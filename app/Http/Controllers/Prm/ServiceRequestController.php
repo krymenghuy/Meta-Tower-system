@@ -10,11 +10,11 @@ use JDV;
 
 class ServiceRequestController extends Controller
 {
-    protected $serviceRequest;
+    protected $service_requests;
 
     public function __construct()
     {
-        $this->serviceRequest = new ServiceRequest();
+        $this->service_requests = new ServiceRequest();
     }
 
     // Save or update
@@ -24,9 +24,8 @@ class ServiceRequestController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-
         $id = $req->id ?? null;
-        $res = $this->serviceRequest->upsert($req->all(), $id, $ss);
+        $res = $this->service_requests->upsert($req->all(), $id, $ss);
         return JDV::raw($res);
     }
 
@@ -38,7 +37,7 @@ class ServiceRequestController extends Controller
             return JDV::raw($ss);
         }
 
-        return JDV::result($this->serviceRequest->getServiceRequestList($req->all(), $ss));
+        return JDV::result($this->service_requests->getServiceRequestList($req->all(), $ss));
     }
 
     // public function serviceRequestDetails(Request $req, $id = null)
@@ -64,8 +63,6 @@ class ServiceRequestController extends Controller
             return JDV::error('Invalid ID');
         }
         $details = ServiceRequest::getServiceRequestDetails($id);
-       
-
         return JDV::result($details);
     }
 
@@ -81,7 +78,7 @@ class ServiceRequestController extends Controller
         if (!$id || !is_numeric($id)) {
             return JDV::error('Invalid ID provided');
         }
-        $result = $this->serviceRequest->deleteById($id, $ss);
+        $result = $this->service_requests->deleteById($id, $ss);
         return JDV::raw($result);
     }
 
@@ -91,7 +88,7 @@ class ServiceRequestController extends Controller
         if($ss->status_code !==200){
             return JDV::raw($ss);
         }
-        return JDV::result($this->serviceRequest->getFormOptions($req->all(),$ss));
+        return JDV::result($this->service_requests->getFormOptions($req->all(),$ss));
     }
 
      function setRequestStatus(Request $req)
@@ -101,7 +98,7 @@ class ServiceRequestController extends Controller
             return JDV::raw($ss);
         }
 
-        return JDV::raw($this->serviceRequest->setRequestStatus($req->all(), $ss));
+        return JDV::raw($this->service_requests->setRequestStatus($req->all(), $ss));
     }
 
 

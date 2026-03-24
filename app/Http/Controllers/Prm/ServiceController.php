@@ -64,7 +64,7 @@ class ServiceController extends Controller
         if(!isset($req->id) || !is_numeric($req->id)){
             return JDV::error('Invalid ID');
         }
-        $res = $this->services->deleteService($req->id);
+        $res = $this->services->deleteService($req->id,$ss);
         return JDV::raw($res);
     }
 
@@ -82,6 +82,15 @@ class ServiceController extends Controller
         return JDV::result(
             $this->services->getServiceInfo($id, $ss)
         );
+    }
+     public function updateServiceStatus(Request $req){
+        $ss = XAuthService::verifyAuth($req,-1);
+        if($ss->status_code !==200){
+            return JDV::raw($ss);
+        }
+        $id = $req->id ?? null;
+        return JDV::raw($this->services->updateServiceStatus($req->status_id,$id,$ss));
+
     }
 
 

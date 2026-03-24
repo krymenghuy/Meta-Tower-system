@@ -32,21 +32,9 @@ class Service
 
         $unit_type_char = ['@','.','-','_'];
         $description_char = ['@',',','-','.','#'];
-
-        $res = DBX::validateObject(
-            $arr,
-            $v_rule,
-            1,
-            ['name'=>$unit_type_char,'unit_type'=>$unit_type_char,'description'=> $description_char],
-            $ss->lang,
-            0,
-            null
-        );
-
+        $res = DBX::validateObject($arr,$v_rule,1,['name'=>$unit_type_char,'unit_type'=>$unit_type_char,'description'=> $description_char],$ss->lang,0,null);
         if($res->error) return DV::error($res->error);
-
         $inputs = $res->values;
-
         // Check for duplicate service name if creating new
         if(!$id) {
             $exist = DB::table('services')
@@ -65,13 +53,10 @@ class Service
                 return DV::error('Update failed: Another service with this name already exists');
             }
         }
-
         $id = DBX::saveData($ss, 'services', ['id'=>$id], $inputs, [], 1);
-
         if($id > 0){
             return DV::depends(1, ['services'=>$inputs, 'id'=>$id]);
         }
-
         return DV::error('Error saving service!');
     }
 
@@ -98,16 +83,18 @@ class Service
         if($service_type_id){
             $str_moreWhere .= ' AND s.service_type_id =' . $service_type_id ;
         }
-
-        $updated_at = DBX::formatTime("s.updated_at", 'updated_at');
         $query = DB::table('services as s')
             ->join('service_types as st','st.id','=','s.service_type_id')
+            ->join('service_statuses as ss','ss.id','=','s.status_id')
             ->whereRaw($str_search)
             ->whereRaw($str_moreWhere)
-            ->selectRaw("s.id,s.name,s.service_type_id,st.name as service_type,s.unit_type,s.price,s.description,$updated_at,s.update_user")->orderBy('s.id','DESC');
+            ->selectRaw("s.id,s.name,s.service_type_id,st.name as service_type,s.unit_type,s.price,s.status_id,ss.name as status,s. description,s.updated_at,s.update_user")->orderBy('s.id','DESC');
         $clone_query = clone $query;
         $count = $clone_query->count('s.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
+        foreach($rows as $row){
+            $row = setOfficialDates($row,['updated_at'],[],[]);
+        }
         return new LengthAwarePaginator($rows,$count,$per_page,$current_page);
 
     }
@@ -115,7 +102,7 @@ class Service
     public static function serviceDetails($id,$ss = null){
         return DB::table('services as s')
             ->where('s.id',$id)
-            ->selectRaw('s.id,s.name,s.service_type_id,s.unit_type,s.price,s.description')
+            ->selectRaw('s.id,s.name,s.service_type_id,s.unit_type,s.price,s.status_id,s.description')
             ->first();
     }
 
@@ -128,8 +115,16 @@ class Service
         ];
     }
 
-    public function deleteService($id = null){
+    public function deleteService($id = null,$ss = null){
         $id = $id ?? $this->id;
+        $service = DB::table('services')->select('id','status_id')->where('id',$id)->first();
+        if(!$service){
+            return DV::error('Service not found.');
+        }
+        if($service->status_id == 1){
+            return DV::error('cannot not delete active service.');
+
+        }
         $deleted = DB::table('services')->where('id',$id)->delete();
         return $deleted ? DV::depends($deleted,['action'=>'deleted']) : DV::error('Delete failed.');
     }
@@ -154,7 +149,20 @@ class Service
             'service_types' => $serviceType
         ];
     }
-
+    function updateServiceStatus($status_id, $id = null, $ss = null)
+    {
+        $ss = $ss ? $ss : $this->userInfo;
+        $currentStatus = DB::table('services')->where('id', $id)->value('status_id');
+        if ($currentStatus == $status_id) {
+            return DV::error('It is the same current status.');
+        }
+        $x = DB::table('services')->where('id', $id)->update([
+            'status_id' => $status_id,
+            'update_user' => $ss->full_name,
+            'updated_at' => getNowTime(),
+        ]);
+        return DV::depends($x, ['Service status', 'updated']);
+    }
 
 
 

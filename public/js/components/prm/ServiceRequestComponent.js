@@ -3,158 +3,159 @@
 var ServiceRequestComponent = (function () {
     const mThis = {};
     mThis.title_prop = "Service Request";
-    mThis.base_url = main_view.base_url;
+    // mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_service_request_component");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter_service_request");
+    mThis.elService_type = mThis.self.querySelector('#_service_request_type_id');
+    mThis.elStatus = mThis.self.querySelector('#_service_request_status');
+    mThis.elSearch = mThis.self.querySelector("#_search_service_request");
+    mThis.elBtnCreate = mThis.self.querySelector("#_btnServiceRequest");
 
-    const $ = sel => mThis.self.querySelector(sel);
-    Object.assign(mThis, {
-        elSearch: $("#_search_service_request"),
-        elStatus: $("#_service_request_status"),
-        elService_type: $("#_service_request_type_id"),
-        elBtnCreate: $("#_btnServiceRequest"),
-        divFilter: $("#_divFilter_service_request"),
-    });
+    // const $ = sel => mThis.self.querySelector(sel);
+    // Object.assign(mThis, {
+    //     elSearch: $("#_search_service_request"),
+    //     elStatus: $("#_service_request_status"),
+    //     elService_type: $("#_service_request_type_id"),
+    //     elBtnCreate: $("#_btnServiceRequest"),
+    //     divFilter: $("#_divFilter_service_request"),
+    // });
 
     mThis.columns = [
-    { title: "", className: "align-middle text-capitalize" },
-    {
-            transTitle: "titles.Request Num",
+        { title: "", className: "align-middle text-capitalize" },
+        {
+            transTitle: "titles.Request No",
             className: "align-middle text-start",
             data: (data) => data.code
                 ? `<span class="text-yp-custom">${data.code}</span>`
                 : `<span class="text-muted fst-italic">N/A</span>`,
-    },
-    {
-        transTitle: "titles.Tenant",
-        className: "align-middle",
-        data: (data) => `<span class="text-primary-custom">${data.tenant_name ?? ''}</span>`
-    },
-    {
-        transTitle: "titles.Room Code",
-        className: "align-middle",
-        data: (data) => `<span class="text-primary-custom user-select-none">${data.space_code ?? ''}</span>`
-    },
-    {
-        transTitle: "titles.Category",
-        className: "align-middle",
-        data: (data) => `<span class="text-primary-custom">${data.service_type ?? ''}</span>`
-    },
-    {
-        transTitle: "titles.Service",
-        className: "align-middle",
-        data: (data) => `<span class="text-primary-custom">${data.service_name ?? ''}</span>`
-    },
-    {
-        transTitle: "titles.Price",
-        className: "align-middle",
-        data: (data) => {
-            const cur = data.cur_symbol ?? '$';
-            let mainPrice = data.total_price ?? data.service_price;
-            let displayPrice = mainPrice
-                ? Number(mainPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-                : '—';
+        },
+        {
+            transTitle: "titles.Tenant",
+            className: "align-middle",
+            data: (data) => `<span class="text-primary-custom">${data.tenant_name ?? ''}</span>`
+        },
+        {
+            transTitle: "titles.Space",
+            className: "align-middle",
+            data: (data) => `<span class="text-primary-custom user-select-none">${data.space_code ?? ''}</span>`
+        },
+        {
+            transTitle: "titles.Service",
+            className: "align-middle",
+            data: (data) => `<span class="text-primary-custom">${data.service_name ?? ''}</span>`
+        },
+        {
+            transTitle: "titles.Category",
+            className: "align-middle",
+            data: (data) => `<span class="text-primary-custom">${data.service_type ?? ''}</span>`
+        },
+        {
+            transTitle: "titles.Price",
+            className: "align-middle",
+            data: (data) => {
+                const cur = data.cur_symbol ?? '$';
+                let mainPrice = data.total_price ?? data.service_price;
+                let displayPrice = mainPrice
+                    ? Number(mainPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                    : '—';
 
-            let extraInfo = '';
+                let extraInfo = '';
 
-            if (data.unit_type === '2' && data.duration_hours > 0 && data.service_price) {
-                const base = Number(data.service_price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                extraInfo = `<small class="text-muted d-block">$${base} × ${data.duration_hours}h</small>`;
-            } else if (data.unit_type) {
-                extraInfo = `<small class="text-nowrap text-muted d-block">/ ${data.unit_type}</small>`;
-            }
+                if (data.unit_type === '2' && data.duration_hours > 0 && data.service_price) {
+                    const base = Number(data.service_price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    extraInfo = `<small class="text-muted d-block">$${base} × ${data.duration_hours}h</small>`;
+                } else if (data.unit_type) {
+                    extraInfo = `<small class="text-nowrap text-muted d-block">/ ${data.unit_type}</small>`;
+                }
 
-            return `
+                return `
                 <span class="fw-bold fs-6">${cur} ${displayPrice}</span>
                 ${extraInfo}
             `;
-        }
-    },
-    {
-        transTitle: "titles.Description",
-        className: "align-middle",
-        data: (data) => `<span class="text-primary-custom">${data.description ?? ''}</span>`
-    },
-    {
-        transTitle: "titles.Schedule Date", className: "align-middle text-center",
-        data: (data) => {
-            const rawDate = (data.scheduled_date || '').toString().trim();
-            const rawTime = (data.start_time || '').toString().trim();
+            }
+        },
+        {
+            transTitle: "titles.Schedule Date", className: "align-middle text-center",
+            data: (data) => {
+                console.log(123,data);
+                
+                const rawDate = (data.scheduled_date || '').toString().trim();
+                const rawTime = (data.start_time || '').toString().trim();
 
-            let datePart = rawDate;
-            let timePart = rawTime.substring(0, 5);
+                let datePart = rawDate;
+                let timePart = rawTime.substring(0, 5);
 
-            // Try to normalise date to YYYY-MM-DD if it's a valid date string.
-            if (rawDate) {
-                const d = new Date(rawDate);
-                if (!Number.isNaN(d.getTime())) {
-                    const y = d.getFullYear();
-                    const m = String(d.getMonth() + 1).padStart(2, '0');
-                    const day = String(d.getDate()).padStart(2, '0');
-                    datePart = `${y}-${m}-${day}`;
+                // Try to normalise date to YYYY-MM-DD if it's a valid date string.
+                if (rawDate) {
+                    const d = new Date(rawDate);
+                    if (!Number.isNaN(d.getTime())) {
+                        const y = d.getFullYear();
+                        const m = String(d.getMonth() + 1).padStart(2, '0');
+                        const day = String(d.getDate()).padStart(2, '0');
+                        datePart = `${y}-${m}-${day}`;
+                    }
                 }
-            }
 
-            if (!datePart && !timePart) {
-                return '<span class="text-yp-custom">...</span>';
-            }
+                if (!datePart && !timePart) {
+                    return '<span class="text-yp-custom">...</span>';
+                }
 
-            if (!timePart) {
-                return `<span class="text-yp-custom">${datePart}</span>`;
-            }
+                if (!timePart) {
+                    return `<span class="text-yp-custom">${datePart}</span>`;
+                }
 
-            return `
+                return `
                 <div class="d-flex flex-column align-items-center">
                     <span class="text-yp-custom text-nowrap">${datePart}</span>
                     <span class="text-muted small text-nowrap">${timePart}</span>
                 </div>
             `;
-        }
-    },
-    {
-        transTitle: "titles.Status",
-        className: "align-middle",
-        data:  (row,index,tr)=>{
-            const statusId   = parseInt(row.status_id) || 2;
-            const statusName = (row.status_name || "-").trim();
-
-            const badgeClass = mThis.getStatusClass(statusId);
-
-            if (statusId ===2){
-                return `
-                    <button data-id = "${row.id}"
-                            data-statusid="${row.status_id}"
-                            class="btn btn-sm ${badgeClass} fw-bold status-change-btn"
-                            data-id="${row.id}"
-                            data-current-status="${statusId}"
-                            aria-expanded="false">
-                            ${statusName}
-                    </button>
-                `;
-            }else {
-                return `
-                    <span class="badge ${badgeClass.replace('btn-', 'bg-')} fs-6 px-3 py-2"
-                        style="cursor: not-allowed;"
-                        title="This status cannot be changed">
-                        ${statusName}
-                    </span>
-                `;
             }
-
-        }
-    },
-    {
-        transTitle: "titles.Updated By",
-        className: 'align-middle',
-        data: (data) => `
+        },
+        {
+            transTitle: "titles.Remark",
+            className: "align-middle",
+            data: (data) => `<span class="text-primary-custom">${data.description ?? ''}</span>`
+        },
+        {
+            title: "Status",
+            className: "align-middle",
+            data: (data) => {
+                const status = (data.status_name ?? '').toLowerCase();
+                const statusId = Number(data.status_id) || 0;
+                const statusClasses = {
+                    pending: 'badge text-warning bg-warning-subtle border border-warning',
+                    accepted: 'badge text-primary bg-primary-subtle border border-primary',
+                    cancelled: 'badge text-danger bg-danger-subtle border border-danger'
+                };
+                const cls = statusClasses[status] ?? 'badge text-dark bg-light border';
+                const isEditable = status === 'pending';
+                return `
+            <span 
+                data-id="${data.id}" 
+                data-statusid= "${data.status_id}"
+                data-current-status="${statusId}"  
+                class="${cls} ${isEditable ? 'status-change-btn' : ''} text-capitalize d-inline-block text-center"
+                style="min-width:70px; cursor:${isEditable ? 'pointer' : 'not-allowed'}"
+                title="${isEditable ? 'Click to change status' : 'This status cannot be changed'}">
+                ${data.status_name ?? ''}
+            </span>
+        `;
+            },
+        },
+        {
+            transTitle: "titles.Updated By",
+            className: 'align-middle',
+            data: (data) => `
             <div class="d-flex flex-column">
                 <span class="text-capitalize text-primary-custom fw-semibold">${data.update_user ?? ''}</span>
                 <span class="text-muted small">${data.updated_at ?? ''}</span>
             </div>`
-    },
-    {
-        transTitle: "titles.Action",
-        className: 'col_action align-middle',
-        data: (data) => `
+        },
+        {
+            transTitle: "titles.Action",
+            className: 'col_action align-middle',
+            data: (data) => `
             <div class="d-flex justify-content-center align-items-end">
                 <a href="javascript:void(0)"
                     class="btn--Options ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'} bg-second pointer p-4"
@@ -164,32 +165,20 @@ var ServiceRequestComponent = (function () {
                     <i class="fa-solid fa-ellipsis-vertical fs-5 text-prm-custom"></i>
                 </a>
             </div>`
-    }
-];
-
-    mThis.getStatusClass =(status_id)=>{
-        switch(status_id){
-            case 1: {
-                return"btn-danger";
-            }
-            case 2: {
-                return"btn-warning";
-            }
-            case 3:{
-                return"btn-success";
-            }
         }
-    }
+    ];
+
 
     mThis.init = () => {
         if (mThis.initAlready) return;
+
         mThis.divListView = mThis.divListView || mThis.self.querySelector('#_service_request_list');
         mThis.ServiceRequestListView = new ListView(mThis.divListView, {
             //fetchApi: `${main_view.base_url}/prm/service-request/list`, // Old version
-            api:{
-                endpoint:`${main_view.base_url}/prm/service-request/list`, // new version
-                method:'POST',
-                cacheTTL:3000 //Cache data 3 seconds
+            api: {
+                endpoint: `${main_view.base_url}/prm/service-request/list`, // new version
+                method: 'POST',
+                cacheTTL: 3000 //Cache data 3 seconds
             },
             perPage: 10,
             apiCluster: main_view.apiCluster,
@@ -202,57 +191,9 @@ var ServiceRequestComponent = (function () {
             }
         });
 
-        mThis.table=  mThis.ServiceRequestListView.getTable();
+        // mThis.table = mThis.ServiceRequestListView.getTable();
 
-        mThis.table.addEventListener('click',(e)=>{
-            let btn = VSUtil.closestLimited(e.target,' .status-change-btn');
-            if(btn){
-                const def = btn.dataset.statusid;
-                const id = btn.dataset.id;
-                const data = [
-                    {
-                        id:1,
-                        name: 'Canceled'
-                    },
-                    {
-                        id:2,
-                        name: 'Pending'
-                    },
-                    {
-                        id:3,
-                        name: 'Accepted'
-                    },
-                ];
-                InputBox.show({
-                    type:'select',
-                    title: 'Change Status ',
-                    allowBlankValue: false,
-                    data:data,
-                    textField: 'name',
-                    valueField: 'id',
-                    defaultValue: def,
-                    requiredMessage: 'Select Correct Status',
-                    onConfirm(value, btn, me) {
-                            const p = {id:id,status_id:value.id};
-                            console.log("111111",p);
-                            vsapi.post(`${main_view.base_url}/prm/service-request/set-status`,p,{})
-                            .then(res => {
-                                if(res.status_code == 200){
-                                    mThis.ServiceRequestListView.showPage(mThis.getFilterData());
-                                    me.close();
-                                }
-                                else{
-                                    me.setError(res.error_message);
-                                }
-                            });
-
-                        }
-                    });
-                return ;
-            }
-
-        });
-
+       
         mThis.elBtnCreate.onclick = (e) => {
             e.preventDefault();
             CreateServiceRequestDialog.show({
@@ -261,79 +202,140 @@ var ServiceRequestComponent = (function () {
                 onClose: () => mThis.ServiceRequestListView.showPage(mThis.getFilterData())
             });
         };
-
-        const sh_parent = mThis.ServiceRequestListView.getListContainer().parentElement;
-        sh_parent.style.maxHeight = (window.innerHeight - 200) + 'px';
-        sh_parent.classList.add("overflow-y-auto", "overflow-x-hidden");
-
+        mThis.listContainer = mThis.ServiceRequestListView.getListContainer();
+        const sh_parent = mThis.listContainer.parentElement;
+        sh_parent.style.maxHeight = (window.innerHeight - 220) + "px";
+        sh_parent.classList.add("overflow-y-auto");
+        sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            sh_parent.style.maxHeight = (window.innerHeight - 200) + 'px';
+            sh_parent.style.maxHeight = (window.innerHeight - 220) + "px";
         };
+        mThis.tblServiceRequest = mThis.ServiceRequestListView.getTable();
 
-        mThis.initDropdownMenus(mThis.ServiceRequestListView.getTable());
+        mThis.tblServiceRequest.addEventListener('click', (e) => {
+            let btn = VSUtil.closestLimited(e.target, ' .status-change-btn');
+            if (btn) {
+                const def = btn.dataset.statusid;
+                const id = btn.dataset.id;
+                const data = [
+                    {
+                        id: 1,
+                        name: 'Canceled'
+                    },
+                    {
+                        id: 2,
+                        name: 'Pending'
+                    },
+                    {
+                        id: 3,
+                        name: 'Accepted'
+                    },
+                ];
+                InputBox.show({
+                    type: 'select',
+                    title: 'Change Status ',
+                    allowBlankValue: false,
+                    data: data,
+                    textField: 'name',
+                    valueField: 'id',
+                    defaultValue: def,
+                    requiredMessage: 'Select Correct Status',
+                    onConfirm(value, btn, me) {
+                        const p = { id: id, status_id: value.id };
+                        console.log("111111", p);
+                        vsapi.post(`${main_view.base_url}/prm/service-request/set-status`, p, {})
+                            .then(res => {
+                                if (res.status_code == 200) {
+                                    mThis.ServiceRequestListView.showPage(mThis.getFilterData());
+                                    me.close();
+                                }
+                                else {
+                                    me.setError(res.error_message);
+                                }
+                            });
 
-        mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
+                    }
+                });
+                return;
+            }
+
+        });
+
+
+        
+
+        let timeOut = null;
+        mThis.elSearch.onkeyup = function (e) {
+            e.preventDefault();
+            clearTimeout(timeOut);
+            timeOut = setTimeout(() => {mThis.ServiceRequestListView.showPage(mThis.getFilterData());}, 250);
+        };
+        mThis.divFilter.addEventListener("change", (e) => {
+            e.preventDefault();
+            mThis.ServiceRequestListView.showPage(mThis.getFilterData());
+        });
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             el.onchange = () => mThis.ServiceRequestListView.showPage(mThis.getFilterData());
         });
-
-        mThis.elSearch.addEventListener('keyup', () => {
-            clearTimeout(mThis.search_timeout);
-            mThis.search_timeout = setTimeout(() => {
-                mThis.ServiceRequestListView.showPage(mThis.getFilterData());
-            }, 250);
-        });
-
+        mThis.initDropdownMenus(mThis.tblServiceRequest);
         mThis.initAlready = true;
     };
 
-    mThis.getFilterData = () => ({
-        status_id: mThis.elStatus.value,
-        service_type_id: mThis.elService_type.value,
-        search_value: mThis.elSearch.value,
-    });
+    mThis.getFilterData = () => {
+        let p = {
+            status_id: mThis.elStatus.value,
+            service_type_id: mThis.elService_type.value,
+            search_value: mThis.elSearch.value,
+        };
+        mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
+            const f = el.dataset.field;
+            p[f] = el.value;
+        });
+        console.log(4444,p);
+        
+        return p;
+    };
 
     mThis.initDropdownMenus = (table) => {
-    new VSDropdownMenu({
-        containerElement: table,
-        actionButtonClass: "btn_leave_action",
-        cssClass: "bg-white shadow",
-        menus: [
-            {
-                html: '<span class="ps-2" vslang="title.Generate Invoice"></span>',
-                icon: `<i class="fa-solid fa-dollar-sign text-success"></i>`,
-                name: "generate_invoice",
-                cssClass: "border-bottom pb-2 mb-2"
-            },
-            {
-                html: '<span class="ps-2 " vslang="title.Modify" ></span>',
-                icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
-                name: "edit_request",
-                cssClass: "border-bottom pb-2"
-            },
-            {
-                html: '<span class="ps-2" vslang="title.Delete"></span>',
-                icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
-                name: "delete_request",
-                cssClass: "border-bottom pb-2"
-            }
-        ],
-        onClick: (menuLink, id, name) => {
-            const row = document.getElementById(`service_request_id_${id}`);
-            const statusId = parseInt(row.dataset.statusId || '0', 10);
-            if (statusId !== 2) {
-                if (name === 'edit_request') {
-                    cv_interact.info('Cannot modify');
-                    return;
+        new VSDropdownMenu({
+            containerElement: table,
+            actionButtonClass: "btn_leave_action",
+            cssClass: "bg-white shadow",
+            menus: [
+                {
+                    html: '<span class="ps-2" vslang="title.Generate Invoice"></span>',
+                    icon: `<i class="fa-solid fa-dollar-sign text-success"></i>`,
+                    name: "generate_invoice",
+                    cssClass: "border-bottom pb-2 mb-2"
+                },
+                {
+                    html: '<span class="ps-2 " vslang="title.Modify Request" ></span>',
+                    icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
+                    name: "edit_request",
+                    cssClass: "border-bottom pb-2"
+                },
+                {
+                    html: '<span class="ps-2" vslang="title.Delete Request"></span>',
+                    icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
+                    name: "delete_request",
+                    cssClass: "border-bottom pb-2"
                 }
+            ],
+            onClick: (menuLink, id, name) => {
+                const row = document.getElementById(`service_request_id_${id}`);
+                const statusId = parseInt(row.dataset.statusId || '0', 10);
+                if (statusId !== 2) {
+                    if (name === 'edit_request') {
+                        cv_interact.info('Cannot modify');
+                        return;
+                    }
+                }
+                if (name === 'generate_invoice') mThis.generateInvoice(id, menuLink);
+                if (name === 'edit_request') mThis.editServiceRequest(id, menuLink);
+                if (name === 'delete_request') mThis.deleteRequest(id, menuLink);
             }
-            if (name === 'generate_invoice') mThis.generateInvoice(id, menuLink);
-            if (name === 'edit_request')     mThis.editServiceRequest(id, menuLink);
-            if (name === 'delete_request')   mThis.deleteRequest(id, menuLink);
-        }
-    });
-};
-
-
+        });
+    };
     mThis.generateInvoice = (id, menuLink) => {
         CreateInvoiceServiceRequestDialog.show({
             service_request_id: id,
@@ -342,7 +344,6 @@ var ServiceRequestComponent = (function () {
             onClose: () => mThis.ServiceRequestListView.showPage(mThis.getFilterData())
         });
     };
-
     mThis.editServiceRequest = (id, menuLink) => {
         CreateServiceRequestDialog.show({
             id: id,
@@ -350,7 +351,6 @@ var ServiceRequestComponent = (function () {
             onClose: () => mThis.ServiceRequestListView.showPage(mThis.getFilterData())
         });
     };
-
     mThis.deleteRequest = (id, menuLink) => {
         if (!AuthManager.allowed(242)) return;
         cv_interact.confirm('Delete this Service Request?', {
@@ -371,34 +371,28 @@ var ServiceRequestComponent = (function () {
         });
     };
 
-      function formatStatus(item){
-        return `<span class="badge text-prm-custom bg-light" >${item.name}</span>`;
-      }
-
+    mThis.prepareFormOptions = (onFinish) => {
+        vsapi.call(`${main_view.base_url}/prm/service-request/form-options`,null,null,null)
+            .then(res => {
+                const d = res.status_code == 200 ? res.data : {};
+                    VSUtil.setComboItems(mThis.elStatus, d.request_statuses, 'id', 'name', '', 'All Statuses', '');
+                    VSUtil.setComboItems(mThis.elService_type, d.service_types, 'id', 'service_type', '', 'All Category', '');
+                if (typeof onFinish === 'function') onFinish();
+            });
+    };
     mThis.show = (options) => {
         mThis.init();
+        mThis.options = options;
+        
         mThis.prepareFormOptions(() => {
             main_view.setContentView(mThis.self, mThis.title_prop);
             mThis.ServiceRequestListView.showPage(mThis.getFilterData());
         });
     };
+return mThis;
+    
 
-    mThis.prepareFormOptions = (callback) => {
-        vsapi.call(`${main_view.base_url}/prm/service-request/form-options`)
-            .then(res => {
-                if (res.status_code === 200) {
-                    VSUtil.setComboItems(mThis.elStatus, res.data.request_statuses, 'id', 'name', '', 'All Statuses', '');
-                    VSUtil.setComboItems(mThis.elService_type, res.data.service_types, 'id', 'service_type', '', 'All Category', '');
-                }
-                if (typeof callback === 'function') callback();
-            });
-    };
-
-    return mThis;
 })();
-
-
-
 const CreateInvoiceServiceRequestDialog = (() => {
     const self = {};
     let dialog = null;
@@ -531,24 +525,24 @@ const CreateInvoiceServiceRequestDialog = (() => {
 
                         const subtotal = parseFloat(me._subtotal || 0);
                         const discType = document.getElementById('discount_type')?.value || 'percent';
-                        const discVal  = parseFloat(document.getElementById('discount_value')?.value || 0);
-                        const taxType  = document.getElementById('tax_type')?.value || 'percent';
-                        const taxVal   = parseFloat(document.getElementById('tax_value')?.value || 0);
+                        const discVal = parseFloat(document.getElementById('discount_value')?.value || 0);
+                        const taxType = document.getElementById('tax_type')?.value || 'percent';
+                        const taxVal = parseFloat(document.getElementById('tax_value')?.value || 0);
 
                         const discount = discType === 'percent' ? subtotal * (discVal / 100) : discVal;
-                        const tax      = taxType === 'percent' ? subtotal * (taxVal / 100) : taxVal;   // ← CHANGED HERE
+                        const tax = taxType === 'percent' ? subtotal * (taxVal / 100) : taxVal;   // ← CHANGED HERE
                         const netAmount = subtotal - discount + tax;
 
                         // Footer
                         document.getElementById('calc-subtotal').textContent = `$${subtotal.toFixed(2)}`;
                         document.getElementById('calc-discount').textContent = `-$${discount.toFixed(2)}`;
-                        document.getElementById('calc-tax').textContent      = `+$${tax.toFixed(2)}`;
-                        document.getElementById('calc-total').textContent    = `$${netAmount.toFixed(2)}`;
+                        document.getElementById('calc-tax').textContent = `+$${tax.toFixed(2)}`;
+                        document.getElementById('calc-total').textContent = `$${netAmount.toFixed(2)}`;
 
                         // Table row
                         document.getElementById('item-discount').textContent = `-$${discount.toFixed(2)}`;
-                        document.getElementById('item-tax').textContent      = `+$${tax.toFixed(2)}`;
-                        document.getElementById('item-net').textContent      = `$${netAmount.toFixed(2)}`;
+                        document.getElementById('item-tax').textContent = `+$${tax.toFixed(2)}`;
+                        document.getElementById('item-net').textContent = `$${netAmount.toFixed(2)}`;
                     };
 
                     ['discount_value', 'tax_value'].forEach(id => {
@@ -570,15 +564,15 @@ const CreateInvoiceServiceRequestDialog = (() => {
                             if (!me._serviceRequestData) return cv_interact.error('No service request data loaded');
 
                             const formData = me.getData();
-                            console.log("1234222",formData);
+                            console.log("1234222", formData);
                             const discType = document.getElementById('discount_type')?.value || 'percent';
-                            const discVal  = parseFloat(document.getElementById('discount_value')?.value || 0);
-                            const taxType  = document.getElementById('tax_type')?.value || 'percent';
-                            const taxVal   = parseFloat(document.getElementById('tax_value')?.value || 0);
+                            const discVal = parseFloat(document.getElementById('discount_value')?.value || 0);
+                            const taxType = document.getElementById('tax_type')?.value || 'percent';
+                            const taxVal = parseFloat(document.getElementById('tax_value')?.value || 0);
 
                             const subtotal = me._serviceRequestData.amount;
                             const discount = discType === 'percent' ? subtotal * (discVal / 100) : discVal;
-                            const tax      = taxType === 'percent' ? subtotal * (taxVal / 100) : taxVal;   // ← CHANGED HERE TOO
+                            const tax = taxType === 'percent' ? subtotal * (taxVal / 100) : taxVal;   // ← CHANGED HERE TOO
 
                             formData.items = [{
 
@@ -597,7 +591,7 @@ const CreateInvoiceServiceRequestDialog = (() => {
                             }];
 
                             formData.tenant_id = me._serviceRequestData.tenant_id;
-                            formData.space_id  = me._serviceRequestData.space_id;
+                            formData.space_id = me._serviceRequestData.space_id;
                             vsapi.call(`${main_view.base_url}/prm/invoice/save`, formData, btn)
                                 .then(res => {
                                     if (res.status_code === 200) {
@@ -629,9 +623,9 @@ const CreateInvoiceServiceRequestDialog = (() => {
         me._subtotal = 0;
 
         document.getElementById('info-tenant').textContent = '-';
-        document.getElementById('info-space').textContent  = '-';
+        document.getElementById('info-space').textContent = '-';
         document.getElementById('info-service').textContent = '-';
-        document.getElementById('info-unit').textContent   = '-';
+        document.getElementById('info-unit').textContent = '-';
         document.getElementById('items-body').innerHTML = '';
 
         vsapi.call(`${main_view.base_url}/prm/service-request/form-options`, { id: op.service_request_id })
@@ -639,12 +633,12 @@ const CreateInvoiceServiceRequestDialog = (() => {
                 if (res.status_code !== 200) return cv_interact.error('Failed to load data');
 
                 const data = res.data.request_details || {};
-                console.log("1111",data);
+                console.log("1111", data);
                 const service = res.data.services?.find(s => s.id == data.service_id) || {};
                 document.getElementById('info-tenant').textContent = data.tenant_name || '-';
-                document.getElementById('info-space').textContent  = data.space_code || '-';
+                document.getElementById('info-space').textContent = data.space_code || '-';
                 document.getElementById('info-service').textContent = service.service || '-';
-                document.getElementById('info-unit').textContent   = data.unit_type || '-';
+                document.getElementById('info-unit').textContent = data.unit_type || '-';
 
                 me._serviceRequestData = {
                     tenant_id: data.tenant_id,
@@ -656,7 +650,7 @@ const CreateInvoiceServiceRequestDialog = (() => {
                     amount: parseFloat(data.total_price || data.service_price || 0)
                 };
                 me.controls.tenant_id.value = data.tenant_id || '';
-                me.controls.space_id.value  = data.space_id || '';
+                me.controls.space_id.value = data.space_id || '';
                 me.controls.service_id.value = data.service_id || '';
 
                 me._subtotal = me._serviceRequestData.amount;
@@ -683,9 +677,6 @@ const CreateInvoiceServiceRequestDialog = (() => {
 
     return self;
 })();
-
-
-
 const CreateServiceRequestDialog = (() => {
     const self = {};
     let dialog = null;
@@ -701,24 +692,18 @@ const CreateServiceRequestDialog = (() => {
                     <div class="row g-3 mb-3">
                         <!-- HIDDEN real tenant_id (sent to backend) -->
                         <input type="hidden" class="data-input" data-field="tenant_id">
-
                         <!-- Visible Tenant Search (NO data-field so name is NOT sent) -->
                         <div class="col-md-6">
-                            <label style="padding-left:6px;color:#777;">
-                                <i class="fas fa-user me-2 text-primary"></i>Tenant <span class="text-danger">*</span>
-                            </label>
                             <div class="material-input outlined">
-                                <input name="tenant" class="form-control" placeholder="Search tenant..." autocomplete="off">
+                                <input name="tenant" class="form-control" placeholder=" " autocomplete="off">
+                                <label style="padding-left:6px;color:#777;">Tenant</label>
                             </div>
                         </div>
 
                         <!-- Room / Space -->
                         <div class="col-md-6">
-                            <label style="padding-left:6px;color:#777;">
-                                <i class="fas fa-door-open me-2 text-info"></i>Room / Space <span class="text-danger">*</span>
-                            </label>
                             <div class="material-input outlined">
-                                <select class="data-input form-control" data-field="space_id" required></select>
+                                <select data-style="material" class="data-input form-control" data-field="space_id" required placeholder="Space"></select>
                             </div>
                         </div>
                     </div>
@@ -726,21 +711,15 @@ const CreateServiceRequestDialog = (() => {
                     <div class="row g-3 mb-3">
                         <!-- Service Category -->
                         <div class="col-md-6">
-                            <label style="padding-left:6px;color:#777;">
-                                <i class="fas fa-layer-group me-2 text-warning"></i>Service Category <span class="text-danger">*</span>
-                            </label>
                             <div class="material-input outlined">
-                                <select class="data-input form-control" data-field="service_type_id" required></select>
+                                <select data-style="material" class="data-input form-control" data-field="service_type_id" required placeholder="Service Type"></select>
                             </div>
                         </div>
 
                         <!-- Service -->
                         <div class="col-md-6">
-                            <label style="padding-left:6px;color:#777;">
-                                <i class="fas fa-concierge-bell me-2 text-success"></i>Service <span class="text-danger">*</span>
-                            </label>
                             <div class="material-input outlined">
-                                <select class="data-input form-control" data-field="service_id" required></select>
+                                <select data-style="material" class="data-input form-control" data-field="service_id" required placeholder="Service"></select>
                             </div>
                         </div>
                     </div>
@@ -748,11 +727,8 @@ const CreateServiceRequestDialog = (() => {
                     <!-- Charge Unit - uses 1/2 (matches your PHP validation) -->
                     <div class="row g-3 mb-3">
                         <div class="col-md-6">
-                            <label style="padding-left:6px;color:#777;">
-                                <i class="fas fa-dollar-sign me-2 text-success"></i>Charge Unit <span class="text-danger">*</span>
-                            </label>
                             <div class="material-input outlined">
-                                <select class="data-input form-control" data-field="unit_type" required>
+                                <select data-style="material" class="data-input form-control" data-field="unit_type" required placeholder="Unit Type">
                                     <option value="">-- Select Unit --</option>
                                     <option value="1">📅 Price Per One Time</option>
                                     <option value="2">⏱️ Price Per Hour</option>
@@ -761,11 +737,8 @@ const CreateServiceRequestDialog = (() => {
                         </div>
 
                         <div class="col-md-6 select-type-time" style="display:none;">
-                            <label style="padding-left:6px;color:#777;">
-                                <i class="fas fa-clock me-2 text-info"></i>Duration (hours) <span class="text-danger">*</span>
-                            </label>
                             <div class="material-input outlined">
-                                <select class="data-input form-control" data-field="duration_hours">
+                                <select data-style="material" class="data-input form-control" data-field="duration_hours" placeholder="Duration (hours)">
                                     <option value="">-- Select Duration --</option>
                                     <option value="0.5">30 minutes</option>
                                     <option value="1">1 hour</option>
@@ -791,7 +764,7 @@ const CreateServiceRequestDialog = (() => {
                                     </div>
                                 </div>
                                 <div class="text-end">
-                                    <small class="text-muted d-block">Base Price × Duration</small>
+                                    <small class="text-muted d-block">Base Price x Duration</small>
                                     <span class="badge bg-primary" id="calc-breakdown">-</span>
                                 </div>
                             </div>
@@ -800,29 +773,26 @@ const CreateServiceRequestDialog = (() => {
 
                     <div class="row g-3">
                         <div class="col-md-4">
-                            <label class="form-label fw-semibold">
-                                <i class="fas fa-calendar-alt text-warning me-1"></i>Scheduled Date <span class="text-danger">*</span>
-                            </label>
-                            <input type="date" class="form-control data-input" data-field="scheduled_date" required>
+                            <div class="material-input outlined">
+                                <input data-type="date" class="form-control data-input" data-field="scheduled_date" required />
+                                <label style="padding-left:6px;color:#777777;">Scheduled Date</label>
+                            </div>
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label fw-semibold">Start Time</label>
-                            <input type="time" class="form-control data-input" data-field="start_time">
-                        </div>
-                    </div>
-
-                    <div class="row g-3">
-                        <div class="col-12">
-                            <label style="padding-left:6px;color:#777;">
-                                <i class="fas fa-comment-dots me-2 text-primary"></i>Remarks
-                            </label>
-                            <div class="material-input outlined position-relative">
-                                <textarea class="data-input form-control" data-field="description"
-                                    rows="4" placeholder="Enter any additional details..." maxlength="500"></textarea>
+                            <div class="material-input outlined">
+                                <input type="time" class="form-control data-input" data-field="start_time" placeholder=" " />
+                                <label style="color:#777777;padding-left:6px;">Start Time</label>
                             </div>
                         </div>
                     </div>
-
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <div class="material-input outlined">
+                                <textarea class="data-input form-control" data-field="description" placeholder=" "></textarea>
+                                <label style="padding-left:6px;color:#777;">Remarks</label>
+                            </div>
+                        </div>
+                    </div>
                     <input type="hidden" class="data-input" data-field="status_id" value="1">
                 </div>
             `,
@@ -833,7 +803,7 @@ const CreateServiceRequestDialog = (() => {
                     const unit = me.controls.unit_type?.value || '';
                     const showDuration = unit === '2';
                     const durationRow = me.divModal.querySelector('.select-type-time');
-                    const previewRow  = me.divModal.querySelector('#price-preview-row');
+                    const previewRow = me.divModal.querySelector('#price-preview-row');
 
                     if (durationRow) durationRow.style.display = showDuration ? 'block' : 'none';
                     if (!showDuration) { if (previewRow) previewRow.style.display = 'none'; return; }
@@ -930,7 +900,7 @@ const CreateServiceRequestDialog = (() => {
                 }
             },
 
-             prepareFormOptions: {
+            prepareFormOptions: {
                 createTitle: "Create Service Request",
                 modifyTitle: "Modify Service Request",
                 targetProp: "request_details",
@@ -957,12 +927,12 @@ const CreateServiceRequestDialog = (() => {
                         vsapi.call([main_view.base_url, "/prm/service-request/save",].join(""), data, btn, null)
                             .then((res) => {
                                 if (res.status_code === 200) {
-                                    me.hide(true,data);
+                                    me.hide(true, data);
                                     cv_interact.success(data.id ? "Updated!" : "Created!");
                                 } else {
                                     cv_interact.error(res.error_message);
                                 }
-                        });
+                            });
                     }
                 }
             ]
