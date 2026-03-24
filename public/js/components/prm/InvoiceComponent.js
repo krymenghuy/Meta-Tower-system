@@ -11,7 +11,6 @@ var InvoiceComponent = (() => {
     mThis.btnAddTest = mThis.self.querySelector("#_btnInvoice_test");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_invoice");
     mThis.elFilter_status = mThis.self.querySelector("#payment_status");
-    mThis.elBuilding = mThis.self.querySelector("#building_id");
     mThis.elSpaceType = mThis.self.querySelector("#space_type_id");
     mThis.elTenant = mThis.self.querySelector("#tenant_id");
     mThis.elSearch = mThis.self.querySelector("#_search_invoice");
@@ -166,12 +165,21 @@ var InvoiceComponent = (() => {
                 mThis.InvoiceListView.showPage(mThis.getFilterData());
         });
 
-        mThis.elSearch.addEventListener("input", () => {
-            clearTimeout(mThis.search_timeout);
-            mThis.search_timeout = setTimeout(() => {
-                mThis.InvoiceListView.showPage(mThis.getFilterData());
-            }, 350);
-        });
+        // mThis.elSearch.addEventListener("input", () => {
+        //     clearTimeout(mThis.search_timeout);
+        //     mThis.search_timeout = setTimeout(() => {
+        //         mThis.InvoiceListView.showPage(mThis.getFilterData());
+        //     }, 350);
+        // });
+        let timeOut = null;
+            mThis.elSearch.onkeyup = function (e) {
+                e.preventDefault();
+                clearTimeout(timeOut);
+                timeOut = setTimeout(() => {
+                    // Use showPage and pass the combined filter data
+                    mThis.InvoiceListView.showPage(mThis.getFilterData());
+                }, 250);
+            };
 
         new ExpandableRowConfig(mThis.tblInvoice.id, {
             dontExpandByClickingOn: ["btn_leave_action"],
@@ -354,7 +362,9 @@ var InvoiceComponent = (() => {
             search_value: mThis.elSearch.value.trim()
         };
         mThis.divFilter.querySelectorAll(".filter-field").forEach(el => {
-            if (el.value) params[el.dataset.field] = el.value;
+            if (el.value && el.dataset.field) {
+                params[el.dataset.field] = el.value.trim();
+            }
         });
         return params;
     };
@@ -427,32 +437,14 @@ var InvoiceComponent = (() => {
         );
     };
 
-    mThis.prepareFormOptions = callback => {
-        vsapi
-            .call(`${main_view.base_url}/prm/invoice/form-options`)
+    mThis.prepareFormOptions = (onFinish) => {
+        vsapi.call(`${main_view.base_url}/prm/invoice/form-options`, null, null, null)
             .then(res => {
-                if (res.status_code === 200) {
-                    const d = res.data || {};
-                    VSUtil.setComboItems(
-                        mThis.elFilter_status,
-                        d.statuses,
-                        "id",
-                        "payment_status",
-                        "",
-                        "All Statuses"
-                    );
-                    VSUtil.setComboItems(
-                        mThis.elBuilding,
-                        d.buildings,
-                        "id",
-                        "building",
-                        "",
-                        "All Buildings"
-                    );
-                }
-                if (typeof callback === "function") callback();
-            });
-    };
+                const d = res.status_code == 200 ? res.data : {};
+                VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'payment_status', '', 'All Statuses', '');
+                if (typeof onFinish === 'function') onFinish();
+            })
+    }
 
     mThis.show = (options = {}) => {
         mThis.init();
@@ -482,43 +474,39 @@ const InvoiceDialog = (() => {
                 <div class="container-fluid">
                     <div class="row g-3">
                         <div class="col-md-3">
-                            <label style="padding-left:6px;color:#777;"><i class="fas fa-user me-2 text-primary"></i>Tenant <span class="text-danger">*</span></label>
                             <div class="material-input outlined">
-                                <input name="tenant" class="data-input form-control" data-field="tenant_id" required>
+                                <input name="tenant" class="data-input form-control" data-field="tenant_id" placeholder=" " autocomplete="off">
+                                <label style="padding-left:6px;color:#777;">Tenant <span class="text-danger">*</span></label>
                             </div>
                         </div>
                         <div class="col-md-3">
-                            <label style="padding-left:6px;color:#777;"><i class="fas fa-door-open me-2 text-info"></i>Room / Space <span class="text-danger">*</span></label>
                             <div class="material-input outlined">
-                                <select name="space" class="data-input form-control" data-field="space_id" required>
-                                    <option value="">-- Select Room / Space --</option>
+                                <select data-style="material" name="space" class="data-input form-control" data-field="space_id" required placeholder="Space">
                                 </select>
                             </div>
                         </div>
                         <div class="col-md-3">
-                            <label style="padding-left:6px;color:#777;"><i class="fas fa-phone-alt text-success me-1"></i>Phone Number</label>
                             <div class="material-input outlined">
                                 <input name="phone_number" class="data-input form-control">
+                                <label style="padding-left:6px;color:#777;">Phone Number</label>
                             </div>
                         </div>
                         <div class="col-md-3">
-                            <label style="padding-left:6px;color:#777;"><i class="fas fa-envelope text-success me-1"></i>Email</label>
                             <div class="material-input outlined">
                                 <input name="email" class="data-input form-control">
+                                <label style="padding-left:6px;color:#777;">Email</label>
                             </div>
                         </div>
                     </div>
                     <div class="row g-3 mb-3 d-flex justify-content-between align-items-end">
                         <div class="col-md-3">
-                            <label class="form-label fw-semibold">
-                                <i class="fas fa-calendar-alt text-warning me-1"></i>Due Date <span class="text-danger">*</span>
-                            </label>
                             <input type="text" data-type="date" name="due_date" class="form-control data-input" required>
+                            <label class="form-label fw-semibold">Due Date <span class="text-danger">*</span></label>
                         </div>
 
                         <div class="col-md-auto">
                             <div class="d-flex gap-2">
-                                <button name="btnRend"    class="btn btn-primary" type="button">Rent</button>
+                                <button name="btnRent"    class="btn btn-primary" type="button">Rent</button>
                                 <button name="btnService"    class="btn btn-primary" type="button">Service</button>
                                 <button name="btnUtility" class="btn btn-primary" type="button">Utility</button>
                             </div>
@@ -551,7 +539,7 @@ const InvoiceDialog = (() => {
                         '[name="div_invoice_summary"]'
                     );
 
-                    me.controls.btnRend.onclick = () => {
+                    me.controls.btnRent.onclick = () => {
                         if (!me._selectedTenantId) {
                             return cv_interact.error(
                                 "Please select Tenant first"
@@ -587,7 +575,6 @@ const InvoiceDialog = (() => {
                             .join("");
 
                         InputBox.resetInstance("rentPopUp");
-
                         InputBox.show({
                             title: "Rent",
                             instanceKey: "rentPopUp",
@@ -596,58 +583,55 @@ const InvoiceDialog = (() => {
                                 div.style.cssText =
                                     "display:grid; grid-template-columns:1fr 1fr; gap:14px; padding:4px 2px;";
                                 div.innerHTML = `
-                                <div>
-                                    <label class="form-label" style="font-size:13px;color:#555;">Unit Code / Room <span style="color:red">*</span></label>
+                                <div class="material-input outlined">
                                     <input class="data-input form-control bg-light"
                                         data-field="contract_id"
                                         name="contract_id"
                                         type="text"
                                         readonly
-                                        placeholder="Auto filled">
+                                        placeholder="Auto fill">
+                                        <label class="form-label" style="font-size:13px;color:#555;">Unit Code / Room</label>
                                 </div>
-                                <div>
-                                    <label class="form-label" style="font-size:13px;color:#555;">Month</label>
-                                    <select class="data-input form-control" data-field="monthly" name="monthly">
-                                        <option value="">-- Select Month --</option>
+                                <div class="material-input outlined">
+                                    <select class="data-input form-control" data-field="monthly" name="monthly" data-style="material"  placeholder="Monthly">
                                         ${monthOptions}
                                     </select>
                                 </div>
-                                <div>
+                                <div class="material-input outlined">
+                                    <input class="data-input form-control" data-field="start_date" name="start_date" type="text" readonly placeholder="Auto fill">
                                     <label class="form-label" style="font-size:13px;color:#555;">Start Date</label>
-                                    <input class="data-input form-control" data-field="start_date"
-                                        name="start_date" type="text" readonly placeholder="Auto filled">
                                 </div>
-                                <div>
-                                    <label class="form-label" style="font-size:13px;color:#555;">End Date</label>
+                                <div class="material-input outlined">
                                     <input class="data-input form-control" data-field="end_date"
-                                        name="end_date" type="text" readonly placeholder="Auto filled">
+                                        name="end_date" type="text" readonly placeholder="Auto fill">
+                                    <label class="form-label" style="font-size:13px;color:#555;">End Date</label>
                                 </div>
-                                <div>
-                                    <label class="form-label" style="font-size:13px;color:#555;">Price</label>
+                                <div class="material-input outlined">
+
                                     <input class="data-input form-control" data-field="price"
-                                        name="price" type="text" placeholder="Auto filled">
+                                        name="price" type="text" placeholder="Auto fill">
+                                    <label class="form-label" style="font-size:13px;color:#555;">Price</label>
                                 </div>
-                                <div>
+                                <div class="material-input outlined" style="display:flex; gap:8px;" >
+                                    <input class="data-input form-control" data-field="discount" name="discount" type="text" placeholder="0">
                                     <label class="form-label" style="font-size:13px;color:#555;">Discount</label>
-                                    <div style="display:flex; gap:8px;">
-                                        <input class="data-input form-control" data-field="discount"
-                                            name="discount" type="text" placeholder="0">
-                                        <select class="data-input form-control" data-field="discount_type"
-                                                name="discount_type" style="width:80px;">
-                                            <option value="percent">%</option>
-                                            <option value="amount">$</option>
-                                        </select>
+                                    <div style="display:flex; gap:8px;" >
+                                            <select class="data-input form-control" data-field="discount_type"
+                                                    name="discount_type" style="width:80px;" >
+                                                <option value="percent">%</option>
+                                                <option value="amount">$</option>
+                                            </select>
                                     </div>
                                 </div>
-                                <div>
-                                    <label class="form-label" style="font-size:13px;color:#555;">Tax %</label>
+                                <div class="material-input outlined">
                                     <input class="data-input form-control" data-field="tax_rate"
                                         name="tax_rate" type="text" placeholder="0">
+                                    <label class="form-label" style="font-size:13px;color:#555;">Tax %</label>
                                 </div>
-                                <div style="grid-column: span 2;">
-                                    <label class="form-label" style="font-size:13px;color:#555;">Remark</label>
+                                <div style="grid-column: span 2;" class="material-input outlined">
                                     <textarea class="data-input form-control" data-field="remark"
                                             name="remark" rows="3"></textarea>
+                                    <label class="form-label" style="font-size:13px;color:#555;">Remark</label>
                                 </div>
                             `;
                                 return div;
@@ -869,7 +853,6 @@ const InvoiceDialog = (() => {
                             return cv_interact.error("No services available");
                         }
 
-                        // Build options for dropdown
                         const serviceOptions = services
                             .map(
                                 s =>
@@ -888,46 +871,42 @@ const InvoiceDialog = (() => {
                                 div.style.cssText =
                                     "display:grid; grid-template-columns:1fr 1fr; gap:14px; padding:4px 2px;";
                                 div.innerHTML = `
-                                <div>
-                                    <label class="form-label" style="font-size:13px;color:#555;">
-                                        Service <span style="color:red">*</span>
-                                    </label>
-                                    <select class="data-input form-control" data-field="service_id" name="service_id">
-                                        <option value="">-- Select Service --</option>
+                                <div class="material-input outlined">
+                                    <select class="data-input form-control" data-style="material" data-field="service_id" name="service_id" placeholder="Select Service">
                                         ${serviceOptions}
                                     </select>
                                 </div>
-                                <div>
-                                    <label class="form-label" style="font-size:13px;color:#555;">Unit Type</label>
+                                <div class="material-input outlined">
                                     <input class="data-input form-control" data-field="unit_type"
-                                        name="unit_type" type="text" readonly placeholder="Auto filled">
+                                        name="unit_type" type="text" readonly placeholder="Auto fill">
+                                    <label class="form-label" style="font-size:13px;color:#555;">Unit Type</label>
                                 </div>
-                                <div>
-                                    <label class="form-label" style="font-size:13px;color:#555;">Price</label>
+                                <div class="material-input outlined">
                                     <input class="data-input form-control" data-field="price"
-                                        name="price" type="text" readonly placeholder="Auto filled">
+                                        name="price" type="text" readonly placeholder="Auto fill">
+                                    <label class="form-label" style="font-size:13px;color:#555;">Price</label>
                                 </div>
-                                <div>
+                                <div class="material-input outlined" style="display:flex; gap:8px;" >
+                                    <input class="data-input form-control" data-field="discount" name="discount" type="text" placeholder="0">
                                     <label class="form-label" style="font-size:13px;color:#555;">Discount</label>
-                                    <div style="display:flex; gap:8px;">
-                                        <input class="data-input form-control" data-field="discount"
-                                            name="discount" type="text" placeholder="0">
-                                        <select class="data-input form-control" data-field="discount_type"
-                                                name="discount_type" style="width:80px;">
-                                            <option value="percent">%</option>
-                                            <option value="amount">$</option>
-                                        </select>
+                                    <div style="display:flex; gap:8px;" >
+                                            <select class="data-input form-control" data-field="discount_type"
+                                                    name="discount_type" style="width:80px;" >
+                                                <option value="percent">%</option>
+                                                <option value="amount">$</option>
+                                            </select>
                                     </div>
                                 </div>
-                                <div>
-                                    <label class="form-label" style="font-size:13px;color:#555;">Tax %</label>
+
+                                <div class="material-input outlined">
                                     <input class="data-input form-control" data-field="tax_rate"
                                         name="tax_rate" type="text" placeholder="0">
+                                    <label class="form-label" style="font-size:13px;color:#555;">Tax %</label>
                                 </div>
-                                <div style="grid-column: span 2;">
-                                    <label class="form-label" style="font-size:13px;color:#555;">Remark</label>
+                                <div style="grid-column: span 2;" class="material-input outlined">
                                     <textarea class="data-input form-control" data-field="remark"
-                                            name="remark" rows="3"></textarea>
+                                    name="remark" rows="3"></textarea>
+                                    <label class="form-label" style="font-size:13px;color:#555;">Remark</label>
                                 </div>
                             `;
                                 return div;
