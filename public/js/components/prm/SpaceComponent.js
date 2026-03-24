@@ -316,12 +316,6 @@ var SpaceComponent = new (function () {
                     cssClass: "border-bottom pb-2",
                     name: "edit_space"
                 },
-                {
-                    html: '<span class="ps-2  " vslang="titles.Delete Space"></span>',
-                    icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
-                    cssClass: "border-bottom pb-2",
-                    name: "delete_space"
-                },
             ],
             // adjustPosition: {
             //     top: -200,
@@ -337,7 +331,6 @@ var SpaceComponent = new (function () {
                 menu.create_booking.style.display = (!isMaintenance && status_id === 1) ? 'block' : 'none';
                 menu.create_contract.style.display = (!isMaintenance && (status_id === 1 || status_id === 2)) ? 'block' : 'none';
                 menu.edit_space.style.display = (!isMaintenance && status_id === 1) ? 'block' : 'none';
-                menu.delete_space.style.display = (!isMaintenance && status_id === 1) ? 'block' : 'none';
                 // menu.set_maintenance.style.display = (!isMaintenance && status_id === 3) ? 'block' : 'none';
             },
 
