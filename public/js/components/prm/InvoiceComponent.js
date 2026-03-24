@@ -1,7 +1,5 @@
 "use strict";
 
-
-
 var InvoiceComponent = (() => {
     const mThis = {};
     mThis.title_prop = "Invoice Management";
@@ -537,6 +535,8 @@ const InvoiceDialog = (() => {
 
                 contentCreated: me => {
                     me.controls = me.controls || {};
+                    const btn_close = me.divModal.querySelector('.close');
+                    if(btn_close) btn_close.classList.add('d-none');
                     const allInputs = me.divModal.querySelectorAll(
                         ".data-input, input, select, textarea"
                     );
@@ -1075,7 +1075,7 @@ const InvoiceDialog = (() => {
                                 transTitle: "titles.Charge As",
                                 dataType: "text",
                                 readOnly: true,
-                                defaultValue: '-'
+                                defaultValue: "-"
                             },
                             {
                                 name: "start_date",
@@ -1287,12 +1287,19 @@ const InvoiceDialog = (() => {
                     }
                 },
 
+                onClose: (me) => {
+                    console.log(22,me);
+
+                    me.itemsView.setData(null);
+                },
+
                 buttons: [
                     {
                         label: '<span vslang="buttons.Cancel"></span>',
                         cssClass: "btn btn-secondary",
                         click: me => {
-                            me.itemsView.setData();
+                            me.itemsView.setData(null);
+
                             me.hide(false);
                         }
                     },
