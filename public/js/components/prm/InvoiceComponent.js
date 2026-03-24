@@ -506,9 +506,11 @@ const InvoiceDialog = (() => {
 
                         <div class="col-md-auto">
                             <div class="d-flex gap-2">
-                                <button name="btnRent"    class="btn btn-primary" type="button">Rent</button>
-                                <button name="btnService"    class="btn btn-primary" type="button">Service</button>
-                                <button name="btnUtility" class="btn btn-primary" type="button">Utility</button>
+                                <button name="btnRent" class="btn btn-outline-primary">Rent</button>
+                                <button name="btnService" class="btn btn-outline-warning">Service</button>
+                                <button name="btnElectric" class="btn btn-outline-success">Electric</button>
+                                <button name="btnWater" class="btn btn-outline-secondary">Water</button>
+
                             </div>
                         </div>
                     </div>
@@ -538,6 +540,8 @@ const InvoiceDialog = (() => {
                     me.controls.div_invoice_summary = me.divModal.querySelector(
                         '[name="div_invoice_summary"]'
                     );
+
+                    // ================Rent====================
 
                     me.controls.btnRent.onclick = () => {
                         if (!me._selectedTenantId) {
@@ -839,6 +843,148 @@ const InvoiceDialog = (() => {
                             }
                         });
                     };
+
+                    // ==================btnElectric================
+                    me.controls.btnElectric.onclick = () => {
+                        if (!me._selectedTenantId) {
+                            return cv_interact.error("Please select Tenant first");
+                        }
+
+                        InputBox.resetInstance("electricPopUp");
+                        InputBox.show({
+                            title: "Electric",
+                            instanceKey: "electricPopUp",
+
+                            createContent() {
+                                const div = document.createElement("div");
+                                div.style.cssText =
+                                    "display:grid; grid-template-columns:1fr 1fr; gap:14px; padding:4px 2px;";
+                                div.innerHTML = `
+                                    <div class="material-input outlined">
+                                        <input class="data-input form-control" data-field="old_electric"
+                                            name="old_electric" type="number" placeholder="0" min="0">
+                                        <label class="form-label" style="font-size:13px;color:#555;">Old Reading (kWh)</label>
+                                    </div>
+                                    <div class="material-input outlined">
+                                        <input class="data-input form-control" data-field="new_electric"
+                                            name="new_electric" type="number" placeholder="0" min="0">
+                                        <label class="form-label" style="font-size:13px;color:#555;">New Reading (kWh)</label>
+                                    </div>
+                                    <div class="material-input outlined">
+                                        <input class="data-input form-control bg-light" data-field="units_used"
+                                            name="units_used" type="text" readonly placeholder="Auto calc">
+                                        <label class="form-label" style="font-size:13px;color:#555;">Units Used (kWh)</label>
+                                    </div>
+                                    <div class="material-input outlined">
+                                        <input class="data-input form-control" data-field="price_per_unit"
+                                            name="price_per_unit" type="number" placeholder="0.00" min="0" step="0.01">
+                                        <label class="form-label" style="font-size:13px;color:#555;">Price per kWh ($)</label>
+                                    </div>
+                                    <div class="material-input outlined">
+                                        <input class="data-input form-control" data-field="start_date"
+                                            name="start_date" type="text" data-type="date" placeholder="Start Date">
+                                        <label class="form-label" style="font-size:13px;color:#555;">Start Date</label>
+                                    </div>
+                                    <div class="material-input outlined">
+                                        <input class="data-input form-control" data-field="end_date"
+                                            name="end_date" type="text" data-type="date" placeholder="End Date">
+                                        <label class="form-label" style="font-size:13px;color:#555;">End Date</label>
+                                    </div>
+                                    <div class="material-input outlined" style="grid-column: span 2;">
+                                        <input class="data-input form-control bg-light" data-field="total_amount"
+                                            name="total_amount" type="text" readonly placeholder="Auto calc">
+                                        <label class="form-label" style="font-size:13px;color:#555;">Total Amount ($)</label>
+                                    </div>
+                                    <div style="grid-column: span 2;" class="material-input outlined">
+                                        <textarea class="data-input form-control" data-field="remark"
+                                            name="remark" rows="2"></textarea>
+                                        <label class="form-label" style="font-size:13px;color:#555;">Remark</label>
+                                    </div>
+                                `;
+                                return div;
+                            },
+
+                            onOpen(ibMe) {
+                                const elOld       = document.querySelector('[data-field="old_electric"]');
+                                const elNew       = document.querySelector('[data-field="new_electric"]');
+                                const elUnits     = document.querySelector('[data-field="units_used"]');
+                                const elPPU       = document.querySelector('[data-field="price_per_unit"]');
+                                const elTotal     = document.querySelector('[data-field="total_amount"]');
+                                const elRemark    = document.querySelector('[data-field="remark"]');
+                                const elStartDate = document.querySelector('[data-field="start_date"]');
+                                const elEndDate   = document.querySelector('[data-field="end_date"]');
+
+                                const recalc = () => {
+                                    const oldVal  = parseFloat(elOld?.value)  || 0;
+                                    const newVal  = parseFloat(elNew?.value)  || 0;
+                                    const ppu     = parseFloat(elPPU?.value)  || 0;
+                                    const units   = Math.max(0, newVal - oldVal);
+
+                                    if (elUnits) elUnits.value = units.toFixed(2);
+
+                                    const total = units * ppu;
+                                    if (elTotal) elTotal.value = total.toFixed(2);
+
+                                    // Auto-fill remark
+                                    if (elRemark) {
+                                        const start = elStartDate?.value || "";
+                                        const end   = elEndDate?.value   || "";
+                                        const period = start && end ? ` (${start} - ${end})` : "";
+                                        elRemark.value = `Electric${period} — ${units.toFixed(2)} kWh × $${ppu.toFixed(2)}`;
+                                    }
+                                };
+
+                                elOld?.addEventListener("input", recalc);
+                                elNew?.addEventListener("input", recalc);
+                                elPPU?.addEventListener("input", recalc);
+                                elStartDate?.addEventListener("change", recalc);
+                                elEndDate?.addEventListener("change", recalc);
+                            },
+
+                            onConfirm(data, btn, ibMe) {
+                                const oldReading = parseFloat(data.old_electric) || 0;
+                                const newReading = parseFloat(data.new_electric) || 0;
+                                const ppu        = parseFloat(data.price_per_unit) || 0;
+                                const units      = Math.max(0, newReading - oldReading);
+
+                                if (newReading <= 0) {
+                                    return cv_interact.error("New reading is required");
+                                }
+                                if (newReading < oldReading) {
+                                    return cv_interact.error("New reading must be greater than old reading");
+                                }
+                                if (ppu <= 0) {
+                                    return cv_interact.error("Price per kWh is required");
+                                }
+
+                                const totalAmount = units * ppu;
+
+                                me.itemsView.addRow({
+                                    item_id:       null,
+                                    item_name:     "Electric",
+                                    type:          "utility",
+                                    price:         totalAmount,
+                                    remarks:       data.remark || `Electric`,
+                                    unit_type:     "kWh",
+                                    start_date:    data.start_date  || "",
+                                    end_date:      data.end_date    || "",
+                                    discount:      parseFloat(data.discount)   || 0,
+                                    discount_type: data.discount_type          || "percent",
+                                    tax_rate:      parseFloat(data.tax_rate)   || 0,
+                                    // extra meter data stored for reference
+                                    old_reading:   oldReading,
+                                    new_reading:   newReading,
+                                    units_used:    units,
+                                    price_per_unit: ppu
+                                }, 0);
+
+                                cv_interact.success("Electric item added");
+                                ibMe.close();
+                            }
+                        });
+                    };
+
+                    // =====================Service=================
 
                     me.controls.btnService.onclick = () => {
                         if (!me._selectedTenantId) {
@@ -1209,6 +1355,8 @@ const InvoiceDialog = (() => {
 
                     me.searchTenant.reset("");
 
+
+
                     // === Save data helper ===
                     me.saveData = () => {
                         const header = me.getData();
@@ -1217,6 +1365,22 @@ const InvoiceDialog = (() => {
                         if (me._selectedTenantId) {
                             header.tenant_id = me._selectedTenantId;
                         }
+
+                        function toMySQLDate(dateStr) {
+                            if (!dateStr) return null;
+
+                            // Handle "31-Mar-2026", "01-03-2026", or already correct "2026-03-31"
+                            const d = new Date(dateStr);
+                            if (isNaN(d.getTime())) return null;   // invalid date
+
+                            const year  = d.getFullYear();
+                            const month = String(d.getMonth() + 1).padStart(2, '0');
+                            const day   = String(d.getDate()).padStart(2, '0');
+
+                            return `${year}-${month}-${day}`;
+                        }
+
+
                         const mappedItem = items.map(item => {
                             const qty = parseFloat(item.qty ?? 1);
                             const price = parseFloat(item.price ?? 0);
@@ -1240,8 +1404,11 @@ const InvoiceDialog = (() => {
                                 special_discount_value: discountValue,
                                 special_discount_type: discountType,
                                 tax_rate: parseFloat(item.tax_rate || 0),
-                                start_date: item.start_date || null,
-                                end_date: item.end_date || null
+                                // start_date: item.start_date || null,
+                                // end_date: item.end_date || null
+
+                                start_date: toMySQLDate(item.start_date),
+                                end_date:   toMySQLDate(item.end_date)
                             };
                         });
                         return { ...header, items: mappedItem, ...totals };
@@ -1249,14 +1416,12 @@ const InvoiceDialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
-                    // 1. Reset Internal State Variables
                     availableItem = data.services || [];
                     me._selectedTenantId = null;
                     me._tenantData = null;
                     me._tenantSpaces = [];
                     me._tenantMonths = [];
 
-                    // 2. Clear Standard Inputs & Textareas
                     if (me.controls) {
                         Object.values(me.controls).forEach(el => {
                             if (
@@ -1268,45 +1433,31 @@ const InvoiceDialog = (() => {
                             }
                         });
 
-                        // 3. FIX: Clear Room/Space Dropdown
+
                         if (me.controls.space) {
-                            // Empty the actual HTML select
                             me.controls.space.innerHTML =
                                 '<option value="">-- Select Room / Space --</option>';
                             me.controls.space.value = "";
-
-                            // Trigger 'change' so custom plugins (like Select2) update their UI
                             const event = new Event("change", {
                                 bubbles: true
                             });
                             me.controls.space.dispatchEvent(event);
-
-                            // If you are explicitly using Select2, uncomment the line below:
-                            // $(me.controls.space).val(null).trigger('change');
                         }
                     }
 
-                    // 4. Reset Search Components
                     if (me.searchTenant) {
                         me.searchTenant.reset("");
                     }
 
-                    // 5. Clear the Items Table/Grid
                     if (me.itemsView) {
                         me.itemsView.setData([]);
                     }
-
-                    // 6. Handle Edit/Modify Logic
                     me.detail = op.id ? data.invoice_details || {} : {};
-
-                    // If modifying an existing invoice, re-populate the fields
                     if (op.id && data.invoice_details) {
                         const d = data.invoice_details;
-                        // The GeneralDialog usually handles basic mapping via data-field,
-                        // but ensure custom logic for tenant/space triggers here if needed.
+
                     }
 
-                    // 7. Refresh dynamic UI components
                     setTimeout(() => {
                         if (me.populateItemDropdown) {
                             me.populateItemDropdown();

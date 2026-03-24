@@ -603,56 +603,6 @@ static function getTenantInfo($arr=[], $ss = null)
     }
 
 
-    // static function generateContractMonths($contract_id, $start_date = null, $end_date = null, $ss = null)
-    // {
-    //     if (!$start_date || !$end_date) {
-    //         $contract = DB::table('contracts')
-    //                     ->where('id', $contract_id)
-    //                     ->select('start_date', 'end_date')
-    //                     ->first();
-
-    //     if (!$contract) return [];
-
-    //         $start_date = $contract->start_date;
-    //         $end_date   = $contract->end_date;
-    //     }
-
-    //     $start = \Carbon\Carbon::parse($start_date);
-    //     $end   = \Carbon\Carbon::parse($end_date);
-
-    //     $current = $start->copy()->startOfMonth();
-    //     $month_num = 1;
-    //     $months = [];
-
-    //     while ($current->lte($end)) {
-
-    //         $monthName = $current->format('M-Y');
-
-    //         $monthStart = $current->copy()->startOfMonth();
-    //         $monthEnd   = $current->copy()->endOfMonth();
-
-    //         // First month: if contract starts in the middle of the month
-    //         if ($current->format('Y-m') === $start->format('Y-m') && $start->day > 1) {
-    //             $monthStart = $start->copy();
-    //         }
-
-    //         // Last month: cut off at contract end date
-    //         if ($monthEnd->gt($end)) {
-    //             $monthEnd = $end->copy();
-    //         }
-
-    //         $months[] = [
-    //             "month"            => $monthName,
-    //             "start_date" => $monthStart->format('d-M-Y'),
-    //             "end_date"   => $monthEnd->format('d-M-Y')
-    //         ];
-
-    //         $current->addMonth();
-    //         $month_num++;
-    //     }
-    //     return $months;
-    // }
-
     static function generateContractMonths($contract_id, $start_date = null, $end_date = null, $ss = null)
     {
         // Fetch contract dates if not provided
