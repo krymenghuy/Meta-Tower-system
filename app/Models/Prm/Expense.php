@@ -29,11 +29,11 @@ class Expense //extends Model
 
         $v_rule = [
             'vendor_id' => '1|number|exists=vendors.id',
-            'category_id' => '1|number|exists=expense_categories.id',
             'expense_date' => '1|date',
+            'category_id' => '1|number|exists=expense_categories.id',
             'amount' => '1|number',
             'currency_code' => '0|string|default=USD',
-            'reference_no' => '0|string|0-100',
+            'reference_no' => '1|string|0-25',
             'remarks' => '0|string|0-255',
             'invoice_image' => '0|string|0-255',
         ];

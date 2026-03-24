@@ -39,17 +39,22 @@ class Bill //extends Model
             'balance'        => '0|number|min=0',
             'paid_amount'       => '1|number|min=0',
             'remark'            => '0|string|0-255',
+            'photo' => '0|image'
         ];
 
         $email_char = ['@', '.', '-', '_'];
         $remark_char = ['@', ',', '.', '#'];
         $tax_char = ['@', '.', '-', '_'];
 
-        $res = DBX::validateObject($arr, $v_rule, 1, ['email' => $email_char, 'tax_number' => $tax_char, 'remark' => $remark_char], $ss->lang, 0, null);
+        $res = DBX::validateObject($arr, $v_rule, 1, ['photo'=>GeneralSettings::$image_chars,'email' => $email_char, 'tax_number' => $tax_char, 'remark' => $remark_char], $ss->lang, 0, null);
         if ($res->error)
             return DV::error($res->error);
 
         $inputs = $res->values;
+        $d = (object) $inputs;
+        $photo = $d->photo ?? null;
+        unset($inputs['photo']);
+        $delete_prev_image = ($id > 0 && (!$photo || isImage($photo)));
 
         $total    = floatval($inputs['total_amount'] ?? 0);
         $paid     = floatval($inputs['paid_amount']  ?? 0);
@@ -71,11 +76,7 @@ class Bill //extends Model
         } else {
         $inputs['status_id'] = 2; // Unpaid
         }
-        if (request()->hasFile('file_image')) {
-        $file = request()->file('file_image');
-        $path = $file->store('bills', 'public'); // saves to storage/app/public/bills/
-        $inputs['file_image'] = $path;
-    }
+
         $exist = DB::table('bills')
             ->where('vendor_id', $inputs['vendor_id'])
             ->whereRaw('LOWER(bill_number) = ?', [strtolower($inputs['bill_number'])])
@@ -93,6 +94,23 @@ class Bill //extends Model
 
         if ($id > 0) {
             return DV::depends(1, ['bills' => $inputs, 'id' => $id]);
+        }
+
+        if ($id > 0) {
+            if ($delete_prev_image) {
+                $file_name = DB::table('bill as b')->where('b.id', $id)->take(1)->value('b.file_image');
+                if ($file_name) {
+                    XPublicStorage::delete([
+                        'branch_id' => null,
+                        'subs_id'   => $ss->subs_id,
+                        'dir'       => self::$img_dir
+                    ], 'images', $file_name);
+                }
+
+                DB::table('bills')->where('id', $id)->update(['file_image' => null]);
+            }
+        XPublicStorage::saveImage(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], null, $photo, null, ['id' => $id, 'store' => 'bills.file_name']);
+        return DV::depends(1, ['tenants' => $inputs, 'id' => $id]);
         }
 
         return DV::error('Error saving bill record!');
