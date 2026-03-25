@@ -511,8 +511,75 @@ function getItemsByPurchaseOrder($data,$ss){
   }
 
     /**
+     * Align purchase_orders.status_id with line receive progress after line-level receives:
+     * 2 = every real line has Receive Qty + Break Amount = Ordered Qty; 3 = some receipt progress but not complete; 1 = no progress.
+     * Matches the rules used in confirmPurchaseOrderReceived so the PO list shows "Received" when appropriate.
+     */
+    protected function syncPurchaseOrderHeaderStatusFromLines(int $poId, $ss = null): void
+    {
+        $ss = $ss ?? $this->userInfo;
+        $receiveCol = self::purchaseOrderItemReceiveQtyColumnName();
+        $hasBreak = Schema::hasColumn('purchase_order_items', 'break_amount');
+
+        $lines = DB::table('purchase_order_items')
+            ->where('po_id', $poId)
+            ->whereNotNull('item_id')
+            ->where('item_id', '>', 0)
+            ->get();
+
+        if ($lines->isEmpty()) {
+            return;
+        }
+
+        $header = DB::table('purchase_orders')->where('id', $poId)->first();
+        if (!$header) {
+            return;
+        }
+        if ((int) $header->status_id === 2) {
+            return;
+        }
+
+        $anyReceived = false;
+        $allComplete = true;
+
+        foreach ($lines as $line) {
+            $ordered = (float) ($line->qty ?? 0);
+            $recv = 0.0;
+            if ($receiveCol) {
+                $recv = (float) ($line->{$receiveCol} ?? 0);
+            }
+            $brk = $hasBreak ? (float) ($line->break_amount ?? 0) : 0.0;
+            $lineStatus = (int) ($line->status_id ?? 0);
+
+            if ($recv > 0 || $brk > 0 || $lineStatus === 2) {
+                $anyReceived = true;
+            }
+            if (abs(($recv + $brk) - $ordered) > 0.02) {
+                $allComplete = false;
+            }
+        }
+
+        $newStatus = (int) $header->status_id;
+        if ($allComplete && $anyReceived) {
+            $newStatus = 2;
+        } elseif ($anyReceived) {
+            $newStatus = 3;
+        }
+
+        if ($newStatus !== (int) $header->status_id) {
+            $now = getNowTime();
+            $updateUser = $ss->login_name ?? $ss->user_name ?? 'User';
+            DB::table('purchase_orders')->where('id', $poId)->update([
+                'status_id' => $newStatus,
+                'updated_at' => $now,
+                'update_user' => $updateUser,
+            ]);
+        }
+    }
+
+    /**
      * Save Receive Qty / Break Amount on selected line items and mark those lines received (status_id = 2).
-     * Does NOT change purchase_orders header status — use confirmPurchaseOrderReceived for PO status "Received".
+     * Updates purchase_orders header status when lines are fully received (2) or partially (3).
      *
      * @param array $payload Expects po_item_ids: int[] (purchase_order_items.id)
      */
@@ -587,6 +654,8 @@ function getItemsByPurchaseOrder($data,$ss){
             }
             DB::table('purchase_order_items')->where('id', $row->id)->update($updateData);
         }
+
+        $this->syncPurchaseOrderHeaderStatusFromLines($id, $ss);
 
         return DV::success(['message' => 'Selected lines were received successfully.']);
     }
