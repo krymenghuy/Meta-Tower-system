@@ -185,7 +185,7 @@ var MaintenanceComponent = (() => {
                 { html: '<span class="ps-2" vslang="titles.Modify"></span>', icon: '<i class="fa-regular fa-edit fs-5 text-warning"></i>', cssClass: "border-bottom pb-2", name: "modify" },
                 { html: '<span class="ps-2" vslang="titles.Finish Maintenance"></span>', icon: '<i class="fa-solid fa-flag-checkered fs-5 text-success"></i>', cssClass: "border-bottom pb-2", name: "finish_maintenance" },
                 { html: '<span class="ps-2" vslang="titles.Cancel Maintenance"></span>', icon: '<i class="fa-solid fa-times-circle fs-5 text-secondary"></i>', cssClass: "border-bottom pb-2", name: "cancel_maintenance" },
-                { html: '<span class="ps-2" vslang="titles.Delete"></span>', icon: '<i class="fa-regular fa-trash-can fs-5 text-danger"></i>', cssClass: "border-bottom pb-2", name: "delete" }
+                { html: '<span class="ps-2" vslang="titles.Delete Maintenance"></span>', icon: '<i class="fa-regular fa-trash-can fs-5 text-danger"></i>', cssClass: "border-bottom pb-2", name: "delete" }
             ],
             onShow: (me, container) => {
                 const menu = me.getActiveMenus(container);
@@ -443,83 +443,102 @@ const CreateMaintenanceDialog = (() => {
                     cssClass: "btn btn-primary",
                     click: (me, btn) => {
                         // basic front-end validation: all fields required except remarks
-                        const buildingId = me.controls?.building_id?.value || "";
-                        const typeUnitVal = me.controls?.type_unit?.value || "";
-                        const spaceId = me.controls?.space_id?.value || "";
-                        const amenityId = me.controls?.amenity_id?.value || "";
-                        const startDate = me.controls?.start_date?.value || "";
-                        const startTime = me.controls?.start_time?.value || "";
-                        const endDate = me.controls?.end_date?.value || "";
-                        const endTime = me.controls?.end_time?.value || "";
+                        // const buildingId = me.controls?.building_id?.value || "";
+                        // const typeUnitVal = me.controls?.type_unit?.value || "";
+                        // const spaceId = me.controls?.space_id?.value || "";
+                        // const amenityId = me.controls?.amenity_id?.value || "";
+                        // const startDate = me.controls?.start_date?.value || "";
+                        // const startTime = me.controls?.start_time?.value || "";
+                        // const endDate = me.controls?.end_date?.value || "";
+                        // const endTime = me.controls?.end_time?.value || "";
 
-                        if (!buildingId.trim()) {
-                            cv_interact.error("Building is required.");
-                            me.controls?.building_id?.focus();
-                            return;
+                        // if (!buildingId.trim()) {
+                        //     cv_interact.error("Building is required.");
+                        //     me.controls?.building_id?.focus();
+                        //     return;
+                        // }
+
+                        // if (!typeUnitVal.trim()) {
+                        //     cv_interact.error("Type unit is required.");
+                        //     me.controls?.type_unit?.focus();
+                        //     return;
+                        // }
+
+                        // if (typeUnitVal === "space" && !spaceId.trim()) {
+                        //     cv_interact.error("Space is required.");
+                        //     me.controls?.space_id?.focus();
+                        //     return;
+                        // }
+
+                        // if (typeUnitVal === "amenity" && !amenityId.trim()) {
+                        //     cv_interact.error("Amenity is required.");
+                        //     me.controls?.amenity_id?.focus();
+                        //     return;
+                        // }
+
+                        // if (!startDate.trim()) {
+                        //     cv_interact.error("Start date is required.");
+                        //     me.controls?.start_date?.focus();
+                        //     return;
+                        // }
+
+                        // if (!startTime.trim()) {
+                        //     cv_interact.error("Start time is required.");
+                        //     me.controls?.start_time?.focus();
+                        //     return;
+                        // }
+
+                        // if (!endDate.trim()) {
+                        //     cv_interact.error("End date is required.");
+                        //     me.controls?.end_date?.focus();
+                        //     return;
+                        // }
+
+                        // if (!endTime.trim()) {
+                        //     cv_interact.error("End time is required.");
+                        //     me.controls?.end_time?.focus();
+                        //     return;
+                        // }
+
+                        const op = me.getData();
+                        op.id = me.dataOptions?.id;
+                        if (op.type_unit === 'space') {
+                            op.amenity_id = null;
+                            if (!op.space_id) {
+                                cv_interact.error("Space is required.");
+                                return;
+                            }
+
+                        } else if (op.type_unit === 'amenity') {
+                            op.space_id = null;
+
+                            if (!op.amenity_id) {
+                                cv_interact.error("Space is required.");
+                                return;
+                            }
                         }
 
-                        if (!typeUnitVal.trim()) {
-                            cv_interact.error("Type unit is required.");
-                            me.controls?.type_unit?.focus();
-                            return;
-                        }
+                        delete op.type_unit;
+                        // if (me.dataOptions?.space_id) {
+                        //     op.space_id = me.dataOptions.space_id;
+                        //     op.type_unit = "space";
+                        //     if (me.dataOptions.building_id) op.building_id = me.dataOptions.building_id;
+                        // }
+                        // const typeUnit = op.type_unit || me.controls?.type_unit?.value || "";
+                        // if (typeUnit === "space") op.amenity_id = null;
+                        // else if (typeUnit === "amenity") op.space_id = null;
+                        // delete op.type_unit;
+                        if (op.start_date && op.start_time) op.start_date = op.start_date + " " + op.start_time;
+                        if (op.end_date && op.end_time) op.end_date = op.end_date + " " + op.end_time;
+                        delete op.start_time;
+                        delete op.end_time;
+                        console.log(8888, op);
 
-                        if (typeUnitVal === "space" && !spaceId.trim()) {
-                            cv_interact.error("Space is required.");
-                            me.controls?.space_id?.focus();
-                            return;
-                        }
-
-                        if (typeUnitVal === "amenity" && !amenityId.trim()) {
-                            cv_interact.error("Amenity is required.");
-                            me.controls?.amenity_id?.focus();
-                            return;
-                        }
-
-                        if (!startDate.trim()) {
-                            cv_interact.error("Start date is required.");
-                            me.controls?.start_date?.focus();
-                            return;
-                        }
-
-                        if (!startTime.trim()) {
-                            cv_interact.error("Start time is required.");
-                            me.controls?.start_time?.focus();
-                            return;
-                        }
-
-                        if (!endDate.trim()) {
-                            cv_interact.error("End date is required.");
-                            me.controls?.end_date?.focus();
-                            return;
-                        }
-
-                        if (!endTime.trim()) {
-                            cv_interact.error("End time is required.");
-                            me.controls?.end_time?.focus();
-                            return;
-                        }
-
-                        const data = me.getData();
-                        data.id = me.dataOptions.id;
-                        if (me.dataOptions?.space_id) {
-                            data.space_id = me.dataOptions.space_id;
-                            data.type_unit = "space";
-                            if (me.dataOptions.building_id) data.building_id = me.dataOptions.building_id;
-                        }
-                        const typeUnit = data.type_unit || me.controls?.type_unit?.value || "";
-                        if (typeUnit === "space") data.amenity_id = null;
-                        else if (typeUnit === "amenity") data.space_id = null;
-                        delete data.type_unit;
-                        if (data.start_date && data.start_time) data.start_date = data.start_date + " " + data.start_time;
-                        if (data.end_date && data.end_time) data.end_date = data.end_date + " " + data.end_time;
-                        delete data.start_time;
-                        delete data.end_time;
-                        vsapi.call(`${main_view.base_url}/prm/maintenance/save`, data, btn, null)
+                        vsapi.call(`${main_view.base_url}/prm/maintenance/save`, op, btn, null)
                             .then(res => {
                                 if (res.status_code === 200) {
-                                    me.hide(true, data);
-                                    cv_interact.success(data.id ? "Updated!" : "Maintenance created!");
+                                    me.hide(true, op);
+                                    cv_interact.success(op.id ? "Updated!" : "Maintenance created!");
                                     if (op && typeof op.onClose === "function") op.onClose();
                                 } else {
                                     cv_interact.error(res.error_message || "Save failed");

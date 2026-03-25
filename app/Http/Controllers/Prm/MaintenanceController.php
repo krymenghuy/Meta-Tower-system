@@ -48,9 +48,6 @@ class MaintenanceController extends Controller
             return JDV::error('Invalid ID');
         }
         $details = Maintenance::getMaintenanceDetails($id);
-        if (!$details) {
-            return JDV::error('Maintenance not found');
-        }
         return JDV::result($details);
     }
 
