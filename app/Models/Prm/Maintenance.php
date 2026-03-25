@@ -29,52 +29,18 @@ class Maintenance extends VSModel
             'building_id'          => '1|number|exists=buildings.id',
             'space_id'             => '0|number|exists=building_spaces.id',
             'amenity_id'           => '0|number|exists=amenities.id',
-            'description'          => '0|string|0-2000',
-            'start_date'           => '0|date',
-            'end_date'             => '0|date',
-            'status_id'            => '0|number|exists=maintenance_statuses.id',
-            'remarks'              => '0|string|0-1000',
+            'start_date'           => '1|TIMESTAMP',
+            'end_date'             => '1|TIMESTAMP',
+            'remarks'              => '0|string|0-255',
         ];
 
         $allowed_chars = ['@', ',', '-', '.', '#', '!', '?', '(', ')', "\n"];
-        $res = DBX::validateObject(
-            $arr,
-            $v_rule,
-            1,
-            ['description' => $allowed_chars, 'remarks' => $allowed_chars],
-            $ss->lang ?? 'en',
-            0,
-            null
-        );
-
+        $res = DBX::validateObject($arr,$v_rule,1,['remarks' => $allowed_chars],$ss->lang ?? 'en',0,null);
         if ($res->error) {
             return DV::error($res->error);
         }
-
         $input = $res->values;
 
-        if (!empty($input['start_date'])) {
-            $input['start_date'] = date('Y-m-d H:i:s', strtotime($input['start_date']));
-        } else {
-            $input['start_date'] = null;
-        }
-        if (!empty($input['end_date'])) {
-            $input['end_date'] = date('Y-m-d H:i:s', strtotime($input['end_date']));
-        } else {
-            $input['end_date'] = null;
-        }
-
-        if (isset($input['space_id']) && (int) $input['space_id'] <= 0) {
-            $input['space_id'] = null;
-        }
-        if (isset($input['amenity_id']) && (int) $input['amenity_id'] <= 0) {
-            $input['amenity_id'] = null;
-        }
-        if (empty($input['status_id'])) {
-            $input['status_id'] = 1; // default: Planned
-        }
-
-        // Auto-sync status_id with time window (unless explicitly Completed/Cancelled).
         try {
             $sid = (int) ($input['status_id'] ?? 0);
             if (!in_array($sid, [3, 4], true)) {
@@ -131,7 +97,6 @@ class Maintenance extends VSModel
         $current_page     = (int) ($d->current_page ?? 1);
         $per_page         = (int) ($d->per_page ?? 10);
         $skip_rows        = ($current_page - 1) * $per_page;
-
         $where_search = "1=1";
         $where_more   = "1=1";
 
@@ -173,8 +138,7 @@ class Maintenance extends VSModel
             ->selectRaw("
                 m.id, m.building_id, b.name as building_name,
                 m.space_id, bs.code as space_code,
-                m.amenity_id, a.name as amenity_name, a.code as amenity_code,
-                m.description, m.start_date, m.end_date,
+                m.amenity_id, a.name as amenity_name, a.code as amenity_code, m.start_date, m.end_date,
                 m.status_id, ms.name as status_name,
                 m.remarks,
                 m.create_uid, m.create_user, m.update_uid, m.update_user,
@@ -202,7 +166,7 @@ class Maintenance extends VSModel
             ->where('m.id', $id)
             ->select([
                 'm.id', 'm.building_id', 'm.space_id', 'm.amenity_id',
-                'm.description', 'm.start_date', 'm.end_date',
+                'm.start_date', 'm.end_date',
                 'm.status_id', 'm.remarks',
                 'm.create_uid', 'm.create_user', 'm.update_uid', 'm.update_user', 'm.updated_at',
                 'b.name as building_name', 'bs.code as space_code', 'a.name as amenity_name', 'a.code as amenity_code',

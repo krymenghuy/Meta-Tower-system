@@ -436,7 +436,7 @@ var SpaceComponent = new (function () {
                                         Unit ${d.code ?? ''}
                                     </h5>
                                     <p class="unit-floor text-muted small mb-0">
-                                        ${d.floor_number ?? '-'} • ${d.building_name ?? ''}${isUnderMaintenance ? ' <span class="text-warning fw-semibold">(Under maintenance)</span>' : ''}
+                                        ${d.floor_number ?? '-'} • ${d.building_name ?? ''}${isUnderMaintenance ? ' <span class="text-warning fw-semibold">(Maintenance)</span>' : ''}
                                     </p>
                                    <p class="unit-floor text-muted small mb-0">
                                         Charge as ( ${d.price_type === 'total' ? `${symbol} ${price.toLocaleString()}/month` : `${symbol} ${price.toLocaleString()}/ m²`} )
