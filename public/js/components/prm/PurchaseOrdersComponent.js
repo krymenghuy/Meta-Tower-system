@@ -12,7 +12,6 @@ var PurchaseOrdersComponent = (() => {
     mThis.elSearch = mThis.self.querySelector("#_po_search");
     let PurchaseOrderDialog = null;
     let ReceivePurchaseOrderDialog = null;
-    let ReceivePoLineDialog = null;
     let _currentEditPoId = null;
 
     const formatCurrency = (amount) => {
@@ -46,7 +45,7 @@ var PurchaseOrdersComponent = (() => {
             return !Number.isNaN(n) && n > 0;
         });
     };
-    /** Strip ItemsView row-delete column and append Action column with Receive button (last column). */
+    /** Strip ItemsView row-delete column and append Action column with receive checkbox (last column). */
     const applyReceiveActionColumn = (me, rows) => {
         const root = me.divModal && me.divModal.querySelector('#receive_purchase_item_list');
         if (!root || !Array.isArray(rows) || !rows.length) return;
@@ -55,6 +54,15 @@ var PurchaseOrdersComponent = (() => {
         const theadRow = table.querySelector('thead tr');
         const tbody = table.querySelector('tbody');
         if (!theadRow || !tbody) return;
+
+        // Preserve checkbox state per PO item, so a full action-column rebuild
+        // doesn't accidentally unlock rows the user already selected.
+        const checkedStateByPoItemId = {};
+        tbody.querySelectorAll('input.receive-po-line-cb').forEach((cb) => {
+            const id = Number(cb.dataset.poItemId || 0);
+            if (id > 0) checkedStateByPoItemId[id] = !!cb.checked;
+        });
+
         const isDeleteCell = (cell) => {
             if (!cell) return false;
             if (cell.classList.contains('iv-td-action')) return true;
@@ -86,14 +94,26 @@ var PurchaseOrdersComponent = (() => {
             td.innerHTML = '';
             const linePending = !row.status_id || Number(row.status_id) === 1;
             if (linePending) {
-                const sendBtn = document.createElement('button');
-                sendBtn.type = 'button';
-                sendBtn.className = 'btn btn-sm btn-primary receive-po-line-btn';
                 const poItemId = Number(row.id || 0);
-                sendBtn.dataset.poItemId = String(poItemId || '');
-                sendBtn.textContent = 'Receive';
-                sendBtn.disabled = !(poItemId > 0);
-                td.appendChild(sendBtn);
+                const recvRaw = row.receive_qty != null ? row.receive_qty : row.recieve_amount;
+                const receiveQtyNum = (recvRaw != null && recvRaw !== '' && !Number.isNaN(Number(recvRaw)))
+                    ? Number(recvRaw)
+                    : 0;
+                const canMark = poItemId > 0 && receiveQtyNum > 0;
+                const cb = document.createElement('input');
+                cb.type = 'checkbox';
+                cb.className = 'form-check-input receive-po-line-cb';
+                cb.title = 'Receive this line';
+                cb.dataset.poItemId = String(poItemId || '');
+                cb.disabled = !canMark;
+
+                // Restore checked state (and therefore the locked "Received Qty" field)
+                // based on this row's own checkbox.
+                if (checkedStateByPoItemId[poItemId]) {
+                    cb.checked = true;
+                }
+                td.appendChild(cb);
+                setReceiveQtyLocked(tr, cb.checked);
             } else {
                 const span = document.createElement('span');
                 span.className = 'text-muted small';
@@ -119,16 +139,117 @@ var PurchaseOrdersComponent = (() => {
         requestAnimationFrame(() => applyReceiveActionColumn(me, rows));
         setTimeout(() => applyReceiveActionColumn(me, rows), 120);
     };
+    /**
+     * Update checkbox enabled state without removing cells (full rebuild on every qty keystroke
+     * clears the checkbox when focus moves from qty input to the checkbox).
+     */
+    const refreshReceiveLineActionsInPlace = (me, rows) => {
+        const root = me.divModal && me.divModal.querySelector('#receive_purchase_item_list');
+        if (!root || !Array.isArray(rows) || !rows.length) return;
+        const table = root.querySelector('table');
+        const tbody = table && table.querySelector('tbody');
+        if (!tbody) return;
+        const trList = tbody.querySelectorAll('tr');
+        let needFull = false;
+        trList.forEach((tr) => {
+            const td = tr.querySelector('td[data-receive-po-col]');
+            if (!td) {
+                needFull = true;
+                return;
+            }
+            const cb = td.querySelector('.receive-po-line-cb');
+            // If this row is already received (no checkbox), do not touch it.
+            if (!cb) return;
+
+            const poItemId = Number(cb.dataset.poItemId || 0);
+            const qtyInput = getReceiveQtyInputInRow(tr);
+            // If we cannot reliably locate the Received Qty input, don't change checkbox/input state.
+            if (!qtyInput) return;
+            const receiveQtyNum = Number(qtyInput.value);
+            if (Number.isNaN(receiveQtyNum)) return;
+
+            const canMark = poItemId > 0 && receiveQtyNum > 0;
+            cb.disabled = !canMark;
+
+            // Preserve the per-row checkbox decision.
+            // Lock/unlock the Received Qty input strictly based on *that row's* checkbox,
+            // even if the row becomes temporarily "invalid" during DOM refresh.
+            setReceiveQtyLocked(tr, cb.checked);
+        });
+        if (needFull) syncReceiveActionColumn(me, rows);
+    };
+    const getReceiveQtyCellInRow = (tr) => {
+        if (!tr || !tr.querySelectorAll) return null;
+        const direct =
+            tr.querySelector('input[data-field="receive_qty"]') ||
+            tr.querySelector('input[name="receive_qty"]') ||
+            tr.querySelector('input[data-field="recieve_amount"]') ||
+            tr.querySelector('input[name="recieve_amount"]') ||
+            tr.querySelector('input[data-name="receive_qty"]') ||
+            tr.querySelector('input[data-name="recieve_amount"]');
+        if (direct) return direct.closest('td');
+
+        // Fallback: scan all inputs in the row and match by common attributes/ids.
+        const inputs = Array.from(tr.querySelectorAll('input'));
+        const byAttr = inputs.find((el) => {
+            const nm = el.getAttribute && el.getAttribute('name');
+            const df = el.dataset && el.dataset.field;
+            const dn = el.dataset && el.dataset.name;
+            const id = el.getAttribute && el.getAttribute('id');
+            return (
+                nm === 'receive_qty' ||
+                df === 'receive_qty' ||
+                dn === 'receive_qty' ||
+                (id && String(id).includes('receive_qty')) ||
+                nm === 'recieve_amount' ||
+                df === 'recieve_amount' ||
+                dn === 'recieve_amount' ||
+                (id && String(id).includes('recieve_amount'))
+            );
+        });
+        if (byAttr) return byAttr.closest('td');
+
+        // Fallback: locate by column header index ("Received Qty") then find input inside that cell.
+        const table = tr.closest ? tr.closest('table') : null;
+        const theadRow = table && table.querySelector ? table.querySelector('thead tr') : null;
+        if (!theadRow) return null;
+        const ths = Array.from(theadRow.querySelectorAll('th'));
+        const recvIdx = ths.findIndex((th) => String(th.textContent || '').trim().toLowerCase() === 'received qty');
+        if (recvIdx < 0) return null;
+        const tds = Array.from(tr.querySelectorAll('td'));
+        return tds[recvIdx] || null;
+    };
+    const getReceiveQtyInputInRow = (tr) => {
+        const recvTd = getReceiveQtyCellInRow(tr);
+        if (!recvTd) return null;
+        return recvTd.querySelector('input:not([type="hidden"]), textarea, select, [contenteditable="true"], [contenteditable=""]') || null;
+    };
+
+    const setReceiveQtyLocked = (tr, locked) => {
+        const recvTd = getReceiveQtyCellInRow(tr);
+        if (!recvTd) return;
+        recvTd.querySelectorAll('input, textarea, select, button').forEach((el) => {
+            if (String(el.type || '').toLowerCase() === 'hidden') return;
+            el.disabled = !!locked;
+            if ('readOnly' in el) el.readOnly = !!locked;
+        });
+        recvTd.querySelectorAll('[contenteditable]').forEach((el) => {
+            el.setAttribute('contenteditable', locked ? 'false' : 'true');
+        });
+        recvTd.style.pointerEvents = locked ? 'none' : '';
+    };
     const refreshReceivePoHeaderStatus = (me) => {
         const poId = me.dataOptions?.id;
-        if (!poId) return;
-        vsapi.call(`${main_view.base_url}/prm/purchase/order/form-options`, { id: poId }, null, false)
+        if (!poId) return Promise.resolve(null);
+        return vsapi.call(`${main_view.base_url}/prm/purchase/order/form-options`, { id: poId }, null, false)
             .then((res) => {
                 if (res && res.status_code === 200 && res.data && res.data.po_details) {
                     me._receivePoStatusId = res.data.po_details.status_id;
+                    return me._receivePoStatusId;
                 }
+                return null;
             })
-            .catch(() => {});
+            .catch(() => null);
     };
     /** Real line: Receive amount + Break Amount must equal Ordered Qty (saved on item). */
     const isReceiveLineRowComplete = (it) => {
@@ -208,41 +329,143 @@ var PurchaseOrdersComponent = (() => {
             : 0;
         return { orderedQty, receiveQty, breakAmount, row };
     };
-    const bindReceiveLineButtonDelegation = (me) => {
-        const root = me.divModal && me.divModal.querySelector('#receive_purchase_item_list');
-        if (!root || root.dataset.receiveLineDelegateBound === '1') return;
-        root.dataset.receiveLineDelegateBound = '1';
-        root.addEventListener('click', (e) => {
-            const sendBtn = e.target && e.target.closest && e.target.closest('.receive-po-line-btn');
-            if (!sendBtn || sendBtn.disabled) return;
-            e.preventDefault();
-            const poId = me.dataOptions && me.dataOptions.id;
-            const poItemId = Number(sendBtn.dataset.poItemId);
-            if (!poId || !poItemId) return;
-            if (Number(me._receivePoStatusId) === 2) {
-                return cv_interact.warning('This purchase order is already fully received.');
-            }
-            const tr = sendBtn.closest('tr');
-            const { orderedQty, receiveQty, breakAmount } = getReceiveLineRowData(me, poItemId, tr);
-            showReceivePoLineDialog({
-                me,
-                poId,
-                poItemId,
-                orderedQty,
-                receiveQty,
-                breakAmount,
-                triggerEl: sendBtn,
-                onSuccess: () => {
+    const setReceiveLineRowLoading = (tr, isLoading) => {
+        if (!tr) return;
+        const cb = tr.querySelector('.receive-po-line-cb');
+        if (cb) cb.disabled = isLoading;
+    };
+    /**
+     * @param {object} opts - silent: no toast; skipReload: no table reload (batch mode)
+     * @returns {Promise<boolean>} true if line saved OK
+     */
+    const submitReceivePoLine = (me, tr, poItemId, loadingEl, opts = {}) => {
+        const silent = opts.silent === true;
+        const skipReload = opts.skipReload === true;
+        const clearCb = () => {
+            const cb = tr && tr.querySelector('.receive-po-line-cb');
+            if (cb) cb.checked = false;
+        };
+        const poId = me.dataOptions && me.dataOptions.id;
+        if (!poId || !poItemId) {
+            clearCb();
+            cv_interact.error('Invalid line.');
+            return Promise.resolve(false);
+        }
+        if (Number(me._receivePoStatusId) === 2) {
+            clearCb();
+            cv_interact.warning('This purchase order is already fully received.');
+            return Promise.resolve(false);
+        }
+        const { orderedQty, receiveQty, breakAmount } = getReceiveLineRowData(me, poItemId, tr);
+        const rq = Number(receiveQty) || 0;
+        const ba = Number(breakAmount) || 0;
+        const oq = Number(orderedQty) || 0;
+        if (Number.isNaN(rq) || rq < 0) {
+            clearCb();
+            cv_interact.error('Receive qty must be 0 or greater.');
+            return Promise.resolve(false);
+        }
+        if (Number.isNaN(ba) || ba < 0) {
+            clearCb();
+            cv_interact.error('Break amount must be 0 or greater.');
+            return Promise.resolve(false);
+        }
+        if ((rq + ba) > oq) {
+            clearCb();
+            cv_interact.error('Receive qty + break amount cannot exceed ordered qty.');
+            return Promise.resolve(false);
+        }
+        setReceiveLineRowLoading(tr, true);
+        return vsapi.call(`${main_view.base_url}/prm/purchase/order/receive`, {
+            id: poId,
+            po_item_ids: [poItemId],
+            receive_qty: rq,
+            break_amount: ba
+        }, loadingEl || tr.querySelector('.receive-po-line-cb') || tr).then((res) => {
+            if (res.status_code === 200) {
+                if (!silent) cv_interact.success(res.message || 'Line received.');
+                if (!skipReload) {
                     refreshReceivePoHeaderStatus(me);
-                    loadReceivePurchaseOrder(me)
+                    return loadReceivePurchaseOrder(me)
                         .then(() => {
                             if (mThis.PoListView && mThis.getFilterData) {
                                 mThis.PoListView.showPage(mThis.getFilterData());
                             }
+                            return true;
                         })
-                        .catch(() => {});
+                        .catch(() => true);
                 }
+                return true;
+            }
+            const cb = tr.querySelector('.receive-po-line-cb');
+            if (cb) cb.checked = false;
+            setReceiveLineRowLoading(tr, false);
+            const rowsFail = (me.receiveItemsView && me.receiveItemsView.getItems)
+                ? (me.receiveItemsView.getItems() || [])
+                : [];
+            refreshReceiveLineActionsInPlace(me, rowsFail);
+            cv_interact.warning(res.error_message || 'Could not receive line.');
+            return false;
+        }).catch(() => {
+            const cb = tr.querySelector('.receive-po-line-cb');
+            if (cb) cb.checked = false;
+            setReceiveLineRowLoading(tr, false);
+            const rows = (me.receiveItemsView && me.receiveItemsView.getItems)
+                ? (me.receiveItemsView.getItems() || [])
+                : [];
+            refreshReceiveLineActionsInPlace(me, rows);
+            return false;
+        }).then((ok) => {
+            if (ok && skipReload) setReceiveLineRowLoading(tr, false);
+            return ok;
+        });
+    };
+    /**
+     * Save all checked lines before final PO confirmation.
+     * Checkbox is selection-only, so confirmation must persist selected rows first.
+     */
+    const saveCheckedReceiveLines = (me, triggerEl) => {
+        const root = me.divModal && me.divModal.querySelector('#receive_purchase_item_list');
+        if (!root) return Promise.resolve(true);
+        const checked = Array.from(root.querySelectorAll('tbody .receive-po-line-cb:checked'))
+            .filter((el) => !el.disabled);
+        if (!checked.length) return Promise.resolve(true);
+
+        return checked.reduce((chain, cb) => {
+            return chain.then((ok) => {
+                if (!ok) return false;
+                const tr = cb.closest('tr');
+                const poItemId = Number(cb.dataset.poItemId);
+                return submitReceivePoLine(me, tr, poItemId, triggerEl, { silent: true, skipReload: true });
             });
+        }, Promise.resolve(true)).then((ok) => {
+            if (!ok) return false;
+            return refreshReceivePoHeaderStatus(me).then(() => true);
+        });
+    };
+    const bindReceiveLineActionDelegation = (me) => {
+        const root = me.divModal && me.divModal.querySelector('#receive_purchase_item_list');
+        if (!root || root.dataset.receiveLineDelegateBound === '1') return;
+        root.dataset.receiveLineDelegateBound = '1';
+        root.addEventListener('change', (e) => {
+            const cb = e.target && e.target.closest && e.target.closest('.receive-po-line-cb');
+            if (!cb || cb.disabled) return;
+            const poItemId = Number(cb.dataset.poItemId);
+            const tr = cb.closest('tr');
+            if (Number(me._receivePoStatusId) === 2) {
+                cb.checked = false;
+                setReceiveQtyLocked(tr, false);
+                return cv_interact.warning('This purchase order is already fully received.');
+            }
+            if (cb.checked) {
+                const { receiveQty } = getReceiveLineRowData(me, poItemId, tr);
+                if (Number(receiveQty) <= 0) {
+                    cb.checked = false;
+                    setReceiveQtyLocked(tr, false);
+                    return cv_interact.warning('Enter received qty before selecting a line.');
+                }
+            }
+            setReceiveQtyLocked(tr, cb.checked);
         });
     };
     const lockReceivePurchaseOrderFields = (me) => {
@@ -258,6 +481,10 @@ var PurchaseOrdersComponent = (() => {
         const itemRoot = root.querySelector('#receive_purchase_item_list');
         if (itemRoot) {
             itemRoot.querySelectorAll('input, select, textarea').forEach((el) => {
+                if (el.classList && el.classList.contains('receive-po-line-cb')) return;
+                const nm = el.getAttribute('name') || '';
+                const df = el.dataset && el.dataset.field ? el.dataset.field : '';
+                if (nm === 'receive_qty' || df === 'receive_qty' || nm === 'recieve_amount') return;
                 el.disabled = true;
             });
         }
@@ -348,7 +575,7 @@ var PurchaseOrdersComponent = (() => {
                 if (typeof me.receiveItemsView.draw === 'function') me.receiveItemsView.draw();
 
                 setTimeout(() => {
-                    bindReceiveLineButtonDelegation(me);
+                    bindReceiveLineActionDelegation(me);
                     syncReceiveActionColumn(me, rows);
                     lockReceivePurchaseOrderFields(me);
                     if (typeof me.updateReceiveTotals === 'function') me.updateReceiveTotals();
@@ -573,6 +800,16 @@ var PurchaseOrdersComponent = (() => {
 
         return p;
     };
+    const resolvePoIdFromMenuContext = (id, menuLink) => {
+        let poId = id;
+        const btn = typeof menuLink === 'object' && menuLink?.target ? menuLink.target : menuLink;
+        const el = (btn && btn.closest) ? btn.closest('[data-id]') : null;
+        if ((!poId || Number(poId) <= 0) && el && el.dataset && el.dataset.id) poId = el.dataset.id;
+        const row = (btn && btn.closest) ? btn.closest('tr') : null;
+        if ((!poId || Number(poId) <= 0) && row && row.dataset && row.dataset.id) poId = row.dataset.id;
+        const n = Number(poId);
+        return Number.isNaN(n) || n <= 0 ? null : n;
+    };
     mThis.initDropdownMenus = (table) => {
 
         const baseMenus = [
@@ -591,17 +828,19 @@ var PurchaseOrdersComponent = (() => {
         ];
 
         const onMenuClick = (menuLink, id, name) => {
+            const poId = resolvePoIdFromMenuContext(id, menuLink);
+            if (!poId) return cv_interact.warning('Invalid purchase order.');
             switch (name) {
                 case 'modify_purchase_order': {
-                    mThis.editPurchaseOrder(id, menuLink);
+                    mThis.editPurchaseOrder(poId, menuLink);
                     break;
                 }
                 case 'delete_purchase_order': {
-                    mThis.deletePurchaseOrder(id, menuLink);
+                    mThis.deletePurchaseOrder(poId, menuLink);
                     break;
                 }
                 case 'receive_purchase_order': {
-                    mThis.receivePurchaseOrder(id, menuLink);
+                    mThis.receivePurchaseOrder(poId, menuLink);
                     break;
                 }
                 default: {
@@ -687,16 +926,10 @@ var PurchaseOrdersComponent = (() => {
             });
     };
     mThis.editPurchaseOrder = (id, menuLink) => {
-        let poId = id;
-        if (!poId && menuLink) {
-            const btn = typeof menuLink === 'object' && menuLink.target ? menuLink.target : menuLink;
-            const el = (btn && btn.closest) ? btn.closest('[data-id]') : null;
-            if (el && el.dataset && el.dataset.id) poId = el.dataset.id;
-            const row = (btn && btn.closest) ? btn.closest('tr') : null;
-            if (!poId && row && row.dataset && row.dataset.id) poId = row.dataset.id;
-        }
+        const poId = resolvePoIdFromMenuContext(id, menuLink);
+        if (!poId) return cv_interact.warning('Invalid purchase order.');
         const op = {
-            id: poId || id,
+            id: poId,
             btn: menuLink,
             onClose: () => {
                 mThis.PoListView.showPage(mThis.getFilterData());
@@ -705,7 +938,9 @@ var PurchaseOrdersComponent = (() => {
         showPurchaseOrderDialog(op);
     };
     mThis.receivePurchaseOrder = (id, menuLink) => {
-        showReceivePurchaseOrderDialog({ id, btn: menuLink });
+        const poId = resolvePoIdFromMenuContext(id, menuLink);
+        if (!poId) return cv_interact.warning('Invalid purchase order.');
+        showReceivePurchaseOrderDialog({ id: poId, btn: menuLink });
     };
     mThis.deletePurchaseOrder = (id, menuLink) => {
         cv_interact.confirm('Delete this Purchase Order?', {
@@ -1349,7 +1584,7 @@ var PurchaseOrdersComponent = (() => {
                     columns: [
                         { name: 'item_id', transTitle: 'titles.Item', displayType: 'select', readOnly: true },
                         { name: 'qty', transTitle: 'titles.Ordered Qty', dataType: 'number', defaultValue: 1, isNumeric: true, readOnly: true },
-                        { name: 'receive_qty', transTitle: 'Received Qty', dataType: 'number', defaultValue: 0, isNumeric: true, readOnly: true },
+                        { name: 'receive_qty', transTitle: 'Received Qty', dataType: 'number', defaultValue: 0, isNumeric: true, readOnly: false },
                         { name: 'unit_price', transTitle: 'titles.Unit Price', dataType: 'number', defaultValue: 0, isNumeric: true, readOnly: true },
                         { name: 'total_price', transTitle: 'titles.Total Price', readOnly: true, dataType: 'number', isNumeric: true }
                     ],
@@ -1359,7 +1594,23 @@ var PurchaseOrdersComponent = (() => {
                     tableClass: 'table',
                     showColumnHeaders: true,
                     showAddLineButton: false,
-                    addLineButtonText: 'Add Item'
+                    addLineButtonText: 'Add Item',
+                    onItemChange: (row_id, item, col_name) => {
+                        if (col_name !== 'receive_qty') return;
+                        if (typeof me.updateReceiveTotals === 'function') me.updateReceiveTotals();
+                        const live = me.receiveItemsView && me.receiveItemsView.getItems
+                            ? (me.receiveItemsView.getItems() || [])
+                            : [];
+                        refreshReceiveLineActionsInPlace(me, live);
+                    },
+                    keyup: (e, col_name) => {
+                        if (col_name !== 'receive_qty') return;
+                        if (typeof me.updateReceiveTotals === 'function') me.updateReceiveTotals();
+                        const live = me.receiveItemsView && me.receiveItemsView.getItems
+                            ? (me.receiveItemsView.getItems() || [])
+                            : [];
+                        refreshReceiveLineActionsInPlace(me, live);
+                    }
                 });
                 me.receiveItemsView.setSelectOptions('unit', [
                     { value: 1, label: 'pcs' },
@@ -1451,43 +1702,54 @@ var PurchaseOrdersComponent = (() => {
                         if (Number(me._receivePoStatusId) === 2) {
                             return cv_interact.warning('This purchase order is already fully received.');
                         }
-                        if (!validateAllReceiveLinesComplete(me)) {
-                            return showIncompleteReceiveRemarkDialog({
-                                poId,
-                                triggerEl: btn,
-                                onConfirmed: ({ remarks, btn: remarkBtn, dlg }) => {
-                                    vsapi.call(`${main_view.base_url}/prm/purchase/order/confirm-received`, {
-                                        id: poId,
-                                        allow_partial: 1,
-                                        remarks
-                                    }, remarkBtn).then((res) => {
-                                        if (res.status_code === 200) {
-                                            cv_interact.success(res.message || 'Purchase order updated.');
-                                            dlg.hide(true);
-                                            me.hide(true);
-                                            if (mThis.PoListView && mThis.getFilterData) {
-                                                mThis.PoListView.showPage(mThis.getFilterData());
-                                            }
-                                        } else {
-                                            cv_interact.warning(res.error_message || 'Could not update purchase order.');
-                                        }
-                                    });
-                                }
-                            });
-                        }
-                        vsapi.call(`${main_view.base_url}/prm/purchase/order/confirm-received`, {
-                            id: poId
-                        }, btn).then((res) => {
-                            if (res.status_code === 200) {
-                                cv_interact.success(res.message || 'Purchase order confirmed as received.');
-                                me._receivePoStatusId = 2;
+                        saveCheckedReceiveLines(me, btn).then((savedOk) => {
+                            if (!savedOk) return;
+                            if (Number(me._receivePoStatusId) === 2) {
+                                cv_interact.success('Purchase order confirmed as received.');
                                 me.hide(true);
                                 if (mThis.PoListView && mThis.getFilterData) {
                                     mThis.PoListView.showPage(mThis.getFilterData());
                                 }
-                            } else {
-                                cv_interact.warning(res.error_message || 'Could not confirm purchase order.');
+                                return;
                             }
+                            if (!validateAllReceiveLinesComplete(me)) {
+                                return showIncompleteReceiveRemarkDialog({
+                                    poId,
+                                    triggerEl: btn,
+                                    onConfirmed: ({ remarks, btn: remarkBtn, dlg }) => {
+                                        vsapi.call(`${main_view.base_url}/prm/purchase/order/confirm-received`, {
+                                            id: poId,
+                                            allow_partial: 1,
+                                            remarks
+                                        }, remarkBtn).then((res) => {
+                                            if (res.status_code === 200) {
+                                                cv_interact.success(res.message || 'Purchase order updated.');
+                                                dlg.hide(true);
+                                                me.hide(true);
+                                                if (mThis.PoListView && mThis.getFilterData) {
+                                                    mThis.PoListView.showPage(mThis.getFilterData());
+                                                }
+                                            } else {
+                                                cv_interact.warning(res.error_message || 'Could not update purchase order.');
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                            vsapi.call(`${main_view.base_url}/prm/purchase/order/confirm-received`, {
+                                id: poId
+                            }, btn).then((res) => {
+                                if (res.status_code === 200) {
+                                    cv_interact.success(res.message || 'Purchase order confirmed as received.');
+                                    me._receivePoStatusId = 2;
+                                    me.hide(true);
+                                    if (mThis.PoListView && mThis.getFilterData) {
+                                        mThis.PoListView.showPage(mThis.getFilterData());
+                                    }
+                                } else {
+                                    cv_interact.warning(res.error_message || 'Could not confirm purchase order.');
+                                }
+                            });
                         });
                     }
                 }
@@ -1503,59 +1765,6 @@ var PurchaseOrdersComponent = (() => {
             }
         });
         ReceivePurchaseOrderDialog.show(op);
-    };
-    const showReceivePoLineDialog = ({ me, poId, poItemId, orderedQty, receiveQty, breakAmount, triggerEl, onSuccess }) => {
-        const payload = {
-            id: poId,
-            po_item_id: poItemId,
-            ordered_qty: Number(orderedQty) || 0,
-            receive_qty: Number(receiveQty) || 0,
-            break_amount: Number(breakAmount) || 0,
-            onLineReceiveSuccess: onSuccess,
-            btn: triggerEl
-        };
-
-        InputBox.resetInstance('receivePoLinePopup');
-        InputBox.show({
-            title: "Receive Line Item",
-            instanceKey: "receivePoLinePopup",
-            columns: 2,
-            fields: [
-                { name: "ordered_qty", label: "Ordered Qty", type: "text", readOnly: true },
-                { name: "receive_qty", label: "Receive Qty", type: "number", required: true },
-                { name: "break_amount", label: "Break Amount", type: "number", required: true, colSpan: 2 },
-            ],
-            onOpen: (ibMe) => {
-                if (ibMe.controls.ordered_qty) ibMe.controls.ordered_qty.value = payload.ordered_qty;
-                if (ibMe.controls.receive_qty) ibMe.controls.receive_qty.value = payload.receive_qty;
-                if (ibMe.controls.break_amount) ibMe.controls.break_amount.value = payload.break_amount;
-            },
-            onConfirm: (data, btn, ibMe) => {
-                const rq = Number(data.receive_qty ?? payload.receive_qty ?? 0);
-                const ba = Number(data.break_amount ?? payload.break_amount ?? 0);
-                const oq = Number(data.ordered_qty ?? payload.ordered_qty ?? 0);
-                const linePoId = payload.id;
-                const linePoItemId = Number(payload.po_item_id);
-                if (!linePoId || !linePoItemId) return cv_interact.error('Invalid line.');
-                if (Number.isNaN(rq) || rq < 0) return cv_interact.error('Receive qty must be 0 or greater.');
-                if (Number.isNaN(ba) || ba < 0) return cv_interact.error('Break amount must be 0 or greater.');
-                if ((rq + ba) > oq) return cv_interact.error('Receive qty + break amount cannot exceed ordered qty.');
-                vsapi.call(`${main_view.base_url}/prm/purchase/order/receive`, {
-                    id: linePoId,
-                    po_item_ids: [linePoItemId],
-                    receive_qty: rq,
-                    break_amount: ba
-                }, btn).then((res) => {
-                    if (res.status_code === 200) {
-                        cv_interact.success(res.message || 'Line received.');
-                        ibMe.close();
-                        if (typeof payload.onLineReceiveSuccess === 'function') payload.onLineReceiveSuccess();
-                    } else {
-                        cv_interact.warning(res.error_message || 'Could not receive line.');
-                    }
-                });
-            }
-        });
     };
     mThis.prepareFormOptions = (onFinish) => {
         vsapi.call(`${main_view.base_url}/prm/purchase/order/form-options`, null, null, null)
