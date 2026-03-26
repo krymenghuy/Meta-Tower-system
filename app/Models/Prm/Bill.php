@@ -35,7 +35,7 @@ class Bill
         $branch_id = $ss->branch_id;
         $v_rule = [
             'bill_number'  => '0|string|max=50',
-            'po_number'    => '0|number',
+            'po_number'    => '0|string|0-25',
             'vendor_id'    => '1|number|exists=vendors.id',
             'bill_date'    => '1|date',
             'file_image'   => '0|string|0-255',
@@ -49,7 +49,7 @@ class Bill
 
         $remark_char      = ['@', '.', '-', '_'];
         $bill_number_char = ['@', '.', '-', '_'];
-        $res = DBX::validateObject($arr, $v_rule, 1,['photo' => GeneralSettings::$image_chars,'remark' => $remark_char,'bill_number' => $bill_number_char ],$ss->lang, 0, null);
+        $res = DBX::validateObject($arr, $v_rule, 1,['photo' => GeneralSettings::$image_chars,'remark' => $remark_char,'bill_number' => $bill_number_char,'po_number' => $bill_number_char ],$ss->lang, 0, null);
 
         if ($res->error) return DV::error($res->error);
 

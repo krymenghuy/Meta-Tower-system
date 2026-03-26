@@ -28,31 +28,40 @@ var ServiceRequestComponent = (function () {
         { title: "", className: "align-middle text-capitalize" },
         {
             transTitle: "titles.Request No",
-            className: "align-middle text-start",
-            data: (data) => data.code
-                ? `<span class="text-yp-custom">${data.code}</span>`
-                : `<span class="text-muted fst-italic">N/A</span>`,
+            className: "align-middle text-nowrap text-start",
+            data: (data) => {
+                const code = data.code ? `<span class="text-prm-custom">${data.code}</span>`: `<span class="text-muted fst-italic">N/A</span>`;
+                const date = data.request_date ? `<span class="text-danger-emphasis small">${data.request_date}</span>`: `<span class="text-muted fst-italic small">N/A</span>`;
+                return `
+                    <div class="d-flex flex-column">
+                        ${code}
+                        <hr class="m-0 border border-secondary border-3 opacity-75">
+                        ${date}
+                    </div>
+                `;
+            }
         },
         {
             transTitle: "titles.Tenant",
-            className: "align-middle",
+            className: "align-middle text-nowrap",
             data: (data) => `<span class="text-primary-custom">${data.tenant_name ?? ''}</span>`
         },
         {
             transTitle: "titles.Space",
-            className: "align-middle",
+            className: "align-middle text-nowrap",
             data: (data) => `<span class="text-primary-custom user-select-none">${data.space_code ?? ''}</span>`
         },
         {
             transTitle: "titles.Service",
-            className: "align-middle",
+            className: "align-middle text-nowrap",
             data: (data) => `<span class="text-primary-custom">${data.service_name ?? ''}</span>`
         },
         {
             transTitle: "titles.Category",
-            className: "align-middle",
+            className: "align-middle text-nowrap",
             data: (data) => `<span class="text-primary-custom">${data.service_type ?? ''}</span>`
         },
+        
         {
             transTitle: "titles.Price",
             className: "align-middle",
@@ -80,16 +89,14 @@ var ServiceRequestComponent = (function () {
             `;
             }
         },
-       {
-            transTitle: "titles.Duration",
-            className: "align-middle",
+        {
+            transTitle: "titles.Charge As",
+            className: "align-middle text-nowrap",
             data: (data) => {
                 let display = '—';
 
-                if (data.unit_type === 'hour' && data.duration_hours != null) {
-                    // Convert number to minimal decimals
-                    const hours = parseFloat(data.duration_hours);
-                    display = `${hours % 1 === 0 ? hours.toFixed(0) : hours} Hour`;
+                if (data.unit_type === 'hour') {
+                   display = 'Hour';
                 } else if (data.unit_type === 'one_time') {
                     display = 'One Time';
                 }
@@ -98,51 +105,103 @@ var ServiceRequestComponent = (function () {
             }
         },
         {
-            transTitle: "titles.Schedule Date", className: "align-middle text-center",
+            transTitle: "titles.Duration",
+            className: "align-middle",
             data: (data) => {
-                console.log(123,data);
+                let display = '—';
+
+                if (data.unit_type == 'hour' && data.duration_hours != null) {
+                    // Convert number to minimal decimals
+                    const hours = parseFloat(data.duration_hours);
+                    display = `${hours % 1 === 0 ? hours.toFixed(0) : hours} H`;
+                } else if (data.unit_type == 'one_time') {
+                    display = 'One Time';
+                }
+
+                return `<span class="text-nowrap">${display}</span>`;
+            }
+        },
+        // {
+        //     transTitle: "titles.Schedule Date", 
+        //     className: "align-middle text-nowrap text-center",
+        //     data: (data) => {
+        //         console.log(123,data);
                 
-                const rawDate = (data.scheduled_date || '').toString().trim();
-                const rawTime = (data.start_time || '').toString().trim();
+        //         const rawDate = (data.scheduled_date || '').toString().trim();
+        //         const rawTime = (data.start_time || '').toString().trim();
 
-                let datePart = rawDate;
-                let timePart = rawTime.substring(0, 5);
+        //         let datePart = rawDate;
+        //         let timePart = rawTime.substring(0, 5);
 
-                // Try to normalise date to YYYY-MM-DD if it's a valid date string.
-                if (rawDate) {
-                    const d = new Date(rawDate);
-                    if (!Number.isNaN(d.getTime())) {
-                        const y = d.getFullYear();
-                        const m = String(d.getMonth() + 1).padStart(2, '0');
-                        const day = String(d.getDate()).padStart(2, '0');
-                        datePart = `${y}-${m}-${day}`;
-                    }
-                }
+        //         // Try to normalise date to YYYY-MM-DD if it's a valid date string.
+        //         if (rawDate) {
+        //             const d = new Date(rawDate);
+        //             if (!Number.isNaN(d.getTime())) {
+        //                 const y = d.getFullYear();
+        //                 const m = String(d.getMonth() + 1).padStart(2, '0');
+        //                 const day = String(d.getDate()).padStart(2, '0');
+        //                 datePart = `${y}-${m}-${day}`;
+        //             }
+        //         }
 
-                if (!datePart && !timePart) {
-                    return '<span class="text-yp-custom">...</span>';
-                }
+        //         if (!datePart && !timePart) {
+        //             return '<span class="text-yp-custom">...</span>';
+        //         }
 
-                if (!timePart) {
-                    return `<span class="text-yp-custom">${datePart}</span>`;
-                }
+        //         if (!timePart) {
+        //             return `<span class="text-yp-custom">${datePart}</span>`;
+        //         }
+
+        //         return `
+        //         <div class="d-flex flex-column align-items-center">
+        //             <span class="text-prm-custom text-nowrap">${datePart}</span>
+        //             <span class="text-muted small text-nowrap">${timePart}</span>
+        //         </div>
+        //     `;
+        //     }
+        // },
+       {
+            transTitle: "titles.Schedule Time", 
+            className: "align-middle text-nowrap text-center",
+            data: (data) => {
+
+                const formatTime = (time) => {
+                    if (!time) return '';
+
+                    // Support HH:mm:ss or HH:mm
+                    let parts = time.split(':');
+                    let hour = parseInt(parts[0], 10);
+                    let minute = parts[1] ?? '00';
+
+                    if (isNaN(hour)) return '';
+
+                    const ampm = hour >= 12 ? 'PM' : 'AM';
+                    hour = hour % 12 || 12;
+
+                    // ensure 2-digit minute
+                    minute = minute.padStart(2, '0');
+
+                    return `${hour}:${minute} ${ampm}`;
+                };
 
                 return `
-                <div class="d-flex flex-column align-items-center">
-                    <span class="text-yp-custom text-nowrap">${datePart}</span>
-                    <span class="text-muted small text-nowrap">${timePart}</span>
-                </div>
-            `;
+                    <div class="d-flex flex-column align-items-start">
+                        <span class="text-prm-custom text-nowrap">${data.scheduled_date ?? ''}</span>
+                        <span class="text-warning small text-nowrap">
+                            ${formatTime(data.start_time)}
+                        </span>
+                    </div>
+                `;
             }
         },
         {
             transTitle: "titles.Remark",
-            className: "align-middle",
+            className: "align-middle text-nowrap",
             data: (data) => `<span class="text-primary-custom">${data.description ?? ''}</span>`
         },
         {
             title: "Status",
-            className: "align-middle",
+            className: "align-middle text-nowrap",
             data: (data) => {
                 const status = (data.status_name ?? '').toLowerCase();
                 const statusId = Number(data.status_id) || 0;
@@ -168,7 +227,7 @@ var ServiceRequestComponent = (function () {
         },
         {
             transTitle: "titles.Updated By",
-            className: 'align-middle',
+            className: 'align-middle text-nowrap',
             data: (data) => `
             <div class="d-flex flex-column">
                 <span class="text-capitalize text-primary-custom fw-semibold">${data.update_user ?? ''}</span>
@@ -177,7 +236,7 @@ var ServiceRequestComponent = (function () {
         },
         {
             transTitle: "titles.Action",
-            className: 'col_action align-middle',
+            className: 'col_action align-middle text-nowrap',
             data: (data) => `
             <div class="d-flex justify-content-center align-items-end">
                 <a href="javascript:void(0)"
@@ -206,7 +265,7 @@ var ServiceRequestComponent = (function () {
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.columns,
-            tableClass: 'table table--white rounded-2 overflow-hidden header-uppercase',
+            tableClass: 'table table--white rounded-2 header-uppercase',
             rowCreated: (data, index, tr) => {
                 tr.dataset.statusId = data.status_id;
                 tr.classList.add('service-request');
@@ -229,7 +288,7 @@ var ServiceRequestComponent = (function () {
         const sh_parent = mThis.listContainer.parentElement;
         sh_parent.style.maxHeight = (window.innerHeight - 220) + "px";
         sh_parent.classList.add("overflow-y-auto");
-        sh_parent.classList.add("overflow-x-hidden");
+        // sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
             sh_parent.style.maxHeight = (window.innerHeight - 220) + "px";
         };
@@ -718,7 +777,7 @@ const CreateServiceRequestDialog = (() => {
                         <!-- Visible Tenant Search (NO data-field so name is NOT sent) -->
                         <div class="col-md-6">
                             <div class="material-input outlined">
-                                <input name="tenant" class="form-control" placeholder=" " autocomplete="off">
+                                <input name="tenant" class="form-control" data-field="tenant_id" placeholder=" " autocomplete="off">
                                 <label style="padding-left:6px;color:#777;">Tenant</label>
                             </div>
                         </div>
@@ -753,8 +812,8 @@ const CreateServiceRequestDialog = (() => {
                             <div class="material-input outlined">
                                 <select data-style="material" class="data-input form-control" data-field="unit_type" required placeholder="Unit Type">
                                     <option value="">-- Select Unit --</option>
-                                    <option value="1">📅 Price Per One Time</option>
-                                    <option value="2">⏱️ Price Per Hour</option>
+                                    <option value="1">One Time</option>
+                                    <option value="2">Hour</option>
                                 </select>
                             </div>
                         </div>
@@ -905,6 +964,8 @@ const CreateServiceRequestDialog = (() => {
 
 
             onPrepareForm: (me, data) => {
+                console.log(4444444444,data.request_details);
+                
                 me.detail = data.request_details;
                 if (me.detail) {
                     const raw = (me.detail.scheduled_date || '').trim();
