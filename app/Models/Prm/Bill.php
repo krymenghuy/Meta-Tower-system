@@ -35,13 +35,13 @@ class Bill
         $branch_id = $ss->branch_id;
         $v_rule = [
             'bill_number'  => '0|string|max=50',
-            'po_number'    => '0|string|0-25',
+            'ref_no'    => '0|number',
             'vendor_id'    => '1|number|exists=vendors.id',
             'bill_date'    => '1|date',
             'file_image'   => '0|string|0-255',
             'total_amount' => '1|number|min=0',
             'balance'      => '0|number|min=0',
-            'paid_amount'  => '1|number|min=0',
+            'paid_amount'  => '0|number|min=0',
             'remark'       => '0|string|0-255',
             'photo'        => '0|string',
             'ext'          => '0|string',
@@ -171,7 +171,6 @@ class Bill
         $d  = (object) $arr;
         $search_value = $d->search_value ?? null;
         $vendor_id    = $d->vendor_id    ?? null;
-        $po_number    = $d->po_number?? null;
         $status_id    = $d->status_id    ?? null;
         $current_page = $d->current_page ?? 1;
         $per_page     = $d->per_page     ?? 10;
@@ -192,21 +191,17 @@ class Bill
             $str_moreWhere .= ' AND b.vendor_id = ' . $vendor_id;
         }
 
-        if ($po_number) {
-            $str_moreWhere .= ' AND b.po_number = ' . $po_number;
-        }
-
         if ($status_id) {
             $str_moreWhere .= ' AND b.status_id = ' . $status_id;
         }
 
         $query = DB::table('bills as b')
-            ->leftJoin('purchase_orders as po', 'po.id', 'b.po_number')
+            // ->leftJoin('purchase_orders as po', 'po.id', 'b.po_number')
             ->leftJoin('vendors as v', 'v.id', 'b.vendor_id')
             ->leftJoin('bill_statuses as s', 's.id', 'b.status_id')
             ->whereRaw($str_search)
             ->whereRaw($str_moreWhere)
-            ->selectRaw("b.id, b.bill_number, b.po_number, b.vendor_id,v.name as vendor_name, v.phone_number, b.bill_date,
+            ->selectRaw("b.id, b.bill_number, b.ref_no, b.vendor_id,v.name as vendor_name, v.phone_number, b.bill_date,
                 b.total_amount, b.balance, b.paid_amount,b.status_id, s.name as status,b.file_image, b.update_user, b.remark, b.updated_at")
             ->orderBy('b.id', 'desc');
         $count = (clone $query)->count('b.id');
@@ -225,10 +220,10 @@ class Bill
     public static function billDetails($id, $ss = null)
     {
         $row = DB::table('bills as b')
-            ->leftJoin('purchase_orders as po', 'po.id', 'b.po_number')
+            // ->leftJoin('purchase_orders as po', 'po.id', 'b.po_number')
             ->leftJoin('vendors as v', 'v.id', 'b.vendor_id')
             ->where('b.id', $id)
-            ->selectRaw('b.id, b.bill_number, b.po_number, po.vendor_id, v.name as vendor_name, v.phone_number, b.bill_date, b.file_image, b.total_amount, b.balance, b.paid_amount, b.status_id, b.remark')
+            ->selectRaw('b.id, b.bill_number, b.ref_no, b.vendor_id, v.name as vendor_name, v.phone_number, b.bill_date, b.file_image, b.total_amount, b.balance, b.paid_amount, b.status_id, b.remark')
             ->first();
         if ($row) {
             $row->file_image_url = self::getBillImageUrl($row->file_image, $ss);

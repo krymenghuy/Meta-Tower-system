@@ -43,10 +43,10 @@ var BillComponent = (() => {
             },
         },
         {
-            transTitle: "titles.Po Number",
+            transTitle: "titles.Reference No",
             className: "align-middle",
             data: (data) => {
-                return `<span class="d-block text-prm-custom">${data.po_number ?? "_"}</span>`;
+                return `<span class="d-block text-prm-custom">${data.ref_no ?? "_"}</span>`;
             },
         },
         {
@@ -244,9 +244,15 @@ var BillComponent = (() => {
                 },
                 {
                     html: '<span class="ps-2">View Attachment</span>',
-                    icon: `<i class="fa-regular fa-eye"></i>`,
+                    icon: `<i class="fa-regular fa-eye fa-lg" style="color: rgb(56, 49, 111);"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "view_attachment",
+                },
+                {
+                    html: '<span class="ps-2">Bill Payment</span>',
+                    icon: `<i class="fa-solid fa-sack-dollar" style="color: rgb(22, 80, 137);"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "bill_payment",
                 },
             ],
 
@@ -262,6 +268,9 @@ var BillComponent = (() => {
                     }
                     case "view_attachment": {
                         mThis.viewAttachment(id);
+                    }
+                    case "bill_payment": {
+                        mThis.billPayment(id);
                     }
                     default: {
                         break;
@@ -378,6 +387,18 @@ var BillComponent = (() => {
                 document.body.appendChild(overlay);
             });
     };
+
+    mThis.billPayment = (id, menuLink) => {
+        let op = {
+            id: null,
+            btn: menuLink,
+            onClose: () => {
+                mThis.BillListView.showPage();
+            },
+        };
+        // renewDialog.show(op);
+        alert("coming soon!");
+    };
     mThis.prepareFormOptions = (onFinish) => {
         vsapi
             .call(
@@ -421,7 +442,7 @@ const BillDialog = (() => {
                 keyboard: true,
                 createContent: () => {
                     return [
-                        `<div class="row justify-content-center">
+                        `<div class="row ">
                                 <input name="vendorid" class="d-none data-input form-control" data-field="vendor_id">
                             <div class="col-6">
                                 <div class="material-input outlined">
@@ -437,26 +458,21 @@ const BillDialog = (() => {
                             </div>
                             <div class="col-6">
                                 <div class="material-input outlined">
-                                    <input name="po_number" class="data-input form-control" data-field="po_number" placeholder=" "></input>
-                                    <label style="color:#777777; padding-left:6px;">PO Number <span style="color:#bbbbbb; font-size:0.8em; font-weight:400;">(Optional)</span></label>
+                                    <input name="ref_no" class="data-input form-control" data-field="ref_no" placeholder=" "></input>
+                                    <label style="color:#777777; padding-left:6px;">Reference No.</label>
                                 </div>
                             </div>
-                            <div class="col-6">
+                            <div class="col-6 col-md-6">
                                 <div class=" material-input outlined">
                                     <input type="text" data-type="date" name="bill_date" required class="data-input form-control form_input" data-field="bill_date" />
                                     <label style="color:#777777;padding-left:6px;">Bill Date</label>
                                 </div>
                             </div>
+
                             <div class="col-6">
                                 <div class="material-input outlined">
                                     <input name="total_amount" class="data-input form-control" data-field="total_amount" placeholder=" "></input>
                                     <label style="color:#777777; padding-left:6px;">Total Amount</label>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="material-input outlined">
-                                    <input name="paid_amount" class="data-input form-control" data-field="paid_amount" placeholder=" "></input>
-                                    <label style="color:#777777; padding-left:6px;">Amount Paid</label>
                                 </div>
                             </div>
                             <div class="col-4">
@@ -465,7 +481,7 @@ const BillDialog = (() => {
                                     <label style="display:none;color:#777777;padding-left:6px;">File</label>
                                 </div>
                             </div>
-                            <div class="col-8">
+                            <div class="col-12">
                                 <div class="material-input outlined d-flex ">
                                     <input type="text" name="documents" class="d-none form-control " accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg" />
                                     <label style="display:none;color:#777777;padding-left:6px;">File</label>
@@ -483,6 +499,12 @@ const BillDialog = (() => {
                                     <label style="color:#777777; padding-left:6px;">Bill Number</label>
                                 </div>
                             </div>
+                            <div class="col-6">
+                                <div class="material-input outlined d-none">
+                                    <input name="paid_amount" class="data-input form-control" data-field="paid_amount" placeholder=" "></input>
+                                    <label style="color:#777777; padding-left:6px;">Amount Paid</label>
+                                </div>
+                            </div>
                         </div>`,
                     ].join("");
                 },
@@ -493,7 +515,7 @@ const BillDialog = (() => {
                         if (me.controls.vendor_id) me.controls.vendor_id.value = vendorId || '';
                         if (!vendorId) {
                             if (me.controls.phone_number) me.controls.phone_number.value = '';
-                            if (me.controls.po_number) me.controls.po_number.value = '';
+                            // if (me.controls.po_number) me.controls.po_number.value = '';
                             return;
                         }
                         vsapi.post(`${main_view.base_url}/prm/vendor/options-vendor-info`, { vendor_id: vendorId }, {})
@@ -501,7 +523,7 @@ const BillDialog = (() => {
                                 const d = res.data || {};
                                 const v = d.vendor || {};
                                 if (me.controls.phone_number) me.controls.phone_number.value = v.phone_number || '';
-                                if (me.controls.po_number) me.controls.po_number.value = v.po_number     || '';
+                                // if (me.controls.po_number) me.controls.po_number.value = v.po_number     || '';
                             })
                             .catch(() => {});
                     };
