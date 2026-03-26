@@ -305,24 +305,64 @@ class PurchaseOrder //extends Model
 
         $po_id = DBX::saveData($ss, 'purchase_orders', ['id' => $id], $inputs, [], 1, false);
 
+        $valid_items = array_values(array_filter($items ?? [], function ($item) {
+            $item = (object) $item;
+            $item_id = isset($item->item_id) ? (int) $item->item_id : 0;
+            $trx_id = isset($item->trx_id) ? (int) $item->trx_id : (isset($item->id) ? (int) $item->id : 0);
+            return $item_id > 0 || $trx_id > 0;
+        }));
+
         $success_count = 0;
-        $count = 0;
+        $count = count($valid_items);
 
         if ($po_id) {
-            foreach ($items as $item) {
+            $existing_line_ids_by_item = [];
+            if (!$create) {
+                $existing_lines = DB::table('purchase_order_items')
+                    ->where('po_id', $po_id)
+                    ->orderBy('id', 'asc')
+                    ->get(['id', 'item_id']);
+                foreach ($existing_lines as $line) {
+                    $key = (int) ($line->item_id ?? 0);
+                    if ($key <= 0) {
+                        continue;
+                    }
+                    if (!isset($existing_line_ids_by_item[$key])) {
+                        $existing_line_ids_by_item[$key] = [];
+                    }
+                    $existing_line_ids_by_item[$key][] = (int) $line->id;
+                }
+            }
+
+            foreach ($valid_items as $item) {
 
                 $item = (object) $item;
-                $trx_id = $item->id ?? $item->trx_id ?? null;
-                // In modify mode, keep old rows and update by row id when available.
-                // If row id is not sent, try to match existing row by item_id.
-                if (!$create && !$trx_id && !empty($item->item_id)) {
-                    $existing_row = DB::table('purchase_order_items')
+                $trx_id = $item->trx_id ?? $item->id ?? null;
+                if (!$create && $trx_id) {
+                    $is_valid_trx = DB::table('purchase_order_items')
+                        ->where('id', $trx_id)
                         ->where('po_id', $po_id)
-                        ->where('item_id', $item->item_id)
-                        ->orderBy('id', 'asc')
+                        ->exists();
+                    if (!$is_valid_trx) {
+                        $trx_id = null;
+                    }
+                }
+                if (!$create && !$trx_id && !empty($item->item_id)) {
+                    $item_key = (int) $item->item_id;
+                    if ($item_key > 0 && !empty($existing_line_ids_by_item[$item_key])) {
+                        $trx_id = array_shift($existing_line_ids_by_item[$item_key]);
+                    }
+                }
+                // In modify mode, update only when explicit line id (trx_id) is provided.
+                // If trx_id is missing, treat as a new line item.
+                if (!$create && empty($item->item_id) && $trx_id) {
+                    $existing_row_by_trx = DB::table('purchase_order_items')
+                        ->where('po_id', $po_id)
+                        ->where('id', $trx_id)
+                        ->select('item_id')
                         ->first();
-                    if ($existing_row) {
-                        $trx_id = $existing_row->id;
+                    if ($existing_row_by_trx && !empty($existing_row_by_trx->item_id)) {
+                        $item->item_id = $existing_row_by_trx->item_id;
                     }
                 }
                 if (empty($item->item_id)) {
@@ -344,8 +384,6 @@ class PurchaseOrder //extends Model
                 if ($po_item) {
                     $success_count++;
                 }
-
-                $count++;
             }
 
             $sub_total = (float) DB::table('purchase_order_items')->where('po_id', $po_id)->sum('total_price');

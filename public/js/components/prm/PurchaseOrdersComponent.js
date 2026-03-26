@@ -36,6 +36,9 @@ var PurchaseOrdersComponent = (() => {
         checkboxEl.style.transform = 'scale(1.35)';
         checkboxEl.style.transformOrigin = 'center';
         checkboxEl.style.cursor = checkboxEl.disabled ? 'not-allowed' : 'pointer';
+        checkboxEl.style.border = '1.5px solid #5b63e6';
+        checkboxEl.style.borderRadius = '3px';
+        checkboxEl.style.accentColor = '#5b63e6';
     };
     const normalizeItems = (raw) => {
         if (Array.isArray(raw)) return raw;
@@ -91,7 +94,7 @@ var PurchaseOrdersComponent = (() => {
         return { id: iv, value: iv, name: lb, label: lb };
     });
     const mapEditRows = (items) => (items ?? []).map((it) => ({
-        id: it.id,
+        trx_id: it.id,
         item_id: it.item_id,
         qty: it.qty != null ? Number(it.qty) : 0,
         unit: normalizeUnit(it.unit_id ?? it.unit),
@@ -157,7 +160,7 @@ var PurchaseOrdersComponent = (() => {
             + poFormRow('Total', `<span id="${pfx}total_display" class="ms-2 fw-bold">$ 0.00</span>`, true)
             + '</div></div>';
     };
-   
+
     const calcTotals = (subTotal, discountVal, discountType) => {
         const dv = +discountVal || 0;
         const dt = (discountType || 'percent') === 'percent' ? 'percent' : 'amount';
@@ -194,6 +197,25 @@ var PurchaseOrdersComponent = (() => {
         if (typeof view.render === 'function') view.render();
         else if (typeof view.refresh === 'function') view.refresh();
         else if (typeof view.draw === 'function') view.draw();
+    };
+    const removeLeadingEmptyItemRow = (view) => {
+        if (!view) return;
+
+        // Keep only meaningful rows in ItemsView data (no direct DOM mutation).
+        // Directly removing table rows can desync ItemsView internal state.
+        if (typeof view.getItems === 'function' && typeof view.setData === 'function') {
+            const cur = view.getItems() || [];
+            const cleaned = cur.filter((it) => {
+                const itemId = String(it?.item_id ?? '').trim();
+                const qty = Number(it?.qty ?? 0);
+                const price = Number(it?.unit_price ?? it?.price ?? 0);
+                return itemId !== '' || qty > 0 || price > 0;
+            });
+            if (cleaned.length !== cur.length) {
+                view.setData(cleaned);
+                renderItemsView(view);
+            }
+        }
     };
     const UNIT_OPTIONS = [
         { value: 1, label: 'pcs' },
@@ -251,6 +273,30 @@ var PurchaseOrdersComponent = (() => {
             const n = Number(id);
             return !Number.isNaN(n) && n > 0;
         });
+    };
+    const getCleanPurchaseItems = (itemsView) => {
+        if (!itemsView || typeof itemsView.getItems !== 'function') return [];
+        const source = itemsView.getItems() || [];
+        const seenTrxIds = new Set();
+
+        return source
+            .filter((row) => {
+                const itemId = Number(row?.item_id ?? row?.id ?? 0);
+                const qty = Number(row?.qty ?? 0);
+                const unitPrice = Number(row?.unit_price ?? row?.price ?? 0);
+                return itemId > 0 || qty > 0 || unitPrice > 0;
+            })
+            .filter((row) => {
+                const trxId = Number(row?.trx_id ?? 0);
+                if (trxId <= 0) return true;
+                if (seenTrxIds.has(trxId)) return false;
+                seenTrxIds.add(trxId);
+                return true;
+            })
+            .map((row) => ({
+                ...row,
+                trx_id: Number(row?.trx_id ?? 0) > 0 ? Number(row.trx_id) : null
+            }));
     };
     const applyReceiveActionColumn = (me, rows) => {
         const root = getReceiveRoot(me);
@@ -1042,20 +1088,8 @@ var PurchaseOrdersComponent = (() => {
                     // ItemsView implementations differ; `setData()` does not always bind into the grid.
                     // Prefer rebuilding via `addRow()` when available (used elsewhere, e.g. InvoiceComponent).
                     setItemsViewRows(me.purchaseItemsView, rows);
-                    // Remove the initial empty row if the grid auto-creates one.
-                    if (typeof me.purchaseItemsView.getItems === 'function' && typeof me.purchaseItemsView.setData === 'function') {
-                        const cur = me.purchaseItemsView.getItems() || [];
-                        const cleaned = cur.filter((it) => {
-                            const itemId = String(it?.item_id ?? '').trim();
-                            const qty = Number(it?.qty ?? 0);
-                            const price = Number(it?.unit_price ?? it?.price ?? 0);
-                            return itemId !== '' || qty > 0 || price > 0;
-                        });
-                        if (cleaned.length !== cur.length) {
-                            me.purchaseItemsView.setData(cleaned);
-                        }
-                    }
                     renderItemsView(me.purchaseItemsView);
+                    removeLeadingEmptyItemRow(me.purchaseItemsView);
                     if (typeof me.updatePOTotals === 'function') me.updatePOTotals();
                     if (!items.length) {
                         cv_interact.warning('This purchase order has no items (items-by-po returned empty).');
@@ -1267,6 +1301,23 @@ var PurchaseOrdersComponent = (() => {
                         tr.dataset.code = itemDetails.code || '';
 
                         if (!me.purchaseItemsView.setCellValue) return;
+                        // Keep selected item visible in the row (label/value), not back to "Select Item".
+                        me.purchaseItemsView.setCellValue(tr, 'item_id', itemId);
+                        const itemSelectEl = tr.querySelector('[name="item_id"], [data-field="item_id"]');
+                        if (itemSelectEl && itemSelectEl.tagName === 'SELECT') {
+                            let hasOption = false;
+                            for (let i = 0; i < itemSelectEl.options.length; i++) {
+                                if (String(itemSelectEl.options[i].value) === String(itemId)) {
+                                    hasOption = true;
+                                    break;
+                                }
+                            }
+                            if (!hasOption && itemDetails?.name) {
+                                itemSelectEl.add(new Option(itemDetails.name, itemId, false, false));
+                            }
+                            itemSelectEl.value = String(itemId);
+                            itemSelectEl.dispatchEvent(new Event('change'));
+                        }
                         if (itemDetails.unit_id == null && itemDetails.unit == null) return;
 
                         me.purchaseItemsView.setCellValue(tr, 'unit', normalizeUnit(itemDetails.unit_id ?? itemDetails.unit));
@@ -1282,7 +1333,7 @@ var PurchaseOrdersComponent = (() => {
                 applyUnitOptions(me.purchaseItemsView);
                 me.updatePOTotals = () => {
                     if (!me.divModal || !me.purchaseItemsView) return;
-                    const items = me.purchaseItemsView.getItems ? me.purchaseItemsView.getItems() : [];
+                    const items = getCleanPurchaseItems(me.purchaseItemsView);
                     let subTotal = 0;
                     if (Array.isArray(items)) {
                         items.forEach(it => {
@@ -1355,7 +1406,7 @@ var PurchaseOrdersComponent = (() => {
                     if (!me.purchaseItemsView || typeof me.purchaseItemsView.getItems !== 'function') {
                         return cv_interact.error('Purchase items are not ready. Please try again.');
                     }
-                    p.items = me.purchaseItemsView.getItems() || [];
+                    p.items = getCleanPurchaseItems(me.purchaseItemsView);
                     if (!hasValidPurchaseOrderLineItems(p.items)) {
                         return cv_interact.error('Please select at least one item before saving the purchase order.');
                     }
