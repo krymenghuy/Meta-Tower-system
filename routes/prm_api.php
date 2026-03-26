@@ -279,7 +279,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('bill')->group
     Route::post('/attachment',[TenantController::class,'getAttachment']);
     Route::post('/attachment/delete',[TenantController::class,'deleteAttachment']);
     Route::post('/attachment/create',[TenantController::class,'createAttachment']);
-   
+
 });
 
 
