@@ -1680,8 +1680,7 @@ const TenantDocumentDialog = (() => {
                 <div class="document-form row justify-content-start">
                     <div class="col-8">
                         <div class="material-input outlined">
-                            <select name="document_type" class="data-input form-control" data-field="document_type_id"></select>
-                            <label style="display:none;color:#777777;padding-left:6px;" for="document_type">Document Type</label>
+                            <select name="document_type" data-style="material" class="data-input form-control" data-field="document_type_id" placeholder="Document Type"></select>
                         </div>
                     </div>
                     <div class="col-4">
@@ -1691,9 +1690,8 @@ const TenantDocumentDialog = (() => {
                         </div>
                     </div>
                     <div class="col-12">
-                        <div class="material-input outlined d-flex ">
-                            <input type="text" name="documents" class="d-none form-control " accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg" />
-                            <label style="display:none;color:#777777;padding-left:6px;">File</label>
+                        <div class="material-input outlined d-flex">
+                            <input type="text" name="documents" class="d-none form-control"  accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg" />
                         </div>
                     </div>
                      <div class="col-12">

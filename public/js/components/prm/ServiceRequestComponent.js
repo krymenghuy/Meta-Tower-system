@@ -56,11 +56,11 @@ var ServiceRequestComponent = (function () {
             className: "align-middle text-nowrap",
             data: (data) => `<span class="text-primary-custom">${data.service_name ?? ''}</span>`
         },
-        {
-            transTitle: "titles.Category",
-            className: "align-middle text-nowrap",
-            data: (data) => `<span class="text-primary-custom">${data.service_type ?? ''}</span>`
-        },
+        // {
+        //     transTitle: "titles.Category",
+        //     className: "align-middle text-nowrap",
+        //     data: (data) => `<span class="text-primary-custom">${data.service_type ?? ''}</span>`
+        // },
         
         {
             transTitle: "titles.Price",
