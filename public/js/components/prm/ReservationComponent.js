@@ -110,7 +110,7 @@ var ReservationComponent = (() => {
 
                 return `
                     <span class="${cls} px-3 py-2 d-inline-flex align-items-center gap-2"
-                        style="min-width:120px"
+                        style="min-width:110px"
                         data-status_id="${data.status_id}">
                         <i class="${icon}" style="font-size:13px;"></i>
                         <span>${label}</span>

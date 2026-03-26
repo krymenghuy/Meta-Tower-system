@@ -49,7 +49,7 @@ class Bill
 
         $remark_char      = ['@', '.', '-', '_'];
         $bill_number_char = ['@', '.', '-', '_'];
-        $res = DBX::validateObject($arr, $v_rule, 1,['photo' => GeneralSettings::$image_chars,'remark' => $remark_char,'bill_number' => $bill_number_char ],$ss->lang, 0, null);
+        $res = DBX::validateObject($arr, $v_rule, 1,['photo' => GeneralSettings::$image_chars,'remark' => $remark_char,'bill_number' => $bill_number_char,'po_number' => $bill_number_char ],$ss->lang, 0, null);
 
         if ($res->error) return DV::error($res->error);
 
