@@ -19,6 +19,10 @@ var ServiceRequestComponent = (function () {
     //     elBtnCreate: $("#_btnServiceRequest"),
     //     divFilter: $("#_divFilter_service_request"),
     // });
+    // const UNIT_TYPES = {
+    //     one_time: { label: 'One Time' },
+    //     hour: { label: 'Hour', short: 'Hour' }
+    // };
 
     mThis.columns = [
         { title: "", className: "align-middle text-capitalize" },
@@ -54,7 +58,9 @@ var ServiceRequestComponent = (function () {
             className: "align-middle",
             data: (data) => {
                 const cur = data.cur_symbol ?? '$';
-                let mainPrice = data.total_price ?? data.service_price;
+                let mainPrice = data.service_price;
+                console.log(55,data.service_price);
+                
                 let displayPrice = mainPrice
                     ? Number(mainPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
                     : '—';
@@ -72,6 +78,23 @@ var ServiceRequestComponent = (function () {
                 <span class="fw-bold fs-6">${cur} ${displayPrice}</span>
                 ${extraInfo}
             `;
+            }
+        },
+       {
+            transTitle: "titles.Duration",
+            className: "align-middle",
+            data: (data) => {
+                let display = '—';
+
+                if (data.unit_type === 'hour' && data.duration_hours != null) {
+                    // Convert number to minimal decimals
+                    const hours = parseFloat(data.duration_hours);
+                    display = `${hours % 1 === 0 ? hours.toFixed(0) : hours} Hour`;
+                } else if (data.unit_type === 'one_time') {
+                    display = 'One Time';
+                }
+
+                return `<span class="text-nowrap">${display}</span>`;
             }
         },
         {

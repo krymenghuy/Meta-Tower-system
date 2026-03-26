@@ -8,7 +8,6 @@ var MaintenanceComponent = (() => {
     mThis.divFilter = mThis.self.querySelector("#_divFilter_maintenance");
     mThis.elFilter_building = mThis.self.querySelector('#_maintenance_building_id');
     mThis.elFilter_status = mThis.self.querySelector('#_maintenance_status_id');
-    mThis.elFilter_type = mThis.self.querySelector('#_maintenance_type_id');
     mThis.elSearch = mThis.self.querySelector("#_search_maintenance");
 
     mThis.cols = [
@@ -79,10 +78,10 @@ var MaintenanceComponent = (() => {
             data: (data) => {
                 const statusId = parseInt(data.status_id, 10);
                 const map = {
-                    1: { text: "Planned", cls: "badge bg-warning-subtle text-warning" },
-                    2: { text: "In Progress", cls: "badge bg-info-subtle text-info" },
-                    3: { text: "Completed", cls: "badge bg-success-subtle text-success" },
-                    4: { text: "Cancelled", cls: "badge bg-secondary-subtle text-secondary" },
+                    1: { text: "Planned", cls: "badge bg-warning-subtle text-warning border border-warning" },
+                    2: { text: "In Progress", cls: "badge bg-info-subtle text-info border border-info" },
+                    3: { text: "Completed", cls: "badge bg-success-subtle text-success border border-success" },
+                    4: { text: "Cancelled", cls: "badge bg-secondary-subtle text-secondary border border-secondary" },
                 };
                 const m = map[statusId] || null;
                 const label = m?.text || data.status_name || "—";
@@ -167,7 +166,10 @@ var MaintenanceComponent = (() => {
 
     mThis.getFilterData = () => {
         const p = {
-            search_value: mThis.elSearch.value
+            search_value: mThis.elSearch.value,
+            building_id: mThis.elFilter_building.value,
+            status_id: mThis.elFilter_status.value,
+
         };
         mThis.divFilter.querySelectorAll(".filter-field").forEach(el => {
             const f = el.dataset.field;
@@ -263,7 +265,6 @@ var MaintenanceComponent = (() => {
                     const d = res.data || {};
                     VSUtil.setComboItems(mThis.elFilter_building, d.buildings || [], "id", "building", '', "All Building", '');
                     VSUtil.setComboItems(mThis.elFilter_status, d.maintenance_statuses || [], "id", "maintenance_status", '', "All Status", '');
-                    VSUtil.setComboItems(mThis.elFilter_type, d.maintenance_types || [], "id", "maintenance_type", '', "All Type", '');
                 }
                 if (typeof onFinish === "function") onFinish();
             });
@@ -442,64 +443,6 @@ const CreateMaintenanceDialog = (() => {
                     label: '<span vslang="buttons.Submit"></span>',
                     cssClass: "btn btn-primary",
                     click: (me, btn) => {
-                        // basic front-end validation: all fields required except remarks
-                        // const buildingId = me.controls?.building_id?.value || "";
-                        // const typeUnitVal = me.controls?.type_unit?.value || "";
-                        // const spaceId = me.controls?.space_id?.value || "";
-                        // const amenityId = me.controls?.amenity_id?.value || "";
-                        // const startDate = me.controls?.start_date?.value || "";
-                        // const startTime = me.controls?.start_time?.value || "";
-                        // const endDate = me.controls?.end_date?.value || "";
-                        // const endTime = me.controls?.end_time?.value || "";
-
-                        // if (!buildingId.trim()) {
-                        //     cv_interact.error("Building is required.");
-                        //     me.controls?.building_id?.focus();
-                        //     return;
-                        // }
-
-                        // if (!typeUnitVal.trim()) {
-                        //     cv_interact.error("Type unit is required.");
-                        //     me.controls?.type_unit?.focus();
-                        //     return;
-                        // }
-
-                        // if (typeUnitVal === "space" && !spaceId.trim()) {
-                        //     cv_interact.error("Space is required.");
-                        //     me.controls?.space_id?.focus();
-                        //     return;
-                        // }
-
-                        // if (typeUnitVal === "amenity" && !amenityId.trim()) {
-                        //     cv_interact.error("Amenity is required.");
-                        //     me.controls?.amenity_id?.focus();
-                        //     return;
-                        // }
-
-                        // if (!startDate.trim()) {
-                        //     cv_interact.error("Start date is required.");
-                        //     me.controls?.start_date?.focus();
-                        //     return;
-                        // }
-
-                        // if (!startTime.trim()) {
-                        //     cv_interact.error("Start time is required.");
-                        //     me.controls?.start_time?.focus();
-                        //     return;
-                        // }
-
-                        // if (!endDate.trim()) {
-                        //     cv_interact.error("End date is required.");
-                        //     me.controls?.end_date?.focus();
-                        //     return;
-                        // }
-
-                        // if (!endTime.trim()) {
-                        //     cv_interact.error("End time is required.");
-                        //     me.controls?.end_time?.focus();
-                        //     return;
-                        // }
-
                         const op = me.getData();
                         op.id = me.dataOptions?.id;
                         if (op.type_unit === 'space') {
@@ -508,7 +451,6 @@ const CreateMaintenanceDialog = (() => {
                                 cv_interact.error("Space is required.");
                                 return;
                             }
-
                         } else if (op.type_unit === 'amenity') {
                             op.space_id = null;
 
@@ -517,23 +459,11 @@ const CreateMaintenanceDialog = (() => {
                                 return;
                             }
                         }
-
                         delete op.type_unit;
-                        // if (me.dataOptions?.space_id) {
-                        //     op.space_id = me.dataOptions.space_id;
-                        //     op.type_unit = "space";
-                        //     if (me.dataOptions.building_id) op.building_id = me.dataOptions.building_id;
-                        // }
-                        // const typeUnit = op.type_unit || me.controls?.type_unit?.value || "";
-                        // if (typeUnit === "space") op.amenity_id = null;
-                        // else if (typeUnit === "amenity") op.space_id = null;
-                        // delete op.type_unit;
                         if (op.start_date && op.start_time) op.start_date = op.start_date + " " + op.start_time;
                         if (op.end_date && op.end_time) op.end_date = op.end_date + " " + op.end_time;
                         delete op.start_time;
                         delete op.end_time;
-                        console.log(8888, op);
-
                         vsapi.call(`${main_view.base_url}/prm/maintenance/save`, op, btn, null)
                             .then(res => {
                                 if (res.status_code === 200) {
