@@ -6,7 +6,6 @@ var BillComponent = (() => {
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_bill_component");
     mThis.btnAdd = mThis.self.querySelector("#_btnBill");
-    mThis.btnDocument = mThis.self.querySelector("#_btnDocument");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_bill");
     mThis.elFilter_vendor = mThis.self.querySelector("#_bill_vendor_id");
     mThis.elFilter_status = mThis.self.querySelector("#_bill_status_id");
@@ -382,22 +381,13 @@ var BillComponent = (() => {
     mThis.prepareFormOptions = (onFinish) => {
         vsapi
             .call(
-                `${main_view.base_url}/prm/bill/form-options`,
-                null,
-                null,
-                null,
-            )
+                `${main_view.base_url}/prm/bill/form-options`,null,null,null,)
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
                 console.log("form-options data:", d); 
                 VSUtil.setComboItems(
                     mThis.elFilter_vendor,
-                    d.vendors,
-                    "id",
-                    "vendor",
-                    "",
-                    "All Vendor",
-                    "",
+                    d.vendors,"id","vendor","","All Vendor","",
                 );
                 VSUtil.setComboItems( mThis.elFilter_status, d.bill_statuses, "id", "bill_status", "", "All Statuses", "",
                 );
@@ -439,7 +429,6 @@ const BillDialog = (() => {
                                     <label style="color:#777777;padding-left:6px; display:none;">Vendor</label>
                                 </div>
                             </div>
-                            
                             <div class="col-6">
                                 <div class="material-input outlined">
                                     <input name="phone_number" class="data-input form-control" data-field="phone_number" placeholder=" "></input>
@@ -449,11 +438,9 @@ const BillDialog = (() => {
                             <div class="col-6">
                                 <div class="material-input outlined">
                                     <input name="po_number" class="data-input form-control" data-field="po_number" placeholder=" "></input>
-                                    <label style="color:#777777; padding-left:6px;">PO Number</label>
+                                    <label style="color:#777777; padding-left:6px;">PO Number <span style="color:#bbbbbb; font-size:0.8em; font-weight:400;">(Optional)</span></label>
                                 </div>
                             </div>
-                            
-                            
                             <div class="col-6">
                                 <div class=" material-input outlined">
                                     <input type="text" data-type="date" name="bill_date" required class="data-input form-control form_input" data-field="bill_date" />
@@ -472,7 +459,6 @@ const BillDialog = (() => {
                                     <label style="color:#777777; padding-left:6px;">Amount Paid</label>
                                 </div>
                             </div>
-
                             <div class="col-4">
                                 <div class="material-input outlined d-flex ">
                                     <button name ="btn_chooseFile"  class="btn btn-block" style="background-color: #e1e5f2; padding: 0.5rem 0.75rem !important;">Choose File </button>
@@ -529,8 +515,7 @@ const BillDialog = (() => {
                             },
                             processResponse: (res) => {
                                 const vendors = res?.data?.vendors || [];
-                                return (Array.isArray(vendors) ? vendors : []).map(v => ({
-                                    ...v,
+                                return (Array.isArray(vendors) ? vendors : []).map(v => ({ ...v,
                                     vendor: v.vendor || v.name || v.vendor_name || v.code || '',
                                     phone_number: v.phone_number || v.contact_phone || v.phone || '',
                                     // po_number: v.po_number || v.purchase_order_number || v.purchase_order || ''
@@ -551,18 +536,13 @@ const BillDialog = (() => {
                             applyVendorInfo(me._selectedVendorId);
                         }
                     }
-
-                    me.uploadInput = me.divModal.querySelector(
-                        'input[name="documents"]',
-                    );
-                    me.fileBase64 = null; // Store base64 data here
                     me.controls.btn_chooseFile.onclick = () => {
                         FileChooser.chooseFile(
                             {
                                 accept: ".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg",
                             },
                             (d) => {
-                                console.log("FileChooser returned:", d);
+                                // console.log("FileChooser returned:", d);
                                 me.fileData = d;
                                 me.controls.documents.value = d.fileName;
                                 me.controls.documents.classList.remove('d-none');
@@ -573,12 +553,12 @@ const BillDialog = (() => {
 
                 configSelect: [
                     
-                    {
-                        name: "bill_statuses",
-                        data: "bill_statuses",
-                        textField: "bill_status",
-                        valueField: "id",
-                    },
+                    // {
+                    //     name: "bill_statuses",
+                    //     data: "bill_statuses",
+                    //     textField: "bill_status",
+                    //     valueField: "id",
+                    // },
                 ],
 
                 prepareFormOptions: {
@@ -587,9 +567,7 @@ const BillDialog = (() => {
                     targetProp: "bill_details",
                     api: {
                         endpoint: [
-                            main_view.base_url,
-                            "/prm/bill/form-options",
-                        ].join(""),
+                            main_view.base_url, "/prm/bill/form-options",  ].join(""),
                         params: (op) => {
                             return { id: op.id };
                         },
@@ -606,18 +584,14 @@ const BillDialog = (() => {
                         me.controls.documents.value = details.file_image;
                         me.controls.documents.classList.remove('d-none');
                     }
-
                     if (details?.vendor_id) {
                         me._selectedVendorId = details.vendor_id;
                         if (me.controls.vendor_id) me.controls.vendor_id.value = details.vendor_id;
                         if (me.controls.vendor)    me.controls.vendor.value    = details.vendor_name || '';
                         if (me.controls.phone_number) me.controls.phone_number.value = details.phone_number || '';
                     }
-
-
                 },
                     
-
                 // onPrepareForm: (me, data) => {
                 //     const header = me.divModal.querySelector(".modal-header");
                 //     const btnClose = header.querySelector("button[data-bs-dismiss]");
@@ -671,11 +645,6 @@ const BillDialog = (() => {
                                 // op.vendor_id = me.dataOptions.vendorid;
                                 op.vendor_id = me._selectedVendorId;
                             }
-                            // console.log("fileData object:", op);
-
-                            // if (me.fileData && me.fileData.base64){
-                            //     op.photo = me.fileData.base64;
-                            // }
 
                             if (me.fileData) {
                                 op.photo = me.fileData.base64 
@@ -688,7 +657,7 @@ const BillDialog = (() => {
                                     || me.fileData.fileType
                                     || me.fileData.extension
                                     || null;    
-                                console.log("photo being sent:", op.photo ? op.photo.substring(0, 50) : "NULL");
+                                // console.log("photo being sent:", op.photo ? op.photo.substring(0, 50) : "NULL");
                             }
                             vsapi
                                 .call([ main_view.base_url, "/prm/bill/save",].join(""), op, btn, null)
