@@ -276,6 +276,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('bill')->group
     Route::post('/update-status', [BillController::class, 'updateBillStatus']);
     Route::post('/view-attachment', [BillController::class, 'viewBillAttachment']);
 
+
 });
 
 
