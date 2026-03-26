@@ -10,9 +10,6 @@
            <div class="col-12 col-md-6 col-lg-2">
                <select id="_maintenance_status_id" class="data-input filter-field form-control" data-field="status_id"></select>
            </div>
-           <div class="col-12 col-md-6 col-lg-2">
-               <select id="_maintenance_type_id" class="data-input filter-field form-control" data-field="maintenance_type_id"></select>
-           </div>
            <div class="col-12 col-md-3 col-lg-auto ms-auto text-md-end">
                <button type="button" class="btnAddNewPrm d-flex align-items-center justify-content-center gap-2 w-100 w-md-auto text-nowrap px-3 py-2" id="_btn_maintenance" style="min-width: 11rem;">
                    <i class="fa-solid fa-wrench"></i>
