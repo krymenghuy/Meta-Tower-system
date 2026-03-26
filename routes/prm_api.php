@@ -25,7 +25,6 @@ use App\Http\Controllers\Prm\AmenityController;
 use App\Http\Controllers\Prm\ItemController;
 use App\Http\Controllers\Prm\MaintenanceController;
 use App\Http\Controllers\Prm\BillController;
-use App\Http\Controllers\Prm\BillDocumentController;
 
 
 use App\Http\Controllers\tenant\AccountStaffController;
