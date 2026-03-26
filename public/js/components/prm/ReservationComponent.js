@@ -78,7 +78,7 @@ var ReservationComponent = (() => {
             data: (data, index, tr) => {
                 return `
                     <div class="text-primary-custom" style="width:150px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.description ?? "N/A"}</span>
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.description ?? "__"}</span>
                     </div>
                 `;
             },

@@ -25,17 +25,17 @@ class Bill
     public static function getBillImageUrl($filename, $ss)
     {
         if (!$filename) return null;
-        return asset("storage/{$ss->subs_id}/bills/{$filename}");
+        return XPublicStorage::getUrl(['subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 'images') . $filename;
     }
 
     public function saveBill($arr = [], $id = null, $ss = null)
     {
         $id = $id ?? $this->id; 
         $ss = $ss ?? $this->userInfo;
-
+        $branch_id = $ss->branch_id;
         $v_rule = [
             'bill_number'  => '0|string|max=50',
-            'po_number'    => '0|number|exists=purchase_orders.id',
+            'po_number'    => '0|number',
             'vendor_id'    => '1|number|exists=vendors.id',
             'bill_date'    => '1|date',
             'file_image'   => '0|string|0-255',
@@ -44,21 +44,12 @@ class Bill
             'paid_amount'  => '1|number|min=0',
             'remark'       => '0|string|0-255',
             'photo'        => '0|string',
-            'ext'          => '0|string',   // FIX: uncomment this line
+            'ext'          => '0|string',
         ];
 
         $remark_char      = ['@', '.', '-', '_'];
         $bill_number_char = ['@', '.', '-', '_'];
-
-        $res = DBX::validateObject(
-            $arr, $v_rule, 1,
-            [
-                'photo'       => GeneralSettings::$image_chars,
-                'remark'      => $remark_char,
-                'bill_number' => $bill_number_char
-            ],
-            $ss->lang, 0, null
-        );
+        $res = DBX::validateObject($arr, $v_rule, 1,['photo' => GeneralSettings::$image_chars,'remark' => $remark_char,'bill_number' => $bill_number_char ],$ss->lang, 0, null);
 
         if ($res->error) return DV::error($res->error);
 
@@ -98,7 +89,6 @@ class Bill
                 return DV::error('Create failed: This bill number already exists');
         }
 
-        // Generate bill number before insert
         if (!$id && empty($inputs['bill_number'])) {
             $branch_id = $ss->branch_id ?? null;
             $inputs['bill_number'] = self::createBillNumber($branch_id);
@@ -113,24 +103,14 @@ class Bill
         // Handle photo upload
         if ($photo && $ext) {
 
-            // FIX: use $id to correctly detect modify vs create
-            if ($id > 0) {
-                $old_file = DB::table('bills')->where('id', $id)->value('file_image');
-                if ($old_file) {
-                    XPublicStorage::delete([
-                        'branch_id' => null,
-                        'subs_id'   => $ss->subs_id,
-                        'dir'       => self::$img_dir
-                    ], 'images', $old_file);
-                }
+            $old_file = DB::table('bills')->where('id', $id)->value('file_image');
+            if ($old_file) {
+                XPublicStorage::delete([
+                    'branch_id' => null,
+                    'subs_id'   => $ss->subs_id,
+                    'dir'       => self::$img_dir
+                ], 'images', $old_file);
             }
-
-            // $category = 'image';
-            // if (in_array($ext, self::$allowed_image_extensions)) {
-            //     $category = 'image';
-            // } elseif (in_array($ext, self::$allowed_doc_extensions)) {
-            //     $category = 'document';
-            // }
 
             $photo = preg_replace('#^data:.*;base64,#', '', $photo);
 
@@ -138,7 +118,7 @@ class Bill
                 ['subs_id' => $ss->subs_id, 'dir' => self::$img_dir],
                 $ext,
                 $photo,
-                // $category
+                'image'   
             );
 
             if ($file_res->status === 'Error') {
@@ -148,9 +128,7 @@ class Bill
             \Log::info('Bill file saved: ' . ($file_res->file_name ?? 'NULL'));
 
             if (!empty($file_res->file_name)) {
-                DB::table('bills')
-                    ->where('id', $id)
-                    ->update(['file_image' => $file_res->file_name]);
+                DB::table('bills')->where('id', $id)->update(['file_image' => $file_res->file_name]);
 
                 $inputs['file_image'] = $file_res->file_name;
             }
@@ -188,10 +166,9 @@ class Bill
 
         return $billNumber;
     }
-
     public function getListBill($arr = [], $ss = null)
     {
-        $d            = (object) $arr;
+        $d  = (object) $arr;
         $search_value = $d->search_value ?? null;
         $vendor_id    = $d->vendor_id    ?? null;
         $po_number    = $d->po_number?? null;
@@ -199,28 +176,28 @@ class Bill
         $current_page = $d->current_page ?? 1;
         $per_page     = $d->per_page     ?? 10;
 
-        if (!is_numeric($current_page) || !is_numeric($per_page)) return null;
+        if(!is_numeric($current_page)){ $current_page = 1; }
 
-        $skip_rows     = ($current_page - 1) * $per_page;
-        $str_search    = '1=1';
+        $skip_rows = ($current_page - 1) * $per_page;
+        $str_search = '1=1';
         $str_moreWhere = '2=2';
 
         if ($search_value) {
             $skip_rows    = 0;
             $search_value = escape_like_str($search_value);
-            $str_search   = "(v.name LIKE '%{$search_value}%' OR b.bill_number LIKE '%{$search_value}%')";
+            $str_search   = "(v.name LIKE '%" . $search_value ."%' OR b.bill_number LIKE '%" . $search_value ."%')";
         }
 
         if ($vendor_id) {
-            $str_moreWhere .= ' AND b.vendor_id = ' . intval($vendor_id);
+            $str_moreWhere .= ' AND b.vendor_id = ' . $vendor_id;
         }
 
         if ($po_number) {
-            $str_moreWhere .= ' AND b.po_number = ' . intval($po_number);
+            $str_moreWhere .= ' AND b.po_number = ' . $po_number;
         }
 
         if ($status_id) {
-            $str_moreWhere .= ' AND b.status_id = ' . intval($status_id);
+            $str_moreWhere .= ' AND b.status_id = ' . $status_id;
         }
 
         $query = DB::table('bills as b')
@@ -229,24 +206,16 @@ class Bill
             ->leftJoin('bill_statuses as s', 's.id', 'b.status_id')
             ->whereRaw($str_search)
             ->whereRaw($str_moreWhere)
-            ->selectRaw("
-                b.id, b.bill_number, b.po_number, b.vendor_id,
-                v.name as vendor_name, v.phone_number, b.bill_date,
-                b.total_amount, b.balance, b.paid_amount,
-                b.status_id, s.name as status,
-                b.file_image, b.update_user, b.remark, b.updated_at
-            ")
+            ->selectRaw("b.id, b.bill_number, b.po_number, b.vendor_id,v.name as vendor_name, v.phone_number, b.bill_date,
+                b.total_amount, b.balance, b.paid_amount,b.status_id, s.name as status,b.file_image, b.update_user, b.remark, b.updated_at")
             ->orderBy('b.id', 'desc');
-
         $count = (clone $query)->count('b.id');
         $rows  = $query->skip($skip_rows)->take($per_page)->get();
-
-        foreach ($rows as &$row) {
+        foreach ($rows as $row) {
             $processed = setOfficialDates($row, ['updated_at', 'bill_date'], [], []);
             if ($processed) $row = $processed;
 
-            // $row->file_image_url = $row->file_image ? asset("storage/{$ss->subs_id}/bills/{$row->file_image}") : null;
-            $row->file_image_url = self::getBillImageUrl($row->file_image, $ss);
+            $row->image_url = self::getBillImageUrl($row->file_image, $ss);
         }
         unset($row);
 
@@ -261,12 +230,9 @@ class Bill
             ->where('b.id', $id)
             ->selectRaw('b.id, b.bill_number, b.po_number, po.vendor_id, v.name as vendor_name, v.phone_number, b.bill_date, b.file_image, b.total_amount, b.balance, b.paid_amount, b.status_id, b.remark')
             ->first();
-
         if ($row) {
-            // Use the new helper
             $row->file_image_url = self::getBillImageUrl($row->file_image, $ss);
         }
-
         return $row;
     }
 
@@ -326,6 +292,9 @@ class Bill
         return DV::depends($x, ['Bill status', 'updated']);
     }
 
+
+
+
     public function viewBillAttachment($id = null, $ss = null)
     {
         $id = $id ?? $this->id;
@@ -336,40 +305,31 @@ class Bill
             ->select('id', 'file_image')
             ->first();
 
-        if (!$bill) {
-            return DV::error('Bill not found.');
-        }
+        if (!$bill) return DV::error('Bill not found.');
+        if (!$bill->file_image) return DV::error('No attachment found for this bill.');
 
-        if (!$bill->file_image) {
-            return DV::error('No attachment found for this bill.');
-        }
+        // Build full URL using same pattern as TenantDocument
+        $fileUrl = XPublicStorage::getUrl(
+            ['subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 
+            'images'
+        ) . $bill->file_image;
 
-        $fileUrl = self::getBillImageUrl($bill->file_image, $ss);
-
-        if (!$fileUrl) {
-            Log::warning("Bill file missing in storage: {$bill->file_image}");
-            return DV::error('File not found in storage.');
-        }
-
+        $ext      = strtolower(pathinfo($bill->file_image, PATHINFO_EXTENSION));
         $mimeTypes = [
             'gif'  => 'image/gif',
             'png'  => 'image/png',
             'jpg'  => 'image/jpeg',
             'jpeg' => 'image/jpeg',
+            'pdf'  => 'application/pdf',
         ];
-
-        $ext      = strtolower(pathinfo($bill->file_image, PATHINFO_EXTENSION));
         $mimeType = $mimeTypes[$ext] ?? 'application/octet-stream';
 
-        Log::info('Bill attachment URL: ' . $fileUrl);
-
         return DV::depends(1, [
-            'data_url'   => $fileUrl,
-            'file_name'  => $bill->file_image,
-            'ext'        => $ext,
-            'mime_type'  => $mimeType,
+            'data_url'  => $fileUrl,
+            'file_name' => $bill->file_image,
+            'ext'       => $ext,
+            'mime_type' => $mimeType,
         ]);
     }
-
 
 }
