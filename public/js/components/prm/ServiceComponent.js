@@ -373,7 +373,7 @@ const CreateServiceDialog = (() => {
                                         <option value="month">Price Per Month</option>
                                         <option value="one_time">One Time Charge</option>
                                         <option value="kwh">Price Per Kwh</option>
-                                        <option value="m3">Price Per M3</option>
+                                        <option value="m3">Price Per m³</option>
                                         <option value="sqm">Price Per Sqm</option>
                                     </select>
                                 </div>
