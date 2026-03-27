@@ -25,7 +25,7 @@ class BillController extends Controller
         $res = $bill->saveBill($req->all());
         return JDV::raw($res);
     }
-     public function getListBill(Request $req){
+    public function getListBill(Request $req){
         $ss = XAuthService::verifyAuth($req, -1);
         if($ss->status_code !==200){
             return JDV::raw($ss);
@@ -42,7 +42,7 @@ class BillController extends Controller
         if(!isset($req->id) || !is_numeric($req->id)){
             return JDV::error('Invalid ID');
         }
-        return JDV::result($this->bills->billDetails($req->id));
+        return JDV::result($this->bills->billDetails($req->id, $ss));
 
     }
     public function getFormOptions(Request $req){
@@ -79,6 +79,21 @@ class BillController extends Controller
         $id = $req->id ?? null;
         return JDV::raw($this->bills->updateBillStatus($req->status_id,$id,$ss));
 
+    }
+
+    public function viewBillAttachment(Request $req)
+    {
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+
+        if (!isset($req->id) || !is_numeric($req->id)) {
+            return JDV::error('Invalid ID');
+        }
+
+        $bill = new Bill($req->id, $ss);
+        return JDV::raw($bill->viewBillAttachment($req->id, $ss));
     }
 
 

@@ -6,7 +6,6 @@ var BillComponent = (() => {
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_bill_component");
     mThis.btnAdd = mThis.self.querySelector("#_btnBill");
-    mThis.btnDocument = mThis.self.querySelector("#_btnDocument");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_bill");
     mThis.elFilter_vendor = mThis.self.querySelector("#_bill_vendor_id");
     mThis.elFilter_status = mThis.self.querySelector("#_bill_status_id");
@@ -44,6 +43,13 @@ var BillComponent = (() => {
             },
         },
         {
+            transTitle: "titles.Reference No",
+            className: "align-middle",
+            data: (data) => {
+                return `<span class="d-block text-prm-custom">${data.ref_no ?? "_"}</span>`;
+            },
+        },
+        {
             title: "Bill Date",
             className: "align-middle",
             data: (data) =>
@@ -63,6 +69,14 @@ var BillComponent = (() => {
             data: (data) => {
                 return `<span class="d-block text-prm-custom fw-semibold" style="color:#15803d;">${formatCurrency(data.paid_amount)}</span>`;
             },
+        },
+        {
+            title: "Description  ",
+            className: "align-middle",
+            data: (data) => {
+                return `<span class="d-block text-prm-custom">${data.remark ?? "__"}</span>`;
+            }
+
         },
         // {
         //     title: "Balance",
@@ -125,7 +139,7 @@ var BillComponent = (() => {
             className: "col_action align-middle",
             data: (data) => `
                 <div class="d-flex justify-content-center align-items-end">
-                    <a href="javascript:void(0)" class="btn--Options btn_dropdown_vendor_action" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
+                    <a href="javascript:void(0)" class="btn--Options btn_dropdown_vendor_action" data-id="${data.id}" data-vendorId="${data.vendor_id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
                         <i class="fa-solid fa-ellipsis-vertical text-black fs-5"></i>
                     </a>
                 </div>`,
@@ -145,6 +159,8 @@ var BillComponent = (() => {
             rowCreated: (data, index, tr) => {
                 tr.dataset.id = data.id;
                 tr.dataset.statusid = data.status_id;
+                tr.dataset.vendorid = data.vendor_id;
+                tr.dataset.fileurl = data.file_image_url ?? "";
                 tr.classList.add("bill");
                 tr.setAttribute("id", `bill_id${data.id}`);
             },
@@ -228,9 +244,15 @@ var BillComponent = (() => {
                 },
                 {
                     html: '<span class="ps-2">View Attachment</span>',
-                    icon: `<i class="fa-regular fa-eye"></i>`,
+                    icon: `<i class="fa-regular fa-eye fa-lg" style="color: rgb(56, 49, 111);"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "view_attachment",
+                },
+                {
+                    html: '<span class="ps-2">Bill Payment</span>',
+                    icon: `<i class="fa-solid fa-sack-dollar" style="color: rgb(22, 80, 137);"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "bill_payment",
                 },
             ],
 
@@ -244,17 +266,16 @@ var BillComponent = (() => {
                         mThis.deleteBill(id, menuLink);
                         break;
                     }
-                    case "modify_vendor": {
-                        mThis.editVendor(id, menuLink);
-                        break;
+                    case "view_attachment": {
+                        mThis.viewAttachment(id);
                     }
-                    case "delete_vendor": {
-                        mThis.deleteVendor(id, menuLink);
-                        break;
+                    case "bill_payment": {
+                        mThis.billPayment(id);
                     }
                     default: {
                         break;
                     }
+
                 }
             },
         };
@@ -262,30 +283,22 @@ var BillComponent = (() => {
     };
 
     mThis.editBill = (id, menuLink) => {
+        const tr = menuLink.closest("tr");
+
+        let vendor_id = tr?.dataset.vendorid || null;
+        console.log(33333, vendor_id);
+
         const op = {
             id: parseInt(id, 10),
+            vendorid: vendor_id,
             btn: menuLink,
             onClose: () => {
                 mThis.BillListView.showPage(mThis.getFilterData());
             },
         };
-
-        console.log(33333, op);
-
         BillDialog.show(op);
     };
 
-    mThis.editVendor = (id, menuLink) => {
-        let op = {
-            id: id,
-            btn: menuLink,
-            onClose: () => {
-                mThis.BillListView.showPage(mThis.getFilterData());
-            },
-        };
-
-        showBillDialog(op);
-    };
     mThis.deleteBill = (id, menuLink) => {
         cv_interact.confirm(
             "Delete this Bill Record?",
@@ -325,58 +338,77 @@ var BillComponent = (() => {
         );
     };
 
-    mThis.deleteVendor = (id, menuLink) => {
+    mThis.viewAttachment = (id) => {
+        vsapi.call(`${main_view.base_url}/prm/bill/view-attachment`, { id: id }, false, false, false)
+            .then((res) => {
+                if (res.status_code !== 200) {
+                    cv_interact.error(res.error_message || 'No attachment found.');
+                    return;
+                }
+
+                const { data_url, ext, mime_type } = res.data;
+
+                const overlay = document.createElement('div');
+                overlay.style.cssText = `position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:9999; display:flex; justify-content:center; align-items:center; cursor:pointer;`;
+
+                const wrapper = document.createElement('div');
+                wrapper.style.cssText = `position:relative; max-width:90vw; max-height:90vh;`;
+
+                // Show image or iframe depending on file type
+                const isImage = ['png', 'jpg', 'jpeg'].includes(ext);
+                const isPdf   = ext === 'pdf';
+
+                if (isImage) {
+                    const img = document.createElement('img');
+                    img.src = data_url;
+                    img.style.cssText = `max-width:100%; max-height:90vh; border-radius:8px; box-shadow:0 4px 32px #000;`;
+                    wrapper.appendChild(img);
+                } else if (isPdf) {
+                    const iframe = document.createElement('iframe');
+                    iframe.src = data_url;
+                    iframe.style.cssText = `width:80vw; height:85vh; border:none; border-radius:8px;`;
+                    wrapper.appendChild(iframe);
+                } else {
+                    // For doc/xls etc — just open in new tab
+                    overlay.onclick = null;
+                    document.body.removeChild(overlay);
+                    window.open(data_url, '_blank');
+                    return;
+                }
+
+                const btnClose = document.createElement('button');
+                btnClose.style.cssText = `position:absolute; top:-16px; right:-16px; border:none; background:#fff; border-radius:50%; width:32px; height:32px; font-size:18px; cursor:pointer; line-height:1;`;
+                btnClose.innerHTML = '&times;';
+                btnClose.onclick = (e) => { e.stopPropagation(); document.body.removeChild(overlay); };
+
+                wrapper.appendChild(btnClose);
+                overlay.appendChild(wrapper);
+                overlay.onclick = () => document.body.removeChild(overlay);
+                document.body.appendChild(overlay);
+            });
+    };
+
+    mThis.billPayment = (id, menuLink) => {
         let op = {
-            id: id,
+            id: null,
             btn: menuLink,
             onClose: () => {
-                mThis.BillListView.showPage(mThis.getFilterData());
+                mThis.BillListView.showPage();
             },
         };
-        if (!AuthManager.allowed(242)) return;
-        cv_interact.confirm(
-            "Delete this Vendor?",
-            {
-                transTitle: "Delete Vendor",
-                context: "delete",
-                confirmButtonText: "Delete",
-            },
-            function (e) {
-                if (e) {
-                    vsapi
-                        .call(
-                            `${main_view.base_url}/prm/vendor/delete`,op,false,false,false,
-                        )
-                        .then((res) => {
-                            if (res.status_code == 200) {
-                                mThis.BillListView.showPage();
-                            } else {
-                                cv_interact.error(res.error_message);
-                            }
-                        });
-                }
-            },
-        );
+        // renewDialog.show(op);
+        alert("coming soon!");
     };
     mThis.prepareFormOptions = (onFinish) => {
         vsapi
             .call(
-                `${main_view.base_url}/prm/bill/form-options`,
-                null,
-                null,
-                null,
-            )
+                `${main_view.base_url}/prm/bill/form-options`,null,null,null,)
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
                 console.log("form-options data:", d); 
                 VSUtil.setComboItems(
                     mThis.elFilter_vendor,
-                    d.vendors,
-                    "id",
-                    "vendor",
-                    "",
-                    "All Vendor",
-                    "",
+                    d.vendors,"id","vendor","","All Vendor","",
                 );
                 VSUtil.setComboItems( mThis.elFilter_status, d.bill_statuses, "id", "bill_status", "", "All Statuses", "",
                 );
@@ -410,8 +442,8 @@ const BillDialog = (() => {
                 keyboard: true,
                 createContent: () => {
                     return [
-                        `<div class="row justify-content-center">
-                                <input name="vendor_id" class="d-none data-input form-control" data-field="vendor_id">
+                        `<div class="row ">
+                                <input name="vendorid" class="d-none data-input form-control" data-field="vendor_id">
                             <div class="col-6">
                                 <div class="material-input outlined">
                                     <input  name="vendor" class="data-input form-control" data-field="vendor_name" placeholder="Vendor Name "></input>
@@ -426,37 +458,30 @@ const BillDialog = (() => {
                             </div>
                             <div class="col-6">
                                 <div class="material-input outlined">
-                                    <input name="bill_number" class="data-input form-control" data-field="bill_number" placeholder=" "></input>
-                                    <label style="color:#777777; padding-left:6px;">Bill Number</label>
+                                    <input name="ref_no" class="data-input form-control" data-field="ref_no" placeholder=" "></input>
+                                    <label style="color:#777777; padding-left:6px;">Reference No.</label>
                                 </div>
                             </div>
-                            
-                            <div class="col-6">
+                            <div class="col-6 col-md-6">
                                 <div class=" material-input outlined">
                                     <input type="text" data-type="date" name="bill_date" required class="data-input form-control form_input" data-field="bill_date" />
                                     <label style="color:#777777;padding-left:6px;">Bill Date</label>
                                 </div>
                             </div>
+
                             <div class="col-6">
                                 <div class="material-input outlined">
                                     <input name="total_amount" class="data-input form-control" data-field="total_amount" placeholder=" "></input>
                                     <label style="color:#777777; padding-left:6px;">Total Amount</label>
                                 </div>
                             </div>
-                            <div class="col-6">
-                                <div class="material-input outlined">
-                                    <input name="paid_amount" class="data-input form-control" data-field="paid_amount" placeholder=" "></input>
-                                    <label style="color:#777777; padding-left:6px;">Amount Paid</label>
-                                </div>
-                            </div>
-
                             <div class="col-4">
                                 <div class="material-input outlined d-flex ">
                                     <button name ="btn_chooseFile"  class="btn btn-block" style="background-color: #e1e5f2; padding: 0.5rem 0.75rem !important;">Choose File </button>
                                     <label style="display:none;color:#777777;padding-left:6px;">File</label>
                                 </div>
                             </div>
-                            <div class="col-8">
+                            <div class="col-12">
                                 <div class="material-input outlined d-flex ">
                                     <input type="text" name="documents" class="d-none form-control " accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg" />
                                     <label style="display:none;color:#777777;padding-left:6px;">File</label>
@@ -466,6 +491,18 @@ const BillDialog = (() => {
                                 <div class="material-input outlined">
                                     <textarea class="data-input form-control" data-field="remark" placeholder=" "></textarea>
                                     <label style="color:#777777;padding-left:6px;">Description</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="material-input outlined d-none">
+                                    <input name="bill_number" class="data-input form-control" data-field="bill_number" placeholder=" "></input>
+                                    <label style="color:#777777; padding-left:6px;">Bill Number</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="material-input outlined d-none">
+                                    <input name="paid_amount" class="data-input form-control" data-field="paid_amount" placeholder=" "></input>
+                                    <label style="color:#777777; padding-left:6px;">Amount Paid</label>
                                 </div>
                             </div>
                         </div>`,
@@ -478,7 +515,7 @@ const BillDialog = (() => {
                         if (me.controls.vendor_id) me.controls.vendor_id.value = vendorId || '';
                         if (!vendorId) {
                             if (me.controls.phone_number) me.controls.phone_number.value = '';
-                            if (me.controls.address) me.controls.address.value = '';
+                            // if (me.controls.po_number) me.controls.po_number.value = '';
                             return;
                         }
                         vsapi.post(`${main_view.base_url}/prm/vendor/options-vendor-info`, { vendor_id: vendorId }, {})
@@ -486,7 +523,7 @@ const BillDialog = (() => {
                                 const d = res.data || {};
                                 const v = d.vendor || {};
                                 if (me.controls.phone_number) me.controls.phone_number.value = v.phone_number || '';
-                                if (me.controls.address) me.controls.address.value = v.address || '';
+                                // if (me.controls.po_number) me.controls.po_number.value = v.po_number     || '';
                             })
                             .catch(() => {});
                     };
@@ -500,10 +537,10 @@ const BillDialog = (() => {
                             },
                             processResponse: (res) => {
                                 const vendors = res?.data?.vendors || [];
-                                return (Array.isArray(vendors) ? vendors : []).map(v => ({
-                                    ...v,
+                                return (Array.isArray(vendors) ? vendors : []).map(v => ({ ...v,
                                     vendor: v.vendor || v.name || v.vendor_name || v.code || '',
-                                    phone_number: v.phone_number || v.contact_phone || v.phone || ''
+                                    phone_number: v.phone_number || v.contact_phone || v.phone || '',
+                                    // po_number: v.po_number || v.purchase_order_number || v.purchase_order || ''
                                 }));
                             },
                             columns: { vendor: 'VENDOR', phone_number: 'PHONE' },
@@ -521,17 +558,13 @@ const BillDialog = (() => {
                             applyVendorInfo(me._selectedVendorId);
                         }
                     }
-
-                    me.uploadInput = me.divModal.querySelector(
-                        'input[name="documents"]',
-                    );
-                    me.fileBase64 = null; // Store base64 data here
                     me.controls.btn_chooseFile.onclick = () => {
                         FileChooser.chooseFile(
                             {
                                 accept: ".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg",
                             },
                             (d) => {
+                                // console.log("FileChooser returned:", d);
                                 me.fileData = d;
                                 me.controls.documents.value = d.fileName;
                                 me.controls.documents.classList.remove('d-none');
@@ -542,12 +575,12 @@ const BillDialog = (() => {
 
                 configSelect: [
                     
-                    {
-                        name: "bill_statuses",
-                        data: "bill_statuses",
-                        textField: "bill_status",
-                        valueField: "id",
-                    },
+                    // {
+                    //     name: "bill_statuses",
+                    //     data: "bill_statuses",
+                    //     textField: "bill_status",
+                    //     valueField: "id",
+                    // },
                 ],
 
                 prepareFormOptions: {
@@ -556,25 +589,64 @@ const BillDialog = (() => {
                     targetProp: "bill_details",
                     api: {
                         endpoint: [
-                            main_view.base_url,
-                            "/prm/bill/form-options",
-                        ].join(""),
+                            main_view.base_url, "/prm/bill/form-options",  ].join(""),
                         params: (op) => {
                             return { id: op.id };
                         },
                     },
                 },
-
-                
-
+               
                 onPrepareForm: (me, data) => {
                     const header = me.divModal.querySelector(".modal-header");
-                    const btnClose = header.querySelector(
-                        "button[data-bs-dismiss]",
-                    );
+                    const btnClose = header.querySelector("button[data-bs-dismiss]",);
                     if (btnClose) btnClose.classList.add("d-none");
+
+                    const details = data?.bill_details;
+                    if (details?.file_image) {
+                        me.controls.documents.value = details.file_image;
+                        me.controls.documents.classList.remove('d-none');
+                    }
+                    if (details?.vendor_id) {
+                        me._selectedVendorId = details.vendor_id;
+                        if (me.controls.vendor_id) me.controls.vendor_id.value = details.vendor_id;
+                        if (me.controls.vendor)    me.controls.vendor.value    = details.vendor_name || '';
+                        if (me.controls.phone_number) me.controls.phone_number.value = details.phone_number || '';
+                    }
                 },
                     
+                // onPrepareForm: (me, data) => {
+                //     const header = me.divModal.querySelector(".modal-header");
+                //     const btnClose = header.querySelector("button[data-bs-dismiss]");
+                //     if (btnClose) btnClose.classList.add("d-none");
+
+                //     // Always reset first — prevents leftover vendor from previous session
+                //     me._selectedVendorId = null;
+                //     if (me.controls.vendor)       me.controls.vendor.value       = '';
+                //     if (me.controls.vendor_id)    me.controls.vendor_id.value    = '';
+                //     if (me.controls.phone_number) me.controls.phone_number.value = '';   
+                //     me.fileData = null;
+                //     if (me.controls.documents) {
+                //         me.controls.documents.value = '';
+                //         me.controls.documents.classList.add('d-none');
+                //     }
+
+                //     const details = data?.bill_details;
+
+                //     if (details?.vendor_id) {
+                //         me._selectedVendorId = details.vendor_id;
+                //         if (me.controls.vendor_id)    me.controls.vendor_id.value    = details.vendor_id;
+                //         if (me.controls.phone_number) me.controls.phone_number.value = details.phone_number || '';
+
+                //         setTimeout(() => {
+                //             if (me.controls.vendor) me.controls.vendor.value = details.vendor_name || '';
+                //         }, 100);
+                //     }
+
+                //     if (details?.file_image) {
+                //         me.controls.documents.value = details.file_image;
+                //         me.controls.documents.classList.remove('d-none');
+                //     }
+                // },
                 buttons: [
                     {
                         label: '<span vslang="buttons.Cancel"></span>',
@@ -589,16 +661,28 @@ const BillDialog = (() => {
                         click: (me, btn) => {
                             const op = me.getData();
                             op.id = me.dataOptions.id;
-                            if (
-                                me._selectedVendorId != null &&
-                                me._selectedVendorId !== undefined
-                            ) {
+                            console.log(444,me.dataOptions);
+                            
+                            if (me._selectedVendorId != null && me._selectedVendorId !== undefined) {
+                                // op.vendor_id = me.dataOptions.vendorid;
                                 op.vendor_id = me._selectedVendorId;
                             }
-                            op.date = op.start_date || op.date;
+
+                            if (me.fileData) {
+                                op.photo = me.fileData.base64 
+                                    || me.fileData.data 
+                                    || me.fileData.fileData 
+                                    || me.fileData.content 
+                                    || null;
+
+                                op.ext = me.fileData.ext
+                                    || me.fileData.fileType
+                                    || me.fileData.extension
+                                    || null;    
+                                // console.log("photo being sent:", op.photo ? op.photo.substring(0, 50) : "NULL");
+                            }
                             vsapi
-                                .call([ main_view.base_url, "/prm/bill/save",].join(""), op, btn, null,
-                                )
+                                .call([ main_view.base_url, "/prm/bill/save",].join(""), op, btn, null)
                                 .then((res) => {
                                     if (res.status_code === 200) {
                                         me.hide(true, op);

@@ -14,17 +14,21 @@ var PurchaseOrdersComponent = (() => {
     let ReceivePurchaseOrderDialog = null;
     let _currentEditPoId = null;
 
-    const formatCurrency = (amount) => `$ ${(Number(+amount || 0)).toFixed(2)}`;
+    const formatCurrency = (amount) => {
+        const value = Number(amount || 0);
+        return `$ ${value.toFixed(2)}`;
+    };
     const formatQty = (qty) => {
-        const n = Number(+qty || 0);
+        const n = Number(qty || 0);
         if (Number.isInteger(n)) return String(n);
+        // Show up to 2 decimals, trim trailing zeros.
         return n.toFixed(2).replace(/\.?0+$/, '');
     };
-    /** Fallback when API omits discount_formatted. */
     const formatDiscount = (data) => {
         const discountType = (data?.discount_type || 'percent') === 'amount' ? 'amount' : 'percent';
-        const discountValue = Number(+data?.discount_value || 0);
+        const discountValue = Number(data?.discount_value || 0);
         if (discountType === 'percent') {
+            // Show `12 %` instead of `12.00 %` when value is integer.
             const isInt = Number.isInteger(discountValue);
             const v = isInt ? String(discountValue) : discountValue.toFixed(2).replace(/\.?0+$/, '');
             return `${v} %`;
@@ -36,233 +40,6 @@ var PurchaseOrdersComponent = (() => {
         checkboxEl.style.transform = 'scale(1.35)';
         checkboxEl.style.transformOrigin = 'center';
         checkboxEl.style.cursor = checkboxEl.disabled ? 'not-allowed' : 'pointer';
-        checkboxEl.style.border = '1.5px solid #5b63e6';
-        checkboxEl.style.borderRadius = '3px';
-        checkboxEl.style.accentColor = '#5b63e6';
-    };
-    const normalizeItems = (raw) => {
-        if (Array.isArray(raw)) return raw;
-        if (Array.isArray(raw?.items)) return raw.items;
-        if (Array.isArray(raw?.data)) return raw.data;
-        return [];
-    };
-    const setDialogDataExcluding = (dlg, data, excludeSelector) => {
-        data = data || {};
-        const rootEl = dlg?.divModal;
-        if (!rootEl || !rootEl.querySelectorAll) return;
-
-        rootEl.querySelectorAll('.data-input').forEach((el) => {
-            if (excludeSelector && el.closest && el.closest(excludeSelector)) return;
-            const field = el.dataset?.field || el.getAttribute('name');
-            if (!field) return;
-            const val = data[field] ?? '';
-            if (el.tagName === 'SELECT') {
-                el.value = val;
-                el.dispatchEvent(new Event('change'));
-            } else if (el.tagName === 'IMG') {
-                el.setAttribute('src', val);
-            } else {
-                el.value = val;
-            }
-        });
-    };
-    const getEditPoId = (me) => (
-        _currentEditPoId ??
-        me?._editPoId ??
-        (PurchaseOrderDialog && PurchaseOrderDialog._editPoId) ??
-        (me?.dataOptions && me.dataOptions.id)
-    );
-    const getReceiveRoot = (me) => me.divModal && me.divModal.querySelector('#receive_purchase_item_list');
-    const getReceiveItems = (me) => (
-        me.receiveItemsView && typeof me.receiveItemsView.getItems === 'function'
-            ? (me.receiveItemsView.getItems() || [])
-            : []
-    );
-    const getReceiveQtyRaw = (rowOrItem) => {
-        if (!rowOrItem) return undefined;
-        return rowOrItem.receive_qty != null ? rowOrItem.receive_qty : rowOrItem.recieve_amount;
-    };
-    const normalizeUnit = (unit) => {
-        const unitByName = { pcs: 1, kg: 2, box: 3, meter: 4 };
-        const unitNum = Number(unit);
-        if (unitNum >= 1 && unitNum <= 4) return unitNum;
-        return unitByName[String(unit).toLowerCase()] ?? unit;
-    };
-    const mapItemSelectOptions = (arr) => (arr || []).map((o) => {
-        const iv = o?.id ?? o?.value ?? o?.item_id;
-        const lb = o?.name ?? o?.label ?? o?.item_name;
-        return { id: iv, value: iv, name: lb, label: lb };
-    });
-    const mapEditRows = (items) => (items ?? []).map((it) => ({
-        trx_id: it.id,
-        item_id: it.item_id,
-        qty: it.qty != null ? Number(it.qty) : 0,
-        unit: normalizeUnit(it.unit_id ?? it.unit),
-        unit_price: it.unit_price || 0,
-        total_price: it.total_price || (Number(it.qty) * Number(it.unit_price || 0)),
-        code: it.code || ''
-    }));
-    const mapReceiveRows = (items) => (items || []).map((it) => {
-        const receiveRaw = getReceiveQtyRaw(it);
-        return {
-            id: it.id,
-            status_id: it.status_id,
-            item_id: it.item_id,
-            qty: it.qty != null ? Number(it.qty) : 0,
-            unit: normalizeUnit(it.unit_id ?? it.unit),
-            unit_price: it.unit_price || 0,
-            total_price: it.total_price || (Number(it.qty) * Number(it.unit_price || 0)),
-            receive_qty: receiveRaw != null ? Number(receiveRaw) : 0,
-            break_amount: it.break_amount != null ? Number(it.break_amount) : 0,
-            code: it.code || ''
-        };
-    });
-    const loadVendorInfo = (me, vendorId) => {
-        if (!vendorId || !(me.controls.phone_number || me.controls.address)) return;
-        vsapi.post(`${main_view.base_url}/prm/vendor/options-vendor-info`, { vendor_id: vendorId }, {})
-            .then((r) => {
-                const v = (r.data ?? {}).vendor ?? {};
-                if (me.controls.phone_number) me.controls.phone_number.value = v.phone_number || '';
-                if (me.controls.address) me.controls.address.value = v.address || '';
-            })
-            .catch(() => {});
-    };
-    const vendorDisplayName = (vendor, withCode) => {
-        if (!vendor) return '';
-        const n = vendor.vendor || vendor.name || vendor.vendor_name || '';
-        return withCode ? (n || vendor.code || '') : (n || '');
-    };
-    const applyPoHeaderToDialog = (me, poDetails, vendors, withCode) => {
-        const vid = poDetails.vendor_id;
-        const v = vendors.find((x) => Number(x.id) === Number(vid));
-        const name = vendorDisplayName(v, withCode);
-        if (me.controls.vendor_id) me.controls.vendor_id.value = vid || '';
-        if (me.controls.vendor) me.controls.vendor.value = name;
-        if (me.controls.po_date) me.controls.po_date.value = poDetails.po_date || '';
-        if (me.controls.po_number) me.controls.po_number.value = poDetails.po_number || '';
-        if (me.controls.discount_value) me.controls.discount_value.value = poDetails.discount_value ?? 0;
-        if (me.controls.discount_type) me.controls.discount_type.value = poDetails.discount_type || 'percent';
-        me._selectedVendorId = vid;
-        loadVendorInfo(me, vid);
-    };
-    /** One Bootstrap field row: Label : control */
-    const poFormRow = (label, fieldHtml, mb) =>
-        `<div class="d-flex align-items-center${mb ? ' mb-2' : ''}"><span class="fw-bold" style="min-width:90px;">${label}</span><span class="mx-2 fw-bold">:</span>${fieldHtml}</div>`;
-    const poTotalsBoxHtml = (pfx, dis) => {
-        const ro = dis ? ' readonly' : '';
-        const ds = dis ? ' disabled' : '';
-        const dInp = `<input type="number" name="discount_value" class="data-input form-control ms-2" data-field="discount_value" style="width:80px" value="0" min="0" step="0.01" placeholder="0"${ro}>`;
-        const dSel = `<select name="discount_type" class="data-input form-control ms-1" data-field="discount_type" style="width:60px"${ds}><option value="percent">%</option><option value="amount">$</option></select>`;
-        return `<div class="col-lg-12 mt-3 d-flex justify-content-end"><div class="p-3 rounded-3 shadow-sm border" style="background-color:#fff; min-width:280px;">`
-            + poFormRow('Sub Total', `<span id="${pfx}subtotal_display" class="ms-2">$ 0.00</span>`, true)
-            + poFormRow('Discount', dInp + dSel, true)
-            + poFormRow('Tax', `<span id="${pfx}tax_display" class="ms-2">$ 0.00</span>`, true)
-            + poFormRow('Total', `<span id="${pfx}total_display" class="ms-2 fw-bold">$ 0.00</span>`, true)
-            + '</div></div>';
-    };
-
-    const calcTotals = (subTotal, discountVal, discountType) => {
-        const dv = +discountVal || 0;
-        const dt = (discountType || 'percent') === 'percent' ? 'percent' : 'amount';
-        const discountAmount = dt === 'percent' ? (subTotal * dv / 100) : dv;
-        const afterDiscount = Math.max(0, subTotal - discountAmount);
-        const taxAmount = 0;
-        const total = afterDiscount + taxAmount;
-        return { subTotal, taxAmount, total };
-    };
-    const writeTotalsToDom = (rootEl, ids, totals) => {
-        if (!rootEl) return;
-        const subtotalEl = rootEl.querySelector(ids.subtotal);
-        const taxEl = rootEl.querySelector(ids.tax);
-        const totalEl = rootEl.querySelector(ids.total);
-        if (subtotalEl) subtotalEl.textContent = formatCurrency(totals.subTotal);
-        if (taxEl) taxEl.textContent = formatCurrency(totals.taxAmount);
-        if (totalEl) totalEl.textContent = formatCurrency(totals.total);
-    };
-    const setItemsViewRows = (view, rows) => {
-        if (!view) return;
-        if (!rows || !rows.length) {
-            if (typeof view.setData === 'function') view.setData([]);
-            return;
-        }
-        if (typeof view.addRow === 'function') {
-            if (typeof view.setData === 'function') view.setData(null);
-            rows.forEach((r) => view.addRow(r));
-            return;
-        }
-        if (typeof view.setData === 'function') view.setData(rows);
-    };
-    const renderItemsView = (view) => {
-        if (!view) return;
-        if (typeof view.render === 'function') view.render();
-        else if (typeof view.refresh === 'function') view.refresh();
-        else if (typeof view.draw === 'function') view.draw();
-    };
-    const removeLeadingEmptyItemRow = (view) => {
-        if (!view) return;
-
-        // Keep only meaningful rows in ItemsView data (no direct DOM mutation).
-        // Directly removing table rows can desync ItemsView internal state.
-        if (typeof view.getItems === 'function' && typeof view.setData === 'function') {
-            const cur = view.getItems() || [];
-            const cleaned = cur.filter((it) => {
-                const itemId = String(it?.item_id ?? '').trim();
-                const qty = Number(it?.qty ?? 0);
-                const price = Number(it?.unit_price ?? it?.price ?? 0);
-                return itemId !== '' || qty > 0 || price > 0;
-            });
-            if (cleaned.length !== cur.length) {
-                view.setData(cleaned);
-                renderItemsView(view);
-            }
-        }
-    };
-    const UNIT_OPTIONS = [
-        { value: 1, label: 'pcs' },
-        { value: 2, label: 'kg' },
-        { value: 3, label: 'box' },
-        { value: 4, label: 'meter' },
-    ];
-    const applyUnitOptions = (itemsView) => {
-        if (!itemsView || typeof itemsView.setSelectOptions !== 'function') return;
-        itemsView.setSelectOptions('unit', UNIT_OPTIONS, '', { value: 'id', label: 'Select unit' });
-    };
-    const bindTotalsInputListeners = (me, fields, onChange) => {
-        if (!me || !me.controls) return;
-        (fields || []).forEach((field) => {
-            const el = me.controls[field];
-            if (!el) return;
-            el.addEventListener('input', onChange);
-            el.addEventListener('change', onChange);
-        });
-    };
-    const RECEIVED_STATUS_BADGE_STYLE =
-        'min-width:90px;background:#dff3ea;color:#37b07f;border-color:#70c39f !important;font-weight:500;';
-    const poStatusBadgeFallback = (statusId, statusLabel) => {
-        const status_id = Number(statusId || 0);
-        const isReceived = status_id === 2 || status_id === 3;
-        const byStatus = {
-            1: 'badge text-warning bg-warning-subtle border border-warning',
-            2: 'badge text-success bg-success-subtle border border-success',
-            3: 'badge text-primary bg-primary-subtle border border-primary',
-            4: 'badge text-info bg-info-subtle border border-info',
-            5: 'badge text-dark bg-secondary-subtle border border-secondary',
-            6: 'badge text-danger bg-danger-subtle border border-danger',
-        };
-        let cls = byStatus[status_id] || 'badge text-warning bg-warning-subtle border border-warning';
-        if (isReceived) cls = 'badge border';
-        const statusText = isReceived ? 'Received' : (statusLabel ?? '');
-        return { cls, statusText };
-    };
-    /** Uses status_class / status_label from API when present. */
-    const poStatusBadgeHtml = (data) => {
-        const sid = Number(data?.status_id ?? 0);
-        const isReceived = sid === 2 || sid === 3;
-        const fb = poStatusBadgeFallback(sid, data?.status);
-        const cls = data?.status_class || fb.cls;
-        const statusText = data?.status_label ?? fb.statusText;
-        const badgeStyle = isReceived ? RECEIVED_STATUS_BADGE_STYLE : 'min-width:90px';
-        return `<span class="${cls} text-capitalize d-inline-block text-center" style="${badgeStyle}">${statusText}</span>`;
     };
     /** At least one line must have a real catalog item (empty default row does not count). */
     const hasValidPurchaseOrderLineItems = (items) => {
@@ -274,32 +51,9 @@ var PurchaseOrdersComponent = (() => {
             return !Number.isNaN(n) && n > 0;
         });
     };
-    const getCleanPurchaseItems = (itemsView) => {
-        if (!itemsView || typeof itemsView.getItems !== 'function') return [];
-        const source = itemsView.getItems() || [];
-        const seenTrxIds = new Set();
-
-        return source
-            .filter((row) => {
-                const itemId = Number(row?.item_id ?? row?.id ?? 0);
-                const qty = Number(row?.qty ?? 0);
-                const unitPrice = Number(row?.unit_price ?? row?.price ?? 0);
-                return itemId > 0 || qty > 0 || unitPrice > 0;
-            })
-            .filter((row) => {
-                const trxId = Number(row?.trx_id ?? 0);
-                if (trxId <= 0) return true;
-                if (seenTrxIds.has(trxId)) return false;
-                seenTrxIds.add(trxId);
-                return true;
-            })
-            .map((row) => ({
-                ...row,
-                trx_id: Number(row?.trx_id ?? 0) > 0 ? Number(row.trx_id) : null
-            }));
-    };
+    /** Strip ItemsView row-delete column and append Action column with receive checkbox (last column). */
     const applyReceiveActionColumn = (me, rows) => {
-        const root = getReceiveRoot(me);
+        const root = me.divModal && me.divModal.querySelector('#receive_purchase_item_list');
         if (!root || !Array.isArray(rows) || !rows.length) return;
         const table = root.querySelector('table');
         if (!table) return;
@@ -307,6 +61,8 @@ var PurchaseOrdersComponent = (() => {
         const tbody = table.querySelector('tbody');
         if (!theadRow || !tbody) return;
 
+        // Preserve checkbox state per PO item, so a full action-column rebuild
+        // doesn't accidentally unlock rows the user already selected.
         const checkedStateByPoItemId = {};
         tbody.querySelectorAll('input.receive-po-line-cb').forEach((cb) => {
             const id = Number(cb.dataset.poItemId || 0);
@@ -331,7 +87,9 @@ var PurchaseOrdersComponent = (() => {
         theadRow.appendChild(th);
         const expectedCellCount = theadRow.querySelectorAll('th').length;
 
-        const liveItems = getReceiveItems(me);
+        const liveItems = (me.receiveItemsView && typeof me.receiveItemsView.getItems === 'function')
+            ? (me.receiveItemsView.getItems() || [])
+            : [];
 
         tbody.querySelectorAll('tr').forEach((tr, idx) => {
             const existingActionCell = Array.from(tr.querySelectorAll('td')).find((cell) => isDeleteCell(cell));
@@ -343,7 +101,7 @@ var PurchaseOrdersComponent = (() => {
             const linePending = !row.status_id || Number(row.status_id) === 1;
             if (linePending) {
                 const poItemId = Number(row.id || 0);
-                const recvRaw = getReceiveQtyRaw(row);
+                const recvRaw = row.receive_qty != null ? row.receive_qty : row.recieve_amount;
                 const receiveQtyNum = (recvRaw != null && recvRaw !== '' && !Number.isNaN(Number(recvRaw)))
                     ? Number(recvRaw)
                     : 0;
@@ -356,6 +114,8 @@ var PurchaseOrdersComponent = (() => {
                 cb.disabled = !canMark;
                 applyReceiveCheckboxUi(cb);
 
+                // Restore checked state (and therefore the locked "Received Qty" field)
+                // based on this row's own checkbox.
                 if (checkedStateByPoItemId[poItemId]) {
                     cb.checked = true;
                 }
@@ -386,8 +146,12 @@ var PurchaseOrdersComponent = (() => {
         requestAnimationFrame(() => applyReceiveActionColumn(me, rows));
         setTimeout(() => applyReceiveActionColumn(me, rows), 120);
     };
+    /**
+     * Update checkbox enabled state without removing cells (full rebuild on every qty keystroke
+     * clears the checkbox when focus moves from qty input to the checkbox).
+     */
     const refreshReceiveLineActionsInPlace = (me, rows) => {
-        const root = getReceiveRoot(me);
+        const root = me.divModal && me.divModal.querySelector('#receive_purchase_item_list');
         if (!root || !Array.isArray(rows) || !rows.length) return;
         const table = root.querySelector('table');
         const tbody = table && table.querySelector('tbody');
@@ -401,10 +165,12 @@ var PurchaseOrdersComponent = (() => {
                 return;
             }
             const cb = td.querySelector('.receive-po-line-cb');
+            // If this row is already received (no checkbox), do not touch it.
             if (!cb) return;
 
             const poItemId = Number(cb.dataset.poItemId || 0);
             const qtyInput = getReceiveQtyInputInRow(tr);
+            // If we cannot reliably locate the Received Qty input, don't change checkbox/input state.
             if (!qtyInput) return;
             const receiveQtyNum = Number(qtyInput.value);
             if (Number.isNaN(receiveQtyNum)) return;
@@ -412,31 +178,54 @@ var PurchaseOrdersComponent = (() => {
             const canMark = poItemId > 0 && receiveQtyNum > 0;
             cb.disabled = !canMark;
             applyReceiveCheckboxUi(cb);
+
+            // Preserve the per-row checkbox decision.
+            // Lock/unlock the Received Qty input strictly based on *that row's* checkbox,
+            // even if the row becomes temporarily "invalid" during DOM refresh.
             setReceiveQtyLocked(tr, cb.checked);
         });
         if (needFull) syncReceiveActionColumn(me, rows);
     };
-    const refreshReceiveQtyDependentUi = (me) => {
-        if (typeof me.updateReceiveTotals === 'function') me.updateReceiveTotals();
-        refreshReceiveLineActionsInPlace(me, getReceiveItems(me));
-    };
-    const RECV_QTY_INPUT_SEL = ['input[data-field="receive_qty"]', 'input[name="receive_qty"]', 'input[data-field="recieve_amount"]', 'input[name="recieve_amount"]', 'input[data-name="receive_qty"]', 'input[data-name="recieve_amount"]'];
     const getReceiveQtyCellInRow = (tr) => {
-        if (!tr?.querySelectorAll) return null;
-        for (let i = 0; i < RECV_QTY_INPUT_SEL.length; i++) {
-            const el = tr.querySelector(RECV_QTY_INPUT_SEL[i]);
-            if (el) return el.closest('td');
-        }
-        const isRecvInp = (el) => {
-            const nm = el.getAttribute?.('name'), df = el.dataset?.field, dn = el.dataset?.name, id = el.getAttribute?.('id');
-            return ['receive_qty', 'recieve_amount'].some((k) => nm === k || df === k || dn === k || (id && String(id).includes(k)));
-        };
-        const hit = Array.from(tr.querySelectorAll('input')).find(isRecvInp);
-        if (hit) return hit.closest('td');
-        const ths = tr.closest?.('table')?.querySelector?.('thead tr')?.querySelectorAll?.('th');
-        if (!ths) return null;
-        const idx = Array.from(ths).findIndex((th) => String(th.textContent || '').trim().toLowerCase() === 'received qty');
-        return idx < 0 ? null : (tr.querySelectorAll('td')[idx] || null);
+        if (!tr || !tr.querySelectorAll) return null;
+        const direct =
+            tr.querySelector('input[data-field="receive_qty"]') ||
+            tr.querySelector('input[name="receive_qty"]') ||
+            tr.querySelector('input[data-field="recieve_amount"]') ||
+            tr.querySelector('input[name="recieve_amount"]') ||
+            tr.querySelector('input[data-name="receive_qty"]') ||
+            tr.querySelector('input[data-name="recieve_amount"]');
+        if (direct) return direct.closest('td');
+
+        // Fallback: scan all inputs in the row and match by common attributes/ids.
+        const inputs = Array.from(tr.querySelectorAll('input'));
+        const byAttr = inputs.find((el) => {
+            const nm = el.getAttribute && el.getAttribute('name');
+            const df = el.dataset && el.dataset.field;
+            const dn = el.dataset && el.dataset.name;
+            const id = el.getAttribute && el.getAttribute('id');
+            return (
+                nm === 'receive_qty' ||
+                df === 'receive_qty' ||
+                dn === 'receive_qty' ||
+                (id && String(id).includes('receive_qty')) ||
+                nm === 'recieve_amount' ||
+                df === 'recieve_amount' ||
+                dn === 'recieve_amount' ||
+                (id && String(id).includes('recieve_amount'))
+            );
+        });
+        if (byAttr) return byAttr.closest('td');
+
+        // Fallback: locate by column header index ("Received Qty") then find input inside that cell.
+        const table = tr.closest ? tr.closest('table') : null;
+        const theadRow = table && table.querySelector ? table.querySelector('thead tr') : null;
+        if (!theadRow) return null;
+        const ths = Array.from(theadRow.querySelectorAll('th'));
+        const recvIdx = ths.findIndex((th) => String(th.textContent || '').trim().toLowerCase() === 'received qty');
+        if (recvIdx < 0) return null;
+        const tds = Array.from(tr.querySelectorAll('td'));
+        return tds[recvIdx] || null;
     };
     const getReceiveQtyInputInRow = (tr) => {
         const recvTd = getReceiveQtyCellInRow(tr);
@@ -475,13 +264,15 @@ var PurchaseOrdersComponent = (() => {
         const itemId = Number(it.item_id ?? 0);
         if (!itemId || itemId <= 0) return true;
         const ordered = Number(it.qty) || 0;
-        const recvRaw = getReceiveQtyRaw(it);
+        const recvRaw = it.receive_qty != null ? it.receive_qty : it.recieve_amount;
         const recv = Number(recvRaw) || 0;
         const brk = Number(it.break_amount) || 0;
         return Math.abs((recv + brk) - ordered) < 0.02;
     };
     const validateAllReceiveLinesComplete = (me) => {
-        const items = getReceiveItems(me);
+        const items = (me.receiveItemsView && typeof me.receiveItemsView.getItems === 'function')
+            ? (me.receiveItemsView.getItems() || [])
+            : [];
         if (!items.length) return false;
         return items.every(isReceiveLineRowComplete);
     };
@@ -529,7 +320,9 @@ var PurchaseOrdersComponent = (() => {
     /** Current line row from ItemsView (by purchase_order_items.id or table row index). */
     const getReceiveLineRowData = (me, poItemId, tr) => {
         const id = Number(poItemId);
-        const items = getReceiveItems(me);
+        const items = (me.receiveItemsView && typeof me.receiveItemsView.getItems === 'function')
+            ? (me.receiveItemsView.getItems() || [])
+            : [];
         let row = items.find((it) => Number(it.id) === id);
         if (!row && tr && tr.parentNode) {
             const rows = Array.from(tr.parentNode.querySelectorAll('tr'));
@@ -537,7 +330,7 @@ var PurchaseOrdersComponent = (() => {
             if (idx >= 0) row = items[idx];
         }
         const orderedQty = row && row.qty != null && !Number.isNaN(Number(row.qty)) ? Number(row.qty) : 0;
-        const receiveRaw = row && getReceiveQtyRaw(row);
+        const receiveRaw = row && (row.receive_qty != null ? row.receive_qty : row.recieve_amount);
         const receiveQty = receiveRaw != null && !Number.isNaN(Number(receiveRaw)) ? Number(receiveRaw) : 0;
         const breakAmount = row && row.break_amount != null && !Number.isNaN(Number(row.break_amount))
             ? Number(row.break_amount)
@@ -549,11 +342,6 @@ var PurchaseOrdersComponent = (() => {
         const cb = tr.querySelector('.receive-po-line-cb');
         if (cb) cb.disabled = isLoading;
     };
-    const resetLineCheckbox = (tr) => {
-        const cb = tr && tr.querySelector ? tr.querySelector('.receive-po-line-cb') : null;
-        if (cb) cb.checked = false;
-    };
-    const refreshReceiveActions = (me) => refreshReceiveLineActionsInPlace(me, getReceiveItems(me));
     /**
      * @param {object} opts - silent: no toast; skipReload: no table reload (batch mode)
      * @returns {Promise<boolean>} true if line saved OK
@@ -617,15 +405,23 @@ var PurchaseOrdersComponent = (() => {
                 }
                 return true;
             }
-            resetLineCheckbox(tr);
+            const cb = tr.querySelector('.receive-po-line-cb');
+            if (cb) cb.checked = false;
             setReceiveLineRowLoading(tr, false);
-            refreshReceiveActions(me);
+            const rowsFail = (me.receiveItemsView && me.receiveItemsView.getItems)
+                ? (me.receiveItemsView.getItems() || [])
+                : [];
+            refreshReceiveLineActionsInPlace(me, rowsFail);
             cv_interact.warning(res.error_message || 'Could not receive line.');
             return false;
         }).catch(() => {
-            resetLineCheckbox(tr);
+            const cb = tr.querySelector('.receive-po-line-cb');
+            if (cb) cb.checked = false;
             setReceiveLineRowLoading(tr, false);
-            refreshReceiveActions(me);
+            const rows = (me.receiveItemsView && me.receiveItemsView.getItems)
+                ? (me.receiveItemsView.getItems() || [])
+                : [];
+            refreshReceiveLineActionsInPlace(me, rows);
             return false;
         }).then((ok) => {
             if (ok && skipReload) setReceiveLineRowLoading(tr, false);
@@ -637,7 +433,7 @@ var PurchaseOrdersComponent = (() => {
      * Checkbox is selection-only, so confirmation must persist selected rows first.
      */
     const saveCheckedReceiveLines = (me, triggerEl) => {
-        const root = getReceiveRoot(me);
+        const root = me.divModal && me.divModal.querySelector('#receive_purchase_item_list');
         if (!root) return Promise.resolve(true);
         const checked = Array.from(root.querySelectorAll('tbody .receive-po-line-cb:checked'))
             .filter((el) => !el.disabled);
@@ -656,7 +452,7 @@ var PurchaseOrdersComponent = (() => {
         });
     };
     const bindReceiveLineActionDelegation = (me) => {
-        const root = getReceiveRoot(me);
+        const root = me.divModal && me.divModal.querySelector('#receive_purchase_item_list');
         if (!root || root.dataset.receiveLineDelegateBound === '1') return;
         root.dataset.receiveLineDelegateBound = '1';
         root.addEventListener('change', (e) => {
@@ -721,18 +517,70 @@ var PurchaseOrdersComponent = (() => {
                 const formData = formRes.data || {};
                 const poDetails = formData.po_details || {};
                 const vendors = formData.vendors || [];
-                applyPoHeaderToDialog(me, poDetails, vendors, false);
+                const vendorId = poDetails.vendor_id;
+                const vendor = vendors.find(v => Number(v.id) === Number(vendorId));
 
-                if (me._itemOptions && me.receiveItemsView?.setSelectOptions) {
-                    me.receiveItemsView.setSelectOptions('item_id', mapItemSelectOptions(me._itemOptions), null);
+                if (me.controls.vendor_id) me.controls.vendor_id.value = vendorId || '';
+                if (me.controls.vendor) me.controls.vendor.value = vendor ? (vendor.vendor || vendor.name || vendor.vendor_name || '') : '';
+                if (me.controls.po_date) me.controls.po_date.value = poDetails.po_date || '';
+                if (me.controls.po_number) me.controls.po_number.value = poDetails.po_number || '';
+                if (me.controls.discount_value) me.controls.discount_value.value = poDetails.discount_value ?? 0;
+                if (me.controls.discount_type) me.controls.discount_type.value = poDetails.discount_type || 'percent';
+
+                me._selectedVendorId = vendorId;
+                if (vendorId && (me.controls.phone_number || me.controls.address)) {
+                    vsapi.post(`${main_view.base_url}/prm/vendor/options-vendor-info`, { vendor_id: vendorId }, {})
+                        .then(r => {
+                            const d = r.data || {};
+                            const v = d.vendor || {};
+                            if (me.controls.phone_number) me.controls.phone_number.value = v.phone_number || '';
+                            if (me.controls.address) me.controls.address.value = v.address || '';
+                        })
+                        .catch(() => {});
                 }
 
-                const items = normalizeItems(itemsRes.data);
+                if (me._itemOptions && me.receiveItemsView?.setSelectOptions) {
+                    const normalizedItemOptions = (me._itemOptions || []).map(o => {
+                        const iv = o?.id ?? o?.value ?? o?.item_id;
+                        const lb = o?.name ?? o?.label ?? o?.item_name;
+                        return { id: iv, value: iv, name: lb, label: lb };
+                    });
+                    me.receiveItemsView.setSelectOptions('item_id', normalizedItemOptions, null);
+                }
 
-                const rows = mapReceiveRows(items);
+                const raw = itemsRes.data;
+                const items = Array.isArray(raw) ? raw : (Array.isArray(raw?.items) ? raw.items : (Array.isArray(raw?.data) ? raw.data : []));
+                const unitByName = { pcs: 1, kg: 2, box: 3, meter: 4 };
 
-                setItemsViewRows(me.receiveItemsView, rows);
-                renderItemsView(me.receiveItemsView);
+                const rows = items.map(it => {
+                    const unitNum = Number(it.unit);
+                    const unitValue = (unitNum >= 1 && unitNum <= 4) ? unitNum : (unitByName[String(it.unit).toLowerCase()] ?? it.unit);
+                    const receiveRaw = it.receive_qty != null ? it.receive_qty : it.recieve_amount;
+                    return {
+                        id: it.id,
+                        status_id: it.status_id,
+                        item_id: it.item_id,
+                        qty: it.qty != null ? Number(it.qty) : 0,
+                        unit: unitValue,
+                        unit_price: it.unit_price || 0,
+                        total_price: it.total_price || (Number(it.qty) * Number(it.unit_price || 0)),
+                        receive_qty: receiveRaw != null ? Number(receiveRaw) : 0,
+                        break_amount: it.break_amount != null ? Number(it.break_amount) : 0,
+                        code: it.code || ''
+                    };
+                });
+
+                if (!rows.length) {
+                    if (typeof me.receiveItemsView.setData === 'function') me.receiveItemsView.setData([]);
+                } else if (typeof me.receiveItemsView.addRow === 'function') {
+                    if (typeof me.receiveItemsView.setData === 'function') me.receiveItemsView.setData(null);
+                    rows.forEach(r => me.receiveItemsView.addRow(r));
+                } else {
+                    me.receiveItemsView.setData(rows);
+                }
+                if (typeof me.receiveItemsView.render === 'function') me.receiveItemsView.render();
+                if (typeof me.receiveItemsView.refresh === 'function') me.receiveItemsView.refresh();
+                if (typeof me.receiveItemsView.draw === 'function') me.receiveItemsView.draw();
 
                 setTimeout(() => {
                     bindReceiveLineActionDelegation(me);
@@ -749,44 +597,93 @@ var PurchaseOrdersComponent = (() => {
             });
     };
     mThis.cols = [
-        { title: '', className: 'align-middle' },
+
         {
-            transTitle: 'titles.Po Number',
-            className: 'align-middle',
-            data: (data) => `<span class="text-nowrap text-prm-custom">${data.po_number ?? ''}</span>`,
+            title: "",
+            className: "align-middle",
         },
         {
-            transTitle: 'titles.Vendor',
-            className: 'align-middle',
-            data: (data) => `<span class="d-block text-prm-custom">${data.vendor_name}</span>`,
+            transTitle: "titles.Po Number",
+            className: "align-middle",
+            data: (data) => {
+                return `<span class="text-nowrap text-prm-custom">${data.po_number ?? ''}</span>`;
+            }
         },
         {
-            title: 'Po Date',
-            className: 'align-middle',
-            data: (data) => `<span class="text-prm-custom text-nowrap">${data.po_date}</span>`,
+            transTitle: "titles.Vendor",
+            className: "align-middle",
+            data: (data) => {
+                return `<span class="d-block text-prm-custom">${data.vendor_name}</span>`;
+            }
+        },
+        {
+            title: "Po Date",
+            className: "align-middle",
+            data: (data) =>
+                `<span class="text-prm-custom text-nowrap">${data.po_date}</span>`,
         },
         {
             title: "Total Price",
             className: "align-middle text-end",
-            data: (data) =>
-                `<span class="d-block text-prm-custom">${data.sub_total_formatted ?? formatCurrency(data.sub_total)}</span>`,
+            data: (data) => {
+                return `<span class="d-block text-prm-custom">${formatCurrency(data.sub_total)}</span>`;
+            }
         },
         {
             title: "Discount",
             className: "align-middle text-end",
-            data: (data) =>
-                `<span class="d-block text-prm-custom">${data.discount_formatted ?? formatDiscount(data)}</span>`,
+            data: (data) => {
+                return `<span class="d-block text-prm-custom">${formatDiscount(data)}</span>`;
+            }
         },
         {
             title: "Total Amount",
             className: "align-middle text-end",
-            data: (data) =>
-                `<span class="d-block text-prm-custom">${data.total_amount_formatted ?? formatCurrency(data.total_amount)}</span>`,
+            data: (data) => {
+                return `<span class="d-block text-prm-custom">${formatCurrency(data.total_amount)}</span>`;
+            }
         },
         {
             title: "Status",
             className: "align-middle text-center",
-            data: (data) => poStatusBadgeHtml(data),
+            data: (data) => {
+
+                const status_id = Number(data.status_id || 0);
+                const isReceived = status_id === 2 || status_id === 3;
+                let cls = 'badge text-warning bg-warning-subtle border border-warning';
+                let badgeStyle = 'min-width:90px';
+
+                if (status_id == 1) {
+                    cls = 'badge text-warning bg-warning-subtle border border-warning';
+                }
+                else if (status_id == 2) {
+                    cls = 'badge text-success bg-success-subtle border border-success';
+                }
+                else if (status_id == 3) {
+                    cls = 'badge text-primary bg-primary-subtle border border-primary';
+                }
+                else if (status_id == 4) {
+                    cls = 'badge text-info bg-info-subtle border border-info';
+                }
+                else if (status_id == 5) {
+                    cls = 'badge text-dark bg-secondary-subtle border border-secondary';
+                }
+                else if (status_id == 6) {
+                    cls = 'badge text-danger bg-danger-subtle border border-danger';
+                }
+
+                if (isReceived) {
+                    cls = 'badge border';
+                    badgeStyle = 'min-width:90px;background:#dff3ea;color:#37b07f;border-color:#70c39f !important;font-weight:500;';
+                }
+
+                const statusText = isReceived ? 'Received' : (data.status ?? '');
+                return `
+                    <span class="${cls} text-capitalize d-inline-block text-center" style="${badgeStyle}">
+                        ${statusText}
+                    </span>
+                `;
+            },
         },
         {
             title: "Remarks",
@@ -797,22 +694,32 @@ var PurchaseOrdersComponent = (() => {
             }
         },
         {
-            transTitle: 'titles.Updated By',
+            transTitle: "titles.Updated By",
             className: 'align-middle text-nowrap',
-            data: (data) => `<div class="d-flex flex-column">
-                <span class="text-capitalize text-start text-prm-custom fw-semibold"><span>${data.update_user ?? ''}</span></span>
-                <span class="text-muted">${data.updated_at ?? ''}</span>
-            </div>`,
-        },
-        {
-            transTitle: 'titles.Action',
-            className: 'col_action align-middle',
-            data: (data) => {
-                const isReceived = [2, 3].includes(Number(data.status_id || 0));
-                const c = isReceived ? 'btn_dropdown_vendor_action_received' : 'btn_dropdown_vendor_action';
-                return `<div class="d-flex justify-content-center align-items-end"><a href="javascript:void(0)" class="btn--Options ${c}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false"><i class="fa-solid fa-ellipsis-vertical text-black fs-5"></i></a></div>`;
+            data: (data, index, tr) => {
+                return `<div class="d-flex flex-column">
+                    <span class="text-capitalize text-start text-prm-custom fw-semibold"><span>${data.update_user ?? ''}</span></span>
+                    <span class="text-muted">${data.updated_at ?? ''}</span>
+                </div>`;
             }
         },
+        {
+            transTitle: "titles.Action",
+            className: 'col_action align-middle',
+            data: (data) => {
+                const statusId = Number(data.status_id || 0);
+                const isReceived = statusId === 2 || statusId === 3;
+                const actionBtnClass = isReceived ? 'btn_dropdown_vendor_action_received' : 'btn_dropdown_vendor_action';
+                return `
+                <div class="d-flex justify-content-center align-items-end">
+                    <a href="javascript:void(0)" class="btn--Options ${actionBtnClass}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
+                        <i class="fa-solid fa-ellipsis-vertical text-black fs-5"></i>
+                    </a>
+                </div>`;
+            }
+        },
+
+
     ];
     mThis.init = () => {
         if (mThis.initAlready) return;
@@ -820,6 +727,7 @@ var PurchaseOrdersComponent = (() => {
         mThis.PoListView = new ListView('_purchases_list', {
             fetchApi: `${main_view.base_url}/prm/purchase/order/list-paginate`,
             perPage: 10,
+            // rememberCurrentPage: false,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
             tableClass: 'table table--white rounded-2 header-uppercase',
@@ -840,6 +748,7 @@ var PurchaseOrdersComponent = (() => {
                     mThis.PoListView.showPage(mThis.getFilterData());
                 }
             };
+            // if (!AuthManager.allowed(240)) return;
             showPurchaseOrderDialog(op);
         };
 
@@ -848,6 +757,7 @@ var PurchaseOrdersComponent = (() => {
         const sh_parent = mThis.pr_tbl.parentElement;
         sh_parent.style.maxHeight = (window.innerHeight - 200) + "px";
         sh_parent.classList.add("overflow-y-auto");
+        // sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
             sh_parent.style.maxHeight = (window.innerHeight - 200) + "px";
         }
@@ -947,26 +857,33 @@ var PurchaseOrdersComponent = (() => {
             }
         };
 
-        const buildDropdownOptions = (actionButtonClass, includeReceivePo) => ({
+        const menuOptions = {
             containerElement: table,
-            actionButtonClass,
+            actionButtonClass: "btn_dropdown_vendor_action",
             cssClass: "bg-white shadow",
-            menus: includeReceivePo
-                ? [
-                    ...baseMenus,
-                    {
-                        html: '<span class="ps-2" vslang="titles.Receive PO"></span>',
-                        icon: `<i class="fa-solid fa-box-open fs-5 text-primary"></i>`,
-                        cssClass: '',
-                        name: "receive_purchase_order"
-                    },
-                ]
-                : [...baseMenus],
-            onClick: onMenuClick
-        });
+            menus: [
+                ...baseMenus,
+                {
+                    html: '<span class="ps-2" vslang="titles.Receive PO"></span>',
+                    icon: `<i class="fa-solid fa-box-open fs-5 text-primary"></i>`,
+                    cssClass: '',
+                    name: "receive_purchase_order"
+                },
+            ],
 
-        new VSDropdownMenu(buildDropdownOptions("btn_dropdown_vendor_action", true));
-        new VSDropdownMenu(buildDropdownOptions("btn_dropdown_vendor_action_received", false));
+            onClick: onMenuClick
+        };
+
+        const menuOptionsReceived = {
+            containerElement: table,
+            actionButtonClass: "btn_dropdown_vendor_action_received",
+            cssClass: "bg-white shadow",
+            menus: [...baseMenus],
+            onClick: onMenuClick
+        };
+
+        new VSDropdownMenu(menuOptions);
+        new VSDropdownMenu(menuOptionsReceived);
     }
     const renderPoItem = (po, container, onFinish) => {
         if (!container) return;
@@ -978,15 +895,16 @@ var PurchaseOrdersComponent = (() => {
         container.innerHTML = '<div class="text-center py-3"><div class="spinner-border text-primary" role="status"></div><div class="small text-muted mt-1">Loading items...</div></div>';
         vsapi.call(`${main_view.base_url}/prm/purchase/order/items-by-po`, { id: poId, po_id: poId }, null, false)
             .then((res) => {
-                const items = normalizeItems(res.data);
-                const rows = items.map((item) => `
+                const raw = res.data;
+                const items = Array.isArray(raw) ? raw : (Array.isArray(raw?.items) ? raw.items : (Array.isArray(raw?.data) ? raw.data : []));
+                const rows = items.map(item => `
                     <tr>
                         <td class="text-nowrap">${item.code ?? ''}</td>
                         <td class="text-nowrap">${item.item_name ?? ''}</td>
                         <td class="text-nowrap">${formatQty(item.qty)}</td>
                         <td class="text-nowrap">${item.unit ?? ''}</td>
-                        <td class="text-nowrap">${item.unit_price_formatted ?? formatCurrency(item.unit_price)}</td>
-                        <td class="text-nowrap">${item.total_price_formatted ?? formatCurrency(item.total_price)}</td>
+                        <td class="text-nowrap">${item.unit_price ?? ''}</td>
+                        <td class="text-nowrap">${item.total_price ?? ''}</td>
                     </tr>
                 `).join('');
                 const tbody = items.length
@@ -1050,7 +968,8 @@ var PurchaseOrdersComponent = (() => {
             }
         });
     };
-    const showPurchaseOrderDialog = (op) => {
+     //create and show RemarkDialog on demand only
+    const showPurchaseOrderDialog = (op) =>{
         const loadPurchaseOrderForEdit = (me, editPoId) => {
             if (!me || !editPoId) return Promise.resolve(null);
             if (!me.purchaseItemsView || typeof me.purchaseItemsView.setData !== 'function') {
@@ -1069,10 +988,36 @@ var PurchaseOrdersComponent = (() => {
                     const formData = formRes.data || {};
                     const poDetails = formData.po_details || {};
                     const vendors = formData.vendors || [];
-                    applyPoHeaderToDialog(me, poDetails, vendors, true);
+                    const vendorId = poDetails.vendor_id;
+                    const vendor = vendors.find(v => Number(v.id) === Number(vendorId));
 
+                    if (me.controls.vendor_id) me.controls.vendor_id.value = vendorId || '';
+                    if (me.controls.vendor) me.controls.vendor.value = vendor ? (vendor.vendor || vendor.name || vendor.vendor_name || vendor.code || '') : '';
+                    if (me.controls.po_date) me.controls.po_date.value = poDetails.po_date || '';
+                    if (me.controls.po_number) me.controls.po_number.value = poDetails.po_number || '';
+                    if (me.controls.discount_value) me.controls.discount_value.value = poDetails.discount_value || 0;
+                    if (me.controls.discount_type) me.controls.discount_type.value = poDetails.discount_type || 'percent';
+
+                    me._selectedVendorId = vendorId;
+
+                    if (vendorId && (me.controls.phone_number || me.controls.address)) {
+                        vsapi.post(`${main_view.base_url}/prm/vendor/options-vendor-info`, { vendor_id: vendorId }, {})
+                            .then(r => {
+                                const v = (r.data || {}).vendor || {};
+                                if (me.controls.phone_number) me.controls.phone_number.value = v.phone_number || '';
+                                if (me.controls.address) me.controls.address.value = v.address || '';
+                            })
+                            .catch(() => {});
+                    }
+
+                    // ensure item select options are ready when binding rows
                     if (me._itemOptions && me.purchaseItemsView?.setSelectOptions) {
-                        me.purchaseItemsView.setSelectOptions('item_id', mapItemSelectOptions(me._itemOptions), null);
+                        const normalizedItemOptions = (me._itemOptions || []).map(o => {
+                            const v = o?.id ?? o?.value ?? o?.item_id;
+                            const l = o?.name ?? o?.label ?? o?.item_name;
+                            return { id: v, value: v, name: l, label: l };
+                        });
+                        me.purchaseItemsView.setSelectOptions('item_id', normalizedItemOptions, null);
                     }
 
                     return vsapi.call(`${main_view.base_url}/prm/purchase/order/items-by-po`, { id: editPoId, po_id: editPoId }, null, false);
@@ -1081,18 +1026,54 @@ var PurchaseOrdersComponent = (() => {
                     if (!itemsRes || itemsRes.status_code !== 200) {
                         throw new Error(itemsRes?.error_message || 'Failed to load purchase order items');
                     }
-                    const items = normalizeItems(itemsRes.data);
+                    const raw = itemsRes.data;
+                    const items = Array.isArray(raw) ? raw : (Array.isArray(raw?.items) ? raw.items : (Array.isArray(raw?.data) ? raw.data : []));
+                    const unitByName = { pcs: 1, kg: 2, box: 3, meter: 4 };
 
-                    const rows = mapEditRows(items);
+                    const rows = items.map(it => {
+                        const unitNum = Number(it.unit);
+                        const unitValue = (unitNum >= 1 && unitNum <= 4) ? unitNum : (unitByName[String(it.unit).toLowerCase()] ?? it.unit);
+                        return {
+                            id: it.id,
+                            item_id: it.item_id,
+                            qty: it.qty != null ? Number(it.qty) : 0,
+                            unit: unitValue,
+                            unit_price: it.unit_price || 0,
+                            total_price: it.total_price || (Number(it.qty) * Number(it.unit_price || 0)),
+                            code: it.code || ''
+                        };
+                    });
 
                     // ItemsView implementations differ; `setData()` does not always bind into the grid.
                     // Prefer rebuilding via `addRow()` when available (used elsewhere, e.g. InvoiceComponent).
-                    setItemsViewRows(me.purchaseItemsView, rows);
-                    renderItemsView(me.purchaseItemsView);
-                    removeLeadingEmptyItemRow(me.purchaseItemsView);
+                    if (typeof me.purchaseItemsView.addRow === 'function') {
+                        if (typeof me.purchaseItemsView.setData === 'function') me.purchaseItemsView.setData(null);
+                        rows.forEach(r => me.purchaseItemsView.addRow(r));
+                    } else {
+                        me.purchaseItemsView.setData(rows);
+                    }
+                    // Remove the initial empty row if the grid auto-creates one.
+                    if (typeof me.purchaseItemsView.getItems === 'function' && typeof me.purchaseItemsView.setData === 'function') {
+                        const cur = me.purchaseItemsView.getItems() || [];
+                        const cleaned = cur.filter((it) => {
+                            const itemId = String(it?.item_id ?? '').trim();
+                            const qty = Number(it?.qty ?? 0);
+                            const price = Number(it?.unit_price ?? it?.price ?? 0);
+                            return itemId !== '' || qty > 0 || price > 0;
+                        });
+                        if (cleaned.length !== cur.length) {
+                            me.purchaseItemsView.setData(cleaned);
+                        }
+                    }
+                    if (typeof me.purchaseItemsView.render === 'function') me.purchaseItemsView.render();
+                    if (typeof me.purchaseItemsView.refresh === 'function') me.purchaseItemsView.refresh();
+                    if (typeof me.purchaseItemsView.draw === 'function') me.purchaseItemsView.draw();
                     if (typeof me.updatePOTotals === 'function') me.updatePOTotals();
                     if (!items.length) {
                         cv_interact.warning('This purchase order has no items (items-by-po returned empty).');
+                    }
+                    if (me.purchaseItemsView?.getItems) {
+                        console.log('[PO] ItemsView getItems after setData', me.purchaseItemsView.getItems());
                     }
                     return items;
                 });
@@ -1233,7 +1214,14 @@ var PurchaseOrdersComponent = (() => {
                         if (me.controls.address) me.controls.address.value = '';
                         return;
                     }
-                    loadVendorInfo(me, vendorId);
+                    vsapi.post(`${main_view.base_url}/prm/vendor/options-vendor-info`, { vendor_id: vendorId }, {})
+                        .then(res => {
+                            const d = res.data || {};
+                            const v = d.vendor || {};
+                            if (me.controls.phone_number) me.controls.phone_number.value = v.phone_number || '';
+                            if (me.controls.address) me.controls.address.value = v.address || '';
+                        })
+                        .catch(() => {});
                 };
 
                 // Keep the same dropdown UI style as screenshot (VSSearchInput),
@@ -1300,29 +1288,18 @@ var PurchaseOrdersComponent = (() => {
                         me.current_item = itemDetails;
                         tr.dataset.code = itemDetails.code || '';
 
-                        if (!me.purchaseItemsView.setCellValue) return;
-                        // Keep selected item visible in the row (label/value), not back to "Select Item".
-                        me.purchaseItemsView.setCellValue(tr, 'item_id', itemId);
-                        const itemSelectEl = tr.querySelector('[name="item_id"], [data-field="item_id"]');
-                        if (itemSelectEl && itemSelectEl.tagName === 'SELECT') {
-                            let hasOption = false;
-                            for (let i = 0; i < itemSelectEl.options.length; i++) {
-                                if (String(itemSelectEl.options[i].value) === String(itemId)) {
-                                    hasOption = true;
-                                    break;
-                                }
-                            }
-                            if (!hasOption && itemDetails?.name) {
-                                itemSelectEl.add(new Option(itemDetails.name, itemId, false, false));
-                            }
-                            itemSelectEl.value = String(itemId);
-                            itemSelectEl.dispatchEvent(new Event('change'));
-                        }
-                        if (itemDetails.unit_id == null && itemDetails.unit == null) return;
+                        if (!itemDetails.unit || !me.purchaseItemsView.setCellValue) return;
 
-                        me.purchaseItemsView.setCellValue(tr, 'unit', normalizeUnit(itemDetails.unit_id ?? itemDetails.unit));
+                        const unitByName = { pcs: 1, kg: 2, box: 3, meter: 4 };
+                        const unitNum = Number(itemDetails.unit);
+                        const unitValue = (unitNum >= 1 && unitNum <= 4) ? unitNum : (unitByName[String(itemDetails.unit).toLowerCase()] ?? itemDetails.unit);
+                        me.purchaseItemsView.setCellValue(tr, 'unit', unitValue);
 
                         if (typeof me.updatePOTotals === 'function') me.updatePOTotals();
+                    },
+                    "keyup": (e, col_name, td) => {
+                        const tr = td.parentNode;
+                        const item = me.purchaseItemsView.getDataRow(tr,'code');
                     },
                 });
                 const itemListEl = me.divModal.querySelector('#purchase_item_list');
@@ -1330,10 +1307,15 @@ var PurchaseOrdersComponent = (() => {
                     itemListEl.addEventListener('input', () => { if (typeof me.updatePOTotals === 'function') me.updatePOTotals(); });
                     itemListEl.addEventListener('change', () => { if (typeof me.updatePOTotals === 'function') me.updatePOTotals(); });
                 }
-                applyUnitOptions(me.purchaseItemsView);
+                me.purchaseItemsView.setSelectOptions("unit", [
+                        { value: 1, label: "pcs" },
+                        { value: 2, label: "kg" },
+                        { value: 3, label: "box" },
+                        { value: 4, label: "meter" },
+                    ],'',{value:'id', label:'Select unit'});
                 me.updatePOTotals = () => {
                     if (!me.divModal || !me.purchaseItemsView) return;
-                    const items = getCleanPurchaseItems(me.purchaseItemsView);
+                    const items = me.purchaseItemsView.getItems ? me.purchaseItemsView.getItems() : [];
                     let subTotal = 0;
                     if (Array.isArray(items)) {
                         items.forEach(it => {
@@ -1345,12 +1327,16 @@ var PurchaseOrdersComponent = (() => {
                     const discountTypeEl = me.controls.discount_type || me.divModal.querySelector('[data-field="discount_type"]');
                     const discountVal = Number(discountEl?.value) || 0;
                     const discountType = (discountTypeEl?.value || 'percent') === 'percent' ? 'percent' : 'amount';
-                    const totals = calcTotals(subTotal, discountVal, discountType);
-                    writeTotalsToDom(me.divModal, {
-                        subtotal: '#po_subtotal_display',
-                        tax: '#po_tax_display',
-                        total: '#po_total_display',
-                    }, totals);
+                    const discountAmount = discountType === 'percent' ? (subTotal * discountVal / 100) : discountVal;
+                    const afterDiscount = Math.max(0, subTotal - discountAmount);
+                    const taxAmount = 0;
+                    const total = afterDiscount + taxAmount;
+                    const subtotalEl = me.divModal.querySelector('#po_subtotal_display');
+                    const taxEl = me.divModal.querySelector('#po_tax_display');
+                    const totalEl = me.divModal.querySelector('#po_total_display');
+                    if (subtotalEl) subtotalEl.textContent = formatCurrency(subTotal);
+                    if (taxEl) taxEl.textContent = formatCurrency(taxAmount);
+                    if (totalEl) totalEl.textContent = formatCurrency(total);
                 };
                 me.clear = ()=>{
                     for(const name in me.fields){
@@ -1368,20 +1354,30 @@ var PurchaseOrdersComponent = (() => {
                     me.purchaseItemsView.setData(null);
                     me.updatePOTotals();
                 };
-                bindTotalsInputListeners(me, ['discount_value', 'discount_type'], () => me.updatePOTotals());
+                ['discount_value', 'discount_type'].forEach(field => {
+                    const el = me.controls[field];
+                    if (el) {
+                        el.addEventListener('input', () => me.updatePOTotals());
+                        el.addEventListener('change', () => me.updatePOTotals());
+                    }
+                });
                 me.updatePOTotals();
             },
             onShow: (me) => {
-                const editPoId = getEditPoId(me);
+                const editPoId = _currentEditPoId ?? me?._editPoId ?? (PurchaseOrderDialog && PurchaseOrderDialog._editPoId) ?? (me?.dataOptions && me.dataOptions.id);
+                console.log('[PO] onShow', { editPoId, hasItemsView: !!me?.purchaseItemsView });
                 if (!editPoId) return;
 
                 const tryLoad = (attempt = 0) => {
                     if (!me.purchaseItemsView || typeof me.purchaseItemsView.setData !== 'function') {
+                        if (attempt === 0) console.log('[PO] waiting for purchaseItemsView...');
                         if (attempt < 60) return setTimeout(() => tryLoad(attempt + 1), 50);
                         return cv_interact.error('Purchase items view not ready.');
                     }
                     loadPurchaseOrderForEdit(me, editPoId)
+                        .then((items) => console.log('[PO] loaded items', { editPoId, count: Array.isArray(items) ? items.length : null }))
                         .catch((err) => {
+                            console.error('[PO] load failed', err);
                             cv_interact.error(err?.message || 'Failed to load purchase order for edit.');
                         });
                 };
@@ -1406,7 +1402,7 @@ var PurchaseOrdersComponent = (() => {
                     if (!me.purchaseItemsView || typeof me.purchaseItemsView.getItems !== 'function') {
                         return cv_interact.error('Purchase items are not ready. Please try again.');
                     }
-                    p.items = getCleanPurchaseItems(me.purchaseItemsView);
+                    p.items = me.purchaseItemsView.getItems() || [];
                     if (!hasValidPurchaseOrderLineItems(p.items)) {
                         return cv_interact.error('Please select at least one item before saving the purchase order.');
                     }
@@ -1418,14 +1414,14 @@ var PurchaseOrdersComponent = (() => {
                         if (res.status_code == 200) {
                             cv_interact.success(savePoId ? 'Purchase order updated.' : 'Purchase order created.');
                             me.hide(true);
-                            mThis.PoListView.showPage(mThis.getFilterData());
+                            PoListView.showPage(getFilterData());
                         } else cv_interact.warning(res.error_message);
                     });
                 }
             }
             ],
         onPrepareForm:(me,data)=>{
-            const editPoId = getEditPoId(me);
+            const editPoId = _currentEditPoId ?? me._editPoId ?? (PurchaseOrderDialog && PurchaseOrderDialog._editPoId) ?? (me.dataOptions && me.dataOptions.id);
             const isModify = !!editPoId;
             const titleEl = me.divModal.querySelector('.modal-title');
             if (titleEl) {
@@ -1472,7 +1468,25 @@ var PurchaseOrdersComponent = (() => {
             cssClass: 'modal-xl vs-modal',
             backdrop: 'static',
             override: {
-                setData: (dlg, data) => setDialogDataExcluding(dlg, data, '#receive_purchase_item_list'),
+                setData: (dlg, data) => {
+                    data = data || {};
+                    const rootEl = dlg?.divModal;
+                    if (!rootEl || !rootEl.querySelectorAll) return;
+                    rootEl.querySelectorAll('.data-input').forEach((el) => {
+                        if (el.closest && el.closest('#receive_purchase_item_list')) return;
+                        const field = el.dataset?.field || el.getAttribute('name');
+                        if (!field) return;
+                        const val = data[field] ?? '';
+                        if (el.tagName === 'SELECT') {
+                            el.value = val;
+                            el.dispatchEvent(new Event('change'));
+                        } else if (el.tagName === 'IMG') {
+                            el.setAttribute('src', val);
+                        } else {
+                            el.value = val;
+                        }
+                    });
+                },
             },
             createContent: () => `
             <div class="row mb-4">
@@ -1591,14 +1605,27 @@ var PurchaseOrdersComponent = (() => {
                     addLineButtonText: 'Add Item',
                     onItemChange: (row_id, item, col_name) => {
                         if (col_name !== 'receive_qty') return;
-                        refreshReceiveQtyDependentUi(me);
+                        if (typeof me.updateReceiveTotals === 'function') me.updateReceiveTotals();
+                        const live = me.receiveItemsView && me.receiveItemsView.getItems
+                            ? (me.receiveItemsView.getItems() || [])
+                            : [];
+                        refreshReceiveLineActionsInPlace(me, live);
                     },
                     keyup: (e, col_name) => {
                         if (col_name !== 'receive_qty') return;
-                        refreshReceiveQtyDependentUi(me);
+                        if (typeof me.updateReceiveTotals === 'function') me.updateReceiveTotals();
+                        const live = me.receiveItemsView && me.receiveItemsView.getItems
+                            ? (me.receiveItemsView.getItems() || [])
+                            : [];
+                        refreshReceiveLineActionsInPlace(me, live);
                     }
                 });
-                applyUnitOptions(me.receiveItemsView);
+                me.receiveItemsView.setSelectOptions('unit', [
+                    { value: 1, label: 'pcs' },
+                    { value: 2, label: 'kg' },
+                    { value: 3, label: 'box' },
+                    { value: 4, label: 'meter' },
+                ], '', { value: 'id', label: 'Select unit' });
 
                 me.updateReceiveTotals = () => {
                     if (!me.divModal || !me.receiveItemsView) return;
@@ -1606,7 +1633,8 @@ var PurchaseOrdersComponent = (() => {
                     let subTotal = 0;
                     if (Array.isArray(items)) {
                         items.forEach((it) => {
-                            const receiveAmt = Number(getReceiveQtyRaw(it)) || 0;
+                            const receiveRaw = it.receive_qty != null ? it.receive_qty : it.recieve_amount;
+                            const receiveAmt = Number(receiveRaw) || 0;
                             const unitPrice = Number(it.unit_price) || 0;
                             subTotal += receiveAmt * unitPrice;
                         });
@@ -1615,12 +1643,16 @@ var PurchaseOrdersComponent = (() => {
                     const discountTypeEl = me.controls.discount_type || me.divModal.querySelector('[data-field="discount_type"]');
                     const discountVal = Number(discountEl?.value) || 0;
                     const discountType = (discountTypeEl?.value || 'percent') === 'percent' ? 'percent' : 'amount';
-                    const totals = calcTotals(subTotal, discountVal, discountType);
-                    writeTotalsToDom(me.divModal, {
-                        subtotal: '#receive_po_subtotal_display',
-                        tax: '#receive_po_tax_display',
-                        total: '#receive_po_total_display',
-                    }, totals);
+                    const discountAmount = discountType === 'percent' ? (subTotal * discountVal / 100) : discountVal;
+                    const afterDiscount = Math.max(0, subTotal - discountAmount);
+                    const taxAmount = 0;
+                    const total = afterDiscount + taxAmount;
+                    const subtotalEl = me.divModal.querySelector('#receive_po_subtotal_display');
+                    const taxEl = me.divModal.querySelector('#receive_po_tax_display');
+                    const totalEl = me.divModal.querySelector('#receive_po_total_display');
+                    if (subtotalEl) subtotalEl.textContent = formatCurrency(subTotal);
+                    if (taxEl) taxEl.textContent = formatCurrency(taxAmount);
+                    if (totalEl) totalEl.textContent = formatCurrency(total);
                 };
             },
             onPrepareForm: (me, data) => {

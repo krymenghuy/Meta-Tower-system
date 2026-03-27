@@ -78,7 +78,7 @@ var ReservationComponent = (() => {
             data: (data, index, tr) => {
                 return `
                     <div class="text-primary-custom" style="width:150px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.description ?? "N/A"}</span>
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.description ?? "__"}</span>
                     </div>
                 `;
             },
@@ -110,7 +110,7 @@ var ReservationComponent = (() => {
 
                 return `
                     <span class="${cls} px-3 py-2 d-inline-flex align-items-center gap-2"
-                        style="min-width:120px"
+                        style="min-width:110px"
                         data-status_id="${data.status_id}">
                         <i class="${icon}" style="font-size:13px;"></i>
                         <span>${label}</span>
@@ -378,7 +378,7 @@ const CreateReservationDialog = (() => {
                                 <input name="tenant_id" class="d-none data-input form-control" data-field="tenant_id">
                             <div class="col-6">
                                 <div class="material-input outlined">
-                                    <input  name="tenant" class="data-input form-control" data-field="tenant_name" placeholder="Tenant Name "></input>
+                                    <input  name="tenant" class="data-input form-control" data-field="tenant_name" placeholder="Tenant Name"></input>
                                     <label style="color:#777777;padding-left:6px; display:none;">Tenant</label>
                                 </div>
                             </div>

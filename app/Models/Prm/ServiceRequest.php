@@ -34,9 +34,9 @@ class ServiceRequest extends VSModel
             'service_id'        => '1|number|exists=services.id',
             'space_id'          => '1|number|exists=building_spaces.id',
             'service_type_id'   => '1|number|exists=service_types.id',
-            'description'       => '0|string|0-1000',
+            'description'       => '0|string|0-255',
             'duration_hours'    => '0|numeric|min:0.5|',
-            'code'              => '0|string|0-100',
+            'code'              => '0|string|0-20',
             'unit_type'         => '0|choice|1,2', // 1 one_time , 2 hour
             'request_date'      => '0|date',
             'scheduled_date'    => '1|date',
@@ -145,7 +145,7 @@ class ServiceRequest extends VSModel
                 sr.description, sr.request_date,
                 sr.start_time,
                 sr.updated_at, sr.update_user,
-                sr.scheduled_date, sr.complete_date, sr.create_uid,
+                sr.scheduled_date,sr.request_date, sr.complete_date, sr.create_uid,
                 rs.id as status_id,
                 rs.name as status_name,
                 st.name as service_type
@@ -156,7 +156,7 @@ class ServiceRequest extends VSModel
         $count = $clone_query->count('sr.id');
         $rows  = $query->skip($skip_rows)->take($per_page)->get();
         foreach($rows as $row){
-            $row = setOfficialDates($row,['complete_date','scheduled_date'],['updated_at','created_at as created_at'],[]);
+            $row = setOfficialDates($row,['complete_date','request_date','scheduled_date'],['updated_at','created_at as created_at'],[]);
         }
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }

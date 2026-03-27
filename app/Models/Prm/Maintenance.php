@@ -29,52 +29,18 @@ class Maintenance extends VSModel
             'building_id'          => '1|number|exists=buildings.id',
             'space_id'             => '0|number|exists=building_spaces.id',
             'amenity_id'           => '0|number|exists=amenities.id',
-            'description'          => '0|string|0-2000',
-            'start_date'           => '0|date',
-            'end_date'             => '0|date',
-            'status_id'            => '0|number|exists=maintenance_statuses.id',
-            'remarks'              => '0|string|0-1000',
+            'start_date'           => '1|TIMESTAMP',
+            'end_date'             => '1|TIMESTAMP',
+            'remarks'              => '0|string|0-255',
         ];
 
         $allowed_chars = ['@', ',', '-', '.', '#', '!', '?', '(', ')', "\n"];
-        $res = DBX::validateObject(
-            $arr,
-            $v_rule,
-            1,
-            ['description' => $allowed_chars, 'remarks' => $allowed_chars],
-            $ss->lang ?? 'en',
-            0,
-            null
-        );
-
+        $res = DBX::validateObject($arr,$v_rule,1,['remarks' => $allowed_chars],$ss->lang ?? 'en',0,null);
         if ($res->error) {
             return DV::error($res->error);
         }
-
         $input = $res->values;
 
-        if (!empty($input['start_date'])) {
-            $input['start_date'] = date('Y-m-d H:i:s', strtotime($input['start_date']));
-        } else {
-            $input['start_date'] = null;
-        }
-        if (!empty($input['end_date'])) {
-            $input['end_date'] = date('Y-m-d H:i:s', strtotime($input['end_date']));
-        } else {
-            $input['end_date'] = null;
-        }
-
-        if (isset($input['space_id']) && (int) $input['space_id'] <= 0) {
-            $input['space_id'] = null;
-        }
-        if (isset($input['amenity_id']) && (int) $input['amenity_id'] <= 0) {
-            $input['amenity_id'] = null;
-        }
-        if (empty($input['status_id'])) {
-            $input['status_id'] = 1; // default: Planned
-        }
-
-        // Auto-sync status_id with time window (unless explicitly Completed/Cancelled).
         try {
             $sid = (int) ($input['status_id'] ?? 0);
             if (!in_array($sid, [3, 4], true)) {
@@ -128,68 +94,71 @@ class Maintenance extends VSModel
         $building_id      = $d->building_id ?? null;
         $space_id         = $d->space_id ?? null;
         $status_id        = $d->status_id ?? null;
-        $current_page     = (int) ($d->current_page ?? 1);
-        $per_page         = (int) ($d->per_page ?? 10);
+        $current_page     = $d->current_page ?? 1;
+        $per_page         = $d->per_page ?? 10;
+        if(!is_numeric($current_page) || !is_numeric($per_page)){
+            return null;
+        }
         $skip_rows        = ($current_page - 1) * $per_page;
-
-        $where_search = "1=1";
-        $where_more   = "1=1";
+        $str_search = "1=1";
+        $str_moreWhere   = "2=2";
 
         if ($search_value) {
-            $search = escape_like_str($search_value);
-            $where_search = "(m.description LIKE '%{$search}%' OR m.remarks LIKE '%{$search}%' OR b.name LIKE '%{$search}%' OR bs.code LIKE '%{$search}%')";
+            $skip_rows = 0;
+            $search_value = escape_like_str($search_value);
+            $str_search = "(b.name LIKE '%" .$search_value ."%' OR bs.code LIKE '%" .$search_value ."%' OR a.code LIKE '%" .$search_value ."%')";
         }
         if ($building_id) {
-            $where_more .= ' AND m.building_id = ' . (int) $building_id;
+            $str_moreWhere .= ' AND m.building_id = ' . $building_id;
         }
         if ($space_id) {
-            $where_more .= ' AND m.space_id = ' . (int) $space_id;
+            $str_moreWhere .= ' AND m.space_id = ' . $space_id;
         }
-        if ($status_id !== null && $status_id !== '' && $status_id !== 'all') {
-            $status_id = (int) $status_id;
-            if ($status_id === 4) {
-                $where_more .= ' AND m.status_id = 4';
-            } else {
-                $now = now()->format('Y-m-d H:i:s');
-                if ($status_id === 1) {
-                    $where_more .= " AND m.start_date IS NOT NULL AND m.start_date > '{$now}'";
-                } elseif ($status_id === 2) {
-                    $where_more .= " AND m.start_date IS NOT NULL AND m.end_date IS NOT NULL AND m.start_date <= '{$now}' AND m.end_date >= '{$now}'";
-                } elseif ($status_id === 3) {
-                    $where_more .= " AND m.end_date IS NOT NULL AND m.end_date < '{$now}'";
-                }
-            }
+        if ($status_id) {
+            $str_moreWhere .= ' AND m.status_id =' . $status_id;
         }
-
-        $updated_at = DBX::formatTime('m.updated_at', 'updated_at');
+        // if ($status_id !== null && $status_id !== '' && $status_id !== 'all') {
+        //     $status_id = (int) $status_id;
+        //     if ($status_id === 4) {
+        //         $str_moreWhere .= ' AND m.status_id = 4';
+        //     } else {
+        //         $now = now()->format('Y-m-d H:i:s');
+        //         if ($status_id === 1) {
+        //             $str_moreWhere .= " AND m.start_date IS NOT NULL AND m.start_date > '{$now}'";
+        //         } elseif ($status_id === 2) {
+        //             $str_moreWhere .= " AND m.start_date IS NOT NULL AND m.end_date IS NOT NULL AND m.start_date <= '{$now}' AND m.end_date >= '{$now}'";
+        //         } elseif ($status_id === 3) {
+        //             $str_moreWhere .= " AND m.end_date IS NOT NULL AND m.end_date < '{$now}'";
+        //         }
+        //     }
+        // }
 
         $query = DB::table('maintenances as m')
             ->join('buildings as b', 'b.id', '=', 'm.building_id')
             ->leftJoin('building_spaces as bs', 'bs.id', '=', 'm.space_id')
             ->leftJoin('amenities as a', 'a.id', '=', 'm.amenity_id')
             ->leftJoin('maintenance_statuses as ms', 'ms.id', '=', 'm.status_id')
-            ->whereRaw($where_search)
-            ->whereRaw($where_more)
+            ->whereRaw($str_search)
+            ->whereRaw($str_moreWhere)
             ->selectRaw("
                 m.id, m.building_id, b.name as building_name,
                 m.space_id, bs.code as space_code,
-                m.amenity_id, a.name as amenity_name, a.code as amenity_code,
-                m.description, m.start_date, m.end_date,
+                m.amenity_id, a.name as amenity_name, a.code as amenity_code, m.start_date, m.end_date,
                 m.status_id, ms.name as status_name,
                 m.remarks,
-                m.create_uid, m.create_user, m.update_uid, m.update_user,
-                $updated_at
+                m.create_uid, m.create_user, m.update_uid, m.update_user,m.updated_at
             ")
             ->orderBy('m.id', 'DESC');
 
-        $total = (clone $query)->count('m.id');
+        $clone_query = clone $query;
+        $count = $clone_query->count('m.id');
         $rows  = $query->skip($skip_rows)->take($per_page)->get();
 
         foreach ($rows as $row) {
             setOfficialDates($row, [], ['updated_at', 'start_date', 'end_date'], []);
         }
 
-        return new LengthAwarePaginator($rows, $total, $per_page, $current_page);
+        return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
     public static function getMaintenanceDetails($id)
@@ -202,7 +171,7 @@ class Maintenance extends VSModel
             ->where('m.id', $id)
             ->select([
                 'm.id', 'm.building_id', 'm.space_id', 'm.amenity_id',
-                'm.description', 'm.start_date', 'm.end_date',
+                'm.start_date', 'm.end_date',
                 'm.status_id', 'm.remarks',
                 'm.create_uid', 'm.create_user', 'm.update_uid', 'm.update_user', 'm.updated_at',
                 'b.name as building_name', 'bs.code as space_code', 'a.name as amenity_name', 'a.code as amenity_code',

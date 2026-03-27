@@ -305,24 +305,64 @@ class PurchaseOrder //extends Model
 
         $po_id = DBX::saveData($ss, 'purchase_orders', ['id' => $id], $inputs, [], 1, false);
 
+        $valid_items = array_values(array_filter($items ?? [], function ($item) {
+            $item = (object) $item;
+            $item_id = isset($item->item_id) ? (int) $item->item_id : 0;
+            $trx_id = isset($item->trx_id) ? (int) $item->trx_id : (isset($item->id) ? (int) $item->id : 0);
+            return $item_id > 0 || $trx_id > 0;
+        }));
+
         $success_count = 0;
-        $count = 0;
+        $count = count($valid_items);
 
         if ($po_id) {
-            foreach ($items as $item) {
+            $existing_line_ids_by_item = [];
+            if (!$create) {
+                $existing_lines = DB::table('purchase_order_items')
+                    ->where('po_id', $po_id)
+                    ->orderBy('id', 'asc')
+                    ->get(['id', 'item_id']);
+                foreach ($existing_lines as $line) {
+                    $key = (int) ($line->item_id ?? 0);
+                    if ($key <= 0) {
+                        continue;
+                    }
+                    if (!isset($existing_line_ids_by_item[$key])) {
+                        $existing_line_ids_by_item[$key] = [];
+                    }
+                    $existing_line_ids_by_item[$key][] = (int) $line->id;
+                }
+            }
+
+            foreach ($valid_items as $item) {
 
                 $item = (object) $item;
-                $trx_id = $item->id ?? $item->trx_id ?? null;
-                // In modify mode, keep old rows and update by row id when available.
-                // If row id is not sent, try to match existing row by item_id.
-                if (!$create && !$trx_id && !empty($item->item_id)) {
-                    $existing_row = DB::table('purchase_order_items')
+                $trx_id = $item->trx_id ?? $item->id ?? null;
+                if (!$create && $trx_id) {
+                    $is_valid_trx = DB::table('purchase_order_items')
+                        ->where('id', $trx_id)
                         ->where('po_id', $po_id)
-                        ->where('item_id', $item->item_id)
-                        ->orderBy('id', 'asc')
+                        ->exists();
+                    if (!$is_valid_trx) {
+                        $trx_id = null;
+                    }
+                }
+                if (!$create && !$trx_id && !empty($item->item_id)) {
+                    $item_key = (int) $item->item_id;
+                    if ($item_key > 0 && !empty($existing_line_ids_by_item[$item_key])) {
+                        $trx_id = array_shift($existing_line_ids_by_item[$item_key]);
+                    }
+                }
+                // In modify mode, update only when explicit line id (trx_id) is provided.
+                // If trx_id is missing, treat as a new line item.
+                if (!$create && empty($item->item_id) && $trx_id) {
+                    $existing_row_by_trx = DB::table('purchase_order_items')
+                        ->where('po_id', $po_id)
+                        ->where('id', $trx_id)
+                        ->select('item_id')
                         ->first();
-                    if ($existing_row) {
-                        $trx_id = $existing_row->id;
+                    if ($existing_row_by_trx && !empty($existing_row_by_trx->item_id)) {
+                        $item->item_id = $existing_row_by_trx->item_id;
                     }
                 }
                 if (empty($item->item_id)) {
@@ -344,8 +384,6 @@ class PurchaseOrder //extends Model
                 if ($po_item) {
                     $success_count++;
                 }
-
-                $count++;
             }
 
             $sub_total = (float) DB::table('purchase_order_items')->where('po_id', $po_id)->sum('total_price');
@@ -403,6 +441,82 @@ class PurchaseOrder //extends Model
         return null;
     }
 
+    /**
+     * PO line / item unit to numeric id (1–4) for UI selects (pcs, kg, box, meter).
+     */
+    public static function normalizePoUnitId($unit): int
+    {
+        $n = (int) $unit;
+        if ($n >= 1 && $n <= 4) {
+            return $n;
+        }
+        $map = ['pcs' => 1, 'kg' => 2, 'box' => 3, 'meter' => 4];
+        $key = strtolower(trim((string) $unit));
+
+        return (int) ($map[$key] ?? ($n > 0 ? $n : 1));
+    }
+
+    /**
+     * Presentation fields for purchase order list rows (status badge + formatted money).
+     *
+     * @param  object  $row  Query row (mutated in place; same fields returned for clarity)
+     */
+    public static function decoratePurchaseOrderListRow($row): object
+    {
+        $statusId = (int) ($row->status_id ?? 0);
+        $isReceived = in_array($statusId, [2, 3], true);
+        $byStatus = [
+            1 => 'badge text-warning bg-warning-subtle border border-warning',
+            2 => 'badge text-success bg-success-subtle border border-success',
+            3 => 'badge text-primary bg-primary-subtle border border-primary',
+            4 => 'badge text-info bg-info-subtle border border-info',
+            5 => 'badge text-dark bg-secondary-subtle border border-secondary',
+            6 => 'badge text-danger bg-danger-subtle border border-danger',
+        ];
+        $row->status_label = $isReceived ? 'Received' : (string) ($row->status ?? '');
+        if ($isReceived) {
+            $row->status_class = 'badge border';
+        } else {
+            $row->status_class = $byStatus[$statusId] ?? 'badge text-warning bg-warning-subtle border border-warning';
+        }
+        $row->sub_total_formatted = '$ ' . number_format((float) ($row->sub_total ?? 0), 2, '.', '');
+        $row->total_amount_formatted = '$ ' . number_format((float) ($row->total_amount ?? 0), 2, '.', '');
+        $dv = (float) ($row->discount_value ?? 0);
+        $dt = (string) ($row->discount_type ?? 'percent');
+        if ($dt === 'amount') {
+            $row->discount_formatted = '$ ' . number_format($dv, 2, '.', '');
+        } else {
+            $isInt = abs($dv - round($dv)) < 0.00001;
+            $v = $isInt ? (string) (int) round($dv) : rtrim(rtrim(number_format($dv, 2, '.', ''), '0'), '.');
+            $row->discount_formatted = $v . ' %';
+        }
+
+        return $row;
+    }
+
+    /**
+     * Optional formatted display fields on PO header (numeric fields unchanged for forms).
+     */
+    public static function decoratePurchaseOrderHeaderRow(?object $row): ?object
+    {
+        if (!$row) {
+            return null;
+        }
+        $row->sub_total_formatted = '$ ' . number_format((float) ($row->sub_total ?? 0), 2, '.', '');
+        $row->total_amount_formatted = '$ ' . number_format((float) ($row->total_amount ?? 0), 2, '.', '');
+        $dv = (float) ($row->discount_value ?? 0);
+        $dt = (string) ($row->discount_type ?? 'percent');
+        if ($dt === 'amount') {
+            $row->discount_formatted = '$ ' . number_format($dv, 2, '.', '');
+        } else {
+            $isInt = abs($dv - round($dv)) < 0.00001;
+            $v = $isInt ? (string) (int) round($dv) : rtrim(rtrim(number_format($dv, 2, '.', ''), '0'), '.');
+            $row->discount_formatted = $v . ' %';
+        }
+
+        return $row;
+    }
+
     function getPurchaseOrderList($filter, $ss)
     {
         $ss = $ss ?? $this->userInfo;
@@ -451,14 +565,22 @@ class PurchaseOrder //extends Model
         $count_query = clone $query;
         $count = $count_query->count('po.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
+        foreach ($rows as $row) {
+            self::decoratePurchaseOrderListRow($row);
+        }
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
     public static function purchaseOrderDetails($id, $ss = null)
     {
-        return DB::table('purchase_orders as po')
+        $row = DB::table('purchase_orders as po')
             ->where('po.id', $id)
             ->selectRaw('po.id,po.po_number,po.vendor_id,po.po_date,po.status_id,po.remarks,po.discount_value,po.discount_type,po.sub_total,po.total_amount')->first();
+        if ($row) {
+            self::decoratePurchaseOrderHeaderRow($row);
+        }
+
+        return $row;
     }
     public static function getFormOptions($id = null, $ss = null)
     {
@@ -488,31 +610,102 @@ class PurchaseOrder //extends Model
         return null;
     }
 
-function getItemsByPurchaseOrder($data,$ss){
-      //$branch_id = $ss->branch_id;
-      //$warehouse_id = $data['warehouse_id'] ?? 1;
-      $po_id = $data['po_id'] ?? $data['id'] ?? null ;
-      $receiveQtyColumn = self::purchaseOrderItemReceiveQtyColumnName();
-      $hasBreakAmount = Schema::hasColumn('purchase_order_items', 'break_amount');
-      $receiveQtyCol = $receiveQtyColumn ? ('IFNULL(pi.' . $receiveQtyColumn . ',0)') : '0';
-      $breakAmountCol = $hasBreakAmount ? 'IFNULL(pi.break_amount,0)' : '0';
+    function getItemsByPurchaseOrder($data, $ss)
+    {
+        $po_id = $data['po_id'] ?? $data['id'] ?? null;
+        $receiveQtyColumn = self::purchaseOrderItemReceiveQtyColumnName();
+        $hasBreakAmount = Schema::hasColumn('purchase_order_items', 'break_amount');
+        $hasLineUnit = Schema::hasColumn('purchase_order_items', 'unit');
+        $receiveQtyCol = $receiveQtyColumn ? ('IFNULL(pi.' . $receiveQtyColumn . ',0)') : '0';
+        $breakAmountCol = $hasBreakAmount ? 'IFNULL(pi.break_amount,0)' : '0';
+        $unitExpr = $hasLineUnit ? 'COALESCE(pi.unit, i.unit)' : 'i.unit';
 
-      $rows = DB::table('purchase_order_items as pi')
+        $rows = DB::table('purchase_order_items as pi')
             ->join('items as i', 'i.id', '=', 'pi.item_id')
             ->where('pi.po_id', $po_id)
-            ->selectRaw("pi.id, pi.qty, i.unit, pi.remarks, pi.status_id, pi.unit_price, pi.total_price, $receiveQtyCol as receive_qty, $breakAmountCol as break_amount, i.code, i.id as item_id, i.name as item_name, pi.update_user, " . DBX::formatDate('i.updated_at') . " as updated_at")
-            ->orderByRaw("i.name ASC")
+            ->selectRaw("pi.id, pi.qty, $unitExpr as unit, pi.remarks, pi.status_id, pi.unit_price, pi.total_price, $receiveQtyCol as receive_qty, $breakAmountCol as break_amount, i.code, i.id as item_id, i.name as item_name, pi.update_user, " . DBX::formatDate('i.updated_at') . ' as updated_at')
+            ->orderByRaw('i.name ASC')
             ->get();
-      foreach($rows as $row){
-          $row->status = $row->status_id == 1 ? 'Panding' : ($row->status_id == 2 ? 'Resived' : null);
+        foreach ($rows as $row) {
+            $row->status = $row->status_id == 1 ? 'Panding' : ($row->status_id == 2 ? 'Resived' : null);
+            $row->unit_id = self::normalizePoUnitId($row->unit ?? null);
+            $row->unit_price_formatted = '$ ' . number_format((float) ($row->unit_price ?? 0), 2, '.', '');
+            $row->total_price_formatted = '$ ' . number_format((float) ($row->total_price ?? 0), 2, '.', '');
+        }
 
-      }
-      return $rows;
-  }
+        return $rows;
+    }
+
+    /**
+     * Align purchase_orders.status_id with line receive progress after line-level receives:
+     * 2 = every real line has Receive Qty + Break Amount = Ordered Qty; 3 = some receipt progress but not complete; 1 = no progress.
+     * Matches the rules used in confirmPurchaseOrderReceived so the PO list shows "Received" when appropriate.
+     */
+    protected function syncPurchaseOrderHeaderStatusFromLines(int $poId, $ss = null): void
+    {
+        $ss = $ss ?? $this->userInfo;
+        $receiveCol = self::purchaseOrderItemReceiveQtyColumnName();
+        $hasBreak = Schema::hasColumn('purchase_order_items', 'break_amount');
+
+        $lines = DB::table('purchase_order_items')
+            ->where('po_id', $poId)
+            ->whereNotNull('item_id')
+            ->where('item_id', '>', 0)
+            ->get();
+
+        if ($lines->isEmpty()) {
+            return;
+        }
+
+        $header = DB::table('purchase_orders')->where('id', $poId)->first();
+        if (!$header) {
+            return;
+        }
+        if ((int) $header->status_id === 2) {
+            return;
+        }
+
+        $anyReceived = false;
+        $allComplete = true;
+
+        foreach ($lines as $line) {
+            $ordered = (float) ($line->qty ?? 0);
+            $recv = 0.0;
+            if ($receiveCol) {
+                $recv = (float) ($line->{$receiveCol} ?? 0);
+            }
+            $brk = $hasBreak ? (float) ($line->break_amount ?? 0) : 0.0;
+            $lineStatus = (int) ($line->status_id ?? 0);
+
+            if ($recv > 0 || $brk > 0 || $lineStatus === 2) {
+                $anyReceived = true;
+            }
+            if (abs(($recv + $brk) - $ordered) > 0.02) {
+                $allComplete = false;
+            }
+        }
+
+        $newStatus = (int) $header->status_id;
+        if ($allComplete && $anyReceived) {
+            $newStatus = 2;
+        } elseif ($anyReceived) {
+            $newStatus = 3;
+        }
+
+        if ($newStatus !== (int) $header->status_id) {
+            $now = getNowTime();
+            $updateUser = $ss->login_name ?? $ss->user_name ?? 'User';
+            DB::table('purchase_orders')->where('id', $poId)->update([
+                'status_id' => $newStatus,
+                'updated_at' => $now,
+                'update_user' => $updateUser,
+            ]);
+        }
+    }
 
     /**
      * Save Receive Qty / Break Amount on selected line items and mark those lines received (status_id = 2).
-     * Does NOT change purchase_orders header status — use confirmPurchaseOrderReceived for PO status "Received".
+     * Updates purchase_orders header status when lines are fully received (2) or partially (3).
      *
      * @param array $payload Expects po_item_ids: int[] (purchase_order_items.id)
      */
@@ -587,6 +780,8 @@ function getItemsByPurchaseOrder($data,$ss){
             }
             DB::table('purchase_order_items')->where('id', $row->id)->update($updateData);
         }
+
+        $this->syncPurchaseOrderHeaderStatusFromLines($id, $ss);
 
         return DV::success(['message' => 'Selected lines were received successfully.']);
     }

@@ -22,11 +22,9 @@ var ContractComponent = new (function () {
         },
         {
             transTitle: "titles.Name",
-            className: "align-middle",
-            data: (data, index) => `<div class="text-prm-custom">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.tenant_name ?? ''}</span>
-                    </div>
-                    `,
+            className: "align-middle text-nowrap",
+            data: (data, index) => `
+                        <span class="">${data.tenant_name ?? ''}</span>`,
         },
         {
             transTitle: "titles.Contact Info",
@@ -41,14 +39,14 @@ var ContractComponent = new (function () {
             className: "align-middle",
             data: (data, index, tr) => {
                 const displayDate = (data.last_renewal_date && data.last_renewal_date.trim()) ? data.last_renewal_date : (data.start_date ?? '');
-                return `<small class="px-2 py-1 bg-body-secondary text-nowrap text-muted rounded-5"><i class="fa-regular fa-clock"></i> ${displayDate}</small>`;
+                return `<small class="px-2 py-2 bg-body-secondary text-nowrap text-muted rounded-2"><i class="fa-regular fa-clock"></i> ${displayDate}</small>`;
             }
         },
          {
             transTitle: "titles.End Date",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<small class="px-2 py-1 bg-body-secondary text-muted text-nowrap rounded-5"><i class="fa-regular fa-clock"></i> ${data.end_date ?? ''}</smaLL>`;
+                return `<small class="px-2 py-2 bg-body-secondary text-muted text-nowrap rounded-2"><i class="fa-regular fa-clock"></i> ${data.end_date ?? ''}</smaLL>`;
             }
         },
         {
@@ -131,27 +129,27 @@ var ContractComponent = new (function () {
 
                 const status = (data.status ?? '').toLowerCase();
 
-                let cls  = 'badge rounded-5 border border-warning text-warning bg-warning-subtle';
+                let cls  = 'badge border border-warning text-warning bg-warning-subtle';
                 let icon = 'bi-check-circle-fill';
                 let dot  = 'bg-warning';
 
                 if (status === 'active') {
-                    cls  = 'badge rounded-4 shadow-sm border border-success text-success bg-success-subtle';
+                    cls  = 'badge border border-success text-success bg-success-subtle';
                     icon = 'fa-regular fa-circle-check';
                     dot  = 'bg-success';
                 }
                 else if (status === 'pending') {
-                    cls  = 'badge rounded-5 shadow-sm border border-warning text-warning bg-warning-subtle';
+                    cls  = 'badge border border-warning text-warning bg-warning-subtle';
                     icon = 'fa-regular fa-hourglass-half';
                     dot  = 'bg-warning';
                 }
                 else if (status === 'expired') {
-                    cls  = 'badge rounded-5 shadow-sm border border-danger text-danger bg-danger-subtle';
+                    cls  = 'badge border border-danger text-danger bg-danger-subtle';
                     icon = 'fa-regular fa-clock';
                     dot  = 'bg-danger';
                 }
                 else if (status === 'terminated') {
-                    cls  = 'badge rounded-5 shadow-sm border border-dark text-white bg-dark';
+                    cls  = 'badge border border-dark text-white bg-dark';
                     icon = 'fa-regular fa-circle-xmark';
                     dot  = 'bg-dark';
                 }
