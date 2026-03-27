@@ -34,7 +34,6 @@ class Invoice extends VSModel
             'contract_id'       => '0|integer|exists:contracts,id',
             'due_date'          => '1|date',
             'payment_status_id' => '0|integer|exists:payment_statuses,id|default=2',
-            'remarks'           => '0|string|max:500',
             'items'             => '1|array|min:1',
         ];
 
@@ -141,7 +140,7 @@ class Invoice extends VSModel
                 $discountType    = $item['special_discount_type'] ?? 'percent';
                 $taxRate         = (float)($item['tax_rate'] ?? 0);
 
-               
+
                 if ($discountType === 'percent') {
                     $discountAmount = $baseAmount * ($discountValue / 100);
                 } else {
@@ -241,7 +240,6 @@ class Invoice extends VSModel
                 'i.updated_at',
                 'i.update_user',
                 'i.payment_status_id',
-                'i.remarks',
                 'i.contract_id',
                 't.name as tenant_name',
                 't.legal_name as tenant_legal_name',
@@ -297,7 +295,7 @@ class Invoice extends VSModel
                 'i.paid_amount',
                 DB::raw('(i.amount - COALESCE(i.paid_amount, 0)) as balance'),
                 'i.payment_status_id',
-                'i.remarks',
+                // 'i.remarks',
                 'i.contract_id',
                 't.name as tenant_name',
                 'bs.code as space_code',
