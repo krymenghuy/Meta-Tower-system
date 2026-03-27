@@ -257,6 +257,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('reservation')
 
 Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('purchase/order')->group(function(){
     Route::post('/save', [PurchaseOrderController::class, 'savePurchaseOrder']);
+    Route::post('/authorized',[PurchaseOrderController::class,'authorized']);
     Route::post('/delete', [PurchaseOrderController::class, 'deletePurchaseOrder']);
     Route::post('/receive', [PurchaseOrderController::class, 'receivePurchaseOrder']);
     Route::post('/confirm-received', [PurchaseOrderController::class, 'confirmPurchaseOrderReceived']);

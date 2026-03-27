@@ -392,7 +392,7 @@ var AmenityComponent = (() => {
             data: [
                 { status_id: "1", name: "Active" },
                 { status_id: "2", name: "Inactive" },
-                { status_id: "3", name: "Maintenance" },
+                // { status_id: "3", name: "Maintenance" },
             ],
             defaultValue: status_id,
             onConfirm: (status, btn, me) => {
@@ -492,15 +492,16 @@ const AmenityDialog = (() => {
                         </div>
                         <div class="col-6">
                             <div class="material-input outlined">
-                                <select data-style="material" type="text" name="category_id" required class="data-input form-control" data-field="category_id" placeholder="Amenity Category" >
+                                <select data-style="material" type="text" name="category_id"  class="data-input form-control" data-field="category_id" placeholder="Amenity Category" >
                                 </select>
                             </div>
                         </div>
                         <div class="col-6">
                             <div class="material-input outlined">
-                                <select  data-style="material" name="requirebooking" class="data-input form-control" data-field="requires_booking" placeholder="Booking ">
+                                <select data-style="material" name="requirebooking" class="data-input form-control" data-field="requires_booking" placeholder="Booking">
                                     <option value="0">No</option>
                                     <option value="1">Yes</option>
+
                                 </select>
                             </div>
                         </div>
@@ -588,7 +589,8 @@ const AmenityDialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
-                    // console.log(11,data);
+                    console.log(6666,data);
+                    
                     const header = me.divModal.querySelector(".modal-header");
                     const btnClose = header.querySelector(
                         "button[data-bs-dismiss]",
@@ -608,72 +610,23 @@ const AmenityDialog = (() => {
                         label: '<span vslang="buttons.Submit"></span>',
                         cssClass: "btn btn-primary",
                         click: (me, btn) => {
-                            let payload = me.getData() || {};
-
-                            const modal = me.divModal || document;
-
-                            modal
-                                .querySelectorAll(
-                                    "input[data-field], textarea[data-field]",
-                                )
-                                .forEach((el) => {
-                                    let val = el.value.trim();
-                                    if (el.type === "number")
-                                        val = Number(val) || 0;
-                                    payload[el.dataset.field] = val;
-                                });
-
-                            // Collect all select fields (fixes requires_booking & is_available)
-                            modal
-                                .querySelectorAll("select[data-field]")
-                                .forEach((el) => {
-                                    payload[el.dataset.field] = el.value;
-                                });
-
-                            // Ensure correct numeric types
-                            payload.requires_booking = Number(
-                                payload.requires_booking ?? 0,
-                            );
-
-                            payload.max_capacity = Number(
-                                payload.max_capacity ?? 0,
-                            );
-
-                            // Preserve ID for updates
-                            if (me.dataOptions?.id) {
-                                payload.id = me.dataOptions.id;
-                            }
-
-
-                            vsapi
-                                .call(
-                                    [
-                                        main_view.base_url,
-                                        "/prm/amenity/save",
-                                    ].join(""),
-                                    payload,
-                                    btn,
-                                )
-                                .then((res) => {
+                            const op = me.getData();
+                            console.log(123456,op);
+                            
+                            op.id = me.dataOptions.id;
+                            vsapi.call([main_view.base_url,"/prm/amenity/save",].join(""),op,btn,).then((res) => {
                                     if (res.status_code === 200) {
-                                        me.hide(true, payload);
-                                        const msg = payload.id
-                                            ? "Amenity updated successfully"
-                                            : "New amenity added successfully";
-                                        cv_interact.success(msg);
-                                        if (me.dataOptions?.onClose)
-                                            me.dataOptions.onClose();
+                                        me.hide(true, op);
+                                         if (me.dataOptions.id > 0) {
+                                            cv_interact.success("Amenity has been updated successfully");
+                                        } else {
+                                            cv_interact.success("New Amenity has been added successfully");
+                                        }
                                     } else {
-                                        cv_interact.error(
-                                            res.error_message ||
-                                                "Failed to save amenity",
-                                        );
+                                        cv_interact.error(res.error_message);
                                     }
-                                })
-                                // .catch((err) => {
-                                //     console.error("Save request failed:", err);
-                                //     cv_interact.error("Network/server error");
-                                // });
+                                });
+                             
                         },
                     },
                 ],
