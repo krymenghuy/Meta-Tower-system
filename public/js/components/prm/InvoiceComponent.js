@@ -164,13 +164,6 @@ var InvoiceComponent = (() => {
             el.onchange = () =>
                 mThis.InvoiceListView.showPage(mThis.getFilterData());
         });
-
-        // mThis.elSearch.addEventListener("input", () => {
-        //     clearTimeout(mThis.search_timeout);
-        //     mThis.search_timeout = setTimeout(() => {
-        //         mThis.InvoiceListView.showPage(mThis.getFilterData());
-        //     }, 350);
-        // });
         let timeOut = null;
             mThis.elSearch.onkeyup = function (e) {
                 e.preventDefault();
@@ -216,23 +209,16 @@ var InvoiceComponent = (() => {
 
         const itemsHtml = (invoice.items || [])
             .map(item => {
-                // Use real type from backend
                 const rawType = (item.type || "service").toLowerCase().trim();
 
                 let badgeClass = "bg-light border text-dark";
-                if (rawType === "rent")
-                    badgeClass = "bg-primary text-white border-0";
-                if (rawType === "utility")
-                    badgeClass = "bg-warning text-dark border-0";
+                if (rawType === "rent") badgeClass = "bg-primary text-white border-0";
+                if (rawType === "utility") badgeClass = "bg-warning text-dark border-0";
 
                 const qty = Number(item.qty || 1);
-                const price = Number(
-                    item.price || item.amount / (qty || 1) || 0
-                );
+                const price = Number(item.price || item.amount / (qty || 1) || 0);
                 const amount = qty * price;
-                const disc = Number(
-                    item.discount || item.special_discount_value || 0
-                );
+                const disc = Number(item.discount || item.special_discount_value || 0);
                 const taxRate = Number(item.tax_rate || 0);
                 const taxAmt = (amount - disc) * (taxRate / 100);
                 const net = amount - disc + taxAmt;
@@ -241,53 +227,37 @@ var InvoiceComponent = (() => {
                 totalDiscount += disc;
                 totalTax += taxAmt;
 
-                const startDate = item.start_date
-                    ? new Date(item.start_date).toLocaleDateString("en-GB", {
-                          day: "2-digit",
-                          month: "short",
-                          year: "numeric"
-                      })
-                    : "—";
-                const endDate = item.end_date
-                    ? new Date(item.end_date).toLocaleDateString("en-GB", {
-                          day: "2-digit",
-                          month: "short",
-                          year: "numeric"
-                      })
-                    : "—";
+                const formatDate = (dateStr) => {
+                    if (!dateStr) return "—";
+                    const date = new Date(dateStr);
+                    if (isNaN(date.getTime())) return dateStr; // fallback
+                    return date.toLocaleDateString("en-GB", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric"
+                    });
+                };
+
+                const startDate = formatDate(item.start_date);
+                const endDate   = formatDate(item.end_date);
 
                 return `
-            <tr>
-                <td class="fw-medium">${item.remarks ||
-                    item.description ||
-                    "—"}</td>
-                <td class="text-center">
-                    <span class="badge rounded-pill ${badgeClass} px-3 py-1 text-capitalize">
-                        ${rawType}
-                    </span>
-                </td>
-                <td class="text-center text-muted small">${
-                    item.unit_type ? item.unit_type.trim() : "—"
-                }</td>
-                <td class="text-center small">${startDate}</td>
-                <td class="text-center small">${endDate}</td>
-                <td class="text-end">${currency}${amount.toLocaleString(
-                    "en-US",
-                    { minimumFractionDigits: 2 }
-                )}</td>
-                <td class="text-end text-danger">-${currency}${disc.toLocaleString(
-                    "en-US",
-                    { minimumFractionDigits: 2 }
-                )}</td>
-                <td class="text-end text-info">${currency}${taxAmt.toLocaleString(
-                    "en-US",
-                    { minimumFractionDigits: 2 }
-                )}</td>
-                <td class="text-end fw-bold">${currency}${net.toLocaleString(
-                    "en-US",
-                    { minimumFractionDigits: 2 }
-                )}</td>
-            </tr>`;
+                <tr>
+                    <td class="fw-medium">${item.remarks || item.description || "—"}</td>
+                    <td class="text-center">
+                        <span class="badge rounded-pill ${badgeClass} px-3 py-1 text-capitalize">
+                            ${rawType}
+                        </span>
+                    </td>
+                    <td class="text-center text-muted small">${qty || "—"}</td>
+                    <td class="text-center text-muted small">${item.unit_type ? item.unit_type.trim() : "—"}</td>
+                    <td class="text-center small">${startDate}</td>
+                    <td class="text-center small">${endDate}</td>
+                    <td class="text-end">${currency}${amount.toLocaleString("en-US", { minimumFractionDigits: 2 })}</td>
+                    <td class="text-end text-danger">-${currency}${disc.toLocaleString("en-US", { minimumFractionDigits: 2 })}</td>
+                    <td class="text-end text-info">${currency}${taxAmt.toLocaleString("en-US", { minimumFractionDigits: 2 })}</td>
+                    <td class="text-end fw-bold">${currency}${net.toLocaleString("en-US", { minimumFractionDigits: 2 })}</td>
+                </tr>`;
             })
             .join("");
 
@@ -301,6 +271,7 @@ var InvoiceComponent = (() => {
                         <tr>
                             <th class="text-center" style="width:250px;">Description</th>
                             <th class="text-center" style="width:110px;">Type</th>
+                            <th class="text-center" style="width:90px;">Unit Used</th>
                             <th class="text-center" style="width:90px;">Charge As</th>
                             <th class="text-center" style="width:110px;">Start Date</th>
                             <th class="text-center" style="width:110px;">End Date</th>
@@ -311,43 +282,25 @@ var InvoiceComponent = (() => {
                         </tr>
                     </thead>
                     <tbody>
-                        ${itemsHtml ||
-                            '<tr><td colspan="9" class="text-center py-4 text-muted">No items found</td></tr>'}
+                        ${itemsHtml || '<tr><td colspan="10" class="text-center py-4 text-muted">No items found</td></tr>'}
                     </tbody>
                     <tfoot class="table-light">
                         <tr>
-                            <td colspan="5" class="text-end fw-bold">Total</td>
-                            <td class="text-end fw-bold">${currency}${subtotal.toLocaleString(
-            "en-US",
-            { minimumFractionDigits: 2 }
-        )}</td>
-                            <td class="text-end fw-bold text-danger">-${currency}${totalDiscount.toLocaleString(
-            "en-US",
-            { minimumFractionDigits: 2 }
-        )}</td>
-                            <td class="text-end fw-bold text-info">${currency}${totalTax.toLocaleString(
-            "en-US",
-            { minimumFractionDigits: 2 }
-        )}</td>
-                            <td class="text-end fw-bold text-success fs-5">${currency}${grandTotal.toLocaleString(
-            "en-US",
-            { minimumFractionDigits: 2 }
-        )}</td>
+                            <td colspan="6" class="text-end fw-bold">Total</td>
+                            <td class="text-end fw-bold">${currency}${subtotal.toLocaleString("en-US", { minimumFractionDigits: 2 })}</td>
+                            <td class="text-end fw-bold text-danger">-${currency}${totalDiscount.toLocaleString("en-US", { minimumFractionDigits: 2 })}</td>
+                            <td class="text-end fw-bold text-info">${currency}${totalTax.toLocaleString("en-US", { minimumFractionDigits: 2 })}</td>
+                            <td class="text-end fw-bold text-success fs-5">${currency}${grandTotal.toLocaleString("en-US", { minimumFractionDigits: 2 })}</td>
                         </tr>
                     </tfoot>
                 </table>
             </div>
 
-            ${
-                invoice.remarks
-                    ? `
-                <div class="mt-3 p-3 bg-light rounded border">
-                    <small class="text-muted fw-semibold d-block mb-1">Remarks:</small>
-                    <p class="mb-0 small">${invoice.remarks}</p>
-                </div>
-            `
-                    : ""
-            }
+            ${invoice.remarks ? `
+            <div class="mt-3 p-3 bg-light rounded border">
+                <small class="text-muted fw-semibold d-block mb-1">Remarks:</small>
+                <p class="mb-0 small">${invoice.remarks}</p>
+            </div>` : ""}
 
             <div class="text-end mt-4">
                 <button class="btn btn-sm btn-outline-secondary" onclick="window.print()">
@@ -508,8 +461,9 @@ const InvoiceDialog = (() => {
                             <div class="d-flex gap-2">
                                 <button name="btnRent" class="btn btn-outline-primary">Rent</button>
                                 <button name="btnService" class="btn btn-outline-warning">Service</button>
-                                <button name="btnElectric" class="btn btn-outline-success">Electric</button>
-                                <button name="btnWater" class="btn btn-outline-secondary">Water</button>
+                                <button name="btnElectric" class="btn btn-outline-success">Electric Bill</button>
+                                <button name="btnWater" class="btn btn-outline-secondary">Water Bill</button>
+                                <button name="btnInternet" class="btn btn-outline-warning">Internet Bill</button>
 
                             </div>
                         </div>
@@ -814,6 +768,7 @@ const InvoiceDialog = (() => {
                                     matchedMonth?.end_date ||
                                     "";
 
+
                                 me.itemsView.addRow(
                                     {
                                         item_id: realContractId,
@@ -944,38 +899,33 @@ const InvoiceDialog = (() => {
                             onConfirm(data, btn, ibMe) {
                                 const oldReading = parseFloat(data.old_electric) || 0;
                                 const newReading = parseFloat(data.new_electric) || 0;
-                                const ppu        = parseFloat(data.price_per_unit) || 0;
-                                const units      = Math.max(0, newReading - oldReading);
-
-                                if (newReading <= 0) {
-                                    return cv_interact.error("New reading is required");
-                                }
-                                if (newReading < oldReading) {
-                                    return cv_interact.error("New reading must be greater than old reading");
-                                }
-                                if (ppu <= 0) {
-                                    return cv_interact.error("Price per kWh is required");
-                                }
-
+                                const ppu = parseFloat(data.price_per_unit) || 0;
+                                const units = Math.max(0, newReading - oldReading);
                                 const totalAmount = units * ppu;
 
+                                if (newReading <= 0) return cv_interact.error("New reading is required");
+                                if (newReading < oldReading) return cv_interact.error("New reading must be greater than old reading");
+                                if (ppu <= 0) return cv_interact.error("Price per kWh is required");
+
                                 me.itemsView.addRow({
-                                    item_id:       null,
-                                    item_name:     "Electric",
-                                    type:          "utility",
-                                    price:         totalAmount,
-                                    remarks:       data.remark || `Electric`,
-                                    unit_type:     "kWh",
-                                    start_date:    data.start_date  || "",
-                                    end_date:      data.end_date    || "",
-                                    discount:      parseFloat(data.discount)   || 0,
-                                    discount_type: data.discount_type          || "percent",
-                                    tax_rate:      parseFloat(data.tax_rate)   || 0,
-                                    // extra meter data stored for reference
-                                    old_reading:   oldReading,
-                                    new_reading:   newReading,
-                                    units_used:    units,
-                                    price_per_unit: ppu
+                                    item_id: null,
+                                    item_name: "Electric",
+                                    type: "utility",
+                                    price: ppu,
+                                    qty: units,
+                                    remarks: data.remark || `Electric (${units.toFixed(2)} kWh)`,
+                                    unit_type: "kWh",
+                                    start_date: data.start_date || "",
+                                    end_date: data.end_date || "",
+
+                                    old_reading: oldReading,
+                                    new_reading: newReading,
+                                    units_used: units,
+                                    price_per_unit: ppu,
+
+                                    discount: 0,
+                                    discount_type: "percent",
+                                    tax_rate: 0
                                 }, 0);
 
                                 cv_interact.success("Electric item added");
@@ -984,7 +934,179 @@ const InvoiceDialog = (() => {
                         });
                     };
 
+                    // ======================Internet================
+                        me.controls.btnInternet.onclick = () => {
+                        if (!me._selectedTenantId) {
+                            return cv_interact.error("Please select Tenant first");
+                        }
+
+                        InputBox.resetInstance("waterPopUp");
+                        InputBox.show({
+                            title: "Water",
+                            instanceKey: "waterPopUp",
+
+                            createContent() {
+                                const div = document.createElement("div");
+                                div.style.cssText = "display:grid; grid-template-columns:1fr 1fr; gap:14px; padding:4px 2px;";
+
+                                div.innerHTML = `
+
+                                `;
+                                return div;
+                            },
+
+                            onOpen(ibMe) {
+
+                            },
+
+                            onConfirm(data, btn, ibMe) {
+
+                            }
+                        });
+                    };
+                    // ======================Water===================
+                    me.controls.btnWater.onclick = () => {
+                        if (!me._selectedTenantId) {
+                            return cv_interact.error("Please select Tenant first");
+                        }
+
+                        InputBox.resetInstance("waterPopUp");
+                        InputBox.show({
+                            title: "Water",
+                            instanceKey: "waterPopUp",
+
+                            createContent() {
+                                const div = document.createElement("div");
+                                div.style.cssText = "display:grid; grid-template-columns:1fr 1fr; gap:14px; padding:4px 2px;";
+
+                                div.innerHTML = `
+                                    <div class="material-input outlined">
+                                        <input class="data-input form-control" data-field="old_water"
+                                            name="old_water" type="number" placeholder="0" min="0">
+                                        <label class="form-label" style="font-size:13px;color:#555;">Old Reading (m³)</label>
+                                    </div>
+                                    <div class="material-input outlined">
+                                        <input class="data-input form-control" data-field="new_water"
+                                            name="new_water" type="number" placeholder="0" min="0">
+                                        <label class="form-label" style="font-size:13px;color:#555;">New Reading (m³)</label>
+                                    </div>
+                                    <div class="material-input outlined">
+                                        <input class="data-input form-control bg-light" data-field="units_used"
+                                            name="units_used" type="text" readonly placeholder="Auto calc">
+                                        <label class="form-label" style="font-size:13px;color:#555;">Units Used (m³)</label>
+                                    </div>
+                                    <div class="material-input outlined">
+                                        <input class="data-input form-control" data-field="price_per_unit"
+                                            name="price_per_unit" type="number" placeholder="0.00" min="0" step="0.01">
+                                        <label class="form-label" style="font-size:13px;color:#555;">Price per m³ ($)</label>
+                                    </div>
+                                    <div class="material-input outlined">
+                                        <input class="data-input form-control" data-field="start_date"
+                                            name="start_date" type="text" data-type="date" placeholder="Start Date">
+                                        <label class="form-label" style="font-size:13px;color:#555;">Start Date</label>
+                                    </div>
+                                    <div class="material-input outlined">
+                                        <input class="data-input form-control" data-field="end_date"
+                                            name="end_date" type="text" data-type="date" placeholder="End Date">
+                                        <label class="form-label" style="font-size:13px;color:#555;">End Date</label>
+                                    </div>
+                                    <div class="material-input outlined" style="grid-column: span 2;">
+                                        <input class="data-input form-control bg-light" data-field="total_amount"
+                                            name="total_amount" type="text" readonly placeholder="Auto calc">
+                                        <label class="form-label" style="font-size:13px;color:#555;">Total Amount ($)</label>
+                                    </div>
+                                    <div style="grid-column: span 2;" class="material-input outlined">
+                                        <textarea class="data-input form-control" data-field="remark"
+                                            name="remark" rows="2"></textarea>
+                                        <label class="form-label" style="font-size:13px;color:#555;">Remark</label>
+                                    </div>
+                                `;
+                                return div;
+                            },
+
+                            onOpen(ibMe) {
+                                const elOld = document.querySelector('[data-field="old_water"]');
+                                const elNew = document.querySelector('[data-field="new_water"]');
+                                const elUnits = document.querySelector('[data-field="units_used"]');
+                                const elPPU = document.querySelector('[data-field="price_per_unit"]');
+                                const elTotal = document.querySelector('[data-field="total_amount"]');
+                                const elRemark = document.querySelector('[data-field="remark"]');
+                                const elStartDate = document.querySelector('[data-field="start_date"]');
+                                const elEndDate = document.querySelector('[data-field="end_date"]');
+
+                                const recalc = () => {
+                                    const oldVal = parseFloat(elOld?.value) || 0;
+                                    const newVal = parseFloat(elNew?.value) || 0;
+                                    const ppu = parseFloat(elPPU?.value) || 0;
+                                    const units = Math.max(0, newVal - oldVal);
+
+                                    if (elUnits) elUnits.value = units.toFixed(2);
+                                    const total = units * ppu;
+                                    if (elTotal) elTotal.value = total.toFixed(2);
+
+                                    // Auto remark
+                                    if (elRemark) {
+                                        const start = elStartDate?.value || "";
+                                        const end = elEndDate?.value || "";
+                                        const period = start && end ? ` (${start} - ${end})` : "";
+                                        elRemark.value = `Water${period} — ${units.toFixed(2)} m³ × $${ppu.toFixed(2)}`;
+                                    }
+                                };
+
+                                // Attach listeners
+                                elOld?.addEventListener("input", recalc);
+                                elNew?.addEventListener("input", recalc);
+                                elPPU?.addEventListener("input", recalc);
+                                elStartDate?.addEventListener("change", recalc);
+                                elEndDate?.addEventListener("change", recalc);
+                            },
+
+                            onConfirm(data, btn, ibMe) {
+                                const oldReading = parseFloat(data.old_water) || 0;
+                                const newReading = parseFloat(data.new_water) || 0;
+                                const ppu = parseFloat(data.price_per_unit) || 0;
+                                const units = Math.max(0, newReading - oldReading);
+                                const totalAmount = units * ppu;
+
+                                if (newReading <= 0) {
+                                    return cv_interact.error("New reading is required");
+                                }
+                                if (newReading < oldReading) {
+                                    return cv_interact.error("New reading must be greater than old reading");
+                                }
+                                if (ppu <= 0) {
+                                    return cv_interact.error("Price per m³ is required");
+                                }
+
+                                me.itemsView.addRow({
+                                    item_id: null,
+                                    item_name: "Water",
+                                    type: "utility",
+                                    price: ppu,                    // price per m³
+                                    qty: units,                    // units used as quantity
+                                    remarks: data.remark || `Water (${units.toFixed(2)} m³)`,
+                                    unit_type: "m³",
+                                    start_date: data.start_date || "",
+                                    end_date: data.end_date || "",
+
+                                    // Extra data for reference
+                                    old_reading: oldReading,
+                                    new_reading: newReading,
+                                    units_used: units,
+                                    price_per_unit: ppu,
+
+                                    discount: 0,
+                                    discount_type: "percent",
+                                    tax_rate: 0
+                                }, 0);
+
+                                cv_interact.success("Water item added");
+                                ibMe.close();
+                            }
+                        });
+                    };
                     // =====================Service=================
+
 
                     me.controls.btnService.onclick = () => {
                         if (!me._selectedTenantId) {
@@ -1159,7 +1281,6 @@ const InvoiceDialog = (() => {
                                 displayType: "hidden",
                                 readOnly: true,
                                 width: "20px",
-                                display: "none"
                             },
                             {
                                 name: "item_name",
@@ -1184,7 +1305,7 @@ const InvoiceDialog = (() => {
                             },
                             {
                                 name: "qty",
-                                transTitle: "titles.Qty",
+                                transTitle: "titles.Unit Used",
                                 dataType: "number",
                                 readOnly: true
                             },
@@ -1211,13 +1332,6 @@ const InvoiceDialog = (() => {
                             {
                                 name: "end_date",
                                 transTitle: "titles.End Date",
-                                dataType: "text",
-                                readOnly: true
-                            },
-
-                            {
-                                name: "unit_type",
-                                transTitle: "titles.Charge As",
                                 dataType: "text",
                                 readOnly: true
                             },

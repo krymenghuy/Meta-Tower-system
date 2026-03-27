@@ -605,7 +605,6 @@ static function getTenantInfo($arr=[], $ss = null)
 
     static function generateContractMonths($contract_id, $start_date = null, $end_date = null, $ss = null)
     {
-        // Fetch contract dates if not provided
         if (!$start_date || !$end_date) {
             $contract = DB::table('contracts')
                 ->where('id', $contract_id)
@@ -616,7 +615,6 @@ static function getTenantInfo($arr=[], $ss = null)
             $end_date   = $contract->end_date;
         }
 
-        // Parse with Carbon - fail gracefully
         try {
             $start = \Carbon\Carbon::parse($start_date)->startOfDay();
             $end   = \Carbon\Carbon::parse($end_date)->endOfDay();
@@ -630,7 +628,6 @@ static function getTenantInfo($arr=[], $ss = null)
             return [];
         }
 
-        // If end is before start → invalid
         if ($end->lt($start)) {
             \Log::warning("Contract end date is before start date", [
                 'contract_id' => $contract_id,
@@ -657,8 +654,8 @@ static function getTenantInfo($arr=[], $ss = null)
 
             $months[] = [
                 'month'      => $monthLabel,
-                'start_date' => $monthStart->format('Y-m-d'),
-                'end_date'   => $monthEnd->format('Y-m-d'),
+                'start_date' => $monthStart->format('j-M-Y'),
+                'end_date'   => $monthEnd->format('j-M-Y'),
             ];
 
             $current->addMonthNoOverflow();
