@@ -356,7 +356,9 @@ class GeneralSettings //extends Model
     static function options_amenity($ss)
 {
     return DB::table('amenities')
-        ->selectRaw('id, name AS amenity, code as amenity_code, max_capacity')
+        ->where('status_id',1)
+        ->where('requires_booking',1)
+        ->selectRaw('id, name AS amenity, code as amenity_code, max_capacity,category_id')
         ->orderBy('name')           
         ->get();
 }
