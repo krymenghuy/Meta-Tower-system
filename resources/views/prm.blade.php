@@ -398,6 +398,7 @@
                             @include('layouts.prm.serviceComponent')
                             @include('layouts.prm.vendorComponent')
                             @include('layouts.prm.billComponent')
+                            @include('layouts.prm.billPaymentComponent')
 
                             @include('layouts.prm.purchaseOrdersComponent')
                             @include('layouts.prm.maintenanceComponent')
