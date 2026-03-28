@@ -7,14 +7,12 @@
                     <i class="fa fa-search fs-6 text-muted position-absolute" style="right: 15px; top: 50%; transform: translateY(-50%);"></i>
                 </div>
             </div>
-           
-            <div class="col-12 col-md-6 col-lg-2">
-                <select id="el_contract_status_id" class="data-input filter-field form-control" data-field="status_id"></select>
-            </div>  
-             <div class="col-12 col-md-6 col-lg-2 d-none">
+            <div class="col-12 col-md-6 col-lg-3">
                 <select id="business_type_id" class="data-input filter-field form-control" data-field="business_type_id"></select>
             </div>
-        
+            <div class="col-12 col-md-6 col-lg-2">
+                <select id="el_contract_status_id" class="data-input filter-field form-control" data-field="status_id"></select>
+            </div>
             <div class="col-12 col-md-3 col-lg-2 ms-auto text-md-end mt-2">
             <button type="button" class="btnAddNewPrm w-100 w-md-auto" id="_btnAddContract">
                 <i class="fa-regular fa-file-lines me-2"></i>

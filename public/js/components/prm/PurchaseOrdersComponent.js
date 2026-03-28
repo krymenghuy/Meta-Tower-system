@@ -752,50 +752,102 @@ var PurchaseOrdersComponent = (() => {
         { title: '', className: 'align-middle' },
         {
             transTitle: 'titles.Po Number',
-            className: 'align-middle',
+            className: 'align-middle text-nowrap',
             data: (data) => `<span class="text-nowrap text-prm-custom">${data.po_number ?? ''}</span>`,
         },
         {
             transTitle: 'titles.Vendor',
-            className: 'align-middle',
+            className: 'align-middle text-nowrap',
             data: (data) => `<span class="d-block text-prm-custom">${data.vendor_name}</span>`,
         },
         {
             title: 'Po Date',
-            className: 'align-middle',
+            className: 'align-middle text-nowrap',
             data: (data) => `<span class="text-prm-custom text-nowrap">${data.po_date}</span>`,
         },
         {
             title: "Total Price",
-            className: "align-middle text-end",
+            className: "align-middle text-nowrap text-end",
             data: (data) =>
                 `<span class="d-block text-prm-custom">${data.sub_total_formatted ?? formatCurrency(data.sub_total)}</span>`,
         },
         {
             title: "Discount",
-            className: "align-middle text-end",
+            className: "align-middle text-nowrap text-end",
             data: (data) =>
                 `<span class="d-block text-prm-custom">${data.discount_formatted ?? formatDiscount(data)}</span>`,
         },
         {
             title: "Total Amount",
-            className: "align-middle text-end",
+            className: "align-middle text-nowrap text-end",
             data: (data) =>
                 `<span class="d-block text-prm-custom">${data.total_amount_formatted ?? formatCurrency(data.total_amount)}</span>`,
         },
         {
+            title: "Authorized By",
+            className: 'align-middle text-nowrap text-center',
+            data: (data) => {
+                return `<div class="d-flex flex-column">
+                <span class="text-capitalize text-start text-prm-custom"><span>${data.authorizer ?? ''}</span></span>
+                <span class="text-start small text-muted">${data.auth_date ?? ''}</span>
+            </div>`;
+              
+            }
+        },
+        {
             title: "Status",
-            className: "align-middle text-center",
-            data: (data) => poStatusBadgeHtml(data),
+            className: "align-middle text-nowrap text-center",
+            data: (data) => {
+                console.log(123,data.status);
+                
+                const status = (data.status ?? '').toLowerCase();
+                let cls = 'badge text-dark bg-warning-subtle border border-warning';
+                if (status === 'pending') {
+                    cls = 'badge text-warning bg-warning-subtle border border-warning';
+                }
+                else if (status === 'approved') {
+                    cls = 'badge text-info bg-info-subtle border border-info';
+                }
+                else if (status === 'ordered') {
+                    cls = 'badge text-primary bg-primary-subtle border border-primary';
+                }
+                else if (status === 'cancelled') {
+                    cls = 'badge text-danger bg-danger-subtle border border-danger';
+                }
+                else if (status === 'partially') {
+                    cls = 'badge text-dark bg-warning-subtle border border-warning';
+                } 
+                else if (status === 'received') {
+                    cls = 'badge text-success bg-success-subtle border border-success';
+                }
+                return `
+                    <span class="${cls} text-capitalize d-inline-block text-center" style="min-width:70px">
+                        ${data.status ?? ''}
+                    </span>
+                `;
+            },
+            // data: (data) => poStatusBadgeHtml(data),
         },
         {
             title: "Remarks",
-            className: "align-middle",
+            className: "align-middle text-nowrap",
             data: (data) => {
                 const remarks = String(data.remarks || '').trim();
                 return `<span class="text-prm-custom d-block text-truncate" style="max-width:180px;" title="${remarks}">${remarks || '-'}</span>`;
             }
         },
+        {
+            title: "Received By",
+            className: 'align-middle text-nowrap',
+            data: (data) => {
+                return `<div class="d-flex flex-column">
+                <span class="text-capitalize text-start text-prm-custom"><span>${data.authorizer ?? ''}</span></span>
+                <span class="text-start small text-muted">${data.auth_date ?? ''}</span>
+            </div>`;
+              
+            }
+        },
+        
         {
             transTitle: 'titles.Updated By',
             className: 'align-middle text-nowrap',
@@ -808,9 +860,7 @@ var PurchaseOrdersComponent = (() => {
             transTitle: 'titles.Action',
             className: 'col_action align-middle',
             data: (data) => {
-                const isReceived = [2, 3].includes(Number(data.status_id || 0));
-                const c = isReceived ? 'btn_dropdown_vendor_action_received' : 'btn_dropdown_vendor_action';
-                return `<div class="d-flex justify-content-center align-items-end"><a href="javascript:void(0)" class="btn--Options ${c}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false"><i class="fa-solid fa-ellipsis-vertical text-black fs-5"></i></a></div>`;
+                return `<div class="d-flex justify-content-center align-items-end"><a href="javascript:void(0)" class="btn--Options btn_dropdown_purchase_action" data-id="${data.id}" data-authorized="${data.authorized}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false"><i class="fa-solid fa-ellipsis-vertical text-black fs-5"></i></a></div>`;
             }
         },
     ];
@@ -830,7 +880,7 @@ var PurchaseOrdersComponent = (() => {
             },
             listContainerClass: null
         });
-
+        
         mThis.btnAdd.onclick = function (e) {
             e.preventDefault();
             const op = {
@@ -872,7 +922,7 @@ var PurchaseOrdersComponent = (() => {
         mThis.Acfg = new ExpandableRowConfig(tblPo.id, {
             dontExpandByClickingOn: [
                 'dropdown-menu',
-                'btn_dropdown_vendor_action'
+                'btn_dropdown_purchase_action'
             ],
             onOpen: (container, detail_tr, parent_tr) => {
                 const poId = parent_tr.dataset.id;
@@ -908,66 +958,72 @@ var PurchaseOrdersComponent = (() => {
         const n = Number(poId);
         return Number.isNaN(n) || n <= 0 ? null : n;
     };
+
     mThis.initDropdownMenus = (table) => {
-
-        const baseMenus = [
-            {
-                html: '<span class="ps-2 " vslang="titles.Modify PO"></span>',
-                icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
-                cssClass: "border-bottom pb-2",
-                name: "modify_purchase_order"
-            },
-            {
-                html: '<span class="ps-2  " vslang="titles.Delete PO"></span>',
-                icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
-                cssClass: "border-bottom pb-2",
-                name: "delete_purchase_order"
-            }
-        ];
-
-        const onMenuClick = (menuLink, id, name) => {
-            const poId = resolvePoIdFromMenuContext(id, menuLink);
-            if (!poId) return cv_interact.warning('Invalid purchase order.');
-            switch (name) {
-                case 'modify_purchase_order': {
-                    mThis.editPurchaseOrder(poId, menuLink);
-                    break;
-                }
-                case 'delete_purchase_order': {
-                    mThis.deletePurchaseOrder(poId, menuLink);
-                    break;
-                }
-                case 'receive_purchase_order': {
-                    mThis.receivePurchaseOrder(poId, menuLink);
-                    break;
-                }
-                default: {
-                    break;
-                }
-            }
-        };
-
-        const buildDropdownOptions = (actionButtonClass, includeReceivePo) => ({
+        const menuOptopns = {
             containerElement: table,
-            actionButtonClass,
+            actionButtonClass: "btn_dropdown_purchase_action",
             cssClass: "bg-white shadow",
-            menus: includeReceivePo
-                ? [
-                    ...baseMenus,
-                    {
-                        html: '<span class="ps-2" vslang="titles.Receive PO"></span>',
-                        icon: `<i class="fa-solid fa-box-open fs-5 text-primary"></i>`,
-                        cssClass: '',
-                        name: "receive_purchase_order"
-                    },
-                ]
-                : [...baseMenus],
-            onClick: onMenuClick
-        });
+            menus: [
 
-        new VSDropdownMenu(buildDropdownOptions("btn_dropdown_vendor_action", true));
-        new VSDropdownMenu(buildDropdownOptions("btn_dropdown_vendor_action_received", false));
-    }
+                {
+                    html: '<span class="ps-2" vslang="titles.Modify PO"></span>',
+                    icon: `<i class="fa-solid fa-square-pen fs-5 text-warning"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "modify_purchase_order"
+                },
+                {
+                    html: '<span class="ps-2" vslang="titles.Delete PO"></span>',
+                    icon: `<i class="fa-solid fa-rectangle-xmark fs-5 text-danger"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "delete_purchase_order"
+                },
+               
+                {
+                    html: '<span class="ps-2  " vslang="titles.Authorized PO"></span>',
+                    icon: `<i class="fa-solid fa-check-to-slot fs-5 text-primary"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "authorized_purchase_order"
+                },
+                {
+                    html: '<span class="ps-2" vslang="titles.Receive PO"></span>',
+                    icon: `<i class="fa-solid fa-box-open fs-5 text-success"></i>`,
+                    cssClass: '',
+                    name: "receive_purchase_order"
+                },
+            ],
+
+            onClick: (menuLink, id, name) => {
+                switch (name) {
+                    case 'modify_purchase_order': {
+                        mThis.editPurchaseOrder(id, menuLink);
+                        break;
+                    }
+                    case 'delete_purchase_order': {
+                        mThis.deletePurchaseOrder(id, menuLink);
+                        break;
+                    }
+                    case 'receive_purchase_order': {
+                        mThis.receivePurchaseOrder(id, menuLink);
+                        break;
+                    }
+                    case 'authorized_purchase_order': {
+                        mThis.authorizedPurchaseOrder(id, menuLink);
+                        break;
+                    }
+                    case 'receive_purchase_order': {
+                        mThis.receivePurchaseOrder(id, menuLink);
+                        break;
+                    }
+
+                    default: {
+                        break;
+                    }
+                }
+            }
+        }
+        new VSDropdownMenu(menuOptopns);
+    };
     const renderPoItem = (po, container, onFinish) => {
         if (!container) return;
         const poId = po.id || po.po_id;
@@ -1014,6 +1070,36 @@ var PurchaseOrdersComponent = (() => {
             .catch(() => {
                 container.innerHTML = '<div class="alert alert-danger m-3">Failed to load purchase order items.</div>';
             });
+    };
+    mThis.authorizedPurchaseOrder = (id, btn) => {
+        const authorized = btn.dataset.authorized;
+        let op = {
+            po_id: id
+        };
+        if (authorized == 1) {
+            cv_interact.warning('You already authorized this Purchase order.');
+        }
+        else {
+            cv_interact.confirm('Are you sure you want to authorize this purchase order?',
+                {
+                    title: 'Authorize Purchase order',
+                    context: 'update',
+                    confirmButtonText: 'Authorize'
+                },
+                (e) => {
+                    if (e) {
+                        vsapi.call(`${main_view.base_url}/prm/purchase/order/authorized`, op, false, null, null).then(res => {
+                            if (res.status_code === 200) {
+                                mThis.PoListView.showPage(mThis.getFilterData());
+                                cv_interact.success('Purchase Order has been authorized!');
+                            }
+                            else
+                                cv_interact.error(res.error_message);
+                        });
+                    }
+                });
+        }
+
     };
     mThis.editPurchaseOrder = (id, menuLink) => {
         const poId = resolvePoIdFromMenuContext(id, menuLink);
