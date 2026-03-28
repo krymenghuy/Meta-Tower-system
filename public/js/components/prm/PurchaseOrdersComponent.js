@@ -117,6 +117,15 @@ var PurchaseOrdersComponent = (() => {
             code: it.code || ''
         };
     });
+    /** Line already persisted to server with receive/break (re-open Receive PO: show tick, disable). */
+    const isReceiveLineAlreadySaved = (row) => {
+        const itemId = Number(row?.item_id ?? 0);
+        if (!itemId || itemId <= 0) return false;
+        if (Number(row?.status_id) === 2) return true;
+        const recv = Number(getReceiveQtyRaw(row)) || 0;
+        const brk = Number(row?.break_amount) || 0;
+        return recv > 0.02 || brk > 0.02;
+    };
     const loadVendorInfo = (me, vendorId) => {
         if (!vendorId || !(me.controls.phone_number || me.controls.address)) return;
         vsapi.post(`${main_view.base_url}/prm/vendor/options-vendor-info`, { vendor_id: vendorId }, {})
@@ -238,31 +247,118 @@ var PurchaseOrdersComponent = (() => {
     };
     const RECEIVED_STATUS_BADGE_STYLE =
         'min-width:90px;background:#dff3ea;color:#37b07f;border-color:#70c39f !important;font-weight:500;';
+    const PARTIAL_RECEIVE_BADGE_STYLE =
+        'min-width:90px;background:#fff3e0;color:#e65100;border-color:#ffb74d !important;font-weight:500;';
+    const PENDING_RECEIVE_BADGE_STYLE =
+        'min-width:90px;background:#fff3cd;color:#664d03;border-color:#ffc107 !important;font-weight:600;';
+    const PO_HEADER_STATUS = {
+        PENDING: 1,
+        APPROVED: 2,
+        ORDERED: 3,
+        PARTIALLY_RECEIVED: 4,
+        RECEIVED: 5,
+        CANCELLED: 6,
+    };
     const poStatusBadgeFallback = (statusId, statusLabel) => {
         const status_id = Number(statusId || 0);
-        const isReceived = status_id === 2 || status_id === 3;
+        const isReceived = status_id === PO_HEADER_STATUS.RECEIVED;
         const byStatus = {
             1: 'badge text-warning bg-warning-subtle border border-warning',
-            2: 'badge text-success bg-success-subtle border border-success',
+            2: 'badge text-info bg-info-subtle border border-info',
             3: 'badge text-primary bg-primary-subtle border border-primary',
-            4: 'badge text-info bg-info-subtle border border-info',
-            5: 'badge text-dark bg-secondary-subtle border border-secondary',
+            4: 'badge text-dark border',
+            5: 'badge text-success bg-success-subtle border border-success',
             6: 'badge text-danger bg-danger-subtle border border-danger',
+        };
+        const byStyle = {
+            1: PENDING_RECEIVE_BADGE_STYLE,
+            4: PARTIAL_RECEIVE_BADGE_STYLE,
+            5: RECEIVED_STATUS_BADGE_STYLE,
         };
         let cls = byStatus[status_id] || 'badge text-warning bg-warning-subtle border border-warning';
         if (isReceived) cls = 'badge border';
         const statusText = isReceived ? 'Received' : (statusLabel ?? '');
-        return { cls, statusText };
+        const badgeStyle = byStyle[status_id] || (isReceived ? RECEIVED_STATUS_BADGE_STYLE : 'min-width:90px');
+        return { cls, statusText, badgeStyle };
     };
-    /** Uses status_class / status_label from API when present. */
+    /** Uses status_class / status_label / status_badge_style from API when present (list sets these from receive progress). */
     const poStatusBadgeHtml = (data) => {
         const sid = Number(data?.status_id ?? 0);
-        const isReceived = sid === 2 || sid === 3;
+        const isReceived = sid === PO_HEADER_STATUS.RECEIVED;
         const fb = poStatusBadgeFallback(sid, data?.status);
         const cls = data?.status_class || fb.cls;
         const statusText = data?.status_label ?? fb.statusText;
-        const badgeStyle = isReceived ? RECEIVED_STATUS_BADGE_STYLE : 'min-width:90px';
+        const badgeStyle = data?.status_badge_style
+            || fb.badgeStyle
+            || (isReceived ? RECEIVED_STATUS_BADGE_STYLE : 'min-width:90px');
         return `<span class="${cls} text-capitalize d-inline-block text-center" style="${badgeStyle}">${statusText}</span>`;
+    };
+    /** Same rules as PurchaseOrder::receiveProgressStateFromLines (effective = receive + break, lines with qty > 0). */
+    const computeReceiveProgressStateFromItems = (items) => {
+        const rows = Array.isArray(items) ? items : [];
+        const meaningful = [];
+        rows.forEach((it) => {
+            const itemId = Number(it?.item_id ?? 0);
+            if (!itemId || itemId <= 0) return;
+            const ordered = Number(it?.qty) || 0;
+            if (ordered <= 0) return;
+            const recvRaw = getReceiveQtyRaw(it);
+            const recv = recvRaw != null && !Number.isNaN(Number(recvRaw)) ? Number(recvRaw) : 0;
+            const brk = Number(it?.break_amount) || 0;
+            const lineMarkedReceived = Number(it?.status_id) === 2;
+            meaningful.push({ ordered, eff: recv + brk, lineMarkedReceived });
+        });
+        if (!meaningful.length) return 'none';
+        let anyReceived = false;
+        let allSatisfied = true;
+        meaningful.forEach((m) => {
+            if (m.eff > 0.02 || m.lineMarkedReceived) anyReceived = true;
+            if (!m.lineMarkedReceived && m.eff + 1e-6 < m.ordered) allSatisfied = false;
+        });
+        if (!anyReceived) return 'none';
+        if (allSatisfied) return 'complete';
+        return 'partial';
+    };
+    const RECEIVE_PROGRESS_BADGE_MAP = {
+        complete: {
+            label: 'Received',
+            cls: 'badge border',
+            style: RECEIVED_STATUS_BADGE_STYLE,
+        },
+        partial: {
+            label: 'Partially Received',
+            cls: 'badge text-dark border',
+            style: PARTIAL_RECEIVE_BADGE_STYLE,
+        },
+        none: {
+            label: 'Pending',
+            cls: 'badge text-dark border',
+            style: PENDING_RECEIVE_BADGE_STYLE,
+        },
+    };
+    const updateReceiveProgressBadge = (me) => {
+        const el = me.divModal && me.divModal.querySelector('#receive_po_progress_badge');
+        if (!el) return;
+        if (Number(me._receivePoStatusId) === PO_HEADER_STATUS.RECEIVED) {
+            const cfg = RECEIVE_PROGRESS_BADGE_MAP.complete;
+            el.textContent = cfg.label;
+            el.className = `${cfg.cls} text-capitalize d-inline-block text-center`;
+            el.setAttribute('style', cfg.style);
+            return;
+        }
+        const items = getReceiveItems(me);
+        const state = computeReceiveProgressStateFromItems(items);
+        const cfg = RECEIVE_PROGRESS_BADGE_MAP[state] || RECEIVE_PROGRESS_BADGE_MAP.none;
+        el.textContent = cfg.label;
+        el.className = `${cfg.cls} text-capitalize d-inline-block text-center`;
+        el.setAttribute('style', cfg.style);
+    };
+    const scheduleReceiveProgressBadgeUpdate = (me) => {
+        if (me._receiveBadgeTimer) clearTimeout(me._receiveBadgeTimer);
+        me._receiveBadgeTimer = setTimeout(() => {
+            me._receiveBadgeTimer = null;
+            updateReceiveProgressBadge(me);
+        }, 200);
     };
     /** At least one line must have a real catalog item (empty default row does not count). */
     const hasValidPurchaseOrderLineItems = (items) => {
@@ -340,9 +436,22 @@ var PurchaseOrdersComponent = (() => {
             td.className = 'text-center align-middle';
             td.setAttribute('data-receive-po-col', '1');
             td.innerHTML = '';
-            const linePending = !row.status_id || Number(row.status_id) === 1;
-            if (linePending) {
-                const poItemId = Number(row.id || 0);
+            const poItemId = Number(row.id || 0);
+            const itemId = Number(row.item_id ?? 0);
+            const alreadySaved = isReceiveLineAlreadySaved(row);
+            if (alreadySaved && itemId > 0 && poItemId > 0) {
+                const cb = document.createElement('input');
+                cb.type = 'checkbox';
+                cb.className = 'form-check-input receive-po-line-cb';
+                cb.title = 'This line already has a saved receipt';
+                cb.dataset.poItemId = String(poItemId);
+                cb.dataset.receiveLineSaved = '1';
+                cb.checked = true;
+                cb.disabled = true;
+                applyReceiveCheckboxUi(cb);
+                td.appendChild(cb);
+                setReceiveQtyLocked(tr, true);
+            } else if (itemId > 0) {
                 const recvRaw = getReceiveQtyRaw(row);
                 const receiveQtyNum = (recvRaw != null && recvRaw !== '' && !Number.isNaN(Number(recvRaw)))
                     ? Number(recvRaw)
@@ -362,10 +471,13 @@ var PurchaseOrdersComponent = (() => {
                 td.appendChild(cb);
                 setReceiveQtyLocked(tr, cb.checked);
             } else {
-                const span = document.createElement('span');
-                span.className = 'text-muted small';
-                span.textContent = 'Received';
-                td.appendChild(span);
+                const cb = document.createElement('input');
+                cb.type = 'checkbox';
+                cb.className = 'form-check-input receive-po-line-cb';
+                cb.disabled = true;
+                cb.dataset.poItemId = '';
+                applyReceiveCheckboxUi(cb);
+                td.appendChild(cb);
             }
             if (!existingActionCell) tr.appendChild(td);
 
@@ -402,6 +514,13 @@ var PurchaseOrdersComponent = (() => {
             }
             const cb = td.querySelector('.receive-po-line-cb');
             if (!cb) return;
+            if (cb.dataset.receiveLineSaved === '1') {
+                cb.checked = true;
+                cb.disabled = true;
+                applyReceiveCheckboxUi(cb);
+                setReceiveQtyLocked(tr, true);
+                return;
+            }
 
             const poItemId = Number(cb.dataset.poItemId || 0);
             const qtyInput = getReceiveQtyInputInRow(tr);
@@ -419,6 +538,7 @@ var PurchaseOrdersComponent = (() => {
     const refreshReceiveQtyDependentUi = (me) => {
         if (typeof me.updateReceiveTotals === 'function') me.updateReceiveTotals();
         refreshReceiveLineActionsInPlace(me, getReceiveItems(me));
+        scheduleReceiveProgressBadgeUpdate(me);
     };
     const RECV_QTY_INPUT_SEL = ['input[data-field="receive_qty"]', 'input[name="receive_qty"]', 'input[data-field="recieve_amount"]', 'input[name="recieve_amount"]', 'input[data-name="receive_qty"]', 'input[data-name="recieve_amount"]'];
     const getReceiveQtyCellInRow = (tr) => {
@@ -475,10 +595,12 @@ var PurchaseOrdersComponent = (() => {
         const itemId = Number(it.item_id ?? 0);
         if (!itemId || itemId <= 0) return true;
         const ordered = Number(it.qty) || 0;
+        if (ordered <= 0) return true;
+        if (Number(it.status_id) === 2) return true;
         const recvRaw = getReceiveQtyRaw(it);
         const recv = Number(recvRaw) || 0;
         const brk = Number(it.break_amount) || 0;
-        return Math.abs((recv + brk) - ordered) < 0.02;
+        return (recv + brk) + 1e-6 >= ordered;
     };
     const validateAllReceiveLinesComplete = (me) => {
         const items = getReceiveItems(me);
@@ -547,7 +669,14 @@ var PurchaseOrdersComponent = (() => {
     const setReceiveLineRowLoading = (tr, isLoading) => {
         if (!tr) return;
         const cb = tr.querySelector('.receive-po-line-cb');
-        if (cb) cb.disabled = isLoading;
+        if (!cb) return;
+        if (!isLoading && cb.dataset.receiveLineSaved === '1') {
+            cb.checked = true;
+            cb.disabled = true;
+            applyReceiveCheckboxUi(cb);
+            return;
+        }
+        cb.disabled = isLoading;
     };
     const resetLineCheckbox = (tr) => {
         const cb = tr && tr.querySelector ? tr.querySelector('.receive-po-line-cb') : null;
@@ -571,7 +700,11 @@ var PurchaseOrdersComponent = (() => {
             cv_interact.error('Invalid line.');
             return Promise.resolve(false);
         }
-        if (Number(me._receivePoStatusId) === 2) {
+        const existingCb = tr && tr.querySelector('.receive-po-line-cb');
+        if (existingCb && existingCb.dataset.receiveLineSaved === '1') {
+            return Promise.resolve(true);
+        }
+        if (Number(me._receivePoStatusId) === PO_HEADER_STATUS.RECEIVED) {
             clearCb();
             cv_interact.warning('This purchase order is already fully received.');
             return Promise.resolve(false);
@@ -628,7 +761,15 @@ var PurchaseOrdersComponent = (() => {
             refreshReceiveActions(me);
             return false;
         }).then((ok) => {
-            if (ok && skipReload) setReceiveLineRowLoading(tr, false);
+            if (ok && skipReload) {
+                const cb = tr && tr.querySelector('.receive-po-line-cb');
+                if (cb) {
+                    cb.dataset.receiveLineSaved = '1';
+                    cb.checked = true;
+                }
+                setReceiveLineRowLoading(tr, false);
+                setReceiveQtyLocked(tr, true);
+            }
             return ok;
         });
     };
@@ -652,7 +793,10 @@ var PurchaseOrdersComponent = (() => {
             });
         }, Promise.resolve(true)).then((ok) => {
             if (!ok) return false;
-            return refreshReceivePoHeaderStatus(me).then(() => true);
+            return refreshReceivePoHeaderStatus(me).then(() => {
+                scheduleReceiveProgressBadgeUpdate(me);
+                return true;
+            });
         });
     };
     const bindReceiveLineActionDelegation = (me) => {
@@ -664,7 +808,7 @@ var PurchaseOrdersComponent = (() => {
             if (!cb || cb.disabled) return;
             const poItemId = Number(cb.dataset.poItemId);
             const tr = cb.closest('tr');
-            if (Number(me._receivePoStatusId) === 2) {
+            if (Number(me._receivePoStatusId) === PO_HEADER_STATUS.RECEIVED) {
                 cb.checked = false;
                 setReceiveQtyLocked(tr, false);
                 return cv_interact.warning('This purchase order is already fully received.');
@@ -739,6 +883,7 @@ var PurchaseOrdersComponent = (() => {
                     syncReceiveActionColumn(me, rows);
                     lockReceivePurchaseOrderFields(me);
                     if (typeof me.updateReceiveTotals === 'function') me.updateReceiveTotals();
+                    updateReceiveProgressBadge(me);
                 }, 60);
 
                 me._receivePoStatusId = poDetails.status_id;
@@ -798,8 +943,8 @@ var PurchaseOrdersComponent = (() => {
             title: "Status",
             className: "align-middle text-nowrap text-center",
             data: (data) => {
-                console.log(123, data.status);
-
+                console.log(123,data.status);
+                
                 const status = (data.status ?? '').toLowerCase();
                 let cls = 'badge text-dark bg-warning-subtle border border-warning';
                 if (status === 'pending') {
@@ -816,7 +961,7 @@ var PurchaseOrdersComponent = (() => {
                 }
                 else if (status === 'partially') {
                     cls = 'badge text-dark bg-warning-subtle border border-warning';
-                }
+                } 
                 else if (status === 'received') {
                     cls = 'badge text-success bg-success-subtle border border-success';
                 }
@@ -860,7 +1005,11 @@ var PurchaseOrdersComponent = (() => {
             transTitle: 'titles.Action',
             className: 'col_action align-middle',
             data: (data) => {
-                return `<div class="d-flex justify-content-center align-items-end"><a href="javascript:void(0)" class="btn--Options btn_dropdown_purchase_action" data-id="${data.id}" data-authorized="${data.authorized}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false"><i class="fa-solid fa-ellipsis-vertical text-black fs-5"></i></a></div>`;
+                const isFullyReceived = Number(data.status_id) === PO_HEADER_STATUS.RECEIVED;
+                const actionClass = isFullyReceived
+                    ? 'btn_dropdown_purchase_received'
+                    : 'btn_dropdown_purchase_action';
+                return `<div class="d-flex justify-content-center align-items-end"><a href="javascript:void(0)" class="btn--Options ${actionClass}" data-id="${data.id}" data-authorized="${data.authorized}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false"><i class="fa-solid fa-ellipsis-vertical text-black fs-5"></i></a></div>`;
             }
         },
     ];
@@ -922,7 +1071,8 @@ var PurchaseOrdersComponent = (() => {
         mThis.Acfg = new ExpandableRowConfig(tblPo.id, {
             dontExpandByClickingOn: [
                 'dropdown-menu',
-                'btn_dropdown_purchase_action'
+                'btn_dropdown_purchase_action',
+                'btn_dropdown_purchase_received',
             ],
             onOpen: (container, detail_tr, parent_tr) => {
                 const poId = parent_tr.dataset.id;
@@ -978,7 +1128,7 @@ var PurchaseOrdersComponent = (() => {
                     cssClass: "border-bottom pb-2",
                     name: "delete_purchase_order"
                 },
-
+               
                 {
                     html: '<span class="ps-2  " vslang="titles.Authorized PO"></span>',
                     icon: `<i class="fa-solid fa-check-to-slot fs-5 text-primary"></i>`,
@@ -1365,9 +1515,15 @@ var PurchaseOrdersComponent = (() => {
                     showAddLineButton: true,
                     addLineButtonText: 'Add Item',
                     onItemChange: async (row_id, item, col_name, td, tr) => {
-                        if (typeof me.updatePOTotals === 'function') me.updatePOTotals();
+                        if (col_name !== 'item_id') {
+                            if (typeof me.updatePOTotals === 'function') me.updatePOTotals();
+                            return;
+                        }
+                        // ItemsView / setCellValue may fire item_id again for the same row; per-row flag avoids loops
+                        // (and avoids clobbering parallel edits on other rows).
+                        if (!tr || tr.dataset.poItemDetailHydrate === '1') return;
 
-                        if (col_name !== 'item_id') return;
+                        if (typeof me.updatePOTotals === 'function') me.updatePOTotals();
 
                         const itemId = item.item_id || item.id;
                         if (!itemId) return;
@@ -1381,26 +1537,33 @@ var PurchaseOrdersComponent = (() => {
                         tr.dataset.code = itemDetails.code || '';
 
                         if (!me.purchaseItemsView.setCellValue) return;
-                        // Keep selected item visible in the row (label/value), not back to "Select Item".
-                        me.purchaseItemsView.setCellValue(tr, 'item_id', itemId);
-                        const itemSelectEl = tr.querySelector('[name="item_id"], [data-field="item_id"]');
-                        if (itemSelectEl && itemSelectEl.tagName === 'SELECT') {
-                            let hasOption = false;
-                            for (let i = 0; i < itemSelectEl.options.length; i++) {
-                                if (String(itemSelectEl.options[i].value) === String(itemId)) {
-                                    hasOption = true;
-                                    break;
-                                }
-                            }
-                            if (!hasOption && itemDetails?.name) {
-                                itemSelectEl.add(new Option(itemDetails.name, itemId, false, false));
-                            }
-                            itemSelectEl.value = String(itemId);
-                            itemSelectEl.dispatchEvent(new Event('change'));
-                        }
-                        if (itemDetails.unit_id == null && itemDetails.unit == null) return;
 
-                        me.purchaseItemsView.setCellValue(tr, 'unit', normalizeUnit(itemDetails.unit_id ?? itemDetails.unit));
+                        tr.dataset.poItemDetailHydrate = '1';
+                        try {
+                            // Keep selected item visible in the row (label/value), not back to "Select Item".
+                            me.purchaseItemsView.setCellValue(tr, 'item_id', itemId);
+                            const itemSelectEl = tr.querySelector('[name="item_id"], [data-field="item_id"]');
+                            if (itemSelectEl && itemSelectEl.tagName === 'SELECT') {
+                                let hasOption = false;
+                                for (let i = 0; i < itemSelectEl.options.length; i++) {
+                                    if (String(itemSelectEl.options[i].value) === String(itemId)) {
+                                        hasOption = true;
+                                        break;
+                                    }
+                                }
+                                if (!hasOption && itemDetails?.name) {
+                                    itemSelectEl.add(new Option(itemDetails.name, itemId, false, false));
+                                }
+                                itemSelectEl.value = String(itemId);
+                                // Do not dispatch a synthetic "change" here — ItemsView will call onItemChange again
+                                // and this handler awaits the API, causing an infinite loop.
+                            }
+                            if (itemDetails.unit_id != null || itemDetails.unit != null) {
+                                me.purchaseItemsView.setCellValue(tr, 'unit', normalizeUnit(itemDetails.unit_id ?? itemDetails.unit));
+                            }
+                        } finally {
+                            delete tr.dataset.poItemDetailHydrate;
+                        }
 
                         if (typeof me.updatePOTotals === 'function') me.updatePOTotals();
                     },
@@ -1620,6 +1783,11 @@ var PurchaseOrdersComponent = (() => {
                         <div class="small text-muted mt-2">Loading purchase order…</div>
                     </div>
                     <div id="receive_po_content_wrap" style="display:none;">
+                        <div class="mb-3 d-flex align-items-center flex-wrap gap-2">
+                            <span class="fw-bold text-prm-custom">Receive status</span>
+                            <span class="mx-1">:</span>
+                            <span id="receive_po_progress_badge" class="badge text-secondary bg-secondary-subtle border border-secondary text-capitalize d-inline-block text-center" style="${PENDING_RECEIVE_BADGE_STYLE}">Pending</span>
+                        </div>
                         <div id="receive_purchase_item_list" class="purchase-item-list"></div>
                     </div>
                 </div>
@@ -1755,12 +1923,12 @@ var PurchaseOrdersComponent = (() => {
                         if (!poId) {
                             return cv_interact.error('Invalid purchase order.');
                         }
-                        if (Number(me._receivePoStatusId) === 2) {
+                        if (Number(me._receivePoStatusId) === PO_HEADER_STATUS.RECEIVED) {
                             return cv_interact.warning('This purchase order is already fully received.');
                         }
                         saveCheckedReceiveLines(me, btn).then((savedOk) => {
                             if (!savedOk) return;
-                            if (Number(me._receivePoStatusId) === 2) {
+                            if (Number(me._receivePoStatusId) === PO_HEADER_STATUS.RECEIVED) {
                                 cv_interact.success('Purchase order confirmed as received.');
                                 me.hide(true);
                                 if (mThis.PoListView && mThis.getFilterData) {
@@ -1797,7 +1965,7 @@ var PurchaseOrdersComponent = (() => {
                             }, btn).then((res) => {
                                 if (res.status_code === 200) {
                                     cv_interact.success(res.message || 'Purchase order confirmed as received.');
-                                    me._receivePoStatusId = 2;
+                                    me._receivePoStatusId = PO_HEADER_STATUS.RECEIVED;
                                     me.hide(true);
                                     if (mThis.PoListView && mThis.getFilterData) {
                                         mThis.PoListView.showPage(mThis.getFilterData());
