@@ -12,6 +12,13 @@ use XPublicStorage;
 
 class PurchaseOrder //extends Model
 {
+    public const STATUS_PENDING = 1;
+    public const STATUS_APPROVED = 2;
+    public const STATUS_ORDERED = 3;
+    public const STATUS_PARTIALLY_RECEIVED = 4;
+    public const STATUS_RECEIVED = 5;
+    public const STATUS_CANCELLED = 6;
+
     protected $id = null;
     protected $userInfo = null;
     public function __construct($id = null, $userInfo = null)
@@ -461,7 +468,7 @@ class PurchaseOrder //extends Model
      *
      * @param  object  $row  Query row (mutated in place; same fields returned for clarity)
      */
-   
+
 
     /**
      * Optional formatted display fields on PO header (numeric fields unchanged for forms).
@@ -484,6 +491,81 @@ class PurchaseOrder //extends Model
         }
 
         return $row;
+    }
+
+    /**
+     * Receive progress for PO lines (meaningful = item_id & qty > 0).
+     * Uses effective qty = receive column + break_amount when present.
+     *
+     * @return string 'none' | 'partial' | 'complete'
+     */
+    public static function receiveProgressStateFromLines($lines): string
+    {
+        $receiveCol = self::purchaseOrderItemReceiveQtyColumnName();
+        $hasBreak = Schema::hasColumn('purchase_order_items', 'break_amount');
+        $meaningful = [];
+        foreach ($lines as $line) {
+            $ordered = (float) ($line->qty ?? 0);
+            if ($ordered <= 0) {
+                continue;
+            }
+            $recv = $receiveCol ? (float) ($line->{$receiveCol} ?? 0) : 0.0;
+            $brk = $hasBreak ? (float) ($line->break_amount ?? 0) : 0.0;
+            // Item status_id 2 = line marked received (distinct from PO header statuses).
+            $lineReceived = (int) ($line->status_id ?? 0) === 2;
+            $meaningful[] = ['ordered' => $ordered, 'eff' => $recv + $brk, 'line_received' => $lineReceived];
+        }
+        if ($meaningful === []) {
+            return 'none';
+        }
+        $anyReceived = false;
+        $allSatisfied = true;
+        foreach ($meaningful as $m) {
+            $lineMarkedReceived = !empty($m['line_received']);
+            if ($lineMarkedReceived || $m['eff'] > 0.02) {
+                $anyReceived = true;
+            }
+            if (!$lineMarkedReceived && ($m['eff'] + 1e-6) < $m['ordered']) {
+                $allSatisfied = false;
+            }
+        }
+        if (!$anyReceived) {
+            return 'none';
+        }
+        if ($allSatisfied) {
+            return 'complete';
+        }
+
+        return 'partial';
+    }
+
+    /**
+     * Bootstrap-friendly badge for list / dialog (receive progress only).
+     *
+     * @return array{label: string, class: string, style: string}
+     */
+    public static function receiveProgressBadgePresentation(string $state): array
+    {
+        if ($state === 'complete') {
+            return [
+                'label' => 'Received',
+                'class' => 'badge border',
+                'style' => 'min-width:90px;background:#dff3ea;color:#37b07f;border-color:#70c39f !important;font-weight:500;',
+            ];
+        }
+        if ($state === 'partial') {
+            return [
+                'label' => 'Partially Received',
+                'class' => 'badge text-dark border',
+                'style' => 'min-width:90px;background:#fff3e0;color:#e65100;border-color:#ffb74d !important;font-weight:500;',
+            ];
+        }
+
+        return [
+            'label' => 'Pending',
+            'class' => 'badge text-gray border',
+            'style' => 'min-width:90px;background:#fff3cd;color:#664d03;border-color:#ffc107 !important;font-weight:600;',
+        ];
     }
 
     function getPurchaseOrderList($filter, $ss)
@@ -519,9 +601,6 @@ class PurchaseOrder //extends Model
         $discount_amount = "CASE WHEN po.discount_type = 'percent' THEN (" . $item_total . " * COALESCE(po.discount_value, 0) / 100) ELSE COALESCE(po.discount_value, 0) END";
         $computed_total_amount = 'GREATEST(0, (' . $item_total . ') - (' . $discount_amount . '))';
         $total_amount = 'COALESCE(po.total_amount, ' . $computed_total_amount . ')';
-        // status_id 2 = all lines received, status_id 3 = partial receive.
-        // For this UI we want both to show "Received".
-        // $statusLabel = "CASE WHEN po.status_id IN (2,3) THEN 'Received' ELSE ps.name END";
         $cols = 'po.id,po.po_number,po.vendor_id,po.po_date,po.authorized,po.status_id,ps.name as status,po.total_authorizers,po.auth_count,po.remarks,po.discount_value,po.discount_type,po.sub_total as stored_sub_total,po.total_amount as stored_total_amount,po.updated_at,po.update_user,v.id as vendor_id,v.name as vendor_name,v.phone_number,'. $sub_total . ' as sub_total,' . $total_amount . ' as total_amount';
         $query = DB::table('purchase_orders as po')
             // ->join('purchase_order_authorizations as au','au.po_id','=','po.id')
@@ -535,6 +614,24 @@ class PurchaseOrder //extends Model
         $count_query = clone $query;
         $count = $count_query->count('po.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
+        $poIds = $rows->pluck('id')->map(function ($id) {
+            return (int) $id;
+        })->all();
+        $linesByPo = [];
+        if ($poIds !== []) {
+            $allLines = DB::table('purchase_order_items')
+                ->whereIn('po_id', $poIds)
+                ->whereNotNull('item_id')
+                ->where('item_id', '>', 0)
+                ->get();
+            foreach ($allLines as $line) {
+                $pid = (int) $line->po_id;
+                if (!isset($linesByPo[$pid])) {
+                    $linesByPo[$pid] = [];
+                }
+                $linesByPo[$pid][] = $line;
+            }
+        }
         foreach ($rows as $row) {
             $auth = DB::table('purchase_order_authorizations')
                 ->where('po_id', $row->id)
@@ -553,7 +650,20 @@ class PurchaseOrder //extends Model
                 $v = $isInt ? (string) (int) round($dv) : rtrim(rtrim(number_format($dv, 2, '.', ''), '0'), '.');
                 $row->discount_formatted = $v . ' %';
             }
-            $row = setOfficialDates($row, ['auth_date','po_date'], ['updated_at'], []);
+            setOfficialDates($row, ['auth_date', 'po_date'], ['updated_at'], []);
+            if ((int) $row->status_id !== self::STATUS_CANCELLED) {
+                $pid = (int) $row->id;
+                $lines = $linesByPo[$pid] ?? [];
+                $state = self::receiveProgressStateFromLines($lines);
+                // Only override badge for receive workflow. When nothing is received yet, show DB status
+                // (e.g. "Ordered" after Authorized PO), not receive-progress "Pending".
+                if ($state === 'partial' || $state === 'complete') {
+                    $badge = self::receiveProgressBadgePresentation($state);
+                    $row->status_label = $badge['label'];
+                    $row->status_class = $badge['class'];
+                    $row->status_badge_style = $badge['style'];
+                }
+            }
         }
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
@@ -624,15 +734,15 @@ class PurchaseOrder //extends Model
     }
 
     /**
-     * Align purchase_orders.status_id with line receive progress after line-level receives:
-     * 2 = every real line has Receive Qty + Break Amount = Ordered Qty; 3 = some receipt progress but not complete; 1 = no progress.
-     * Matches the rules used in confirmPurchaseOrderReceived so the PO list shows "Received" when appropriate.
+     * Align purchase_orders.status_id with line receive progress after line-level receives.
+     * Rules (per line with qty > 0): effective = receive_qty + break_amount.
+     * - All lines effective >= ordered → Received (5)
+     * - Some but not all → Partially Received (4)
+     * - No receive on any line → if header was partial/received, revert toward workflow (Ordered if authorized, else Approved)
      */
     protected function syncPurchaseOrderHeaderStatusFromLines(int $poId, $ss = null): void
     {
         $ss = $ss ?? $this->userInfo;
-        $receiveCol = self::purchaseOrderItemReceiveQtyColumnName();
-        $hasBreak = Schema::hasColumn('purchase_order_items', 'break_amount');
 
         $lines = DB::table('purchase_order_items')
             ->where('po_id', $poId)
@@ -648,38 +758,22 @@ class PurchaseOrder //extends Model
         if (!$header) {
             return;
         }
-        if ((int) $header->status_id === 2) {
+        if ((int) $header->status_id === self::STATUS_RECEIVED) {
             return;
         }
 
-        $anyReceived = false;
-        $allComplete = true;
-
-        foreach ($lines as $line) {
-            $ordered = (float) ($line->qty ?? 0);
-            $recv = 0.0;
-            if ($receiveCol) {
-                $recv = (float) ($line->{$receiveCol} ?? 0);
-            }
-            $brk = $hasBreak ? (float) ($line->break_amount ?? 0) : 0.0;
-            $lineStatus = (int) ($line->status_id ?? 0);
-
-            if ($recv > 0 || $brk > 0 || $lineStatus === 2) {
-                $anyReceived = true;
-            }
-            if (abs(($recv + $brk) - $ordered) > 0.02) {
-                $allComplete = false;
-            }
+        $state = self::receiveProgressStateFromLines($lines);
+        $cur = (int) $header->status_id;
+        $newStatus = $cur;
+        if ($state === 'complete') {
+            $newStatus = self::STATUS_RECEIVED;
+        } elseif ($state === 'partial') {
+            $newStatus = self::STATUS_PARTIALLY_RECEIVED;
+        } elseif ($state === 'none' && in_array($cur, [self::STATUS_PARTIALLY_RECEIVED, self::STATUS_RECEIVED], true)) {
+            $newStatus = (int) ($header->authorized ?? 0) === 1 ? self::STATUS_ORDERED : self::STATUS_APPROVED;
         }
 
-        $newStatus = (int) $header->status_id;
-        if ($allComplete && $anyReceived) {
-            $newStatus = 2;
-        } elseif ($anyReceived) {
-            $newStatus = 3;
-        }
-
-        if ($newStatus !== (int) $header->status_id) {
+        if ($newStatus !== $cur) {
             $now = getNowTime();
             $updateUser = $ss->login_name ?? $ss->user_name ?? 'User';
             DB::table('purchase_orders')->where('id', $poId)->update([
@@ -692,7 +786,7 @@ class PurchaseOrder //extends Model
 
     /**
      * Save Receive Qty / Break Amount on selected line items and mark those lines received (status_id = 2).
-     * Updates purchase_orders header status when lines are fully received (2) or partially (3).
+     * Updates purchase_orders header status when lines are fully received (5) or partially received (4).
      *
      * @param array $payload Expects po_item_ids: int[] (purchase_order_items.id)
      */
@@ -707,7 +801,7 @@ class PurchaseOrder //extends Model
         if (!$po) {
             return DV::error('Purchase order not found.');
         }
-        if ((int) $po->status_id === 2) {
+        if ((int) $po->status_id === self::STATUS_RECEIVED) {
             return DV::error('This purchase order is already fully received.');
         }
         $itemCount = DB::table('purchase_order_items')->where('po_id', $id)->count();
@@ -788,7 +882,7 @@ class PurchaseOrder //extends Model
         if (!$po) {
             return DV::error('Purchase order not found.');
         }
-        if ((int) $po->status_id === 2) {
+        if ((int) $po->status_id === self::STATUS_RECEIVED) {
             return DV::error('This purchase order is already fully received.');
         }
 
@@ -808,12 +902,16 @@ class PurchaseOrder //extends Model
         $hasIncomplete = false;
         foreach ($lines as $line) {
             $ordered = (float) ($line->qty ?? 0);
+            if ($ordered <= 0) {
+                continue;
+            }
             $recv = 0.0;
             if ($receiveCol) {
                 $recv = (float) ($line->{$receiveCol} ?? 0);
             }
             $brk = $hasBreak ? (float) ($line->break_amount ?? 0) : 0.0;
-            if (abs(($recv + $brk) - $ordered) > 0.02) {
+            $lineMarkedReceived = (int) ($line->status_id ?? 0) === 2;
+            if (!$lineMarkedReceived && ($recv + $brk) + 1e-6 < $ordered) {
                 $hasIncomplete = true;
                 break;
             }
@@ -830,9 +928,9 @@ class PurchaseOrder //extends Model
             }
             $now = getNowTime();
             $updateUser = $ss->login_name ?? $ss->user_name ?? 'User';
-            // Partial receive status for header (id:3 in this project)
+            // Partial receive status for PO header.
             DB::table('purchase_orders')->where('id', $id)->update([
-                'status_id' => 3,
+                'status_id' => self::STATUS_PARTIALLY_RECEIVED,
                 'remarks' => $remarks,
                 'updated_at' => $now,
                 'update_user' => $updateUser,
@@ -848,7 +946,7 @@ class PurchaseOrder //extends Model
         }
 
         DB::table('purchase_orders')->where('id', $id)->update([
-            'status_id' => 2,
+            'status_id' => self::STATUS_RECEIVED,
             'updated_at' => $now,
             'update_user' => $updateUser,
         ]);
@@ -918,7 +1016,7 @@ class PurchaseOrder //extends Model
                 'auth_count' => $authorized_count,
                 'total_authorizers' => $total_authorizers,
                 'authorized' => $authorized,
-                'status_id' => $authorized ? 3 : 1
+                'status_id' => $authorized ? self::STATUS_ORDERED : self::STATUS_PENDING
             ]);
 
         return DV::success();
