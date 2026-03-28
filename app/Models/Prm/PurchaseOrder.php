@@ -461,38 +461,7 @@ class PurchaseOrder //extends Model
      *
      * @param  object  $row  Query row (mutated in place; same fields returned for clarity)
      */
-    public static function decoratePurchaseOrderListRow($row): object
-    {
-        $statusId = (int) ($row->status_id ?? 0);
-        $isReceived = in_array($statusId, [2, 3], true);
-        $byStatus = [
-            1 => 'badge text-warning bg-warning-subtle border border-warning',
-            2 => 'badge text-success bg-success-subtle border border-success',
-            3 => 'badge text-primary bg-primary-subtle border border-primary',
-            4 => 'badge text-info bg-info-subtle border border-info',
-            5 => 'badge text-dark bg-secondary-subtle border border-secondary',
-            6 => 'badge text-danger bg-danger-subtle border border-danger',
-        ];
-        $row->status_label = $isReceived ? 'Received' : (string) ($row->status ?? '');
-        if ($isReceived) {
-            $row->status_class = 'badge border';
-        } else {
-            $row->status_class = $byStatus[$statusId] ?? 'badge text-warning bg-warning-subtle border border-warning';
-        }
-        $row->sub_total_formatted = '$ ' . number_format((float) ($row->sub_total ?? 0), 2, '.', '');
-        $row->total_amount_formatted = '$ ' . number_format((float) ($row->total_amount ?? 0), 2, '.', '');
-        $dv = (float) ($row->discount_value ?? 0);
-        $dt = (string) ($row->discount_type ?? 'percent');
-        if ($dt === 'amount') {
-            $row->discount_formatted = '$ ' . number_format($dv, 2, '.', '');
-        } else {
-            $isInt = abs($dv - round($dv)) < 0.00001;
-            $v = $isInt ? (string) (int) round($dv) : rtrim(rtrim(number_format($dv, 2, '.', ''), '0'), '.');
-            $row->discount_formatted = $v . ' %';
-        }
-
-        return $row;
-    }
+   
 
     /**
      * Optional formatted display fields on PO header (numeric fields unchanged for forms).
@@ -553,9 +522,9 @@ class PurchaseOrder //extends Model
         // status_id 2 = all lines received, status_id 3 = partial receive.
         // For this UI we want both to show "Received".
         // $statusLabel = "CASE WHEN po.status_id IN (2,3) THEN 'Received' ELSE ps.name END";
-        $cols = 'po.id,po.po_number,po.vendor_id,po.po_date,po.authorized,au.auth_user as authorizer,au.auth_date,po.status_id,ps.name as status,po.total_authorizers,po.auth_count,po.remarks,po.discount_value,po.discount_type,po.sub_total as stored_sub_total,po.total_amount as stored_total_amount,po.updated_at,po.update_user,v.id as vendor_id,v.name as vendor_name,v.phone_number,'. $sub_total . ' as sub_total,' . $total_amount . ' as total_amount';
+        $cols = 'po.id,po.po_number,po.vendor_id,po.po_date,po.authorized,po.status_id,ps.name as status,po.total_authorizers,po.auth_count,po.remarks,po.discount_value,po.discount_type,po.sub_total as stored_sub_total,po.total_amount as stored_total_amount,po.updated_at,po.update_user,v.id as vendor_id,v.name as vendor_name,v.phone_number,'. $sub_total . ' as sub_total,' . $total_amount . ' as total_amount';
         $query = DB::table('purchase_orders as po')
-            ->join('purchase_order_authorizations as au','au.po_id','=','po.id')
+            // ->join('purchase_order_authorizations as au','au.po_id','=','po.id')
             ->join('vendors as v', 'v.id', '=', 'po.vendor_id')
             ->join('purchase_order_statuses as ps', 'ps.id', '=', 'po.status_id')
             ->whereRaw($str_where)
@@ -567,7 +536,23 @@ class PurchaseOrder //extends Model
         $count = $count_query->count('po.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
         foreach ($rows as $row) {
-            self::decoratePurchaseOrderListRow($row);
+            $auth = DB::table('purchase_order_authorizations')
+                ->where('po_id', $row->id)
+                ->first();
+                $row->authorizer = $auth->auth_user ?? null;
+            $row->auth_date = $auth->auth_date ?? null;
+            //au.auth_user as authorizer,au.auth_date,
+            $row->sub_total_formatted = '$ ' . number_format((float) ($row->sub_total ?? 0), 2, '.', '');
+            $row->total_amount_formatted = '$ ' . number_format((float) ($row->total_amount ?? 0), 2, '.', '');
+            $dv = (float) ($row->discount_value ?? 0);
+            $dt = (string) ($row->discount_type ?? 'percent');
+            if ($dt === 'amount') {
+                $row->discount_formatted = '$ ' . number_format($dv, 2, '.', '');
+            } else {
+                $isInt = abs($dv - round($dv)) < 0.00001;
+                $v = $isInt ? (string) (int) round($dv) : rtrim(rtrim(number_format($dv, 2, '.', ''), '0'), '.');
+                $row->discount_formatted = $v . ' %';
+            }
             $row = setOfficialDates($row, ['auth_date','po_date'], ['updated_at'], []);
         }
 
