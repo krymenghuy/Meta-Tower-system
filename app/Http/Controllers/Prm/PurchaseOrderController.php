@@ -103,4 +103,12 @@ class PurchaseOrderController extends Controller
         $res = $this->purchaseOrders->confirmPurchaseOrderReceived((int) $req->id, $ss, $req->all());
         return JDV::raw($res);
     }
+    function authorized(Request $req){
+        $ss = XAuthService::verifyAuth($req,-1);
+        if($ss->status_code !==200){
+            return JDV::raw($ss);
+        }
+        $res = $this->purchaseOrders->authorized($req->all(),$ss);
+        return JDV::raw($res);
+    }
 }

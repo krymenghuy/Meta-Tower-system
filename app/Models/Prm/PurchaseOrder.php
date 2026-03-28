@@ -543,8 +543,8 @@ class PurchaseOrder //extends Model
         if ($status_id) {
             $str_where .= ' AND po.status_id = ' . $status_id;
         }
-        $updated_at = DBX::formatTime('po.updated_at', 'updated_at');
-        $po_date = DBX::formatDate('po.po_date', 'po_date');
+        // $updated_at = DBX::formatTime('po.updated_at', 'updated_at');
+        // $po_date = DBX::formatDate('po.po_date', 'po_date');
         $item_total = '(SELECT COALESCE(SUM(pi.total_price), 0) FROM purchase_order_items as pi WHERE pi.po_id = po.id)';
         $sub_total = 'COALESCE(po.sub_total, ' . $item_total . ')';
         $discount_amount = "CASE WHEN po.discount_type = 'percent' THEN (" . $item_total . " * COALESCE(po.discount_value, 0) / 100) ELSE COALESCE(po.discount_value, 0) END";
@@ -552,9 +552,10 @@ class PurchaseOrder //extends Model
         $total_amount = 'COALESCE(po.total_amount, ' . $computed_total_amount . ')';
         // status_id 2 = all lines received, status_id 3 = partial receive.
         // For this UI we want both to show "Received".
-        $statusLabel = "CASE WHEN po.status_id IN (2,3) THEN 'Received' ELSE ps.name END";
-        $cols = 'po.id,po.po_number,po.vendor_id,' . $po_date . ',po.status_id,po.remarks,po.discount_value,po.discount_type,po.sub_total as stored_sub_total,po.total_amount as stored_total_amount,' . $updated_at . ',po.update_user,v.id as vendor_id,v.name as vendor_name,v.phone_number,' . $statusLabel . ' as status,' . $sub_total . ' as sub_total,' . $total_amount . ' as total_amount';
+        // $statusLabel = "CASE WHEN po.status_id IN (2,3) THEN 'Received' ELSE ps.name END";
+        $cols = 'po.id,po.po_number,po.vendor_id,po.po_date,po.authorized,au.auth_user as authorizer,au.auth_date,po.status_id,ps.name as status,po.total_authorizers,po.auth_count,po.remarks,po.discount_value,po.discount_type,po.sub_total as stored_sub_total,po.total_amount as stored_total_amount,po.updated_at,po.update_user,v.id as vendor_id,v.name as vendor_name,v.phone_number,'. $sub_total . ' as sub_total,' . $total_amount . ' as total_amount';
         $query = DB::table('purchase_orders as po')
+            ->join('purchase_order_authorizations as au','au.po_id','=','po.id')
             ->join('vendors as v', 'v.id', '=', 'po.vendor_id')
             ->join('purchase_order_statuses as ps', 'ps.id', '=', 'po.status_id')
             ->whereRaw($str_where)
@@ -567,6 +568,7 @@ class PurchaseOrder //extends Model
         $rows = $query->skip($skip_rows)->take($per_page)->get();
         foreach ($rows as $row) {
             self::decoratePurchaseOrderListRow($row);
+            $row = setOfficialDates($row, ['auth_date','po_date'], ['updated_at'], []);
         }
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
@@ -884,5 +886,56 @@ class PurchaseOrder //extends Model
         DB::table('purchase_order_items')->where('po_id', $id)->delete();
         DB::table('purchase_orders')->where('id', $id)->delete();
         return DV::success(['message' => 'Purchase order has been deleted.']);
+    }
+
+
+    public function authorized($arr = [], $ss){
+        $d = (object)$arr;
+        $po_id = $d->po_id ?? null;
+
+        if(!$po_id){
+            return DV::error('Invalid PO id');
+        }
+
+        $exists = DB::table('purchase_order_authorizations')
+            ->where('po_id', $po_id)
+            ->where('auth_uid', $ss->user_id)
+            ->exists();
+
+        if($exists){
+            return DV::error('you already authorized this PO.');
+        }
+
+        // Save authorization
+        DB::table('purchase_order_authorizations')->insert([
+            'po_id'  => $po_id,
+            'auth_uid'    => $ss->user_id,
+            'auth_user'   => $ss->full_name,
+            'auth_date'   => getNowTime(),
+            'create_user' => $ss->full_name,
+            'update_user' => $ss->full_name,
+            'create_uid'  => $ss->user_id,
+            'update_uid'  => $ss->user_id
+        ]);
+
+        $authorized_count = DB::table('purchase_order_authorizations')
+            ->where('po_id',$po_id)
+            ->count();
+
+        $total_authorizers = DB::table('purchase_order_authorizers')
+            ->where('inactive',0)
+            ->count();
+        $authorized = $authorized_count >= $total_authorizers ? 1 : 0;
+
+        $updated = DB::table('purchase_orders')
+            ->where('id',$po_id)
+            ->update([
+                'auth_count' => $authorized_count,
+                'total_authorizers' => $total_authorizers,
+                'authorized' => $authorized,
+                'status_id' => $authorized ? 3 : 1
+            ]);
+
+        return DV::success();
     }
 }

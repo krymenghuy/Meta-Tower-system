@@ -44,7 +44,7 @@ class Amenity extends VSModel
         $inputs = $res->values;
         $d = (object) $inputs;
 
-        $d->requires_booking = isset($d->requires_booking) ? (int)$d->requires_booking : 0;
+        // $d->requires_booking = isset($d->requires_booking) ? (int)$d->requires_booking : 0;
 
         if(!$id) {
             $exist = DB::table('amenities')

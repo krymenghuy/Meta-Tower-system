@@ -24,7 +24,6 @@ class Reservation extends VSModel
     public function upsert($arr = [], $id = null, $ss = null){
         // 1. Force local timezone so 'now' matches your watch
         date_default_timezone_set('Asia/Phnom_Penh');
-
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
 
@@ -274,14 +273,7 @@ class Reservation extends VSModel
         return DV::depends($x, ['reservation status', 'updated']);
     }
 
-    public static function options_amenity($ss)
-{
-    return DB::table('amenities')
-        ->select('id', 'amenity', 'code', 'max_capacity')
-        ->where('active', 1) 
-        ->orderBy('amenity')
-        ->get();
-}
+    
 
     
 }
