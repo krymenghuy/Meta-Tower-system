@@ -60,6 +60,8 @@ class Invoice extends VSModel
             return DV::error('Please add at least one item.');
         }
 
+        \Log::info(2323232323, $arr);
+
         DB::beginTransaction();
 
         try {
@@ -94,15 +96,15 @@ class Invoice extends VSModel
             foreach ($items as $item) {
                 $itemType = strtolower($item['type'] ?? $item['item_type'] ?? 'service');
 
-                    if (!in_array($itemType, ['service', 'rent', 'utility'])) {
-                        \Log::warning("Invalid item type received, forced to 'service'", [
-                            'received' => $item['type'] ?? 'missing',
-                            'item'     => $item
-                        ]);
-                        $itemType = 'service';
-                    }
+                if (!in_array($itemType, ['service', 'rent', 'utility'])) {
+                    \Log::warning("Invalid item type received, forced to 'service'", [
+                        'received' => $item['type'] ?? 'missing',
+                        'item'     => $item
+                    ]);
+                    $itemType = 'service';
+                }
 
-                if (!in_array($itemType, ['service', 'rent','utility',])) {
+                if (!in_array($itemType, ['service', 'rent', 'utility',])) {
                     $itemType = 'service';
                 }
 
@@ -134,53 +136,34 @@ class Invoice extends VSModel
                     }
                 }
 
-                $baseAmount = $qty * $price;
-
-                $discountValue   = (float)($item['discount'] ?? $item['special_discount_value'] ?? 0);
-                $discountType    = $item['special_discount_type'] ?? 'percent';
-                $taxRate         = (float)($item['tax_rate'] ?? 0);
-
-
-                if ($discountType === 'percent') {
-                    $discountAmount = $baseAmount * ($discountValue / 100);
-                } else {
-                    $discountAmount = $discountValue;
-                }
-                $afterDiscount = $baseAmount - $discountAmount;
-
-                $taxAmount = $afterDiscount * ($taxRate / 100);
-
-                $finalAmount = $afterDiscount + $taxAmount;
-
-                $amount = round($finalAmount, 2);
-
+                $price = (float)($item['price'] ?? 0);
+                $qty   = (float)($item['qty'] ?? 1);
 
                 $itemRows[] = [
-                    'invoice_id'              => $id,
-                    'item_id'                 => $itemId,
-                    'type'                    => $itemType,
-                    'qty'                     => $qty,
-                    'unit_type'               => $unitType,
-                    'remarks'                 => $item['remarks'] ?? $item['description'] ?? '',
-                    'amount'                  => $amount,
-                    'discount'                => (float)($item['discount'] ?? 0),
-                    'special_discount_value'  => $discountValue,
-                    'special_discount_type'   => in_array($item['special_discount_type'] ?? '', ['amount', 'percent'])
-                                                    ? $item['special_discount_type']
-                                                    : 'percent',
-                    'tax_rate'                => $taxRate,
-                    'created_at'              => now(),
-                    'updated_at'              => now(),
-                    'start_date'              => $item['start_date'] ?? null,
-                    'end_date'                => $item['end_date']   ?? null,
+                    'invoice_id'             => $id,
+                    'item_id'                => $itemId,
+                    'type'                   => $itemType,
+                    'qty'                    => $qty,
+                    'price'                  => $price,
+                    'amount'                 => $item['amount'],
+                    'unit_type'              => $unitType,
+                    'remarks'                => $item['remarks'] ?? $item['description'] ?? '',
+                    'discount'               => $item['discount_value'] ?? 0,
+                    'discount_type'          => $item['discount_type'] ?? 0,
+                    'special_discount_value' => $item['special_discount_value'] ?? 0,
+                    'special_discount_type'  => $item['special_discount_type'] ?? 'percent',
+                    'tax_rate'               => (float)($item['tax_rate'] ?? 0),
+                    'start_date'             => $item['start_date'] ?? null,
+                    'end_date'               => $item['end_date'] ?? null,
+                    'created_at'             => now(),
+                    'updated_at'             => now(),
                 ];
             }
 
             if (!empty($itemRows)) {
                 DB::table('invoice_items')->insert($itemRows);
             }
-
-            // Calculate and update total
+            // Calculate and update total for the header
             $totalAmount = array_sum(array_column($itemRows, 'amount'));
 
             DB::table('invoices')
@@ -194,7 +177,6 @@ class Invoice extends VSModel
             DB::commit();
 
             return DV::depends(1, ['invoices' => $inputs, 'id' => $id]);
-
         } catch (\Exception $e) {
             DB::rollBack();
             \Log::error("Invoice save failed: " . $e->getMessage(), [
@@ -266,7 +248,7 @@ class Invoice extends VSModel
         if (!empty($d->search_value)) {
             $search = '%' . $d->search_value . '%';
             $query->where(function ($q) use ($search) {
-                    $q->where('i.code',    'like', $search)
+                $q->where('i.code',    'like', $search)
                     ->orWhere('t.name',  'like', $search)
                     ->orWhere('bs.code', 'like', $search);
             });
@@ -311,11 +293,11 @@ class Invoice extends VSModel
         $header->items = DB::table('invoice_items as ii')
             ->leftJoin('services as s', function ($join) {
                 $join->on('s.id', '=', 'ii.item_id')
-                     ->where('ii.type', '=', 'service');
+                    ->where('ii.type', '=', 'service');
             })
             ->leftJoin('contracts as c', function ($join) {
                 $join->on('c.id', '=', 'ii.item_id')
-                     ->where('ii.type', '=', 'rent');
+                    ->where('ii.type', '=', 'rent');
             })
             ->where('ii.invoice_id', $id)
             ->select(
@@ -333,6 +315,7 @@ class Invoice extends VSModel
                 'ii.start_date',
                 'ii.end_date',
                 'ii.tax_rate',
+                'ii.price',
                 DB::raw("
                     COALESCE(
                         s.name,
