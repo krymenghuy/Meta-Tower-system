@@ -1,4 +1,6 @@
 "use strict";
+
+
 var ReservationComponent = (() => {
     const mThis = {};
     mThis.title_prop = "Reservation";
@@ -283,15 +285,12 @@ var ReservationComponent = (() => {
 
     mThis.editReservation = (id, menulink) => {
         const op = {
-            id: parseInt(id, 10),
+            id: id,
             btn: menulink,
             onClose: () => {
                 mThis.ReservationListView.showPage(mThis.getFilterData());
             },
         };
-
-        console.log(33333, op);
-
         CreateReservationDialog.show(op);
     };
     mThis.deleteReservation = (id, menuLink) => {
@@ -365,7 +364,6 @@ const CreateReservationDialog = (() => {
 
     self.show = (op) => {
         console.log("DEBUG 1: Opening Dialog with op:", op);
-
         dialog =
             dialog ||
             new GeneralDialog({
@@ -378,8 +376,7 @@ const CreateReservationDialog = (() => {
                                 <input name="tenant_id" class="d-none data-input form-control" data-field="tenant_id">
                             <div class="col-6">
                                 <div class="material-input outlined">
-                                    <input  name="tenant" class="data-input form-control" data-field="tenant_name" placeholder=" "></input>
-                                    <label style="color:#777777;padding-left:6px;">Tenant</label>
+                                    <input  name="tenant" class="data-input form-control" data-field="tenant_name" placeholder="Tenant"></input>
                                 </div>
                             </div>
                             <div class="col-6">
@@ -448,6 +445,9 @@ const CreateReservationDialog = (() => {
                         query: {
                             from: "tenants",
                             select: ["id", "name", "phone_number"],
+                            where: [['status_id','=',1]],
+                            orderBy: [['id','DESC']],
+                            limit:50,
                             searchFields: {
                                 name: "LIKE",
                                 phone_number: "LIKE",

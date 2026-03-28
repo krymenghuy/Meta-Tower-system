@@ -1599,9 +1599,8 @@ const CreateTenantDialog = (() => {
                     },
                 },
                 onPrepareForm: (me, data) => {
-                    const header = me.divModal.querySelector(".modal-header");
-                    const btnClose = header.querySelector("button");
-                    if (btnClose) btnClose.classList.add("d-none");
+                    
+                    
                 },
 
                 extendMethod: {
