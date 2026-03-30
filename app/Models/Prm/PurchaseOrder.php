@@ -3,306 +3,71 @@
 namespace App\Models\Prm;
 
 use App\Models\Prm\GeneralSettings;
+use App\Models\Prm\Item;
 use DV;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Pagination\LengthAwarePaginator;
 use DBX;
-use XPublicStorage;
-
-class PurchaseOrder //extends Model
+use Vsd\Vsloquent\VSModel;
+class PurchaseOrder extends VSModel
 {
-    public const STATUS_PENDING = 1;
-    public const STATUS_APPROVED = 2;
-    public const STATUS_ORDERED = 3;
-    public const STATUS_PARTIALLY_RECEIVED = 4;
-    public const STATUS_RECEIVED = 5;
-    public const STATUS_CANCELLED = 6;
+    // Layout matches Building: save → list → details → form options → delete → related reads
+    // → authorize / receive → static presentation helpers → legacy MI.
 
-    protected $id = null;
+    protected $table = 'purchase_orders';
+
+    protected static $purchaseOrderStatusIdMap = null;
+
     protected $userInfo = null;
+
     public function __construct($id = null, $userInfo = null)
     {
         $this->id = $id;
         $this->userInfo = $userInfo;
-    }
 
-    //Receive PO items and increase Inventory items
-    function receiveVPO($data, $ss)
-    {
-        $branch_id = $ss->branch_id;
-        $validate_rule = [
-            "type" => "1|choice|MI,RM,FG",
-            "warehouse_id" => "1|number|default=1|exists=warehouses.id|default=1|text=Warehouse identity does not exist",
-            //"block"=>"1|exists=inv_blocks.code|default=A",
-            "stockclass_code" => "1|string|exists=inv_stock_classes.code|default=A",
-            "po_number" => "0|string|0-25",
-            "trx_date" => "0|timestamp",
-            "vendor_id" => "0|number|exists=vendors.id",//supplyer_id
-            "items" => "1|object"
-        ];
-
-        $check_unique = null;
-        $res = validateObject($data, $validate_rule, true, [], $ss->lang, false, $check_unique);
-        if ($res->error)
-            return DV::error($res->error);
-
-        $inputs = $res->values;
-        $items = $inputs['items'];
-        $x_res = $this->validateItems($items);
-        if ($x_res->error)
-            return DV::error($x_res->error);
-        $items = $x_res->items;
-
-        $trx_date = convertDate($inputs['trx_date']);
-        if ($trx_date > date('Y-m-d'))
-            return DV::error('Transaction date cannot be later than today');
-        if (!(bool) strtotime($trx_date))
-            $trx_date = getNowTime();
-
-        //before it was called "stockclass_code", not "stock_class"
-        //$default_stock_class = $inputs['stock_class'];
-        $warehouse_id = $inputs["warehouse_id"]; //default to 1
-
-        if (!(bool) strtotime($trx_date))
-            $trx_date = $inputs['trx_date'];
-        //return DV::result($items);
-        $item = null;
-        $i = 0;
-        $success_items = [];
-        $success_count = 0;
-        //$errors = [];
-        do {
-            if (!isset($items[$i]))
-                break;
-            $item = $items[$i];
-            //$uom = $item->uom;
-
-            //begin:: task to process each $item in $items array
-            $item_id = isset($item->id) ? $item->id : null;
-            $trx_id = 0;
-            $item_id = $item->id;
-            //Expiration is input by user on Item View
-            $expiration_date = isset($item->expiration_date) ? $item->expiration_date : null;
-            $new_sku = self::createSKU($branch_id, $item_id, $expiration_date, $item->group_name, $item->category);
-            //$stock_item = $this->getStockRecord($branch_id,$warehouse_id,$stockclass_code,$item_id,$trx_date);
-            $input_item = ['id' => $item->id, 'sku' => $new_sku, 'code' => $item->code, 'uom' => $item->uom, 'purchase_qty' => $item->qty];
-            //NOTE: Item::prepareDailyStockRecord() will ensure that there is one record in table "inv_daily_stock" for the (item_id,begin_qty,purchase_qty,avail_qty, ...)
-            $stock_class = $item->stock_class;
-            $stock_item = Item::prepareDailyStockRecord($ss, $warehouse_id, $stock_class, $input_item, $trx_date);
-            $update_qty = 0;
-            if ($stock_item) {
-                $trx_id = $stock_item->trx_id;
-                $uom = $stock_item->uom;
-                $update_qty = $stock_item->purchase_qty + $item->qty;
-                $x = DB::table('inv_daily_stocks')->where('id', $stock_item->trx_id)->where('branch_id', $branch_id)->where('warehouse_id', $warehouse_id)->where('stockclass_code', $stock_class)->update([
-                    'purchase_qty' => $update_qty,
-                    'update_uid' => $ss->user_id,
-                    'updated_at' => getNowTime(),
-                    'update_user' => $ss->login_name
-                ]);
-                if (!$x)
-                    return DV::error("Failed to udpate daily stock status");
-                $trx_id = $stock_item->trx_id;
-            }
-            //$item_stockclass = isset($item->stockclass_code)?$item->stockclass_code:$stockclass_code;
-            $success_count++;
-            $success_items[] = (object) ['id' => $item_id, 'code' => $item->code, 'qty' => $item->qty, 'uom' => $uom, 'sku' => $new_sku, 'stock_class' => $stock_class, 'target_qty' => 'purchase_qty'];
-            StockLog::log($ss, ['action' => 'receive', 'qty' => $item->qty, 'uom' => $uom, 'trx_id' => $trx_id, 'sku' => $new_sku], 'inv');
-
-
-            //end:: task to process each $item in $items array
-            $i++;
-        } while ($item);
-        if ($success_count === 0)
-            return DV::error("0 items were received in the purchase order");
-        QTYChanged::dispatch(['user' => $ss, 'target_qty' => 'purchase_qty', 'warehouse_id' => $warehouse_id, 'stockclass_code' => $stock_class, 'items' => $success_items]);
-        return DV::success(['data' => ['success_count' => $success_count, 'count' => $i]]);
-    }
-
-    static function validPOQty($po_id, $arr, $ss)
-    {
-        $d = (object) $arr;
-        $item_id = $d->item_id;
-        $qty = $d->qty;
-        $to_skip = (object) ['item_id' => 0];
-        $skip_count = 0;
-        $skip_msg = null;
-        $row = DB::table('purchase_orders_mi')->where('id', $po_id)->first();
-        $items = DB::table('po_items_mi')->selectRaw('id,item_id,price,uom,po_id,qty,ifnull(accepted_qty,0) as accepted_qty,update_user,ifnull(delivered_qty,0) as delivered_qty,ifnull(rejected_qty,0) as rejected_qty')->get();
-        // foreach($rows as $row){
-        if ($row) {
-            $poItem = self::getPOItemsMIInfo($items, $po_id, $item_id);
-            if ($poItem->error)
-                return DV::error($poItem->message);
-            $poQTY = $poItem->qty;
-            $accepted_qty = $poItem->accepted_qty;
-            $validQty = $poQTY >= $accepted_qty ? ($poQTY - $accepted_qty) : ($accepted_qty - $poItem);
-
-            // $validQty = $poQTY - $accepted_qty - $poItem->delivered_qty - $poItem->rejected_qty;
-            if ($validQty == 0) {
-                $skip_msg = 'Cannot change remarks on full purchased order item quantity received';
-                $skip_count++;
-                $to_skip = (object) ['item_id' => $poItem->item_id];
-                // continue;
-            }
-            if ($qty > $validQty) {
-                $xitem = Item::getProps($item_id, 'code,name') ?? (object) ['name' => ''];
-                $msg = $validQty > 0 ? $xitem->name . ' was already received ' . $accepted_qty . ' item' . ($accepted_qty > 1 ? 's' : '') . '. There ' . ($validQty > 1 ? 'are ' : 'is ') . $validQty . ' less'
-                    : 'Receving qty must be equal or less than order qty on ' . $xitem->name;
-                return DV::error($msg);
-            }
-            if ($poItem->id > 0) {
-                DBX::saveData($ss, 'po_items_mi', ['id' => $poItem->id], [
-                    'accepted_qty' => $accepted_qty + $qty,
-                    'remarks' => isset($d->remarks) ? $d->remarks : null,
-                    'expire_date' => $d->expire_date
-                ], [], 1);
-                if ($qty == $validQty) {
-                    $ud = DBX::saveData($ss, self::$po_table, ['id' => $po_id], ['status_id' => 3], [], 1);
-                }
-            }
-        }
-        if (count($items) == $skip_count) {
-            //* update Po status
-            $ud = DBX::saveData($ss, self::$po_table, ['id' => $po_id], ['status_id' => 3], [], 1);
-            return DV::error('All items were received, also remarks can not be changed');
-        }
-        return DV::success(['skip_row_msg' => $skip_msg, 'to_skip' => $to_skip]);
-    }
-
-    static function savePoOrderItem($ss, $po_id, $item, $id)
-    {
-
-
-        $item = is_object($item) ? $item : (object) $item;
-
-        // Calculate total price if not provided
-        $total_price = $item->total ?? ($item->qty * ($item->unit_price ?? 0));
-
-        $inputs = [
-            "po_id" => $po_id,
-            "item_id" => $item->item_id ?? $item->id ?? null,
-            "qty" => $item->qty ?? 0,
-            "unit" => $item->unit ?? null,
-            "unit_price" => $item->unit_price ?? 0,
-            "total_price" => $total_price,
-        ];
-
-        $saved_id = DBX::saveData($ss, 'purchase_order_items', ['id' => $id], $inputs, [], 1, false);
-
-        if ($saved_id > 0) {
-            $inputs['id'] = $saved_id;
-            return (object) $inputs;
-        }
-
-        return null; // Failed to save
     }
 
 
-    static function getProps($id, $cols = 'id,code,name')
+    public function savePurchaseOrder($arr = [], $id = null, $ss = null)
     {
-        return DB::table('items as i')->where('i.id', $id)->selectRaw($cols)->first();
-    }
-
-
-    function savePurchaseOrder1($arr = [], $id = null, $ss = null)
-    {
-
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
-        $branch_id = $ss->branch_id;
 
         $v_rule = [
-            "vendor_id" => "1|number|exists=vendors.id|Vendor identity is not correct",
-            "po_number" => "0|string|0-50",
-            "po_date" => "0|timestamp",
-            "remarks" => "0|string|1-255",
-            "items" => "1|array"
+            'vendor_id' => '1|number|exists=vendors.id|Vendor identity is not correct',
+            'po_number' => '0|string|0-50',
+            'po_date' => '1|timestamp',
+            'remarks' => '0|string|1-255',
+            'discount_value' => '0|number|min=0',
+            'discount_type' => '0|choice|percent,amount',
+            'items' => '1|array',
         ];
 
         $po_number = ['-', '_', '.', '#'];
 
         $res = DBX::validateObject($arr, $v_rule, 1, ['po_number' => $po_number], $ss->lang, false, null);
-        if ($res->error)
+        if ($res->error) {
             return DV::error($res->error);
-
-        $inputs = $res->values;
-        $items = $inputs['items'];
-
-        $po_date = convertDate($inputs['po_date']);
-        if ($po_date > date('Y-m-d'))
-            return DV::error('PO date cannot be later than today');
-        if (!(bool) strtotime($po_date))
-            $po_date = getNowTime();
-        unset($inputs['items']);
-        $create = !$id;
-        $po_id = DBX::saveData($ss, 'purchase_orders', ['id' => $id], $inputs, [], 1, false);
-        $success_count = 0;
-        $item = null;
-        $i = 0;
-        if ($po_id) {
-            do {
-                if (!isset($items[$i]))
-                    break;
-                $item = $items[$i];
-
-
-                $trx_id = 0;
-                $item_id = $item->item_id;
-                $input_item = ['item_id' => $item_id, 'unit' => $item->unit, 'unit_price' => $item->unit_price, 'qty' => $item->qty, 'po_id' => $po_id];
-                //NOTE: Item::prepareDailyStockRecord() will ensure that there is one record in table "inv_daily_stock" for the (item_id,begin_qty,refield_qty,avail_qty, ...)
-                $po_item = self::savePoItem($ss, $input_item, $po_id);
-
-                $i++;
-            } while ($item);
-
         }
 
-
-
-
-
-        return DV::success(['data' => ['success_count' => $success_count, 'count' => $i]]);
-
-    }
-    function savePurchaseOrder($arr = [], $id = null, $ss = null)
-    {
-
-        $id = $id ?? $this->id;
-        $ss = $ss ?? $this->userInfo;
-        $branch_id = $ss->branch_id;
-
-        $v_rule = [
-            "vendor_id" => "1|number|exists=vendors.id|Vendor identity is not correct",
-            "po_number" => "0|string|0-50",
-            "po_date" => "1|timestamp",
-            "remarks" => "0|string|1-255",
-            "discount_value" => "0|number|min=0",
-            "discount_type" => "0|choice|percent,amount",
-            "items" => "1|array"
-        ];
-
-        $po_number = ['-', '_', '.', '#'];
-
-        $res = DBX::validateObject($arr, $v_rule, 1, ['po_number' => $po_number], $ss->lang, false, null);
-        if ($res->error)
-            return DV::error($res->error);
-
         $inputs = $res->values;
         $items = $inputs['items'];
 
         $po_date = convertDate($inputs['po_date']);
-        if ($po_date > date('Y-m-d'))
+        if ($po_date > date('Y-m-d')) {
             return DV::error('PO date cannot be later than today');
-        if (!(bool) strtotime($po_date))
+        }
+        if (!(bool) strtotime($po_date)) {
             $po_date = getNowTime();
+        }
 
         $inputs['po_date'] = $po_date;
         $inputs['discount_value'] = (float) ($inputs['discount_value'] ?? 0);
         $discount_type = $inputs['discount_type'] ?? 'percent';
         $inputs['discount_type'] = in_array($discount_type, ['percent', 'amount']) ? $discount_type : 'percent';
-        // Save PO first, then compute summary totals from persisted line items.
+
+        // Save header first; sub_total / total_amount filled after lines exist.
         $inputs['total_amount'] = 0;
         $inputs['sub_total'] = 0;
 
@@ -385,7 +150,6 @@ class PurchaseOrder //extends Model
                     'po_id' => $po_id
                 ];
 
-
                 $po_item = self::savePoItem($ss, $input_item, $po_id);
 
                 if ($po_item) {
@@ -412,9 +176,9 @@ class PurchaseOrder //extends Model
             ]
         ]);
     }
-    static function savePoItem($ss, $item, $po_id)
-    {
 
+    public static function savePoItem($ss, $item, $po_id)
+    {
         $item = (object) $item;
         $trx_id = $item->trx_id ?? null;
         if (!is_numeric($trx_id) || (int) $trx_id <= 0) {
@@ -422,13 +186,12 @@ class PurchaseOrder //extends Model
         }
 
         $inputs = [
-            "po_id" => $po_id,
-            "item_id" => $item->item_id ?? $item->id ?? null,
-            "qty" => $item->qty ?? 0,
-            "unit_price" => $item->unit_price ?? 0,
-            "total_price" => ($item->qty ?? 0) * ($item->unit_price ?? 0)
+            'po_id' => $po_id,
+            'item_id' => $item->item_id ?? $item->id ?? null,
+            'qty' => $item->qty ?? 0,
+            'unit_price' => $item->unit_price ?? 0,
+            'total_price' => ($item->qty ?? 0) * ($item->unit_price ?? 0),
         ];
-        // Omit unit from insert if purchase_order_items has no unit column; getItemsByPurchaseOrder uses i.unit for display
 
         $id = DBX::saveData(
             $ss,
@@ -448,144 +211,81 @@ class PurchaseOrder //extends Model
         return null;
     }
 
-    /**
-     * PO line / item unit to numeric id (1–4) for UI selects (pcs, kg, box, meter).
-     */
-    public static function normalizePoUnitId($unit): int
+    public static function poStatusId(string $key): int
     {
-        $n = (int) $unit;
-        if ($n >= 1 && $n <= 4) {
-            return $n;
+        $map = self::purchaseOrderStatusIdsFromTable();
+        if (!isset($map[$key])) {
+            throw new \InvalidArgumentException('Unknown PO status key "' . $key . '".');
         }
-        $map = ['pcs' => 1, 'kg' => 2, 'box' => 3, 'meter' => 4];
-        $key = strtolower(trim((string) $unit));
 
-        return (int) ($map[$key] ?? ($n > 0 ? $n : 1));
+        return $map[$key];
     }
 
-    /**
-     * Presentation fields for purchase order list rows (status badge + formatted money).
-     *
-     * @param  object  $row  Query row (mutated in place; same fields returned for clarity)
-     */
-
-
-    /**
-     * Optional formatted display fields on PO header (numeric fields unchanged for forms).
-     */
-    public static function decoratePurchaseOrderHeaderRow(?object $row): ?object
+    private static function purchaseOrderStatusIdsFromTable(): array
     {
-        if (!$row) {
-            return null;
-        }
-        $row->sub_total_formatted = '$ ' . number_format((float) ($row->sub_total ?? 0), 2, '.', '');
-        $row->total_amount_formatted = '$ ' . number_format((float) ($row->total_amount ?? 0), 2, '.', '');
-        $dv = (float) ($row->discount_value ?? 0);
-        $dt = (string) ($row->discount_type ?? 'percent');
-        if ($dt === 'amount') {
-            $row->discount_formatted = '$ ' . number_format($dv, 2, '.', '');
-        } else {
-            $isInt = abs($dv - round($dv)) < 0.00001;
-            $v = $isInt ? (string) (int) round($dv) : rtrim(rtrim(number_format($dv, 2, '.', ''), '0'), '.');
-            $row->discount_formatted = $v . ' %';
+        if (self::$purchaseOrderStatusIdMap !== null) {
+            return self::$purchaseOrderStatusIdMap;
         }
 
-        return $row;
-    }
-
-    /**
-     * Receive progress for PO lines (meaningful = item_id & qty > 0).
-     * Uses effective qty = receive column + break_amount when present.
-     *
-     * @return string 'none' | 'partial' | 'complete'
-     */
-    public static function receiveProgressStateFromLines($lines): string
-    {
-        $receiveCol = self::purchaseOrderItemReceiveQtyColumnName();
-        $hasBreak = Schema::hasColumn('purchase_order_items', 'break_amount');
-        $meaningful = [];
-        foreach ($lines as $line) {
-            $ordered = (float) ($line->qty ?? 0);
-            if ($ordered <= 0) {
-                continue;
-            }
-            $recv = $receiveCol ? (float) ($line->{$receiveCol} ?? 0) : 0.0;
-            $brk = $hasBreak ? (float) ($line->break_amount ?? 0) : 0.0;
-            // Item status_id 2 = line marked received (distinct from PO header statuses).
-            $lineReceived = (int) ($line->status_id ?? 0) === 2;
-            $meaningful[] = ['ordered' => $ordered, 'eff' => $recv + $brk, 'line_received' => $lineReceived];
-        }
-        if ($meaningful === []) {
-            return 'none';
-        }
-        $anyReceived = false;
-        $allSatisfied = true;
-        foreach ($meaningful as $m) {
-            $lineMarkedReceived = !empty($m['line_received']);
-            if ($lineMarkedReceived || $m['eff'] > 0.02) {
-                $anyReceived = true;
-            }
-            if (!$lineMarkedReceived && ($m['eff'] + 1e-6) < $m['ordered']) {
-                $allSatisfied = false;
-            }
-        }
-        if (!$anyReceived) {
-            return 'none';
-        }
-        if ($allSatisfied) {
-            return 'complete';
+        $rows = DB::table('purchase_order_statuses')->select('id', 'name')->orderBy('id')->get();
+        $byName = [];
+        foreach ($rows as $row) {
+            $byName[strtolower(trim((string) ($row->name ?? '')))] = (int) $row->id;
         }
 
-        return 'partial';
-    }
-
-    /**
-     * Bootstrap-friendly badge for list / dialog (receive progress only).
-     *
-     * @return array{label: string, class: string, style: string}
-     */
-    public static function receiveProgressBadgePresentation(string $state): array
-    {
-        if ($state === 'complete') {
-            return [
-                'label' => 'Received',
-                'class' => 'badge border',
-                'style' => 'min-width:90px;background:#dff3ea;color:#37b07f;border-color:#70c39f !important;font-weight:500;',
-            ];
-        }
-        if ($state === 'partial') {
-            return [
-                'label' => 'Partially Received',
-                'class' => 'badge text-dark border',
-                'style' => 'min-width:90px;background:#fff3e0;color:#e65100;border-color:#ffb74d !important;font-weight:500;',
-            ];
-        }
-
-        return [
-            'label' => 'Pending',
-            'class' => 'badge text-gray border',
-            'style' => 'min-width:90px;background:#fff3cd;color:#664d03;border-color:#ffc107 !important;font-weight:600;',
+        $aliases = [
+            'pending' => ['pending'],
+            'approved' => ['approved'],
+            'ordered' => ['ordered'],
+            'partially_received' => ['partially received', 'partially_received'],
+            'received' => ['received'],
+            'cancelled' => ['cancelled', 'canceled'],
         ];
+
+        $map = [];
+        foreach ($aliases as $logical => $names) {
+            foreach ($names as $name) {
+                if (isset($byName[$name])) {
+                    $map[$logical] = $byName[$name];
+                    break;
+                }
+            }
+        }
+
+        $missing = array_diff(array_keys($aliases), array_keys($map));
+        if ($missing !== []) {
+            $present = $byName === [] ? '(none)' : implode(', ', array_keys($byName));
+            throw new \RuntimeException(
+                'purchase_order_statuses is missing name row(s) for: '
+                . implode(', ', $missing)
+                . '. DB has: ' . $present
+            );
+        }
+
+        self::$purchaseOrderStatusIdMap = $map;
+
+        return self::$purchaseOrderStatusIdMap;
     }
 
-    function getPurchaseOrderList($filter, $ss)
+    public function getPurchaseOrderList($filter, $ss = null)
     {
         $ss = $ss ?? $this->userInfo;
-        $str_search = "1=1";
         $d = (object) $filter;
         $search_value = $d->search_value ?? null;
         $vendor_id = $d->vendor_id ?? null;
         $status_id = $d->status_id ?? null;
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 10;
-        if (!is_numeric($current_page))
+        if (!is_numeric($current_page)) {
             $current_page = 1;
+        }
         $skip_rows = ($current_page - 1) * $per_page;
-        $str_where = '2=2';
+        $str_search = '1=1';
+        $str_where = '1=1';
         if ($search_value) {
             $skip_rows = 0;
             $search_value = escape_like_str($search_value);
-            $str_search = "(po.po_number Like '%" .$search_value ."%' OR v.name Like '%" . $search_value . "%')";
+            $str_search = "(po.po_number Like '%" . $search_value . "%' OR v.name Like '%" . $search_value . "%')";
         }
         if ($vendor_id) {
             $str_where .= ' AND po.vendor_id = ' . $vendor_id;
@@ -594,16 +294,14 @@ class PurchaseOrder //extends Model
         if ($status_id) {
             $str_where .= ' AND po.status_id = ' . $status_id;
         }
-        // $updated_at = DBX::formatTime('po.updated_at', 'updated_at');
-        // $po_date = DBX::formatDate('po.po_date', 'po_date');
+
         $item_total = '(SELECT COALESCE(SUM(pi.total_price), 0) FROM purchase_order_items as pi WHERE pi.po_id = po.id)';
         $sub_total = 'COALESCE(po.sub_total, ' . $item_total . ')';
         $discount_amount = "CASE WHEN po.discount_type = 'percent' THEN (" . $item_total . " * COALESCE(po.discount_value, 0) / 100) ELSE COALESCE(po.discount_value, 0) END";
         $computed_total_amount = 'GREATEST(0, (' . $item_total . ') - (' . $discount_amount . '))';
         $total_amount = 'COALESCE(po.total_amount, ' . $computed_total_amount . ')';
-        $cols = 'po.id,po.po_number,po.vendor_id,po.po_date,po.authorized,po.status_id,ps.name as status,po.total_authorizers,po.auth_count,po.remarks,po.discount_value,po.discount_type,po.sub_total as stored_sub_total,po.total_amount as stored_total_amount,po.updated_at,po.update_user,v.id as vendor_id,v.name as vendor_name,v.phone_number,'. $sub_total . ' as sub_total,' . $total_amount . ' as total_amount';
+        $cols = 'po.id,po.po_number,po.vendor_id,po.po_date,po.authorized,po.status_id,ps.name as status,po.total_authorizers,po.auth_count,po.remarks,po.discount_value,po.discount_type,po.sub_total as stored_sub_total,po.total_amount as stored_total_amount,po.updated_at,po.update_user,v.id as vendor_id,v.name as vendor_name,v.phone_number,' . $sub_total . ' as sub_total,' . $total_amount . ' as total_amount';
         $query = DB::table('purchase_orders as po')
-            // ->join('purchase_order_authorizations as au','au.po_id','=','po.id')
             ->join('vendors as v', 'v.id', '=', 'po.vendor_id')
             ->join('purchase_order_statuses as ps', 'ps.id', '=', 'po.status_id')
             ->whereRaw($str_where)
@@ -611,8 +309,8 @@ class PurchaseOrder //extends Model
             ->selectRaw($cols)
             ->orderByRaw('po.id DESC');
 
-        $count_query = clone $query;
-        $count = $count_query->count('po.id');
+        $clone_query = clone $query;
+        $count = $clone_query->count('po.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
         $poIds = $rows->pluck('id')->map(function ($id) {
             return (int) $id;
@@ -636,9 +334,8 @@ class PurchaseOrder //extends Model
             $auth = DB::table('purchase_order_authorizations')
                 ->where('po_id', $row->id)
                 ->first();
-                $row->authorizer = $auth->auth_user ?? null;
-            $row->auth_date = $auth->auth_date ?? null;
-            //au.auth_user as authorizer,au.auth_date,
+            $row->authorizer = $auth?->auth_user ?? null;
+            $row->auth_date = $auth?->auth_date ?? null;
             $row->sub_total_formatted = '$ ' . number_format((float) ($row->sub_total ?? 0), 2, '.', '');
             $row->total_amount_formatted = '$ ' . number_format((float) ($row->total_amount ?? 0), 2, '.', '');
             $dv = (float) ($row->discount_value ?? 0);
@@ -651,12 +348,11 @@ class PurchaseOrder //extends Model
                 $row->discount_formatted = $v . ' %';
             }
             setOfficialDates($row, ['auth_date', 'po_date'], ['updated_at'], []);
-            if ((int) $row->status_id !== self::STATUS_CANCELLED) {
+            if ((int) $row->status_id !== self::poStatusId('cancelled')) {
                 $pid = (int) $row->id;
                 $lines = $linesByPo[$pid] ?? [];
                 $state = self::receiveProgressStateFromLines($lines);
-                // Only override badge for receive workflow. When nothing is received yet, show DB status
-                // (e.g. "Ordered" after Authorized PO), not receive-progress "Pending".
+                // Badge override only when something is received; else keep ps.name from DB.
                 if ($state === 'partial' || $state === 'complete') {
                     $badge = self::receiveProgressBadgePresentation($state);
                     $row->status_label = $badge['label'];
@@ -668,6 +364,7 @@ class PurchaseOrder //extends Model
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
+
     public static function purchaseOrderDetails($id, $ss = null)
     {
         $row = DB::table('purchase_orders as po')
@@ -679,9 +376,9 @@ class PurchaseOrder //extends Model
 
         return $row;
     }
+
     public static function getFormOptions($id = null, $ss = null)
     {
-
         $po_details = $id ? self::purchaseOrderDetails($id, $ss) : null;
 
         return (object) [
@@ -691,23 +388,24 @@ class PurchaseOrder //extends Model
         ];
     }
 
-    /**
-     * Column on purchase_order_items that stores received quantity.
-     * Supports receive_qty (preferred) or legacy DB typo recieve_amount.
-     */
-    public static function purchaseOrderItemReceiveQtyColumnName(): ?string
+    public function deletePurchaseOrder($id = null, $ss = null)
     {
-        if (Schema::hasColumn('purchase_order_items', 'receive_qty')) {
-            return 'receive_qty';
+        $id = $id ?? $this->id;
+        if (!$id) {
+            return DV::error('Invalid purchase order ID.');
         }
-        if (Schema::hasColumn('purchase_order_items', 'recieve_amount')) {
-            return 'recieve_amount';
+        $po = DB::table('purchase_orders')->where('id', $id)->first();
+        if (!$po) {
+            return DV::error('Purchase order not found.');
         }
+        DB::table('purchase_order_items')->where('po_id', $id)->delete();
+        DB::table('purchase_orders')->where('id', $id)->delete();
 
-        return null;
+        return DV::success(['message' => 'Purchase order has been deleted.']);
     }
 
-    function getItemsByPurchaseOrder($data, $ss)
+
+    public function getItemsByPurchaseOrder($data, $ss)
     {
         $po_id = $data['po_id'] ?? $data['id'] ?? null;
         $receiveQtyColumn = self::purchaseOrderItemReceiveQtyColumnName();
@@ -724,7 +422,7 @@ class PurchaseOrder //extends Model
             ->orderByRaw('i.name ASC')
             ->get();
         foreach ($rows as $row) {
-            $row->status = $row->status_id == 1 ? 'Panding' : ($row->status_id == 2 ? 'Resived' : null);
+            $row->status = $row->status_id == 1 ? 'Pending' : ($row->status_id == 2 ? 'Received' : null);
             $row->unit_id = self::normalizePoUnitId($row->unit ?? null);
             $row->unit_price_formatted = '$ ' . number_format((float) ($row->unit_price ?? 0), 2, '.', '');
             $row->total_price_formatted = '$ ' . number_format((float) ($row->total_price ?? 0), 2, '.', '');
@@ -733,16 +431,63 @@ class PurchaseOrder //extends Model
         return $rows;
     }
 
-    /**
-     * Align purchase_orders.status_id with line receive progress after line-level receives.
-     * Rules (per line with qty > 0): effective = receive_qty + break_amount.
-     * - All lines effective >= ordered → Received (5)
-     * - Some but not all → Partially Received (4)
-     * - No receive on any line → if header was partial/received, revert toward workflow (Ordered if authorized, else Approved)
-     */
+
+    public function authorized($arr = [], $ss = null)
+    {
+        $d = (object) $arr;
+        $po_id = $d->po_id ?? null;
+
+        if (!$po_id) {
+            return DV::error('Invalid PO id');
+        }
+
+        $exists = DB::table('purchase_order_authorizations')
+            ->where('po_id', $po_id)
+            ->where('auth_uid', $ss->user_id)
+            ->exists();
+
+        if ($exists) {
+            return DV::error('you already authorized this PO.');
+        }
+
+        DB::table('purchase_order_authorizations')->insert([
+            'po_id'  => $po_id,
+            'auth_uid'    => $ss->user_id,
+            'auth_user'   => $ss->full_name,
+            'auth_date'   => getNowTime(),
+            'create_user' => $ss->full_name,
+            'update_user' => $ss->full_name,
+            'create_uid'  => $ss->user_id,
+            'update_uid'  => $ss->user_id
+        ]);
+
+        $authorized_count = DB::table('purchase_order_authorizations')
+            ->where('po_id', $po_id)
+            ->count();
+
+        $total_authorizers = DB::table('purchase_order_authorizers')
+            ->where('inactive', 0)
+            ->count();
+        $authorized = $authorized_count >= $total_authorizers ? 1 : 0;
+
+        DB::table('purchase_orders')
+            ->where('id', $po_id)
+            ->update([
+                'auth_count' => $authorized_count,
+                'total_authorizers' => $total_authorizers,
+                'authorized' => $authorized,
+                'status_id' => $authorized ? self::poStatusId('ordered') : self::poStatusId('pending')
+            ]);
+
+        return DV::success();
+    }
+
+    // Keep purchase_orders.status_id in sync with line receive totals (after receivePurchaseOrder).
     protected function syncPurchaseOrderHeaderStatusFromLines(int $poId, $ss = null): void
     {
         $ss = $ss ?? $this->userInfo;
+        $idReceived = self::poStatusId('received');
+        $idPartiallyReceived = self::poStatusId('partially_received');
 
         $lines = DB::table('purchase_order_items')
             ->where('po_id', $poId)
@@ -758,7 +503,7 @@ class PurchaseOrder //extends Model
         if (!$header) {
             return;
         }
-        if ((int) $header->status_id === self::STATUS_RECEIVED) {
+        if ((int) $header->status_id === $idReceived) {
             return;
         }
 
@@ -766,11 +511,11 @@ class PurchaseOrder //extends Model
         $cur = (int) $header->status_id;
         $newStatus = $cur;
         if ($state === 'complete') {
-            $newStatus = self::STATUS_RECEIVED;
+            $newStatus = $idReceived;
         } elseif ($state === 'partial') {
-            $newStatus = self::STATUS_PARTIALLY_RECEIVED;
-        } elseif ($state === 'none' && in_array($cur, [self::STATUS_PARTIALLY_RECEIVED, self::STATUS_RECEIVED], true)) {
-            $newStatus = (int) ($header->authorized ?? 0) === 1 ? self::STATUS_ORDERED : self::STATUS_APPROVED;
+            $newStatus = $idPartiallyReceived;
+        } elseif ($state === 'none' && in_array($cur, [$idPartiallyReceived, $idReceived], true)) {
+            $newStatus = (int) ($header->authorized ?? 0) === 1 ? self::poStatusId('ordered') : self::poStatusId('approved');
         }
 
         if ($newStatus !== $cur) {
@@ -784,13 +529,8 @@ class PurchaseOrder //extends Model
         }
     }
 
-    /**
-     * Save Receive Qty / Break Amount on selected line items and mark those lines received (status_id = 2).
-     * Updates purchase_orders header status when lines are fully received (5) or partially received (4).
-     *
-     * @param array $payload Expects po_item_ids: int[] (purchase_order_items.id)
-     */
-    public function receivePurchaseOrder($id, $ss = null, $payload = [])
+    // Receive selected lines; $arr mirrors Request::all() (po_item_ids, receive_qty, break_amount, …).
+    public function receivePurchaseOrder($id, $ss = null, $arr = [])
     {
         $ss = $ss ?? $this->userInfo;
         $id = (int) $id;
@@ -801,7 +541,7 @@ class PurchaseOrder //extends Model
         if (!$po) {
             return DV::error('Purchase order not found.');
         }
-        if ((int) $po->status_id === self::STATUS_RECEIVED) {
+        if ((int) $po->status_id === self::poStatusId('received')) {
             return DV::error('This purchase order is already fully received.');
         }
         $itemCount = DB::table('purchase_order_items')->where('po_id', $id)->count();
@@ -809,7 +549,7 @@ class PurchaseOrder //extends Model
             return DV::error('Purchase order has no line items to receive.');
         }
 
-        $rawIds = $payload['po_item_ids'] ?? $payload['items'] ?? [];
+        $rawIds = $arr['po_item_ids'] ?? $arr['items'] ?? [];
         $lineIds = is_array($rawIds)
             ? array_values(array_unique(array_filter(array_map('intval', $rawIds))))
             : [];
@@ -828,13 +568,13 @@ class PurchaseOrder //extends Model
 
         $receiveQtyColumn = self::purchaseOrderItemReceiveQtyColumnName();
         $hasBreakAmount = Schema::hasColumn('purchase_order_items', 'break_amount');
-        $payloadReceiveQty = null;
-        if (isset($payload['receive_qty'])) {
-            $payloadReceiveQty = (float) $payload['receive_qty'];
-        } elseif (isset($payload['recieve_amount'])) {
-            $payloadReceiveQty = (float) $payload['recieve_amount'];
+        $receiveQtyInput = null;
+        if (isset($arr['receive_qty'])) {
+            $receiveQtyInput = (float) $arr['receive_qty'];
+        } elseif (isset($arr['recieve_amount'])) {
+            $receiveQtyInput = (float) $arr['recieve_amount'];
         }
-        $payloadBreakAmount = isset($payload['break_amount']) ? (float) $payload['break_amount'] : null;
+        $breakAmountInput = isset($arr['break_amount']) ? (float) $arr['break_amount'] : null;
 
         $selectedRows = DB::table('purchase_order_items')
             ->where('po_id', $id)
@@ -843,8 +583,8 @@ class PurchaseOrder //extends Model
             ->get();
         foreach ($selectedRows as $row) {
             $orderedQty = (float) ($row->qty ?? 0);
-            $receiveQty = $payloadReceiveQty !== null ? $payloadReceiveQty : $orderedQty;
-            $breakAmount = $payloadBreakAmount !== null ? $payloadBreakAmount : 0;
+            $receiveQty = $receiveQtyInput !== null ? $receiveQtyInput : $orderedQty;
+            $breakAmount = $breakAmountInput !== null ? $breakAmountInput : 0;
             if ($receiveQty < 0 || $breakAmount < 0) {
                 return DV::error('Receive qty and break amount must be 0 or greater.');
             }
@@ -867,11 +607,8 @@ class PurchaseOrder //extends Model
         return DV::success(['message' => 'Selected lines were received successfully.']);
     }
 
-    /**
-     * Confirm PO as fully received: every real line must have Receive Qty + Break Amount = Ordered Qty (stored on items).
-     * Use after user saved each line via Receive Line Item. Sets header and line status to received.
-     */
-    public function confirmPurchaseOrderReceived($id, $ss = null, $payload = [])
+    // Mark PO received when every line is complete; allow_partial + remarks for partial close.
+    public function confirmPurchaseOrderReceived($id, $ss = null, $arr = [])
     {
         $ss = $ss ?? $this->userInfo;
         $id = (int) $id;
@@ -882,7 +619,7 @@ class PurchaseOrder //extends Model
         if (!$po) {
             return DV::error('Purchase order not found.');
         }
-        if ((int) $po->status_id === self::STATUS_RECEIVED) {
+        if ((int) $po->status_id === self::poStatusId('received')) {
             return DV::error('This purchase order is already fully received.');
         }
 
@@ -917,20 +654,19 @@ class PurchaseOrder //extends Model
             }
         }
 
-        $allowPartial = !empty($payload['allow_partial']);
+        $allowPartial = !empty($arr['allow_partial']);
         if ($hasIncomplete) {
             if (!$allowPartial) {
                 return DV::error('Not all items are fully received. For each line, Receive amount + Break Amount must equal Ordered Qty (save each line first).');
             }
-            $remarks = trim((string) ($payload['remarks'] ?? $payload['remark'] ?? ''));
+            $remarks = trim((string) ($arr['remarks'] ?? $arr['remark'] ?? ''));
             if ($remarks === '') {
                 return DV::error('Please enter remarks.');
             }
             $now = getNowTime();
             $updateUser = $ss->login_name ?? $ss->user_name ?? 'User';
-            // Partial receive status for PO header.
             DB::table('purchase_orders')->where('id', $id)->update([
-                'status_id' => self::STATUS_PARTIALLY_RECEIVED,
+                'status_id' => self::poStatusId('partially_received'),
                 'remarks' => $remarks,
                 'updated_at' => $now,
                 'update_user' => $updateUser,
@@ -946,7 +682,7 @@ class PurchaseOrder //extends Model
         }
 
         DB::table('purchase_orders')->where('id', $id)->update([
-            'status_id' => self::STATUS_RECEIVED,
+            'status_id' => self::poStatusId('received'),
             'updated_at' => $now,
             'update_user' => $updateUser,
         ]);
@@ -954,71 +690,291 @@ class PurchaseOrder //extends Model
         return DV::success(['message' => 'Purchase order confirmed as received.']);
     }
 
-    /**
-     * Delete a purchase order and its line items.
-     */
-    public function deletePurchaseOrder($id, $ss = null)
+
+    // List / dialog helpers (receive badges, money format on header, line unit id).
+
+    public static function normalizePoUnitId($unit): int
     {
-        if (!$id) {
-            return DV::error('Invalid purchase order ID.');
+        $n = (int) $unit;
+        if ($n >= 1 && $n <= 4) {
+            return $n;
         }
-        $po = DB::table('purchase_orders')->where('id', $id)->first();
-        if (!$po) {
-            return DV::error('Purchase order not found.');
-        }
-        DB::table('purchase_order_items')->where('po_id', $id)->delete();
-        DB::table('purchase_orders')->where('id', $id)->delete();
-        return DV::success(['message' => 'Purchase order has been deleted.']);
+        $map = ['pcs' => 1, 'kg' => 2, 'box' => 3, 'meter' => 4];
+        $key = strtolower(trim((string) $unit));
+
+        return (int) ($map[$key] ?? ($n > 0 ? $n : 1));
     }
 
-
-    public function authorized($arr = [], $ss){
-        $d = (object)$arr;
-        $po_id = $d->po_id ?? null;
-
-        if(!$po_id){
-            return DV::error('Invalid PO id');
+    public static function decoratePurchaseOrderHeaderRow(?object $row): ?object
+    {
+        if (!$row) {
+            return null;
+        }
+        $row->sub_total_formatted = '$ ' . number_format((float) ($row->sub_total ?? 0), 2, '.', '');
+        $row->total_amount_formatted = '$ ' . number_format((float) ($row->total_amount ?? 0), 2, '.', '');
+        $dv = (float) ($row->discount_value ?? 0);
+        $dt = (string) ($row->discount_type ?? 'percent');
+        if ($dt === 'amount') {
+            $row->discount_formatted = '$ ' . number_format($dv, 2, '.', '');
+        } else {
+            $isInt = abs($dv - round($dv)) < 0.00001;
+            $v = $isInt ? (string) (int) round($dv) : rtrim(rtrim(number_format($dv, 2, '.', ''), '0'), '.');
+            $row->discount_formatted = $v . ' %';
         }
 
-        $exists = DB::table('purchase_order_authorizations')
-            ->where('po_id', $po_id)
-            ->where('auth_uid', $ss->user_id)
-            ->exists();
+        return $row;
+    }
 
-        if($exists){
-            return DV::error('you already authorized this PO.');
+    // none | partial | complete — from line qty, receive col, break_amount, line status_id.
+    public static function receiveProgressStateFromLines($lines): string
+    {
+        $receiveCol = self::purchaseOrderItemReceiveQtyColumnName();
+        $hasBreak = Schema::hasColumn('purchase_order_items', 'break_amount');
+        $meaningful = [];
+        foreach ($lines as $line) {
+            $ordered = (float) ($line->qty ?? 0);
+            if ($ordered <= 0) {
+                continue;
+            }
+            $recv = $receiveCol ? (float) ($line->{$receiveCol} ?? 0) : 0.0;
+            $brk = $hasBreak ? (float) ($line->break_amount ?? 0) : 0.0;
+            $lineReceived = (int) ($line->status_id ?? 0) === 2;
+            $meaningful[] = ['ordered' => $ordered, 'eff' => $recv + $brk, 'line_received' => $lineReceived];
+        }
+        if ($meaningful === []) {
+            return 'none';
+        }
+        $anyReceived = false;
+        $allSatisfied = true;
+        foreach ($meaningful as $m) {
+            $lineMarkedReceived = !empty($m['line_received']);
+            if ($lineMarkedReceived || $m['eff'] > 0.02) {
+                $anyReceived = true;
+            }
+            if (!$lineMarkedReceived && ($m['eff'] + 1e-6) < $m['ordered']) {
+                $allSatisfied = false;
+            }
+        }
+        if (!$anyReceived) {
+            return 'none';
+        }
+        if ($allSatisfied) {
+            return 'complete';
         }
 
-        // Save authorization
-        DB::table('purchase_order_authorizations')->insert([
-            'po_id'  => $po_id,
-            'auth_uid'    => $ss->user_id,
-            'auth_user'   => $ss->full_name,
-            'auth_date'   => getNowTime(),
-            'create_user' => $ss->full_name,
-            'update_user' => $ss->full_name,
-            'create_uid'  => $ss->user_id,
-            'update_uid'  => $ss->user_id
-        ]);
+        return 'partial';
+    }
 
-        $authorized_count = DB::table('purchase_order_authorizations')
-            ->where('po_id',$po_id)
-            ->count();
+    public static function receiveProgressBadgePresentation(string $state): array
+    {
+        if ($state === 'complete') {
+            return [
+                'label' => 'Received',
+                'class' => 'badge border',
+                'style' => 'min-width:90px;background:#dff3ea;color:#37b07f;border-color:#70c39f !important;font-weight:500;',
+            ];
+        }
+        if ($state === 'partial') {
+            return [
+                'label' => 'Partially Received',
+                'class' => 'badge text-dark border',
+                'style' => 'min-width:90px;background:#fff3e0;color:#e65100;border-color:#ffb74d !important;font-weight:500;',
+            ];
+        }
 
-        $total_authorizers = DB::table('purchase_order_authorizers')
-            ->where('inactive',0)
-            ->count();
-        $authorized = $authorized_count >= $total_authorizers ? 1 : 0;
+        return [
+            'label' => 'Pending',
+            'class' => 'badge text-gray border',
+            'style' => 'min-width:90px;background:#fff3cd;color:#664d03;border-color:#ffc107 !important;font-weight:600;',
+        ];
+    }
 
-        $updated = DB::table('purchase_orders')
-            ->where('id',$po_id)
-            ->update([
-                'auth_count' => $authorized_count,
-                'total_authorizers' => $total_authorizers,
-                'authorized' => $authorized,
-                'status_id' => $authorized ? self::STATUS_ORDERED : self::STATUS_PENDING
-            ]);
+    // receive_qty or legacy recieve_amount column name.
+    public static function purchaseOrderItemReceiveQtyColumnName(): ?string
+    {
+        if (Schema::hasColumn('purchase_order_items', 'receive_qty')) {
+            return 'receive_qty';
+        }
+        if (Schema::hasColumn('purchase_order_items', 'recieve_amount')) {
+            return 'recieve_amount';
+        }
 
-        return DV::success();
+        return null;
+    }
+
+    // Legacy — MI / inventory (not used by PRM list UI).
+
+    public function receiveVPO($data, $ss)
+    {
+        $branch_id = $ss->branch_id;
+        $validate_rule = [
+            "type" => "1|choice|MI,RM,FG",
+            "warehouse_id" => "1|number|default=1|exists=warehouses.id|default=1|text=Warehouse identity does not exist",
+            //"block"=>"1|exists=inv_blocks.code|default=A",
+            "stockclass_code" => "1|string|exists=inv_stock_classes.code|default=A",
+            "po_number" => "0|string|0-25",
+            "trx_date" => "0|timestamp",
+            "vendor_id" => "0|number|exists=vendors.id",//supplyer_id
+            "items" => "1|object"
+        ];
+
+        $check_unique = null;
+        $res = validateObject($data, $validate_rule, true, [], $ss->lang, false, $check_unique);
+        if ($res->error)
+            return DV::error($res->error);
+
+        $inputs = $res->values;
+        $items = $inputs['items'];
+        $x_res = $this->validateItems($items);
+        if ($x_res->error)
+            return DV::error($x_res->error);
+        $items = $x_res->items;
+
+        $trx_date = convertDate($inputs['trx_date']);
+        if ($trx_date > date('Y-m-d'))
+            return DV::error('Transaction date cannot be later than today');
+        if (!(bool) strtotime($trx_date))
+            $trx_date = getNowTime();
+
+        //before it was called "stockclass_code", not "stock_class"
+        //$default_stock_class = $inputs['stock_class'];
+        $warehouse_id = $inputs["warehouse_id"]; //default to 1
+
+        if (!(bool) strtotime($trx_date))
+            $trx_date = $inputs['trx_date'];
+        //return DV::result($items);
+        $item = null;
+        $i = 0;
+        $success_items = [];
+        $success_count = 0;
+        //$errors = [];
+        do {
+            if (!isset($items[$i]))
+                break;
+            $item = $items[$i];
+            //$uom = $item->uom;
+
+            //begin:: task to process each $item in $items array
+            $item_id = isset($item->id) ? $item->id : null;
+            $trx_id = 0;
+            $item_id = $item->id;
+            //Expiration is input by user on Item View
+            $expiration_date = isset($item->expiration_date) ? $item->expiration_date : null;
+            $new_sku = self::createSKU($branch_id, $item_id, $expiration_date, $item->group_name, $item->category);
+            //$stock_item = $this->getStockRecord($branch_id,$warehouse_id,$stockclass_code,$item_id,$trx_date);
+            $input_item = ['id' => $item->id, 'sku' => $new_sku, 'code' => $item->code, 'uom' => $item->uom, 'purchase_qty' => $item->qty];
+            //NOTE: Item::prepareDailyStockRecord() will ensure that there is one record in table "inv_daily_stock" for the (item_id,begin_qty,purchase_qty,avail_qty, ...)
+            $stock_class = $item->stock_class;
+            $stock_item = Item::prepareDailyStockRecord($ss, $warehouse_id, $stock_class, $input_item, $trx_date);
+            $update_qty = 0;
+            if ($stock_item) {
+                $trx_id = $stock_item->trx_id;
+                $uom = $stock_item->uom;
+                $update_qty = $stock_item->purchase_qty + $item->qty;
+                $x = DB::table('inv_daily_stocks')->where('id', $stock_item->trx_id)->where('branch_id', $branch_id)->where('warehouse_id', $warehouse_id)->where('stockclass_code', $stock_class)->update([
+                    'purchase_qty' => $update_qty,
+                    'update_uid' => $ss->user_id,
+                    'updated_at' => getNowTime(),
+                    'update_user' => $ss->login_name
+                ]);
+                if (!$x)
+                    return DV::error("Failed to udpate daily stock status");
+                $trx_id = $stock_item->trx_id;
+            }
+            //$item_stockclass = isset($item->stockclass_code)?$item->stockclass_code:$stockclass_code;
+            $success_count++;
+            $success_items[] = (object) ['id' => $item_id, 'code' => $item->code, 'qty' => $item->qty, 'uom' => $uom, 'sku' => $new_sku, 'stock_class' => $stock_class, 'target_qty' => 'purchase_qty'];
+            StockLog::log($ss, ['action' => 'receive', 'qty' => $item->qty, 'uom' => $uom, 'trx_id' => $trx_id, 'sku' => $new_sku], 'inv');
+
+            //end:: task to process each $item in $items array
+            $i++;
+        } while ($item);
+        if ($success_count === 0)
+            return DV::error("0 items were received in the purchase order");
+        QTYChanged::dispatch(['user' => $ss, 'target_qty' => 'purchase_qty', 'warehouse_id' => $warehouse_id, 'stockclass_code' => $stock_class, 'items' => $success_items]);
+        return DV::success(['data' => ['success_count' => $success_count, 'count' => $i]]);
+    }
+
+    public static function validPOQty($po_id, $arr, $ss)
+    {
+        $d = (object) $arr;
+        $item_id = $d->item_id;
+        $qty = $d->qty;
+        $to_skip = (object) ['item_id' => 0];
+        $skip_count = 0;
+        $skip_msg = null;
+        $row = DB::table('purchase_orders_mi')->where('id', $po_id)->first();
+        $items = DB::table('po_items_mi')->selectRaw('id,item_id,price,uom,po_id,qty,ifnull(accepted_qty,0) as accepted_qty,update_user,ifnull(delivered_qty,0) as delivered_qty,ifnull(rejected_qty,0) as rejected_qty')->where('po_id', $po_id)->get();
+        // foreach($rows as $row){
+        if ($row) {
+            $poItem = self::getPOItemsMIInfo($items, $po_id, $item_id);
+            if ($poItem->error)
+                return DV::error($poItem->message);
+            $poQTY = $poItem->qty;
+            $accepted_qty = $poItem->accepted_qty;
+            $validQty = $poQTY >= $accepted_qty ? ($poQTY - $accepted_qty) : max(0, $accepted_qty - $poQTY);
+
+            // $validQty = $poQTY - $accepted_qty - $poItem->delivered_qty - $poItem->rejected_qty;
+            if ($validQty == 0) {
+                $skip_msg = 'Cannot change remarks on full purchased order item quantity received';
+                $skip_count++;
+                $to_skip = (object) ['item_id' => $poItem->item_id];
+                // continue;
+            }
+            if ($qty > $validQty) {
+                $xitem = Item::getProps($item_id, 'code,name') ?? (object) ['name' => ''];
+                $msg = $validQty > 0 ? $xitem->name . ' was already received ' . $accepted_qty . ' item' . ($accepted_qty > 1 ? 's' : '') . '. There ' . ($validQty > 1 ? 'are ' : 'is ') . $validQty . ' less'
+                    : 'Receving qty must be equal or less than order qty on ' . $xitem->name;
+                return DV::error($msg);
+            }
+            if ($poItem->id > 0) {
+                DBX::saveData($ss, 'po_items_mi', ['id' => $poItem->id], [
+                    'accepted_qty' => $accepted_qty + $qty,
+                    'remarks' => isset($d->remarks) ? $d->remarks : null,
+                    'expire_date' => $d->expire_date
+                ], [], 1);
+                if ($qty == $validQty) {
+                    $ud = DBX::saveData($ss, 'purchase_orders_mi', ['id' => $po_id], ['status_id' => 3], [], 1);
+                }
+            }
+        }
+        if (count($items) == $skip_count) {
+            //* update Po status
+            $ud = DBX::saveData($ss, 'purchase_orders_mi', ['id' => $po_id], ['status_id' => 3], [], 1);
+            return DV::error('All items were received, also remarks can not be changed');
+        }
+        return DV::success(['skip_row_msg' => $skip_msg, 'to_skip' => $to_skip]);
+    }
+
+    public static function savePoOrderItem($ss, $po_id, $item, $id)
+    {
+
+        $item = is_object($item) ? $item : (object) $item;
+
+        // Calculate total price if not provided
+        $total_price = $item->total ?? ($item->qty * ($item->unit_price ?? 0));
+
+        $inputs = [
+            "po_id" => $po_id,
+            "item_id" => $item->item_id ?? $item->id ?? null,
+            "qty" => $item->qty ?? 0,
+            "unit" => $item->unit ?? null,
+            "unit_price" => $item->unit_price ?? 0,
+            "total_price" => $total_price,
+        ];
+
+        $saved_id = DBX::saveData($ss, 'purchase_order_items', ['id' => $id], $inputs, [], 1, false);
+
+        if ($saved_id > 0) {
+            $inputs['id'] = $saved_id;
+            return (object) $inputs;
+        }
+
+        return null; // Failed to save
+    }
+
+    public static function getProps($id, $cols = 'id,code,name')
+    {
+        return DB::table('items as i')->where('i.id', $id)->selectRaw($cols)->first();
     }
 }

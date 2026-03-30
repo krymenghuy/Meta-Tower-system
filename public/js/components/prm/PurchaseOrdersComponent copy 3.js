@@ -134,7 +134,7 @@ var PurchaseOrdersComponent = (() => {
                 if (me.controls.phone_number) me.controls.phone_number.value = v.phone_number || '';
                 if (me.controls.address) me.controls.address.value = v.address || '';
             })
-            .catch(() => { });
+            .catch(() => {});
     };
     const vendorDisplayName = (vendor, withCode) => {
         if (!vendor) return '';
@@ -942,36 +942,7 @@ var PurchaseOrdersComponent = (() => {
         {
             title: "Status",
             className: "align-middle text-nowrap text-center",
-            data: (data) => {
-                console.log(123,data.status);
-
-                const status = (data.status ?? '').toLowerCase();
-                let cls = 'badge text-dark bg-warning-subtle border border-warning';
-                if (status === 'pending') {
-                    cls = 'badge text-warning bg-warning-subtle border border-warning';
-                }
-                else if (status === 'approved') {
-                    cls = 'badge text-info bg-info-subtle border border-info';
-                }
-                else if (status === 'ordered') {
-                    cls = 'badge text-primary bg-primary-subtle border border-primary';
-                }
-                else if (status === 'cancelled') {
-                    cls = 'badge text-danger bg-danger-subtle border border-danger';
-                }
-                else if (status === 'partially') {
-                    cls = 'badge text-dark bg-warning-subtle border border-warning';
-                }
-                else if (status === 'received') {
-                    cls = 'badge text-success bg-success-subtle border border-success';
-                }
-                return `
-                    <span class="${cls} text-capitalize d-inline-block text-center" style="min-width:70px">
-                        ${data.status ?? ''}
-                    </span>
-                `;
-            },
-            // data: (data) => poStatusBadgeHtml(data),
+            data: (data) => poStatusBadgeHtml(data),
         },
         {
             title: "Remarks",
@@ -1110,69 +1081,66 @@ var PurchaseOrdersComponent = (() => {
     };
 
     mThis.initDropdownMenus = (table) => {
-        const menuOptopns = {
+        const baseMenus = [
+            {
+                html: '<span class="ps-2" vslang="titles.Modify PO"></span>',
+                icon: `<i class="fa-solid fa-square-pen fs-5 text-warning"></i>`,
+                cssClass: 'border-bottom pb-2',
+                name: 'modify_purchase_order',
+            },
+            {
+                html: '<span class="ps-2" vslang="titles.Delete PO"></span>',
+                icon: `<i class="fa-solid fa-rectangle-xmark fs-5 text-danger"></i>`,
+                cssClass: 'border-bottom pb-2',
+                name: 'delete_purchase_order',
+            },
+        ];
+        const onPoMenuClick = (menuLink, id, name) => {
+            switch (name) {
+                case 'modify_purchase_order':
+                    mThis.editPurchaseOrder(id, menuLink);
+                    break;
+                case 'delete_purchase_order':
+                    mThis.deletePurchaseOrder(id, menuLink);
+                    break;
+                case 'receive_purchase_order':
+                    mThis.receivePurchaseOrder(id, menuLink);
+                    break;
+                case 'authorized_purchase_order':
+                    mThis.authorizedPurchaseOrder(id, menuLink);
+                    break;
+                default:
+                    break;
+            }
+        };
+        new VSDropdownMenu({
             containerElement: table,
-            actionButtonClass: "btn_dropdown_purchase_action",
-            cssClass: "bg-white shadow",
+            actionButtonClass: 'btn_dropdown_purchase_action',
+            cssClass: 'bg-white shadow',
             menus: [
-
-                {
-                    html: '<span class="ps-2" vslang="titles.Modify PO"></span>',
-                    icon: `<i class="fa-solid fa-square-pen fs-5 text-warning"></i>`,
-                    cssClass: "border-bottom pb-2",
-                    name: "modify_purchase_order"
-                },
-                {
-                    html: '<span class="ps-2" vslang="titles.Delete PO"></span>',
-                    icon: `<i class="fa-solid fa-rectangle-xmark fs-5 text-danger"></i>`,
-                    cssClass: "border-bottom pb-2",
-                    name: "delete_purchase_order"
-                },
-
+                ...baseMenus,
                 {
                     html: '<span class="ps-2  " vslang="titles.Authorized PO"></span>',
                     icon: `<i class="fa-solid fa-check-to-slot fs-5 text-primary"></i>`,
-                    cssClass: "border-bottom pb-2",
-                    name: "authorized_purchase_order"
+                    cssClass: 'border-bottom pb-2',
+                    name: 'authorized_purchase_order',
                 },
                 {
                     html: '<span class="ps-2" vslang="titles.Receive PO"></span>',
                     icon: `<i class="fa-solid fa-box-open fs-5 text-success"></i>`,
                     cssClass: '',
-                    name: "receive_purchase_order"
+                    name: 'receive_purchase_order',
                 },
             ],
-
-            onClick: (menuLink, id, name) => {
-                switch (name) {
-                    case 'modify_purchase_order': {
-                        mThis.editPurchaseOrder(id, menuLink);
-                        break;
-                    }
-                    case 'delete_purchase_order': {
-                        mThis.deletePurchaseOrder(id, menuLink);
-                        break;
-                    }
-                    case 'receive_purchase_order': {
-                        mThis.receivePurchaseOrder(id, menuLink);
-                        break;
-                    }
-                    case 'authorized_purchase_order': {
-                        mThis.authorizedPurchaseOrder(id, menuLink);
-                        break;
-                    }
-                    case 'receive_purchase_order': {
-                        mThis.receivePurchaseOrder(id, menuLink);
-                        break;
-                    }
-
-                    default: {
-                        break;
-                    }
-                }
-            }
-        }
-        new VSDropdownMenu(menuOptopns);
+            onClick: onPoMenuClick,
+        });
+        new VSDropdownMenu({
+            containerElement: table,
+            actionButtonClass: 'btn_dropdown_purchase_received',
+            cssClass: 'bg-white shadow',
+            menus: [...baseMenus],
+            onClick: onPoMenuClick,
+        });
     };
     const renderPoItem = (po, container, onFinish) => {
         if (!container) return;
@@ -1300,7 +1268,7 @@ var PurchaseOrdersComponent = (() => {
                         throw new Error(formRes?.error_message || 'Failed to load purchase order details');
                     }
                     const titleEl2 = me.divModal && me.divModal.querySelector('.modal-title');
-                    if (titleEl2) titleEl2.innerHTML = '<h2 class="text-prm-custom text-start fw-bold">Modify Purchase Order1</h2>';
+                    if (titleEl2) titleEl2.innerHTML = '<h2 class="text-prm-custom text-start fw-bold">Modify Purchase Order</h2>';
 
                     const formData = formRes.data || {};
                     const poDetails = formData.po_details || {};
@@ -1334,7 +1302,7 @@ var PurchaseOrdersComponent = (() => {
                 });
         };
         PurchaseOrderDialog = PurchaseOrderDialog || new GeneralDialog({
-            cssClass: "modal-xl vs-modal",
+            cssClass:"modal-xl vs-modal",
             override: {
                 // Prevent GeneralDialog.setData() from clearing ItemsView row inputs/selects.
                 // GeneralDialog's default setData targets all `.data-input` elements; ItemsView uses similar controls.
@@ -1359,8 +1327,8 @@ var PurchaseOrdersComponent = (() => {
                     });
                 },
             },
-            createContent: () => {
-                return `
+            createContent:()=>{
+            return `
                 <div class="row mb-4">
                     <div class="col-md-4">
                         <div class="d-flex align-items-center mb-2">
@@ -1452,9 +1420,15 @@ var PurchaseOrdersComponent = (() => {
             </div>
             `;
             },
-            configSelect: [
+            configSelect:[
+                // {
+                //     name: "vendor_id",
+                //     data: "vendors",
+                //     textField: "vendor_id",
+                //     valueField: "id",
+                // },
             ],
-            contentCreated: (me) => {
+            contentCreated:(me)=>{
                 const applyVendorInfo = (vendorId) => {
                     me._selectedVendorId = vendorId || '';
                     if (me.controls.vendor_id) me.controls.vendor_id.value = vendorId || '';
@@ -1501,16 +1475,16 @@ var PurchaseOrdersComponent = (() => {
                 }
                 me.purchaseItemsView = new ItemsView('purchase_item_list', {
                     columns: [
-                        { name: "item_id", transTitle: "titles.Item", displayType: "select" },
-                        { name: "qty", transTitle: "titles.Qty", dataType: "number", defaultValue: 1, isNumeric: true },
-                        { name: "unit", transTitle: "titles.Unit", displayType: "select" },
-                        { name: "unit_price", transTitle: "titles.UnitPrice", dataType: "number", defaultValue: 0, isNumeric: true },
-                        { name: "total_price", transTitle: "titles.TotalPrice", readOnly: true, dataType: "number", isNumeric: true }
+                        { name:"item_id", transTitle:"titles.Item", displayType:"select" },
+                        { name:"qty", transTitle:"titles.Qty", dataType:"number", defaultValue:1, isNumeric:true },
+                        { name:"unit", transTitle:"titles.Unit", displayType:"select" },
+                        { name:"unit_price", transTitle:"titles.UnitPrice", dataType:"number", defaultValue:0, isNumeric:true },
+                        { name:"total_price", transTitle:"titles.TotalPrice", readOnly:true, dataType:"number", isNumeric:true }
                     ],
-                    calc: { mode: "auto", qtyField: "qty", priceField: "unit_price", totalField: "total_price", currencyPrecision: 2 },
-                    totalSummary: { container: "#sum", showTax: false, allowDiscount: false, currency: "USD" },
-                    validateColumns: { item_id: "positive", qty: "positive", unit: "positive", unit_price: "positive" },
-                    tableClass: 'table',
+                    calc:{ mode:"auto", qtyField:"qty", priceField:"unit_price", totalField:"total_price", currencyPrecision:2 },
+                    totalSummary:{ container:"#sum", showTax:false, allowDiscount:false, currency:"USD" },
+                    validateColumns: {item_id: "positive",qty: "positive",unit: "positive",unit_price: "positive"},
+                    tableClass:'table',
                     showColumnHeaders: true,
                     showAddLineButton: true,
                     addLineButtonText: 'Add Item',
@@ -1595,16 +1569,16 @@ var PurchaseOrdersComponent = (() => {
                         total: '#po_total_display',
                     }, totals);
                 };
-                me.clear = () => {
-                    for (const name in me.fields) {
-                        const el = me.fields[name];
-                        const tag = el.tagName;
-                        if (['SELECT', 'INPUT', 'TEXTAREA'].indexOf(tag) >= 0) {
-                            el.value = '';
-                        }
-                        else {
-                            el.textContent = '';
-                        }
+                me.clear = ()=>{
+                    for(const name in me.fields){
+                    const el = me.fields[name];
+                    const tag = el.tagName ;
+                    if(['SELECT','INPUT','TEXTAREA'].indexOf(tag) >= 0){
+                        el.value = '';
+                    }
+                    else{
+                        el.textContent = '';
+                    }
                     }
                     if (me.controls.discount_value) me.controls.discount_value.value = '0';
                     if (me.controls.discount_type) me.controls.discount_type.value = 'percent';
@@ -1632,71 +1606,72 @@ var PurchaseOrdersComponent = (() => {
                 // Run after GeneralDialog internal setData() which can clear [name] controls.
                 setTimeout(() => tryLoad(0), 0);
             },
-            buttons: [
-                {
-                    label: "Cancel",
-                    cssClass: "btn btn-warning",
-                    click: (me, btn) => {
-                        me.hide(false);
-                    }
-                },
-                {
-                    label: "<span>Save</span>",
-                    cssClass: "btn btn-primary",
-                    click: (me) => {
-                        let p = me.getData();
-                        if (!me.purchaseItemsView || typeof me.purchaseItemsView.getItems !== 'function') {
-                            return cv_interact.error('Purchase items are not ready. Please try again.');
-                        }
-                        p.items = getCleanPurchaseItems(me.purchaseItemsView);
-                        if (!hasValidPurchaseOrderLineItems(p.items)) {
-                            return cv_interact.error('Please select at least one item before saving the purchase order.');
-                        }
-                        p.vendor_id = me._selectedVendorId;
+            buttons:[
+            {
+                label:"Cancel",
+                cssClass:"btn btn-warning",
+                click:(me,btn)=>{
+                    me.hide(false);
+                }
 
-                        const savePoId = _currentEditPoId ?? me._editPoId ?? (me.dataOptions && me.dataOptions.id);
-                        if (savePoId) p.id = savePoId;
-                        vsapi.call(`${main_view.base_url}/prm/purchase/order/save`, p, false).then(res => {
-                            if (res.status_code == 200) {
-                                cv_interact.success(savePoId ? 'Purchase order updated.' : 'Purchase order created.');
-                                me.hide(true);
-                                mThis.PoListView.showPage(mThis.getFilterData());
-                            } else cv_interact.warning(res.error_message);
-                        });
-                    }
-                }
-            ],
-            onPrepareForm: (me, data) => {
-                const editPoId = getEditPoId(me);
-                const isModify = !!editPoId;
-                const titleEl = me.divModal.querySelector('.modal-title');
-                if (titleEl) {
-                    titleEl.innerHTML = isModify
-                        ? '<h2 class="text-prm-custom text-start fw-bold">Modify Purchase Order2</h2>'
-                        : '<h2 class="text-prm-custom text-start fw-bold">Create Purchase Order</h2>';
-                }
-                me._itemOptions = data.item || [];
-                if (me.purchaseItemsView && me.purchaseItemsView.setSelectOptions) {
-                    me.purchaseItemsView.setSelectOptions('item_id', me._itemOptions, null);
-                }
-                // Only clear defaults when creating a new PO (not in modify mode).
-                // `onPrepareForm` may run before `contentCreated`, so don't reset edit state here.
-                if (!isModify) {
-                    _currentEditPoId = null;
-                    me.clear();
-                }
             },
-            prepareFormOptions: {
-                modifyTitle: "Purchase Order",
-                createTitle: "Create Purchase Order",
-                targetProp: "item_details",
-                api: {
-                    endpoint: `${main_view.base_url}/prm/item/form-options`,
-                    params: (dataOptions) => {
-                        return { owner_id: dataOptions?.owner_id };
+            {
+                label:"<span>Save</span>",
+                cssClass:"btn btn-primary",
+                click:(me) =>{
+                    let p = me.getData();
+                    if (!me.purchaseItemsView || typeof me.purchaseItemsView.getItems !== 'function') {
+                        return cv_interact.error('Purchase items are not ready. Please try again.');
                     }
+                    p.items = getCleanPurchaseItems(me.purchaseItemsView);
+                    if (!hasValidPurchaseOrderLineItems(p.items)) {
+                        return cv_interact.error('Please select at least one item before saving the purchase order.');
+                    }
+                    p.vendor_id = me._selectedVendorId;
+
+                    const savePoId = _currentEditPoId ?? me._editPoId ?? (me.dataOptions && me.dataOptions.id);
+                    if (savePoId) p.id = savePoId;
+                    vsapi.call(`${main_view.base_url}/prm/purchase/order/save`, p, false).then(res =>{
+                        if (res.status_code == 200) {
+                            cv_interact.success(savePoId ? 'Purchase order updated.' : 'Purchase order created.');
+                            me.hide(true);
+                            mThis.PoListView.showPage(mThis.getFilterData());
+                        } else cv_interact.warning(res.error_message);
+                    });
                 }
             }
+            ],
+        onPrepareForm:(me,data)=>{
+            const editPoId = getEditPoId(me);
+            const isModify = !!editPoId;
+            const titleEl = me.divModal.querySelector('.modal-title');
+            if (titleEl) {
+                titleEl.innerHTML = isModify
+                    ? '<h2 class="text-prm-custom text-start fw-bold">Modify Purchase Order</h2>'
+                    : '<h2 class="text-prm-custom text-start fw-bold">Create Purchase Order</h2>';
+            }
+            me._itemOptions = data.item || [];
+            if (me.purchaseItemsView && me.purchaseItemsView.setSelectOptions) {
+                me.purchaseItemsView.setSelectOptions('item_id', me._itemOptions, null);
+            }
+            // Only clear defaults when creating a new PO (not in modify mode).
+            // `onPrepareForm` may run before `contentCreated`, so don't reset edit state here.
+            if (!isModify) {
+                _currentEditPoId = null;
+                me.clear();
+            }
+        },
+        prepareFormOptions:{
+            modifyTitle: "Purchase Order",
+            createTitle: "Purchase Order",
+            targetProp:"item_details",
+            api:{
+                endpoint:`${main_view.base_url}/prm/item/form-options`,
+                params:(dataOptions)=>{
+                return { owner_id: dataOptions?.owner_id };
+                }
+            }
+        }
         });
 
         _currentEditPoId = op.id || null;
@@ -1709,7 +1684,6 @@ var PurchaseOrdersComponent = (() => {
             }, 250);
         }
     };
-
     const showReceivePurchaseOrderDialog = (op) => {
         ReceivePurchaseOrderDialog = ReceivePurchaseOrderDialog || new GeneralDialog({
             cssClass: 'modal-xl vs-modal',
@@ -1990,7 +1964,6 @@ var PurchaseOrdersComponent = (() => {
         });
         ReceivePurchaseOrderDialog.show(op);
     };
-
     mThis.prepareFormOptions = (onFinish) => {
         vsapi.call(`${main_view.base_url}/prm/purchase/order/form-options`, null, null, null)
             .then(res => {

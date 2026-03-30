@@ -601,7 +601,7 @@ const CreateFloorDialog = (() => {
                         </div>
                     </div>
                     <div class="col-12">
-                        
+
                         <div class="material-input outlined">
                             <textarea name="description" class="data-input form-control" data-field="description" placeholder=" "></textarea>
                             <label style="color:#777777;padding-left:6px;">Description</label>
