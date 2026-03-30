@@ -306,452 +306,243 @@ var BillPaymentComponent = (() => {
 
 
 
+
 const BillPaymentDialog = (() => {
     const self = {};
     let dialog = null;
 
-    /* ── inline styles injected once ── */
-    const injectStyles = (() => {
-        let done = false;
-        return () => {
-            if (done) return;
-            done = true;
-            const css = `
-            /* ── PO-style dialog reset ── */
-            .bpd-wrap *{box-sizing:border-box;}
-            .bpd-wrap{font-size:13px;color:#222;}
-
-            /* header strip */
-            .bpd-wrap .modal-header{
-                background:#e8ecf6!important;
-                border-bottom:1px solid #cdd3e8!important;
-                padding:12px 20px!important;
-            }
-            .bpd-wrap .modal-title{font-size:15px;font-weight:600;color:#1e2a52;}
-
-            /* field rows: label : input */
-            .bpd-fields{display:grid;grid-template-columns:1fr 1fr;column-gap:48px;margin-bottom:16px;}
-            .bpd-row{display:flex;align-items:center;margin-bottom:12px;gap:0;}
-            .bpd-row label{
-                width:110px;flex-shrink:0;
-                font-size:13px;font-weight:600;color:#1e2a52;
-            }
-            .bpd-row .bpd-sep{color:#b0b8d0;margin:0 10px 0 0;font-weight:400;}
-            .bpd-row input,.bpd-row select{
-                flex:1;height:34px;
-                border:1px solid #d0d6e8;border-radius:6px;
-                padding:0 10px;font-size:13px;color:#222;
-                background:#fff;outline:none;
-                transition:border-color .15s,box-shadow .15s;
-            }
-            .bpd-row input:focus,.bpd-row select:focus{
-                border-color:#5b72d8;
-                box-shadow:0 0 0 3px rgba(91,114,216,.14);
-            }
-            .bpd-row input::placeholder,.bpd-row select option[value=""]{color:#b0b8d0;}
-
-            /* file row */
-            .bpd-file-wrap{flex:1;display:flex;gap:8px;}
-            .bpd-file-wrap input[type=text]{
-                flex:1;height:34px;border:1px solid #d0d6e8;border-radius:6px;
-                padding:0 10px;font-size:13px;color:#888;background:#f8f9fd;
-            }
-            .bpd-choose{
-                height:34px;padding:0 14px;white-space:nowrap;cursor:pointer;
-                background:#e8ecf6;border:1px solid #cdd3e8;border-radius:6px;
-                font-size:13px;font-weight:500;color:#3a4a7a;
-                transition:background .15s;
-            }
-            .bpd-choose:hover{background:#d4d9ee;}
-
-            /* amounts section */
-            .bpd-amounts{
-                background:#f2f4fb;border:1px solid #dde2f2;border-radius:8px;
-                padding:14px 18px;margin-bottom:16px;
-            }
-            .bpd-amounts-grid{display:grid;grid-template-columns:1fr 1fr;column-gap:48px;}
-
-            /* totals box */
-            .bpd-totals-wrap{display:flex;justify-content:flex-end;margin-bottom:16px;}
-            .bpd-totals{
-                background:#fff;border:1px solid #dde2f2;border-radius:8px;
-                padding:14px 20px;min-width:270px;
-            }
-            .bpd-t-row{
-                display:flex;align-items:center;justify-content:space-between;
-                margin-bottom:10px;font-size:13px;
-            }
-            .bpd-t-row label{font-weight:600;color:#1e2a52;min-width:90px;}
-            .bpd-t-row .bpd-sep{color:#b0b8d0;margin:0 10px;}
-            .bpd-t-row .bpd-val{
-                min-width:100px;text-align:right;
-                font-variant-numeric:tabular-nums;color:#222;
-            }
-            .bpd-t-row.bpd-grand{
-                border-top:1px solid #dde2f2;padding-top:10px;margin-top:4px;font-size:14px;
-            }
-            .bpd-t-row.bpd-grand label,
-            .bpd-t-row.bpd-grand .bpd-val{font-weight:700;color:#1e2a52;}
-            .bpd-balance-positive{color:#15803d!important;}
-            .bpd-balance-negative{color:#dc2626!important;}
-
-            /* description */
-            .bpd-textarea{
-                width:100%;min-height:72px;resize:vertical;
-                border:1px solid #d0d6e8;border-radius:6px;
-                padding:9px 11px;font-size:13px;color:#222;
-                outline:none;transition:border-color .15s,box-shadow .15s;
-                font-family:inherit;
-            }
-            .bpd-textarea:focus{border-color:#5b72d8;box-shadow:0 0 0 3px rgba(91,114,216,.14);}
-            .bpd-textarea::placeholder{color:#b0b8d0;}
-
-            /* footer buttons */
-            .bpd-wrap .modal-footer{
-                background:#f2f4fb!important;
-                border-top:1px solid #dde2f2!important;
-                padding:12px 20px!important;
-            }
-            .bpd-wrap .modal-footer .btn-secondary{
-                background:#f59e0b!important;border-color:#f59e0b!important;
-                color:#fff!important;font-weight:600;
-            }
-            .bpd-wrap .modal-footer .btn-secondary:hover{background:#d97706!important;border-color:#d97706!important;}
-            .bpd-wrap .modal-footer .btn-primary{
-                background:#fff!important;border:1px solid #cdd3e8!important;
-                color:#1e2a52!important;font-weight:600;
-            }
-            .bpd-wrap .modal-footer .btn-primary:hover{
-                background:#eef1fb!important;border-color:#5b72d8!important;color:#3a4a7a!important;
-            }
-
-            /* section label */
-            .bpd-section-label{
-                font-size:11px;font-weight:700;letter-spacing:.6px;
-                text-transform:uppercase;color:#7a85a8;
-                margin-bottom:10px;padding-bottom:6px;
-                border-bottom:1px solid #dde2f2;
-            }
-            `;
-            const tag = document.createElement("style");
-            tag.textContent = css;
-            document.head.appendChild(tag);
-        };
-    })();
-
     self.show = (op) => {
-        injectStyles();
 
-        dialog = dialog || new GeneralDialog({
-            cssClass: "modal-lg vs-modal bpd-wrap",
-            backdrop: "static",
-            keyboard: true,
-
-            /* ── dialog HTML ── */
-            createContent: () => [`
-
-                <!-- hidden vendor id -->
-                <input name="vendorid" class="d-none data-input" data-field="vendor_id">
-
-                <!-- ── TOP FIELDS ── -->
-                <div class="bpd-fields">
-
-                    <!-- LEFT -->
-                    <div>
-                        <div class="bpd-row">
-                            <label>Payee (Vendor)</label>
-                            <span class="bpd-sep">:</span>
-                            <input name="vendor"
-                                class="data-input"
-                                data-field="vendor_name"
-                                placeholder="Search vendor…"
-                                autocomplete="off"/>
-                        </div>
-                        <div class="bpd-row">
-                            <label>Phone</label>
-                            <span class="bpd-sep">:</span>
-                            <input name="phone_number"
-                                class="data-input"
-                                data-field="phone_number"
-                                placeholder="Auto-filled"
-                                readonly/>
-                        </div>
-                        <div class="bpd-row">
-                            <label>Payer</label>
-                            <span class="bpd-sep">:</span>
-                            <input name="code"
-                                class="data-input"
-                                data-field="code"
-                                placeholder="Optional"/>
-                        </div>
-                        <div class="bpd-row">
-                            <label>Category</label>
-                            <span class="bpd-sep">:</span>
-                            <input name="category"
-                                class="data-input"
-                                data-field="category"
-                                placeholder="e.g. Utilities"/>
-                        </div>
-                    </div>
-
-                    <!-- RIGHT -->
-                    <div>
-                        <div class="bpd-row">
-                            <label>Payment Date</label>
-                            <span class="bpd-sep">:</span>
-                            <input type="text"
-                                data-type="date"
-                                name="bill_date"
-                                required
-                                class="data-input form_input"
-                                data-field="bill_date"/>
-                        </div>
-                        <div class="bpd-row">
-                            <label>Bill Number</label>
-                            <span class="bpd-sep">:</span>
-                            <input name="ref_no"
-                                class="data-input"
-                                data-field="ref_no"
-                                placeholder="Ref / Invoice no."/>
-                        </div>
-                        <div class="bpd-row">
-                            <label>Item</label>
-                            <span class="bpd-sep">:</span>
-                            <input name="item"
-                                class="data-input"
-                                data-field="item"
-                                placeholder=" "/>
-                        </div>
-                        <div class="bpd-row">
-                            <label>Payment Method</label>
-                            <span class="bpd-sep">:</span>
-                            <input name="item"
-                                class="data-input"
-                                data-field="item"
-                                placeholder=" " />
-                        </div>
-                        
-                    </div>
-                </div>
-
-                <!-- ── AMOUNTS ── -->
-                <div class="bpd-amounts">
-                    <div class="bpd-section-label">Payment amounts</div>
-                    <div class="bpd-amounts-grid">
-                        <div class="bpd-row">
-                            <label>Total Amount</label>
-                            <span class="bpd-sep">:</span>
-                            <input name="total_amount"
-                                id="_bpd_total"
-                                class="data-input"
-                                data-field="total_amount"
-                                type="number" min="0" step="0.01"
-                                placeholder="0.00"
-                                oninput="_bpdRecalc()"/>
-                        </div>
-                        <div class="bpd-row">
-                            <label>Amount Paid</label>
-                            <span class="bpd-sep">:</span>
-                            <input name="paid_amount"
-                                id="_bpd_paid"
-                                class="data-input"
-                                data-field="paid_amount"
-                                type="number" min="0" step="0.01"
-                                placeholder="0.00"
-                                oninput="_bpdRecalc()"/>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ── BALANCE SUMMARY ── -->
-                <div class="bpd-totals-wrap">
-                    <div class="bpd-totals">
-                        <div class="bpd-t-row">
-                            <label>Total Amount</label>
-                            <span class="bpd-sep">:</span>
-                            <span class="bpd-val" id="_bpd_s_total">$ 0.00</span>
-                        </div>
-                        <div class="bpd-t-row">
-                            <label>Amount Paid</label>
-                            <span class="bpd-sep">:</span>
-                            <span class="bpd-val bpd-balance-positive" id="_bpd_s_paid">$ 0.00</span>
-                        </div>
-                        <div class="bpd-t-row bpd-grand">
-                            <label>Balance</label>
-                            <span class="bpd-sep">:</span>
-                            <span class="bpd-val" id="_bpd_s_balance">$ 0.00</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ── DESCRIPTION ── -->
-                <textarea name="remark"
-                    class="data-input bpd-textarea"
-                    data-field="remark"
-                    placeholder="Description"></textarea>
-
-
-            `].join(""),
-
-
-            contentCreated: (me) => {
-
-                const fileInput = me.divModal.querySelector("#_bpd_file_input");
-                const fileLabel = me.divModal.querySelector("#_bpd_file_label");
-                if (fileInput && fileLabel) {
-                    fileInput.addEventListener("change", () => {
-                        fileLabel.value = fileInput.files[0]?.name || "";
-                    });
-                }
-
-                const applyVendorInfo = (vendorId) => {
-                    me._selectedVendorId = vendorId || "";
-                    if (me.controls.vendor_id) me.controls.vendor_id.value = vendorId || "";
-                    if (!vendorId) {
-                        if (me.controls.phone_number) me.controls.phone_number.value = "";
-                        return;
-                    }
-                    vsapi.post(`${main_view.base_url}/prm/vendor/options-vendor-info`, { vendor_id: vendorId }, {})
-                        .then(res => {
-                            const v = res.data?.vendor || {};
-                            if (me.controls.phone_number) me.controls.phone_number.value = v.phone_number || "";
-                        })
-                        .catch(() => {});
-                };
-
-                if (me.controls.vendor) {
-                    me.searchVendor = VSSearchInput.init(me.controls.vendor, {
-                        type: "select",
-                        prefetch: true,
-                        minChars: 0,
-                        api: { endpoint: `${main_view.base_url}/prm/bill/form-options` },
-                        processResponse: (res) => {
-                            const vendors = res?.data?.vendors || [];
-                            return (Array.isArray(vendors) ? vendors : []).map(v => ({
-                                ...v,
-                                vendor: v.vendor || v.name || v.vendor_name || v.code || "",
-                                phone_number: v.phone_number || v.contact_phone || v.phone || "",
-                            }));
-                        },
-                        columns: { vendor: "VENDOR", phone_number: "PHONE" },
-                        showColumnHeader: true,
-                        placeholder: "Search vendor",
-                        onSelect: (vendor) => {
-                            me.controls.vendor.value = vendor?.vendor || "";
-                            applyVendorInfo(vendor?.id || "");
-                        },
-                    });
-
-                    if (me._selectedVendorId) applyVendorInfo(me._selectedVendorId);
-                }
-
-                // me.controls.div_invoice_summary =
-                //     me.divModal.querySelector('[name="div_invoice_summary"]');
-
-                /* hide default close button */
-                const btnClose = me.divModal.querySelector(".modal-header button[data-bs-dismiss]");
-                if (btnClose) btnClose.classList.add("d-none");
-            },
-
-            configSelect: [],
-
-            prepareFormOptions: {
-                createTitle: "Bill Payment Voucher",
-                modifyTitle: "Modify Bill Payment",
-                targetProp: "bill_details",
-                api: {
-                    endpoint: [main_view.base_url, "/prm/bill/form-options"].join(""),
-                    params: (op) => ({ id: op.id }),
+        dialog =
+            dialog ||
+            new GeneralDialog({
+                cssClass: "modal-lg vs-modal",
+                backdrop: "static",
+                keyboard: true,
+                createContent: () => {
+                    return [
+                        `<div class="row g-3">
+                            <input name="vendorid" class="d-none data-input form-control" data-field="vendor_id">
+                            <div class=" col-md-5 ">
+                                <div class=" material-input outlined">
+                                    <input  name="vendor" class="data-input form-control" data-field="vendor_name" placeholder="Payee(Vendor)"></input>
+                                    <label style="color:#777777;padding-left:6px; display:none;"></label>
+                                </div>
+                                <div class="material-input outlined">
+                                    <input name="phone_number" class="data-input form-control" data-field="phone_number" placeholder=" "></input>
+                                    <label style="color:#777777; padding-left:6px;">Contact</label>
+                                </div>
+                            </div>
+                            <div class="col-md-2 "></div>
+                            <div class="col-md-5 align-items-end">
+                                <div class=" material-input outlined">
+                                    <input type="text" data-type="date" name="bill_date" required class="data-input form-control form_input" data-field="bill_date" />
+                                    <label style="color:#777777;padding-left:6px;">Bill Date</label>
+                                </div>
+                                <div class="material-input outlined">
+                                    <input name="bill_number" class="data-input form-control" data-field="bill_number" placeholder=" "></input>
+                                    <label style="color:#777777; padding-left:6px;">Bill Number</label>
+                                </div>
+                            </div>   
+                               
+                            <div class="col-4">
+                                <div class="material-input outlined">
+                                    <input name="total_amount" class="data-input form-control" data-field="total_amount" placeholder=" "></input>
+                                    <label style="color:#777777; padding-left:6px;">Total Amount</label>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="material-input outlined">
+                                    <input name="paid_amount" class="data-input form-control" data-field="paid_amount" placeholder=" "></input>
+                                    <label style="color:#777777; padding-left:6px;">Amount Paid</label>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="material-input outlined">
+                                    <input name="paid_amount"style="cursor: not-allowed;" class="data-input form-control" data-field="balance" placeholder=" " readonly />
+                                    <label style="color:#777777; padding-left:6px;">Balance</label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12 ">
+                                <div class="material-input outlined">
+                                    <textarea class="data-input form-control" data-field="remark" placeholder=" "></textarea>
+                                    <label style="color:#777777;padding-left:6px;">Description</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="material-input outlined d-none">
+                                    <input name="bill_number" class="data-input form-control" data-field="bill_number" placeholder=" "></input>
+                                    <label style="color:#777777; padding-left:6px;">Bill Number</label>
+                                </div>
+                            </div>
+                            
+                        </div>`,
+                    ].join("");
                 },
-            },
 
-            onPrepareForm: (me, data) => {
-                const details = data?.bill_details;
-
-                if (details?.file_image) {
-                    const fl = me.divModal.querySelector("#_bpd_file_label");
-                    if (fl) fl.value = details.file_image;
-                }
-
-                if (details?.vendor_id) {
-                    me._selectedVendorId = details.vendor_id;
-                    if (me.controls.vendor_id)    me.controls.vendor_id.value    = details.vendor_id;
-                    if (me.controls.vendor)        me.controls.vendor.value       = details.vendor_name   || "";
-                    if (me.controls.phone_number)  me.controls.phone_number.value = details.phone_number  || "";
-                }
-
-                /* refresh balance summary when editing */
-                setTimeout(() => _bpdRecalc(), 100);
-            },
-
-            buttons: [
-                {
-                    label: '<span vslang="buttons.Cancel"></span>',
-                    cssClass: "btn btn-secondary",
-                    click: (me) => me.hide(false),
-                },
-                {
-                    label: '<span vslang="buttons.Submit"></span>',
-                    cssClass: "btn btn-primary",
-                    click: (me, btn) => {
-                        const op = me.getData();
-                        op.id = me.dataOptions.id;
-
-                        if (me._selectedVendorId != null && me._selectedVendorId !== undefined) {
-                            op.vendor_id = me._selectedVendorId;
+                contentCreated: (me) => {
+                    const applyVendorInfo = (vendorId) => {
+                        me._selectedVendorId = vendorId || '';
+                        if (me.controls.vendor_id) me.controls.vendor_id.value = vendorId || '';
+                        if (!vendorId) {
+                            if (me.controls.phone_number) me.controls.phone_number.value = '';
+                            // if (me.controls.po_number) me.controls.po_number.value = '';
+                            return;
                         }
+                        vsapi.post(`${main_view.base_url}/prm/vendor/options-vendor-info`, { vendor_id: vendorId }, {})
+                            .then(res => {
+                                const d = res.data || {};
+                                const v = d.vendor || {};
+                                if (me.controls.phone_number) me.controls.phone_number.value = v.phone_number || '';
+                                // if (me.controls.po_number) me.controls.po_number.value = v.po_number     || '';
+                            })
+                            .catch(() => {});
+                    };
+                    if (me.controls.vendor) {
+                        me.searchVendor = VSSearchInput.init(me.controls.vendor, {
+                            type: 'select',
+                            prefetch: true,
+                            minChars: 0,
+                            api: {
+                                endpoint: `${main_view.base_url}/prm/bill/form-options`,
+                            },
+                            processResponse: (res) => {
+                                const vendors = res?.data?.vendors || [];
+                                return (Array.isArray(vendors) ? vendors : []).map(v => ({ ...v,
+                                    vendor: v.vendor || v.name || v.vendor_name || v.code || '',
+                                    phone_number: v.phone_number || v.contact_phone || v.phone || '',
+                                    // po_number: v.po_number || v.purchase_order_number || v.purchase_order || ''
+                                }));
+                            },
+                            columns: { vendor: 'VENDOR', phone_number: 'PHONE' },
+                            showColumnHeader: true,
+                            placeholder: 'Search vendor',
+                            onSelect: (vendor) => {
+                                const id = vendor?.id || '';
+                                me.controls.vendor.value = vendor?.vendor || '';
+                                applyVendorInfo(id);
+                            }
+                        });
 
-                        // if (me.fileData) {
-                        //     op.photo = me.fileData.base64 || me.fileData.data
-                        //         || me.fileData.fileData   || me.fileData.content || null;
-                        //     op.ext   = me.fileData.ext    || me.fileData.fileType
-                        //         || me.fileData.extension  || null;
-                        // }
+                        // prefill in modify mode
+                        if (me._selectedVendorId) {
+                            applyVendorInfo(me._selectedVendorId);
+                        }
+                    }
+                    me.controls.btn_chooseFile.onclick = () => {
+                        FileChooser.chooseFile(
+                            {
+                                accept: ".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg",
+                            },
+                            (d) => {
+                                // console.log("FileChooser returned:", d);
+                                me.fileData = d;
+                                me.controls.documents.value = d.fileName;
+                                me.controls.documents.classList.remove('d-none');
+                            },
+                        );
+                    };
+                },
 
-                        vsapi.call([main_view.base_url, "/prm/bill/save"].join(""), op, btn, null)
-                            .then((res) => {
-                                if (res.status_code === 200) {
-                                    me.hide(true, op);
-                                    cv_interact.success(
-                                        me.dataOptions.id > 0
-                                            ? "Bill has been updated successfully"
-                                            : "New bill has been added successfully"
-                                    );
-                                } else {
-                                    cv_interact.error(res.error_message);
-                                }
-                            });
+                configSelect: [
+                    
+                    // {
+                    //     name: "bill_statuses",
+                    //     data: "bill_statuses",
+                    //     textField: "bill_status",
+                    //     valueField: "id",
+                    // },
+                ],
+
+                prepareFormOptions: {
+                    createTitle: "Bill Payment Voucher",
+                    modifyTitle: "Modify Bill Record",
+                    targetProp: "bill_details",
+                    api: {
+                        endpoint: [
+                            main_view.base_url, "/prm/bill/form-options",  ].join(""),
+                        params: (op) => {
+                            return { id: op.id };
+                        },
                     },
                 },
-            ],
-        });
+               
+                onPrepareForm: (me, data) => {
+                    const header = me.divModal.querySelector(".modal-header");
+                    const btnClose = header.querySelector("button[data-bs-dismiss]",);
+                    if (btnClose) btnClose.classList.add("d-none");
 
+                    const details = data?.bill_details;
+                    if (details?.file_image) {
+                        me.controls.documents.value = details.file_image;
+                        me.controls.documents.classList.remove('d-none');
+                    }
+                    if (details?.vendor_id) {
+                        me._selectedVendorId = details.vendor_id;
+                        if (me.controls.vendor_id) me.controls.vendor_id.value = details.vendor_id;
+                        if (me.controls.vendor)    me.controls.vendor.value    = details.vendor_name || '';
+                        if (me.controls.phone_number) me.controls.phone_number.value = details.phone_number || '';
+                    }
+                },
+              
+                buttons: [
+                    {
+                        label: '<span vslang="buttons.Cancel"></span>',
+                        cssClass: "btn btn-secondary",
+                        click: (me, btn) => {
+                            me.hide(false);
+                        },
+                    },
+                    {
+                        label: '<span vslang="buttons.Submit"></span>',
+                        cssClass: "btn btn-primary",
+                        click: (me, btn) => {
+                            const op = me.getData();
+                            op.id = me.dataOptions.id;
+                            console.log(444,me.dataOptions);
+                            
+                            if (me._selectedVendorId != null && me._selectedVendorId !== undefined) {
+                                // op.vendor_id = me.dataOptions.vendorid;
+                                op.vendor_id = me._selectedVendorId;
+                            }
+
+                            if (me.fileData) {
+                                op.photo = me.fileData.base64 
+                                    || me.fileData.data 
+                                    || me.fileData.fileData 
+                                    || me.fileData.content 
+                                    || null;
+
+                                op.ext = me.fileData.ext
+                                    || me.fileData.fileType
+                                    || me.fileData.extension
+                                    || null;    
+                                // console.log("photo being sent:", op.photo ? op.photo.substring(0, 50) : "NULL");
+                            }
+                            vsapi
+                                .call([ main_view.base_url, "/prm/bill/save",].join(""), op, btn, null)
+                                .then((res) => {
+                                    if (res.status_code === 200) {
+                                        me.hide(true, op);
+                                        if (me.dataOptions.id > 0) {
+                                            cv_interact.success(
+                                                "Bill has been updated successfully",
+                                            );
+                                        } else {
+                                            cv_interact.success(
+                                                "New bill has been added successfully",
+                                            );
+                                        }
+                                    } else {
+                                        cv_interact.error(res.error_message);
+                                    }
+                                });
+                        },
+                    },
+                ],
+            });
         dialog.show(op);
     };
-
     return self;
-})();
-
-/* ── global recalc (called by oninput on amount fields) ── */
-function _bpdRecalc() {
-    const total   = parseFloat(document.getElementById("_bpd_total")?.value)   || 0;
-    const paid    = parseFloat(document.getElementById("_bpd_paid")?.value)    || 0;
-    const balance = total - paid;
-
-    const fmt = (n) => "$ " + n.toFixed(2);
-
-    const elTotal   = document.getElementById("_bpd_s_total");
-    const elPaid    = document.getElementById("_bpd_s_paid");
-    const elBalance = document.getElementById("_bpd_s_balance");
-
-    if (elTotal)   elTotal.textContent   = fmt(total);
-    if (elPaid)    elPaid.textContent    = fmt(paid);
-    if (elBalance) {
-        elBalance.textContent = fmt(Math.abs(balance));
-        elBalance.className   = "bpd-val " + (balance > 0
-            ? "bpd-balance-negative"   /* still owes */
-            : balance < 0
-                ? "bpd-balance-positive"   /* overpaid  */
-                : "");                     /* settled   */
-    }
-}
+})()
