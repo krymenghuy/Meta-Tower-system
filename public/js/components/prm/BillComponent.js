@@ -249,7 +249,7 @@ var BillComponent = (() => {
                     name: "view_attachment",
                 },
                 {
-                    html: '<span class="ps-2">Bill Payment</span>',
+                    html: '<span class="ps-2">Pay The Bill</span>',
                     icon: `<i class="fa-solid fa-sack-dollar" style="color: rgb(22, 80, 137);"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "bill_payment",
@@ -396,8 +396,8 @@ var BillComponent = (() => {
                 mThis.BillListView.showPage();
             },
         };
-        // renewDialog.show(op);
-        alert("coming soon!");
+        BillPaymentDialog.show(op);
+        // alert("coming soon!");
     };
     mThis.prepareFormOptions = (onFinish) => {
         vsapi
@@ -456,19 +456,18 @@ const BillDialog = (() => {
                                     <label style="color:#777777; padding-left:6px;">Phone Number</label>
                                 </div>
                             </div>
-                            <div class="col-6">
-                                <div class="material-input outlined">
-                                    <input name="ref_no" class="data-input form-control" data-field="ref_no" placeholder=" "></input>
-                                    <label style="color:#777777; padding-left:6px;">Reference No.</label>
-                                </div>
-                            </div>
                             <div class="col-6 col-md-6">
                                 <div class=" material-input outlined">
                                     <input type="text" data-type="date" name="bill_date" required class="data-input form-control form_input" data-field="bill_date" />
                                     <label style="color:#777777;padding-left:6px;">Bill Date</label>
                                 </div>
                             </div>
-
+                            <div class="col-6">
+                                <div class="material-input outlined">
+                                    <input name="ref_no" class="data-input form-control" data-field="ref_no" placeholder=" "></input>
+                                    <label style="color:#777777; padding-left:6px;">Reference No.</label>
+                                </div>
+                            </div>
                             <div class="col-6">
                                 <div class="material-input outlined">
                                     <input name="total_amount" class="data-input form-control" data-field="total_amount" placeholder=" "></input>
@@ -707,3 +706,4 @@ const BillDialog = (() => {
     };
     return self;
 })();
+

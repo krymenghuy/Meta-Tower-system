@@ -813,8 +813,8 @@ const ContractDialog = (() => {
                     <div class="row g-3">
                         <div class="col-6">
                             <div class="material-input outlined">
-                                <input name="tenant" class="data-input form-control" data-field="tenant_name" placeholder=" " />
-                                <label style="color:#777777;padding-left:6px;" for="tenant">Tenant</label>
+                                <input name="tenant" class="data-input form-control" data-field="tenant_name" placeholder="Tenant" />
+                                <!-- <label style="color:#777777;padding-left:6px;" for="tenant">Tenant</label> -->
                             </div>
                         </div>
                         <div class="col-6">

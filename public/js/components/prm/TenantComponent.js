@@ -83,8 +83,8 @@ var TenantComponent = new (function () {
             title: "Contact Info",
             className: "align-middle",
             data: (data) =>
-                `<span class="d-block text-prm-custom"><i class="fa-solid text-muted px-1 fa-phone" style="font-size:12px;"></i> ${data.phone_number ?? ""}</span>
-                 <span class="d-block text-muted"><i class="fa-solid text-muted px-1 fa-envelope" style="font-size:12px;"></i> ${data.email ?? ""}</span>`,
+                `<span class="d-block text-prm-custom"><i class="fa-solid text-success px-1 fa-phone" style="font-size:12px;"></i> ${data.phone_number ?? ""}</span>
+                 <span class="d-block text-primary"><i class="fa-solid text-primary px-1 fa-envelope" style="font-size:12px;"></i> ${data.email ?? ""}</span>`,
         },
         {
             title: "Status",
@@ -1403,8 +1403,8 @@ const CreateTenantDialog = (() => {
                         <div class="col-md-8 row pb-3">
                             <div class="col-12 ">
                                 <div class="material-input outlined">
-                                    <input type="text" name="name" class="data-input form-control" data-field="name" placeholder=" " />
-                                    <label style="color:#777777;padding-left:6px;">Full Name</label>
+                                    <input type="text" name="name" class="data-input form-control" data-field="name" placeholder="Full Name" />
+                                   <!-- <label style="color:#777777;padding-left:6px;">Full Name</label> -->
                                 </div>
 
                             </div>
