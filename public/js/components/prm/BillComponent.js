@@ -21,6 +21,13 @@ var BillComponent = (() => {
             className: "align-middle",
         },
         {
+            title: "Bill Date",
+            className: "align-middle",
+            data: (data) =>
+                `<span class="text-prm-custom text-nowrap">${data.bill_date}</span>`,
+        },
+
+        {
             transTitle: "titles.Bill Number",
             className: "align-middle",
             data: (data) => {
@@ -49,13 +56,7 @@ var BillComponent = (() => {
                 return `<span class="d-block text-prm-custom">${data.ref_no ?? "_"}</span>`;
             },
         },
-        {
-            title: "Bill Date",
-            className: "align-middle",
-            data: (data) =>
-                `<span class="text-prm-custom text-nowrap">${data.bill_date}</span>`,
-        },
-
+        
         {
             title: "Total Amount",
             className: "align-middle text-end",
@@ -388,16 +389,24 @@ var BillComponent = (() => {
             });
     };
 
-    mThis.billPayment = (id, menuLink) => {
-        let op = {
-            id: null,
-            btn: menuLink,
-            onClose: () => {
-                mThis.BillListView.showPage();
-            },
-        };
-        BillPaymentDialog.show(op);
-        // alert("coming soon!");
+    // mThis.billPayment = (id, menuLink) => {
+    //     let op = {
+    //         id: null,
+    //         btn: menuLink,
+    //         onClose: () => {
+    //             mThis.BillListView.showPage();
+    //         },
+    //     };
+    //     BillPaymentDialog.show(op);
+    //     // alert("coming soon!");
+    // };
+
+    mThis.billPayment = (id) => {
+
+        BillPaymentDialog.show({
+            bill_id: parseInt(id),              
+            onClose: () => mThis.BillListView.showPage(mThis.getFilterData())
+        });
     };
     mThis.prepareFormOptions = (onFinish) => {
         vsapi
