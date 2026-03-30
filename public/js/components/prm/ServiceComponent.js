@@ -369,12 +369,11 @@ const CreateServiceDialog = (() => {
                             <div class="col-6">
                                 <div class="material-input outlined">
                                     <select data-style="material" name="unit_type" class="data-input form-control" data-field="unit_type" placeholder="Unit Type">
-                                        <option value="hour">Price Per Hour</option>
-                                        <option value="month">Price Per Month</option>
-                                        <option value="one_time">One Time Charge</option>
-                                        <option value="kwh">Price Per Kwh</option>
-                                        <option value="m3">Price Per m³</option>
-                                        <option value="sqm">Price Per Sqm</option>
+                                        <option value="hour">Hour</option>
+                                        <option value="month">Monthly</option>
+                                        <option value="one_time">One Time</option>
+                                        <option value="kwh">Kwh</option>
+                                        <option value="sqm">SQM</option>
                                     </select>
                                 </div>
                             </div>

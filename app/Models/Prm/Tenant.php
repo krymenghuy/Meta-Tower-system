@@ -137,10 +137,6 @@ function checkUniqueTenantByPhone($phone_number, $id = null)
         if($status_id){
             $str_moreWhere .= ' AND t.status_id =' . $status_id;
         }
-        $updated_at = DBX::formatTime("t.updated_at", 'updated_at');
-        $start_date = DBX::formatDate("c.start_date", 'start_date');
-        $end_date = DBX::formatDate("c.end_date", 'end_date');
-        $date_of_birth = DBX::formatDate("t.date_of_birth", 'date_of_birth');
         $lastContract = DB::table('contracts')
             ->selectRaw('MAX(id) as id, tenant_id')
             ->groupBy('tenant_id');
@@ -156,27 +152,29 @@ function checkUniqueTenantByPhone($phone_number, $id = null)
             ->whereRaw($str_search)
             ->whereRaw($str_moreWhere)
             ->selectRaw("
-                t.id,t.name,t.sex,$date_of_birth,t.nationality_id,
+                t.id,t.name,t.sex,t.date_of_birth,t.nationality_id,
                 t.legal_name,t.code,t.photo_file_name,t.national_id,
                 t.passport_number,t.phone_number,t.email,t.address,
                 t.status_id,ts.name as status,
                 bt.name as business_type,
                 bs.code as space_code,
-                $start_date,$end_date,$updated_at,t.update_user
+                c.start_date,c.end_date,t.updated_at,t.update_user
             ")
             ->orderBy('t.status_id', 'asc')
-            ->orderBy('t.created_at', 'desc');
+            ->orderBy('t.id', 'desc');
 
             // ->orderBy('t.id','DESC');
         $clone_query = clone $query;
         $count = $clone_query->count('t.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
         foreach($rows as $row){
+            
             $row->image_url = '';
             if($row->photo_file_name){
                 $row->image_url = self::profilePicture($row->id,$ss);
             }
             unset($row->photo_file_name);
+            $row = setOfficialDates($row, ['date_of_birth','start_date','end_date'], ['updated_at'], []);
         }
         return new LengthAwarePaginator($rows,$count,$per_page,$current_page);
 

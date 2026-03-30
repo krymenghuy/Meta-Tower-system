@@ -87,7 +87,7 @@ class PurchaseOrderController extends Controller
         if (!isset($req->id) || !is_numeric($req->id)) {
             return JDV::error('Invalid ID');
         }
-        $res = $this->purchaseOrders->receivePurchaseOrder((int) $req->id, $ss, $req->all());
+        $res = $this->purchaseOrders->receivePurchaseOrder($req->id, $ss, $req->all());
         return JDV::raw($res);
     }
 
@@ -100,7 +100,7 @@ class PurchaseOrderController extends Controller
         if (!isset($req->id) || !is_numeric($req->id)) {
             return JDV::error('Invalid ID');
         }
-        $res = $this->purchaseOrders->confirmPurchaseOrderReceived((int) $req->id, $ss, $req->all());
+        $res = $this->purchaseOrders->confirmPurchaseOrderReceived($req->id, $ss, $req->all());
         return JDV::raw($res);
     }
     function authorized(Request $req){
