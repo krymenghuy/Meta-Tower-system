@@ -369,13 +369,19 @@ var ServiceRequestComponent = (function () {
             cssClass: "bg-white shadow",
             menus: [
                 {
-                    html: '<span class="ps-2 " vslang="title.Modify Request" ></span>',
+                    html: '<span class="ps-2 " vslang="title.Accepted" ></span>',
+                    icon: `<i class="fa-regular fa-edit fs-5 text-primary"></i>`,
+                    name: "edit_request",
+                    cssClass: "border-bottom pb-2"
+                },
+                {
+                    html: '<span class="ps-2 " vslang="title.Modify" ></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     name: "edit_request",
                     cssClass: "border-bottom pb-2"
                 },
                 {
-                    html: '<span class="ps-2" vslang="title.Delete Request"></span>',
+                    html: '<span class="ps-2" vslang="title.Delete"></span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     name: "delete_request",
                     cssClass: "border-bottom pb-2"
@@ -464,8 +470,8 @@ const CreateServiceRequestDialog = (() => {
                         <!-- Visible Tenant Search (NO data-field so name is NOT sent) -->
                         <div class="col-md-6">
                             <div class="material-input outlined">
-                                <input name="tenant" class="form-control" data-field="tenant_id" placeholder=" " autocomplete="off">
-                                <label style="padding-left:6px;color:#777;">Tenant</label>
+                                <input name="tenant" class="form-control" data-field="tenant_id" placeholder="Tenant" autocomplete="off">
+                                <!--<label style="padding-left:6px;color:#777;">Tenant</label> -->
                             </div>
                         </div>
 
