@@ -60,7 +60,6 @@ ${fontLink}${biLink}${styleHTML}
             (item) => parseFloat(item.price || 0) > 0 || parseFloat(item.total || 0) > 0 || parseFloat(item.amount || 0) > 0
         );
 
-        /* Recalculate totals */
         let subtotal = 0, totalDiscount = 0, totalTax = 0;
         validItems.forEach((item) => {
             const qty       = parseFloat(item.qty   || 1);
@@ -79,10 +78,8 @@ ${fontLink}${biLink}${styleHTML}
         const grandTotal = subtotal - totalDiscount + totalTax;
         const paid       = parseFloat(invoice.paid_amount || 0);
         const balance    = Math.max(0, grandTotal - paid);
+        const today      = new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
 
-        const today = new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
-
-        /* ── Line item rows — all 10 columns ── */
         const itemRows = validItems.map((item, i) => {
             const qty      = parseFloat(item.qty   || 1);
             const price    = parseFloat(item.price || 0);
@@ -92,7 +89,6 @@ ${fontLink}${biLink}${styleHTML}
             const discType = (item.discount_type || item.special_discount_type || "percent").toLowerCase();
             const taxRate  = parseFloat(item.tax_rate || 0);
 
-            /* Discount display */
             let discDisplay = "—";
             if (disc > 0) {
                 discDisplay = (discType === "amount" || discType === "$")
@@ -100,15 +96,12 @@ ${fontLink}${biLink}${styleHTML}
                     : `-${fmt(disc)}%`;
             }
 
-            /* Type badge colours */
             const typeColors = {
                 rent:    ["#dbeafe", "#1d4ed8"],
                 utility: ["#ffedd5", "#c2410c"],
                 service: ["#f3f4f6", "#374151"],
             };
             const [tbg, tfg] = typeColors[rawType] || typeColors.service;
-
-            /* Alternating row background */
             const rowStyle = i % 2 !== 0 ? 'style="background:#f8faff;"' : '';
 
             return `
@@ -145,40 +138,44 @@ ${fontLink}${biLink}${styleHTML}
     overflow: hidden;
 }
 
-/* ── HEADER ── */
 .pi-head {
-    background: linear-gradient(135deg, #1a56db, #60a5fa);
+    background: linear-gradient(135deg, rgba(26, 86, 219, 0.9), rgba(96, 165, 250, 0.8)),
+                url('../assets/images/meta/background.jpg') no-repeat;
+    background-size: cover;
+    background-position: center;
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    padding: 14px 32px;
+    align-items: flex-start;
+    padding: 15px;
     gap: 12px;
-    flex-wrap: wrap;
+    position: relative;
+    border-bottom: 3px solid #fde68a; /* Gold accent line to match the Invoice No */
 }
-.pi-logo-icon {
-    width: 72px; height: 72px;
-    display: flex; align-items: center; justify-content: center;
-}
+.pi-head-left { display: flex; gap: 20px; align-items: flex-start; }
+.pi-logo-icon { width: 72px; height: 72px; }
 .pi-logo-icon img {
     width: 72px; height: 72px;
-    border-radius: 10px;
-    object-fit: contain;
+    object-fit: fill;
     background: rgba(255,255,255,0.15);
 }
+.pi-company-info { color: #fff; }
+.pi-company-name { font-size: 18px; font-weight: 800; letter-spacing: 0.5px; margin-bottom: 4px; }
+.pi-company-contact {
+    font-size: 11px; color: #e0e7ff; display: flex; align-items: center; gap: 6px; margin-top: 2px;
+}
+.pi-company-contact i { font-size: 10px; opacity: 0.8; }
+
 .pi-title-block { text-align: right; }
-.pi-inv-word {
-    font-size: 26px; font-weight: 800;
-    color: #fff; letter-spacing: 1px; line-height: 1;
-}
-.pi-inv-num {
-    font-size: 13px; color: #e0e7ff; margin-top: 6px;
-}
+.pi-inv-word { font-size: 26px; font-weight: 800; color: #fff; line-height: 1; }
+.pi-inv-num { font-size: 13px; color: #e0e7ff; margin-top: 8px; }
 .pi-inv-num span { font-weight: 800; color: #fde68a; font-size: 15px; }
 
 /* ── META ROW ── */
 .pi-meta {
-    display: flex; justify-content: space-between; align-items: flex-start;
-    padding: 16px 32px; gap: 16px; flex-wrap: wrap;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 15px; gap: 16px; flex-wrap: wrap;
     background: #f8faff;
     border-top: 1px solid #e8ecf0;
     border-bottom: 1px solid #e8ecf0;
@@ -188,9 +185,6 @@ ${fontLink}${biLink}${styleHTML}
 .pi-tenant-name   { font-size: 17px; font-weight: 700; color: #111827; }
 .pi-tenant-detail { font-size: 11px; color: #6b7280; margin-top: 3px; display: flex; align-items: center; gap: 5px; }
 .pi-tenant-detail i { color: #1a56db; font-size: 10px; }
-.pi-meta-dates { min-width: 110px; }
-.pi-date-val   { font-size: 12px; font-weight: 600; color: #374151; }
-.pi-date-item  { margin-bottom: 8px; }
 .pi-amount-due { min-width: 150px; text-align: right; }
 .pi-due-box {
     display: inline-block; background: #1a56db; color: #fff;
@@ -199,124 +193,63 @@ ${fontLink}${biLink}${styleHTML}
 .pi-due-lbl { font-size: 9px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; opacity: .75; }
 .pi-due-amt { font-size: 20px; font-weight: 800; letter-spacing: -.5px; margin-top: 2px; }
 
-/* ── TABLE ── */
+/* ── TABLE & REST ── */
 .pi-tbl-wrap { overflow-x: auto; }
-.pi-table {
-    width: 100%; border-collapse: collapse; min-width: 700px;
-}
+.pi-table { width: 100%; border-collapse: collapse; min-width: 700px; }
 .pi-table thead tr { background: #ebedf2; }
 .pi-table thead th {
-    padding: 9px 8px;
-    font-size: 10px; font-weight: 700; color: #1A1647;
-    text-transform: uppercase; letter-spacing: .7px;
-    border-bottom: 2px solid #c7d2fe;
-    white-space: nowrap;
+    padding: 9px 8px; font-size: 10px; font-weight: 700; color: #1A1647;
+    text-transform: uppercase; letter-spacing: .7px; border-bottom: 2px solid #c7d2fe;
 }
-.pi-th-l { text-align: left; }
-.pi-th-r { text-align: right; }
-.pi-th-c { text-align: center; }
-
-.pi-table tbody tr { border-bottom: 1px solid #f3f4f6; }
-.pi-table tbody tr:last-child { border-bottom: none; }
-.pi-table tbody td { padding: 8px 8px; font-size: 11px; vertical-align: middle; }
-
-.pi-td-desc   { min-width: 160px; text-align: left; }
+.pi-th-l { text-align: left; } .pi-th-r { text-align: right; } .pi-th-c { text-align: center; }
+.pi-table tbody td { padding: 8px 8px; font-size: 11px; vertical-align: middle; border-bottom: 1px solid #f3f4f6; }
 .pi-item-name { font-size: 12px; font-weight: 600; color: #1f2937; }
-.pi-td-c { text-align: center; color: #374151; }
-.pi-td-r { text-align: right; color: #374151; white-space: nowrap; }
-.pi-bold { font-weight: 700; }
 .pi-total-cell { color: #1a56db !important; font-weight: 700; }
-.pi-disc-cell  { color: #dc3545; }
-.pi-tax-cell   { color: #0284c7; }
+.pi-type-badge { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 10px; font-weight: 600; text-transform: capitalize; }
 
-.pi-type-badge {
-    display: inline-block; padding: 2px 10px; border-radius: 20px;
-    font-size: 10px; font-weight: 600; text-transform: capitalize; white-space: nowrap;
-}
-
-/* ── TOTALS ── */
 .pi-totals-wrap { padding: 16px 32px 20px; display: flex; justify-content: flex-end; }
-.pi-totals-card {
-    min-width: 270px;
-    border: 1px solid #e8ecf0;
-    border-radius: 10px;
-    overflow: hidden;
-}
+.pi-totals-card { min-width: 270px; border: 1px solid #e8ecf0; border-radius: 10px; overflow: hidden; }
 .pi-totals-card table { width: 100%; border-collapse: collapse; }
-.pi-totals-card tr    { border-bottom: 1px solid #f3f4f6; }
-.pi-totals-card tr:last-child { border-bottom: none; }
-.pi-totals-card td    { padding: 8px 14px; font-size: 12px; }
-.pi-totals-card td:first-child { color: #6b7280; }
-.pi-totals-card td:last-child  { text-align: right; font-weight: 600; color: #374151; }
-.pi-total-row td {
-    background: #1a56db !important; color: #fff !important;
-    font-weight: 700 !important; font-size: 13px !important;
-}
-.pi-red   { color: #dc3545 !important; }
-.pi-blue  { color: #0284c7 !important; }
-.pi-green { color: #198754 !important; }
+.pi-totals-card td { padding: 8px 14px; font-size: 12px; border-bottom: 1px solid #f3f4f6; }
+.pi-total-row td { background: #1a56db !important; color: #fff !important; font-weight: 700 !important; }
 
-/* ── REMARKS ── */
-.pi-remarks {
-    margin: 0 32px 16px; padding: 10px 14px;
-    background: #fffbeb; border-left: 4px solid #fbbf24; border-radius: 6px;
-}
-.pi-remarks-lbl { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #b45309; margin-bottom: 3px; }
-.pi-remarks-txt { font-size: 11px; color: #92400e; }
+.pi-remarks { margin: 0 32px 16px; padding: 10px 14px; background: #fffbeb; border-left: 4px solid #fbbf24; border-radius: 6px; }
+.pi-footer { padding: 16px 32px; background: #f0f5ff; border-top: 1px solid #e0e7ff; display: flex; justify-content: space-between; align-items: flex-end; position: relative; }
+.pi-action-bar { padding: 12px 32px; border-top: 1px solid #e8ecf0; background: #fff; display: flex; justify-content: flex-end; gap: 8px; }
 
-/* ── FOOTER ── */
-.pi-footer {
-    padding: 16px 32px;
-    background: #f0f5ff;
-    border-top: 1px solid #e0e7ff;
-    display: flex; justify-content: space-between; align-items: flex-end;
-    gap: 16px; flex-wrap: wrap;
-    position: relative; overflow: hidden;
+.pi-btn-outline, .pi-btn-primary {
+    padding: 7px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 6px; font-family: inherit;
 }
-.pi-footer-wave {
-    position: absolute; bottom: 0; right: 0; width: 50%; height: 100%;
-    background: linear-gradient(135deg, #1a56db18, #60a5fa28);
-    border-radius: 80% 0 0 0; pointer-events: none;
-}
-.pi-footer-left  { position: relative; z-index: 1; }
-.pi-footer-title { font-size: 10px; font-weight: 700; color: #1a56db; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 3px; }
-.pi-footer-body  { font-size: 10px; color: #6b7280; line-height: 1.6; }
-.pi-footer-right { position: relative; z-index: 1; text-align: right; font-size: 10px; color: #9ca3af; }
-
-/* ── ACTION BAR ── */
-.pi-action-bar {
-    padding: 12px 32px; border-top: 1px solid #e8ecf0; background: #fff;
-    display: flex; justify-content: flex-end; align-items: center; gap: 8px; flex-wrap: wrap;
-}
-.pi-btn-outline {
-    padding: 7px 16px; border-radius: 8px; border: 1px solid #d1d5db;
-    background: #fff; color: #374151; font-size: 12px; font-weight: 600; cursor: pointer;
-    display: inline-flex; align-items: center; gap: 6px; font-family: inherit; transition: background .15s;
-}
-.pi-btn-outline:hover { background: #f9fafb; }
-.pi-btn-primary {
-    padding: 7px 18px; border-radius: 8px; border: none;
-    background: #1a56db; color: #fff; font-size: 12px; font-weight: 600; cursor: pointer;
-    display: inline-flex; align-items: center; gap: 6px; font-family: inherit; transition: background .15s;
-}
-.pi-btn-primary:hover { background: #1648c0; }
+.pi-btn-outline { border: 1px solid #d1d5db; background: #fff; color: #374151; }
+.pi-btn-primary { border: none; background: #1a56db; color: #fff; }
 
 @media (max-width: 580px) {
-    .pi-head, .pi-meta, .pi-tbl-wrap, .pi-totals-wrap,
-    .pi-remarks, .pi-footer, .pi-action-bar { padding-left: 14px; padding-right: 14px; }
-    .pi-inv-word  { font-size: 20px; }
-    .pi-totals-card { width: 100%; }
-    .pi-footer-wave { display: none; }
+    .pi-head-left { flex-direction: column; gap: 10px; }
+    .pi-head, .pi-meta, .pi-action-bar { padding: 14px; }
 }
 </style>
 
 <div class="pi-root" id="pi-invoice-content">
 
-    <!-- HEADER -->
     <div class="pi-head">
-        <div class="pi-logo-icon">
-            <img src="../assets/images/meta/Meta_logo1.png" alt="Company Logo"
-                 onerror="this.style.display='none'">
+        <div class="pi-head-left">
+            <div class="pi-logo-icon">
+                <img src="../assets/images/meta/Meta_logo1.png" alt="Company Logo"
+                     onerror="this.style.display='none'">
+            </div>
+            <div class="pi-company-info">
+                <div class="pi-pi-company-name">META TOWER</div>
+                <div class="pi-company-contact">
+                    <i class="bi bi-envelope-fill"></i> info@metatower.com
+                </div>
+                <div class="pi-company-contact">
+                    <i class="bi bi-telephone-fill"></i> +855 12 345 678
+                </div>
+                <div class="pi-company-contact">
+                    <i class="bi bi-geo-alt-fill"></i> Phnom Penh, Cambodia
+                </div>
+            </div>
         </div>
         <div class="pi-title-block">
             <div class="pi-inv-word">Invoice / វិក័យប័ត្រ</div>
@@ -324,7 +257,6 @@ ${fontLink}${biLink}${styleHTML}
         </div>
     </div>
 
-    <!-- BILL TO / DATES / AMOUNT DUE -->
     <div class="pi-meta">
         <div class="pi-bill-to">
             <div class="pi-meta-label">Bill To</div>
@@ -346,21 +278,20 @@ ${fontLink}${biLink}${styleHTML}
         </div>
     </div>
 
-    <!-- LINE ITEMS — 10 columns -->
     <div class="pi-tbl-wrap">
         <table class="pi-table">
             <thead>
                 <tr>
-                    <th class="pi-th-l"  style="min-width:140px;">Item Description</th>
-                    <th class="pi-th-c"  style="width:85px;">Type</th>
-                    <th class="pi-th-c"  style="width:85px;">Qty</th>
-                    <th class="pi-th-c"  style="width:85px;">Unit</th>
-                    <th class="pi-th-c"  style="width:85px;">Start Date</th>
-                    <th class="pi-th-c"  style="width:85px;">End Date</th>
-                    <th class="pi-th-r"  style="width:85px;">Unit Price</th>
-                    <th class="pi-th-r"  style="width:85px;">Discount</th>
-                    <th class="pi-th-c"  style="width:85px;">Tax</th>
-                    <th class="pi-th-r"  style="width:90px;">Total</th>
+                    <th class="pi-th-l">Item Description</th>
+                    <th class="pi-th-c" style="width:80px;">Type</th>
+                    <th class="pi-th-c" style="width:60px;">Qty</th>
+                    <th class="pi-th-c" style="width:70px;">Unit</th>
+                    <th class="pi-th-c" style="width:85px;">Start Date</th>
+                    <th class="pi-th-c" style="width:85px;">End Date</th>
+                    <th class="pi-th-r" style="width:85px;">Unit Price</th>
+                    <th class="pi-th-r" style="width:85px;">Discount</th>
+                    <th class="pi-th-c" style="width:70px;">Tax</th>
+                    <th class="pi-th-r" style="width:100px;">Total</th>
                 </tr>
             </thead>
             <tbody>
@@ -369,7 +300,6 @@ ${fontLink}${biLink}${styleHTML}
         </table>
     </div>
 
-    <!-- TOTALS -->
     <div class="pi-totals-wrap">
         <div class="pi-totals-card">
             <table>
@@ -383,16 +313,9 @@ ${fontLink}${biLink}${styleHTML}
         </div>
     </div>
 
-    <!-- REMARKS -->
-    ${invoice.remarks ? `
-    <div class="pi-remarks">
-        <div class="pi-remarks-lbl">Remarks</div>
-        <div class="pi-remarks-txt">${invoice.remarks}</div>
-    </div>` : ""}
+    ${invoice.remarks ? `<div class="pi-remarks"><div class="pi-remarks-lbl">Remarks</div><div class="pi-remarks-txt">${invoice.remarks}</div></div>` : ""}
 
-    <!-- FOOTER -->
     <div class="pi-footer">
-        <div class="pi-footer-wave"></div>
         <div class="pi-footer-left">
             <div class="pi-footer-title">Terms &amp; Conditions</div>
             <div class="pi-footer-body">Payment is due by the date shown above.<br>Late payments may incur additional charges.</div>
@@ -403,25 +326,20 @@ ${fontLink}${biLink}${styleHTML}
         </div>
     </div>
 
-    <!-- ACTION BUTTONS (hidden on print) -->
     <div class="pi-action-bar">
-        <button class="pi-btn-outline" id="pi-print-btn">
-            <i class="bi bi-printer"></i> Print Invoice
-        </button>
-        <button class="pi-btn-primary" id="pi-download-btn">
-            <i class="bi bi-download"></i> Download PDF
-        </button>
+        <button class="pi-btn-outline" id="pi-print-btn"><i class="bi bi-printer"></i> Print Invoice</button>
+        <button class="pi-btn-primary" id="pi-download-btn"><i class="bi bi-download"></i> Download PDF</button>
     </div>
 
 </div>`;
     };
 
-    /* ── Wire print buttons after DOM injection ── */
+    /* ── Wire buttons ── */
     const wireButtons = (container) => {
         const invoiceEl  = container.querySelector("#pi-invoice-content");
         const printBtn   = container.querySelector("#pi-print-btn");
         const downloadBtn= container.querySelector("#pi-download-btn");
-        if (printBtn)     printBtn.addEventListener("click",    () => printViaIframe(invoiceEl));
+        if (printBtn)     printBtn.addEventListener("click", () => printViaIframe(invoiceEl));
         if (downloadBtn)  downloadBtn.addEventListener("click", () => printViaIframe(invoiceEl));
     };
 
@@ -436,24 +354,17 @@ ${fontLink}${biLink}${styleHTML}
             cssClass: "modal-xl vs-modal",
             backdrop: "static",
             keyboard: true,
-            createContent: () => `
-                <div name="pi_container" style="min-height:260px;border-radius:8px;border:1px solid #d1d5db;overflow:hidden;">
-                    <div style="display:flex;align-items:center;justify-content:center;padding:60px 0;gap:14px;
-                                color:#6b7280;font-family:'Segoe UI',sans-serif;font-size:14px;">
-                        <div style="width:32px;height:32px;border:4px solid #dbeafe;border-top-color:#1a56db;
-                                    border-radius:50%;animation:pi-spin .7s linear infinite;"></div>
-                        Loading invoice…
-                    </div>
-                    <style>@keyframes pi-spin{to{transform:rotate(360deg)}}</style>
-                </div>`,
-
+            createContent: () => `<div name="pi_container" style="min-height:260px;border-radius:8px;border:1px solid #d1d5db;overflow:hidden;">
+                <div style="display:flex;align-items:center;justify-content:center;padding:60px 0;gap:14px;color:#6b7280;font-size:14px;">
+                    <div style="width:32px;height:32px;border:4px solid #dbeafe;border-top-color:#1a56db;border-radius:50%;animation:pi-spin .7s linear infinite;"></div>
+                    Loading invoice…
+                </div><style>@keyframes pi-spin{to{transform:rotate(360deg)}}</style></div>`,
             contentCreated: (me) => {
                 const container = me.divModal.querySelector('[name="pi_container"]');
-                vsapi
-                    .call(`${main_view.base_url}/prm/invoice/details`, { id: op.invoice_id })
+                vsapi.call(`${main_view.base_url}/prm/invoice/details`, { id: op.invoice_id })
                     .then((res) => {
                         if (res.status_code !== 200) {
-                            container.innerHTML = `<div class="alert alert-danger m-4">Failed to load invoice: ${res.error_message || "Unknown error"}</div>`;
+                            container.innerHTML = `<div class="alert alert-danger m-4">Error: ${res.error_message || "Unknown error"}</div>`;
                             return;
                         }
                         container.innerHTML = buildInvoiceHTML(res.data || {});
@@ -463,16 +374,8 @@ ${fontLink}${biLink}${styleHTML}
                         container.innerHTML = `<div class="alert alert-danger m-4">Network error — could not load invoice.</div>`;
                     });
             },
-
-            buttons: [
-                {
-                    label: "Close",
-                    cssClass: "btn btn-secondary",
-                    click: (me) => me.hide()
-                }
-            ]
+            buttons: [{ label: "Close", cssClass: "btn btn-secondary", click: (me) => me.hide() }]
         });
-
         dlg.show(op);
     };
 

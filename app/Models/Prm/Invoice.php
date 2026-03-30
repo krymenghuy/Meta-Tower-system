@@ -280,6 +280,8 @@ class Invoice extends VSModel
                 // 'i.remarks',
                 'i.contract_id',
                 't.name as tenant_name',
+                't.phone_number as tenant_phone',
+                't.email as tenant_email',
                 'bs.code as space_code',
                 'ct.legal_name as contract_legal_name'
 

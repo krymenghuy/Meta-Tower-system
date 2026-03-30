@@ -81,16 +81,16 @@ var InvoiceComponent = (() => {
             transTitle: "titles.Status",
             className: "align-middle text-center",
             data: data => {
-                const statusName = (
-                    data.payment_status_name || ""
-                ).toLowerCase();
+                const statusId = Number(data.payment_status_id || 0);
                 let cls = "bg-secondary";
-                if (statusName === "paid") cls = "bg-success";
-                else if (statusName === "unpaid") cls = "bg-danger";
-                else if (statusName.includes("partial"))
-                    cls = "bg-warning text-dark";
-                return `<span class="badge ${cls} text-capitalize px-2 py-1">${data.payment_status_name ||
-                    "—"}</span>`;
+
+                if (statusId === 1) cls = "bg-success";           // Paid
+                else if (statusId === 2) cls = "bg-danger";       // Unpaid
+                else if (statusId === 3) cls = "bg-warning text-dark"; // Partially Paid
+
+                return `<span class="badge ${cls} text-capitalize px-2 py-1">
+                            ${data.payment_status_name || "—"}
+                        </span>`;
             }
         },
         {
@@ -129,9 +129,10 @@ var InvoiceComponent = (() => {
             tableClass:
                 "table table--white rounded-2 overflow-hidden header-uppercase",
             rowCreated: (data, index, tr) => {
-                tr.dataset.statusid = data.payment_status_id;
-                tr.classList.add("invoice");
+                tr.dataset.statusid = data.payment_status_id || 0;
                 tr.id = `invoice_id_${data.id}`;
+                tr.dataset.ispaid = data.payment_status_id || 0;     // ← This is used by dropdown
+                tr.dataset.canceled = 0;
             },
             listContainerClass: null
         });
@@ -248,8 +249,6 @@ var InvoiceComponent = (() => {
 
         const itemsHtml = validItems
             .map(item => {
-                console.log(222, item);
-
                 const rawType = (item.type || "service").toLowerCase().trim();
 
                 let badgeClass = "bg-light border text-dark";
@@ -272,113 +271,90 @@ var InvoiceComponent = (() => {
                 const total = parseFloat(item.total || item.amount || 0);
 
                 return `
-        <tr>
-            <td class="fw-medium">${item.description ||
-                item.remarks ||
-                item.item_name ||
-                "—"}</td>
-            <td class="text-center">
-                <span class="badge rounded-pill ${badgeClass} px-3 py-1 text-capit
-                alize">
-                    ${rawType}
-                </span>
-            </td>
-            <td class="text-center text-muted small">${qty}</td>
-            <td class="text-center text-muted small">${
-                item.unit_type ? item.unit_type.trim() : "—"
-            }</td>
-            <td class="text-center small">${formatDate(item.start_date)}</td>
-            <td class="text-center small">${formatDate(item.end_date)}</td>
-            <td class="text-end">${price.toLocaleString("en-US", {
-                minimumFractionDigits: 2
-            })}</td>
+                <tr>
+                    <td class="fw-medium">${item.description ||
+                        item.remarks ||
+                        item.item_name ||
+                        "—"}
+                    </td>
+                    <td class="text-center">
+                        <span class="badge rounded-pill ${badgeClass} px-3 py-1 text-capitalize">
+                            ${rawType}
+                        </span>
+                    </td>
+                    <td class="text-center text-muted small">${qty}</td>
+                    <td class="text-center text-muted small">${
+                        item.unit_type ? item.unit_type.trim() : "—"}
+                    </td>
+                    <td class="text-center small">${formatDate(item.start_date)}</td>
+                    <td class="text-center small">${formatDate(item.end_date)}</td>
+                    <td class="text-end">${price.toLocaleString("en-US", {minimumFractionDigits: 2})}</td>
+                    <td class="text-end text-danger">${getDiscountDisplay(item)}</td>
+                    <td class="text-end text-info">+${taxAmount}%</td>
+                    <td class="text-end fw-bold">${currency}${total.toLocaleString("en-US",{ minimumFractionDigits: 2 })}</td>
 
-
-
-            <td class="text-end text-danger">
-                ${getDiscountDisplay(item)}
-            </td>
-            <td class="text-end text-info">+${taxAmount}%</td>
-            <td class="text-end fw-bold">${currency}${total.toLocaleString(
-                    "en-US",
-                    { minimumFractionDigits: 2 }
-                )}</td>
-        </tr>`;
+                </tr>`;
             })
             .join("");
 
         // ✅ Footer totals calculation
         const foot = validItems.reduce(
             (acc, item) => {
-                const discount = parseFloat(
-                    item.discount || item.special_discount_value || 0
-                );
                 const total = parseFloat(item.total || item.amount || 0);
-
-                acc.discount += discount;
                 acc.total += total;
                 return acc;
             },
-            { discount: 0, total: 0 }
+            { discount: 0, tax:0,total: 0 }
         );
 
         const fmt = n =>
             n.toLocaleString("en-US", { minimumFractionDigits: 2 });
 
         container.innerHTML = `
-    <div class="bg-white rounded shadow-sm p-3">
-        <div class="table-responsive">
-            <table class="table table-sm table-bordered mb-0">
-                <thead style="background:#f0f4ff;">
-                    <tr>
-                        <th class="text-center" style="min-width:150px;">Description</th>
-                        <th class="text-center" style="width:100px;">Type</th>
-                        <th class="text-center" style="width:80px;">Qty</th>
-                        <th class="text-center" style="width:90px;">Unit</th>
-                        <th class="text-center" style="width:110px;">Start Date</th>
-                        <th class="text-center" style="width:110px;">End Date</th>
-                        <th class="text-end" style="width:100px;">Price</th>
-                        <th class="text-end" style="width:100px;">Discount</th>
-                        <th class="text-center" style="width:80px;">Tax %</th>
-                        <th class="text-end" style="width:120px;">Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${itemsHtml ||
-                        '<tr><td colspan="10" class="text-center py-4 text-muted">No items found</td></tr>'}
-                </tbody>
-                <tfoot class="table-light fw-bold">
-                    <tr>
-                        <td colspan="7" class="text-end text-uppercase small">Summary</td>
-                        <td class="text-end text-danger">-${currency}${fmt(
-            foot.discount
-        )}</td>
-                        <td class="bg-white"></td>
-                        <td class="text-end text-success fs-5">${currency}${fmt(
-            foot.total
-        )}</td>
-                    </tr>
-                </tfoot>
-            </table>
-        </div>
+            <div class="bg-white rounded shadow-sm p-3">
+                <div class="table-responsive">
+                    <table class="table table-sm table-bordered mb-0">
+                        <thead style="background:#f0f4ff;">
+                            <tr>
+                                <th class="text-center" style="min-width:150px;">Description</th>
+                                <th class="text-center" style="width:100px;">Type</th>
+                                <th class="text-center" style="width:0px;">Quantity</th>
+                                <th class="text-center" style="width:90px;">Unit</th>
+                                <th class="text-center" style="width:110px;">Start Date</th>
+                                <th class="text-center" style="width:110px;">End Date</th>
+                                <th class="text-end" style="width:100px;">Price</th>
+                                <th class="text-end" style="width:100px;">Discount</th>
+                                <th class="text-center" style="width:80px;">Tax %</th>
+                                <th class="text-end" style="width:120px;">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${itemsHtml ||
+                                '<tr><td colspan="10" class="text-center py-4 text-muted">No items found</td></tr>'}
+                        </tbody>
+                        <tfoot class="table-light fw-bold">
+                            <tr>
+                                <td colspan="9" class="text-end text-uppercase text-primary">Summary</td>
+                                <td class="text-end text-success fs-5">${currency}${fmt(foot.total)}</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
 
-        ${
-            invoice.remarks
-                ? `
-        <div class="mt-3 p-3 bg-light rounded border">
-            <small class="text-muted fw-semibold d-block mb-1 text-uppercase" style="font-size: 0.7rem;">Remarks:</small>
-            <p class="mb-0 small">${invoice.remarks}</p>
-        </div>`
-                : ""
-        }
+                ${invoice.remarks? `
+                    <div class="mt-3 p-3 bg-light rounded border">
+                        <small class="text-muted fw-semibold d-block mb-1 text-uppercase" style="font-size: 0.7rem;">Remarks:</small>
+                        <p class="mb-0 small">${invoice.remarks}</p>
+                    </div>`: ""
+                }
 
-        <div class="text-end mt-4 no-print">
-            <button class="btn btn-sm btn-outline-primary" onclick="window.print()">
-                <i class="bi bi-printer me-1"></i> Print Invoice
-            </button>
-        </div>
-    </div>`;
-    };
+                <div class="text-end mt-4 no-print">
+                    <button class="btn btn-sm btn-outline-primary" onclick="window.print()">
+                        <i class="bi bi-printer me-1"></i> Print Invoice
+                    </button>
+                </div>
+                </div>`;
+                };
 
     mThis.getFilterData = () => {
         const params = {
@@ -393,43 +369,70 @@ var InvoiceComponent = (() => {
         return params;
     };
 
-    mThis.initDropdownMenus = table => {
-        new VSDropdownMenu({
-            containerElement: table,
+
+
+    mThis.initDropdownMenus = (container) => {
+        const menuOptions = {
+            containerElement: container,
             actionButtonClass: "btn_leave_action",
-            cssClass: "bg-white shadow",
+            cssClass: "bg-white box-shadow",
             menus: [
                 {
-                    html: '<span class="ps-2">Modify</span>',
-                    icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
+                    html: '<span class="ps-2" vslang="titles.Print Invoice"></span>',
+                    icon: `<i class="fa-solid fa-receipt text-primary fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "edit_invoice"
+                    name: "print_invoice",
                 },
                 {
-                    html: '<span class="ps-2">Delete</span>',
-                    icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
+                    html: '<span class="ps-2" vslang="titles.Delete Invoice"></span>',
+                    icon: `<i class="fa-regular fa-trash-can text-danger fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "delete_invoice"
-                }
+                    name: "delete_invoice",
+                },
             ],
-            onClick: (menuLink, id, name) => {
-                if (name === "edit_invoice") mThis.editInvoice(id, menuLink);
-                else if (name === "delete_invoice")
-                    mThis.deleteInvoice(id, menuLink);
-            }
-        });
-    };
+            onShow: (me, menuContainer) => {
+                const statusId = Number(menuContainer.dataset.ispaid || 0);
 
-    mThis.editInvoice = (id, menuLink) => {
-        InvoiceDialog.show({
-            id,
-            btn: menuLink,
-            onClose: () => mThis.InvoiceListView.showPage(mThis.getFilterData())
-        });
+                let allowed = [];
+
+                if (statusId === 1) {
+                    allowed = ["print_invoice"];
+                }
+                else if (statusId === 2) {
+                    allowed = ["print_invoice", "delete_invoice"];
+                }
+                else if (statusId === 3) {
+                    allowed = ["print_invoice", "delete_invoice"];
+                }
+                else {
+                    allowed = ["print_invoice", "delete_invoice"];
+                }
+
+                const menuItems = me.getActiveMenus(menuContainer);
+                for (const key in menuItems) {
+                    if (menuItems[key]?.style) {
+                        menuItems[key].style.display =
+                            allowed.includes(menuItems[key].dataset.mnuaction || menuItems[key].dataset.name)
+                                ? "block"
+                                : "none";
+                    }
+                }
+            },
+            onClick: (menulink, id, name) => {
+                if (name === "delete_invoice") {
+                    mThis.deleteInvoice(id, menulink);
+                } else if (name === "print_invoice") {
+                    mThis.printInvoice(id, menulink);
+                }
+            }
+        };
+
+        new VSDropdownMenu(menuOptions);
     };
 
     mThis.deleteInvoice = (id, menuLink) => {
         if (!AuthManager.allowed(242)) return;
+
         cv_interact.confirm(
             "Are you sure you want to delete this invoice?",
             {
@@ -439,38 +442,50 @@ var InvoiceComponent = (() => {
             },
             confirmed => {
                 if (!confirmed) return;
-                vsapi
-                    .call(
-                        `${main_view.base_url}/prm/invoice/delete`,
-                        { id },
-                        menuLink
-                    )
+
+                vsapi.call(`${main_view.base_url}/prm/invoice/delete`, { id }, menuLink)
                     .then(res => {
                         if (res.status_code === 200) {
-                            mThis.InvoiceListView.showPage(
-                                mThis.getFilterData()
-                            );
+                            mThis.InvoiceListView.showPage(mThis.getFilterData());
                             cv_interact.success("Invoice deleted successfully");
                         } else {
-                            cv_interact.error(
-                                res.error_message || "Failed to delete"
-                            );
+                            cv_interact.error(res.error_message || "Failed to delete");
                         }
                     });
             }
         );
     };
 
-    mThis.prepareFormOptions = onFinish => {
-        vsapi
-            .call(
-                `${main_view.base_url}/prm/invoice/form-options`,
-                null,
-                null,
-                null
-            )
+
+
+mThis.printInvoice = (id, menulink) => {
+    console.log("=== PRINT INVOICE CLICKED ===");
+    console.log("Invoice ID:", id);
+    console.log("PrintInvoiceDialog defined?", typeof PrintInvoiceDialog);
+
+    if (!AuthManager.allowed(309)) {
+        cv_interact.error("You do not have permission to print invoices.");
+        return;
+    }
+
+    if (typeof PrintInvoiceDialog === "undefined" || typeof PrintInvoiceDialog.show !== "function") {
+        console.error("PrintInvoiceDialog is not defined!");
+        cv_interact.error("Print dialog is not available. Please contact administrator.");
+        return;
+    }
+
+    // If we reach here, the dialog exists
+    PrintInvoiceDialog.show({
+        invoice_id: id,
+        btn: menulink
+    });
+};
+
+
+    mThis.prepareFormOptions = (onFinish) => {
+        vsapi.call(`${main_view.base_url}/prm/invoice/form-options`)
             .then(res => {
-                const d = res.status_code == 200 ? res.data : {};
+                const d = res.status_code === 200 ? res.data : {};
                 VSUtil.setComboItems(
                     mThis.elFilter_status,
                     d.statuses,
@@ -487,6 +502,7 @@ var InvoiceComponent = (() => {
     mThis.show = (options = {}) => {
         mThis.init();
         mThis.options = options;
+
         mThis.prepareFormOptions(() => {
             main_view.setContentView(mThis.self, mThis.title_prop);
             mThis.InvoiceListView.showPage(mThis.getFilterData());
