@@ -3,17 +3,18 @@
 var PurchaseOrdersComponent = (() => {
     const mThis = {};
     mThis.title_prop = "Purchase Orders";
-
-    mThis.currency_symbol = "$";
-
+    mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_purchases_component");
     mThis.btnAdd = mThis.self.querySelector("#_btnPurchases");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_purchases");
-    mThis.elFilter_vendor = mThis.self.querySelector("#_po_vendor_id");
-    mThis.elFilter_status = mThis.self.querySelector("#_po_status_id");
+    mThis.elFilter_vendor = mThis.self.querySelector('#_po_vendor_id');
+    mThis.elFilter_status = mThis.self.querySelector('#_po_status_id');
     mThis.elSearch = mThis.self.querySelector("#_po_search");
+    let PurchaseOrderDialog = null;
+    let ReceivePurchaseOrderDialog = null;
+    let _currentEditPoId = null;
 
-    const formatCurrency = (amount) => `${mThis.currency_symbol || "$"} ${(Number(+amount || 0)).toFixed(2)}`;
+    const formatCurrency = (amount) => `$ ${(Number(+amount || 0)).toFixed(2)}`;
     const formatQty = (qty) => {
         const n = Number(+qty || 0);
         if (Number.isInteger(n)) return String(n);
@@ -30,160 +31,6 @@ var PurchaseOrdersComponent = (() => {
         }
         return formatCurrency(discountValue);
     };
-    const RECEIVED_STATUS_BADGE_STYLE =
-        'min-width:90px;background:#dff3ea;color:#37b07f;border-color:#70c39f !important;font-weight:500;';
-    const PARTIAL_RECEIVE_BADGE_STYLE =
-        'min-width:90px;background:#fff3e0;color:#e65100;border-color:#ffb74d !important;font-weight:500;';
-    const PENDING_RECEIVE_BADGE_STYLE =
-        'min-width:90px;background:#fff3cd;color:#664d03;border-color:#ffc107 !important;font-weight:600;';
-    const PO_HEADER_STATUS = {
-        PENDING: 1,
-        APPROVED: 2,
-        ORDERED: 3,
-        PARTIALLY_RECEIVED: 4,
-        RECEIVED: 5,
-        CANCELLED: 6,
-    };
-    const poStatusBadgeFallback = (statusId, statusLabel) => {
-        const status_id = Number(statusId || 0);
-        const isReceived = status_id === PO_HEADER_STATUS.RECEIVED;
-        const byStatus = {
-            1: 'badge text-warning bg-warning-subtle border border-warning',
-            2: 'badge text-info bg-info-subtle border border-info',
-            3: 'badge text-primary bg-primary-subtle border border-primary',
-            4: 'badge text-dark border',
-            5: 'badge text-success bg-success-subtle border border-success',
-            6: 'badge text-danger bg-danger-subtle border border-danger',
-        };
-        const byStyle = {
-            1: PENDING_RECEIVE_BADGE_STYLE,
-            4: PARTIAL_RECEIVE_BADGE_STYLE,
-            5: RECEIVED_STATUS_BADGE_STYLE,
-        };
-        let cls = byStatus[status_id] || 'badge text-warning bg-warning-subtle border border-warning';
-        if (isReceived) cls = 'badge border';
-        const statusText = isReceived ? 'Received' : (statusLabel ?? '');
-        const badgeStyle = byStyle[status_id] || (isReceived ? RECEIVED_STATUS_BADGE_STYLE : 'min-width:90px');
-        return { cls, statusText, badgeStyle };
-    };
-    /** Uses status_class / status_label / status_badge_style from API when present (list sets these from receive progress). */
-    const poStatusBadgeHtml = (data) => {
-        const sid = Number(data?.status_id ?? 0);
-        const isReceived = sid === PO_HEADER_STATUS.RECEIVED;
-        const fb = poStatusBadgeFallback(sid, data?.status);
-        const cls = data?.status_class || fb.cls;
-        const statusText = data?.status_label ?? fb.statusText;
-        const badgeStyle = data?.status_badge_style
-            || fb.badgeStyle
-            || (isReceived ? RECEIVED_STATUS_BADGE_STYLE : 'min-width:90px');
-        return `<span class="${cls} text-capitalize d-inline-block text-center" style="${badgeStyle}">${statusText}</span>`;
-    };
-
-
-    mThis.cols = [
-        { title: '', className: 'align-middle' },
-        {
-            transTitle: 'titles.Po Number',
-            className: 'align-middle text-nowrap',
-            data: (data) => `<span class="text-nowrap text-prm-custom">${data.po_number ?? ''}</span>`,
-        },
-        {
-            transTitle: 'titles.Vendor',
-            className: 'align-middle text-nowrap',
-            data: (data) => `<span class="d-block text-prm-custom">${data.vendor_name}</span>`,
-        },
-        {
-            title: 'Po Date',
-            className: 'align-middle text-nowrap',
-            data: (data) => `<span class="text-prm-custom text-nowrap">${data.po_date}</span>`,
-        },
-        {
-            title: "Total Price",
-            className: "align-middle text-nowrap text-end",
-            data: (data) =>
-                `<span class="d-block text-prm-custom">${data.sub_total_formatted ?? formatCurrency(data.sub_total)}</span>`,
-        },
-        {
-            title: "Discount",
-            className: "align-middle text-nowrap text-end",
-            data: (data) =>
-                `<span class="d-block text-prm-custom">${data.discount_formatted ?? formatDiscount(data)}</span>`,
-        },
-        {
-            title: "Total Amount",
-            className: "align-middle text-nowrap text-end",
-            data: (data) =>
-                `<span class="d-block text-prm-custom">${data.total_amount_formatted ?? formatCurrency(data.total_amount)}</span>`,
-        },
-        {
-            title: "Authorized By",
-            className: 'align-middle text-nowrap text-center',
-            data: (data) => {
-                return `<div class="d-flex flex-column">
-                <span class="text-capitalize text-start text-prm-custom"><span>${data.authorizer ?? ''}</span></span>
-                <span class="text-start small text-muted">${data.auth_date ?? ''}</span>
-            </div>`;
-
-            }
-        },
-        {
-            title: "Status",
-            className: "align-middle text-nowrap text-center",
-            data: (data) => poStatusBadgeHtml(data),
-        },
-        {
-            title: "Remarks",
-            className: "align-middle text-nowrap",
-            data: (data) => {
-                const remarks = String(data.remarks || '').trim();
-                return `<span class="text-prm-custom d-block text-truncate" style="max-width:180px;" title="${remarks}">${remarks || '-'}</span>`;
-            }
-        },
-        {
-            title: "Received By",
-            className: 'align-middle text-nowrap',
-            data: (data) => {
-                return `<div class="d-flex flex-column">
-                <span class="text-capitalize text-start text-prm-custom"><span>${data.authorizer ?? ''}</span></span>
-                <span class="text-start small text-muted">${data.auth_date ?? ''}</span>
-            </div>`;
-
-            }
-        },
-
-        {
-            transTitle: 'titles.Updated By',
-            className: 'align-middle text-nowrap',
-            data: (data) => `<div class="d-flex flex-column">
-                <span class="text-capitalize text-start text-prm-custom fw-semibold"><span>${data.update_user ?? ''}</span></span>
-                <span class="text-muted">${data.updated_at ?? ''}</span>
-            </div>`,
-        },
-        {
-            transTitle: 'titles.Action',
-            className: 'col_action align-middle',
-            data: (data) => {
-                const isFullyReceived = Number(data.status_id) === PO_HEADER_STATUS.RECEIVED;
-                const actionClass = isFullyReceived
-                    ? 'btn_dropdown_purchase_received'
-                    : 'btn_dropdown_purchase_action';
-                return `<div class="d-flex justify-content-center align-items-end"><a href="javascript:void(0)" class="btn--Options ${actionClass}" data-id="${data.id}" data-authorized="${data.authorized}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false"><i class="fa-solid fa-ellipsis-vertical text-black fs-5"></i></a></div>`;
-            }
-        },
-    ];
-
-
-    let PurchaseOrderDialog = null;
-    let ReceivePurchaseOrderDialog = null;
-    let _currentEditPoId = null;
-
-    const getEditPoId = (me) => (
-        _currentEditPoId ??
-        me?._editPoId ??
-        (PurchaseOrderDialog && PurchaseOrderDialog._editPoId) ??
-        (me?.dataOptions && me.dataOptions.id)
-    );
-
     const applyReceiveCheckboxUi = (checkboxEl) => {
         if (!checkboxEl) return;
         checkboxEl.style.transform = 'scale(1.35)';
@@ -219,6 +66,12 @@ var PurchaseOrdersComponent = (() => {
             }
         });
     };
+    const getEditPoId = (me) => (
+        _currentEditPoId ??
+        me?._editPoId ??
+        (PurchaseOrderDialog && PurchaseOrderDialog._editPoId) ??
+        (me?.dataOptions && me.dataOptions.id)
+    );
     const getReceiveRoot = (me) => me.divModal && me.divModal.querySelector('#receive_purchase_item_list');
     const getReceiveItems = (me) => (
         me.receiveItemsView && typeof me.receiveItemsView.getItems === 'function'
@@ -281,7 +134,7 @@ var PurchaseOrdersComponent = (() => {
                 if (me.controls.phone_number) me.controls.phone_number.value = v.phone_number || '';
                 if (me.controls.address) me.controls.address.value = v.address || '';
             })
-            .catch(() => {});
+            .catch(() => { });
     };
     const vendorDisplayName = (vendor, withCode) => {
         if (!vendor) return '';
@@ -391,6 +244,54 @@ var PurchaseOrdersComponent = (() => {
             el.addEventListener('input', onChange);
             el.addEventListener('change', onChange);
         });
+    };
+    const RECEIVED_STATUS_BADGE_STYLE =
+        'min-width:90px;background:#dff3ea;color:#37b07f;border-color:#70c39f !important;font-weight:500;';
+    const PARTIAL_RECEIVE_BADGE_STYLE =
+        'min-width:90px;background:#fff3e0;color:#e65100;border-color:#ffb74d !important;font-weight:500;';
+    const PENDING_RECEIVE_BADGE_STYLE =
+        'min-width:90px;background:#fff3cd;color:#664d03;border-color:#ffc107 !important;font-weight:600;';
+    const PO_HEADER_STATUS = {
+        PENDING: 1,
+        APPROVED: 2,
+        ORDERED: 3,
+        PARTIALLY_RECEIVED: 4,
+        RECEIVED: 5,
+        CANCELLED: 6,
+    };
+    const poStatusBadgeFallback = (statusId, statusLabel) => {
+        const status_id = Number(statusId || 0);
+        const isReceived = status_id === PO_HEADER_STATUS.RECEIVED;
+        const byStatus = {
+            1: 'badge text-warning bg-warning-subtle border border-warning',
+            2: 'badge text-info bg-info-subtle border border-info',
+            3: 'badge text-primary bg-primary-subtle border border-primary',
+            4: 'badge text-dark border',
+            5: 'badge text-success bg-success-subtle border border-success',
+            6: 'badge text-danger bg-danger-subtle border border-danger',
+        };
+        const byStyle = {
+            1: PENDING_RECEIVE_BADGE_STYLE,
+            4: PARTIAL_RECEIVE_BADGE_STYLE,
+            5: RECEIVED_STATUS_BADGE_STYLE,
+        };
+        let cls = byStatus[status_id] || 'badge text-warning bg-warning-subtle border border-warning';
+        if (isReceived) cls = 'badge border';
+        const statusText = isReceived ? 'Received' : (statusLabel ?? '');
+        const badgeStyle = byStyle[status_id] || (isReceived ? RECEIVED_STATUS_BADGE_STYLE : 'min-width:90px');
+        return { cls, statusText, badgeStyle };
+    };
+    /** Uses status_class / status_label / status_badge_style from API when present (list sets these from receive progress). */
+    const poStatusBadgeHtml = (data) => {
+        const sid = Number(data?.status_id ?? 0);
+        const isReceived = sid === PO_HEADER_STATUS.RECEIVED;
+        const fb = poStatusBadgeFallback(sid, data?.status);
+        const cls = data?.status_class || fb.cls;
+        const statusText = data?.status_label ?? fb.statusText;
+        const badgeStyle = data?.status_badge_style
+            || fb.badgeStyle
+            || (isReceived ? RECEIVED_STATUS_BADGE_STYLE : 'min-width:90px');
+        return `<span class="${cls} text-capitalize d-inline-block text-center" style="${badgeStyle}">${statusText}</span>`;
     };
     /** Same rules as PurchaseOrder::receiveProgressStateFromLines (effective = receive + break, lines with qty > 0). */
     const computeReceiveProgressStateFromItems = (items) => {
@@ -992,7 +893,126 @@ var PurchaseOrdersComponent = (() => {
                 return items;
             });
     };
+    mThis.cols = [
+        { title: '', className: 'align-middle' },
+        {
+            transTitle: 'titles.Po Number',
+            className: 'align-middle text-nowrap',
+            data: (data) => `<span class="text-nowrap text-prm-custom">${data.po_number ?? ''}</span>`,
+        },
+        {
+            transTitle: 'titles.Vendor',
+            className: 'align-middle text-nowrap',
+            data: (data) => `<span class="d-block text-prm-custom">${data.vendor_name}</span>`,
+        },
+        {
+            title: 'Po Date',
+            className: 'align-middle text-nowrap',
+            data: (data) => `<span class="text-prm-custom text-nowrap">${data.po_date}</span>`,
+        },
+        {
+            title: "Total Price",
+            className: "align-middle text-nowrap text-end",
+            data: (data) =>
+                `<span class="d-block text-prm-custom">${data.sub_total_formatted ?? formatCurrency(data.sub_total)}</span>`,
+        },
+        {
+            title: "Discount",
+            className: "align-middle text-nowrap text-end",
+            data: (data) =>
+                `<span class="d-block text-prm-custom">${data.discount_formatted ?? formatDiscount(data)}</span>`,
+        },
+        {
+            title: "Total Amount",
+            className: "align-middle text-nowrap text-end",
+            data: (data) =>
+                `<span class="d-block text-prm-custom">${data.total_amount_formatted ?? formatCurrency(data.total_amount)}</span>`,
+        },
+        {
+            title: "Authorized By",
+            className: 'align-middle text-nowrap text-center',
+            data: (data) => {
+                return `<div class="d-flex flex-column">
+                <span class="text-capitalize text-start text-prm-custom"><span>${data.authorizer ?? ''}</span></span>
+                <span class="text-start small text-muted">${data.auth_date ?? ''}</span>
+            </div>`;
 
+            }
+        },
+        {
+            title: "Status",
+            className: "align-middle text-nowrap text-center",
+            data: (data) => {
+                console.log(123,data.status);
+
+                const status = (data.status ?? '').toLowerCase();
+                let cls = 'badge text-dark bg-warning-subtle border border-warning';
+                if (status === 'pending') {
+                    cls = 'badge text-warning bg-warning-subtle border border-warning';
+                }
+                else if (status === 'approved') {
+                    cls = 'badge text-info bg-info-subtle border border-info';
+                }
+                else if (status === 'ordered') {
+                    cls = 'badge text-primary bg-primary-subtle border border-primary';
+                }
+                else if (status === 'cancelled') {
+                    cls = 'badge text-danger bg-danger-subtle border border-danger';
+                }
+                else if (status === 'partially') {
+                    cls = 'badge text-dark bg-warning-subtle border border-warning';
+                }
+                else if (status === 'received') {
+                    cls = 'badge text-success bg-success-subtle border border-success';
+                }
+                return `
+                    <span class="${cls} text-capitalize d-inline-block text-center" style="min-width:70px">
+                        ${data.status ?? ''}
+                    </span>
+                `;
+            },
+            // data: (data) => poStatusBadgeHtml(data),
+        },
+        {
+            title: "Remarks",
+            className: "align-middle text-nowrap",
+            data: (data) => {
+                const remarks = String(data.remarks || '').trim();
+                return `<span class="text-prm-custom d-block text-truncate" style="max-width:180px;" title="${remarks}">${remarks || '-'}</span>`;
+            }
+        },
+        {
+            title: "Received By",
+            className: 'align-middle text-nowrap',
+            data: (data) => {
+                return `<div class="d-flex flex-column">
+                <span class="text-capitalize text-start text-prm-custom"><span>${data.authorizer ?? ''}</span></span>
+                <span class="text-start small text-muted">${data.auth_date ?? ''}</span>
+            </div>`;
+
+            }
+        },
+
+        {
+            transTitle: 'titles.Updated By',
+            className: 'align-middle text-nowrap',
+            data: (data) => `<div class="d-flex flex-column">
+                <span class="text-capitalize text-start text-prm-custom fw-semibold"><span>${data.update_user ?? ''}</span></span>
+                <span class="text-muted">${data.updated_at ?? ''}</span>
+            </div>`,
+        },
+        {
+            transTitle: 'titles.Action',
+            className: 'col_action align-middle',
+            data: (data) => {
+                const isFullyReceived = Number(data.status_id) === PO_HEADER_STATUS.RECEIVED;
+                const actionClass = isFullyReceived
+                    ? 'btn_dropdown_purchase_received'
+                    : 'btn_dropdown_purchase_action';
+                return `<div class="d-flex justify-content-center align-items-end"><a href="javascript:void(0)" class="btn--Options ${actionClass}" data-id="${data.id}" data-authorized="${data.authorized}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false"><i class="fa-solid fa-ellipsis-vertical text-black fs-5"></i></a></div>`;
+            }
+        },
+    ];
     mThis.init = () => {
         if (mThis.initAlready) return;
 
@@ -1001,8 +1021,7 @@ var PurchaseOrdersComponent = (() => {
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
-            tableClass:
-                "table table--white rounded-2 overflow-hidden header-uppercase",
+            tableClass: 'table table--white rounded-2 header-uppercase',
             rowCreated: (data, index, tr) => {
                 tr.dataset.id = data.id;
                 tr.dataset.statusid = data.status_id;
@@ -1011,47 +1030,45 @@ var PurchaseOrdersComponent = (() => {
             listContainerClass: null
         });
 
-        mThis.btnAdd.onclick = (e) => {
+        mThis.btnAdd.onclick = function (e) {
             e.preventDefault();
             const op = {
                 id: null,
                 btn: e.target,
-                onClose: () =>
-                    mThis.PoListView.showPage(mThis.getFilterData())
+                onClose: () => {
+                    mThis.PoListView.showPage(mThis.getFilterData());
+                }
             };
             showPurchaseOrderDialog(op);
         };
 
-        const pr_tbl = mThis.PoListView.getListContainer();
-        const sh_parent = pr_tbl.parentElement;
-        sh_parent.style.height = `${window.innerHeight - 200}px`;
-        sh_parent.classList.add("overflow-y-auto", "overflow-x-hidden");
-        window.addEventListener(
-            "resize",
-            () => {
-                sh_parent.style.height = `${window.innerHeight - 200}px`;
-            },
-            { passive: true }
-        );
 
-        mThis.tblPo = mThis.PoListView.getTable();
-        if (!mThis.tblPo.id) mThis.tblPo.id = '_purchases_list_table';
-        mThis.initDropdownMenus(mThis.tblPo);
+        mThis.pr_tbl = mThis.PoListView.getListContainer();
+        const sh_parent = mThis.pr_tbl.parentElement;
+        sh_parent.style.maxHeight = (window.innerHeight - 200) + "px";
+        sh_parent.classList.add("overflow-y-auto");
+        window.onresize = () => {
+            sh_parent.style.maxHeight = (window.innerHeight - 200) + "px";
+        }
+        const tblPo = mThis.PoListView.getTable();
+        if (!tblPo.id) tblPo.id = '_purchases_list_table';
+        mThis.initDropdownMenus(tblPo);
+        mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
 
-        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
-            el.onchange = () =>
+            el.onchange = (e) => {
+                e.preventDefault();
                 mThis.PoListView.showPage(mThis.getFilterData());
+            }
         });
-        let timeOut = null;
-        mThis.elSearch.onkeyup = function (e) {
+
+        mThis.elSearch.addEventListener('keyup', (e) => {
             e.preventDefault();
-            clearTimeout(timeOut);
-            timeOut = setTimeout(() => {
+            clearTimeout(mThis.search_timeout);
+            mThis.search_timeout = setTimeout(() => {
                 mThis.PoListView.showPage(mThis.getFilterData());
             }, 250);
-        };
-
-        new ExpandableRowConfig(mThis.tblPo.id, {
+        });
+        mThis.Acfg = new ExpandableRowConfig(tblPo.id, {
             dontExpandByClickingOn: [
                 'dropdown-menu',
                 'btn_dropdown_purchase_action',
@@ -1060,13 +1077,104 @@ var PurchaseOrdersComponent = (() => {
             onOpen: (container, detail_tr, parent_tr) => {
                 const poId = parent_tr.dataset.id;
                 if (!poId) return;
-                mThis.renderPoItem({ id: poId }, container);
+                renderPoItem({ id: poId }, container);
             },
         });
 
+
         mThis.initAlready = true;
     };
-    mThis.renderPoItem = (po, container, onFinish) => {
+    mThis.getFilterData = () => {
+        let p = {
+            vendor_id: mThis.elFilter_vendor.value,
+            status_id: mThis.elFilter_status.value,
+            search_value: mThis.elSearch.value,
+        };
+
+        mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
+            const f = el.dataset.field;
+            p[f] = el.value;
+        });
+
+        return p;
+    };
+    const resolvePoIdFromMenuContext = (id, menuLink) => {
+        let poId = id;
+        const btn = typeof menuLink === 'object' && menuLink?.target ? menuLink.target : menuLink;
+        const el = (btn && btn.closest) ? btn.closest('[data-id]') : null;
+        if ((!poId || Number(poId) <= 0) && el && el.dataset && el.dataset.id) poId = el.dataset.id;
+        const row = (btn && btn.closest) ? btn.closest('tr') : null;
+        if ((!poId || Number(poId) <= 0) && row && row.dataset && row.dataset.id) poId = row.dataset.id;
+        const n = Number(poId);
+        return Number.isNaN(n) || n <= 0 ? null : n;
+    };
+
+    mThis.initDropdownMenus = (table) => {
+        const menuOptopns = {
+            containerElement: table,
+            actionButtonClass: "btn_dropdown_purchase_action",
+            cssClass: "bg-white shadow",
+            menus: [
+
+                {
+                    html: '<span class="ps-2" vslang="titles.Modify PO"></span>',
+                    icon: `<i class="fa-solid fa-square-pen fs-5 text-warning"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "modify_purchase_order"
+                },
+                {
+                    html: '<span class="ps-2" vslang="titles.Delete PO"></span>',
+                    icon: `<i class="fa-solid fa-rectangle-xmark fs-5 text-danger"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "delete_purchase_order"
+                },
+
+                {
+                    html: '<span class="ps-2  " vslang="titles.Authorized PO"></span>',
+                    icon: `<i class="fa-solid fa-check-to-slot fs-5 text-primary"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "authorized_purchase_order"
+                },
+                {
+                    html: '<span class="ps-2" vslang="titles.Receive PO"></span>',
+                    icon: `<i class="fa-solid fa-box-open fs-5 text-success"></i>`,
+                    cssClass: '',
+                    name: "receive_purchase_order"
+                },
+            ],
+
+            onClick: (menuLink, id, name) => {
+                switch (name) {
+                    case 'modify_purchase_order': {
+                        mThis.editPurchaseOrder(id, menuLink);
+                        break;
+                    }
+                    case 'delete_purchase_order': {
+                        mThis.deletePurchaseOrder(id, menuLink);
+                        break;
+                    }
+                    case 'receive_purchase_order': {
+                        mThis.receivePurchaseOrder(id, menuLink);
+                        break;
+                    }
+                    case 'authorized_purchase_order': {
+                        mThis.authorizedPurchaseOrder(id, menuLink);
+                        break;
+                    }
+                    case 'receive_purchase_order': {
+                        mThis.receivePurchaseOrder(id, menuLink);
+                        break;
+                    }
+
+                    default: {
+                        break;
+                    }
+                }
+            }
+        }
+        new VSDropdownMenu(menuOptopns);
+    };
+    const renderPoItem = (po, container, onFinish) => {
         if (!container) return;
         const poId = po.id || po.po_id;
         if (!poId) {
@@ -1113,95 +1221,6 @@ var PurchaseOrdersComponent = (() => {
                 container.innerHTML = '<div class="alert alert-danger m-3">Failed to load purchase order items.</div>';
             });
     };
-
-    mThis.getFilterData = () => {
-        const params = {
-            vendor_id: mThis.elFilter_vendor.value,
-            status_id: mThis.elFilter_status.value,
-            search_value: mThis.elSearch.value.trim()
-        };
-        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
-            if (el.value && el.dataset.field) {
-                params[el.dataset.field] = el.value.trim();
-            }
-        });
-        return params;
-    };
-
-    mThis.initDropdownMenus = table => {
-        const baseMenus = [
-            {
-                html: '<span class="ps-2" vslang="titles.Modify PO"></span>',
-                icon: `<i class="fa-solid fa-square-pen fs-5 text-warning"></i>`,
-                cssClass: 'border-bottom pb-2',
-                name: 'modify_purchase_order',
-            },
-            {
-                html: '<span class="ps-2" vslang="titles.Delete PO"></span>',
-                icon: `<i class="fa-solid fa-rectangle-xmark fs-5 text-danger"></i>`,
-                cssClass: 'border-bottom pb-2',
-                name: 'delete_purchase_order',
-            },
-        ];
-        const onPoMenuClick = (menuLink, id, name) => {
-            switch (name) {
-                case 'modify_purchase_order':
-                    mThis.editPurchaseOrder(id, menuLink);
-                    break;
-                case 'delete_purchase_order':
-                    mThis.deletePurchaseOrder(id, menuLink);
-                    break;
-                case 'receive_purchase_order':
-                    mThis.receivePurchaseOrder(id, menuLink);
-                    break;
-                case 'authorized_purchase_order':
-                    mThis.authorizedPurchaseOrder(id, menuLink);
-                    break;
-                default:
-                    break;
-            }
-        };
-        new VSDropdownMenu({
-            containerElement: table,
-            actionButtonClass: 'btn_dropdown_purchase_action',
-            cssClass: 'bg-white shadow',
-            menus: [
-                ...baseMenus,
-                {
-                    html: '<span class="ps-2  " vslang="titles.Authorized PO"></span>',
-                    icon: `<i class="fa-solid fa-check-to-slot fs-5 text-primary"></i>`,
-                    cssClass: 'border-bottom pb-2',
-                    name: 'authorized_purchase_order',
-                },
-                {
-                    html: '<span class="ps-2" vslang="titles.Receive PO"></span>',
-                    icon: `<i class="fa-solid fa-box-open fs-5 text-success"></i>`,
-                    cssClass: '',
-                    name: 'receive_purchase_order',
-                },
-            ],
-            onClick: onPoMenuClick,
-        });
-        new VSDropdownMenu({
-            containerElement: table,
-            actionButtonClass: 'btn_dropdown_purchase_received',
-            cssClass: 'bg-white shadow',
-            menus: [...baseMenus],
-            onClick: onPoMenuClick,
-        });
-    };
-
-    const resolvePoIdFromMenuContext = (id, menuLink) => {
-        let poId = id;
-        const btn = typeof menuLink === 'object' && menuLink?.target ? menuLink.target : menuLink;
-        const el = (btn && btn.closest) ? btn.closest('[data-id]') : null;
-        if ((!poId || Number(poId) <= 0) && el && el.dataset && el.dataset.id) poId = el.dataset.id;
-        const row = (btn && btn.closest) ? btn.closest('tr') : null;
-        if ((!poId || Number(poId) <= 0) && row && row.dataset && row.dataset.id) poId = row.dataset.id;
-        const n = Number(poId);
-        return Number.isNaN(n) || n <= 0 ? null : n;
-    };
-
     mThis.authorizedPurchaseOrder = (id, btn) => {
         const authorized = btn.dataset.authorized;
         let op = {
@@ -1267,26 +1286,7 @@ var PurchaseOrdersComponent = (() => {
             }
         });
     };
-    mThis.prepareFormOptions = (onFinish) => {
-        vsapi.call(`${main_view.base_url}/prm/purchase/order/form-options`, null, null, null)
-            .then(res => {
-                const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elFilter_vendor, d.vendors, 'id', 'vendor', '', 'All Vendor', '');
-                VSUtil.setComboItems(mThis.elFilter_status, d.po_statuses, 'id', 'name', '', 'All Statuses', '');
-                if (typeof onFinish === 'function') onFinish();
-            })
-    };
-
-    mThis.show = (options = {}) => {
-        mThis.init();
-        mThis.options = options;
-        mThis.prepareFormOptions(() => {
-            main_view.setContentView(mThis.self, mThis.title_prop);
-            mThis.PoListView.showPage(mThis.getFilterData());
-        });
-    };
-
-    function showPurchaseOrderDialog(op) {
+    const showPurchaseOrderDialog = (op) => {
         const loadPurchaseOrderForEdit = (me, editPoId) => {
             if (!me || !editPoId) return Promise.resolve(null);
             if (!me.purchaseItemsView || typeof me.purchaseItemsView.setData !== 'function') {
@@ -1300,7 +1300,7 @@ var PurchaseOrdersComponent = (() => {
                         throw new Error(formRes?.error_message || 'Failed to load purchase order details');
                     }
                     const titleEl2 = me.divModal && me.divModal.querySelector('.modal-title');
-                    if (titleEl2) titleEl2.innerHTML = '<h2 class="text-prm-custom text-start fw-bold">Modify Purchase Order</h2>';
+                    if (titleEl2) titleEl2.innerHTML = '<h2 class="text-prm-custom text-start fw-bold">Modify Purchase Order1</h2>';
 
                     const formData = formRes.data || {};
                     const poDetails = formData.po_details || {};
@@ -1334,7 +1334,7 @@ var PurchaseOrdersComponent = (() => {
                 });
         };
         PurchaseOrderDialog = PurchaseOrderDialog || new GeneralDialog({
-            cssClass:"modal-xl vs-modal",
+            cssClass: "modal-xl vs-modal",
             override: {
                 // Prevent GeneralDialog.setData() from clearing ItemsView row inputs/selects.
                 // GeneralDialog's default setData targets all `.data-input` elements; ItemsView uses similar controls.
@@ -1359,8 +1359,8 @@ var PurchaseOrdersComponent = (() => {
                     });
                 },
             },
-            createContent:()=>{
-            return `
+            createContent: () => {
+                return `
                 <div class="row mb-4">
                     <div class="col-md-4">
                         <div class="d-flex align-items-center mb-2">
@@ -1452,15 +1452,9 @@ var PurchaseOrdersComponent = (() => {
             </div>
             `;
             },
-            configSelect:[
-                // {
-                //     name: "vendor_id",
-                //     data: "vendors",
-                //     textField: "vendor_id",
-                //     valueField: "id",
-                // },
+            configSelect: [
             ],
-            contentCreated:(me)=>{
+            contentCreated: (me) => {
                 const applyVendorInfo = (vendorId) => {
                     me._selectedVendorId = vendorId || '';
                     if (me.controls.vendor_id) me.controls.vendor_id.value = vendorId || '';
@@ -1507,16 +1501,16 @@ var PurchaseOrdersComponent = (() => {
                 }
                 me.purchaseItemsView = new ItemsView('purchase_item_list', {
                     columns: [
-                        { name:"item_id", transTitle:"titles.Item", displayType:"select" },
-                        { name:"qty", transTitle:"titles.Qty", dataType:"number", defaultValue:1, isNumeric:true },
-                        { name:"unit", transTitle:"titles.Unit", displayType:"select" },
-                        { name:"unit_price", transTitle:"titles.UnitPrice", dataType:"number", defaultValue:0, isNumeric:true },
-                        { name:"total_price", transTitle:"titles.TotalPrice", readOnly:true, dataType:"number", isNumeric:true }
+                        { name: "item_id", transTitle: "titles.Item", displayType: "select" },
+                        { name: "qty", transTitle: "titles.Qty", dataType: "number", defaultValue: 1, isNumeric: true },
+                        { name: "unit", transTitle: "titles.Unit", displayType: "select" },
+                        { name: "unit_price", transTitle: "titles.UnitPrice", dataType: "number", defaultValue: 0, isNumeric: true },
+                        { name: "total_price", transTitle: "titles.TotalPrice", readOnly: true, dataType: "number", isNumeric: true }
                     ],
-                    calc:{ mode:"auto", qtyField:"qty", priceField:"unit_price", totalField:"total_price", currencyPrecision:2 },
-                    totalSummary:{ container:"#sum", showTax:false, allowDiscount:false, currency:"USD" },
-                    validateColumns: {item_id: "positive",qty: "positive",unit: "positive",unit_price: "positive"},
-                    tableClass:'table',
+                    calc: { mode: "auto", qtyField: "qty", priceField: "unit_price", totalField: "total_price", currencyPrecision: 2 },
+                    totalSummary: { container: "#sum", showTax: false, allowDiscount: false, currency: "USD" },
+                    validateColumns: { item_id: "positive", qty: "positive", unit: "positive", unit_price: "positive" },
+                    tableClass: 'table',
                     showColumnHeaders: true,
                     showAddLineButton: true,
                     addLineButtonText: 'Add Item',
@@ -1601,16 +1595,16 @@ var PurchaseOrdersComponent = (() => {
                         total: '#po_total_display',
                     }, totals);
                 };
-                me.clear = ()=>{
-                    for(const name in me.fields){
-                    const el = me.fields[name];
-                    const tag = el.tagName ;
-                    if(['SELECT','INPUT','TEXTAREA'].indexOf(tag) >= 0){
-                        el.value = '';
-                    }
-                    else{
-                        el.textContent = '';
-                    }
+                me.clear = () => {
+                    for (const name in me.fields) {
+                        const el = me.fields[name];
+                        const tag = el.tagName;
+                        if (['SELECT', 'INPUT', 'TEXTAREA'].indexOf(tag) >= 0) {
+                            el.value = '';
+                        }
+                        else {
+                            el.textContent = '';
+                        }
                     }
                     if (me.controls.discount_value) me.controls.discount_value.value = '0';
                     if (me.controls.discount_type) me.controls.discount_type.value = 'percent';
@@ -1638,72 +1632,71 @@ var PurchaseOrdersComponent = (() => {
                 // Run after GeneralDialog internal setData() which can clear [name] controls.
                 setTimeout(() => tryLoad(0), 0);
             },
-            buttons:[
-            {
-                label:"Cancel",
-                cssClass:"btn btn-warning",
-                click:(me,btn)=>{
-                    me.hide(false);
-                }
-
-            },
-            {
-                label:"<span>Save</span>",
-                cssClass:"btn btn-primary",
-                click:(me) =>{
-                    let p = me.getData();
-                    if (!me.purchaseItemsView || typeof me.purchaseItemsView.getItems !== 'function') {
-                        return cv_interact.error('Purchase items are not ready. Please try again.');
+            buttons: [
+                {
+                    label: "Cancel",
+                    cssClass: "btn btn-warning",
+                    click: (me, btn) => {
+                        me.hide(false);
                     }
-                    p.items = getCleanPurchaseItems(me.purchaseItemsView);
-                    if (!hasValidPurchaseOrderLineItems(p.items)) {
-                        return cv_interact.error('Please select at least one item before saving the purchase order.');
-                    }
-                    p.vendor_id = me._selectedVendorId;
+                },
+                {
+                    label: "<span>Save</span>",
+                    cssClass: "btn btn-primary",
+                    click: (me) => {
+                        let p = me.getData();
+                        if (!me.purchaseItemsView || typeof me.purchaseItemsView.getItems !== 'function') {
+                            return cv_interact.error('Purchase items are not ready. Please try again.');
+                        }
+                        p.items = getCleanPurchaseItems(me.purchaseItemsView);
+                        if (!hasValidPurchaseOrderLineItems(p.items)) {
+                            return cv_interact.error('Please select at least one item before saving the purchase order.');
+                        }
+                        p.vendor_id = me._selectedVendorId;
 
-                    const savePoId = _currentEditPoId ?? me._editPoId ?? (me.dataOptions && me.dataOptions.id);
-                    if (savePoId) p.id = savePoId;
-                    vsapi.call(`${main_view.base_url}/prm/purchase/order/save`, p, false).then(res =>{
-                        if (res.status_code == 200) {
-                            cv_interact.success(savePoId ? 'Purchase order updated.' : 'Purchase order created.');
-                            me.hide(true);
-                            mThis.PoListView.showPage(mThis.getFilterData());
-                        } else cv_interact.warning(res.error_message);
-                    });
+                        const savePoId = _currentEditPoId ?? me._editPoId ?? (me.dataOptions && me.dataOptions.id);
+                        if (savePoId) p.id = savePoId;
+                        vsapi.call(`${main_view.base_url}/prm/purchase/order/save`, p, false).then(res => {
+                            if (res.status_code == 200) {
+                                cv_interact.success(savePoId ? 'Purchase order updated.' : 'Purchase order created.');
+                                me.hide(true);
+                                mThis.PoListView.showPage(mThis.getFilterData());
+                            } else cv_interact.warning(res.error_message);
+                        });
+                    }
                 }
-            }
             ],
-        onPrepareForm:(me,data)=>{
-            const editPoId = getEditPoId(me);
-            const isModify = !!editPoId;
-            const titleEl = me.divModal.querySelector('.modal-title');
-            if (titleEl) {
-                titleEl.innerHTML = isModify
-                    ? '<h2 class="text-prm-custom text-start fw-bold">Modify Purchase Order</h2>'
-                    : '<h2 class="text-prm-custom text-start fw-bold">Create Purchase Order</h2>';
-            }
-            me._itemOptions = data.item || [];
-            if (me.purchaseItemsView && me.purchaseItemsView.setSelectOptions) {
-                me.purchaseItemsView.setSelectOptions('item_id', me._itemOptions, null);
-            }
-            // Only clear defaults when creating a new PO (not in modify mode).
-            // `onPrepareForm` may run before `contentCreated`, so don't reset edit state here.
-            if (!isModify) {
-                _currentEditPoId = null;
-                me.clear();
-            }
-        },
-        prepareFormOptions:{
-            modifyTitle: "Purchase Order",
-            createTitle: "Purchase Order",
-            targetProp:"item_details",
-            api:{
-                endpoint:`${main_view.base_url}/prm/item/form-options`,
-                params:(dataOptions)=>{
-                return { owner_id: dataOptions?.owner_id };
+            onPrepareForm: (me, data) => {
+                const editPoId = getEditPoId(me);
+                const isModify = !!editPoId;
+                const titleEl = me.divModal.querySelector('.modal-title');
+                if (titleEl) {
+                    titleEl.innerHTML = isModify
+                        ? '<h2 class="text-prm-custom text-start fw-bold">Modify Purchase Order2</h2>'
+                        : '<h2 class="text-prm-custom text-start fw-bold">Create Purchase Order</h2>';
+                }
+                me._itemOptions = data.item || [];
+                if (me.purchaseItemsView && me.purchaseItemsView.setSelectOptions) {
+                    me.purchaseItemsView.setSelectOptions('item_id', me._itemOptions, null);
+                }
+                // Only clear defaults when creating a new PO (not in modify mode).
+                // `onPrepareForm` may run before `contentCreated`, so don't reset edit state here.
+                if (!isModify) {
+                    _currentEditPoId = null;
+                    me.clear();
+                }
+            },
+            prepareFormOptions: {
+                modifyTitle: "Purchase Order",
+                createTitle: "Create Purchase Order",
+                targetProp: "item_details",
+                api: {
+                    endpoint: `${main_view.base_url}/prm/item/form-options`,
+                    params: (dataOptions) => {
+                        return { owner_id: dataOptions?.owner_id };
+                    }
                 }
             }
-        }
         });
 
         _currentEditPoId = op.id || null;
@@ -1716,7 +1709,8 @@ var PurchaseOrdersComponent = (() => {
             }, 250);
         }
     };
-    function showReceivePurchaseOrderDialog(op) {
+
+    const showReceivePurchaseOrderDialog = (op) => {
         ReceivePurchaseOrderDialog = ReceivePurchaseOrderDialog || new GeneralDialog({
             cssClass: 'modal-xl vs-modal',
             backdrop: 'static',
@@ -1997,8 +1991,26 @@ var PurchaseOrdersComponent = (() => {
         ReceivePurchaseOrderDialog.show(op);
     };
 
+    mThis.prepareFormOptions = (onFinish) => {
+        vsapi.call(`${main_view.base_url}/prm/purchase/order/form-options`, null, null, null)
+            .then(res => {
+                const d = res.status_code == 200 ? res.data : {};
+                VSUtil.setComboItems(mThis.elFilter_vendor, d.vendors, 'id', 'vendor', '', 'All Vendor', '');
+                VSUtil.setComboItems(mThis.elFilter_status, d.po_statuses, 'id', 'name', '', 'All Statuses', '');
+                if (typeof onFinish === 'function') onFinish();
+            })
+    }
+
+    mThis.show = (options) => {
+        mThis.init();
+        mThis.options = options;
+        mThis.prepareFormOptions(() => {
+            main_view.setContentView(mThis.self, mThis.title_prop);
+            mThis.PoListView.showPage(mThis.getFilterData());
+        });
+
+    };
     return mThis;
 })();
-
 
 
