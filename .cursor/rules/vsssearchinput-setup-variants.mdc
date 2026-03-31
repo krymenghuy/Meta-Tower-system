@@ -1,0 +1,39 @@
+---
+description: Enforce VSSearchInput setup variants and usage patterns
+alwaysApply: true
+---
+
+# VSSearchInput Setup Standards
+
+When generating code that uses `VSSearchInput`, follow these rules:
+
+- Use `VSSearchInput.init(targetInput, options)` with plain script-tag compatible JS.
+- Reuse company libraries/helpers (`vsapi`, `XQuery`, `VSUtil`, `LocaleManager`) when available; do not duplicate logic.
+- Keep option names exactly as documented (`type`, `api`, `query`, `searchTerm`, `prefetch`, `columns`, `showColumnHeader`, `processResponse`, `onFetchComplete`, `onSelect`, `maxDropdownHeight`).
+- Support both API and XQuery modes:
+  - API string: `api: "/api/search-driver"`
+  - API object: `api: { endpoint, params }` (allow static object or dynamic function)
+  - XQuery: `query: { from, select, limit, searchFields }`
+- Use `type: "select"` for dropdown table selection scenarios; use `type: "input"` for autocomplete typing scenarios.
+- For select lists with many results, prefer `prefetch: true` and set `maxDropdownHeight` (for example `"380px"`).
+- For table rendering, use `columns` with either simple label mapping or advanced `{ label, field }` mapping.
+- In `onSelect`, set both display text and selected id/reference (for example `dataset.driverId`).
+- When a modal/dialog opens for fresh data entry, call `instance.reset()`.
+- Keep code style concise and consistent with existing project components (IIFE modules, callback style, no ESM-only patterns).
+
+Preferred baseline snippet:
+
+```javascript
+const inst = VSSearchInput.init(driverInput, {
+  type: "select",
+  api: "/api/search-driver",
+  prefetch: true,
+  maxDropdownHeight: "380px",
+  columns: { code: "ID", name: "Driver", phone_number: "Phone" },
+  showColumnHeader: true,
+  onSelect: (item) => {
+    driverInput.value = `${item.name} (${item.code})`;
+    driverInput.dataset.driverId = item.id;
+  }
+});
+```
