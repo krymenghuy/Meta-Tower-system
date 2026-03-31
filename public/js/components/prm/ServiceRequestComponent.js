@@ -11,19 +11,6 @@ var ServiceRequestComponent = (function () {
     mThis.elSearch = mThis.self.querySelector("#_search_service_request");
     mThis.elBtnCreate = mThis.self.querySelector("#_btnServiceRequest");
 
-    // const $ = sel => mThis.self.querySelector(sel);
-    // Object.assign(mThis, {
-    //     elSearch: $("#_search_service_request"),
-    //     elStatus: $("#_service_request_status"),
-    //     elService_type: $("#_service_request_type_id"),
-    //     elBtnCreate: $("#_btnServiceRequest"),
-    //     divFilter: $("#_divFilter_service_request"),
-    // });
-    // const UNIT_TYPES = {
-    //     one_time: { label: 'One Time' },
-    //     hour: { label: 'Hour', short: 'Hour' }
-    // };
-
     mThis.columns = [
         { title: "", className: "align-middle text-capitalize" },
         {
@@ -324,7 +311,6 @@ var ServiceRequestComponent = (function () {
                     requiredMessage: 'Select Correct Status',
                     onConfirm(value, btn, me) {
                         const p = { id: id, status_id: value.id };
-                        console.log("111111", p);
                         vsapi.post(`${main_view.base_url}/prm/service-request/set-status`, p, {})
                             .then(res => {
                                 if (res.status_code == 200) {
@@ -373,8 +359,6 @@ var ServiceRequestComponent = (function () {
             const f = el.dataset.field;
             p[f] = el.value;
         });
-        console.log(4444,p);
-        
         return p;
     };
 
@@ -385,19 +369,19 @@ var ServiceRequestComponent = (function () {
             cssClass: "bg-white shadow",
             menus: [
                 {
-                    html: '<span class="ps-2" vslang="title.Generate Invoice"></span>',
-                    icon: `<i class="fa-solid fa-dollar-sign text-success"></i>`,
-                    name: "generate_invoice",
-                    cssClass: "border-bottom pb-2 mb-2"
+                    html: '<span class="ps-2 " vslang="title.Accepted" ></span>',
+                    icon: `<i class="fa-regular fa-edit fs-5 text-primary"></i>`,
+                    name: "edit_request",
+                    cssClass: "border-bottom pb-2"
                 },
                 {
-                    html: '<span class="ps-2 " vslang="title.Modify Request" ></span>',
+                    html: '<span class="ps-2 " vslang="title.Modify" ></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     name: "edit_request",
                     cssClass: "border-bottom pb-2"
                 },
                 {
-                    html: '<span class="ps-2" vslang="title.Delete Request"></span>',
+                    html: '<span class="ps-2" vslang="title.Delete"></span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     name: "delete_request",
                     cssClass: "border-bottom pb-2"
@@ -412,20 +396,12 @@ var ServiceRequestComponent = (function () {
                         return;
                     }
                 }
-                if (name === 'generate_invoice') mThis.generateInvoice(id, menuLink);
                 if (name === 'edit_request') mThis.editServiceRequest(id, menuLink);
                 if (name === 'delete_request') mThis.deleteRequest(id, menuLink);
             }
         });
     };
-    mThis.generateInvoice = (id, menuLink) => {
-        CreateInvoiceServiceRequestDialog.show({
-            service_request_id: id,
-            btn: menuLink,
-
-            onClose: () => mThis.ServiceRequestListView.showPage(mThis.getFilterData())
-        });
-    };
+   
     mThis.editServiceRequest = (id, menuLink) => {
         CreateServiceRequestDialog.show({
             id: id,
@@ -475,290 +451,7 @@ return mThis;
     
 
 })();
-const CreateInvoiceServiceRequestDialog = (() => {
-    const self = {};
-    let dialog = null;
 
-    self.show = (op) => {
-        if (!dialog) {
-            dialog = new GeneralDialog({
-                cssClass: "modal-xl vs-modal",
-                backdrop: "static",
-                keyboard: true,
-
-                createContent: () => `
-                    <div class="row g-4">
-
-                        <!-- Tenant & Service Info -->
-                        <div class="col-12">
-                            <div class="border border-info border-2 rounded-3 p-3 bg-white">
-                                <div class="row g-3 text-start">
-                                    <div class="col-md-3">
-                                        <span class="text-muted fw-medium">Tenant:</span><br>
-                                        <span class="fw-semibold fs-6" id="info-tenant">-</span>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <span class="text-muted fw-medium">Room:</span><br>
-                                        <span class="fw-semibold fs-6" id="info-space">-</span>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <span class="text-muted fw-medium">Service:</span><br>
-                                        <span class="fw-semibold fs-6" id="info-service">-</span>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <span class="text-muted fw-medium">Unit Type:</span><br>
-                                        <span class="fw-semibold fs-6" id="info-unit">-</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Due Date, Discount, Tax -->
-                        <div class="col-12">
-                            <div class="row g-3">
-                                <div class="col-md-3">
-                                    <label class="form-label fw-semibold">Due Date <span class="text-danger">*</span></label>
-                                    <input type="text"  data-type="date" class="form-control data-input" data-field="due_date" required>
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label fw-semibold">Discount</label>
-                                    <div class="d-flex gap-1">
-                                        <select class="form-select" id="discount_type" style="max-width:90px;">
-                                            <option value="percent">%</option>
-                                            <option value="fixed">$</option>
-                                        </select>
-                                        <input type="number" step="0.01" min="0" class="form-control" id="discount_value" placeholder="0">
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label fw-semibold">Tax</label>
-                                    <div class="d-flex gap-1">
-                                        <select class="form-select" id="tax_type" style="max-width:90px;">
-                                            <option value="percent">%</option>
-                                            <option value="fixed">$</option>
-                                        </select>
-                                        <input type="number" step="0.01" min="0" class="form-control" id="tax_value" placeholder="0">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Service Request Item Table -->
-                        <div class="col-12">
-                            <div class="border border-info border-2 rounded-3 p-3 bg-white">
-                                <div class="card-header d-flex justify-content-between align-items-center" style="background-color:#e1e5f2; margin:-16px -16px 16px -16px; padding:12px 20px; border-radius:6px 6px 0 0;">
-                                    <h6 class="mb-0"><i class="fas fa-list me-2"></i>Service Request Item</h6>
-                                </div>
-                                <div class="table-responsive">
-                                    <table class="table table-bordered table-sm align-middle table-hover mb-0">
-                                        <thead style="background-color:#f0f4ff;">
-                                            <tr>
-                                                <th>Description</th>
-                                                <th class="text-center">Type</th>
-                                                <th class="text-center">Qty/Unit</th>
-                                                <th class="text-end">Amount</th>
-                                                <th class="text-end">Discount</th>
-                                                <th class="text-end">Tax</th>
-                                                <th class="text-end">Net Amount</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="items-body"></tbody>
-                                        <tfoot class="table-light">
-                                            <tr>
-                                                <td colspan="3" class="text-end fw-bold">Subtotal</td>
-                                                <td class="text-end fw-bold" id="calc-subtotal">$0.00</td>
-                                                <td class="text-end fw-bold text-danger" id="calc-discount">-$0.00</td>
-                                                <td class="text-end fw-bold text-info" id="calc-tax">+$0.00</td>
-                                                <td class="text-end fw-bold fs-5 text-success" id="calc-total">$0.00</td>
-                                            </tr>
-                                        </tfoot>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                         <div class="col-12">
-                            <div class="col-md-3">
-                            <label class="form-label fw-semibold"><i class="fas fa-calendar-alt text-warning me-1"></i>Due Date <span class="text-danger">*</span></label>
-                            <input type="text" data-type="date" name="due_date" class="form-control data-input" required>
-                        </div>
-                        </div>
-
-                        <!-- Remarks -->
-                        <div class="col-12">
-                            <label class="form-label fw-semibold">Remarks</label>
-                            <textarea class="form-control data-input" data-field="remarks" rows="3" placeholder="Additional notes..."></textarea>
-                        </div>
-
-                        <!-- Hidden fields -->
-                        <input type="hidden" data-field="tenant_id">
-                        <input type="hidden" data-field="space_id">
-                        <input type="hidden" data-field="service_id">
-                    </div>
-                `,
-
-                contentCreated: (me) => {
-                    me.controls = {};
-                    me.divModal.querySelectorAll('.data-input').forEach(el => {
-                        if (el.dataset.field) me.controls[el.dataset.field] = el;
-                    });
-
-                    const calculateAndUpdate = () => {
-                        if (!me._serviceRequestData) return;
-
-                        const subtotal = parseFloat(me._subtotal || 0);
-                        const discType = document.getElementById('discount_type')?.value || 'percent';
-                        const discVal = parseFloat(document.getElementById('discount_value')?.value || 0);
-                        const taxType = document.getElementById('tax_type')?.value || 'percent';
-                        const taxVal = parseFloat(document.getElementById('tax_value')?.value || 0);
-
-                        const discount = discType === 'percent' ? subtotal * (discVal / 100) : discVal;
-                        const tax = taxType === 'percent' ? subtotal * (taxVal / 100) : taxVal;   // ← CHANGED HERE
-                        const netAmount = subtotal - discount + tax;
-
-                        // Footer
-                        document.getElementById('calc-subtotal').textContent = `$${subtotal.toFixed(2)}`;
-                        document.getElementById('calc-discount').textContent = `-$${discount.toFixed(2)}`;
-                        document.getElementById('calc-tax').textContent = `+$${tax.toFixed(2)}`;
-                        document.getElementById('calc-total').textContent = `$${netAmount.toFixed(2)}`;
-
-                        // Table row
-                        document.getElementById('item-discount').textContent = `-$${discount.toFixed(2)}`;
-                        document.getElementById('item-tax').textContent = `+$${tax.toFixed(2)}`;
-                        document.getElementById('item-net').textContent = `$${netAmount.toFixed(2)}`;
-                    };
-
-                    ['discount_value', 'tax_value'].forEach(id => {
-                        document.getElementById(id)?.addEventListener('input', calculateAndUpdate);
-                    });
-                    ['discount_type', 'tax_type'].forEach(id => {
-                        document.getElementById(id)?.addEventListener('change', calculateAndUpdate);
-                    });
-
-                    me.loadServiceData = (op) => loadServiceRequestData(me, op);
-                    me.calculateAndUpdate = calculateAndUpdate;
-                },
-                buttons: [
-                    { label: 'Cancel', cssClass: 'btn btn-secondary', click: me => me.hide(false) },
-                    {
-                        label: 'Generate Invoice',
-                        cssClass: 'btn btn-primary',
-                        click: (me, btn) => {
-                            if (!me._serviceRequestData) return cv_interact.error('No service request data loaded');
-
-                            const formData = me.getData();
-                            console.log("1234222", formData);
-                            const discType = document.getElementById('discount_type')?.value || 'percent';
-                            const discVal = parseFloat(document.getElementById('discount_value')?.value || 0);
-                            const taxType = document.getElementById('tax_type')?.value || 'percent';
-                            const taxVal = parseFloat(document.getElementById('tax_value')?.value || 0);
-
-                            const subtotal = me._serviceRequestData.amount;
-                            const discount = discType === 'percent' ? subtotal * (discVal / 100) : discVal;
-                            const tax = taxType === 'percent' ? subtotal * (taxVal / 100) : taxVal;   // ← CHANGED HERE TOO
-
-                            formData.items = [{
-
-                                service_id: me._serviceRequestData.service_id,
-                                description: me._serviceRequestData.description,
-                                type: 'Service',
-                                unit_type: me._serviceRequestData.unit_type,
-                                quantity: me._serviceRequestData.quantity,
-                                amount: subtotal,
-                                discount_type: discType,
-                                discount_value: discVal,
-                                discount: discount,
-                                tax_type: taxType,
-                                tax_value: taxVal,
-                                tax: tax
-                            }];
-
-                            formData.tenant_id = me._serviceRequestData.tenant_id;
-                            formData.space_id = me._serviceRequestData.space_id;
-                            vsapi.call(`${main_view.base_url}/prm/invoice/save`, formData, btn)
-                                .then(res => {
-                                    if (res.status_code === 200) {
-                                        me.hide(true);
-                                        cv_interact.success('Invoice generated successfully!');
-                                        if (op.onClose) op.onClose();
-                                    } else {
-                                        cv_interact.error(res.error_message || 'Failed to generate invoice');
-                                    }
-                                })
-                                .catch(() => cv_interact.error('Network error'));
-                        }
-                    }
-                ]
-            });
-        }
-
-        dialog.show(op);
-
-        setTimeout(() => {
-            if (dialog.loadServiceData) dialog.loadServiceData(op);
-        }, 150);
-    };
-
-    const loadServiceRequestData = (me, op) => {
-        if (!op?.service_request_id) return;
-
-        me._serviceRequestData = null;
-        me._subtotal = 0;
-
-        document.getElementById('info-tenant').textContent = '-';
-        document.getElementById('info-space').textContent = '-';
-        document.getElementById('info-service').textContent = '-';
-        document.getElementById('info-unit').textContent = '-';
-        document.getElementById('items-body').innerHTML = '';
-
-        vsapi.call(`${main_view.base_url}/prm/service-request/form-options`, { id: op.service_request_id })
-            .then(res => {
-                if (res.status_code !== 200) return cv_interact.error('Failed to load data');
-
-                const data = res.data.request_details || {};
-                console.log("1111", data);
-                const service = res.data.services?.find(s => s.id == data.service_id) || {};
-                document.getElementById('info-tenant').textContent = data.tenant_name || '-';
-                document.getElementById('info-space').textContent = data.space_code || '-';
-                document.getElementById('info-service').textContent = service.service || '-';
-                document.getElementById('info-unit').textContent = data.unit_type || '-';
-
-                me._serviceRequestData = {
-                    tenant_id: data.tenant_id,
-                    space_id: data.space_id,
-                    service_id: data.service_id,
-                    description: data.description || service.service || 'Service Request',
-                    unit_type: data.unit_type || '',
-                    quantity: parseFloat(data.quantity || 1),
-                    amount: parseFloat(data.total_price || data.service_price || 0)
-                };
-                me.controls.tenant_id.value = data.tenant_id || '';
-                me.controls.space_id.value = data.space_id || '';
-                me.controls.service_id.value = data.service_id || '';
-
-                me._subtotal = me._serviceRequestData.amount;
-
-                const qtyDisplay = me._serviceRequestData.quantity !== 1
-                    ? `${me._serviceRequestData.quantity} ${me._serviceRequestData.unit_type || ''}`.trim()
-                    : me._serviceRequestData.unit_type || '—';
-
-                document.getElementById('items-body').innerHTML = `
-                    <tr>
-                        <td>${me._serviceRequestData.description || '-'}</td>
-                        <td class="text-center">Service</td>
-                        <td class="text-center"><span class="badge-unit">${qtyDisplay}</span></td>
-                        <td class="text-end">$${me._serviceRequestData.amount.toFixed(2)}</td>
-                        <td class="text-end text-danger" id="item-discount">-$0.00</td>
-                        <td class="text-end text-info" id="item-tax">$0.00</td>
-                        <td class="text-end fw-bold" id="item-net">$${me._serviceRequestData.amount.toFixed(2)}</td>
-                    </tr>`;
-
-                if (typeof me.calculateAndUpdate === 'function') me.calculateAndUpdate();
-            })
-            .catch(() => cv_interact.error('Network error loading data'));
-    };
-
-    return self;
-})();
 const CreateServiceRequestDialog = (() => {
     const self = {};
     let dialog = null;
@@ -777,8 +470,8 @@ const CreateServiceRequestDialog = (() => {
                         <!-- Visible Tenant Search (NO data-field so name is NOT sent) -->
                         <div class="col-md-6">
                             <div class="material-input outlined">
-                                <input name="tenant" class="form-control" data-field="tenant_id" placeholder=" " autocomplete="off">
-                                <label style="padding-left:6px;color:#777;">Tenant</label>
+                                <input name="tenant" class="form-control" data-field="tenant_id" placeholder="Tenant" autocomplete="off">
+                                <!--<label style="padding-left:6px;color:#777;">Tenant</label> -->
                             </div>
                         </div>
 

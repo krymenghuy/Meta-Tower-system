@@ -684,7 +684,7 @@ const BuildingSpaceDialog = (() => {
         dialog =
             dialog ||
             new GeneralDialog({
-                cssClass: "modal-md vs-modal",
+                cssClass: "modal-lg vs-modal",
                 backdrop: "static",
                 keyboard: true,
                 createContent: () => {
@@ -866,60 +866,55 @@ const CreateBookingDialog = (() => {
         dialog =
             dialog ||
             new GeneralDialog({
-                cssClass: "modal-md vs-modal",
+                cssClass: "modal-lg vs-modal",
                 backdrop: "static",
                 keyboard: true,
                 createContent: () => {
                     return [
                         `<div class="row justify-content-center">
                             <div class="col-6">
-                                <label style="color:#777777;padding-left:6px;">Booker Name</label>
                                 <div class="material-input outlined">
                                     <input type="text" name="booker_name" class="data-input form-control" data-field="booker_name" placeholder=" " />
+                                    <label style="color:#777777;padding-left:6px;">Booker Name</label>
                                 </div>
                             </div>
                             <div class="col-6">
-                                <label style="color:#777777;padding-left:6px;">Booker Phone</label>
                                 <div class="material-input outlined">
                                     <input type="number" name="booker_phone" class="data-input form-control" data-field="booker_phone" placeholder=" " />
+                                    <label style="color:#777777;padding-left:6px;">Phone Number</label>
                                 </div>
                             </div>
                             <div class="col-6">
-                                <label style="color:#777777;padding-left:6px;">Booker Email</label>
                                 <div class="material-input outlined">
                                     <input type="email" name="booker_email" class="data-input form-control" data-field="booker_email" placeholder=" " />
+                                    <label style="color:#777777;padding-left:6px;">Email</label>
                                 </div>
                             </div>
                             <div class="col-6">
-                                <label style="color:#777777;padding-left:6px;">Booking Date</label>
                                 <div class="material-input outlined">
                                     <input type="text" data-type="date" name="booking_date" class="data-input form-control" data-field="booking_date" placeholder=" " />
+                                    <label style="color:#777777;padding-left:6px;">Booking Date</label>
                                 </div>
                             </div>
                             <div class="col-12 col-md-6">
-                                <label style="color:#777777;padding-left:6px;">Expired Booking Date</label>
                                 <div class="material-input outlined">
-                                    <input type="text" data-type="date" name="expired_booking_date"
-                                        class="data-input form-control form_input"
-                                        data-field="expired_booking_date" />
+                                    <input type="text" data-type="date" name="expired_booking_date" class="data-input form-control form_input" data-field="expired_booking_date" />
+                                    <label style="color:#777777;padding-left:6px;">Expired Booking Date</label>
                                 </div>
+                                
                             </div>
 
 
                             <div class="col-6">
-                                <label style="color:#777777;padding-left:6px;">Booking Price</label>
                                 <div class="material-input outlined">
                                     <input type="number" name="booking_fee" class="data-input form-control" data-field="booking_fee" placeholder=" " />
+                                    <label style="color:#777777;padding-left:6px;">Booking Amount</label>
                                 </div>
                             </div>
                             <div class="col-12">
-                                <label style="color:#777777;padding-left:6px;">Remarks</label>
                                 <div class="material-input outlined">
-                                    <textarea class="data-input form-control"
-                                        data-field="remarks"
-                                        rows="3"
-                                        placeholder=" ">
-                                    </textarea>
+                                    <textarea class="data-input form-control" data-field="remarks" rows="3" placeholder=" "></textarea>
+                                    <label style="color:#777777;padding-left:6px;">Remarks</label>
                                 </div>
                             </div>
 
