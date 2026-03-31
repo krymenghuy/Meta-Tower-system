@@ -896,33 +896,28 @@ const ContractDialog = (() => {
             },
 
             contentCreated: (me) => {
-                me.searchTenant = VSSearchInput.init(me.controls.tenant, {
-                    type: "select",
+                me.searchTenant= VSSearchInput.init(me.controls.tenant,{
+                    type: 'select',
                     prefetch: true,
-                    maxDropdownHeight: "380px",
                     // api:
                     query: {
-                        from: "tenants",
-                        select: ["id", "name", "code", "legal_name"],
-                        searchFields: { name: "LIKE", code: "=", legal_name: "LIKE" },
-                        orderBy: [["id", "desc"]]
+                        from: 'tenants',
+                        select: ['id', 'name', 'code', 'legal_name'],
+                        searchFields: { name: 'LIKE', code: '=',legal_name:'LIKE' },
+                        orderBy:[['id','desc']]
                     },
-                    showColumnHeader: true,
-                    columns: {
+                    // showColumnHeader: false,
+                    columns:{
                         code: "Code",
                         name: "Name",
                         // legal_name: "Legal Name"
                     },
                     onSelect: (item) => {
-                        const tenantId = item?.id || "";
-                        const tenantName = item?.name || "";
-                        const tenantCode = item?.code || "";
-                        me.controls.tenant.value = tenantCode
-                            ? `${tenantName} (${tenantCode})`
-                            : tenantName;
-                        me.controls.tenant.dataset.tenantId = tenantId;
-                        me.tenant_id = tenantId;
-                        me.controls.legal_name.value = item?.legal_name || "";
+                        console.log(123,item);
+                        me.tenant_id = item.id;
+                        me.controls.legal_name.value = item.legal_name || '';
+                        me.tenant_id = item.id || '';
+
                     }
                 });
             },
@@ -961,9 +956,6 @@ const ContractDialog = (() => {
 
             onPrepareForm: (me, data) => {
                 LocaleManager.translateZone(me.divModal);
-                if (me.searchTenant && typeof me.searchTenant.reset === "function") {
-                    me.searchTenant.reset();
-                }
                 // Preselect tenant when coming from TenantComponent (create-from-tenant)
                 if (!me.dataOptions.id && me.dataOptions.tenant_id) {
                     me.tenant_id = me.dataOptions.tenant_id;
