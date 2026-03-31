@@ -97,7 +97,10 @@ class TenantController extends Controller
         if($ss->status_code !== 200){
             return JDV::raw($ss);
         }
-         $id = $req->tenant_id ?? $req->id;
+        $id = $req->tenant_id ?? $req->id;
+        if (!isset($id) || !is_numeric($id)) {
+            return JDV::error('Invalid ID');
+        }
         return JDV::result($this->tenants->getLeaseHistory($id,$ss));
     }
     public function options_active_space(Request $req){

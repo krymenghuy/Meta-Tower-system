@@ -168,7 +168,7 @@ function checkUniqueTenantByPhone($phone_number, $id = null)
         $count = $clone_query->count('t.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
         foreach($rows as $row){
-            
+
             $row->image_url = '';
             if($row->photo_file_name){
                 $row->image_url = self::profilePicture($row->id,$ss);
@@ -269,15 +269,151 @@ function checkUniqueTenantByPhone($phone_number, $id = null)
     public function getLeaseHistory($id = null,$ss = null){
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
-        $rows = DB::table('contracts as c')
-        ->join('building_spaces as bs', 'bs.id', '=', 'c.space_id')
-        ->join('buildings as b', 'b.id', '=', 'bs.building_id')
-        ->where('c.tenant_id', $id)
-        ->selectRaw('c.id,c.start_date,c.end_date,c.tenant_id')
-        ->orderByDesc('c.start_date')
-        ->get();
-        return $rows;
 
+        // 1) Contracts for this tenant (used as header + "current period" baseline)
+        $contract_start = DBX::formatDate("c.start_date", 'contract_start_date');
+        $contract_end = DBX::formatDate("c.end_date", 'contract_end_date');
+        $contract_updated_at = DBX::formatTime("c.updated_at", 'contract_updated_at');
+
+        $contracts = DB::table('contracts as c')
+            ->join('building_spaces as bs', 'bs.id', '=', 'c.space_id')
+            ->join('buildings as b', 'b.id', '=', 'bs.building_id')
+            ->join('contract_statuses as cs', 'cs.id', '=', 'c.status_id')
+            ->join('business_types as bt', 'bt.id', '=', 'c.business_type_id')
+            ->join('space_types as st', 'st.id', '=', 'c.space_type_id')
+            ->where('c.tenant_id', $id)
+            ->selectRaw(
+                'c.id as contract_id,'
+                    . 'cs.name as contract_status,'
+                    . $contract_start . ',' . $contract_end . ','
+                    . 'bt.name as business_type,'
+                    . 'st.name as space_type,'
+                    . 'bs.code as space_code,'
+                    . 'b.name as building_name,'
+                    . 'c.sqm_size,c.price,c.price_type,'
+                    . 'c.deposit,c.deposit_remarks,'
+                    . 'c.update_user,'
+                    . $contract_updated_at
+            )
+            ->orderByDesc('c.start_date')
+            ->get();
+
+        if ($contracts->isEmpty()) {
+            return [];
+        }
+
+        $contractIds = $contracts->pluck('contract_id')->filter()->values()->all();
+
+        // 2) Renewal rows (old renewals + each renewal period)
+        $renewal_date = DBX::formatDate("cr.renewal_date", 'renewal_date');
+        $renewal_start = DBX::formatDate("cr.start_date", 'renewal_start_date');
+        $renewal_end = DBX::formatDate("cr.end_date", 'renewal_end_date');
+        $renewal_updated_at = DBX::formatTime("cr.updated_at", 'updated_at');
+
+        $renewals = DB::table('contract_renewals as cr')
+            ->leftJoin('building_spaces as bs', 'bs.id', '=', 'cr.space_id')
+            ->leftJoin('buildings as b', 'b.id', '=', 'bs.building_id')
+            ->whereIn('cr.contract_id', $contractIds)
+            ->selectRaw(
+                'cr.id as renewal_id,'
+                    . 'cr.contract_id,'
+                    . $renewal_date . ',' . $renewal_start . ',' . $renewal_end . ','
+                    . 'cr.remarks,'
+                    . 'cr.update_user,'
+                    . $renewal_updated_at . ','
+                    . 'bs.code as space_code,'
+                    . 'b.name as building_name'
+            )
+            ->orderByDesc('cr.id')
+            ->get();
+
+        // Group renewals for quick lookup
+        $renewalsByContractId = [];
+        foreach ($renewals as $r) {
+            $cid = (int) ($r->contract_id ?? 0);
+            if (!$cid) continue;
+            if (!isset($renewalsByContractId[$cid])) {
+                $renewalsByContractId[$cid] = [];
+            }
+            $renewalsByContractId[$cid][] = $r;
+        }
+
+        // 3) Build flat renewal entries (one list for UI table)
+        $entries = [];
+        foreach ($contracts as $c) {
+            $cid = (int) $c->contract_id;
+            $contractRenewals = $renewalsByContractId[$cid] ?? [];
+
+            // Latest renewal id (we ordered desc, so first is latest)
+            $latestRenewalId = !empty($contractRenewals)
+                ? (int) ($contractRenewals[0]->renewal_id ?? 0)
+                : null;
+
+            if (empty($contractRenewals)) {
+                $entries[] = (object) [
+                    'contract_id' => $cid,
+                    'contract_status' => $c->contract_status ?? 'active',
+                    'contract_start_date' => $c->contract_start_date ?? null,
+                    'contract_end_date' => $c->contract_end_date ?? null,
+                    'business_type' => $c->business_type ?? null,
+                    'space_type' => $c->space_type ?? null,
+                    'unit_code' => $c->space_code ?? null,
+                    'building_name' => $c->building_name ?? null,
+                    'sqm_size' => $c->sqm_size ?? null,
+                    'price' => $c->price ?? null,
+                    'price_type' => $c->price_type ?? 'sqm',
+                    'deposit' => $c->deposit ?? null,
+                    'deposit_remarks' => $c->deposit_remarks ?? null,
+                    'renewal_id' => null,
+                    'renewal_date' => null,
+                    'renewal_start_date' => $c->contract_start_date ?? null,
+                    'renewal_end_date' => $c->contract_end_date ?? null,
+                    'remarks' => null,
+                    'update_user' => $c->update_user ?? null,
+                    'updated_at' => $c->contract_updated_at ?? null,
+                    'is_initial' => true,
+                    'is_current' => true,
+                ];
+                continue;
+            }
+
+            foreach ($contractRenewals as $r) {
+                $isCurrentByPeriod =
+                    (string) ($r->renewal_start_date ?? '') === (string) ($c->contract_start_date ?? '') &&
+                    (string) ($r->renewal_end_date ?? '') === (string) ($c->contract_end_date ?? '');
+
+                $isCurrentByLatestId =
+                    ($latestRenewalId !== null) && (int) ($r->renewal_id ?? 0) === (int) $latestRenewalId;
+
+                $entries[] = (object) [
+                    'contract_id' => $cid,
+                    'contract_status' => $c->contract_status ?? 'active',
+                    'contract_start_date' => $c->contract_start_date ?? null,
+                    'contract_end_date' => $c->contract_end_date ?? null,
+                    'business_type' => $c->business_type ?? null,
+                    'space_type' => $c->space_type ?? null,
+                    'unit_code' => $r->space_code ?? $c->space_code ?? null,
+                    'building_name' => $r->building_name ?? $c->building_name ?? null,
+                    'sqm_size' => $c->sqm_size ?? null,
+                    'price' => $c->price ?? null,
+                    'price_type' => $c->price_type ?? 'sqm',
+                    'deposit' => $c->deposit ?? null,
+                    'deposit_remarks' => $c->deposit_remarks ?? null,
+
+                    'renewal_id' => $r->renewal_id ?? null,
+                    'renewal_date' => $r->renewal_date ?? null,
+                    'renewal_start_date' => $r->renewal_start_date ?? null,
+                    'renewal_end_date' => $r->renewal_end_date ?? null,
+                    'remarks' => $r->remarks ?? null,
+                    'update_user' => $r->update_user ?? null,
+                    'updated_at' => $r->updated_at ?? null,
+                    'is_initial' => false,
+                    'is_current' => $isCurrentByPeriod || $isCurrentByLatestId,
+                ];
+            }
+        }
+
+        return $entries;
     }
 
         public function getActiveSpaces($id = null,$ss = null){
