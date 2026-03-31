@@ -17,15 +17,15 @@ var BillPaymentComponent = (() => {
     };
     mThis.cols = [
         { title: "", className: "align-middle" },
-        {
-            title: "Payment Date",
-            className: "align-middle",
-            data: (data) => `<span class="text-prm-custom text-nowrap">${data.payment_date}</span>`,
-        },
+        
         {
             transTitle: "titles.Bill Number",
             className: "align-middle",
-            data: (data) => `<span class="text-nowrap text-prm-custom">${data.bill_number ?? ""}</span>`,
+            data: (data) => {
+                return`
+                    <span class="d-block text-nowrap text-prm-custom fw-semibold">${data.bill_number ?? ""}</span>
+                    <span class="d-block text-prm-custom text-nowrap">${data.payment_date}</span>`
+                    }        ,
         },
         
         {
@@ -33,16 +33,21 @@ var BillPaymentComponent = (() => {
             className: "align-middle",
             data: (data) => `<span class="d-block text-prm-custom">${data.vendor_name}</span>`,
         },
-        // {
-        //     transTitle: "titles.Phone Number",
-        //     className: "align-middle",
-        //     data: (data) => `<span class="d-block text-prm-custom">${data.phone_number}</span>
-        //                      <span class="d-block text-prm-custom">${data.email ?? "_"}</span>`,
-        // },
+        {
+            transTitle: "titles.Payer",
+            className: "align-middle",
+            data: (data) => `<span class="d-block text-prm-custom">${data.payer}</span>`,
+        },
+       
         {
             transTitle: "titles.Reference No",
             className: "align-middle",
             data: (data) => `<span class="d-block text-prm-custom">${data.ref_no ?? "_"}</span>`,
+        },
+        {
+            transTitle: "titles.Payment Method",
+            className: "align-middle",
+            data: (data) => `<span class="d-block text-prm-custom">${data.payment_method ?? "_"}</span>`,
         },
         {
             title: "Total Amount ",
@@ -59,36 +64,31 @@ var BillPaymentComponent = (() => {
             className: "align-middle text-end",
             data: (data) => `<span class="d-block text-prm-custom fw-semibold" style="color:#1d4ed8;">${formatCurrency(data.amount)}</span>`,
         },
-        {
-            transTitle: "titles.Payment Method",
-            className: "align-middle",
-            data: (data) => `<span class="d-block text-prm-custom">${data.payment_method ?? "_"}</span>`,
-        },
-        {
-            title: "Description",
-            className: "align-middle",
-            data: (data) => `<span class="d-block text-prm-custom">${data.remark ?? "__"}</span>`,
-        },
-        {
-            title: "Status",
-            className: "align-middle text-center",
-            data: (data) => {
-                const status_id = data.status_id;
-                let cls = "badge text-warning bg-danger-subtle border border-danger";
-                if (status_id == 3) cls = "badge text-warning bg-warning-subtle border border-warning";
-                else if (status_id == 2) cls = "badge text-success bg-success-subtle border border-success";
-                else if (status_id == 1) cls = "badge text-danger bg-danger-subtle border border-danger";
-                return `<span class="${cls} text-capitalize d-inline-block text-center" style="min-width:90px">${data.status ?? ""}</span>`;
-            },
-        },
-        {
-            transTitle: "titles.Updated By",
-            className: "align-middle text-nowrap",
-            data: (data) => `<div class="d-flex flex-column">
-                <span class="text-capitalize text-start text-prm-custom fw-semibold">${data.update_user ?? ""}</span>
-                <span class="text-muted">${data.updated_at ?? ""}</span>
-            </div>`,
-        },
+        // {
+        //     title: "Description",
+        //     className: "align-middle",
+        //     data: (data) => `<span class="d-block text-prm-custom">${data.remark ?? "__"}</span>`,
+        // },
+        // {
+        //     title: "Status",
+        //     className: "align-middle text-center",
+        //     data: (data) => {
+        //         const status_id = data.status_id;
+        //         let cls = "badge text-warning bg-danger-subtle border border-danger";
+        //         if (status_id == 3) cls = "badge text-warning bg-warning-subtle border border-warning";
+        //         else if (status_id == 2) cls = "badge text-success bg-success-subtle border border-success";
+        //         else if (status_id == 1) cls = "badge text-danger bg-danger-subtle border border-danger";
+        //         return `<span class="${cls} text-capitalize d-inline-block text-center" style="min-width:90px">${data.status ?? ""}</span>`;
+        //     },
+        // },
+        // {
+        //     transTitle: "titles.Updated By",
+        //     className: "align-middle text-nowrap",
+        //     data: (data) => `<div class="d-flex flex-column">
+        //         <span class="text-capitalize text-start text-prm-custom fw-semibold">${data.update_user ?? ""}</span>
+        //         <span class="text-muted">${data.updated_at ?? ""}</span>
+        //     </div>`,
+        // },
         {
             transTitle: "titles.Action",
             className: "col_action align-middle",
@@ -198,10 +198,10 @@ var BillPaymentComponent = (() => {
                 //     name: "view_attachment",
                 // },
                 {
-                    html: '<span class="ps-2">Print</span>',
+                    html: '<span class="ps-2">View Detail</span>',
                     icon: `<i class="fa-solid fa-print" style="color: rgb(22, 80, 137);"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "print_bill",
+                    name: "view_bill",
                 },
             ],
             onClick: (menuLink, id, name) => {
@@ -352,7 +352,11 @@ const BillPaymentDialog = (() => {
                                 <label style="color:#777777;padding-left:6px;">Contact</label>
                             </div>
                             <div class="material-input outlined">
-                                <select data-style="material" name="payment_method" class="data-input form-control" data-field="payment_method">
+                                <input type="text" name="payer" class="data-input form-control" data-field="payer" placeholder=" " >
+                                <label style="color:#777777;padding-left:6px;">Payer</label>
+                            </div>
+                            <div class="material-input outlined">
+                               <select data-style="material" name="payment_method" class="data-input form-control" data-field="payment_method">
                                     <option value="cash">Cash</option>
                                     <option value="bank">Bank Transfer</option>
                                     <option value="cheque">Cheque</option>
@@ -360,6 +364,7 @@ const BillPaymentDialog = (() => {
                                 </select>
                                 <label style="color:#777777;padding-left:6px;">Payment Method</label>
                             </div>
+                            
                         </div>
                         <div class="col-md-2"></div>
                         <div class="col-md-5">
@@ -372,26 +377,40 @@ const BillPaymentDialog = (() => {
                                 <label style="color:#777777;padding-left:6px;">Bill Number</label>
                             </div>
                             <div class="material-input outlined">
-                                <input name="payer" class="data-input form-control" data-field="payer" placeholder=" "> 
-                                <label style="color:#777777;padding-left:6px;">Payer</label>
+                                <input style="cursor: not-allowed;" name="expense_type" class="data-input form-control" placeholder=" " readonly>
+                                <label style="color:#777777;padding-left:6px;">Expense Type</label>
+                            </div>
+                            <div class="material-input outlined">
+                                <select data-style="material" name="currency" class="data-input form-control" data-field="currency">
+                                    <option value="USD">USD - $</option>
+                                    <option value="KHR">KHR - ៛</option>
+                                </select>
+                                <label style="color:#777777;padding-left:6px;">Currency</label>
+                            </div>
+                            
+                        </div>
+                        <div class="col-3">
+                            <div class="material-input outlined bg-light rounded">
+                                <input name="total_amount" class="form-control text-end" style="cursor:not-allowed;" readonly>
+                                <label class="text-muted small px-2">Total Amount</label>
                             </div>
                         </div>
-                        <div class="col-4">
-                            <div class="material-input outlined">
-                                <input style="cursor: not-allowed;" name="total_amount" class="data-input form-control" data-field="total_amount" placeholder=" " readonly>
-                                <label style="color:#777777;padding-left:6px;">Total Amount</label>
+                        <div class="col-3">
+                            <div class="material-input outlined bg-light rounded">
+                                <input name="paid_amount" data-field="paid_amount" class="form-control text-end" style="cursor:not-allowed;" readonly>
+                                <label class="text-muted small px-2">Already Paid</label>
                             </div>
                         </div>
-                        <div class="col-4">
-                            <div class="material-input outlined">
-                                <input name="amount" class="data-input form-control" data-field="amount" placeholder=" " required>
-                                <label style="color:#777777;padding-left:6px;">Amount Paid</label>
+                        <div class="col-3">
+                            <div class="material-input outlined border-primary">
+                                <input name="amount" data-field="amount" class="data-input form-control text-end fw-bold" placeholder="0.00">
+                                <label class="text-primary px-2">Paying Now</label>
                             </div>
                         </div>
-                        <div class="col-4">
-                            <div class="material-input outlined">
-                                <input style="cursor: not-allowed; color:red;" name="balance" class="data-input form-control" data-field="balance" placeholder=" " readonly>
-                                <label style="color:red;padding-left:6px;">Balance</label>
+                        <div class="col-3">
+                            <div class="material-input outlined bg-light rounded">
+                                <input name="balance" class="form-control text-end fw-bold" style="cursor:not-allowed; color:#dc3545;" readonly>
+                                <label class="fw-bold px-2" style="color:#dc3545;">Remaining</label>
                             </div>
                         </div>
 
@@ -407,7 +426,7 @@ const BillPaymentDialog = (() => {
 
             prepareFormOptions: {
                 createTitle: "Bill Payment Voucher",
-                modifyTitle: "Record Payment",
+                modifyTitle: "Process Payment",
                 targetProp: "bill",        
                 api: {
                     endpoint: `${main_view.base_url}/prm/bill-payment/form-options`,
@@ -421,37 +440,50 @@ const BillPaymentDialog = (() => {
               
                 const bill = data?.bill || data?.bill_details;
 
+                const totalAmount = Number(bill.balance || 0); 
+                const amountInput = me.controls.amount;
+                const balanceInput = me.controls.balance;
+
+                if (me.controls.total_amount) me.controls.total_amount.value = Number(bill.total_amount || 0).toFixed(2); 
+                if (balanceInput) balanceInput.value = bill.balance ?? '';  
+
+                if (amountInput && balanceInput) {
+                    amountInput.addEventListener('input', () => {
+                        let paid = parseFloat(amountInput.value) || 0;
+                        if (paid > totalAmount) {
+                            amountInput.value = totalAmount.toFixed(2);
+                            paid = totalAmount;
+                        }
+                        balanceInput.value = Math.max(0, totalAmount - paid).toFixed(2);
+                    });
+                }
+
                 if (bill && bill.id) {
+                    console.log(bill);
 
-                    if (me.controls.vendor)       me.controls.vendor.value       = bill.vendor_name || '';
-                    if (me.controls.phone_number) me.controls.phone_number.value = bill.phone_number || '';
-                    if (me.controls.bill_number)  me.controls.bill_number.value  = bill.bill_number || '';
-                    if (me.controls.total_amount) me.controls.total_amount.value = Number(bill.total_amount || 0).toFixed(2);
-
-                    if (me.controls.vendor)       me.controls.vendor.readOnly = true;
-                    if (me.controls.phone_number) me.controls.phone_number.readOnly = true;
-                    if (me.controls.bill_number)  me.controls.bill_number.readOnly = true;
-                    if (me.controls.total_amount) me.controls.total_amount.readOnly = true;
-                    if (me.controls.balance) { 
-                        me.controls.balance.value    = bill.balance ?? '';
-                        me.controls.balance.readOnly = true;
-                    }
+                    if (me.controls.vendor)       { me.controls.vendor.value       = bill.vendor_name || '';                       me.controls.vendor.readOnly       = true; }
+                    if (me.controls.phone_number) { me.controls.phone_number.value = bill.phone_number || '';                      me.controls.phone_number.readOnly = true; }
+                    if (me.controls.expense_type) { me.controls.expense_type.value = bill.expense_type_name || '';                 me.controls.expense_type.readOnly = true; }
+                    if (me.controls.bill_number)  { me.controls.bill_number.value  = bill.bill_number || '';                       me.controls.bill_number.readOnly  = true; }
+                    if (me.controls.total_amount) { me.controls.total_amount.value = Number(bill.total_amount || 0).toFixed(2);    me.controls.total_amount.readOnly = true; }
+                    if (me.controls.paid_amount)  { me.controls.paid_amount.value  = Number(bill.paid_amount  || 0).toFixed(2);    me.controls.paid_amount.readOnly  = true; } // ✅ added
+                    if (me.controls.balance)      { me.controls.balance.value      = Number(bill.balance      || 0).toFixed(2);    me.controls.balance.readOnly      = true; }
 
                     if (me.controls.payment_date) {
                         const today = new Date().toISOString().split('T')[0];
                         me.controls.payment_date.value = today;
                     }
 
-                    // Auto calculate balance
-                    const totalAmount = Number(bill.total_amount || 0);
-                    const amountInput = me.controls.amount;
+                    // Auto calculate remaining balance based on what's left (bill.balance), not total
+                    const remaining  = Number(bill.balance || 0);
+                    const amountInput  = me.controls.amount;
                     const balanceInput = me.controls.balance;
 
                     if (amountInput && balanceInput) {
                         amountInput.addEventListener('input', () => {
-                            let paid = parseFloat(amountInput.value) || 0;
-                            let remaining = Math.max(0, totalAmount - paid);
-                            balanceInput.value = remaining.toFixed(2);
+                            let paying = parseFloat(amountInput.value) || 0;
+                            if (paying > remaining) { amountInput.value = remaining.toFixed(2); paying = remaining; }
+                            balanceInput.value = Math.max(0, remaining - paying).toFixed(2);
                         });
                     }
 
@@ -460,7 +492,6 @@ const BillPaymentDialog = (() => {
                     cv_interact.warning("Could not load bill details.");
                 }
             },
-
             buttons: [
                 {
                     label: '<span vslang="buttons.Cancel"></span>',
@@ -468,7 +499,7 @@ const BillPaymentDialog = (() => {
                     click: (me) => me.hide(false)
                 },
                 {
-                    label: '<span vslang="buttons.Submit"></span>',
+                    label: '<span vslang="buttons.Confirm Payment"></span>',
                     cssClass: "btn btn-primary",
                     click: (me, btn) => {
                         const op = me.getData();

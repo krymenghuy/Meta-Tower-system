@@ -23,11 +23,12 @@ class BillPayment
             'bill_id'        => '1|number|exists=bills.id',
             'payment_date'   => '1|date',
             'amount'         => '1|number|min=0.01',
-            'total_amount'         => '1|number|min=0.01|exists=bills.total_amount',
-            'paid_amount'         => '1|number|min=0.01|exists=bills.paid_amountgit',
+            'total_amount'         => '0|number|min=0.01|exists=bills.total_amount',
+            'paid_amount'         => '0|number|min=0.01|exists=bills.paid_amount',
             'payment_method' => '0|string|0-50',
             'ref_no'         => '0|string|0-100',
             'note'           => '0|string|0-255',
+            'currency' => '0|string|0-10',  
         ];
 
         $res = DBX::validateObject($arr, $v_rule, 1, [], $ss->lang, 0, null);
@@ -37,6 +38,12 @@ class BillPayment
         $bill_id = $inputs['bill_id'];
 
         $bill = DB::table('bills')->where('id', $bill_id)->first();
+        $total_paid = floatval(
+            DB::table('bill_payments')->where('bill_id', $bill_id)->sum('amount')
+        );
+
+        $total   = floatval($bill->total_amount);
+        $balance = max(0, $total - $total_paid); 
         if (!$bill) return DV::error('Bill not found.');
         if ($bill->status_id == 2) return DV::error('This bill is already fully paid.');
 
@@ -95,30 +102,7 @@ class BillPayment
             return DV::error('Failed to save payment. Please check logs.');
         }
     }
-    // public function getPaymentsByBill(array $arr = [], $ss = null)
-    // {
-    //     $d        = (object) $arr;
-    //     $bill_id  = $d->bill_id      ?? null;
-    //     $per_page = $d->per_page     ?? 10;
-    //     $page     = $d->current_page ?? 1;
-
-    //     if (!$bill_id) return DV::error('bill_id is required.');
-
-    //     $query = DB::table('bill_payments as bp')
-    //         ->where('bp.bill_id', $bill_id)
-    //         ->selectRaw(' bp.id,bp.bill_id,bp.amount,bp.payment_date,bp.payment_method,bp.ref_no,bp.note,bp.create_user,bp.update_user,bp.updated_at')
-    //         ->orderBy('bp.id', 'desc');
-
-    //     $count = (clone $query)->count('bp.id');
-    //     $rows  = $query->skip(($page - 1) * $per_page)->take($per_page)->get();
-
-    //     foreach ($rows as $row) {
-    //         $processed = setOfficialDates($row, ['updated_at', 'payment_date'], [], []);
-    //         if ($processed) $row = $processed;
-    //     }
-
-    //     return new LengthAwarePaginator($rows, $count, $per_page, $page);
-    // }
+    
 
     public function getListPaginate(array $arr = [], $ss = null)
     {
@@ -138,22 +122,19 @@ class BillPayment
 
         if ($search_value) {
             $search_value = escape_like_str($search_value);
-            $str_search = "(bp.ref_no LIKE '%{$search_value}%' 
-                        OR bp.note LIKE '%{$search_value}%' 
-                        OR b.bill_number LIKE '%{$search_value}%')";
+            $str_search = "(bp.ref_no LIKE '%{$search_value}%' OR bp.note LIKE '%{$search_value}%' OR b.bill_number LIKE '%{$search_value}%')";
         }
 
         $query = DB::table('bill_payments as bp')
             ->leftJoin('bills as b', 'b.id', 'bp.bill_id')
             ->leftJoin('vendors as v', 'v.id', 'b.vendor_id')
+            ->leftJoin('expense_categories as ex', 'ex.id', 'b.expense_type_id')
             ->whereRaw($str_search);
 
         if ($bill_id) {
             $query->where('bp.bill_id', $bill_id);
         }
-
-        $query->selectRaw("
-            bp.id,bp.bill_id,b.bill_number,v.name as vendor_name, bp.payment_date,bp.amount,bp.payment_method,bp.ref_no, bp.note, bp.create_user,bp.update_user,bp.created_at,bp.updated_at")
+        $query->selectRaw("bp.id,bp.bill_id,b.bill_number,v.name as vendor_name,b.expense_type_id,ex.name as expense_type_name, bp.payment_date,bp.amount,bp.payment_method,bp.ref_no, bp.note, bp.create_user,bp.update_user,bp.created_at,bp.updated_at")
         ->orderBy('bp.id', 'desc');
 
         $count = (clone $query)->count('bp.id');
@@ -216,18 +197,9 @@ class BillPayment
             $bill = DB::table('bills as b')
                 ->leftJoin('vendors as v', 'v.id', 'b.vendor_id')
                 ->leftJoin('bill_statuses as s', 's.id', 'b.status_id')
+                ->leftJoin('expense_categories as ex', 'ex.id', 'b.expense_type_id')
                 ->where('b.id', $bill_id)
-                ->selectRaw('
-                    b.id,
-                    b.bill_number,
-                    b.total_amount,
-                    b.paid_amount,
-                    b.balance,
-                    b.status_id,
-                    s.name as status,
-                    v.name as vendor_name,
-                    v.phone_number
-                ')
+                ->selectRaw('b.id,b.bill_number,b.total_amount, b.paid_amount,b.balance,b.status_id,s.name as status,v.name as vendor_name,v.phone_number,b.expense_type_id, ex.name as expense_type_name')
                 ->first();
         }
 
