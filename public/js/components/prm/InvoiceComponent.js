@@ -150,7 +150,7 @@ var InvoiceComponent = (() => {
         const pr_tbl = mThis.InvoiceListView.getListContainer();
         const sh_parent = pr_tbl.parentElement;
         sh_parent.style.height = `${window.innerHeight - 200}px`;
-        sh_parent.classList.add("overflow-y-auto", "overflow-x-hidden");
+        sh_parent.classList.add("overflow-y-auto");
         window.addEventListener(
             "resize",
             () => {
@@ -309,9 +309,8 @@ var InvoiceComponent = (() => {
 
         const fmt = n =>
             n.toLocaleString("en-US", { minimumFractionDigits: 2 });
-
         container.innerHTML = `
-            <div class="bg-white rounded shadow-sm p-3">
+            <div class="bg-white rounded shadow-sm">
                 <div class="table-responsive">
                     <table class="table table-sm table-bordered mb-0">
                         <thead style="background:#f0f4ff;">
@@ -341,18 +340,12 @@ var InvoiceComponent = (() => {
                     </table>
                 </div>
 
-                ${invoice.remarks? `
-                    <div class="mt-3 p-3 bg-light rounded border">
-                        <small class="text-muted fw-semibold d-block mb-1 text-uppercase" style="font-size: 0.7rem;">Remarks:</small>
-                        <p class="mb-0 small">${invoice.remarks}</p>
-                    </div>`: ""
-                }
-
-                <div class="text-end mt-4 no-print">
-                    <button class="btn btn-sm btn-outline-primary" onclick="window.print()">
-                        <i class="bi bi-printer me-1"></i> Print Invoice
-                    </button>
-                </div>
+                    ${invoice.remarks? `
+                        <div class="mt-3 p-3 bg-light rounded border">
+                            <small class="text-muted fw-semibold d-block mb-1 text-uppercase" style="font-size: 0.7rem;">Remarks:</small>
+                            <p class="mb-0 small">${invoice.remarks}</p>
+                        </div>`: ""
+                    }
                 </div>`;
                 };
 
