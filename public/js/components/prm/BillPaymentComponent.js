@@ -17,36 +17,42 @@ var BillPaymentComponent = (() => {
     };
     mThis.cols = [
         { title: "", className: "align-middle" },
+        
         {
             transTitle: "titles.Bill Number",
             className: "align-middle",
-            data: (data) => `<span class="text-nowrap text-prm-custom">${data.bill_number ?? ""}</span>`,
+            data: (data) => {
+                return`
+                    <span class="d-block text-nowrap text-prm-custom fw-semibold">${data.bill_number ?? ""}</span>
+                    <span class="d-block text-prm-custom text-nowrap">${data.payment_date}</span>`
+                    }        ,
         },
+        
         {
             transTitle: "titles.Vendor",
             className: "align-middle",
             data: (data) => `<span class="d-block text-prm-custom">${data.vendor_name}</span>`,
         },
         {
-            transTitle: "titles.Phone Number",
+            transTitle: "titles.Payer",
             className: "align-middle",
-            data: (data) => `<span class="d-block text-prm-custom">${data.phone_number}</span>
-                             <span class="d-block text-prm-custom">${data.email ?? "_"}</span>`,
+            data: (data) => `<span class="d-block text-prm-custom">${data.payer}</span>`,
         },
+       
         {
             transTitle: "titles.Reference No",
             className: "align-middle",
             data: (data) => `<span class="d-block text-prm-custom">${data.ref_no ?? "_"}</span>`,
         },
         {
-            title: "Bill Date",
+            transTitle: "titles.Payment Method",
             className: "align-middle",
-            data: (data) => `<span class="text-prm-custom text-nowrap">${data.bill_date}</span>`,
+            data: (data) => `<span class="d-block text-prm-custom">${data.payment_method ?? "_"}</span>`,
         },
         {
-            title: "Total Amount",
+            title: "Total Amount ",
             className: "align-middle text-end",
-            data: (data) => `<span class="d-block text-prm-custom fw-semibold" style="color:#1d4ed8;">${formatCurrency(data.total_amount)}</span>`,
+            data: (data) => `<span class="d-block text-prm-custom fw-semibold" style="color:#15803d;">${formatCurrency(data.amount_total)}</span>`,
         },
         {
             title: "Amount Paid",
@@ -54,30 +60,35 @@ var BillPaymentComponent = (() => {
             data: (data) => `<span class="d-block text-prm-custom fw-semibold" style="color:#15803d;">${formatCurrency(data.paid_amount)}</span>`,
         },
         {
-            title: "Description",
-            className: "align-middle",
-            data: (data) => `<span class="d-block text-prm-custom">${data.remark ?? "__"}</span>`,
+            title: "balance",
+            className: "align-middle text-end",
+            data: (data) => `<span class="d-block text-prm-custom fw-semibold" style="color:#1d4ed8;">${formatCurrency(data.amount)}</span>`,
         },
-        {
-            title: "Status",
-            className: "align-middle text-center",
-            data: (data) => {
-                const status_id = data.status_id;
-                let cls = "badge text-warning bg-danger-subtle border border-danger";
-                if (status_id == 3) cls = "badge text-warning bg-warning-subtle border border-warning";
-                else if (status_id == 2) cls = "badge text-success bg-success-subtle border border-success";
-                else if (status_id == 1) cls = "badge text-danger bg-danger-subtle border border-danger";
-                return `<span class="${cls} text-capitalize d-inline-block text-center" style="min-width:90px">${data.status ?? ""}</span>`;
-            },
-        },
-        {
-            transTitle: "titles.Updated By",
-            className: "align-middle text-nowrap",
-            data: (data) => `<div class="d-flex flex-column">
-                <span class="text-capitalize text-start text-prm-custom fw-semibold">${data.update_user ?? ""}</span>
-                <span class="text-muted">${data.updated_at ?? ""}</span>
-            </div>`,
-        },
+        // {
+        //     title: "Description",
+        //     className: "align-middle",
+        //     data: (data) => `<span class="d-block text-prm-custom">${data.remark ?? "__"}</span>`,
+        // },
+        // {
+        //     title: "Status",
+        //     className: "align-middle text-center",
+        //     data: (data) => {
+        //         const status_id = data.status_id;
+        //         let cls = "badge text-warning bg-danger-subtle border border-danger";
+        //         if (status_id == 3) cls = "badge text-warning bg-warning-subtle border border-warning";
+        //         else if (status_id == 2) cls = "badge text-success bg-success-subtle border border-success";
+        //         else if (status_id == 1) cls = "badge text-danger bg-danger-subtle border border-danger";
+        //         return `<span class="${cls} text-capitalize d-inline-block text-center" style="min-width:90px">${data.status ?? ""}</span>`;
+        //     },
+        // },
+        // {
+        //     transTitle: "titles.Updated By",
+        //     className: "align-middle text-nowrap",
+        //     data: (data) => `<div class="d-flex flex-column">
+        //         <span class="text-capitalize text-start text-prm-custom fw-semibold">${data.update_user ?? ""}</span>
+        //         <span class="text-muted">${data.updated_at ?? ""}</span>
+        //     </div>`,
+        // },
         {
             transTitle: "titles.Action",
             className: "col_action align-middle",
@@ -96,7 +107,7 @@ var BillPaymentComponent = (() => {
         if (mThis.initAlready) return;
 
         mThis.BillPaymentListView = new ListView("_bill_payment_list", {
-            fetchApi: `${main_view.base_url}/prm/bill/list-paginate`,
+            fetchApi: `${main_view.base_url}/prm/bill-payment/list-paginate`,
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
@@ -168,37 +179,37 @@ var BillPaymentComponent = (() => {
             actionButtonClass: "btn_dropdown_vendor_action",
             cssClass: "bg-white shadow",
             menus: [
-                {
-                    html: '<span class="ps-2" vslang="titles.Modify Bill Record"></span>',
-                    icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
-                    cssClass: "border-bottom pb-2",
-                    name: "modify_bill",
-                },
+                // {
+                //     html: '<span class="ps-2" vslang="titles.Modify Bill Record"></span>',
+                //     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
+                //     cssClass: "border-bottom pb-2",
+                //     name: "modify_bill",
+                // },
                 {
                     html: '<span class="ps-2" vslang="titles.Delete Bill Record"></span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "delete_bill",
                 },
+                // {
+                //     html: '<span class="ps-2">View Attachment</span>',
+                //     icon: `<i class="fa-regular fa-eye fa-lg" style="color:rgb(56,49,111);"></i>`,
+                //     cssClass: "border-bottom pb-2",
+                //     name: "view_attachment",
+                // },
                 {
-                    html: '<span class="ps-2">View Attachment</span>',
-                    icon: `<i class="fa-regular fa-eye fa-lg" style="color:rgb(56,49,111);"></i>`,
+                    html: '<span class="ps-2">View Detail</span>',
+                    icon: `<i class="fa-solid fa-print" style="color: rgb(22, 80, 137);"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "view_attachment",
-                },
-                {
-                    html: '<span class="ps-2">Bill Payment</span>',
-                    icon: `<i class="fa-solid fa-sack-dollar" style="color:rgb(22,80,137);"></i>`,
-                    cssClass: "border-bottom pb-2",
-                    name: "bill_payment",
+                    name: "view_bill",
                 },
             ],
             onClick: (menuLink, id, name) => {
                 switch (name) {
                     case "modify_bill":   mThis.editBill(id, menuLink); break;
                     case "delete_bill":   mThis.deleteBill(id, menuLink); break;
-                    case "view_attachment": mThis.viewAttachment(id);
-                    case "bill_payment":  mThis.billPayment(id);
+                    case "view_attachment": mThis.viewAttachment(id); break;
+                    case "print_bill":  mThis.printBill(id); break;
                     default: break;
                 }
             },
@@ -273,14 +284,24 @@ var BillPaymentComponent = (() => {
             });
     };
 
-    // mThis.billPayment = (id, menuLink) => {
-    //     let op = {
-    //         id: null,
-    //         btn: menuLink,
-    //         onClose: () => mThis.BillPaymentListView.showPage(),
-    //     };
-    //     alert("coming soon!");
-    // };
+    mThis.printBill = (id, menuLink) => {
+        let op = {
+            id: null,
+            btn: menuLink,
+            onClose: () => mThis.BillPaymentListView.showPage(),
+        };
+        alert("coming soon!");
+    };
+    mThis.billPayment = (id) => {
+        BillPaymentDialog.show({
+            id: null,                    
+            bill_id: id,             
+            btn: null,
+            onClose: () => {
+                mThis.BillListView.showPage(mThis.getFilterData());
+            },
+        });
+    };
 
     mThis.prepareFormOptions = (onFinish) => {
         vsapi.call(`${main_view.base_url}/prm/bill/form-options`, null, null, null)
@@ -295,6 +316,7 @@ var BillPaymentComponent = (() => {
     mThis.show = (options) => {
         mThis.init();
         mThis.options = options;
+        mThis.btnAdd.classList.add("d-none");
         mThis.prepareFormOptions(() => {
             main_view.setContentView(mThis.self, mThis.title_prop);
             mThis.BillPaymentListView.showPage(mThis.getFilterData());
@@ -305,425 +327,204 @@ var BillPaymentComponent = (() => {
 })();
 
 
-
 const BillPaymentDialog = (() => {
     const self = {};
     let dialog = null;
 
-    /* ── inline styles injected once ── */
-    const injectStyles = (() => {
-        let done = false;
-        return () => {
-            if (done) return;
-            done = true;
-            const css = `
-            /* ── PO-style dialog reset ── */
-            .bpd-wrap *{box-sizing:border-box;}
-            .bpd-wrap{font-size:13px;color:#222;}
-
-            /* header strip */
-            .bpd-wrap .modal-header{
-                background:#e8ecf6!important;
-                border-bottom:1px solid #cdd3e8!important;
-                padding:12px 20px!important;
-            }
-            .bpd-wrap .modal-title{font-size:15px;font-weight:600;color:#1e2a52;}
-
-            /* field rows: label : input */
-            .bpd-fields{display:grid;grid-template-columns:1fr 1fr;column-gap:48px;margin-bottom:16px;}
-            .bpd-row{display:flex;align-items:center;margin-bottom:12px;gap:0;}
-            .bpd-row label{
-                width:110px;flex-shrink:0;
-                font-size:13px;font-weight:600;color:#1e2a52;
-            }
-            .bpd-row .bpd-sep{color:#b0b8d0;margin:0 10px 0 0;font-weight:400;}
-            .bpd-row input,.bpd-row select{
-                flex:1;height:34px;
-                border:1px solid #d0d6e8;border-radius:6px;
-                padding:0 10px;font-size:13px;color:#222;
-                background:#fff;outline:none;
-                transition:border-color .15s,box-shadow .15s;
-            }
-            .bpd-row input:focus,.bpd-row select:focus{
-                border-color:#5b72d8;
-                box-shadow:0 0 0 3px rgba(91,114,216,.14);
-            }
-            .bpd-row input::placeholder,.bpd-row select option[value=""]{color:#b0b8d0;}
-
-            /* file row */
-            .bpd-file-wrap{flex:1;display:flex;gap:8px;}
-            .bpd-file-wrap input[type=text]{
-                flex:1;height:34px;border:1px solid #d0d6e8;border-radius:6px;
-                padding:0 10px;font-size:13px;color:#888;background:#f8f9fd;
-            }
-            .bpd-choose{
-                height:34px;padding:0 14px;white-space:nowrap;cursor:pointer;
-                background:#e8ecf6;border:1px solid #cdd3e8;border-radius:6px;
-                font-size:13px;font-weight:500;color:#3a4a7a;
-                transition:background .15s;
-            }
-            .bpd-choose:hover{background:#d4d9ee;}
-
-            /* amounts section */
-            .bpd-amounts{
-                background:#f2f4fb;border:1px solid #dde2f2;border-radius:8px;
-                padding:14px 18px;margin-bottom:16px;
-            }
-            .bpd-amounts-grid{display:grid;grid-template-columns:1fr 1fr;column-gap:48px;}
-
-            /* totals box */
-            .bpd-totals-wrap{display:flex;justify-content:flex-end;margin-bottom:16px;}
-            .bpd-totals{
-                background:#fff;border:1px solid #dde2f2;border-radius:8px;
-                padding:14px 20px;min-width:270px;
-            }
-            .bpd-t-row{
-                display:flex;align-items:center;justify-content:space-between;
-                margin-bottom:10px;font-size:13px;
-            }
-            .bpd-t-row label{font-weight:600;color:#1e2a52;min-width:90px;}
-            .bpd-t-row .bpd-sep{color:#b0b8d0;margin:0 10px;}
-            .bpd-t-row .bpd-val{
-                min-width:100px;text-align:right;
-                font-variant-numeric:tabular-nums;color:#222;
-            }
-            .bpd-t-row.bpd-grand{
-                border-top:1px solid #dde2f2;padding-top:10px;margin-top:4px;font-size:14px;
-            }
-            .bpd-t-row.bpd-grand label,
-            .bpd-t-row.bpd-grand .bpd-val{font-weight:700;color:#1e2a52;}
-            .bpd-balance-positive{color:#15803d!important;}
-            .bpd-balance-negative{color:#dc2626!important;}
-
-            /* description */
-            .bpd-textarea{
-                width:100%;min-height:72px;resize:vertical;
-                border:1px solid #d0d6e8;border-radius:6px;
-                padding:9px 11px;font-size:13px;color:#222;
-                outline:none;transition:border-color .15s,box-shadow .15s;
-                font-family:inherit;
-            }
-            .bpd-textarea:focus{border-color:#5b72d8;box-shadow:0 0 0 3px rgba(91,114,216,.14);}
-            .bpd-textarea::placeholder{color:#b0b8d0;}
-
-            /* footer buttons */
-            .bpd-wrap .modal-footer{
-                background:#f2f4fb!important;
-                border-top:1px solid #dde2f2!important;
-                padding:12px 20px!important;
-            }
-            .bpd-wrap .modal-footer .btn-secondary{
-                background:#f59e0b!important;border-color:#f59e0b!important;
-                color:#fff!important;font-weight:600;
-            }
-            .bpd-wrap .modal-footer .btn-secondary:hover{background:#d97706!important;border-color:#d97706!important;}
-            .bpd-wrap .modal-footer .btn-primary{
-                background:#fff!important;border:1px solid #cdd3e8!important;
-                color:#1e2a52!important;font-weight:600;
-            }
-            .bpd-wrap .modal-footer .btn-primary:hover{
-                background:#eef1fb!important;border-color:#5b72d8!important;color:#3a4a7a!important;
-            }
-
-            /* section label */
-            .bpd-section-label{
-                font-size:11px;font-weight:700;letter-spacing:.6px;
-                text-transform:uppercase;color:#7a85a8;
-                margin-bottom:10px;padding-bottom:6px;
-                border-bottom:1px solid #dde2f2;
-            }
-            `;
-            const tag = document.createElement("style");
-            tag.textContent = css;
-            document.head.appendChild(tag);
-        };
-    })();
-
     self.show = (op) => {
-        injectStyles();
-
         dialog = dialog || new GeneralDialog({
-            cssClass: "modal-lg vs-modal bpd-wrap",
+            cssClass: "modal-lg vs-modal",
             backdrop: "static",
             keyboard: true,
 
-            /* ── dialog HTML ── */
-            createContent: () => [`
+            createContent: () => {
+                return [
+                    `<div class="row g-3">
+                        <input name="vendorid" class="d-none data-input form-control" data-field="vendor_id">
 
-                <!-- hidden vendor id -->
-                <input name="vendorid" class="d-none data-input" data-field="vendor_id">
-
-                <!-- ── TOP FIELDS ── -->
-                <div class="bpd-fields">
-
-                    <!-- LEFT -->
-                    <div>
-                        <div class="bpd-row">
-                            <label>Payee (Vendor)</label>
-                            <span class="bpd-sep">:</span>
-                            <input name="vendor"
-                                class="data-input"
-                                data-field="vendor_name"
-                                placeholder="Search vendor…"
-                                autocomplete="off"/>
+                        <div class="col-md-5">
+                            <div class="material-input outlined">
+                                <input style="cursor: not-allowed;" name="vendor" class="data-input form-control" data-field="vendor_name" placeholder="Payee (Vendor)" readonly>
+                                <label style="color:#777777;padding-left:6px;">Vendor</label>
+                            </div>
+                            <div class="material-input outlined">
+                                <input style="cursor: not-allowed;" name="phone_number" class="data-input form-control" data-field="phone_number" placeholder=" " readonly>
+                                <label style="color:#777777;padding-left:6px;">Contact</label>
+                            </div>
+                            <div class="material-input outlined">
+                                <input type="text" name="payer" class="data-input form-control" data-field="payer" placeholder=" " >
+                                <label style="color:#777777;padding-left:6px;">Payer</label>
+                            </div>
+                            <div class="material-input outlined">
+                               <select data-style="material" name="payment_method" class="data-input form-control" data-field="payment_method">
+                                    <option value="cash">Cash</option>
+                                    <option value="bank">Bank Transfer</option>
+                                    <option value="cheque">Cheque</option>
+                                    <option value="other">Other</option>
+                                </select>
+                                <label style="color:#777777;padding-left:6px;">Payment Method</label>
+                            </div>
+                            
                         </div>
-                        <div class="bpd-row">
-                            <label>Phone</label>
-                            <span class="bpd-sep">:</span>
-                            <input name="phone_number"
-                                class="data-input"
-                                data-field="phone_number"
-                                placeholder="Auto-filled"
-                                readonly/>
+                        <div class="col-md-2"></div>
+                        <div class="col-md-5">
+                            <div class="material-input outlined">
+                                <input type="text" data-type="date" name="payment_date" required class="data-input form-control" data-field="payment_date" />
+                                <label style="color:#777777;padding-left:6px;">Payment Date</label>
+                            </div>
+                            <div class="material-input outlined">
+                                <input style="cursor: not-allowed;" name="bill_number" class="data-input form-control" data-field="bill_number" placeholder=" " readonly>
+                                <label style="color:#777777;padding-left:6px;">Bill Number</label>
+                            </div>
+                            <div class="material-input outlined">
+                                <input style="cursor: not-allowed;" name="expense_type" class="data-input form-control" placeholder=" " readonly>
+                                <label style="color:#777777;padding-left:6px;">Expense Type</label>
+                            </div>
+                            <div class="material-input outlined">
+                                <select data-style="material" name="currency" class="data-input form-control" data-field="currency">
+                                    <option value="USD">USD - $</option>
+                                    <option value="KHR">KHR - ៛</option>
+                                </select>
+                                <label style="color:#777777;padding-left:6px;">Currency</label>
+                            </div>
+                            
                         </div>
-                        <div class="bpd-row">
-                            <label>Payer</label>
-                            <span class="bpd-sep">:</span>
-                            <input name="code"
-                                class="data-input"
-                                data-field="code"
-                                placeholder="Optional"/>
+                        <div class="col-3">
+                            <div class="material-input outlined bg-light rounded">
+                                <input name="total_amount" class="form-control text-end" style="cursor:not-allowed;" readonly>
+                                <label class="text-muted small px-2">Total Amount</label>
+                            </div>
                         </div>
-                        <div class="bpd-row">
-                            <label>Category</label>
-                            <span class="bpd-sep">:</span>
-                            <input name="category"
-                                class="data-input"
-                                data-field="category"
-                                placeholder="e.g. Utilities"/>
+                        <div class="col-3">
+                            <div class="material-input outlined bg-light rounded">
+                                <input name="paid_amount" data-field="paid_amount" class="form-control text-end" style="cursor:not-allowed;" readonly>
+                                <label class="text-muted small px-2">Already Paid</label>
+                            </div>
                         </div>
-                    </div>
-
-                    <!-- RIGHT -->
-                    <div>
-                        <div class="bpd-row">
-                            <label>Payment Date</label>
-                            <span class="bpd-sep">:</span>
-                            <input type="text"
-                                data-type="date"
-                                name="bill_date"
-                                required
-                                class="data-input form_input"
-                                data-field="bill_date"/>
+                        <div class="col-3">
+                            <div class="material-input outlined border-primary">
+                                <input name="amount" data-field="amount" class="data-input form-control text-end fw-bold" placeholder="0.00">
+                                <label class="text-primary px-2">Paying Now</label>
+                            </div>
                         </div>
-                        <div class="bpd-row">
-                            <label>Bill Number</label>
-                            <span class="bpd-sep">:</span>
-                            <input name="ref_no"
-                                class="data-input"
-                                data-field="ref_no"
-                                placeholder="Ref / Invoice no."/>
+                        <div class="col-3">
+                            <div class="material-input outlined bg-light rounded">
+                                <input name="balance" class="form-control text-end fw-bold" style="cursor:not-allowed; color:#dc3545;" readonly>
+                                <label class="fw-bold px-2" style="color:#dc3545;">Remaining</label>
+                            </div>
                         </div>
-                        <div class="bpd-row">
-                            <label>Item</label>
-                            <span class="bpd-sep">:</span>
-                            <input name="item"
-                                class="data-input"
-                                data-field="item"
-                                placeholder=" "/>
+
+                        <div class="col-12">
+                            <div class="material-input outlined">
+                                <textarea class="data-input form-control" data-field="note" placeholder=" "></textarea>
+                                <label style="color:#777777;padding-left:6px;">Description</label>
+                            </div>
                         </div>
-                        <div class="bpd-row">
-                            <label>Payment Method</label>
-                            <span class="bpd-sep">:</span>
-                            <input name="item"
-                                class="data-input"
-                                data-field="item"
-                                placeholder=" " />
-                        </div>
-                        
-                    </div>
-                </div>
-
-                <!-- ── AMOUNTS ── -->
-                <div class="bpd-amounts">
-                    <div class="bpd-section-label">Payment amounts</div>
-                    <div class="bpd-amounts-grid">
-                        <div class="bpd-row">
-                            <label>Total Amount</label>
-                            <span class="bpd-sep">:</span>
-                            <input name="total_amount"
-                                id="_bpd_total"
-                                class="data-input"
-                                data-field="total_amount"
-                                type="number" min="0" step="0.01"
-                                placeholder="0.00"
-                                oninput="_bpdRecalc()"/>
-                        </div>
-                        <div class="bpd-row">
-                            <label>Amount Paid</label>
-                            <span class="bpd-sep">:</span>
-                            <input name="paid_amount"
-                                id="_bpd_paid"
-                                class="data-input"
-                                data-field="paid_amount"
-                                type="number" min="0" step="0.01"
-                                placeholder="0.00"
-                                oninput="_bpdRecalc()"/>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ── BALANCE SUMMARY ── -->
-                <div class="bpd-totals-wrap">
-                    <div class="bpd-totals">
-                        <div class="bpd-t-row">
-                            <label>Total Amount</label>
-                            <span class="bpd-sep">:</span>
-                            <span class="bpd-val" id="_bpd_s_total">$ 0.00</span>
-                        </div>
-                        <div class="bpd-t-row">
-                            <label>Amount Paid</label>
-                            <span class="bpd-sep">:</span>
-                            <span class="bpd-val bpd-balance-positive" id="_bpd_s_paid">$ 0.00</span>
-                        </div>
-                        <div class="bpd-t-row bpd-grand">
-                            <label>Balance</label>
-                            <span class="bpd-sep">:</span>
-                            <span class="bpd-val" id="_bpd_s_balance">$ 0.00</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ── DESCRIPTION ── -->
-                <textarea name="remark"
-                    class="data-input bpd-textarea"
-                    data-field="remark"
-                    placeholder="Description"></textarea>
-
-
-            `].join(""),
-
-
-            contentCreated: (me) => {
-
-                const fileInput = me.divModal.querySelector("#_bpd_file_input");
-                const fileLabel = me.divModal.querySelector("#_bpd_file_label");
-                if (fileInput && fileLabel) {
-                    fileInput.addEventListener("change", () => {
-                        fileLabel.value = fileInput.files[0]?.name || "";
-                    });
-                }
-
-                const applyVendorInfo = (vendorId) => {
-                    me._selectedVendorId = vendorId || "";
-                    if (me.controls.vendor_id) me.controls.vendor_id.value = vendorId || "";
-                    if (!vendorId) {
-                        if (me.controls.phone_number) me.controls.phone_number.value = "";
-                        return;
-                    }
-                    vsapi.post(`${main_view.base_url}/prm/vendor/options-vendor-info`, { vendor_id: vendorId }, {})
-                        .then(res => {
-                            const v = res.data?.vendor || {};
-                            if (me.controls.phone_number) me.controls.phone_number.value = v.phone_number || "";
-                        })
-                        .catch(() => {});
-                };
-
-                if (me.controls.vendor) {
-                    me.searchVendor = VSSearchInput.init(me.controls.vendor, {
-                        type: "select",
-                        prefetch: true,
-                        minChars: 0,
-                        api: { endpoint: `${main_view.base_url}/prm/bill/form-options` },
-                        processResponse: (res) => {
-                            const vendors = res?.data?.vendors || [];
-                            return (Array.isArray(vendors) ? vendors : []).map(v => ({
-                                ...v,
-                                vendor: v.vendor || v.name || v.vendor_name || v.code || "",
-                                phone_number: v.phone_number || v.contact_phone || v.phone || "",
-                            }));
-                        },
-                        columns: { vendor: "VENDOR", phone_number: "PHONE" },
-                        showColumnHeader: true,
-                        placeholder: "Search vendor",
-                        onSelect: (vendor) => {
-                            me.controls.vendor.value = vendor?.vendor || "";
-                            applyVendorInfo(vendor?.id || "");
-                        },
-                    });
-
-                    if (me._selectedVendorId) applyVendorInfo(me._selectedVendorId);
-                }
-
-                // me.controls.div_invoice_summary =
-                //     me.divModal.querySelector('[name="div_invoice_summary"]');
-
-                /* hide default close button */
-                const btnClose = me.divModal.querySelector(".modal-header button[data-bs-dismiss]");
-                if (btnClose) btnClose.classList.add("d-none");
+                    </div>`
+                ].join("");
             },
-
-            configSelect: [],
 
             prepareFormOptions: {
                 createTitle: "Bill Payment Voucher",
-                modifyTitle: "Modify Bill Payment",
-                targetProp: "bill_details",
+                modifyTitle: "Process Payment",
+                targetProp: "bill",        
                 api: {
-                    endpoint: [main_view.base_url, "/prm/bill/form-options"].join(""),
-                    params: (op) => ({ id: op.id }),
-                },
+                    endpoint: `${main_view.base_url}/prm/bill-payment/form-options`,
+                    params: (op) => ({
+                        bill_id: op.bill_id || op.id || null
+                    })
+                }
             },
 
             onPrepareForm: (me, data) => {
-                const details = data?.bill_details;
+              
+                const bill = data?.bill || data?.bill_details;
 
-                if (details?.file_image) {
-                    const fl = me.divModal.querySelector("#_bpd_file_label");
-                    if (fl) fl.value = details.file_image;
+                const totalAmount = Number(bill.balance || 0); 
+                const amountInput = me.controls.amount;
+                const balanceInput = me.controls.balance;
+
+                if (me.controls.total_amount) me.controls.total_amount.value = Number(bill.total_amount || 0).toFixed(2); 
+                if (balanceInput) balanceInput.value = bill.balance ?? '';  
+
+                if (amountInput && balanceInput) {
+                    amountInput.addEventListener('input', () => {
+                        let paid = parseFloat(amountInput.value) || 0;
+                        if (paid > totalAmount) {
+                            amountInput.value = totalAmount.toFixed(2);
+                            paid = totalAmount;
+                        }
+                        balanceInput.value = Math.max(0, totalAmount - paid).toFixed(2);
+                    });
                 }
 
-                if (details?.vendor_id) {
-                    me._selectedVendorId = details.vendor_id;
-                    if (me.controls.vendor_id)    me.controls.vendor_id.value    = details.vendor_id;
-                    if (me.controls.vendor)        me.controls.vendor.value       = details.vendor_name   || "";
-                    if (me.controls.phone_number)  me.controls.phone_number.value = details.phone_number  || "";
-                }
+                if (bill && bill.id) {
+                    console.log(bill);
 
-                /* refresh balance summary when editing */
-                setTimeout(() => _bpdRecalc(), 100);
+                    if (me.controls.vendor)       { me.controls.vendor.value       = bill.vendor_name || '';                       me.controls.vendor.readOnly       = true; }
+                    if (me.controls.phone_number) { me.controls.phone_number.value = bill.phone_number || '';                      me.controls.phone_number.readOnly = true; }
+                    if (me.controls.expense_type) { me.controls.expense_type.value = bill.expense_type_name || '';                 me.controls.expense_type.readOnly = true; }
+                    if (me.controls.bill_number)  { me.controls.bill_number.value  = bill.bill_number || '';                       me.controls.bill_number.readOnly  = true; }
+                    if (me.controls.total_amount) { me.controls.total_amount.value = Number(bill.total_amount || 0).toFixed(2);    me.controls.total_amount.readOnly = true; }
+                    if (me.controls.paid_amount)  { me.controls.paid_amount.value  = Number(bill.paid_amount  || 0).toFixed(2);    me.controls.paid_amount.readOnly  = true; } // ✅ added
+                    if (me.controls.balance)      { me.controls.balance.value      = Number(bill.balance      || 0).toFixed(2);    me.controls.balance.readOnly      = true; }
+
+                    if (me.controls.payment_date) {
+                        const today = new Date().toISOString().split('T')[0];
+                        me.controls.payment_date.value = today;
+                    }
+
+                    // Auto calculate remaining balance based on what's left (bill.balance), not total
+                    const remaining  = Number(bill.balance || 0);
+                    const amountInput  = me.controls.amount;
+                    const balanceInput = me.controls.balance;
+
+                    if (amountInput && balanceInput) {
+                        amountInput.addEventListener('input', () => {
+                            let paying = parseFloat(amountInput.value) || 0;
+                            if (paying > remaining) { amountInput.value = remaining.toFixed(2); paying = remaining; }
+                            balanceInput.value = Math.max(0, remaining - paying).toFixed(2);
+                        });
+                    }
+
+                } else {
+                    console.error("Bill data is missing in response", data);
+                    cv_interact.warning("Could not load bill details.");
+                }
             },
-
             buttons: [
                 {
                     label: '<span vslang="buttons.Cancel"></span>',
                     cssClass: "btn btn-secondary",
-                    click: (me) => me.hide(false),
+                    click: (me) => me.hide(false)
                 },
                 {
-                    label: '<span vslang="buttons.Submit"></span>',
+                    label: '<span vslang="buttons.Confirm Payment"></span>',
                     cssClass: "btn btn-primary",
                     click: (me, btn) => {
                         const op = me.getData();
-                        op.id = me.dataOptions.id;
+                        op.bill_id = me.dataOptions.bill_id || null;
 
-                        if (me._selectedVendorId != null && me._selectedVendorId !== undefined) {
-                            op.vendor_id = me._selectedVendorId;
+                        if (!op.bill_id) {
+                            cv_interact.error("Bill ID is missing.");
+                            return;
                         }
 
-                        // if (me.fileData) {
-                        //     op.photo = me.fileData.base64 || me.fileData.data
-                        //         || me.fileData.fileData   || me.fileData.content || null;
-                        //     op.ext   = me.fileData.ext    || me.fileData.fileType
-                        //         || me.fileData.extension  || null;
-                        // }
-
-                        vsapi.call([main_view.base_url, "/prm/bill/save"].join(""), op, btn, null)
+                        vsapi.call(`${main_view.base_url}/prm/bill-payment/save`, op, btn, null)
                             .then((res) => {
                                 if (res.status_code === 200) {
                                     me.hide(true, op);
-                                    cv_interact.success(
-                                        me.dataOptions.id > 0
-                                            ? "Bill has been updated successfully"
-                                            : "New bill has been added successfully"
-                                    );
+                                    cv_interact.success("Payment recorded successfully.");
                                 } else {
-                                    cv_interact.error(res.error_message);
+                                    cv_interact.error(res.error_message || "Failed to record payment.");
                                 }
+                            })
+                            .catch(() => {
+                                cv_interact.error("Network error while saving payment.");
                             });
-                    },
-                },
-            ],
+                    }
+                }
+            ]
         });
 
         dialog.show(op);
@@ -732,26 +533,3 @@ const BillPaymentDialog = (() => {
     return self;
 })();
 
-/* ── global recalc (called by oninput on amount fields) ── */
-function _bpdRecalc() {
-    const total   = parseFloat(document.getElementById("_bpd_total")?.value)   || 0;
-    const paid    = parseFloat(document.getElementById("_bpd_paid")?.value)    || 0;
-    const balance = total - paid;
-
-    const fmt = (n) => "$ " + n.toFixed(2);
-
-    const elTotal   = document.getElementById("_bpd_s_total");
-    const elPaid    = document.getElementById("_bpd_s_paid");
-    const elBalance = document.getElementById("_bpd_s_balance");
-
-    if (elTotal)   elTotal.textContent   = fmt(total);
-    if (elPaid)    elPaid.textContent    = fmt(paid);
-    if (elBalance) {
-        elBalance.textContent = fmt(Math.abs(balance));
-        elBalance.className   = "bpd-val " + (balance > 0
-            ? "bpd-balance-negative"   /* still owes */
-            : balance < 0
-                ? "bpd-balance-positive"   /* overpaid  */
-                : "");                     /* settled   */
-    }
-}
