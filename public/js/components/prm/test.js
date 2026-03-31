@@ -1,1261 +1,480 @@
-"use strict";
+// ==================== PrintInvoiceDialog.js ====================
 
-var ServiceRequestComponent = (function () {
-    const mThis = {};
-    mThis.title_prop = "Service Request";
-    mThis.base_url = main_view.base_url;
-    mThis.self = main_view.VSAppContent.querySelector("#_main_service_request_component");
+const PrintInvoiceDialog = (() => {
+    const self = {};
 
-    const $ = sel => mThis.self.querySelector(sel);
-    Object.assign(mThis, {
-        elSearch: $("#_search_service_request"),
-        elStatus: $("#_service_request_status"),
-        elService_type: $("#_service_request_type_id"),
-        elBtnCreate: $("#_btnServiceRequest"),
-        divFilter: $("#_divFilter_service_request"),
-    });
+    const currency = "$";
 
-    mThis.columns = [
-    { title: "", className: "align-middle text-capitalize" },
-    {
-            transTitle: "titles.Request Num",
-            className: "align-middle text-start",
-            data: (data) => data.code
-                ? `<span class="text-yp-custom">${data.code}</span>`
-                : `<span class="text-muted fst-italic">N/A</span>`,
-    },
-    {
-        transTitle: "titles.Tenant",
-        className: "align-middle",
-        data: (data) => `<span class="text-primary-custom">${data.tenant_name ?? ''}</span>`
-    },
-    {
-        transTitle: "titles.Room Code",
-        className: "align-middle",
-        data: (data) => `<span class="text-primary-custom user-select-none">${data.space_code ?? ''}</span>`
-    },
-    {
-        transTitle: "titles.Category",
-        className: "align-middle",
-        data: (data) => `<span class="text-primary-custom">${data.service_type ?? ''}</span>`
-    },
-    {
-        transTitle: "titles.Service",
-        className: "align-middle",
-        data: (data) => `<span class="text-primary-custom">${data.service_name ?? ''}</span>`
-    },
-    {
-        transTitle: "titles.Price",
-        className: "align-middle",
-        data: (data) => {
-            const cur = data.cur_symbol ?? '$';
-            let mainPrice = data.total_price ?? data.service_price;
-            let displayPrice = mainPrice
-                ? Number(mainPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-                : '—';
+    const fmt = (n) =>
+        Number(n || 0).toLocaleString("en-US", { minimumFractionDigits: 2 });
 
-            let extraInfo = '';
+    const formatDate = (dateStr) => {
+        if (!dateStr) return "—";
+        const d = new Date(dateStr);
+        if (isNaN(d.getTime())) return dateStr;
+        return d.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
+    };
 
-            if (data.unit_type === '2' && data.duration_hours > 0 && data.service_price) {
-                const base = Number(data.service_price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                extraInfo = `<small class="text-muted d-block">$${base} × ${data.duration_hours}h</small>`;
-            } else if (data.unit_type) {
-                extraInfo = `<small class="text-nowrap text-muted d-block">/ ${data.unit_type}</small>`;
+    /* ── Print only the invoice via hidden iframe ── */
+    const printViaIframe = (invoiceEl) => {
+        const styleHTML  = Array.from(document.querySelectorAll("style")).map(s => s.outerHTML).join("\n");
+        const biLink     = Array.from(document.querySelectorAll('link[href*="bootstrap-icons"]')).map(l => l.outerHTML).join("\n");
+        const fontLink   = `<link rel="preconnect" href="https://fonts.googleapis.com"/>
+                            <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>`;
+
+        const fullDoc = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Invoice</title>
+${fontLink}${biLink}${styleHTML}
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter','Segoe UI',sans-serif;background:#fff;padding:0;
+       -webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .pi-action-bar{display:none!important}
+  @media print{body{background:#fff!important}.pi-action-bar{display:none!important}}
+</style>
+</head>
+<body>${invoiceEl.outerHTML}</body>
+</html>`;
+
+        const iframe = document.createElement("iframe");
+        iframe.style.cssText = "position:fixed;top:0;left:0;width:0;height:0;border:none;opacity:0;pointer-events:none;z-index:-9999;";
+        document.body.appendChild(iframe);
+        const iDoc = iframe.contentWindow.document;
+        iDoc.open(); iDoc.write(fullDoc); iDoc.close();
+        iframe.onload = () => {
+            setTimeout(() => {
+                iframe.contentWindow.focus();
+                iframe.contentWindow.print();
+                setTimeout(() => document.body.removeChild(iframe), 2000);
+            }, 400);
+        };
+    };
+
+    /* ── Build invoice HTML ── */
+    const buildInvoiceHTML = (invoice) => {
+        const validItems = (invoice.items || []).filter(
+            (item) => parseFloat(item.price || 0) > 0 || parseFloat(item.total || 0) > 0 || parseFloat(item.amount || 0) > 0
+        );
+
+        /* Recalculate totals */
+        let subtotal = 0, totalDiscount = 0, totalTax = 0;
+        validItems.forEach((item) => {
+            const qty       = parseFloat(item.qty   || 1);
+            const price     = parseFloat(item.price || 0);
+            const disc      = parseFloat(item.discount || item.special_discount_value || 0);
+            const discType  = (item.discount_type || item.special_discount_type || "percent").toLowerCase();
+            const taxRate   = parseFloat(item.tax_rate || 0);
+            const lineBase  = qty * price;
+            const discAmt   = (discType === "amount" || discType === "$") ? disc : (lineBase * disc / 100);
+            const afterDisc = lineBase - discAmt;
+            subtotal       += lineBase;
+            totalDiscount  += discAmt;
+            totalTax       += (afterDisc * taxRate / 100);
+        });
+
+        const grandTotal = subtotal - totalDiscount + totalTax;
+        const paid       = parseFloat(invoice.paid_amount || 0);
+        const balance    = Math.max(0, grandTotal - paid);
+
+        const today = new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
+
+        /* ── Line item rows — all 10 columns ── */
+        const itemRows = validItems.map((item, i) => {
+            const qty      = parseFloat(item.qty   || 1);
+            const price    = parseFloat(item.price || 0);
+            const total    = parseFloat(item.total || item.amount || 0);
+            const rawType  = (item.type || "service").toLowerCase();
+            const disc     = parseFloat(item.discount || item.special_discount_value || 0);
+            const discType = (item.discount_type || item.special_discount_type || "percent").toLowerCase();
+            const taxRate  = parseFloat(item.tax_rate || 0);
+
+            /* Discount display */
+            let discDisplay = "—";
+            if (disc > 0) {
+                discDisplay = (discType === "amount" || discType === "$")
+                    ? `-${currency}${fmt(disc)}`
+                    : `-${fmt(disc)}%`;
             }
+
+            /* Type badge colours */
+            const typeColors = {
+                rent:    ["#dbeafe", "#1d4ed8"],
+                utility: ["#ffedd5", "#c2410c"],
+                service: ["#f3f4f6", "#374151"],
+            };
+            const [tbg, tfg] = typeColors[rawType] || typeColors.service;
+
+            /* Alternating row background */
+            const rowStyle = i % 2 !== 0 ? 'style="background:#f8faff;"' : '';
 
             return `
-                <span class="fw-bold fs-6">${cur} ${displayPrice}</span>
-                ${extraInfo}
-            `;
-        }
-    },
-    {
-        transTitle: "titles.Description",
-        className: "align-middle",
-        data: (data) => `<span class="text-primary-custom">${data.description ?? ''}</span>`
-    },
-    {
-        transTitle: "titles.Schedule Date", className: "align-middle text-center",
-        data: (data) => {
-            const rawDate = (data.scheduled_date || '').toString().trim();
-            const rawTime = (data.start_time || '').toString().trim();
+            <tr ${rowStyle}>
+                <td class="pi-td-desc">
+                    <div class="pi-item-name">${item.description || item.remarks || item.item_name || "—"}</div>
+                </td>
+                <td class="pi-td-c">
+                    <span class="pi-type-badge" style="background:${tbg};color:${tfg};">${rawType}</span>
+                </td>
+                <td class="pi-td-c">${qty}</td>
+                <td class="pi-td-c">${item.unit_type ? item.unit_type.trim() : "—"}</td>
+                <td class="pi-td-c">${formatDate(item.start_date)}</td>
+                <td class="pi-td-c">${formatDate(item.end_date)}</td>
+                <td class="pi-td-r">${currency}${fmt(price)}</td>
+                <td class="pi-td-r pi-disc-cell">${discDisplay}</td>
+                <td class="pi-td-c pi-tax-cell">${taxRate > 0 ? `+${taxRate}%` : "—"}</td>
+                <td class="pi-td-r pi-bold pi-total-cell">${currency}${fmt(total)}</td>
+            </tr>`;
+        }).join("");
 
-            let datePart = rawDate;
-            let timePart = rawTime.substring(0, 5);
+        const discRow = totalDiscount > 0
+            ? `<tr><td>Discount</td><td class="pi-red">-${currency}${fmt(totalDiscount)}</td></tr>` : "";
+        const taxRow  = totalTax > 0
+            ? `<tr><td>Tax</td><td class="pi-blue">+${currency}${fmt(totalTax)}</td></tr>` : "";
 
-            // Try to normalise date to YYYY-MM-DD if it's a valid date string.
-            if (rawDate) {
-                const d = new Date(rawDate);
-                if (!Number.isNaN(d.getTime())) {
-                    const y = d.getFullYear();
-                    const m = String(d.getMonth() + 1).padStart(2, '0');
-                    const day = String(d.getDate()).padStart(2, '0');
-                    datePart = `${y}-${m}-${day}`;
-                }
-            }
+        return `
+<style>
+.pi-root *, .pi-root *::before, .pi-root *::after { box-sizing: border-box; }
+.pi-root {
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    color: #1f2937;
+    background: #fff;
+    overflow: hidden;
+}
 
-            if (!datePart && !timePart) {
-                return '<span class="text-yp-custom">...</span>';
-            }
+/* ── HEADER ── */
+.pi-head {
+    background: linear-gradient(135deg, #1a56db, #60a5fa);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 32px;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+.pi-logo-icon {
+    width: 72px; height: 72px;
+    display: flex; align-items: center; justify-content: center;
+}
+.pi-logo-icon img {
+    width: 72px; height: 72px;
+    border-radius: 10px;
+    object-fit: contain;
+    background: rgba(255,255,255,0.15);
+}
+.pi-title-block { text-align: right; }
+.pi-inv-word {
+    font-size: 26px; font-weight: 800;
+    color: #fff; letter-spacing: 1px; line-height: 1;
+}
+.pi-inv-num {
+    font-size: 13px; color: #e0e7ff; margin-top: 6px;
+}
+.pi-inv-num span { font-weight: 800; color: #fde68a; font-size: 15px; }
 
-            if (!timePart) {
-                return `<span class="text-yp-custom">${datePart}</span>`;
-            }
+/* ── META ROW ── */
+.pi-meta {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    padding: 16px 32px; gap: 16px; flex-wrap: wrap;
+    background: #f8faff;
+    border-top: 1px solid #e8ecf0;
+    border-bottom: 1px solid #e8ecf0;
+}
+.pi-meta-label { font-size: 9px; font-weight: 700; color: #9ca3af; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 5px; }
+.pi-bill-to    { flex: 1; min-width: 180px; }
+.pi-tenant-name   { font-size: 17px; font-weight: 700; color: #111827; }
+.pi-tenant-detail { font-size: 11px; color: #6b7280; margin-top: 3px; display: flex; align-items: center; gap: 5px; }
+.pi-tenant-detail i { color: #1a56db; font-size: 10px; }
+.pi-meta-dates { min-width: 110px; }
+.pi-date-val   { font-size: 12px; font-weight: 600; color: #374151; }
+.pi-date-item  { margin-bottom: 8px; }
+.pi-amount-due { min-width: 150px; text-align: right; }
+.pi-due-box {
+    display: inline-block; background: #1a56db; color: #fff;
+    border-radius: 10px; padding: 8px 18px; text-align: center;
+}
+.pi-due-lbl { font-size: 9px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; opacity: .75; }
+.pi-due-amt { font-size: 20px; font-weight: 800; letter-spacing: -.5px; margin-top: 2px; }
 
-            return `
-                <div class="d-flex flex-column align-items-center">
-                    <span class="text-yp-custom text-nowrap">${datePart}</span>
-                    <span class="text-muted small text-nowrap">${timePart}</span>
-                </div>
-            `;
-        }
-    },
-    {
-        transTitle: "titles.Status",
-        className: "align-middle",
-        data:  (row,index,tr)=>{
-            const statusId   = parseInt(row.status_id) || 2;
-            const statusName = (row.status_name || "-").trim();
+/* ── TABLE ── */
+.pi-tbl-wrap { overflow-x: auto; }
+.pi-table {
+    width: 100%; border-collapse: collapse; min-width: 700px;
+}
+.pi-table thead tr { background: #ebedf2; }
+.pi-table thead th {
+    padding: 9px 8px;
+    font-size: 10px; font-weight: 700; color: #1A1647;
+    text-transform: uppercase; letter-spacing: .7px;
+    border-bottom: 2px solid #c7d2fe;
+    white-space: nowrap;
+}
+.pi-th-l { text-align: left; }
+.pi-th-r { text-align: right; }
+.pi-th-c { text-align: center; }
 
-            const badgeClass = mThis.getStatusClass(statusId);
+.pi-table tbody tr { border-bottom: 1px solid #f3f4f6; }
+.pi-table tbody tr:last-child { border-bottom: none; }
+.pi-table tbody td { padding: 8px 8px; font-size: 11px; vertical-align: middle; }
 
-            if (statusId ===2){
-                return `
-                    <button data-id = "${row.id}"
-                            data-statusid="${row.status_id}"
-                            class="btn btn-sm ${badgeClass} fw-bold status-change-btn"
-                            data-id="${row.id}"
-                            data-current-status="${statusId}"
-                            aria-expanded="false">
-                            ${statusName}
-                    </button>
-                `;
-            }else {
-                return `
-                    <span class="badge ${badgeClass.replace('btn-', 'bg-')} fs-6 px-3 py-2"
-                        style="cursor: not-allowed;"
-                        title="This status cannot be changed">
-                        ${statusName}
-                    </span>
-                `;
-            }
+.pi-td-desc   { min-width: 160px; text-align: left; }
+.pi-item-name { font-size: 12px; font-weight: 600; color: #1f2937; }
+.pi-td-c { text-align: center; color: #374151; }
+.pi-td-r { text-align: right; color: #374151; white-space: nowrap; }
+.pi-bold { font-weight: 700; }
+.pi-total-cell { color: #1a56db !important; font-weight: 700; }
+.pi-disc-cell  { color: #dc3545; }
+.pi-tax-cell   { color: #0284c7; }
 
-        }
-    },
-    {
-        transTitle: "titles.Updated By",
-        className: 'align-middle',
-        data: (data) => `
-            <div class="d-flex flex-column">
-                <span class="text-capitalize text-primary-custom fw-semibold">${data.update_user ?? ''}</span>
-                <span class="text-muted small">${data.updated_at ?? ''}</span>
-            </div>`
-    },
-    {
-        transTitle: "titles.Action",
-        className: 'col_action align-middle',
-        data: (data) => `
-            <div class="d-flex justify-content-center align-items-end">
-                <a href="javascript:void(0)"
-                    class="btn--Options ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'} bg-second pointer p-4"
-                    data-id="${data.id}"
-                    data-status-id="${data.request_status_id}"
-                    aria-haspopup="true" aria-expanded="false">
-                    <i class="fa-solid fa-ellipsis-vertical fs-5 text-prm-custom"></i>
-                </a>
-            </div>`
-    }
-];
+.pi-type-badge {
+    display: inline-block; padding: 2px 10px; border-radius: 20px;
+    font-size: 10px; font-weight: 600; text-transform: capitalize; white-space: nowrap;
+}
 
-    mThis.getStatusClass =(status_id)=>{
-        switch(status_id){
-            case 1: {
-                return"btn-danger";
-            }
-            case 2: {
-                return"btn-warning";
-            }
-            case 3:{
-                return"btn-success";
-            }
-        }
-    }
+/* ── TOTALS ── */
+.pi-totals-wrap { padding: 16px 32px 20px; display: flex; justify-content: flex-end; }
+.pi-totals-card {
+    min-width: 270px;
+    border: 1px solid #e8ecf0;
+    border-radius: 10px;
+    overflow: hidden;
+}
+.pi-totals-card table { width: 100%; border-collapse: collapse; }
+.pi-totals-card tr    { border-bottom: 1px solid #f3f4f6; }
+.pi-totals-card tr:last-child { border-bottom: none; }
+.pi-totals-card td    { padding: 8px 14px; font-size: 12px; }
+.pi-totals-card td:first-child { color: #6b7280; }
+.pi-totals-card td:last-child  { text-align: right; font-weight: 600; color: #374151; }
+.pi-total-row td {
+    background: #1a56db !important; color: #fff !important;
+    font-weight: 700 !important; font-size: 13px !important;
+}
+.pi-red   { color: #dc3545 !important; }
+.pi-blue  { color: #0284c7 !important; }
+.pi-green { color: #198754 !important; }
 
-    mThis.init = () => {
-        if (mThis.initAlready) return;
-        mThis.divListView = mThis.divListView || mThis.self.querySelector('#_service_request_list');
-        mThis.ServiceRequestListView = new ListView(mThis.divListView, {
-            //fetchApi: `${main_view.base_url}/prm/service-request/list`, // Old version
-            api:{
-                endpoint:`${main_view.base_url}/prm/service-request/list`, // new version
-                method:'POST',
-                cacheTTL:3000 //Cache data 3 seconds
-            },
-            perPage: 10,
-            apiCluster: main_view.apiCluster,
-            columns: mThis.columns,
-            tableClass: 'table table--white rounded-2 overflow-hidden header-uppercase',
-            rowCreated: (data, index, tr) => {
-                tr.dataset.statusId = data.status_id;
-                tr.classList.add('service-request');
-                tr.setAttribute('id', `service_request_id_${data.id}`);
-            }
-        });
+/* ── REMARKS ── */
+.pi-remarks {
+    margin: 0 32px 16px; padding: 10px 14px;
+    background: #fffbeb; border-left: 4px solid #fbbf24; border-radius: 6px;
+}
+.pi-remarks-lbl { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #b45309; margin-bottom: 3px; }
+.pi-remarks-txt { font-size: 11px; color: #92400e; }
 
-        mThis.table=  mThis.ServiceRequestListView.getTable();
+/* ── FOOTER ── */
+.pi-footer {
+    padding: 16px 32px;
+    background: #f0f5ff;
+    border-top: 1px solid #e0e7ff;
+    display: flex; justify-content: space-between; align-items: flex-end;
+    gap: 16px; flex-wrap: wrap;
+    position: relative; overflow: hidden;
+}
+.pi-footer-wave {
+    position: absolute; bottom: 0; right: 0; width: 50%; height: 100%;
+    background: linear-gradient(135deg, #1a56db18, #60a5fa28);
+    border-radius: 80% 0 0 0; pointer-events: none;
+}
+.pi-footer-left  { position: relative; z-index: 1; }
+.pi-footer-title { font-size: 10px; font-weight: 700; color: #1a56db; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 3px; }
+.pi-footer-body  { font-size: 10px; color: #6b7280; line-height: 1.6; }
+.pi-footer-right { position: relative; z-index: 1; text-align: right; font-size: 10px; color: #9ca3af; }
 
-        mThis.table.addEventListener('click',(e)=>{
-            let btn = VSUtil.closestLimited(e.target,' .status-change-btn');
-            if(btn){
-                const def = btn.dataset.statusid;
-                const id = btn.dataset.id;
-                const data = [
-                    {
-                        id:1,
-                        name: 'Canceled'
-                    },
-                    {
-                        id:2,
-                        name: 'Pending'
-                    },
-                    {
-                        id:3,
-                        name: 'Accepted'
-                    },
-                ];
-                InputBox.show({
-                    type:'select',
-                    title: 'Change Status ',
-                    allowBlankValue: false,
-                    data:data,
-                    textField: 'name',
-                    valueField: 'id',
-                    defaultValue: def,
-                    requiredMessage: 'Select Correct Status',
-                    onConfirm(value, btn, me) {
-                            const p = {id:id,status_id:value.id};
-                            console.log("111111",p);
-                            vsapi.post(`${main_view.base_url}/prm/service-request/set-status`,p,{})
-                            .then(res => {
-                                if(res.status_code == 200){
-                                    mThis.ServiceRequestListView.showPage(mThis.getFilterData());
-                                    me.close();
-                                }
-                                else{
-                                    me.setError(res.error_message);
-                                }
-                            });
+/* ── ACTION BAR ── */
+.pi-action-bar {
+    padding: 12px 32px; border-top: 1px solid #e8ecf0; background: #fff;
+    display: flex; justify-content: flex-end; align-items: center; gap: 8px; flex-wrap: wrap;
+}
+.pi-btn-outline {
+    padding: 7px 16px; border-radius: 8px; border: 1px solid #d1d5db;
+    background: #fff; color: #374151; font-size: 12px; font-weight: 600; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 6px; font-family: inherit; transition: background .15s;
+}
+.pi-btn-outline:hover { background: #f9fafb; }
+.pi-btn-primary {
+    padding: 7px 18px; border-radius: 8px; border: none;
+    background: #1a56db; color: #fff; font-size: 12px; font-weight: 600; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 6px; font-family: inherit; transition: background .15s;
+}
+.pi-btn-primary:hover { background: #1648c0; }
 
-                        }
-                    });
-                return ;
-            }
+@media (max-width: 580px) {
+    .pi-head, .pi-meta, .pi-tbl-wrap, .pi-totals-wrap,
+    .pi-remarks, .pi-footer, .pi-action-bar { padding-left: 14px; padding-right: 14px; }
+    .pi-inv-word  { font-size: 20px; }
+    .pi-totals-card { width: 100%; }
+    .pi-footer-wave { display: none; }
+}
+</style>
 
-        });
+<div class="pi-root" id="pi-invoice-content">
 
-        mThis.elBtnCreate.onclick = (e) => {
-            e.preventDefault();
-            CreateServiceRequestDialog.show({
-                id: null,
-                btn: e.target,
-                onClose: () => mThis.ServiceRequestListView.showPage(mThis.getFilterData())
-            });
-        };
+    <!-- HEADER -->
+    <div class="pi-head">
+        <div class="pi-logo-icon">
+            <img src="../assets/images/meta/Meta_logo1.png" alt="Company Logo"
+                 onerror="this.style.display='none'">
+        </div>
+        <div class="pi-title-block">
+            <div class="pi-inv-word">Invoice / វិក័យប័ត្រ</div>
+            <div class="pi-inv-num">Invoice No / ចំនួនវិក័យប័ត្រ: <span>${invoice.code || "—"}</span></div>
+        </div>
+    </div>
 
-        const sh_parent = mThis.ServiceRequestListView.getListContainer().parentElement;
-        sh_parent.style.maxHeight = (window.innerHeight - 200) + 'px';
-        sh_parent.classList.add("overflow-y-auto", "overflow-x-hidden");
+    <!-- BILL TO / DATES / AMOUNT DUE -->
+    <div class="pi-meta">
+        <div class="pi-bill-to">
+            <div class="pi-meta-label">Bill To</div>
+            <div class="pi-tenant-name">${invoice.tenant_name || "—"}</div>
+            ${invoice.space_code   ? `<div class="pi-tenant-detail"><i class="bi bi-geo-alt-fill"></i>&nbsp;Space: <strong>${invoice.space_code}</strong></div>`   : ""}
+            ${invoice.email        ? `<div class="pi-tenant-detail"><i class="bi bi-envelope-fill"></i>&nbsp;${invoice.email}</div>`                               : ""}
+            ${invoice.phone_number ? `<div class="pi-tenant-detail"><i class="bi bi-telephone-fill"></i>&nbsp;${invoice.phone_number}</div>`                       : ""}
+        </div>
+        <div class="pi-meta-dates">
+            ${invoice.due_date   ? `<div class="pi-date-item"><div class="pi-meta-label">Due Date</div><div class="pi-date-val">${formatDate(invoice.due_date)}</div></div>`   : ""}
+            ${invoice.updated_at ? `<div class="pi-date-item"><div class="pi-meta-label">Issued</div><div class="pi-date-val">${formatDate(invoice.updated_at)}</div></div>`   : ""}
+        </div>
+        <div class="pi-amount-due">
+            <div class="pi-meta-label">Amount Due</div>
+            <div class="pi-due-box">
+                <div class="pi-due-lbl">Account Due</div>
+                <div class="pi-due-amt">${currency}${fmt(balance > 0 ? balance : grandTotal)}</div>
+            </div>
+        </div>
+    </div>
 
-        window.onresize = () => {
-            sh_parent.style.maxHeight = (window.innerHeight - 200) + 'px';
-        };
+    <!-- LINE ITEMS — 10 columns -->
+    <div class="pi-tbl-wrap">
+        <table class="pi-table">
+            <thead>
+                <tr>
+                    <th class="pi-th-l"  style="min-width:140px;">Item Description</th>
+                    <th class="pi-th-c"  style="width:85px;">Type</th>
+                    <th class="pi-th-c"  style="width:85px;">Qty</th>
+                    <th class="pi-th-c"  style="width:85px;">Unit</th>
+                    <th class="pi-th-c"  style="width:85px;">Start Date</th>
+                    <th class="pi-th-c"  style="width:85px;">End Date</th>
+                    <th class="pi-th-r"  style="width:85px;">Unit Price</th>
+                    <th class="pi-th-r"  style="width:85px;">Discount</th>
+                    <th class="pi-th-c"  style="width:85px;">Tax</th>
+                    <th class="pi-th-r"  style="width:90px;">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${itemRows || `<tr><td colspan="10" style="text-align:center;padding:28px;color:#9ca3af;font-size:12px;">No items found</td></tr>`}
+            </tbody>
+        </table>
+    </div>
 
-        mThis.initDropdownMenus(mThis.ServiceRequestListView.getTable());
+    <!-- TOTALS -->
+    <div class="pi-totals-wrap">
+        <div class="pi-totals-card">
+            <table>
+                <tr><td>Subtotal</td><td>${currency}${fmt(subtotal)}</td></tr>
+                ${discRow}
+                ${taxRow}
+                <tr class="pi-total-row"><td>Total</td><td>${currency}${fmt(grandTotal)}</td></tr>
+                <tr><td>Paid</td><td class="pi-green">${currency}${fmt(paid)}</td></tr>
+                <tr><td>Balance Due</td><td class="pi-red">${currency}${fmt(balance)}</td></tr>
+            </table>
+        </div>
+    </div>
 
-        mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
-            el.onchange = () => mThis.ServiceRequestListView.showPage(mThis.getFilterData());
-        });
+    <!-- REMARKS -->
+    ${invoice.remarks ? `
+    <div class="pi-remarks">
+        <div class="pi-remarks-lbl">Remarks</div>
+        <div class="pi-remarks-txt">${invoice.remarks}</div>
+    </div>` : ""}
 
-        mThis.elSearch.addEventListener('keyup', () => {
-            clearTimeout(mThis.search_timeout);
-            mThis.search_timeout = setTimeout(() => {
-                mThis.ServiceRequestListView.showPage(mThis.getFilterData());
-            }, 250);
-        });
+    <!-- FOOTER -->
+    <div class="pi-footer">
+        <div class="pi-footer-wave"></div>
+        <div class="pi-footer-left">
+            <div class="pi-footer-title">Terms &amp; Conditions</div>
+            <div class="pi-footer-body">Payment is due by the date shown above.<br>Late payments may incur additional charges.</div>
+        </div>
+        <div class="pi-footer-right">
+            <div>Generated by Property Manager</div>
+            <div>${today}</div>
+        </div>
+    </div>
 
-        mThis.initAlready = true;
+    <!-- ACTION BUTTONS (hidden on print) -->
+    <div class="pi-action-bar">
+        <button class="pi-btn-outline" id="pi-print-btn">
+            <i class="bi bi-printer"></i> Print Invoice
+        </button>
+        <button class="pi-btn-primary" id="pi-download-btn">
+            <i class="bi bi-download"></i> Download PDF
+        </button>
+    </div>
+
+</div>`;
     };
 
-    mThis.getFilterData = () => ({
-        status_id: mThis.elStatus.value,
-        service_type_id: mThis.elService_type.value,
-        search_value: mThis.elSearch.value,
-    });
-
-    mThis.initDropdownMenus = (table) => {
-    new VSDropdownMenu({
-        containerElement: table,
-        actionButtonClass: "btn_leave_action",
-        cssClass: "bg-white shadow",
-        menus: [
-            {
-                html: '<span class="ps-2" vslang="title.Generate Invoice"></span>',
-                icon: `<i class="fa-solid fa-dollar-sign text-success"></i>`,
-                name: "generate_invoice",
-                cssClass: "border-bottom pb-2 mb-2"
-            },
-            {
-                html: '<span class="ps-2 " vslang="title.Modify" ></span>',
-                icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
-                name: "edit_request",
-                cssClass: "border-bottom pb-2"
-            },
-            {
-                html: '<span class="ps-2" vslang="title.Delete"></span>',
-                icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
-                name: "delete_request",
-                cssClass: "border-bottom pb-2"
-            }
-        ],
-        onClick: (menuLink, id, name) => {
-            const row = document.getElementById(`service_request_id_${id}`);
-            const statusId = parseInt(row.dataset.statusId || '0', 10);
-            if (statusId !== 2) {
-                if (name === 'edit_request') {
-                    cv_interact.info('Cannot modify');
-                    return;
-                }
-            }
-            if (name === 'generate_invoice') mThis.generateInvoice(id, menuLink);
-            if (name === 'edit_request')     mThis.editServiceRequest(id, menuLink);
-            if (name === 'delete_request')   mThis.deleteRequest(id, menuLink);
-        }
-    });
-};
-
-
-    mThis.generateInvoice = (id, menuLink) => {
-        CreateInvoiceServiceRequestDialog.show({
-            service_request_id: id,
-            btn: menuLink,
-
-            onClose: () => mThis.ServiceRequestListView.showPage(mThis.getFilterData())
-        });
+    /* ── Wire print buttons after DOM injection ── */
+    const wireButtons = (container) => {
+        const invoiceEl  = container.querySelector("#pi-invoice-content");
+        const printBtn   = container.querySelector("#pi-print-btn");
+        const downloadBtn= container.querySelector("#pi-download-btn");
+        if (printBtn)     printBtn.addEventListener("click",    () => printViaIframe(invoiceEl));
+        if (downloadBtn)  downloadBtn.addEventListener("click", () => printViaIframe(invoiceEl));
     };
 
-    mThis.editServiceRequest = (id, menuLink) => {
-        CreateServiceRequestDialog.show({
-            id: id,
-            btn: menuLink,
-            onClose: () => mThis.ServiceRequestListView.showPage(mThis.getFilterData())
-        });
-    };
-
-    mThis.deleteRequest = (id, menuLink) => {
-        if (!AuthManager.allowed(242)) return;
-        cv_interact.confirm('Delete this Service Request?', {
-            transTitle: 'Delete Service Request',
-            confirmButtonText: "Delete"
-        }, (confirmed) => {
-            if (confirmed) {
-                vsapi.call(`${main_view.base_url}/prm/service-request/delete`, { id }, false, false, false)
-                    .then(res => {
-                        if (res.status_code === 200) {
-                            cv_interact.success('Service request deleted');
-                            mThis.ServiceRequestListView.showPage();
-                        } else {
-                            cv_interact.error(res.error_message);
-                        }
-                    });
-            }
-        });
-    };
-
-      function formatStatus(item){
-        return `<span class="badge text-prm-custom bg-light" >${item.name}</span>`;
-      }
-
-    mThis.show = (options) => {
-        mThis.init();
-        mThis.prepareFormOptions(() => {
-            main_view.setContentView(mThis.self, mThis.title_prop);
-            mThis.ServiceRequestListView.showPage(mThis.getFilterData());
-        });
-    };
-
-    mThis.prepareFormOptions = (callback) => {
-        vsapi.call(`${main_view.base_url}/prm/service-request/form-options`)
-            .then(res => {
-                if (res.status_code === 200) {
-                    VSUtil.setComboItems(mThis.elStatus, res.data.request_statuses, 'id', 'name', '', 'All Statuses', '');
-                    VSUtil.setComboItems(mThis.elService_type, res.data.service_types, 'id', 'service_type', '', 'All Category', '');
-                }
-                if (typeof callback === 'function') callback();
-            });
-    };
-
-    return mThis;
-})();
-
-
-
-const CreateInvoiceServiceRequestDialog = (() => {
-    const self = {};
-    let dialog = null;
-
+    /* ── Public API ── */
     self.show = (op) => {
-        if (!dialog) {
-            dialog = new GeneralDialog({
-                cssClass: "modal-xl vs-modal",
-                backdrop: "static",
-                keyboard: true,
-
-                createContent: () => `
-                    <div class="row g-4">
-
-                        <!-- Tenant & Service Info -->
-                        <div class="col-12">
-                            <div class="border border-info border-2 rounded-3 p-3 bg-white">
-                                <div class="row g-3 text-start">
-                                    <div class="col-md-3">
-                                        <span class="text-muted fw-medium">Tenant:</span><br>
-                                        <span class="fw-semibold fs-6" id="info-tenant">-</span>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <span class="text-muted fw-medium">Room:</span><br>
-                                        <span class="fw-semibold fs-6" id="info-space">-</span>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <span class="text-muted fw-medium">Service:</span><br>
-                                        <span class="fw-semibold fs-6" id="info-service">-</span>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <span class="text-muted fw-medium">Unit Type:</span><br>
-                                        <span class="fw-semibold fs-6" id="info-unit">-</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Due Date, Discount, Tax -->
-                        <div class="col-12">
-                            <div class="row g-3">
-                                <div class="col-md-3">
-                                    <label class="form-label fw-semibold">Due Date <span class="text-danger">*</span></label>
-                                    <input type="text"  data-type="date" class="form-control data-input" data-field="due_date" required>
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label fw-semibold">Discount</label>
-                                    <div class="d-flex gap-1">
-                                        <select class="form-select" id="discount_type" style="max-width:90px;">
-                                            <option value="percent">%</option>
-                                            <option value="fixed">$</option>
-                                        </select>
-                                        <input type="number" step="0.01" min="0" class="form-control" id="discount_value" placeholder="0">
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label fw-semibold">Tax</label>
-                                    <div class="d-flex gap-1">
-                                        <select class="form-select" id="tax_type" style="max-width:90px;">
-                                            <option value="percent">%</option>
-                                            <option value="fixed">$</option>
-                                        </select>
-                                        <input type="number" step="0.01" min="0" class="form-control" id="tax_value" placeholder="0">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Service Request Item Table -->
-                        <div class="col-12">
-                            <div class="border border-info border-2 rounded-3 p-3 bg-white">
-                                <div class="card-header d-flex justify-content-between align-items-center" style="background-color:#e1e5f2; margin:-16px -16px 16px -16px; padding:12px 20px; border-radius:6px 6px 0 0;">
-                                    <h6 class="mb-0"><i class="fas fa-list me-2"></i>Service Request Item</h6>
-                                </div>
-                                <div class="table-responsive">
-                                    <table class="table table-bordered table-sm align-middle table-hover mb-0">
-                                        <thead style="background-color:#f0f4ff;">
-                                            <tr>
-                                                <th>Description</th>
-                                                <th class="text-center">Type</th>
-                                                <th class="text-center">Qty/Unit</th>
-                                                <th class="text-end">Amount</th>
-                                                <th class="text-end">Discount</th>
-                                                <th class="text-end">Tax</th>
-                                                <th class="text-end">Net Amount</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="items-body"></tbody>
-                                        <tfoot class="table-light">
-                                            <tr>
-                                                <td colspan="3" class="text-end fw-bold">Subtotal</td>
-                                                <td class="text-end fw-bold" id="calc-subtotal">$0.00</td>
-                                                <td class="text-end fw-bold text-danger" id="calc-discount">-$0.00</td>
-                                                <td class="text-end fw-bold text-info" id="calc-tax">+$0.00</td>
-                                                <td class="text-end fw-bold fs-5 text-success" id="calc-total">$0.00</td>
-                                            </tr>
-                                        </tfoot>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                         <div class="col-12">
-                            <div class="col-md-3">
-                            <label class="form-label fw-semibold"><i class="fas fa-calendar-alt text-warning me-1"></i>Due Date <span class="text-danger">*</span></label>
-                            <input type="text" data-type="date" name="due_date" class="form-control data-input" required>
-                        </div>
-                        </div>
-
-                        <!-- Remarks -->
-                        <div class="col-12">
-                            <label class="form-label fw-semibold">Remarks</label>
-                            <textarea class="form-control data-input" data-field="remarks" rows="3" placeholder="Additional notes..."></textarea>
-                        </div>
-
-                        <!-- Hidden fields -->
-                        <input type="hidden" data-field="tenant_id">
-                        <input type="hidden" data-field="space_id">
-                        <input type="hidden" data-field="service_id">
-                    </div>
-                `,
-
-                contentCreated: (me) => {
-                    me.controls = {};
-                    me.divModal.querySelectorAll('.data-input').forEach(el => {
-                        if (el.dataset.field) me.controls[el.dataset.field] = el;
-                    });
-
-                    const calculateAndUpdate = () => {
-                        if (!me._serviceRequestData) return;
-
-                        const subtotal = parseFloat(me._subtotal || 0);
-                        const discType = document.getElementById('discount_type')?.value || 'percent';
-                        const discVal  = parseFloat(document.getElementById('discount_value')?.value || 0);
-                        const taxType  = document.getElementById('tax_type')?.value || 'percent';
-                        const taxVal   = parseFloat(document.getElementById('tax_value')?.value || 0);
-
-                        const discount = discType === 'percent' ? subtotal * (discVal / 100) : discVal;
-                        const tax      = taxType === 'percent' ? subtotal * (taxVal / 100) : taxVal;   // ← CHANGED HERE
-                        const netAmount = subtotal - discount + tax;
-
-                        // Footer
-                        document.getElementById('calc-subtotal').textContent = `$${subtotal.toFixed(2)}`;
-                        document.getElementById('calc-discount').textContent = `-$${discount.toFixed(2)}`;
-                        document.getElementById('calc-tax').textContent      = `+$${tax.toFixed(2)}`;
-                        document.getElementById('calc-total').textContent    = `$${netAmount.toFixed(2)}`;
-
-                        // Table row
-                        document.getElementById('item-discount').textContent = `-$${discount.toFixed(2)}`;
-                        document.getElementById('item-tax').textContent      = `+$${tax.toFixed(2)}`;
-                        document.getElementById('item-net').textContent      = `$${netAmount.toFixed(2)}`;
-                    };
-
-                    ['discount_value', 'tax_value'].forEach(id => {
-                        document.getElementById(id)?.addEventListener('input', calculateAndUpdate);
-                    });
-                    ['discount_type', 'tax_type'].forEach(id => {
-                        document.getElementById(id)?.addEventListener('change', calculateAndUpdate);
-                    });
-
-                    me.loadServiceData = (op) => loadServiceRequestData(me, op);
-                    me.calculateAndUpdate = calculateAndUpdate;
-                },
-                buttons: [
-                    { label: 'Cancel', cssClass: 'btn btn-secondary', click: me => me.hide(false) },
-                    {
-                        label: 'Generate Invoice',
-                        cssClass: 'btn btn-primary',
-                        click: (me, btn) => {
-                            if (!me._serviceRequestData) return cv_interact.error('No service request data loaded');
-
-                            const formData = me.getData();
-                            console.log("1234222",formData);
-                            const discType = document.getElementById('discount_type')?.value || 'percent';
-                            const discVal  = parseFloat(document.getElementById('discount_value')?.value || 0);
-                            const taxType  = document.getElementById('tax_type')?.value || 'percent';
-                            const taxVal   = parseFloat(document.getElementById('tax_value')?.value || 0);
-
-                            const subtotal = me._serviceRequestData.amount;
-                            const discount = discType === 'percent' ? subtotal * (discVal / 100) : discVal;
-                            const tax      = taxType === 'percent' ? subtotal * (taxVal / 100) : taxVal;   // ← CHANGED HERE TOO
-
-                            formData.items = [{
-
-                                service_id: me._serviceRequestData.service_id,
-                                description: me._serviceRequestData.description,
-                                type: 'Service',
-                                unit_type: me._serviceRequestData.unit_type,
-                                quantity: me._serviceRequestData.quantity,
-                                amount: subtotal,
-                                discount_type: discType,
-                                discount_value: discVal,
-                                discount: discount,
-                                tax_type: taxType,
-                                tax_value: taxVal,
-                                tax: tax
-                            }];
-
-                            formData.tenant_id = me._serviceRequestData.tenant_id;
-                            formData.space_id  = me._serviceRequestData.space_id;
-                            vsapi.call(`${main_view.base_url}/prm/invoice/save`, formData, btn)
-                                .then(res => {
-                                    if (res.status_code === 200) {
-                                        me.hide(true);
-                                        cv_interact.success('Invoice generated successfully!');
-                                        if (op.onClose) op.onClose();
-                                    } else {
-                                        cv_interact.error(res.error_message || 'Failed to generate invoice');
-                                    }
-                                })
-                                .catch(() => cv_interact.error('Network error'));
-                        }
-                    }
-                ]
-            });
+        if (!op || !op.invoice_id) {
+            cv_interact.error("Invoice ID is missing");
+            return;
         }
 
-        dialog.show(op);
-
-        setTimeout(() => {
-            if (dialog.loadServiceData) dialog.loadServiceData(op);
-        }, 150);
-    };
-
-    const loadServiceRequestData = (me, op) => {
-        if (!op?.service_request_id) return;
-
-        me._serviceRequestData = null;
-        me._subtotal = 0;
-
-        document.getElementById('info-tenant').textContent = '-';
-        document.getElementById('info-space').textContent  = '-';
-        document.getElementById('info-service').textContent = '-';
-        document.getElementById('info-unit').textContent   = '-';
-        document.getElementById('items-body').innerHTML = '';
-
-        vsapi.call(`${main_view.base_url}/prm/service-request/form-options`, { id: op.service_request_id })
-            .then(res => {
-                if (res.status_code !== 200) return cv_interact.error('Failed to load data');
-
-                const data = res.data.request_details || {};
-                console.log("1111",data);
-                const service = res.data.services?.find(s => s.id == data.service_id) || {};
-                document.getElementById('info-tenant').textContent = data.tenant_name || '-';
-                document.getElementById('info-space').textContent  = data.space_code || '-';
-                document.getElementById('info-service').textContent = service.service || '-';
-                document.getElementById('info-unit').textContent   = data.unit_type || '-';
-
-                me._serviceRequestData = {
-                    tenant_id: data.tenant_id,
-                    space_id: data.space_id,
-                    service_id: data.service_id,
-                    description: data.description || service.service || 'Service Request',
-                    unit_type: data.unit_type || '',
-                    quantity: parseFloat(data.quantity || 1),
-                    amount: parseFloat(data.total_price || data.service_price || 0)
-                };
-                me.controls.tenant_id.value = data.tenant_id || '';
-                me.controls.space_id.value  = data.space_id || '';
-                me.controls.service_id.value = data.service_id || '';
-
-                me._subtotal = me._serviceRequestData.amount;
-
-                const qtyDisplay = me._serviceRequestData.quantity !== 1
-                    ? `${me._serviceRequestData.quantity} ${me._serviceRequestData.unit_type || ''}`.trim()
-                    : me._serviceRequestData.unit_type || '—';
-
-                document.getElementById('items-body').innerHTML = `
-                    <tr>
-                        <td>${me._serviceRequestData.description || '-'}</td>
-                        <td class="text-center">Service</td>
-                        <td class="text-center"><span class="badge-unit">${qtyDisplay}</span></td>
-                        <td class="text-end">$${me._serviceRequestData.amount.toFixed(2)}</td>
-                        <td class="text-end text-danger" id="item-discount">-$0.00</td>
-                        <td class="text-end text-info" id="item-tax">$0.00</td>
-                        <td class="text-end fw-bold" id="item-net">$${me._serviceRequestData.amount.toFixed(2)}</td>
-                    </tr>`;
-
-                if (typeof me.calculateAndUpdate === 'function') me.calculateAndUpdate();
-            })
-            .catch(() => cv_interact.error('Network error loading data'));
-    };
-
-    return self;
-})();
-
-
-
-const CreateServiceRequestDialog = (() => {
-    const self = {};
-    let dialog = null;
-
-    self.show = (op) => {
-        dialog = dialog || new GeneralDialog({
-            cssClass: "modal-lg vs-modal",
+        const dlg = new GeneralDialog({
+            cssClass: "modal-xl vs-modal",
             backdrop: "static",
             keyboard: true,
-
             createContent: () => `
-                <div class="container-fluid">
-                    <div class="row g-3 mb-3">
-                        <!-- HIDDEN real tenant_id (sent to backend) -->
-                        <input type="hidden" class="data-input" data-field="tenant_id">
-
-                        <!-- Visible Tenant Search (NO data-field so name is NOT sent) -->
-                        <div class="col-md-6">
-                            <label style="padding-left:6px;color:#777;">
-                                <i class="fas fa-user me-2 text-primary"></i>Tenant <span class="text-danger">*</span>
-                            </label>
-                            <div class="material-input outlined">
-                                <input name="tenant" class="form-control" placeholder="Search tenant..." autocomplete="off">
-                            </div>
-                        </div>
-
-                        <!-- Room / Space -->
-                        <div class="col-md-6">
-                            <label style="padding-left:6px;color:#777;">
-                                <i class="fas fa-door-open me-2 text-info"></i>Room / Space <span class="text-danger">*</span>
-                            </label>
-                            <div class="material-input outlined">
-                                <select class="data-input form-control" data-field="space_id" required></select>
-                            </div>
-                        </div>
+                <div name="pi_container" style="min-height:260px;border-radius:8px;border:1px solid #d1d5db;overflow:hidden;">
+                    <div style="display:flex;align-items:center;justify-content:center;padding:60px 0;gap:14px;
+                                color:#6b7280;font-family:'Segoe UI',sans-serif;font-size:14px;">
+                        <div style="width:32px;height:32px;border:4px solid #dbeafe;border-top-color:#1a56db;
+                                    border-radius:50%;animation:pi-spin .7s linear infinite;"></div>
+                        Loading invoice…
                     </div>
-
-                    <div class="row g-3 mb-3">
-                        <!-- Service Category -->
-                        <div class="col-md-6">
-                            <label style="padding-left:6px;color:#777;">
-                                <i class="fas fa-layer-group me-2 text-warning"></i>Service Category <span class="text-danger">*</span>
-                            </label>
-                            <div class="material-input outlined">
-                                <select class="data-input form-control" data-field="service_type_id" required></select>
-                            </div>
-                        </div>
-
-                        <!-- Service -->
-                        <div class="col-md-6">
-                            <label style="padding-left:6px;color:#777;">
-                                <i class="fas fa-concierge-bell me-2 text-success"></i>Service <span class="text-danger">*</span>
-                            </label>
-                            <div class="material-input outlined">
-                                <select class="data-input form-control" data-field="service_id" required></select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Charge Unit - uses 1/2 (matches your PHP validation) -->
-                    <div class="row g-3 mb-3">
-                        <div class="col-md-6">
-                            <label style="padding-left:6px;color:#777;">
-                                <i class="fas fa-dollar-sign me-2 text-success"></i>Charge Unit <span class="text-danger">*</span>
-                            </label>
-                            <div class="material-input outlined">
-                                <select class="data-input form-control" data-field="unit_type" required>
-                                    <option value="">-- Select Unit --</option>
-                                    <option value="1">📅 Price Per One Time</option>
-                                    <option value="2">⏱️ Price Per Hour</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6 select-type-time" style="display:none;">
-                            <label style="padding-left:6px;color:#777;">
-                                <i class="fas fa-clock me-2 text-info"></i>Duration (hours) <span class="text-danger">*</span>
-                            </label>
-                            <div class="material-input outlined">
-                                <select class="data-input form-control" data-field="duration_hours">
-                                    <option value="">-- Select Duration --</option>
-                                    <option value="0.5">30 minutes</option>
-                                    <option value="1">1 hour</option>
-                                    <option value="1.5">1.5 hours</option>
-                                    <option value="2">2 hours</option>
-                                    <option value="2.5">2.5 hours</option>
-                                    <option value="3">3 hours</option>
-                                    <option value="4">4 hours</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Price Preview, Date, Time, Remarks (your exact HTML) -->
-                    <div class="row g-3 mb-3" id="price-preview-row" style="display:none;">
-                        <div class="col-12">
-                            <div class="alert alert-info d-flex align-items-center justify-content-between shadow-sm price-alert">
-                                <div class="d-flex align-items-center">
-                                    <i class="fas fa-calculator fa-2x me-3 text-primary"></i>
-                                    <div>
-                                        <small class="text-muted d-block mb-1">Estimated Total</small>
-                                        <strong class="fs-4 text-primary" id="calc-total">$0.00</strong>
-                                    </div>
-                                </div>
-                                <div class="text-end">
-                                    <small class="text-muted d-block">Base Price × Duration</small>
-                                    <span class="badge bg-primary" id="calc-breakdown">-</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row g-3">
-                        <div class="col-md-4">
-                            <label class="form-label fw-semibold">
-                                <i class="fas fa-calendar-alt text-warning me-1"></i>Scheduled Date <span class="text-danger">*</span>
-                            </label>
-                            <input type="date" class="form-control data-input" data-field="scheduled_date" required>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label fw-semibold">Start Time</label>
-                            <input type="time" class="form-control data-input" data-field="start_time">
-                        </div>
-                    </div>
-
-                    <div class="row g-3">
-                        <div class="col-12">
-                            <label style="padding-left:6px;color:#777;">
-                                <i class="fas fa-comment-dots me-2 text-primary"></i>Remarks
-                            </label>
-                            <div class="material-input outlined position-relative">
-                                <textarea class="data-input form-control" data-field="description"
-                                    rows="4" placeholder="Enter any additional details..." maxlength="500"></textarea>
-                            </div>
-                        </div>
-                    </div>
-
-                    <input type="hidden" class="data-input" data-field="status_id" value="1">
-                </div>
-            `,
+                    <style>@keyframes pi-spin{to{transform:rotate(360deg)}}</style>
+                </div>`,
 
             contentCreated: (me) => {
-
-                const updatePricePreview = () => {
-                    const unit = me.controls.unit_type?.value || '';
-                    const showDuration = unit === '2';
-                    const durationRow = me.divModal.querySelector('.select-type-time');
-                    const previewRow  = me.divModal.querySelector('#price-preview-row');
-
-                    if (durationRow) durationRow.style.display = showDuration ? 'block' : 'none';
-                    if (!showDuration) { if (previewRow) previewRow.style.display = 'none'; return; }
-
-                    const hours = parseFloat(me.controls.duration_hours?.value || 0);
-                    const price = parseFloat(me.servicePrice || 0);
-
-                    if (hours > 0 && price > 0) {
-                        const total = price * hours;
-                        me.divModal.querySelector('#calc-total').textContent = `$${total.toFixed(2)}`;
-                        me.divModal.querySelector('#calc-breakdown').textContent = `$${price.toFixed(2)} × ${hours}h`;
-                        if (previewRow) previewRow.style.display = 'block';
-                    } else if (previewRow) {
-                        previewRow.style.display = 'none';
-                    }
-                };
-
-                me.searchTenant = VSSearchInput.init(me.controls.tenant, {
-                    type: 'select',
-                    prefetch: true,
-                    query: {
-                        from: 'tenants',
-                        select: ['id', 'name', 'legal_name', 'email', 'phone_number'],
-                        searchFields: { name: 'LIKE', legal_name: 'LIKE', email: '=', phone_number: '=' }
-                    },
-                    columns: { name: "Name", phone_number: "Phone" },
-                    onSelect: (tenant) => {
-                        me.controls.tenant_id.value = tenant.id;
-                        // me._selectedTenantId = tenant.id;
-
-                        vsapi.post(`${main_view.base_url}/prm/tenant/option-tenant-with-service`, {
-                            tenant_id: tenant.id
-                        }).then(res => {
-                            const d = res.data || {};
-                            VSUtil.setComboItems(me.controls.space_id, d.spaces || [], 'space_id', 'space_code', '', '-- Select Room --');
-
-                            const typesMap = {};
-                            (d.service || []).forEach(s => {
-                                if (!typesMap[s.service_type_id]) {
-                                    typesMap[s.service_type_id] = { id: s.service_type_id, service_type: s.service_type };
-                                }
-                            });
-                            VSUtil.setComboItems(me.controls.service_type_id, Object.values(typesMap), 'id', 'service_type', '', '-- Select Category --');
-
-                            me._availableServices = d.service || [];
-                            me.controls.service_id.innerHTML = '<option value="">-- Select Service --</option>';
-                            updatePricePreview();
-                        });
-                    }
-                });
-
-                // Service selected → force numeric unit_type
-                me.controls.service_id?.addEventListener('change', () => {
-                    const svc = me._availableServices?.find(s => String(s.id) === me.controls.service_id.value);
-                    if (svc) {
-                        me.servicePrice = parseFloat(svc.price) || 0;
-                        me.controls.unit_type.value = (svc.unit_type === 'hour') ? '2' : '1';  // ← CRITICAL
-                        updatePricePreview();
-                    }
-                });
-
-                me.controls.service_type_id?.addEventListener('change', () => {
-                    const typeId = me.controls.service_type_id.value;
-                    let filtered = me._availableServices || [];
-                    if (typeId) filtered = filtered.filter(s => String(s.service_type_id) === typeId);
-                    VSUtil.setComboItems(me.controls.service_id, filtered, 'id', 'service_name', '', '-- Select Service --');
-                    me.controls.service_id.value = '';
-                    me.servicePrice = 0;
-                    updatePricePreview();
-                });
-
-                ['unit_type', 'duration_hours'].forEach(f => {
-                    me.controls[f]?.addEventListener('change', updatePricePreview);
-                });
-            },
-
-
-            onPrepareForm: (me, data) => {
-                me.detail = data.request_details;
-                if (me.detail) {
-                    const raw = (me.detail.scheduled_date || '').trim();
-                    if (raw) {
-                        const d = new Date(raw);
-                        if (!isNaN(d.getTime())) {
-                            const y = d.getFullYear();
-                            const m = String(d.getMonth() + 1).padStart(2, '0');
-                            const day = String(d.getDate()).padStart(2, '0');
-                            me.controls.scheduled_date.value = `${y}-${m}-${day}`;
+                const container = me.divModal.querySelector('[name="pi_container"]');
+                vsapi
+                    .call(`${main_view.base_url}/prm/invoice/details`, { id: op.invoice_id })
+                    .then((res) => {
+                        if (res.status_code !== 200) {
+                            container.innerHTML = `<div class="alert alert-danger m-4">Failed to load invoice: ${res.error_message || "Unknown error"}</div>`;
+                            return;
                         }
-                    }
-                    if (me.detail.start_time && me.controls.start_time) {
-                        me.controls.start_time.value = me.detail.start_time.substring(0, 5);
-                    }
-                }
-            },
-
-             prepareFormOptions: {
-                createTitle: "Create Service Request",
-                modifyTitle: "Modify Service Request",
-                targetProp: "request_details",
-                api: {
-                    endpoint: `${main_view.base_url}/prm/service-request/form-options`,
-                    params: (op) => { id: op.id }
-                }
+                        container.innerHTML = buildInvoiceHTML(res.data || {});
+                        wireButtons(container);
+                    })
+                    .catch(() => {
+                        container.innerHTML = `<div class="alert alert-danger m-4">Network error — could not load invoice.</div>`;
+                    });
             },
 
             buttons: [
                 {
-                    label: '<span vslang="buttons.Cancel"></span>',
-                    cssClass: 'btn btn-secondary',
-                    click: (me, btn) => {
-                        me.hide(false);
-                    },
-                },
-                {
-                    label: '<span vslang="buttons.Submit"></span>',
-                    cssClass: 'btn btn-primary',
-                    click: (me, btn) => {
-                        const data = me.getData();
-                        data.id = op?.id || null;
-                        vsapi.call([main_view.base_url, "/prm/service-request/save",].join(""), data, btn, null)
-                            .then((res) => {
-                                if (res.status_code === 200) {
-                                    me.hide(true,data);
-                                    cv_interact.success(data.id ? "Updated!" : "Created!");
-                                } else {
-                                    cv_interact.error(res.error_message);
-                                }
-                        });
-                    }
+                    label: "Close",
+                    cssClass: "btn btn-secondary",
+                    click: (me) => me.hide()
                 }
             ]
         });
 
-        dialog.show(op);
+        dlg.show(op);
     };
 
     return self;
 })();
-
-
-
-
-
-const CreateServiceRequestDialog = (() => {
-    const self = {};
-    let dialog = null;
-
-    self.show = (op) => {
-        dialog = dialog || new GeneralDialog({
-            cssClass: "modal-lg vs-modal",
-            backdrop: "static",
-            keyboard: true,
-
-            createContent: () => `
-                <div class="container-fluid">
-                    <div class="row g-3 mb-3">
-                        <input type="hidden" class="data-input" data-field="tenant_id">
-                        <div class="col-md-6">
-                            <label style="padding-left:6px;color:#777;"><i class="fas fa-user me-2 text-primary"></i>Tenant <span class="text-danger">*</span></label>
-                            <div class="material-input outlined">
-                                <input name="tenant" class="data-input form-control" data-field="tenant_search" required>
-                            </div>
-                        </div>
-
-                        <!-- Room / Space -->
-                        <div class="col-md-6">
-                            <label style="padding-left:6px;color:#777;">
-                                <i class="fas fa-door-open me-2 text-info"></i>Room / Space <span class="text-danger">*</span>
-                            </label>
-                            <div class="material-input outlined">
-                                <select class="data-input form-control" data-field="space_id" required></select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row g-3 mb-3">
-                        <!-- Service Category -->
-                        <div class="col-md-6">
-                            <label style="padding-left:6px;color:#777;">
-                                <i class="fas fa-layer-group me-2 text-warning"></i>Service Category <span class="text-danger">*</span>
-                            </label>
-                            <div class="material-input outlined">
-                                <select class="data-input form-control" data-field="service_type_id" required></select>
-                            </div>
-                        </div>
-
-                        <!-- Service -->
-                        <div class="col-md-6">
-                            <label style="padding-left:6px;color:#777;">
-                                <i class="fas fa-concierge-bell me-2 text-success"></i>Service <span class="text-danger">*</span>
-                            </label>
-                            <div class="material-input outlined">
-                                <select class="data-input form-control" data-field="service_id" required></select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Charge Unit - uses 1/2 (matches your PHP validation) -->
-                    <div class="row g-3 mb-3">
-                        <div class="col-md-6">
-                            <label style="padding-left:6px;color:#777;">
-                                <i class="fas fa-dollar-sign me-2 text-success"></i>Charge Unit <span class="text-danger">*</span>
-                            </label>
-                            <div class="material-input outlined">
-                                <select class="data-input form-control" data-field="unit_type" required>
-                                    <option value="">-- Select Unit --</option>
-                                    <option value="1">📅 Price Per One Time</option>
-                                    <option value="2">⏱️ Price Per Hour</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6 select-type-time" style="display:none;">
-                            <label style="padding-left:6px;color:#777;">
-                                <i class="fas fa-clock me-2 text-info"></i>Duration (hours) <span class="text-danger">*</span>
-                            </label>
-                            <div class="material-input outlined">
-                                <select class="data-input form-control" data-field="duration_hours">
-                                    <option value="">-- Select Duration --</option>
-                                    <option value="0.5">30 minutes</option>
-                                    <option value="1">1 hour</option>
-                                    <option value="1.5">1.5 hours</option>
-                                    <option value="2">2 hours</option>
-                                    <option value="2.5">2.5 hours</option>
-                                    <option value="3">3 hours</option>
-                                    <option value="4">4 hours</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Price Preview, Date, Time, Remarks (your exact HTML) -->
-                    <div class="row g-3 mb-3" id="price-preview-row" style="display:none;">
-                        <div class="col-12">
-                            <div class="alert alert-info d-flex align-items-center justify-content-between shadow-sm price-alert">
-                                <div class="d-flex align-items-center">
-                                    <i class="fas fa-calculator fa-2x me-3 text-primary"></i>
-                                    <div>
-                                        <small class="text-muted d-block mb-1">Estimated Total</small>
-                                        <strong class="fs-4 text-primary" id="calc-total">$0.00</strong>
-                                    </div>
-                                </div>
-                                <div class="text-end">
-                                    <small class="text-muted d-block">Base Price × Duration</small>
-                                    <span class="badge bg-primary" id="calc-breakdown">-</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row g-3">
-                        <div class="col-md-4">
-                            <label class="form-label fw-semibold">
-                                <i class="fas fa-calendar-alt text-warning me-1"></i>Scheduled Date <span class="text-danger">*</span>
-                            </label>
-                            <input type="date" class="form-control data-input" data-field="scheduled_date" required>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label fw-semibold">Start Time</label>
-                            <input type="time" class="form-control data-input" data-field="start_time">
-                        </div>
-                    </div>
-
-                    <div class="row g-3">
-                        <div class="col-12">
-                            <label style="padding-left:6px;color:#777;">
-                                <i class="fas fa-comment-dots me-2 text-primary"></i>Remarks
-                            </label>
-                            <div class="material-input outlined position-relative">
-                                <textarea class="data-input form-control" data-field="description"
-                                    rows="4" placeholder="Enter any additional details..." maxlength="500"></textarea>
-                            </div>
-                        </div>
-                    </div>
-
-                    <input type="hidden" class="data-input" data-field="status_id" value="1">
-                </div>
-            `,
-
-            contentCreated: (me) => {
-
-                const updatePricePreview = () => {
-                    const unit = me.controls.unit_type?.value || '';
-                    const showDuration = unit === '2';
-                    const durationRow = me.divModal.querySelector('.select-type-time');
-                    const previewRow  = me.divModal.querySelector('#price-preview-row');
-
-                    if (durationRow) durationRow.style.display = showDuration ? 'block' : 'none';
-                    if (!showDuration) { if (previewRow) previewRow.style.display = 'none'; return; }
-
-                    const hours = parseFloat(me.controls.duration_hours?.value || 0);
-                    const price = parseFloat(me.servicePrice || 0);
-
-                    if (hours > 0 && price > 0) {
-                        const total = price * hours;
-                        me.divModal.querySelector('#calc-total').textContent = `$${total.toFixed(2)}`;
-                        me.divModal.querySelector('#calc-breakdown').textContent = `$${price.toFixed(2)} × ${hours}h`;
-                        if (previewRow) previewRow.style.display = 'block';
-                    } else if (previewRow) {
-                        previewRow.style.display = 'none';
-                    }
-                };
-
-                me.searchTenant = VSSearchInput.init(me.divModal.querySelector('[name="tenant"]'),{
-                    type: 'select',
-                    prefetch: true,
-                    query: {
-                        from: 'tenants',
-                        select: ['id', 'name', 'legal_name', 'email', 'phone_number'],
-                        searchFields: { name: 'LIKE', legal_name: 'LIKE', email: '=', phone_number: '=' }
-                    },
-                    columns: { name: "Name", phone_number: "Phone" },
-                    onSelect: (tenant) => {
-                        me.controls.tenant_id.value = tenant.id;
-                        // me._selectedTenantId = tenant.id;
-
-                        vsapi.post(`${main_view.base_url}/prm/tenant/option-tenant-with-service`, {tenant_id: tenant.id
-                        }).then(res => {
-                            const d = res.data || {};
-                            VSUtil.setComboItems(me.controls.space_id, d.spaces || [], 'space_id', 'space_code', '', '-- Select Room --');
-                            const typesMap = {};
-                            (d.service || []).forEach(s => {
-                                if (!typesMap[s.service_type_id]) {
-                                    typesMap[s.service_type_id] = { id: s.service_type_id, service_type: s.service_type };
-                                }
-                            });
-                            VSUtil.setComboItems(me.controls.service_type_id, Object.values(typesMap), 'id', 'service_type', '', '-- Select Category --');
-
-                            me._availableServices = d.service || [];
-                            me.controls.service_id.innerHTML = '<option value="">-- Select Service --</option>';
-                            updatePricePreview();
-                        });
-                    }
-                });
-
-                // Service selected → force numeric unit_type
-                me.controls.service_id?.addEventListener('change', () => {
-                    const svc = me._availableServices?.find(s => String(s.id) === me.controls.service_id.value);
-                    if (svc) {
-                        me.servicePrice = parseFloat(svc.price) || 0;
-                        me.controls.unit_type.value = (svc.unit_type === 'hour') ? '2' : '1';  // ← CRITICAL
-                        updatePricePreview();
-                    }
-                });
-
-                me.controls.service_type_id?.addEventListener('change', () => {
-                    const typeId = me.controls.service_type_id.value;
-                    let filtered = me._availableServices || [];
-                    if (typeId) filtered = filtered.filter(s => String(s.service_type_id) === typeId);
-                    VSUtil.setComboItems(me.controls.service_id, filtered, 'id', 'service_name', '', '-- Select Service --');
-                    me.controls.service_id.value = '';
-                    me.servicePrice = 0;
-                    updatePricePreview();
-                });
-
-                ['unit_type', 'duration_hours'].forEach(f => {
-                    me.controls[f]?.addEventListener('change', updatePricePreview);
-                });
-            },
-
-
-            onPrepareForm: (me, data) => {
-                me.detail = data.request_details;
-                if (me.detail) {
-                    const raw = (me.detail.scheduled_date || '').trim();
-                    if (raw) {
-                        const d = new Date(raw);
-                        if (!isNaN(d.getTime())) {
-                            const y = d.getFullYear();
-                            const m = String(d.getMonth() + 1).padStart(2, '0');
-                            const day = String(d.getDate()).padStart(2, '0');
-                            me.controls.scheduled_date.value = `${y}-${m}-${day}`;
-                        }
-                    }
-                    if (me.detail.start_time && me.controls.start_time) {
-                        me.controls.start_time.value = me.detail.start_time.substring(0, 5);
-                    }
-                }
-            },
-
-             prepareFormOptions: {
-                createTitle: "Create Service Request",
-                modifyTitle: "Modify Service Request",
-                targetProp: "request_details",
-                api: {
-                    endpoint: `${main_view.base_url}/prm/service-request/form-options`,
-                }
-            },
-
-            buttons: [
-                {
-                    label: '<span vslang="buttons.Cancel"></span>',
-                    cssClass: 'btn btn-secondary',
-                    click: (me, btn) => {
-                        me.hide(false);
-                    },
-                },
-                {
-                    label: '<span vslang="buttons.Submit"></span>',
-                    cssClass: 'btn btn-primary',
-                    click: (me, btn) => {
-                        const data = me.getData();
-                        data.id = op?.id || null;
-                        vsapi.call([main_view.base_url, "/prm/service-request/save",].join(""), data, btn, null)
-                            .then((res) => {
-                                if (res.status_code === 200) {
-                                    me.hide(true,data);
-                                    cv_interact.success(data.id ? "Updated!" : "Created!");
-                                } else {
-                                    cv_interact.error(res.error_message);
-                                }
-                        });
-                    }
-                }
-            ]
-        });
-
-        dialog.show(op);
-    };
-
-    return self;
-})();
-
-
