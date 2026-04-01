@@ -359,10 +359,10 @@ class GeneralSettings //extends Model
         ->where('status_id',1)
         ->where('requires_booking',1)
         ->selectRaw('id, name AS amenity, code as amenity_code, max_capacity,category_id')
-        ->orderBy('name')           
+        ->orderBy('name')
         ->get();
 }
-    
+
 
     static function options_reservation_status($ss)
     {
@@ -437,7 +437,7 @@ class GeneralSettings //extends Model
     static function options_tenant($ss)
     {
         return DB::table('tenants')->selectRaw('id,name AS tenant')->get();
-    } 
+    }
     static function options_tenant_status($ss)
     {
         return DB::table('tenant_statuses')->selectRaw('id,name')->get();
@@ -530,7 +530,7 @@ class GeneralSettings //extends Model
     {
         return DB::table('request_statuses')->selectRaw('id,name')->get();
     }
-    
+
      static function options_vendor_types($ss)
     {
         return DB::table('vendor_types')->selectRaw('id,name as vendor_type')->get();
@@ -630,7 +630,7 @@ class GeneralSettings //extends Model
         return DB::table('expense_categories')->selectRaw('id,name as expense_category')->get();
     }
 
-    
+
     static function options_expense_statuses($ss)
     {
         return DB::table('expense_statuses')->selectRaw('id,name as expense_status')->get();

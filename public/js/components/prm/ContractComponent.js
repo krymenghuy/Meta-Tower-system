@@ -1321,10 +1321,14 @@ const RenewDialog = (() => {
                 if (me.controls.price) me.controls.price.value = "";
                 if (me.controls.price_type) me.controls.price_type.value = "";
                 if (me.controls.remarks) me.controls.remarks.value = "";
-                // DateTimePicker may attach after first paint; re-apply renew start = old end.
+                // DateTimePicker may attach after first paint; force final values.
                 setTimeout(() => {
                     if (me.controls.start_date && renewStartIso) {
                         me.controls.start_date.value = renewStartIso;
+                    }
+                    // Keep renew end_date empty by default (user must choose).
+                    if (me.controls.end_date) {
+                        me.controls.end_date.value = "";
                     }
                 }, 0);
 
