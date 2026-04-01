@@ -265,6 +265,8 @@ Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('purchase/order
     Route::post('/items-by-po', [PurchaseOrderController::class, 'getItemsByPurchaseOrder']);
     Route::post('/list-paginate', [PurchaseOrderController::class, 'getPurchaseOrderList']);
     Route::post('/form-options', [PurchaseOrderController::class, 'getFormOptions']);
+    Route::post('/po-form-options', [PurchaseOrderController::class, 'getPOFormOptions']);
+
 });
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('bill')->group(function () {
