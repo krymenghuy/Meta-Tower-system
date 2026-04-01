@@ -35,6 +35,7 @@ class Bill
         $branch_id = $ss->branch_id;
         $v_rule = [
             'bill_number'  => '0|string|max=50',
+            'expense_type_id'  => '1|number|exists=expense_categories.id',
             'ref_no'    => '0|number',
             'vendor_id'    => '1|number|exists=vendors.id',
             'bill_date'    => '1|date',
@@ -172,6 +173,7 @@ class Bill
         $search_value = $d->search_value ?? null;
         $vendor_id    = $d->vendor_id    ?? null;
         $status_id    = $d->status_id    ?? null;
+        $expense_type_id    = $d->expense_type_id    ?? null;
         $current_page = $d->current_page ?? 1;
         $per_page     = $d->per_page     ?? 10;
 
@@ -194,14 +196,18 @@ class Bill
         if ($status_id) {
             $str_moreWhere .= ' AND b.status_id = ' . $status_id;
         }
+        if ($expense_type_id) {
+            $str_moreWhere .= ' AND b.expense_type_id = ' . $expenese_type_id;
+        }
 
         $query = DB::table('bills as b')
             // ->leftJoin('purchase_orders as po', 'po.id', 'b.po_number')
             ->leftJoin('vendors as v', 'v.id', 'b.vendor_id')
             ->leftJoin('bill_statuses as s', 's.id', 'b.status_id')
-            ->whereRaw($str_search)
+            ->leftJoin('expense_categories as ex', 'ex.id', 'b.expense_type_id')
             ->whereRaw($str_moreWhere)
-            ->selectRaw("b.id, b.bill_number, b.ref_no, b.vendor_id,v.name as vendor_name, v.phone_number, b.bill_date,
+            ->where('b.status_id', '!=', 2)
+            ->selectRaw("b.id, b.bill_number, b.ref_no, b.expense_type_id,ex.name as expense_type_name,b.vendor_id,v.name as vendor_name, v.phone_number, b.bill_date,
                 b.total_amount, b.balance, b.paid_amount,b.status_id, s.name as status,b.file_image, b.update_user, b.remark, b.updated_at")
             ->orderBy('b.id', 'desc');
         $count = (clone $query)->count('b.id');
@@ -222,8 +228,9 @@ class Bill
         $row = DB::table('bills as b')
             // ->leftJoin('purchase_orders as po', 'po.id', 'b.po_number')
             ->leftJoin('vendors as v', 'v.id', 'b.vendor_id')
+            ->leftJoin('expense_categories as ex', 'ex.id', 'b.expense_type_id') 
             ->where('b.id', $id)
-            ->selectRaw('b.id, b.bill_number, b.ref_no, b.vendor_id, v.name as vendor_name, v.phone_number, b.bill_date, b.file_image, b.total_amount, b.balance, b.paid_amount, b.status_id, b.remark')
+            ->selectRaw('b.id, b.bill_number, b.ref_no, b.vendor_id, v.name as vendor_name,b.expense_type_id, ex.name as expense_type_name, v.phone_number, b.bill_date, b.file_image, b.total_amount, b.balance, b.paid_amount, b.status_id, b.remark')
             ->first();
         if ($row) {
             $row->file_image_url = self::getBillImageUrl($row->file_image, $ss);
@@ -239,6 +246,7 @@ class Bill
             'bill_details' => $bill_details,
             'vendors'      => GeneralSettings::options_vendor($ss),
             'bill_statuses'  => GeneralSettings::options_bill_statuses($ss),
+            'expense_types' => GeneralSettings::options_expense_categories($ss),
         ];
     }
 

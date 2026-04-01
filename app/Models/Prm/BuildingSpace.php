@@ -209,10 +209,38 @@ class BuildingSpace
         $count = $clone_query->count('bs.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
 
-        // foreach ($rows as $row) {
-        //     $row->status = $row->maintenance_status_id == 1 ? 'Maintenance' : $row->status;
-        // }
-        return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+        $summaryRow = DB::table('building_spaces as bs')
+            ->join('buildings as b', 'b.id', '=', 'bs.building_id')
+            ->join('floors as f', 'f.floor_number', '=', 'bs.floor_id')
+            ->join('space_types as st', 'st.id', '=', 'bs.space_type_id')
+            ->join('space_statuses as ss', 'ss.id', '=', 'bs.status_id')
+            ->whereRaw($str_search)
+            ->whereRaw($str_moreWhere)
+            ->selectRaw("
+                COUNT(bs.id) as total_units,
+                SUM(CASE WHEN LOWER(TRIM(ss.name)) = 'available' THEN 1 ELSE 0 END) as available_cnt,
+                SUM(CASE WHEN LOWER(TRIM(ss.name)) = 'booked' THEN 1 ELSE 0 END) as booked_cnt,
+                SUM(CASE WHEN LOWER(TRIM(ss.name)) = 'occupied' THEN 1 ELSE 0 END) as occupied_cnt
+            ")
+            ->first();
+
+        $totalUnits = (int) ($summaryRow->total_units ?? 0);
+        $available = (int) ($summaryRow->available_cnt ?? 0);
+        $booked = (int) ($summaryRow->booked_cnt ?? 0);
+        $occupied = (int) ($summaryRow->occupied_cnt ?? 0);
+        // Occupancy = count of occupied units only (matches OCCUPIED on cards). Booked has its own summary.
+        $occupancyCount = $occupied;
+
+        $paginator = new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+        $out = $paginator->toArray();
+        $out['summary'] = [
+            'total_units' => $totalUnits,
+            'occupancy' => $occupancyCount,
+            'available' => $available,
+            'booked' => $booked,
+        ];
+
+        return $out;
 
     }
 

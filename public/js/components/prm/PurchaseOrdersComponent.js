@@ -1,5 +1,14 @@
 "use strict";
 
+/**
+ * PurchaseOrdersComponent — PRM purchase orders (list, create/edit PO, receive).
+ *
+ * Sections (top to bottom):
+ *   1) Shared helpers: money/qty, ItemsView row mapping, totals, vendor header
+ *   2) Receive PO: checkbox column, line submit, confirm flow
+ *   3) List view columns + init + filters
+ *   4) Dialogs: PurchaseOrder (ItemsView lines), Receive (read-only header + receive qty)
+ */
 var PurchaseOrdersComponent = (() => {
     const mThis = {};
     mThis.title_prop = "Purchase Orders";
@@ -688,6 +697,9 @@ var PurchaseOrdersComponent = (() => {
 
                 } else {
                     me.clear();
+                    if (me.searchVendor && typeof me.searchVendor.reset === 'function') {
+                        me.searchVendor.reset();
+                    }
                 }
             },
             prepareFormOptions: {

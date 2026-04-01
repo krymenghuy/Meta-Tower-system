@@ -21,17 +21,24 @@ var BillComponent = (() => {
             className: "align-middle",
         },
         {
+            title: "Bill Date",
+            className: "align-middle",
+            data: (data) =>
+                `<span class="text-prm-custom text-nowrap">${data.bill_date}</span>`,
+        },
+
+        {
             transTitle: "titles.Bill Number",
             className: "align-middle",
             data: (data) => {
-                return `<span class="text-nowrap text-prm-custom">${data.bill_number ?? ""}</span>`;
+                return `<span class="text-nowrap text-prm-custom fw-semibold">${data.bill_number ?? ""}</span>`;
             },
         },
         {
             transTitle: "titles.Vendor",
             className: "align-middle",
             data: (data) => {
-                return `<span class="d-block text-prm-custom">${data.vendor_name}</span>`;
+                return `<span class="d-block text-prm-custom fw-semibold">${data.vendor_name}</span>`;
             },
         },
         {
@@ -43,19 +50,20 @@ var BillComponent = (() => {
             },
         },
         {
+            transTitle: "titles.Expense Type",
+            className: "align-middle",
+            data: (data) => {
+                return `<span class="d-block text-prm-custom ">${data.expense_type_name ?? "_"}</span>`;
+            },
+        },
+        {
             transTitle: "titles.Reference No",
             className: "align-middle",
             data: (data) => {
                 return `<span class="d-block text-prm-custom">${data.ref_no ?? "_"}</span>`;
             },
         },
-        {
-            title: "Bill Date",
-            className: "align-middle",
-            data: (data) =>
-                `<span class="text-prm-custom text-nowrap">${data.bill_date}</span>`,
-        },
-
+        
         {
             title: "Total Amount",
             className: "align-middle text-end",
@@ -71,33 +79,25 @@ var BillComponent = (() => {
             },
         },
         {
-            title: "Description  ",
-            className: "align-middle",
+            title: "Balance",
+            className: "align-middle text-end",
             data: (data) => {
-                return `<span class="d-block text-prm-custom">${data.remark ?? "__"}</span>`;
-            }
+                const balance = Number(data.balance || 0);
+                const total = Number(data.total_amount || 0);
+                const paid = Number(data.paid_amount || 0);
+                const color =
+                    balance > 0
+                        ? "#dc2626"
+                        : total > 0 && paid >= total
+                          ? "#15803d"
+                          : "#94a3b8";
 
+                return `
+                    <span class="d-block fw-semibold" style="color:${color};">
+                        ${formatCurrency(data.balance)}
+                    </span>`;
+            },
         },
-        // {
-        //     title: "Balance",
-        //     className: "align-middle text-end",
-        //     data: (data) => {
-        //         const balance = Number(data.balance || 0);
-        //         const total = Number(data.total_amount || 0);
-        //         const paid = Number(data.paid_amount || 0);
-        //         const color =
-        //             balance > 0
-        //                 ? "#dc2626"
-        //                 : total > 0 && paid >= total
-        //                   ? "#15803d"
-        //                   : "#94a3b8";
-
-        //         return `
-        //             <span class="d-block fw-semibold" style="color:${color};">
-        //                 ${formatCurrency(data.balance)}
-        //             </span>`;
-        //     },
-        // },
         {
             title: "Status",
             className: "align-middle text-center",
@@ -152,7 +152,6 @@ var BillComponent = (() => {
         mThis.BillListView = new ListView("_bill_list", {
             fetchApi: `${main_view.base_url}/prm/bill/list-paginate`,
             perPage: 10,
-            // rememberCurrentPage: false,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
             tableClass: "table table--white rounded-2 header-uppercase",
@@ -160,9 +159,10 @@ var BillComponent = (() => {
                 tr.dataset.id = data.id;
                 tr.dataset.statusid = data.status_id;
                 tr.dataset.vendorid = data.vendor_id;
+                tr.dataset.billid   = data.bill_id;
                 tr.dataset.fileurl = data.file_image_url ?? "";
                 tr.classList.add("bill");
-                tr.setAttribute("id", `bill_id${data.id}`);
+                tr.setAttribute("id", `bill_payment_id${data.id}`);
             },
             listContainerClass: null,
         });
@@ -176,7 +176,6 @@ var BillComponent = (() => {
                     mThis.BillListView.showPage(mThis.getFilterData());
                 },
             };
-            // if (!AuthManager.allowed(240)) return;
             BillDialog.show(op);
         };
 
@@ -184,7 +183,6 @@ var BillComponent = (() => {
         const sh_parent = mThis.pr_tbl.parentElement;
         sh_parent.style.maxHeight = window.innerHeight - 200 + "px";
         sh_parent.classList.add("overflow-y-auto");
-        // sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
             sh_parent.style.maxHeight = window.innerHeight - 200 + "px";
         };
@@ -206,7 +204,118 @@ var BillComponent = (() => {
             }, 250);
         });
 
+        new ExpandableRowConfig(tblBill.id, {
+            dontExpandByClickingOn: ["btn_dropdown_vendor_action"],
+            onOpen: (container, detail_tr, parent_tr) => {
+                const id = parent_tr.dataset.id;
+                if (id && !isNaN(id)) mThis.displayBillDetail(container, id);
+            }
+        });
+
         mThis.initAlready = true;
+    };
+
+    mThis.displayBillDetail = (container, bill_id) => {
+        container.innerHTML = `<div class="text-center py-3"><div class="spinner-border text-primary" role="status"></div></div>`;
+
+        vsapi.call(`${main_view.base_url}/prm/bill-payment/form-options`, { bill_id })
+            .then(res => {
+                if (res.status_code !== 200) {
+                    container.innerHTML = `<div class="alert alert-danger m-3">Failed to load bill details</div>`;
+                    return;
+                }
+                mThis.renderBillDetail(container, res.data || {});
+            })
+            .catch(() => {
+                container.innerHTML = `<div class="alert alert-danger m-3">Network error loading bill details</div>`;
+            });
+    };
+
+    mThis.renderBillDetail = (container, data) => {
+        const bill     = data.bill || {};
+        const payments = data.payments || [];
+        const currency = "$";
+        const fmt = n => Number(n || 0).toLocaleString("en-US", { minimumFractionDigits: 2 });
+
+        const paymentsHtml = payments.map(p => `
+            <tr>
+                <td class="text-center text-nowrap">${p.payment_date ?? "—"}</td>
+                <td>${p.payer ?? "—"}</td>
+                <td class="text-center text-capitalize">${p.payment_method ?? "—"}</td>
+                <td class="text-center">${p.currency_code ?? "USD"}</td>
+                <td class="text-end fw-semibold text-success">${currency}${fmt(p.amount)}</td>
+            </tr>
+        `).join("");
+
+        container.innerHTML = `
+        <div class="bg-white rounded shadow-sm p-3">
+
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <div>
+                    <h6 class="fw-bold mb-1 text-uppercase text-primary">Bill Payment Receipt</h6>
+                    <small class="text-muted">Bill No: <span class="fw-semibold text-dark">${bill.bill_number ?? "—"}</span></small>
+                </div>
+                <span class="badge fs-6 px-3 py-2 ${
+                    bill.status_id == 2 ? 'bg-success' :
+                    bill.status_id == 3 ? 'bg-warning text-dark' : 'bg-danger'
+                }">
+                    ${bill.status ?? "Unpaid"}
+                </span>
+            </div>
+
+            <hr class="my-2">
+
+            <div class="row g-2 mb-3">
+                <div class="col-md-6">
+                    <small class="text-muted text-uppercase fw-semibold" style="font-size:0.7rem;">Vendor</small>
+                    <p class="mb-1 fw-semibold">${bill.vendor_name ?? "—"}</p>
+                    <small class="text-muted">${bill.phone_number ?? ""}</small>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <small class="text-muted text-uppercase fw-semibold" style="font-size:0.7rem;">Expense Type</small>
+                    <p class="mb-1">${bill.expense_type_name ?? "—"}</p>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-sm table-bordered mb-0">
+                    <thead style="background:#f0f4ff;">
+                        <tr>
+                            <th class="text-center" style="width:150px;">Payment Date</th>
+                            <th class="text-center">Payer</th>
+                            <th class="text-center" style="width:140px;">Method</th>
+                            <th class="text-center" style="width:140px;">Currency</th>
+                            <th class="text-end"    style="width:150px;">Amount Paid</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${paymentsHtml || '<tr><td colspan="5" class="text-center py-4 text-muted">No payments recorded</td></tr>'}
+                    </tbody>
+                    <tfoot class="table-light fw-bold">
+                        <tr>
+                            <td colspan="4" class="text-end text-muted small">Total Amount</td>
+                            <td class="text-end text-primary">${currency}${fmt(bill.total_amount)}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" class="text-end text-muted small">Amount Paid</td>
+                            <td class="text-end text-success">${currency}${fmt(bill.paid_amount)}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" class="text-end text-muted small">Remaining Balance</td>
+                            <td class="text-end fw-bold fs-6 ${Number(bill.balance) > 0 ? 'text-danger' : 'text-success'}">
+                                ${currency}${fmt(bill.balance)}
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <div class="text-end mt-3 no-print">
+                <button class="btn btn-sm btn-outline-primary" onclick="window.print()">
+                    <i class="bi bi-printer me-1"></i> Print Receipt
+                </button>
+            </div>
+        </div>`;
     };
 
     mThis.getFilterData = () => {
@@ -249,33 +358,29 @@ var BillComponent = (() => {
                     name: "view_attachment",
                 },
                 {
-                    html: '<span class="ps-2">Pay The Bill</span>',
-                    icon: `<i class="fa-solid fa-sack-dollar" style="color: rgb(22, 80, 137);"></i>`,
+                    html: '<span class="ps-2">Pay Now</span>',
+                    icon: `<i class="fa-solid fa-circle-dollar-to-slot" style="color: rgb(160, 2, 57);"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "bill_payment",
                 },
             ],
+            onShow: (me, container) => {
+                const menu = me.getActiveMenus(container);
+                const status_id = Number(container.dataset.statusid);
+
+                if (menu.bill_payment) {
+                    const isBlocked = status_id === 2;
+                    menu.bill_payment.style.display = isBlocked ? "none" : "block";
+                }
+            },
 
             onClick: (menuLink, id, name) => {
                 switch (name) {
-                    case "modify_bill": {
-                        mThis.editBill(id, menuLink);
-                        break;
-                    }
-                    case "delete_bill": {
-                        mThis.deleteBill(id, menuLink);
-                        break;
-                    }
-                    case "view_attachment": {
-                        mThis.viewAttachment(id);
-                    }
-                    case "bill_payment": {
-                        mThis.billPayment(id);
-                    }
-                    default: {
-                        break;
-                    }
-
+                    case "modify_bill":     mThis.editBill(id, menuLink);       break;
+                    case "delete_bill":     mThis.deleteBill(id, menuLink);     break;
+                    case "view_attachment": mThis.viewAttachment(id, menuLink); break;
+                    case "bill_payment":    mThis.billPayment(id, menuLink);    break;
+                    default: break;
                 }
             },
         };
@@ -311,25 +416,16 @@ var BillComponent = (() => {
                 if (e) {
                     vsapi
                         .call(
-                            `${main_view.base_url}/prm/bill/delete`,
-                            { id: id },
-                            false,
-                            false,
-                            false,
-                        )
+                            `${main_view.base_url}/prm/bill/delete`, { id: id }, false, false, false)
                         .then((res) => {
                             if (res.status_code == 200) {
                                 cv_interact.success(
-                                    res.message ||
-                                        "Bill record has been deleted.",
+                                    res.message || "Bill record has been deleted.",
                                 );
-                                mThis.BillListView.showPage(
-                                    mThis.getFilterData(),
-                                );
+                                mThis.BillListView.showPage(mThis.getFilterData());
                             } else {
                                 cv_interact.error(
-                                    res.error_message ||
-                                        "Failed to delete bill record.",
+                                    res.error_message || "Failed to delete bill record.",
                                 );
                             }
                         });
@@ -338,7 +434,23 @@ var BillComponent = (() => {
         );
     };
 
-    mThis.viewAttachment = (id) => {
+    mThis.billPayment = (id, menuLink) => {
+        let op = {
+            id: null,
+            bill_id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.BillListView.showPage(mThis.getFilterData());
+
+                const tr = document.querySelector(`#bill_payment_id${id}`);
+                const expandedContainer = tr?.nextElementSibling?.querySelector(".expandable-content");
+                if (expandedContainer) mThis.displayBillDetail(expandedContainer, id);
+            }
+        };
+        BillPaymentDialog.show(op);
+    };
+
+    mThis.viewAttachment = (id, menuLink) => {
         vsapi.call(`${main_view.base_url}/prm/bill/view-attachment`, { id: id }, false, false, false)
             .then((res) => {
                 if (res.status_code !== 200) {
@@ -354,7 +466,6 @@ var BillComponent = (() => {
                 const wrapper = document.createElement('div');
                 wrapper.style.cssText = `position:relative; max-width:90vw; max-height:90vh;`;
 
-                // Show image or iframe depending on file type
                 const isImage = ['png', 'jpg', 'jpeg'].includes(ext);
                 const isPdf   = ext === 'pdf';
 
@@ -369,7 +480,6 @@ var BillComponent = (() => {
                     iframe.style.cssText = `width:80vw; height:85vh; border:none; border-radius:8px;`;
                     wrapper.appendChild(iframe);
                 } else {
-                    // For doc/xls etc — just open in new tab
                     overlay.onclick = null;
                     document.body.removeChild(overlay);
                     window.open(data_url, '_blank');
@@ -387,31 +497,15 @@ var BillComponent = (() => {
                 document.body.appendChild(overlay);
             });
     };
-
-    mThis.billPayment = (id, menuLink) => {
-        let op = {
-            id: null,
-            btn: menuLink,
-            onClose: () => {
-                mThis.BillListView.showPage();
-            },
-        };
-        BillPaymentDialog.show(op);
-        // alert("coming soon!");
-    };
+    
     mThis.prepareFormOptions = (onFinish) => {
         vsapi
-            .call(
-                `${main_view.base_url}/prm/bill/form-options`,null,null,null,)
+            .call(`${main_view.base_url}/prm/bill/form-options`, null, null, null)
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
                 console.log("form-options data:", d); 
-                VSUtil.setComboItems(
-                    mThis.elFilter_vendor,
-                    d.vendors,"id","vendor","","All Vendor","",
-                );
-                VSUtil.setComboItems( mThis.elFilter_status, d.bill_statuses, "id", "bill_status", "", "All Statuses", "",
-                );
+                VSUtil.setComboItems(mThis.elFilter_vendor, d.vendors, "id", "vendor", "", "All Vendor", "");
+                VSUtil.setComboItems(mThis.elFilter_status, d.bill_statuses, "id", "bill_status", "", "All Statuses", "");
                 if (typeof onFinish === "function") onFinish();
             });
     };
@@ -470,6 +564,12 @@ const BillDialog = (() => {
                             </div>
                             <div class="col-6">
                                 <div class="material-input outlined">
+                                    <select name="expense_type_id" data-style="material" class="data-input form-control" data-field="expense_type_id" placeholder="Expense Type">
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="material-input outlined">
                                     <input name="total_amount" class="data-input form-control" data-field="total_amount" placeholder=" "></input>
                                     <label style="color:#777777; padding-left:6px;">Total Amount</label>
                                 </div>
@@ -480,7 +580,7 @@ const BillDialog = (() => {
                                     <label style="display:none;color:#777777;padding-left:6px;">File</label>
                                 </div>
                             </div>
-                            <div class="col-12">
+                            <div class="col-8">
                                 <div class="material-input outlined d-flex ">
                                     <input type="text" name="documents" class="d-none form-control " accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg" />
                                     <label style="display:none;color:#777777;padding-left:6px;">File</label>
@@ -514,7 +614,6 @@ const BillDialog = (() => {
                         if (me.controls.vendor_id) me.controls.vendor_id.value = vendorId || '';
                         if (!vendorId) {
                             if (me.controls.phone_number) me.controls.phone_number.value = '';
-                            // if (me.controls.po_number) me.controls.po_number.value = '';
                             return;
                         }
                         vsapi.post(`${main_view.base_url}/prm/vendor/options-vendor-info`, { vendor_id: vendorId }, {})
@@ -522,7 +621,6 @@ const BillDialog = (() => {
                                 const d = res.data || {};
                                 const v = d.vendor || {};
                                 if (me.controls.phone_number) me.controls.phone_number.value = v.phone_number || '';
-                                // if (me.controls.po_number) me.controls.po_number.value = v.po_number     || '';
                             })
                             .catch(() => {});
                     };
@@ -539,7 +637,6 @@ const BillDialog = (() => {
                                 return (Array.isArray(vendors) ? vendors : []).map(v => ({ ...v,
                                     vendor: v.vendor || v.name || v.vendor_name || v.code || '',
                                     phone_number: v.phone_number || v.contact_phone || v.phone || '',
-                                    // po_number: v.po_number || v.purchase_order_number || v.purchase_order || ''
                                 }));
                             },
                             columns: { vendor: 'VENDOR', phone_number: 'PHONE' },
@@ -552,7 +649,6 @@ const BillDialog = (() => {
                             }
                         });
 
-                        // prefill in modify mode
                         if (me._selectedVendorId) {
                             applyVendorInfo(me._selectedVendorId);
                         }
@@ -563,7 +659,6 @@ const BillDialog = (() => {
                                 accept: ".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg",
                             },
                             (d) => {
-                                // console.log("FileChooser returned:", d);
                                 me.fileData = d;
                                 me.controls.documents.value = d.fileName;
                                 me.controls.documents.classList.remove('d-none');
@@ -573,13 +668,12 @@ const BillDialog = (() => {
                 },
 
                 configSelect: [
-                    
-                    // {
-                    //     name: "bill_statuses",
-                    //     data: "bill_statuses",
-                    //     textField: "bill_status",
-                    //     valueField: "id",
-                    // },
+                    {
+                        name: "expense_type_id",
+                        data: "expense_types",
+                        textField: "expense_category",
+                        valueField: "id",
+                    },
                 ],
 
                 prepareFormOptions: {
@@ -587,8 +681,7 @@ const BillDialog = (() => {
                     modifyTitle: "Modify Bill Record",
                     targetProp: "bill_details",
                     api: {
-                        endpoint: [
-                            main_view.base_url, "/prm/bill/form-options",  ].join(""),
+                        endpoint: [main_view.base_url, "/prm/bill/form-options"].join(""),
                         params: (op) => {
                             return { id: op.id };
                         },
@@ -597,7 +690,7 @@ const BillDialog = (() => {
                
                 onPrepareForm: (me, data) => {
                     const header = me.divModal.querySelector(".modal-header");
-                    const btnClose = header.querySelector("button[data-bs-dismiss]",);
+                    const btnClose = header.querySelector("button[data-bs-dismiss]");
                     if (btnClose) btnClose.classList.add("d-none");
 
                     const details = data?.bill_details;
@@ -612,40 +705,7 @@ const BillDialog = (() => {
                         if (me.controls.phone_number) me.controls.phone_number.value = details.phone_number || '';
                     }
                 },
-                    
-                // onPrepareForm: (me, data) => {
-                //     const header = me.divModal.querySelector(".modal-header");
-                //     const btnClose = header.querySelector("button[data-bs-dismiss]");
-                //     if (btnClose) btnClose.classList.add("d-none");
 
-                //     // Always reset first — prevents leftover vendor from previous session
-                //     me._selectedVendorId = null;
-                //     if (me.controls.vendor)       me.controls.vendor.value       = '';
-                //     if (me.controls.vendor_id)    me.controls.vendor_id.value    = '';
-                //     if (me.controls.phone_number) me.controls.phone_number.value = '';   
-                //     me.fileData = null;
-                //     if (me.controls.documents) {
-                //         me.controls.documents.value = '';
-                //         me.controls.documents.classList.add('d-none');
-                //     }
-
-                //     const details = data?.bill_details;
-
-                //     if (details?.vendor_id) {
-                //         me._selectedVendorId = details.vendor_id;
-                //         if (me.controls.vendor_id)    me.controls.vendor_id.value    = details.vendor_id;
-                //         if (me.controls.phone_number) me.controls.phone_number.value = details.phone_number || '';
-
-                //         setTimeout(() => {
-                //             if (me.controls.vendor) me.controls.vendor.value = details.vendor_name || '';
-                //         }, 100);
-                //     }
-
-                //     if (details?.file_image) {
-                //         me.controls.documents.value = details.file_image;
-                //         me.controls.documents.classList.remove('d-none');
-                //     }
-                // },
                 buttons: [
                     {
                         label: '<span vslang="buttons.Cancel"></span>',
@@ -660,10 +720,9 @@ const BillDialog = (() => {
                         click: (me, btn) => {
                             const op = me.getData();
                             op.id = me.dataOptions.id;
-                            console.log(444,me.dataOptions);
+                            console.log(444, me.dataOptions);
                             
                             if (me._selectedVendorId != null && me._selectedVendorId !== undefined) {
-                                // op.vendor_id = me.dataOptions.vendorid;
                                 op.vendor_id = me._selectedVendorId;
                             }
 
@@ -678,21 +737,16 @@ const BillDialog = (() => {
                                     || me.fileData.fileType
                                     || me.fileData.extension
                                     || null;    
-                                // console.log("photo being sent:", op.photo ? op.photo.substring(0, 50) : "NULL");
                             }
                             vsapi
-                                .call([ main_view.base_url, "/prm/bill/save",].join(""), op, btn, null)
+                                .call([main_view.base_url, "/prm/bill/save"].join(""), op, btn, null)
                                 .then((res) => {
                                     if (res.status_code === 200) {
                                         me.hide(true, op);
                                         if (me.dataOptions.id > 0) {
-                                            cv_interact.success(
-                                                "Bill has been updated successfully",
-                                            );
+                                            cv_interact.success("Bill has been updated successfully");
                                         } else {
-                                            cv_interact.success(
-                                                "New bill has been added successfully",
-                                            );
+                                            cv_interact.success("New bill has been added successfully");
                                         }
                                     } else {
                                         cv_interact.error(res.error_message);
@@ -706,4 +760,3 @@ const BillDialog = (() => {
     };
     return self;
 })();
-

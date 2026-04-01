@@ -252,13 +252,6 @@ var TenantComponent = new (function () {
                     name: "upload_document",
                 },
                 {
-                    html: '<span class="ps-2">Renew Contract</span>',
-                    icon: `<i class="fa-solid fa-arrows-rotate fs-5 text-prm-custom"></i>`,
-
-                    cssClass: "border-bottom pb-2",
-                    name: "renew_contract",
-                },
-                {
                     html: '<span class="ps-2">Edit Information</span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
@@ -285,8 +278,6 @@ var TenantComponent = new (function () {
                 // menu.edit_student.style.display = enroll_finalized == 1 ? 'none' : 'block';
                 menu.create_contract.style.display =
                     status_id == 1 ? "block" : "none";
-                menu.renew_contract.style.display =
-                    status_id > 1 ? "block" : "none";
                 menu.service_request.style.display =
                     status_id == 2 ? "block" : "none";
                 menu.upload_document.style.display =
@@ -309,10 +300,6 @@ var TenantComponent = new (function () {
                     }
                     case "upload_document": {
                         mThis.uploadDocument(id, menuLink);
-                        break;
-                    }
-                    case "renew_contract": {
-                        mThis.renewContract(id, menuLink);
                         break;
                     }
                     case "edit_tenant": {
@@ -823,7 +810,7 @@ var TenantComponent = new (function () {
                                 <a class="nav-link active fw-semibold" href="#overview_tenant_detail">Overview</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link fw-semibold" href="#lease_tenant_history">Lease History</a>
+                                <a class="nav-link fw-semibold" href="#lease_tenant_history">Renewal History</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link fw-semibold" href="#document_tenant_list">Documents</a>
@@ -858,119 +845,14 @@ var TenantComponent = new (function () {
                         <div class="tab-pane" id="lease_tenant_history">
                             <h5 class="fw-bold mb-2">
                                 <i class="fa fa-file-text me-1 text-primary"></i>
-                                Lease History
+                                Renewal History
                             </h5>
-                            <!-- Timeline Content -->
-                            <div class="container py-4 position-relative overflow-auto" style="max-height: 360px; scrollbar-width: thin;scrollbar-color: #888 #f1f1f1;">
-
-                            <!-- Current Lease Card -->
-                            <div class="d-flex position-relative mb-4">
-                                <div class="flex-shrink-0 text-center" style="width: 3rem; z-index: 10;">
-                                    <div class="rounded-circle text-white shadow-lg d-flex align-items-center justify-content-center" style="background-color:#0f49bd;width: 2.5rem; height: 2.5rem;">
-                                        <i class="fa fa-file-text text-white"></i>
-                                    </div>
-                                </div>
-                                <div class="flex-grow-1 ms-3">
-                                    <div class="card shadow-sm" style="border-left: 6px solid #0f49bd;border-radius: 14px;">
-                                        <div class="card-body" >
-                                        <div class="d-flex justify-content-between flex-column flex-md-row mb-3">
-                                            <div>
-                                            <h5 class="card-title mb-1">Current Lease: Jan 2026 - Jan 2027 <span class="badge text-uppercase rounded-4" style="background-color:#0f49bd;">Current</span></h5>
-                                            <p class="text-muted mb-0">Unit 402 • 1,200 sq ft • Sunset Heights</p>
-                                            </div>
-                                            <div class="text-end">
-                                            <p class="h5 text-primary mb-0">$2,500 <small class="text-muted">/mon</small></p>
-                                            <small class="text-muted">Contract Value: $30,000</small>
-                                            </div>
-                                        </div>
-                                        <ul class="list-unstyled bg-light p-3 rounded mb-3">
-                                            <li class="d-flex align-items-start mb-2">
-                                            <i class="fa-solid fa-circle-exclamation text-success me-2"></i>
-                                            Renewal signed on Oct 15, 2023. Included a 4% standard escalation.
-                                            </li>
-                                            <li class="d-flex align-items-start">
-                                            <i class="fa-regular fa-circle-check text-info me-2"></i>
-                                            Security Deposit: $2,500 held in escrow.
-                                            </li>
-                                        </ul>
-
-                                        </div>
-                                    </div>
-                                </div>
+                            <div class="container py-4 position-relative overflow-auto lease-history-scroll" style="max-height: 360px; scrollbar-width: thin;scrollbar-color: #888 #f1f1f1;">
+                                <p class="text-muted small mb-0">Open this tab to load contracts.</p>
                             </div>
-
-                            <!-- Initial Contract Card -->
-                            <!-- <div class="d-flex position-relative mb-0">
-                                    <div class="flex-shrink-0 text-center" style="width: 3rem; z-index: 10;">
-                                        <div class="rounded-circle bg-success text-white shadow-sm d-flex align-items-center justify-content-center" style="width: 2.5rem; height: 2.5rem;">
-                                            <i class="fa-regular fa-star"></i>
-                                        </div>
-                                    </div>
-                                    <div class="flex-grow-1 ms-3">
-                                        <div class="card border rounded-4 shadow-sm">
-                                            <div class="card-body">
-                                                <div class="d-flex justify-content-between flex-column flex-md-row mb-2">
-                                                    <div>
-                                                        <h5 class="card-title mb-1">Initial Contract: Jan 2021 - Jan 2022 <span class="badge bg-success rounded-4 text-uppercase">Origins</span></h5>
-                                                        <p class="text-muted mb-0">Unit 310 • 1,000 sq ft • Sunset Heights</p>
-                                                    </div>
-                                                    <div class="text-end">
-                                                        <p class="h5 mb-0">$2,100 <small class="text-muted">/mon</small></p>
-                                                        <small class="text-muted">Contract Value: $25,200</small>
-                                                    </div>
-                                                </div>
-                                                <div class="d-flex align-items-center gap-2 text-muted bg-light p-2 rounded">
-                                                    <i class="material-icons">celebration</i>
-                                                    First lease signed. Security deposit paid in full: $2,100.
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div> -->
                         </div>
 
                     </div>
-                    <div class="tab-pane" id="document_tenant_list">
-                        <h5 class="fw-bold mb-4"><i class="fa fa-folder me-1 text-primary"></i> Documents</h5>
-                        <div class="table-responsive">
-                            <table class="table align-middle">
-                                <thead class="bg-light">
-                                    <tr class=" text-uppercase ">
-                                        <th class="border-0 ps-3" style="letter-spacing: 0.05em;">Document Type</th>
-                                        <th class="border-0">File Name</th>
-                                        <th class="border-0">File Type</th>
-                                        <th class="border-0">Description</th>
-                                        <th class="border-0 text-end pe-3">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr class="border-bottom">
-                                        <td class="ps-3 py-3">
-                                            <div class="d-flex align-items-center">
-                                                <div>
-                                                    <div class="fw-bold text-dark">${data.document_type_id ?? ""}</div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="fw-bold text-dark">${data.file_name ?? ""}</div>
-                                        </td>
-                                        <td>
-                                            <div class="fw-semibold text-dark">${data.ext ?? ""}</div>
-                                        </td>
-                                        <td>
-                                            <span class="text-muted small">${data.description ?? "No description"}</span>
-                                        </td>
-                                        <td class="text-end pe-3">
-                                            <button class="btn btn-sm text-muted p-0 ">
-                                                <i class="fa-solid fa-ellipsis fa-shake"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-
 
                     </div>
                     <!-- Footer -->
@@ -1015,6 +897,189 @@ var TenantComponent = new (function () {
 
         mThis.setActionsProfileInfo(mThis.profile_info_tenant);
     };
+    mThis._escapeHtml = (s) => {
+        if (s == null) return "";
+        return String(s)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;");
+    };
+    mThis._fmtMoney = (n) => {
+        if (n == null || n === "") return "—";
+        const x = Number(n);
+        if (Number.isNaN(x)) return String(n);
+        return x.toLocaleString(undefined, {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 2,
+        });
+    };
+    mThis._getUnitCode = (row, fallback = "—") => {
+        if (!row) return fallback;
+        const value =
+            row.unit_code ??
+            row.space_code ??
+            row.unit ??
+            row.code ??
+            row.unit_number;
+        return value == null || value === "" ? fallback : value;
+    };
+    mThis._leaseHistoryContractsHtml = (renewalEntriesRaw) => {
+        const entries = Array.isArray(renewalEntriesRaw) ? renewalEntriesRaw : [];
+        if (!entries.length) {
+            return `<div class="text-center py-5 text-muted">
+                <i class="fa fa-file-text fa-2x mb-2 opacity-50 d-block"></i>
+                <p class="mb-0">No renewal history recorded for this tenant.</p>
+            </div>`;
+        }
+
+        // Group by contract_id so we render one card per contract.
+        const groupsByContractId = new Map();
+        entries.forEach((e) => {
+            const cid = e.contract_id ?? "0";
+            if (!groupsByContractId.has(cid)) groupsByContractId.set(cid, []);
+            groupsByContractId.get(cid).push(e);
+        });
+
+        let cards = "";
+        groupsByContractId.forEach((group) => {
+            if (!group.length) return;
+            const first = group[0];
+
+            const contractStatusName = String(first.contract_status ?? "").trim();
+            const contractStatusLower = contractStatusName.toLowerCase();
+            const hasCurrent = group.some((r) => !!r.is_current);
+
+            let accent = "#adb5bd";
+            let circleBg = "#6c757d";
+            let headerBadgeHtml = "";
+            if (hasCurrent || contractStatusLower === "active") {
+                accent = "#0f49bd";
+                circleBg = "#0f49bd";
+                headerBadgeHtml = `<span class="badge text-uppercase rounded-4 text-white ms-1" style="background-color:#0f49bd;">CURRENT</span>`;
+            } else if (contractStatusLower === "pending") {
+                accent = "#fd7e14";
+                circleBg = "#fd7e14";
+                headerBadgeHtml = `<span class="badge text-uppercase rounded-4 text-white ms-1" style="background-color:#fd7e14;">PENDING</span>`;
+            } else {
+                headerBadgeHtml = `<span class="badge text-uppercase rounded-4 text-dark bg-light border ms-1">${mThis._escapeHtml(contractStatusName || "—")}</span>`;
+            }
+
+            const start = mThis._escapeHtml(first.contract_start_date ?? "");
+            const end = mThis._escapeHtml(first.contract_end_date ?? "");
+            const title = `Contract: ${start} — ${end}`;
+
+            const unitPart = mThis._escapeHtml(mThis._getUnitCode(first, "—"));
+            const sqmPart =
+                first.sqm_size != null && first.sqm_size !== ""
+                    ? `${mThis._fmtMoney(first.sqm_size)} sqm`
+                    : "—";
+            const bldg = first.building_name ? mThis._escapeHtml(first.building_name) : "";
+            const subtitle = `Unit ${unitPart} • ${sqmPart}${bldg ? ` • ${bldg}` : ""}`;
+
+            const pt = mThis._escapeHtml((first.price_type ?? "sqm").toString());
+            const priceLine = `$ ${mThis._fmtMoney(first.price)} <small class="text-muted">/${pt}</small>`;
+
+            const dep = first.deposit != null && first.deposit !== "";
+            let depositSmallHtml = dep ? `Deposit: $${mThis._fmtMoney(first.deposit)}` : "\u00a0";
+            if (first.deposit_remarks) {
+                depositSmallHtml = dep
+                    ? `${depositSmallHtml} <span class="text-muted">• ${mThis._escapeHtml(first.deposit_remarks)}</span>`
+                    : `<span class="text-muted">${mThis._escapeHtml(first.deposit_remarks)}</span>`;
+            }
+
+            const renewalsTableRowsHtml = group
+                .map((r) => {
+                    const isInitial = !!r.is_initial;
+                    const renewalDate = r.renewal_date
+                        ? mThis._escapeHtml(r.renewal_date)
+                        : isInitial
+                          ? "Initial"
+                          : "—";
+
+                    const rowStart = mThis._escapeHtml(r.renewal_start_date ?? "—");
+                    const rowEnd = mThis._escapeHtml(r.renewal_end_date ?? "—");
+
+                    const rowUnitCode = mThis._escapeHtml(
+                        mThis._getUnitCode(r, mThis._getUnitCode(first, "—")),
+                    );
+                    const currentBadgeHtml = r.is_current
+                        ? `<span class="badge text-uppercase rounded-4 text-white ms-1" style="background-color:#0f49bd;">Current</span>`
+                        : "";
+
+                    const remarks = r.remarks != null && r.remarks !== ""
+                        ? mThis._escapeHtml(r.remarks)
+                        : "—";
+
+                    const updatedBy = r.update_user
+                        ? `${mThis._escapeHtml(r.update_user)}${r.updated_at ? ` • ${mThis._escapeHtml(r.updated_at)}` : ""}`
+                        : "—";
+
+                    return `<tr class="${r.is_current ? "table-prm-current-row" : ""}">
+                        <td class="text-nowrap">${renewalDate}</td>
+                        <td class="text-nowrap">${rowStart}</td>
+                        <td class="text-nowrap">${rowEnd}</td>
+                        <td class="text-nowrap">
+                            <span class="fw-semibold text-prm-custom">${rowUnitCode}</span>
+                            ${currentBadgeHtml}
+                        </td>
+                        <td>${remarks}</td>
+                        <td class="text-nowrap">${updatedBy}</td>
+                    </tr>`;
+                })
+                .join("");
+
+            const renewalsCount = group.length;
+
+            cards += `<div class="d-flex position-relative mb-4">
+                <div class="flex-shrink-0 text-center" style="width: 3rem; z-index: 10;">
+                    <div class="rounded-circle text-white shadow-lg d-flex align-items-center justify-content-center" style="background-color:${circleBg};width: 2.5rem; height: 2.5rem;">
+                        <i class="fa fa-file-text text-white"></i>
+                    </div>
+                </div>
+                <div class="flex-grow-1 ms-3">
+                    <div class="card shadow-sm" style="border-left: 6px solid ${accent};border-radius: 14px;">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between flex-column flex-md-row mb-3">
+                                <div>
+                                    <h5 class="card-title mb-1">${title} ${headerBadgeHtml}</h5>
+                                    <p class="text-muted mb-0">${subtitle}</p>
+                                </div>
+                                <div class="text-end mt-2 mt-md-0">
+                                    <p class="h5 text-primary mb-0">${priceLine}</p>
+                                    <small class="text-muted">${depositSmallHtml}</small>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center mb-2 mt-2">
+                                <small class="text-muted fw-semibold">Renewal history</small>
+                                <small class="text-muted">${renewalsCount} renewals</small>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-sm table--white mb-0 renewal-history-table">
+                                    <thead class="bg-light">
+                                        <tr class="text-uppercase small">
+                                            <th class="border-0">Renewal date</th>
+                                            <th class="border-0">Start date</th>
+                                            <th class="border-0">End date</th>
+                                            <th class="border-0">Unit Code</th>
+                                            <th class="border-0">Remarks</th>
+                                            <th class="border-0">Updated by</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${renewalsTableRowsHtml}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+        });
+
+        return cards;
+    };
     mThis.renderOverView = (div, target, data) => {
         if (target == "overview_tenant_detail") {
             const p = { id: data.id };
@@ -1058,91 +1123,36 @@ var TenantComponent = new (function () {
             const p = { id: data.id };
             vsapi
                 .call(
-                    [main_view.base_url, "/prm/tenant/lease"].join(""),
+                    [main_view.base_url, "/prm/tenant/lease-history"].join(""),
                     p,
                     false,
                     null,
                 )
                 .then((res) => {
-                    const d = res.status_code == 200 ? res.data : {};
-
-                    let html = "";
-                    html += `<div class="tab-pane" id="lease_tenant_history">
-                                <h5 class="fw-bold mb-2">
-                                    <i class="fa fa-file-text me-1 text-primary"></i>
-                                    Lease History
-                                </h5>
-                                <!-- Timeline Content -->
-                                <div class="container py-4 position-relative overflow-auto" style="max-height: 360px; scrollbar-width: thin;scrollbar-color: #888 #f1f1f1;">
-
-                                <!-- Current Lease Card -->
-                                <div class="d-flex position-relative mb-4">
-                                    <div class="flex-shrink-0 text-center" style="width: 3rem; z-index: 10;">
-                                    <div class="rounded-circle text-white shadow-lg d-flex align-items-center justify-content-center" style="background-color:#0f49bd;width: 2.5rem; height: 2.5rem;">
-                                        <i class="fa fa-file-text text-white"></i>
-                                    </div>
-                                    </div>
-                                    <div class="flex-grow-1 ms-3">
-                                        <div class="card shadow-sm" style="border-left: 6px solid #0f49bd;border-radius: 14px;">
-                                            <div class="card-body" >
-                                            <div class="d-flex justify-content-between flex-column flex-md-row mb-3">
-                                                <div>
-                                                <h5 class="card-title mb-1">Current Lease: Jan 2026 - Jan 2027 <span class="badge text-uppercase rounded-4" style="background-color:#0f49bd;">Current</span></h5>
-                                                <p class="text-muted mb-0">Unit 402 • 1,200 sq ft • Sunset Heights</p>
-                                                </div>
-                                                <div class="text-end">
-                                                <p class="h5 text-primary mb-0">$2,500 <small class="text-muted">/mon</small></p>
-                                                <small class="text-muted">Contract Value: $30,000</small>
-                                                </div>
-                                            </div>
-                                            <ul class="list-unstyled bg-light p-3 rounded mb-3">
-                                                <li class="d-flex align-items-start mb-2">
-                                                <i class="fa-solid fa-circle-exclamation text-success me-2"></i>
-                                                Renewal signed on Oct 15, 2023. Included a 4% standard escalation.
-                                                </li>
-                                                <li class="d-flex align-items-start">
-                                                <i class="fa-regular fa-circle-check text-info me-2"></i>
-                                                Security Deposit: $2,500 held in escrow.
-                                                </li>
-                                            </ul>
-
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Initial Contract Card -->
-                                <!-- <div class="d-flex position-relative mb-0">
-                                        <div class="flex-shrink-0 text-center" style="width: 3rem; z-index: 10;">
-                                            <div class="rounded-circle bg-success text-white shadow-sm d-flex align-items-center justify-content-center" style="width: 2.5rem; height: 2.5rem;">
-                                                <i class="fa-regular fa-star"></i>
-                                            </div>
-                                        </div>
-                                        <div class="flex-grow-1 ms-3">
-                                            <div class="card border rounded-4 shadow-sm">
-                                                <div class="card-body">
-                                                    <div class="d-flex justify-content-between flex-column flex-md-row mb-2">
-                                                    <div>
-                                                    <h5 class="card-title mb-1">Initial Contract: Jan 2021 - Jan 2022 <span class="badge bg-success rounded-4 text-uppercase">Origins</span></h5>
-                                                    <p class="text-muted mb-0">Unit 310 • 1,000 sq ft • Sunset Heights</p>
-                                                </div>
-                                                <div class="text-end">
-                                                    <p class="h5 mb-0">$2,100 <small class="text-muted">/mon</small></p>
-                                                    <small class="text-muted">Contract Value: $25,200</small>
-                                                </div>
-                                            </div>
-                                            <div class="d-flex align-items-center gap-2 text-muted bg-light p-2 rounded">
-                                                <i class="material-icons">celebration</i>
-                                                First lease signed. Security deposit paid in full: $2,100.
-                                            </div>
-                                        </div>
-                                    </div> -->
-                                    </div>
-                                </div>
+                    const raw =
+                        res.status_code == 200 && res.data != null
+                            ? res.data
+                            : [];
+                    const contracts = Array.isArray(raw) ? raw : [];
+                    const cardsHtml = mThis._leaseHistoryContractsHtml(contracts);
+                    div.innerHTML = `<div class="tab-pane active" id="lease_tenant_history">
+                            <h5 class="fw-bold mb-2">
+                                <i class="fa fa-file-text me-1 text-primary"></i>
+                                Renewal History
+                            </h5>
+                            <div class="container py-4 position-relative overflow-auto lease-history-scroll" style="max-height: 360px; scrollbar-width: thin;scrollbar-color: #888 #f1f1f1;">
+                                ${cardsHtml}
                             </div>
-
                         </div>`;
-                    div.innerHTML = html;
+                })
+                .catch((err) => {
+                    div.innerHTML = `<div class="tab-pane active" id="lease_tenant_history">
+                            <h5 class="fw-bold mb-2">
+                                <i class="fa fa-file-text me-1 text-primary"></i>
+                                Renewal History
+                            </h5>
+                            <div class="alert alert-danger m-3">Failed to load contracts: ${mThis._escapeHtml(err && err.message ? err.message : "Unknown error")}</div>
+                        </div>`;
                 });
         }
         if (target === "document_tenant_list") {
@@ -1599,8 +1609,8 @@ const CreateTenantDialog = (() => {
                     },
                 },
                 onPrepareForm: (me, data) => {
-                    
-                    
+
+
                 },
 
                 extendMethod: {
