@@ -23,8 +23,8 @@ class BillPaymentController extends Controller
         if ($ss->status_code !== 200) return JDV::raw($ss);
 
         $id      = $req->id ?? null;
-        $payment = new BillPayment($id, $ss);
-        return JDV::raw($payment->savePayment($req->all(), $id, $ss));
+        $bill_payment = new BillPayment($id, $ss);
+        return JDV::raw($bill_payment->savePayment($req->all(), $id, $ss));
     }
 
 
