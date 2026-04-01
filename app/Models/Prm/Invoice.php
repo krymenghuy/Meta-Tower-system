@@ -94,17 +94,17 @@ class Invoice extends VSModel
             foreach ($items as $item) {
                 $itemType = strtolower($item['type'] ?? $item['item_type'] ?? 'service');
 
-                if (!in_array($itemType, ['service', 'rent', 'utility'])) {
-                    \Log::warning("Invalid item type received, forced to 'service'", [
-                        'received' => $item['type'] ?? 'missing',
-                        'item'     => $item
-                    ]);
-                    $itemType = 'service';
-                }
+                // if (!in_array($itemType, ['service', 'rent', 'utility'])) {
+                //     \Log::warning("Invalid item type received, forced to 'service'", [
+                //         'received' => $item['type'] ?? 'missing',
+                //         'item'     => $item
+                //     ]);
+                //     $itemType = 'service';
+                // }
 
-                if (!in_array($itemType, ['service', 'rent', 'utility',])) {
-                    $itemType = 'service';
-                }
+                // if (!in_array($itemType, ['service', 'rent', 'utility',])) {
+                //     $itemType = 'service';
+                // }
 
                 $itemId = $item['item_id']  ?? null;
                 $qty    = (int)($item['qty'] ?? 1);
@@ -248,6 +248,7 @@ class Invoice extends VSModel
             foreach ($pmt_breakdowns as $bd) {
                 $detailRows[] = [
                     'receipt_id'       => $receipt_id,
+                    'bank_id'          => $bd['bank_id'] ?? null,
                     'method'           => strtolower($bd['method'] ?? 'cash'),
                     'amount'           => (float)($bd['amount'] ?? 0),
                     'currency_code'    => $bd['currency_code'] ?? 'USD',
@@ -268,8 +269,20 @@ class Invoice extends VSModel
             }
             // 3. Update Invoice
             $new_paid_amount = (float)$invoice->paid_amount + $total_received;
-            $new_due_amount  = max(0.00, (float)$invoice->amount - $new_paid_amount);
+            $total_invoice_amount = (float)$invoice->amount;
+            $new_due_amount  = max(0.00, $total_invoice_amount - $new_paid_amount);
             $is_paid         = ($new_due_amount <= 0) ? 1 : 0;
+
+           if ($new_due_amount <= 0.001) {
+                $payment_status_id = 1; // Paid
+                $is_paid = 1;
+            } elseif ($new_paid_amount > 0) {
+                $payment_status_id = 3; // Partial
+                $is_paid = 0;
+            } else {
+                $payment_status_id = 2; // Unpaid
+                $is_paid = 0;
+            }
 
             DB::table('invoices')
                 ->where('id', $invoice_id)
@@ -277,7 +290,7 @@ class Invoice extends VSModel
                     'paid_amount'       => $new_paid_amount,
                     'due_amount'        => $new_due_amount,
                     'is_paid'           => $is_paid,
-                    'payment_status_id' => $is_paid ? 1 : ($invoice->payment_status_id ?? 2),
+                    'payment_status_id' => $payment_status_id,
                     'updated_at'        => now(),
                     'update_user'       => $ss->name ?? 'Admin',
                     'update_uid'        => $ss->uid ?? 1,
@@ -459,6 +472,7 @@ class Invoice extends VSModel
             'statuses'        => GeneralSettings::options_payment_status($ss),
             'tenants'         => GeneralSettings::options_tenant_with_active_contract($ss),
             'services'        => GeneralSettings::options_service($ss),
+            'banks'           => GeneralSettings::options_bank($ss),
             'business_types'  => GeneralSettings::options_business_type($ss),
         ];
     }

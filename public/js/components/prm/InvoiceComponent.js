@@ -263,11 +263,6 @@ var InvoiceComponent = (() => {
                     item.discount || item.special_discount_value || 0
                 );
                 const taxAmount = parseFloat(item.tax_rate) || 0;
-
-                console.log("discount", discount);
-                console.log("item", item);
-
-                // Use 'total' if available (calculated by engine), fallback to 'amount' (from DB)
                 const total = parseFloat(item.total || item.amount || 0);
 
                 return `
@@ -342,7 +337,7 @@ var InvoiceComponent = (() => {
 
                     ${invoice.remarks? `
                         <div class="mt-3 p-3 bg-light rounded border">
-                            <small class="text-muted fw-semibold d-block mb-1 text-uppercase" style="font-size: 0.7rem;">Remarks:</small>
+                            <small class="text-muted fw-semibold d-block  text-uppercase" style="font-size: 0.7rem;">Remarks:</small>
                             <p class="mb-0 small">${invoice.remarks}</p>
                         </div>`: ""
                     }
@@ -396,12 +391,9 @@ var InvoiceComponent = (() => {
                 let allowed = [];
 
                 if (statusId === 1) {
-                    allowed = ["print_invoice", "receive_invoice"];
+                    allowed = ["receive_invoice"];
                 }
-                else if (statusId === 2) {
-                    allowed = [ "delete_invoice"];
-                }
-                else if (statusId === 3) {
+                else if (statusId === 2 || statusId === 3) {
                     allowed = ["print_invoice", "delete_invoice", "receive_invoice"];
                 }
                 else {
@@ -461,7 +453,10 @@ var InvoiceComponent = (() => {
     mThis.receiveInvoice = (id, menulink) => {
         ReceiveDialog.show({
             invoice_id: id,
-            btn: menulink
+            btn: menulink,
+            onClose: () =>
+                    mThis.InvoiceListView.showPage(mThis.getFilterData())
+
         });
     };
 
@@ -544,7 +539,7 @@ const InvoiceDialog = (() => {
                             </div>
                         </div>
                     </div>
-                    <div class="row g-3 mb-3 d-flex justify-content-between align-items-end">
+                    <div class="row g-3  d-flex justify-content-between align-items-end">
                         <div class="col-md-3 material-input outlined">
                             <input type="text" data-type="date" name="due_date" class="form-control data-input" required placeholder="dd-mm-yy">
                             <label class="form-label">Due Date <span class="text-danger">*</span></label>
@@ -1744,272 +1739,258 @@ const InvoiceDialog = (() => {
 })();
 
 
+
 const ReceiveDialog = (() => {
     const self = {};
     let dialog = null;
 
     self.show = (op) => {
-        dialog =
-            dialog ||
-            new GeneralDialog({
-                cssClass: "modal-lg vs-modal",
-                backdrop: "static",
-                keyboard: true,
-                createContent: () => {
-                    return `<div class="row g-3">
-                        <div class="col-12">
-                            <label class="form-label" vslang="titles.Amount Due"></label>
-                            <input name="amount_due" type="text" class="form-control data-input" data-field="amount_due" disabled/>
-                        </div>
+        dialog = dialog || new GeneralDialog({
+            title: "Receive Payment",
+            cssClass: "modal-lg vs-modal",
+            backdrop: "static",
+            keyboard: true,
 
-                        <div class="col-12">
-                            <label class="form-label" vslang="titles.Cash"></label>
-                            <div class="input-group">
-                                <span class="input-group-text">$</span>
-                                <input name="cash" type="number" class="form-control data-input" data-field="cash" />
-                            </div>
+            createContent: () => `
+            <div class="container-fluid px-0">
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <div class="material-input outlined">
+                            <input name="amount_due" type="text" class="form-control bg-light" disabled />
+                            <label>Amount Due</label>
                         </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="material-input outlined">
+                            <input name="cash" type="number" class="form-control data-input" data-field="cash" min="0" step="0.01" placeholder="0.00"/>
+                            <label>Cash ($)</label>
+                        </div>
+                    </div>
+                </div>
 
-                        <div class="col-12 col-md-3">
-                            <label class="form-label" vslang="titles.Bank"></label>
-                            <select name="payment_method_id" class="form-select data-input" data-field="bank_name"></select>
+                <div class="pb-1 mb-2 border-bottom">
+                    <small class="text-muted text-uppercase fw-bold" style="font-size:11px;">Bank Transfer</small>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-6">
+                        <div class="material-input outlined">
+                            <select name="bank_transfer_bank_id" data-style="material" class="form-select data-input" data-field="bank_transfer_bank_id"  placeholder="Bank"></select>
                         </div>
-                        <div class="col-12 col-md-3">
-                            <label class="form-label" vslang="titles.Amount"></label>
-                            <div class="input-group">
-                                <span class="input-group-text">$</span>
-                                <input name="amount" type="number" class="form-control data-input" data-field="amount" />
-                            </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="material-input outlined">
+                            <input name="transfer_amount" type="number" class="form-control data-input" data-field="transfer_amount" min="0" step="0.01" placeholder="0.00"/>
+                            <label>Transfer Amount ($)</label>
                         </div>
-                        <div class="col-12 col-md-3">
-                            <label class="form-label" vslang="titles.Bank Ref Number"></label>
-                            <input name="bank_ref_number" class="form-control data-input" data-field="bank_ref_number" />
+                    </div>
+                </div>
+               <div class="row ">
+                    <div class="col-6">
+                        <div class="material-input outlined">
+                            <input name="bank_ref_number" type="text" class="form-control data-input"
+                                   data-field="bank_ref_number" placeholder=" "/>
+                            <label>Ref Number</label>
                         </div>
-                        <div class="col-12 col-md-3">
-                            <label class="form-label" vslang="titles.Account Name"></label>
-                            <input name="bank_acc_name" class="form-control data-input" data-field="bank_acc_name" />
+                    </div>
+                    <div class="col-6">
+                        <div class="material-input outlined">
+                            <input name="bank_acc_name" type="text" class="form-control data-input"
+                                   data-field="bank_acc_name" placeholder=" "/>
+                            <label>Account Name</label>
                         </div>
+                    </div>
+                </div>
 
-                        <div class="col-12 col-md-4">
-                            <label class="form-label" vslang="titles.Card Type"></label>
+                <div class="pb-1 mb-2 border-bottom">
+                    <small class="text-muted text-uppercase fw-bold" style="font-size:11px;">Card</small>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-4">
+                        <div class="material-input outlined">
                             <select name="card_type" class="form-select data-input" data-field="card_type">
                                 <option value="">None</option>
                                 <option value="credit">Credit</option>
                                 <option value="debit">Debit</option>
                             </select>
+                            <label>Card Type</label>
                         </div>
-                        <div class="col-12 col-md-4">
-                            <label class="form-label" vslang="titles.Amount"></label>
-                            <div class="input-group">
-                                <span class="input-group-text">$</span>
-                                <input name="card_amount" type="number" class="form-control data-input" data-field="card_amount" />
-                            </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="material-input outlined">
+                            <input name="card_amount" type="number" class="form-control data-input" data-field="card_amount" placeholder="0.00"/>
+                            <label>Amount ($)</label>
                         </div>
-                        <div class="col-12 col-md-4">
-                            <label class="form-label" vslang="titles.Card Number"></label>
-                            <input name="card_number" class="form-control data-input" data-field="card_number" />
+                    </div>
+                    <div class="col-4">
+                        <div class="material-input outlined">
+                            <input name="card_number" type="text" class="form-control data-input" data-field="card_number" placeholder="Last 4 digits"/>
+                            <label>Card #</label>
                         </div>
+                    </div>
+                </div>
 
-                        <div class="col-12 col-md-4">
-                            <label class="form-label" vslang="titles.Cheque"></label>
-                            <select name="cheque_bank_id" class="form-select data-input" data-field="cheque_bank_name"></select>
+                <div class="pb-1 mb-2 border-bottom">
+                    <small class="text-muted text-uppercase fw-bold" style="font-size:11px;">Cheque</small>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-4">
+                        <div class="material-input outlined">
+                            <select name="cheque_bank_id" class="form-select data-input" data-field="cheque_bank_id"></select>
+                            <label>Cheque Bank</label>
                         </div>
-                        <div class="col-12 col-md-4">
-                            <label class="form-label" vslang="titles.Amount"></label>
-                            <div class="input-group">
-                                <span class="input-group-text">$</span>
-                                <input name="cheque" type="number" class="form-control data-input" data-field="cheque" />
-                            </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="material-input outlined">
+                            <input name="cheque_amount" type="number" class="form-control data-input" data-field="cheque_amount" placeholder="0.00"/>
+                            <label>Amount ($)</label>
                         </div>
-                        <div class="col-12 col-md-4">
-                            <label class="form-label" vslang="titles.Cheque Number"></label>
-                            <input name="cheque_number" class="form-control data-input" data-field="cheque_number" />
+                    </div>
+                    <div class="col-4">
+                        <div class="material-input outlined">
+                            <input name="cheque_number" type="text" class="form-control data-input" data-field="cheque_number" />
+                            <label>Cheque #</label>
                         </div>
+                    </div>
+                </div>
 
-                        <div class="col-12">
-                            <label class="form-label" vslang="titles.Remarks"></label>
-                            <textarea name="remarks" class="form-control data-input" data-field="remarks" rows="2" style="height:65px;"></textarea>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="material-input outlined">
+                            <textarea name="remarks" class="form-control data-input" data-field="remarks" rows="2"></textarea>
+                            <label>Remarks</label>
                         </div>
-                    </div>`;
-                },
+                    </div>
+                </div>
+            </div>`,
 
-                contentCreated: (me) => {
-                    me.convertPayment = (data) => {
-                        const result = {
-                            invoice_id: data.inv_id,
-                            remarks: data.remarks,
-                            pmt_breakdowns: []
-                        };
-
-                        if (data.cash && parseFloat(data.cash) > 0) {
-                            result.pmt_breakdowns.push({
-                                method: "cash",
-                                amount: parseFloat(data.cash),
-                                currency_code: "USD"
-                            });
-                        }
-
-                        if (data.cheque && parseFloat(data.cheque) > 0) {
-                            result.pmt_breakdowns.push({
-                                method: "cheque",
-                                amount: parseFloat(data.cheque),
-                                currency_code: "USD",
-                                cheque_number: data.cheque_number || null,
-                                cheque_bank_name: data.cheque_bank_name || null
-                            });
-                        }
-
-                        if (data.amount && parseFloat(data.amount) > 0) {
-                            result.pmt_breakdowns.push({
-                                method: "bank_transfer",
-                                amount: parseFloat(data.amount),
-                                currency_code: "USD",
-                                bank_ref_number: data.bank_ref_number || null,
-                                account_name: data.bank_acc_name || null,
-                                bank_name: data.bank_name || null
-                            });
-                        }
-
-                        if (data.card_amount && parseFloat(data.card_amount) > 0) {
-                            result.pmt_breakdowns.push({
-                                method: "card",
-                                amount: parseFloat(data.card_amount),
-                                currency_code: "USD",
-                                card_number: data.card_number || null,
-                                card_type: data.card_type || null
-                            });
-                        }
-
-                        return result;
+            contentCreated: (me) => {
+                me.convertPayment = (data) => {
+                    const result = {
+                        invoice_id: me.dataOptions.invoice_id,
+                        remarks: data.remarks || '',
+                        pmt_breakdowns: []
                     };
-                },
 
-                configSelect: [
-                    {
-                        name: "payment_method_id",
-                        data: "payment_method",
-                        textField: "name",
-                        valueField: "name",
-                    },
-                    {
-                        name: "cheque_bank_id",
-                        data: "payment_method",
-                        textField: "name",
-                        valueField: "name",
-                    },
-                ],
+                    const parseAmt = (val) => isNaN(parseFloat(val)) ? 0 : parseFloat(val);
 
-                // ✅ FIX: Read values from op (passed via dialog.show(op)), not from data.invoice
-                onPrepareForm: (me, data) => {
-                    const opts = me.dataOptions || {};
-                    me.controls.amount_due.value  = opts.balance ?? '';
-                    me.controls.cash.value         = '';
-                    me.controls.amount.value       = '';
-                    me.controls.bank_ref_number.value = '';
-                    me.controls.bank_acc_name.value   = '';
-                    me.controls.card_type.value    = '';
-                    me.controls.card_amount.value  = '';
-                    me.controls.card_number.value  = '';
-                    me.controls.cheque.value       = '';
-                    me.controls.cheque_number.value = '';
-                    me.controls.remarks.value      = '';
-
-                    // Reset selects safely
-                    if (me.controls.payment_method_id) me.controls.payment_method_id.value = '';
-                    if (me.controls.cheque_bank_id)    me.controls.cheque_bank_id.value    = '';
-                },
-
-                buttons: [
-                    {
-                        label: '<span vslang="buttons.Cancel"></span>',
-                        cssClass: "btn btn-secondary",
-                        click: (me) => me.hide(false),
-                    },
-                    {
-                           label: '<span vslang="buttons.Receive"></span>',
-                        cssClass: "btn btn-primary",
-                        click: (me, btn) => {
-                            const getData = me.getData();
-                            getData.inv_id = me.dataOptions.invoice_id; // ✅ from op
-                            const op = me.convertPayment(getData);
-
-                            const submitReceive = () => {
-                                vsapi.call(
-                                    `${main_view.base_url}/prm/invoice/receive`,
-                                    op, btn, null
-                                ).then((res) => {
-                                    if (res.status_code === 200) {
-                                        me.hide(true, op);
-                                        cv_interact.success("Invoice has been received successfully");
-                                    } else {
-                                        cv_interact.error(res.error_message);
-                                    }
-                                });
-                            };
-
-                            if (!op.pmt_breakdowns || op.pmt_breakdowns.length === 0) {
-                                cv_interact.confirm(
-                                    'Are you sure you want to receive a payment of $0?',
-                                    { title: "Receive Payment", context: 'OK' },
-                                    (confirmed) => {
-                                        if (confirmed) {
-                                            op.pmt_breakdowns = [{ method: "cash", amount: 0, currency_code: "USD" }];
-                                            op.special_receive = 1;
-                                            submitReceive();
-                                        }
-                                    }
-                                );
-                            } else {
-                                submitReceive();
-                            }
-                        },
-                    },
-                    {
-                        label: "<span class='text-nowrap'>Receive & Print</span>",
-                        cssClass: "btn btn-vs-save",
-                        click: (me, btn) => {
-                            const getData = me.getData();
-                            getData.inv_id = me.dataOptions.invoice_id; // ✅ from op
-                            const op = me.convertPayment(getData);
-
-                            const submitReceive = () => {
-                                // ✅ FIX: was wrongly pointing to /api/invoice/receive
-                                vsapi.call(
-                                    `${main_view.base_url}/prm/invoice/receive`,
-                                    op, btn, null
-                                ).then((res) => {
-                                    if (res.status_code === 200) {
-                                        me.hide(true, op);
-                                        const receipt_id = res.data.receipt_id;
-                                        PrintReceiptDialog.show({ receipt_id });
-                                    } else {
-                                        cv_interact.error(res.error_message);
-                                    }
-                                });
-                            };
-
-                            if (!op.pmt_breakdowns || op.pmt_breakdowns.length === 0) {
-                                cv_interact.confirm(
-                                    'Are you sure you want to receive a payment of $0?',
-                                    { title: "Receive Payment", context: 'OK' },
-                                    (confirmed) => {
-                                        if (confirmed) {
-                                            op.pmt_breakdowns = [{ method: "cash", amount: 0, currency_code: "USD" }];
-                                            op.special_receive = 1;
-                                            submitReceive();
-                                        }
-                                    }
-                                );
-                            } else {
-                                submitReceive();
-                            }
-                        },
+                    // Cash
+                    if (parseAmt(data.cash) > 0) {
+                        result.pmt_breakdowns.push({
+                            method: "cash",
+                            amount: parseAmt(data.cash),
+                            currency_code: "USD"
+                        });
                     }
-                ],
-            });
 
-        dialog.show(op); // op contains: { invoice_id, balance, ... }
+                    // Bank Transfer
+                    if (parseAmt(data.transfer_amount) > 0) {
+                        const bankEl = me.controls.bank_transfer_bank_id;
+                        result.pmt_breakdowns.push({
+                            method: "bank_transfer",
+                            amount: parseAmt(data.transfer_amount),
+                            currency_code: "USD",
+                            bank_id: parseInt(data.bank_transfer_bank_id) || null,
+                            bank_name: bankEl?.options[bankEl.selectedIndex]?.text?.trim() || null,
+                            bank_ref_number: data.bank_ref_number || null,
+                            account_name: data.bank_acc_name || null,
+                        });
+                    }
+
+                    // Card
+                    if (parseAmt(data.card_amount) > 0) {
+                        result.pmt_breakdowns.push({
+                            method: "card",
+                            amount: parseAmt(data.card_amount),
+                            currency_code: "USD",
+                            card_number: data.card_number || null,
+                            card_type: data.card_type || null
+                        });
+                    }
+
+                    // Cheque
+                    if (parseAmt(data.cheque_amount) > 0) {
+                        const chequeEl = me.controls.cheque_bank_id;
+                        result.pmt_breakdowns.push({
+                            method: "cheque",
+                            amount: parseAmt(data.cheque_amount),
+                            currency_code: "USD",
+                            bank_id: parseInt(data.cheque_bank_id) || null,
+                            cheque_bank_name: chequeEl?.options[chequeEl.selectedIndex]?.text?.trim() || null,
+                            cheque_number: data.cheque_number || null,
+                        });
+                    }
+                    return result;
+                };
+            },
+
+            onPrepareForm: (me) => {
+                const opts = me.dataOptions || {};
+
+                // Load balance
+                vsapi.call(`${main_view.base_url}/prm/invoice/details`, { id: opts.invoice_id })
+                    .then(res => {
+                        const bal = res?.data?.balance || 0;
+                        if (me.controls.amount_due) me.controls.amount_due.value = Number(bal).toFixed(2);
+                    });
+
+                vsapi.call(`${main_view.base_url}/prm/invoice/form-options`)
+                    .then(res => {
+                        const banks = res?.data?.banks || [];
+                        
+                        VSUtil.setComboItems(me.controls.bank_transfer_bank_id, banks, "id", "name", true, "— Select Bank —");
+                        VSUtil.setComboItems(me.controls.cheque_bank_id, banks, "id", "name", true, "— Select Bank —");
+                    });
+
+                // me.clearData(); 
+            },
+
+            buttons: [
+                {
+                    label: 'Cancel',
+                    cssClass: "btn btn-secondary",
+                    click: (me) => me.hide(false),
+                },
+                {
+                    label: 'Receive',
+                    cssClass: "btn btn-primary",
+                    click: (me, btn) => {
+                        const payload = me.convertPayment(me.getData());
+
+                        if (!payload.pmt_breakdowns || payload.pmt_breakdowns.length === 0) {
+                            return cv_interact.error("Please enter at least one payment amount.");
+                        }
+
+                        vsapi.call(`${main_view.base_url}/prm/invoice/receive`, payload, btn)
+                            .then(res => {
+                                if (res.status_code === 200) {
+                                    cv_interact.success(
+                                        payload.invoice_id ? "Payment Received" : "Record Created"
+                                    );       
+                                    me.hide(true);
+                                } else {
+                                    cv_interact.error(res.error_message || "Save failed");
+                                }
+                            })
+                            .catch(err => {
+                                cv_interact.error("Network error occurred");
+                                console.error(err);
+                            });
+                    },
+                },
+                {
+                    label: "Receive & Print",
+                    cssClass: "btn btn-success",
+                    click: (me, btn) => {
+                        const payload = me.convertPayment(me.getData());
+                        self._submitReceive(me, btn, payload, true);
+                    },
+                }
+            ],
+        });
+
+        dialog.show(op);
     };
 
     return self;
 })();
+
