@@ -359,7 +359,6 @@ var VendorComponent = (() => {
             id: id,
             btn: menulink,
             onClose: () => {
-                ;
                 mThis.VendorListView.showPage(mThis.getFilterData());
             }
         };
