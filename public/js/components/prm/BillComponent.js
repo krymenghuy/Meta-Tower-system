@@ -21,17 +21,24 @@ var BillComponent = (() => {
             className: "align-middle",
         },
         {
+            title: "Bill Date",
+            className: "align-middle",
+            data: (data) =>
+                `<span class="text-prm-custom text-nowrap">${data.bill_date}</span>`,
+        },
+
+        {
             transTitle: "titles.Bill Number",
             className: "align-middle",
             data: (data) => {
-                return `<span class="text-nowrap text-prm-custom">${data.bill_number ?? ""}</span>`;
+                return `<span class="text-nowrap text-prm-custom fw-semibold">${data.bill_number ?? ""}</span>`;
             },
         },
         {
             transTitle: "titles.Vendor",
             className: "align-middle",
             data: (data) => {
-                return `<span class="d-block text-prm-custom">${data.vendor_name}</span>`;
+                return `<span class="d-block text-prm-custom fw-semibold">${data.vendor_name}</span>`;
             },
         },
         {
@@ -43,19 +50,20 @@ var BillComponent = (() => {
             },
         },
         {
+            transTitle: "titles.Expense Type",
+            className: "align-middle",
+            data: (data) => {
+                return `<span class="d-block text-prm-custom ">${data.expense_type_name ?? "_"}</span>`;
+            },
+        },
+        {
             transTitle: "titles.Reference No",
             className: "align-middle",
             data: (data) => {
                 return `<span class="d-block text-prm-custom">${data.ref_no ?? "_"}</span>`;
             },
         },
-        {
-            title: "Bill Date",
-            className: "align-middle",
-            data: (data) =>
-                `<span class="text-prm-custom text-nowrap">${data.bill_date}</span>`,
-        },
-
+        
         {
             title: "Total Amount",
             className: "align-middle text-end",
@@ -70,34 +78,34 @@ var BillComponent = (() => {
                 return `<span class="d-block text-prm-custom fw-semibold" style="color:#15803d;">${formatCurrency(data.paid_amount)}</span>`;
             },
         },
-        {
-            title: "Description  ",
-            className: "align-middle",
-            data: (data) => {
-                return `<span class="d-block text-prm-custom">${data.remark ?? "__"}</span>`;
-            }
-
-        },
         // {
-        //     title: "Balance",
-        //     className: "align-middle text-end",
+        //     title: "Description  ",
+        //     className: "align-middle",
         //     data: (data) => {
-        //         const balance = Number(data.balance || 0);
-        //         const total = Number(data.total_amount || 0);
-        //         const paid = Number(data.paid_amount || 0);
-        //         const color =
-        //             balance > 0
-        //                 ? "#dc2626"
-        //                 : total > 0 && paid >= total
-        //                   ? "#15803d"
-        //                   : "#94a3b8";
+        //         return `<span class="d-block text-prm-custom">${data.remark ?? "__"}</span>`;
+        //     }
 
-        //         return `
-        //             <span class="d-block fw-semibold" style="color:${color};">
-        //                 ${formatCurrency(data.balance)}
-        //             </span>`;
-        //     },
         // },
+        {
+            title: "Balance",
+            className: "align-middle text-end",
+            data: (data) => {
+                const balance = Number(data.balance || 0);
+                const total = Number(data.total_amount || 0);
+                const paid = Number(data.paid_amount || 0);
+                const color =
+                    balance > 0
+                        ? "#dc2626"
+                        : total > 0 && paid >= total
+                          ? "#15803d"
+                          : "#94a3b8";
+
+                return `
+                    <span class="d-block fw-semibold" style="color:${color};">
+                        ${formatCurrency(data.balance)}
+                    </span>`;
+            },
+        },
         {
             title: "Status",
             className: "align-middle text-center",
@@ -249,12 +257,28 @@ var BillComponent = (() => {
                     name: "view_attachment",
                 },
                 {
-                    html: '<span class="ps-2">Pay The Bill</span>',
-                    icon: `<i class="fa-solid fa-sack-dollar" style="color: rgb(22, 80, 137);"></i>`,
+                    html: '<span class="ps-2">Pay Now</span>',
+                    icon: `<i class="fa-solid fa-circle-dollar-to-slot" style="color: rgb(160, 2, 57);"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "bill_payment",
                 },
             ],
+            onShow: (me, container) => {
+                const menu = me.getActiveMenus(container);
+                const status_id = Number(container.dataset.statusid);
+
+                // if (menu.edit_reservation) {
+                //     // Hide if status is 2 or 3
+                //     const isBlocked = status_id === 2 || status_id === 3;
+                //     menu.edit_reservation.style.display = isBlocked ? "none" : "block";
+                // }
+
+                if (menu.bill_payment) {
+                    // Hide only if status is 2
+                    const isBlocked = status_id === 2;
+                    menu.bill_payment.style.display = isBlocked ? "none" : "block";
+                }
+            },
 
             onClick: (menuLink, id, name) => {
                 switch (name) {
@@ -388,16 +412,13 @@ var BillComponent = (() => {
             });
     };
 
-    mThis.billPayment = (id, menuLink) => {
-        let op = {
-            id: null,
-            btn: menuLink,
-            onClose: () => {
-                mThis.BillListView.showPage();
-            },
-        };
-        BillPaymentDialog.show(op);
-        // alert("coming soon!");
+
+    mThis.billPayment = (id) => {
+
+        BillPaymentDialog.show({
+            bill_id: parseInt(id),              
+            onClose: () => mThis.BillListView.showPage(mThis.getFilterData())
+        });
     };
     mThis.prepareFormOptions = (onFinish) => {
         vsapi
@@ -470,6 +491,12 @@ const BillDialog = (() => {
                             </div>
                             <div class="col-6">
                                 <div class="material-input outlined">
+                                    <select name="expense_type_id" data-style="material" class="data-input form-control" data-field="expense_type_id" placeholder="Expense Type">
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="material-input outlined">
                                     <input name="total_amount" class="data-input form-control" data-field="total_amount" placeholder=" "></input>
                                     <label style="color:#777777; padding-left:6px;">Total Amount</label>
                                 </div>
@@ -480,7 +507,7 @@ const BillDialog = (() => {
                                     <label style="display:none;color:#777777;padding-left:6px;">File</label>
                                 </div>
                             </div>
-                            <div class="col-12">
+                            <div class="col-8">
                                 <div class="material-input outlined d-flex ">
                                     <input type="text" name="documents" class="d-none form-control " accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg" />
                                     <label style="display:none;color:#777777;padding-left:6px;">File</label>
@@ -574,12 +601,12 @@ const BillDialog = (() => {
 
                 configSelect: [
                     
-                    // {
-                    //     name: "bill_statuses",
-                    //     data: "bill_statuses",
-                    //     textField: "bill_status",
-                    //     valueField: "id",
-                    // },
+                    {
+                        name: "expense_type_id",
+                        data: "expense_types",
+                        textField: "expense_category",
+                        valueField: "id",
+                    },
                 ],
 
                 prepareFormOptions: {
@@ -706,4 +733,6 @@ const BillDialog = (() => {
     };
     return self;
 })();
+
+
 
