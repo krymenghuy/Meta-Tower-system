@@ -192,8 +192,20 @@ class Maintenance extends VSModel
         $id = $d->id ?? $this->id;
         $details = $id ? self::getMaintenanceDetails($id) : null;
 
-        $include_space_id = $details->space_id ?? null;
-        $include_amenity_id = $details->amenity_id ?? null;
+        // When creating from Space/Amenity context, request may pass ids so options lists include that row
+        // (e.g. space already under maintenance would otherwise be excluded from building_spaces).
+        $include_space_id = null;
+        if ($details && !empty($details->space_id)) {
+            $include_space_id = $details->space_id;
+        } elseif (!empty($d->space_id)) {
+            $include_space_id = $d->space_id;
+        }
+        $include_amenity_id = null;
+        if ($details && !empty($details->amenity_id)) {
+            $include_amenity_id = $details->amenity_id;
+        } elseif (!empty($d->amenity_id)) {
+            $include_amenity_id = $d->amenity_id;
+        }
 
         $building_spaces = GeneralSettings::options_building_space($ss, $include_space_id, true);
 
