@@ -247,20 +247,22 @@ class Invoice extends VSModel
                     'cheque_bank_name' => $bd['cheque_bank_name'] ?? null,
                     'remarks'          => $bd['remarks'] ?? null,
                     'created_at'       => now(),
+                    // 'updated_at'       => now(),
                 ];
             }
 
             if (!empty($detailRows)) {
                 DB::table('receipt_breakdowns')->insert($detailRows);
             }
-            // 3. Update Invoice
             $new_paid_amount = (float)$invoice->paid_amount + $total_received;
             $total_invoice_amount = (float)$invoice->amount;
-            $new_due_amount  = max(0.00, $total_invoice_amount - $new_paid_amount);
-            $is_paid         = ($new_due_amount <= 0) ? 1 : 0;
 
-           if ($new_due_amount <= 0.001) {
-                $payment_status_id = 1; // Paid
+            $new_due_amount = $total_invoice_amount - $new_paid_amount;
+            if ($new_due_amount < 0) {
+                $new_due_amount = 0;
+            }
+            if ($new_due_amount <= 0.001) {
+                $payment_status_id = 1;
                 $is_paid = 1;
             } elseif ($new_paid_amount > 0) {
                 $payment_status_id = 3; // Partial

@@ -26,6 +26,7 @@ use App\Http\Controllers\Prm\ItemController;
 use App\Http\Controllers\Prm\MaintenanceController;
 use App\Http\Controllers\Prm\BillController;
 use App\Http\Controllers\Prm\BillPaymentController;
+use App\Http\Controllers\Prm\ReceiptController;
 
 use App\Http\Controllers\tenant\AccountStaffController;
 use App\Http\Controllers\tenant\ZoneController;
@@ -301,6 +302,12 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('settings')->g
      Route::post('/options-service', [GeneralSettingsController::class, 'options_service']);
     // Route::post('/options-program', [StudentController::class, 'getOptions_program']);
 
+});
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('receipts')->group(function () {
+    Route::post('/list-paginate', [ReceiptController::class, 'getListPaginate']);
+    Route::post('/details', [ReceiptController::class, 'receiptDetails']);
+    Route::post('/delete',  [ReceiptController::class, 'deleteReceipt']);
 });
 
 
