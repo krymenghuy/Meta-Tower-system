@@ -20,6 +20,7 @@ var PurchaseOrdersComponent = (() => {
     mThis.elFilter_status = mThis.self.querySelector('#_po_status_id');
     mThis.elSearch = mThis.self.querySelector("#_po_search");
     let PurchaseOrderDialog = null;
+    let ReceivePurchaseOrderDialog = null;
 
 
 
@@ -41,40 +42,47 @@ var PurchaseOrdersComponent = (() => {
             data: (data) => `<span class="text-prm-custom text-nowrap">${data.po_date}</span>`,
         },
         {
-            title: "Total Price",
+            title: "Subtotal",
             className: "align-middle text-nowrap text-end",
-            data: (data) =>
-                `<span class="d-block text-prm-custom">${data.sub_total_formatted ?? formatCurrency(data.sub_total)}</span>`,
-        },
-        {
-            title: "Discount",
-            className: "align-middle text-nowrap text-end",
-            data: (data) =>
-                `<span class="d-block text-prm-custom">${data.discount_formatted ?? formatDiscount(data)}</span>`,
-        },
-        {
-            title: "Total Amount",
-            className: "align-middle text-nowrap text-end",
-            data: (data) =>
-                `<span class="d-block text-prm-custom">${data.total_amount_formatted ?? formatCurrency(data.total_amount)}</span>`,
-        },
-        {
-            title: "Authorized By",
-            className: 'align-middle text-nowrap text-center',
-            data: (data) => {
-                return `<div class="d-flex flex-column">
-                <span class="text-capitalize text-start text-prm-custom"><span>${data.authorizer ?? ''}</span></span>
-                <span class="text-start small text-muted">${data.auth_date ?? ''}</span>
-            </div>`;
+            data: (data) =>{
+                const sub_total = VSMoney.formatAmount(data.sub_total,data.currency_code ?? 'USD');
+                const text = sub_total;
+                const cls_color = data.sub_total > 0 ? 'text-prm-custom' : 'text-danger';
+                    return `<span class="d-block ${cls_color}">${text}</span>`;
 
             }
         },
+       
+       {
+            title: "Discount Amount",
+            className: "align-middle  text-nowrap",
+            data: (data, index, tr) => {
+                return `<div class="d-flex justify-content-center"><span class='text-nowrap text-center'>${
+                    data.discount_type === "percent"
+                        ? data.discount_value
+                            ? parseFloat(data.discount_value) + " %"
+                            : ""
+                        : data.discount_value
+                        ? "$ " + parseFloat(data.discount_value).toFixed(2)
+                        : ""
+                }</span></div>`;
+            },
+        },
+        {
+            title: "Grand Total",
+            className: "align-middle text-nowrap text-end",
+            data: (data) =>{
+                const cls_color = data.total_amount > 0 ? 'text-prm-custom' : 'text-danger';
+                const total_amount = VSMoney.formatAmount(data.total_amount,data.currency_code ?? 'USD');
+
+                return `<span class=" ${cls_color}">${total_amount}</span>`;
+            }
+        },
+       
         {
             title: "Status",
             className: "align-middle text-nowrap text-center",
             data: (data) => {
-                console.log(123, data.status);
-
                 const status = (data.status ?? '').toLowerCase();
                 let cls = 'badge text-dark bg-warning-subtle border border-warning';
                 if (status === 'pending') {
@@ -111,18 +119,63 @@ var PurchaseOrdersComponent = (() => {
                 return `<span class="text-prm-custom d-block text-truncate" style="max-width:180px;" title="${remarks}">${remarks || '-'}</span>`;
             }
         },
-        {
-            title: "Received By",
-            className: 'align-middle text-nowrap',
+      {
+            title: "Authorized",
+            className: 'align-middle text-nowrap text-center',
             data: (data) => {
-                return `<div class="d-flex flex-column">
-                <span class="text-capitalize text-start text-prm-custom"><span>${data.authorizer ?? ''}</span></span>
-                <span class="text-start small text-muted">${data.auth_date ?? ''}</span>
-            </div>`;
+                if (!data.authorizer) {
+                    return `
+                        <div class="d-flex justify-content-start">
+                            <a href="javascript:void(0)" class="authorized-po d-flex align-items-center gap-1 text-decoration-none text-primary"
+                            data-id="${data.id}">
+                                <span class="tool-tip">
+                                    <i class="fa-solid fa-user-clock fs-6"></i>
+                                    <span class="tool-tiptext fs-6">Authorize</span>
+                                </span>
+                            </a>
+                        </div>
+                    `;
+                }
 
+                return `
+                    <div class="d-flex flex-column">
+                        <span class="text-capitalize text-start ">
+                            <i class="fa-solid fa-user-check fs-6 text-success me-1"></i>
+                            ${data.authorizer}
+                        </span>
+                        <span class="text-start small text-muted">
+                            ${data.auth_date ?? ''}
+                        </span>
+                    </div>
+                `;
             }
         },
+        {
+            title: "Received",
+            className: 'align-middle text-nowrap',
+            data: (data) => {
 
+                if (!data.receiver) {
+                    return `
+                        <div class="text-muted small">
+                            Not yet
+                        </div>
+                    `;
+                }
+
+                return `
+                    <div class="d-flex flex-column">
+                        <span class="text-capitalize text-start">
+                            <i class="fa-solid fa-box-check text-success me-1"></i>
+                            ${data.receiver}
+                        </span>
+                        <span class="text-start small text-muted">
+                            ${data.receive_date ?? ''}
+                        </span>
+                    </div>
+                `;
+            }
+        },
         {
             transTitle: 'titles.Updated By',
             className: 'align-middle text-nowrap',
@@ -179,6 +232,17 @@ var PurchaseOrdersComponent = (() => {
         const tblPo = mThis.PoListView.getTable();
         if (!tblPo.id) tblPo.id = '_purchases_list_table';
         mThis.initDropdownMenus(tblPo);
+        tblPo.addEventListener('click', (e) => {
+            let btn = e.target.closest('.authorized-po');
+            if (btn) {
+                console.log(123,btn);
+                
+                mThis.authorizedPurchaseOrder(btn.dataset.id, btn);
+                return;
+            }
+
+        });
+
         mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
 
             el.onchange = (e) => {
@@ -344,11 +408,11 @@ var PurchaseOrdersComponent = (() => {
                 if (info.length > 0) {
                     info.map(item => {
                         tBody += `<tr>
-                        <th class="text-nowrap">${item.item_code || item.code}</th>
-                        <th class="text-nowrap">${item.item_name}</th>
-                        <th class="text-nowrap">${item.unit_price_formatted}</th>
-                        <th class="text-nowrap">${item.qty} <small>${item.unit ?? 'pcs'}</small></th>
-                        <th class="text-nowrap">${item.total_price_formatted}</th>
+                        <th class="text-capitalize text-nowrap">${item.item_code || item.code}</th>
+                        <th class="text-capitalize text-nowrap">${item.item_name}</th>
+                        <th class="text-capitalize text-nowrap">${ VSMoney.formatAmount(item.unit_price || 0.00, 'USD')}</th>
+                        <th class="text-capitalize text-nowrap">${item.qty} <small>${item.unit ?? 'pcs'}</small></th>
+                        <th class="text-capitalize text-nowrap">${ VSMoney.formatAmount(item.total_price || 0.00, 'USD')}</th>
                     </tr>`
                     });
                 } else
@@ -357,42 +421,34 @@ var PurchaseOrdersComponent = (() => {
 
                 tBody = '<tbody>' + tBody + '</tbody>';
                 html +=
-                    '<table class="table w-100" style="background-color: #ebebeb;">' +
+                    '<table class="table">' +
                     tHead +
                     tBody +
                     '</table>';
 
 
                 elBody.innerHTML = html;
-
-                elBody.classList.add("rounded-3", "table");
-                if (!expandableRow) {
-                    elBody.querySelectorAll("select.modal-select2").forEach(el => {
-                        $(el).select2({
-                            tags: true
-                        });
-                    });
-                    // const elGroup = mThis.elBody.querySelector('.opt_group');
-                    // elGroup.onchange = (e) => {
-                    //     e.preventDefault();
-                    //     mThis.options.group_id = e.target.value;
-                    // };
-                    // ApprovalDialog.setOption(elBody,d,elBody.querySelector("#pre_price"));
-                    if (typeof onFinish === "function") onFinish();
-                }
+                elBody.classList.add('p-3', 'table-responsive', 'table-responsive-hover');
+                
             });
     };
 
      
-    mThis.receivePurchaseOrder = (id, menuLink) => {
-        const op = {
-            id: id,
-            btn: menuLink,
-            onClose: () => {
-                mThis.PoListView.showPage(mThis.getFilterData());
-            }
-        };
-        showPurchasePurchaseOrderDialog(op);
+    // mThis.receivePurchaseOrder = (id, menuLink) => {
+    //     const op = {
+    //         id: id,
+    //         btn: menuLink,
+    //         onClose: () => {
+    //             mThis.PoListView.showPage(mThis.getFilterData());
+    //         }
+    //     };
+    //     ReceivePODialog.show(op);
+    // };
+      mThis.receivePurchaseOrder = (id, menuLink) => {
+        let poId = id;
+        console.log(123,poId);
+        
+        showReceivePurchaseOrderDialog({ id: poId, btn: menuLink });
     };
     mThis.authorizedPurchaseOrder = (id, btn) => {
         const authorized = btn.dataset.authorized;
@@ -466,6 +522,281 @@ var PurchaseOrdersComponent = (() => {
                             <span class="mx-2 fw-bold">:</span>
                              <input type="hidden"
                                 name="vendor_id"
+                                class="data-input"
+                                data-field="vendor_id">
+                            <input type="text" name="vendor" class="data-input form-control flex-grow-1">
+                            
+                        </div>
+                        <div class="d-flex align-items-center mb-2">
+                            <span class="fw-bold" style="min-width:90px;">Phone</span>
+                            <span class="mx-2 fw-bold">:</span>
+                            <input type="text"
+                                name="phone_number"
+                                class="data-input form-control flex-grow-1"
+                                data-field="phone_number"
+                                placeholder="">
+                        </div>
+                        <div class="d-flex align-items-center mb-2">
+                            <span class="fw-bold" style="min-width:90px;">Address</span>
+                            <span class="mx-2 fw-bold">:</span>
+                            <input type="text"
+                                name="address"
+                                class="data-input form-control flex-grow-1"
+                                data-field="address"
+                                placeholder="">
+                        </div>
+
+
+                    </div>
+                    <div class="col-md-5">
+                    </div>
+                    <div class="col-md-3 mt-3 mt-md-0">
+                        <div class="d-flex align-items-center mb-2">
+                            <span class="fw-bold" style="min-width:90px;">PO Date</span>
+                            <span class="mx-2 fw-bold">:</span>
+                            <input data-type="date"
+                                name="po_date"
+                                class="data-input form-control flex-grow-1"
+                                data-field="po_date">
+                        </div>
+                        <div class="d-none align-items-center">
+                            <span class="fw-bold" style="min-width:90px;">PO Number</span>
+                            <span class="mx-2 fw-bold">:</span>
+                            <input type="text"
+                                name="po_number"
+                                class="data-input form-control flex-grow-1"
+                                data-field="po_number"
+                                placeholder="">
+                        </div>
+                    </div>
+                    <div class="col-lg-12 mt-3 p-3" style="background-color:#ebebeb;">
+                        <div  name="purchaseItemList" class="purchase-item-list"></div>
+                    </div>
+                    <div class="col-lg-12 mt-3 d-flex justify-content-end">
+                        <div name="div_purchase_summary"></div>
+                    </div>
+
+                    </div>`,
+                    `</div>`].join('');
+
+            },
+            configSelect: [
+            ],
+            contentCreated: (me) => {
+
+                me.controls.div_purchase_summary = me.divModal.querySelector(
+                    '[name="div_purchase_summary"]'
+                );
+
+                const applyVendorInfo = (vendorId) => {
+                    me._selectedVendorId = vendorId || '';
+                    if (me.controls.vendor_id) me.controls.vendor_id.value = vendorId || '';
+                    if (!vendorId) {
+                        me.controls.phone_number.value = '';
+                        me.controls.address.value = '';
+                        return;
+                    }
+                    vsapi.post(`${main_view.base_url}/prm/vendor/options-vendor-info`, { vendor_id: vendorId }, {})
+                        .then(res => {
+                            const d = res.data || {};
+                            const v = d.vendor || {};
+                            if (me.controls.phone_number) me.controls.phone_number.value = v.phone_number || '';
+                            if (me.controls.address) me.controls.address.value = v.address || '';
+                        })
+                        .catch(() => { });
+
+                };
+                me.searchVendor = VSSearchInput.init(me.controls.vendor, {
+                    type: 'select',
+                    prefetch: true,
+                    minChars: 0,
+                    api: {
+                        endpoint: `${main_view.base_url}/prm/purchase/order/form-options`,
+                    },
+                    processResponse: (res) => {
+                        const vendors = res?.data?.vendors || [];
+                        return (Array.isArray(vendors) ? vendors : []).map(v => ({
+                            ...v,
+                            vendor: v.vendor || v.name || v.vendor_name || v.code || '',
+                            phone_number: v.phone_number || v.contact_phone || v.phone || '',
+                            address: v.address || ''
+                        }));
+                    },
+                    columns: { vendor: 'VENDOR', phone_number: 'PHONE' },
+                    showColumnHeader: true,
+                    placeholder: 'Search vendor',
+                    onSelect: (vendor) => {
+                        const id = vendor?.id || '';
+                        me.controls.vendor.value = vendor?.vendor || '';
+                        me.vendor_id = id;
+                        applyVendorInfo(id);
+                    }
+                });
+                if (me._selectedVendorId) {
+                        applyVendorInfo(me._selectedVendorId);
+                    }
+               
+
+              
+
+
+
+                me.purchaseItemsView = new ItemsView(me.controls.purchaseItemList, {
+                    currencyCode: "USD",
+                    columns: [
+                        { name: "item_id", transTitle: "titles.Item", displayType: "select" },
+                        { name: "qty", transTitle: "titles.Qty", dataType: "number", defaultValue: 1, isNumeric: true },
+                        { name: "unit", transTitle: "titles.Unit", dataType: "string", displayType: "number", readOnly: true },
+                        { name: "unit_price", transTitle: "titles.Price", dataType: "decimal",displayType:"input",currencySymbol: "$" },
+                        { name: "total_price", transTitle: "titles.Total",dataType: "decimal",displayType:"input",currencySymbol: "$" },
+
+                    ],
+                    calc: { mode: "auto", qtyField: "qty", priceField: "unit_price", totalField: "total_price", currencyPrecision: 2 },
+
+                    totalSummary: { container: me.controls.div_purchase_summary, showTax: false, allowDiscount: true, discountBeforeTax: true, currency: "USD" },
+                    validateColumns: { item_id: "positive", qty: "positive", unit_price: "positive" },
+                    tableClass: 'table',
+                    showColumnHeaders: true,
+                    showAddLineButton: true,
+                    addLineButtonText: 'Add Item',
+                    onItemChange: async (row_id, item, col_name, td, tr) => {
+                        if (col_name !== 'item_id') return;
+                        const itemId = item.item_id || item.id;
+                        if (!itemId) return;
+                        const res = await vsapi.call(
+                            `${main_view.base_url}/prm/item/details`,
+                            { id: itemId },
+                            false
+                        );
+
+                        const d = res.data ?? {};
+                        console.log(123,d);
+                        
+                        tr.dataset.code = d.code || '';
+                        me.setTotal(col_name, tr, d);
+                    },
+                    "keyup": (e, col_name, td) => {
+                        const tr = td.parentNode;
+                        const item = me.purchaseItemsView.getDataRow(tr, ['code']);
+                        me.setTotal(col_name, tr, item);
+                    },
+                });
+                me.saveData = (onFinish) => {
+                    let p = me.getData();
+                    let po_data = me.purchaseItemsView.getData();
+                    
+                    
+                    p.items = po_data.items;
+                    p.totals = po_data.totals;
+                    
+                    // p.vendor_id = me._selectedVendorId || '';
+                    p.id = me.dataOptions.id;
+                    console.log(6666,p);
+                    
+
+                    vsapi.call(`${main_view.base_url}/prm/purchase/order/save`, p, false).then(onFinish);
+
+                }
+                me.clear = () => {
+                    for (const name in me.fields) {
+                        const el = me.fields[name];
+                        const tag = el.tagName;
+
+                        if (['SELECT', 'INPUT', 'TEXTAREA'].indexOf(tag) >= 0) {
+                            el.value = '';
+                        }
+                        else {
+                            el.textContent = '';
+                        }
+                    }
+                    me.purchaseItemsView.setData(null);
+                };
+                 me.setTotal = (col_name, tr,item) => {
+                    if (!tr) return;
+                    console.log(1233322,item);
+                    
+                    const d = me.purchaseItemsView.getDataRow(tr);
+                    me.purchaseItemsView.setCellValue(tr, 'unit', item.unit || '');
+                
+                };
+            },
+            buttons: [
+                {
+                    label: "Cancel",
+                    cssClass: "btn btn-warning",
+                    click: (me, btn) => {
+                        me.hide(false);
+                    }
+                },
+                {
+                    label: "<span>Save</span>",
+                    cssClass: "btn btn-primary",
+                    click: (me) => {
+                        console.log(1234, me);
+                        me.saveData(res => {
+                            if (res.status_code == 200) {
+                                cv_interact.success("New purchase order has been added successfully");
+                                me.hide(true);
+                                mThis.PoListView.showPage(mThis.getFilterData());
+
+                            } else cv_interact.error(res.error_message);
+                        });
+                    },
+                },
+            ],
+            onPrepareForm: (me, data) => {
+                me.controls.vendor.value = data.po_detail?.name || '';
+                me.purchaseItemsView.setSelectOptions(
+                    'item_id',
+                    data.item_options || data.products,
+                    null
+                );
+                if (me.dataOptions.id) {
+                    console.log(8888,data);
+                     me.purchaseItemsView.setData(data.po_detail);
+                    // me.purchaseItemsView.setData({
+                    //     currency_code: data.po_detail?.currency_code || "USD",
+                    //     items: data.items || [],
+                    //     totals: data.totals || {
+                    //         discount_type: "amount",
+                    //         discount_value: 0,
+                    //         extra_items: {}
+                    //     }
+                    // });
+
+                } else {
+                    me.clear();
+                    if (me.searchVendor && typeof me.searchVendor.reset === 'function') {
+                        me.searchVendor.reset();
+                    }
+                }
+            },
+            prepareFormOptions: {
+                modifyTitle: "Modify Purchase Order",
+                createTitle: "Purchase Order",
+                targetProp: "po_detail",
+                api: {
+                    endpoint: `${main_view.base_url}/prm/purchase/order/po-form-options`,
+                    params: (op) => {
+                        return { id: op.id };
+                    }
+                }
+            }
+        });
+        PurchaseOrderDialog.show(op);
+    };
+const showReceivePurchaseOrderDialog = (op) => {
+        console.log(12333, op);
+        ReceivePurchaseOrderDialog = ReceivePurchaseOrderDialog || new GeneralDialog({
+            cssClass: "modal-xl vs-modal",
+            createContent: () => {
+                return [`<div class="row">`,
+                    `<div class="col-md-4">
+                        <div class="d-flex align-items-center mb-2">
+                            <span class="fw-bold" style="min-width:90px;">Vendor</span>
+                            <span class="mx-2 fw-bold">:</span>
+                             <input type="hidden"
+                                name="vendor_id"
                                 class="data-input "
                                 data-field="vendor_id">
                             <input type="text" name="vendor" class="data-input form-control flex-grow-1" data-field="vendor">
@@ -503,7 +834,7 @@ var PurchaseOrdersComponent = (() => {
                                 class="data-input form-control flex-grow-1"
                                 data-field="po_date">
                         </div>
-                        <div class="d-flex align-items-center">
+                        <div class="d-none align-items-center">
                             <span class="fw-bold" style="min-width:90px;">PO Number</span>
                             <span class="mx-2 fw-bold">:</span>
                             <input type="text"
@@ -588,18 +919,16 @@ var PurchaseOrdersComponent = (() => {
                     currencyCode: "USD",
                     columns: [
                         { name: "item_id", transTitle: "titles.Item", displayType: "select" },
-                        { name: "qty", transTitle: "titles.Qty", dataType: "number", defaultValue: 1, isNumeric: true },
-                        { name: "unit_price", transTitle: "titles.Price", dataType: "number", defaultValue: 0, isNumeric: true },
-                        { name: "total_price", transTitle: "titles.Total", readOnly: true, dataType: "number", isNumeric: true },
+                        { name: "qty", transTitle: "titles.Order Qty", dataType: "number", defaultValue: 1, isNumeric: true},
+                        {name: "accepted_qty",transTitle: "titles.Accepted Qty",dataType: "number",displayType: "input", isNumeric: true},
+                        {name: "accept",transTitle: "titles.Accepted",html: '<input type="checkbox" class="check_accept">'},
 
                     ],
-                    calc: { mode: "auto", qtyField: "qty", priceField: "unit_price", totalField: "total_price", currencyPrecision: 2 },
 
-                    totalSummary: { container: me.controls.div_purchase_summary, showTax: false, allowDiscount: true, discountBeforeTax: true, currency: "USD" },
-                    validateColumns: { item_id: "positive", qty: "positive", unit_price: "positive" },
+                    validateColumns: { item_id: "positive", qty: "positive"},
                     tableClass: 'table',
                     showColumnHeaders: true,
-                    showAddLineButton: true,
+                    showAddLineButton: false,
                     addLineButtonText: 'Add Item',
                     onItemChange: async (row_id, item, col_name, td, tr) => {
                         if (col_name !== 'item_id') return;
@@ -613,43 +942,15 @@ var PurchaseOrdersComponent = (() => {
 
                         const d = res.data ?? {};
                         tr.dataset.code = d.code || '';
-                        // me.setTotal(col_name, tr, d);
+                       
                     },
-                    "keyup": (e, col_name, td) => {
+                     "keyup": (e, col_name, td) => {
                         const tr = td.parentNode;
                         const item = me.purchaseItemsView.getDataRow(tr, ['code']);
-                        // me.setTotal(col_name, tr, item);
                     },
                 });
-                me.saveData = (onFinish) => {
-                    let p = me.getData();
-                    let po_data = me.purchaseItemsView.getData();
-
-                    p.items = po_data.items;
-                    p.totals = po_data.totals;
-
-
-                    p.vendor_id = me._selectedVendorId;
-                    p.id = me.dataOptions.id;
-                    console.log(111123, p);
-
-                    vsapi.call(`${main_view.base_url}/prm/purchase/order/save`, p, false).then(onFinish);
-
-                }
-                me.clear = () => {
-                    for (const name in me.fields) {
-                        const el = me.fields[name];
-                        const tag = el.tagName;
-
-                        if (['SELECT', 'INPUT', 'TEXTAREA'].indexOf(tag) >= 0) {
-                            el.value = '';
-                        }
-                        else {
-                            el.textContent = '';
-                        }
-                    }
-                    me.purchaseItemsView.setData(null);
-                };
+               
+          
             },
             buttons: [
                 {
@@ -685,6 +986,7 @@ var PurchaseOrdersComponent = (() => {
                 if (me.dataOptions.id) {
                     console.log(8888,data.po_detail);
                      me.purchaseItemsView.setData(data.po_detail);
+                   
                     // me.purchaseItemsView.setData({
                     //     currency_code: data.po_detail?.currency_code || "USD",
                     //     items: data.items || [],
@@ -702,6 +1004,12 @@ var PurchaseOrdersComponent = (() => {
                     }
                 }
             },
+            onShow: (me) => {
+                const title = me.divModal.querySelector('.modal-title');
+                if (title) {
+                    title.innerHTML = '<h2 class="text-prm-custom text-start fw-bold">Receive Purchase Order</h2>';
+                }
+            },
             prepareFormOptions: {
                 modifyTitle: "Modify Purchase Order",
                 createTitle: "Purchase Order",
@@ -714,10 +1022,9 @@ var PurchaseOrdersComponent = (() => {
                 }
             }
         });
-        PurchaseOrderDialog.show(op);
+        ReceivePurchaseOrderDialog.show(op);
     };
 
- 
 
 
     mThis.prepareFormOptions = (onFinish) => {

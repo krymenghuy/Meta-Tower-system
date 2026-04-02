@@ -29,8 +29,7 @@ class PurchaseOrderController extends Controller
     public function getPurchaseOrderList(Request $req)
     {
         $ss = XAuthService::verifyAuth($req, -1);
-        if ($ss->status_code != 200)
-            return $ss;
+        if ($ss->status_code !== 200) return JDV::raw($ss);
         $item = new PurchaseOrder(null, $ss);
         $data = $item->getPurchaseOrderList($req->all(), $ss);
         return JDV::result($data);
@@ -127,7 +126,7 @@ class PurchaseOrderController extends Controller
         $po_detail = PurchaseOrder::purchaseOrderDetails($id, $ss);
         if ($po_detail) {
             $model = new PurchaseOrder(null);
-            $items = $model->getItemsByTrx(['po_id' => $id], $ss);
+            $items = $model->getItemsByPO(['po_id' => $id], $ss);
             $po_detail->items = $items;
             $totals = [
                 'discount_type'  => $po_detail->discount_type ?? 'amount',

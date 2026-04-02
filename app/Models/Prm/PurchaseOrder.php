@@ -13,136 +13,133 @@ use Vsd\Vsloquent\VSModel;
 class PurchaseOrder extends VSModel
 {
     protected $table = 'purchase_orders';
-
     protected static $purchaseOrderStatusIdMap = null;
-
     protected $userInfo = null;
-
     public function __construct($id = null, $userInfo = null)
     {
         $this->id = $id;
         $this->userInfo = $userInfo;
 
     }
-
     static function getOptionItems(){
       $rows = DB::table('items as i')->selectRaw('id as value, name as label')->get();
         return $rows;
     }
    public function savePurchaseOrder($arr = [], $id = null, $ss = null)
-{
-    $id = $id ?? $this->id;
-    $ss = $ss ?? $this->userInfo;
+    {
+        $id = $id ?? $this->id;
+        $ss = $ss ?? $this->userInfo;
 
-    $v_rule = [
-        'vendor_id' => '1|number|exists=vendors.id|Vendor identity is not correct',
-        'po_number' => '0|string|0-50',
-        'po_date' => '0|timestamp',
-        'remarks' => '0|string|1-255',
-        'items' => '1|array',
-    ];
-    $po_number = ['-', '_', '.', '#'];
-    $res = DBX::validateObject($arr,$v_rule,1,['po_number' => $po_number],$ss->lang,false,null);
-    if ($res->error) {
-        return DV::error($res->error);
-    }
-    $inputs = $res->values;
-    $items = $inputs['items'] ?? [];
-    $totals = $arr['totals'] ?? [];
-    $po_date = convertDate($inputs['po_date'] ?? null);
-    if (!$po_date || !strtotime($po_date)) {
-        $po_date = date('Y-m-d');
-    }
-    if ($po_date > date('Y-m-d')) {
-        return DV::error('PO date cannot be later than today');
-    }
-    $inputs['po_date'] = $po_date;
-    $inputs['sub_total'] = $totals['subtotal'] ?? 0;
-    $inputs['discount_value'] = $totals['discount_value'] ?? 0;
-    $inputs['discount_type'] = in_array(
-    $totals['discount_type'] ?? 'percent',['percent', 'amount']) ? $totals['discount_type'] : 'percent';
-    $inputs['tax_total'] = $totals['tax_total'] ?? 0;
-    $inputs['total_amount'] = $totals['grand_total'] ?? 0;
-    $inputs['currency_code'] = $totals['currency_code'] ?? 'USD';
-
-    unset($inputs['items']);
-    $create = empty($id);
-    DB::beginTransaction();
-    try {
-
-        $po_id = DBX::saveData($ss,'purchase_orders',['id' => $id],$inputs,[],1,false);
-        if (!$po_id) {
-            DB::rollBack();
-            return DV::error('Cannot save purchase order');
+        $v_rule = [
+            'vendor_id' => '1|number|exists=vendors.id|Vendor identity is not correct',
+            'po_number' => '0|string|0-25',
+            'po_date' => '0|timestamp',
+            'remarks' => '0|string|1-255',
+            'items' => '1|array',
+        ];
+        $po_number = ['-', '_', '.', '#'];
+        $res = DBX::validateObject($arr,$v_rule,1,['po_number' => $po_number],$ss->lang,false,null);
+        if ($res->error) {
+            return DV::error($res->error);
         }
-        $items = array_map(fn($i) => (object) $i, $items);
-        $valid_items = array_values(array_filter($items, function ($item) {
-            return !empty($item->item_id);
-        }));
-        $success_count = 0;
-        $incoming_ids = [];
-        foreach ($valid_items as $item) {
-            $trx_id = $item->trx_id ?? $item->id ?? null;
-            if (!$create && $trx_id) {
-                $exists = DB::table('purchase_order_items')
-                    ->where('id', $trx_id)
+        $inputs = $res->values;
+        $items = $inputs['items'] ?? [];
+        $totals = $arr['totals'] ?? [];
+        $po_date = convertDate($inputs['po_date'] ?? null);
+        if (!$po_date || !strtotime($po_date)) {
+            $po_date = date('Y-m-d');
+        }
+        if ($po_date > date('Y-m-d')) {
+            return DV::error('PO date cannot be later than today');
+        }
+        $inputs['po_date'] = $po_date;
+        $inputs['sub_total'] = $totals['subtotal'] ?? 0;
+        $inputs['discount_value'] = $totals['discount_value'] ?? 0;
+        $inputs['discount_type'] = in_array(
+        $totals['discount_type'] ?? 'percent',['percent', 'amount']) ? $totals['discount_type'] : 'percent';
+        $inputs['tax_total'] = $totals['tax_total'] ?? 0;
+        $inputs['total_amount'] = $totals['grand_total'] ?? 0;
+        $inputs['currency_code'] = $totals['currency_code'] ?? 'USD';
+
+        unset($inputs['items']);
+        $create = empty($id);
+        DB::beginTransaction();
+        try {
+
+            $po_id = DBX::saveData($ss,'purchase_orders',['id' => $id],$inputs,[],1,false);
+            if (!$po_id) {
+                DB::rollBack();
+                return DV::error('Cannot save purchase order');
+            }
+            self::setPONumber($ss->branch_id, $po_id, 'PO', $inputs['po_date'], 5, null);
+            $items = array_map(fn($i) => (object) $i, $items);
+            $valid_items = array_values(array_filter($items, function ($item) {
+                return !empty($item->item_id);
+            }));
+            $success_count = 0;
+            $incoming_ids = [];
+            foreach ($valid_items as $item) {
+                $trx_id = $item->trx_id ?? $item->id ?? null;
+                if (!$create && $trx_id) {
+                    $exists = DB::table('purchase_order_items')
+                        ->where('id', $trx_id)
+                        ->where('po_id', $po_id)
+                        ->exists();
+                    if (!$exists) {
+                        $trx_id = null;
+                    }
+                }
+
+                $qty = $item->qty ?? 0;
+                $unit_price = $item->unit_price ?? 0;
+                $input_item = [
+                    'trx_id' => $trx_id,
+                    'item_id' => $item->item_id,
+                    'unit' => $item->unit ?? null,
+                    'qty' => $qty,
+                    'unit_price' => $unit_price,
+                    'total_price' => $qty * $unit_price,
+                    'po_id' => $po_id
+                ];
+                $saved = self::savePoItem($ss, $input_item, $po_id);
+                if ($saved) {
+                    $success_count++;
+                    if ($trx_id) {
+                        $incoming_ids[] = $trx_id;
+                    }
+                }
+            }
+            if (!$create) {
+                DB::table('purchase_order_items')
                     ->where('po_id', $po_id)
-                    ->exists();
-                if (!$exists) {
-                    $trx_id = null;
-                }
+                    ->when(!empty($incoming_ids), function ($q) use ($incoming_ids) {
+                        $q->whereNotIn('id', $incoming_ids);
+                    })
+                    ->delete();
             }
-
-            $qty = $item->qty ?? 0;
-            $unit_price = $item->unit_price ?? 0;
-            $input_item = [
-                'trx_id' => $trx_id,
-                'item_id' => $item->item_id,
-                'unit' => $item->unit ?? null,
-                'qty' => $qty,
-                'unit_price' => $unit_price,
-                'total_price' => $qty * $unit_price,
-                'po_id' => $po_id
-            ];
-            $saved = self::savePoItem($ss, $input_item, $po_id);
-            if ($saved) {
-                $success_count++;
-                if ($trx_id) {
-                    $incoming_ids[] = $trx_id;
-                }
-            }
-        }
-        if (!$create) {
-            DB::table('purchase_order_items')
+            $db_sub = DB::table('purchase_order_items')
                 ->where('po_id', $po_id)
-                ->when(!empty($incoming_ids), function ($q) use ($incoming_ids) {
-                    $q->whereNotIn('id', $incoming_ids);
-                })
-                ->delete();
-        }
-        $db_sub = DB::table('purchase_order_items')
-            ->where('po_id', $po_id)
-            ->sum('total_price');
+                ->sum('total_price');
 
-        if (abs($db_sub - ($inputs['sub_total'] ?? 0)) > 0.01) {
+            if (abs($db_sub - ($inputs['sub_total'] ?? 0)) > 0.01) {
+                DB::rollBack();
+                return DV::error('Subtotal mismatch with items');
+            }
+
+            DB::commit();
+            return DV::success([
+                'data' => [
+                    'po_id' => $po_id,
+                    'success_count' => $success_count,
+                    'count' => count($valid_items)
+                ]
+            ]);
+
+        } catch (\Exception $e) {
             DB::rollBack();
-            return DV::error('Subtotal mismatch with items');
+            return DV::error($e->getMessage());
         }
-
-        DB::commit();
-        return DV::success([
-            'data' => [
-                'po_id' => $po_id,
-                'success_count' => $success_count,
-                'count' => count($valid_items)
-            ]
-        ]);
-
-    } catch (\Exception $e) {
-        DB::rollBack();
-        return DV::error($e->getMessage());
     }
-}
 
 
     public static function savePoItem($ss, $item, $po_id)
@@ -178,63 +175,6 @@ class PurchaseOrder extends VSModel
 
         return null;
     }
-
-    public static function poStatusId(string $key): int
-    {
-        $map = self::purchaseOrderStatusIdsFromTable();
-        if (!isset($map[$key])) {
-            throw new \InvalidArgumentException('Unknown PO status key "' . $key . '".');
-        }
-
-        return $map[$key];
-    }
-
-    private static function purchaseOrderStatusIdsFromTable(): array
-    {
-        if (self::$purchaseOrderStatusIdMap !== null) {
-            return self::$purchaseOrderStatusIdMap;
-        }
-
-        $rows = DB::table('purchase_order_statuses')->select('id', 'name')->orderBy('id')->get();
-        $byName = [];
-        foreach ($rows as $row) {
-            $byName[strtolower(trim((string) ($row->name ?? '')))] = (int) $row->id;
-        }
-
-        $aliases = [
-            'pending' => ['pending'],
-            'approved' => ['approved'],
-            'ordered' => ['ordered'],
-            'partially_received' => ['partially received', 'partially_received'],
-            'received' => ['received'],
-            'cancelled' => ['cancelled', 'canceled'],
-        ];
-
-        $map = [];
-        foreach ($aliases as $logical => $names) {
-            foreach ($names as $name) {
-                if (isset($byName[$name])) {
-                    $map[$logical] = $byName[$name];
-                    break;
-                }
-            }
-        }
-
-        $missing = array_diff(array_keys($aliases), array_keys($map));
-        if ($missing !== []) {
-            $present = $byName === [] ? '(none)' : implode(', ', array_keys($byName));
-            throw new \RuntimeException(
-                'purchase_order_statuses is missing name row(s) for: '
-                . implode(', ', $missing)
-                . '. DB has: ' . $present
-            );
-        }
-
-        self::$purchaseOrderStatusIdMap = $map;
-
-        return self::$purchaseOrderStatusIdMap;
-    }
-
     public function getPurchaseOrderList($filter, $ss = null)
     {
         $ss = $ss ?? $this->userInfo;
@@ -244,32 +184,26 @@ class PurchaseOrder extends VSModel
         $status_id = $d->status_id ?? null;
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 10;
-        if (!is_numeric($current_page)) {
+        if (!is_numeric($current_page))
             $current_page = 1;
-        }
         $skip_rows = ($current_page - 1) * $per_page;
-        $str_search = '1=1';
-        $str_where = '1=1';
+        $str_search = "1=1";
+        $str_where = '2=2';
         if ($search_value) {
             $skip_rows = 0;
             $search_value = escape_like_str($search_value);
-            $str_search = "(po.po_number Like '%" . $search_value . "%' OR v.name Like '%" . $search_value . "%')";
+            $str_search = "(po.po_number Like '%" .$search_value ."%' OR v.name Like '%" . $search_value . "%')";
         }
         if ($vendor_id) {
             $str_where .= ' AND po.vendor_id = ' . $vendor_id;
         }
-
         if ($status_id) {
             $str_where .= ' AND po.status_id = ' . $status_id;
         }
-
-        $item_total = '(SELECT COALESCE(SUM(pi.total_price), 0) FROM purchase_order_items as pi WHERE pi.po_id = po.id)';
-        $sub_total = 'COALESCE(po.sub_total, ' . $item_total . ')';
-        $discount_amount = "CASE WHEN po.discount_type = 'percent' THEN (" . $item_total . " * COALESCE(po.discount_value, 0) / 100) ELSE COALESCE(po.discount_value, 0) END";
-        $computed_total_amount = 'GREATEST(0, (' . $item_total . ') - (' . $discount_amount . '))';
-        $total_amount = 'COALESCE(po.total_amount, ' . $computed_total_amount . ')';
-        $cols = 'po.id,po.po_number,po.vendor_id,po.po_date,po.authorized,po.status_id,ps.name as status,po.total_authorizers,po.auth_count,po.remarks,po.discount_value,po.discount_type,po.sub_total as stored_sub_total,po.total_amount as stored_total_amount,po.updated_at,po.update_user,v.id as vendor_id,v.name as vendor_name,v.phone_number,' . $sub_total . ' as sub_total,' . $total_amount . ' as total_amount';
+    
+        $cols = 'po.id,po.po_number,po.vendor_id,po.po_date,po.authorized,po.status_id,ps.name as status,po.total_authorizers,po.auth_count,po.remarks,po.discount_value,po.discount_type,po.sub_total,po.total_amount,po.updated_at,po.update_user,v.name as vendor_name,v.phone_number';
         $query = DB::table('purchase_orders as po')
+            // ->join('purchase_order_authorizations as au','au.po_id','=','po.id')
             ->join('vendors as v', 'v.id', '=', 'po.vendor_id')
             ->join('purchase_order_statuses as ps', 'ps.id', '=', 'po.status_id')
             ->whereRaw($str_where)
@@ -277,62 +211,19 @@ class PurchaseOrder extends VSModel
             ->selectRaw($cols)
             ->orderByRaw('po.id DESC');
 
-        $clone_query = clone $query;
-        $count = $clone_query->count('po.id');
+        $count_query = clone $query;
+        $count = $count_query->count('po.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
-        $poIds = $rows->pluck('id')->map(function ($id) {
-            return (int) $id;
-        })->all();
-        $linesByPo = [];
-        if ($poIds !== []) {
-            $allLines = DB::table('purchase_order_items')
-                ->whereIn('po_id', $poIds)
-                ->whereNotNull('item_id')
-                ->where('item_id', '>', 0)
-                ->get();
-            foreach ($allLines as $line) {
-                $pid = (int) $line->po_id;
-                if (!isset($linesByPo[$pid])) {
-                    $linesByPo[$pid] = [];
-                }
-                $linesByPo[$pid][] = $line;
-            }
-        }
         foreach ($rows as $row) {
-            $auth = DB::table('purchase_order_authorizations')
-                ->where('po_id', $row->id)
-                ->first();
-            $row->authorizer = $auth?->auth_user ?? null;
-            $row->auth_date = $auth?->auth_date ?? null;
-            $row->sub_total_formatted = '$ ' . number_format((float) ($row->sub_total ?? 0), 2, '.', '');
-            $row->total_amount_formatted = '$ ' . number_format((float) ($row->total_amount ?? 0), 2, '.', '');
-            $dv = (float) ($row->discount_value ?? 0);
-            $dt = (string) ($row->discount_type ?? 'percent');
-            if ($dt === 'amount') {
-                $row->discount_formatted = '$ ' . number_format($dv, 2, '.', '');
-            } else {
-                $isInt = abs($dv - round($dv)) < 0.00001;
-                $v = $isInt ? (string) (int) round($dv) : rtrim(rtrim(number_format($dv, 2, '.', ''), '0'), '.');
-                $row->discount_formatted = $v . ' %';
-            }
+            $auth = DB::table('purchase_order_authorizations')->where('po_id', $row->id)->first();
+            $row->authorizer = $auth->auth_user ?? null;
+            $row->auth_date = $auth->auth_date ?? null;
             setOfficialDates($row, ['auth_date', 'po_date'], ['updated_at'], []);
-            if ((int) $row->status_id !== self::poStatusId('cancelled')) {
-                $pid = (int) $row->id;
-                $lines = $linesByPo[$pid] ?? [];
-                $state = self::receiveProgressStateFromLines($lines);
-                // Badge override only when something is received; else keep ps.name from DB.
-                if ($state === 'partial' || $state === 'complete') {
-                    $badge = self::receiveProgressBadgePresentation($state);
-                    $row->status_label = $badge['label'];
-                    $row->status_class = $badge['class'];
-                    $row->status_badge_style = $badge['style'];
-                }
-            }
+            
         }
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
-
     public static function purchaseOrderDetails($id, $ss = null)
     {
         $row = DB::table('purchase_orders as po')
@@ -340,17 +231,11 @@ class PurchaseOrder extends VSModel
             ->join('purchase_order_items as pi', 'pi.po_id', '=', 'po.id')
             ->where('po.id', $id)
             ->selectRaw('po.id,po.po_number,po.vendor_id,v.name,v.phone_number,v.address,po.po_date,po.status_id,po.remarks,po.discount_value,po.discount_type,po.sub_total,po.tax_total,po.total_amount,pi.item_id,pi.qty,pi.unit_price,pi.total_price')->first();
-        // if ($row) {
-        //     self::decoratePurchaseOrderHeaderRow($row);
-        // }
-
         return $row;
     }
-
     public static function getFormOptions($id = null, $ss = null)
     {
         $po_details = $id ? self::purchaseOrderDetails($id, $ss) : null;
-
         return (object) [
             'po_details' => $po_details,
             'vendors' => GeneralSettings::options_vendor($ss),
@@ -358,7 +243,6 @@ class PurchaseOrder extends VSModel
             'po_statuses' => GeneralSettings::options_po_status($ss),
         ];
     }
-
     public function deletePurchaseOrder($id = null, $ss = null)
     {
         $id = $id ?? $this->id;
@@ -376,45 +260,29 @@ class PurchaseOrder extends VSModel
         }
         return DV::success(['message' => 'Purchase order has been deleted.']);
     }
-
- function getItemsByTrx($data,$ss){
-      
-      $id = $data['po_id'] ?? $data['id'] ?? null ;
-      $rows = DB::table('purchase_order_items as pi')
-        ->join('items as i','i.id','=','pi.item_id')
-        ->where('pi.po_id',$id)
-        ->selectRaw("i.id as item_id,pi.qty,pi.unit_price")->get();
-     
-      
-      return $rows;
-  }
-    static function getItemsByPurchaseOrder($po_id, $ss = null)
+    public function getItemsByPO($data,$ss){
+        
+        $id = $data['po_id'] ?? $data['id'] ?? null ;
+        $rows = DB::table('purchase_order_items as pi')
+            ->join('items as i','i.id','=','pi.item_id')
+            ->where('pi.po_id',$id)
+            ->selectRaw("pi.item_id,pi.qty,i.unit,pi.unit_price")->get();
+        
+        
+        return $rows;
+    }
+    static function getItemsByPurchaseOrder($id = null, $ss = null)
     {
-
-        $receiveQtyColumn = self::purchaseOrderItemReceiveQtyColumnName();
-        $hasBreakAmount = Schema::hasColumn('purchase_order_items', 'break_amount');
-        $hasLineUnit = Schema::hasColumn('purchase_order_items', 'unit');
-        $receiveQtyCol = $receiveQtyColumn ? ('IFNULL(pi.' . $receiveQtyColumn . ',0)') : '0';
-        $breakAmountCol = $hasBreakAmount ? 'IFNULL(pi.break_amount,0)' : '0';
-        $unitExpr = $hasLineUnit ? 'COALESCE(pi.unit, i.unit)' : 'i.unit';
-
+        $po_id = $id ?? null;
         $rows = DB::table('purchase_order_items as pi')
             ->join('items as i', 'i.id', '=', 'pi.item_id')
             ->where('pi.po_id', $po_id)
-            ->selectRaw("pi.id, pi.qty, $unitExpr as unit, pi.remarks, pi.status_id, pi.unit_price, pi.total_price, $receiveQtyCol as receive_qty, $breakAmountCol as break_amount, i.code, i.id as item_id, i.name as item_name, pi.update_user, " . DBX::formatDate('i.updated_at') . ' as updated_at')
+            ->selectRaw("pi.id, pi.qty,pi.unit_price, pi.total_price,pi.remarks, pi.status_id, i.code,pi.item_id, i.name as item_name")
             ->orderByRaw('i.name ASC')
             ->get();
-        foreach ($rows as $row) {
-            $row->status = $row->status_id == 1 ? 'Pending' : ($row->status_id == 2 ? 'Received' : null);
-            $row->unit_id = self::normalizePoUnitId($row->unit ?? null);
-            $row->unit_price_formatted = '$ ' . number_format((float) ($row->unit_price ?? 0), 2, '.', '');
-            $row->total_price_formatted = '$ ' . number_format((float) ($row->total_price ?? 0), 2, '.', '');
-        }
 
         return $rows;
     }
-
-
     public function authorized($arr = [], $ss = null)
     {
         $d = (object) $arr;
@@ -459,149 +327,102 @@ class PurchaseOrder extends VSModel
                 'auth_count' => $authorized_count,
                 'total_authorizers' => $total_authorizers,
                 'authorized' => $authorized,
-                'status_id' => $authorized ? self::poStatusId('ordered') : self::poStatusId('pending')
+                'status_id' => 3, // set status to "Authorized"
             ]);
 
         return DV::success();
     }
-
-    // Keep purchase_orders.status_id in sync with line receive totals (after receivePurchaseOrder).
-    protected function syncPurchaseOrderHeaderStatusFromLines(int $poId, $ss = null): void
+    public function receivePurchaseOrder($arr = [], $id = null, $ss = null)
     {
         $ss = $ss ?? $this->userInfo;
-        $idReceived = self::poStatusId('received');
-        $idPartiallyReceived = self::poStatusId('partially_received');
-
-        $lines = DB::table('purchase_order_items')
-            ->where('po_id', $poId)
-            ->whereNotNull('item_id')
-            ->where('item_id', '>', 0)
-            ->get();
-
-        if ($lines->isEmpty()) {
-            return;
+        $id = $id ?? $this->id;
+        $d = (object) $arr;
+        $po = DB::table('purchase_orders')
+            ->where('id', $id)
+            ->first();
+        if (!$po) {
+            return DV::error('Purchase order not found.');
+        }
+        if ($po->status_id == 6) {
+            return DV::error('Cannot receive a cancelled purchase order.');
+        }
+        if ($po->status_id < 3) {
+            return DV::error('Purchase order must be in Ordered status.');
+        }
+        $items = $d->items ?? [];
+        if (empty($items)) {
+            return DV::error('No items to receive.');
         }
 
-        $header = DB::table('purchase_orders')->where('id', $poId)->first();
-        if (!$header) {
-            return;
-        }
-        if ((int) $header->status_id === $idReceived) {
-            return;
-        }
+        DB::beginTransaction();
 
-        $state = self::receiveProgressStateFromLines($lines);
-        $cur = (int) $header->status_id;
-        $newStatus = $cur;
-        if ($state === 'complete') {
-            $newStatus = $idReceived;
-        } elseif ($state === 'partial') {
-            $newStatus = $idPartiallyReceived;
-        } elseif ($state === 'none' && in_array($cur, [$idPartiallyReceived, $idReceived], true)) {
-            $newStatus = (int) ($header->authorized ?? 0) === 1 ? self::poStatusId('ordered') : self::poStatusId('approved');
-        }
+        try {
 
-        if ($newStatus !== $cur) {
-            $now = getNowTime();
-            $updateUser = $ss->login_name ?? $ss->user_name ?? 'User';
-            DB::table('purchase_orders')->where('id', $poId)->update([
-                'status_id' => $newStatus,
-                'updated_at' => $now,
-                'update_user' => $updateUser,
-            ]);
-        }
-    }
-public function receivePurchaseOrder($arr = [], $id = null, $ss = null)
-{
-    $ss = $ss ?? $this->userInfo;
-    $id = $id ?? $this->id;
-    $d = (object) $arr;
-    $po = DB::table('purchase_orders')
-        ->where('id', $id)
-        ->first();
-    if (!$po) {
-        return DV::error('Purchase order not found.');
-    }
-    if ($po->status_id == 6) {
-        return DV::error('Cannot receive a cancelled purchase order.');
-    }
-    if ($po->status_id < 3) {
-        return DV::error('Purchase order must be in Ordered status.');
-    }
-    $items = $d->items ?? [];
-    if (empty($items)) {
-        return DV::error('No items to receive.');
-    }
+            $allFullyReceived = true;
 
-    DB::beginTransaction();
+            foreach ($items as $item) {
 
-    try {
+                $poItem = DB::table('purchase_order_items')
+                    ->where('po_id', $id)
+                    ->where('item_id', $item['item_id'])
+                    ->first();
 
-        $allFullyReceived = true;
+                if (!$poItem) {
+                    DB::rollBack();
+                    return DV::error('PO item not found: ' . $item['item_id']);
+                }
 
-        foreach ($items as $item) {
+                $receiveQty = (float) ($item['received_qty'] ?? 0);
 
-            $poItem = DB::table('purchase_order_items')
-                ->where('po_id', $id)
-                ->where('item_id', $item['item_id'])
-                ->first();
+                if ($receiveQty <= 0) {
+                    continue;
+                }
 
-            if (!$poItem) {
-                DB::rollBack();
-                return DV::error('PO item not found: ' . $item['item_id']);
+                $newReceivedQty = $poItem->received_qty + $receiveQty;
+
+                if ($newReceivedQty > $poItem->qty) {
+                    DB::rollBack();
+                    return DV::error('Receive quantity exceeds ordered quantity.');
+                }
+
+                $acceptQty = $newReceivedQty;
+
+                DB::table('purchase_order_items')
+                    ->where('id', $poItem->id)
+                    ->update([
+                        'received_qty' => $newReceivedQty,
+                        'accept_qty' => $acceptQty,
+                        'accept_date' => now(),
+                        'accept_uid' => $ss->user_id ?? null,
+                        'accept_user' => $ss->user_name ?? null,
+                        'status_id' => ($newReceivedQty == $poItem->qty) ? 5 : 4,
+                    ]);
+
+                if ($newReceivedQty < $poItem->qty) {
+                    $allFullyReceived = false;
+                }
             }
 
-            $receiveQty = (float) ($item['received_qty'] ?? 0);
+            $newStatus = $allFullyReceived ? 5 : 4;
 
-            if ($receiveQty <= 0) {
-                continue;
-            }
-
-            $newReceivedQty = $poItem->received_qty + $receiveQty;
-
-            if ($newReceivedQty > $poItem->qty) {
-                DB::rollBack();
-                return DV::error('Receive quantity exceeds ordered quantity.');
-            }
-
-            $acceptQty = $newReceivedQty;
-
-            DB::table('purchase_order_items')
-                ->where('id', $poItem->id)
+            DB::table('purchase_orders')
+                ->where('id', $id)
                 ->update([
-                    'received_qty' => $newReceivedQty,
-                    'accept_qty' => $acceptQty,
-                    'accept_date' => now(),
-                    'accept_uid' => $ss->user_id ?? null,
-                    'accept_user' => $ss->user_name ?? null,
-                    'status_id' => ($newReceivedQty == $poItem->qty) ? 5 : 4,
+                    'status_id' => $newStatus,
+                    'update_uid' => $ss->user_id ?? null,
+                    'update_user' => $ss->user_name ?? null,
+                    'updated_at' => now(),
                 ]);
 
-            if ($newReceivedQty < $poItem->qty) {
-                $allFullyReceived = false;
-            }
+            DB::commit();
+
+            return DV::success('Purchase order received successfully.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return DV::error($e->getMessage());
         }
-
-        $newStatus = $allFullyReceived ? 5 : 4;
-
-        DB::table('purchase_orders')
-            ->where('id', $id)
-            ->update([
-                'status_id' => $newStatus,
-                'update_uid' => $ss->user_id ?? null,
-                'update_user' => $ss->user_name ?? null,
-                'updated_at' => now(),
-            ]);
-
-        DB::commit();
-
-        return DV::success('Purchase order received successfully.');
-
-    } catch (\Exception $e) {
-        DB::rollBack();
-        return DV::error($e->getMessage());
     }
-}
     // Receive selected lines; $arr mirrors Request::all() (po_item_ids, receive_qty, break_amount, …).
     public function receivePurchaseOrder1($arr = [], $id = null, $ss = null)
     {
@@ -678,204 +499,6 @@ public function receivePurchaseOrder($arr = [], $id = null, $ss = null)
 
         return DV::success(['message' => 'Selected lines were received successfully.']);
     }
-
-    // Mark PO received when every line is complete; allow_partial + remarks for partial close.
-    public function confirmPurchaseOrderReceived($id, $ss = null, $arr = [])
-    {
-        $ss = $ss ?? $this->userInfo;
-        $id = (int) $id;
-        if ($id <= 0) {
-            return DV::error('Invalid purchase order ID.');
-        }
-        $po = DB::table('purchase_orders')->where('id', $id)->first();
-        if (!$po) {
-            return DV::error('Purchase order not found.');
-        }
-        if ((int) $po->status_id === self::poStatusId('received')) {
-            return DV::error('This purchase order is already fully received.');
-        }
-
-        $receiveCol = self::purchaseOrderItemReceiveQtyColumnName();
-        $hasBreak = Schema::hasColumn('purchase_order_items', 'break_amount');
-
-        $lines = DB::table('purchase_order_items')
-            ->where('po_id', $id)
-            ->whereNotNull('item_id')
-            ->where('item_id', '>', 0)
-            ->get();
-
-        if ($lines->isEmpty()) {
-            return DV::error('Purchase order has no line items to receive.');
-        }
-
-        $hasIncomplete = false;
-        foreach ($lines as $line) {
-            $ordered = (float) ($line->qty ?? 0);
-            if ($ordered <= 0) {
-                continue;
-            }
-            $recv = 0.0;
-            if ($receiveCol) {
-                $recv = (float) ($line->{$receiveCol} ?? 0);
-            }
-            $brk = $hasBreak ? (float) ($line->break_amount ?? 0) : 0.0;
-            $lineMarkedReceived = (int) ($line->status_id ?? 0) === 2;
-            if (!$lineMarkedReceived && ($recv + $brk) + 1e-6 < $ordered) {
-                $hasIncomplete = true;
-                break;
-            }
-        }
-
-        $allowPartial = !empty($arr['allow_partial']);
-        if ($hasIncomplete) {
-            if (!$allowPartial) {
-                return DV::error('Not all items are fully received. For each line, Receive amount + Break Amount must equal Ordered Qty (save each line first).');
-            }
-            $remarks = trim((string) ($arr['remarks'] ?? $arr['remark'] ?? ''));
-            if ($remarks === '') {
-                return DV::error('Please enter remarks.');
-            }
-            $now = getNowTime();
-            $updateUser = $ss->login_name ?? $ss->user_name ?? 'User';
-            DB::table('purchase_orders')->where('id', $id)->update([
-                'status_id' => self::poStatusId('partially_received'),
-                'remarks' => $remarks,
-                'updated_at' => $now,
-                'update_user' => $updateUser,
-            ]);
-            return DV::success(['message' => 'Remarks saved. Purchase order marked as partially received.']);
-        }
-
-        $now = getNowTime();
-        $updateUser = $ss->login_name ?? $ss->user_name ?? 'User';
-
-        foreach ($lines as $line) {
-            DB::table('purchase_order_items')->where('id', $line->id)->update(['status_id' => 2]);
-        }
-
-        DB::table('purchase_orders')->where('id', $id)->update([
-            'status_id' => self::poStatusId('received'),
-            'updated_at' => $now,
-            'update_user' => $updateUser,
-        ]);
-
-        return DV::success(['message' => 'Purchase order confirmed as received.']);
-    }
-
-
-    // List / dialog helpers (receive badges, money format on header, line unit id).
-
-    public static function normalizePoUnitId($unit): int
-    {
-        $n = (int) $unit;
-        if ($n >= 1 && $n <= 4) {
-            return $n;
-        }
-        $map = ['pcs' => 1, 'kg' => 2, 'box' => 3, 'meter' => 4];
-        $key = strtolower(trim((string) $unit));
-
-        return (int) ($map[$key] ?? ($n > 0 ? $n : 1));
-    }
-
-    public static function decoratePurchaseOrderHeaderRow(?object $row): ?object
-    {
-        if (!$row) {
-            return null;
-        }
-        $row->sub_total_formatted = '$ ' . number_format((float) ($row->sub_total ?? 0), 2, '.', '');
-        $row->total_amount_formatted = '$ ' . number_format((float) ($row->total_amount ?? 0), 2, '.', '');
-        $dv = (float) ($row->discount_value ?? 0);
-        $dt = (string) ($row->discount_type ?? 'percent');
-        if ($dt === 'amount') {
-            $row->discount_formatted = '$ ' . number_format($dv, 2, '.', '');
-        } else {
-            $isInt = abs($dv - round($dv)) < 0.00001;
-            $v = $isInt ? (string) (int) round($dv) : rtrim(rtrim(number_format($dv, 2, '.', ''), '0'), '.');
-            $row->discount_formatted = $v . ' %';
-        }
-
-        return $row;
-    }
-
-    // none | partial | complete — from line qty, receive col, break_amount, line status_id.
-    public static function receiveProgressStateFromLines($lines): string
-    {
-        $receiveCol = self::purchaseOrderItemReceiveQtyColumnName();
-        $hasBreak = Schema::hasColumn('purchase_order_items', 'break_amount');
-        $meaningful = [];
-        foreach ($lines as $line) {
-            $ordered = (float) ($line->qty ?? 0);
-            if ($ordered <= 0) {
-                continue;
-            }
-            $recv = $receiveCol ? (float) ($line->{$receiveCol} ?? 0) : 0.0;
-            $brk = $hasBreak ? (float) ($line->break_amount ?? 0) : 0.0;
-            $lineReceived = (int) ($line->status_id ?? 0) === 2;
-            $meaningful[] = ['ordered' => $ordered, 'eff' => $recv + $brk, 'line_received' => $lineReceived];
-        }
-        if ($meaningful === []) {
-            return 'none';
-        }
-        $anyReceived = false;
-        $allSatisfied = true;
-        foreach ($meaningful as $m) {
-            $lineMarkedReceived = !empty($m['line_received']);
-            if ($lineMarkedReceived || $m['eff'] > 0.02) {
-                $anyReceived = true;
-            }
-            if (!$lineMarkedReceived && ($m['eff'] + 1e-6) < $m['ordered']) {
-                $allSatisfied = false;
-            }
-        }
-        if (!$anyReceived) {
-            return 'none';
-        }
-        if ($allSatisfied) {
-            return 'complete';
-        }
-
-        return 'partial';
-    }
-
-    public static function receiveProgressBadgePresentation(string $state): array
-    {
-        if ($state === 'complete') {
-            return [
-                'label' => 'Received',
-                'class' => 'badge border',
-                'style' => 'min-width:90px;background:#dff3ea;color:#37b07f;border-color:#70c39f !important;font-weight:500;',
-            ];
-        }
-        if ($state === 'partial') {
-            return [
-                'label' => 'Partially Received',
-                'class' => 'badge text-dark border',
-                'style' => 'min-width:90px;background:#fff3e0;color:#e65100;border-color:#ffb74d !important;font-weight:500;',
-            ];
-        }
-
-        return [
-            'label' => 'Pending',
-            'class' => 'badge text-gray border',
-            'style' => 'min-width:90px;background:#fff3cd;color:#664d03;border-color:#ffc107 !important;font-weight:600;',
-        ];
-    }
-
-    // receive_qty or legacy recieve_amount column name.
-    public static function purchaseOrderItemReceiveQtyColumnName(): ?string
-    {
-        if (Schema::hasColumn('purchase_order_items', 'receive_qty')) {
-            return 'receive_qty';
-        }
-        if (Schema::hasColumn('purchase_order_items', 'recieve_amount')) {
-            return 'recieve_amount';
-        }
-
-        return null;
-    }
-
-    // Legacy — MI / inventory (not used by PRM list UI).
-
     public function receiveVPO($data, $ss)
     {
         $branch_id = $ss->branch_id;
@@ -967,86 +590,55 @@ public function receivePurchaseOrder($arr = [], $id = null, $ss = null)
         return DV::success(['data' => ['success_count' => $success_count, 'count' => $i]]);
     }
 
-    public static function validPOQty($po_id, $arr, $ss)
+      static function setPONumber($branch_id, $po_id = 0, $doc_class = null, $po_date = null, $len = 5, $v_prefix = null, $onSuccess = null)
     {
-        $d = (object) $arr;
-        $item_id = $d->item_id;
-        $qty = $d->qty;
-        $to_skip = (object) ['item_id' => 0];
-        $skip_count = 0;
-        $skip_msg = null;
-        $row = DB::table('purchase_orders_mi')->where('id', $po_id)->first();
-        $items = DB::table('po_items_mi')->selectRaw('id,item_id,price,uom,po_id,qty,ifnull(accepted_qty,0) as accepted_qty,update_user,ifnull(delivered_qty,0) as delivered_qty,ifnull(rejected_qty,0) as rejected_qty')->where('po_id', $po_id)->get();
-        // foreach($rows as $row){
-        if ($row) {
-            $poItem = self::getPOItemsMIInfo($items, $po_id, $item_id);
-            if ($poItem->error)
-                return DV::error($poItem->message);
-            $poQTY = $poItem->qty;
-            $accepted_qty = $poItem->accepted_qty;
-            $validQty = $poQTY >= $accepted_qty ? ($poQTY - $accepted_qty) : max(0, $accepted_qty - $poQTY);
-
-            // $validQty = $poQTY - $accepted_qty - $poItem->delivered_qty - $poItem->rejected_qty;
-            if ($validQty == 0) {
-                $skip_msg = 'Cannot change remarks on full purchased order item quantity received';
-                $skip_count++;
-                $to_skip = (object) ['item_id' => $poItem->item_id];
-                // continue;
-            }
-            if ($qty > $validQty) {
-                $xitem = Item::getProps($item_id, 'code,name') ?? (object) ['name' => ''];
-                $msg = $validQty > 0 ? $xitem->name . ' was already received ' . $accepted_qty . ' item' . ($accepted_qty > 1 ? 's' : '') . '. There ' . ($validQty > 1 ? 'are ' : 'is ') . $validQty . ' less'
-                    : 'Receving qty must be equal or less than order qty on ' . $xitem->name;
-                return DV::error($msg);
-            }
-            if ($poItem->id > 0) {
-                DBX::saveData($ss, 'po_items_mi', ['id' => $poItem->id], [
-                    'accepted_qty' => $accepted_qty + $qty,
-                    'remarks' => isset($d->remarks) ? $d->remarks : null,
-                    'expire_date' => $d->expire_date
-                ], [], 1);
-                if ($qty == $validQty) {
-                    $ud = DBX::saveData($ss, 'purchase_orders_mi', ['id' => $po_id], ['status_id' => 3], [], 1);
-                }
-            }
+        if (!$len){
+            $len = 5;
         }
-        if (count($items) == $skip_count) {
-            //* update Po status
-            $ud = DBX::saveData($ss, 'purchase_orders_mi', ['id' => $po_id], ['status_id' => 3], [], 1);
-            return DV::error('All items were received, also remarks can not be changed');
+        $def_prefix = $v_prefix != null ? $v_prefix : 'PO';
+        $table_name = "purchase_order_code_control";
+        $target_table = "purchase_orders";
+        $target_column = "po_number";
+        $com_branch_id = null;
+        $doc_class = $doc_class ?? 'no-tax';
+        $str_company_branch = '1=1';
+        if ($com_branch_id > 0)
+            $str_company_branch = 'com_branch_id =' . $com_branch_id;
+        if (!$po_id)
+            return null;
+
+        //if ($def_prefix) $where_branch .=" AND prefix ='$def_prefix'";
+        $str_prefix = '1=1';
+        if ($v_prefix) {
+            $str_prefix = 'c.prefix = \'' . $v_prefix . '\'';
         }
-        return DV::success(['skip_row_msg' => $skip_msg, 'to_skip' => $to_skip]);
-    }
+        $year = date('Y', strtotime($po_date));
+        $row = DB::table($table_name . " as c")->where('branch_id', $branch_id)->where('c.issue_year', $year)->where('c.doc_class', $doc_class)->whereRaw($str_company_branch)->whereRaw($str_prefix)->selectRaw("last_id,prefix")->take(1)->get()->first();
 
-    public static function savePoOrderItem($ss, $po_id, $item, $id)
-    {
-
-        $item = is_object($item) ? $item : (object) $item;
-
-        // Calculate total price if not provided
-        $total_price = $item->total ?? ($item->qty * ($item->unit_price ?? 0));
-
-        $inputs = [
-            "po_id" => $po_id,
-            "item_id" => $item->item_id ?? $item->id ?? null,
-            "qty" => $item->qty ?? 0,
-            "unit" => $item->unit ?? null,
-            "unit_price" => $item->unit_price ?? 0,
-            "total_price" => $total_price,
-        ];
-
-        $saved_id = DBX::saveData($ss, 'purchase_order_items', ['id' => $id], $inputs, [], 1, false);
-
-        if ($saved_id > 0) {
-            $inputs['id'] = $saved_id;
-            return (object) $inputs;
+        $next_num = 0;
+        $prefix = null;
+        if ($row && $row->prefix == $v_prefix) {
+            $next_num = $row->last_id;
+            $prefix = $row->prefix;
         }
+        if (!$prefix)
+            $prefix = $def_prefix;
+        if (!$prefix)
+            $prefix = "PO";
+        $next_num++;
+        //example invoice number => I2023-00003
+        // $new_code = $prefix . substr($year, -2) . "-" . formatNumber($next_num, $len);
+        $new_code = $prefix . "-". substr($year, -2) . "-" . formatNumber($next_num, $len);
 
-        return null; // Failed to save
-    }
 
-    public static function getProps($id, $cols = 'id,code,name')
-    {
-        return DB::table('items as i')->where('i.id', $id)->selectRaw($cols)->first();
+        $x = DB::table($target_table)->where('id', $po_id)->update([$target_column => $new_code]);
+        if ($x || $x === 1) {
+            $updated = DB::table($table_name)->where('prefix', $prefix)->where('branch_id', $branch_id)->where('issue_year', $year)->where('doc_class', $doc_class)->whereRaw($str_company_branch)->update(['last_id' => $next_num]);
+            if (!$updated)
+                DB::table($table_name)->insert(['branch_id' => $branch_id, 'com_branch_id' => $com_branch_id, 'doc_class' => $doc_class, 'issue_year' => $year, 'prefix' => $prefix, 'last_id' => $next_num]);
+            if ($onSuccess)
+                $onSuccess();
+            return (object) ['status_code' => 200, 'status' => 'OK', 'code' => $new_code];
+        }
     }
 }
