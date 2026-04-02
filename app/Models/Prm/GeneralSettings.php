@@ -465,6 +465,10 @@ class GeneralSettings //extends Model
             ->orderBy('id')
             ->get();
     }
+    static function options_bank($ss)
+        {
+            return DB::table('banks')->selectRaw('id,name')->get();
+        }
     static function options_service_request_type($service_type_id){
         //$branch_id = $ss->branch_id;
         $service_type_id = $service_type_id ?? -1;
