@@ -93,25 +93,11 @@ class Invoice extends VSModel
             $itemRows = [];
             foreach ($items as $item) {
                 $itemType = strtolower($item['type'] ?? $item['item_type'] ?? 'service');
-
-                // if (!in_array($itemType, ['service', 'rent', 'utility'])) {
-                //     \Log::warning("Invalid item type received, forced to 'service'", [
-                //         'received' => $item['type'] ?? 'missing',
-                //         'item'     => $item
-                //     ]);
-                //     $itemType = 'service';
-                // }
-
-                // if (!in_array($itemType, ['service', 'rent', 'utility',])) {
-                //     $itemType = 'service';
-                // }
-
                 $itemId = $item['item_id']  ?? null;
                 $qty    = (int)($item['qty'] ?? 1);
                 $price  = (float)($item['price'] ?? 0);
                 $unitType = $item['unit_type'] ?? '-';
 
-                // Auto-load price from contract when type = rent
                 if ($itemType === 'rent' && $itemId) {
                     $contractPrice = DB::table('contracts')
                         ->where('id', $itemId)
@@ -121,7 +107,7 @@ class Invoice extends VSModel
                         $price = (float)$contractPrice;
                     }
                 }
-                // Auto-load price + unit_type from service
+
                 else if ($itemType === 'service' && $itemId) {
                     $serviceData = DB::table('services')
                         ->where('id', $itemId)
@@ -161,7 +147,7 @@ class Invoice extends VSModel
             if (!empty($itemRows)) {
                 DB::table('invoice_items')->insert($itemRows);
             }
-            // Calculate and update total for the header
+
             $totalAmount = array_sum(array_column($itemRows, 'amount'));
 
             DB::table('invoices')

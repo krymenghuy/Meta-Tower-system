@@ -131,7 +131,8 @@ var InvoiceComponent = (() => {
             rowCreated: (data, index, tr) => {
                 tr.dataset.statusid = data.payment_status_id || 0;
                 tr.id = `invoice_id_${data.id}`;
-                tr.dataset.ispaid = data.payment_status_id || 0;     // ← This is used by dropdown
+                // tr.dataset.ispaid = data.payment_status_id || 0;
+                tr.dataset.statusid = data.payment_status_id || 0;
                 tr.dataset.canceled = 0;
             },
             listContainerClass: null
@@ -386,18 +387,21 @@ var InvoiceComponent = (() => {
 
             ],
             onShow: (me, menuContainer) => {
-                const statusId = Number(menuContainer.dataset.ispaid || 0);
+                const statusId = Number(menuContainer.dataset.statusid || menuContainer.dataset.ispaid || 0);
 
                 let allowed = [];
 
                 if (statusId === 1) {
-                    allowed = ["receive_invoice"];
+                    allowed = [ "print_invoice"];
                 }
-                else if (statusId === 2 || statusId === 3) {
-                    allowed = ["print_invoice", "delete_invoice", "receive_invoice"];
+                else if (statusId === 2 ) {
+                    allowed = [ "receive_invoice", "delete_invoice"];
+                }
+                 else if (statusId === 2 || statusId === 3) {
+                    allowed = [ "receive_invoice", "delete_invoice","print_invoice"];
                 }
                 else {
-                    allowed = ["print_invoice", "delete_invoice", "receive_invoice"];
+                    allowed = [ "receive_invoice","print_invoice", "delete_invoice"];
                 }
 
                 const menuItems = me.getActiveMenus(menuContainer);
@@ -460,14 +464,30 @@ var InvoiceComponent = (() => {
         });
     };
 
+    // mThis.receiveInvoice =(id, menulink) => {
+    //     const row = document.getElementById(`invoice_id_${id}`);
+    //     const statusId = Number(row?.dataset.statusid || 0);
+
+    //     if (statusId === 1) {
+    //         cv_interact.error("This invoice is already fully paid.");
+    //         return;
+    //     }
+
+    //     ReceiveDialog.show({
+    //         invoice_id: id,
+    //         btn: menulink,
+    //         onClose: () => mThis.InvoiceListView.showPage(mThis.getFilterData())
+    //     });
+    // };
 
 
-mThis.printInvoice = (id, menulink) => {
-    PrintInvoiceDialog.show({
-        invoice_id: id,
-        btn: menulink
-    });
-};
+
+    mThis.printInvoice = (id, menulink) => {
+        PrintInvoiceDialog.show({
+            invoice_id: id,
+            btn: menulink
+        });
+    };
 
 
     mThis.prepareFormOptions = (onFinish) => {
@@ -544,8 +564,8 @@ const InvoiceDialog = (() => {
                             <input type="text" data-type="date" name="due_date" class="form-control data-input" required placeholder="dd-mm-yy">
                             <label class="form-label">Due Date <span class="text-danger">*</span></label>
                         </div>
-                        <div class="col-md-auto">
-                            <div class="d-flex gap-2">
+                        <div class="col-md-auto p-3">
+                            <div class="d-flex gap-2 ">
                                 <button name="btnRent" class="btn btn-outline-primary">Rent</button>
                                 <button name="btnService" class="btn btn-outline-warning">Service</button>
                                 <button name="btnElectric" class="btn btn-outline-success">Electric Bill</button>
