@@ -14,7 +14,7 @@ var InvoiceComponent = (() => {
     mThis.elSpaceType = mThis.self.querySelector("#space_type_id");
     mThis.elTenant = mThis.self.querySelector("#tenant_id");
     mThis.elSearch = mThis.self.querySelector("#_search_invoice");
-
+    mThis.tblReceive = mThis.self.querySelector("#_tblReceive");
     mThis.cols = [
         { transTitle: "", className: "align-middle text-capitalize" },
         {
@@ -1739,12 +1739,11 @@ const InvoiceDialog = (() => {
 })();
 
 
-
 const ReceiveDialog = (() => {
     const self = {};
     let dialog = null;
 
-    self.show = (op) => {
+    self.show = (op = {}) => {
         dialog = dialog || new GeneralDialog({
             title: "Receive Payment",
             cssClass: "modal-lg vs-modal",
@@ -1753,195 +1752,215 @@ const ReceiveDialog = (() => {
 
             createContent: () => `
             <div class="container-fluid px-0">
-                <div class="row mb-3">
-                    <div class="col-6">
-                        <div class="material-input outlined">
-                            <input name="amount_due" type="text" class="form-control bg-light" disabled />
-                            <label>Amount Due</label>
+                <!-- Balance Header -->
+                <div class="alert d-flex justify-content-between align-items-center mb-4 py-3 px-4 border-0 shadow-sm"
+                     style="border-radius: 12px; background-color: #e1e5f2; color: #1a1647;">
+                    <div>
+                        <small class="text-uppercase fw-bold opacity-75 d-block" style="font-size: 10px; letter-spacing: 1px;">TOTAL BALANCE DUE</small>
+                        <div class="d-flex align-items-center">
+                            <span class="h3 mb-0 fw-bold">$</span>
+                            <input name="amount_due" type="text"
+                                   class="h3 mb-0 fw-bold bg-transparent border-0  w-auto"
+                                   style="outline:none; color: #1a1647;" readonly disabled />
                         </div>
                     </div>
-                    <div class="col-6">
-                        <div class="material-input outlined">
-                            <input name="cash" type="number" class="form-control data-input" data-field="cash" min="0" step="0.01" placeholder="0.00"/>
-                            <label>Cash ($)</label>
+                    <i class="fas fa-file-invoice-dollar fa-3x " style=" color: #1a1647;"></i>
+                </div>
+
+                <!-- Payment Method Tabs -->
+                <div class="mb-3">
+                    <label class="form-label text-muted fw-bold mb-2" style="font-size: 11px; letter-spacing: 0.5px;">
+                        CHOOSE PAYMENT METHOD
+                    </label>
+                    <ul class="nav nav-tabs border-bottom-0" id="paymentMethodTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link active fw-semibold" id="cash-tab" data-bs-toggle="tab"
+                               href="#cash" role="tab">
+                                <i class="fas fa-money-bill-wave me-1"></i> Cash
+                            </a>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link fw-semibold" id="bank-tab" data-bs-toggle="tab"
+                               href="#bank" role="tab">
+                                <i class="fas fa-university me-1"></i> Bank
+                            </a>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link fw-semibold" id="card-tab" data-bs-toggle="tab"
+                               href="#card" role="tab">
+                                <i class="fas fa-credit-card me-1"></i> Card
+                            </a>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link fw-semibold" id="cheque-tab" data-bs-toggle="tab"
+                               href="#cheque" role="tab">
+                                <i class="fas fa-money-check me-1"></i> Cheque
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Payment Sections -->
+                <div class="p-4 border rounded shadow-sm bg-white mb-3 tab-content" style="min-height: 200px;">
+                    <div id="cash" class="payment-section tab-pane fade show active" role="tabpanel">
+                        <div class="material-input outlined mb-0">
+                            <input name="cash" type="number" class="form-control data-input fw-bold text-primary"
+                                   data-field="cash" min="0" step="0.01" placeholder="0.00" style="font-size: 1.5rem;"/>
+                            <label>Cash Amount ($)</label>
+                        </div>
+                    </div>
+
+                    <div id="bank" class="payment-section tab-pane fade" role="tabpanel">
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <div class="material-input outlined">
+                                    <select name="bank_transfer_bank_id" data-style="material" class="form-select data-input" data-field="bank_transfer_bank_id"  placeholder="Bank"></select>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="material-input outlined">
+                                    <input name="transfer_amount" type="number" class="form-control data-input"
+                                           data-field="transfer_amount" placeholder="0.00"/>
+                                    <label>Amount ($)</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="material-input outlined">
+                                    <input name="bank_ref_number" type="text" class="form-control data-input"
+                                           data-field="bank_ref_number" placeholder=" "/>
+                                    <label>Ref Number</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="material-input outlined">
+                                    <input name="bank_acc_name" type="text" class="form-control data-input"
+                                        data-field="bank_acc_name" placeholder=" "/>
+                                    <label>Account Number</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="card" class="payment-section tab-pane fade" role="tabpanel">
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <div class="material-input outlined">
+                                    <select name="card_type" data-style="material"  class="form-select data-input" data-field="card_type" required placeholder="Card Type">
+                                        <option value="credit">Credit</option>
+                                        <option value="debit">Debit</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="material-input outlined">
+                                    <input name="card_amount" type="number" class="form-control data-input"
+                                           data-field="card_amount" placeholder="0.00"/>
+                                    <label>Amount ($)</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="material-input outlined">
+                                    <input name="card_number" type="number" class="form-control data-input"
+                                           data-field="card_number" placeholder="0.00"/>
+                                    <label>Card Number</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="cheque" class="payment-section tab-pane fade" role="tabpanel">
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <div class="material-input outlined">
+                                    <select name="cheque_bank_id" class="form-select data-input" data-field="cheque_bank_id"></select>
+                                    <label>Cheque Bank</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="material-input outlined">
+                                    <input name="cheque_amount" type="number" class="form-control data-input"
+                                           data-field="cheque_amount" placeholder="0.00"/>
+                                    <label>Cheque Amount ($)</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="material-input outlined">
+                                    <input name="cheque_number" type="number" class="form-control data-input"
+                                           data-field="cheque_number" placeholder="0.00"/>
+                                    <label>Cheque Number</label>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="pb-1 mb-2 border-bottom">
-                    <small class="text-muted text-uppercase fw-bold" style="font-size:11px;">Bank Transfer</small>
-                </div>
-                <div class="row mb-2">
-                    <div class="col-6">
-                        <div class="material-input outlined">
-                            <select name="bank_transfer_bank_id" data-style="material" class="form-select data-input" data-field="bank_transfer_bank_id"  placeholder="Bank"></select>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="material-input outlined">
-                            <input name="transfer_amount" type="number" class="form-control data-input" data-field="transfer_amount" min="0" step="0.01" placeholder="0.00"/>
-                            <label>Transfer Amount ($)</label>
-                        </div>
-                    </div>
-                </div>
-               <div class="row ">
-                    <div class="col-6">
-                        <div class="material-input outlined">
-                            <input name="bank_ref_number" type="text" class="form-control data-input"
-                                   data-field="bank_ref_number" placeholder=" "/>
-                            <label>Ref Number</label>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="material-input outlined">
-                            <input name="bank_acc_name" type="text" class="form-control data-input"
-                                   data-field="bank_acc_name" placeholder=" "/>
-                            <label>Account Name</label>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="pb-1 mb-2 border-bottom">
-                    <small class="text-muted text-uppercase fw-bold" style="font-size:11px;">Card</small>
-                </div>
-                <div class="row mb-3">
-                    <div class="col-4">
-                        <div class="material-input outlined">
-                            <select name="card_type" class="form-select data-input" data-field="card_type">
-                                <option value="">None</option>
-                                <option value="credit">Credit</option>
-                                <option value="debit">Debit</option>
-                            </select>
-                            <label>Card Type</label>
-                        </div>
-                    </div>
-                    <div class="col-4">
-                        <div class="material-input outlined">
-                            <input name="card_amount" type="number" class="form-control data-input" data-field="card_amount" placeholder="0.00"/>
-                            <label>Amount ($)</label>
-                        </div>
-                    </div>
-                    <div class="col-4">
-                        <div class="material-input outlined">
-                            <input name="card_number" type="text" class="form-control data-input" data-field="card_number" placeholder="Last 4 digits"/>
-                            <label>Card #</label>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="pb-1 mb-2 border-bottom">
-                    <small class="text-muted text-uppercase fw-bold" style="font-size:11px;">Cheque</small>
-                </div>
-                <div class="row mb-3">
-                    <div class="col-4">
-                        <div class="material-input outlined">
-                            <select name="cheque_bank_id" class="form-select data-input" data-field="cheque_bank_id"></select>
-                            <label>Cheque Bank</label>
-                        </div>
-                    </div>
-                    <div class="col-4">
-                        <div class="material-input outlined">
-                            <input name="cheque_amount" type="number" class="form-control data-input" data-field="cheque_amount" placeholder="0.00"/>
-                            <label>Amount ($)</label>
-                        </div>
-                    </div>
-                    <div class="col-4">
-                        <div class="material-input outlined">
-                            <input name="cheque_number" type="text" class="form-control data-input" data-field="cheque_number" />
-                            <label>Cheque #</label>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-12">
-                        <div class="material-input outlined">
-                            <textarea name="remarks" class="form-control data-input" data-field="remarks" rows="2"></textarea>
-                            <label>Remarks</label>
-                        </div>
-                    </div>
+                <!-- Remarks -->
+                <div class="material-input outlined">
+                    <textarea name="remarks" class="form-control data-input" data-field="remarks" rows="2"></textarea>
+                    <label>Remarks</label>
                 </div>
             </div>`,
 
             contentCreated: (me) => {
                 me.convertPayment = (data) => {
                     const result = {
-                        invoice_id: me.dataOptions.invoice_id,
+                        invoice_id: me.dataOptions?.invoice_id || null,
                         remarks: data.remarks || '',
                         pmt_breakdowns: []
                     };
 
-                    const parseAmt = (val) => isNaN(parseFloat(val)) ? 0 : parseFloat(val);
+                    const parseAmt = (v) => isNaN(parseFloat(v)) ? 0 : parseFloat(v);
 
-                    // Cash
                     if (parseAmt(data.cash) > 0) {
-                        result.pmt_breakdowns.push({
-                            method: "cash",
-                            amount: parseAmt(data.cash),
-                            currency_code: "USD"
-                        });
+                        result.pmt_breakdowns.push({ method: "cash", amount: parseAmt(data.cash), currency_code: "USD" });
                     }
-
-                    // Bank Transfer
                     if (parseAmt(data.transfer_amount) > 0) {
-                        const bankEl = me.controls.bank_transfer_bank_id;
                         result.pmt_breakdowns.push({
                             method: "bank_transfer",
                             amount: parseAmt(data.transfer_amount),
                             currency_code: "USD",
                             bank_id: parseInt(data.bank_transfer_bank_id) || null,
-                            bank_name: bankEl?.options[bankEl.selectedIndex]?.text?.trim() || null,
                             bank_ref_number: data.bank_ref_number || null,
-                            account_name: data.bank_acc_name || null,
                         });
                     }
-
-                    // Card
                     if (parseAmt(data.card_amount) > 0) {
                         result.pmt_breakdowns.push({
                             method: "card",
                             amount: parseAmt(data.card_amount),
                             currency_code: "USD",
-                            card_number: data.card_number || null,
                             card_type: data.card_type || null
                         });
                     }
-
-                    // Cheque
                     if (parseAmt(data.cheque_amount) > 0) {
-                        const chequeEl = me.controls.cheque_bank_id;
                         result.pmt_breakdowns.push({
                             method: "cheque",
                             amount: parseAmt(data.cheque_amount),
                             currency_code: "USD",
-                            bank_id: parseInt(data.cheque_bank_id) || null,
-                            cheque_bank_name: chequeEl?.options[chequeEl.selectedIndex]?.text?.trim() || null,
-                            cheque_number: data.cheque_number || null,
+                            bank_id: parseInt(data.cheque_bank_id) || null
                         });
                     }
+
                     return result;
                 };
             },
 
             onPrepareForm: (me) => {
                 const opts = me.dataOptions || {};
-
-                // Load balance
-                vsapi.call(`${main_view.base_url}/prm/invoice/details`, { id: opts.invoice_id })
-                    .then(res => {
-                        const bal = res?.data?.balance || 0;
-                        if (me.controls.amount_due) me.controls.amount_due.value = Number(bal).toFixed(2);
-                    });
+                if (opts.invoice_id) {
+                    vsapi.call(`${main_view.base_url}/prm/invoice/details`, { id: opts.invoice_id })
+                        .then(res => {
+                            if (me.controls.amount_due && res.status_code === 200) {
+                                me.controls.amount_due.value = Number(res.data?.balance || 0).toFixed(2);
+                            }
+                        });
+                }
 
                 vsapi.call(`${main_view.base_url}/prm/invoice/form-options`)
                     .then(res => {
                         const banks = res?.data?.banks || [];
-                        
                         VSUtil.setComboItems(me.controls.bank_transfer_bank_id, banks, "id", "name", true, "— Select Bank —");
                         VSUtil.setComboItems(me.controls.cheque_bank_id, banks, "id", "name", true, "— Select Bank —");
                     });
-
-                // me.clearData(); 
             },
 
             buttons: [
@@ -1955,34 +1974,22 @@ const ReceiveDialog = (() => {
                     cssClass: "btn btn-primary",
                     click: (me, btn) => {
                         const payload = me.convertPayment(me.getData());
-
-                        if (!payload.pmt_breakdowns || payload.pmt_breakdowns.length === 0) {
+                        if (payload.pmt_breakdowns.length === 0) {
                             return cv_interact.error("Please enter at least one payment amount.");
                         }
 
                         vsapi.call(`${main_view.base_url}/prm/invoice/receive`, payload, btn)
                             .then(res => {
                                 if (res.status_code === 200) {
-                                    cv_interact.success(
-                                        payload.invoice_id ? "Payment Received" : "Record Created"
-                                    );       
+                                    cv_interact.success("Payment successful");
+                                    if (typeof InvoiceComponent !== 'undefined' && InvoiceComponent.InvoiceListView) {
+                                        InvoiceComponent.InvoiceListView.showPage();
+                                    }
                                     me.hide(true);
                                 } else {
-                                    cv_interact.error(res.error_message || "Save failed");
+                                    cv_interact.error(res.error_message || "Failed to receive payment");
                                 }
-                            })
-                            .catch(err => {
-                                cv_interact.error("Network error occurred");
-                                console.error(err);
                             });
-                    },
-                },
-                {
-                    label: "Receive & Print",
-                    cssClass: "btn btn-success",
-                    click: (me, btn) => {
-                        const payload = me.convertPayment(me.getData());
-                        self._submitReceive(me, btn, payload, true);
                     },
                 }
             ],
@@ -1993,4 +2000,3 @@ const ReceiveDialog = (() => {
 
     return self;
 })();
-
