@@ -26,6 +26,7 @@ use App\Http\Controllers\Prm\ItemController;
 use App\Http\Controllers\Prm\MaintenanceController;
 use App\Http\Controllers\Prm\BillController;
 use App\Http\Controllers\Prm\BillPaymentController;
+use App\Http\Controllers\Prm\ReceiptController;
 
 use App\Http\Controllers\tenant\AccountStaffController;
 use App\Http\Controllers\tenant\ZoneController;
@@ -205,6 +206,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('invoice')->gr
     Route::post('/form-options', [InvoiceController::class, 'getFormOptions']);
     Route::post('/delete', [InvoiceController::class, 'deleteInvoice']);
     Route::post('/update-status', [InvoiceController::class, 'updateInvoiceStatus']);
+    Route::post('/receive', [InvoiceController::class, 'receive']);
 });
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('expense')->group(function () {
@@ -302,6 +304,12 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('settings')->g
      Route::post('/options-service', [GeneralSettingsController::class, 'options_service']);
     // Route::post('/options-program', [StudentController::class, 'getOptions_program']);
 
+});
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('receipts')->group(function () {
+    Route::post('/list-paginate', [ReceiptController::class, 'getListPaginate']);
+    Route::post('/details', [ReceiptController::class, 'receiptDetails']);
+    Route::post('/delete',  [ReceiptController::class, 'deleteReceipt']);
 });
 
 

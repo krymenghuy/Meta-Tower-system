@@ -17,51 +17,35 @@ const PrintInvoiceDialog = (() => {
     const printViaIframe = (invoiceEl) => {
         const styleHTML = Array.from(document.querySelectorAll("style")).map(s => s.outerHTML).join("\n");
         const biLink = Array.from(document.querySelectorAll('link[href*="bootstrap-icons"]')).map(l => l.outerHTML).join("\n");
-        const fontLink = `<link rel="preconnect" href="https://fonts.googleapis.com"/>
-                        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>`;
+        const fontLink = `
+            <link rel="preconnect" href="https://fonts.googleapis.com"/>
+            <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>`;
         const fullDoc = `<!DOCTYPE html>
-                        <html lang="en">
-                        <head>
-                        <meta charset="UTF-8"/>
-                        <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-                        ${fontLink}${biLink}${styleHTML}
-                        <style>
-                        *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
-                            body {
-                                font-family: 'Inter','Segoe UI', sans-serif;
-                                background: #fff;
-                                -webkit-print-color-adjust: exact;
-                                print-color-adjust: exact;
-                            }
-                            .pi-action-bar { display:none!important; }
-
-                            @page {
-                                size: A4 landscape;
-                                margin: 0;
-                            }
-
-                            @media print {
-                                body {
-                                    background: #fff !important;
-                                    margin: 10mm;
-                                }
-                                .pi-action-bar { display:none!important; }
-                                .pi-tbl-wrap { overflow: visible !important; }
-                                .pi-table { min-width: unset !important; }
-
-                                .pi-root { font-size: 13px !important; }
-                                .pi-table tbody td { font-size: 12px !important; padding: 9px 8px !important; }
-                                .pi-table thead th { font-size: 11px !important; }
-                                .pi-item-name { font-size: 13px !important; }
-                                .pi-company-name { font-size: 20px !important; }
-                                .pi-inv-word { font-size: 28px !important; }
-                                .pi-tenant-name { font-size: 18px !important; }
-                                .pi-due-amt { font-size: 22px !important; }
-                            }
-                        </style>
-                        </head>
-                        <body>${invoiceEl.outerHTML}</body>
-                        </html>`;
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+${fontLink}${biLink}${styleHTML}
+<style>
+    *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+    body {
+        font-family: 'DM Sans', sans-serif;
+        background: #fff;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    .pi-action-bar { display:none!important; }
+    @page { size: A4 landscape; margin: 0; }
+    @media print {
+        body { background: #fff !important; margin: 8mm; }
+        .pi-action-bar { display:none!important; }
+        .pi-tbl-wrap { overflow: visible !important; }
+        .pi-table { min-width: unset !important; }
+    }
+</style>
+</head>
+<body>${invoiceEl.outerHTML}</body>
+</html>`;
 
         const iframe = document.createElement("iframe");
         iframe.style.cssText = "position:fixed;top:0;left:0;width:0;height:0;border:none;opacity:0;pointer-events:none;z-index:-9999;";
@@ -85,237 +69,277 @@ const PrintInvoiceDialog = (() => {
         let grandTotal = 0;
         validItems.forEach((item) => {
             const itemTotal = parseFloat(item.total || item.amount || 0);
-            if (itemTotal > 0) {
-                grandTotal += itemTotal;
-            } else {
-                const qty = parseFloat(item.qty || 1);
-                const price = parseFloat(item.price || 0);
-                grandTotal += qty * price;
-            }
+            grandTotal += itemTotal > 0 ? itemTotal : parseFloat(item.qty || 1) * parseFloat(item.price || 0);
         });
 
         const paid    = parseFloat(invoice.paid_amount || 0);
         const balance = Math.max(0, grandTotal - paid);
         const today   = new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
 
-        const itemRows = validItems.map((item, i) => {
-            const qty       = parseFloat(item.qty || 1);
-            const price     = parseFloat(item.price || 0);
-            const total     = parseFloat(item.total || item.amount || (qty * price));
-            const rawType   = (item.type || "service").toLowerCase();
-            const disc      = parseFloat(item.discount || item.special_discount_value || 0);
-            const discType  = (item.discount_type || item.special_discount_type || "percent").toLowerCase();
-            const taxRate   = parseFloat(item.tax_rate || 0);
+        const typeConfig = {
+            rent:    { bg: "#EFF6FF", fg: "#1D4ED8", dot: "#3B82F6" },
+            utility: { bg: "#FFF7ED", fg: "#C2410C", dot: "#F97316" },
+            service: { bg: "#F0FDF4", fg: "#166534", dot: "#22C55E" },
+        };
 
-            let discDisplay = "—";
+        const itemRows = validItems.map((item, i) => {
+            const qty      = parseFloat(item.qty || 1);
+            const price    = parseFloat(item.price || 0);
+            const total    = parseFloat(item.total || item.amount || (qty * price));
+            const rawType  = (item.type || "service").toLowerCase();
+            const disc     = parseFloat(item.discount || item.special_discount_value || 0);
+            const discType = (item.discount_type || item.special_discount_type || "percent").toLowerCase();
+            const taxRate  = parseFloat(item.tax_rate || 0);
+            const cfg      = typeConfig[rawType] || typeConfig.service;
+
+            let discDisplay = `<span style="color:#9CA3AF;">—</span>`;
             if (disc > 0) {
                 discDisplay = (discType === "amount" || discType === "$")
-                    ? `-${currency}${fmt(disc)}`
-                    : `-${fmt(disc)}%`;
+                    ? `<span style="color:#EF4444;font-weight:600;">-${currency}${fmt(disc)}</span>`
+                    : `<span style="color:#EF4444;font-weight:600;">-${fmt(disc)}%</span>`;
             }
 
-            const typeColors = {
-                rent:    ["#dbeafe", "#1d4ed8"],
-                utility: ["#ffedd5", "#c2410c"],
-                service: ["#f3f4f6", "#374151"],
-            };
-            const [tbg, tfg] = typeColors[rawType] || typeColors.service;
-            const rowStyle = i % 2 !== 0 ? 'style="background:#f8faff;"' : '';
+            const rowBg = i % 2 !== 0 ? '#FAFBFF' : '#FFFFFF';
 
             return `
-            <tr ${rowStyle}>
-                <td class="pi-td-desc">
-                    <div class="pi-item-name">${item.description || item.remarks || item.item_name || "—"}</div>
+            <tr style="background:${rowBg};transition:background 0.15s;">
+                <td style="padding:11px 14px;border-bottom:1px solid #EEF0F5;">
+                    <div style="font-weight:600;color:#111827;font-size:12.5px;font-family:'DM Sans',sans-serif;">
+                        ${item.description || item.remarks || item.item_name || "—"}
+                    </div>
                 </td>
-                <td class="pi-td-c">
-                    <span class="pi-type-badge" style="background:${tbg};color:${tfg};">${rawType}</span>
+                <td style="padding:11px 10px;text-align:center;border-bottom:1px solid #EEF0F5;">
+                    <span style="display:inline-flex;align-items:center;gap:5px;background:${cfg.bg};color:${cfg.fg};padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;">
+                        <span style="width:5px;height:5px;border-radius:50%;background:${cfg.dot};flex-shrink:0;"></span>
+                        ${rawType}
+                    </span>
                 </td>
-                <td class="pi-td-c">${qty}</td>
-                <td class="pi-td-c">${item.unit_type ? item.unit_type.trim() : "—"}</td>
-                <td class="pi-td-c">${formatDate(item.start_date)}</td>
-                <td class="pi-td-c">${formatDate(item.end_date)}</td>
-                <td class="pi-td-r">${currency}${fmt(price)}</td>
-                <td class="pi-td-r pi-disc-cell">${discDisplay}</td>
-                <td class="pi-td-c pi-tax-cell">${taxRate > 0 ? `+${taxRate}%` : "—"}</td>
-                <td class="pi-td-r pi-bold pi-total-cell">${currency}${fmt(total)}</td>
+                <td style="padding:11px 10px;text-align:center;color:#4B5563;font-size:12px;border-bottom:1px solid #EEF0F5;">${qty}</td>
+                <td style="padding:11px 10px;text-align:center;color:#6B7280;font-size:11px;border-bottom:1px solid #EEF0F5;">${item.unit_type ? item.unit_type.trim() : "—"}</td>
+                <td style="padding:11px 10px;text-align:center;color:#6B7280;font-size:11px;border-bottom:1px solid #EEF0F5;">${formatDate(item.start_date)}</td>
+                <td style="padding:11px 10px;text-align:center;color:#6B7280;font-size:11px;border-bottom:1px solid #EEF0F5;">${formatDate(item.end_date)}</td>
+                <td style="padding:11px 14px;text-align:right;color:#374151;font-size:12px;border-bottom:1px solid #EEF0F5;">${currency}${fmt(price)}</td>
+                <td style="padding:11px 14px;text-align:right;border-bottom:1px solid #EEF0F5;">${discDisplay}</td>
+                <td style="padding:11px 10px;text-align:center;font-size:11px;border-bottom:1px solid #EEF0F5;color:${taxRate > 0 ? '#2563EB' : '#9CA3AF'};">${taxRate > 0 ? `+${taxRate}%` : "—"}</td>
+                <td style="padding:11px 14px;text-align:right;font-weight:700;color:#1A3D91;font-size:13px;border-bottom:1px solid #EEF0F5;">${currency}${fmt(total)}</td>
             </tr>`;
         }).join("");
 
+        const statusColor = balance <= 0 ? "#059669" : "#DC2626";
+        const statusLabel = balance <= 0 ? "PAID" : "OUTSTANDING";
+        const statusBg    = balance <= 0 ? "#ECFDF5" : "#FEF2F2";
+
         return `
-                <style>
-                .pi-root *, .pi-root *::before, .pi-root *::after { box-sizing: border-box; }
-                .pi-root {
-                    font-family: 'Inter', 'Segoe UI', sans-serif;
-                    color: #1f2937;
-                    background: #fff;
-                    overflow: hidden;
-                }
-                .pi-head { background: linear-gradient(135deg, rgba(26,86,219,0.9), rgba(96,165,250,0.8)), url('../assets/images/meta/background.jpg') no-repeat; background-size: cover; background-position: center; display: flex; justify-content: space-between; align-items: flex-start; padding: 15px; gap: 12px; border-bottom: 3px solid #fde68a; }
-                .pi-head-left { display: flex; gap: 20px; align-items: flex-start; }
-                .pi-logo-icon { width: 72px; height: 72px; }
-                .pi-logo-icon img { width: 72px; height: 72px; object-fit: fill; background: rgba(255,255,255,0.15); }
-                .pi-company-info { color: #fff; }
-                .pi-company-name { font-size: 18px; font-weight: 800; letter-spacing: 0.5px; margin-bottom: 4px; }
-                .pi-company-contact { font-size: 11px; color: #e0e7ff; display: flex; align-items: center; gap: 6px; margin-top: 2px; }
-                .pi-company-contact i { font-size: 10px; opacity: 0.8; }
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap');
 
-                .pi-title-block { text-align: right; }
-                .pi-inv-word { font-size: 26px; font-weight: 800; color: #fff; line-height: 1; }
-                .pi-inv-num { font-size: 13px; color: #e0e7ff; margin-top: 8px; }
-                .pi-inv-num span { font-weight: 800; color: #fde68a; font-size: 15px; }
+    .pi-root {
+        font-family: 'DM Sans', 'Segoe UI', sans-serif;
+        color: #1f2937;
+        background: #fff;
+        max-width: 100%;
+    }
+    .pi-action-bar button {
+        cursor: pointer;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: 0.3px;
+        transition: all 0.2s ease;
+    }
+    .pi-action-bar button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .pi-tbl-wrap { overflow-x: auto; }
+    .pi-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 900px;
+    }
+    .pi-table thead th {
+        padding: 11px 14px;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: #6B7280;
+        background: #F8FAFF;
+        border-bottom: 2px solid #E5E9F5;
+    }
+    .pi-table tbody tr:hover { background: #F0F4FF !important; }
+    .pi-totals-row td {
+        padding: 13px 16px;
+        font-size: 13px;
+        border-top: 1px solid #E5E9F5;
+    }
+</style>
 
-                .pi-meta {
-                    display: flex; justify-content: space-between; align-items: flex-start; padding: 15px; gap: 16px; flex-wrap: wrap;
-                    background: #f8faff; border-top: 1px solid #e8ecf0; border-bottom: 1px solid #e8ecf0;
-                }
-                .pi-meta-label { font-size: 9px; font-weight: 700; color: #9ca3af; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 5px; }
-                .pi-bill-to { flex: 1; min-width: 180px; }
-                .pi-tenant-name { font-size: 17px; font-weight: 700; color: #111827; }
-                .pi-tenant-detail { font-size: 11px; color: #6b7280; margin-top: 3px; display: flex; align-items: center; gap: 5px; }
-                .pi-tenant-detail i { color: #1a56db; font-size: 10px; }
-                .pi-amount-due { min-width: 150px; text-align: right; }
-                .pi-due-box { display: inline-block; background: #1a56db; color: #fff; border-radius: 10px; padding: 8px 18px; text-align: center; }
-                .pi-due-lbl { font-size: 9px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; opacity: .75; }
-                .pi-due-amt { font-size: 20px; font-weight: 800; letter-spacing: -.5px; margin-top: 2px; }
+<div class="pi-root" id="pi-invoice-content">
 
-                .pi-tbl-wrap { overflow-x: auto; }
-                .pi-table { width: 100%; border-collapse: collapse; min-width: 950px; }
-                .pi-table thead tr { background: #ebedf2; }
-                .pi-table thead th { padding: 9px 8px; font-size: 10px; font-weight: 700; color: #1A1647; text-transform: uppercase; letter-spacing: .7px; border-bottom: 2px solid #c7d2fe; }
-                .pi-th-l { text-align: left; } .pi-th-r { text-align: right; } .pi-th-c { text-align: center; }
-                .pi-table tbody td { padding: 8px 8px; font-size: 11px; vertical-align: middle; border-bottom: 1px solid #f3f4f6; }
-                .pi-item-name { font-size: 12px; font-weight: 600; color: #1f2937; }
-                .pi-total-cell { color: #1a56db !important; font-weight: 700; }
-                .pi-disc-cell { color: #ef4444; }
-                .pi-tax-cell  { color: #3b82f6; }
-                .pi-type-badge { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 10px; font-weight: 600; text-transform: capitalize; }
+    <!-- ═══ HEADER BAND ═══ -->
+    <div style="background:linear-gradient(135deg,#0F2060 0%,#1A3D91 55%,#2254C5 100%);padding:10px;display:flex;justify-content:space-between;align-items:flex-start;gap:20px;position:relative;overflow:hidden;">
+        <!-- decorative circles -->
+        <div style="position:absolute;right:-40px;top:-40px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,0.04);pointer-events:none;"></div>
+        <div style="position:absolute;right:60px;top:20px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,0.05);pointer-events:none;"></div>
 
-                .pi-totals-wrap { padding: 16px 10px 20px; display: flex; justify-content: flex-end; }
-                .pi-totals-card { min-width: 280px; border: 1px solid #e8ecf0; border-radius: 10px; overflow: hidden; }
-                .pi-totals-card table { width: 100%; border-collapse: collapse; }
-                .pi-totals-card td { padding: 8px 14px; font-size: 12px; border-bottom: 1px solid #f3f4f6; }
-                .pi-total-row td { background: #1a56db !important; color: #fff !important; font-weight: 700 !important; }
-
-                .pi-remarks { margin: 0 32px 16px; padding: 10px 14px; background: #fffbeb; border-left: 4px solid #fbbf24; border-radius: 6px; }
-                .pi-footer { padding: 16px 32px; background: #f0f5ff; border-top: 1px solid #e0e7ff; display: flex; justify-content: space-between; align-items: flex-end; }
-                .pi-action-bar { padding: 12px 32px; border-top: 1px solid #e8ecf0; background: #fff; display: flex; justify-content: flex-end; gap: 8px; }
-
-                .pi-btn-outline, .pi-btn-primary {
-                    padding: 7px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer;
-                    display: inline-flex; align-items: center; gap: 6px;
-                }
-                .pi-btn-outline { border: 1px solid #d1d5db; background: #fff; color: #374151; }
-                .pi-btn-primary { border: none; background: #1a56db; color: #fff; }
-
-                @media (max-width: 580px) {
-                    .pi-head-left { flex-direction: column; gap: 10px; }
-                    .pi-head, .pi-meta, .pi-action-bar { padding: 14px; }
-                }
-                </style>
-
-
-
-                <div class="pi-root" id="pi-invoice-content">
-                    <div class="pi-head">
-                        <div class="pi-head-left">
-                            <div class="pi-logo-icon">
-                                <img src="../assets/images/meta/Meta_logo1.png" alt="Company Logo" onerror="this.style.display='none'">
-                            </div>
-                            <div class="pi-company-info">
-                                <div class="pi-company-name">META TOWER</div>
-                                <div class="pi-company-contact"><i class="bi bi-envelope-fill"></i> info@metatower.com</div>
-                                <div class="pi-company-contact"><i class="bi bi-telephone-fill"></i> +855 12 345 678</div>
-                                <div class="pi-company-contact"><i class="bi bi-geo-alt-fill"></i> Phnom Penh, Cambodia</div>
-                            </div>
-                        </div>
-                        <div class="pi-title-block">
-                            <div class="pi-inv-word"> វិក័យប័ត្រ / Invoice</div>
-                            <div class="pi-inv-num">ចំនួនវិក័យប័ត្រ: /Invoice No <span>${invoice.code || "—"}</span></div>
-                        </div>
+        <div style="display:flex;gap:18px;align-items:flex-start;position:relative;">
+            <div style="width:60px;height:60px;border-radius:14px;background:rgba(255,255,255,0.12);border:1.5px solid rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;">
+                <img src="../assets/images/meta/Meta_logo1.png" alt="Logo"
+                    style="width:54px;height:54px;object-fit:contain;"
+                    onerror="this.parentElement.innerHTML='<span style=\'font-size:22px;font-weight:900;color:#fff;font-family:Playfair Display,serif;\'>M</span>'">
+            </div>
+            <div>
+                <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:#FFFFFF;letter-spacing:0.5px;line-height:1.1;">META TOWER</div>
+                <div style="margin-top:6px;display:flex;flex-direction:column;gap:3px;">
+                    <div style="font-size:11px;color:rgba(255,255,255,0.65);display:flex;align-items:center;gap:5px;">
+                        <i class="bi bi-envelope-fill" style="font-size:9px;"></i> info@metatower.com
                     </div>
-
-                    <div class="pi-meta">
-                        <div class="pi-bill-to">
-                            <div class="pi-meta-label">Bill To</div>
-                            <div class="pi-tenant-name">${invoice.tenant_name || "—"}</div>
-                            ${invoice.space_code ? `<div class="pi-tenant-detail"><i class="bi bi-geo-alt-fill"></i>&nbsp;Space: <strong>${invoice.space_code}</strong></div>` : ""}
-                            ${invoice.tenant_email ? `<div class="pi-tenant-detail"><i class="bi bi-envelope-fill"></i>&nbsp;${invoice.tenant_email}</div>` : ""}
-                            ${invoice.tenant_phone ? `<div class="pi-tenant-detail"><i class="bi bi-telephone-fill"></i>&nbsp;${invoice.tenant_phone}</div>` : ""}
-                        </div>
-                        <div class="pi-meta-dates">
-                            ${invoice.due_date ? `<div class="pi-date-item"><div class="pi-meta-label">Due Date</div><div class="pi-date-val">${formatDate(invoice.due_date)}</div></div>` : ""}
-                            ${invoice.updated_at ? `<div class="pi-date-item"><div class="pi-meta-label">Issued</div><div class="pi-date-val">${formatDate(invoice.updated_at)}</div></div>` : ""}
-                        </div>
-                        <div class="pi-amount-due">
-                            <div class="pi-meta-label">Amount Due</div>
-                            <div class="pi-due-box">
-                                <div class="pi-due-lbl">Account Due</div>
-                                <div class="pi-due-amt">${currency}${fmt(balance > 0 ? balance : grandTotal)}</div>
-                            </div>
-                        </div>
+                    <div style="font-size:11px;color:rgba(255,255,255,0.65);display:flex;align-items:center;gap:5px;">
+                        <i class="bi bi-telephone-fill" style="font-size:9px;"></i> +855 12 345 678
                     </div>
-
-                    <div class="pi-tbl-wrap">
-                        <table class="pi-table">
-                            <thead>
-                                <tr>
-                                    <th class="pi-th-l">Item Description</th>
-                                    <th class="pi-th-c" style="width:80px;">Type</th>
-                                    <th class="pi-th-c" style="width:60px;">Qty</th>
-                                    <th class="pi-th-c" style="width:70px;">Unit</th>
-                                    <th class="pi-th-c" style="width:85px;">Start Date</th>
-                                    <th class="pi-th-c" style="width:80px;">End Date</th>
-                                    <th class="pi-th-r" style="width:85px;">Unit Price</th>
-                                    <th class="pi-th-r" style="width:80px;">Discount</th>
-                                    <th class="pi-th-c" style="width:60px;">Tax</th>
-                                    <th class="pi-th-r" style="width:85px;">Total</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${itemRows || `<tr><td colspan="10" style="text-align:center;padding:40px;color:#9ca3af;">No items found</td></tr>`}
-                            </tbody>
-                        </table>
+                    <div style="font-size:11px;color:rgba(255,255,255,0.65);display:flex;align-items:center;gap:5px;">
+                        <i class="bi bi-geo-alt-fill" style="font-size:9px;"></i> Phnom Penh, Cambodia
                     </div>
+                </div>
+            </div>
+        </div>
 
-                    <!-- Only One Total - Now correctly equals sum of item totals -->
-                    <div class="pi-totals-wrap">
-                        <div class="pi-totals-card">
-                            <table>
-                                <tr class="pi-total-row"><td>Total</td><td>${currency}${fmt(grandTotal)}</td></tr>
-                                <tr><td>Paid</td><td class="pi-green">${currency}${fmt(paid)}</td></tr>
-                                <tr><td>Balance Due</td><td class="pi-red">${currency}${fmt(balance)}</td></tr>
-                            </table>
-                        </div>
-                    </div>
+        <div style="text-align:right;position:relative;">
+            <div style="font-family:'Playfair Display',serif;font-size:32px;font-weight:900;color:#FFFFFF;letter-spacing:-0.5px;line-height:1;">INVOICE</div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:6px;letter-spacing:0.5px;text-transform:uppercase;">Invoice Number</div>
+            <div style="font-size:16px;font-weight:700;color:#FDE68A;margin-top:2px;letter-spacing:0.3px;">${invoice.code || "—"}</div>
+            <div style="margin-top:10px;display:inline-block;padding:4px 12px;border-radius:20px;background:${statusBg};color:${statusColor};font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;">
+                ${statusLabel}
+            </div>
+        </div>
+    </div>
 
-                    ${invoice.remarks ? `<div class="pi-remarks"><div class="pi-remarks-lbl">Remarks</div><div class="pi-remarks-txt">${invoice.remarks}</div></div>` : ""}
+    <!-- ═══ META BAR ═══ -->
+    <div style="display:flex;justify-content:space-between;align-items:stretch;gap:0;border-bottom:2px solid #E5E9F5;flex-wrap:wrap;">
 
-                    <div class="pi-footer">
-                        <div class="pi-footer-left">
-                            <div class="pi-footer-title">Terms &amp; Conditions</div>
-                            <div class="pi-footer-body">Payment is due by the date shown above.<br>Late payments may incur additional charges.</div>
-                        </div>
-                        <div class="pi-footer-right">
-                            <div>Generated by Property Manager</div>
-                            <div>${today}</div>
-                        </div>
-                    </div>
+        <!-- Bill To -->
+        <div style="padding:18px 24px;flex:1;min-width:200px;border-right:1px solid #EEF0F5;">
+            <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#9CA3AF;margin-bottom:7px;">Bill To</div>
+            <div style="font-size:17px;font-weight:700;color:#111827;line-height:1.2;">${invoice.tenant_name || "—"}</div>
+            ${invoice.space_code ? `<div style="margin-top:5px;font-size:11px;color:#6B7280;display:flex;align-items:center;gap:4px;"><i class="bi bi-building" style="color:#1A3D91;font-size:10px;"></i> Space: <strong style="color:#374151;">${invoice.space_code}</strong></div>` : ""}
+            ${invoice.tenant_email ? `<div style="margin-top:3px;font-size:11px;color:#6B7280;display:flex;align-items:center;gap:4px;"><i class="bi bi-envelope" style="color:#1A3D91;font-size:10px;"></i> ${invoice.tenant_email}</div>` : ""}
+            ${invoice.tenant_phone ? `<div style="margin-top:3px;font-size:11px;color:#6B7280;display:flex;align-items:center;gap:4px;"><i class="bi bi-telephone" style="color:#1A3D91;font-size:10px;"></i> ${invoice.tenant_phone}</div>` : ""}
+        </div>
 
-                    <div class="pi-action-bar">
-                        <button class="pi-btn-outline" id="pi-print-btn"><i class="bi bi-printer"></i> Print Invoice</button>
-                        <button class="pi-btn-primary" id="pi-download-btn"><i class="bi bi-download"></i> Download PDF</button>
-                    </div>
+        <!-- Dates -->
+        <div style="padding:18px 24px;display:flex;flex-direction:column;justify-content:center;gap:10px;border-right:1px solid #EEF0F5;min-width:160px;">
+            ${invoice.due_date ? `
+            <div>
+                <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#9CA3AF;margin-bottom:3px;">Due Date</div>
+                <div style="font-size:13px;font-weight:600;color:#111827;">${formatDate(invoice.due_date)}</div>
+            </div>` : ""}
+            ${invoice.updated_at ? `
+            <div>
+                <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#9CA3AF;margin-bottom:3px;">Issued On</div>
+                <div style="font-size:13px;font-weight:600;color:#111827;">${formatDate(invoice.updated_at)}</div>
+            </div>` : ""}
+        </div>
 
-                </div>`;
+        <!-- Amount Due -->
+        <div style="padding:18px 24px;display:flex;flex-direction:column;justify-content:center;align-items:flex-end;min-width:180px;background:#F8FAFF;">
+            <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#9CA3AF;margin-bottom:6px;">Amount Due</div>
+            <div style="font-size:28px;font-weight:800;font-family:'Playfair Display',serif;color:#0F2060;letter-spacing:-0.5px;line-height:1;">
+                ${currency}${fmt(balance > 0 ? balance : grandTotal)}
+            </div>
+            <div style="margin-top:4px;font-size:11px;color:#6B7280;">
+                ${paid > 0 ? `<span style="color:#059669;font-weight:600;">${currency}${fmt(paid)} paid</span>` : 'No payments yet'}
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ ITEMS TABLE ═══ -->
+    <div class="pi-tbl-wrap">
+        <table class="pi-table">
+            <thead>
+                <tr>
+                    <th style="text-align:left;">Description</th>
+                    <th style="text-align:center;width:85px;">Type</th>
+                    <th style="text-align:center;width:55px;">Qty</th>
+                    <th style="text-align:center;width:65px;">Unit</th>
+                    <th style="text-align:center;width:90px;">Start</th>
+                    <th style="text-align:center;width:90px;">End</th>
+                    <th style="text-align:right;width:90px;">Unit Price</th>
+                    <th style="text-align:right;width:85px;">Discount</th>
+                    <th style="text-align:center;width:60px;">Tax</th>
+                    <th style="text-align:right;width:95px;">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${itemRows || `<tr><td colspan="10" style="text-align:center;padding:48px;color:#9CA3AF;font-size:13px;">No items found</td></tr>`}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ═══ TOTALS ═══ -->
+    <div style="display:flex;justify-content:flex-end;padding:16px 20px 8px;">
+        <div style="min-width:260px;border:1px solid #E5E9F5;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(15,32,96,0.06);">
+            <table style="width:100%;border-collapse:collapse;">
+                <tr class="pi-totals-row">
+                    <td style="color:#6B7280;">Grand Total</td>
+                    <td style="text-align:right;font-weight:600;color:#111827;">${currency}${fmt(grandTotal)}</td>
+                </tr>
+                <tr class="pi-totals-row">
+                    <td style="color:#059669;display:flex;align-items:center;gap:5px;">
+                        <i class="bi bi-check-circle-fill" style="font-size:11px;"></i> Amount Paid
+                    </td>
+                    <td style="text-align:right;font-weight:600;color:#059669;">- ${currency}${fmt(paid)}</td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="padding:0;"></td>
+                </tr>
+                <tr style="background:linear-gradient(135deg,#0F2060,#1A3D91);">
+                    <td style="padding:14px 16px;color:#fff;font-weight:700;font-size:13px;letter-spacing:0.3px;">Balance Due</td>
+                    <td style="padding:14px 16px;text-align:right;font-weight:800;color:#FDE68A;font-size:15px;font-family:'Playfair Display',serif;">${currency}${fmt(balance)}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- ═══ REMARKS ═══ -->
+    ${invoice.remarks ? `
+    <div style="margin:8px 20px 16px;padding:12px 16px;background:#FFFBEB;border-left:3px solid #F59E0B;border-radius:0 8px 8px 0;">
+        <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#92400E;margin-bottom:4px;">Remarks</div>
+        <div style="font-size:12px;color:#78350F;line-height:1.5;">${invoice.remarks}</div>
+    </div>` : ""}
+
+    <!-- ═══ FOOTER ═══ -->
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;padding:14px 24px;background:#F8FAFF;border-top:1px solid #E5E9F5;flex-wrap:wrap;gap:12px;">
+        <div>
+            <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#1A3D91;margin-bottom:4px;">Terms &amp; Conditions</div>
+            <div style="font-size:10px;color:#9CA3AF;line-height:1.6;">Payment is due by the date shown above.<br>Late payments may incur additional charges.</div>
+        </div>
+        <div style="text-align:right;">
+            <div style="font-size:10px;color:#9CA3AF;">Generated by Property Manager</div>
+            <div style="font-size:11px;font-weight:600;color:#4B5563;margin-top:2px;">${today}</div>
+        </div>
+    </div>
+
+    <!-- ═══ ACTION BAR ═══ -->
+    <div class="pi-action-bar" style="display:flex;justify-content:flex-end;gap:10px;padding:14px 20px;border-top:1px solid #E5E9F5;background:#fff;">
+        <button id="pi-print-btn"
+            style="padding:9px 20px;border-radius:8px;border:1.5px solid #1A3D91;background:#fff;color:#1A3D91;font-weight:600;display:inline-flex;align-items:center;gap:7px;">
+            <i class="bi bi-printer-fill"></i> Print Invoice
+        </button>
+        <button id="pi-download-btn"
+            style="padding:9px 20px;border-radius:8px;border:none;background:linear-gradient(135deg,#0F2060,#1A3D91);color:#fff;font-weight:600;display:inline-flex;align-items:center;gap:7px;box-shadow:0 2px 8px rgba(15,32,96,0.25);">
+            <i class="bi bi-download"></i> Download PDF
+        </button>
+    </div>
+
+</div>`;
     };
 
-
     const wireButtons = (container) => {
-        const invoiceEl = container.querySelector("#pi-invoice-content");
-        const printBtn = container.querySelector("#pi-print-btn");
+        const invoiceEl  = container.querySelector("#pi-invoice-content");
+        const printBtn   = container.querySelector("#pi-print-btn");
         const downloadBtn = container.querySelector("#pi-download-btn");
-
-        if (printBtn) printBtn.addEventListener("click", () => printViaIframe(invoiceEl));
+        if (printBtn)    printBtn.addEventListener("click",    () => printViaIframe(invoiceEl));
         if (downloadBtn) downloadBtn.addEventListener("click", () => printViaIframe(invoiceEl));
     };
 
@@ -329,11 +353,14 @@ const PrintInvoiceDialog = (() => {
             cssClass: "modal-xl vs-modal",
             backdrop: "static",
             keyboard: true,
-            createContent: () => `<div name="pi_container" style="min-height:260px;border-radius:8px;border:1px solid #d1d5db;overflow:hidden;">
-                <div style="display:flex;align-items:center;justify-content:center;padding:60px 0;gap:14px;color:#6b7280;font-size:14px;">
-                    <div style="width:32px;height:32px;border:4px solid #dbeafe;border-top-color:#1a56db;border-radius:50%;animation:pi-spin .7s linear infinite;"></div>
-                    Loading invoice…
-                </div><style>@keyframes pi-spin{to{transform:rotate(360deg)}}</style></div>`,
+            createContent: () => `
+                <div name="pi_container" style="min-height:280px;border-radius:8px;overflow:hidden;">
+                    <div style="display:flex;align-items:center;justify-content:center;padding:80px 0;gap:14px;color:#6B7280;font-size:13px;">
+                        <div style="width:28px;height:28px;border:3px solid #E5E9F5;border-top-color:#1A3D91;border-radius:50%;animation:pi-spin .7s linear infinite;"></div>
+                        Loading invoice…
+                    </div>
+                    <style>@keyframes pi-spin{to{transform:rotate(360deg)}}</style>
+                </div>`,
             contentCreated: (me) => {
                 const container = me.divModal.querySelector('[name="pi_container"]');
                 vsapi.call(`${main_view.base_url}/prm/invoice/details`, { id: op.invoice_id })
