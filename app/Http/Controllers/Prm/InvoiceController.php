@@ -89,7 +89,19 @@ class InvoiceController extends Controller
         if (!isset($req->id) || !is_numeric($req->id)) {
             return JDV::error('Invalid ID');
         }
-
         return JDV::raw($this->invoices->deleteInvoice($req->id));
     }
+
+       public function receive(Request $req)
+        {
+            $ss = XAuthService::verifyAuth($req, -1);
+            if ($ss->status_code !== 200) {
+                return JDV::raw($ss);
+            }
+
+            $invoice = new Invoice(null, $ss);
+            $res = $invoice->receive($req->all(), $ss);
+
+            return JDV::raw($res);
+        }
 }

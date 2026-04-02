@@ -60,8 +60,6 @@ class Invoice extends VSModel
             return DV::error('Please add at least one item.');
         }
 
-        \Log::info(2323232323, $arr);
-
         DB::beginTransaction();
 
         try {
@@ -95,25 +93,11 @@ class Invoice extends VSModel
             $itemRows = [];
             foreach ($items as $item) {
                 $itemType = strtolower($item['type'] ?? $item['item_type'] ?? 'service');
-
-                if (!in_array($itemType, ['service', 'rent', 'utility'])) {
-                    \Log::warning("Invalid item type received, forced to 'service'", [
-                        'received' => $item['type'] ?? 'missing',
-                        'item'     => $item
-                    ]);
-                    $itemType = 'service';
-                }
-
-                if (!in_array($itemType, ['service', 'rent', 'utility',])) {
-                    $itemType = 'service';
-                }
-
                 $itemId = $item['item_id']  ?? null;
                 $qty    = (int)($item['qty'] ?? 1);
                 $price  = (float)($item['price'] ?? 0);
                 $unitType = $item['unit_type'] ?? '-';
 
-                // Auto-load price from contract when type = rent
                 if ($itemType === 'rent' && $itemId) {
                     $contractPrice = DB::table('contracts')
                         ->where('id', $itemId)
@@ -123,7 +107,7 @@ class Invoice extends VSModel
                         $price = (float)$contractPrice;
                     }
                 }
-                // Auto-load price + unit_type from service
+
                 else if ($itemType === 'service' && $itemId) {
                     $serviceData = DB::table('services')
                         ->where('id', $itemId)
@@ -163,7 +147,7 @@ class Invoice extends VSModel
             if (!empty($itemRows)) {
                 DB::table('invoice_items')->insert($itemRows);
             }
-            // Calculate and update total for the header
+
             $totalAmount = array_sum(array_column($itemRows, 'amount'));
 
             DB::table('invoices')
@@ -185,6 +169,140 @@ class Invoice extends VSModel
             return DV::error('Failed to save invoice: ' . $e->getMessage());
         }
     }
+
+    // ======================= Receive Payment ========================
+    public function receive($data, $ss = null)
+    {
+        $ss = $ss ?? $this->userInfo;
+
+        $invoice_id     = (int)($data['invoice_id'] ?? 0);
+        $remarks        = trim($data['remarks'] ?? '');
+        $pmt_breakdowns = $data['pmt_breakdowns'] ?? $data['payment_breakdown'] ?? [];
+
+        if ($invoice_id <= 0) {
+            return DV::error('Invalid invoice ID.');
+        }
+
+        DB::beginTransaction();
+
+        try {
+            // Get invoice
+            $invoice = DB::table('invoices')
+                ->where('id', $invoice_id)
+                ->first();
+
+            if (!$invoice) {
+                throw new \Exception('Invoice not found.');
+            }
+
+            if ((int)$invoice->payment_status_id === 1) {
+                throw new \Exception('Invoice is already marked as paid.');
+            }
+
+            // Calculate total received
+            $total_received = array_sum(array_column($pmt_breakdowns, 'amount'));
+            // 1. Create Receipt Header
+            $receiptData = [
+                'receipt_date'   => now()->toDateString(),
+                'invoice_id'     => $invoice_id,
+                'tenant_id'      => $invoice->tenant_id,
+                'branch_id'      => $ss->branch_id ?? $invoice->branch_id ?? 1,
+                'total_received' => $total_received,
+                'remarks'        => $remarks,
+                'create_user'    => $ss->name ?? 'Admin',
+                'create_uid'     => $ss->uid ?? 1,
+            ];
+
+            $receipt_id = DBX::saveData($ss, 'receipts', [], $receiptData, [], 1);
+
+            if (!$receipt_id) {
+                throw new \Exception('Failed to create receipt record.');
+            }
+
+            $codeRes = setOfficialCode(
+                $receiptData['branch_id'],
+                'receipt_code_control',
+                'receipts',
+                ['id' => $receipt_id],
+                'R-',
+                5,
+                null
+            );
+
+            // 2. Insert into receipt_detail
+            $detailRows = [];
+            foreach ($pmt_breakdowns as $bd) {
+                $detailRows[] = [
+                    'receipt_id'       => $receipt_id,
+                    'bank_id'          => $bd['bank_id'] ?? null,
+                    'method'           => strtolower($bd['method'] ?? 'cash'),
+                    'amount'           => (float)($bd['amount'] ?? 0),
+                    'currency_code'    => $bd['currency_code'] ?? 'USD',
+                    'bank_ref_number'  => $bd['bank_ref_number'] ?? null,
+                    'account_name'     => $bd['account_name'] ?? null,
+                    'bank_name'        => $bd['bank_name'] ?? null,
+                    'card_number'      => $bd['card_number'] ?? null,
+                    'card_type'        => $bd['card_type'] ?? null,
+                    'cheque_number'    => $bd['cheque_number'] ?? null,
+                    'cheque_bank_name' => $bd['cheque_bank_name'] ?? null,
+                    'remarks'          => $bd['remarks'] ?? null,
+                    'created_at'       => now(),
+                    // 'updated_at'       => now(),
+                ];
+            }
+
+            if (!empty($detailRows)) {
+                DB::table('receipt_breakdowns')->insert($detailRows);
+            }
+            $new_paid_amount = (float)$invoice->paid_amount + $total_received;
+            $total_invoice_amount = (float)$invoice->amount;
+
+            $new_due_amount = $total_invoice_amount - $new_paid_amount;
+            if ($new_due_amount < 0) {
+                $new_due_amount = 0;
+            }
+            if ($new_due_amount <= 0.001) {
+                $payment_status_id = 1;
+                $is_paid = 1;
+            } elseif ($new_paid_amount > 0) {
+                $payment_status_id = 3; // Partial
+                $is_paid = 0;
+            } else {
+                $payment_status_id = 2; // Unpaid
+                $is_paid = 0;
+            }
+
+            DB::table('invoices')
+                ->where('id', $invoice_id)
+                ->update([
+                    'paid_amount'       => $new_paid_amount,
+                    'due_amount'        => $new_due_amount,
+                    'is_paid'           => $is_paid,
+                    'payment_status_id' => $payment_status_id,
+                    'updated_at'        => now(),
+                    'update_user'       => $ss->name ?? 'Admin',
+                    'update_uid'        => $ss->uid ?? 1,
+                ]);
+
+            DB::commit();
+
+            return DV::depends(1, [
+                'receipt_id'     => $receipt_id,
+                'code'           => $codeRes->code ?? 'R-' . str_pad($receipt_id, 5, '0', STR_PAD_LEFT),
+                'total_received' => $total_received,
+                'new_paid_amount'=> $new_paid_amount,
+                'is_fully_paid'  => (bool)$is_paid
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error("Receive payment failed: " . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
+            return DV::error('Failed to receive payment: ' . $e->getMessage());
+        }
+    }
+
     public static function checkDuplicateSpaceId($tenant_id, $invoice_id = null)
     {
         $query = DB::table('invoices as i')
@@ -342,6 +460,7 @@ class Invoice extends VSModel
             'statuses'        => GeneralSettings::options_payment_status($ss),
             'tenants'         => GeneralSettings::options_tenant_with_active_contract($ss),
             'services'        => GeneralSettings::options_service($ss),
+            'banks'           => GeneralSettings::options_bank($ss),
             'business_types'  => GeneralSettings::options_business_type($ss),
         ];
     }
