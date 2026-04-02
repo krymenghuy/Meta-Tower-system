@@ -294,10 +294,6 @@ class Bill
 
         return DV::depends($x, ['Bill status', 'updated']);
     }
-
-
-
-
     public function viewBillAttachment($id = null, $ss = null)
     {
         $id = $id ?? $this->id;
@@ -311,7 +307,7 @@ class Bill
         if (!$bill) return DV::error('Bill not found.');
         if (!$bill->file_image) return DV::error('No attachment found for this bill.');
 
-        // Build full URL using same pattern as TenantDocument
+
         $fileUrl = XPublicStorage::getUrl(
             ['subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 
             'images'
