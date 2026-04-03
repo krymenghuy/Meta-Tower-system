@@ -1140,7 +1140,7 @@ var TenantComponent = new (function () {
                                 <i class="fa fa-file-text me-1 text-primary"></i>
                                 Renewal History
                             </h5>
-                            <div class="container py-4 position-relative overflow-auto lease-history-scroll" style="max-height: 360px; scrollbar-width: thin;scrollbar-color: #888 #f1f1f1;">
+                            <div class=" py-4 position-relative overflow-auto lease-history-scroll" style="max-height: 360px; scrollbar-width: thin;scrollbar-color: #888 #f1f1f1;">
                                 ${cardsHtml}
                             </div>
                         </div>`;
