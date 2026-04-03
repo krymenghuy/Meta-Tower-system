@@ -706,9 +706,6 @@ var TenantComponent = new (function () {
             }
         }
 
-        const sizeLabel =
-            data.price_type === "total" ? `${data.sqm_size ?? "-"} sqm` : "N/A";
-
         let html = `
         <div class="row g-4">
             <div class="col-12 col-lg-3">
@@ -719,7 +716,7 @@ var TenantComponent = new (function () {
                                 class="rounded-circle border shadow-sm"
                                 width="130" height="130">
                         </div>
-                        <h4 class="fw-bold mb-1">${data.name}</h4>
+                        <h4 class="fw-bold mb-2">${data.name}</h4>
                         <div class="mb-3">
                             <span class="${cls_class} px-3 py-2">${data.status}</span>
                         </div>
@@ -737,17 +734,19 @@ var TenantComponent = new (function () {
                                     <div class="fw-semibold">${data.space_code ?? "N/A"}</div>
                                 </div>
                             </div>
-                            <div class="col-6">
-                                <div class="p-3 bg-light rounded">
-                                    <div class="text-muted small">Size</div>
-                                    <div class="fw-semibold">${sizeLabel}</div>
-                                </div>
-                            </div>
-
-                            <div class="col-6">
-                                <div class="p-3 bg-light rounded">
-                                    <div class="text-muted small">Price</div>
-                                    <div class="fw-semibold">${data.price ?? "N/A"}</div>
+                            <div class="col-12">
+                                <div class="p-3 bg-light rounded text-center">
+                                    <h6 class="mb-3">Lease Terms</h6>
+                                    <div class="row text-center">
+                                        <div class="col-6 border-end border-info">
+                                            <div class="text-muted mb-1 small">Start Date</div>
+                                            <div class="fw-semibold small">${data.start_date ?? "N/A"}</div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="text-muted mb-1 small">End Date</div>
+                                            <div class="fw-semibold small">${data.end_date ?? "N/A"}</div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -757,46 +756,6 @@ var TenantComponent = new (function () {
                     </div>
                 </div>
 
-
-                <!-- Quick Stats -->
-                <div class="row g-3">
-                    <div class="col-12">
-                        <div class="card shadow-sm">
-                            <div class="card-body">
-                                <div class="row text-center">
-                                    <h6>Lease Terms</h6>
-                                    <div class="col-6 border-end border-info">
-                                        <div class="text-muted mb-1">Start Date</div>
-                                        <div class="fw-semibold small">01 Jan 2026</div>
-                                    </div>
-                                    <div class="col-6">
-                                        <div class="text-muted mb-1">End Date</div>
-                                        <div class="fw-semibold small">01 Jan 2027</div>
-                                    </div>
-
-                                </div>
-
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- <div class="col-6">
-                        <div class="card text-center shadow-sm">
-                            <div class="card-body">
-                                <small class="text-muted">Unit Number</small>
-                                <div class="fw-bold fs-5 text-primary">402-B</div>
-                            </div>
-                        </div>
-                    </div>
-                     <div class="col-6">
-                        <div class="card text-center shadow-sm">
-                            <div class="card-body">
-                                <small class="text-muted">Unit Number</small>
-                                <div class="fw-bold fs-5 text-primary">402-B</div>
-                            </div>
-                        </div>
-                    </div> -->
-                </div>
             </div>
 
             <!-- RIGHT COLUMN -->
