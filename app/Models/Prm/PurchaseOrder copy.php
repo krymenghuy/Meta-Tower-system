@@ -573,24 +573,26 @@ class PurchaseOrder extends VSModel
         ];
     }
 
-    function getPurchaseOrderList($filter, $ss)
+   
+       public function getPurchaseOrderList($filter, $ss = null)
     {
         $ss = $ss ?? $this->userInfo;
-        $str_search = "1=1";
         $d = (object) $filter;
         $search_value = $d->search_value ?? null;
         $vendor_id = $d->vendor_id ?? null;
         $status_id = $d->status_id ?? null;
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 10;
-        if (!is_numeric($current_page))
+        if (!is_numeric($current_page)) {
             $current_page = 1;
+        }
         $skip_rows = ($current_page - 1) * $per_page;
-        $str_where = '2=2';
+        $str_search = '1=1';
+        $str_where = '1=1';
         if ($search_value) {
             $skip_rows = 0;
             $search_value = escape_like_str($search_value);
-            $str_search = "(po.po_number Like '%" .$search_value ."%' OR v.name Like '%" . $search_value . "%')";
+            $str_search = "(po.po_number Like '%" . $search_value . "%' OR v.name Like '%" . $search_value . "%')";
         }
         if ($vendor_id) {
             $str_where .= ' AND po.vendor_id = ' . $vendor_id;
@@ -599,16 +601,14 @@ class PurchaseOrder extends VSModel
         if ($status_id) {
             $str_where .= ' AND po.status_id = ' . $status_id;
         }
-        // $updated_at = DBX::formatTime('po.updated_at', 'updated_at');
-        // $po_date = DBX::formatDate('po.po_date', 'po_date');
+
         $item_total = '(SELECT COALESCE(SUM(pi.total_price), 0) FROM purchase_order_items as pi WHERE pi.po_id = po.id)';
         $sub_total = 'COALESCE(po.sub_total, ' . $item_total . ')';
         $discount_amount = "CASE WHEN po.discount_type = 'percent' THEN (" . $item_total . " * COALESCE(po.discount_value, 0) / 100) ELSE COALESCE(po.discount_value, 0) END";
         $computed_total_amount = 'GREATEST(0, (' . $item_total . ') - (' . $discount_amount . '))';
         $total_amount = 'COALESCE(po.total_amount, ' . $computed_total_amount . ')';
-        $cols = 'po.id,po.po_number,po.vendor_id,po.po_date,po.authorized,po.status_id,ps.name as status,po.total_authorizers,po.auth_count,po.remarks,po.discount_value,po.discount_type,po.sub_total as stored_sub_total,po.total_amount as stored_total_amount,po.updated_at,po.update_user,v.id as vendor_id,v.name as vendor_name,v.phone_number,'. $sub_total . ' as sub_total,' . $total_amount . ' as total_amount';
+        $cols = 'po.id,po.po_number,po.vendor_id,po.po_date,po.authorized,po.status_id,ps.name as status,po.total_authorizers,po.auth_count,po.remarks,po.discount_value,po.discount_type,po.sub_total as stored_sub_total,po.total_amount as stored_total_amount,po.updated_at,po.update_user,v.id as vendor_id,v.name as vendor_name,v.phone_number,' . $sub_total . ' as sub_total,' . $total_amount . ' as total_amount';
         $query = DB::table('purchase_orders as po')
-            // ->join('purchase_order_authorizations as au','au.po_id','=','po.id')
             ->join('vendors as v', 'v.id', '=', 'po.vendor_id')
             ->join('purchase_order_statuses as ps', 'ps.id', '=', 'po.status_id')
             ->whereRaw($str_where)
@@ -616,8 +616,8 @@ class PurchaseOrder extends VSModel
             ->selectRaw($cols)
             ->orderByRaw('po.id DESC');
 
-        $count_query = clone $query;
-        $count = $count_query->count('po.id');
+        $clone_query = clone $query;
+        $count = $clone_query->count('po.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
         $poIds = $rows->pluck('id')->map(function ($id) {
             return (int) $id;
@@ -641,9 +641,8 @@ class PurchaseOrder extends VSModel
             $auth = DB::table('purchase_order_authorizations')
                 ->where('po_id', $row->id)
                 ->first();
-                $row->authorizer = $auth->auth_user ?? null;
-            $row->auth_date = $auth->auth_date ?? null;
-            //au.auth_user as authorizer,au.auth_date,
+            $row->authorizer = $auth?->auth_user ?? null;
+            $row->auth_date = $auth?->auth_date ?? null;
             $row->sub_total_formatted = '$ ' . number_format((float) ($row->sub_total ?? 0), 2, '.', '');
             $row->total_amount_formatted = '$ ' . number_format((float) ($row->total_amount ?? 0), 2, '.', '');
             $dv = (float) ($row->discount_value ?? 0);
@@ -656,12 +655,11 @@ class PurchaseOrder extends VSModel
                 $row->discount_formatted = $v . ' %';
             }
             setOfficialDates($row, ['auth_date', 'po_date'], ['updated_at'], []);
-            if ((int) $row->status_id !== self::STATUS_CANCELLED) {
+            if ((int) $row->status_id !== self::poStatusId('cancelled')) {
                 $pid = (int) $row->id;
                 $lines = $linesByPo[$pid] ?? [];
                 $state = self::receiveProgressStateFromLines($lines);
-                // Only override badge for receive workflow. When nothing is received yet, show DB status
-                // (e.g. "Ordered" after Authorized PO), not receive-progress "Pending".
+                // Badge override only when something is received; else keep ps.name from DB.
                 if ($state === 'partial' || $state === 'complete') {
                     $badge = self::receiveProgressBadgePresentation($state);
                     $row->status_label = $badge['label'];

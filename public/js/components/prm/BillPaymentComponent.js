@@ -30,12 +30,19 @@ var BillPaymentComponent = (() => {
         {
             transTitle: "titles.Vendor",
             className: "align-middle",
-            data: (data) => `<span class="d-block text-prm-custom">${data.vendor_name ?? ""}</span>`,
+            data: (data) => `<span class="d-block text-prm-custom text-capitalize">${data.vendor_name ?? ""}</span>`,
+        },
+        {
+            transTitle: "titles.Expense Type",
+            className: "align-middle",
+            data: (data) => {
+                return `<span class="d-block text-prm-custom ">${data.expense_type_name ?? "_"}</span>`;
+            },
         },
         {
             transTitle: "titles.Payer",
             className: "align-middle",
-            data: (data) => `<span class="d-block text-prm-custom">${data.payer ?? ""}</span>`,
+            data: (data) => `<span class="d-block text-prm-custom text-capitalize">${data.payer ?? ""}</span>`,
         },
         {
             transTitle: "titles.Reference No",
@@ -45,22 +52,17 @@ var BillPaymentComponent = (() => {
         {
             transTitle: "titles.Payment Method",
             className: "align-middle",
-            data: (data) => `<span class="d-block text-prm-custom">${data.payment_method ?? "_"}</span>`,
+            data: (data) => `<span class="d-block text-prm-custom text-capitalize">${data.payment_method ?? "_"}</span>`,
         },
         {
-            title: "Total Amount",
+            title: " Amount",
             className: "align-middle text-end",
-            data: (data) => `<span class="d-block text-prm-custom fw-semibold" style="color:#15803d;">${formatCurrency(data.total_amount)}</span>`,
+            data: (data) => `<span class="d-block text-prm-custom fw-semibold" style="color:#1d4ed8;">${formatCurrency(data.total_amount)}</span>`,
         },
         {
-            title: "Amount Paid",
+            title: "Description",
             className: "align-middle text-end",
-            data: (data) => `<span class="d-block text-prm-custom fw-semibold" style="color:#15803d;">${formatCurrency(data.paid_amount)}</span>`,
-        },
-        {
-            title: "Balance",
-            className: "align-middle text-end",
-            data: (data) => `<span class="d-block text-prm-custom fw-semibold" style="color:#1d4ed8;">${formatCurrency(data.balance)}</span>`,
+            data: (data) => `<span class="d-block text-prm-custom fw-semibold">${data.note ?? "_"}</span>`,
         },
         {
             transTitle: "titles.Action",
@@ -92,6 +94,15 @@ var BillPaymentComponent = (() => {
                 tr.dataset.fileurl = data.file_image_url ?? "";
                 tr.classList.add("bill");
                 tr.setAttribute("id", `bill_id${data.id}`);
+
+                if (index === 0) mThis._seenBillNumbers = new Set();
+                if (!mThis._seenBillNumbers) mThis._seenBillNumbers = new Set();
+
+                if (mThis._seenBillNumbers.has(data.bill_number)) {
+                    tr.style.display = "none";
+                } else {
+                    mThis._seenBillNumbers.add(data.bill_number);
+                }
             },
             listContainerClass: null,
         });
@@ -165,83 +176,59 @@ var BillPaymentComponent = (() => {
         const fmt = n => Number(n || 0).toLocaleString("en-US", { minimumFractionDigits: 2 });
 
         const paymentsHtml = payments.map(p => `
-            <tr>
-                <td class="text-center text-nowrap">${p.payment_date ?? "—"}</td>
-                <td>${p.payer ?? "—"}</td>
-                <td class="text-center text-capitalize">${p.payment_method ?? "—"}</td>
-                <td class="text-center">${p.currency_code ?? "USD"}</td>
-                <td class="text-end fw-semibold text-success">${currency}${fmt(p.amount)}</td>
+            <tr style="font-size:0.82rem;">
+                <td class="text-center text-nowrap text-muted">${p.payment_date ?? "—"}</td>
+                <td class="text-capitalize">${p.payer ?? "—"}</td>
+                <td class="text-center text-muted text-capitalize">${p.note ?? "—"}</td>
+                <td class="text-center">
+                    <span class="badge rounded-pill bg-light text-dark border text-capitalize" style="font-size:0.75rem;">${p.payment_method ?? "—"}</span>
+                </td>
+                <td class="text-center text-muted">${p.currency_code ?? "USD"}</td>
+                <td class="text-end fw-semibold pe-3" style="color:#059669;">${currency}${fmt(p.amount)}</td>
             </tr>
         `).join("");
 
         container.innerHTML = `
-        <div class="bg-white rounded shadow-sm p-3">
+        <div style="background:#f8fafc; border-radius:10px; padding:10px 14px; font-size:0.875rem;">
 
-            <div class="d-flex justify-content-between align-items-start mb-3">
-                <div>
-                    <h6 class="fw-bold mb-1 text-uppercase text-primary">Bill Payment Receipt</h6>
-                    <small class="text-muted">Bill No: <span class="fw-semibold text-dark">${bill.bill_number ?? "—"}</span></small>
-                </div>
-                <span class="badge fs-6 px-3 py-2 ${
-                    bill.status_id == 2 ? 'bg-success' :
-                    bill.status_id == 3 ? 'bg-warning text-dark' : 'bg-danger'
-                }">
-                    ${bill.status ?? "Unpaid"}
-                </span>
-            </div>
-
-            <hr class="my-2">
-
-            <div class="row g-2 mb-3">
-                <div class="col-md-6">
-                    <small class="text-muted text-uppercase fw-semibold" style="font-size:0.7rem;">Vendor</small>
-                    <p class="mb-1 fw-semibold">${bill.vendor_name ?? "—"}</p>
-                    <small class="text-muted">${bill.phone_number ?? ""}</small>
-                </div>
-                <div class="col-md-6 text-md-end">
-                    <small class="text-muted text-uppercase fw-semibold" style="font-size:0.7rem;">Expense Type</small>
-                    <p class="mb-1">${bill.expense_type_name ?? "—"}</p>
-                </div>
-            </div>
-
-            <div class="table-responsive">
-                <table class="table table-sm table-bordered mb-0">
-                    <thead style="background:#f0f4ff;">
+            <!-- Payments Table only -->
+            <div class="table-responsive" style="border-radius:8px; border:1px solid #e2e8f0; overflow:hidden;">
+                <table class="table table-sm mb-0" style="font-size:0.82rem;">
+                    <thead style="background:#f1f5f9; border-bottom:1px solid #e2e8f0;">
                         <tr>
-                            <th class="text-center" style="width:120px;">Payment Date</th>
-                            <th class="text-center">Payer</th>
-                            <th class="text-center" style="width:130px;">Method</th>
-                            <th class="text-center" style="width:80px;">Currency</th>
-                            <th class="text-end"    style="width:120px;">Amount Paid</th>
+                            <th class="text-center text-muted fw-semibold py-2" style="width:110px; font-size:0.72rem;">Date</th>
+                            <th class="text-muted fw-semibold py-2" style="font-size:0.72rem;">Payer</th>
+                            <th class="text-center text-muted fw-semibold py-2" style="font-size:0.72rem;">Remark</th>
+                            <th class="text-center text-muted fw-semibold py-2" style="width:100px; font-size:0.72rem;">Method</th>
+                            <th class="text-center text-muted fw-semibold py-2" style="width:70px; font-size:0.72rem;">Currency</th>
+                            <th class="text-end text-muted fw-semibold py-2 pe-3" style="width:110px; font-size:0.72rem;">Paid</th>
                         </tr>
                     </thead>
                     <tbody>
-                        ${paymentsHtml || '<tr><td colspan="5" class="text-center py-4 text-muted">No payments recorded</td></tr>'}
-                    </tbody>
-                    <tfoot class="table-light fw-bold">
+                        ${paymentsHtml || `
                         <tr>
-                            <td colspan="4" class="text-end text-muted small">Total Amount</td>
-                            <td class="text-end text-primary">${currency}${fmt(bill.total_amount)}</td>
-                        </tr>
-                        <tr>
-                            <td colspan="4" class="text-end text-muted small">Amount Paid</td>
-                            <td class="text-end text-success">${currency}${fmt(bill.paid_amount)}</td>
-                        </tr>
-                        <tr>
-                            <td colspan="4" class="text-end text-muted small">Remaining Balance</td>
-                            <td class="text-end fw-bold fs-6 text-success">
-                                ${currency}${fmt(bill.balance)}
+                            <td colspan="6" class="text-center py-3 text-muted" style="font-size:0.82rem;">
+                                <i class="fa-regular fa-folder-open me-1"></i> No payments recorded
                             </td>
-                        </tr>
-                    </tfoot>
+                        </tr>`}
+                    </tbody>
                 </table>
             </div>
 
-            <div class="text-end mt-3 no-print">
-                <button class="btn btn-sm btn-outline-primary" onclick="window.print()">
-                    <i class="bi bi-printer me-1"></i> Print Receipt
-                </button>
+            <!-- Summary Footer -->
+            <div class="d-flex flex-wrap justify-content-end gap-2 mt-2">
+                ${[
+                    { label: "Total",     val: bill.total_amount, color: "#3b82f6" },
+                    { label: "Paid",      val: bill.paid_amount,  color: "#059669" },
+                    { label: "Remaining", val: bill.balance,      color: "#dc2626" },
+                ].map(s => `
+                    <div style="background:#fff; border:1px solid #e2e8f0; border-radius:8px; padding:6px 14px; text-align:right; min-width:120px;">
+                        <div class="text-muted" style="font-size:0.68rem; text-transform:uppercase; letter-spacing:0.05em;">${s.label}</div>
+                        <div class="fw-bold" style="font-size:0.95rem; color:${s.color};">${currency}${fmt(s.val)}</div>
+                    </div>
+                `).join("")}
             </div>
+
         </div>`;
     };
 
@@ -256,6 +243,10 @@ var BillPaymentComponent = (() => {
         });
         return p;
     };
+    mThis.refreshList = (filter) => {
+        mThis._seenBillNumbers = new Set();
+        mThis.BillPaymentListView.showPage(filter ?? mThis.getFilterData());
+    };
 
     mThis.initDropdownMenus = (table) => {
         const menuOptopns = {
@@ -269,12 +260,12 @@ var BillPaymentComponent = (() => {
                     cssClass: "border-bottom pb-2",
                     name: "delete_bill",
                 },
-                {
-                    html: '<span class="ps-2">View Detail</span>',
-                    icon: `<i class="fa-solid fa-print" style="color: rgb(22, 80, 137);"></i>`,
-                    cssClass: "border-bottom pb-2",
-                    name: "view_bill",
-                },
+                // {
+                //     html: '<span class="ps-2">View Detail</span>',
+                //     icon: `<i class="fa-solid fa-print" style="color: rgb(22, 80, 137);"></i>`,
+                //     cssClass: "border-bottom pb-2",
+                //     name: "view_bill",
+                // },
             ],
             onClick: (menuLink, id, name) => {
                 switch (name) {
@@ -385,6 +376,7 @@ var BillPaymentComponent = (() => {
             },
         });
     };
+    
 
     mThis.prepareFormOptions = (onFinish) => {
         vsapi.call(`${main_view.base_url}/prm/bill/form-options`, null, null, null)

@@ -104,7 +104,6 @@ class BillPayment
         }
     }
     
-
     public function getListPaginate(array $arr = [], $ss = null)
     {
         $ss = $ss ?? $this->userInfo;
@@ -125,7 +124,7 @@ class BillPayment
 
         if ($search_value) {
             $search_value = escape_like_str($search_value);
-            $str_search = "(bp.ref_no LIKE '%{$search_value}%' OR bp.note LIKE '%{$search_value}%' OR b.bill_number LIKE '%{$search_value}%')";
+            $str_search = "(bp.ref_no LIKE '%" . $search_value . "%' OR bp.note LIKE '%" . $search_value . "%' OR b.bill_number LIKE '%" . $search_value . "%' OR v.name LIKE '%" . $search_value . "%')";
         }
 
         $query = DB::table('bill_payments as bp')
@@ -138,7 +137,7 @@ class BillPayment
         if ($bill_id) {
             $query->where('bp.bill_id', $bill_id);
         }
-        $query->selectRaw("bp.id,bp.bill_id,b.bill_number,v.name as vendor_name,b.expense_type_id,ex.name as expense_type_name,bp.payment_date,bp.amount,bp.payment_method,bp.payer,bp.ref_no,bp.currency_code,bp.payment_method, bp.note, bp.create_user,bp.update_user,bp.created_at,bp.updated_at")
+        $query->selectRaw("bp.id,bp.bill_id,b.bill_number,v.name as vendor_name,b.expense_type_id,ex.name as expense_type_name,bp.payment_date,bp.amount,bp.payment_method,bp.payer,bp.ref_no,bp.currency_code,bp.payment_method, bp.note,b.total_amount,b.paid_amount,b.balance,b.status_id,bp.create_user,bp.update_user,bp.created_at,bp.updated_at")
         ->orderBy('bp.id', 'desc');
 
         $count = (clone $query)->count('bp.id');
