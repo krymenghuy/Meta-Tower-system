@@ -31,80 +31,75 @@ var ServiceRequestComponent = (function () {
         {
             transTitle: "titles.Tenant",
             className: "align-middle text-nowrap",
-            data: (data) => `<span class="text-primary-custom">${data.tenant_name ?? ''}</span>`
-        },
-        {
-            transTitle: "titles.Space",
-            className: "align-middle text-nowrap",
-            data: (data) => `<span class="text-primary-custom user-select-none">${data.space_code ?? ''}</span>`
-        },
-        {
-            transTitle: "titles.Service",
-            className: "align-middle text-nowrap",
-            data: (data) => `<span class="text-primary-custom">${data.service_name ?? ''}</span>`
-        },
-        // {
-        //     transTitle: "titles.Category",
-        //     className: "align-middle text-nowrap",
-        //     data: (data) => `<span class="text-primary-custom">${data.service_type ?? ''}</span>`
-        // },
-        
-        {
-            transTitle: "titles.Price",
-            className: "align-middle",
             data: (data) => {
-                const cur = data.cur_symbol ?? '$';
-                let mainPrice = data.service_price;
-                console.log(55,data.service_price);
-                
-                let displayPrice = mainPrice
-                    ? Number(mainPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-                    : '—';
-
-                let extraInfo = '';
-
-                if (data.unit_type === '2' && data.duration_hours > 0 && data.service_price) {
-                    const base = Number(data.service_price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                    extraInfo = `<small class="text-muted d-block">$${base} × ${data.duration_hours}h</small>`;
-                } else if (data.unit_type) {
-                    extraInfo = `<small class="text-nowrap text-muted d-block">/ ${data.unit_type}</small>`;
-                }
-
-                return `
-                <span class="fw-bold fs-6">${cur} ${displayPrice}</span>
-                ${extraInfo}
-            `;
+                return ` <div class="d-flex text-nowrap align-items-center gap-2">
+                <div>
+                    <span class="text-prm-custom d-block">
+                        ${data.tenant_name ?? ''}
+                    </span>
+                    <span class="d-block text-warning">
+                        ${data.space_code ?? ""}
+                    </span>
+                </div>
+            </div>`;
             }
         },
         {
-            transTitle: "titles.Charge As",
-            className: "align-middle text-nowrap",
-            data: (data) => {
-                let display = '—';
+            title: "Service Type",
+            className: "align-middle",
+            data: (data) =>
+                `<span class="d-block text-prm-custom text-nowrap">${data.service_type ?? ""}</span>
+                 <span class="d-block text-prm-custom text-nowrap">${data.service_name ?? ""}</span>`,
+        },
+        // {
+        //     transTitle: "titles.Price",
+        //     className: "align-middle",
+        //     data: (data) => {
+        //         const cur = data.cur_symbol ?? '$';
+        //         let mainPrice = data.service_price;
+        //         console.log(55,data.service_price);
+                
+        //         let displayPrice = mainPrice
+        //             ? Number(mainPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+        //             : '—';
 
-                if (data.unit_type === 'hour') {
-                   display = 'Hour';
-                } else if (data.unit_type === 'one_time') {
-                    display = 'One Time';
-                }
+        //         let extraInfo = '';
 
-                return `<span class="text-nowrap">${display}</span>`;
+        //         if (data.unit_type == '2' && data.duration_hours > 0 && data.service_price) {
+        //             const base = Number(data.service_price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        //             extraInfo = `<small class="text-muted d-block">$${base} × ${data.duration_hours}h</small>`;
+        //         } else if (data.unit_type) {
+        //             extraInfo = `<small class="text-nowrap text-muted d-block">/ ${data.unit_type}</small>`;
+        //         }
+
+        //         return `
+        //         <span class="fw-bold fs-6">${cur} ${displayPrice}</span>
+        //         ${extraInfo}
+        //     `;
+        //     }
+        // },
+            {
+            title: "Price",
+            className: "align-middle text-nowrap text-end",
+            data: (data) =>{
+                const service_price = VSMoney.formatAmount(data.service_price,data.currency_code ?? 'USD');
+                const text = service_price;
+                const cls_color = data.service_price > 0 ? 'text-prm-custom' : 'text-danger';
+                    return `<span class="d-block ${cls_color}">${text}</span>`;
+
             }
         },
         {
             transTitle: "titles.Duration",
             className: "align-middle",
             data: (data) => {
-                let display = '—';
+                const hours = parseFloat(data.duration_hours);
 
-                if (data.unit_type == 'hour' && data.duration_hours != null) {
-                    // Convert number to minimal decimals
-                    const hours = parseFloat(data.duration_hours);
-                    display = `${hours % 1 === 0 ? hours.toFixed(0) : hours} H`;
-                } else if (data.unit_type == 'one_time') {
-                    display = 'One Time';
+                if (!data.duration_hours || isNaN(hours)) {
+                    return `<span class="text-nowrap">One Time</span>`;
                 }
 
+                const display = `${hours % 1 === 0 ? hours.toFixed(0) : hours} H`;
                 return `<span class="text-nowrap">${display}</span>`;
             }
         },
@@ -148,7 +143,7 @@ var ServiceRequestComponent = (function () {
         //     }
         // },
        {
-            transTitle: "titles.Schedule Time", 
+            transTitle: "titles.Schedule Date", 
             className: "align-middle text-nowrap text-center",
             data: (data) => {
 
@@ -181,10 +176,17 @@ var ServiceRequestComponent = (function () {
                 `;
             }
         },
+        
         {
             transTitle: "titles.Remark",
-            className: "align-middle text-nowrap",
-            data: (data) => `<span class="text-primary-custom">${data.description ?? ''}</span>`
+            className: "align-middle",
+            data: (data, index, tr) => {
+                return `
+                    <div class="text-primary-custom" style="width:200px;">
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.description ?? '...'}</span>
+                    </div>
+                `;
+            }
         },
         {
             title: "Status",
@@ -369,13 +371,13 @@ var ServiceRequestComponent = (function () {
             cssClass: "bg-white shadow",
             menus: [
                 {
-                    html: '<span class="ps-2 " vslang="title.Accepted" ></span>',
-                    icon: `<i class="fa-regular fa-edit fs-5 text-primary"></i>`,
-                    name: "edit_request",
+                    html: '<span class="ps-2 " vslang="title.Accept"></span>',
+                    icon: `<i class="fa-regular fa-square-check fs-5 text-primary"></i>`,
+                    name: "accept_request",
                     cssClass: "border-bottom pb-2"
                 },
                 {
-                    html: '<span class="ps-2 " vslang="title.Modify" ></span>',
+                    html: '<span class="ps-2 " vslang="title.Modify"></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     name: "edit_request",
                     cssClass: "border-bottom pb-2"
@@ -601,7 +603,10 @@ const CreateServiceRequestDialog = (() => {
                     prefetch: true,
                     query: {
                         from: 'tenants',
+                        where: [['status_id','=',2]],
                         select: ['id', 'name', 'legal_name', 'email', 'phone_number'],
+                        orderBy: [['id','DESC']],
+                        limit:50,
                         searchFields: { name: 'LIKE', legal_name: 'LIKE', email: '=', phone_number: '=' }
                     },
                     columns: { name: "Name", phone_number: "Phone" },

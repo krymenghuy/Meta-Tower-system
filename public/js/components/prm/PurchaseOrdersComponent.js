@@ -940,9 +940,9 @@ const showReceivePurchaseOrderDialog = (op) => {
                         { name: "item_id", transTitle: "titles.Item", displayType: "select",},
                         { name: "qty", transTitle: "titles.Qty", dataType: "number", readOnly: true,},
                         {name: "accepted_qty",transTitle: "titles.Accepted",dataType: "number",displayType: "input",},
-                        { name: "unit", transTitle: "titles.Unit", dataType: "string", displayType: "number", readOnly: true },
-                        { name: "unit_price", transTitle: "titles.Price", dataType: "decimal",displayType:"input",currencySymbol: "$",readOnly: true,},
-                        { name: "total_price", transTitle: "titles.Total",dataType: "decimal",displayType:"input",currencySymbol: "$",readOnly: true,},
+                        { name: "unit", transTitle: "titles.Unit", dataType: "text", readOnly: true },
+                        { name: "unit_price", transTitle: "titles.Price", dataType: "number",readOnly: true,readOnly: true },
+                        { name: "total_price", transTitle: "titles.Total",dataType: "number",readOnly: true,isNumeric:true},
                         {name: "accept",transTitle: "titles.Accepted",html: '<input type="checkbox" class="check_accept">'},
 
                     ],
