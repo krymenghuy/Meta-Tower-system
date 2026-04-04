@@ -89,7 +89,7 @@ class Contract
         return DV::error($created ? 'Create failed.' : 'Update failed.');
     }
 
-    protected static function getPendingStatusId()
+    public static function getPendingStatusId()
     {
         $pendingId = DB::table('contract_statuses')
             ->where(function ($q) {
@@ -113,7 +113,7 @@ class Contract
         return $activeId ?: 1;
     }
 
-    protected static function getExpiredStatusId()
+    public static function getExpiredStatusId()
     {
         $expiredId = DB::table('contract_statuses')
             ->where(function ($q) {
@@ -125,7 +125,7 @@ class Contract
         return $expiredId ?: 2;
     }
 
-    protected static function getTerminatedStatusId()
+ public static function getTerminatedStatusId()
     {
         $terminatedId = DB::table('contract_statuses')
             ->where(function ($q) {
@@ -138,7 +138,7 @@ class Contract
     }
 
     /** Get space_statuses.id for "Occupied" (used when a contract is created/uses a unit). */
-    protected static function getSpaceOccupiedStatusId()
+  public static function getSpaceOccupiedStatusId()
     {
         $id = DB::table('space_statuses')
             ->where(function ($q) {
@@ -163,7 +163,7 @@ class Contract
         return $id;
     }
 
-  static function checkDuplicateContract($space_id, $id = null)
+ public static function checkDuplicateContract($space_id, $id = null)
     {
         if (!$space_id) return null;
 
@@ -368,13 +368,13 @@ class Contract
         return $deleted ? DV::depends($deleted,['action'=>'deleted']) : DV::error('Deleted failed.');
     }
 
-  static function normalizePhone($phone)
+ public static function normalizePhone($phone)
     {
-        $value = trim((string) $phone);
+        $value = trim($phone);
         return preg_replace('/\D+/', '', $value);
     }
 
-  static function getLatestBookingBySpaceId($space_id)
+ public static function getLatestBookingBySpaceId($space_id)
     {
         if (!$space_id) return null;
         return DB::table('space_bookings')
@@ -383,7 +383,7 @@ class Contract
             ->first();
     }
 
-  static function findTenantByNormalizedPhone($booking_phone)
+ public static function findTenantByNormalizedPhone($booking_phone)
     {
         return DB::table('tenants')
             ->select('id', 'name', 'phone_number')
@@ -394,7 +394,7 @@ class Contract
             });
     }
 
-  static function phoneValidationResponse($status, $message = null, $extra = [])
+  public static function phoneValidationResponse($status, $message = null, $extra = [])
     {
         return (object) array_merge([
             'status' => (bool) $status,
@@ -402,7 +402,7 @@ class Contract
         ], $extra);
     }
 
-  static function validateBookingTenantPhone($space_id, $tenant_id = null, $strictTenantMatch = false)
+  public static function validateBookingTenantPhone($space_id, $tenant_id = null, $strictTenantMatch = false)
     {
         $booking = self::getLatestBookingBySpaceId($space_id);
         if (!$booking) {
