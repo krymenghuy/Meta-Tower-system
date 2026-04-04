@@ -140,7 +140,7 @@ class ServiceRequest extends VSModel
                 sr.id, sr.code, sr.tenant_id, t.name as tenant_name, t.email as tenant_email, t.phone_number as tenant_phone,
                 sr.space_id, bs.code as space_code,
                 sr.service_id, s.name as service_name,
-                s.price as service_price, s.unit_type,
+                s.price as service_price,sr.unit_type,
                 sr.total_price, sr.duration_hours,
                 sr.description, sr.request_date,
                 sr.start_time,
@@ -156,6 +156,8 @@ class ServiceRequest extends VSModel
         $count = $clone_query->count('sr.id');
         $rows  = $query->skip($skip_rows)->take($per_page)->get();
         foreach($rows as $row){
+
+            $row->unit_type = $row->unit_type == '1' ? 'One Time' : ($row->unit_type == '2' ? 'Hour' : '');
             $row = setOfficialDates($row,['complete_date','request_date','scheduled_date'],['updated_at','created_at as created_at'],[]);
         }
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
