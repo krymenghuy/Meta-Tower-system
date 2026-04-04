@@ -323,7 +323,7 @@ var BillComponent = (() => {
                 },
                 {
                     html: '<span class="ps-2">View Attachment</span>',  
-                    icon: `<i class="fa-regular fa-eye fa-lg" style="color: rgb(56, 49, 111);"></i>`,
+                    icon: `<i class="fa-solid fa-panorama" style="color: rgb(59, 125, 74);"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "view_attachment",
                 },

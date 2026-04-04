@@ -13,7 +13,40 @@ var BillPaymentComponent = (() => {
 
     const formatCurrency = (amount) => {
         const value = Number(amount || 0);
+        const rate = mThis.getExchangeRate();
+        const mode = mThis.displayCurrency || "USD";
+        if (mode === "KHR"){
+            return `៛ ${(value * rate).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`; 
+        }
         return `$ ${value.toFixed(2)}`;
+    };
+
+    mThis.getExchangeRate = () => {
+        const rate = parseFloat(mThis.elExchangeRate?.value || 4100);
+        return isNaN(rate) || rate <= 0 ? 4100 : rate;
+
+    }   
+    mThis.buildExchangeRateUI = () => {
+        mThis.elExchangeRate = mThis.self.querySelector("#_exchange_rate_input");
+        const btnToggle      = mThis.self.querySelector("#_btn_toggle_currency");
+        const rateBox        = mThis.self.querySelector("#_rate_box");
+
+        if (!btnToggle) return;
+
+        btnToggle.onclick = () => {
+            mThis.displayCurrency       = mThis.displayCurrency === "KHR" ? "USD" : "KHR";
+            btnToggle.textContent       = mThis.displayCurrency;
+            btnToggle.style.color       = mThis.displayCurrency === "KHR" ? "#059669" : "#1d4ed8";
+            btnToggle.style.borderColor = mThis.displayCurrency === "KHR" ? "#059669" : "#1d4ed8";
+            if (rateBox) rateBox.style.width = mThis.displayCurrency === "KHR" ? "auto" : "0";
+            mThis.BillPaymentListView.showPage(mThis.getFilterData());
+        };
+
+        if (mThis.elExchangeRate) {
+            mThis.elExchangeRate.addEventListener("change", () => {
+                mThis.BillPaymentListView.showPage(mThis.getFilterData());
+            });
+        }
     };
 
     mThis.cols = [
@@ -79,6 +112,7 @@ var BillPaymentComponent = (() => {
     ];
     mThis.init = () => {
         if (mThis.initAlready) return;
+        mThis.buildExchangeRateUI(); 
 
         mThis.BillPaymentListView = new ListView("_bill_payment_list", {
             fetchApi: `${main_view.base_url}/prm/bill-payment/list-paginate`,
@@ -484,6 +518,21 @@ const BillPaymentDialog = (() => {
                                 <label class="fw-bold px-2" style="color:#dc3545;">Remaining</label>
                             </div>
                         </div>
+                        <div class="col-12" id="_dlg_conv_row" style="display:none;">
+                            <div style="border:1px dashed #bfdbfe; border-radius:6px; padding:8px 14px; background:#eff6ff; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span style="font-size:11px; color:#1d4ed8; white-space:nowrap;">1 USD =</span>
+                                    <input id="_dlg_conv_rate" type="number" min="1" value="4100"
+                                        style="width:80px; border:1px solid #93c5fd; border-radius:4px; background:#fff; padding:2px 8px; font-size:12px; color:#1d4ed8; font-weight:500; text-align:right; outline:none;">
+                                    <span style="font-size:11px; color:#1d4ed8;">KHR</span>
+                                </div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span style="font-size:11px; color:#3b82f6;">Paying Now</span>
+                                    <span style="font-size:13px; color:#1d4ed8;">→</span>
+                                    <span id="_dlg_conv_result" style="font-size:14px; color:#1d4ed8; font-weight:500;">៛ 0</span>
+                                </div>
+                            </div>
+                        </div>
 
                         <div class="col-12">
                             <div class="material-input outlined">
@@ -555,6 +604,35 @@ const BillPaymentDialog = (() => {
                     };
                     amountInput.addEventListener('input', me._amountHandler);
                 }
+
+                const dlgRate    = me.divModal.querySelector("#_dlg_conv_rate");
+                const dlgResult  = me.divModal.querySelector("#_dlg_conv_result");
+                const dlgConvRow = me.divModal.querySelector("#_dlg_conv_row");
+                const currSelect = me.controls.currency_code;
+
+                if (dlgRate && BillPaymentComponent?.elExchangeRate?.value) {
+                    dlgRate.value = BillPaymentComponent.elExchangeRate.value;
+                }
+
+                const updateDlgConv = () => {
+                    const rate   = parseFloat(dlgRate?.value) || 4100;
+                    const paying = parseFloat(amountInput?.value) || 0;
+                    if (dlgResult) dlgResult.textContent = `៛ ${Math.round(paying * rate).toLocaleString("en-US")}`;
+                };
+
+                const toggleConvRow = () => {
+                    const isKHR = currSelect?.value === "KHR";
+                    if (dlgConvRow) dlgConvRow.style.display = isKHR ? "block" : "none";
+                    if (isKHR) updateDlgConv();
+                };
+
+                if (currSelect)  currSelect.addEventListener("change", toggleConvRow);
+                if (dlgRate)     dlgRate.addEventListener("input", updateDlgConv);
+                if (amountInput) amountInput.addEventListener("input", () => {
+                    if (currSelect?.value === "KHR") updateDlgConv();
+                });
+
+                toggleConvRow();
             },
 
             buttons: [
