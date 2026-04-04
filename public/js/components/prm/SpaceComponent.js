@@ -159,7 +159,7 @@ var SpaceComponent = new (function () {
                 id: null,
                 btn: e.target,
                 onClose: () => {
-                    mThis.SpaceListView.showPage(mThis.getFilterData());
+                    mThis.applyListFilters();
                 }
             };
             BuildingSpaceDialog.show(op);
@@ -195,17 +195,13 @@ var SpaceComponent = new (function () {
 
 
 
-        mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
-            el.onchange = () => {
-                mThis.SpaceListView.showPage(mThis.getFilterData());
-            }
-        });
+        mThis.bindSpaceFilterListeners();
 
         mThis.elSearch.addEventListener('keyup', (e) => {
             e.preventDefault();
             clearTimeout(mThis.search_timeout);
             mThis.search_timeout = setTimeout(() => {
-                mThis.SpaceListView.showPage(mThis.getFilterData());
+                mThis.applyListFilters();
             }, 250);
         });
 
@@ -277,22 +273,51 @@ var SpaceComponent = new (function () {
     };
 
     mThis.getFilterData = () => {
+        const nz = (v) => (v === "" || v === null || v === undefined ? "0" : String(v));
         let p = {
-            search_value: mThis.elSearch.value,
-            status_id: mThis.elFilter_status.value,
-            building_id: mThis.elBuilding.value,
-            floor_id: mThis.elFloor.value,
+            search_value: mThis.elSearch.value || "",
+            status_id: nz(mThis.elFilter_status && mThis.elFilter_status.value),
+            building_id: nz(mThis.elBuilding && mThis.elBuilding.value),
+            floor_id: nz(mThis.elFloor && mThis.elFloor.value),
         };
 
-        mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             const f = el.dataset.field;
-            p[f] = el.value;
+            if (f) {
+                if (f === "status_id" || f === "building_id" || f === "floor_id") {
+                    p[f] = nz(el.value);
+                } else {
+                    p[f] = el.value;
+                }
+            }
         });
-        // console.log(6767,p);
-
 
         return p;
     };
+
+    /**
+     * ListView merges cached api_params; falsy values get overwritten by stale params.
+     * We send "0" for "All …" selects (PHP treats as no filter). setParams keeps cache aligned.
+     */
+    mThis.applyListFilters = () => {
+        const d = mThis.getFilterData();
+        if (mThis.SpaceListView && typeof mThis.SpaceListView.setParams === "function") {
+            mThis.SpaceListView.setParams(d);
+        }
+        mThis.SpaceListView.showPage(d);
+    };
+
+    mThis.bindSpaceFilterListeners = () => {
+        if (mThis._spaceFilterListenersBound) {
+            return;
+        }
+        mThis._spaceFilterListenersBound = true;
+        mThis.divFilter.addEventListener("change", (e) => {
+            e.preventDefault();
+            mThis.applyListFilters();
+        });
+    };
+
     mThis.initDropdownMenus = (table) => {
         const menuOptopns = {
             containerElement: table,
@@ -538,7 +563,7 @@ var SpaceComponent = new (function () {
             btn: menulink,
             onClose: () => {
                 ;
-                mThis.SpaceListView.showPage(mThis.getFilterData());
+                mThis.applyListFilters();
             }
         };
         ContractDialog.show(op);
@@ -553,7 +578,7 @@ var SpaceComponent = new (function () {
             btn: menulink,
             onClose: () => {
                 ;
-                mThis.SpaceListView.showPage(mThis.getFilterData());
+                mThis.applyListFilters();
             }
         };
 
@@ -565,7 +590,7 @@ var SpaceComponent = new (function () {
             building_id: menulink?.dataset?.buildingid || null,
             btn: menulink,
             onClose: () => {
-                mThis.SpaceListView.showPage(mThis.getFilterData());
+                mThis.applyListFilters();
             }
         };
         if (typeof CreateMaintenanceDialog !== "undefined") {
@@ -578,7 +603,7 @@ var SpaceComponent = new (function () {
                 vsapi.call(`${main_view.base_url}/prm/maintenance/finish-by-space`, { space_id: id }, menulink, null).then(res => {
                     if (res.status_code === 200) {
                         cv_interact.success("Maintenance finished.");
-                        mThis.SpaceListView.showPage(mThis.getFilterData());
+                        mThis.applyListFilters();
                     } else {
                         cv_interact.error(res.error_message || "Failed");
                     }
@@ -592,7 +617,7 @@ var SpaceComponent = new (function () {
             space_id: id,
             btn: menulink,
             onClose: () => {
-                mThis.SpaceListView.showPage(mThis.getFilterData());
+                mThis.applyListFilters();
             }
         };
 
@@ -603,7 +628,7 @@ var SpaceComponent = new (function () {
             id: id,
             btn: menulink,
             onClose: () => {
-                mThis.SpaceListView.showPage(mThis.getFilterData());
+                mThis.applyListFilters();
             }
         };
         // if (!AuthManager.allowed(242)) return;
@@ -617,7 +642,7 @@ var SpaceComponent = new (function () {
                     if (res.status_code == 200) {
 
                         cv_interact.success('Space has been deleted')
-                        mThis.SpaceListView.showPage();
+                        mThis.applyListFilters();
                     } else {
                         cv_interact.error(res.error_message);
                     }
@@ -643,7 +668,7 @@ var SpaceComponent = new (function () {
                     },
                     btn: e.target,
                     onClose: () => {
-                        mThis.SpaceListView.showPage(mThis.getFilterData());
+                        mThis.applyListFilters();
                     }
                 };
                 ContractDialog.show(op);
@@ -683,7 +708,7 @@ var SpaceComponent = new (function () {
         mThis.prepareFormOptions(() => {
             main_view.setContentView(mThis.self, mThis.title_prop);
             mThis.setDataSummary(null);
-            mThis.SpaceListView.showPage(mThis.getFilterData());
+            mThis.applyListFilters();
         });
 
     };

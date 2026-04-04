@@ -188,10 +188,24 @@ class BuildingSpace
             $str_moreWhere .= ' AND bs.space_type_id = ' . $space_type_id;
         }
         if ($status_id) {
-            // if($status_id == 4){
-            //     $str_moreWhere .= ' AND bs.maintenance_status_id = ' . 1;
-            // }else
-            $str_moreWhere .= ' AND bs.status_id = ' . $status_id . ' AND bs.maintenance_status_id = ' . 0;
+            // If filter is OCCUPIED, include units even when they are under maintenance.
+            // For AVAILABLE/BOOKED, exclude maintenance units.
+            $status_id = (int) $status_id;
+
+            $selectedStatus = DB::table('space_statuses')
+                ->where('id', $status_id)
+                ->select('name', 'status_code')
+                ->first();
+
+            $selectedName = strtolower(trim($selectedStatus->name ?? ''));
+            $selectedCode = strtolower(trim($selectedStatus->status_code ?? ''));
+            $isOccupiedFilter = $selectedName === 'occupied' || $selectedCode === 'occupied';
+
+            $str_moreWhere .= ' AND bs.status_id = ' . $status_id;
+            if (!$isOccupiedFilter) {
+                // Not under maintenance: treat NULL like 0 (legacy rows may have NULL).
+                $str_moreWhere .= ' AND COALESCE(bs.maintenance_status_id, 0) = 0';
+            }
         }
 
         $updated_at = DBX::formatTime("bs.updated_at", "updated_at");

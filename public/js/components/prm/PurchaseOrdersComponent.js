@@ -681,21 +681,22 @@ var PurchaseOrdersComponent = (() => {
                         me.setTotal(col_name, tr, item);
                     },
                 });
+               
                 me.saveData = (onFinish) => {
                     let p = me.getData();
                     let po_data = me.purchaseItemsView.getData();
-                    
-                    
-                    p.items = po_data.items;
+                    let items = po_data.items || [];
+                   if (!me.hasValidPOItems(items)) {
+                        return cv_interact.error('Please select at least one item before saving the purchase order.');
+                    }
+                    p.items = items;
                     p.totals = po_data.totals;
-                    
-                    // p.vendor_id = me._selectedVendorId || '';
                     p.id = me.dataOptions.id;
-                    console.log(6666,p);
-                    
 
-                    vsapi.call(`${main_view.base_url}/prm/purchase/order/save`, p, false).then(onFinish);
+                    console.log(6666, p);
 
+                    vsapi.call(`${main_view.base_url}/prm/purchase/order/save`, p, false)
+                        .then(onFinish);
                 }
                 me.clear = () => {
                     for (const name in me.fields) {
@@ -711,13 +712,25 @@ var PurchaseOrdersComponent = (() => {
                     }
                     me.purchaseItemsView.setData(null);
                 };
-                 me.setTotal = (col_name, tr,item) => {
+                me.setTotal = (col_name, tr,item) => {
                     if (!tr) return;
                     console.log(1233322,item);
                     
                     const d = me.purchaseItemsView.getDataRow(tr);
                     me.purchaseItemsView.setCellValue(tr, 'unit', item.unit || '');
                 
+                };
+                me.hasValidPOItems = (items) => {
+                    if (!Array.isArray(items) || items.length === 0) return false;
+
+                    return items.some((row) => {
+                        const rawId = row?.item_id || row?.id;
+                        const qty = Number(row?.qty);
+
+                        const id = Number(rawId);
+
+                        return Number.isFinite(id) && id > 0 && Number.isFinite(qty) && qty > 0;
+                    });
                 };
             },
             buttons: [
@@ -746,11 +759,7 @@ var PurchaseOrdersComponent = (() => {
             ],
             onPrepareForm: (me, data) => {
                 me.controls.vendor.value = data.po_detail?.name || '';
-                me.purchaseItemsView.setSelectOptions(
-                    'item_id',
-                    data.item_options || data.products,
-                    null
-                );
+                me.purchaseItemsView.setSelectOptions('item_id',data.item_options,null);
                 if (me.dataOptions.id) {
                     console.log(8888,data);
                      me.purchaseItemsView.setData(data.po_detail);
@@ -769,6 +778,15 @@ var PurchaseOrdersComponent = (() => {
                     if (me.searchVendor && typeof me.searchVendor.reset === 'function') {
                         me.searchVendor.reset();
                     }
+                }
+            },
+            onShow: (me) => {
+                const title = me.divModal.querySelector('.modal-title');
+                if (title) {
+                    const isModify = !!me.dataOptions?.id;
+                    title.innerHTML = isModify
+                        ? '<h2 class="text-prm-custom text-start fw-bold">Modify Purchase Order</h2>'
+                        : '<h2 class="text-prm-custom text-start fw-bold">Purchase Order</h2>';
                 }
             },
             prepareFormOptions: {
@@ -917,15 +935,21 @@ const showReceivePurchaseOrderDialog = (op) => {
 
                 me.purchaseItemsView = new ItemsView(me.controls.purchaseItemList, {
                     currencyCode: "USD",
+                    
                     columns: [
-                        { name: "item_id", transTitle: "titles.Item", displayType: "select" },
-                        { name: "qty", transTitle: "titles.Order Qty", dataType: "number", defaultValue: 1, isNumeric: true},
-                        {name: "accepted_qty",transTitle: "titles.Accepted Qty",dataType: "number",displayType: "input", isNumeric: true},
+                        { name: "item_id", transTitle: "titles.Item", displayType: "select",},
+                        { name: "qty", transTitle: "titles.Qty", dataType: "number", readOnly: true,},
+                        {name: "accepted_qty",transTitle: "titles.Accepted",dataType: "number",displayType: "input",},
+                        { name: "unit", transTitle: "titles.Unit", dataType: "text", readOnly: true },
+                        { name: "unit_price", transTitle: "titles.Price", dataType: "number",readOnly: true,readOnly: true },
+                        { name: "total_price", transTitle: "titles.Total",dataType: "number",readOnly: true,isNumeric:true},
                         {name: "accept",transTitle: "titles.Accepted",html: '<input type="checkbox" class="check_accept">'},
 
                     ],
+                    calc: { mode: "auto", qtyField: "accepted_qty", priceField: "unit_price", totalField: "total_price", currencyPrecision: 2 },
 
-                    validateColumns: { item_id: "positive", qty: "positive"},
+                    totalSummary: { container: me.controls.div_purchase_summary, showTax: false, allowDiscount: true, discountBeforeTax: true, currency: "USD" },
+                    validateColumns: { item_id: "positive", qty: "positive",accepted_qty: "positive", unit_price: "positive" },
                     tableClass: 'table',
                     showColumnHeaders: true,
                     showAddLineButton: false,

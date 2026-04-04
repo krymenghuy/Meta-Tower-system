@@ -436,17 +436,17 @@ var TenantComponent = new (function () {
                 switch (status) {
                     case "active":
                         statusClass =
-                            "badge text-dark bg-success-subtle border border-success";
+                            "badge text-success bg-success-subtle border border-success";
 
                         break;
                     case "inactive":
                         statusClass =
-                            "badge text-dark bg-danger-subtle border border-danger";
+                            "badge text-danger bg-danger-subtle border border-danger";
 
                         break;
                     default:
                         statusClass =
-                            "badge text-dark bg-warning-subtle border border-warning";
+                            "badge text-warning bg-warning-subtle border border-warning";
 
                         break;
                 }
@@ -1181,7 +1181,7 @@ var TenantComponent = new (function () {
                                 <i class="fa fa-file-text me-1 text-primary"></i>
                                 Renewal History
                             </h5>
-                            <div class="container py-4 position-relative overflow-auto lease-history-scroll" style="max-height: 360px; scrollbar-width: thin;scrollbar-color: #888 #f1f1f1;">
+                            <div class=" py-4 position-relative overflow-auto lease-history-scroll" style="max-height: 360px; scrollbar-width: thin;scrollbar-color: #888 #f1f1f1;">
                                 ${cardsHtml}
                             </div>
                         </div>`;
@@ -1454,8 +1454,8 @@ const CreateTenantDialog = (() => {
                         <div class="col-md-8 row pb-3">
                             <div class="col-12 ">
                                 <div class="material-input outlined">
-                                    <input type="text" name="name" class="data-input form-control" data-field="name" placeholder="Full Name" />
-                                   <!-- <label style="color:#777777;padding-left:6px;">Full Name</label> -->
+                                    <input type="text" name="name" class="data-input form-control" data-field="name" placeholder="" />
+                                    <label style="color:#777777;padding-left:6px;">Full Name</label>
                                 </div>
 
                             </div>
