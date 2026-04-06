@@ -92,7 +92,7 @@ class InvoiceController extends Controller
         return JDV::raw($this->invoices->deleteInvoice($req->id));
     }
 
-       public function receive(Request $req)
+    public function receive(Request $req)
         {
             $ss = XAuthService::verifyAuth($req, -1);
             if ($ss->status_code !== 200) {
@@ -104,4 +104,15 @@ class InvoiceController extends Controller
 
             return JDV::raw($res);
         }
+
+    // public function setInvoiceStatus(Request $req)
+    // {
+    //     $ss = XAuthService::verifyAuth($req, -1);
+    //     if ($ss->status_code !== 200) {
+    //         return JDV::raw($ss);
+    //     }
+
+    //     return JDV::raw($this->invoices->setInvoiceStatus($req->all(), $ss));
+
+    // }
 }

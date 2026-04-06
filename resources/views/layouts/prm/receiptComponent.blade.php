@@ -3,7 +3,7 @@
         <div class="row g-3 align-items-center">
             <div class="col-12 col-md-6 col-lg-3">
                 <div class="position-relative w-100">
-                <input type="text" class="form-control rounded-2 pe-5 filter-field " id="_search_receipt" placeholder="Search">
+                <input type="text" class="form-control rounded-2 pe-5 filter-field " id="_search_receipt" placeholder="Search By Name or Invoice No">
                 <i class="fa fa-search fs-6 text-muted position-absolute" style="right: 15px; top: 50%; transform: translateY(-50%);"></i>
             </div>
          </div>
@@ -14,12 +14,12 @@
                 <select id="payment_method_id" class="data-input filter-field form-control" data-field="payment_method_id"></select>
             </div>
 
-            <div class="col-12 col-md-3 col-lg-2 ms-auto text-md-end" style="overflow:visible;">
+            {{-- <div class="col-12 col-md-3 col-lg-2 ms-auto text-md-end" style="overflow:visible;">
                 <button type="button" class="btnAddNewPrm w-100 w-md-auto" id="_btnReceipt">
                       <i class="fa-solid fa-money-check-dollar mr-2"></i>
                     <span vslang="buttons.Receipt"></span>
                 </button>
-            </div>
+            </div> --}}
         </div>
 
         
