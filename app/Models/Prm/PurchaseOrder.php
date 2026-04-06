@@ -613,7 +613,7 @@ class PurchaseOrder extends VSModel
             $str_prefix = 'c.prefix = \'' . $v_prefix . '\'';
         }
         $year = date('Y', strtotime($po_date));
-        $row = DB::table($table_name . " as c")->where('branch_id', $branch_id)->where('c.issue_year', $year)->where('c.doc_class', $doc_class)->whereRaw($str_company_branch)->whereRaw($str_prefix)->selectRaw("last_id,prefix")->take(1)->get()->first();
+        $row = DB::table($table_name . " as c")->where('branch_id', $branch_id)->where('c.issue_year', $year)->where('c.doc_class', $doc_class)->whereRaw($str_prefix)->selectRaw("last_id,prefix")->take(1)->get()->first();
 
         $next_num = 0;
         $prefix = null;
