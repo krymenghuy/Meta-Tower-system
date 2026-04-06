@@ -176,7 +176,7 @@ var TenantComponent = new (function () {
                 btn: e.target,
                 onClose: () => {
                     mThis.renderView();
-                    // mThis.tenantListView.showPage(mThis.getFilterData());
+                    mThis.tenantListView.showPage(mThis.getFilterData());
                 },
             };
             CreateTenantDialog.show(op);
@@ -852,7 +852,48 @@ var TenantComponent = new (function () {
                             </div>
                         </div>
 
-                    </div>
+                        <div class="tab-pane" id="document_tenant_list">
+                            <h5 class="fw-bold mb-4"><i class="fa fa-folder me-1 text-primary"></i> Documents</h5>
+                            <div class="table-responsive">
+                                <table class="table align-middle">
+                                    <thead class="bg-light">
+                                        <tr class=" text-uppercase ">
+                                            <th class="border-0 ps-3" style="letter-spacing: 0.05em;">Document Type</th>
+                                            <th class="border-0">File Name</th>
+                                            <th class="border-0">File Type</th>
+                                            <th class="border-0">Description</th>
+                                            <th class="border-0 text-end pe-3">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="border-bottom">
+                                            <td class="ps-3 py-3">
+                                                <div class="d-flex align-items-center">
+                                                    <div>
+                                                        <div class="fw-bold text-dark">${data.document_type_id ?? ""}</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="fw-bold text-dark">${data.file_name ?? ""}</div>
+                                            </td>
+                                            <td>
+                                                <div class="fw-semibold text-dark">${data.ext ?? ""}</div>
+                                            </td>
+                                            <td>
+                                                <span class="text-muted small">${data.description ?? "No description"}</span>
+                                            </td>
+                                            <td class="text-end pe-3">
+                                                <button class="btn btn-sm text-muted p-0 ">
+                                                    <i class="fa-solid fa-ellipsis fa-shake"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </div>
 
                     </div>
                     <!-- Footer -->
