@@ -22,7 +22,7 @@ var BillComponent = (() => {
         },
         {
             title: "Bill Number",
-            className: "align-middle",
+            className: "align-middle text-nowrap",
             data: (data) =>
                 `<span class="d-block text-nowrap text-prm-custom fw-semibold">${data.bill_number ?? ""}</span> 
                  <span class="d-block text-prm-custom text-nowrap">${data.bill_date}</span>`,
@@ -37,14 +37,14 @@ var BillComponent = (() => {
         // },
         {
             transTitle: "titles.Vendor",
-            className: "align-middle",
+            className: "align-middle text-nowrap",
             data: (data) => {
                 return `<span class="d-block text-prm-custom fw-semibold text-capitalize">${data.vendor_name}</span>`;
             },
         },
         {
             transTitle: "titles.Phone Number",
-            className: "align-middle",
+            className: "align-middle text-nowrap",
             data: (data) => {
                 return `<span class="d-block text-prm-custom">${data.phone_number}</span>
                         <span class="d-block text-prm-custom">${data.email ?? "_"}</span>`;
@@ -52,14 +52,14 @@ var BillComponent = (() => {
         },
         {
             transTitle: "titles.Expense Type",
-            className: "align-middle",
+            className: "align-middle text-nowrap",
             data: (data) => {
                 return `<span class="d-block text-prm-custom ">${data.expense_type_name ?? "_"}</span>`;
             },
         },
         {
             transTitle: "titles.Reference No",
-            className: "align-middle",
+            className: "align-middle text-nowrap",
             data: (data) => {
                 return `<span class="d-block text-prm-custom">${data.ref_no ?? "_"}</span>`;
             },
@@ -67,21 +67,21 @@ var BillComponent = (() => {
         
         {
             title: "Total Amount",
-            className: "align-middle text-end",
+            className: "align-middle text-nowrap text-end",
             data: (data) => {
                 return `<span class="d-block text-prm-custom fw-semibold" style="color:#1d4ed8;">${formatCurrency(data.total_amount)}</span>`;
             },
         },
         {
             title: "Amount Paid",
-            className: "align-middle text-end",
+            className: "align-middle text-nowrap text-end",
             data: (data) => {
                 return `<span class="d-block text-prm-custom fw-semibold" style="color:#15803d;">${formatCurrency(data.paid_amount)}</span>`;
             },
         },
         {
             title: "Balance",
-            className: "align-middle text-end",
+            className: "align-middle text-nowrap text-end",
             data: (data) => {
                 const balance = Number(data.balance || 0);
                 const total = Number(data.total_amount || 0);
@@ -101,7 +101,7 @@ var BillComponent = (() => {
         },
         {
             title: "Status",
-            className: "align-middle text-center",
+            className: "align-middle text-nowrap text-center",
             data: (data) => {
                 const status_id = data.status_id;
                 let cls =
@@ -137,7 +137,7 @@ var BillComponent = (() => {
         },
         {
             transTitle: "titles.Action",
-            className: "col_action align-middle",
+            className: "col_action align-middle text-nowrap",
             data: (data) => `
                 <div class="d-flex justify-content-center align-items-end">
                     <a href="javascript:void(0)" class="btn--Options btn_dropdown_vendor_action" data-id="${data.id}" data-vendorId="${data.vendor_id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
