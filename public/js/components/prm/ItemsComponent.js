@@ -27,7 +27,7 @@ var ItemsComponent = (() => {
             transTitle: "titles.Name",
             className: "align-middle",
             data: (data) => {
-                return `<span class="text-primary-custom">${data.name ?? ''}</span>`;
+                return `<span class="text-primary-custom text-capitalize">${data.name ?? ''}</span>`;
             }
         },
 
