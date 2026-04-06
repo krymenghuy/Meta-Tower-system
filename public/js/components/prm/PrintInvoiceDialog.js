@@ -126,7 +126,7 @@ ${fontLink}${biLink}${styleHTML}
         }).join("");
 
         const statusColor = balance <= 0 ? "#059669" : "#DC2626";
-        const statusLabel = balance <= 0 ? "PAID" : "OUTSTANDING";
+        const statusLabel = balance <= 0 ? "PAID" : "Partially Paid";
         const statusBg    = balance <= 0 ? "#ECFDF5" : "#FEF2F2";
 
         return `

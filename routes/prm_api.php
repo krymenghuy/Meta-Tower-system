@@ -207,6 +207,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('invoice')->gr
     Route::post('/delete', [InvoiceController::class, 'deleteInvoice']);
     Route::post('/update-status', [InvoiceController::class, 'updateInvoiceStatus']);
     Route::post('/receive', [InvoiceController::class, 'receive']);
+    // Route::post('/set-status', [InvoiceController::class, 'setInvoiceStatus']);
 });
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('expense')->group(function () {

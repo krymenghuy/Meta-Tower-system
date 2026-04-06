@@ -49,16 +49,20 @@ class ReceiptController extends Controller
     }
 
     public function deleteReceipt(Request $req)
-    {
-        $ss = XAuthService::verifyAuth($req, -1);
-        if ($ss->status_code !== 200) {
-            return JDV::raw($ss);
-        }
+        {
+            $ss = XAuthService::verifyAuth($req, -1);
+            if ($ss->status_code !== 200) {
+                return JDV::raw($ss);
+            }
 
-        if (!isset($req->id) || !is_numeric($req->id)) {
-            return JDV::error('Invalid ID');
+            if (!isset($req->id) || !is_numeric($req->id)) {
+                return JDV::error('Invalid ID');
+            }
+
+            // Call the fixed method in the model
+            $result = $this->receipts->deleteById($req->id);
+            
+            return JDV::raw($result);
         }
-        return JDV::raw($this->receipts->deleteReceipt($req->id));
-    }
 
 }

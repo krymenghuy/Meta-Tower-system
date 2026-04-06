@@ -21,55 +21,87 @@ class Receipt extends Model
         $this->userInfo = $userInfo;
     }
 
-    /**
-     * Get a paginated list of receipts
-     */
-    public function getListPaginate($arr, $ss)
-    {
-        $d            = (object) $arr;
-        $current_page = max(1, (int)($d->current_page ?? 1));
-        $per_page     = (int)($d->per_page ?? 10);
-        $skip         = ($current_page - 1) * $per_page;
 
-        $query = DB::table('receipts as r')
-            ->leftJoin('tenants as t', 't.id', '=', 'r.tenant_id')
-            ->leftJoin('invoices as i', 'i.id', '=', 'r.invoice_id')
-            ->select([
-                'r.id',
-                'r.code',
-                'r.receipt_date',
-                'r.invoice_id',
-                'r.tenant_id',
-                'r.total_received',
-                'r.remarks',
-                'r.created_at',
-                't.name as tenant_name',
-                'i.code as invoice_code',
-                'i.amount as invoice_total'
-            ])
-            ->orderByDesc('r.id');
+    public function getListPaginate($arr = [], $ss = null, $id = null)
+        {
+            $d = (object) $arr;
 
-        if (!empty($d->tenant_id)) {
-            $query->where('r.tenant_id', $d->tenant_id);
+            $current_page = max(1, (int) ($d->current_page ?? 1));
+            $per_page     = max(1, (int) ($d->per_page ?? 10));
+            $search       = trim($d->search_value ?? '');
+
+            $query = DB::table('receipts as r')
+                ->leftJoin('tenants as t', 't.id', '=', 'r.tenant_id')
+                ->leftJoin('invoices as i', 'i.id', '=', 'r.invoice_id')
+                ->leftJoin('building_spaces as bs',  'bs.id', '=', 'i.space_id')
+                ->leftJoin('receipt_breakdowns as rb', 'rb.receipt_id', '=', 'r.id')
+                ->select([
+                    'r.id',
+                    'r.code',
+                    'r.receipt_date',
+                    'r.total_received',
+                    'r.remarks',
+                    'r.updated_at',
+                    'r.update_user',
+                    't.name as tenant_name',
+                    'i.code as invoice_code',
+                    'i.amount as invoice_total',
+                    'i.invoice_date as invoice_date',
+                    'bs.code as space_code',
+
+                    DB::raw("
+                        GROUP_CONCAT(
+                            DISTINCT CONCAT(
+                                TRIM(rb.method),
+                                ' = $',
+                                FORMAT(rb.amount, 2)
+                            )
+                            SEPARATOR ', '
+                        ) as payment_methods
+                    "),
+                ])
+                ->groupBy(
+                    'r.id', 'r.code', 'r.receipt_date', 'r.total_received',
+                    'r.remarks', 'r.updated_at', 'r.update_user',
+                    't.name', 'i.code', 'i.amount'
+                )
+                ->orderByDesc('r.id');
+
+            // Filters
+            if (!empty($d->tenant_id)) {
+                $query->where('r.tenant_id', $d->tenant_id);
+            }
+
+            if ($id) {
+                $query->where('r.id', $id);
+            }
+
+            if ($search) {
+                $search = '%' . escape_like_str($search) . '%';
+                $query->where(function ($q) use ($search) {
+                    $q->where('r.code', 'LIKE', $search)
+                    ->orWhere('t.name', 'LIKE', $search)
+                    ->orWhere('i.code', 'LIKE', $search);
+                });
+            }
+
+            $total = (clone $query)->select('r.id')->distinct()->count();
+
+            $skip = ($current_page - 1) * $per_page;
+            $rows = $query->skip($skip)->take($per_page)->get();
+
+            // Format dates
+            foreach ($rows as $row) {
+                $row = setOfficialDates($row, [], ['updated_at', 'receipt_date'], []);
+            }
+            foreach($rows as $row){
+                $row = setOfficialDates($row,['receipt_date'],['updated_at','created_at as created_at'],[]);
+            }
+
+            return new LengthAwarePaginator($rows, $total, $per_page, $current_page);
         }
 
-        if (!empty($d->search_value)) {
-            $search = '%' . $d->search_value . '%';
-            $query->where(function ($q) use ($search) {
-                $q->where('r.code', 'like', $search)
-                  ->orWhere('t.name', 'like', $search);
-            });
-        }
 
-        $count = (clone $query)->count();
-        $rows  = $query->skip($skip)->take($per_page)->get();
-
-        return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
-    }
-
-    /**
-     * Get specific receipt details and its payment breakdown
-     */
     public static function getReceiptDetails($id)
     {
         $header = DB::table('receipts as r')
@@ -103,7 +135,6 @@ class Receipt extends Model
                 'rb.amount',
                 'rb.currency_code',
                 'rb.bank_ref_number',
-                'rb.account_name',
                 'rb.bank_name as manual_bank_name',
                 'b.name as registered_bank_name',
                 'rb.card_number',
@@ -114,11 +145,17 @@ class Receipt extends Model
 
         return $header;
     }
+    
 
-    public function deleteReceipt($id, $ss = null)
+    public function deleteById($id = null)
     {
-      $id = $id ?? $this->id;
-      $X =self::deleteBy(['id' => $id]);
-      return DV::depends($X, 'Failed to delete invoice.');
+        $id = $id ?? $this->id;
+        return DB::transaction(function () use ($id) {
+            DB::table('receipt_breakdowns')->where('receipt_id', $id)->delete();
+            $deleted = self::where('id', $id)->delete();
+
+            return DV::depends($deleted, 'Failed to delete receipt');
+        });
     }
+
 }
