@@ -386,63 +386,154 @@ var PurchaseOrdersComponent = (() => {
                 </div>`;
             },
             contentCreated: (me) => {
-                // Vendor Search
+
+                me.controls.div_purchase_summary = me.divModal.querySelector(
+                    '[name="div_purchase_summary"]'
+                );
+
+                const applyVendorInfo = (vendorId) => {
+                    me._selectedVendorId = vendorId || '';
+                    if (me.controls.vendor_id) me.controls.vendor_id.value = vendorId || '';
+                    if (!vendorId) {
+                        me.controls.phone_number.value = '';
+                        me.controls.address.value = '';
+                        return;
+                    }
+                    vsapi.post(`${main_view.base_url}/prm/vendor/options-vendor-info`, { vendor_id: vendorId }, {})
+                        .then(res => {
+                            const d = res.data || {};
+                            const v = d.vendor || {};
+                            if (me.controls.phone_number) me.controls.phone_number.value = v.phone_number || '';
+                            if (me.controls.address) me.controls.address.value = v.address || '';
+                        })
+                        .catch(() => { });
+
+                };
                 me.searchVendor = VSSearchInput.init(me.controls.vendor, {
                     type: 'select',
                     prefetch: true,
                     minChars: 0,
-                    api: { endpoint: `${main_view.base_url}/prm/purchase/order/form-options` },
-                    processResponse: (res) => (res?.data?.vendors || []).map(v => ({
-                        ...v,
-                        vendor: v.vendor || v.name || v.vendor_name || '',
-                        phone_number: v.phone_number || '',
-                        address: v.address || ''
-                    })),
+                    api: {
+                        endpoint: `${main_view.base_url}/prm/purchase/order/form-options`,
+                    },
+                    processResponse: (res) => {
+                        const vendors = res?.data?.vendors || [];
+                        return (Array.isArray(vendors) ? vendors : []).map(v => ({
+                            ...v,
+                            vendor: v.vendor || v.name || v.vendor_name || v.code || '',
+                            phone_number: v.phone_number || v.contact_phone || v.phone || '',
+                            address: v.address || ''
+                        }));
+                    },
                     columns: { vendor: 'VENDOR', phone_number: 'PHONE' },
                     showColumnHeader: true,
                     placeholder: 'Search vendor',
                     onSelect: (vendor) => {
                         const id = vendor?.id || '';
                         me.controls.vendor.value = vendor?.vendor || '';
-                        me._selectedVendorId = id;
-                        if (me.controls.vendor_id) me.controls.vendor_id.value = id;
-                        if (id) {
-                            vsapi.post(`${main_view.base_url}/prm/vendor/options-vendor-info`, { vendor_id: id })
-                                .then(res => {
-                                    const v = res.data?.vendor || {};
-                                    me.controls.phone_number.value = v.phone_number || '';
-                                    me.controls.address.value = v.address || '';
-                                });
-                        }
+                        me.vendor_id = id;
+                        applyVendorInfo(id);
                     }
                 });
+                if (me._selectedVendorId) {
+                        applyVendorInfo(me._selectedVendorId);
+                    }
+               
+
+              
+
+
 
                 me.purchaseItemsView = new ItemsView(me.controls.purchaseItemList, {
                     currencyCode: "USD",
                     columns: [
                         { name: "item_id", transTitle: "titles.Item", displayType: "select" },
                         { name: "qty", transTitle: "titles.Qty", dataType: "number", defaultValue: 1, isNumeric: true },
-                        { name: "unit", transTitle: "titles.Unit", dataType: "string", readOnly: true },
-                        { name: "unit_price", transTitle: "titles.Price", dataType: "decimal", displayType: "input", currencySymbol: "$" },
-                        { name: "total_price", transTitle: "titles.Total", dataType: "decimal", displayType: "input", currencySymbol: "$" },
+                        { name: "unit", transTitle: "titles.Unit", dataType: "string", displayType: "number", readOnly: true },
+                        { name: "unit_price", transTitle: "titles.Price", dataType: "decimal",displayType:"input",currencySymbol: "$" },
+                        { name: "total_price", transTitle: "titles.Total",dataType: "decimal",displayType:"input",currencySymbol: "$" },
+
                     ],
                     calc: { mode: "auto", qtyField: "qty", priceField: "unit_price", totalField: "total_price", currencyPrecision: 2 },
+
                     totalSummary: { container: me.controls.div_purchase_summary, showTax: false, allowDiscount: true, discountBeforeTax: true, currency: "USD" },
                     validateColumns: { item_id: "positive", qty: "positive", unit_price: "positive" },
                     tableClass: 'table',
                     showColumnHeaders: true,
                     showAddLineButton: true,
                     addLineButtonText: 'Add Item',
-                });
+                    onItemChange: async (row_id, item, col_name, td, tr) => {
+                        if (col_name !== 'item_id') return;
+                        const itemId = item.item_id || item.id;
+                        if (!itemId) return;
+                        const res = await vsapi.call(
+                            `${main_view.base_url}/prm/item/details`,
+                            { id: itemId },
+                            false
+                        );
 
+                        const d = res.data ?? {};
+                        console.log(123,d);
+                        
+                        tr.dataset.code = d.code || '';
+                        me.setTotal(col_name, tr, d);
+                    },
+                    "keyup": (e, col_name, td) => {
+                        const tr = td.parentNode;
+                        const item = me.purchaseItemsView.getDataRow(tr, ['code']);
+                        me.setTotal(col_name, tr, item);
+                    },
+                });
+               
                 me.saveData = (onFinish) => {
-                    const p = me.getData();
-                    const po_data = me.purchaseItemsView.getData();
-                    p.items = po_data.items || [];
+                    let p = me.getData();
+                    let po_data = me.purchaseItemsView.getData();
+                    let items = po_data.items || [];
+                   if (!me.hasValidPOItems(items)) {
+                        return cv_interact.error('Please select at least one item before saving the purchase order.');
+                    }
+                    p.items = items;
                     p.totals = po_data.totals;
                     p.id = me.dataOptions.id;
 
-                    vsapi.call(`${main_view.base_url}/prm/purchase/order/save`, p, false).then(onFinish);
+                    console.log(6666, p);
+
+                    vsapi.call(`${main_view.base_url}/prm/purchase/order/save`, p, false)
+                        .then(onFinish);
+                }
+                me.clear = () => {
+                    for (const name in me.fields) {
+                        const el = me.fields[name];
+                        const tag = el.tagName;
+
+                        if (['SELECT', 'INPUT', 'TEXTAREA'].indexOf(tag) >= 0) {
+                            el.value = '';
+                        }
+                        else {
+                            el.textContent = '';
+                        }
+                    }
+                    me.purchaseItemsView.setData(null);
+                };
+                me.setTotal = (col_name, tr,item) => {
+                    if (!tr) return;
+                    console.log(1233322,item);
+                    
+                    const d = me.purchaseItemsView.getDataRow(tr);
+                    me.purchaseItemsView.setCellValue(tr, 'unit', item.unit || '');
+                
+                };
+                me.hasValidPOItems = (items) => {
+                    if (!Array.isArray(items) || items.length === 0) return false;
+
+                    return items.some((row) => {
+                        const rawId = row?.item_id || row?.id;
+                        const qty = Number(row?.qty);
+
+                        const id = Number(rawId);
+
+                        return Number.isFinite(id) && id > 0 && Number.isFinite(qty) && qty > 0;
+                    });
                 };
             },
             buttons: [
@@ -463,6 +554,38 @@ var PurchaseOrdersComponent = (() => {
                     }
                 },
             ],
+            onPrepareForm: (me, data) => {
+                me.controls.vendor.value = data.po_detail?.name || '';
+                me.purchaseItemsView.setSelectOptions('item_id',data.item_options,null);
+                if (me.dataOptions.id) {
+                    console.log(8888,data);
+                     me.purchaseItemsView.setData(data.po_detail);
+                    // me.purchaseItemsView.setData({
+                    //     currency_code: data.po_detail?.currency_code || "USD",
+                    //     items: data.items || [],
+                    //     totals: data.totals || {
+                    //         discount_type: "amount",
+                    //         discount_value: 0,
+                    //         extra_items: {}
+                    //     }
+                    // });
+
+                } else {
+                    me.clear();
+                    if (me.searchVendor && typeof me.searchVendor.reset === 'function') {
+                        me.searchVendor.reset();
+                    }
+                }
+            },
+            onShow: (me) => {
+                const title = me.divModal.querySelector('.modal-title');
+                if (title) {
+                    const isModify = !!me.dataOptions?.id;
+                    title.innerHTML = isModify
+                        ? '<h2 class="text-prm-custom text-start fw-bold">Modify Purchase Order</h2>'
+                        : '<h2 class="text-prm-custom text-start fw-bold">Purchase Order</h2>';
+                }
+            },
             prepareFormOptions: {
                 modifyTitle: "Modify Purchase Order",
                 createTitle: "Purchase Order",
