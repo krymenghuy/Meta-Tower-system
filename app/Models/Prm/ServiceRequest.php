@@ -22,77 +22,167 @@ class ServiceRequest extends VSModel
         $this->userInfo = $userInfo;
     }
 
+    // public function upsert($arr = [], $id = null, $ss = null)
+    // {
+    //     $id = $id ?? $this->id;
+    //     $ss = $ss ?? $this->userInfo;
+    //     $branch_id = $ss->branch_id;
+
+    //     // $created = !$id;
+    //     $v_rule = [
+    //         'tenant_id'         => '1|number|exists=tenants.id',
+    //         'service_id'        => '1|number|exists=services.id',
+    //         'space_id'          => '1|number|exists=building_spaces.id',
+    //         'service_type_id'   => '1|number|exists=service_types.id',
+    //         'description'       => '0|string|0-255',
+    //         'duration_hours'    => '0|numeric|min:0.5|',
+    //         'code'              => '0|string|0-20',
+    //         'unit_type'         => '0|choice|1,2', // 1 one_time , 2 hour
+    //         'request_date'      => '0|date',
+    //         'scheduled_date'    => '1|date',
+    //         'start_time'        => '1|time',
+    //         'complete_date'    => '0|date',
+    //     ];
+    //     $allowed_chars = ['@', ',', '-', '.', '#', '!', '?', '(', ')', "\n"];
+    //     $res = DBX::validateObject($arr,$v_rule,1,['description' => $allowed_chars],$ss->lang ?? 'en',0,null);
+    //     if ($res->error) {
+    //         return DV::error($res->error);
+    //     }
+    //     $input = $res->values;
+    //     $total_price = null;
+    //     if($input['unit_type']=="2" && $input['duration_hours'] == ""){
+    //          return DV::error('Please select value duration hour');
+
+    //     }
+    //     $created = !$id;
+    //     try {
+    //     $input['request_date'] = isset($input['request_date'])
+    //         ? (int) date('Ymd', strtotime($input['request_date']))
+    //         : (int) date('Ymd');
+    //         $save_id = DBX::saveData($ss, 'service_requests', ['id' => $id], $input, [], 1);
+    //         if (!$save_id) {
+    //             return DV::error('Failed to save service request.');
+    //         }
+    //         if ($created) {
+    //             $prefix = 'REQ-';
+    //             $codeRes = setOfficialCode($branch_id,'service_request_code_control','service_requests',['id' => $save_id],$prefix,5,null);
+    //             if (isset($codeRes->code)) {
+    //                 $return_data['code'] = $codeRes->code;
+    //             } else {
+    //                 Log::warning("Code generation failed for service request ID: {$save_id}", [
+    //                     'response' => $codeRes ?? 'No response'
+    //                 ]);
+    //                 // Still success, but log issue
+    //             }
+    //         } else {
+    //             // On update/modify: return existing code
+    //             $return_data['code'] = DB::table('service_requests')
+    //                 ->where('id', $id)
+    //                 ->value('code') ?? '123';
+    //         }
+    //         $message = $created ? 'Service request created successfully' : 'Service request updated successfully';
+
+    //         return DV::success($return_data + ['message' => $message]);
+    //     }
+    //     catch (\Exception $e) {
+    //         Log::error('Service request save failed', [
+    //             'error' => $e->getMessage(),
+    //             'data'  => $input
+    //         ]);
+    //         return DV::error('Error saving service request: ' . $e->getMessage());
+    //     }
+    // }
+
     public function upsert($arr = [], $id = null, $ss = null)
-    {
-        $id = $id ?? $this->id;
-        $ss = $ss ?? $this->userInfo;
-        $branch_id = $ss->branch_id;
+{
+    $id = $id ?? $this->id;
+    $ss = $ss ?? $this->userInfo;
+    $branch_id = $ss->branch_id;
 
-        // $created = !$id;
-        $v_rule = [
-            'tenant_id'         => '1|number|exists=tenants.id',
-            'service_id'        => '1|number|exists=services.id',
-            'space_id'          => '1|number|exists=building_spaces.id',
-            'service_type_id'   => '1|number|exists=service_types.id',
-            'description'       => '0|string|0-255',
-            'duration_hours'    => '0|numeric|min:0.5|',
-            'code'              => '0|string|0-20',
-            'unit_type'         => '0|choice|1,2', // 1 one_time , 2 hour
-            'request_date'      => '0|date',
-            'scheduled_date'    => '1|date',
-            'start_time'        => '1|time',
-            'complete_date'    => '0|date',
-        ];
-        $allowed_chars = ['@', ',', '-', '.', '#', '!', '?', '(', ')', "\n"];
-        $res = DBX::validateObject($arr,$v_rule,1,['description' => $allowed_chars],$ss->lang ?? 'en',0,null);
-        if ($res->error) {
-            return DV::error($res->error);
-        }
-        $input = $res->values;
-        $total_price = null;
-        if($input['unit_type']=="2" && $input['duration_hours'] == ""){
-             return DV::error('Please select value duration hour');
+    $v_rule = [
+        'tenant_id'         => '1|number|exists=tenants.id',
+        'service_id'        => '1|number|exists=services.id',
+        'space_id'          => '1|number|exists=building_spaces.id',
+        'service_type_id'   => '1|number|exists=service_types.id',
+        'description'       => '0|string|0-255',
+        'duration_hours'    => '0|numeric|min:0.5|max:99.9',
+        'code'              => '0|string|0-20',
+        'unit_type'         => '0|choice|1,2', // 1=one_time, 2=hour
+        'request_date'      => '0|date',
+        'scheduled_date'    => '1|date',
+        'start_time'        => '1|time',
+        'complete_date'     => '0|date',
+    ];
 
-        }
-        $created = !$id;
-        try {
-        $input['request_date'] = isset($input['request_date'])
-            ? (int) date('Ymd', strtotime($input['request_date']))
-            : (int) date('Ymd');
-            $save_id = DBX::saveData($ss, 'service_requests', ['id' => $id], $input, [], 1);
-            if (!$save_id) {
-                return DV::error('Failed to save service request.');
-            }
-            if ($created) {
-                $prefix = 'REQ-';
-                $codeRes = setOfficialCode($branch_id,'service_request_code_control','service_requests',['id' => $save_id],$prefix,5,null);
-                if (isset($codeRes->code)) {
-                    $return_data['code'] = $codeRes->code;
-                } else {
-                    Log::warning("Code generation failed for service request ID: {$save_id}", [
-                        'response' => $codeRes ?? 'No response'
-                    ]);
-                    // Still success, but log issue
-                }
-            } else {
-                // On update/modify: return existing code
-                $return_data['code'] = DB::table('service_requests')
-                    ->where('id', $id)
-                    ->value('code') ?? '123';
-            }
-            $message = $created ? 'Service request created successfully' : 'Service request updated successfully';
+    $allowed_chars = ['@', ',', '-', '.', '#', '!', '?', '(', ')', "\n"];
+    $res = DBX::validateObject($arr, $v_rule, 1, ['description' => $allowed_chars], $ss->lang ?? 'en', 0, null);
+    if ($res->error) {
+        return DV::error($res->error);
+    }
+    $input = $res->values;
 
-            return DV::success($return_data + ['message' => $message]);
-        }
-        catch (\Exception $e) {
-            Log::error('Service request save failed', [
-                'error' => $e->getMessage(),
-                'data'  => $input
-            ]);
-            return DV::error('Error saving service request: ' . $e->getMessage());
-        }
+    if ($input['unit_type'] == '2' && empty($input['duration_hours'])) {
+        return DV::error('Please select value duration hour');
     }
 
+    $total_price = null;
+    if ($input['unit_type'] == '2' && !empty($input['duration_hours'])) {
+        $service = DB::table('services')
+            ->where('id', $input['service_id'])
+            ->first(['price']);
+
+        if (!$service) {
+            return DV::error('Service not found or invalid.');
+        }
+        $hourly_rate = $service->price ?? 0;
+        if ($hourly_rate <= 0) {
+            return DV::error('Price not defined for this service.');
+        }
+        $input['total_price'] = round($hourly_rate * $input['duration_hours'], 2);
+    } else {
+        $input['total_price'] = null;
+    }
+
+    $input['request_date'] = isset($input['request_date'])
+        ? (int) date('Ymd', strtotime($input['request_date']))
+        : (int) date('Ymd');
+
+    $created = !$id;
+
+    try {
+        $save_id = DBX::saveData($ss, 'service_requests', ['id' => $id], $input, [], 1);
+        if (!$save_id) {
+            return DV::error('Failed to save service request.');
+        }
+
+        $return_data = [];
+
+        if ($created) {
+            $prefix = 'REQ-';
+            $codeRes = setOfficialCode($branch_id, 'service_request_code_control', 'service_requests', ['id' => $save_id], $prefix, 5, null);
+            if (isset($codeRes->code)) {
+                $return_data['code'] = $codeRes->code;
+            } else {
+                Log::warning("Code generation failed for service request ID: {$save_id}");
+            }
+            $message = 'Service request created successfully';
+        } else {
+            $return_data['code'] = DB::table('service_requests')
+                ->where('id', $id)
+                ->value('code') ?? '123';
+            $message = 'Service request updated successfully';
+        }
+
+        return DV::success($return_data + ['message' => $message]);
+
+    } catch (\Exception $e) {
+        Log::error('Service request save failed', [
+            'error' => $e->getMessage(),
+            'data'  => $input
+        ]);
+        return DV::error('Error saving service request: ' . $e->getMessage());
+    }
+}
 
 
     public function getServiceRequestList($arr = [], $ss = null)
@@ -163,30 +253,37 @@ class ServiceRequest extends VSModel
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
-    public function getServiceRequestDetails($id)
+    static function getServiceRequestDetails($id, $ss = null)
     {
         return DB::table('service_requests as sr')
             ->join('tenants as t', 't.id', '=', 'sr.tenant_id')
             ->join('services as s', 's.id', '=', 'sr.service_id')
             ->join('building_spaces as bs', 'bs.id', '=', 'sr.space_id')
-            ->leftJoin('request_statuses as rs', 'rs.id', '=', 'sr.status_id') // leftJoin for safety
+            // ->leftJoin('request_statuses as rs', 'rs.id', '=', 'sr.status_id') // leftJoin for safety
             ->join('service_types as st', 'st.id', '=', 's.service_type_id')
             ->where('sr.id', $id)
-            ->select(
-                'sr.id', 'sr.code', 'sr.tenant_id', 'sr.space_id', 'sr.service_id', 's.service_type_id',
-                's.price as service_price', 's.unit_type',
-                'sr.request_date', 'sr.description',
-                'sr.update_user',
-                'sr.start_time',
-                'sr.scheduled_date', 'sr.complete_date', 'sr.create_uid',
-                'sr.updated_at', 'sr.total_price', 'sr.duration_hours',
-                'bs.code as space_code',
-                't.name as tenant_name',
-                'st.name as service_type',
-                's.name as service_name',
-                'rs.id as status_id',
-                'rs.name as status_name'
-            )
+            ->selectRaw("sr.id, sr.code, sr.tenant_id, sr.space_id, sr.service_id,
+                sr.request_date, sr.description,
+                sr.start_time,
+                sr.scheduled_date, sr.complete_date, sr.create_uid,
+                sr.updated_at, sr.total_price, sr.duration_hours,
+                sr.unit_type, sr.status_id,t.name as tenant_name, bs.code as space_code, s.name as service_name, st.name as service_type
+            ")
+            // ->select(
+            //     'sr.id', 'sr.code', 'sr.tenant_id', 'sr.space_id', 'sr.service_id', 's.service_type_id',
+            //     's.price as service_price', 's.unit_type',
+            //     'sr.request_date', 'sr.description',
+            //     'sr.update_user',
+            //     'sr.start_time',
+            //     'sr.scheduled_date', 'sr.complete_date', 'sr.create_uid',
+            //     'sr.updated_at', 'sr.total_price', 'sr.duration_hours',
+            //     'bs.code as space_code',
+            //     't.name as tenant_name',
+            //     'st.name as service_type',
+            //     's.name as service_name',
+            //     'rs.id as status_id',
+            //     'rs.name as status_name'
+            // )
             ->first();
     }
 
