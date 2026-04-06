@@ -542,9 +542,7 @@ console.log(123,op);
                     </div>
                 </div>
             `,
-
             contentCreated: (me) => {
-
                 const updatePricePreview = () => {
                     const unit = me.controls.unit_type?.value || '';
                     const showDuration = unit === '2';
@@ -566,7 +564,6 @@ console.log(123,op);
                         previewRow.style.display = 'none';
                     }
                 };
-
                 me.searchTenant = VSSearchInput.init(me.controls.tenant, {
                     type: 'select',
                     prefetch: true,
@@ -620,7 +617,6 @@ console.log(123,op);
                     me.servicePrice = 0;
                     updatePricePreview();
                 });
-
                 ['unit_type', 'duration_hours'].forEach(f => {
                     me.controls[f]?.addEventListener('change', updatePricePreview);
                 });
@@ -685,7 +681,6 @@ console.log(123,op);
                 }
             ]
         });
-
         dialog.show(op);
     };
 
