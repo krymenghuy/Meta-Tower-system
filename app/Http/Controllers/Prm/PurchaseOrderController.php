@@ -29,8 +29,7 @@ class PurchaseOrderController extends Controller
     public function getPurchaseOrderList(Request $req)
     {
         $ss = XAuthService::verifyAuth($req, -1);
-        if ($ss->status_code != 200)
-            return $ss;
+        if ($ss->status_code !== 200) return JDV::raw($ss);
         $item = new PurchaseOrder(null, $ss);
         $data = $item->getPurchaseOrderList($req->all(), $ss);
         return JDV::result($data);
@@ -57,12 +56,11 @@ class PurchaseOrderController extends Controller
     }
     public function getItemsByPurchaseOrder(Request $req){
         $ss = XAuthService::verifyAuth($req,-1);
-        if($ss->status_code !=200) return $ss;
-        $poId = $req->input('id') ?? $req->input('po_id') ?? $req->id ?? null;
-        $item = new PurchaseOrder(null,$ss);
-        $data = $item->getItemsByPurchaseOrder(['id' => $poId, 'po_id' => $poId], $ss);
-        $list = is_object($data) && method_exists($data, 'toArray') ? $data->toArray() : (array) $data;
-        return JDV::result($list);
+        if($ss->status_code !==200) return JDV::raw($ss);
+        if(!isset($req->po_id) || !is_numeric($req->po_id)){
+            return JDV::error('Invalid ID');
+        }
+        return JDV::result($this->purchaseOrders->getItemsByPurchaseOrder($req->po_id, $ss));
     }
 
     public function deletePurchaseOrder(Request $req)
@@ -74,7 +72,7 @@ class PurchaseOrderController extends Controller
         if (!isset($req->id) || !is_numeric($req->id)) {
             return JDV::error('Invalid ID');
         }
-        $res = $this->purchaseOrders->deletePurchaseOrder((int) $req->id, $ss);
+        $res = $this->purchaseOrders->deletePurchaseOrder($req->id, $ss);
         return JDV::raw($res);
     }
 
@@ -84,10 +82,8 @@ class PurchaseOrderController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        if (!isset($req->id) || !is_numeric($req->id)) {
-            return JDV::error('Invalid ID');
-        }
-        $res = $this->purchaseOrders->receivePurchaseOrder($req->id, $ss, $req->all());
+      
+        $res = $this->purchaseOrders->receivePurchaseOrder($req->all(),$req->id, $ss);
         return JDV::raw($res);
     }
 
@@ -111,4 +107,44 @@ class PurchaseOrderController extends Controller
         $res = $this->purchaseOrders->authorized($req->all(),$ss);
         return JDV::raw($res);
     }
+
+    public function getPOFormOptions(Request $req)
+{
+    $ss = XAuthService::verifyAuth($req, -1);
+    if ($ss->status_code != 200) {
+        return JDV::raw($ss);
+    }
+
+    $id = $req->po_id ?? $req->id;
+
+    $po_detail = null;
+    $items = [];
+    $totals = [];
+
+    if (!empty($id)) {
+
+        $po_detail = PurchaseOrder::purchaseOrderDetails($id, $ss);
+        if ($po_detail) {
+            $model = new PurchaseOrder(null);
+            $items = $model->getItemsByPO(['po_id' => $id], $ss);
+            $po_detail->items = $items;
+            $totals = [
+                'discount_type'  => $po_detail->discount_type ?? 'amount',
+                'discount_value' => $po_detail->discount_value ?? 0,
+                'extra_items' => []
+
+            ];
+            $po_detail->totals = $totals;
+        }
+    }
+
+    $data = [
+        'po_detail' => $po_detail,
+        'items' => $items,
+        'totals' => $totals,
+        'item_options' => PurchaseOrder::getOptionItems(),
+    ];
+
+    return JDV::result($data);
+}
 }

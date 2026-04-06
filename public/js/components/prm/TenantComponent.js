@@ -252,13 +252,6 @@ var TenantComponent = new (function () {
                     name: "upload_document",
                 },
                 {
-                    html: '<span class="ps-2">Renew Contract</span>',
-                    icon: `<i class="fa-solid fa-arrows-rotate fs-5 text-prm-custom"></i>`,
-
-                    cssClass: "border-bottom pb-2",
-                    name: "renew_contract",
-                },
-                {
                     html: '<span class="ps-2">Edit Information</span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
@@ -285,8 +278,6 @@ var TenantComponent = new (function () {
                 // menu.edit_student.style.display = enroll_finalized == 1 ? 'none' : 'block';
                 menu.create_contract.style.display =
                     status_id == 1 ? "block" : "none";
-                menu.renew_contract.style.display =
-                    status_id > 1 ? "block" : "none";
                 menu.service_request.style.display =
                     status_id == 2 ? "block" : "none";
                 menu.upload_document.style.display =
@@ -309,10 +300,6 @@ var TenantComponent = new (function () {
                     }
                     case "upload_document": {
                         mThis.uploadDocument(id, menuLink);
-                        break;
-                    }
-                    case "renew_contract": {
-                        mThis.renewContract(id, menuLink);
                         break;
                     }
                     case "edit_tenant": {
@@ -449,17 +436,17 @@ var TenantComponent = new (function () {
                 switch (status) {
                     case "active":
                         statusClass =
-                            "badge text-dark bg-success-subtle border border-success";
+                            "badge text-success bg-success-subtle border border-success";
 
                         break;
                     case "inactive":
                         statusClass =
-                            "badge text-dark bg-danger-subtle border border-danger";
+                            "badge text-danger bg-danger-subtle border border-danger";
 
                         break;
                     default:
                         statusClass =
-                            "badge text-dark bg-warning-subtle border border-warning";
+                            "badge text-warning bg-warning-subtle border border-warning";
 
                         break;
                 }
@@ -1153,7 +1140,7 @@ var TenantComponent = new (function () {
                                 <i class="fa fa-file-text me-1 text-primary"></i>
                                 Renewal History
                             </h5>
-                            <div class="container py-4 position-relative overflow-auto lease-history-scroll" style="max-height: 360px; scrollbar-width: thin;scrollbar-color: #888 #f1f1f1;">
+                            <div class=" py-4 position-relative overflow-auto lease-history-scroll" style="max-height: 360px; scrollbar-width: thin;scrollbar-color: #888 #f1f1f1;">
                                 ${cardsHtml}
                             </div>
                         </div>`;
@@ -1426,8 +1413,8 @@ const CreateTenantDialog = (() => {
                         <div class="col-md-8 row pb-3">
                             <div class="col-12 ">
                                 <div class="material-input outlined">
-                                    <input type="text" name="name" class="data-input form-control" data-field="name" placeholder="Full Name" />
-                                   <!-- <label style="color:#777777;padding-left:6px;">Full Name</label> -->
+                                    <input type="text" name="name" class="data-input form-control" data-field="name" placeholder="" />
+                                    <label style="color:#777777;padding-left:6px;">Full Name</label>
                                 </div>
 
                             </div>

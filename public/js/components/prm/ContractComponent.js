@@ -74,40 +74,32 @@ var ContractComponent = new (function () {
             transTitle: "titles.Price",
             className: "align-middle",
             data: (data) => {
-                const cur = data.cur_symbol ?? '$';
-                const price = data.price ? Number(data.price).toLocaleString() : '-';
+                const price = VSMoney.formatAmount(data.price,data.currency_code ?? 'USD');
 
                 if (data.price_type === 'total') {
                     return `
-                        <span class="fw-semibold">
-                            ${cur} ${price}
-                            <small class="text-muted">/mon</small>
-                        </span>
-                        <div class="text-muted small">Whole Room</div>
+                        <span class="text-nowrap w-semibold">${price} <small class="text-nowrap text-muted">/mon</small></span>
+                        <div class="text-nowrap text-muted small">Whole Room</div>
                     `;
                 }
 
                 return `
                     <span class="text-nowrap text-primary-custom">
-                        ${cur} ${price}
-                        <small class="text-muted">/sqm</small>
+                            ${price}
+                        <small class="text-nowrap text-muted">/sqm</small>
                     </span>
-                    <div class="text-muted small">
+                    <div class="text-nowrap text-muted small">
                         ${data.sqm_size ?? '-'} sqm
                     </div>
                 `;
             }
         },
         {
-            title: "DEPOSIT",
+            transTitle: "titles.Deposit",
             className: "align-middle",
             data: (data) => {
-                const cur = data.cur_symbol ?? '$';
-                const amount = data.deposit ?? data.deposit_amount;
-                if (amount === null || amount === undefined || amount === '') {
-                    return `<span class="text-muted">-</span>`;
-                }
-                return `<span class="fw-semibold">${cur} ${Number(amount).toLocaleString()}</span>`;
+               const deposit = VSMoney.formatAmount(data.deposit, data.currency_code ?? 'USD');
+                return `<span class="fw-semibold">${deposit}</span>`;
             }
         },
 
@@ -961,6 +953,8 @@ const ContractDialog = (() => {
 
             onPrepareForm: (me, data) => {
                 LocaleManager.translateZone(me.divModal);
+                //   const isReadOnly = me.dataOptions.id > 0;
+                    // me.setReadOnly(isReadOnly, ["business_type_id"]);
                 if (me.searchTenant && typeof me.searchTenant.reset === "function") {
                     me.searchTenant.reset();
                 }
@@ -1321,10 +1315,14 @@ const RenewDialog = (() => {
                 if (me.controls.price) me.controls.price.value = "";
                 if (me.controls.price_type) me.controls.price_type.value = "";
                 if (me.controls.remarks) me.controls.remarks.value = "";
-                // DateTimePicker may attach after first paint; re-apply renew start = old end.
+                // DateTimePicker may attach after first paint; force final values.
                 setTimeout(() => {
                     if (me.controls.start_date && renewStartIso) {
                         me.controls.start_date.value = renewStartIso;
+                    }
+                    // Keep renew end_date empty by default (user must choose).
+                    if (me.controls.end_date) {
+                        me.controls.end_date.value = "";
                     }
                 }, 0);
 

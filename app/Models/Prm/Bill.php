@@ -206,6 +206,7 @@ class Bill
             ->leftJoin('bill_statuses as s', 's.id', 'b.status_id')
             ->leftJoin('expense_categories as ex', 'ex.id', 'b.expense_type_id')
             ->whereRaw($str_moreWhere)
+            ->where('b.status_id', '!=', 2)
             ->selectRaw("b.id, b.bill_number, b.ref_no, b.expense_type_id,ex.name as expense_type_name,b.vendor_id,v.name as vendor_name, v.phone_number, b.bill_date,
                 b.total_amount, b.balance, b.paid_amount,b.status_id, s.name as status,b.file_image, b.update_user, b.remark, b.updated_at")
             ->orderBy('b.id', 'desc');
@@ -293,10 +294,6 @@ class Bill
 
         return DV::depends($x, ['Bill status', 'updated']);
     }
-
-
-
-
     public function viewBillAttachment($id = null, $ss = null)
     {
         $id = $id ?? $this->id;
@@ -310,7 +307,7 @@ class Bill
         if (!$bill) return DV::error('Bill not found.');
         if (!$bill->file_image) return DV::error('No attachment found for this bill.');
 
-        // Build full URL using same pattern as TenantDocument
+
         $fileUrl = XPublicStorage::getUrl(
             ['subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 
             'images'

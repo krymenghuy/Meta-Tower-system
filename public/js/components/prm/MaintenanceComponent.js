@@ -309,7 +309,7 @@ const CreateMaintenanceDialog = (() => {
                             </div>
                             <div id="_maintenance_unit_space_row" class="col-12 col-sm-6" style="display:none;">
                                 <div class="material-input outlined">
-                                    <select data-style="material" name="space_id" class="data-input form-control" data-field="space_id" placeholder="Select space"><option value="">Select space</option></select>
+                                    <select data-style="material" name="space_id" class="data-input form-control" data-field="space_id" id="_maintenance_space_id" placeholder="Select space"><option value="">Select space</option></select>
 
                                 </div>
                             </div>
@@ -371,9 +371,10 @@ const CreateMaintenanceDialog = (() => {
                     if (val !== "amenity" && me.controls?.amenity_id) me.controls.amenity_id.value = "";
                 };
                 typeUnit?.addEventListener("change", toggleUnitFields);
-                if (me.detail) {
-                    if (me.detail.space_id) typeUnit.value = "space";
-                    else if (me.detail.amenity_id) typeUnit.value = "amenity";
+                const unitPreset = me.detail || me.dataOptions;
+                if (unitPreset) {
+                    if (unitPreset.space_id) typeUnit.value = "space";
+                    else if (unitPreset.amenity_id) typeUnit.value = "amenity";
                 }
                 toggleUnitFields();
             },
@@ -389,7 +390,12 @@ const CreateMaintenanceDialog = (() => {
                 targetProp: "maintenance_details",
                 api: {
                     endpoint: `${main_view.base_url}/prm/maintenance/form-options`,
-                    params: (op) => ({ id: op.id || null })
+                    params: (op) => {
+                        const p = { id: op.id || null };
+                        if (op.space_id != null && op.space_id !== "") p.space_id = op.space_id;
+                        if (op.amenity_id != null && op.amenity_id !== "") p.amenity_id = op.amenity_id;
+                        return p;
+                    }
                 }
             },
             onPrepareForm: (me, data) => {

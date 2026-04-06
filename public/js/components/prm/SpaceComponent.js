@@ -139,7 +139,13 @@ var SpaceComponent = new (function () {
             rowCreated: (data, index, tr) => {
             },
             processResponse: (res) => {
-                return res.data;
+                const payload = res.data;
+                if (payload && payload.summary) {
+                    mThis.setDataSummary(payload.summary);
+                } else {
+                    mThis.setDataSummary(null);
+                }
+                return payload;
             },
             renderItems: (data, list_container) => {
                 mThis.renderSpaceCard(list_container, data);
@@ -153,7 +159,7 @@ var SpaceComponent = new (function () {
                 id: null,
                 btn: e.target,
                 onClose: () => {
-                    mThis.SpaceListView.showPage(mThis.getFilterData());
+                    mThis.applyListFilters();
                 }
             };
             BuildingSpaceDialog.show(op);
@@ -189,71 +195,76 @@ var SpaceComponent = new (function () {
 
 
 
-        mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
-            el.onchange = () => {
-                mThis.SpaceListView.showPage(mThis.getFilterData());
-            }
-        });
+        mThis.bindSpaceFilterListeners();
 
         mThis.elSearch.addEventListener('keyup', (e) => {
             e.preventDefault();
             clearTimeout(mThis.search_timeout);
             mThis.search_timeout = setTimeout(() => {
-                mThis.SpaceListView.showPage(mThis.getFilterData());
+                mThis.applyListFilters();
             }, 250);
         });
 
 
         mThis.initAlready = true;
     };
-    mThis.setDataSummary = () => {
+    // Align accent + value colors with unit-card status colors in renderSpace (available / booked / occupied).
+    mThis.summaryPalette = {
+        total: '#5867dd',
+        occupancy: '#fd397a',
+        available: '#0abb87',
+        booked: '#5578eb',
+    };
 
-        const s = {
-            total_units: 10,
-            occupancy: 92.4,
-            available: 3,
-            pending: 3
-        };
+    mThis.setDataSummary = (summary) => {
+        const pal = mThis.summaryPalette;
+        const s = summary && typeof summary === 'object'
+            ? summary
+            : { total_units: 0, occupancy: 0, available: 0, booked: 0 };
+        const total = Number(s.total_units ?? 0);
+        const occ = Number(s.occupancy ?? 0);
+        const avail = Number(s.available ?? 0);
+        const booked = Number(s.booked ?? 0);
 
         let html = `<div class="row g-2">`;
 
         html += `<div class="col-12 col-sm-6 col-lg-2">
-                <div class="metric-card-sm" style="border-left:6px solid #5867dd;">
+                <div class="metric-card-sm" style="border-left:6px solid ${pal.total};">
                     <div class="metric-head-sm">
-                        <span class="metric-dot bg-primary"></span>
+                        <span class="metric-dot d-inline-block rounded-circle" style="width:8px;height:8px;background:${pal.total};"></span>
                         <span>Total Units</span>
                     </div>
-                    <div class="metric-value-sm">${s.total_units}</div>
+                    <div class="metric-value-sm fw-bold px-4" style="color:${pal.total};">${total}</div>
                 </div>
             </div>
 
             <div class="col-12 col-sm-6 col-lg-2">
-                <div class="metric-card-sm" style="border-left:6px solid #0abb87;">
+                <div class="metric-card-sm" style="border-left:6px solid ${pal.occupancy};">
                     <div class="metric-head-sm">
-                        <span class="metric-dot bg-success"></span>
+                        <span class="metric-dot d-inline-block rounded-circle" style="width:8px;height:8px;background:${pal.occupancy};"></span>
                         <span>Occupancy</span>
                     </div>
-                    <div class="metric-value-sm">${s.occupancy}%</div>
+                    <div class="metric-value-sm fw-bold px-4" style="color:${pal.occupancy};">${occ}</div>
                 </div>
             </div>
 
             <div class="col-12 col-sm-6 col-lg-2">
-                <div class="metric-card-sm" style="border-left:6px solid #fd397a;">
+                <div class="metric-card-sm" style="border-left:6px solid ${pal.available};">
                     <div class="metric-head-sm">
-                        <span class="metric-dot bg-danger"></span>
+                        <span class="metric-dot d-inline-block rounded-circle" style="width:8px;height:8px;background:${pal.available};"></span>
                         <span>Available</span>
                     </div>
-                    <div class="metric-value-sm">${s.available}</div>
+                    <div class="metric-value-sm fw-bold px-4" style="color:${pal.available};">${avail}</div>
                 </div>
             </div>
 
             <div class="col-12 col-sm-6 col-lg-2">
-                <div class="metric-card-sm" style="border-left:6px solid #ffb822;">
+                <div class="metric-card-sm" style="border-left:6px solid ${pal.booked};">
                     <div class="metric-head-sm">
-                        <span class="metric-dot bg-warning"></span>
-                        <span>Pending</span>
+                        <span class="metric-dot d-inline-block rounded-circle" style="width:8px;height:8px;background:${pal.booked};"></span>
+                        <span>Booked</span>
                     </div>
-                    <div class="metric-value-sm">${s.pending}</div>
+                    <div class="metric-value-sm fw-bold px-4" style="color:${pal.booked};">${booked}</div>
                 </div>
             </div>`;
 
@@ -262,22 +273,51 @@ var SpaceComponent = new (function () {
     };
 
     mThis.getFilterData = () => {
+        const nz = (v) => (v === "" || v === null || v === undefined ? "0" : String(v));
         let p = {
-            search_value: mThis.elSearch.value,
-            status_id: mThis.elFilter_status.value,
-            building_id: mThis.elBuilding.value,
-            floor_id: mThis.elFloor.value,
+            search_value: mThis.elSearch.value || "",
+            status_id: nz(mThis.elFilter_status && mThis.elFilter_status.value),
+            building_id: nz(mThis.elBuilding && mThis.elBuilding.value),
+            floor_id: nz(mThis.elFloor && mThis.elFloor.value),
         };
 
-        mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             const f = el.dataset.field;
-            p[f] = el.value;
+            if (f) {
+                if (f === "status_id" || f === "building_id" || f === "floor_id") {
+                    p[f] = nz(el.value);
+                } else {
+                    p[f] = el.value;
+                }
+            }
         });
-        // console.log(6767,p);
-
 
         return p;
     };
+
+    /**
+     * ListView merges cached api_params; falsy values get overwritten by stale params.
+     * We send "0" for "All …" selects (PHP treats as no filter). setParams keeps cache aligned.
+     */
+    mThis.applyListFilters = () => {
+        const d = mThis.getFilterData();
+        if (mThis.SpaceListView && typeof mThis.SpaceListView.setParams === "function") {
+            mThis.SpaceListView.setParams(d);
+        }
+        mThis.SpaceListView.showPage(d);
+    };
+
+    mThis.bindSpaceFilterListeners = () => {
+        if (mThis._spaceFilterListenersBound) {
+            return;
+        }
+        mThis._spaceFilterListenersBound = true;
+        mThis.divFilter.addEventListener("change", (e) => {
+            e.preventDefault();
+            mThis.applyListFilters();
+        });
+    };
+
     mThis.initDropdownMenus = (table) => {
         const menuOptopns = {
             containerElement: table,
@@ -382,7 +422,6 @@ var SpaceComponent = new (function () {
         });
     }
     mThis.renderSpace = (container, data) => {
-        console.log(9090, data);
         container.innerHTML = "";
         let html = `<div class="row g-3">`;
         if (Array.isArray(data) && data.length > 0) {
@@ -524,7 +563,7 @@ var SpaceComponent = new (function () {
             btn: menulink,
             onClose: () => {
                 ;
-                mThis.SpaceListView.showPage(mThis.getFilterData());
+                mThis.applyListFilters();
             }
         };
         ContractDialog.show(op);
@@ -539,7 +578,7 @@ var SpaceComponent = new (function () {
             btn: menulink,
             onClose: () => {
                 ;
-                mThis.SpaceListView.showPage(mThis.getFilterData());
+                mThis.applyListFilters();
             }
         };
 
@@ -551,7 +590,7 @@ var SpaceComponent = new (function () {
             building_id: menulink?.dataset?.buildingid || null,
             btn: menulink,
             onClose: () => {
-                mThis.SpaceListView.showPage(mThis.getFilterData());
+                mThis.applyListFilters();
             }
         };
         if (typeof CreateMaintenanceDialog !== "undefined") {
@@ -564,7 +603,7 @@ var SpaceComponent = new (function () {
                 vsapi.call(`${main_view.base_url}/prm/maintenance/finish-by-space`, { space_id: id }, menulink, null).then(res => {
                     if (res.status_code === 200) {
                         cv_interact.success("Maintenance finished.");
-                        mThis.SpaceListView.showPage(mThis.getFilterData());
+                        mThis.applyListFilters();
                     } else {
                         cv_interact.error(res.error_message || "Failed");
                     }
@@ -578,7 +617,7 @@ var SpaceComponent = new (function () {
             space_id: id,
             btn: menulink,
             onClose: () => {
-                mThis.SpaceListView.showPage(mThis.getFilterData());
+                mThis.applyListFilters();
             }
         };
 
@@ -589,7 +628,7 @@ var SpaceComponent = new (function () {
             id: id,
             btn: menulink,
             onClose: () => {
-                mThis.SpaceListView.showPage(mThis.getFilterData());
+                mThis.applyListFilters();
             }
         };
         // if (!AuthManager.allowed(242)) return;
@@ -603,7 +642,7 @@ var SpaceComponent = new (function () {
                     if (res.status_code == 200) {
 
                         cv_interact.success('Space has been deleted')
-                        mThis.SpaceListView.showPage();
+                        mThis.applyListFilters();
                     } else {
                         cv_interact.error(res.error_message);
                     }
@@ -629,7 +668,7 @@ var SpaceComponent = new (function () {
                     },
                     btn: e.target,
                     onClose: () => {
-                        mThis.SpaceListView.showPage(mThis.getFilterData());
+                        mThis.applyListFilters();
                     }
                 };
                 ContractDialog.show(op);
@@ -668,8 +707,8 @@ var SpaceComponent = new (function () {
         mThis.options = options;
         mThis.prepareFormOptions(() => {
             main_view.setContentView(mThis.self, mThis.title_prop);
-            mThis.setDataSummary();
-            mThis.SpaceListView.showPage(mThis.getFilterData());
+            mThis.setDataSummary(null);
+            mThis.applyListFilters();
         });
 
     };
@@ -901,7 +940,7 @@ const CreateBookingDialog = (() => {
                                     <input type="text" data-type="date" name="expired_booking_date" class="data-input form-control form_input" data-field="expired_booking_date" />
                                     <label style="color:#777777;padding-left:6px;">Expired Booking Date</label>
                                 </div>
-                                
+
                             </div>
 
 
