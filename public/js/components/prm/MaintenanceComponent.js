@@ -264,7 +264,7 @@ var MaintenanceComponent = (() => {
                 if (res.status_code === 200) {
                     const d = res.data || {};
                     VSUtil.setComboItems(mThis.elFilter_building, d.buildings || [], "id", "building", '', "All Building", '');
-                    VSUtil.setComboItems(mThis.elFilter_status, d.maintenance_statuses || [], "id", "maintenance_status", '', "All Status", '');
+                    VSUtil.setComboItems(mThis.elFilter_status, d.maintenance_statuses || [], "id", "maintenance_status", '', "All Statuses", '');
                 }
                 if (typeof onFinish === "function") onFinish();
             });

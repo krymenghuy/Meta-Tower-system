@@ -38,7 +38,7 @@ var BillPaymentComponent = (() => {
             btnToggle.textContent       = mThis.displayCurrency;
             btnToggle.style.color       = mThis.displayCurrency === "KHR" ? "#059669" : "#1d4ed8";
             btnToggle.style.borderColor = mThis.displayCurrency === "KHR" ? "#059669" : "#1d4ed8";
-            if (rateBox) rateBox.style.width = mThis.displayCurrency === "KHR" ? "auto" : "0";
+            // if (rateBox) rateBox.style.width = mThis.displayCurrency === "KHR" ? "auto" : "0";
             mThis.BillPaymentListView.showPage(mThis.getFilterData());
         };
 
@@ -461,16 +461,16 @@ const BillPaymentDialog = (() => {
                                 <label style="color:#777777;padding-left:6px;">Contact</label>
                             </div>
                             <div class="material-input outlined">
-                                <input type="text" name="payer" class="data-input form-control" data-field="payer" placeholder=" " >
-                                <label style="color:#777777;padding-left:6px;">Payer</label>
-                            </div>
-                            <div class="material-input outlined">
                                <select data-style="material" name="payment_method" class="data-input form-control" data-field="payment_method" placeholder="Payment Method">
                                     <option value="cash">Cash</option>
                                     <option value="bank">Bank Transfer</option>
                                     <option value="cheque">Cheque</option>
                                     <option value="other">Other</option>
                                 </select>
+                            </div>
+                            <div class="material-input outlined">
+                                <input type="text" name="payer" class="data-input form-control" data-field="payer" placeholder=" " >
+                                <label style="color:#777777;padding-left:6px;">Payer</label>
                             </div>
                         </div>
                         <div class="col-md-2"></div>

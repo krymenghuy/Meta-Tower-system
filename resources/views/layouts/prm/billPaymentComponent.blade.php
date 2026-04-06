@@ -7,12 +7,12 @@
             <div class="col-12 col-md-6 col-lg-2">
                 <select type="id" id="_bill_vendor_id" class="data-input filter-field form-control" data-field="vendor_id"></select>
             </div>
-            <div class="col-12 col-md-6 col-lg-2">
+            <div class="col-12 col-md-6 col-lg-2 d-none">
                 <select type="id" id="_bill_status_id" class="data-input filter-field form-control" data-field="status_id"></select>
             </div>
-            <div class="col-12 col-md-6 col-lg-auto ms-auto d-flex align-items-center">
+           <div class="col-12 col-md-6 col-lg-2 ms-end d-flex align-items-end">
                 <div style="display:flex; align-items:center; gap:6px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:5px 10px;">
-                    <div id="_rate_box" style="display:flex; align-items:center; gap:6px; width:0; overflow:hidden; transition:width 0.2s;">
+                    <div id="_rate_box" style="display:flex; align-items:center; gap:6px;">
                         <span style="font-size:11px; color:#64748b; white-space:nowrap;">1 USD =</span>
                         <input id="_exchange_rate_input" type="number" min="1" value="4100"
                             style="width:75px; border:none; background:transparent; font-size:12px; font-weight:500; text-align:right; outline:none; color:#1d4ed8;">
