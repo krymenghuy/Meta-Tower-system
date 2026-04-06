@@ -132,7 +132,8 @@ class BillPayment
             ->leftJoin('vendors as v', 'v.id', 'b.vendor_id')
             ->leftJoin('expense_categories as ex', 'ex.id', 'b.expense_type_id')
             ->whereRaw($str_search)
-            ->where('b.status_id', 2);
+            // ->where('b.status_id')
+            ;
 
         if ($bill_id) {
             $query->where('bp.bill_id', $bill_id);

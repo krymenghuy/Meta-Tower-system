@@ -159,7 +159,7 @@ function v_display($mod_id, $module_ids = null)
                 </li><li class="kt-menu__item" aria-haspopup="true" <?php v_display(206); ?>>
                     <a href="BillPaymentComponent" modid="270" class="menu-item kt-menu__link">
                         <span class="kt-menu__link-icon">
-                            <img class="icons opacity-icons" src="{{ asset('assets/images/icons/money.svg') }}" />
+                            <img class="icons opacity-icons" src="{{ asset('assets/images/icons/money-bag.svg') }}" />
                         </span>
                         <span class="kt-menu__link-text font-color " vslang="menus.Bill Payment"></span>
                     </a>

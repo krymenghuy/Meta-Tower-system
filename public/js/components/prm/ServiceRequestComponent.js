@@ -45,48 +45,17 @@ var ServiceRequestComponent = (function () {
             }
         },
         {
-            title: "Service Type",
-            className: "align-middle",
+            title: "Request Type",
+            className: "align-middle text-nowrap",
             data: (data) =>
                 `<span class="d-block text-prm-custom text-nowrap">${data.service_type ?? ""}</span>
                  <span class="d-block text-prm-custom text-nowrap">${data.service_name ?? ""}</span>`,
         },
-        // {
-        //     transTitle: "titles.Price",
-        //     className: "align-middle",
-        //     data: (data) => {
-        //         const cur = data.cur_symbol ?? '$';
-        //         let mainPrice = data.service_price;
-        //         console.log(55,data.service_price);
-
-        //         let displayPrice = mainPrice
-        //             ? Number(mainPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-        //             : '—';
-
-        //         let extraInfo = '';
-
-        //         if (data.unit_type == '2' && data.duration_hours > 0 && data.service_price) {
-        //             const base = Number(data.service_price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-        //             extraInfo = `<small class="text-muted d-block">$${base} × ${data.duration_hours}h</small>`;
-        //         } else if (data.unit_type) {
-        //             extraInfo = `<small class="text-nowrap text-muted d-block">/ ${data.unit_type}</small>`;
-        //         }
-
-        //         return `
-        //         <span class="fw-bold fs-6">${cur} ${displayPrice}</span>
-        //         ${extraInfo}
-        //     `;
-        //     }
-        // },
-            {
-            title: "Price",
-            className: "align-middle text-nowrap text-end",
-            data: (data) =>{
-                const service_price = VSMoney.formatAmount(data.service_price,data.currency_code ?? 'USD');
-                const text = service_price;
-                const cls_color = data.service_price > 0 ? 'text-prm-custom' : 'text-danger';
-                    return `<span class="d-block ${cls_color}">${text}</span>`;
-
+        {
+            transTitle: "titles.Charge As",
+            className: "align-middle text-nowrap",
+            data: (data) => {
+                return `<span class="badge text-success bg-success-subtle border border-success text-nowrap" style="min-width:70px;">${data.unit_type}</span>`;
             }
         },
         {
@@ -96,13 +65,25 @@ var ServiceRequestComponent = (function () {
                 const hours = parseFloat(data.duration_hours);
 
                 if (!data.duration_hours || isNaN(hours)) {
-                    return `<span class="text-nowrap">One Time</span>`;
+                    return `<span class="text-nowrap">___</span>`;
                 }
 
                 const display = `${hours % 1 === 0 ? hours.toFixed(0) : hours} H`;
                 return `<span class="text-nowrap">${display}</span>`;
             }
         },
+        {
+            title: "Amount",
+            className: "align-middle text-nowrap text-end",
+            data: (data) =>{
+                const service_price = VSMoney.formatAmount(data.total_price,data.currency_code ?? 'USD');
+                const text = service_price;
+                const cls_color = data.total_price > 0 ? 'text-prm-custom' : 'text-danger';
+                    return `<span class="d-block ${cls_color}">${text}</span>`;
+
+            }
+        },
+      
         // {
         //     transTitle: "titles.Schedule Date",
         //     className: "align-middle text-nowrap text-center",
@@ -168,9 +149,9 @@ var ServiceRequestComponent = (function () {
 
                 return `
                     <div class="d-flex flex-column align-items-start">
-                        <span class="text-prm-custom text-nowrap">${data.scheduled_date ?? ''}</span>
-                        <span class="text-warning small text-nowrap">
-                            ${formatTime(data.start_time)}
+                        <span class="text-primary text-nowrap">${data.scheduled_date ?? ''}</span>
+                        <span class="text-prm-custom small text-nowrap">
+                            Start Time: ${formatTime(data.start_time)}
                         </span>
                     </div>
                 `;
@@ -392,12 +373,12 @@ var ServiceRequestComponent = (function () {
             onClick: (menuLink, id, name) => {
                 const row = document.getElementById(`service_request_id_${id}`);
                 const statusId = parseInt(row.dataset.statusId || '0', 10);
-                if (statusId !== 2) {
-                    if (name === 'edit_request') {
-                        cv_interact.info('Cannot modify');
-                        return;
-                    }
-                }
+                // if (statusId !== 2) {
+                //     if (name === 'edit_request') {
+                //         cv_interact.info('Cannot modify');
+                //         return;
+                //     }
+                // }
                 if (name === 'edit_request') mThis.editServiceRequest(id, menuLink);
                 if (name === 'delete_request') mThis.deleteRequest(id, menuLink);
             }
@@ -457,8 +438,10 @@ return mThis;
 const CreateServiceRequestDialog = (() => {
     const self = {};
     let dialog = null;
-
     self.show = (op) => {
+    
+console.log(123,op);
+
         dialog = dialog || new GeneralDialog({
             cssClass: "modal-lg vs-modal",
             backdrop: "static",
@@ -467,41 +450,30 @@ const CreateServiceRequestDialog = (() => {
             createContent: () => `
                 <div class="container-fluid">
                     <div class="row g-3 mb-3">
-                        <!-- HIDDEN real tenant_id (sent to backend) -->
                         <input type="hidden" class="data-input" data-field="tenant_id">
-                        <!-- Visible Tenant Search (NO data-field so name is NOT sent) -->
                         <div class="col-md-6">
                             <div class="material-input outlined">
                                 <input name="tenant" class="form-control" data-field="tenant_id" placeholder="Tenant" autocomplete="off">
-                                <!--<label style="padding-left:6px;color:#777;">Tenant</label> -->
                             </div>
                         </div>
-
-                        <!-- Room / Space -->
                         <div class="col-md-6">
                             <div class="material-input outlined">
                                 <select data-style="material" class="data-input form-control" data-field="space_id" required placeholder="Space"></select>
                             </div>
                         </div>
                     </div>
-
                     <div class="row g-3 mb-3">
-                        <!-- Service Category -->
                         <div class="col-md-6">
                             <div class="material-input outlined">
                                 <select data-style="material" class="data-input form-control" data-field="service_type_id" required placeholder="Service Type"></select>
                             </div>
                         </div>
-
-                        <!-- Service -->
                         <div class="col-md-6">
                             <div class="material-input outlined">
                                 <select data-style="material" class="data-input form-control" data-field="service_id" required placeholder="Service"></select>
                             </div>
                         </div>
                     </div>
-
-                    <!-- Charge Unit - uses 1/2 (matches your PHP validation) -->
                     <div class="row g-3 mb-3">
                         <div class="col-md-6">
                             <div class="material-input outlined">
@@ -512,7 +484,6 @@ const CreateServiceRequestDialog = (() => {
                                 </select>
                             </div>
                         </div>
-
                         <div class="col-md-6 select-type-time" style="display:none;">
                             <div class="material-input outlined">
                                 <select data-style="material" class="data-input form-control" data-field="duration_hours" placeholder="Duration (hours)">
@@ -529,19 +500,18 @@ const CreateServiceRequestDialog = (() => {
                         </div>
                     </div>
 
-                    <!-- Price Preview, Date, Time, Remarks (your exact HTML) -->
                     <div class="row g-3 mb-3" id="price-preview-row" style="display:none;">
                         <div class="col-12">
-                            <div class="alert alert-info d-flex align-items-center justify-content-between shadow-sm price-alert">
+                            <div class="alert alert-secondary d-flex align-items-center justify-content-between shadow-sm price-alert">
                                 <div class="d-flex align-items-center">
                                     <i class="fas fa-calculator fa-2x me-3 text-primary"></i>
                                     <div>
-                                        <small class="text-muted d-block mb-1">Estimated Total</small>
+                                        <small class="text-muted d-block mb-1">Amount</small>
                                         <strong class="fs-4 text-primary" id="calc-total">$0.00</strong>
                                     </div>
                                 </div>
                                 <div class="text-end">
-                                    <small class="text-muted d-block">Base Price x Duration</small>
+                                    <small class="text-muted d-block">Price x Duration</small>
                                     <span class="badge bg-primary" id="calc-breakdown">-</span>
                                 </div>
                             </div>
@@ -570,12 +540,9 @@ const CreateServiceRequestDialog = (() => {
                             </div>
                         </div>
                     </div>
-                    <input type="hidden" class="data-input" data-field="status_id" value="1">
                 </div>
             `,
-
             contentCreated: (me) => {
-
                 const updatePricePreview = () => {
                     const unit = me.controls.unit_type?.value || '';
                     const showDuration = unit === '2';
@@ -597,7 +564,6 @@ const CreateServiceRequestDialog = (() => {
                         previewRow.style.display = 'none';
                     }
                 };
-
                 me.searchTenant = VSSearchInput.init(me.controls.tenant, {
                     type: 'select',
                     prefetch: true,
@@ -611,6 +577,7 @@ const CreateServiceRequestDialog = (() => {
                     },
                     columns: { name: "Name", phone_number: "Phone" },
                     onSelect: (tenant) => {
+                        console.log(12553, tenant);
                         me.controls.tenant_id.value = tenant.id;
                         // me._selectedTenantId = tenant.id;
 
@@ -619,7 +586,6 @@ const CreateServiceRequestDialog = (() => {
                         }).then(res => {
                             const d = res.data || {};
                             VSUtil.setComboItems(me.controls.space_id, d.spaces || [], 'space_id', 'space_code', '', '-- Select Room --');
-
                             const typesMap = {};
                             (d.service || []).forEach(s => {
                                 if (!typesMap[s.service_type_id]) {
@@ -627,15 +593,13 @@ const CreateServiceRequestDialog = (() => {
                                 }
                             });
                             VSUtil.setComboItems(me.controls.service_type_id, Object.values(typesMap), 'id', 'service_type', '', '-- Select Category --');
-
                             me._availableServices = d.service || [];
                             me.controls.service_id.innerHTML = '<option value="">-- Select Service --</option>';
                             updatePricePreview();
                         });
                     }
                 });
-
-                // Service selected → force numeric unit_type
+                me.searchTenant.reset("");
                 me.controls.service_id?.addEventListener('change', () => {
                     const svc = me._availableServices?.find(s => String(s.id) === me.controls.service_id.value);
                     if (svc) {
@@ -644,7 +608,6 @@ const CreateServiceRequestDialog = (() => {
                         updatePricePreview();
                     }
                 });
-
                 me.controls.service_type_id?.addEventListener('change', () => {
                     const typeId = me.controls.service_type_id.value;
                     let filtered = me._availableServices || [];
@@ -654,13 +617,10 @@ const CreateServiceRequestDialog = (() => {
                     me.servicePrice = 0;
                     updatePricePreview();
                 });
-
                 ['unit_type', 'duration_hours'].forEach(f => {
                     me.controls[f]?.addEventListener('change', updatePricePreview);
                 });
             },
-
-
             onPrepareForm: (me, data) => {
                 console.log(4444444444,data.request_details);
 
@@ -706,6 +666,8 @@ const CreateServiceRequestDialog = (() => {
                     click: (me, btn) => {
                         const data = me.getData();
                         data.id = op?.id || null;
+                        console.log(3333,data);
+                        
                         vsapi.call([main_view.base_url, "/prm/service-request/save",].join(""), data, btn, null)
                             .then((res) => {
                                 if (res.status_code === 200) {
@@ -719,7 +681,6 @@ const CreateServiceRequestDialog = (() => {
                 }
             ]
         });
-
         dialog.show(op);
     };
 

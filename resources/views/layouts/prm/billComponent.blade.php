@@ -3,15 +3,13 @@
         <div class="row g-3 align-items-center">
             <div class="col-12 col-md-6 col-lg-3">
                 <input type="text" class="form-control rounded-2 pe-5 filter-field input-search" id="_search_bill" placeholder="Search ____" >
-         </div>
-
-         <div class="col-12 col-md-6 col-lg-2">
+            </div>
+            <div class="col-12 col-md-6 col-lg-2">
                 <select type="id" id="_bill_vendor_id" class="data-input filter-field form-control" data-field="vendor_id"></select>
             </div>
-             <div class="col-12 col-md-6 col-lg-2">
+            <div class="col-12 col-md-6 col-lg-2">
                 <select type="id" id="_bill_status_id" class="data-input filter-field form-control" data-field="status_id"></select>
             </div>
-
             <div class="col-12 col-md-3 col-lg-2 ms-auto text-md-end" style="overflow:visible;">
                 <button type="button" class="btnAddNewPrm w-100 w-md-auto" id="_btnBill">
                     <i class="fa-solid fa-bars-staggered"></i>
