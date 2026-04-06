@@ -73,6 +73,14 @@ class ContractController extends Controller
             return JDV::raw($ss);
         }
 
+        $space_id = $req->space_id ?? null;
+        if ($space_id && is_numeric($space_id)) {
+            $check = Contract::validateBookingTenantPhone($space_id);
+            if (!($check->status ?? false)) {
+                return JDV::error($check->message ?? 'Please create tenant first.');
+            }
+        }
+
         return JDV::result($this->contracts->getFormOptions($req->id,$ss));
     }
 
@@ -137,6 +145,26 @@ class ContractController extends Controller
         $months = Contract::generateContractMonths((int) $contract_id);
 
         return JDV::result(['months' => $months]);
+    }
+
+    public function validateBookingTenantPhone(Request $req)
+    {
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+
+        $space_id = $req->space_id ?? null;
+        if (!$space_id || !is_numeric($space_id)) {
+            return JDV::error('Invalid space ID');
+        }
+
+        $res = Contract::validateBookingTenantPhone((int) $space_id);
+        if (!($res->status ?? false)) {
+            return JDV::error($res->message ?? 'Phone number validation failed.');
+        }
+
+        return JDV::result($res);
     }
 
 

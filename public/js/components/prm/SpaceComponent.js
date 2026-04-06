@@ -432,20 +432,20 @@ var SpaceComponent = new (function () {
                 let statusColor = "#08b9d5";
                 switch (status) {
                     case "available":
-                        statusClass = "badge text-uppercase text-white shadow-sm rounded-4 bg-success";
+                        statusClass = "badge text-uppercase text-white shadow-sm bg-success";
                         statusColor = "#0abb87";
                         break;
                     case "booked":
-                        statusClass = "badge text-uppercase text-white shadow-sm rounded-4 bg-info";
+                        statusClass = "badge text-uppercase text-white shadow-sm  bg-info";
                         statusColor = "#5578eb";
                         break;
                     case "occupied":
-                        statusClass = "badge text-uppercase text-white bg-danger shadow-sm rounded-4";
+                        statusClass = "badge text-uppercase text-white bg-danger shadow-sm ";
                         statusColor = "#fd397a";
 
                         break;
                     default:
-                        statusClass = "badge text-uppercase text-white bg-warning shadow-sm rounded-4";
+                        statusClass = "badge text-uppercase text-white bg-warning shadow-sm ";
                         statusColor = "#ffb822";
                         break;
                 }
@@ -558,15 +558,25 @@ var SpaceComponent = new (function () {
         container.innerHTML = html;
     };
     mThis.createContract = (id, menulink) => {
-        let op = {
-            id: null,
-            btn: menulink,
-            onClose: () => {
-                ;
-                mThis.applyListFilters();
+        vsapi.call(
+            `${main_view.base_url}/prm/contract/form-options`,
+            { space_id: id },
+            menulink,
+            null
+        ).then((res) => {
+            if (res.status_code !== 200) {
+                cv_interact.error(res.error_message || "Please create tenant first.");
+                return;
             }
-        };
-        ContractDialog.show(op);
+            let op = {
+                id: null,
+                btn: menulink,
+                onClose: () => {
+                    mThis.applyListFilters();
+                }
+            };
+            ContractDialog.show(op);
+        });
     }
     mThis.editSpace = (id, menulink) => {
         let op = {

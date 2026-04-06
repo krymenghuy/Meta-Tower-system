@@ -3,6 +3,7 @@
 namespace App\Models\Prm;
 
 use App\Models\Prm\GeneralSettings;
+use Carbon\Carbon;
 use DV;
 use Vsd\Vsloquent\VSModel;
 use DBX;
@@ -40,6 +41,14 @@ class Maintenance extends VSModel
             return DV::error($res->error);
         }
         $input = $res->values;
+
+        $startAt = Carbon::parse($input['start_date']);
+        $endAt = Carbon::parse($input['end_date']);
+        if ($startAt->greaterThanOrEqualTo($endAt)) {
+            return DV::error(
+                'Start date and time must be before end date and time. Expected format: YYYY-MM-DD hh:mm AM/PM.'
+            );
+        }
 
         try {
             $sid = (int) ($input['status_id'] ?? 0);
