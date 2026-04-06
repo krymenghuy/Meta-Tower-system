@@ -135,7 +135,6 @@ class Receipt extends Model
                 'rb.amount',
                 'rb.currency_code',
                 'rb.bank_ref_number',
-                'rb.account_name',
                 'rb.bank_name as manual_bank_name',
                 'b.name as registered_bank_name',
                 'rb.card_number',
@@ -146,11 +145,17 @@ class Receipt extends Model
 
         return $header;
     }
+    
 
-    public function deleteReceipt($id, $ss = null)
+    public function deleteById($id = null)
     {
-      $id = $id ?? $this->id;
-      $X =self::deleteBy(['id' => $id]);
-      return DV::depends($X, 'Failed to delete invoice.');
+        $id = $id ?? $this->id;
+        return DB::transaction(function () use ($id) {
+            DB::table('receipt_breakdowns')->where('receipt_id', $id)->delete();
+            $deleted = self::where('id', $id)->delete();
+
+            return DV::depends($deleted, 'Failed to delete receipt');
+        });
     }
+
 }

@@ -137,40 +137,14 @@ var InvoiceComponent = (() => {
                 const statusId = Number(data.payment_status_id || 0);
                 let cls = "bg-secondary";
 
-                if (statusId === 1) cls = "bg-success";           // Paid
-                else if (statusId === 2) cls = "bg-danger";       // Unpaid
-                else if (statusId === 3) cls = "bg-warning text-dark"; // Partially Paid
+                if (statusId === 1) cls = "badge text-success bg-success-subtle border border-success";           // Paid
+                else if (statusId === 2) cls = "badge text-warning bg-warning-subtle border border-warning";       // Unpaid
+                else if (statusId === 3) cls = "badge text-warning bg-warning-subtle border border-warning"; // Partially Paid
 
-                return `<span class="badge ${cls} text-capitalize px-2 py-1">
+                return `<span class="badge ${cls} text-capitalize px-3 py-2">
                             ${data.payment_status_name || "—"}
                         </span>`;
             }
-        },
-        {
-            transTitle: "titles.Status",
-            className: "align-middle text-nowrap",
-            data: (data) => {
-                const status = (data.status_name ?? '').toLowerCase();
-                const statusId = Number(data.payment_status_id) || 0;
-                const statusClasses = {
-                    paid: 'badge text-success bg-success-subtle border border-success',
-                    partially: 'badge text-warning bg-warning-subtle border border-warning',
-                    unpaid: 'badge text-danger bg-danger-subtle border border-danger'
-                };
-                const cls = statusClasses[status] ?? 'badge text-dark bg-light border';
-                const isEditable = status === 'pending';
-                return `
-            <span
-                data-id="${data.id}"
-                data-statusid= "${data.payment_status_id}"
-                data-current-status="${statusId}"
-                class="${cls} ${isEditable ? 'status-change-btn' : ''} text-capitalize d-inline-block text-center"
-                style="min-width:70px; cursor:${isEditable ? 'pointer' : 'not-allowed'}"
-                title="${isEditable ? 'Click to change status' : 'This status cannot be changed'}">
-                ${data.status_name ?? ''}
-            </span>
-        `;
-            },
         },
         {
             transTitle: "titles.Updated By",
@@ -210,7 +184,6 @@ var InvoiceComponent = (() => {
             rowCreated: (data, index, tr) => {
                 tr.dataset.statusid = data.payment_status_id || 0;
                 tr.id = `invoice_id_${data.id}`;
-                // tr.dataset.ispaid = data.payment_status_id || 0;
                 tr.dataset.statusid = data.payment_status_id || 0;
                 tr.dataset.canceled = 0;
             },
@@ -285,8 +258,6 @@ var InvoiceComponent = (() => {
 
     mThis.renderInvoiceDetail = (container, invoice) => {
         const currency = mThis.currency_symbol || "$";
-
-        // ✅ Filter out placeholder rows: must have either price or total/amount
         const validItems = (invoice.items || []).filter(
             item =>
                 parseFloat(item.price || 0) > 0 ||

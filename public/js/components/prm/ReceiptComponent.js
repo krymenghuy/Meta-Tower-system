@@ -172,14 +172,36 @@ var ReceiptComponent = new (function() {
                 {
                     html: '<span class="ps-2">Delete Receipt</span>',
                     icon: `<i class="fa-regular fa-trash-can text-danger"></i>`,
-                    name: "delete"
+                    name: "delete_receipt"
                 }
             ],
-            onClick: (btn, id, name) => {
-                if (name === "delete") mThis.deleteExpense(id);
+            onClick: (menuLink, id, name) => {
+                if (name === "delete_receipt") mThis.deleteReceipt(id, menuLink);
             }
         });
     };
+
+    mThis.deleteReceipt = (id, menuLink) => {
+        if (!AuthManager.allowed(242)) return;
+        
+        cv_interact.confirm('Delete this Receipt?', {
+            transTitle: 'Delete Receipt',
+            confirmButtonText: "Delete"
+        }, (confirmed) => {
+            if (confirmed) {
+                vsapi.call(`${main_view.base_url}/prm/receipt/delete`, { id }, false, false, false)
+                    .then(res => {
+                        if (res.status_code === 200) {
+                            cv_interact.success('Receipt deleted');
+                            mThis.ReceiptListView.showPage();
+                        } else {
+                            cv_interact.error(res.error_message);
+                        }
+                    });
+            }
+        });
+    };
+
 
     mThis.show = () => {
         mThis.init();
