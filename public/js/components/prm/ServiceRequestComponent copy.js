@@ -582,65 +582,27 @@ console.log(123,op);
                     onSelect: (tenant) => {
                         console.log(12553, tenant);
                         me.controls.tenant_id.value = tenant.id;
-                        me.loadTenantOptions(tenant.id);
+                        // me._selectedTenantId = tenant.id;
+
+                        vsapi.post(`${main_view.base_url}/prm/tenant/option-tenant-with-service`, {
+                            tenant_id: tenant.id
+                        }).then(res => {
+                            const d = res.data || {};
+                            VSUtil.setComboItems(me.controls.space_id, d.spaces || [], 'space_id', 'space_code', '', '-- Select Room --');
+                            const typesMap = {};
+                            (d.service || []).forEach(s => {
+                                if (!typesMap[s.service_type_id]) {
+                                    typesMap[s.service_type_id] = { id: s.service_type_id, service_type: s.service_type };
+                                }
+                            });
+                            VSUtil.setComboItems(me.controls.service_type_id, Object.values(typesMap), 'id', 'service_type', '', '-- Select Category --');
+                            me._availableServices = d.service || [];
+                            me.controls.service_id.innerHTML = '<option value="">-- Select Service --</option>';
+                            updatePricePreview();
+                        });
                     }
                 });
                 me.searchTenant.reset("");
-
-                // Shared loader: populate spaces & services for a tenant.
-                // Pass restoreValues to pre-select saved fields after loading (used in Modify mode).
-                me.loadTenantOptions = (tenantId, restoreValues = null) => {
-                    vsapi.post(`${main_view.base_url}/prm/tenant/option-tenant-with-service`, {
-                        tenant_id: tenantId
-                    }).then(res => {
-                        const d = res.data || {};
-                        me._availableServices = d.service || [];
-
-                        // Spaces
-                        VSUtil.setComboItems(me.controls.space_id, d.spaces || [], 'space_id', 'space_code', '', '-- Select Room --');
-
-                        // Service types
-                        const typesMap = {};
-                        me._availableServices.forEach(s => {
-                            if (!typesMap[s.service_type_id]) {
-                                typesMap[s.service_type_id] = { id: s.service_type_id, service_type: s.service_type };
-                            }
-                        });
-                        VSUtil.setComboItems(me.controls.service_type_id, Object.values(typesMap), 'id', 'service_type', '', '-- Select Category --');
-
-                        if (restoreValues) {
-                            // Restore mode: set saved values
-                            if (restoreValues.space_id) me.controls.space_id.value = String(restoreValues.space_id);
-
-                            // Derive service_type_id from service if missing
-                            let resolvedTypeId = restoreValues.service_type_id;
-                            if (!resolvedTypeId && restoreValues.service_id) {
-                                const match = me._availableServices.find(s => String(s.id) === String(restoreValues.service_id));
-                                if (match) resolvedTypeId = match.service_type_id;
-                            }
-                            if (resolvedTypeId) me.controls.service_type_id.value = String(resolvedTypeId);
-
-                            // Filter services by type then restore
-                            let filtered = me._availableServices;
-                            if (resolvedTypeId) filtered = filtered.filter(s => String(s.service_type_id) === String(resolvedTypeId));
-                            VSUtil.setComboItems(me.controls.service_id, filtered, 'id', 'service_name', '', '-- Select Service --');
-                            if (restoreValues.service_id) me.controls.service_id.value = String(restoreValues.service_id);
-
-                            // Restore service price
-                            const svc = me._availableServices.find(s => String(s.id) === String(restoreValues.service_id));
-                            if (svc) me.servicePrice = parseFloat(svc.price) || 0;
-
-                            // unit_type & duration
-                            if (me.controls.unit_type && restoreValues.unit_type) me.controls.unit_type.value = restoreValues.unit_type;
-                            if (me.controls.duration_hours && restoreValues.duration_hours) me.controls.duration_hours.value = restoreValues.duration_hours;
-                        } else {
-                            // Create mode: just reset service dropdowns
-                            me.controls.service_id.innerHTML = '<option value="">-- Select Service --</option>';
-                        }
-
-                        updatePricePreview();
-                    });
-                };
                 me.controls.service_id?.addEventListener('change', () => {
                     const svc = me._availableServices?.find(s => String(s.id) === me.controls.service_id.value);
                     if (svc) {
@@ -716,13 +678,54 @@ console.log(123,op);
                         }
                     }
 
-                    // Reuse shared loader — restoreValues causes it to pre-fill all saved fields
-                    me.loadTenantOptions(detail.tenant_id, {
-                        space_id: detail.space_id,
-                        service_type_id: detail.service_type_id,
-                        service_id: detail.service_id,
-                        unit_type: detail.unit_type,
-                        duration_hours: detail.duration_hours,
+                    vsapi.post(`${main_view.base_url}/prm/tenant/option-tenant-with-service`, {
+                        tenant_id: detail.tenant_id
+                    }).then(res => {
+                        const d = res.data || {};
+                        me._availableServices = d.service || [];
+
+                        // Space
+                        VSUtil.setComboItems(me.controls.space_id, d.spaces || [], 'space_id', 'space_code', '', '-- Select Room --');
+                        if (detail.space_id) me.controls.space_id.value = String(detail.space_id);
+
+                        // Service Type — derive from selected service if service_type_id missing
+                        let resolvedTypeId = detail.service_type_id;
+                        if (!resolvedTypeId && detail.service_id) {
+                            const matchedSvc = me._availableServices.find(s => String(s.id) === String(detail.service_id));
+                            if (matchedSvc) resolvedTypeId = matchedSvc.service_type_id;
+                        }
+
+                        const typesMap = {};
+                        me._availableServices.forEach(s => {
+                            if (!typesMap[s.service_type_id]) {
+                                typesMap[s.service_type_id] = { id: s.service_type_id, service_type: s.service_type };
+                            }
+                        });
+                        VSUtil.setComboItems(me.controls.service_type_id, Object.values(typesMap), 'id', 'service_type', '', '-- Select Category --');
+                        if (resolvedTypeId) me.controls.service_type_id.value = String(resolvedTypeId);
+
+                        // Services filtered by resolved type
+                        let filtered = me._availableServices;
+                        if (resolvedTypeId) {
+                            filtered = filtered.filter(s => String(s.service_type_id) === String(resolvedTypeId));
+                        }
+                        VSUtil.setComboItems(me.controls.service_id, filtered, 'id', 'service_name', '', '-- Select Service --');
+                        if (detail.service_id) me.controls.service_id.value = String(detail.service_id);
+
+                        // Restore service price
+                        const svc = me._availableServices.find(s => String(s.id) === String(detail.service_id));
+                        if (svc) me.servicePrice = parseFloat(svc.price) || 0;
+
+                        // Re-apply unit_type & duration after dropdowns ready
+                        if (me.controls.unit_type && detail.unit_type) {
+                            me.controls.unit_type.value = detail.unit_type;
+                        }
+                        if (me.controls.duration_hours && detail.duration_hours) {
+                            me.controls.duration_hours.value = detail.duration_hours;
+                        }
+
+                        // Trigger price preview
+                        me.controls.unit_type?.dispatchEvent(new Event('change'));
                     });
                 }
             },
