@@ -58,7 +58,7 @@ var ServiceRequestComponent = (function () {
         //         const cur = data.cur_symbol ?? '$';
         //         let mainPrice = data.service_price;
         //         console.log(55,data.service_price);
-                
+
         //         let displayPrice = mainPrice
         //             ? Number(mainPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
         //             : '—';
@@ -104,11 +104,11 @@ var ServiceRequestComponent = (function () {
             }
         },
         // {
-        //     transTitle: "titles.Schedule Date", 
+        //     transTitle: "titles.Schedule Date",
         //     className: "align-middle text-nowrap text-center",
         //     data: (data) => {
         //         console.log(123,data);
-                
+
         //         const rawDate = (data.scheduled_date || '').toString().trim();
         //         const rawTime = (data.start_time || '').toString().trim();
 
@@ -143,7 +143,7 @@ var ServiceRequestComponent = (function () {
         //     }
         // },
        {
-            transTitle: "titles.Schedule Date", 
+            transTitle: "titles.Schedule Date",
             className: "align-middle text-nowrap text-center",
             data: (data) => {
 
@@ -176,7 +176,7 @@ var ServiceRequestComponent = (function () {
                 `;
             }
         },
-        
+
         {
             transTitle: "titles.Remark",
             className: "align-middle",
@@ -202,10 +202,10 @@ var ServiceRequestComponent = (function () {
                 const cls = statusClasses[status] ?? 'badge text-dark bg-light border';
                 const isEditable = status === 'pending';
                 return `
-            <span 
-                data-id="${data.id}" 
+            <span
+                data-id="${data.id}"
                 data-statusid= "${data.status_id}"
-                data-current-status="${statusId}"  
+                data-current-status="${statusId}"
                 class="${cls} ${isEditable ? 'status-change-btn' : ''} text-capitalize d-inline-block text-center"
                 style="min-width:70px; cursor:${isEditable ? 'pointer' : 'not-allowed'}"
                 title="${isEditable ? 'Click to change status' : 'This status cannot be changed'}">
@@ -264,7 +264,7 @@ var ServiceRequestComponent = (function () {
 
         // mThis.table = mThis.ServiceRequestListView.getTable();
 
-       
+
         mThis.elBtnCreate.onclick = (e) => {
             e.preventDefault();
             CreateServiceRequestDialog.show({
@@ -332,7 +332,7 @@ var ServiceRequestComponent = (function () {
         });
 
 
-        
+
 
         let timeOut = null;
         mThis.elSearch.onkeyup = function (e) {
@@ -403,7 +403,7 @@ var ServiceRequestComponent = (function () {
             }
         });
     };
-   
+
     mThis.editServiceRequest = (id, menuLink) => {
         CreateServiceRequestDialog.show({
             id: id,
@@ -443,14 +443,14 @@ var ServiceRequestComponent = (function () {
     mThis.show = (options) => {
         mThis.init();
         mThis.options = options;
-        
+
         mThis.prepareFormOptions(() => {
             main_view.setContentView(mThis.self, mThis.title_prop);
             mThis.ServiceRequestListView.showPage(mThis.getFilterData());
         });
     };
 return mThis;
-    
+
 
 })();
 
@@ -663,7 +663,7 @@ const CreateServiceRequestDialog = (() => {
 
             onPrepareForm: (me, data) => {
                 console.log(4444444444,data.request_details);
-                
+
                 me.detail = data.request_details;
                 if (me.detail) {
                     const raw = (me.detail.scheduled_date || '').trim();

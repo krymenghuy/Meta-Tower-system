@@ -23,58 +23,83 @@ class Receipt extends Model
 
 
     public function getListPaginate($arr = [], $ss = null, $id = null)
-    {
-        $d = (object) $arr;
+        {
+            $d = (object) $arr;
 
-        $current_page = max(1, (int) ($d->current_page ?? 1));
-        $per_page     = max(1, (int) ($d->per_page ?? 10));
-        $search       = trim($d->search_value ?? '');
+            $current_page = max(1, (int) ($d->current_page ?? 1));
+            $per_page     = max(1, (int) ($d->per_page ?? 10));
+            $search       = trim($d->search_value ?? '');
 
-        $query = DB::table('receipts as r')
-            ->leftJoin('tenants as t', 't.id', '=', 'r.tenant_id')
-            ->leftJoin('invoices as i', 'i.id', '=', 'r.invoice_id')
-            ->leftJoin('receipt_breakdowns as rb', 'rb.receipt_id', '=', 'r.id')
-            ->select([
-                'r.id', 'r.code', 'r.receipt_date', 'r.total_received',
-                'r.remarks', 'r.updated_at', 'r.update_user',
-                't.name as tenant_name',
-                'i.code as invoice_code',
-                'i.amount as invoice_total',
-                DB::raw('GROUP_CONCAT(DISTINCT rb.method SEPARATOR ", ") as payment_methods'),
-                DB::raw('GROUP_CONCAT(DISTINCT rb.bank_name SEPARATOR ", ") as payment_banks'),
-                DB::raw('GROUP_CONCAT(DISTINCT rb.card_type SEPARATOR ", ") as payment_card_types'),
-            ])
-            ->groupBy('r.id', 'r.code', 'r.receipt_date', 'r.total_received',
+            $query = DB::table('receipts as r')
+                ->leftJoin('tenants as t', 't.id', '=', 'r.tenant_id')
+                ->leftJoin('invoices as i', 'i.id', '=', 'r.invoice_id')
+                ->leftJoin('building_spaces as bs',  'bs.id', '=', 'i.space_id')
+                ->leftJoin('receipt_breakdowns as rb', 'rb.receipt_id', '=', 'r.id')
+                ->select([
+                    'r.id',
+                    'r.code',
+                    'r.receipt_date',
+                    'r.total_received',
+                    'r.remarks',
+                    'r.updated_at',
+                    'r.update_user',
+                    't.name as tenant_name',
+                    'i.code as invoice_code',
+                    'i.amount as invoice_total',
+                    'i.invoice_date as invoice_date',
+                    'bs.code as space_code',
+
+                    DB::raw("
+                        GROUP_CONCAT(
+                            DISTINCT CONCAT(
+                                TRIM(rb.method),
+                                ' = $',
+                                FORMAT(rb.amount, 2)
+                            )
+                            SEPARATOR ', '
+                        ) as payment_methods
+                    "),
+                ])
+                ->groupBy(
+                    'r.id', 'r.code', 'r.receipt_date', 'r.total_received',
                     'r.remarks', 'r.updated_at', 'r.update_user',
-                    't.name', 'i.code', 'i.amount')
-            ->orderByDesc('r.id');
+                    't.name', 'i.code', 'i.amount'
+                )
+                ->orderByDesc('r.id');
 
-        if (!empty($d->tenant_id)) {
-            $query->where('r.tenant_id', $d->tenant_id);
+            // Filters
+            if (!empty($d->tenant_id)) {
+                $query->where('r.tenant_id', $d->tenant_id);
+            }
+
+            if ($id) {
+                $query->where('r.id', $id);
+            }
+
+            if ($search) {
+                $search = '%' . escape_like_str($search) . '%';
+                $query->where(function ($q) use ($search) {
+                    $q->where('r.code', 'LIKE', $search)
+                    ->orWhere('t.name', 'LIKE', $search)
+                    ->orWhere('i.code', 'LIKE', $search);
+                });
+            }
+
+            $total = (clone $query)->select('r.id')->distinct()->count();
+
+            $skip = ($current_page - 1) * $per_page;
+            $rows = $query->skip($skip)->take($per_page)->get();
+
+            // Format dates
+            foreach ($rows as $row) {
+                $row = setOfficialDates($row, [], ['updated_at', 'receipt_date'], []);
+            }
+            foreach($rows as $row){
+                $row = setOfficialDates($row,['receipt_date'],['updated_at','created_at as created_at'],[]);
+            }
+
+            return new LengthAwarePaginator($rows, $total, $per_page, $current_page);
         }
-
-        if ($id) {
-            $query->where('r.id', $id);
-        }
-
-        if ($search) {
-            $search = '%' . escape_like_str($search) . '%';
-            $query->where(function ($q) use ($search) {
-                $q->where('r.code', 'LIKE', $search)
-                ->orWhere('t.name', 'LIKE', $search);
-            });
-        }
-
-        $total = (clone $query)->select('r.id')->distinct()->count();
-
-        $skip = ($current_page - 1) * $per_page;
-        $rows = $query->skip($skip)->take($per_page)->get();
-        foreach($rows as $row){
-            $row = setOfficialDates($row,['complete_date','request_date','scheduled_date'],['updated_at','created_at as created_at'],[]);
-        }
-
-        return new LengthAwarePaginator($rows, $total, $per_page, $current_page);
-    }
 
 
     public static function getReceiptDetails($id)

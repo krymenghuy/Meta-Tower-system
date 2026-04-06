@@ -18,22 +18,36 @@ var InvoiceComponent = (() => {
     mThis.cols = [
         { transTitle: "", className: "align-middle text-capitalize" },
         {
-            transTitle: "titles.Invoice Num",
-            className: "align-middle text-start",
-            data: data =>
-                `<span class="text-yp-custom">${data.code || "N/A"}</span>`
+            transTitle: "titles.Invoice No",
+            className: "align-middle  text-start",
+            data: (data) => {
+                const code = data.code ? `<span class="text-prm-custom">${data.code}</span>`: `<span class="text-muted fst-italic">N/A</span>`;
+                const date = data.invoice_date ? `<span class="text-danger-emphasis small">${data.invoice_date}</span>`: `<span class="text-muted fst-italic small">N/A</span>`;
+                return `
+                    <div class="d-flex flex-column">
+                        ${code}
+                        <hr class="m-0 border border-secondary border-3 opacity-75">
+                        ${date}
+                    </div>
+                `;
+            }
         },
+
         {
             transTitle: "titles.Tenant",
-            className: "align-middle",
-            data: data =>
-                `<span class="text-yp-custom">${data.tenant_name || "—"}</span>`
-        },
-        {
-            transTitle: "titles.Space Code",
-            className: "align-middle",
-            data: data =>
-                `<span class="text-yp-custom">${data.space_code || "—"}</span>`
+            className: "align-middle text-nowrap",
+            data: (data) => {
+                return ` <div class="d-flex text-warning align-items-center gap-2">
+                <div>
+                    <span class="text-prm-custom d-block">
+                        ${data.tenant_name ?? ''}
+                    </span>
+                    <span class="d-block text-warning">
+                        ${data.space_code ?? ""}
+                    </span>
+                </div>
+            </div>`;
+            }
         },
         {
             transTitle: "titles.Amount",
@@ -72,10 +86,49 @@ var InvoiceComponent = (() => {
             }
         },
         {
-            transTitle: "titles.Due Date",
+            transTitle: "titles.Expiration Date",
+            className: "align-middle text-nowrap text-center",
+            data: (data) => {
+
+                const formatTime = (time) => {
+                    if (!time) return '';
+
+                    // Support HH:mm:ss or HH:mm
+                    let parts = time.split(':');
+                    let hour = parseInt(parts[0], 10);
+                    let minute = parts[1] ?? '00';
+
+                    if (isNaN(hour)) return '';
+
+                    const ampm = hour >= 12 ? 'PM' : 'AM';
+                    hour = hour % 12 || 12;
+
+                    // ensure 2-digit minute
+                    minute = minute.padStart(2, '0');
+
+                    return `${hour}:${minute} ${ampm}`;
+                };
+
+                return `
+                    <div class="d-flex flex-column align-items-start">
+                        <span class="text-prm-custom text-nowrap">${data.due_date ?? ''}</span>
+                        <span class="text-warning small text-nowrap">
+                            ${formatTime(data.start_time)}
+                        </span>
+                    </div>
+                `;
+            }
+        },
+        {
+            transTitle: "titles.Remark",
             className: "align-middle",
-            data: data =>
-                `<span class="text-yp-custom">${data.due_date || "N/A"}</span>`
+            data: data => {
+                return `
+                    <div class="text-primary-custom" style="width:150px;">
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ?? '...'}</span>
+                    </div>
+                `;
+            }
         },
         {
             transTitle: "titles.Status",
@@ -92,6 +145,32 @@ var InvoiceComponent = (() => {
                             ${data.payment_status_name || "—"}
                         </span>`;
             }
+        },
+        {
+            transTitle: "titles.Status",
+            className: "align-middle text-nowrap",
+            data: (data) => {
+                const status = (data.status_name ?? '').toLowerCase();
+                const statusId = Number(data.payment_status_id) || 0;
+                const statusClasses = {
+                    paid: 'badge text-success bg-success-subtle border border-success',
+                    partially: 'badge text-warning bg-warning-subtle border border-warning',
+                    unpaid: 'badge text-danger bg-danger-subtle border border-danger'
+                };
+                const cls = statusClasses[status] ?? 'badge text-dark bg-light border';
+                const isEditable = status === 'pending';
+                return `
+            <span
+                data-id="${data.id}"
+                data-statusid= "${data.payment_status_id}"
+                data-current-status="${statusId}"
+                class="${cls} ${isEditable ? 'status-change-btn' : ''} text-capitalize d-inline-block text-center"
+                style="min-width:70px; cursor:${isEditable ? 'pointer' : 'not-allowed'}"
+                title="${isEditable ? 'Click to change status' : 'This status cannot be changed'}">
+                ${data.status_name ?? ''}
+            </span>
+        `;
+            },
         },
         {
             transTitle: "titles.Updated By",
@@ -464,24 +543,6 @@ var InvoiceComponent = (() => {
         });
     };
 
-    // mThis.receiveInvoice =(id, menulink) => {
-    //     const row = document.getElementById(`invoice_id_${id}`);
-    //     const statusId = Number(row?.dataset.statusid || 0);
-
-    //     if (statusId === 1) {
-    //         cv_interact.error("This invoice is already fully paid.");
-    //         return;
-    //     }
-
-    //     ReceiveDialog.show({
-    //         invoice_id: id,
-    //         btn: menulink,
-    //         onClose: () => mThis.InvoiceListView.showPage(mThis.getFilterData())
-    //     });
-    // };
-
-
-
     mThis.printInvoice = (id, menulink) => {
         PrintInvoiceDialog.show({
             invoice_id: id,
@@ -559,13 +620,25 @@ const InvoiceDialog = (() => {
                             </div>
                         </div>
                     </div>
-                    <div class="row g-3  d-flex justify-content-between align-items-end">
-                        <div class="col-md-3 material-input outlined">
-                            <input type="text" data-type="date" name="due_date" class="form-control data-input" required placeholder="dd-mm-yy">
-                            <label class="form-label">Due Date <span class="text-danger">*</span></label>
+
+                    <div class="d-flex flex-wrap gap-3 align-items-end justify-content-between">
+
+                        <!-- Due Date & Time -->
+                        <div class="d-flex gap-2">
+                            <div class="material-input outlined" style="min-width: 180px;">
+                                <input type="text" data-type="date" name="due_date" class="form-control data-input" required placeholder="dd-mm-yy">
+                                <label class="form-label">Due Date <span class="text-danger">*</span></label>
+                            </div>
+
+                            <div class="material-input outlined" style="min-width: 140px;">
+                                <input type="time" class="form-control data-input" data-field="start_time" placeholder=" " />
+                                <label style="color:#777777;padding-left:6px;">Start Time</label>
+                            </div>
                         </div>
-                        <div class="col-md-auto p-3">
-                            <div class="d-flex gap-2 ">
+
+                        <!-- Buttons -->
+                        <div class="d-flex flex-wrap p-3">
+                            <div class="d-flex gap-2">
                                 <button name="btnRent" class="btn btn-outline-primary">Rent</button>
                                 <button name="btnService" class="btn btn-outline-warning">Service</button>
                                 <button name="btnElectric" class="btn btn-outline-success">Electric Bill</button>
@@ -1675,6 +1748,22 @@ const InvoiceDialog = (() => {
                             );
                         }
                     }
+                     me.detail = data.invoice_details;
+                    if (me.detail) {
+                        const raw = (me.detail.due_date || '').trim();
+                        if (raw) {
+                            const d = new Date(raw);
+                            if (!isNaN(d.getTime())) {
+                                const y = d.getFullYear();
+                                const m = String(d.getMonth() + 1).padStart(2, '0');
+                                const day = String(d.getDate()).padStart(2, '0');
+                                me.controls.due_date.value = `${y}-${m}-${day}`;
+                            }
+                        }
+                        if (me.detail.start_time && me.controls.start_time) {
+                            me.controls.start_time.value = me.detail.start_time.substring(0, 5);
+                        }
+                    }
 
                     if (me.searchTenant) me.searchTenant.reset("");
                     if (me.itemsView) me.itemsView.setData([]);
@@ -1757,273 +1846,6 @@ const InvoiceDialog = (() => {
 
     return self;
 })();
-
-
-// const ReceiveDialog = (() => {
-//     const self = {};
-//     let dialog = null;
-
-//     self.show = (op = {}) => {
-//         dialog = dialog || new GeneralDialog({
-//             title: "Receive Payment",
-//             cssClass: "modal-lg vs-modal",
-//             backdrop: "static",
-//             keyboard: true,
-
-//             createContent: () => `
-//             <div class="container-fluid px-0">
-//                 <!-- Balance Header -->
-//                 <div class="alert d-flex justify-content-between align-items-center mb-4 py-3 px-4 border-0 shadow-sm"
-//                      style="border-radius: 12px; background-color: #e1e5f2; color: #1a1647;">
-//                     <div>
-//                         <small class="text-uppercase fw-bold opacity-75 d-block" style="font-size: 10px; letter-spacing: 1px;">TOTAL BALANCE DUE</small>
-//                         <div class="d-flex align-items-center">
-//                             <span class="h3 mb-0 fw-bold">$</span>
-//                             <input name="amount_due" type="text"
-//                                    class="h3 mb-0 fw-bold bg-transparent border-0  w-auto"
-//                                    style="outline:none; color: #1a1647;" readonly disabled />
-//                         </div>
-//                     </div>
-//                     <i class="fas fa-file-invoice-dollar fa-3x " style=" color: #1a1647;"></i>
-//                 </div>
-
-//                 <!-- Payment Method Tabs -->
-//                 <div class="mb-3">
-//                     <label class="form-label text-muted fw-bold mb-2" style="font-size: 11px; letter-spacing: 0.5px;">
-//                         CHOOSE PAYMENT METHOD
-//                     </label>
-//                     <ul class="nav nav-tabs border-bottom-0" id="paymentMethodTabs" role="tablist">
-//                         <li class="nav-item" role="presentation">
-//                             <a class="nav-link active fw-semibold" id="cash-tab" data-bs-toggle="tab"
-//                                href="#cash" role="tab">
-//                                 <i class="fas fa-money-bill-wave me-1"></i> Cash
-//                             </a>
-//                         </li>
-//                         <li class="nav-item" role="presentation">
-//                             <a class="nav-link fw-semibold" id="bank-tab" data-bs-toggle="tab"
-//                                href="#bank" role="tab">
-//                                 <i class="fas fa-university me-1"></i> Bank
-//                             </a>
-//                         </li>
-//                         <li class="nav-item" role="presentation">
-//                             <a class="nav-link fw-semibold" id="card-tab" data-bs-toggle="tab"
-//                                href="#card" role="tab">
-//                                 <i class="fas fa-credit-card me-1"></i> Card
-//                             </a>
-//                         </li>
-//                         <li class="nav-item" role="presentation">
-//                             <a class="nav-link fw-semibold" id="cheque-tab" data-bs-toggle="tab"
-//                                href="#cheque" role="tab">
-//                                 <i class="fas fa-money-check me-1"></i> Cheque
-//                             </a>
-//                         </li>
-//                     </ul>
-//                 </div>
-
-//                 <!-- Payment Sections -->
-//                 <div class="p-4 border rounded shadow-sm bg-white mb-3 tab-content" style="min-height: 200px;">
-//                     <div id="cash" class="payment-section tab-pane fade show active" role="tabpanel">
-//                         <div class="material-input outlined mb-0">
-//                             <input name="cash" type="number" class="form-control data-input fw-bold text-primary"
-//                                    data-field="cash" min="0" step="0.01" placeholder="0.00" style="font-size: 1.5rem;"/>
-//                             <label>Cash Amount ($)</label>
-//                         </div>
-//                     </div>
-
-//                     <div id="bank" class="payment-section tab-pane fade" role="tabpanel">
-//                         <div class="row g-3">
-//                             <div class="col-6">
-//                                 <div class="material-input outlined">
-//                                     <select name="bank_transfer_bank_id" data-style="material" class="form-select data-input" data-field="bank_name"  placeholder="Bank"></select>
-//                                 </div>
-//                             </div>
-//                             <div class="col-6">
-//                                 <div class="material-input outlined">
-//                                     <input name="transfer_amount" type="number" class="form-control data-input"
-//                                            data-field="transfer_amount" placeholder="0.00"/>
-//                                     <label>Amount ($)</label>
-//                                 </div>
-//                             </div>
-//                             <div class="col-6">
-//                                 <div class="material-input outlined">
-//                                     <input name="bank_ref_number" type="text" class="form-control data-input"
-//                                            data-field="bank_ref_number" placeholder=" "/>
-//                                     <label>Ref Number</label>
-//                                 </div>
-//                             </div>
-//                             <div class="col-6">
-//                                 <div class="material-input outlined">
-//                                     <input name="bank_acc_name" type="text" class="form-control data-input"
-//                                         data-field="account_name" placeholder=" "/>
-//                                     <label>Account Number</label>
-//                                 </div>
-//                             </div>
-//                         </div>
-//                     </div>
-
-//                     <div id="card" class="payment-section tab-pane fade" role="tabpanel">
-//                         <div class="row g-3">
-//                             <div class="col-6">
-//                                 <div class="material-input outlined">
-//                                     <select name="card_type" data-style="material"  class="form-select data-input" data-field="card_type" required placeholder="Card Type">
-//                                         <option value="credit">Credit</option>
-//                                         <option value="debit">Debit</option>
-//                                     </select>
-//                                 </div>
-//                             </div>
-//                             <div class="col-6">
-//                                 <div class="material-input outlined">
-//                                     <input name="card_amount" type="number" class="form-control data-input"
-//                                            data-field="card_amount" placeholder="0.00"/>
-//                                     <label>Amount ($)</label>
-//                                 </div>
-//                             </div>
-//                             <div class="col-6">
-//                                 <div class="material-input outlined">
-//                                     <input name="card_number" type="number" class="form-control data-input"
-//                                            data-field="card_number" placeholder="0.00"/>
-//                                     <label>Card Number</label>
-//                                 </div>
-//                             </div>
-//                         </div>
-//                     </div>
-
-//                     <div id="cheque" class="payment-section tab-pane fade" role="tabpanel">
-//                         <div class="row g-3">
-//                             <div class="col-6">
-//                                 <div class="material-input outlined">
-//                                     <select name="cheque_bank_id" class="form-select data-input" data-field="cheque_bank_id"></select>
-//                                     <label>Cheque Bank</label>
-//                                 </div>
-//                             </div>
-//                             <div class="col-6">
-//                                 <div class="material-input outlined">
-//                                     <input name="cheque_amount" type="number" class="form-control data-input"
-//                                            data-field="cheque_amount" placeholder="0.00"/>
-//                                     <label>Cheque Amount ($)</label>
-//                                 </div>
-//                             </div>
-//                             <div class="col-6">
-//                                 <div class="material-input outlined">
-//                                     <input name="cheque_number" type="number" class="form-control data-input"
-//                                            data-field="cheque_number" placeholder="0.00"/>
-//                                     <label>Cheque Number</label>
-//                                 </div>
-//                             </div>
-//                         </div>
-//                     </div>
-//                 </div>
-
-//                 <!-- Remarks -->
-//                 <div class="material-input outlined">
-//                     <textarea name="remarks" class="form-control data-input" data-field="remarks" rows="2"></textarea>
-//                     <label>Remarks</label>
-//                 </div>
-//             </div>`,
-
-//             contentCreated: (me) => {
-//                 me.convertPayment = (data) => {
-//                     const result = {
-//                         invoice_id: me.dataOptions?.invoice_id || null,
-//                         remarks: data.remarks || '',
-//                         pmt_breakdowns: []
-//                     };
-//                     const parseAmt = (v) => isNaN(parseFloat(v)) ? 0 : parseFloat(v);
-
-//                     if (parseAmt(data.cash) > 0) {
-//                         result.pmt_breakdowns.push({ method: "cash", amount: parseAmt(data.cash), currency_code: "USD" });
-//                     }
-//                     if (parseAmt(data.transfer_amount) > 0) {
-//                         result.pmt_breakdowns.push({
-//                             method: "bank_transfer",
-//                             amount: parseAmt(data.transfer_amount),
-//                             currency_code: "USD",
-//                             bank_id: parseInt(data.bank_transfer_bank_id) || null,
-//                             bank_ref_number: data.bank_ref_number || null,
-//                             account_name: data.bank_acc_name || null,
-//                         });
-//                     }
-//                     if (parseAmt(data.card_amount) > 0) {
-//                         result.pmt_breakdowns.push({
-//                             method: "card",
-//                             amount: parseAmt(data.card_amount),
-//                             currency_code: "USD",
-//                             card_type: data.card_type || null,
-//                             card_number: data.card_number || null,
-//                         });
-//                     }
-//                     if (parseAmt(data.cheque_amount) > 0) {
-//                         result.pmt_breakdowns.push({
-//                             method: "cheque",
-//                             amount: parseAmt(data.cheque_amount),
-//                             currency_code: "USD",
-//                             bank_id: parseInt(data.cheque_bank_id) || null,
-//                             cheque_number: data.cheque_number || null,
-//                         });
-//                     }
-
-//                     return result;
-//                 };
-//             },
-
-//             onPrepareForm: (me) => {
-//                 const opts = me.dataOptions || {};
-//                 if (opts.invoice_id) {
-//                     vsapi.call(`${main_view.base_url}/prm/invoice/details`, { id: opts.invoice_id })
-//                         .then(res => {
-//                             if (me.controls.amount_due && res.status_code === 200) {
-//                                 me.controls.amount_due.value = Number(res.data?.balance || 0).toFixed(2);
-//                             }
-//                         });
-//                 }
-
-//                 vsapi.call(`${main_view.base_url}/prm/invoice/form-options`)
-//                     .then(res => {
-//                         const banks = res?.data?.banks || [];
-//                         VSUtil.setComboItems(me.controls.bank_transfer_bank_id, banks, "id", "name", true, "— Select Bank —");
-//                         VSUtil.setComboItems(me.controls.cheque_bank_id, banks, "id", "name", true, "— Select Bank —");
-//                     });
-//             },
-
-//             buttons: [
-//                 {
-//                     label: 'Cancel',
-//                     cssClass: "btn btn-secondary",
-//                     click: (me) => me.hide(false),
-//                 },
-//                 {
-//                     label: 'Receive',
-//                     cssClass: "btn btn-primary",
-//                     click: (me, btn) => {
-//                         const payload = me.convertPayment(me.getData());
-//                         if (payload.pmt_breakdowns.length === 0) {
-//                             return cv_interact.error("Please enter at least one payment amount.");
-//                         }
-
-//                         vsapi.call(`${main_view.base_url}/prm/invoice/receive`, payload, btn)
-//                             .then(res => {
-//                                 if (res.status_code === 200) {
-//                                     cv_interact.success("Payment successful");
-//                                     if (typeof InvoiceComponent !== 'undefined' && InvoiceComponent.InvoiceListView) {
-//                                         InvoiceComponent.InvoiceListView.showPage();
-//                                     }
-//                                     me.hide(true);
-//                                 } else {
-//                                     cv_interact.error(res.error_message || "Failed to receive payment");
-//                                 }
-//                             });
-//                     },
-//                 }
-//             ],
-//         });
-
-//         dialog.show(op);
-//     };
-
-//     return self;
-// })();
-
-
 
 
 
@@ -2222,7 +2044,7 @@ const ReceiveDialog = (() => {
             // Cash
             if (parseAmt(data.cash) > 0) {
                 breakdowns.push({
-                    method: "cash",
+                    method: "Cash",
                     amount: parseAmt(data.cash),
                     currency_code: "USD"
                 });
@@ -2231,20 +2053,19 @@ const ReceiveDialog = (() => {
             // Bank Transfer
             if (parseAmt(data.transfer_amount) > 0) {
                 breakdowns.push({
-                    method: "Bank_transfer",
+                    method: "Bank",
                     amount: parseAmt(data.transfer_amount),
                     currency_code: "USD",
                     bank_id: parseInt(data.bank_transfer_bank_id) || null,
                     bank_name: me.getSelectText ? me.getSelectText('bank_transfer_bank_id') : null,
                     bank_ref_number: data.bank_ref_number || null,
-                    account_name: data.bank_acc_name || null,
                 });
             }
 
             // Card
             if (parseAmt(data.card_amount) > 0) {
                 breakdowns.push({
-                    method: "card",
+                    method: "Card",
                     amount: parseAmt(data.card_amount),
                     currency_code: "USD",
                     card_type: data.card_type || null,
@@ -2255,7 +2076,7 @@ const ReceiveDialog = (() => {
             // Cheque
             if (parseAmt(data.cheque_amount) > 0) {
                 breakdowns.push({
-                    method: "cheque",
+                    method: "Cheque",
                     amount: parseAmt(data.cheque_amount),
                     currency_code: "USD",
                     bank_id: parseInt(data.cheque_bank_id) || null,
