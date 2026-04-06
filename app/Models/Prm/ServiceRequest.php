@@ -217,7 +217,7 @@ class ServiceRequest extends VSModel
             $str_moreWhere .= ' AND sr.service_id =' . $service_id;
         }
 
-        
+
         $query = DB::table('service_requests as sr')
             ->join('tenants as t', 't.id', '=', 'sr.tenant_id')
             ->join('building_spaces as bs', 'bs.id', '=', 'sr.space_id')
