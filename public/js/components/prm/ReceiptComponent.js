@@ -16,13 +16,22 @@ var ReceiptComponent = new (function() {
     mThis.cols = [
         { transTitle: "", className: "align-middle" },
         {
-            transTitle: "titles.Receipt Num",
-            className: "align-middle",
-            data: data =>
-                `<span class="text-prm-custom fw-bold">${data.code}</span>`
+            transTitle: "titles.Receipt No",
+            className: "align-middle text-nowrap text-start",
+            data: (data) => {
+                const code = data.code ? `<span class="text-prm-custom">${data.code}</span>`: `<span class="text-muted fst-italic">N/A</span>`;
+                const date = data.receipt_date ? `<span class="text-danger-emphasis small">${data.receipt_date}</span>`: `<span class="text-muted fst-italic small">N/A</span>`;
+                return `
+                    <div class="d-flex flex-column">
+                        ${code}
+                        <hr class="m-0 border border-secondary border-3 opacity-75">
+                        ${date}
+                    </div>
+                `;
+            }
         },
         {
-            transTitle: "titles.Invoice Num",
+            transTitle: "titles.Invoice No",
             className: "align-middle",
             data: data =>
                 `<span class="text-prm-custom">${data.invoice_code ||
@@ -31,9 +40,8 @@ var ReceiptComponent = new (function() {
         {
             transTitle: "titles.Tenant",
             className: "align-middle",
-            data: data => `<span class="text-dark">${data.tenant_name}</span>`
+            data: data => `<span class=" text-prm-custom" text-dark">${data.tenant_name}</span>`
         },
-
         {
             transTitle: "titles.Amount",
             className: "align-middle ",
@@ -42,6 +50,22 @@ var ReceiptComponent = new (function() {
                 return `<span class="text-success fw-bold">$ ${val}</span>`;
             }
         },
+        {
+            transTitle: "titles.Payment Methods",
+            className: "align-middle",
+            data: data => `<span class="text-warning text-prm-custom">${data.payment_methods}</span>`
+        },
+        {
+            transTitle: "titles.Payment By",
+            className: "align-middle",
+            data: data => {
+                const by = data.payment_by || data.payment_banks || data.payment_card_types || " ";
+                const val = parseFloat(data.total_received || 0).toFixed(2);
+
+                return `<span class="text-primary  text-prm-custom">${by} </span><span class=" text-prm-custom ">$ ${val}</span></span>`;
+            }
+        },
+
         {
             transTitle: "titles.Date",
             className: "align-middle ",
@@ -64,15 +88,24 @@ var ReceiptComponent = new (function() {
                     ""}</span>`;
             }
         },
+        // {
+        //     transTitle: "titles.Updated By",
+        //     className: "align-middle",
+        //     data: data => `
+        //         <div class="d-flex flex-column">
+        //             <span class="text-capitalize text-yp-custom fw-semibold">${data.created_at ||
+        //                 "—"}</span>
+        //             <small class="text-muted">${data.created_at || "—"}</small>
+        //         </div>`
+        // },
         {
             transTitle: "titles.Updated By",
-            className: "align-middle",
-            data: data => `
-                <div class="d-flex flex-column">
-                    <span class="text-capitalize text-yp-custom fw-semibold">${data.created_at ||
-                        "—"}</span>
-                    <small class="text-muted">${data.created_at || "—"}</small>
-                </div>`
+            className: 'align-middle text-nowrap',
+            data: (data) => `
+            <div class="d-flex flex-column">
+                <span class="text-capitalize text-primary-custom fw-semibold">${data.update_user ?? ''}</span>
+                <span class="text-muted small">${data.updated_at ?? ''}</span>
+            </div>`
         },
         {
             transTitle: "titles.Action",
@@ -149,77 +182,77 @@ var ReceiptComponent = new (function() {
             });
     };
 
-    mThis.renderReceiptDetail = (container, receipt) => {
-        const currency = mThis.currency_symbol || "$";
-        const fmt = n =>
-            Number(n || 0).toLocaleString("en-US", {
-                minimumFractionDigits: 2
-            });
-        const breakdowns = receipt.breakdowns || [];
+    // mThis.renderReceiptDetail = (container, receipt) => {
+    //     const currency = mThis.currency_symbol || "$";
+    //     const fmt = n =>
+    //         Number(n || 0).toLocaleString("en-US", {
+    //             minimumFractionDigits: 2
+    //         });
+    //     const breakdowns = receipt.breakdowns || [];
 
-        const breakdownHtml = breakdowns
-            .map(item => {
-                const method = (item.method || "other").replace("_", " ");
+    //     const breakdownHtml = breakdowns
+    //         .map(item => {
+    //             const method = (item.method || "other").replace("_", " ");
 
-                // Bank name: prefer registered bank, fall back to manual
-                const bankDisplay =
-                    item.registered_bank_name ||
-                    item.manual_bank_name ||
-                    item.bank_name ||
-                    "—";
+    //             // Bank name: prefer registered bank, fall back to manual
+    //             const bankDisplay =
+    //                 item.registered_bank_name ||
+    //                 item.manual_bank_name ||
+    //                 item.bank_name ||
+    //                 "—";
 
-                // Reference/detail line differs by method
-                let refDetail = "";
-                if (item.bank_ref_number)
-                    refDetail = `Ref: ${item.bank_ref_number}`;
-                else if (item.card_number)
-                    refDetail = `Card:${item.card_number}`;
-                else if (item.cheque_number)
-                    refDetail = `Cheque #${item.cheque_number}`;
+    //             // Reference/detail line differs by method
+    //             let refDetail = "";
+    //             if (item.bank_ref_number)
+    //                 refDetail = `Ref: ${item.bank_ref_number}`;
+    //             else if (item.card_number)
+    //                 refDetail = `Card:${item.card_number}`;
+    //             else if (item.cheque_number)
+    //                 refDetail = `Cheque #${item.cheque_number}`;
 
-                // Account identifier differs by method
-                const accountDisplay =
-                    item.account_name || item.card_number
-                        ? item.account_name || ` ${item.card_number}`
-                        : "—";
+    //             // Account identifier differs by method
+    //             const accountDisplay =
+    //                 item.account_name || item.card_number
+    //                     ? item.account_name || ` ${item.card_number}`
+    //                     : "—";
 
-                return `
-        <tr>
-            <td class="fw-medium">
-                <div class="d-flex flex-column">
-                    <span class="text-dark text-capitalize">${method}</span>
-                    <small class="text-muted" style="font-size:0.7rem">${refDetail}</small>
-                </div>
-            </td>
-            <td>${bankDisplay}</td>
-            <td>${accountDisplay}</td>
-            <td class="text-end text-success fw-bold">${currency}${fmt(
-                    item.amount
-                )}</td>
-        </tr>`;
-            })
-            .join("");
+    //             return `
+    //     <tr>
+    //         <td class="fw-medium">
+    //             <div class="d-flex flex-column">
+    //                 <span class="text-dark text-capitalize">${method}</span>
+    //                 <small class="text-muted" style="font-size:0.7rem">${refDetail}</small>
+    //             </div>
+    //         </td>
+    //         <td>${bankDisplay}</td>
+    //         <td>${accountDisplay}</td>
+    //         <td class="text-end text-success fw-bold">${currency}${fmt(
+    //                 item.amount
+    //             )}</td>
+    //     </tr>`;
+    //         })
+    //         .join("");
 
-        container.innerHTML = `
-        <div class="bg-light p-3 rounded shadow-sm border-start border-primary border-4">
-            <div class="table-responsive bg-white rounded border">
-                <table class="table table-sm table-hover mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Payment Method</th>
-                            <th>Bank</th>
-                            <th>Account / Card</th>
-                            <th class="text-end">Amount Paid</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${breakdownHtml ||
-                            '<tr><td colspan="5" class="text-center py-3 text-muted">No payment breakdowns found</td></tr>'}
-                    </tbody>
-                </table>
-            </div>
-        </div>`;
-    };
+    //     container.innerHTML = `
+    //     <div class="bg-light p-3 rounded shadow-sm border-start border-primary border-4">
+    //         <div class="table-responsive bg-white rounded border">
+    //             <table class="table table-sm table-hover mb-0">
+    //                 <thead class="table-light">
+    //                     <tr>
+    //                         <th>Payment Method</th>
+    //                         <th>Bank</th>
+    //                         <th>Account / Card</th>
+    //                         <th class="text-end">Amount Paid</th>
+    //                     </tr>
+    //                 </thead>
+    //                 <tbody>
+    //                     ${breakdownHtml ||
+    //                         '<tr><td colspan="5" class="text-center py-3 text-muted">No payment breakdowns found</td></tr>'}
+    //                 </tbody>
+    //             </table>
+    //         </div>
+    //     </div>`;
+    // };
 
     mThis.getFilterData = () => {
         let p = {

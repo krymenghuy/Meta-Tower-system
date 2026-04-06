@@ -548,7 +548,7 @@ const InvoiceDialog = (() => {
                         </div>
                         <div class="col-md-3">
                             <div class="material-input outlined">
-                                <input name="phone_number" class="data-input form-control">
+                                <input style="cursor: not-allowed;" name="phone_number" class="data-input form-control" readonly>
                                 <label style="padding-left:6px;color:#777;">Phone Number</label>
                             </div>
                         </div>
@@ -2025,11 +2025,13 @@ const InvoiceDialog = (() => {
 
 
 
+
+
 const ReceiveDialog = (() => {
     const self = {};
     let dialog = null;
 
-    self.show = (op = {}) => {
+    self.show = (op) => {
         dialog = dialog || new GeneralDialog({
             title: "Receive Payment",
             cssClass: "modal-lg vs-modal",
@@ -2037,284 +2039,318 @@ const ReceiveDialog = (() => {
             keyboard: true,
 
             createContent: () => `
-            <div class="container-fluid px-0">
-                <!-- Balance Header -->
-                <div class="alert d-flex justify-content-between align-items-center mb-4 py-3 px-4 border-0 shadow-sm"
-                     style="border-radius: 12px; background-color: #e1e5f2; color: #1a1647;">
-                    <div>
-                        <small class="text-uppercase fw-bold opacity-75 d-block" style="font-size: 10px; letter-spacing: 1px;">TOTAL BALANCE DUE</small>
-                        <div class="d-flex align-items-center">
-                            <span class="h3 mb-0 fw-bold">$</span>
-                            <input name="amount_due" type="text"
-                                   class="h3 mb-0 fw-bold bg-transparent border-0 w-auto"
-                                   style="outline:none; color: #1a1647;" readonly disabled />
+                <div class="container-fluid px-0">
+
+                    <!-- 3-col summary header -->
+                    <div class="row g-0" style="border-radius:8px;overflow:hidden;margin-bottom:1.5rem;">
+                        <div class="col-4" style="padding:0.75rem 1.25rem;border-right:1px solid white; background:#e1e5f2;">
+                            <div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#1a1647;margin-bottom:4px;">Balance Due</div>
+                            <div style="font-size:17px;font-weight:600;color:#5665E1;" id="f_due">$0.00</div>
                         </div>
-                    </div>
-                    <i class="fas fa-file-invoice-dollar fa-3x" style="color: #1a1647;"></i>
-                </div>
-
-                <!-- Payment Method Tabs -->
-                <div class="mb-3">
-                    <label class="form-label text-muted fw-bold mb-2" style="font-size: 11px; letter-spacing: 0.5px;">
-                        CHOOSE PAYMENT METHOD
-                    </label>
-                    <ul class="nav nav-tabs border-bottom-0" id="paymentMethodTabs" role="tablist">
-                        <li class="nav-item" role="presentation">
-                            <a class="nav-link active fw-semibold" id="cash-tab" data-bs-toggle="tab"
-                               href="#cash" role="tab">
-                                <i class="fas fa-money-bill-wave me-1"></i> Cash
-                            </a>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <a class="nav-link fw-semibold" id="bank-tab" data-bs-toggle="tab"
-                               href="#bank" role="tab">
-                                <i class="fas fa-university me-1"></i> Bank
-                            </a>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <a class="nav-link fw-semibold" id="card-tab" data-bs-toggle="tab"
-                               href="#card" role="tab">
-                                <i class="fas fa-credit-card me-1"></i> Card
-                            </a>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <a class="nav-link fw-semibold" id="cheque-tab" data-bs-toggle="tab"
-                               href="#cheque" role="tab">
-                                <i class="fas fa-money-check me-1"></i> Cheque
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-
-                <!-- Payment Sections -->
-                <div class="p-4 border rounded shadow-sm bg-white mb-3 tab-content" style="min-height: 200px;">
-                    <div id="cash" class="payment-section tab-pane fade show active" role="tabpanel">
-                        <div class="material-input outlined mb-0">
-                            <input name="cash" type="number" class="form-control data-input fw-bold text-primary"
-                                   data-field="cash" min="0" step="0.01" placeholder="0.00" style="font-size: 1.5rem;"/>
-                            <label>Cash Amount ($)</label>
+                        <div class="col-4" style="padding:0.75rem 1.25rem;border-right:1px solid white; text-align:center;background:#e1e5f2;">
+                            <div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#1a1647;margin-bottom:4px;">Total Paid</div>
+                            <div style="font-size:17px;font-weight:600;color:#19BF9B;" id="f_tot">$0.00</div>
+                        </div>
+                        <div class="col-4" style="padding:0.75rem 1.25rem;text-align:right;background:#e1e5f2;">
+                            <div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#1a1647;margin-bottom:4px;">Remaining</div>
+                            <div style="font-size:17px;font-weight:600;color:#FAB31C;" id="f_bal">$0.00</div>
                         </div>
                     </div>
 
-                    <div id="bank" class="payment-section tab-pane fade" role="tabpanel">
-                        <div class="row g-3">
-                            <div class="col-6">
-                                <div class="material-input outlined">
-                                    <select name="bank_transfer_bank_id" data-style="material" class="form-select data-input" data-field="bank_transfer_bank_id" placeholder="Bank"></select>
-                                </div>
+                    <div style="display:flex;flex-direction:column;">
+
+                        <!-- Cash -->
+                        <div>
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <span class="payment-badge" style="background:#EAF3DE;color:#27500A;">Cash</span>
+                                <div style="flex:1;height:1px;background:#dee2e6;"></div>
+                                <span style="font-size:11px;color:#6c757d;">Entered: <strong id="c_e" style="color:#212529;">—</strong></span>
                             </div>
-                            <div class="col-6">
-                                <div class="material-input outlined">
-                                    <input name="transfer_amount" type="number" class="form-control data-input"
-                                           data-field="transfer_amount" placeholder="0.00"/>
+                            <div style="display:flex;flex-direction:row;gap:8px;flex-wrap:wrap;margin-bottom: 0.5rem;">
+                                <div style="flex:1;min-width:120px;" class="material-input outlined">
+                                    <input name="cash" type="number" class="form-control data-input" data-field="cash"
+                                        min="0" step="0.01" placeholder=" "/>
                                     <label>Amount ($)</label>
                                 </div>
                             </div>
-                            <div class="col-6">
-                                <div class="material-input outlined">
+                        </div>
+
+                        <!-- Bank Transfer -->
+                        <div>
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <span class="payment-badge" style="background:#E6F1FB;color:#0C447C;">Bank Transfer</span>
+                                <div style="flex:1;height:1px;background:#dee2e6;"></div>
+                                <span style="font-size:11px;color:#6c757d;">Entered: <strong id="b_e" style="color:#212529;">—</strong></span>
+                            </div>
+                            <div style="display:flex;flex-direction:row;gap:8px;flex-wrap:wrap;margin-bottom: 0.5rem;">
+                                <div style="flex:1;min-width:120px;" class="material-input outlined">
+                                    <select name="bank_transfer_bank_id" class="form-select data-input"
+                                            data-field="bank_transfer_bank_id" data-style="material" placeholder="Bank"></select>
+                                </div>
+                                <div style="flex:1;min-width:120px;" class="material-input outlined">
+                                    <input name="transfer_amount" type="number" class="form-control data-input"
+                                        data-field="transfer_amount" min="0" step="0.01" placeholder=" "/>
+                                    <label>Amount ($)</label>
+                                </div>
+                                <div style="flex:1;min-width:120px;" class="material-input outlined">
                                     <input name="bank_ref_number" type="text" class="form-control data-input"
-                                           data-field="bank_ref_number" placeholder=" "/>
+                                        data-field="bank_ref_number" placeholder=" "/>
                                     <label>Ref Number</label>
                                 </div>
                             </div>
-                            <div class="col-6">
-                                <div class="material-input outlined">
-                                    <input name="bank_acc_name" type="text" class="form-control data-input"
-                                           data-field="bank_acc_name" placeholder=" "/>
-                                    <label>Account Name</label>
-                                </div>
-                            </div>
                         </div>
-                    </div>
 
-                    <div id="card" class="payment-section tab-pane fade" role="tabpanel">
-                        <div class="row g-3">
-                            <div class="col-6">
-                                <div class="material-input outlined">
-                                    <select name="card_type" data-style="material" class="form-select data-input" data-field="card_type" required placeholder="Card Type">
+                        <!-- Card -->
+                        <div>
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <span class="payment-badge" style="background:#EEEDFE;color:#3C3489;">Card</span>
+                                <div style="flex:1;height:1px;background:#dee2e6;"></div>
+                                <span style="font-size:11px;color:#6c757d;">Entered: <strong id="ca_e" style="color:#212529;">—</strong></span>
+                            </div>
+                            <div style="display:flex;flex-direction:row;gap:8px;flex-wrap:wrap;margin-bottom: 0.5rem;">
+                                <div style="flex:1;min-width:120px;" class="material-input outlined">
+                                    <select name="card_type" class="form-select data-input" data-field="card_type"
+                                            data-style="material">
+                                        <option value="">None</option>
                                         <option value="credit">Credit</option>
                                         <option value="debit">Debit</option>
                                     </select>
                                 </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="material-input outlined">
+                                <div style="flex:1;min-width:120px;" class="material-input outlined">
                                     <input name="card_amount" type="number" class="form-control data-input"
-                                           data-field="card_amount" placeholder="0.00"/>
+                                        data-field="card_amount" min="0" step="0.01" placeholder=" "/>
                                     <label>Amount ($)</label>
                                 </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="material-input outlined">
+                                <div style="flex:1;min-width:120px;" class="material-input outlined">
                                     <input name="card_number" type="text" class="form-control data-input"
-                                           data-field="card_number" placeholder=" "/>
+                                        data-field="card_number" placeholder=""/>
                                     <label>Card Number</label>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div id="cheque" class="payment-section tab-pane fade" role="tabpanel">
-                        <div class="row g-3">
-                            <div class="col-6">
-                                <div class="material-input outlined">
-                                    <select name="cheque_bank_id" class="form-select data-input" data-field="cheque_bank_id"></select>
-                                    <label>Cheque Bank</label>
-                                </div>
+                        <!-- Cheque -->
+                        <div>
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <span class="payment-badge" style="background:#FAEEDA;color:#633806;">Cheque</span>
+                                <div style="flex:1;height:1px;background:#dee2e6;"></div>
+                                <span style="font-size:11px;color:#6c757d;">Entered: <strong id="ch_e" style="color:#212529;">—</strong></span>
                             </div>
-                            <div class="col-6">
-                                <div class="material-input outlined">
+                            <div style="display:flex;flex-direction:row;gap:8px;flex-wrap:wrap;margin-bottom: 0.5rem;">
+                                <div style="flex:1;min-width:120px;" class="material-input outlined">
+                                    <select name="cheque_bank_id" class="form-select data-input"
+                                            data-field="cheque_bank_id" data-style="material" placeholder="Cheque Bank"></select>
+                                </div>
+                                <div style="flex:1;min-width:120px;" class="material-input outlined">
                                     <input name="cheque_amount" type="number" class="form-control data-input"
-                                           data-field="cheque_amount" placeholder="0.00"/>
-                                    <label>Cheque Amount ($)</label>
+                                        data-field="cheque_amount" min="0" step="0.01" placeholder=" "/>
+                                    <label>Amount ($)</label>
                                 </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="material-input outlined">
+                                <div style="flex:1;min-width:120px;" class="material-input outlined">
                                     <input name="cheque_number" type="text" class="form-control data-input"
-                                           data-field="cheque_number" placeholder=" "/>
+                                        data-field="cheque_number" placeholder=" "/>
                                     <label>Cheque Number</label>
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Remarks -->
+                        <div>
+                            <div class="material-input outlined" style="margin:0;">
+                                <textarea name="remarks" class="form-control data-input" data-field="remarks"
+                                        rows="2" style="height:55px;" placeholder=""></textarea>
+                                <label>Remarks</label>
+                            </div>
+                        </div>
+
                     </div>
-                </div>
+                </div>`,
 
-                <!-- Remarks -->
-                <div class="material-input outlined">
-                    <textarea name="remarks" class="form-control data-input" data-field="remarks" rows="2"></textarea>
-                    <label>Remarks</label>
-                </div>
-            </div>`,
+    contentCreated: (me) => {
+        // ====================== LIVE TOTALS ======================
+        const updateTotals = () => {
+            const getValue = (name) => {
+                const el = me.divModal.querySelector(`[name="${name}"]`);
+                return el ? parseFloat(el.value) || 0 : 0;
+            };
 
-            contentCreated: (me) => {
-                /**
-                 * Helper: get the display text of a <select> element's selected option.
-                 */
-                me.getSelectText = (controlName) => {
-                    const sel = me.controls[controlName];
-                    if (!sel) return null;
-                    const opt = sel.options[sel.selectedIndex];
-                    return (opt && opt.value) ? opt.text : null;
-                };
+            const cash   = getValue('cash');
+            const bank   = getValue('transfer_amount');
+            const card   = getValue('card_amount');
+            const cheque = getValue('cheque_amount');
 
-                /**
-                 * Build the pmt_breakdowns payload from form data.
-                 * FIX 1: account_name is now read from bank_acc_name field.
-                 * FIX 2: bank_name is resolved from the bank select label.
-                 * FIX 3: card_number is now included.
-                 * FIX 4: cheque_number and cheque_bank_name are now included.
-                 */
-                me.convertPayment = (data) => {
-                    const result = {
-                        invoice_id: me.dataOptions?.invoice_id || null,
-                        remarks: data.remarks || '',
-                        pmt_breakdowns: []
-                    };
+            const totalPaid = cash + bank + card + cheque;
 
-                    const parseAmt = (v) => isNaN(parseFloat(v)) ? 0 : parseFloat(v);
+            let due = 0;
+            const dueEl = me.divModal.querySelector('#f_due');
+            if (dueEl) {
+                due = parseFloat(dueEl.textContent.replace(/[^0-9.-]+/g, '')) || 0;
+            }
 
-                    // --- Cash ---
-                    if (parseAmt(data.cash) > 0) {
-                        result.pmt_breakdowns.push({
-                            method: "cash",
-                            amount: parseAmt(data.cash),
-                            currency_code: "USD"
-                        });
-                    }
+            const remaining = Math.max(0, due - totalPaid);
 
-                    // --- Bank Transfer ---
-                    if (parseAmt(data.transfer_amount) > 0) {
-                        result.pmt_breakdowns.push({
-                            method: "bank_transfer",
-                            amount: parseAmt(data.transfer_amount),
-                            currency_code: "USD",
-                            bank_id: parseInt(data.bank_transfer_bank_id) || null,
-                            bank_name: me.getSelectText('bank_transfer_bank_id'),   // FIX 2
-                            bank_ref_number: data.bank_ref_number || null,
-                            account_name: data.bank_acc_name || null,               // FIX 1
-                        });
-                    }
+            const fmt = (n) => '$' + Number(n).toFixed(2);
 
-                    // --- Card ---
-                    if (parseAmt(data.card_amount) > 0) {
-                        result.pmt_breakdowns.push({
-                            method: "card",
-                            amount: parseAmt(data.card_amount),
-                            currency_code: "USD",
-                            card_type: data.card_type || null,
-                            card_number: data.card_number || null,                  // FIX 3
-                        });
-                    }
 
-                    // --- Cheque ---
-                    if (parseAmt(data.cheque_amount) > 0) {
-                        result.pmt_breakdowns.push({
-                            method: "cheque",
-                            amount: parseAmt(data.cheque_amount),
-                            currency_code: "USD",
-                            bank_id: parseInt(data.cheque_bank_id) || null,
-                            cheque_bank_name: me.getSelectText('cheque_bank_id'),   // FIX 4
-                            cheque_number: data.cheque_number || null,              // FIX 4
-                        });
-                    }
+            me.divModal.querySelector('#f_tot').textContent = fmt(totalPaid);
+            me.divModal.querySelector('#f_bal').textContent = fmt(remaining);
 
-                    return result;
-                };
-            },
+            const balEl = me.divModal.querySelector('#f_bal');
+            if (balEl) {
+                balEl.style.color = (remaining <= 0.001) ? '#3B6D11' : '#FAB31C';
+            }
 
-            onPrepareForm: (me) => {
-                const opts = me.dataOptions || {};
-                if (opts.invoice_id) {
-                    vsapi.call(`${main_view.base_url}/prm/invoice/details`, { id: opts.invoice_id })
-                        .then(res => {
-                            if (me.controls.amount_due && res.status_code === 200) {
-                                me.controls.amount_due.value = Number(res.data?.balance || 0).toFixed(2);
-                            }
-                        });
-                }
+            me.divModal.querySelector('#c_e').textContent  = cash   > 0 ? fmt(cash)   : '—';
+            me.divModal.querySelector('#b_e').textContent  = bank   > 0 ? fmt(bank)   : '—';
+            me.divModal.querySelector('#ca_e').textContent = card   > 0 ? fmt(card)   : '—';
+            me.divModal.querySelector('#ch_e').textContent = cheque > 0 ? fmt(cheque) : '—';
+        };
 
-                vsapi.call(`${main_view.base_url}/prm/invoice/form-options`)
-                    .then(res => {
-                        const banks = res?.data?.banks || [];
-                        VSUtil.setComboItems(me.controls.bank_transfer_bank_id, banks, "id", "name", true, "— Select Bank —");
-                        VSUtil.setComboItems(me.controls.cheque_bank_id, banks, "id", "name", true, "— Select Bank —");
-                    });
-            },
-
-            buttons: [
-                {
-                    label: 'Cancel',
-                    cssClass: "btn btn-secondary",
-                    click: (me) => me.hide(false),
-                },
-                {
-                    label: 'Receive',
-                    cssClass: "btn btn-primary",
-                    click: (me, btn) => {
-                        const payload = me.convertPayment(me.getData());
-                        if (payload.pmt_breakdowns.length === 0) {
-                            return cv_interact.error("Please enter at least one payment amount.");
-                        }
-
-                        vsapi.call(`${main_view.base_url}/prm/invoice/receive`, payload, btn)
-                            .then(res => {
-                                if (res.status_code === 200) {
-                                    cv_interact.success("Payment successful");
-                                    if (typeof InvoiceComponent !== 'undefined' && InvoiceComponent.InvoiceListView) {
-                                        InvoiceComponent.InvoiceListView.showPage();
-                                    }
-                                    me.hide(true);
-                                } else {
-                                    cv_interact.error(res.error_message || "Failed to receive payment");
-                                }
-                            });
-                    },
-                }
-            ],
+        const amountFields = ['cash', 'transfer_amount', 'card_amount', 'cheque_amount'];
+        amountFields.forEach(name => {
+            const input = me.divModal.querySelector(`[name="${name}"]`);
+            if (input) {
+                input.addEventListener('input', updateTotals);
+                input.addEventListener('change', updateTotals);
+            }
         });
 
-        dialog.show(op);
+        me.convertPayment = (data) => {
+            const parseAmt = (v) => isNaN(parseFloat(v)) ? 0 : parseFloat(v);
+            const breakdowns = [];
+
+            // Cash
+            if (parseAmt(data.cash) > 0) {
+                breakdowns.push({
+                    method: "cash",
+                    amount: parseAmt(data.cash),
+                    currency_code: "USD"
+                });
+            }
+
+            // Bank Transfer
+            if (parseAmt(data.transfer_amount) > 0) {
+                breakdowns.push({
+                    method: "Bank_transfer",
+                    amount: parseAmt(data.transfer_amount),
+                    currency_code: "USD",
+                    bank_id: parseInt(data.bank_transfer_bank_id) || null,
+                    bank_name: me.getSelectText ? me.getSelectText('bank_transfer_bank_id') : null,
+                    bank_ref_number: data.bank_ref_number || null,
+                    account_name: data.bank_acc_name || null,
+                });
+            }
+
+            // Card
+            if (parseAmt(data.card_amount) > 0) {
+                breakdowns.push({
+                    method: "card",
+                    amount: parseAmt(data.card_amount),
+                    currency_code: "USD",
+                    card_type: data.card_type || null,
+                    card_number: data.card_number || null,
+                });
+            }
+
+            // Cheque
+            if (parseAmt(data.cheque_amount) > 0) {
+                breakdowns.push({
+                    method: "cheque",
+                    amount: parseAmt(data.cheque_amount),
+                    currency_code: "USD",
+                    bank_id: parseInt(data.cheque_bank_id) || null,
+                    cheque_bank_name: me.getSelectText ? me.getSelectText('cheque_bank_id') : null,
+                    cheque_number: data.cheque_number || null,
+                });
+            }
+            return {
+                invoice_id: me.dataOptions?.invoice_id || null,
+                remarks: (data.remarks || '').trim(),
+                pmt_breakdowns: breakdowns,
+
+            };
+
+        };
+    },
+
+    onPrepareForm: (me) => {
+        const opts = me.dataOptions || {};
+
+        // Load invoice details
+        if (opts.invoice_id) {
+            vsapi.call(`${main_view.base_url}/prm/invoice/details`, { id: opts.invoice_id })
+                .then(res => {
+                    if (res.status_code === 200) {
+                        const d = res.data || {};
+                        const bal = Number(d.balance || 0).toFixed(2);
+
+                        const set = (id, val) => {
+                            const el = me.divModal.querySelector('#' + id);
+                            if (el) el.textContent = val;
+                        };
+
+                        set('f_due', '$' + bal);
+                        set('f_bal', '$' + bal);
+                        set('f_tot', '$0.00');
+
+                        if (d.tenant_name) set('lbl_tenant', d.tenant_name);
+                        if (d.code) set('lbl_invoice', d.code);
+                    }
+                });
+        }
+
+        // Load banks
+        vsapi.call(`${main_view.base_url}/prm/invoice/form-options`)
+            .then(res => {
+                const banks = res?.data?.banks || [];
+                if (me.controls.bank_transfer_bank_id) {
+                    VSUtil.setComboItems(me.controls.bank_transfer_bank_id, banks, "id", "name", true, "— Select Bank —");
+                }
+                if (me.controls.cheque_bank_id) {
+                    VSUtil.setComboItems(me.controls.cheque_bank_id, banks, "id", "name", true, "— Select Bank —");
+                }
+            });
+    },
+
+        buttons: [
+            { label: 'Cancel', cssClass: "btn btn-secondary", click: (me) => me.hide(false) },
+            {
+                label: 'Receive',
+                cssClass: "btn btn-primary",
+                click: (me, btn) => {
+                    const payload = me.convertPayment(me.getData());
+
+                    if (!payload.pmt_breakdowns || payload.pmt_breakdowns.length === 0) {
+                        return cv_interact.error("Please enter at least one payment amount.");
+                    }
+
+                    vsapi.call(`${main_view.base_url}/prm/invoice/receive`, payload, btn)
+                        .then(res => {
+                            if (res.status_code === 200) {
+                                cv_interact.success("Payment Received Successfully");
+                                me.hide(true);
+                            } else {
+                                cv_interact.error(res.error_message || "Save failed");
+                            }
+                        })
+                        .catch(err => {
+                            console.error(err);
+                            cv_interact.error("Network error occurred");
+                        });
+                }
+            },
+            {
+                label: "Receive & Print",
+                cssClass: "btn btn-success",
+                click: (me, btn) => {
+                    const payload = me.convertPayment(me.getData());
+                    self._submitReceive(me, btn, payload, true);   // your existing print handler
+                }
+            }
+        ]
+    });
+
+    dialog.show(op);
     };
 
     return self;

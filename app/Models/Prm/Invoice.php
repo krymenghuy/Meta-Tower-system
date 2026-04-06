@@ -201,7 +201,6 @@ class Invoice extends VSModel
 
             // Calculate total received
             $total_received = array_sum(array_column($pmt_breakdowns, 'amount'));
-            // 1. Create Receipt Header
             $receiptData = [
                 'receipt_date'   => now()->toDateString(),
                 'invoice_id'     => $invoice_id,
@@ -229,26 +228,38 @@ class Invoice extends VSModel
                 null
             );
 
-            // 2. Insert into receipt_detail
+            $detailRows = [];
+                foreach ($pmt_breakdowns as $bd) {
+                    $bankId = $bd['bank_id'] ?? null;
+                    $bankName = null;
+
+                    if ($bankId) {
+                        $bankName = DB::table('banks')
+                            ->where('id', $bankId)
+                            ->value('name');
+                    }
+                }
             $detailRows = [];
             foreach ($pmt_breakdowns as $bd) {
                 $detailRows[] = [
-                    'receipt_id'       => $receipt_id,
-                    'bank_id'          => $bd['bank_id'] ?? null,
-                    'method'           => strtolower($bd['method'] ?? 'cash'),
-                    'amount'           => (float)($bd['amount'] ?? 0),
-                    'currency_code'    => $bd['currency_code'] ?? 'USD',
-                    'bank_ref_number'  => $bd['bank_ref_number'] ?? null,
-                    'account_name'     => $bd['account_name'] ?? null,
-                    'bank_name'        => $bd['bank_name'] ?? null,
-                    'card_number'      => $bd['card_number'] ?? null,
-                    'card_type'        => $bd['card_type'] ?? null,
-                    'cheque_number'    => $bd['cheque_number'] ?? null,
-                    'cheque_bank_name' => $bd['cheque_bank_name'] ?? null,
-                    'remarks'          => $bd['remarks'] ?? null,
-                    'created_at'       => now(),
-                    // 'updated_at'       => now(),
-                ];
+                        'receipt_id'       => $receipt_id,
+                        'bank_id'          => $bd['bank_id'] ?? null,
+                        'method'           => strtolower(trim($bd['method'] ?? 'cash')),
+                        'amount'           => (float)($bd['amount'] ?? 0),
+                        'currency_code'    => $bd['currency_code'] ?? 'USD',
+                        'bank_ref_number'  => $bd['bank_ref_number'] ?? null,
+                        'account_name'     => $bd['account_name'] ?? null,
+                        'bank_name'        => $bankName ?? $bd['bank_name'] ?? null,
+                        'card_number'      => $bd['card_number'] ?? null,
+                        'card_type'         => in_array($bd['card_type'] ?? '', ['credit', 'debit'])
+                                                ? strtolower($bd['card_type'])
+                                                : null,
+
+                        'cheque_number'    => $bd['cheque_number'] ?? null,
+                        'cheque_bank_name' => $bankName ?? $bd['cheque_bank_name'] ?? null,
+                        'remarks'          => $bd['remarks'] ?? $remarks,
+                        'created_at'       => now(),
+                    ];
             }
 
             if (!empty($detailRows)) {
@@ -265,7 +276,7 @@ class Invoice extends VSModel
                 $payment_status_id = 1;
                 $is_paid = 1;
             } elseif ($new_paid_amount > 0) {
-                $payment_status_id = 3; // Partial
+                $payment_status_id = 3;
                 $is_paid = 0;
             } else {
                 $payment_status_id = 2; // Unpaid
@@ -302,6 +313,7 @@ class Invoice extends VSModel
             return DV::error('Failed to receive payment: ' . $e->getMessage());
         }
     }
+
 
     public static function checkDuplicateSpaceId($tenant_id, $invoice_id = null)
     {
