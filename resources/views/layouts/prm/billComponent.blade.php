@@ -10,6 +10,9 @@
             <div class="col-12 col-md-6 col-lg-2">
                 <select type="id" id="_bill_status_id" class="data-input filter-field form-control" data-field="status_id"></select>
             </div>
+            <div class="col-12 col-md-6 col-lg-2">
+                <select type="id" id="_bill_category_id" class="data-input filter-field form-control" data-field="category_id"></select>
+            </div>
             <div class="col-12 col-md-3 col-lg-2 ms-auto text-md-end" style="overflow:visible;">
                 <button type="button" class="btnAddNewPrm w-100 w-md-auto" id="_btnBill">
                     <i class="fa-solid fa-bars-staggered"></i>
