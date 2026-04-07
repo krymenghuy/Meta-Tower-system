@@ -71,7 +71,7 @@ class PurchaseOrder extends VSModel
                 DB::rollBack();
                 return DV::error('Cannot save purchase order');
             }
-            self::setPONumber($ss->branch_id, $po_id, 'PO', $inputs['po_date'], 5, null);
+           self::setPONumber($ss->branch_id, $po_id, 'PO', $inputs['po_date'], 5, 'PO');
             $items = array_map(fn($i) => (object) $i, $items);
             $valid_items = array_values(array_filter($items, function ($item) {
                 return !empty($item->item_id);
@@ -590,55 +590,60 @@ class PurchaseOrder extends VSModel
         return DV::success(['data' => ['success_count' => $success_count, 'count' => $i]]);
     }
 
-      static function setPONumber($branch_id, $po_id = 0, $doc_class = null, $po_date = null, $len = 5, $v_prefix = null, $onSuccess = null)
-    {
-        if (!$len){
-            $len = 5;
-        }
-        $def_prefix = $v_prefix != null ? $v_prefix : 'PO';
-        $table_name = "purchase_order_code_control";
-        $target_table = "purchase_orders";
-        $target_column = "po_number";
-        $com_branch_id = null;
-        $doc_class = $doc_class ?? 'no-tax';
-        $str_company_branch = '1=1';
-        if ($com_branch_id > 0)
-            $str_company_branch = 'com_branch_id =' . $com_branch_id;
-        if (!$po_id)
-            return null;
+    public static function setPONumber($branch_id,$po_id,$doc_class = 'PO',$po_date = null,$len = 5,$prefix = 'PO',$onSuccess = null) {
+    if (!$po_id) return null;
+    $year = date('Y', strtotime($po_date ?? now()));
+    return DB::transaction(function () use (
+        $branch_id,
+        $po_id,
+        $doc_class,
+        $year,
+        $len,
+        $prefix,
+        $onSuccess
+    ) {
 
-        //if ($def_prefix) $where_branch .=" AND prefix ='$def_prefix'";
-        $str_prefix = '1=1';
-        if ($v_prefix) {
-            $str_prefix = 'c.prefix = \'' . $v_prefix . '\'';
-        }
-        $year = date('Y', strtotime($po_date));
-        $row = DB::table($table_name . " as c")->where('branch_id', $branch_id)->where('c.issue_year', $year)->where('c.doc_class', $doc_class)->whereRaw($str_company_branch)->whereRaw($str_prefix)->selectRaw("last_id,prefix")->take(1)->get()->first();
+        $row = DB::table('purchase_order_code_control')
+            ->where('branch_id', $branch_id)
+            ->where('issue_year', $year)
+            ->where('doc_class', $doc_class)
+            ->where('prefix', $prefix)
+            ->lockForUpdate()
+            ->first();
 
-        $next_num = 0;
-        $prefix = null;
-        if ($row && $row->prefix == $v_prefix) {
-            $next_num = $row->last_id;
-            $prefix = $row->prefix;
-        }
-        if (!$prefix)
-            $prefix = $def_prefix;
-        if (!$prefix)
-            $prefix = "PO";
-        $next_num++;
-        //example invoice number => I2023-00003
-        // $new_code = $prefix . substr($year, -2) . "-" . formatNumber($next_num, $len);
-        $new_code = $prefix . "-". substr($year, -2) . "-" . formatNumber($next_num, $len);
+        if ($row) {
+            $next_num = $row->last_id + 1;
 
+            DB::table('purchase_order_code_control')
+                ->where('id', $row->id)
+                ->update(['last_id' => $next_num]);
+        } else {
+            $next_num = 1;
 
-        $x = DB::table($target_table)->where('id', $po_id)->update([$target_column => $new_code]);
-        if ($x || $x === 1) {
-            $updated = DB::table($table_name)->where('prefix', $prefix)->where('branch_id', $branch_id)->where('issue_year', $year)->where('doc_class', $doc_class)->whereRaw($str_company_branch)->update(['last_id' => $next_num]);
-            if (!$updated)
-                DB::table($table_name)->insert(['branch_id' => $branch_id, 'com_branch_id' => $com_branch_id, 'doc_class' => $doc_class, 'issue_year' => $year, 'prefix' => $prefix, 'last_id' => $next_num]);
-            if ($onSuccess)
-                $onSuccess();
-            return (object) ['status_code' => 200, 'status' => 'OK', 'code' => $new_code];
+            DB::table('purchase_order_code_control')->insert([
+                'branch_id' => $branch_id,
+                'doc_class' => $doc_class,
+                'issue_year' => $year,
+                'prefix' => $prefix,
+                'last_id' => $next_num,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
         }
-    }
+
+        $new_code = $prefix . '-' . substr($year, -2) . '-' . str_pad($next_num, $len, '0', STR_PAD_LEFT);
+
+        DB::table('purchase_orders')
+            ->where('id', $po_id)
+            ->update(['po_number' => $new_code]);
+
+        if ($onSuccess) $onSuccess();
+
+        return (object)[
+            'status_code' => 200,
+            'status' => 'OK',
+            'code' => $new_code
+        ];
+    });
+}
 }
