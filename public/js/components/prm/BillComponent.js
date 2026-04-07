@@ -39,17 +39,18 @@ var BillComponent = (() => {
             transTitle: "titles.Vendor",
             className: "align-middle",
             data: (data) => {
-                return `<span class="d-block text-prm-custom fw-semibold text-capitalize">${data.vendor_name}</span>`;
+                return `<span class="d-block text-prm-custom fw-semibold text-capitalize">${data.vendor_name}</span>
+                        <span class="d-block text-prm-custom">${data.phone_number}</span>`;
             },
         },
-        {
-            transTitle: "titles.Phone Number",
-            className: "align-middle",
-            data: (data) => {
-                return `<span class="d-block text-prm-custom">${data.phone_number}</span>
-                        <span class="d-block text-prm-custom">${data.email ?? "_"}</span>`;
-            },
-        },
+        // {
+        //     transTitle: "titles.Phone Number",
+        //     className: "align-middle",
+        //     data: (data) => {
+        //         return `<span class="d-block text-prm-custom">${data.phone_number}</span>
+        //                 <span class="d-block text-prm-custom">${data.email ?? "_"}</span>`;
+        //     },
+        // },
         {
             transTitle: "titles.Expense Type",
             className: "align-middle",

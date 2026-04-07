@@ -215,11 +215,28 @@ var PurchaseOrdersComponent = (() => {
             actionButtonClass: "btn_dropdown_purchase_action",
             cssClass: "bg-white shadow",
             menus: [
-                { html: '<span class="ps-2" vslang="titles.Modify PO"></span>', icon: `<i class="fa-solid fa-square-pen fs-5 text-warning"></i>`, cssClass: "border-bottom pb-2", name: "modify_purchase_order" },
-                { html: '<span class="ps-2" vslang="titles.Delete PO"></span>', icon: `<i class="fa-solid fa-rectangle-xmark fs-5 text-danger"></i>`, cssClass: "border-bottom pb-2", name: "delete_purchase_order" },
-                { html: '<span class="ps-2" vslang="titles.Authorized PO"></span>', icon: `<i class="fa-solid fa-check-to-slot fs-5 text-primary"></i>`, cssClass: "border-bottom pb-2", name: "authorized_purchase_order" },
-                { html: '<span class="ps-2" vslang="titles.Receive PO"></span>', icon: `<i class="fa-solid fa-box-open fs-5 text-success"></i>`, name: "receive_purchase_order" },
-                { html: '<span class="ps-2" vslang="titles.Generate Bill"></span>', icon: `<i class="fa-solid fa-file-invoice-dollar fs-5 text-success"></i>`, name: "generate_bill" },
+                { html: '<span class="ps-2" vslang="titles.Modify PO"></span>', 
+                  icon: `<i class="fa-solid fa-square-pen fs-5 text-warning"></i>`, 
+                  cssClass: "border-bottom pb-2", 
+                  name: "modify_purchase_order" 
+                },
+                { html: '<span class="ps-2" vslang="titles.Delete PO"></span>', 
+                  icon: `<i class="fa-solid fa-rectangle-xmark fs-5 text-danger"></i>`, 
+                  cssClass: "border-bottom pb-2", 
+                  name: "delete_purchase_order"
+                },
+                { html: '<span class="ps-2" vslang="titles.Authorized PO"></span>', 
+                  icon: `<i class="fa-solid fa-check-to-slot fs-5 text-primary"></i>`, 
+                  cssClass: "border-bottom pb-2", 
+                  name: "authorized_purchase_order" },
+                { html: '<span class="ps-2" vslang="titles.Receive PO"></span>', 
+                  icon: `<i class="fa-solid fa-box-open fs-5 text-success"></i>`, 
+                  name: "receive_purchase_order" 
+                },
+                { html: '<span class="ps-2" vslang="titles.Generate Bill"></span>', 
+                  icon: `<i class="fa-solid fa-file-invoice-dollar fs-5 text-success"></i>`, 
+                  name: "generate_bill" 
+                },
             ],
             onShow: (me, container) => {
                 const menu = me.getActiveMenus(container);
@@ -345,7 +362,6 @@ var PurchaseOrdersComponent = (() => {
         });
     };
 
-    // ==================== Dialog Functions ====================
     const showPurchaseOrderDialog = (op) => {
         PurchaseOrderDialog = PurchaseOrderDialog || new GeneralDialog({
             cssClass: "modal-xl vs-modal",
@@ -439,10 +455,6 @@ var PurchaseOrdersComponent = (() => {
                         applyVendorInfo(me._selectedVendorId);
                     }
                
-
-              
-
-
 
                 me.purchaseItemsView = new ItemsView(me.controls.purchaseItemList, {
                     currencyCode: "USD",
@@ -641,8 +653,14 @@ var PurchaseOrdersComponent = (() => {
             },
             // Note: Receive dialog contentCreated and other logic can be added similarly if needed
             buttons: [
-                { label: "Cancel", cssClass: "btn btn-warning", click: (me) => me.hide(false) },
-                { label: "<span>Save</span>", cssClass: "btn btn-primary", click: (me) => me.hide(true) },
+                { label: "Cancel", 
+                  cssClass: "btn btn-warning", 
+                  click: (me) => me.hide(false) 
+                },
+                { label: "<span>Save</span>", 
+                  cssClass: "btn btn-primary", 
+                  click: (me) => me.hide(true)
+                },
             ],
             prepareFormOptions: {
                 api: {
