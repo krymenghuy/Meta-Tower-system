@@ -15,66 +15,6 @@ class Maintenance extends VSModel
     protected $userInfo = null;
     protected $table = 'maintenances';
 
-    /**
-     * Planned (1) / In Progress (2) / Completed (3) from schedule window vs current time.
-     * Before start → 1, from start through end (inclusive) → 2, after end → 3.
-     */
-    public static function computeScheduleStatusId($startDate, $endDate): int
-    {
-        $now = Carbon::now();
-        $startAt = Carbon::parse($startDate);
-        $endAt = Carbon::parse($endDate);
-        if ($now->lt($startAt)) {
-            return 1;
-        }
-        if ($now->lte($endAt)) {
-            return 2;
-        }
-
-        return 3;
-    }
-
-    /**
-     * Persist and reflect schedule-derived status when not Completed (3) or Cancelled (4).
-     * Call before setOfficialDates() so start_date/end_date are still parseable DB values.
-     *
-     * @param object $row list/detail row with id, status_id, start_date, end_date, status_name
-     * @param \Illuminate\Support\Collection|array|null $statusIdToName pluck('name','id') optional
-     */
-    public static function applyScheduleDerivedStatus(object $row, $statusIdToName = null): void
-    {
-        $sid = (int) ($row->status_id ?? 0);
-        if (in_array($sid, [3, 4], true)) {
-            return;
-        }
-        $start = $row->start_date ?? null;
-        $end = $row->end_date ?? null;
-        if (!$start || !$end) {
-            return;
-        }
-        try {
-            $computed = self::computeScheduleStatusId($start, $end);
-        } catch (\Throwable $e) {
-            return;
-        }
-        $id = (int) ($row->id ?? 0);
-        if ($id > 0 && $computed !== $sid) {
-            DB::table('maintenances')->where('id', $id)->update(['status_id' => $computed]);
-        }
-        $row->status_id = $computed;
-        if ($statusIdToName !== null) {
-            $name = $statusIdToName[$computed] ?? null;
-            if ($name !== null) {
-                $row->status_name = $name;
-            }
-        } else {
-            $name = DB::table('maintenance_statuses')->where('id', $computed)->value('name');
-            if ($name !== null) {
-                $row->status_name = $name;
-            }
-        }
-    }
-
     public function __construct($id = null, $userInfo = null)
     {
         $this->id = $id;
@@ -113,10 +53,17 @@ class Maintenance extends VSModel
         try {
             $sid = (int) ($input['status_id'] ?? 0);
             if (!in_array($sid, [3, 4], true)) {
+                $now = now()->format('Y-m-d H:i:s');
                 $start = $input['start_date'] ?? null;
                 $end = $input['end_date'] ?? null;
                 if ($start && $end) {
-                    $input['status_id'] = self::computeScheduleStatusId($start, $end);
+                    if ($start <= $now && $end >= $now) {
+                        $input['status_id'] = 2; // In Progress
+                    } elseif ($end < $now) {
+                        $input['status_id'] = 3; // Completed
+                    } elseif ($start > $now) {
+                        $input['status_id'] = 1; // Planned
+                    }
                 }
             }
         } catch (\Exception $e) {
@@ -216,10 +163,9 @@ class Maintenance extends VSModel
         $count = $clone_query->count('m.id');
         $rows  = $query->skip($skip_rows)->take($per_page)->get();
 
-        $statusIdToName = DB::table('maintenance_statuses')->pluck('name', 'id');
         foreach ($rows as $row) {
-            self::applyScheduleDerivedStatus($row, $statusIdToName);
             setOfficialDates($row, [], ['updated_at', 'start_date', 'end_date'], []);
+            self::applyEffectiveMaintenanceStatus($row);
         }
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
@@ -244,8 +190,8 @@ class Maintenance extends VSModel
             ->first();
 
         if ($row) {
-            self::applyScheduleDerivedStatus($row);
             setOfficialDates($row, [], ['updated_at', 'start_date', 'end_date'], []);
+            self::applyEffectiveMaintenanceStatus($row);
         }
         return $row;
     }
@@ -397,5 +343,118 @@ class Maintenance extends VSModel
         }
 
         return $this->setStatus(['id' => $row->id, 'status_id' => 3], $ss);
+    }
+
+    /** Sync DB status_id for rows in 1–2; returns how many rows were updated. */
+    public static function syncAllOpenMaintenanceStatuses(): int
+    {
+        $updated = 0;
+        DB::table('maintenances')
+            ->whereIn('status_id', [1, 2])
+            ->select('id', 'status_id', 'start_date', 'end_date', 'space_id', 'amenity_id')
+            ->orderBy('id')
+            ->chunkById(200, function ($rows) use (&$updated) {
+                foreach ($rows as $row) {
+                    setOfficialDates($row, [], ['start_date', 'end_date'], []);
+                    $eid = self::resolveTimeBasedStatusId(
+                        (int) ($row->status_id ?? 0),
+                        $row->start_date ?? null,
+                        $row->end_date ?? null
+                    );
+                    if ($eid === null) {
+                        continue;
+                    }
+                    if (self::persistTimeBasedStatusIfChanged($row, $eid)) {
+                        $updated++;
+                    }
+                }
+            }, 'id');
+        return $updated;
+    }
+
+    /** Time-based display + persist status_id when it differs (3–4 never auto-changed). */
+    private static function applyEffectiveMaintenanceStatus($row): void
+    {
+        $sid = (int) ($row->status_id ?? 0);
+        $eid = self::resolveTimeBasedStatusId($sid, $row->start_date ?? null, $row->end_date ?? null);
+        if ($eid === null) {
+            $row->effective_status_id = $sid;
+            return;
+        }
+        $row->effective_status_id = $eid;
+        $row->status_name = [1 => 'Planned', 2 => 'In Progress', 3 => 'Completed'][$eid] ?? $row->status_name;
+        self::persistTimeBasedStatusIfChanged($row, $eid);
+    }
+
+    /** @return int|null null = use stored status_id (cancelled/completed/missing dates) */
+    private static function resolveTimeBasedStatusId(int $sid, $startDate, $endDate): ?int
+    {
+        if ($sid === 3 || $sid === 4) {
+            return null;
+        }
+        $s = !empty($startDate) ? Carbon::parse($startDate) : null;
+        $e = !empty($endDate) ? Carbon::parse($endDate) : null;
+        if (!$s || !$e) {
+            return null;
+        }
+        $n = Carbon::now();
+        if ($n->lt($s)) {
+            return 1;
+        }
+        if ($s->lte($n) && $e->gte($n)) {
+            return 2;
+        }
+        return 3;
+    }
+
+    /** Update maintenances.status_id and space/amenity flags. Returns true if DB status row changed. */
+    private static function persistTimeBasedStatusIfChanged($row, int $eid): bool
+    {
+        $sid = (int) ($row->status_id ?? 0);
+        if ($sid === 4 || $eid === $sid) {
+            return false;
+        }
+        $id = (int) ($row->id ?? 0);
+        if ($id <= 0) {
+            return false;
+        }
+        $now = getNowTime();
+        DB::table('maintenances')->where('id', $id)->update([
+            'status_id'   => $eid,
+            'update_user' => 'System',
+            'update_uid'  => null,
+            'updated_at'  => $now,
+        ]);
+        $row->status_id = $eid;
+        self::applyMaintenanceSideEffectsForStatus($row, $eid, $now);
+        return true;
+    }
+
+    private static function applyMaintenanceSideEffectsForStatus($row, int $statusId, $now): void
+    {
+        $spaceId = isset($row->space_id) ? (int) $row->space_id : 0;
+        $amenityId = isset($row->amenity_id) ? (int) $row->amenity_id : 0;
+        if ($statusId === 2) {
+            if ($spaceId > 0) {
+                DB::table('building_spaces')->where('id', $spaceId)->update(['maintenance_status_id' => 1]);
+            }
+            if ($amenityId > 0) {
+                $mid = DB::table('amenity_statuses')->whereRaw('LOWER(TRIM(name)) = ?', ['maintenance'])->value('id');
+                if ($mid) {
+                    DB::table('amenities')->where('id', $amenityId)->update([
+                        'status_id' => $mid, 'update_user' => 'System', 'update_uid' => null, 'updated_at' => $now,
+                    ]);
+                }
+            }
+            return;
+        }
+        if ($spaceId > 0) {
+            DB::table('building_spaces')->where('id', $spaceId)->update(['maintenance_status_id' => 0]);
+        }
+        if ($amenityId > 0) {
+            DB::table('amenities')->where('id', $amenityId)->update([
+                'status_id' => 1, 'update_user' => 'System', 'update_uid' => null, 'updated_at' => $now,
+            ]);
+        }
     }
 }

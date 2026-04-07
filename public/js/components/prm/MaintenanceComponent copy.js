@@ -1,5 +1,28 @@
 "use strict";
 var MaintenanceComponent = (() => {
+    const maintenanceMomentMs = (val) => {
+        if (!val) return NaN;
+        const s = String(val).trim().split(/\s+/);
+        const datePart = s[0] || "";
+        const timePart = (s[1] || "00:00").substring(0, 5);
+        const combined = datePart + (s[1] ? " " + timePart : "");
+        const t = new Date(combined).getTime();
+        return t;
+    };
+
+    /** Planned / In Progress / Completed from window vs now; keep Completed (3) and Cancelled (4) from server. */
+    const getEffectiveMaintenanceStatusId = (data) => {
+        const sid = parseInt(data.status_id, 10);
+        if (sid === 3 || sid === 4) return sid;
+        const startMs = maintenanceMomentMs(data.start_date);
+        const endMs = maintenanceMomentMs(data.end_date);
+        if (isNaN(startMs) || isNaN(endMs)) return sid;
+        const now = Date.now();
+        if (now < startMs) return 1;
+        if (now <= endMs) return 2;
+        return 3;
+    };
+
     const mThis = {};
     mThis.title_prop = "Maintenance";
     mThis.base_url = main_view.base_url;
@@ -9,9 +32,6 @@ var MaintenanceComponent = (() => {
     mThis.elFilter_building = mThis.self.querySelector('#_maintenance_building_id');
     mThis.elFilter_status = mThis.self.querySelector('#_maintenance_status_id');
     mThis.elSearch = mThis.self.querySelector("#_search_maintenance");
-    mThis.autoRefreshMs = 60000;
-    mThis.autoRefreshTimer = null;
-    mThis.autoRefreshStartTimeout = null;
 
     mThis.cols = [
         { title: "", className: "align-middle" },
@@ -79,7 +99,7 @@ var MaintenanceComponent = (() => {
             transTitle: "titles.Status",
             className: "align-middle",
             data: (data) => {
-                const statusId = parseInt(data.effective_status_id ?? data.status_id, 10);
+                const statusId = getEffectiveMaintenanceStatusId(data);
                 const map = {
                     1: { text: "Planned", cls: "badge bg-warning-subtle text-warning border border-warning" },
                     2: { text: "In Progress", cls: "badge bg-info-subtle text-info border border-info" },
@@ -100,17 +120,20 @@ var MaintenanceComponent = (() => {
         {
             transTitle: "titles.Action",
             className: "col_action align-middle",
-            data: (data) => `
+            data: (data) => {
+                const effSid = getEffectiveMaintenanceStatusId(data);
+                return `
                 <div class="d-flex justify-content-center align-items-end">
                     <a href="javascript:void(0)"
                        class="btn--Options btn_dropdown_maintenance_action"
                        data-id="${data.id}"
-                       data-statusid="${data.effective_status_id ?? data.status_id}"
+                       data-statusid="${effSid}"
                        aria-haspopup="true"
                        aria-expanded="false">
                         <i class="fa-solid fa-ellipsis-vertical text-black fs-5"></i>
                     </a>
-                </div>`
+                </div>`;
+            }
         }
     ];
 
@@ -125,7 +148,6 @@ var MaintenanceComponent = (() => {
             tableClass: "table table--white rounded-2 header-uppercase",
             rowCreated: (data, index, tr) => {
                 tr.setAttribute("id", "maintenance_id_" + data.id);
-                tr.dataset.statusid = String(data.effective_status_id ?? data.status_id ?? "");
             },
             listContainerClass: null
         });
@@ -165,6 +187,19 @@ var MaintenanceComponent = (() => {
             }, 250);
         });
 
+        if (!mThis._scheduleStatusInterval) {
+            mThis._scheduleStatusInterval = setInterval(() => {
+                if (!mThis.self || !document.body.contains(mThis.self)) {
+                    clearInterval(mThis._scheduleStatusInterval);
+                    mThis._scheduleStatusInterval = null;
+                    return;
+                }
+                if (mThis.MaintenanceListView && typeof mThis.MaintenanceListView.showPage === "function") {
+                    mThis.MaintenanceListView.showPage(mThis.getFilterData());
+                }
+            }, 60000);
+        }
+
         mThis.initAlready = true;
     };
 
@@ -180,26 +215,6 @@ var MaintenanceComponent = (() => {
             if (f) p[f] = el.value;
         });
         return p;
-    };
-
-    mThis.isActiveView = () => !!(mThis.self && mThis.self.offsetParent !== null);
-
-    mThis.refreshListIfActive = () => {
-        if (!mThis.initAlready || !mThis.isActiveView()) return;
-        mThis.MaintenanceListView.showPage(mThis.getFilterData());
-    };
-
-    mThis.startAutoRefresh = () => {
-        clearInterval(mThis.autoRefreshTimer);
-        clearTimeout(mThis.autoRefreshStartTimeout);
-        const now = Date.now();
-        const msToNextMinute = 60000 - (now % 60000);
-        mThis.autoRefreshStartTimeout = setTimeout(() => {
-            mThis.refreshListIfActive();
-            mThis.autoRefreshTimer = setInterval(() => {
-                mThis.refreshListIfActive();
-            }, mThis.autoRefreshMs);
-        }, msToNextMinute);
     };
 
     mThis.initDropdownMenus = (table) => {
@@ -300,7 +315,6 @@ var MaintenanceComponent = (() => {
         mThis.prepareFormOptions(() => {
             main_view.setContentView(mThis.self, mThis.title_prop);
             mThis.MaintenanceListView.showPage(mThis.getFilterData());
-            mThis.startAutoRefresh();
         });
     };
 

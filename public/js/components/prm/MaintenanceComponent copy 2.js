@@ -9,9 +9,6 @@ var MaintenanceComponent = (() => {
     mThis.elFilter_building = mThis.self.querySelector('#_maintenance_building_id');
     mThis.elFilter_status = mThis.self.querySelector('#_maintenance_status_id');
     mThis.elSearch = mThis.self.querySelector("#_search_maintenance");
-    mThis.autoRefreshMs = 60000;
-    mThis.autoRefreshTimer = null;
-    mThis.autoRefreshStartTimeout = null;
 
     mThis.cols = [
         { title: "", className: "align-middle" },
@@ -79,7 +76,7 @@ var MaintenanceComponent = (() => {
             transTitle: "titles.Status",
             className: "align-middle",
             data: (data) => {
-                const statusId = parseInt(data.effective_status_id ?? data.status_id, 10);
+                const statusId = parseInt(data.status_id, 10);
                 const map = {
                     1: { text: "Planned", cls: "badge bg-warning-subtle text-warning border border-warning" },
                     2: { text: "In Progress", cls: "badge bg-info-subtle text-info border border-info" },
@@ -105,7 +102,7 @@ var MaintenanceComponent = (() => {
                     <a href="javascript:void(0)"
                        class="btn--Options btn_dropdown_maintenance_action"
                        data-id="${data.id}"
-                       data-statusid="${data.effective_status_id ?? data.status_id}"
+                       data-statusid="${data.status_id}"
                        aria-haspopup="true"
                        aria-expanded="false">
                         <i class="fa-solid fa-ellipsis-vertical text-black fs-5"></i>
@@ -125,7 +122,6 @@ var MaintenanceComponent = (() => {
             tableClass: "table table--white rounded-2 header-uppercase",
             rowCreated: (data, index, tr) => {
                 tr.setAttribute("id", "maintenance_id_" + data.id);
-                tr.dataset.statusid = String(data.effective_status_id ?? data.status_id ?? "");
             },
             listContainerClass: null
         });
@@ -180,26 +176,6 @@ var MaintenanceComponent = (() => {
             if (f) p[f] = el.value;
         });
         return p;
-    };
-
-    mThis.isActiveView = () => !!(mThis.self && mThis.self.offsetParent !== null);
-
-    mThis.refreshListIfActive = () => {
-        if (!mThis.initAlready || !mThis.isActiveView()) return;
-        mThis.MaintenanceListView.showPage(mThis.getFilterData());
-    };
-
-    mThis.startAutoRefresh = () => {
-        clearInterval(mThis.autoRefreshTimer);
-        clearTimeout(mThis.autoRefreshStartTimeout);
-        const now = Date.now();
-        const msToNextMinute = 60000 - (now % 60000);
-        mThis.autoRefreshStartTimeout = setTimeout(() => {
-            mThis.refreshListIfActive();
-            mThis.autoRefreshTimer = setInterval(() => {
-                mThis.refreshListIfActive();
-            }, mThis.autoRefreshMs);
-        }, msToNextMinute);
     };
 
     mThis.initDropdownMenus = (table) => {
@@ -300,7 +276,6 @@ var MaintenanceComponent = (() => {
         mThis.prepareFormOptions(() => {
             main_view.setContentView(mThis.self, mThis.title_prop);
             mThis.MaintenanceListView.showPage(mThis.getFilterData());
-            mThis.startAutoRefresh();
         });
     };
 
