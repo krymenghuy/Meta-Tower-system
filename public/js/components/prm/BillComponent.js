@@ -9,6 +9,7 @@ var BillComponent = (() => {
     mThis.divFilter = mThis.self.querySelector("#_divFilter_bill");
     mThis.elFilter_vendor = mThis.self.querySelector("#_bill_vendor_id");
     mThis.elFilter_status = mThis.self.querySelector("#_bill_status_id");
+    mThis.elFilter_category = mThis.self.querySelector("#_bill_category_id");
     mThis.elSearch = mThis.self.querySelector("#_search_bill");
 
     mThis.cols = [
@@ -36,8 +37,8 @@ var BillComponent = (() => {
             transTitle: "titles.Vendor",
             className: "align-middle text-nowrap",
             data: (data) => {
-                return `<span class="text-prm-custom text-capitalize">${data.vendor_name}</span>
-                <span class="text-warning small">(${data.phone_number})</span>`;
+                return `<span class="d-block text-prm-custom text-capitalize">${data.vendor_name}</span>
+                <span class="d-block text-prm-custom small">(${data.phone_number})</span>`;
             },
         },
         
@@ -57,19 +58,19 @@ var BillComponent = (() => {
         },
         
         {
-            title: "Total Amount",
+            title: "Amount",
             className: "align-middle text-nowrap",
             data: (data) => {
-                const total = VSMoney.formatAmount(data.price, data.currency_code ?? 'USD');
+                const total = VSMoney.formatAmount(data.total_amount, data.currency_code ?? 'USD');
                 return `<span class="d-block text-prm-custom" style="color:#1d4ed8;">${total}</span>`;
             },
         },
         {
-            title: "Amount Paid",
+            title: "Paid",
             className: "align-middle text-nowrap",
             data: (data) => {
                 const paid = VSMoney.formatAmount(data.paid_amount, data.currency_code ?? 'USD');
-                return `<span class="d-block text-prm-custom" style="color:#15803d;">${paid}</span>`;
+                return `<span class="d-block text-prm-custom">${paid}</span>`;
             },
         },
         {
@@ -475,6 +476,7 @@ var BillComponent = (() => {
                 console.log("form-options data:", d); 
                 VSUtil.setComboItems(mThis.elFilter_vendor, d.vendors, "id", "vendor", "", "All Vendor", "");
                 VSUtil.setComboItems(mThis.elFilter_status, d.bill_statuses, "id", "bill_status", "", "All Statuses", "");
+                VSUtil.setComboItems(mThis.elFilter_category, d.expense_category, "id", "expense_category", "", "All Category", "");
                 if (typeof onFinish === "function") onFinish();
             });
     };
