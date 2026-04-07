@@ -7,22 +7,25 @@
                 <i class="fa fa-search fs-6 text-muted position-absolute" style="right: 15px; top: 50%; transform: translateY(-50%);"></i>
             </div>
          </div>
-            <div class="col-12 col-md-6 col-lg-2">
-                <div class="material-input outlined" style="min-width: 180px;">
-                    <input type="text" data-type="date" name="due_date" class="form-control data-input" required placeholder="dd-mm-yy">
-                    <label class="form-label">Due Date <span class="text-danger">*</span></label>
+        <div class="col-12 col-md-6 col-lg-5">
+            <div id="_dateFilter_receipt" class="d-flex gap-3 align-items-center">
+                <div class="material-input outlined flex-fill" style="margin-bottom: 0;">
+                    <input data-select="datepicker" class="form-control filter-field" placeholder="d-m-y" data-field="date_from" />
+                    <label class="form-label">Date From</label>
                 </div>
 
+                <div class="material-input outlined flex-fill" style="margin-bottom: 0;">
+                    <input data-select="datepicker" class="form-control filter-field" placeholder="d-m-y" data-field="date_to" />
+                    <label class="form-label">Date To</label>
+                </div>
             </div>
-            <div class="col-12 col-md-6 col-lg-2">
-                <select id="payment_method_id" class="data-input filter-field form-control" data-field="payment_method_id"></select>
-            </div>
-
+        </div>
+        <div class="col-12 col-md-6 col-lg-2">
+            <select id="payment_method_id" class="data-input filter-field form-control" data-field="payment_method_id"></select>
         </div>
 
-
+        </div>
 
     </div>
     <div id="_receipt_list" class="table-responsive  mt-3 rounded-2"></div>
 </div>
-

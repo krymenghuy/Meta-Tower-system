@@ -166,12 +166,13 @@ var ReceiptComponent = new (function() {
 
     mThis.getFilterData = () => {
         let p = {
-            status_id: mThis.elFilter_status.value,
             category_id: mThis.elFilter_category.value,
             search_value: mThis.elSearch.value
         };
         mThis.divFilter.querySelectorAll(".filter-field").forEach(el => {
-            if (el.dataset.field) p[el.dataset.field] = el.value;
+            if (el.dataset.field) {
+                p[el.dataset.field] = el.value;
+            }
         });
         return p;
     };
