@@ -34,7 +34,7 @@ class ServiceRequest extends VSModel
     //         'service_id'        => '1|number|exists=services.id',
     //         'space_id'          => '1|number|exists=building_spaces.id',
     //         'service_type_id'   => '1|number|exists=service_types.id',
-    //         'description'       => '0|string|0-255',
+    //         'remarks'       => '0|string|0-255',
     //         'duration_hours'    => '0|numeric|min:0.5|',
     //         'code'              => '0|string|0-20',
     //         'unit_type'         => '0|choice|1,2', // 1 one_time , 2 hour
@@ -44,7 +44,7 @@ class ServiceRequest extends VSModel
     //         'complete_date'    => '0|date',
     //     ];
     //     $allowed_chars = ['@', ',', '-', '.', '#', '!', '?', '(', ')', "\n"];
-    //     $res = DBX::validateObject($arr,$v_rule,1,['description' => $allowed_chars],$ss->lang ?? 'en',0,null);
+    //     $res = DBX::validateObject($arr,$v_rule,1,['remarks' => $allowed_chars],$ss->lang ?? 'en',0,null);
     //     if ($res->error) {
     //         return DV::error($res->error);
     //     }
@@ -104,9 +104,8 @@ class ServiceRequest extends VSModel
         'service_id'        => '1|number|exists=services.id',
         'space_id'          => '1|number|exists=building_spaces.id',
         'service_type_id'   => '1|number|exists=service_types.id',
-        'description'       => '0|string|0-255',
+        'remarks'       => '0|string|0-255',
         'duration_hours'    => '0|numeric|min:0.5|max:99.9',
-        'code'              => '0|string|0-20',
         'unit_type'         => '0|choice|1,2', // 1=one_time, 2=hour
         'request_date'      => '0|date',
         'scheduled_date'    => '1|date',
@@ -115,17 +114,16 @@ class ServiceRequest extends VSModel
     ];
 
     $allowed_chars = ['@', ',', '-', '.', '#', '!', '?', '(', ')', "\n"];
-    $res = DBX::validateObject($arr, $v_rule, 1, ['description' => $allowed_chars], $ss->lang ?? 'en', 0, null);
+    $res = DBX::validateObject($arr, $v_rule, 1, ['remarks' => $allowed_chars], $ss->lang ?? 'en', 0, null);
     if ($res->error) {
         return DV::error($res->error);
     }
     $input = $res->values;
-
+   
     if ($input['unit_type'] == '2' && empty($input['duration_hours'])) {
         return DV::error('Please select value duration hour');
     }
 
-    $total_price = null;
     if ($input['unit_type'] == '2' && !empty($input['duration_hours'])) {
         $service = DB::table('services')
             ->where('id', $input['service_id'])
@@ -232,7 +230,7 @@ class ServiceRequest extends VSModel
                 sr.service_id, s.name as service_name,
                 s.price as service_price,sr.unit_type,
                 sr.total_price, sr.duration_hours,
-                sr.description, sr.request_date,
+                sr.remarks, sr.request_date,
                 sr.start_time,
                 sr.updated_at, sr.update_user,
                 sr.scheduled_date,sr.request_date, sr.complete_date, sr.create_uid,
@@ -263,7 +261,7 @@ class ServiceRequest extends VSModel
             ->join('service_types as st', 'st.id', '=', 's.service_type_id')
             ->where('sr.id', $id)
             ->selectRaw("sr.id, sr.code, sr.tenant_id, sr.space_id, sr.service_id,
-                sr.request_date, sr.description,
+                sr.request_date, sr.remarks,
                 sr.start_time,
                 sr.scheduled_date, sr.complete_date, sr.create_uid,
                 sr.updated_at, sr.total_price, sr.duration_hours,
@@ -272,7 +270,7 @@ class ServiceRequest extends VSModel
             // ->select(
             //     'sr.id', 'sr.code', 'sr.tenant_id', 'sr.space_id', 'sr.service_id', 's.service_type_id',
             //     's.price as service_price', 's.unit_type',
-            //     'sr.request_date', 'sr.description',
+            //     'sr.request_date', 'sr.remarks',
             //     'sr.update_user',
             //     'sr.start_time',
             //     'sr.scheduled_date', 'sr.complete_date', 'sr.create_uid',
@@ -312,31 +310,63 @@ class ServiceRequest extends VSModel
         return DV::depends($deleted, 'Failed to delete service request');
     }
 
-    public function setRequestStatus($arr, $ss = null)
-    {
-        $ss = $ss ?? $this->userInfo;
+public function acceptRequest($arr = [], $ss = null)
+{
+    $ss = $ss ?? $this->userInfo;
+    $d  = (object) $arr;
 
-        $id        = $arr['id'] ?? null;
-        $status_id = $arr['status_id'] ?? null;
+    $id = $d->id ?? null;
+    if (!$id) {
+        return DV::error('Invalid request id');
+    }
+    $req = DB::table('service_requests')->select('id', 'status_id')->where('id', $id)->first();
+    if (!$req) {
+        return DV::error('Service request not found');
+    }
+    if ($req->status_id == 2) {
+        return DV::error('You already accepted this request.');
+    }
+    if (in_array($req->status_id, [3, 4])) {
+        return DV::error('Request already processed.');
+    }
 
-        if (!$id || !$status_id) {
-            return DV::error('Missing required parameters');
-        }
-        $data = [
-            'status_id'   => $status_id,
+    $updated = DB::table('service_requests')
+        ->where('id', $id)
+        ->update([
+            'status_id'   => 2,
             'update_user' => $ss->full_name ?? 'System',
             'update_uid'  => $ss->id ?? null,
             'updated_at'  => getNowTime(),
-        ];
-        $updated = DB::table('service_requests')
-            ->where('id', $id)
-            ->update($data);
+        ]);
 
-        if ($updated === 0) {
-            return DV::error('Service request not found or no changes made');
-        }
-        return DV::success(['message' => 'Status updated successfully']);
+    if (!$updated) {
+        return DV::error('Update failed.');
     }
 
+    return DV::success([
+        'message' => 'Request accepted successfully'
+    ]);
+}
+function rejectRequest($arr = [], $ss = null)
+{
+    $ss = $ss ?? $this->ss;
 
+    $arr = (array) $arr;
+
+    $id = $arr['id'] ?? $arr['discount_id'] ?? null;
+    $remarks = $arr['remarks'] ?? $arr['remark'] ?? null;
+
+    if (empty($id)) {
+        return DV::error('ID is required.');
+    }
+
+    $reject = DB::table('service_requests')
+        ->where('id', $id)
+        ->update([
+            'status_id' => 3,
+            'remarks' => $remarks
+        ]);
+
+    return DV::depends($reject, ['action' => 'reject']);
+}
 }
