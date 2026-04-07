@@ -75,11 +75,12 @@ var ReceiptComponent = new (function() {
             className: "align-middle text-nowrap",
             data: data =>{
                     return `
-                    <div class="text-primary-custom" style="width:220px;">
+                    <div class="text-primary-custom" style="width:200px;">
                         <span class="text-wrap text-break" style ="word-break:break-word;">${data.payment_methods}</span>
                     </div>`;
             }
         },
+
         {
             transTitle: "titles.Remark",
             className: "align-middle",
@@ -89,6 +90,21 @@ var ReceiptComponent = new (function() {
                         <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ?? '...'}</span>
                     </div>
                 `;
+            }
+        },
+        {
+            transTitle: "titles.Status",
+            className: "align-middle text-center",
+            data: data => {
+                const statusId = Number(data.receipt_status_id || 0);
+                let cls = "bg-secondary";
+
+                if (statusId === 1) cls = "badge text-success bg-success-subtle border border-success";           // active
+                else if (statusId === 2) cls = "badge text-danger bg-danger-subtle border border-danger";       // cancelled
+
+                return `<span class="badge ${cls} text-capitalize px-3 py-2">
+                            ${data.receipt_status_name || "—"}
+                        </span>`;
             }
         },
         {
@@ -123,6 +139,7 @@ var ReceiptComponent = new (function() {
             rowCreated: (data, index, tr) => {
                 tr.classList.add("receipt", "cursor-pointer");
                 tr.id = `receipt_id_${data.id}`;
+                tr.dataset.statusid = data.receipt_status_id;
             }
         });
 
@@ -163,43 +180,58 @@ var ReceiptComponent = new (function() {
         new VSDropdownMenu({
             containerElement: table,
             actionButtonClass: "btn_leave_action",
+            cssClass: "bg-white shadow",
             menus: [
                 {
-                    html: '<span class="ps-2">Edit Receipt</span>',
-                    icon: `<i class="fa-regular fa-edit text-warning"></i>`,
-                    name: "edit"
+                    html: '<span class="ps-2 " vslang="title.Change Status"></span>',
+                    icon: `<i class="fa-solid fa-bolt fs-5 text-primary"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "change_receipt_status"
                 },
-                {
-                    html: '<span class="ps-2">Delete Receipt</span>',
-                    icon: `<i class="fa-regular fa-trash-can text-danger"></i>`,
-                    name: "delete_receipt"
-                }
             ],
             onClick: (menuLink, id, name) => {
                 if (name === "delete_receipt") mThis.deleteReceipt(id, menuLink);
+                if (name === "change_receipt_status") mThis.changeReceiptStatus(id, menuLink);
             }
         });
     };
 
-    mThis.deleteReceipt = (id, menuLink) => {
-        if (!AuthManager.allowed(242)) return;
-        
-        cv_interact.confirm('Delete this Receipt?', {
-            transTitle: 'Delete Receipt',
-            confirmButtonText: "Delete"
-        }, (confirmed) => {
-            if (confirmed) {
-                vsapi.call(`${main_view.base_url}/prm/receipt/delete`, { id }, false, false, false)
-                    .then(res => {
+
+    mThis.changeReceiptStatus = (id, link) => {
+        const tr = link.closest("tr");
+        const current_status = tr?.dataset.statusid || "";
+
+        const inputOptions = {
+            context: "success",
+            title: "Change Receipt Status",
+            label: "Select Status",
+            valueKey: "status_id",
+            labelKey: "name",
+            confirmButtonText: "Save",
+            data: [
+                { status_id: "1", name: "Active" },
+                { status_id: "2", name: "Cancelled" },
+            ],
+            defaultValue: current_status,
+            onConfirm: (status, btn, me) => {
+                const payload = {
+                    id: id,
+                    receipt_status_id: status.status_id
+                };
+
+                vsapi.post(`${mThis.base_url}/prm/receipts/update-status`, payload, { loader: false, agent: btn })
+                    .then((res) => {
                         if (res.status_code === 200) {
-                            cv_interact.success('Receipt deleted');
-                            mThis.ReceiptListView.showPage();
+                            me.close();
+                            cv_interact.success("Receipt status updated");
+                            mThis.ReceiptListView.showPage(mThis.getFilterData());
                         } else {
-                            cv_interact.error(res.error_message);
+                            me.setError(res.data || "Unable to update status");
                         }
                     });
-            }
-        });
+            },
+        };
+        InputBox.show(inputOptions);
     };
 
 
