@@ -406,7 +406,43 @@ function setOfficialExpenseNo($branch_id,$code_control_table,$target_table,$key_
     return null;
     //return $prefix.$branch_id.formatNumber(1,$len);
 }
+function setOfficialBillNumber($branch_id,$code_control_table,$target_table,$key_field=[],$def_prefix="",$len=5,Closure $onSuccess = null){
+    if (!$key_field) return null;
+    if(!$len) $len=5;
 
+    $where_branch ="1=1";
+    if($branch_id>0){
+        $where_branch = "branch_id =$branch_id";
+    }
+    if ($def_prefix) $where_branch .=" AND prefix ='$def_prefix'";
+
+    $str_where=null;
+    foreach($key_field as $pk_field=>$pk_value) $str_where ="$pk_field='$pk_value'";
+    if(!$str_where) return null;
+
+    $rows = DB::table($code_control_table)->whereRaw($where_branch)->selectRaw("last_id,prefix")->take(1)->get();
+    $next_num = 0;
+    $prefix=null;
+    foreach($rows as $row){
+      $next_num = $row->last_id;
+      $prefix =$row->prefix;
+    }
+    if(!$prefix) $prefix = $def_prefix;
+
+    $next_num++;
+    $new_code = $prefix.$branch_id.formatNumber($next_num,$len);
+
+    $x = DB::table($target_table)->whereRaw($str_where)->update(['bill_number'=>$new_code]);
+    \Log::info('str'.json_encode($str_where));
+    if($x || $x===1){
+       $updated = DB::table($code_control_table)->whereRaw($where_branch)->update(['last_id'=>$next_num]);
+       if (!$updated) DB::table($code_control_table)->insert(['branch_id'=>$branch_id,'prefix'=>$def_prefix,'last_id'=>$next_num]);
+       if ($onSuccess) $onSuccess();
+       return (object)['status'=>'OK','bill_number'=>$new_code];
+    }
+    return null;
+    //return $prefix.$branch_id.formatNumber(1,$len);
+}
 
 
 //@param $name_orientation => 0="Khmer or Asia where faimily name appears first", 1="European or American"

@@ -99,7 +99,7 @@ var ContractComponent = new (function () {
             className: "align-middle",
             data: (data) => {
                const deposit = VSMoney.formatAmount(data.deposit, data.currency_code ?? 'USD');
-                return `<span class="fw-semibold">${deposit}</span>`;
+                return `<span class="text-prm-custom">${deposit}</span>`;
             }
         },
 
@@ -163,7 +163,7 @@ var ContractComponent = new (function () {
             className: 'align-middle text-nowrap',
             data: (data, index, tr) => {
                 return `<div class="d-flex flex-column">
-                    <span class="text-capitalize text-start text-prm-custom fw-semibold">${data.update_user ?? ''}</span>
+                    <span class="text-capitalize text-start text-prm-custom">${data.update_user ?? ''}</span>
                     <small class="text-muted">${data.updated_at ?? ''}</small>
                 </div>`;
             }
