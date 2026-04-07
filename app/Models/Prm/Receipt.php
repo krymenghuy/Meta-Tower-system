@@ -95,7 +95,7 @@ class Receipt extends Model
                 $row = setOfficialDates($row, [], ['updated_at', 'receipt_date'], []);
             }
             foreach($rows as $row){
-                $row = setOfficialDates($row,['receipt_date'],['updated_at','created_at as created_at'],[]);
+                $row = setOfficialDates($row,['receipt_date','invoice_date'],['updated_at','created_at as created_at'],[]);
             }
 
             return new LengthAwarePaginator($rows, $total, $per_page, $current_page);
@@ -145,7 +145,7 @@ class Receipt extends Model
 
         return $header;
     }
-    
+
 
     public function deleteById($id = null)
     {
