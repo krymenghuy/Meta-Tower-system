@@ -72,7 +72,7 @@ var ExpenseComponent = (() => {
             className: 'align-middle',
             data: (data) => {
                 return `<div class="d-flex flex-column">
-                    <span class="text-capitalize text-start text-yp-custom fw-semibold"><small>${data.update_user ?? ''}</small></span>
+                    <span class="text-capitalize text-start text-prm-custom">${data.update_user ?? ''}</span>
                     <small class="text-muted">${data.updated_at ?? ''}</small>
                 </div>`;
             }

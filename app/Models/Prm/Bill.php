@@ -213,7 +213,7 @@ class Bill
         $count = (clone $query)->count('b.id');
         $rows  = $query->skip($skip_rows)->take($per_page)->get();
         foreach ($rows as $row) {
-            $processed = setOfficialDates($row, ['updated_at', 'bill_date'], [], []);
+            $processed = setOfficialDates($row, ['bill_date'], ['updated_at'], []);
             if ($processed) $row = $processed;
 
             $row->image_url = self::getBillImageUrl($row->file_image, $ss);
