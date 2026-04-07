@@ -138,7 +138,7 @@ var InvoiceComponent = (() => {
                 let cls = "bg-secondary";
 
                 if (statusId === 1) cls = "badge text-success bg-success-subtle border border-success";           // Paid
-                else if (statusId === 2) cls = "badge text-warning bg-warning-subtle border border-warning";       // Unpaid
+                else if (statusId === 2) cls = "badge text-danger bg-danger-subtle border border-danger";       // Unpaid
                 else if (statusId === 3) cls = "badge text-warning bg-warning-subtle border border-warning"; // Partially Paid
 
                 return `<span class="badge ${cls} text-capitalize px-3 py-2">
