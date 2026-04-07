@@ -308,6 +308,7 @@ var BillComponent = (() => {
         let p = {
             vendor_id: mThis.elFilter_vendor.value,
             status_id: mThis.elFilter_status.value,
+            expense_type_id: mThis.elFilter_category.value,
             search_value: mThis.elSearch.value,
         };
 
@@ -492,7 +493,7 @@ var BillComponent = (() => {
                 console.log("form-options data:", d); 
                 VSUtil.setComboItems(mThis.elFilter_vendor, d.vendors, "id", "vendor", "", "All Vendor", "");
                 VSUtil.setComboItems(mThis.elFilter_status, d.bill_statuses, "id", "bill_status", "", "All Statuses", "");
-                VSUtil.setComboItems(mThis.elFilter_category, d.expense_category, "id", "expense_category", "", "All Category", "");
+                VSUtil.setComboItems(mThis.elFilter_category, d.expense_types, "id", "expense_category", "", "All Category", "");
                 if (typeof onFinish === "function") onFinish();
             });
     };

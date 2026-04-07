@@ -168,7 +168,7 @@ class Bill
         return $billNumber;
     }
     public function getListBill($arr = [], $ss = null)
-    {
+    {   
         $d  = (object) $arr;
         $search_value = $d->search_value ?? null;
         $vendor_id    = $d->vendor_id    ?? null;
