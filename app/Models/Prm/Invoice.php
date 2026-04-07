@@ -407,7 +407,7 @@ class Invoice extends VSModel
     $rows  = $query->skip($skip)->take($per_page)->get();
 
     foreach ($rows as $row) {
-        $row = setOfficialDates($row, ['due_date'], ['updated_at', 'created_at', 'invoice_date'], []);
+        $row = setOfficialDates($row, ['due_date', 'invoice_date'], ['updated_at', 'created_at'], []);
     }
 
     return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
