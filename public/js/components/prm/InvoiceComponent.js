@@ -1974,6 +1974,17 @@ const ReceiveDialog = (() => {
 
             const totalPaid = cash + bank + card + cheque;
 
+            const remarkParts = [];
+                if (cash > 0) remarkParts.push(`Paid $${cash.toFixed(2)} via Cash`);
+                if (bank > 0) remarkParts.push(`Paid $${bank.toFixed(2)} via Bank Transfer`);
+                if (card > 0) remarkParts.push(`Paid $${card.toFixed(2)} via Card`);
+                if (cheque > 0) remarkParts.push(`Paid $${cheque.toFixed(2)} via Cheque`);
+
+            const remarkEl = me.divModal.querySelector('[name="remarks"]');
+                if (remarkEl) {
+                    remarkEl.value = remarkParts.join(', ');
+                    remarkEl.dispatchEvent(new Event('change'));
+                }
             let due = 0;
             const dueEl = me.divModal.querySelector('#f_due');
             if (dueEl) {

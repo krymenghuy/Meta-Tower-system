@@ -8,21 +8,19 @@
             </div>
          </div>
             <div class="col-12 col-md-6 col-lg-2">
-                <select id="receipt_status" class="data-input filter-field form-control" data-field="status_id"></select>
+                <div class="material-input outlined" style="min-width: 180px;">
+                    <input type="text" data-type="date" name="due_date" class="form-control data-input" required placeholder="dd-mm-yy">
+                    <label class="form-label">Due Date <span class="text-danger">*</span></label>
+                </div>
+
             </div>
             <div class="col-12 col-md-6 col-lg-2">
                 <select id="payment_method_id" class="data-input filter-field form-control" data-field="payment_method_id"></select>
             </div>
 
-            {{-- <div class="col-12 col-md-3 col-lg-2 ms-auto text-md-end" style="overflow:visible;">
-                <button type="button" class="btnAddNewPrm w-100 w-md-auto" id="_btnReceipt">
-                      <i class="fa-solid fa-money-check-dollar mr-2"></i>
-                    <span vslang="buttons.Receipt"></span>
-                </button>
-            </div> --}}
         </div>
 
-        
+
 
     </div>
     <div id="_receipt_list" class="table-responsive  mt-3 rounded-2"></div>
