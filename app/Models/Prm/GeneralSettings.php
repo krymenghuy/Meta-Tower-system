@@ -363,6 +363,29 @@ class GeneralSettings //extends Model
         ->get();
 }
 
+static function options_maintenance_amenity($ss)
+{
+    return DB::table('amenities')
+        ->where('status_id',1)
+        ->selectRaw('id, name AS amenity, code as amenity_code, max_capacity,category_id')
+        ->orderBy('name')
+        ->get();
+}
+
+// static function options_amenity($ss, $requires_booking_only = true)
+// {
+//     $query = DB::table('amenities')
+//         ->where('status_id', 1);
+
+//     if ($requires_booking_only) {
+//         $query->where('requires_booking', 1);
+//     }
+
+//     return $query
+//         ->selectRaw('id, name AS amenity, code as amenity_code, max_capacity,category_id')
+//         ->orderBy('name')
+//         ->get();
+// }
 
     static function options_reservation_status($ss)
     {
