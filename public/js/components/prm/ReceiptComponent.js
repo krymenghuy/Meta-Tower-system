@@ -118,7 +118,7 @@ var ReceiptComponent = new (function() {
         },
         {
             transTitle: "titles.Action",
-            className: "col_action align-middle text-center",
+            className: "col_action align-middle text-center text-nowrap",
             data: data => `
                 <a href="javascript:void(0)" class="btn_leave_action" data-id="${data.id}">
                     <i class="fa-solid fa-ellipsis-vertical text-muted fs-5"></i>
@@ -142,6 +142,13 @@ var ReceiptComponent = new (function() {
                 tr.dataset.statusid = data.receipt_status_id;
             }
         });
+        mThis.listContainer = mThis.ReceiptListView.getListContainer();
+            const sh_parent = mThis.listContainer.parentElement;
+            sh_parent.style.maxHeight = (window.innerHeight - 220) + "px";
+            sh_parent.classList.add("overflow-y-auto");
+            window.onresize = () => {
+                sh_parent.style.maxHeight = (window.innerHeight - 220) + "px";
+            };
 
         mThis.tblReceipt = mThis.ReceiptListView.getTable();
 
@@ -210,7 +217,7 @@ var ReceiptComponent = new (function() {
             labelKey: "name",
             confirmButtonText: "Save",
             data: [
-                { status_id: "1", name: "Active" },
+                // { status_id: "1", name: "Active" },
                 { status_id: "2", name: "Cancelled" },
             ],
             defaultValue: current_status,
