@@ -164,7 +164,7 @@ var ServiceRequestComponent = (function () {
             data: (data, index, tr) => {
                 return `
                     <div class="text-primary-custom" style="width:200px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.description ?? '...'}</span>
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ?? '...'}</span>
                     </div>
                 `;
             }
@@ -187,7 +187,7 @@ var ServiceRequestComponent = (function () {
                 data-id="${data.id}"
                 data-statusid= "${data.status_id}"
                 data-current-status="${statusId}"
-                class="${cls} ${isEditable ? 'status-change-btn' : ''} text-capitalize d-inline-block text-center"
+                class="${cls} ${isEditable} text-capitalize d-inline-block text-center"
                 style="min-width:70px; cursor:${isEditable ? 'pointer' : 'not-allowed'}"
                 title="${isEditable ? 'Click to change status' : 'This status cannot be changed'}">
                 ${data.status_name ?? ''}
@@ -210,8 +210,9 @@ var ServiceRequestComponent = (function () {
             data: (data) => `
             <div class="d-flex justify-content-center align-items-end">
                 <a href="javascript:void(0)"
-                    class="btn--Options ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'} bg-second pointer p-4"
+                    class="btn--Options ${data.action_id > 1 ? 'd-none' : 'btn_service_request_action'} bg-second pointer p-4"
                     data-id="${data.id}"
+                    data-statusid="${data.status_id}"
                     data-status-id="${data.request_status_id}"
                     aria-haspopup="true" aria-expanded="false">
                     <i class="fa-solid fa-ellipsis-vertical fs-5 text-prm-custom"></i>
@@ -264,53 +265,7 @@ var ServiceRequestComponent = (function () {
         };
         mThis.tblServiceRequest = mThis.ServiceRequestListView.getTable();
 
-        mThis.tblServiceRequest.addEventListener('click', (e) => {
-            let btn = VSUtil.closestLimited(e.target, ' .status-change-btn');
-            if (btn) {
-                const def = btn.dataset.statusid;
-                const id = btn.dataset.id;
-                const data = [
-                    {
-                        id: 1,
-                        name: 'Canceled'
-                    },
-                    {
-                        id: 2,
-                        name: 'Pending'
-                    },
-                    {
-                        id: 3,
-                        name: 'Accepted'
-                    },
-                ];
-                InputBox.show({
-                    type: 'select',
-                    title: 'Change Status ',
-                    allowBlankValue: false,
-                    data: data,
-                    textField: 'name',
-                    valueField: 'id',
-                    defaultValue: def,
-                    requiredMessage: 'Select Correct Status',
-                    onConfirm(value, btn, me) {
-                        const p = { id: id, status_id: value.id };
-                        vsapi.post(`${main_view.base_url}/prm/service-request/set-status`, p, {})
-                            .then(res => {
-                                if (res.status_code == 200) {
-                                    mThis.ServiceRequestListView.showPage(mThis.getFilterData());
-                                    me.close();
-                                }
-                                else {
-                                    me.setError(res.error_message);
-                                }
-                            });
-
-                    }
-                });
-                return;
-            }
-
-        });
+       
 
 
 
@@ -348,13 +303,19 @@ var ServiceRequestComponent = (function () {
     mThis.initDropdownMenus = (table) => {
         new VSDropdownMenu({
             containerElement: table,
-            actionButtonClass: "btn_leave_action",
+            actionButtonClass: "btn_service_request_action",
             cssClass: "bg-white shadow",
             menus: [
                 {
                     html: '<span class="ps-2 " vslang="title.Accept"></span>',
                     icon: `<i class="fa-regular fa-square-check fs-5 text-primary"></i>`,
                     name: "accept_request",
+                    cssClass: "border-bottom pb-2"
+                },
+                {
+                    html: '<span class="ps-2" vslang="title.Reject"></span>',
+                    icon: `<i class="fa-regular fa-rectangle-xmark fs-5 text-danger-emphasis"></i>`,
+                    name: "reject_request",
                     cssClass: "border-bottom pb-2"
                 },
                 {
@@ -379,12 +340,76 @@ var ServiceRequestComponent = (function () {
                 //         return;
                 //     }
                 // }
+
+                if (name === 'accept_request') mThis.acceptRequest(id, menuLink);
+                if (name === 'reject_request') mThis.rejectRequest(id, menuLink);
                 if (name === 'edit_request') mThis.editServiceRequest(id, menuLink);
                 if (name === 'delete_request') mThis.deleteRequest(id, menuLink);
             }
         });
     };
+    mThis.rejectRequest = (id, menuLink) => {
+        let op ={
+            id:id
+        }
+        Swal.fire({
+            input: "textarea",
+            inputLabel: " ",
+            inputPlaceholder: "Please, enter new remark why reject this request",
+            reverseButtons: true,
+            showCancelButton: true,
+            inputValidator: (value) => {
+                if(!value)
+                    return "Remarks required!";
+                else
+                {
+                    op.remarks = value;
+                    console.log(44,op);
+                    
+                    vsapi.call(`${main_view.base_url}/prm/service-request/reject`,op,null).then((res) => {
+                        if(res.status_code === 200)
+                        {
+                            mThis.ServiceRequestListView.showPage(mThis.getFilterData());
+                        }
+                        else
+                        {
+                            cv_interact.error(res.error_message ?? "Something went wrong!");
+                        }
+                    });
+                }
+            },
+        });
+    };
+    mThis.acceptRequest = (id, menuLink) => {
+        cv_interact.confirm(
+            'Are you sure you want to accept this service request?',
+            {
+                title: 'Accept Service Request',
+                context: 'update',
+                confirmButtonText: 'Accept'
+            },
+            (e) => {
+                if (!e) return;
 
+                vsapi.call(
+                    `${main_view.base_url}/prm/service-request/accept`,
+                    { id },
+                    false
+                )
+                .then(res => {
+                    if (res.status_code === 200) {
+                        mThis.ServiceRequestListView.showPage(mThis.getFilterData());
+                        cv_interact.success('Service Request has been accepted!');
+                    } else {
+                        cv_interact.error(res.error_message || 'Something went wrong');
+                    }
+                })
+                .catch(() => {
+                    cv_interact.error('Network error');
+                });
+            }
+        );
+    };
     mThis.editServiceRequest = (id, menuLink) => {
         CreateServiceRequestDialog.show({
             id: id,

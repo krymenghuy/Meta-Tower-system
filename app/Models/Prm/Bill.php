@@ -208,17 +208,20 @@ class Bill
 
     public function deleteBill($id = null, $ss = null)
     {
-        $id   = $id ?? $this->id;
+        $id = $id ?? $this->id;
+
         $bill = DB::table('bills')->select('id', 'status_id')->where('id', $id)->first();
-
-        if (!$bill) return DV::error('Bill not found.');
-        if ($bill->status_id == 2) return DV::error('Cannot delete unpaid bill.');
-
+        if (!$bill) {
+            return DV::error('Bill not found.');
+        }
+        if ($bill->status_id >= 2) {
+            return DV::error('Cannot delete bill already paid or partially paid.');
+        }
         $deleted = DB::table('bills')->where('id', $id)->delete();
-
-        return $deleted
-            ? DV::depends($deleted, ['action' => 'deleted'])
-            : DV::error('Delete failed.');
+        if (!$deleted) {
+            return DV::error('Delete failed.');
+        }
+        return DV::depends($deleted, ['action' => 'deleted']);
     }
 
     public function getVendorInfo($id = null, $ss = null)
@@ -239,9 +242,7 @@ class Bill
         $ss = $ss ?? $this->userInfo;
 
         $currentStatus = DB::table('bills')->where('id', $id)->value('status_id');
-
         if ($currentStatus == $status_id) return DV::error('It is the same current status.');
-
         $x = DB::table('bills')->where('id', $id)->update([
             'status_id'   => $status_id,
             'update_user' => $ss->full_name,

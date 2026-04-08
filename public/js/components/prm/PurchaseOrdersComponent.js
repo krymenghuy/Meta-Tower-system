@@ -309,11 +309,10 @@ var PurchaseOrdersComponent = (() => {
     };
 
     mThis.authorizedPurchaseOrder = (id, btn) => {
-        if (btn.dataset.authorized == 1) {
+        if (btn.dataset.authorized == 2) {
             cv_interact.warning('You already authorized this Purchase order.');
             return;
         }
-
         cv_interact.confirm('Are you sure you want to authorize this purchase order?', {
             title: 'Authorize Purchase order',
             context: 'update',
