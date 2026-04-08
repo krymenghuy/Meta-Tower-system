@@ -25,14 +25,13 @@ var BillComponent = (() => {
                     <hr class="m-0 border border-secondary opacity-100">
                  <span class="d-block text-prm-custom small">${data.bill_date}</span>`,
         },
-
-        // {
-        //     transTitle: "titles.Bill Number",
-        //     className: "align-middle",
-        //     data: (data) => {
-        //         return `<span class="text-nowrap text-prm-custom fw-semibold">${data.bill_number ?? ""}</span>`;
-        //     },
-        // },
+        {
+            transTitle: "titles.Due Date",
+            className: "align-middle text-nowrap",
+            data: (data) => {
+                return `<span class="d-block text-prm-custom ">${data.due_date ?? "_"}</span>`;
+            },
+        },
         {
             transTitle: "titles.Vendor",
             className: "align-middle text-nowrap",
@@ -43,7 +42,7 @@ var BillComponent = (() => {
         },
         
         {
-            transTitle: "titles.Type",
+            transTitle: "titles.Category",
             className: "align-middle text-nowrap",
             data: (data) => {
                 return `<span class="d-block text-prm-custom ">${data.expense_type_name ?? "_"}</span>`;
@@ -292,6 +291,7 @@ var BillComponent = (() => {
         let p = {
             vendor_id: mThis.elFilter_vendor.value,
             status_id: mThis.elFilter_status.value,
+            // expense_type_id: mThis.elFilter_category.value,
             search_value: mThis.elSearch.value,
         };
 
@@ -476,7 +476,7 @@ var BillComponent = (() => {
                 console.log("form-options data:", d); 
                 VSUtil.setComboItems(mThis.elFilter_vendor, d.vendors, "id", "vendor", "", "All Vendor", "");
                 VSUtil.setComboItems(mThis.elFilter_status, d.bill_statuses, "id", "bill_status", "", "All Statuses", "");
-                VSUtil.setComboItems(mThis.elFilter_category, d.expense_category, "id", "expense_category", "", "All Category", "");
+                VSUtil.setComboItems(mThis.elFilter_category, d.expense_types, "id", "expense_category", "", "All Category", "");
                 if (typeof onFinish === "function") onFinish();
             });
     };
@@ -524,7 +524,13 @@ const BillDialog = (() => {
                             <div class="col-6 col-md-6">
                                 <div class=" material-input outlined">
                                     <input type="text" data-type="date" name="bill_date" required class="data-input form-control form_input" data-field="bill_date" />
-                                    <label style="color:#777777;padding-left:6px;">Bill Date</label>
+                                    <label style="color:#777777;padding-left:6px;">Invoice Date</label>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-6">
+                                <div class=" material-input outlined">
+                                    <input type="text" data-type="date" name="due_date" required class="data-input form-control form_input" data-field="due_date" />
+                                    <label style="color:#777777;padding-left:6px;">Due Date</label>
                                 </div>
                             </div>
                             <div class="col-6">
@@ -535,14 +541,14 @@ const BillDialog = (() => {
                             </div>
                             <div class="col-6">
                                 <div class="material-input outlined">
-                                    <select name="expense_type_id" data-style="material" class="data-input form-control" data-field="expense_type_id" placeholder="Expense Type">
+                                    <select name="expense_type_id" data-style="material" class="data-input form-control" data-field="expense_type_id" placeholder="Category">
                                     </select>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="material-input outlined">
                                     <input name="total_amount" class="data-input form-control" data-field="total_amount" placeholder=" "></input>
-                                    <label style="color:#777777; padding-left:6px;">Total Amount</label>
+                                    <label style="color:#777777; padding-left:6px;">Total Amount $</label>
                                 </div>
                             </div>
                             <div class="col-4">

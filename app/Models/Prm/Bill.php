@@ -41,6 +41,7 @@ class Bill
         'ref_no'          => '1|string|0-25',
         'vendor_id'       => '1|number|exists=vendors.id',
         'bill_date'       => '1|date',
+        'due_date'        => '1|date',
         'total_amount'    => '1|number|min=0',
         'remark'          => '0|string|0-255',
         'photo'           => '0|string',
@@ -123,7 +124,7 @@ class Bill
 
    
     public function getListBill($arr = [], $ss = null)
-    {
+    {   
         $d  = (object) $arr;
         $search_value = $d->search_value ?? null;
         $vendor_id    = $d->vendor_id    ?? null;
@@ -162,13 +163,13 @@ class Bill
             ->leftJoin('expense_categories as ex', 'ex.id', 'b.expense_type_id')
             ->whereRaw($str_moreWhere)
             // ->where('b.status_id', '!=', 2)
-            ->selectRaw("b.id, b.bill_number, b.ref_no, b.expense_type_id,ex.name as expense_type_name,b.vendor_id,v.name as vendor_name, v.phone_number, b.bill_date,
+            ->selectRaw("b.id, b.bill_number, b.ref_no, b.expense_type_id,ex.name as expense_type_name,b.vendor_id,v.name as vendor_name, v.phone_number, b.bill_date,b.due_date,
                 b.total_amount, b.balance, b.paid_amount,b.status_id, s.name as status,b.file_image, b.update_user, b.remark, b.updated_at")
             ->orderBy('b.id', 'desc');
         $count = (clone $query)->count('b.id');
         $rows  = $query->skip($skip_rows)->take($per_page)->get();
         foreach ($rows as $row) {
-            $processed = setOfficialDates($row, ['bill_date'], ['updated_at'], []);
+            $processed = setOfficialDates($row, ['bill_date','due_date'], ['updated_at'], []);
             if ($processed) $row = $processed;
 
             $row->image_url = self::getBillImageUrl($row->file_image, $ss);
@@ -185,7 +186,7 @@ class Bill
             ->leftJoin('vendors as v', 'v.id', 'b.vendor_id')
             ->leftJoin('expense_categories as ex', 'ex.id', 'b.expense_type_id') 
             ->where('b.id', $id)
-            ->selectRaw('b.id, b.bill_number, b.ref_no, b.vendor_id, v.name as vendor_name,b.expense_type_id, ex.name as expense_type_name, v.phone_number, b.bill_date, b.file_image, b.total_amount, b.balance, b.paid_amount, b.status_id, b.remark')
+            ->selectRaw('b.id, b.bill_number, b.ref_no, b.vendor_id, v.name as vendor_name,b.expense_type_id, ex.name as expense_type_name, v.phone_number, b.bill_date,b.due_date, b.file_image, b.total_amount, b.balance, b.paid_amount, b.status_id, b.remark')
             ->first();
         if ($row) {
             $row->file_image_url = self::getBillImageUrl($row->file_image, $ss);

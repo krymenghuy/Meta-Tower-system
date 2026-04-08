@@ -695,8 +695,6 @@ var PurchaseOrdersComponent = (() => {
                             <td class="text-nowrap">${VSMoney.formatAmount(item.total_price || 0, 'USD')}</td>
                         </tr>`;
                     });
-                } else {
-                    tBody = `<tr><td colspan="5" class="text-center p-3 fw-semibold">មិនទាន់មានទំនិញ!</td></tr>`;
                 }
 
                 html = `<table class="table">${tHead}<tbody>${tBody}</tbody></table>`;
