@@ -31,6 +31,9 @@ class Receipt extends Model
         $per_page     = max(1, (int) ($d->per_page ?? 10));
         $search       = trim($d->search_value ?? '');
 
+        $date_from    = $d->date_from ?? null;
+        $date_to      = $d->date_to ?? null;
+
         $query = DB::table('receipts as r')
             ->leftJoin('tenants as t', 't.id', '=', 'r.tenant_id')
             ->leftJoin('invoices as i', 'i.id', '=', 'r.invoice_id')
@@ -70,6 +73,14 @@ class Receipt extends Model
             ])
             ->groupBy('r.id')
             ->orderByDesc('r.id');
+            
+        if (!empty($date_from)) {
+            // Ensure format compatibility. If DB is Y-m-d, Carbon handles conversion
+            $query->whereDate('r.receipt_date', '>=', date('Y-m-d', strtotime($date_from)));
+        }
+        if (!empty($date_to)) {
+            $query->whereDate('r.receipt_date', '<=', date('Y-m-d', strtotime($date_to)));
+        }
 
         if ($id) {
             $query->where('r.id', $id);
