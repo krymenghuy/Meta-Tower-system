@@ -82,23 +82,30 @@ class ServiceRequestController extends Controller
         return JDV::raw($result);
     }
 
- //  GetFromOption
+    //  GetFromOption
         public function getFormOptions(Request $req){
-        $ss = XAuthService::verifyAuth($req, -1);
-        if($ss->status_code !==200){
-            return JDV::raw($ss);
+            $ss = XAuthService::verifyAuth($req, -1);
+            if($ss->status_code !==200){
+                return JDV::raw($ss);
+            }
+            return JDV::result($this->service_requests->getFormOptions($req->all(),$ss));
         }
-        return JDV::result($this->service_requests->getFormOptions($req->all(),$ss));
-    }
 
-     function setRequestStatus(Request $req)
+    function acceptRequest(Request $req)
     {
         $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-
-        return JDV::raw($this->service_requests->setRequestStatus($req->all(), $ss));
+        return JDV::raw($this->service_requests->acceptRequest($req->all(), $ss));
+    }
+    function rejectRequest(Request $req)
+    {
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        return JDV::raw($this->service_requests->rejectRequest($req->all(), $ss));
     }
 
 

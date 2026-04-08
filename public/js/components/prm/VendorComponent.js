@@ -49,7 +49,7 @@ var VendorComponent = (() => {
                 </div>
 
                 <div>
-                    <span class="fw-semibold text-dark d-block">
+                    <span class="text-prm-custom d-block">
                         ${name}
                     </span>
                     <span class="d-block text-muted small">
@@ -138,8 +138,8 @@ var VendorComponent = (() => {
             className: 'align-middle text-nowrap',
             data: (data, index, tr) => {
                 return `<div class="d-flex flex-column">
-                    <span class="text-capitalize text-start text-yp-custom fw-semibold"><span>${data.update_user ?? ''}</span></span>
-                    <span class="text-muted">${data.updated_at ?? ''}</span>
+                    <span class="text-capitalize text-start text-prm-custom"><span>${data.update_user ?? ''}</span></span>
+                    <span class="text-muted small">${data.updated_at ?? ''}</span>
                 </div>`;
             }
         },

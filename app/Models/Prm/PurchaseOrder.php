@@ -200,7 +200,7 @@ class PurchaseOrder extends VSModel
         if ($status_id) {
             $str_where .= ' AND po.status_id = ' . $status_id;
         }
-    
+
         $cols = 'po.id,po.po_number,po.vendor_id,po.po_date,po.authorized,po.status_id,ps.name as status,po.total_authorizers,po.auth_count,po.remarks,po.discount_value,po.discount_type,po.sub_total,po.total_amount,po.updated_at,po.update_user,v.name as vendor_name,v.phone_number';
         $query = DB::table('purchase_orders as po')
             // ->join('purchase_order_authorizations as au','au.po_id','=','po.id')
@@ -219,7 +219,7 @@ class PurchaseOrder extends VSModel
             $row->authorizer = $auth->auth_user ?? null;
             $row->auth_date = $auth->auth_date ?? null;
             setOfficialDates($row, ['auth_date', 'po_date'], ['updated_at'], []);
-            
+
         }
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
@@ -261,14 +261,14 @@ class PurchaseOrder extends VSModel
         return DV::success(['message' => 'Purchase order has been deleted.']);
     }
     public function getItemsByPO($data,$ss){
-        
+
         $id = $data['po_id'] ?? $data['id'] ?? null ;
         $rows = DB::table('purchase_order_items as pi')
             ->join('items as i','i.id','=','pi.item_id')
             ->where('pi.po_id',$id)
             ->selectRaw("pi.item_id,pi.qty,i.unit,pi.unit_price")->get();
-        
-        
+
+
         return $rows;
     }
     static function getItemsByPurchaseOrder($id = null, $ss = null)
@@ -429,7 +429,7 @@ class PurchaseOrder extends VSModel
         $ss = $ss ?? $this->userInfo;
         $id = $id ?? $this->id;
         $d = (object) $arr;
-        
+
         $po = DB::table('purchase_orders po')->where('po.id', $id)->select('po.id','po.vendor_id','po.po_number','po.po_date','po.status_id','po.authorized')->first();
         if (!$po) {
             return DV::error('Purchase order not found.');
@@ -604,12 +604,11 @@ class PurchaseOrder extends VSModel
     ) {
 
         $row = DB::table('purchase_order_code_control')
-            ->where('branch_id', $branch_id)
-            ->where('issue_year', $year)
-            ->where('doc_class', $doc_class)
-            ->where('prefix', $prefix)
-            ->lockForUpdate()
-            ->first();
+        ->where('branch_id', $branch_id)
+        ->where('issue_year', $year)
+        ->where('doc_class', $doc_class)
+        ->where('prefix', $prefix)
+        ->first();
 
         if ($row) {
             $next_num = $row->last_id + 1;

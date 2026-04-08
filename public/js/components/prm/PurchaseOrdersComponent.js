@@ -101,7 +101,6 @@ var PurchaseOrdersComponent = (() => {
                 }
                 return `<div class="d-flex flex-column">
                     <span class="text-capitalize text-start">
-                        <i class="fa-solid fa-user-check fs-6 text-success me-1"></i>
                         ${data.authorizer}
                     </span>
                     <span class="text-start small text-muted">${data.auth_date ?? ''}</span>
@@ -126,8 +125,8 @@ var PurchaseOrdersComponent = (() => {
             transTitle: 'titles.Updated By',
             className: 'align-middle text-nowrap',
             data: (data) => `<div class="d-flex flex-column">
-                <span class="text-capitalize text-start text-prm-custom fw-semibold">${data.update_user ?? ''}</span>
-                <span class="text-muted">${data.updated_at ?? ''}</span>
+                <span class="text-capitalize text-start text-prm-custom">${data.update_user ?? ''}</span>
+                <span class="small text-muted">${data.updated_at ?? ''}</span>
             </div>`,
         },
         {
@@ -310,11 +309,10 @@ var PurchaseOrdersComponent = (() => {
     };
 
     mThis.authorizedPurchaseOrder = (id, btn) => {
-        if (btn.dataset.authorized == 1) {
+        if (btn.dataset.authorized == 2) {
             cv_interact.warning('You already authorized this Purchase order.');
             return;
         }
-
         cv_interact.confirm('Are you sure you want to authorize this purchase order?', {
             title: 'Authorize Purchase order',
             context: 'update',
@@ -697,8 +695,6 @@ var PurchaseOrdersComponent = (() => {
                             <td class="text-nowrap">${VSMoney.formatAmount(item.total_price || 0, 'USD')}</td>
                         </tr>`;
                     });
-                } else {
-                    tBody = `<tr><td colspan="5" class="text-center p-3 fw-semibold">មិនទាន់មានទំនិញ!</td></tr>`;
                 }
 
                 html = `<table class="table">${tHead}<tbody>${tBody}</tbody></table>`;
