@@ -371,6 +371,7 @@ var SpaceComponent = new (function () {
                 menu.create_booking.style.display = (!isMaintenance && status_id === 1) ? 'block' : 'none';
                 menu.create_contract.style.display = (!isMaintenance && (status_id === 1 || status_id === 2)) ? 'block' : 'none';
                 menu.edit_space.style.display = (!isMaintenance && status_id === 1) ? 'block' : 'none';
+                menu.finish_maintenance.style.display = isMaintenance ? 'block' : 'none';
                 // menu.set_maintenance.style.display = (!isMaintenance && status_id === 3) ? 'block' : 'none';
             },
 
@@ -854,11 +855,6 @@ const BuildingSpaceDialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
-                    // LocaleManager.translateZone(me.divModal);
-                    // console.log(12,data);
-                    const header = me.divModal.querySelector('.modal-header');
-                    const btnClose = header.querySelector('button');
-                    if (btnClose) btnClose.classList.add('d-none');
                 },
 
                 buttons: [

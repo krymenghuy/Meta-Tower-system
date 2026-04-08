@@ -200,7 +200,7 @@ var ServiceRequestComponent = (function () {
             className: 'align-middle text-nowrap',
             data: (data) => `
             <div class="d-flex flex-column">
-                <span class="text-capitalize text-primary-custom fw-semibold">${data.update_user ?? ''}</span>
+                <span class="text-capitalize text-primary-custom">${data.update_user ?? ''}</span>
                 <span class="text-muted small">${data.updated_at ?? ''}</span>
             </div>`
         },
