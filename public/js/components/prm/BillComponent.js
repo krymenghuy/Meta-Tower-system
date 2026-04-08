@@ -548,7 +548,7 @@ const BillDialog = (() => {
                             <div class="col-6">
                                 <div class="material-input outlined">
                                     <input name="total_amount" class="data-input form-control" data-field="total_amount" placeholder=" "></input>
-                                    <label style="color:#777777; padding-left:6px;">Total Amount</label>
+                                    <label style="color:#777777; padding-left:6px;">Total Amount $</label>
                                 </div>
                             </div>
                             <div class="col-4">

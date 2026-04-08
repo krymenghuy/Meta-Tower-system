@@ -9,34 +9,25 @@ var BillPaymentComponent = (() => {
     mThis.divFilter = mThis.self.querySelector("#_divFilter_bill");
     mThis.elFilter_vendor = mThis.self.querySelector("#_bill_vendor_id");
     mThis.elFilter_status = mThis.self.querySelector("#_bill_status_id");
-    mThis.elSearch = mThis.self.querySelector("#_search_bill_payment");
-
-    const formatCurrency = (amount) => {
-        const value = Number(amount || 0);
-        const rate = mThis.getExchangeRate();
-        const mode = mThis.displayCurrency || "USD";
-        if (mode === "KHR"){
-            return `៛ ${(value * rate).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`; 
-        }
-        return `$ ${value.toFixed(2)}`;
-    };
+    mThis.elSearch = mThis.self.querySelector("#_search_bill_payment"); 
 
     mThis.cols = [
         { title: "", className: "align-middle" },
-        {
-            transTitle: "titles.Bill Number",
-            className: "align-middle",
-            data: (data) => {
-                return `
-                    <span class="d-block text-nowrap text-prm-custom fw-semibold">${data.bill_number ?? ""}</span>`;
-            },
-        },
+        
         {
             transTitle: "titles.Payment Date",
             className: "align-middle",
             data: (data) => {
                 return `
                     <span class="d-block text-prm-custom text-nowrap mb-2">${data.payment_date}</span>`;
+            },
+        },
+        {
+            transTitle: "titles.Bill Number",
+            className: "align-middle",
+            data: (data) => {
+                return `
+                    <span class="d-block text-nowrap text-prm-custom ">${data.bill_number ?? ""}</span>`;
             },
         },
         {
@@ -481,7 +472,7 @@ const BillPaymentDialog = (() => {
                         </div>
                         <div class="col-3">
                             <div class="material-input outlined border-primary">
-                                <input name="amount" data-field="amount" class="data-input form-control text-end fw-bold" placeholder="0.00">
+                                <input name="amount" data-field="amount" class="data-input form-control text-end fw-bold" placeholder="0.00 $">
                                 <label class="text-primary px-2">Paying Now</label>
                             </div>
                         </div>
