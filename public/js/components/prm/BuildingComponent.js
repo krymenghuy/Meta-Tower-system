@@ -622,7 +622,7 @@ const CreateFloorDialog = (() => {
             },
             prepareFormOptions: {
                 createTitle: "Create Floor",
-                modifyTitle: "Modify Floor",
+                modifyTitle: "Add Floor",
                 targetProp: "floor_details",
                 api: {
                     endpoint: main_view.base_url + "/prm/building/form-options",
