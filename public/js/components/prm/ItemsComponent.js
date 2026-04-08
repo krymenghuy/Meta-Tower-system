@@ -34,7 +34,7 @@ var ItemsComponent = (() => {
 
         {
             transTitle: "titles.Unit",
-            className: "align-middle text-capitalize",
+            className: "align-middle",
             data: (data) => {
                 return `<span class="text-primary-custom">${data.unit ?? ''}</span>`;
             }
@@ -51,8 +51,8 @@ var ItemsComponent = (() => {
             className: 'align-middle',
             data: (data, index, tr) => {
                 return `<div class="d-flex flex-column">
-                    <span class="text-capitalize text-start text-yp-custom fw-semibold"><span>${data.update_user ?? ''}</span></span>
-                    <span class="text-muted">${data.updated_at ?? ''}</span>
+                    <span class="text-capitalize text-start text-prm-custom"><span>${data.update_user ?? ''}</span></span>
+                    <span class="text-muted small">${data.updated_at ?? ''}</span>
                 </div>`;
             }
         },
@@ -74,7 +74,7 @@ var ItemsComponent = (() => {
 
         mThis.ItemListView = new ListView('_item_list', {
             fetchApi: `${main_view.base_url}/prm/item/list-paginate`,
-            perPage: 8,
+            perPage: 10,
             // rememberCurrentPage: false,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
@@ -113,9 +113,7 @@ var ItemsComponent = (() => {
             sh_parent.style.maxHeight = (window.innerHeight - 200) + 'px';
         }
         mThis.tblItem = mThis.ItemListView.getTable();
-
         mThis.initDropdownMenus(mThis.tblItem);
-
         mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
 
             el.onchange = (e) => {
@@ -158,13 +156,13 @@ var ItemsComponent = (() => {
             cssClass: "bg-white shadow",
             menus: [
                 {
-                    html: '<span class="ps-2 " vslang="titles.Modify Item"></span>',
+                    html: '<span class="ps-2 " vslang="titles.Modify"></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "edit_item"
                 },
                 {
-                    html: '<span class="ps-2  " vslang="titles.Delete Item"></span>',
+                    html: '<span class="ps-2  " vslang="titles.Delete"></span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "delete_item"
@@ -275,14 +273,13 @@ const CreateItemsDialog = (() => {
                             </div>
                             <div class="col-6">
                                 <div class="material-input outlined">
-                                    <select name="category_id" class="data-input form-control" data-field="category_id">
+                                    <select  data-style="material" name="category_id" class="data-input form-control" data-field="category_id" placeholder="Category">
                                     </select>
-                                    <label style="display: none; padding-left:6px;color:#777777;">Category<span class="text-danger">*</span></label>
                                 </div>
                            </div>
                             <div class="col-6">
                                 <div class="material-input outlined">
-                                    <select name="unit" class="data-input form-control" data-field="unit">
+                                    <select name="unit" data-style="material" class="data-input form-control" data-field="unit" placeholder="Unit">
                                         <option value="pcs">pcs</option>
                                         <option value="box">box</option>
                                         <option value="set">set</option>
@@ -290,10 +287,11 @@ const CreateItemsDialog = (() => {
                                         <option value="kg">kg</option>
                                         <option value="meter">meter</option>
                                     </select>
-                                <label style="display: none; padding-left:6px;color:#777777;" for="unit">Unit</label>
 
                                 </div>
                             </div>
+
+                            
 
 
                         </div>`

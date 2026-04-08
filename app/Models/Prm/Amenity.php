@@ -208,7 +208,7 @@ class Amenity extends VSModel
         $count = $clone_query->count('a.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
         foreach($rows as $row){
-            $row = setOfficialDates($row,['updated_at'],[],[]);
+            $row = setOfficialDates($row,[],['updated_at'],[]);
         }
         return new LengthAwarePaginator($rows,$count,$per_page,$current_page);
     }

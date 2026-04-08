@@ -7,7 +7,6 @@ var BuildingComponent = ( () => {
     mThis.btnAddBuilding = mThis.self.querySelector("#_btnAddBuilding");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_building");
     mThis.elSearch = mThis.self.querySelector("#_search_building");
-    mThis.divSummaryCards = mThis.self.querySelector("#_summary_cards");
 
     mThis.cols = [
         {
@@ -22,7 +21,7 @@ var BuildingComponent = ( () => {
                     <img class="btn-view-member-photo" data-id="${data.id}" src="${data.image_url || `${main_view.base_url}/assets/images/meta/building_img.jpg`}" alt="" style="width: 50px; height: 50px; border-radius: 6px; margin-right: 10px; object-fit: cover;"/>
 
                   <div class="d-flex flex-column">
-                    <span class="text-primary-custom fw-semibold d-inline-block" style="min-width:150px; ">
+                    <span class="text-prm-custom d-inline-block" style="min-width:150px; ">
                         ${data.name ?? ''}
                     </span>
                     <small class="text-muted text-break" style="max-width:250px;">
@@ -37,7 +36,7 @@ var BuildingComponent = ( () => {
             className: "align-middle",
             data: (data) => {
                 let area = data.total_area ?? '';
-                return `<span class="text-primary-custom">${area}${area ? ' sqm' : ''}</span>`;
+                return `<span class="text-primary-custom">${area}${area ? ' (sqm)' : ''}</span>`;
             },
         },
         {
@@ -78,7 +77,7 @@ var BuildingComponent = ( () => {
             className: "align-middle",
             data: (data) => `
                 <div class="d-flex flex-column">
-                    <span class="text-capitalize text-primary-custom fw-semibold">${data.update_user ?? ''}</span>
+                    <span class="text-capitalize text-prm-custom">${data.update_user ?? ''}</span>
                     <span class="text-muted small">${data.updated_at ?? ''}</span>
                 </div>
             `,
@@ -100,92 +99,7 @@ var BuildingComponent = ( () => {
     ];
 
 
-    mThis.renderSummaryCards = (summaryData) => {
-        if (!mThis.divSummaryCards) return;
-
-        const cards = [
-            {
-                title: "TOTAL MANAGED AREA",
-                value: summaryData.total_area || "4,900",
-                unit: "sqm",
-                change: summaryData.area_change || "+12%",
-                changePositive: true,
-                subtitle: "Square meters total"
-            },
-            {
-                title: "ACTIVE TENANTS",
-                value: summaryData.active_tenants || "248",
-                unit: "",
-                change: summaryData.tenants_change || "+5.4%",
-                changePositive: true,
-                subtitle: "Across all properties"
-            },
-            {
-                title: "AVG. OCCUPANCY",
-                value: summaryData.avg_occupancy || "68",
-                unit: "%",
-                change: summaryData.occupancy_change || "-21%",
-                changePositive: false,
-                subtitle: "Global average"
-            },
-            {
-                title: "REVENUE MTD",
-                value: summaryData.revenue_mtd || "$142k",
-                unit: "",
-                change: summaryData.revenue_change || "+18%",
-                changePositive: true,
-                subtitle: "Month to date"
-            }
-        ];
-
-        const cardsHTML = cards.map(card => `
-            <div class="col-12 col-sm-6 col-md-2">
-                <div class="card border-0 h-100">
-                    <div class="card-body border border-gray rounded-3">
-                        <p class="text-muted text-uppercase small mb-2" style="font-size: 0.75rem; font-weight: 600;">
-                            ${card.title}
-                        </p>
-                        <div class="d-flex align-items-end justify-content-between">
-                            <div>
-                                <h3 class="mb-0 fw-bold">
-                                    ${card.value}<span class="fs-5">${card.unit}</span>
-                                </h3>
-                                <p class="text-muted small mb-0 mt-1" style="font-size: 0.8rem;">
-                                    ${card.subtitle}
-                                </p>
-                            </div>
-                            <div>
-                                <span class="badge ${card.changePositive ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger'} fw-semibold">
-                                    ${card.change}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `).join('');
-
-        mThis.divSummaryCards.innerHTML = `
-            <div class="row g-3 mb-4 d-none">
-                ${cardsHTML}
-            </div>
-        `;
-    };
-
-
-    mThis.fetchSummaryData = () => {
-        vsapi.call(`${main_view.base_url}/prm/building/summary`, null, null, null)
-            .then(res => {
-                if (res.status_code == 200) {
-                    mThis.renderSummaryCards(res.data);
-                }
-            })
-            .catch(err => {
-
-                mThis.renderSummaryCards({});
-            });
-    };
-
+   
     mThis.init = () => {
         if (mThis.initAlready) return;
 
@@ -194,7 +108,7 @@ var BuildingComponent = ( () => {
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
-            tableClass: 'table table--white rounded-2 overflow-hidden header-uppercase',
+            tableClass: 'table table--white rounded-2 header-uppercase',
             rowCreated:(data,index,tr)=>{
                 tr.dataset.statusid = data.status_id;
                 tr.dataset.totalfloor = data.total_floor ?? 0;
@@ -273,12 +187,11 @@ var BuildingComponent = ( () => {
             }, 0);
             const canAddFloor = (parseInt(totalFloor || '0', 10) > 0) && (maxFloorNo < parseInt(totalFloor || '0', 10));
 
-            html = `${canAddFloor ? `<div class="rounded-3 p-2 bg-white">
+            html = `${canAddFloor ? `<div class="rounded-3 p-2 bg-danger-subtle mb-2">
                 <button data-buildingid="${id}" class="btn-add-floor btnAddNewPrm" type="button">
                     <span class="">${LocaleManager.trans('Add Floor','buttons')}</span>
                 </button>
             </div>` : ''}
-            <div class="table-responsive p-1">
             <table class="table table-sm table-hover align-middle tbl_list_floor">
             <thead class="table-light text-nowrap">
                 <tr>
@@ -287,12 +200,11 @@ var BuildingComponent = ( () => {
                     <th>${LocaleManager.trans('Total Space')}</th>
                     <th>${LocaleManager.trans('Description')}</th>
                     <th>${LocaleManager.trans('Last Updated')}</th>
-                    <!-- <th>${LocaleManager.trans('Action')}</th> -->
                 </tr>
             </thead>
             <tbody></tbody>`;
 
-            html = html+`</table></div>`;
+            html = html+`</table>`;
             container.innerHTML =  html;
 
             const tbody = container.querySelector('table.tbl_list_floor > tbody');
@@ -324,12 +236,10 @@ var BuildingComponent = ( () => {
         if(!data) data = [];
 
         (data || []).map(level => {
-        console.log(66,level);
-
             let shortcut = level.floor_name ? `(${level.floor_name ?? ''})` : '';
             html = [html,`<tr>
                 <td>
-                    <span class="fw-semibold d-block">${level.floor_name ?? ''}</span>
+                    <span class="d-block">${level.floor_name ?? ''}</span>
                     <span class="d-block text-muted">
                         <small>${shortcut ?? ''}</small>
                     </span>
@@ -338,27 +248,11 @@ var BuildingComponent = ( () => {
                 <td>${level.total_space ?? ''}</td>
                 <td>${level.description ?? ''}</td>
                 <td>
-                    <span class="d-block p-1 fw-semibold">${level.update_user ?? ''}</span>
+                    <span class="d-block">${level.update_user ?? ''}</span>
                     <span>
                         <small>${level.updated_at ?? ''}</small>
                     </span>
                 </td>
-                <!-- <td>
-                    <div class="d-flex gap-2">
-                        <a href="javascript:void(0)" class="btn-level-modify" data-buildingid ="${level.id}" data-id="${level.id}">
-                           <span class="tool-tip">
-                            <i class="fa-regular fa-pen-to-square text-warning fs-5"></i>
-                            <span class="tool-tiptext fs-6">Modify</span>
-                           </span>
-                        </a>
-                        <a href="javascript:void(0)" class="btn-level-delete" data-programid ="${level.id}" data-id="${level.id}">
-                           <span class="tool-tip">
-                            <i class="fa-regular fa-trash-can text-danger fs-5"></i>
-                            <span class="tool-tiptext fs-6">Delete</span>
-                           </span>
-                        </a>
-                    </div>
-                </td> -->
             </tr>`].join('');
         });
         tbody.innerHTML = html;
@@ -469,7 +363,6 @@ var BuildingComponent = ( () => {
         if(!options) options = {};
         mThis.prepareFormOptions(()=>{
             main_view.setContentView(mThis.self,mThis.title_prop);
-            mThis.fetchSummaryData();
             mThis.BuildingListView.showPage(mThis.getFilterData());
         });
     };
@@ -610,11 +503,6 @@ const CreateFloorDialog = (() => {
                 </div>
             `,
             contentCreated: (me) => {
-                // Remove header modification if headerWrapper undefined
-                const header = me.divModal.querySelector('.modal-header');
-                if (header) {
-                    // header.innerHTML = ''; // optional
-                }
             },
             prepareFormOptions: {
                 createTitle: "Create Floor",

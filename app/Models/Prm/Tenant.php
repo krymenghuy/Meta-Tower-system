@@ -27,93 +27,110 @@ function checkUniqueTenantByNID($nid, $id = null)
     if ($x) return 'National ID ?? has been used by another Tenant::'. $nid;
     return null;
 }
+// function checkUniqueTenantByPhone($phone_number, $id = null)
+// {
+//     $str_id = "1=1";
+//     if (!$phone_number) return 'Phone number cannot be empty';
+//     if ($id > 0) $str_id = "t.id <> $id";
+//     $x = DB::table('tenants as t')->where('t.phone_number', $phone_number)->whereRaw($str_id)->select('id')->take(1)->exists();
+//     if ($x) return 'phone number"' . $phone_number . '" has been used by another tenant';
+//     return null;
+// }
 function checkUniqueTenantByPhone($phone_number, $id = null)
 {
-    $str_id = "1=1";
-    if (!$phone_number) return 'Phone number cannot be empty';
-    if ($id > 0) $str_id = "t.id <> $id";
-    $x = DB::table('tenants as t')->where('t.phone_number', $phone_number)->whereRaw($str_id)->select('id')->take(1)->exists();
-    if ($x) return 'phone number"' . $phone_number . '" has been used by another tenant';
+    if (empty($phone_number)) {
+        return 'Phone number cannot be empty';
+    }
+    $query = DB::table('tenants')
+        ->where('phone_number', $phone_number);
+    if ($id) {
+        $query->where('id', '<>', $id);
+    }
+    if ($query->exists()) {
+        return 'Phone number "' . $phone_number . '" has already been used by another tenant';
+    }
     return null;
 }
  public function createTenant($arr = [], $id = null, $ss = null)
 {
-    $id   = $id   ?? $this->id;
-    $ss   = $ss   ?? $this->userInfo;
+    $id = $id ?? $this->id;
+    $ss = $ss ?? $this->userInfo;
     $branch_id = $ss->branch_id;
     $v_rule = [
-        'name'          => '1|string|0-100|text=Tenant name must be provided',
-        'sex'           => '1|choice|F,M',
-        'date_of_birth' => '1|date',
-        'nationality_id'=> '1|number',
-        'legal_name'    => '1|string|0-100',
-        'national_id'   => '1|string|0-50',
+        'name'            => '1|string|0-30|text=Tenant name must be provided',
+        'sex'             => '1|choice|F,M',
+        'date_of_birth'   => '1|date',
+        'nationality_id'  => '1|number',
+        'legal_name'      => '1|string|0-100',
+        'national_id'     => '0|string|0-50',
         'passport_number' => '0|string|0-50',
-        'phone_number'  => '1|phone|0-20',
-        'email'         => '0|email|1-50',
-        'address'       => '0|string|0-350',
-        'photo' => '0|image'
+        'phone_number'    => '0|string',
+        'email'           => '0|email',
+        'address'         => '0|string',
+        'photo'           => '0|image'
     ];
-
-    $email_char  = ['@','.','-','_'];
-    $address_char = ['@',',','.','#'];
-    $legal_name_char = ['@',',','.','#'];
-
-    $res = DBX::validateObject($arr,$v_rule,1,['photo'=>GeneralSettings::$image_chars,'email' => $email_char, 'address' => $address_char,'passport_number' => $email_char, 'legal_name' => $legal_name_char],$ss->lang,0,null);
-    if ($res->error) {
-        return DV::error($res->error);
-    }
-
+    $email_char = ['@', '.'];
+    $address_char = ['@', '.', '#'];
+    $name_char = ['@', '.', '#'];
+    $passport_char = ['-','_', '.', '#'];
+    $res = DBX::validateObject($arr,$v_rule,1,['photo' => GeneralSettings::$image_chars,'email' => $email_char,'address' => $address_char,'passport_number' => $passport_char,'legal_name' => $name_char],$ss->lang,0,null);
+    if ($res->error) return DV::error($res->error);
     $inputs = $res->values;
     $d = (object) $inputs;
-
-    $d->phone_number = str_replace(' ', '', $inputs['phone_number']);
-        $inputs['phone_number'] = $d->phone_number;
-        $phone_check = $this->checkUniqueTenantByPhone($d->phone_number, $id);
-        if ($phone_check) return DV::error($phone_check);
-
-    $national_id = $d->national_id ?? null;
-
-    $nid_check = $this->checkUniqueTenantByNID($national_id, $id);
+    $dob = $d->date_of_birth ?? null;
+    if ($dob) {
+        $birth = new \DateTime($dob);
+        $today = new \DateTime();
+        if ($birth > $today) return DV::error('Date of birth cannot be in the future.');
+        $age = $today->diff($birth)->y;
+        if ($age < 18) return DV::error('Tenant must be 18 years or older.');
+        if ($age > 120) return DV::error('Invalid date of birth age.');
+        
+    }
+    $nationality_id = $d->nationality_id ?? null;
+    if ($nationality_id === 14) {
+        $national_id = $d->national_id ?? null;
+        if (empty($national_id)) {
+            return DV::error('National ID is required for Khmer nationality.');
+        }
+        $nid_check = $this->checkUniqueTenantByNID($national_id, $id);
         if ($nid_check) return DV::error($nid_check);
-
-
+    }
+    if ($nationality_id !== 14) {
+        $passport = $d->passport_number ?? null;
+        if (empty($passport)) {
+            return DV::error('Passport is required for foreign nationality.');
+        }
+    }
+    $phone_number = isset($d->phone_number)? str_replace(' ', '', $d->phone_number): null;
+    $phone_check = $this->checkUniqueTenantByPhone($phone_number, $id);
+    if ($phone_check) return DV::error($phone_check);
+    $inputs['phone_number'] = $phone_number;
     $photo = $d->photo ?? null;
     unset($inputs['photo']);
     $delete_prev_image = ($id > 0 && (!$photo || isImage($photo)));
-
     $created = !$id;
     $id = DBX::saveData($ss, 'tenants', ['id' => $id], $inputs, [], 1);
-    if ($id && $created) {
-
-            $prefix = 'T-';
-            $res = setOfficialCode($branch_id, 'tenant_code_control', 'tenants', ['id' => $id], $prefix, 4, null);
-
-        }
-    if ($id > 0) {
-        if ($delete_prev_image) {
-            $file_name = DB::table('tenants as t')->where('t.id', $id)->take(1)->value('t.photo_file_name');
-            if ($file_name) {
-                XPublicStorage::delete([
-                    'branch_id' => null,
-                    'subs_id'   => $ss->subs_id,
-                    'dir'       => self::$img_dir
-                ], 'images', $file_name);
-            }
-
-            DB::table('tenants')->where('id', $id)->update(['photo_file_name' => null]);
-        }
-       XPublicStorage::saveImage(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], null, $photo, null, ['id' => $id, 'store' => 'tenants.photo_file_name']);
-        $hasActive = DB::table('contracts')
-            ->where('tenant_id', $id)
-            ->whereDate('end_date', '>=', now())
-            ->exists();
-
-        DB::table('tenants')->where('id', $id)
-            ->update(['status_id' => $hasActive ? 2 : 1]);
-       return DV::depends(1, ['tenants' => $inputs, 'id' => $id]);
+    if (!$id) {
+        return DV::error('Failed to save tenant');
     }
-    return DV::error('Failed to save tenant');
+    if ($created) {
+        setOfficialCode($branch_id,'tenant_code_control','tenants',['id' => $id],'T-',4,null);
+    }
+    if ($delete_prev_image) {
+        $file_name = DB::table('tenants')
+            ->where('id', $id)
+            ->value('photo_file_name');
+        if ($file_name) {
+            XPublicStorage::delete(['branch_id' => null,'subs_id'   => $ss->subs_id,'dir'=> self::$img_dir], 'images', $file_name);
+        }
+        DB::table('tenants')->where('id', $id)->update(['photo_file_name' => null]);
+    }
+
+    XPublicStorage::saveImage(['branch_id' => null,'subs_id'   => $ss->subs_id,'dir'=> self::$img_dir],null,$photo,null,['id' => $id, 'store' => 'tenants.photo_file_name']);
+    $hasActive = DB::table('contracts')->where('tenant_id', $id)->whereDate('end_date', '>=', now())->exists();
+    DB::table('tenants')->where('id', $id)->update(['status_id' => $hasActive ? 2 : 1]);
+    return DV::depends(1, ['tenants' => $inputs, 'id' => $id]);
 }
 
     public function getListPaginate($arr, $ss = null){
