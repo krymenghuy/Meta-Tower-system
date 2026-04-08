@@ -306,6 +306,14 @@ class ServiceRequest extends VSModel
     public function deleteById($id = null)
     {
         $id = $id ?? $this->id;
+        $req = DB::table('service_requests')->where('id', $id)->select('status_id')->first();
+        if($req->status_id == 2){
+            return DV::error('This request has already been accepted, so it cannot be deleted.');
+        }
+        if($req->status_id == 3){
+            return DV::error('This request has already been rejected, so it cannot be deleted.');
+        }
+
         $deleted = self::deleteBy(['id' => $id]);
         return DV::depends($deleted, 'Failed to delete service request');
     }
