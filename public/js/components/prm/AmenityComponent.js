@@ -512,8 +512,12 @@ const AmenityDialog = (() => {
                         </div>
                         <div class="col-6">
                             <div class="material-input outlined">
-                                <select data-style="material" name="require_booking" class="data-input form-control" data-field="requires_booking" placeholder="Booking">
-                                    <option value="0">No</option>
+                                <select data-style="material"
+                                        name="requires_booking"
+                                        class="data-input form-control"
+                                        data-field="requires_booking"
+                                        placeholder="Requires Booking">
+                                    <option value="0" >No</option>
                                     <option value="1">Yes</option>
                                 </select>
                             </div>
@@ -602,13 +606,7 @@ const AmenityDialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
-                    console.log(6666,data);
-                    
-                    const header = me.divModal.querySelector(".modal-header");
-                    const btnClose = header.querySelector(
-                        "button[data-bs-dismiss]",
-                    );
-                    if (btnClose) btnClose.classList.add("d-none");
+                    me.controls.requires_booking.value = data.amenity_details.requires_booking;
                 },
 
                 buttons: [
