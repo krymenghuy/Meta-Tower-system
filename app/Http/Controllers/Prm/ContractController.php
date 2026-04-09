@@ -74,14 +74,21 @@ class ContractController extends Controller
         }
 
         $space_id = $req->space_id ?? null;
+        $bookingTenantMatch = null;
         if ($space_id && is_numeric($space_id)) {
             $check = Contract::validateBookingTenantPhone($space_id);
             if (!($check->status ?? false)) {
                 return JDV::error($check->message ?? 'Please create tenant first.');
             }
+            $bookingTenantMatch = $check;
+        }
+        $out = $this->contracts->getFormOptions($req->id, $ss, $space_id);
+        if ($bookingTenantMatch && !empty($bookingTenantMatch->tenant_id)) {
+            $out->prefill_tenant_id = $bookingTenantMatch->tenant_id;
+            $out->prefill_tenant_name = $bookingTenantMatch->tenant_name ?? null;
         }
 
-        return JDV::result($this->contracts->getFormOptions($req->id,$ss));
+        return JDV::result($out);
     }
 
     public function deleteContract(Request $req)

@@ -571,6 +571,7 @@ var SpaceComponent = new (function () {
             }
             let op = {
                 id: null,
+                space_id: id,
                 btn: menulink,
                 onClose: () => {
                     mThis.applyListFilters();
