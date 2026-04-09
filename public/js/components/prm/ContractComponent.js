@@ -24,7 +24,7 @@ var ContractComponent = new (function () {
             transTitle: "titles.Name",
             className: "align-middle text-nowrap",
             data: (data, index) => `
-                        <span class="">${data.tenant_name ?? ''}</span>`,
+                        <span class="text-prm-custom">${data.tenant_name ?? ''}</span>`,
         },
         {
             transTitle: "titles.Contact Info",
