@@ -393,7 +393,7 @@ const CreateReservationDialog = (() => {
                             </div>
                             <div class="col-6">
                                 <div class="material-input outlined">
-                                    <select data-style="material" name="amenity_category" class="data-input form-control" data-field="category_id" placeholder="Amenity Category"  >
+                                    <select data-style="material" name="amenity_category" class="data-input form-control" data-field="category_id"  placeholder="Amenity Category"  >
                                     </select>
                                 </div>
                             </div>
@@ -445,7 +445,7 @@ const CreateReservationDialog = (() => {
                         query: {
                             from: "tenants",
                             select: ["id", "name", "phone_number"],
-                            where: [['status_id','=',1]],
+                            where: [['status_id','=',2]],
                             orderBy: [['id','DESC']],
                             limit:50,
                             searchFields: {

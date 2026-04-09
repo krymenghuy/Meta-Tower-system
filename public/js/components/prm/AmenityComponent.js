@@ -65,8 +65,8 @@ var AmenityComponent = (() => {
                 const isRequired = val == 1;
 
                 return isRequired
-                    ? '<span class=" text-success"><i class="fa-regular fa-circle-check"></i> Yes</span>'
-                    : '<span class=" text-muted"><i class="fa-regular fa-circle-xmark"></i> No</span>';
+                    ? '<span class=" text-prm-custom"><i class="fa-regular fa-circle-check text-success"></i> Yes</span>'
+                    : '<span class=" text-prm-custom"><i class="fa-regular fa-circle-xmark text-danger"></i> No</span>';
             },
         },
         {
@@ -104,7 +104,7 @@ var AmenityComponent = (() => {
             className: "col_action align-middle text-nowrap",
             data: (data) => `
                 <div class="d-flex justify-content-center align-items-end">
-                    <a href="javascript:void(0)" class="btn--Options ${data.action_id > 1 ? "d-none" : "btn_leave_action"}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
+                    <a href="javascript:void(0)" class="btn--Options btn_amenity_action" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
                        <i class="fa-solid fa-ellipsis-vertical text-black fs-5"></i>
                     </a>
                 </div>`,
@@ -200,30 +200,13 @@ var AmenityComponent = (() => {
     mThis.initDropdownMenus = (table) => {
         const menuOptions = {
             containerElement: table,
-            actionButtonClass: "btn_leave_action",
+            actionButtonClass: "btn_amenity_action",
             cssClass: "bg-white shadow",
             menus: [
-                {
-                    html: '<span class="ps-2"  vslang="titles.Change Status">Change Status</span>',
-                    icon: `<i class="fa fa-exchange fs-5 text-info"></i>`,
-                    cssClass: "border-bottom pb-2",
-                    name: "change_status",
-                },
-                {
-                    html: '<span class="ps-2" vslang="titles.Set Maintenance">Set Maintenance</span>',
-                    icon: '<i class="fa-solid fa-wrench fs-5 text-primary"></i>',
-                    cssClass: "border-bottom pb-2",
-                    name: "set_maintenance",
-                },
-                {
-                    html: '<span class="ps-2" vslang="titles.Finish Maintenance">Finish Maintenance</span>',
-                    icon: '<i class="fa-solid fa-flag-checkered fs-5 text-success"></i>',
-                    cssClass: "border-bottom pb-2",
-                    name: "finish_maintenance",
-                },
+                
                 {
                     html: '<span class="ps-2" vslang="titles.Modify">Modify</span>',
-                    icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
+                    icon: `<i class="fa-regular fa-edit fs-5 text-primary"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "edit_amenity",
                 },
@@ -233,7 +216,38 @@ var AmenityComponent = (() => {
                     cssClass: "border-bottom pb-2",
                     name: "delete_amenity",
                 },
+                {
+                    html: '<span class="ps-2" vslang="titles.Maintenance">Maintenance</span>',
+                    icon: `<i class="fa-solid fa-screwdriver-wrench fs-5 text-warning"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "set_maintenance",
+                },
+                {
+                    html: '<span class="ps-2" vslang="titles.Finish">Finish</span>',
+                    icon: '<i class="fa-solid fa-screwdriver-wrench fs-5 text-prm-custom"></i>',
+                    cssClass: "border-bottom pb-2",
+                    name: "finish_maintenance",
+                },
+                 {
+                    html: '<span class="ps-2"  vslang="titles.Change Status">Change Status</span>',
+                    icon: `<i class="fa fa-exchange fs-5 text-success"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "change_status",
+                },
             ],
+            onShow: (me, container) => {
+                const menu = me.getActiveMenus(container);
+
+                const status_id = container.dataset.statusid;
+                // menu.create_booking.style.display = (!isMaintenance && status_id === 1) ? 'block' : 'none';
+                // menu.create_contract.style.display = (!isMaintenance && (status_id === 1 || status_id === 2)) ? 'block' : 'none';
+                // menu.edit_space.style.display = (!isMaintenance && status_id === 1) ? 'block' : 'none';
+                menu.finish_maintenance.style.display = status_id == 3 ? 'block' : 'none';
+                menu.set_maintenance.style.display = status_id != 3 ? 'block' : 'none';
+                menu.change_status.style.display = status_id != 3 ? 'block' : 'none';
+                // menu.set_maintenance.style.display = (!isMaintenance && status_id === 3) ? 'block' : 'none';
+            },
+
             onClick: (menuLink, id, name) => {
                 switch (name) {
                     case "change_status": {
@@ -498,10 +512,9 @@ const AmenityDialog = (() => {
                         </div>
                         <div class="col-6">
                             <div class="material-input outlined">
-                                <select data-style="material" name="requirebooking" class="data-input form-control" data-field="requires_booking" placeholder="Booking">
+                                <select data-style="material" name="require_booking" class="data-input form-control" data-field="requires_booking" placeholder="Booking">
                                     <option value="0">No</option>
                                     <option value="1">Yes</option>
-
                                 </select>
                             </div>
                         </div>
@@ -513,8 +526,8 @@ const AmenityDialog = (() => {
                         </div>
                         <div class="col-12">
                             <div class="material-input outlined">
-                                <textarea class="data-input form-control" data-field="description" placeholder=" "></textarea>
-                                 <label style="color:#777777;padding-left:6px;">Description</label>
+                                <textarea name="description" class="data-input form-control" data-field="description" placeholder=" "></textarea>
+                                <label style="color:#777777;padding-left:6px;">Description</label>
                             </div>
                         </div>
 
