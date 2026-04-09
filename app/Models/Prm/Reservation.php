@@ -171,7 +171,7 @@ class Reservation extends VSModel
         if($search_value){
             $skip_rows = 0;
             $search_value = escape_like_str($search_value);
-            $str_search = "(a.name LIKE '%" . $search_value . "%' OR r.description LIKE '%" . $search_value . "%')";
+            $str_search = "(t.name LIKE '%" . $search_value . "%' OR a.name LIKE '%" . $search_value . "%' )";
         }
 
         if($tenant_id){ 

@@ -501,7 +501,6 @@ const AmenityDialog = (() => {
                                 <select data-style="material" name="requirebooking" class="data-input form-control" data-field="requires_booking" placeholder="Booking">
                                     <option value="0">No</option>
                                     <option value="1">Yes</option>
-
                                 </select>
                             </div>
                         </div>
@@ -517,8 +516,6 @@ const AmenityDialog = (() => {
                                  <label style="color:#777777;padding-left:6px;">Description</label>
                             </div>
                         </div>
-
-
                     </div>`,
                     ].join("");
                 },

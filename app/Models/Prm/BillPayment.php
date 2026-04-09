@@ -113,6 +113,7 @@ class BillPayment
         $bill_id      = $d->bill_id      ?? null;
         $vendor_id    = $d->vendor_id    ?? null;  
         $status_id    = $d->status_id    ?? null;
+        $status_id    = $d->status_id    ?? null;
         $current_page = $d->current_page ?? 1;
         $per_page     = $d->per_page     ?? 10;
 
@@ -121,14 +122,16 @@ class BillPayment
         $skip_rows = ($current_page - 1) * $per_page;
 
         $str_search = '1=1';
+        $str_moreWhere = '2=2';
 
         if ($vendor_id) {
             $str_moreWhere .= ' AND bp.vendor_id = ' . $vendor_id;
         }
-         if ($search_value) {
+        
+        if ($search_value) {
             $skip_rows    = 0;
             $search_value = escape_like_str($search_value);
-            $str_search   = "(bp.name LIKE '%" . $search_value ."%' OR bp.bill_number LIKE '%" . $search_value ."%')";
+            $str_search   = "(v.name LIKE '%" . $search_value ."%' OR b.bill_number LIKE '%" . $search_value ."%')";
         }
 
         $query = DB::table('bill_payments as bp')

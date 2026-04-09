@@ -445,7 +445,7 @@ const CreateReservationDialog = (() => {
                         query: {
                             from: "tenants",
                             select: ["id", "name", "phone_number"],
-                            where: [['status_id','=',1]],
+                            where: [['status_id','=',2]],
                             orderBy: [['id','DESC']],
                             limit:50,
                             searchFields: {
