@@ -67,8 +67,18 @@ var BillPaymentComponent = (() => {
         },
         {
             title: "Description",
-            className: "align-middle text-end",
+            className: "align-middle",
             data: (data) => `<span class="d-block text-prm-custom fw-semibold">${data.note ?? "_"}</span>`,
+        },
+        {
+            transTitle: "titles.Updated By",
+            className: "align-middle text-nowrap",
+            data: (data, index, tr) => {
+                return `<div class="d-flex flex-column">
+                    <span class="text-capitalize text-start text-prm-custom"><span>${data.update_user ?? ""}</span></span>
+                    <span class="text-muted small">${data.updated_at ?? ""}</span>
+                </div>`;
+            },
         },
         {
             transTitle: "titles.Action",
@@ -140,95 +150,8 @@ var BillPaymentComponent = (() => {
             }, 250);
         });
 
-        // new ExpandableRowConfig(tblBill.id, {
-        //     dontExpandByClickingOn: ["btn_dropdown_vendor_action"],
-        //     onOpen: (container, detail_tr, parent_tr) => {
-        //         const bill_id = parent_tr.dataset.billid;
-        //         if (bill_id && !isNaN(bill_id)) mThis.displayBillDetail(container, bill_id);
-        //     }
-        // });
-
         mThis.initAlready = true;
     };
-
-    // mThis.displayBillDetail = (container, bill_id) => {
-    //     container.innerHTML = `<div class="text-center py-3"><div class="spinner-border text-primary" role="status"></div></div>`;
-
-    //     vsapi.call(`${main_view.base_url}/prm/bill-payment/form-options`, { bill_id })
-    //         .then(res => {
-    //             if (res.status_code !== 200) {
-    //                 container.innerHTML = `<div class="alert alert-danger m-3">Failed to load bill details</div>`;
-    //                 return;
-    //             }
-    //             mThis.renderBillDetail(container, res.data || {});
-    //         })
-    //         .catch(() => {
-    //             container.innerHTML = `<div class="alert alert-danger m-3">Network error loading bill details</div>`;
-    //         });
-    // };
-
-    // mThis.renderBillDetail = (container, data) => {
-    //     const bill     = data.bill || {};
-    //     const payments = data.payments || [];
-    //     const currency = "$";
-    //     const fmt = n => Number(n || 0).toLocaleString("en-US", { minimumFractionDigits: 2 });
-
-    //     const paymentsHtml = payments.map(p => `
-    //         <tr style="font-size:0.82rem;">
-    //             <td class="text-center text-nowrap text-muted">${p.payment_date ?? "—"}</td>
-    //             <td class="text-capitalize">${p.payer ?? "—"}</td>
-    //             <td class="text-center text-muted text-capitalize">${p.note ?? "—"}</td>
-    //             <td class="text-center">
-    //                 <span class="badge rounded-pill bg-light text-dark border text-capitalize" style="font-size:0.75rem;">${p.payment_method ?? "—"}</span>
-    //             </td>
-    //             <td class="text-center text-muted">${p.currency_code ?? "USD"}</td>
-    //             <td class="text-end fw-semibold pe-3" style="color:#059669;">${currency}${fmt(p.amount)}</td>
-    //         </tr>
-    //     `).join("");
-
-    //     container.innerHTML = `
-    //     <div style="background:#f8fafc; border-radius:10px; padding:10px 14px; font-size:0.875rem;">
-
-    //         <!-- Payments Table only -->
-    //         <div class="table-responsive" style="border-radius:8px; border:1px solid #e2e8f0; overflow:hidden;">
-    //             <table class="table table-sm mb-0" style="font-size:0.82rem;">
-    //                 <thead style="background:#f1f5f9; border-bottom:1px solid #e2e8f0;">
-    //                     <tr>
-    //                         <th class="text-center text-muted fw-semibold py-2" style="width:110px; font-size:0.72rem;">Date</th>
-    //                         <th class="text-muted fw-semibold py-2" style="font-size:0.72rem;">Payer</th>
-    //                         <th class="text-center text-muted fw-semibold py-2" style="font-size:0.72rem;">Remark</th>
-    //                         <th class="text-center text-muted fw-semibold py-2" style="width:100px; font-size:0.72rem;">Method</th>
-    //                         <th class="text-center text-muted fw-semibold py-2" style="width:70px; font-size:0.72rem;">Currency</th>
-    //                         <th class="text-end text-muted fw-semibold py-2 pe-3" style="width:110px; font-size:0.72rem;">Paid</th>
-    //                     </tr>
-    //                 </thead>
-    //                 <tbody>
-    //                     ${paymentsHtml || `
-    //                     <tr>
-    //                         <td colspan="6" class="text-center py-3 text-muted" style="font-size:0.82rem;">
-    //                             <i class="fa-regular fa-folder-open me-1"></i> No payments recorded
-    //                         </td>
-    //                     </tr>`}
-    //                 </tbody>
-    //             </table>
-    //         </div>
-
-    //         <!-- Summary Footer -->
-    //         <div class="d-flex flex-wrap justify-content-end gap-2 mt-2">
-    //             ${[
-    //                 { label: "Total",     val: bill.total_amount, color: "#3b82f6" },
-    //                 { label: "Paid",      val: bill.paid_amount,  color: "#059669" },
-    //                 { label: "Remaining", val: bill.balance,      color: "#dc2626" },
-    //             ].map(s => `
-    //                 <div style="background:#fff; border:1px solid #e2e8f0; border-radius:8px; padding:6px 14px; text-align:right; min-width:120px;">
-    //                     <div class="text-muted" style="font-size:0.68rem; text-transform:uppercase; letter-spacing:0.05em;">${s.label}</div>
-    //                     <div class="fw-bold" style="font-size:0.95rem; color:${s.color};">${currency}${fmt(s.val)}</div>
-    //                 </div>
-    //             `).join("")}
-    //         </div>
-
-    //     </div>`;
-    // };
 
     mThis.getFilterData = () => {
         let p = {
@@ -375,7 +298,6 @@ var BillPaymentComponent = (() => {
         });
     };
     
-
     mThis.prepareFormOptions = (onFinish) => {
         vsapi.call(`${main_view.base_url}/prm/bill/form-options`, null, null, null)
             .then((res) => {
@@ -547,7 +469,7 @@ const BillPaymentDialog = (() => {
                 if (me.controls.total_amount) { me.controls.total_amount.value = Number(bill.total_amount || 0).toFixed(2); me.controls.total_amount.readOnly = true; }
                 if (me.controls.paid_amount)  { me.controls.paid_amount.value  = Number(bill.paid_amount  || 0).toFixed(2); me.controls.paid_amount.readOnly  = true; }
                 if (me.controls.balance)      { me.controls.balance.value      = Number(bill.balance      || 0).toFixed(2); me.controls.balance.readOnly      = true; }
-                if (me.controls.due_date)     {me.controls.due_date.value     = bill.due_date || '';                       me.controls.due_date.readOnly     = true; }
+                if (me.controls.due_date)     {me.controls.due_date.value      = bill.due_date || '';                       me.controls.due_date.readOnly     = true; }
 
                 if (me.controls.payment_date) {
                     me.controls.payment_date.value = new Date().toISOString().split('T')[0];
@@ -570,34 +492,9 @@ const BillPaymentDialog = (() => {
                     amountInput.addEventListener('input', me._amountHandler);
                 }
 
-                const dlgRate    = me.divModal.querySelector("#_dlg_conv_rate");
-                const dlgResult  = me.divModal.querySelector("#_dlg_conv_result");
-                const dlgConvRow = me.divModal.querySelector("#_dlg_conv_row");
-                const currSelect = me.controls.currency_code;
-
-                if (dlgRate && BillPaymentComponent?.elExchangeRate?.value) {
-                    dlgRate.value = BillPaymentComponent.elExchangeRate.value;
+                if (me.controls.note) {
+                    me.controls.note.value = data?.bill_details?.note || '';
                 }
-
-                const updateDlgConv = () => {
-                    const rate   = parseFloat(dlgRate?.value) || 4100;
-                    const paying = parseFloat(amountInput?.value) || 0;
-                    if (dlgResult) dlgResult.textContent = `៛ ${Math.round(paying * rate).toLocaleString("en-US")}`;
-                };
-
-                const toggleConvRow = () => {
-                    const isKHR = currSelect?.value === "KHR";
-                    if (dlgConvRow) dlgConvRow.style.display = isKHR ? "block" : "none";
-                    if (isKHR) updateDlgConv();
-                };
-
-                if (currSelect)  currSelect.addEventListener("change", toggleConvRow);
-                if (dlgRate)     dlgRate.addEventListener("input", updateDlgConv);
-                if (amountInput) amountInput.addEventListener("input", () => {
-                    if (currSelect?.value === "KHR") updateDlgConv();
-                });
-
-                toggleConvRow();
             },
 
             buttons: [

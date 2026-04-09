@@ -122,9 +122,13 @@ class BillPayment
 
         $str_search = '1=1';
 
-        if ($search_value) {
+        if ($vendor_id) {
+            $str_moreWhere .= ' AND bp.vendor_id = ' . $vendor_id;
+        }
+         if ($search_value) {
+            $skip_rows    = 0;
             $search_value = escape_like_str($search_value);
-            $str_search = "(bp.ref_no LIKE '%" . $search_value . "%' OR bp.note LIKE '%" . $search_value . "%' OR b.bill_number LIKE '%" . $search_value . "%' OR v.name LIKE '%" . $search_value . "%')";
+            $str_search   = "(bp.name LIKE '%" . $search_value ."%' OR bp.bill_number LIKE '%" . $search_value ."%')";
         }
 
         $query = DB::table('bill_payments as bp')
@@ -158,8 +162,7 @@ class BillPayment
                 ->leftJoin('bill_statuses as s', 's.id', 'b.status_id')
                 ->leftJoin('expense_categories as ex', 'ex.id', 'b.expense_type_id')
                 ->where('b.id', $bill_id)
-                ->selectRaw('
-                    b.id, b.bill_number,b.total_amount,b.paid_amount,b.balance,b.status_id, s.name as status,v.name as vendor_name,v.phone_number,b.expense_type_id, ex.name as expense_type_name,b.currency_code')
+                ->selectRaw('b.id, b.bill_number,b.total_amount,b.paid_amount,b.balance,b.status_id, s.name as status,v.name as vendor_name,v.phone_number,b.expense_type_id, ex.name as expense_type_name,b.currency_code')
                 ->first();
 
             $payments = DB::table('bill_payments')
