@@ -309,11 +309,10 @@ var PurchaseOrdersComponent = (() => {
     };
 
     mThis.authorizedPurchaseOrder = (id, btn) => {
-        if (btn.dataset.authorized == 1) {
+        if (btn.dataset.authorized == 2) {
             cv_interact.warning('You already authorized this Purchase order.');
             return;
         }
-
         cv_interact.confirm('Are you sure you want to authorize this purchase order?', {
             title: 'Authorize Purchase order',
             context: 'update',
@@ -696,8 +695,6 @@ var PurchaseOrdersComponent = (() => {
                             <td class="text-nowrap">${VSMoney.formatAmount(item.total_price || 0, 'USD')}</td>
                         </tr>`;
                     });
-                } else {
-                    tBody = `<tr><td colspan="5" class="text-center p-3 fw-semibold">មិនទាន់មានទំនិញ!</td></tr>`;
                 }
 
                 html = `<table class="table">${tHead}<tbody>${tBody}</tbody></table>`;

@@ -131,9 +131,7 @@ class BillPayment
             ->leftJoin('bills as b', 'b.id', 'bp.bill_id')
             ->leftJoin('vendors as v', 'v.id', 'b.vendor_id')
             ->leftJoin('expense_categories as ex', 'ex.id', 'b.expense_type_id')
-            ->whereRaw($str_search)
-            // ->where('b.status_id')
-            ;
+            ->whereRaw($str_search);
 
         if ($bill_id) {
             $query->where('bp.bill_id', $bill_id);
@@ -161,7 +159,7 @@ class BillPayment
                 ->leftJoin('expense_categories as ex', 'ex.id', 'b.expense_type_id')
                 ->where('b.id', $bill_id)
                 ->selectRaw('
-                    b.id, b.bill_number,b.total_amount,b.paid_amount,b.balance,b.status_id, s.name as status,v.name as vendor_name, v.phone_number,b.expense_type_id, ex.name as expense_type_name,b.currency_code')
+                    b.id, b.bill_number,b.total_amount,b.paid_amount,b.balance,b.status_id, s.name as status,v.name as vendor_name,v.phone_number,b.expense_type_id, ex.name as expense_type_name,b.currency_code')
                 ->first();
 
             $payments = DB::table('bill_payments')
