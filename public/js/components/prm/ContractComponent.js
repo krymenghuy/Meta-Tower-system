@@ -946,7 +946,10 @@ const ContractDialog = (() => {
                 api: {
                     endpoint: [main_view.base_url, "/prm/contract/form-options",].join(""),
                     params: (op) => {
-                        return { id: op.id };
+                        return {
+                            id: op.id,
+                            space_id: op.space_id ?? null
+                        };
                     },
                 },
             },
@@ -958,13 +961,16 @@ const ContractDialog = (() => {
                 if (me.searchTenant && typeof me.searchTenant.reset === "function") {
                     me.searchTenant.reset();
                 }
-                // Preselect tenant when coming from TenantComponent (create-from-tenant)
-                if (!me.dataOptions.id && me.dataOptions.tenant_id) {
-                    me.tenant_id = me.dataOptions.tenant_id;
+                // Preselect tenant when coming from TenantComponent or from booked unit phone-match.
+                const prefillTenantId = !me.dataOptions.id
+                    ? (me.dataOptions.tenant_id ?? data?.prefill_tenant_id ?? null)
+                    : null;
+                if (prefillTenantId) {
+                    me.tenant_id = prefillTenantId;
                     vsapi
                         .call(
                             [main_view.base_url, "/prm/tenant/details"].join(""),
-                            { id: me.dataOptions.tenant_id },
+                            { id: prefillTenantId },
                             false,
                             null,
                         )
@@ -974,7 +980,11 @@ const ContractDialog = (() => {
                                 const tenantInput =
                                     me.divModal.querySelector('input[name="tenant"]');
                                 if (tenantInput) {
-                                    tenantInput.value = t.name || "";
+                                    const tenantCode = t.code || "";
+                                    tenantInput.value = tenantCode
+                                        ? `${t.name || ""} (${tenantCode})`
+                                        : (t.name || "");
+                                    tenantInput.dataset.tenantId = prefillTenantId;
                                 }
                                 if (me.controls.legal_name) {
                                     me.controls.legal_name.value = t.legal_name || "";
@@ -1020,7 +1030,11 @@ const ContractDialog = (() => {
                     unitSelect.onchange = (e) => {
                         applyUnitData(e.target.value);
                     };
-                    if (unitSelect.value) {
+                    const defaultSpaceId = me.dataOptions?.space_id ?? data?.contract_details?.space_id ?? '';
+                    if (defaultSpaceId) {
+                        unitSelect.value = defaultSpaceId;
+                        applyUnitData(defaultSpaceId);
+                    } else if (unitSelect.value) {
                         applyUnitData(unitSelect.value);
                     } else {
                         toggleUnitInputs(false);
