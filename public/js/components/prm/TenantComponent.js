@@ -1637,6 +1637,8 @@ const CreateTenantDialog = (() => {
                             op.photo = me.tenantImageBox
                                 ? me.tenantImageBox.getImage()
                                 : "";
+                                console.log(4444,op);
+                                
                             vsapi
                                 .call(
                                     [

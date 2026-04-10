@@ -19,7 +19,7 @@ var InvoiceComponent = (() => {
         { transTitle: "", className: "align-middle text-capitalize" },
         {
             transTitle: "titles.Invoice No",
-            className: "align-middle  text-start",
+            className: "align-middle  text-start text-nowrap",
             data: (data) => {
                 const code = data.code ? `<span class="text-prm-custom">${data.code}</span>`: `<span class="text-muted fst-italic">N/A</span>`;
                 const date = data.invoice_date ? `<span class="text-danger-emphasis small">${data.invoice_date}</span>`: `<span class="text-muted fst-italic small">N/A</span>`;
@@ -42,6 +42,20 @@ var InvoiceComponent = (() => {
                     <span class="text-prm-custom d-block">
                         ${data.tenant_name ?? ''}
                     </span>
+                    <span class="text-danger-emphasis small">
+                        ${data.tenant_phone ?? ""}
+                    </span>
+                </div>
+            </div>`;
+            }
+        },
+        {
+            transTitle: "titles.Space",
+            className: "align-middle text-nowrap",
+            data: (data) => {
+                return ` <div class="d-flex text-warning align-items-center gap-2">
+                <div>
+
                     <span class="d-block text-warning">
                         ${data.space_code ?? ""}
                     </span>
@@ -51,7 +65,7 @@ var InvoiceComponent = (() => {
         },
         {
             transTitle: "titles.Amount",
-            className: "align-middle text-primary",
+            className: "align-middle text-primary text-nowrap",
             data: data => {
                 const amt = data.amount
                     ? Number(data.amount).toLocaleString("en-US", {
@@ -63,7 +77,7 @@ var InvoiceComponent = (() => {
         },
         {
             transTitle: "titles.Paid",
-            className: "align-middle text-success",
+            className: "align-middle text-success text-nowrap",
             data: data => {
                 const amt = data.paid_amount
                     ? Number(data.paid_amount).toLocaleString("en-US", {
@@ -75,7 +89,7 @@ var InvoiceComponent = (() => {
         },
         {
             transTitle: "titles.Balance",
-            className: "align-middle text-danger",
+            className: "align-middle text-danger text-nowrap",
             data: data => {
                 const amt = data.balance
                     ? Number(data.balance).toLocaleString("en-US", {
@@ -121,7 +135,7 @@ var InvoiceComponent = (() => {
         },
         {
             transTitle: "titles.Remark",
-            className: "align-middle",
+            className: "align-middle text-nowrap text-center",
             data: data => {
                 return `
                     <div class="text-primary-custom" style="width:150px;">
@@ -132,7 +146,7 @@ var InvoiceComponent = (() => {
         },
         {
             transTitle: "titles.Status",
-            className: "align-middle text-center",
+            className: "align-middle text-center text-nowrap",
             data: data => {
                 const statusId = Number(data.payment_status_id || 0);
                 let cls = "bg-secondary";
@@ -148,7 +162,7 @@ var InvoiceComponent = (() => {
         },
         {
             transTitle: "titles.Updated By",
-            className: "align-middle",
+            className: "align-middle text-nowrap",
             data: data => `
                 <div class="d-flex flex-column">
                     <span class="text-capitalize text-yp-custom fw-semibold">${data.update_user ||
@@ -158,7 +172,7 @@ var InvoiceComponent = (() => {
         },
         {
             transTitle: "titles.Action",
-            className: "col_action align-middle text-center",
+            className: "col_action align-middle text-center text-nowrap",
             data: data => `
                 <div class="d-flex justify-content-center">
                     <a href="javascript:void(0)" class="btn--Options btn_leave_action"
@@ -180,7 +194,7 @@ var InvoiceComponent = (() => {
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
             tableClass:
-                "table table--white rounded-2 overflow-hidden header-uppercase",
+                "table table--white rounded-2  header-uppercase",
             rowCreated: (data, index, tr) => {
                 tr.dataset.statusid = data.payment_status_id || 0;
                 tr.id = `invoice_id_${data.id}`;
@@ -200,17 +214,14 @@ var InvoiceComponent = (() => {
             });
         };
 
-        const pr_tbl = mThis.InvoiceListView.getListContainer();
-        const sh_parent = pr_tbl.parentElement;
-        sh_parent.style.height = `${window.innerHeight - 200}px`;
+        mThis.listContainer = mThis.InvoiceListView.getListContainer();
+        const sh_parent = mThis.listContainer.parentElement;
+        sh_parent.style.maxHeight = (window.innerHeight - 220) + "px";
         sh_parent.classList.add("overflow-y-auto");
-        window.addEventListener(
-            "resize",
-            () => {
-                sh_parent.style.height = `${window.innerHeight - 200}px`;
-            },
-            { passive: true }
-        );
+        // sh_parent.classList.add("overflow-x-hidden");
+        window.onresize = () => {
+            sh_parent.style.maxHeight = (window.innerHeight - 220) + "px";
+        };
 
         mThis.tblInvoice = mThis.InvoiceListView.getTable();
         mThis.initDropdownMenus(mThis.tblInvoice);
@@ -565,64 +576,142 @@ const InvoiceDialog = (() => {
                 backdrop: "static",
                 keyboard: true,
                 createContent: () => `
-                <div class="container-fluid">
-                    <div class="row g-3">
-                        <div class="col-md-3">
-                            <div class="material-input outlined">
-                                <input name="tenant" class="data-input form-control" data-field="tenant_id" placeholder=" Tenant " autocomplete="off" data-style="material">
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="material-input outlined">
-                                <select data-style="material" name="space" class="data-input form-control" data-field="space_id" required placeholder="Space">
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="material-input outlined">
-                                <input style="cursor: not-allowed;" name="phone_number" class="data-input form-control" readonly>
-                                <label style="padding-left:6px;color:#777;">Phone Number</label>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="material-input outlined">
-                                <input name="email" class="data-input form-control">
-                                <label style="padding-left:6px;color:#777;">Email</label>
-                            </div>
-                        </div>
-                    </div>
+                        <div class="container-fluid">
+                            <div id="_invoice_form_container" class="bg-white rounded-3 shadow-sm">
 
-                    <div class="d-flex flex-wrap gap-3 align-items-end justify-content-between">
+                                <div class="d-flex justify-content-between align-items-start">
 
-                        <!-- Due Date & Time -->
-                        <div class="d-flex gap-2">
-                            <div class="material-input outlined" style="min-width: 180px;">
-                                <input type="text" data-type="date" name="due_date" class="form-control data-input" required placeholder="dd-mm-yy">
-                                <label class="form-label">Due Date <span class="text-danger">*</span></label>
-                            </div>
+                                    <!-- LEFT: Tenant Info -->
+                                    <div>
+                                        <div class="field-row">
+                                            <label class="field-label fw-semibold">Tenant Name <span class="text-danger">*</span></label>
+                                            <span class="field-sep">:</span>
+                                            <input name="tenant" class="data-input form-control field-input" data-field="tenant_id" placeholder=" " autocomplete="off">
+                                        </div>
+                                        <div class="field-row">
+                                            <label class="field-label fw-semibold">Phone Number</label>
+                                            <span class="field-sep">:</span>
+                                            <input name="phone_number" class="data-input form-control field-input bg-light" readonly placeholder=" ">
+                                        </div>
+                                        <div class="field-row">
+                                            <label class="field-label fw-semibold">Email Address</label>
+                                            <span class="field-sep">:</span>
+                                            <input name="email" class="data-input form-control field-input" placeholder=" ">
+                                        </div>
+                                    </div>
 
-                            <div class="material-input outlined" style="min-width: 140px;">
-                                <input type="time" class="form-control data-input" data-field="start_time" placeholder=" " />
-                                <label style="color:#777777;padding-left:6px;">Start Time</label>
+                                    <!-- RIGHT: Space / Date / Time -->
+                                    <div>
+                                        <div class="field-row">
+                                            <label class="field-label fw-semibold">Space / Room</label>
+                                            <span class="field-sep">:</span>
+                                            <select name="space" class="data-input field-input" data-field="space_id" required>
+                                            </select>
+                                        </div>
+                                        <div class="field-row">
+                                            <label class="field-label fw-semibold">Due Date <span class="text-danger">*</span></label>
+                                            <span class="field-sep">:</span>
+                                            <input type="text" data-type="date" name="due_date" class="form-control data-input field-input" required placeholder=" ">
+                                        </div>
+                                        <div class="field-row">
+                                            <label class="field-label fw-semibold">Start Time</label>
+                                            <span class="field-sep">:</span>
+                                            <input type="time" name="start_time" class="form-control data-input field-input" data-field="start_time" placeholder=" ">
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <!-- Quick Add Buttons -->
+                                <div class="row mb-4">
+                                    <div class="col-12 ">
+                                        <label class="form-label small text-muted mb-2 text-uppercase fw-bold text-center">Quick Add Items</label>
+                                        <div class="d-flex flex-wrap gap-2 justify-content-center">
+                                            <button name="btnRent" class="btn btn-outline-primary px-4 rounded-pill">
+                                                <i class="fa fa-home me-1"></i> Rent
+                                            </button>
+                                            <button name="btnService" class="btn btn-outline-warning px-4 rounded-pill">
+                                                <i class="fa fa-concierge-bell me-1"></i> Service
+                                            </button>
+                                            <button name="btnElectric" class="btn btn-outline-success px-4 rounded-pill">
+                                                <i class="fa fa-bolt me-1"></i> Electric Bill
+                                            </button>
+                                            <button name="btnWater" class="btn btn-outline-secondary px-4 rounded-pill">
+                                                <i class="fa fa-tint me-1"></i> Water Bill
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div name="divItemsView" ></div>
+                                <div class="mt-4 d-flex justify-content-end">
+                                    <div name="div_invoice_summary" class="w-100" style="max-width: 400px;"></div>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Buttons -->
-                        <div class="d-flex flex-wrap p-3">
-                            <div class="d-flex gap-2">
-                                <button name="btnRent" class="btn btn-outline-primary">Rent</button>
-                                <button name="btnService" class="btn btn-outline-warning">Service</button>
-                                <button name="btnElectric" class="btn btn-outline-success">Electric Bill</button>
-                                <button name="btnWater" class="btn btn-outline-secondary">Water Bill</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div name="divItemsView"></div>
-                    <div class="mt-4 d-flex justify-content-end">
-                        <div name="div_invoice_summary"></div>
-                    </div>
-                </div>
-            `,
+                        <style>
+                        .field-row {
+                            display: flex;
+                            align-items: center;
+                            margin-bottom: 12px;
+                            --field-width: 260px;
+                        }
+                        .field-label {
+                            width: 110px;
+                            font-size: 0.875rem;
+                            color: #222;
+                            flex-shrink: 0;
+                        }
+                        .field-sep {
+                            margin: 0 10px;
+                            font-weight: 600;
+                            color: #444;
+                            flex-shrink: 0;
+                        }
+                        .field-row .field-input {
+                            width: var(--field-width);
+                            border-radius: 6px;
+                            border: 1px solid #d0d0d0;
+                            font-size: 0.875rem;
+                            padding: 6px 10px;
+                            background-color: #fff;
+                            box-sizing: border-box;
+                        }
+                        .field-row .field-input:focus {
+                            border-color: #86b7fe;
+                            box-shadow: 0 0 0 3px rgba(13,110,253,0.15);
+                            outline: none;
+                        }
+                        .field-row .choices {
+                            width: var(--field-width) !important;
+                            flex-shrink: 0;
+                        }
+                        .field-row .choices .choices__inner {
+                            width: 100% !important;
+                            min-height: unset !important;
+                            border-radius: 6px !important;
+                            border: 1px solid #d0d0d0 !important;
+                            font-size: 0.875rem !important;
+                            padding: 6px 10px !important;
+                            background-color: #fff !important;
+                            box-sizing: border-box;
+                        }
+                        .field-row .choices.is-focused .choices__inner,
+                        .field-row .choices .choices__inner:focus-within {
+                            border-color: #86b7fe !important;
+                            box-shadow: 0 0 0 3px rgba(13,110,253,0.15) !important;
+                            outline: none !important;
+                        }
+                        .field-row .choices[data-type*="select-one"] .choices__button {
+                            display: none !important;
+                        }
+                        .field-row .choices .choices__list--dropdown {
+                            width: var(--field-width) !important;
+                            z-index: 9999;
+                        }
+                        </style>
+                    `,
 
                 contentCreated: me => {
                     me.controls = me.controls || {};
@@ -1581,6 +1670,7 @@ const InvoiceDialog = (() => {
                         prefetch: true,
                         query: {
                             from: "tenants",
+                            where: [['status_id','=',2]],
                             select: [
                                 "id",
                                 "name",
@@ -1621,7 +1711,7 @@ const InvoiceDialog = (() => {
                                         "space_id",
                                         "space_code",
                                         "",
-                                        "-- Select Room / Space --",
+                                        "-- Select Space --",
                                         ""
                                     );
                                 });
@@ -1855,9 +1945,9 @@ const ReceiveDialog = (() => {
                         <!-- Cash -->
                         <div>
                             <div class="d-flex align-items-center gap-2 mb-2">
-                                <span class="payment-badge" style="background:#EAF3DE;color:#27500A;">Cash</span>
+                                <span class="payment-badge" style="color:#27500A;">Cash</span>
                                 <div style="flex:1;height:1px;background:#dee2e6;"></div>
-                                <span style="font-size:11px;color:#6c757d;">Entered: <strong id="c_e" style="color:#212529;">—</strong></span>
+                                <span style="font-size:11px;color:#27500A;">Entered: <strong id="c_e" style="color:#212529;">—</strong></span>
                             </div>
                             <div style="display:flex;flex-direction:row;gap:8px;flex-wrap:wrap;margin-bottom: 0.5rem;">
                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
@@ -1871,9 +1961,9 @@ const ReceiveDialog = (() => {
                         <!-- Bank Transfer -->
                         <div>
                             <div class="d-flex align-items-center gap-2 mb-2">
-                                <span class="payment-badge" style="background:#E6F1FB;color:#0C447C;">Bank Transfer</span>
+                                <span class="payment-badge" style=";color:#0C447C;">Bank Transfer</span>
                                 <div style="flex:1;height:1px;background:#dee2e6;"></div>
-                                <span style="font-size:11px;color:#6c757d;">Entered: <strong id="b_e" style="color:#212529;">—</strong></span>
+                                <span style="font-size:11px;color:#0C447C;">Entered: <strong id="b_e" style="color:#212529;">—</strong></span>
                             </div>
                             <div style="display:flex;flex-direction:row;gap:8px;flex-wrap:wrap;margin-bottom: 0.5rem;">
                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
@@ -1896,9 +1986,9 @@ const ReceiveDialog = (() => {
                         <!-- Card -->
                         <div>
                             <div class="d-flex align-items-center gap-2 mb-2">
-                                <span class="payment-badge" style="background:#EEEDFE;color:#3C3489;">Card</span>
+                                <span class="payment-badge" style="color:#3C3489;">Card</span>
                                 <div style="flex:1;height:1px;background:#dee2e6;"></div>
-                                <span style="font-size:11px;color:#6c757d;">Entered: <strong id="ca_e" style="color:#212529;">—</strong></span>
+                                <span style="font-size:11px;color:#3C3489;">Entered: <strong id="ca_e" style="color:#212529;">—</strong></span>
                             </div>
                             <div style="display:flex;flex-direction:row;gap:8px;flex-wrap:wrap;margin-bottom: 0.5rem;">
                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
@@ -1925,9 +2015,9 @@ const ReceiveDialog = (() => {
                         <!-- Cheque -->
                         <div>
                             <div class="d-flex align-items-center gap-2 mb-2">
-                                <span class="payment-badge" style="background:#FAEEDA;color:#633806;">Cheque</span>
+                                <span class="payment-badge" style="color:#633806;">Cheque</span>
                                 <div style="flex:1;height:1px;background:#dee2e6;"></div>
-                                <span style="font-size:11px;color:#6c757d;">Entered: <strong id="ch_e" style="color:#212529;">—</strong></span>
+                                <span style="font-size:11px;color:#633806;">Entered: <strong id="ch_e" style="color:#212529;">—</strong></span>
                             </div>
                             <div style="display:flex;flex-direction:row;gap:8px;flex-wrap:wrap;margin-bottom: 0.5rem;">
                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
@@ -1974,6 +2064,17 @@ const ReceiveDialog = (() => {
 
             const totalPaid = cash + bank + card + cheque;
 
+            const remarkParts = [];
+                if (cash > 0) remarkParts.push(`Paid $${cash.toFixed(2)} via Cash`);
+                if (bank > 0) remarkParts.push(`Paid $${bank.toFixed(2)} via Bank Transfer`);
+                if (card > 0) remarkParts.push(`Paid $${card.toFixed(2)} via Card`);
+                if (cheque > 0) remarkParts.push(`Paid $${cheque.toFixed(2)} via Cheque`);
+
+            const remarkEl = me.divModal.querySelector('[name="remarks"]');
+                if (remarkEl) {
+                    remarkEl.value = remarkParts.join(', ');
+                    remarkEl.dispatchEvent(new Event('change'));
+                }
             let due = 0;
             const dueEl = me.divModal.querySelector('#f_due');
             if (dueEl) {
