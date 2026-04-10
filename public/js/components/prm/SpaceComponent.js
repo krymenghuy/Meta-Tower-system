@@ -325,37 +325,38 @@ var SpaceComponent = new (function () {
             cssClass: "bg-white shadow",
             //menuItemClass:"",
             menus: [
+                
                 {
-                    html: '<span class="ps-2  " vslang="titles.Create Booking">Create Booking</span>',
-                    icon: `<i class="fa-regular fa-calendar-plus fs-5 text-info-emphasis"></i>`,
-                    cssClass: "border-bottom pb-2",
-                    name: "create_booking"
-                },
-                {
-                    html: '<span class="ps-2  " vslang="titles.Create Contract">Create Contract</span>',
+                    html: '<span class="ps-2" vslang="titles.Contract">Contract</span>',
                     icon: `<i class="fa-regular fa-file-lines fs-5 text-primary"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "create_contract"
                 },
-                {
-                    html: '<span class="ps-2  " vslang="titles.Set Maintenance">Set Maintenance</span>',
-                    icon: `<i class="fa-solid fa-screwdriver-wrench fs-5 text-warning-emphasis"></i>`,
-                    cssClass: "border-bottom pb-2",
-                    name: "set_maintenance"
-                },
-                  {
-                    html: '<span class="ps-2  " vslang="titles.Finish Maintenance">Finish Maintenance</span>',
-                    icon: `<i class="fa-solid fa-hourglass-end fs-5 text-success-emphasis"></i>`,
-                    cssClass: "border-bottom pb-2",
-                    name: "finish_maintenance"
-                },
-                {
-
-                    html: '<span class="ps-2 " vslang="titles.Modify Space"></span>',
+                 {
+                    html: '<span class="ps-2 " vslang="titles.Modify">Modify</span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "edit_space"
                 },
+                {
+                    html: '<span class="ps-2" vslang="titles.Booking">Booking</span>',
+                    icon: `<i class="fa-solid fa-bold fs-5 text-info-emphasis"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "create_booking"
+                },
+                {
+                    html: '<span class="ps-2" vslang="titles.Maintenance">Maintenance</span>',
+                    icon: `<i class="fa-solid fa-screwdriver-wrench fs-5 text-warning-emphasis"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "set_maintenance"
+                },
+                {
+                    html: '<span class="ps-2  " vslang="titles.Finish">Finish</span>',
+                    icon: `<i class="fa-solid fa-clipboard-check fs-5 text-success"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "finish_maintenance"
+                },
+               
             ],
             // adjustPosition: {
             //     top: -200,
@@ -365,14 +366,16 @@ var SpaceComponent = new (function () {
             onShow: (me, container) => {
                 const menu = me.getActiveMenus(container);
 
-                const status_id = Number(container.dataset.statusid);
-                const maintenance_status_id = Number(container.dataset.maintenanceStatusid);
-                const isMaintenance = maintenance_status_id === 1;
-                menu.create_booking.style.display = (!isMaintenance && status_id === 1) ? 'block' : 'none';
-                menu.create_contract.style.display = (!isMaintenance && (status_id === 1 || status_id === 2)) ? 'block' : 'none';
-                menu.edit_space.style.display = (!isMaintenance && status_id === 1) ? 'block' : 'none';
+                const status_id = container.dataset.statusid;
+                const maintenance_status_id = container.dataset.maintenancestatusid;
+                
+                const isMaintenance = maintenance_status_id == 1;
+
+                menu.create_booking.style.display =  status_id >= 2 ? 'none' : 'block';
+                menu.create_contract.style.display = status_id >= 2 ? 'none' : 'block';
+                menu.edit_space.style.display = status_id == 3 ? 'none' : 'block';
                 menu.finish_maintenance.style.display = isMaintenance ? 'block' : 'none';
-                // menu.set_maintenance.style.display = (!isMaintenance && status_id === 3) ? 'block' : 'none';
+                menu.set_maintenance.style.display = isMaintenance ? 'none' : 'block';
             },
 
             onClick: (menulink, id, name) => {
@@ -484,7 +487,7 @@ var SpaceComponent = new (function () {
 
                                 </div>
                                 <span>
-                                    <a href="javascript:void(0)" class="btn_space_action" data-id="${d.id}" data-buildingid="${d.building_id}" data-floorid="${d.floor_id}" data-statusid="${d.status_id}" data-maintenance-statusid="${d.maintenance_status_id}" aria-haspopup="true" aria-expanded="false">
+                                    <a href="javascript:void(0)" class="btn_space_action" data-id="${d.id}" data-buildingid="${d.building_id}" data-floorid="${d.floor_id}" data-statusid="${d.status_id}" data-maintenanceStatusId="${d.maintenance_status_id}" aria-haspopup="true" aria-expanded="false">
                                         <i class="fa-solid fa-ellipsis-vertical text-primary-custom fs-5"></i>
                                     </a>
                                 </span>
@@ -856,6 +859,7 @@ const BuildingSpaceDialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
+                    me.controls.price_type.value = data.space_details.price_type;
                 },
 
                 buttons: [
@@ -872,10 +876,12 @@ const BuildingSpaceDialog = (() => {
                         click: (me, btn) => {
                             const op = me.getData();
                             op.id = me.dataOptions.id;
-                            if (!op.price_type) {
-                                cv_interact.error("Please select Price Type");
-                                return;
-                            }
+                            console.log(220,op);
+                            
+                            // if (!op.price_type) {
+                            //     cv_interact.error("Please select Price Type");
+                            //     return;
+                            // }
                             vsapi.call([main_view.base_url, "/prm/building-space/save",].join(""), op, btn, null).then((res) => {
                                 if (res.status_code === 200) {
                                     me.hide(true, op);

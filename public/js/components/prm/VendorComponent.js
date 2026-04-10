@@ -99,7 +99,7 @@ var VendorComponent = (() => {
             className: "align-middle text-nowrap",
             data: (data) => {
                 return `<span class="d-block text-prm-custom"> ${data.contact_person ?? ""}</span>
-                         <span class="d-block text-prm-custom"> ${data.contact_phone ?? ""}</span>`;
+                         <span class="d-block text-muted small"> ${data.contact_phone ?? ""}</span>`;
             }
         },
         {
@@ -257,18 +257,23 @@ var VendorComponent = (() => {
                     name: "change_vendor_status"
                 },
                 {
-                    html: '<span class="ps-2 " vslang="titles.Modify Vendor"></span>',
+                    html: '<span class="ps-2 " vslang="titles.Modify"></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "modify_vendor"
                 },
                 {
-                    html: '<span class="ps-2  " vslang="titles.Delete Vendor"></span>',
+                    html: '<span class="ps-2  " vslang="titles.Delete"></span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "delete_vendor"
                 },
             ],
+            onShow:(me,container)=>{
+                const menu = me.getActiveMenus(container);
+                menu.change_vendor_status.style.display =  'none';
+                menu.create_expense.style.display =  'none';
+            },
 
             onClick: (menuLink, id, name) => {
                 switch (name) {

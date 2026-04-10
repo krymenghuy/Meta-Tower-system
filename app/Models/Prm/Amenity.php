@@ -27,7 +27,6 @@ class Amenity extends VSModel
         $branch_id = $ss->branch_id;
         $v_rule = [
             'name' => '1|string|0-100|text= Amenity name must be provided',
-            
             'building_id' => '1|number|exists=buildings.id',
             'floor_id' => '1|number|exists=floors.id',
             'category_id' => '1|number|exists=amenity_categories.id',
