@@ -208,7 +208,7 @@ class Amenity extends VSModel
         $count = $clone_query->count('a.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
         foreach($rows as $row){
-            $row = setOfficialDates($row,['updated_at'],[],[]);
+            $row = setOfficialDates($row,[],['updated_at'],[]);
         }
         return new LengthAwarePaginator($rows,$count,$per_page,$current_page);
     }
@@ -237,10 +237,19 @@ class Amenity extends VSModel
         ];
     }
 
-    public function deleteAmenity($id = null){
+   
+    public function deleteAmenity($id = null)
+    {
         $id = $id ?? $this->id;
-        $deleted = DB::table('amenities')->where('id',$id)->delete();
-        return $deleted ? DV::depends($deleted,['action'=>'deleted']) : DV::error('Delete failed.');
+        $exists = DB::table('reservations')->where('amenity_id', $id)->exists();
+        if ($exists) {
+            return DV::error('Cannot delete this amenity because it has reservation records.');
+        }
+        $deleted = DB::table('amenities')->where('id', $id)->delete();
+        if($deleted){
+            DB::table('maintenances')->where('amenity_id', $id)->delete();
+        }
+        return $deleted ? DV::depends($deleted, ['action' => 'deleted']) : DV::error('Delete failed.');
     }
 
     function updateAmenityStatus($status_id, $id = null, $ss = null) {

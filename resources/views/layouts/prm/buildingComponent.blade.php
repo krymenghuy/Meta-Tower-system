@@ -17,25 +17,12 @@
         </div>
     </div>
 
-    <div id="_summary_cards" class="mt-3 rounded-2 "></div>
-    <div id="_building_list" class="table-responsive  mt-3 bg-white rounded-2 border"></div>
+    <div id="_building_list" class="table-responsive mt-3 rounded-2"></div>
 
 </div>
 <style>
 
-    .tbl_list_floor thead th {
-    font-weight: 600;
-    color: #1A1647 !important;
-    background-color: #e9eaea !important;
+   
 
 
-}
-
-.tbl_list_floor tbody td {
-    vertical-align: middle;
-}
-
-.tbl_list_floor tbody tr:hover {
-    background-color: #f8f9fa;
-}
 </style>

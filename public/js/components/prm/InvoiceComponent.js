@@ -1670,6 +1670,7 @@ const InvoiceDialog = (() => {
                         prefetch: true,
                         query: {
                             from: "tenants",
+                            where: [['status_id','=',2]],
                             select: [
                                 "id",
                                 "name",

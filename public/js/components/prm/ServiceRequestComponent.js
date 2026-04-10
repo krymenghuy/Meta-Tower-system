@@ -178,7 +178,7 @@ var ServiceRequestComponent = (function () {
                 const statusClasses = {
                     pending: 'badge text-warning bg-warning-subtle border border-warning',
                     accepted: 'badge text-primary bg-primary-subtle border border-primary',
-                    cancelled: 'badge text-danger bg-danger-subtle border border-danger'
+                    rejected: 'badge text-danger bg-danger-subtle border border-danger'
                 };
                 const cls = statusClasses[status] ?? 'badge text-dark bg-light border';
                 const isEditable = status === 'pending';
@@ -200,7 +200,7 @@ var ServiceRequestComponent = (function () {
             className: 'align-middle text-nowrap',
             data: (data) => `
             <div class="d-flex flex-column">
-                <span class="text-capitalize text-primary-custom fw-semibold">${data.update_user ?? ''}</span>
+                <span class="text-capitalize text-primary-custom">${data.update_user ?? ''}</span>
                 <span class="text-muted small">${data.updated_at ?? ''}</span>
             </div>`
         },
@@ -299,7 +299,6 @@ var ServiceRequestComponent = (function () {
         });
         return p;
     };
-
     mThis.initDropdownMenus = (table) => {
         new VSDropdownMenu({
             containerElement: table,
@@ -331,16 +330,16 @@ var ServiceRequestComponent = (function () {
                     cssClass: "border-bottom pb-2"
                 }
             ],
-            onClick: (menuLink, id, name) => {
-                const row = document.getElementById(`service_request_id_${id}`);
-                const statusId = parseInt(row.dataset.statusId || '0', 10);
-                // if (statusId !== 2) {
-                //     if (name === 'edit_request') {
-                //         cv_interact.info('Cannot modify');
-                //         return;
-                //     }
-                // }
+             onShow: (me, container) => {
+                const menu = me.getActiveMenus(container);
+                const status_id = container.dataset.statusid;
 
+               menu.accept_request.style.display = (status_id >= 2) ? 'none' : 'block';
+               menu.reject_request.style.display = (status_id >= 2) ? 'none' : 'block';
+
+               
+            },
+            onClick: (menuLink, id, name) => {
                 if (name === 'accept_request') mThis.acceptRequest(id, menuLink);
                 if (name === 'reject_request') mThis.rejectRequest(id, menuLink);
                 if (name === 'edit_request') mThis.editServiceRequest(id, menuLink);
@@ -436,7 +435,6 @@ var ServiceRequestComponent = (function () {
             }
         });
     };
-
     mThis.prepareFormOptions = (onFinish) => {
         vsapi.call(`${main_view.base_url}/prm/service-request/form-options`,null,null,null)
             .then(res => {
@@ -560,7 +558,7 @@ console.log(123,op);
                     <div class="row g-3">
                         <div class="col-12">
                             <div class="material-input outlined">
-                                <textarea class="data-input form-control" data-field="description" placeholder=" "></textarea>
+                                <textarea class="data-input form-control" data-field="remarks" placeholder=" "></textarea>
                                 <label style="padding-left:6px;color:#777;">Remarks</label>
                             </div>
                         </div>

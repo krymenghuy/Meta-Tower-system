@@ -16,27 +16,23 @@ class Maintenance extends VSModel
     protected $table = 'maintenances';
 
     /**
-     * Planned (1) / In Progress (2) / Completed (3) from schedule window vs current time.
-     * Before start → 1, from start through end (inclusive) → 2, after end → 3.
+     * Planned (1) / In Progress (2) from schedule window vs current time.
+     * Before start -> 1, from start onwards -> 2.
+     * Completed (3) must be set manually via finish action.
      */
-    public static function computeScheduleStatusId($startDate, $endDate): int
+    public static function computeScheduleStatusId($startDate, $endDate = null): int
     {
         $now = Carbon::now();
         $startAt = Carbon::parse($startDate);
-        $endAt = Carbon::parse($endDate);
         if ($now->lt($startAt)) {
             return 1;
         }
-        if ($now->lte($endAt)) {
-            return 2;
-        }
-
-        return 3;
+        return 2;
     }
 
     /**
      * Persist and reflect schedule-derived status when not Completed (3) or Cancelled (4).
-     * Call before setOfficialDates() so start_date/end_date are still parseable DB values.
+     * Call before setOfficialDates() so date fields are still parseable DB values.
      *
      * @param object $row list/detail row with id, status_id, start_date, end_date, status_name
      * @param \Illuminate\Support\Collection|array|null $statusIdToName pluck('name','id') optional
@@ -48,12 +44,11 @@ class Maintenance extends VSModel
             return;
         }
         $start = $row->start_date ?? null;
-        $end = $row->end_date ?? null;
-        if (!$start || !$end) {
+        if (!$start) {
             return;
         }
         try {
-            $computed = self::computeScheduleStatusId($start, $end);
+            $computed = self::computeScheduleStatusId($start);
         } catch (\Throwable $e) {
             return;
         }
@@ -114,9 +109,8 @@ class Maintenance extends VSModel
             $sid = (int) ($input['status_id'] ?? 0);
             if (!in_array($sid, [3, 4], true)) {
                 $start = $input['start_date'] ?? null;
-                $end = $input['end_date'] ?? null;
-                if ($start && $end) {
-                    $input['status_id'] = self::computeScheduleStatusId($start, $end);
+                if ($start) {
+                    $input['status_id'] = self::computeScheduleStatusId($start);
                 }
             }
         } catch (\Exception $e) {
@@ -179,22 +173,6 @@ class Maintenance extends VSModel
         if ($status_id) {
             $str_moreWhere .= ' AND m.status_id =' . $status_id;
         }
-        // if ($status_id !== null && $status_id !== '' && $status_id !== 'all') {
-        //     $status_id = (int) $status_id;
-        //     if ($status_id === 4) {
-        //         $str_moreWhere .= ' AND m.status_id = 4';
-        //     } else {
-        //         $now = now()->format('Y-m-d H:i:s');
-        //         if ($status_id === 1) {
-        //             $str_moreWhere .= " AND m.start_date IS NOT NULL AND m.start_date > '{$now}'";
-        //         } elseif ($status_id === 2) {
-        //             $str_moreWhere .= " AND m.start_date IS NOT NULL AND m.end_date IS NOT NULL AND m.start_date <= '{$now}' AND m.end_date >= '{$now}'";
-        //         } elseif ($status_id === 3) {
-        //             $str_moreWhere .= " AND m.end_date IS NOT NULL AND m.end_date < '{$now}'";
-        //         }
-        //     }
-        // }
-
         $query = DB::table('maintenances as m')
             ->join('buildings as b', 'b.id', '=', 'm.building_id')
             ->leftJoin('building_spaces as bs', 'bs.id', '=', 'm.space_id')
@@ -274,7 +252,22 @@ class Maintenance extends VSModel
 
         $building_spaces = GeneralSettings::options_building_space($ss, $include_space_id, true);
 
-        $amenities = GeneralSettings::options_amenity($ss);
+        $amenities = GeneralSettings::options_maintenance_amenity($ss);
+        if (!empty($include_amenity_id)) {
+            $hasIncludedAmenity = $amenities->contains(function ($a) use ($include_amenity_id) {
+                return (int) ($a->id ?? 0) === (int) $include_amenity_id;
+            });
+            if (!$hasIncludedAmenity) {
+                $selectedAmenity = DB::table('amenities')
+                    ->where('id', (int) $include_amenity_id)
+                    ->selectRaw('id, name AS amenity, code as amenity_code, max_capacity, category_id')
+                    ->first();
+                if ($selectedAmenity) {
+                    $amenities->push($selectedAmenity);
+                }
+            }
+        }
+        // $amenities = GeneralSettings::options_amenity($ss, false);
         $under_maintenance_amenity_ids = DB::table('maintenances')
             ->whereNotNull('amenity_id')
             ->where('amenity_id', '>', 0)

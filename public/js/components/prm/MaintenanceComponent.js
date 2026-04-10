@@ -313,7 +313,7 @@ const CreateMaintenanceDialog = (() => {
 
     self.show = (op) => {
         dialog = dialog || new GeneralDialog({
-            cssClass: "modal-md vs-modal vs-modal--compact",
+            cssClass: "modal-lg vs-modal vs-modal--compact",
             backdrop: "static",
             keyboard: true,
             createContent: () => `
@@ -424,6 +424,9 @@ const CreateMaintenanceDialog = (() => {
                 }
             },
             onPrepareForm: (me, data) => {
+console.log(123123123, data);
+
+
                 me.detail = data.maintenance_details || null;
                 if (me.dataOptions?.space_id) {
                     me.detail = me.detail || {};
@@ -487,6 +490,7 @@ const CreateMaintenanceDialog = (() => {
 
                             if (!op.amenity_id) {
                                 cv_interact.error("Space is required.");
+                                // cv_interact.error("Amenity is required.");
                                 return;
                             }
                         }
