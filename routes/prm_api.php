@@ -311,8 +311,8 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('settings')->g
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('receipts')->group(function () {
     Route::post('/list-paginate', [ReceiptController::class, 'getListPaginate']);
     Route::post('/details', [ReceiptController::class, 'receiptDetails']);
-    Route::post('/delete',  [ReceiptController::class, 'deleteReceipt']);
-    Route::post('/update-status', [ReceiptController::class, 'setReceiptStatus']);
+    Route::post('/cancel',[ReceiptController::class,'cancelReceipt']);
+    Route::post('/form-options',[ReceiptController::class,'getFormOptions']);
 });
 
 

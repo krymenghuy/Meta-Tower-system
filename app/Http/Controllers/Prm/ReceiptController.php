@@ -62,13 +62,20 @@ class ReceiptController extends Controller
 
         return JDV::raw($result);
     }
-     public function setReceiptStatus(Request $req)
-        {
-            $ss = XAuthService::verifyAuth($req, -1);
-            if ($ss->status_code !== 200) {
-                return JDV::raw($ss);
-            }
-            return JDV::raw($this->receipts->setReceiptStatus($req->all(), $ss));
+    public function cancelReceipt(Request $req)
+    {
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
         }
+        return JDV::raw($this->receipts->cancelReceipt($req->all(), $ss));
+    }
+    public function getFormOptions(Request $req){
+        $ss = XAuthService::verifyAuth($req, -1);
+        if($ss->status_code !==200){
+            return JDV::raw($ss);
+        }
+        return JDV::result($this->receipts->getFormOptions($req->all(),$ss));
+    }
 
 }

@@ -21,7 +21,7 @@
             </div>
         </div>
         <div class="col-12 col-md-6 col-lg-2">
-            <select id="payment_method_id" class="data-input filter-field form-control" data-field="payment_method_id"></select>
+            <select id="_receipt_status" class="data-input filter-field form-control" data-field="status_id" placeholder="Status"></select>
         </div>
 
         </div>

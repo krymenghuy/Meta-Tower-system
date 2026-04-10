@@ -127,7 +127,7 @@ var InvoiceComponent = (() => {
                     <div class="d-flex flex-column align-items-start">
                         <span class="text-prm-custom text-nowrap">${data.due_date ?? ''}</span>
                         <span class="text-warning small text-nowrap">
-                            ${formatTime(data.start_time)}
+                            Start Time:${formatTime(data.start_time)}
                         </span>
                     </div>
                 `;

@@ -7,8 +7,7 @@ var ReceiptComponent = new (function() {
         "#_main_receipt_component"
     );
     mThis.btnAdd = mThis.self.querySelector("#_btnReceipt");
-    mThis.elFilter_category = mThis.self.querySelector("#payment_method_id");
-    mThis.elFilter_status = mThis.self.querySelector("#receipt_status");
+    mThis.elStatus = mThis.self.querySelector("#_receipt_status");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_receipt");
     mThis.elSearch = mThis.self.querySelector("#_search_receipt");
     mThis.currency_symbol = "$";
@@ -55,6 +54,20 @@ var ReceiptComponent = new (function() {
                     <span class="text-prm-custom d-block">
                         ${data.tenant_name ?? ''}
                     </span>
+                    <span class="text-danger-emphasis small">
+                        ${data.tenant_phone ?? ""}
+                    </span>
+                </div>
+            </div>`;
+            }
+        },
+         {
+            transTitle: "titles.Space",
+            className: "align-middle text-nowrap",
+            data: (data) => {
+                return ` <div class="d-flex text-warning align-items-center gap-2">
+                <div>
+
                     <span class="d-block text-warning">
                         ${data.space_code ?? ""}
                     </span>
@@ -94,18 +107,30 @@ var ReceiptComponent = new (function() {
         },
         {
             transTitle: "titles.Status",
-            className: "align-middle text-center",
-            data: data => {
-                const statusId = Number(data.receipt_status_id || 0);
-                let cls = "bg-secondary";
+            className: "align-middle text-nowrap text-center",
+            data: (data) => {
+                const statusId = parseInt(data.receipt_status_id) || 1;
 
-                if (statusId === 1) cls = "badge text-success bg-success-subtle border border-success";           // active
-                else if (statusId === 2) cls = "badge text-danger bg-danger-subtle border border-danger";       // cancelled
+                const statusClasses = {
+                    1: 'badge text-primary bg-primary-subtle border border-primary', // Active
+                    2: 'badge text-danger bg-danger-subtle border border-danger'    // Canceled
+                };
 
-                return `<span class="badge ${cls} text-capitalize px-3 py-2">
-                            ${data.receipt_status_name || "—"}
-                        </span>`;
-            }
+                const cls = statusClasses[statusId] ?? 'badge text-dark bg-light border';
+
+                // It is editable (cancellable) only if it is currently Active (1)
+                const isEditable = statusId === 1;
+
+                return `
+                    <span
+                        data-id="${data.id}"
+                        class="${cls} text-capitalize d-inline-block text-center"
+                        style="min-width:70px; cursor:${isEditable ? 'pointer' : 'default'}"
+                        title="${isEditable ? 'Active Payment' : 'Canceled Payment'}">
+                        ${data.receipt_status_name ?? (statusId === 1 ? 'Active' : 'Canceled')}
+                    </span>
+                `;
+            },
         },
         {
             transTitle: "titles.Updated By",
@@ -173,8 +198,9 @@ var ReceiptComponent = new (function() {
 
     mThis.getFilterData = () => {
         let p = {
-            category_id: mThis.elFilter_category.value,
-            search_value: mThis.elSearch.value
+            search_value: mThis.elSearch.value,
+            status_id: mThis.elStatus.value,
+            
         };
         mThis.divFilter.querySelectorAll(".filter-field").forEach(el => {
             if (el.dataset.field) {
@@ -191,63 +217,84 @@ var ReceiptComponent = new (function() {
             cssClass: "bg-white shadow",
             menus: [
                 {
-                    html: '<span class="ps-2 " vslang="title.Change Status"></span>',
-                    icon: `<i class="fa-solid fa-bolt fs-5 text-primary"></i>`,
-                    cssClass: "border-bottom pb-2",
-                    name: "change_receipt_status"
+                    html: '<span class="ps-2" vslang="title.Reject"></span>',
+                    icon: `<i class="fa-regular fa-rectangle-xmark fs-5 text-danger-emphasis"></i>`,
+                    name: "cancel_receipt",
+                    cssClass: "border-bottom pb-2"
                 },
             ],
+            onShow: (me, container) =>{
+                const menu = me.getActiveMenu(container);
+                const status_id = container.dataset.statusid;
+
+                menu.cancel_receipt.style.display = (status_id >= 2) ? 'none' : 'block';
+
+            },
             onClick: (menuLink, id, name) => {
-                if (name === "delete_receipt") mThis.deleteReceipt(id, menuLink);
-                if (name === "change_receipt_status") mThis.changeReceiptStatus(id, menuLink);
+                if (name === "cancel_receipt") mThis.cancelReceipt(id, menuLink);
             }
         });
     };
 
 
-    mThis.changeReceiptStatus = (id, link) => {
-        const tr = link.closest("tr");
-        const current_status = tr?.dataset.statusid || "";
-
-        const inputOptions = {
-            context: "success",
-            title: "Change Receipt Status",
-            label: "Select Status",
-            valueKey: "status_id",
-            labelKey: "name",
-            confirmButtonText: "Save",
-            data: [
-                // { status_id: "1", name: "Active" },
-                { status_id: "2", name: "Cancelled" },
-            ],
-            defaultValue: current_status,
-            onConfirm: (status, btn, me) => {
-                const payload = {
-                    id: id,
-                    receipt_status_id: status.status_id
-                };
-
-                vsapi.post(`${mThis.base_url}/prm/receipts/update-status`, payload, { loader: false, agent: btn })
-                    .then((res) => {
-                        if (res.status_code === 200) {
-                            me.close();
-                            cv_interact.success("Receipt status updated");
-                            mThis.ReceiptListView.showPage(mThis.getFilterData());
-                        } else {
-                            me.setError(res.data || "Unable to update status");
+    mThis.cancelReceipt = (id) => {
+        Swal.fire({
+            title: 'Cancel Receipt?',
+            text: "This will restore the due balance on the invoice.",
+            icon: 'warning',
+            input: "textarea",
+            inputPlaceholder: "Reason for cancellation (required)...",
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            confirmButtonText: 'Yes, Cancel it!',
+            reverseButtons: true,
+            inputValidator: (value) => {
+                if (!value) return "You must provide a reason!";
+            },
+            showLoaderOnConfirm: true,
+            preConfirm: (remark) => {
+                let op = { id: id, remarks: remark };
+                return vsapi.call(`${mThis.base_url}/prm/receipts/cancel`, op, null)
+                    .then(res => {
+                        if (res.status_code !== 200) {
+                            throw new Error(res.error_message || "Failed to cancel");
                         }
+                        return res;
+                    })
+                    .catch(error => {
+                        Swal.showValidationMessage(`Request failed: ${error}`);
                     });
             },
-        };
-        InputBox.show(inputOptions);
+            allowOutsideClick: () => !Swal.isLoading()
+        }).then((result) => {
+            if (result.isConfirmed) {
+                cv_interact.success("Receipt has been canceled.");
+                // Corrected the list view variable name here:
+                mThis.ReceiptListView.showPage(mThis.getFilterData());
+            }
+        });
     };
 
+    mThis.prepareFormOptions = (onFinish) => {
+        vsapi.call(`${main_view.base_url}/prm/receipts/form-options`,null,null,null)
+            .then(res => {
+                const d = res.status_code == 200 ? res.data : {};
+                    VSUtil.setComboItems(mThis.elStatus, d.receipt_statuses, 'id', 'name', '', 'All Statuses', '');
+                if (typeof onFinish === 'function') onFinish();
+            });
+    };
 
-    mThis.show = () => {
+     mThis.show = (options) => {
         mThis.init();
-        main_view.setContentView(mThis.self, mThis.title_prop);
-        mThis.ReceiptListView.showPage(mThis.getFilterData());
+        mThis.options = options;
+
+        mThis.prepareFormOptions(() => {
+            main_view.setContentView(mThis.self, mThis.title_prop);
+            mThis.ReceiptListView.showPage(mThis.getFilterData());
+        });
     };
+
+
 
     return mThis;
 })();

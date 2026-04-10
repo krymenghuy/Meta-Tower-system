@@ -29,10 +29,23 @@ class Receipt extends Model
 
         $current_page = max(1, (int) ($d->current_page ?? 1));
         $per_page     = max(1, (int) ($d->per_page ?? 10));
-        $search       = trim($d->search_value ?? '');
+        $search_value      = $d->search_value ?? null;
+        $status_id         = $d->status_id ?? null;
+        $skip_rows = ($current_page - 1) * $per_page;
 
         $date_from    = $d->date_from ?? null;
         $date_to      = $d->date_to ?? null;
+
+        $str_search = "1=1";
+        $str_moreWhere = "2=2";
+        if ($search_value ) {
+            $skip_rows = 0;
+            $search_value = escape_like_str($search_value);
+            $str_search = "(r.code LIKE '%" . $search_value . "%' OR t.name LIKE '%" .$search_value . "%' OR i.code LIKE '%" . $search_value . "%')";
+        }
+        if ($status_id) {
+            $str_moreWhere .= ' AND r.receipt_status_id =' . (int)$status_id;
+        }
 
         $query = DB::table('receipts as r')
             ->leftJoin('tenants as t', 't.id', '=', 'r.tenant_id')
@@ -40,7 +53,8 @@ class Receipt extends Model
             ->leftJoin('building_spaces as bs', 'bs.id', '=', 'i.space_id')
             ->leftJoin('receipt_breakdowns as rb', 'rb.receipt_id', '=', 'r.id')
             ->leftJoin('receipt_statuses as rs', 'rs.id', '=', 'r.receipt_status_id')
-
+            ->whereRaw($str_search)
+            ->whereRaw($str_moreWhere)
             ->select([
                 'r.id',
                 'r.code',
@@ -50,6 +64,7 @@ class Receipt extends Model
                 'r.updated_at',
                 'r.update_user',
                 't.name as tenant_name',
+                't.phone_number as tenant_phone',
                 'i.code as invoice_code',
                 'i.amount as invoice_total',
                 'i.invoice_date as invoice_date',
@@ -73,9 +88,8 @@ class Receipt extends Model
             ])
             ->groupBy('r.id')
             ->orderByDesc('r.id');
-            
+
         if (!empty($date_from)) {
-            // Ensure format compatibility. If DB is Y-m-d, Carbon handles conversion
             $query->whereDate('r.receipt_date', '>=', date('Y-m-d', strtotime($date_from)));
         }
         if (!empty($date_to)) {
@@ -86,19 +100,9 @@ class Receipt extends Model
             $query->where('r.id', $id);
         }
 
-        if ($search) {
-            $search = '%' . escape_like_str($search) . '%';
-            $query->where(function ($q) use ($search) {
-                $q->where('r.code', 'LIKE', $search)
-                ->orWhere('t.name', 'LIKE', $search)
-                ->orWhere('i.code', 'LIKE', $search);
-            });
-        }
-
         $total = (clone $query)->select('r.id')->distinct()->count();
 
-        $skip = ($current_page - 1) * $per_page;
-        $rows = $query->skip($skip)->take($per_page)->get();
+         $rows  = $query->skip($skip_rows)->take($per_page)->get();
 
         // Format dates
         foreach ($rows as $row) {
@@ -153,80 +157,81 @@ class Receipt extends Model
         return $header;
     }
 
-public function setReceiptStatus($arr, $ss = null)
-{
-    $ss = $ss ?? $this->userInfo;
-    $id = $arr['id'] ?? null;
-    $new_status_id = (int)($arr['receipt_status_id'] ?? 0);
+public function cancelReceipt($arr, $ss = null)
+    {
+        $ss = $ss ?? $this->userInfo;
+        $id = $arr['id'] ?? null;
+        $remarks = $arr['remarks'] ?? $arr['remark'] ?? '';
+        $new_status_id = 2; // Canceled status
 
-    if (!$id || !$new_status_id) {
-        return DV::error('Missing required parameters');
-    }
-
-    return DB::transaction(function () use ($id, $new_status_id, $ss) {
-        $receipt = DB::table('receipts')->where('id', $id)->first();
-        if (!$receipt) return DV::error('Receipt not found');
-
-        $old_status_id = (int)$receipt->receipt_status_id;
-
-        $updated = DB::table('receipts')
-            ->where('id', $id)
-            ->update([
-                'receipt_status_id' => $new_status_id,
-                'update_user'       => $ss->full_name ?? $ss->name ?? 'System',
-                'update_uid'        => $ss->id ?? $ss->uid ?? null,
-                'updated_at'        => now(),
-            ]);
-
-        // 2. Only update Invoice if the status actually changed to/from Canceled (2)
-        if ($updated && $old_status_id !== $new_status_id) {
-            $invoice = DB::table('invoices')->where('id', $receipt->invoice_id)->first();
-
-            if ($invoice) {
-                $amount = (float)$receipt->total_received;
-                $current_paid = (float)$invoice->paid_amount;
-                $total_invoice = (float)$invoice->amount;
-
-                // Status 2 = Canceled (Subtract amount)
-                // Status 1 = Active (Add amount back)
-                $new_paid_amount = ($new_status_id == 2)
-                    ? max(0, $current_paid - $amount)
-                    : ($current_paid + $amount);
-
-                $new_due_amount = max(0, $total_invoice - $new_paid_amount);
-
-                // Recalculate Invoice Payment Status: 1=Paid, 2=Unpaid, 3=Partial
-                $inv_status = 2;
-                if ($new_due_amount <= 0.001) {
-                    $inv_status = 1;
-                } else if ($new_paid_amount > 0) {
-                    $inv_status = 3;
-                }
-
-                DB::table('invoices')->where('id', $receipt->invoice_id)->update([
-                    'paid_amount'       => $new_paid_amount,
-                    'due_amount'        => $new_due_amount,
-                    'payment_status_id' => $inv_status,
-                    'is_paid'           => ($inv_status == 1 ? 1 : 0),
-                    'updated_at'        => now()
-                ]);
-            }
+        if (!$id) {
+            return DV::error('Missing required parameters');
         }
 
-        return DV::success(['message' => 'Status and invoice updated successfully']);
-    });
-}
+        return DB::transaction(function () use ($id, $new_status_id, $ss, $remarks) {
+            $receipt = DB::table('receipts')->where('id', $id)->first();
+            if (!$receipt) {
+                return DV::error('Receipt not found');
+            }
 
+            $old_status_id = (int)$receipt->receipt_status_id;
+            if ($old_status_id === $new_status_id) {
+                return DV::error('Receipt is already canceled');
+            }
+            $updated = DB::table('receipts')
+                ->where('id', $id)
+                ->update([
+                    'receipt_status_id' => $new_status_id,
+                    'remarks'           => $remarks,
+                    'update_user'       => $ss->full_name ?? $ss->name ?? 'System',
+                    'update_uid'        => $ss->id ?? $ss->uid ?? null,
+                    'updated_at'        => now(),
+                ]);
 
-    public function deleteById($id = null)
-    {
-        $id = $id ?? $this->id;
-        return DB::transaction(function () use ($id) {
-            DB::table('receipt_breakdowns')->where('receipt_id', $id)->delete();
-            $deleted = self::where('id', $id)->delete();
+            if ($updated) {
+                $invoice = DB::table('invoices')->where('id', $receipt->invoice_id)->first();
 
-            return DV::depends($deleted, 'Failed to delete receipt');
+                if ($invoice) {
+                    $amount_to_reverse = (float)$receipt->total_received;
+                    $current_paid = (float)$invoice->paid_amount;
+                    $total_invoice = (float)$invoice->amount;
+
+                    $new_paid_amount = max(0, $current_paid - $amount_to_reverse);
+                    $new_due_amount = max(0, $total_invoice - $new_paid_amount);
+
+                    $inv_status = 2;
+                    if ($new_due_amount <= 0.001) {
+                        $inv_status = 1; // Paid
+                    } elseif ($new_paid_amount > 0) {
+                        $inv_status = 3; // Partial
+                    }
+
+                    DB::table('invoices')->where('id', $receipt->invoice_id)->update([
+                        'paid_amount'       => $new_paid_amount,
+                        'due_amount'        => $new_due_amount,
+                        'payment_status_id' => $inv_status,
+                        'is_paid'           => ($inv_status == 1 ? 1 : 0),
+                        'updated_at'        => now(),
+                        'update_user'       => $ss->full_name ?? $ss->name ?? 'System',
+                        'update_uid'        => $ss->id ?? $ss->uid ?? null,
+                    ]);
+                }
+            }
+
+            return DV::success(['message' => 'Receipt canceled and invoice balance restored successfully']);
         });
     }
+
+
+    public function getFormOptions($arr = [], $ss = null){
+        $ss = $ss ? $ss : $this->userInfo;
+        $d = (object)$arr;
+        $id = $d->id ?? $this->id;
+        return(object)[
+            'receipt_statuses'  => GeneralSettings::options_receipt_status($ss)
+
+        ];
+    }
+
 
 }
