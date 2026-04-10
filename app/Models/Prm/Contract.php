@@ -348,10 +348,10 @@ class Contract
                 ->first();
         }
 
-    public static function getFormOptions($id,$ss)
+    public static function getFormOptions($id, $ss, $space_id = null)
     {
         $contract_details = $id ? self::contractDetails($id) : null;
-        $current_space_id = $contract_details->space_id ?? null;
+        $current_space_id = $contract_details->space_id ?? $space_id;
         return (object) [
             'contract_details' => $contract_details,
             'tenants'      => GeneralSettings::options_tenant($ss),
