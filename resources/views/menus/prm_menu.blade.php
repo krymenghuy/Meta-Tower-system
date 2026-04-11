@@ -210,7 +210,7 @@ function v_display($mod_id, $module_ids = null)
                             <img class="icons opacity-icons"
                                 src="{{ asset('assets/images/icons/service_price.svg') }}" />
                         </span>
-                        <span class="kt-menu__link-text font-color " vslang="menus.Price Services"></span>
+                        <span class="kt-menu__link-text font-color " vslang="menus.Service Price"></span>
                     </a>
                 </li>
                 <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover"

@@ -79,8 +79,8 @@ var ServiceComponent = (() => {
             className: 'align-middle',
             data: (data, index, tr) => {
                 return `<div class="d-flex flex-column">
-                    <span class="text-capitalize text-start text-yp-custom fw-semibold"><span>${data.update_user ?? ''}</span></span>
-                    <span class="text-muted">${data.updated_at ?? ''}</span>
+                    <span class="text-capitalize text-start text-prm-custom"><span>${data.update_user ?? ''}</span></span>
+                    <span class="text-muted small">${data.updated_at ?? ''}</span>
                 </div>`;
             }
         },
@@ -108,8 +108,6 @@ var ServiceComponent = (() => {
             columns: mThis.cols,
             tableClass: 'table table--white rounded-2 overflow-hidden header-uppercase',
             rowCreated: (data, index, tr) => {
-
-
                 tr.dataset.statusid = data.status_id;
                 tr.classList.add('service');
                 tr.setAttribute('id', ['service_id', data.id].join(''));
@@ -192,18 +190,22 @@ var ServiceComponent = (() => {
                     name: "change_service_status"
                 },
                 {
-                    html: '<span class="ps-2 " vslang="titles.Modify Service"></span>',
+                    html: '<span class="ps-2 " vslang="titles.Modify"></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "edit_service"
                 },
                 {
-                    html: '<span class="ps-2  " vslang="titles.Delete Service"></span>',
+                    html: '<span class="ps-2  " vslang="titles.Delete"></span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "delete_service"
                 },
             ],
+            onShow: (me,container) => {
+                const menu = me.getActiveMenus(container);
+                menu.change_service_status.style.display =  'none';
+            },
 
             onClick: (menuLink, id, name) => {
                 switch (name) {
@@ -290,9 +292,6 @@ var ServiceComponent = (() => {
                 mThis.ServiceListView.showPage(mThis.getFilterData());
             }
         };
-        console.log(89,op);
-        
-        // if (!AuthManager.allowed(242)) return;
         cv_interact.confirm('Delete this Service?', {
             transTitle: 'Delete Service',
             context: 'delete',

@@ -323,7 +323,7 @@ const CreateMaintenanceDialog = (() => {
 
     self.show = (op) => {
         dialog = dialog || new GeneralDialog({
-            cssClass: "modal-md vs-modal vs-modal--compact",
+            cssClass: "modal-lg vs-modal vs-modal--compact",
             backdrop: "static",
             keyboard: true,
             createContent: () => `

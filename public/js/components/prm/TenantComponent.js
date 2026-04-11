@@ -820,7 +820,7 @@ var TenantComponent = new (function () {
                                             <th class="border-0 ps-3" style="letter-spacing: 0.05em;">Document Type</th>
                                             <th class="border-0">File Name</th>
                                             <th class="border-0">File Type</th>
-                                            <th class="border-0">Description</th>
+                                            <th class="border-0">Remarks</th>
                                             <th class="border-0 text-end pe-3">Actions</th>
                                         </tr>
                                     </thead>
@@ -840,7 +840,7 @@ var TenantComponent = new (function () {
                                                 <div class="fw-semibold text-dark">${data.ext ?? ""}</div>
                                             </td>
                                             <td>
-                                                <span class="text-muted small">${data.description ?? "No description"}</span>
+                                                <span class="text-muted small">${data.remarks ?? ""}</span>
                                             </td>
                                             <td class="text-end pe-3">
                                                 <button class="btn btn-sm text-muted p-0 ">
@@ -1174,7 +1174,7 @@ var TenantComponent = new (function () {
                         </td>
                         <td>
                             <span class="fw-bold text-dark">
-                                ${doc.description || 'No description'}
+                                ${doc.remarks || ''}
                             </span>
                         </td>
                        <td class="text-end py-3 px-3">
@@ -1218,7 +1218,7 @@ var TenantComponent = new (function () {
                                     <th class="border-0 ps-3" style="letter-spacing: 0.05em;">Document Type</th>
                                     <th class="border-0">File</th>
                                     <th class="border-0">File Type</th>
-                                    <th class="border-0">Description</th>
+                                    <th class="border-0">Remarks</th>
                                     <th class="border-0 text-end">Actions</th>
                                 </tr>
                             </thead>
@@ -1687,8 +1687,8 @@ const TenantDocumentDialog = (() => {
                     </div>
                      <div class="col-12">
                         <div class="material-input outlined">
-                            <textarea type="text" name="description" required class="data-input form-control" data-field="description" placeholder=" " /></textarea>
-                            <label style="color:#777777;padding-left:6px;">Description</label>
+                            <textarea type="text" name="remarks" required class="data-input form-control" data-field="remarks" placeholder=" " /></textarea>
+                            <label style="color:#777777;padding-left:6px;">Remarks</label>
                         </div>
                     </div>
 
@@ -1801,7 +1801,7 @@ const TenantDocumentDialog = (() => {
                                 tenant_id: me.dataOptions.tenant_id,
                                 ext: me.fileData.ext,
                                 data: me.fileData.dataUrl,
-                                description: me.controls.description.value,
+                                remarks: me.controls.remarks.value,
                                 document_type_id:
                                     me.controls.document_type.value,
                             };

@@ -27,7 +27,6 @@ class Amenity extends VSModel
         $branch_id = $ss->branch_id;
         $v_rule = [
             'name' => '1|string|0-100|text= Amenity name must be provided',
-            
             'building_id' => '1|number|exists=buildings.id',
             'floor_id' => '1|number|exists=floors.id',
             'category_id' => '1|number|exists=amenity_categories.id',
@@ -237,10 +236,19 @@ class Amenity extends VSModel
         ];
     }
 
-    public function deleteAmenity($id = null){
+   
+    public function deleteAmenity($id = null)
+    {
         $id = $id ?? $this->id;
-        $deleted = DB::table('amenities')->where('id',$id)->delete();
-        return $deleted ? DV::depends($deleted,['action'=>'deleted']) : DV::error('Delete failed.');
+        $exists = DB::table('reservations')->where('amenity_id', $id)->exists();
+        if ($exists) {
+            return DV::error('Cannot delete this amenity because it has reservation records.');
+        }
+        $deleted = DB::table('amenities')->where('id', $id)->delete();
+        if($deleted){
+            DB::table('maintenances')->where('amenity_id', $id)->delete();
+        }
+        return $deleted ? DV::depends($deleted, ['action' => 'deleted']) : DV::error('Delete failed.');
     }
 
     function updateAmenityStatus($status_id, $id = null, $ss = null) {

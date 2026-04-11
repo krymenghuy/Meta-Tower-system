@@ -26,7 +26,7 @@ class TenantDocument
         $this->userInfo = $userInfo;
     }
 
-public function saveTenantDocument($arr = [], $ss = null,$id = null)
+public function saveTenantDocument($arr = [], $ss = null)
     {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
@@ -34,7 +34,7 @@ public function saveTenantDocument($arr = [], $ss = null,$id = null)
 
         $v_rule = [
             'tenant_id' => '1|number|exists=tenants.id',
-            'description' => '0|string|0-150',
+            'remarks' => '0|string|0-255',
             'document_type_id' => '1|number|exists=document_types.id',
             'ext' => '0|string',
             'file_name' => '0|string|0-150',
@@ -43,7 +43,6 @@ public function saveTenantDocument($arr = [], $ss = null,$id = null)
 
         $res = DBX::validateObject($arr, $v_rule, true, ['data' => GeneralSettings::$image_chars], $ss->lang, false, null);
         if ($res->error) {
-            error_log('Validation error: ' . json_encode($res->error));
             return DV::error($res->error);
         }
 
@@ -85,7 +84,7 @@ public function saveTenantDocument($arr = [], $ss = null,$id = null)
         $row = DB::table('tenant_documents as td')
             ->join('document_types as dt', 'dt.id', '=', 'td.document_type_id')
             ->where('td.tenant_id', $tenant_id)
-            ->selectRaw("td.id, td.tenant_id,td.ext, td.description, td.document_type_id, dt.name as document_type, td.file_name, td.created_at, $updated_at, td.update_user, td.create_user")
+            ->selectRaw("td.id, td.tenant_id,td.ext, td.remarks, td.document_type_id, dt.name as document_type, td.file_name, td.created_at, $updated_at, td.update_user, td.create_user")
             ->orderBy('td.id', 'DESC')->get();
 
         return $row;
@@ -94,7 +93,7 @@ public function saveTenantDocument($arr = [], $ss = null,$id = null)
     public static function getDetails($id) {
         return DB::table('tenant_documents as td')
             ->where('td.id', $id)
-            ->selectRaw('td.id, td.tenant_id, td.description,td.ext, td.document_type_id, td.file_name')
+            ->selectRaw('td.id, td.tenant_id, td.remarks,td.ext, td.document_type_id, td.file_name')
             ->first();
     }
 

@@ -93,7 +93,7 @@ class Service
         $count = $clone_query->count('s.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
         foreach($rows as $row){
-            $row = setOfficialDates($row,['updated_at'],[],[]);
+            $row = setOfficialDates($row,[],['updated_at'],[]);
         }
         return new LengthAwarePaginator($rows,$count,$per_page,$current_page);
 
@@ -124,6 +124,10 @@ class Service
         if($service->status_id == 1){
             return DV::error('cannot not delete active service.');
 
+        }
+        $service = DB::table('service_requests')->where('service_id',$id)->first();
+        if($service){
+            return DV::error('Cannot delete service that has been used in service request.');
         }
         $deleted = DB::table('services')->where('id',$id)->delete();
         return $deleted ? DV::depends($deleted,['action'=>'deleted']) : DV::error('Delete failed.');
