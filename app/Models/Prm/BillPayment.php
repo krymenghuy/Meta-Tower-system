@@ -109,9 +109,13 @@ class BillPayment
         $ss = $ss ?? $this->userInfo;
         $d = (object) $arr;
 
+        $date_from    = $d->date_from ?? null;
+        $date_to      = $d->date_to ?? null;
+
         $search_value = $d->search_value ?? null;
         $bill_id      = $d->bill_id      ?? null;
-        $vendor_id    = $d->vendor_id    ?? null;  
+        $expense_type_id    = $d->expense_type_id    ?? null; 
+        $payment_date       = $d->payment_date       ?? null;
         $status_id    = $d->status_id    ?? null;
         $current_page = $d->current_page ?? 1;
         $per_page     = $d->per_page     ?? 10;
@@ -121,11 +125,19 @@ class BillPayment
         $skip_rows = ($current_page - 1) * $per_page;
 
         $str_search = '1=1';
+        $str_moreWhere = '2=2';
 
         if ($search_value) {
+            $skip_rows    = 0;
             $search_value = escape_like_str($search_value);
-            $str_search = "(bp.ref_no LIKE '%" . $search_value . "%' OR bp.note LIKE '%" . $search_value . "%' OR b.bill_number LIKE '%" . $search_value . "%' OR v.name LIKE '%" . $search_value . "%')";
+            $str_search   = "(v.name LIKE '%" . $search_value ."%' OR b.bill_number LIKE '%" . $search_value ."%' OR bp.payer LIKE '%" . $search_value ."%')";
         }
+        if ($expense_type_id) {
+            $str_moreWhere .= ' AND b.expense_type_id = ' . $expense_type_id;
+        }
+        // if ($payment_date) {
+        //     $str_moreWhere .= ' AND bp.payment_date = ' . $payment_date;
+        // }
 
         $query = DB::table('bill_payments as bp')
             ->leftJoin('bills as b', 'b.id', 'bp.bill_id')
@@ -138,6 +150,14 @@ class BillPayment
         }
         $query->selectRaw("bp.id,bp.bill_id,b.bill_number,v.name as vendor_name,b.expense_type_id,ex.name as expense_type_name,bp.payment_date,bp.amount,bp.payment_method,bp.payer,bp.ref_no,bp.currency_code,bp.payment_method, bp.note,b.total_amount,b.paid_amount,b.balance,b.status_id,bp.create_user,bp.update_user,bp.created_at,bp.updated_at")
         ->orderBy('bp.id', 'desc');
+
+        if (!empty($date_from)) {
+            // Ensure format compatibility. If DB is Y-m-d, Carbon handles conversion
+            $query->whereDate('bp.payment_date', '>=', date('Y-m-d', strtotime($date_from)));
+        }
+        if (!empty($date_to)) {
+            $query->whereDate('bp.payment_date', '<=', date('Y-m-d', strtotime($date_to)));
+        }
 
         $count = (clone $query)->count('bp.id');
         $rows  = $query->skip($skip_rows)->take($per_page)->get();
@@ -158,8 +178,7 @@ class BillPayment
                 ->leftJoin('bill_statuses as s', 's.id', 'b.status_id')
                 ->leftJoin('expense_categories as ex', 'ex.id', 'b.expense_type_id')
                 ->where('b.id', $bill_id)
-                ->selectRaw('
-                    b.id, b.bill_number,b.total_amount,b.paid_amount,b.balance,b.status_id, s.name as status,v.name as vendor_name,v.phone_number,b.expense_type_id, ex.name as expense_type_name,b.currency_code')
+                ->selectRaw('b.id, b.bill_number,b.total_amount,b.paid_amount,b.balance,b.status_id, s.name as status,v.name as vendor_name,v.phone_number,b.expense_type_id, ex.name as expense_type_name,b.currency_code')
                 ->first();
 
             $payments = DB::table('bill_payments')
@@ -212,6 +231,72 @@ class BillPayment
         } catch (\Throwable $e) {
             DB::rollBack();
             return DV::error('Delete failed: ' . $e->getMessage());
+        }
+    }
+
+    public function cancelPayment($d, $ss = null)
+    {
+        $ss = $ss ?? $this->userInfo;
+
+        $id             = $d->id;
+        $cancel_remarks = isset($d->cancel_remarks) ? $d->cancel_remarks : 'Cancelled payment at ' . date('Y-m-d H:i:s');
+
+        // Check if the bill is fully paid (status_id = 2: paid)
+        $paid = DB::table('bill_payments')
+            ->where('id', $id)
+            ->where('inactive', 0)
+            ->where('branch_id', $ss->branch_id)
+            ->selectRaw('bill_id, amount')
+            ->first();
+
+        if (!$paid) return DV::error('Payment record not found or already cancelled.');
+
+        $bill = DB::table('bills')->where('id', $paid->bill_id)->first();
+        if (!$bill) return DV::error('Bill not found.');
+
+        DB::beginTransaction();
+        try {
+            // Step 1: Soft cancel the bill payment (like cancelling receipt)
+            DB::table('bill_payments')->where('id', $id)->update([
+                'inactive'       => 1,
+                'cancel_remarks' => $cancel_remarks . ' at ' . date('Y-m-d H:i:s'),
+                'cancelled_at'   => getNowTime(),
+                'cancelled_by'   => $ss->full_name,
+                'updated_at'     => getNowTime(),
+            ]);
+
+            // Step 2: Recalculate bill totals excluding cancelled payments
+            $total_paid = floatval(
+                DB::table('bill_payments')
+                    ->where('bill_id', $paid->bill_id)
+                    ->where('inactive', 0)
+                    ->sum('amount')
+            );
+
+            $total     = floatval($bill->total_amount);
+            $balance   = max(0, $total - $total_paid);
+            $status_id = $total_paid <= 0 ? 1 : ($total_paid >= $total ? 2 : 3);
+
+            // Step 3: Update bill status (like updating invoice inactive + items)
+            $cancel = DB::table('bills')->where('id', $paid->bill_id)->update([
+                'paid_amount' => $total_paid,
+                'balance'     => $balance,
+                'status_id'   => $status_id,
+                'update_user' => $ss->full_name,
+                'updated_at'  => getNowTime(),
+            ]);
+
+            // Step 4: Roll back any cash account transaction tied to this payment
+            CashAccount::rollBackTranxByBillPayment($id, $ss);
+
+            DB::commit();
+            return DV::depends($cancel, 'Cancelled', 'Something went wrong or bill not found.');
+
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::error($e->getMessage());
+            Log::error($e->getTraceAsString());
+            return DV::error('Something went wrong on server side');
         }
     }
 

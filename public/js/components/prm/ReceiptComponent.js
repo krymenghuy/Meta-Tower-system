@@ -7,8 +7,7 @@ var ReceiptComponent = new (function() {
         "#_main_receipt_component"
     );
     mThis.btnAdd = mThis.self.querySelector("#_btnReceipt");
-    mThis.elFilter_category = mThis.self.querySelector("#payment_method_id");
-    mThis.elFilter_status = mThis.self.querySelector("#receipt_status");
+    mThis.elStatus = mThis.self.querySelector("#_receipt_status");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_receipt");
     mThis.elSearch = mThis.self.querySelector("#_search_receipt");
     mThis.currency_symbol = "$";
@@ -18,9 +17,13 @@ var ReceiptComponent = new (function() {
         {
             transTitle: "titles.Receipt No",
             className: "align-middle text-nowrap text-start",
-            data: (data) => {
-                const code = data.code ? `<span class="text-prm-custom">${data.code}</span>`: `<span class="text-muted fst-italic">N/A</span>`;
-                const date = data.receipt_date ? `<span class="text-danger-emphasis small">${data.receipt_date}</span>`: `<span class="text-muted fst-italic small">N/A</span>`;
+            data: data => {
+                const code = data.code
+                    ? `<span class="text-prm-custom">${data.code}</span>`
+                    : `<span class="text-muted fst-italic">N/A</span>`;
+                const date = data.receipt_date
+                    ? `<span class="text-danger-emphasis small">${data.receipt_date}</span>`
+                    : `<span class="text-muted fst-italic small">N/A</span>`;
                 return `
                     <div class="d-flex flex-column">
                         ${code}
@@ -33,9 +36,13 @@ var ReceiptComponent = new (function() {
         {
             transTitle: "titles.Invoice No",
             className: "align-middle  text-start",
-            data: (data) => {
-                const code = data.invoice_code ? `<span class="text-prm-custom ">${data.invoice_code}</span>`: `<span class="text-muted fst-italic">N/A</span>`;
-                const date = data.invoice_date ? `<span class="text-danger-emphasis small">${data.invoice_date}</span>`: `<span class="text-muted fst-italic small">N/A</span>`;
+            data: data => {
+                const code = data.invoice_code
+                    ? `<span class="text-prm-custom ">${data.invoice_code}</span>`
+                    : `<span class="text-muted fst-italic">N/A</span>`;
+                const date = data.invoice_date
+                    ? `<span class="text-danger-emphasis small">${data.invoice_date}</span>`
+                    : `<span class="text-muted fst-italic small">N/A</span>`;
                 return `
                     <div class="d-flex flex-column ">
                         ${code}
@@ -49,12 +56,26 @@ var ReceiptComponent = new (function() {
         {
             transTitle: "titles.Tenant",
             className: "align-middle text-nowrap",
-            data: (data) => {
+            data: data => {
                 return ` <div class="d-flex text-warning align-items-center gap-2">
                 <div>
                     <span class="text-prm-custom d-block">
-                        ${data.tenant_name ?? ''}
+                        ${data.tenant_name ?? ""}
                     </span>
+                    <span class="text-danger-emphasis small">
+                        ${data.tenant_phone ?? ""}
+                    </span>
+                </div>
+            </div>`;
+            }
+        },
+        {
+            transTitle: "titles.Space",
+            className: "align-middle text-nowrap",
+            data: data => {
+                return ` <div class="d-flex text-warning align-items-center gap-2">
+                <div>
+
                     <span class="d-block text-warning">
                         ${data.space_code ?? ""}
                     </span>
@@ -73,8 +94,8 @@ var ReceiptComponent = new (function() {
         {
             transTitle: "titles.Payment Methods",
             className: "align-middle text-nowrap",
-            data: data =>{
-                    return `
+            data: data => {
+                return `
                     <div class="text-primary-custom" style="width:200px;">
                         <span class="text-wrap text-break" style ="word-break:break-word;">${data.payment_methods}</span>
                     </div>`;
@@ -87,40 +108,61 @@ var ReceiptComponent = new (function() {
             data: data => {
                 return `
                     <div class="text-primary-custom" style="width:150px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ?? '...'}</span>
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ??
+                            "..."}</span>
                     </div>
                 `;
             }
         },
         {
             transTitle: "titles.Status",
-            className: "align-middle text-center",
+            className: "align-middle text-nowrap text-center",
             data: data => {
-                const statusId = Number(data.receipt_status_id || 0);
-                let cls = "bg-secondary";
+                const statusId = parseInt(data.receipt_status_id) || 1;
 
-                if (statusId === 1) cls = "badge text-success bg-success-subtle border border-success";           // active
-                else if (statusId === 2) cls = "badge text-danger bg-danger-subtle border border-danger";       // cancelled
+                const statusClasses = {
+                    1: "badge text-primary bg-primary-subtle border border-primary", // Active
+                    2: "badge text-danger bg-danger-subtle border border-danger" // Canceled
+                };
 
-                return `<span class="badge ${cls} text-capitalize px-3 py-2">
-                            ${data.receipt_status_name || "—"}
-                        </span>`;
+                const cls =
+                    statusClasses[statusId] ??
+                    "badge text-dark bg-light border";
+
+                // It is editable (cancellable) only if it is currently Active (1)
+                const isEditable = statusId === 1;
+
+                return `
+                    <span
+                        data-id="${data.id}"
+                        class="${cls} text-capitalize d-inline-block text-center"
+                        style="min-width:70px; cursor:${
+                            isEditable ? "pointer" : "default"
+                        }"
+                        title="${
+                            isEditable ? "Active Payment" : "Canceled Payment"
+                        }">
+                        ${data.receipt_status_name ??
+                            (statusId === 1 ? "Active" : "Canceled")}
+                    </span>
+                `;
             }
         },
         {
             transTitle: "titles.Updated By",
-            className: 'align-middle text-nowrap',
-            data: (data) => `
+            className: "align-middle text-nowrap",
+            data: data => `
             <div class="d-flex flex-column">
-                <span class="text-capitalize text-primary-custom fw-semibold">${data.update_user ?? ''}</span>
-                <span class="text-muted small">${data.updated_at ?? ''}</span>
+                <span class="text-capitalize text-primary-custom fw-semibold">${data.update_user ??
+                    ""}</span>
+                <span class="text-muted small">${data.updated_at ?? ""}</span>
             </div>`
         },
         {
             transTitle: "titles.Action",
             className: "col_action align-middle text-center text-nowrap",
             data: data => `
-                <a href="javascript:void(0)" class="btn_leave_action" data-id="${data.id}">
+                <a href="javascript:void(0)" class="btn_leave_action" data-id="${data.id}" data-statusid="${data.receipt_status_id}">
                     <i class="fa-solid fa-ellipsis-vertical text-muted fs-5"></i>
                 </a>`
         }
@@ -139,19 +181,18 @@ var ReceiptComponent = new (function() {
             rowCreated: (data, index, tr) => {
                 tr.classList.add("receipt", "cursor-pointer");
                 tr.id = `receipt_id_${data.id}`;
-                tr.dataset.statusid = data.receipt_status_id;
+                tr.dataset.statusId = data.receipt_status_id;
             }
         });
         mThis.listContainer = mThis.ReceiptListView.getListContainer();
-            const sh_parent = mThis.listContainer.parentElement;
-            sh_parent.style.maxHeight = (window.innerHeight - 220) + "px";
-            sh_parent.classList.add("overflow-y-auto");
-            window.onresize = () => {
-                sh_parent.style.maxHeight = (window.innerHeight - 220) + "px";
-            };
+        const sh_parent = mThis.listContainer.parentElement;
+        sh_parent.style.maxHeight = window.innerHeight - 220 + "px";
+        sh_parent.classList.add("overflow-y-auto");
+        window.onresize = () => {
+            sh_parent.style.maxHeight = window.innerHeight - 220 + "px";
+        };
 
         mThis.tblReceipt = mThis.ReceiptListView.getTable();
-
 
         mThis.initDropdownMenus(mThis.tblReceipt);
 
@@ -173,8 +214,8 @@ var ReceiptComponent = new (function() {
 
     mThis.getFilterData = () => {
         let p = {
-            category_id: mThis.elFilter_category.value,
-            search_value: mThis.elSearch.value
+            search_value: mThis.elSearch.value,
+            status_id: mThis.elStatus.value
         };
         mThis.divFilter.querySelectorAll(".filter-field").forEach(el => {
             if (el.dataset.field) {
@@ -184,69 +225,120 @@ var ReceiptComponent = new (function() {
         return p;
     };
 
-    mThis.initDropdownMenus = table => {
+    mThis.initDropdownMenus = (table) => {
         new VSDropdownMenu({
             containerElement: table,
             actionButtonClass: "btn_leave_action",
             cssClass: "bg-white shadow",
             menus: [
                 {
-                    html: '<span class="ps-2 " vslang="title.Change Status"></span>',
-                    icon: `<i class="fa-solid fa-bolt fs-5 text-primary"></i>`,
-                    cssClass: "border-bottom pb-2",
-                    name: "change_receipt_status"
+                    html:
+                        '<span class="ps-2" vslang="title.Cancel Receipt"></span>',
+                    icon: `<i class="fa-regular fa-rectangle-xmark fs-5 text-danger-emphasis"></i>`,
+                    name: "cancel_receipt",
+                    cssClass: "border-bottom pb-2"
                 },
+                {
+                    html:
+                        '<span class="ps-2" vslang="titles.Print Receipt"></span>',
+                    icon: `<i class="fa-solid fa-receipt text-primary fs-5"></i>`,
+                    name: "print_receipt",
+                    cssClass: "border-bottom pb-2"
+                }
             ],
+            onShow: (me, container) => {
+                const menu = me.getActiveMenus(container);
+                const status_id = container.dataset.statusid;
+                menu.cancel_receipt.style.display = status_id === '1' ? 'block' : 'none';
+            },
             onClick: (menuLink, id, name) => {
-                if (name === "delete_receipt") mThis.deleteReceipt(id, menuLink);
-                if (name === "change_receipt_status") mThis.changeReceiptStatus(id, menuLink);
+                if (name === "cancel_receipt") {
+                    mThis.cancelReceipt(id);
+                } else if (name === "print_receipt") {
+                    mThis.printReceipt(id);
+                }
             }
         });
     };
 
-
-    mThis.changeReceiptStatus = (id, link) => {
-        const tr = link.closest("tr");
-        const current_status = tr?.dataset.statusid || "";
-
-        const inputOptions = {
-            context: "success",
-            title: "Change Receipt Status",
-            label: "Select Status",
-            valueKey: "status_id",
-            labelKey: "name",
-            confirmButtonText: "Save",
-            data: [
-                // { status_id: "1", name: "Active" },
-                { status_id: "2", name: "Cancelled" },
-            ],
-            defaultValue: current_status,
-            onConfirm: (status, btn, me) => {
-                const payload = {
-                    id: id,
-                    receipt_status_id: status.status_id
-                };
-
-                vsapi.post(`${mThis.base_url}/prm/receipts/update-status`, payload, { loader: false, agent: btn })
-                    .then((res) => {
-                        if (res.status_code === 200) {
-                            me.close();
-                            cv_interact.success("Receipt status updated");
-                            mThis.ReceiptListView.showPage(mThis.getFilterData());
-                        } else {
-                            me.setError(res.data || "Unable to update status");
-                        }
-                    });
-            },
-        };
-        InputBox.show(inputOptions);
+    mThis.printReceipt = (id, menuLink) => {
+        PrintReceiptDialog.show({
+            receipt_id: id,
+            btn: menuLink
+        });
     };
 
+    mThis.cancelReceipt = id => {
+        Swal.fire({
+            title: "Cancel Receipt?",
+            text: "This will restore the due balance on the invoice.",
+            icon: "warning",
+            input: "textarea",
+            inputPlaceholder: "Reason for cancellation (required)...",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            confirmButtonText: "Yes, Cancel it!",
+            reverseButtons: true,
+            inputValidator: value => {
+                if (!value) return "You must provide a reason!";
+            },
+            showLoaderOnConfirm: true,
+            preConfirm: remark => {
+                let op = { id: id, remarks: remark };
+                return vsapi
+                    .call(`${mThis.base_url}/prm/receipts/cancel`, op, null)
+                    .then(res => {
+                        if (res.status_code !== 200) {
+                            throw new Error(
+                                res.error_message || "Failed to cancel"
+                            );
+                        }
+                        return res;
+                    })
+                    .catch(error => {
+                        Swal.showValidationMessage(`Request failed: ${error}`);
+                    });
+            },
+            allowOutsideClick: () => !Swal.isLoading()
+        }).then(result => {
+            if (result.isConfirmed) {
+                cv_interact.success("Receipt has been canceled.");
+                mThis.ReceiptListView.showPage(mThis.getFilterData());
+            }
+        });
+    };
 
-    mThis.show = () => {
+    mThis.prepareFormOptions = onFinish => {
+        vsapi
+            .call(
+                `${main_view.base_url}/prm/receipts/form-options`,
+                null,
+                null,
+                null
+            )
+            .then(res => {
+                const d = res.status_code == 200 ? res.data : {};
+                VSUtil.setComboItems(
+                    mThis.elStatus,
+                    d.receipt_statuses,
+                    "id",
+                    "name",
+                    "",
+                    "All Statuses",
+                    ""
+                );
+                if (typeof onFinish === "function") onFinish();
+            });
+    };
+
+    mThis.show = options => {
         mThis.init();
-        main_view.setContentView(mThis.self, mThis.title_prop);
-        mThis.ReceiptListView.showPage(mThis.getFilterData());
+        mThis.options = options;
+
+        mThis.prepareFormOptions(() => {
+            main_view.setContentView(mThis.self, mThis.title_prop);
+            mThis.ReceiptListView.showPage(mThis.getFilterData());
+        });
     };
 
     return mThis;
