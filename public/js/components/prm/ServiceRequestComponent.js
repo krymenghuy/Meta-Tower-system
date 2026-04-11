@@ -149,8 +149,8 @@ var ServiceRequestComponent = (function () {
 
                 return `
                     <div class="d-flex flex-column align-items-start">
-                        <span class="text-primary text-nowrap">${data.scheduled_date ?? ''}</span>
-                        <span class="text-prm-custom small text-nowrap">
+                        <span class="text-prm-custom text-nowrap">${data.scheduled_date ?? ''}</span>
+                        <span class="text-warning small text-nowrap">
                             Start Time: ${formatTime(data.start_time)}
                         </span>
                     </div>
@@ -265,7 +265,7 @@ var ServiceRequestComponent = (function () {
         };
         mThis.tblServiceRequest = mThis.ServiceRequestListView.getTable();
 
-       
+
 
 
 
@@ -337,7 +337,7 @@ var ServiceRequestComponent = (function () {
                menu.accept_request.style.display = (status_id >= 2) ? 'none' : 'block';
                menu.reject_request.style.display = (status_id >= 2) ? 'none' : 'block';
 
-               
+
             },
             onClick: (menuLink, id, name) => {
                 if (name === 'accept_request') mThis.acceptRequest(id, menuLink);
@@ -364,7 +364,7 @@ var ServiceRequestComponent = (function () {
                 {
                     op.remarks = value;
                     console.log(44,op);
-                    
+
                     vsapi.call(`${main_view.base_url}/prm/service-request/reject`,op,null).then((res) => {
                         if(res.status_code === 200)
                         {
