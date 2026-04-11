@@ -237,10 +237,19 @@ class Amenity extends VSModel
         ];
     }
 
-    public function deleteAmenity($id = null){
+   
+    public function deleteAmenity($id = null)
+    {
         $id = $id ?? $this->id;
-        $deleted = DB::table('amenities')->where('id',$id)->delete();
-        return $deleted ? DV::depends($deleted,['action'=>'deleted']) : DV::error('Delete failed.');
+        $exists = DB::table('reservations')->where('amenity_id', $id)->exists();
+        if ($exists) {
+            return DV::error('Cannot delete this amenity because it has reservation records.');
+        }
+        $deleted = DB::table('amenities')->where('id', $id)->delete();
+        if($deleted){
+            DB::table('maintenances')->where('amenity_id', $id)->delete();
+        }
+        return $deleted ? DV::depends($deleted, ['action' => 'deleted']) : DV::error('Delete failed.');
     }
 
     function updateAmenityStatus($status_id, $id = null, $ss = null) {

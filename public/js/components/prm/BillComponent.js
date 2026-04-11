@@ -9,7 +9,7 @@ var BillComponent = (() => {
     mThis.divFilter = mThis.self.querySelector("#_divFilter_bill");
     mThis.elFilter_vendor = mThis.self.querySelector("#_bill_vendor_id");
     mThis.elFilter_status = mThis.self.querySelector("#_bill_status_id");
-    mThis.elFilter_category = mThis.self.querySelector("#_bill_expanse_type_id");
+    mThis.elFilter_category = mThis.self.querySelector("#_bill_expense_type_id");
     mThis.elSearch = mThis.self.querySelector("#_search_bill");
 
     mThis.cols = [

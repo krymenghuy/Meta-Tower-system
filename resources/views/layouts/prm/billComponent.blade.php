@@ -11,7 +11,7 @@
                 <select type="id" id="_bill_status_id" class="data-input filter-field form-control" data-field="status_id"></select>
             </div>
             <div class="col-12 col-md-6 col-lg-2">
-                <select type="id" id="_bill_expanse_type_id" class="data-input filter-field form-control" data-field="expanse_type_id"></select>
+                <select type="id" id="_bill_expense_type_id" class="data-input filter-field form-control" data-field="expanse_type_id"></select>
             </div>
             <!-- <div class="col-12 col-md-6 col-lg-2">
                 <input data-select="datepicker" class="form-control filter-field" placeholder="Filter date" data-field="bill_date" />

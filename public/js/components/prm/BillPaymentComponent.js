@@ -7,8 +7,9 @@ var BillPaymentComponent = (() => {
     mThis.self = main_view.VSAppContent.querySelector("#_main_bill_payment_component");
     mThis.btnAdd = mThis.self.querySelector("#_btnBillPayment");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_bill");
-    mThis.elFilter_vendor = mThis.self.querySelector("#_bill_vendor_id");
+    mThis.elFilter_category = mThis.self.querySelector("#_bill_expense_type_id");
     mThis.elFilter_status = mThis.self.querySelector("#_bill_status_id");
+    mThis.elFilter_date = mThis.self.querySelector("#_payment_date");
     mThis.elSearch = mThis.self.querySelector("#_search_bill_payment"); 
 
     mThis.cols = [
@@ -155,13 +156,15 @@ var BillPaymentComponent = (() => {
 
     mThis.getFilterData = () => {
         let p = {
-            vendor_id: mThis.elFilter_vendor.value,
+            // expense_type_id: mThis.elFilter_category.value,
             status_id: mThis.elFilter_status.value,
             search_value: mThis.elSearch.value,
+            payment_date:    mThis.elFilter_date?.value ?? "",
         };
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             p[el.dataset.field] = el.value;
         });
+        console.log("Filter data:", p);
         return p;
     };
     mThis.refreshList = (filter) => {
@@ -302,7 +305,7 @@ var BillPaymentComponent = (() => {
         vsapi.call(`${main_view.base_url}/prm/bill/form-options`, null, null, null)
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elFilter_vendor, d.vendors, "id", "vendor", "", "All Vendor", "");
+                VSUtil.setComboItems(mThis.elFilter_category, d.expense_types, "id", "expense_category", "", "All Category", "");
                 VSUtil.setComboItems(mThis.elFilter_status, d.bill_statuses, "id", "bill_status", "", "All Statuses", "");
                 if (typeof onFinish === "function") onFinish();
             });

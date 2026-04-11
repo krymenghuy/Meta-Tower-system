@@ -1,6 +1,4 @@
 "use strict";
-
-
 var ReservationComponent = (() => {
     const mThis = {};
     mThis.title_prop = "Reservation";
@@ -17,13 +15,7 @@ var ReservationComponent = (() => {
             title: "",
             className: "align-middle text-capitalize",
         },
-        // {
-        //     transTitle: "titles.Amenity Category",
-        //     className: "align-middle",
-        //    data: (data) => {
-        //         return `<span class="text-primary-custom">${data.amenity_category ?? ''}</span>`;
-        //     }
-        // },
+        
         {
             transTitle: "titles.Amenity Info",
             className: "align-middle",
@@ -32,14 +24,6 @@ var ReservationComponent = (() => {
                         <small class="d-block text-muted">${data.amenity_code ?? ""}</small>`;
             },
         },
-        // {
-        //     transTitle: "titles.Building Info",
-        //     className: "align-middle",
-        //    data: (data) => {
-        //         return `<span class="text-primary-custom">${data.building_name ?? ''}</span>
-        //                 <small class="d-block text-muted">${data.floor_number ?? ''}</small>`;
-        //     }
-        // },
         {
             transTitle: "titles.Tenant Info",
             className: "align-middle",
@@ -63,24 +47,17 @@ var ReservationComponent = (() => {
                 };
                 const start12 = to12h((data.start_time ?? "").substring(0, 5));
                 const end12 = to12h((data.end_time ?? "").substring(0, 5));
-                return `<span class="d-block text-prm-custom">${data.date ?? ""}</span>
+                return `<span class="d-block text-prm-custom">${data.booking_date ?? ""}</span>
                             <small class="text-muted">${start12} - ${end12}</small>`;
             },
         },
-        // {
-        //     transTitle: "titles.MAX Capacity",
-        //     className: "align-middle",
-        //     data: (data) => {
-        //         return `<span class="text-primary-custom">${data.amenity_capacity ?? ""}</span> <span class="text-muted">PAX/Room</span>`;
-        //     },
-        // },
         {
-            transTitle: "titles.Remark",
+            transTitle: "titles.Remarks",
             className: "align-middle",
             data: (data, index, tr) => {
                 return `
                     <div class="text-primary-custom" style="width:150px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.description ?? "__"}</span>
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ?? "__"}</span>
                     </div>
                 `;
             },
@@ -89,33 +66,22 @@ var ReservationComponent = (() => {
             transTitle: "titles.Status",
             className: "align-middle",
             data: (data) => {
-                // Standardize the status string
                 const status = (data.status ?? "").toLowerCase();
-                let cls =
-                    "badge border border-secondary text-secondary bg-secondary-subtle";
-                let icon = "fa-regular fa-calendar";
+                let cls = "badge border border-secondary text-secondary bg-secondary-subtle";
                 let label = "Upcoming";
-
                 if (status === "upcoming") {
                     cls ="badge border border-info text-info bg-info-subtle";
-                    icon = "fa-regular fa-clock fa-spin";
                     label = "Upcoming";
                 } else if (status === "in-progress") {
                     cls ="badge border border-warning text-warning bg-warning-subtle";
-                    icon = "fa-solid fa-spinner fa-spin-pulse"; 
                     label = "In-Progress";
                 } else if (status === "completed") {
                     cls ="badge border border-success text-success bg-success-subtle";
-                    icon = "fa-regular fa-circle-check fa-beat-fade";
                     label = "Completed";
                 }
-
                 return `
-                    <span class="${cls} px-3 py-2 d-inline-flex align-items-center gap-2"
-                        style="min-width:110px"
-                        data-status_id="${data.status_id}">
-                        <i class="${icon}" style="font-size:13px;"></i>
-                        <span>${label}</span>
+                    <span class="${cls} px-3 py-2 d-inline-flex align-items-center gap-2" style="min-width:90px">
+                        ${label}
                     </span>
                 `;
             },
@@ -393,7 +359,7 @@ const CreateReservationDialog = (() => {
                             </div>
                             <div class="col-6">
                                 <div class="material-input outlined">
-                                    <select data-style="material" name="amenity_category" class="data-input form-control" data-field="category_id" placeholder="Amenity Category"  >
+                                    <select data-style="material" name="amenity_category" class="data-input form-control" data-field="category_id"  placeholder="Amenity Category"  >
                                     </select>
                                 </div>
                             </div>
@@ -411,7 +377,7 @@ const CreateReservationDialog = (() => {
                             </div>
                             <div class="col-6">
                                 <div class="material-input outlined">
-                                    <input type="text" data-type="date" name="start_date" required class="data-input form-control form_input" data-field="date" />
+                                    <input type="text" data-type="date" name="booking_date" required class="data-input form-control form_input" data-field="booking_date" />
                                     <label style="color:#777777;padding-left:6px;">Schedule Date</label>
                                 </div>
                             </div>
@@ -430,8 +396,8 @@ const CreateReservationDialog = (() => {
 
                             <div class="col-12">
                                 <div class="material-input outlined">
-                                    <textarea class="data-input form-control" data-field="description" placeholder=" "></textarea>
-                                    <label style="color:#777777;padding-left:6px;">Description</label>
+                                    <textarea name="remarks" class="data-input form-control" data-field="remarks" placeholder=" "></textarea>
+                                    <label style="color:#777777;padding-left:6px;">remarks</label>
                                 </div>
                             </div>
                         </div>`,
@@ -573,7 +539,7 @@ const CreateReservationDialog = (() => {
                             ) {
                                 op.tenant_id = me._selectedTenantId;
                             }
-                            op.date = op.start_date || op.date;
+                            op.date = op.booking_date || op.date;
                             vsapi
                                 .call(
                                     [

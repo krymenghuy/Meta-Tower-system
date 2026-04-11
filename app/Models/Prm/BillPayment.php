@@ -111,8 +111,8 @@ class BillPayment
 
         $search_value = $d->search_value ?? null;
         $bill_id      = $d->bill_id      ?? null;
-        $vendor_id    = $d->vendor_id    ?? null;  
-        $status_id    = $d->status_id    ?? null;
+        $expense_type_id    = $d->expense_type_id    ?? null; 
+        $payment_date       = $d->payment_date       ?? null;
         $status_id    = $d->status_id    ?? null;
         $current_page = $d->current_page ?? 1;
         $per_page     = $d->per_page     ?? 10;
@@ -124,15 +124,17 @@ class BillPayment
         $str_search = '1=1';
         $str_moreWhere = '2=2';
 
-        if ($vendor_id) {
-            $str_moreWhere .= ' AND bp.vendor_id = ' . $vendor_id;
-        }
-        
         if ($search_value) {
             $skip_rows    = 0;
             $search_value = escape_like_str($search_value);
-            $str_search   = "(v.name LIKE '%" . $search_value ."%' OR b.bill_number LIKE '%" . $search_value ."%')";
+            $str_search   = "(v.name LIKE '%" . $search_value ."%' OR b.bill_number LIKE '%" . $search_value ."%' OR bp.payer LIKE '%" . $search_value ."%')";
         }
+        if ($expense_type_id) {
+            $str_moreWhere .= ' AND b.expense_type_id = ' . $expense_type_id;
+        }
+        // if ($payment_date) {
+        //     $str_moreWhere .= ' AND bp.payment_date = ' . $payment_date;
+        // }
 
         $query = DB::table('bill_payments as bp')
             ->leftJoin('bills as b', 'b.id', 'bp.bill_id')
