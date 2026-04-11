@@ -365,11 +365,7 @@ var AmenityComponent = (() => {
                 if (confirmed) {
                     vsapi
                         .call(
-                            `${main_view.base_url}/prm/amenity/delete`,
-                            op,
-                            false,
-                            false,
-                            false,
+                            `${main_view.base_url}/prm/amenity/delete`,op,false,false,false,
                         )
                         .then((res) => {
                             if (res.status_code === 200) {
@@ -534,8 +530,6 @@ const AmenityDialog = (() => {
                                 <label style="color:#777777;padding-left:6px;">Description</label>
                             </div>
                         </div>
-
-
                     </div>`,
                     ].join("");
                 },

@@ -283,21 +283,14 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('bill')->group
     Route::post('/view-attachment', [BillController::class, 'viewBillAttachment']);
 });
 
-// Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('bill/payment')->group(function () {
-//     Route::post('/save', [BillPaymentController::class, 'saveBillPayment']);
-//     Route::post('/list-paginate', [BillPaymentController::class, 'getListBillPayment']);
-//     Route::post('/details', [BillPaymentController::class, 'billPaymentDetails']);
-//     Route::post('/form-options', [BillPaymentController::class, 'getFormOptions']);
-//     Route::post('/delete', [BillPaymentController::class, 'deleteBillPayment']);
-//     Route::post('/update-status', [BillPaymentController::class, 'updateBillPaymentStatus']);
-// });
-
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('bill-payment')->group(function () {
     Route::post('/form-options', [BillPaymentController::class, 'getFormOptions']);
     Route::post('/save', [BillPaymentController::class, 'savePayment']);
     Route::post('/list-paginate', [BillPaymentController::class, 'getListPaginate']);
+    Route::post('/details', [BillPaymentController::class, 'billPaymentDetails']);
     Route::post('/delete',  [BillPaymentController::class, 'deletePayment']);
+    Route::post('/cancel', [BillPaymentController::class, 'cancelPayment']);
 });
 
 

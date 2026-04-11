@@ -9,7 +9,7 @@ var BillComponent = (() => {
     mThis.divFilter = mThis.self.querySelector("#_divFilter_bill");
     mThis.elFilter_vendor = mThis.self.querySelector("#_bill_vendor_id");
     mThis.elFilter_status = mThis.self.querySelector("#_bill_status_id");
-    mThis.elFilter_category = mThis.self.querySelector("#_bill_category_id");
+    mThis.elFilter_category = mThis.self.querySelector("#_bill_expense_type_id");
     mThis.elSearch = mThis.self.querySelector("#_search_bill");
 
     mThis.cols = [
@@ -291,7 +291,7 @@ var BillComponent = (() => {
         let p = {
             vendor_id: mThis.elFilter_vendor.value,
             status_id: mThis.elFilter_status.value,
-            // expense_type_id: mThis.elFilter_category.value,
+            expense_type_id: mThis.elFilter_category.value,
             search_value: mThis.elSearch.value,
         };
 

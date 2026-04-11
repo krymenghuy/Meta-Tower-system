@@ -142,7 +142,7 @@ class Bill
         if ($search_value) {
             $skip_rows    = 0;
             $search_value = escape_like_str($search_value);
-            $str_search   = "(v.name LIKE '%" . $search_value ."%' OR b.bill_number LIKE '%" . $search_value ."%')";
+            $str_search   = "(b.bill_number LIKE '%" . $search_value ."%' OR v.name LIKE '%" . $search_value ."%')";
         }
 
         if ($vendor_id) {
@@ -153,7 +153,7 @@ class Bill
             $str_moreWhere .= ' AND b.status_id = ' . $status_id;
         }
         if ($expense_type_id) {
-            $str_moreWhere .= ' AND b.expense_type_id = ' . $expenese_type_id;
+            $str_moreWhere .= ' AND b.expense_type_id = ' . $expense_type_id;
         }
 
         $query = DB::table('bills as b')

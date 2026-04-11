@@ -61,4 +61,13 @@ class BillPaymentController extends Controller
 
         return JDV::result(BillPayment::getFormOptions($bill_id, $ss));
     }
+
+    function cancelPayment(Request $req)
+    {
+        $ss = XAuthService::verifyAuth($req, 217);
+        if($ss->status_code != 200) return JDV::raw($ss);
+        $x = new BillPayment();
+        $cancel = $x->cancelPayment($req, $ss);
+        return JDV::raw($cancel);
+    }
 }
