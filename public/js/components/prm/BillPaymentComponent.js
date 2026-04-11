@@ -86,7 +86,7 @@ var BillPaymentComponent = (() => {
             className: "col_action align-middle",
             data: (data) => `
                 <div class="d-flex justify-content-center align-items-end">
-                    <a href="javascript:void(0)" class="btn--Options btn_dropdown_vendor_action"
+                    <a href="javascript:void(0)" class="btn--Options btn_bill_action"
                         data-id="${data.id}" data-vendorId="${data.vendor_id || ''}"
                         data-statusid="${data.status_id || ''}" aria-haspopup="true" aria-expanded="false">
                         <i class="fa-solid fa-ellipsis-vertical text-black fs-5"></i>
@@ -156,10 +156,11 @@ var BillPaymentComponent = (() => {
 
     mThis.getFilterData = () => {
         let p = {
-            // expense_type_id: mThis.elFilter_category.value,
+            
             status_id: mThis.elFilter_status.value,
             search_value: mThis.elSearch.value,
             payment_date:    mThis.elFilter_date?.value ?? "",
+            // expense_type_id: mThis.elFilter_category.value, 
         };
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             p[el.dataset.field] = el.value;
@@ -167,50 +168,35 @@ var BillPaymentComponent = (() => {
         console.log("Filter data:", p);
         return p;
     };
-    mThis.refreshList = (filter) => {
-        mThis._seenBillNumbers = new Set();
-        mThis.BillPaymentListView.showPage(filter ?? mThis.getFilterData());
-    };
 
     mThis.initDropdownMenus = (table) => {
         const menuOptopns = {
             containerElement: table,
-            actionButtonClass: "btn_dropdown_vendor_action",
+            actionButtonClass: "btn_bill_action",
             cssClass: "bg-white shadow",
             menus: [
                 {
-                    html: '<span class="ps-2" vslang="titles.Delete Bill Record"></span>',
+                    html: '<span class="ps-2" vslang="titles.Delete Payment"></span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "delete_bill",
+                    name: "delete_payment",
                 },
                 // {
-                //     html: '<span class="ps-2">View Detail</span>',
+                //     html: '<span class="ps-2">Cancel Payment</span>',
                 //     icon: `<i class="fa-solid fa-print" style="color: rgb(22, 80, 137);"></i>`,
                 //     cssClass: "border-bottom pb-2",
-                //     name: "view_bill",
+                //     name: "cancel_payment",
                 // },
             ],
             onClick: (menuLink, id, name) => {
                 switch (name) {
-                    case "delete_bill": mThis.deleteBill(id, menuLink); break;
-                    case "view_bill":   mThis.viewBill(id, menuLink);   break;
+                    case "delete_payment": mThis.deletePayment(id, menuLink); break;
+                    case "cancel_payment":   mThis.cancelPayment(id, menuLink);   break;
                     default: break;
                 }
             },
         };
         new VSDropdownMenu(menuOptopns);
-    };
-
-    mThis.viewBill = (id, menuLink) => {
-        const tr = menuLink.closest("tr");
-        const bill_id = tr?.dataset.billid;
-        if (!bill_id) return cv_interact.error("Bill ID not found.");
-
-        const expandedContainer = tr?.nextElementSibling?.querySelector(".expandable-content");
-        if (expandedContainer) {
-            mThis.displayBillDetail(expandedContainer, bill_id);
-        }
     };
 
     mThis.editBill = (id, menuLink) => {
@@ -225,18 +211,49 @@ var BillPaymentComponent = (() => {
         BillPaymentDialog.show(op);
     };
 
-    mThis.deleteBill = (id, menuLink) => {
-        cv_interact.confirm("Delete this Bill Record?",
-            { transTitle: "Delete Bill Record", context: "delete", confirmButtonText: "Delete" },
+    mThis.deletePayment = (id, menuLink) => {
+        const op = {
+             id,
+             btn: menuLink,
+             onClose: () =>
+             mThis.BillPaymentListView.showPage(mThis.getFilterData()),
+        }
+        cv_interact.confirm("Delete this Payment?",
+            { context: "delete", confirmButtonText: "Delete" },
             function (e) {
                 if (e) {
-                    vsapi.call(`${main_view.base_url}/prm/bill/delete`, { id }, false, false, false)
+                    vsapi.call(`${main_view.base_url}/prm/bill-payment/delete`, { id }, false, false, false)
                         .then((res) => {
                             if (res.status_code == 200) {
                                 cv_interact.success(res.message || "Bill record has been deleted.");
                                 mThis.BillPaymentListView.showPage(mThis.getFilterData());
                             } else {
                                 cv_interact.error(res.error_message || "Failed to delete bill record.");
+                            }
+                        });
+                }
+            }
+        );
+    };
+
+    mThis.cancelPayment = (id, menuLink) => {
+        const op = {
+            id,
+            btn: menuLink,
+            onClose: () =>
+                mThis.BillPaymentListView.showPage(mThis.getFilterData()),
+        }
+        cv_interact.confirm("Cancel this Bill Payment?",
+            { context: "warning", confirmButtonText: "Cancel Bill" },
+            function (e) {
+                if (e) {
+                    vsapi.call(`${main_view.base_url}/prm/bill-payment/cancel`, { id }, false, false, false)
+                        .then((res) => {
+                            if (res.status_code == 200) {
+                                cv_interact.success(res.message || "Bill payment has been cancelled.");
+                                mThis.BillPaymentListView.showPage(mThis.getFilterData());
+                            } else {
+                                cv_interact.error(res.error_message || "Failed to cancel bill payment.");
                             }
                         });
                 }

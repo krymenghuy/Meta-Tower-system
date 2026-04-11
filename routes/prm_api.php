@@ -290,6 +290,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('bill-payment'
     Route::post('/list-paginate', [BillPaymentController::class, 'getListPaginate']);
     Route::post('/details', [BillPaymentController::class, 'billPaymentDetails']);
     Route::post('/delete',  [BillPaymentController::class, 'deletePayment']);
+    Route::post('/cancel', [BillPaymentController::class, 'cancelPayment']);
 });
 
 

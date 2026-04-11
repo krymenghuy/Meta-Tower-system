@@ -4,7 +4,7 @@
             <div class="col-12 col-md-6 col-lg-3">
                 <input type="text" class="form-control rounded-2 pe-5 filter-field input-search" id="_search_bill" placeholder="Search ____" >
             </div>
-            <div class="col-12 col-md-6 col-lg-2">
+            <div class="col-12 col-md-6 col-lg-2 d-none ">
                 <select type="id" id="_bill_vendor_id" class="data-input filter-field form-control" data-field="vendor_id"></select>
             </div>
             <div class="col-12 col-md-6 col-lg-2">

@@ -184,7 +184,6 @@ var ReservationComponent = (() => {
             const f = el.dataset.field;
             p[f] = el.value;
         });
-        console.log(2222,p);
         
         return p;
     };
