@@ -29,3 +29,4 @@
     </div>
     <div id="_receipt_list" class="table-responsive  mt-3 rounded-2"></div>
 </div>
+<script src="{{ asset('js/components/prm/PrintReceipt.js') }}"></script>
