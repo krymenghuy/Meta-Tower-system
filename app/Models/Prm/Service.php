@@ -86,7 +86,9 @@ class Service
         $count = $clone_query->count('s.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
         foreach($rows as $row){
-            $row = setOfficialDates($row, [], ['updated_at'], []);
+            // $row = setOfficialDates($row, [], ['updated_at'], []);
+            $processed = setOfficialDates($row, ['bill_date','due_date'], ['updated_at'], []);
+            if ($processed) $row = $processed;
         }
         return new LengthAwarePaginator($rows,$count,$per_page,$current_page);
 
