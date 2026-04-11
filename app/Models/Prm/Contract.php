@@ -348,17 +348,78 @@ class Contract
                 ->first();
         }
 
-    public static function getFormOptions($id, $ss, $space_id = null)
+    public static function getFormOptions($id, $ss, $space_id = null, $include_space_ids = [], $restrict_to_include_spaces = false)
     {
         $contract_details = $id ? self::contractDetails($id) : null;
         $current_space_id = $contract_details->space_id ?? $space_id;
+        $normalizedIncludeIds = [];
+        foreach ( $include_space_ids as $sid) {
+            $sid = $sid;
+            if ($sid > 0) {
+                $normalizedIncludeIds[$sid] = true;
+            }
+        }
+        if (!empty($current_space_id)) {
+            $normalizedIncludeIds[ $current_space_id] = true;
+        }
+        if ($restrict_to_include_spaces && !empty($normalizedIncludeIds)) {
+            $building_spaces = DB::table('building_spaces')
+                ->join('space_types as st', 'st.id', '=', 'building_spaces.space_type_id')
+                ->whereIn('building_spaces.id', array_keys($normalizedIncludeIds))
+                ->selectRaw('
+                    building_spaces.id,
+                    building_spaces.code,
+                    building_spaces.code as floor_id,
+                    building_spaces.building_id,
+                    building_spaces.space_type_id,
+                    st.name as space_type,
+                    building_spaces.sqm_size,
+                    building_spaces.price_type,
+                    building_spaces.price
+                ')
+                ->orderBy('building_spaces.code')
+                ->get();
+        } else {
+            $building_spaces = GeneralSettings::options_building_space($ss, $current_space_id);
+        }
+        if (!empty($normalizedIncludeIds)) {
+            $existingIds = [];
+            foreach ($building_spaces as $row) {
+                $rid = ($row->id ?? 0);
+                if ($rid > 0) {
+                    $existingIds[$rid] = true;
+                }
+            }
+            $missingIds = array_values(array_diff(array_keys($normalizedIncludeIds), array_keys($existingIds)));
+            if (!empty($missingIds)) {
+                $missingRows = DB::table('building_spaces')
+                    ->join('space_types as st', 'st.id', '=', 'building_spaces.space_type_id')
+                    ->whereIn('building_spaces.id', $missingIds)
+                    ->selectRaw('
+                        building_spaces.id,
+                        building_spaces.code,
+                        building_spaces.code as floor_id,
+                        building_spaces.building_id,
+                        building_spaces.space_type_id,
+                        st.name as space_type,
+                        building_spaces.sqm_size,
+                        building_spaces.price_type,
+                        building_spaces.price
+                    ')
+                    ->orderBy('building_spaces.code')
+                    ->get();
+                foreach ($missingRows as $row) {
+                    $building_spaces->push($row);
+                }
+            }
+        }
         return (object) [
             'contract_details' => $contract_details,
             'tenants'      => GeneralSettings::options_tenant($ss),
             'legal_names'      => GeneralSettings::options_legal($ss),
             'statuses'      => GeneralSettings::options_contract_status($ss),
             'space_types'      => GeneralSettings::options_space_type($ss),
-            'building_spaces'      => GeneralSettings::options_building_space($ss, $current_space_id),
+            'building_spaces'      => $building_spaces,
             'business_types'   => GeneralSettings::options_business_type($ss)
         ];
     }
@@ -438,12 +499,74 @@ class Contract
             ]);
         }
 
+        $relatedBookings = DB::table('space_bookings as sb')
+            ->join('building_spaces as bs', 'bs.id', '=', 'sb.space_id')
+            ->select('sb.space_id', 'bs.code', 'sb.booker_phone')
+            ->orderByDesc('sb.id')
+            ->get();
+
+        $relatedSpaces = [];
+        $seenSpaceIds = [];
+        foreach ($relatedBookings as $row) {
+            $normalizedPhone = self::normalizePhone($row->booker_phone ?? '');
+            $spaceId = ($row->space_id ?? 0);
+            if ($spaceId <= 0 || $normalizedPhone !== $booker_phone || isset($seenSpaceIds[$spaceId])) {
+                continue;
+            }
+            $seenSpaceIds[$spaceId] = true;
+            $relatedSpaces[] = (object) [
+                'id' => $spaceId,
+                'code' => $row->code ?? '',
+            ];
+        }
+
         return self::phoneValidationResponse(true, 'Booking phone matched with tenant.', [
             'has_booking' => true,
             'booker_phone' => $booker_phone_raw,
             'tenant_id' => $tenant->id,
             'tenant_name' => $tenant->name,
+            'spaces' => $relatedSpaces,
         ]);
+    }
+
+    public static function getBookingSpacesByTenantId($tenant_id)
+    {
+        $tenant_id = $tenant_id;
+        if ($tenant_id <= 0) {
+            return [];
+        }
+
+        $tenantPhoneRaw = DB::table('tenants')->where('id', $tenant_id)->value('phone_number');
+        $tenantPhone = self::normalizePhone($tenantPhoneRaw ?? '');
+        if ($tenantPhone === '') {
+            return [];
+        }
+
+        $rows = DB::table('space_bookings as sb')
+            ->join('building_spaces as bs', 'bs.id', '=', 'sb.space_id')
+            ->select('sb.space_id', 'bs.code', 'sb.booker_phone')
+            ->orderByDesc('sb.id')
+            ->get();
+
+        $spaces = [];
+        $seen = [];
+        foreach ($rows as $row) {
+            $spaceId = ($row->space_id ?? 0);
+            if ($spaceId <= 0 || isset($seen[$spaceId])) {
+                continue;
+            }
+            $bookingPhone = self::normalizePhone($row->booker_phone ?? '');
+            if ($bookingPhone !== $tenantPhone) {
+                continue;
+            }
+            $seen[$spaceId] = true;
+            $spaces[] = (object) [
+                'id' => $spaceId,
+                'code' => $row->code ?? '',
+            ];
+        }
+
+        return $spaces;
     }
 
     /**

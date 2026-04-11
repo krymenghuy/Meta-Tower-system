@@ -1051,27 +1051,7 @@ var TenantComponent = new (function () {
                                 </div>
                             </div>
 
-                            <div class="d-flex justify-content-between align-items-center mb-2 mt-2">
-                                <small class="text-muted fw-semibold">Renewal history</small>
-                                <small class="text-muted">${renewalsCount} renewals</small>
-                            </div>
-                            <div class="table-responsive">
-                                <table class="table table-sm table--white mb-0 renewal-history-table">
-                                    <thead class="bg-light">
-                                        <tr class="text-uppercase small">
-                                            <th class="border-0">Renewal date</th>
-                                            <th class="border-0">Start date</th>
-                                            <th class="border-0">End date</th>
-                                            <th class="border-0">Unit Code</th>
-                                            <th class="border-0">Remarks</th>
-                                            <th class="border-0">Updated by</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        ${renewalsTableRowsHtml}
-                                    </tbody>
-                                </table>
-                            </div>
+                           
                         </div>
                     </div>
                 </div>
@@ -1638,7 +1618,7 @@ const CreateTenantDialog = (() => {
                                 ? me.tenantImageBox.getImage()
                                 : "";
                                 console.log(4444,op);
-                                
+
                             vsapi
                                 .call(
                                     [
