@@ -24,7 +24,7 @@ var ContractComponent = new (function () {
             transTitle: "titles.Name",
             className: "align-middle text-nowrap",
             data: (data, index) => `
-                        <span class="">${data.tenant_name ?? ''}</span>`,
+                        <span class="text-prm-custom">${data.tenant_name ?? ''}</span>`,
         },
         {
             transTitle: "titles.Contact Info",
@@ -74,40 +74,32 @@ var ContractComponent = new (function () {
             transTitle: "titles.Price",
             className: "align-middle",
             data: (data) => {
-                const cur = data.cur_symbol ?? '$';
-                const price = data.price ? Number(data.price).toLocaleString() : '-';
+                const price = VSMoney.formatAmount(data.price,data.currency_code ?? 'USD');
 
                 if (data.price_type === 'total') {
                     return `
-                        <span class="fw-semibold">
-                            ${cur} ${price}
-                            <small class="text-muted">/mon</small>
-                        </span>
-                        <div class="text-muted small">Whole Room</div>
+                        <span class="text-nowrap w-semibold">${price} <small class="text-nowrap text-muted">/mon</small></span>
+                        <div class="text-nowrap text-muted small">Whole Room</div>
                     `;
                 }
 
                 return `
                     <span class="text-nowrap text-primary-custom">
-                        ${cur} ${price}
-                        <small class="text-muted">/sqm</small>
+                            ${price}
+                        <small class="text-nowrap text-muted">/sqm</small>
                     </span>
-                    <div class="text-muted small">
+                    <div class="text-nowrap text-muted small">
                         ${data.sqm_size ?? '-'} sqm
                     </div>
                 `;
             }
         },
         {
-            title: "DEPOSIT",
+            transTitle: "titles.Deposit",
             className: "align-middle",
             data: (data) => {
-                const cur = data.cur_symbol ?? '$';
-                const amount = data.deposit ?? data.deposit_amount;
-                if (amount === null || amount === undefined || amount === '') {
-                    return `<span class="text-muted">-</span>`;
-                }
-                return `<span class="fw-semibold">${cur} ${Number(amount).toLocaleString()}</span>`;
+               const deposit = VSMoney.formatAmount(data.deposit, data.currency_code ?? 'USD');
+                return `<span class="text-prm-custom">${deposit}</span>`;
             }
         },
 
@@ -171,7 +163,7 @@ var ContractComponent = new (function () {
             className: 'align-middle text-nowrap',
             data: (data, index, tr) => {
                 return `<div class="d-flex flex-column">
-                    <span class="text-capitalize text-start text-prm-custom fw-semibold">${data.update_user ?? ''}</span>
+                    <span class="text-capitalize text-start text-prm-custom">${data.update_user ?? ''}</span>
                     <small class="text-muted">${data.updated_at ?? ''}</small>
                 </div>`;
             }
@@ -719,7 +711,7 @@ var ContractComponent = new (function () {
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
                 // VSUtil.setComboItems(mThis.elTenant, d.tenants, 'id', 'tenant', '', 'All Tenants', null);
-                VSUtil.setComboItems(mThis.elStatus, d.statuses, 'id', 'status_name', '', 'All Statues','');
+                VSUtil.setComboItems(mThis.elStatus, d.statuses, 'id', 'status_name', '', 'All Statuses','');
                 VSUtil.setComboItems(mThis.elBusinessType, d.business_types, 'id', 'business_type', '', 'All Business Type', '');
 
                 if (typeof onFinish === 'function') onFinish();
@@ -896,28 +888,33 @@ const ContractDialog = (() => {
             },
 
             contentCreated: (me) => {
-                me.searchTenant= VSSearchInput.init(me.controls.tenant,{
-                    type: 'select',
+                me.searchTenant = VSSearchInput.init(me.controls.tenant, {
+                    type: "select",
                     prefetch: true,
+                    maxDropdownHeight: "380px",
                     // api:
                     query: {
-                        from: 'tenants',
-                        select: ['id', 'name', 'code', 'legal_name'],
-                        searchFields: { name: 'LIKE', code: '=',legal_name:'LIKE' },
-                        orderBy:[['id','desc']]
+                        from: "tenants",
+                        select: ["id", "name", "code", "legal_name"],
+                        searchFields: { name: "LIKE", code: "=", legal_name: "LIKE" },
+                        orderBy: [["id", "desc"]]
                     },
-                    // showColumnHeader: false,
-                    columns:{
+                    showColumnHeader: true,
+                    columns: {
                         code: "Code",
                         name: "Name",
                         // legal_name: "Legal Name"
                     },
                     onSelect: (item) => {
-                        console.log(123,item);
-                        me.tenant_id = item.id;
-                        me.controls.legal_name.value = item.legal_name || '';
-                        me.tenant_id = item.id || '';
-
+                        const tenantId = item?.id || "";
+                        const tenantName = item?.name || "";
+                        const tenantCode = item?.code || "";
+                        me.controls.tenant.value = tenantCode
+                            ? `${tenantName} (${tenantCode})`
+                            : tenantName;
+                        me.controls.tenant.dataset.tenantId = tenantId;
+                        me.tenant_id = tenantId;
+                        me.controls.legal_name.value = item?.legal_name || "";
                     }
                 });
             },
@@ -949,20 +946,31 @@ const ContractDialog = (() => {
                 api: {
                     endpoint: [main_view.base_url, "/prm/contract/form-options",].join(""),
                     params: (op) => {
-                        return { id: op.id };
+                        return {
+                            id: op.id,
+                            space_id: op.space_id ?? null
+                        };
                     },
                 },
             },
 
             onPrepareForm: (me, data) => {
                 LocaleManager.translateZone(me.divModal);
-                // Preselect tenant when coming from TenantComponent (create-from-tenant)
-                if (!me.dataOptions.id && me.dataOptions.tenant_id) {
-                    me.tenant_id = me.dataOptions.tenant_id;
+                //   const isReadOnly = me.dataOptions.id > 0;
+                    // me.setReadOnly(isReadOnly, ["business_type_id"]);
+                if (me.searchTenant && typeof me.searchTenant.reset === "function") {
+                    me.searchTenant.reset();
+                }
+                // Preselect tenant when coming from TenantComponent or from booked unit phone-match.
+                const prefillTenantId = !me.dataOptions.id
+                    ? (me.dataOptions.tenant_id ?? data?.prefill_tenant_id ?? null)
+                    : null;
+                if (prefillTenantId) {
+                    me.tenant_id = prefillTenantId;
                     vsapi
                         .call(
                             [main_view.base_url, "/prm/tenant/details"].join(""),
-                            { id: me.dataOptions.tenant_id },
+                            { id: prefillTenantId },
                             false,
                             null,
                         )
@@ -972,7 +980,11 @@ const ContractDialog = (() => {
                                 const tenantInput =
                                     me.divModal.querySelector('input[name="tenant"]');
                                 if (tenantInput) {
-                                    tenantInput.value = t.name || "";
+                                    const tenantCode = t.code || "";
+                                    tenantInput.value = tenantCode
+                                        ? `${t.name || ""} (${tenantCode})`
+                                        : (t.name || "");
+                                    tenantInput.dataset.tenantId = prefillTenantId;
                                 }
                                 if (me.controls.legal_name) {
                                     me.controls.legal_name.value = t.legal_name || "";
@@ -1018,7 +1030,11 @@ const ContractDialog = (() => {
                     unitSelect.onchange = (e) => {
                         applyUnitData(e.target.value);
                     };
-                    if (unitSelect.value) {
+                    const defaultSpaceId = me.dataOptions?.space_id ?? data?.contract_details?.space_id ?? '';
+                    if (defaultSpaceId) {
+                        unitSelect.value = defaultSpaceId;
+                        applyUnitData(defaultSpaceId);
+                    } else if (unitSelect.value) {
                         applyUnitData(unitSelect.value);
                     } else {
                         toggleUnitInputs(false);
@@ -1313,10 +1329,14 @@ const RenewDialog = (() => {
                 if (me.controls.price) me.controls.price.value = "";
                 if (me.controls.price_type) me.controls.price_type.value = "";
                 if (me.controls.remarks) me.controls.remarks.value = "";
-                // DateTimePicker may attach after first paint; re-apply renew start = old end.
+                // DateTimePicker may attach after first paint; force final values.
                 setTimeout(() => {
                     if (me.controls.start_date && renewStartIso) {
                         me.controls.start_date.value = renewStartIso;
+                    }
+                    // Keep renew end_date empty by default (user must choose).
+                    if (me.controls.end_date) {
+                        me.controls.end_date.value = "";
                     }
                 }, 0);
 

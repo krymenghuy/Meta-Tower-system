@@ -51,6 +51,11 @@ class Contract
         $inputs = $res->values;
         $d = (object) $arr;
         $space_id = $d->space_id;
+        $tenant_id = $inputs['tenant_id'] ?? null;
+        $bookingPhoneValidation = self::validateBookingTenantPhone((int) $space_id, $tenant_id, true);
+        if (!($bookingPhoneValidation->status ?? false)) {
+            return DV::error($bookingPhoneValidation->message ?? 'Please create tenant before creating contract.');
+        }
         $dup_id = self::checkDuplicateContract($space_id ?? null, $id);
         if ($dup_id) {
             return DV::error('This space already has a contract.');
@@ -84,7 +89,7 @@ class Contract
         return DV::error($created ? 'Create failed.' : 'Update failed.');
     }
 
-    protected static function getPendingStatusId()
+    public static function getPendingStatusId()
     {
         $pendingId = DB::table('contract_statuses')
             ->where(function ($q) {
@@ -108,7 +113,7 @@ class Contract
         return $activeId ?: 1;
     }
 
-    protected static function getExpiredStatusId()
+    public static function getExpiredStatusId()
     {
         $expiredId = DB::table('contract_statuses')
             ->where(function ($q) {
@@ -120,7 +125,7 @@ class Contract
         return $expiredId ?: 2;
     }
 
-    protected static function getTerminatedStatusId()
+ public static function getTerminatedStatusId()
     {
         $terminatedId = DB::table('contract_statuses')
             ->where(function ($q) {
@@ -133,7 +138,7 @@ class Contract
     }
 
     /** Get space_statuses.id for "Occupied" (used when a contract is created/uses a unit). */
-    protected static function getSpaceOccupiedStatusId()
+  public static function getSpaceOccupiedStatusId()
     {
         $id = DB::table('space_statuses')
             ->where(function ($q) {
@@ -158,12 +163,22 @@ class Contract
         return $id;
     }
 
-  static function checkDuplicateContract($space_id, $id = null)
+ public static function checkDuplicateContract($space_id, $id = null)
     {
         if (!$space_id) return null;
 
+        // Only treat as duplicate if the space has an Active or Pending contract.
+        // Expired or Terminated contracts do not block creating a new contract for the same space.
+        $activeId = self::getActiveStatusId();
+        $pendingId = self::getPendingStatusId();
+        $statusIds = array_filter([$activeId, $pendingId]);
+
         $query = DB::table('contracts as c')
             ->where('c.space_id', $space_id);
+
+        if (!empty($statusIds)) {
+            $query->whereIn('c.status_id', $statusIds);
+        }
 
         if ($id) {
             $query->where('c.id', '<>', $id);
@@ -333,10 +348,10 @@ class Contract
                 ->first();
         }
 
-    public static function getFormOptions($id,$ss)
+    public static function getFormOptions($id, $ss, $space_id = null)
     {
         $contract_details = $id ? self::contractDetails($id) : null;
-        $current_space_id = $contract_details->space_id ?? null;
+        $current_space_id = $contract_details->space_id ?? $space_id;
         return (object) [
             'contract_details' => $contract_details,
             'tenants'      => GeneralSettings::options_tenant($ss),
@@ -353,6 +368,84 @@ class Contract
         return $deleted ? DV::depends($deleted,['action'=>'deleted']) : DV::error('Deleted failed.');
     }
 
+ public static function normalizePhone($phone)
+    {
+        $value = trim($phone);
+        return preg_replace('/\D+/', '', $value);
+    }
+
+ public static function getLatestBookingBySpaceId($space_id)
+    {
+        if (!$space_id) return null;
+        return DB::table('space_bookings')
+            ->where('space_id', $space_id)
+            ->orderByDesc('id')
+            ->first();
+    }
+
+ public static function findTenantByNormalizedPhone($booking_phone)
+    {
+        return DB::table('tenants')
+            ->select('id', 'name', 'phone_number')
+            ->get()
+            ->first(function ($row) use ($booking_phone) {
+                $tenant_phone = self::normalizePhone($row->phone_number ?? '');
+                return $tenant_phone === $booking_phone;
+            });
+    }
+
+  public static function phoneValidationResponse($status, $message = null, $extra = [])
+    {
+        return (object) array_merge([
+            'status' => (bool) $status,
+            'message' => $message,
+        ], $extra);
+    }
+
+  public static function validateBookingTenantPhone($space_id, $tenant_id = null, $strictTenantMatch = false)
+    {
+        $booking = self::getLatestBookingBySpaceId($space_id);
+        if (!$booking) {
+            return self::phoneValidationResponse(true, 'No booking found for this space.', [
+                'has_booking' => false,
+            ]);
+        }
+
+        $booker_phone_raw = $booking->booker_phone ?? '';
+        $booker_phone = self::normalizePhone($booker_phone_raw);
+        if ($booker_phone === '') {
+            return self::phoneValidationResponse(false, 'Booking phone number is empty. Please update booking or create tenant first.', [
+                'has_booking' => true,
+            ]);
+        }
+
+        if ($strictTenantMatch && $tenant_id) {
+            $tenant_phone_raw = DB::table('tenants')->where('id', $tenant_id)->value('phone_number');
+            $tenant_phone = self::normalizePhone($tenant_phone_raw);
+            if ($tenant_phone !== '' && $tenant_phone === $booker_phone) {
+                return self::phoneValidationResponse(true, null, ['has_booking' => true]);
+            }
+            return self::phoneValidationResponse(false, 'Selected tenant phone number does not match booking phone number. Please create/select the correct tenant first.', [
+                'has_booking' => true,
+            ]);
+        }
+
+        $tenant = self::findTenantByNormalizedPhone($booker_phone);
+        if (!$tenant) {
+            return self::phoneValidationResponse(false, 'Booking phone number does not match any tenant. Please create tenant first.', [
+                'has_booking' => true,
+                'booker_phone' => $booker_phone_raw,
+            ]);
+        }
+
+        return self::phoneValidationResponse(true, 'Booking phone matched with tenant.', [
+            'has_booking' => true,
+            'booker_phone' => $booker_phone_raw,
+            'tenant_id' => $tenant->id,
+            'tenant_name' => $tenant->name,
+        ]);
+    }
+
     /**
      * Set contract status to Terminated (only when Active). Frees the building space and updates tenant status.
      */
@@ -365,10 +458,10 @@ class Contract
         if (!$contract) {
             return DV::error('Contract not found');
         }
-        if ((int) $contract->status_id === (int) $terminatedStatusId) {
+        if ( $contract->status_id ===  $terminatedStatusId) {
             return DV::error('Contract is already terminated');
         }
-        if ((int) $contract->status_id !== (int) $activeStatusId) {
+        if ( $contract->status_id !==  $activeStatusId) {
             return DV::error('Only active contracts can be terminated');
         }
 
@@ -597,49 +690,60 @@ static function getTenantInfo($arr=[], $ss = null)
     {
         if (!$start_date || !$end_date) {
             $contract = DB::table('contracts')
-                        ->where('id', $contract_id)
-                        ->select('start_date', 'end_date')
-                        ->first();
-
-        if (!$contract) return [];
+                ->where('id', $contract_id)
+                ->select('start_date', 'end_date')
+                ->first();
 
             $start_date = $contract->start_date;
             $end_date   = $contract->end_date;
         }
 
-        $start = \Carbon\Carbon::parse($start_date);
-        $end   = \Carbon\Carbon::parse($end_date);
+        try {
+            $start = \Carbon\Carbon::parse($start_date)->startOfDay();
+            $end   = \Carbon\Carbon::parse($end_date)->endOfDay();
+        } catch (\Exception $e) {
+            \Log::error("Invalid date format in generateContractMonths", [
+                'contract_id' => $contract_id,
+                'start_date'  => $start_date,
+                'end_date'    => $end_date,
+                'error'       => $e->getMessage()
+            ]);
+            return [];
+        }
 
-        $current = $start->copy()->startOfMonth();
-        $month_num = 1;
+        if ($end->lt($start)) {
+            \Log::warning("Contract end date is before start date", [
+                'contract_id' => $contract_id,
+                'start'       => $start_date,
+                'end'         => $end_date
+            ]);
+            return [];
+        }
+
         $months = [];
+        $current = $start->copy()->startOfMonth();
 
         while ($current->lte($end)) {
-
-            $monthName = $current->format('M-Y');
-
             $monthStart = $current->copy()->startOfMonth();
             $monthEnd   = $current->copy()->endOfMonth();
 
-            // First month: if contract starts in the middle of the month
             if ($current->format('Y-m') === $start->format('Y-m') && $start->day > 1) {
                 $monthStart = $start->copy();
             }
-
-            // Last month: cut off at contract end date
             if ($monthEnd->gt($end)) {
                 $monthEnd = $end->copy();
             }
+            $monthLabel = $current->format('M Y');
 
             $months[] = [
-                "month"            => $monthName,
-                "start_date" => $monthStart->format('d-M-Y'),
-                "end_date"   => $monthEnd->format('d-M-Y')
+                'month'      => $monthLabel,
+                'start_date' => $monthStart->format('j-M-Y'),
+                'end_date'   => $monthEnd->format('j-M-Y'),
             ];
 
-            $current->addMonth();
-            $month_num++;
+            $current->addMonthNoOverflow();
         }
+
         return $months;
     }
 

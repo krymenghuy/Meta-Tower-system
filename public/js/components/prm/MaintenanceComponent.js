@@ -35,43 +35,53 @@ var MaintenanceComponent = (() => {
             transTitle: "titles.Date",
             className: "align-middle text-center",
             data: (data) => {
-                const to12h = (hhmm) => {
+                const formatTime12h = (hhmm) => {
                     if (!hhmm) return "";
-                    const [h, m] = String(hhmm).trim().split(":").map(Number);
-                    const hour = isNaN(h) ? 0 : h % 24;
-                    const min = isNaN(m) ? 0 : m;
-                    const ampm = hour < 12 ? "AM" : "PM";
-                    const h12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
-                    return `${h12}:${String(min).padStart(2, "0")} ${ampm}`;
+                    const [rawHour, rawMinute] = String(hhmm).trim().split(":").map(Number);
+                    const hour24 = Number.isNaN(rawHour) ? 0 : rawHour % 24;
+                    const minute = Number.isNaN(rawMinute) ? 0 : rawMinute;
+                    const suffix = hour24 < 12 ? "AM" : "PM";
+                    const hour12 = hour24 === 0 ? 12 : (hour24 > 12 ? hour24 - 12 : hour24);
+                    return `${hour12}:${String(minute).padStart(2, "0")} ${suffix}`;
                 };
-                const formatDate = (val) => {
-                    if (!val) return { dateStr: "—", timePart: "", time12: "" };
-                    const s = String(val).trim().split(/\s+/);
-                    const datePart = s[0] || "";
-                    const timePart = (s[1] || "00:00").substring(0, 5);
-                    const parsed = new Date(datePart + (s[1] ? " " + s[1] : ""));
-                    let dateStr = datePart;
-                    if (!isNaN(parsed.getTime())) {
-                        dateStr = parsed.getFullYear() + "-" + String(parsed.getMonth() + 1).padStart(2, "0") + "-" + String(parsed.getDate()).padStart(2, "0");
+
+                const parseDateTime = (value) => {
+                    if (!value) {
+                        return { date: "—", time: "", time12h: "" };
                     }
-                    return { dateStr, timePart, time12: to12h(timePart) };
+                    const parts = String(value).trim().split(/\s+/);
+                    const datePart = parts[0] || "";
+                    const timePart = (parts[1] || "00:00").substring(0, 5);
+                    const parsed = new Date(datePart + (parts[1] ? " " + parts[1] : ""));
+                    const normalizedDate = Number.isNaN(parsed.getTime())
+                        ? datePart
+                        : `${parsed.getFullYear()}-${String(parsed.getMonth() + 1).padStart(2, "0")}-${String(parsed.getDate()).padStart(2, "0")}`;
+                    return {
+                        date: normalizedDate,
+                        time: timePart,
+                        time12h: formatTime12h(timePart),
+                    };
                 };
-                const start = formatDate(data.start_date);
-                const end = formatDate(data.end_date);
-                const sameDate = start.dateStr !== "—" && end.dateStr !== "—" && start.dateStr === end.dateStr;
-                const dateLine = sameDate
-                    ? `<div class="date-cell-date fw-medium text-prm-custom">${start.dateStr}</div>`
-                    : `<div class="d-flex align-items-center justify-content-center gap-1 flex-wrap date-cell-date fw-medium text-prm-custom"><span>${start.dateStr}</span><i class="fa-solid fa-arrow-right fa-xs text-muted" style="opacity:0.8"></i><span>${end.dateStr}</span></div>`;
-                const timeLine = sameDate && (start.time12 || end.time12)
+
+                const start = parseDateTime(data.start_date);
+                const end = parseDateTime(data.end_date);
+                const isSameDate = start.date !== "—" && end.date !== "—" && start.date === end.date;
+
+                const dateHtml = isSameDate
+                    ? `<div class="date-cell-date fw-medium text-prm-custom">${start.date}</div>`
+                    : `<div class="d-flex align-items-center justify-content-center gap-1 flex-wrap date-cell-date fw-medium text-prm-custom"><span>${start.date}</span><i class="fa-solid fa-arrow-right fa-xs text-muted" style="opacity:0.8"></i><span>${end.date}</span></div>`;
+
+                const timeHtml = isSameDate && (start.time12h || end.time12h)
                     ? `<div class="d-flex align-items-center justify-content-center gap-1 mt-1 py-1 px-2 rounded small text-muted bg-light" style="font-size:0.8rem;">
-                        <span>${start.time12 || "—"}</span>
+                        <span>${start.time12h || "—"}</span>
                         <i class="fa-solid fa-arrow-right fa-xs" style="opacity:0.7"></i>
-                        <span>${end.time12 || "—"}</span>
+                        <span>${end.time12h || "—"}</span>
                     </div>`
                     : "";
+
                 return `<div class="d-flex flex-column align-items-center date-cell py-1">
-                    ${dateLine}
-                    ${timeLine}
+                    ${dateHtml}
+                    ${timeHtml}
                 </div>`;
             }
         },
@@ -424,7 +434,7 @@ const CreateMaintenanceDialog = (() => {
                 }
             },
             onPrepareForm: (me, data) => {
-console.log(123123123, data);
+           console.log(123123123, data);
 
 
                 me.detail = data.maintenance_details || null;

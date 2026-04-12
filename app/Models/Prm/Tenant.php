@@ -85,7 +85,7 @@ function checkUniqueTenantByPhone($phone_number, $id = null)
         $age = $today->diff($birth)->y;
         if ($age < 18) return DV::error('Tenant must be 18 years or older.');
         if ($age > 120) return DV::error('Invalid date of birth age.');
-        
+
     }
     $nationality_id = $d->nationality_id ?? null;
     if ($nationality_id === 14) {
