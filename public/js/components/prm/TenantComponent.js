@@ -93,7 +93,7 @@ var TenantComponent = new (function () {
                 const status = (data.status ?? "").toLowerCase();
 
                 let cls =
-                    "badge text-dark bg-warning-subtle border border-warning";
+                    "badge text-warning bg-warning-subtle border border-warning";
 
                 if (status === "pending") {
                     cls =

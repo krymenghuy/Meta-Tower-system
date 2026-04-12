@@ -209,14 +209,12 @@ class Bill
     public function deleteBill($id = null, $ss = null)
     {
         $id = $id ?? $this->id;
-
-        $bill = DB::table('bills')->select('id', 'status_id')->where('id', $id)->first();
-        if (!$bill) {
+        $paid = DB::table('bills')->select('id', 'status_id','paid_amount')->where('id', $id)->first();
+        if (!$paid) {
             return DV::error('Bill not found.');
         }
-        if ($bill->status_id >= 2) {
-            return DV::error('Cannot delete bill already paid or partially paid.');
-        }
+        $is_paid = ($paid->paid_amount > 0 || $paid->status_id > 1);
+        if($is_paid) return DV::error('Cannot delete paid invoice');
         $deleted = DB::table('bills')->where('id', $id)->delete();
         if (!$deleted) {
             return DV::error('Delete failed.');

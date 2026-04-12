@@ -22,12 +22,12 @@ var MaintenanceComponent = (() => {
         },
         {
             transTitle: "titles.Type unit",
-            className: "align-middle text-center",
+            className: "align-middle",
             data: (data) => {
                 const space = data.space_id && data.space_code ? data.space_code : null;
                 const amenityCode = data.amenity_id ? (data.amenity_code || data.amenity_name || "") : null;
-                if (space) return `<div class="d-flex flex-column align-items-center"><span class="text-nowrap">${space}</span><span class="text-muted small">Space</span></div>`;
-                if (amenityCode) return `<div class="d-flex flex-column align-items-center"><span class="text-nowrap">${amenityCode}</span><span class="text-muted small">Amenity</span></div>`;
+                if (space) return `<div class="d-flex flex-column align-items-start"><span class="text-nowrap">${space}</span><span class="text-muted small">Space</span></div>`;
+                if (amenityCode) return `<div class="d-flex flex-column align-items-start"><span class="text-nowrap">${amenityCode}</span><span class="text-muted small">Amenity</span></div>`;
                 return `<span class="text-nowrap">—</span>`;
             }
         },

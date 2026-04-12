@@ -32,7 +32,8 @@ class Service
 
         $unit_type_char = ['@','.','-','_'];
         $description_char = ['@',',','-','.','#'];
-        $res = DBX::validateObject($arr,$v_rule,1,['name'=>$unit_type_char,'unit_type'=>$unit_type_char,'description'=> $description_char],$ss->lang,0,null);
+        $name_char = ['(',')','-','.','#'];
+        $res = DBX::validateObject($arr,$v_rule,1,['name'=>$name_char,'unit_type'=>$unit_type_char,'description'=> $description_char],$ss->lang,0,null);
         if($res->error) return DV::error($res->error);
         $inputs = $res->values;
         $exist = DB::table('services')
