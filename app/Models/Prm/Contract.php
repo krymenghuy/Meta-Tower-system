@@ -363,52 +363,21 @@ class Contract
             $normalizedIncludeIds[ $current_space_id] = true;
         }
         if ($restrict_to_include_spaces && !empty($normalizedIncludeIds)) {
-            $building_spaces = DB::table('building_spaces')
-                ->join('space_types as st', 'st.id', '=', 'building_spaces.space_type_id')
-                ->whereIn('building_spaces.id', array_keys($normalizedIncludeIds))
-                ->selectRaw('
-                    building_spaces.id,
-                    building_spaces.code,
-                    building_spaces.code as floor_id,
-                    building_spaces.building_id,
-                    building_spaces.space_type_id,
-                    st.name as space_type,
-                    building_spaces.sqm_size,
-                    building_spaces.price_type,
-                    building_spaces.price
-                ')
-                ->orderBy('building_spaces.code')
-                ->get();
+            $building_spaces = GeneralSettings::options_building_space_rows_by_ids(array_keys($normalizedIncludeIds));
         } else {
             $building_spaces = GeneralSettings::options_building_space($ss, $current_space_id);
         }
         if (!empty($normalizedIncludeIds)) {
-            $existingIds = [];
-            foreach ($building_spaces as $row) {
-                $rid = ($row->id ?? 0);
-                if ($rid > 0) {
-                    $existingIds[$rid] = true;
-                }
-            }
-            $missingIds = array_values(array_diff(array_keys($normalizedIncludeIds), array_keys($existingIds)));
+            // When editing / multi-space context, ensure included space rows exist in the list even if
+            // options_building_space (available-only) or restrict_to_include_spaces would omit them — same idea as Maintenance::getFormOptions.
+            $alreadyLoadedById = $building_spaces
+                ->filter(function ($row) {
+                    return ($row->id ?? 0) > 0;
+                })
+                ->keyBy('id');
+            $missingIds = array_keys(array_diff_key($normalizedIncludeIds, $alreadyLoadedById->all()));
             if (!empty($missingIds)) {
-                $missingRows = DB::table('building_spaces')
-                    ->join('space_types as st', 'st.id', '=', 'building_spaces.space_type_id')
-                    ->whereIn('building_spaces.id', $missingIds)
-                    ->selectRaw('
-                        building_spaces.id,
-                        building_spaces.code,
-                        building_spaces.code as floor_id,
-                        building_spaces.building_id,
-                        building_spaces.space_type_id,
-                        st.name as space_type,
-                        building_spaces.sqm_size,
-                        building_spaces.price_type,
-                        building_spaces.price
-                    ')
-                    ->orderBy('building_spaces.code')
-                    ->get();
-                foreach ($missingRows as $row) {
+                foreach (GeneralSettings::options_building_space_rows_by_ids($missingIds) as $row) {
                     $building_spaces->push($row);
                 }
             }
@@ -757,9 +726,9 @@ public static function applyPendingRenewalUnitChanges()
         ->get();
 
     foreach ($pending as $row) {
-        $contractId = (int) $row->contract_id;
-        $newSpaceId = (int) $row->new_space_id;
-        $oldSpaceId = (int) $row->old_space_id;
+        $contractId = $row->contract_id;
+        $newSpaceId = $row->new_space_id;
+        $oldSpaceId = $row->old_space_id;
         if ($newSpaceId === $oldSpaceId) {
             continue;
         }

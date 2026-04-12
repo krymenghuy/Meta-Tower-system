@@ -431,6 +431,14 @@ var TenantComponent = new (function () {
         let html = `<div class="row g-3">`;
         if (Array.isArray(data) && data.length > 0) {
             data.forEach((d) => {
+                const prmNonEmpty = (v) =>
+                    v !== null && v !== undefined && String(v).trim() !== "";
+                /** Backend: status_id 2 = tenant with active contract; list also joins last contract (dates / space). */
+                const hasContractAlready =
+                    Number(d.status_id) === 2 ||
+                    prmNonEmpty(d.end_date) ||
+                    prmNonEmpty(d.start_date) ||
+                    prmNonEmpty(d.space_code);
                 const status = (d.status || "Pending").toLowerCase();
                 let statusClass = "";
                 switch (status) {
@@ -483,14 +491,14 @@ var TenantComponent = new (function () {
                                     <div class="col-2"></div>
                                     <div class="col-6">
                                         ${
-                                            d.end_date
+                                            hasContractAlready
                                                 ? `
                                                 <div class="d-flex flex-column text-center gap-1">
                                                     <span class="text-prm-custom fw-semibold">
                                                         Lease Expiry
                                                     </span>
                                                     <small class="text-muted">
-                                                        ${d.end_date}
+                                                        ${d.end_date || d.start_date || "—"}
                                                     </small>
                                                 </div>
                                             `
@@ -1050,8 +1058,6 @@ var TenantComponent = new (function () {
                                     <small class="text-muted">${depositSmallHtml}</small>
                                 </div>
                             </div>
-
-                           
                         </div>
                     </div>
                 </div>
