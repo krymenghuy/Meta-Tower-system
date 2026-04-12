@@ -199,6 +199,7 @@ var InvoiceComponent = (() => {
                 tr.id = `invoice_id_${data.id}`;
                 tr.dataset.statusid = data.payment_status_id || 0;
                 tr.dataset.canceled = 0;
+
             },
             listContainerClass: null
         });
@@ -223,6 +224,7 @@ var InvoiceComponent = (() => {
         };
 
         mThis.tblInvoice = mThis.InvoiceListView.getTable();
+
         mThis.initDropdownMenus(mThis.tblInvoice);
 
         mThis.divFilter.querySelectorAll(".filter-field").forEach(el => {
@@ -285,7 +287,6 @@ var InvoiceComponent = (() => {
                 year: "numeric"
             });
         };
-        // Helper to display discount correctly ($ or %)
         const getDiscountDisplay = (item) => {
             const discountValue = parseFloat(item.discount || item.special_discount_value || 0);
             const discountType  = (item.discount_type || item.special_discount_type || 'percent').toLowerCase().trim();
@@ -421,6 +422,7 @@ var InvoiceComponent = (() => {
 
 
     mThis.initDropdownMenus = (container) => {
+
         const menuOptions = {
             containerElement: container,
             actionButtonClass: "btn_leave_action",
