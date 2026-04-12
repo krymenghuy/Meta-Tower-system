@@ -197,7 +197,9 @@ class Maintenance extends VSModel
         $statusIdToName = DB::table('maintenance_statuses')->pluck('name', 'id');
         foreach ($rows as $row) {
             self::applyScheduleDerivedStatus($row, $statusIdToName);
-            setOfficialDates($row, [], ['updated_at', 'start_date', 'end_date'], []);
+            // setOfficialDates($row, [], ['updated_at', 'start_date', 'end_date'], []);
+            $processed = setOfficialDates($row, [], ['start_date','end_date','updated_at'], []);
+            if ($processed) $row = $processed;
         }
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);

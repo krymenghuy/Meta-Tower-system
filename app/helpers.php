@@ -184,6 +184,7 @@ function setOfficialDates(&$row, array $dateCols = [], array $dateTimeCols= [], 
     }
 }
 
+
 /**
  * Internal processor for one column definition.
  */

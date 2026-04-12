@@ -9,7 +9,7 @@ var BillComponent = (() => {
     mThis.divFilter = mThis.self.querySelector("#_divFilter_bill");
     mThis.elFilter_vendor = mThis.self.querySelector("#_bill_vendor_id");
     mThis.elFilter_status = mThis.self.querySelector("#_bill_status_id");
-    mThis.elFilter_category = mThis.self.querySelector("#_bill_category_id");
+    mThis.elFilter_category = mThis.self.querySelector("#_bill_expense_type_id");
     mThis.elSearch = mThis.self.querySelector("#_search_bill");
 
     mThis.cols = [
@@ -291,7 +291,7 @@ var BillComponent = (() => {
         let p = {
             vendor_id: mThis.elFilter_vendor.value,
             status_id: mThis.elFilter_status.value,
-            // expense_type_id: mThis.elFilter_category.value,
+            expense_type_id: mThis.elFilter_category.value,
             search_value: mThis.elSearch.value,
         };
 
@@ -316,22 +316,22 @@ var BillComponent = (() => {
                     name: "bill_payment",
                 },
                 {
-                    html: '<span class="ps-2">View Attachment</span>',  
-                    icon: `<i class="fa-solid fa-panorama" style="color: rgb(59, 125, 74);"></i>`,
-                    cssClass: "border-bottom pb-2",
-                    name: "view_attachment",
-                },
-                {
-                    html: '<span class="ps-2" vslang="titles.Modify Bill Record"></span>',
+                    html: '<span class="ps-2" vslang="titles.Modify Bill"></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "modify_bill",
                 },
                 {
-                    html: '<span class="ps-2" vslang="titles.Delete Bill Record"></span>',
+                    html: '<span class="ps-2" vslang="titles.Delete Bill"></span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "delete_bill",
+                },
+                {
+                    html: '<span class="ps-2">View Attachment</span>',  
+                    icon: `<i class="fa-solid fa-panorama" style="color: rgb(59, 125, 74);"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "view_attachment",
                 },
             ],
             onShow: (me, container) => {
