@@ -20,9 +20,13 @@ var InvoiceComponent = (() => {
         {
             transTitle: "titles.Invoice No",
             className: "align-middle  text-start text-nowrap",
-            data: (data) => {
-                const code = data.code ? `<span class="text-prm-custom">${data.code}</span>`: `<span class="text-muted fst-italic">N/A</span>`;
-                const date = data.invoice_date ? `<span class="text-danger-emphasis small">${data.invoice_date}</span>`: `<span class="text-muted fst-italic small">N/A</span>`;
+            data: data => {
+                const code = data.code
+                    ? `<span class="text-prm-custom">${data.code}</span>`
+                    : `<span class="text-muted fst-italic">N/A</span>`;
+                const date = data.invoice_date
+                    ? `<span class="text-danger-emphasis small">${data.invoice_date}</span>`
+                    : `<span class="text-muted fst-italic small">N/A</span>`;
                 return `
                     <div class="d-flex flex-column">
                         ${code}
@@ -36,11 +40,11 @@ var InvoiceComponent = (() => {
         {
             transTitle: "titles.Tenant",
             className: "align-middle text-nowrap",
-            data: (data) => {
+            data: data => {
                 return ` <div class="d-flex text-warning align-items-center gap-2">
                 <div>
                     <span class="text-prm-custom d-block">
-                        ${data.tenant_name ?? ''}
+                        ${data.tenant_name ?? ""}
                     </span>
                     <span class="text-danger-emphasis small">
                         ${data.tenant_phone ?? ""}
@@ -52,7 +56,7 @@ var InvoiceComponent = (() => {
         {
             transTitle: "titles.Space",
             className: "align-middle text-nowrap",
-            data: (data) => {
+            data: data => {
                 return ` <div class="d-flex text-warning align-items-center gap-2">
                 <div>
 
@@ -69,8 +73,8 @@ var InvoiceComponent = (() => {
             data: data => {
                 const amt = data.amount
                     ? Number(data.amount).toLocaleString("en-US", {
-                        minimumFractionDigits: 2
-                    })
+                          minimumFractionDigits: 2
+                      })
                     : "0.00";
                 return `<span class="d-block text-yp-custom fw-semibold">${mThis.currency_symbol}${amt}</span>`;
             }
@@ -102,30 +106,30 @@ var InvoiceComponent = (() => {
         {
             transTitle: "titles.Expiration Date",
             className: "align-middle text-nowrap text-center",
-            data: (data) => {
-
-                const formatTime = (time) => {
-                    if (!time) return '';
+            data: data => {
+                const formatTime = time => {
+                    if (!time) return "";
 
                     // Support HH:mm:ss or HH:mm
-                    let parts = time.split(':');
+                    let parts = time.split(":");
                     let hour = parseInt(parts[0], 10);
-                    let minute = parts[1] ?? '00';
+                    let minute = parts[1] ?? "00";
 
-                    if (isNaN(hour)) return '';
+                    if (isNaN(hour)) return "";
 
-                    const ampm = hour >= 12 ? 'PM' : 'AM';
+                    const ampm = hour >= 12 ? "PM" : "AM";
                     hour = hour % 12 || 12;
 
                     // ensure 2-digit minute
-                    minute = minute.padStart(2, '0');
+                    minute = minute.padStart(2, "0");
 
                     return `${hour}:${minute} ${ampm}`;
                 };
 
                 return `
                     <div class="d-flex flex-column align-items-start">
-                        <span class="text-prm-custom text-nowrap">${data.due_date ?? ''}</span>
+                        <span class="text-prm-custom text-nowrap">${data.due_date ??
+                            ""}</span>
                         <span class="text-warning small text-nowrap">
                             Start Time:${formatTime(data.start_time)}
                         </span>
@@ -139,7 +143,8 @@ var InvoiceComponent = (() => {
             data: data => {
                 return `
                     <div class="text-primary-custom" style="width:150px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ?? '...'}</span>
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ??
+                            "..."}</span>
                     </div>
                 `;
             }
@@ -151,9 +156,17 @@ var InvoiceComponent = (() => {
                 const statusId = Number(data.payment_status_id || 0);
                 let cls = "bg-secondary";
 
-                if (statusId === 1) cls = "badge text-success bg-success-subtle border border-success";           // Paid
-                else if (statusId === 2) cls = "badge text-danger bg-danger-subtle border border-danger";       // Unpaid
-                else if (statusId === 3) cls = "badge text-warning bg-warning-subtle border border-warning"; // Partially Paid
+                if (statusId === 1)
+                    cls =
+                        "badge text-success bg-success-subtle border border-success";
+                // Paid
+                else if (statusId === 2)
+                    cls =
+                        "badge text-danger bg-danger-subtle border border-danger";
+                // Unpaid
+                else if (statusId === 3)
+                    cls =
+                        "badge text-warning bg-warning-subtle border border-warning"; // Partially Paid
 
                 return `<span class="badge ${cls} text-capitalize px-3 py-2">
                             ${data.payment_status_name || "—"}
@@ -193,14 +206,11 @@ var InvoiceComponent = (() => {
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
-            tableClass:
-                "table table--white rounded-2  header-uppercase",
+            tableClass: "table table--white rounded-2  header-uppercase",
             rowCreated: (data, index, tr) => {
-                // tr.dataset.statusid = data.payment_status_id || 0;
                 tr.id = `invoice_id_${data.id}`;
                 tr.dataset.statusid = data.payment_status_id || 0;
                 tr.dataset.canceled = 0;
-
             },
             listContainerClass: null
         });
@@ -217,11 +227,11 @@ var InvoiceComponent = (() => {
 
         mThis.listContainer = mThis.InvoiceListView.getListContainer();
         const sh_parent = mThis.listContainer.parentElement;
-        sh_parent.style.maxHeight = (window.innerHeight - 220) + "px";
+        sh_parent.style.maxHeight = window.innerHeight - 220 + "px";
         sh_parent.classList.add("overflow-y-auto");
         // sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            sh_parent.style.maxHeight = (window.innerHeight - 220) + "px";
+            sh_parent.style.maxHeight = window.innerHeight - 220 + "px";
         };
 
         mThis.tblInvoice = mThis.InvoiceListView.getTable();
@@ -288,25 +298,31 @@ var InvoiceComponent = (() => {
                 year: "numeric"
             });
         };
-        const getDiscountDisplay = (item) => {
-            const discountValue = parseFloat(item.discount || item.special_discount_value || 0);
-            const discountType  = (item.discount_type || item.special_discount_type || 'percent').toLowerCase().trim();
+        const getDiscountDisplay = item => {
+            const value = parseFloat(
+                item.discount || item.special_discount_value || 0
+            );
+            const type = (
+                item.discount_type ||
+                item.special_discount_type ||
+                "percent"
+            )
+                .toLowerCase()
+                .trim();
+
             const currency = mThis.currency_symbol || "$";
 
-            if (discountValue <= 0) {
+            if (value <= 0) {
                 return `<span class="text-muted">—</span>`;
             }
 
-            if (discountType === 'amount' || discountType === '$') {
-                // Show as money: - $25.00
-                return `-${currency}${discountValue.toLocaleString("en-US", {
-                    minimumFractionDigits: 2
-                })}`;
+            if (type === "amount" || type === "$") {
+                return `${currency}${value.toFixed(2)}`;
             } else {
-                // Show as percent: - 10.00%
-                return `-${discountValue.toLocaleString("en-US", {
-                    minimumFractionDigits: 2
-                })}%`;
+                const percentStr =
+                    value % 1 === 0 ? value.toFixed(0) : value.toFixed(2);
+
+                return `${percentStr}%`;
             }
         };
 
@@ -342,14 +358,26 @@ var InvoiceComponent = (() => {
                     </td>
                     <td class="text-center text-muted small">${qty}</td>
                     <td class="text-center text-muted small">${
-                        item.unit_type ? item.unit_type.trim() : "—"}
+                        item.unit_type ? item.unit_type.trim() : "—"
+                    }
                     </td>
-                    <td class="text-center small">${formatDate(item.start_date)}</td>
-                    <td class="text-center small">${formatDate(item.end_date)}</td>
-                    <td class="text-end">${price.toLocaleString("en-US", {minimumFractionDigits: 2})}</td>
-                    <td class="text-end text-danger">${getDiscountDisplay(item)}</td>
-                    <td class="text-end text-info">+${taxAmount}%</td>
-                    <td class="text-end fw-bold">${currency}${total.toLocaleString("en-US",{ minimumFractionDigits: 2 })}</td>
+                    <td class="text-center small">${formatDate(
+                        item.start_date
+                    )}</td>
+                    <td class="text-center small">${formatDate(
+                        item.end_date
+                    )}</td>
+                    <td class="text-end">$${price.toLocaleString("en-US", {
+                        minimumFractionDigits: 2
+                    })}</td>
+                    <td class="text-end text-danger">${getDiscountDisplay(
+                        item
+                    )}</td>
+                    <td class="text-end text-info">${taxAmount}%</td>
+                    <td class="text-end fw-bold">${currency}${total.toLocaleString(
+                    "en-US",
+                    { minimumFractionDigits: 2 }
+                )}</td>
 
                 </tr>`;
             })
@@ -362,7 +390,7 @@ var InvoiceComponent = (() => {
                 acc.total += total;
                 return acc;
             },
-            { discount: 0, tax:0,total: 0 }
+            { discount: 0, tax: 0, total: 0 }
         );
 
         const fmt = n =>
@@ -392,20 +420,25 @@ var InvoiceComponent = (() => {
                         <tfoot class="table-light fw-bold">
                             <tr>
                                 <td colspan="9" class="text-end text-uppercase text-primary">Summary</td>
-                                <td class="text-end text-success fs-5">${currency}${fmt(foot.total)}</td>
+                                <td class="text-end text-success fs-5">${currency}${fmt(
+            foot.total
+        )}</td>
                             </tr>
                         </tfoot>
                     </table>
                 </div>
 
-                    ${invoice.remarks? `
+                    ${
+                        invoice.remarks
+                            ? `
                         <div class="mt-3 p-3 bg-light rounded border">
                             <small class="text-muted fw-semibold d-block  text-uppercase" style="font-size: 0.7rem;">Remarks:</small>
                             <p class="mb-0 small">${invoice.remarks}</p>
-                        </div>`: ""
+                        </div>`
+                            : ""
                     }
                 </div>`;
-                };
+    };
 
     mThis.getFilterData = () => {
         const params = {
@@ -420,50 +453,53 @@ var InvoiceComponent = (() => {
         return params;
     };
 
-
-
-    mThis.initDropdownMenus = (container) => {
-
+    mThis.initDropdownMenus = container => {
         const menuOptions = {
             containerElement: container,
             actionButtonClass: "btn_leave_action",
             cssClass: "bg-white box-shadow",
             menus: [
                 {
-                    html: '<span class="ps-2" vslang="titles.Receive Payment"></span>',
+                    html:
+                        '<span class="ps-2" vslang="titles.Receive Payment"></span>',
                     icon: `<i class="fa-solid fa-hand-holding-dollar text-success fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "receive_invoice",
+                    name: "receive_invoice"
                 },
                 {
-                    html: '<span class="ps-2" vslang="titles.Print Invoice"></span>',
+                    html:
+                        '<span class="ps-2" vslang="titles.Print Invoice"></span>',
                     icon: `<i class="fa-solid fa-receipt text-primary fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "print_invoice",
+                    name: "print_invoice"
                 },
                 {
-                    html: '<span class="ps-2" vslang="titles.Delete Invoice"></span>',
+                    html:
+                        '<span class="ps-2" vslang="titles.Delete Invoice"></span>',
                     icon: `<i class="fa-regular fa-trash-can text-danger fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "delete_invoice",
-                },
-
+                    name: "delete_invoice"
+                }
             ],
-           onShow: (me, menuContainer) => {
+            onShow: (me, menuContainer) => {
                 const menu = me.getActiveMenus(menuContainer);
                 const statusId = Number(menuContainer.dataset.statusid);
 
-                menu.print_invoice.style.display = (statusId === 1 || statusId === 3) ? 'block' : 'none';
-                menu.print_invoice.style.display = (statusId === 1 || statusId === 3) ? 'block' : 'none';
-                menu.receive_invoice.style.display = (statusId === 2 || statusId === 3) ? 'block' : 'none';
-                menu.delete_invoice.style.display = (statusId === 2) ? 'block' : 'none';
+                menu.print_invoice.style.display =
+                    statusId === 1 || statusId === 3 ? "block" : "none";
+                menu.print_invoice.style.display =
+                    statusId === 1 || statusId === 3 ? "block" : "none";
+                menu.receive_invoice.style.display =
+                    statusId === 2 || statusId === 3 ? "block" : "none";
+                menu.delete_invoice.style.display =
+                    statusId === 2 ? "block" : "none";
             },
             onClick: (menulink, id, name) => {
                 if (name === "delete_invoice") {
                     mThis.deleteInvoice(id);
                 } else if (name === "print_invoice") {
                     mThis.printInvoice(id);
-                }else if(name === "receive_invoice"){
+                } else if (name === "receive_invoice") {
                     mThis.receiveInvoice(id);
                 }
             }
@@ -485,13 +521,22 @@ var InvoiceComponent = (() => {
             confirmed => {
                 if (!confirmed) return;
 
-                vsapi.call(`${main_view.base_url}/prm/invoice/delete`, { id }, menuLink)
+                vsapi
+                    .call(
+                        `${main_view.base_url}/prm/invoice/delete`,
+                        { id },
+                        menuLink
+                    )
                     .then(res => {
                         if (res.status_code === 200) {
-                            mThis.InvoiceListView.showPage(mThis.getFilterData());
+                            mThis.InvoiceListView.showPage(
+                                mThis.getFilterData()
+                            );
                             cv_interact.success("Invoice deleted successfully");
                         } else {
-                            cv_interact.error(res.error_message || "Failed to delete");
+                            cv_interact.error(
+                                res.error_message || "Failed to delete"
+                            );
                         }
                     });
             }
@@ -502,9 +547,7 @@ var InvoiceComponent = (() => {
         ReceiveDialog.show({
             invoice_id: id,
             btn: menulink,
-            onClose: () =>
-                    mThis.InvoiceListView.showPage(mThis.getFilterData())
-
+            onClose: () => mThis.InvoiceListView.showPage(mThis.getFilterData())
         });
     };
 
@@ -515,9 +558,9 @@ var InvoiceComponent = (() => {
         });
     };
 
-
-    mThis.prepareFormOptions = (onFinish) => {
-        vsapi.call(`${main_view.base_url}/prm/invoice/form-options`)
+    mThis.prepareFormOptions = onFinish => {
+        vsapi
+            .call(`${main_view.base_url}/prm/invoice/form-options`)
             .then(res => {
                 const d = res.status_code === 200 ? res.data : {};
                 VSUtil.setComboItems(
@@ -597,7 +640,7 @@ const InvoiceDialog = (() => {
                                             <input type="text" data-type="date" name="due_date" class="form-control data-input field-input" required placeholder=" ">
                                         </div>
                                         <div class="field-row">
-                                            <label class="field-label fw-semibold">Start Time</label>
+                                            <label class="field-label fw-semibold">Time</label>
                                             <span class="field-sep">:</span>
                                             <input type="time" name="start_time" class="form-control data-input field-input" data-field="start_time" placeholder=" ">
                                         </div>
@@ -609,17 +652,20 @@ const InvoiceDialog = (() => {
                                 <div class="row mb-4">
                                     <div class="col-12 ">
                                         <div class="d-flex flex-wrap gap-2 justify-content-end">
-                                            <button name="btnRent" class="btn btn-outline-primary px-3 rounded-pill ">
-                                                <i class="fa fa-home "></i> Rent
+                                            <button name="btnRent" class="btn btn-outline-primary px-3 rounded-pill">
+                                                <i class="fa fa-home"></i> Rent
                                             </button>
                                             <button name="btnService" class="btn btn-outline-warning px-3 rounded-pill">
-                                                <i class="fa fa-concierge-bell "></i> Service
+                                                <i class="fa fa-tools"></i> Service
+                                            </button>
+                                            <button name="btnRequest" class="btn btn-outline-info px-3 rounded-pill">
+                                                <i class="fa fa-clipboard-list"></i> Request
                                             </button>
                                             <button name="btnElectric" class="btn btn-outline-success px-3 rounded-pill">
-                                                <i class="fa fa-bolt "></i> Electric Bill
+                                                <i class="fa fa-bolt"></i> Electric
                                             </button>
-                                            <button name="btnWater" class="btn btn-outline-secondary px-3 rounded-pill">
-                                                <i class="fa fa-tint "></i> Water Bill
+                                            <button name="btnWater" class="btn btn-outline-info px-3 rounded-pill">   <!-- changed color to info -->
+                                                <i class="fa fa-tint"></i> Water
                                             </button>
                                         </div>
                                     </div>
@@ -724,17 +770,27 @@ const InvoiceDialog = (() => {
                         const spaces = me._tenantSpaces || [];
                         const months = me._tenantMonths || [];
 
-                        const selectedSpaceId =
-                            me.controls.space_id?.value ||
-                            me.controls.space?.value ||
-                            "";
-                        const matchedContract = spaces.find(
-                            s => String(s.space_id) === String(selectedSpaceId)
-                        );
-                        const defaultContractId =
-                            matchedContract?.contract_id ??
-                            spaces[0]?.contract_id;
+                        console.log("Tenant Spaces:", spaces); // For debugging
 
+                        const selectedSpaceId =
+                            me.controls.space?.value ||
+                            me.controls.space_id?.value ||
+                            "";
+
+                        const matchedSpace =
+                            spaces.find(
+                                s =>
+                                    String(s.space_id) ===
+                                    String(selectedSpaceId)
+                            ) || spaces[0]; // fallback to first space
+
+                        if (!matchedSpace) {
+                            return cv_interact.error("No space/contract found");
+                        }
+
+                        const defaultContractId = matchedSpace.contract_id;
+
+                        // Filter months for the selected contract
                         const monthOptions = months
                             .filter(
                                 m =>
@@ -748,6 +804,7 @@ const InvoiceDialog = (() => {
                             .join("");
 
                         InputBox.resetInstance("rentPopUp");
+
                         InputBox.show({
                             title: "Rent",
                             instanceKey: "rentPopUp",
@@ -755,51 +812,57 @@ const InvoiceDialog = (() => {
                                 const div = document.createElement("div");
                                 div.style.cssText =
                                     "display:grid; grid-template-columns:1fr 1fr; gap:14px; padding:4px 2px;";
+
                                 div.innerHTML = `
-                                <div class="material-input outlined">
-                                    <input class="data-input form-control bg-light"
-                                        data-field="contract_id" name="contract_id"
-                                        type="text" readonly placeholder="Auto fill">
-                                    <label class="form-label" style="font-size:13px;color:#555;">Unit Code / Room</label>
-                                </div>
-                                <div class="material-input outlined">
-                                    <select class="data-input form-control" data-field="monthly" name="monthly" data-style="material" placeholder="Monthly">
-                                        ${monthOptions}
-                                    </select>
-                                </div>
-                                <div class="material-input outlined">
-                                    <input class="data-input form-control" data-field="start_date" name="start_date" type="text" readonly placeholder="Auto fill">
-                                    <label class="form-label" style="font-size:13px;color:#555;">Start Date</label>
-                                </div>
-                                <div class="material-input outlined">
-                                    <input class="data-input form-control" data-field="end_date" name="end_date" type="text" readonly placeholder="Auto fill">
-                                    <label class="form-label" style="font-size:13px;color:#555;">End Date</label>
-                                </div>
-                                <div class="material-input outlined">
-                                    <input class="data-input form-control" data-field="price" name="price" type="text" placeholder="Auto fill">
-                                    <label class="form-label" style="font-size:13px;color:#555;">Price</label>
-                                </div>
-                                <div class="material-input outlined" style="display:flex; gap:8px; align-items:flex-end;">
-                                    <div style="flex:1">
-                                        <input class="data-input form-control" data-field="discount" name="discount" type="text" placeholder="0">
-                                        <label class="form-label" style="font-size:13px;color:#555;">Discount</label>
+                                    <div class="material-input outlined">
+                                        <input class="data-input form-control bg-light"
+                                            data-field="contract_id" name="contract_id"
+                                            type="text" readonly>
+                                        <label class="form-label" style="font-size:13px;color:#555;">Unit Code / Room</label>
                                     </div>
-                                    <div style="width:85px;">
-                                        <select class="data-input form-control" data-field="discount_type" name="discount_type">
-                                            <option value="percent">%</option>
-                                            <option value="amount">$</option>
+                                    <div class="material-input outlined">
+                                        <select class="data-input form-control" data-field="monthly" name="monthly" data-style="material" placeholder="Monthly">
+                                            ${monthOptions}
                                         </select>
                                     </div>
-                                </div>
-                                <div class="material-input outlined">
-                                    <input class="data-input form-control" data-field="tax_rate" name="tax_rate" type="text" placeholder="0">
-                                    <label class="form-label" style="font-size:13px;color:#555;">Tax %</label>
-                                </div>
-                                <div style="grid-column: span 2;" class="material-input outlined">
-                                    <textarea class="data-input form-control" data-field="remark" name="remark" rows="3"></textarea>
-                                    <label class="form-label" style="font-size:13px;color:#555;">Remark</label>
-                                </div>
-                            `;
+                                    <div class="material-input outlined">
+                                        <input class="data-input form-control" data-field="start_date" name="start_date"
+                                            type="text" readonly>
+                                        <label class="form-label" style="font-size:13px;color:#555;">Start Date</label>
+                                    </div>
+                                    <div class="material-input outlined">
+                                        <input class="data-input form-control" data-field="end_date" name="end_date"
+                                            type="text" readonly>
+                                        <label class="form-label" style="font-size:13px;color:#555;">End Date</label>
+                                    </div>
+                                    <div class="material-input outlined">
+                                        <input class="data-input form-control" data-field="price" name="price"
+                                            type="text" readonly>
+                                        <label class="form-label" style="font-size:13px;color:#555;">Price (Effective)</label>
+                                    </div>
+                                    <div class="material-input outlined" style="display:flex; gap:8px; align-items:flex-end;">
+                                        <div style="flex:1">
+                                            <input class="data-input form-control" data-field="discount" name="discount"
+                                                type="text" placeholder="0">
+                                            <label class="form-label" style="font-size:13px;color:#555;">Discount</label>
+                                        </div>
+                                        <div style="width:85px;">
+                                            <select class="data-input form-control" data-field="discount_type" name="discount_type">
+                                                <option value="percent">%</option>
+                                                <option value="amount">$</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="material-input outlined">
+                                        <input class="data-input form-control" data-field="tax_rate" name="tax_rate"
+                                            type="text" placeholder="0">
+                                        <label class="form-label" style="font-size:13px;color:#555;">Tax %</label>
+                                    </div>
+                                    <div style="grid-column: span 2;" class="material-input outlined">
+                                        <textarea class="data-input form-control" data-field="remark" name="remark" rows="3"></textarea>
+                                        <label class="form-label" style="font-size:13px;color:#555;">Remark</label>
+                                    </div>
+                                `;
                                 return div;
                             },
 
@@ -820,17 +883,50 @@ const InvoiceDialog = (() => {
                                     '[data-field="end_date"]'
                                 );
 
-                                if (!elContract || !elMonthly) return;
+                                if (!elContract || !elMonthly || !elPrice)
+                                    return;
 
-                                const updateDates = (
-                                    selectedMonth,
-                                    contractId
-                                ) => {
+                                // Fill initial values
+                                elContract.value =
+                                    matchedSpace.space_code || "(No code)";
+                                elContract.dataset.contractId = String(
+                                    matchedSpace.contract_id
+                                );
+
+                                // IMPORTANT: Use effective_price instead of price
+                                if (elPrice) {
+                                    const effectivePrice = Number(
+                                        matchedSpace.effective_price || 0
+                                    );
+                                    elPrice.value = effectivePrice.toFixed(2);
+                                }
+
+                                // Set default month and dates
+                                const defaultMonth =
+                                    months.find(
+                                        m =>
+                                            String(m.contract_id) ===
+                                            String(matchedSpace.contract_id)
+                                    ) || {};
+
+                                if (elMonthly)
+                                    elMonthly.value = defaultMonth.month || "";
+                                if (elStartDate)
+                                    elStartDate.value =
+                                        defaultMonth.start_date || "";
+                                if (elEndDate)
+                                    elEndDate.value =
+                                        defaultMonth.end_date || "";
+
+                                // Update dates when month changes
+                                elMonthly.addEventListener("change", e => {
+                                    const selectedMonth = e.target.value;
                                     const matchedMonth = months.find(
                                         m =>
                                             String(m.contract_id) ===
-                                                String(contractId) &&
-                                            m.month === selectedMonth
+                                                String(
+                                                    matchedSpace.contract_id
+                                                ) && m.month === selectedMonth
                                     );
                                     if (matchedMonth) {
                                         if (elStartDate)
@@ -839,80 +935,8 @@ const InvoiceDialog = (() => {
                                         if (elEndDate)
                                             elEndDate.value =
                                                 matchedMonth.end_date || "";
-                                    } else {
-                                        if (elStartDate) elStartDate.value = "";
-                                        if (elEndDate) elEndDate.value = "";
                                     }
-                                };
-
-                                elMonthly.addEventListener("change", e => {
-                                    const currentContractId =
-                                        elContract.dataset.contractId;
-                                    updateDates(
-                                        e.target.value,
-                                        currentContractId
-                                    );
                                 });
-
-                                const fillFields = contractId => {
-                                    if (!contractId) return;
-                                    const matchedSpace = spaces.find(
-                                        s =>
-                                            String(s.contract_id) ===
-                                            String(contractId)
-                                    );
-                                    const defaultMonth =
-                                        months.find(
-                                            m =>
-                                                String(m.contract_id) ===
-                                                String(contractId)
-                                        ) || {};
-                                    if (matchedSpace && elPrice) {
-                                        elPrice.value = Number(
-                                            matchedSpace.price || 0
-                                        ).toFixed(2);
-                                    }
-                                    if (elMonthly)
-                                        elMonthly.value =
-                                            defaultMonth.month || "";
-                                    if (elStartDate)
-                                        elStartDate.value =
-                                            defaultMonth.start_date || "";
-                                    if (elEndDate)
-                                        elEndDate.value =
-                                            defaultMonth.end_date || "";
-                                };
-
-                                let targetContractId = null;
-                                let displaySpaceCode = "";
-
-                                if (selectedSpaceId) {
-                                    const match = spaces.find(
-                                        s =>
-                                            String(s.space_id) ===
-                                            String(selectedSpaceId)
-                                    );
-                                    if (match) {
-                                        targetContractId = match.contract_id;
-                                        displaySpaceCode =
-                                            match.space_code || "";
-                                    }
-                                }
-
-                                if (!targetContractId && spaces.length > 0) {
-                                    targetContractId = spaces[0].contract_id;
-                                    displaySpaceCode =
-                                        spaces[0].space_code || "";
-                                }
-
-                                if (targetContractId) {
-                                    elContract.dataset.contractId = String(
-                                        targetContractId
-                                    );
-                                    elContract.value =
-                                        displaySpaceCode || "(No room code)";
-                                    fillFields(targetContractId);
-                                }
                             },
 
                             onConfirm(data, btn, ibMe) {
@@ -935,9 +959,10 @@ const InvoiceDialog = (() => {
                                         String(s.contract_id) ===
                                         String(realContractId)
                                 );
-                                const roomCode =
-                                    matchedSpace?.space_code || "—";
 
+                                if (!matchedSpace) return;
+
+                                const roomCode = matchedSpace.space_code || "—";
                                 const filteredMonths = months.filter(
                                     m =>
                                         String(m.contract_id) ===
@@ -946,33 +971,38 @@ const InvoiceDialog = (() => {
                                 const matchedMonth =
                                     filteredMonths.find(
                                         m => m.month === data.monthly
-                                    ) ||
-                                    filteredMonths[0] ||
-                                    null;
-
-                                const elStartDate = document.querySelector(
-                                    '[data-field="start_date"]'
-                                );
-                                const elEndDate = document.querySelector(
-                                    '[data-field="end_date"]'
-                                );
+                                    ) || filteredMonths[0];
 
                                 const resolvedStartDate =
-                                    elStartDate?.value ||
+                                    document.querySelector(
+                                        '[data-field="start_date"]'
+                                    )?.value ||
                                     matchedMonth?.start_date ||
                                     "";
                                 const resolvedEndDate =
-                                    elEndDate?.value ||
+                                    document.querySelector(
+                                        '[data-field="end_date"]'
+                                    )?.value ||
                                     matchedMonth?.end_date ||
                                     "";
+
+                                const finalPrice = Number(
+                                    matchedSpace.effective_price ||
+                                        data.price ||
+                                        0
+                                );
+
+                                console.log(111111111111, {
+                                    start_date: resolvedStartDate,
+                                    end_date: resolvedEndDate
+                                });
 
                                 me.itemsView.addRow(
                                     {
                                         item_id: realContractId,
                                         item_name: `Rent - ${roomCode}`,
                                         type: "rent",
-                                        price: Number(data.price) || 0,
-                                        // space_price: Number(data.price) || 0,
+                                        price: finalPrice,
                                         qty: 1,
                                         remarks: `Rent - ${roomCode} (${data.monthly ||
                                             "N/A"})`,
@@ -981,7 +1011,8 @@ const InvoiceDialog = (() => {
                                         end_date: resolvedEndDate,
                                         space_code: roomCode,
                                         discount: Number(data.discount) || 0,
-                                        discount_type: data.discount_type || "amount",
+                                        discount_type:
+                                            data.discount_type || "amount",
                                         tax_rate: Number(data.tax_rate) || 0
                                     },
                                     0
@@ -1480,6 +1511,159 @@ const InvoiceDialog = (() => {
                         });
                     };
 
+                    // ==================Service Request=========
+                    me.controls.btnRequest.onclick = () => {
+                        if (!me._selectedTenantId) {
+                            return cv_interact.error(
+                                "Please select Tenant first"
+                            );
+                        }
+
+                        const services = availableItem || [];
+                        if (services.length === 0) {
+                            return cv_interact.error("No services available");
+                        }
+
+                        const serviceOptions = services
+                            .map(
+                                s =>
+                                    `<option value="${s.id}">${s.service ||
+                                        s.name ||
+                                        `Service #${s.id}`}</option>`
+                            )
+                            .join("");
+
+                        InputBox.show({
+                            title: "Add Service",
+                            instanceKey: "servicePopUp",
+
+                            createContent() {
+                                const div = document.createElement("div");
+                                div.style.cssText =
+                                    "display:grid; grid-template-columns:1fr 1fr; gap:14px; padding:4px 2px;";
+                                div.innerHTML = `
+                                <div class="material-input outlined">
+                                    <select class="data-input form-control" data-style="material" data-field="service_id" name="service_id" placeholder="Select Service">
+                                        ${serviceOptions}
+                                    </select>
+                                </div>
+                                <div class="material-input outlined">
+                                    <input class="data-input form-control" data-field="unit_type" name="unit_type" type="text" readonly placeholder="Auto fill">
+                                    <label class="form-label" style="font-size:13px;color:#555;">Unit Type</label>
+                                </div>
+                                <div class="material-input outlined">
+                                    <input class="data-input form-control" data-field="price" name="price" type="text" readonly placeholder="Auto fill">
+                                    <label class="form-label" style="font-size:13px;color:#555;">Price</label>
+                                </div>
+                                <div class="material-input outlined" style="display:flex; gap:8px;">
+                                    <input class="data-input form-control" data-field="discount" name="discount" type="text" placeholder="0">
+                                    <label class="form-label" style="font-size:13px;color:#555;">Discount</label>
+                                    <div style="display:flex; gap:8px;">
+                                        <select class="data-input form-control" data-field="discount_type" name="discount_type" style="width:80px;">
+                                            <option value="percent">%</option>
+                                            <option value="amount">$</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="material-input outlined">
+                                    <input class="data-input form-control" data-field="tax_rate" name="tax_rate" type="text" placeholder="0">
+                                    <label class="form-label" style="font-size:13px;color:#555;">Tax %</label>
+                                </div>
+                                <div style="grid-column: span 2;" class="material-input outlined">
+                                    <textarea class="data-input form-control" data-field="remark" name="remark" rows="3"></textarea>
+                                    <label class="form-label" style="font-size:13px;color:#555;">Remark</label>
+                                </div>
+                            `;
+                                return div;
+                            },
+
+                            onOpen(ibMe) {
+                                const elService = document.querySelector(
+                                    '[data-field="service_id"]'
+                                );
+                                const elUnitType = document.querySelector(
+                                    '[data-field="unit_type"]'
+                                );
+                                const elPrice = document.querySelector(
+                                    '[data-field="price"]'
+                                );
+                                const elDiscount = document.querySelector(
+                                    '[data-field="discount"]'
+                                );
+
+                                if (elService) elService.value = "";
+                                if (elUnitType) elUnitType.value = "";
+                                if (elPrice) elPrice.value = "";
+                                if (elDiscount) elDiscount.value = "";
+
+                                const fillFields = serviceId => {
+                                    const selected = services.find(
+                                        s => String(s.id) === String(serviceId)
+                                    );
+                                    if (!selected) return;
+                                    if (elUnitType)
+                                        elUnitType.value =
+                                            selected.unit_type || "—";
+                                    if (elPrice)
+                                        elPrice.value = Number(
+                                            selected.price || 0
+                                        ).toFixed(2);
+                                };
+
+                                if (elService) {
+                                    elService.addEventListener("change", e => {
+                                        fillFields(e.target.value);
+                                    });
+                                }
+                            },
+
+                            onConfirm(data, btn, ibMe) {
+                                if (!data.service_id) {
+                                    cv_interact.error(
+                                        "Please select a Service"
+                                    );
+                                    return;
+                                }
+
+                                const selectedService = services.find(
+                                    s =>
+                                        String(s.id) === String(data.service_id)
+                                );
+                                if (!selectedService) return;
+
+                                const serviceDisplayName =
+                                    selectedService.service ||
+                                    selectedService.name ||
+                                    `Service #${selectedService.id}`;
+
+                                me.itemsView.addRow(
+                                    {
+                                        item_id: data.service_id,
+                                        item_name: serviceDisplayName,
+                                        type: "service",
+                                        price:
+                                            Number(selectedService.price) || 0,
+                                        qty: 1,
+                                        remarks:
+                                            selectedService.service ||
+                                            selectedService.name ||
+                                            "Service",
+                                        unit_type:
+                                            selectedService.unit_type || "—",
+                                        discount: Number(data.discount) || 0,
+                                        discount_type:
+                                            data.discount_type || "percent",
+                                        tax_rate: Number(data.tax_rate) || 0
+                                    },
+                                    0
+                                );
+
+                                cv_interact.success("Service added at the top");
+                                ibMe.close();
+                            }
+                        });
+                    };
+
                     me.itemsView = new ItemsView(me.controls.divItemsView, {
                         currencyCode: "USD",
                         columns: [
@@ -1652,7 +1836,7 @@ const InvoiceDialog = (() => {
                         prefetch: true,
                         query: {
                             from: "tenants",
-                            where: [['status_id','=',2]],
+                            where: [["status_id", "=", 2]],
                             select: [
                                 "id",
                                 "name",
@@ -1738,8 +1922,8 @@ const InvoiceDialog = (() => {
                                     unit_type: item.unit_type || "—",
                                     remarks:
                                         item.remarks || item.description || "",
-                                    start_date: toMySQLDate(item.start_date),
-                                    end_date: toMySQLDate(item.end_date),
+                                    start_date: item.start_date,
+                                    end_date: item.end_date,
 
                                     // Fields for the calculation audit trail
                                     discount: parseFloat(item.discount || 0),
@@ -1766,6 +1950,10 @@ const InvoiceDialog = (() => {
 
                 onPrepareForm: (me, data) => {
                     availableItem = data.services || [];
+                    ServiceRequest = data.service_requests || [];
+                    console.log("Service Requests:", ServiceRequest);
+                    console.log("Available Items:", availableItem);
+
                     me._selectedTenantId = null;
                     me._tenantData = null;
                     me._tenantSpaces = [];
@@ -1791,20 +1979,29 @@ const InvoiceDialog = (() => {
                             );
                         }
                     }
-                     me.detail = data.invoice_details;
+                    me.detail = data.invoice_details;
                     if (me.detail) {
-                        const raw = (me.detail.due_date || '').trim();
+                        const raw = (me.detail.due_date || "").trim();
                         if (raw) {
                             const d = new Date(raw);
                             if (!isNaN(d.getTime())) {
                                 const y = d.getFullYear();
-                                const m = String(d.getMonth() + 1).padStart(2, '0');
-                                const day = String(d.getDate()).padStart(2, '0');
+                                const m = String(d.getMonth() + 1).padStart(
+                                    2,
+                                    "0"
+                                );
+                                const day = String(d.getDate()).padStart(
+                                    2,
+                                    "0"
+                                );
                                 me.controls.due_date.value = `${y}-${m}-${day}`;
                             }
                         }
                         if (me.detail.start_time && me.controls.start_time) {
-                            me.controls.start_time.value = me.detail.start_time.substring(0, 5);
+                            me.controls.start_time.value = me.detail.start_time.substring(
+                                0,
+                                5
+                            );
                         }
                     }
 
@@ -1851,6 +2048,9 @@ const InvoiceDialog = (() => {
                         cssClass: "btn btn-primary",
                         click: (me, btn) => {
                             const formData = me.saveData();
+
+                            console.log(123123123, formData);
+
                             if (
                                 !formData.items ||
                                 formData.items.length === 0
@@ -1890,20 +2090,20 @@ const InvoiceDialog = (() => {
     return self;
 })();
 
-
-
 const ReceiveDialog = (() => {
     const self = {};
     let dialog = null;
 
-    self.show = (op) => {
-        dialog = dialog || new GeneralDialog({
-            title: "Receive Payment",
-            cssClass: "modal-lg vs-modal",
-            backdrop: "static",
-            keyboard: true,
+    self.show = op => {
+        dialog =
+            dialog ||
+            new GeneralDialog({
+                title: "Receive Payment",
+                cssClass: "modal-lg vs-modal",
+                backdrop: "static",
+                keyboard: true,
 
-            createContent: () => `
+                createContent: () => `
                 <div class="container-fluid px-0">
 
                     <!-- 3-col summary header -->
@@ -2031,201 +2231,273 @@ const ReceiveDialog = (() => {
                     </div>
                 </div>`,
 
-    contentCreated: (me) => {
-        // ====================== LIVE TOTALS ======================
-        const updateTotals = () => {
-            const getValue = (name) => {
-                const el = me.divModal.querySelector(`[name="${name}"]`);
-                return el ? parseFloat(el.value) || 0 : 0;
-            };
-
-            const cash   = getValue('cash');
-            const bank   = getValue('transfer_amount');
-            const card   = getValue('card_amount');
-            const cheque = getValue('cheque_amount');
-
-            const totalPaid = cash + bank + card + cheque;
-
-            const remarkParts = [];
-                if (cash > 0) remarkParts.push(`Paid $${cash.toFixed(2)} via Cash`);
-                if (bank > 0) remarkParts.push(`Paid $${bank.toFixed(2)} via Bank Transfer`);
-                if (card > 0) remarkParts.push(`Paid $${card.toFixed(2)} via Card`);
-                if (cheque > 0) remarkParts.push(`Paid $${cheque.toFixed(2)} via Cheque`);
-
-            const remarkEl = me.divModal.querySelector('[name="remarks"]');
-                if (remarkEl) {
-                    remarkEl.value = remarkParts.join(', ');
-                    remarkEl.dispatchEvent(new Event('change'));
-                }
-            let due = 0;
-            const dueEl = me.divModal.querySelector('#f_due');
-            if (dueEl) {
-                due = parseFloat(dueEl.textContent.replace(/[^0-9.-]+/g, '')) || 0;
-            }
-
-            const remaining = Math.max(0, due - totalPaid);
-
-            const fmt = (n) => '$' + Number(n).toFixed(2);
-
-
-            me.divModal.querySelector('#f_tot').textContent = fmt(totalPaid);
-            me.divModal.querySelector('#f_bal').textContent = fmt(remaining);
-
-            const balEl = me.divModal.querySelector('#f_bal');
-            if (balEl) {
-                balEl.style.color = (remaining <= 0.001) ? '#3B6D11' : '#FAB31C';
-            }
-
-            me.divModal.querySelector('#c_e').textContent  = cash   > 0 ? fmt(cash)   : '—';
-            me.divModal.querySelector('#b_e').textContent  = bank   > 0 ? fmt(bank)   : '—';
-            me.divModal.querySelector('#ca_e').textContent = card   > 0 ? fmt(card)   : '—';
-            me.divModal.querySelector('#ch_e').textContent = cheque > 0 ? fmt(cheque) : '—';
-        };
-
-        const amountFields = ['cash', 'transfer_amount', 'card_amount', 'cheque_amount'];
-        amountFields.forEach(name => {
-            const input = me.divModal.querySelector(`[name="${name}"]`);
-            if (input) {
-                input.addEventListener('input', updateTotals);
-                input.addEventListener('change', updateTotals);
-            }
-        });
-
-        me.convertPayment = (data) => {
-            const parseAmt = (v) => isNaN(parseFloat(v)) ? 0 : parseFloat(v);
-            const breakdowns = [];
-
-            // Cash
-            if (parseAmt(data.cash) > 0) {
-                breakdowns.push({
-                    method: "Cash",
-                    amount: parseAmt(data.cash),
-                    currency_code: "USD"
-                });
-            }
-
-            // Bank Transfer
-            if (parseAmt(data.transfer_amount) > 0) {
-                breakdowns.push({
-                    method: "Bank",
-                    amount: parseAmt(data.transfer_amount),
-                    currency_code: "USD",
-                    bank_id: parseInt(data.bank_transfer_bank_id) || null,
-                    bank_name: me.getSelectText ? me.getSelectText('bank_transfer_bank_id') : null,
-                    bank_ref_number: data.bank_ref_number || null,
-                });
-            }
-
-            // Card
-            if (parseAmt(data.card_amount) > 0) {
-                breakdowns.push({
-                    method: "Card",
-                    amount: parseAmt(data.card_amount),
-                    currency_code: "USD",
-                    card_type: data.card_type || null,
-                    card_number: data.card_number || null,
-                });
-            }
-
-            // Cheque
-            if (parseAmt(data.cheque_amount) > 0) {
-                breakdowns.push({
-                    method: "Cheque",
-                    amount: parseAmt(data.cheque_amount),
-                    currency_code: "USD",
-                    bank_id: parseInt(data.cheque_bank_id) || null,
-                    cheque_bank_name: me.getSelectText ? me.getSelectText('cheque_bank_id') : null,
-                    cheque_number: data.cheque_number || null,
-                });
-            }
-            return {
-                invoice_id: me.dataOptions?.invoice_id || null,
-                remarks: (data.remarks || '').trim(),
-                pmt_breakdowns: breakdowns,
-
-            };
-
-        };
-    },
-
-    onPrepareForm: (me) => {
-        const opts = me.dataOptions || {};
-
-        // Load invoice details
-        if (opts.invoice_id) {
-            vsapi.call(`${main_view.base_url}/prm/invoice/details`, { id: opts.invoice_id })
-                .then(res => {
-                    if (res.status_code === 200) {
-                        const d = res.data || {};
-                        const bal = Number(d.balance || 0).toFixed(2);
-
-                        const set = (id, val) => {
-                            const el = me.divModal.querySelector('#' + id);
-                            if (el) el.textContent = val;
+                contentCreated: me => {
+                    // ====================== LIVE TOTALS ======================
+                    const updateTotals = () => {
+                        const getValue = name => {
+                            const el = me.divModal.querySelector(
+                                `[name="${name}"]`
+                            );
+                            return el ? parseFloat(el.value) || 0 : 0;
                         };
 
-                        set('f_due', '$' + bal);
-                        set('f_bal', '$' + bal);
-                        set('f_tot', '$0.00');
+                        const cash = getValue("cash");
+                        const bank = getValue("transfer_amount");
+                        const card = getValue("card_amount");
+                        const cheque = getValue("cheque_amount");
 
-                        if (d.tenant_name) set('lbl_tenant', d.tenant_name);
-                        if (d.code) set('lbl_invoice', d.code);
+                        const totalPaid = cash + bank + card + cheque;
+
+                        const remarkParts = [];
+                        if (cash > 0)
+                            remarkParts.push(
+                                `Paid $${cash.toFixed(2)} via Cash`
+                            );
+                        if (bank > 0)
+                            remarkParts.push(
+                                `Paid $${bank.toFixed(2)} via Bank Transfer`
+                            );
+                        if (card > 0)
+                            remarkParts.push(
+                                `Paid $${card.toFixed(2)} via Card`
+                            );
+                        if (cheque > 0)
+                            remarkParts.push(
+                                `Paid $${cheque.toFixed(2)} via Cheque`
+                            );
+
+                        const remarkEl = me.divModal.querySelector(
+                            '[name="remarks"]'
+                        );
+                        if (remarkEl) {
+                            remarkEl.value = remarkParts.join(", ");
+                            remarkEl.dispatchEvent(new Event("change"));
+                        }
+                        let due = 0;
+                        const dueEl = me.divModal.querySelector("#f_due");
+                        if (dueEl) {
+                            due =
+                                parseFloat(
+                                    dueEl.textContent.replace(/[^0-9.-]+/g, "")
+                                ) || 0;
+                        }
+
+                        const remaining = Math.max(0, due - totalPaid);
+
+                        const fmt = n => "$" + Number(n).toFixed(2);
+
+                        me.divModal.querySelector("#f_tot").textContent = fmt(
+                            totalPaid
+                        );
+                        me.divModal.querySelector("#f_bal").textContent = fmt(
+                            remaining
+                        );
+
+                        const balEl = me.divModal.querySelector("#f_bal");
+                        if (balEl) {
+                            balEl.style.color =
+                                remaining <= 0.001 ? "#3B6D11" : "#FAB31C";
+                        }
+
+                        me.divModal.querySelector("#c_e").textContent =
+                            cash > 0 ? fmt(cash) : "—";
+                        me.divModal.querySelector("#b_e").textContent =
+                            bank > 0 ? fmt(bank) : "—";
+                        me.divModal.querySelector("#ca_e").textContent =
+                            card > 0 ? fmt(card) : "—";
+                        me.divModal.querySelector("#ch_e").textContent =
+                            cheque > 0 ? fmt(cheque) : "—";
+                    };
+
+                    const amountFields = [
+                        "cash",
+                        "transfer_amount",
+                        "card_amount",
+                        "cheque_amount"
+                    ];
+                    amountFields.forEach(name => {
+                        const input = me.divModal.querySelector(
+                            `[name="${name}"]`
+                        );
+                        if (input) {
+                            input.addEventListener("input", updateTotals);
+                            input.addEventListener("change", updateTotals);
+                        }
+                    });
+
+                    me.convertPayment = data => {
+                        const parseAmt = v =>
+                            isNaN(parseFloat(v)) ? 0 : parseFloat(v);
+                        const breakdowns = [];
+
+                        // Cash
+                        if (parseAmt(data.cash) > 0) {
+                            breakdowns.push({
+                                method: "Cash",
+                                amount: parseAmt(data.cash),
+                                currency_code: "USD"
+                            });
+                        }
+
+                        // Bank Transfer
+                        if (parseAmt(data.transfer_amount) > 0) {
+                            breakdowns.push({
+                                method: "Bank",
+                                amount: parseAmt(data.transfer_amount),
+                                currency_code: "USD",
+                                bank_id:
+                                    parseInt(data.bank_transfer_bank_id) ||
+                                    null,
+                                bank_name: me.getSelectText
+                                    ? me.getSelectText("bank_transfer_bank_id")
+                                    : null,
+                                bank_ref_number: data.bank_ref_number || null
+                            });
+                        }
+
+                        // Card
+                        if (parseAmt(data.card_amount) > 0) {
+                            breakdowns.push({
+                                method: "Card",
+                                amount: parseAmt(data.card_amount),
+                                currency_code: "USD",
+                                card_type: data.card_type || null,
+                                card_number: data.card_number || null
+                            });
+                        }
+
+                        // Cheque
+                        if (parseAmt(data.cheque_amount) > 0) {
+                            breakdowns.push({
+                                method: "Cheque",
+                                amount: parseAmt(data.cheque_amount),
+                                currency_code: "USD",
+                                bank_id: parseInt(data.cheque_bank_id) || null,
+                                cheque_bank_name: me.getSelectText
+                                    ? me.getSelectText("cheque_bank_id")
+                                    : null,
+                                cheque_number: data.cheque_number || null
+                            });
+                        }
+                        return {
+                            invoice_id: me.dataOptions?.invoice_id || null,
+                            remarks: (data.remarks || "").trim(),
+                            pmt_breakdowns: breakdowns
+                        };
+                    };
+                },
+
+                onPrepareForm: me => {
+                    const opts = me.dataOptions || {};
+
+                    // Load invoice details
+                    if (opts.invoice_id) {
+                        vsapi
+                            .call(`${main_view.base_url}/prm/invoice/details`, {
+                                id: opts.invoice_id
+                            })
+                            .then(res => {
+                                if (res.status_code === 200) {
+                                    const d = res.data || {};
+                                    const bal = Number(d.balance || 0).toFixed(
+                                        2
+                                    );
+
+                                    const set = (id, val) => {
+                                        const el = me.divModal.querySelector(
+                                            "#" + id
+                                        );
+                                        if (el) el.textContent = val;
+                                    };
+
+                                    set("f_due", "$" + bal);
+                                    set("f_bal", "$" + bal);
+                                    set("f_tot", "$0.00");
+
+                                    if (d.tenant_name)
+                                        set("lbl_tenant", d.tenant_name);
+                                    if (d.code) set("lbl_invoice", d.code);
+                                }
+                            });
                     }
-                });
-        }
 
-        // Load banks
-        vsapi.call(`${main_view.base_url}/prm/invoice/form-options`)
-            .then(res => {
-                const banks = res?.data?.banks || [];
-                if (me.controls.bank_transfer_bank_id) {
-                    VSUtil.setComboItems(me.controls.bank_transfer_bank_id, banks, "id", "name", true, "— Select Bank —");
-                }
-                if (me.controls.cheque_bank_id) {
-                    VSUtil.setComboItems(me.controls.cheque_bank_id, banks, "id", "name", true, "— Select Bank —");
-                }
-            });
-    },
-
-        buttons: [
-            { label: 'Cancel', cssClass: "btn btn-secondary", click: (me) => me.hide(false) },
-            {
-                label: 'Receive',
-                cssClass: "btn btn-primary",
-                click: (me, btn) => {
-                    const payload = me.convertPayment(me.getData());
-
-                    if (!payload.pmt_breakdowns || payload.pmt_breakdowns.length === 0) {
-                        return cv_interact.error("Please enter at least one payment amount.");
-                    }
-
-                    vsapi.call(`${main_view.base_url}/prm/invoice/receive`, payload, btn)
+                    // Load banks
+                    vsapi
+                        .call(`${main_view.base_url}/prm/invoice/form-options`)
                         .then(res => {
-                            if (res.status_code === 200) {
-                                cv_interact.success("Payment Received Successfully");
-                                me.hide(true);
-                            } else {
-                                cv_interact.error(res.error_message || "Save failed");
+                            const banks = res?.data?.banks || [];
+                            if (me.controls.bank_transfer_bank_id) {
+                                VSUtil.setComboItems(
+                                    me.controls.bank_transfer_bank_id,
+                                    banks,
+                                    "id",
+                                    "name",
+                                    true,
+                                    "— Select Bank —"
+                                );
                             }
-                        })
-                        .catch(err => {
-                            console.error(err);
-                            cv_interact.error("Network error occurred");
+                            if (me.controls.cheque_bank_id) {
+                                VSUtil.setComboItems(
+                                    me.controls.cheque_bank_id,
+                                    banks,
+                                    "id",
+                                    "name",
+                                    true,
+                                    "— Select Bank —"
+                                );
+                            }
                         });
-                }
-            },
-            {
-                label: "Receive & Print",
-                cssClass: "btn btn-success",
-                click: (me, btn) => {
-                    const payload = me.convertPayment(me.getData());
-                    self._submitReceive(me, btn, payload, true);   // your existing print handler
-                }
-            }
-        ]
-    });
+                },
 
-    dialog.show(op);
+                buttons: [
+                    {
+                        label: "Cancel",
+                        cssClass: "btn btn-secondary",
+                        click: me => me.hide(false)
+                    },
+                    {
+                        label: "Receive",
+                        cssClass: "btn btn-primary",
+                        click: (me, btn) => {
+                            const payload = me.convertPayment(me.getData());
+
+                            if (
+                                !payload.pmt_breakdowns ||
+                                payload.pmt_breakdowns.length === 0
+                            ) {
+                                return cv_interact.error(
+                                    "Please enter at least one payment amount."
+                                );
+                            }
+
+                            vsapi
+                                .call(
+                                    `${main_view.base_url}/prm/invoice/receive`,
+                                    payload,
+                                    btn
+                                )
+                                .then(res => {
+                                    if (res.status_code === 200) {
+                                        cv_interact.success(
+                                            "Payment Received Successfully"
+                                        );
+                                        me.hide(true);
+                                    } else {
+                                        cv_interact.error(
+                                            res.error_message || "Save failed"
+                                        );
+                                    }
+                                })
+                                .catch(err => {
+                                    console.error(err);
+                                    cv_interact.error("Network error occurred");
+                                });
+                        }
+                    }
+                ]
+            });
+
+        dialog.show(op);
     };
 
     return self;

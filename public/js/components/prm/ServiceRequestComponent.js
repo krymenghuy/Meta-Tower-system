@@ -83,47 +83,7 @@ var ServiceRequestComponent = (function () {
 
             }
         },
-
-        // {
-        //     transTitle: "titles.Schedule Date",
-        //     className: "align-middle text-nowrap text-center",
-        //     data: (data) => {
-        //         console.log(123,data);
-
-        //         const rawDate = (data.scheduled_date || '').toString().trim();
-        //         const rawTime = (data.start_time || '').toString().trim();
-
-        //         let datePart = rawDate;
-        //         let timePart = rawTime.substring(0, 5);
-
-        //         // Try to normalise date to YYYY-MM-DD if it's a valid date string.
-        //         if (rawDate) {
-        //             const d = new Date(rawDate);
-        //             if (!Number.isNaN(d.getTime())) {
-        //                 const y = d.getFullYear();
-        //                 const m = String(d.getMonth() + 1).padStart(2, '0');
-        //                 const day = String(d.getDate()).padStart(2, '0');
-        //                 datePart = `${y}-${m}-${day}`;
-        //             }
-        //         }
-
-        //         if (!datePart && !timePart) {
-        //             return '<span class="text-yp-custom">...</span>';
-        //         }
-
-        //         if (!timePart) {
-        //             return `<span class="text-yp-custom">${datePart}</span>`;
-        //         }
-
-        //         return `
-        //         <div class="d-flex flex-column align-items-center">
-        //             <span class="text-prm-custom text-nowrap">${datePart}</span>
-        //             <span class="text-muted small text-nowrap">${timePart}</span>
-        //         </div>
-        //     `;
-        //     }
-        // },
-       {
+        {
             transTitle: "titles.Schedule Date",
             className: "align-middle text-nowrap text-center",
             data: (data) => {
