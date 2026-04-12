@@ -490,64 +490,75 @@ function checkUniqueTenantByPhone($phone_number, $id = null)
 
 
     public function getTenantWithSpacesAndMonths($id = null, $ss = null)
-{
-    $id = $id ?? $this->id;
-    $ss = $ss ?? $this->userInfo;
+    {
+        $id = $id ?? $this->id;
+        $ss = $ss ?? $this->userInfo;
 
-    $tenant = DB::table('tenants')
-        ->where('id', $id)
-        ->select('id', 'name', 'legal_name', 'email', 'phone_number')
-        ->first();
+        $tenant = DB::table('tenants')
+            ->where('id', $id)
+            ->select('id', 'name', 'legal_name', 'email', 'phone_number')
+            ->first();
 
-    $allMonths = [];
+        $allMonths = [];
 
-    $spaces = DB::table('contracts as c')
-        ->join('building_spaces as bs', 'bs.id', '=', 'c.space_id')
-        ->where('c.tenant_id', $id)
-        ->select(
-            'c.id as contract_id',
-            'bs.id as space_id',
-            'bs.code as space_code',
-            'c.price',
-            'c.sqm_size',
-            'c.start_date',
-            'c.end_date'
-        )
-        ->orderByDesc('c.start_date')
-        ->get()
-        ->map(function ($contract) use ($ss, &$allMonths) {
-            $months = Contract::generateContractMonths(
-                null,
-                $contract->start_date,
-                $contract->end_date,
-                $ss
-            );
-            foreach ($months as $month) {
-                $allMonths[] = array_merge($month, [
+        $spaces = DB::table('contracts as c')
+            ->join('building_spaces as bs', 'bs.id', '=', 'c.space_id')
+            ->where('c.tenant_id', $id)
+            ->select(
+                'c.id as contract_id',
+                'bs.id as space_id',
+                'bs.code as space_code',
+                'bs.sqm_size as space_sqm_size',
+                'bs.price_type',
+                'c.price',
+                'c.sqm_size',
+                'c.start_date',
+                'c.end_date'
+            )
+            ->orderByDesc('c.start_date')
+            ->get()
+            ->map(function ($contract) use ($ss, &$allMonths) {
+
+                // Calculate effective price based on price_type
+                $effective_price = ($contract->price_type === 'total')
+                    ? $contract->price
+                    : ($contract->price * $contract->space_sqm_size);
+                // Generate months for this contract
+                $months = Contract::generateContractMonths(
+                    null,
+                    $contract->start_date,
+                    $contract->end_date,
+                    $ss
+                );
+                foreach ($months as $month) {
+                    $allMonths[] = array_merge($month, [
+                        'contract_id' => $contract->contract_id,
+                        'space_id'    => $contract->space_id,
+                        'space_code'  => $contract->space_code,
+                        'effective_price' => $effective_price
+                    ]);
+                }
+
+                return (object) [
                     'contract_id' => $contract->contract_id,
                     'space_id'    => $contract->space_id,
                     'space_code'  => $contract->space_code,
-                ]);
-            }
+                    'price'       => $contract->price,
+                    'sqm_size'        => $contract->space_sqm_size,
+                    'price_type'      => $contract->price_type,
+                    'effective_price' => $effective_price,
+                    'start_date'  => $contract->start_date,
+                    'end_date'    => $contract->end_date,
+                ];
+            })
+            ->values();
 
-            return (object) [
-                'contract_id' => $contract->contract_id,
-                'space_id'    => $contract->space_id,
-                'space_code'  => $contract->space_code,
-                'price'       => $contract->price,
-                'sqm_size'    => $contract->sqm_size,
-                'start_date'  => $contract->start_date,
-                'end_date'    => $contract->end_date,
-            ];
-        })
-        ->values();
-
-    return (object) [
-        'tenant' => $tenant,
-        'spaces' => $spaces,
-        'months' => $allMonths,
-    ];
-}
+        return (object) [
+            'tenant' => $tenant,
+            'spaces' => $spaces,
+            'months' => $allMonths,
+        ];
+    }
 
 
 

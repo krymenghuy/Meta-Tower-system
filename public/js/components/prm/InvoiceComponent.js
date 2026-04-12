@@ -288,24 +288,25 @@ var InvoiceComponent = (() => {
             });
         };
         const getDiscountDisplay = (item) => {
-            const discountValue = parseFloat(item.discount || item.special_discount_value || 0);
-            const discountType  = (item.discount_type || item.special_discount_type || 'percent').toLowerCase().trim();
+            const value = parseFloat(item.discount || item.special_discount_value || 0);
+            const type  = (item.discount_type || item.special_discount_type || 'percent')
+                            .toLowerCase().trim();
+
             const currency = mThis.currency_symbol || "$";
 
-            if (discountValue <= 0) {
+            if (value <= 0) {
                 return `<span class="text-muted">—</span>`;
             }
 
-            if (discountType === 'amount' || discountType === '$') {
-                // Show as money: - $25.00
-                return `-${currency}${discountValue.toLocaleString("en-US", {
-                    minimumFractionDigits: 2
-                })}`;
-            } else {
-                // Show as percent: - 10.00%
-                return `-${discountValue.toLocaleString("en-US", {
-                    minimumFractionDigits: 2
-                })}%`;
+            if (type === 'amount' || type === '$') {
+                return `${currency}${value.toFixed(2)}`;
+            }
+            else {
+                const percentStr = value % 1 === 0
+                    ? value.toFixed(0)
+                    : value.toFixed(2);
+
+                return `${percentStr}%`;
             }
         };
 
@@ -347,7 +348,7 @@ var InvoiceComponent = (() => {
                     <td class="text-center small">${formatDate(item.end_date)}</td>
                     <td class="text-end">${price.toLocaleString("en-US", {minimumFractionDigits: 2})}</td>
                     <td class="text-end text-danger">${getDiscountDisplay(item)}</td>
-                    <td class="text-end text-info">+${taxAmount}%</td>
+                    <td class="text-end text-info">${taxAmount}%</td>
                     <td class="text-end fw-bold">${currency}${total.toLocaleString("en-US",{ minimumFractionDigits: 2 })}</td>
 
                 </tr>`;
@@ -712,282 +713,183 @@ const InvoiceDialog = (() => {
                         '[name="div_invoice_summary"]'
                     );
 
+
                     // ================ Rent ====================
                     me.controls.btnRent.onclick = () => {
                         if (!me._selectedTenantId) {
-                            return cv_interact.error(
-                                "Please select Tenant first"
-                            );
+                            return cv_interact.error("Please select Tenant first");
                         }
 
                         const spaces = me._tenantSpaces || [];
                         const months = me._tenantMonths || [];
 
-                        console.log("123",spaces);
+                        console.log("Tenant Spaces:", spaces);   // For debugging
 
+                        const selectedSpaceId = me.controls.space?.value || me.controls.space_id?.value || "";
 
-                        const selectedSpaceId =
-                            me.controls.space_id?.value ||
-                            me.controls.space?.value ||
-                            "";
-                        const matchedContract = spaces.find(
+                        const matchedSpace = spaces.find(
                             s => String(s.space_id) === String(selectedSpaceId)
-                        );
-                        const defaultContractId =
-                            matchedContract?.contract_id ??
-                            spaces[0]?.contract_id;
+                        ) || spaces[0];   // fallback to first space
 
+                        if (!matchedSpace) {
+                            return cv_interact.error("No space/contract found");
+                        }
+
+                        const defaultContractId = matchedSpace.contract_id;
+
+                        // Filter months for the selected contract
                         const monthOptions = months
-                            .filter(
-                                m =>
-                                    String(m.contract_id) ===
-                                    String(defaultContractId)
-                            )
-                            .map(
-                                m =>
-                                    `<option value="${m.month}">${m.month}</option>`
-                            )
+                            .filter(m => String(m.contract_id) === String(defaultContractId))
+                            .map(m => `<option value="${m.month}">${m.month}</option>`)
                             .join("");
 
                         InputBox.resetInstance("rentPopUp");
+
                         InputBox.show({
                             title: "Rent",
                             instanceKey: "rentPopUp",
                             createContent() {
                                 const div = document.createElement("div");
-                                div.style.cssText =
-                                    "display:grid; grid-template-columns:1fr 1fr; gap:14px; padding:4px 2px;";
+                                div.style.cssText = "display:grid; grid-template-columns:1fr 1fr; gap:14px; padding:4px 2px;";
+
                                 div.innerHTML = `
-                                <div class="material-input outlined">
-                                    <input class="data-input form-control bg-light"
-                                        data-field="contract_id" name="contract_id"
-                                        type="text" readonly placeholder="Auto fill">
-                                    <label class="form-label" style="font-size:13px;color:#555;">Unit Code / Room</label>
-                                </div>
-                                <div class="material-input outlined">
-                                    <select class="data-input form-control" data-field="monthly" name="monthly" data-style="material" placeholder="Monthly">
-                                        ${monthOptions}
-                                    </select>
-                                </div>
-                                <div class="material-input outlined">
-                                    <input class="data-input form-control" data-field="start_date" name="start_date" type="text" readonly placeholder="Auto fill">
-                                    <label class="form-label" style="font-size:13px;color:#555;">Start Date</label>
-                                </div>
-                                <div class="material-input outlined">
-                                    <input class="data-input form-control" data-field="end_date" name="end_date" type="text" readonly placeholder="Auto fill">
-                                    <label class="form-label" style="font-size:13px;color:#555;">End Date</label>
-                                </div>
-                                <div class="material-input outlined">
-                                    <input class="data-input form-control" data-field="price" name="price" type="text" placeholder="Auto fill">
-                                    <label class="form-label" style="font-size:13px;color:#555;">Price</label>
-                                </div>
-                                <div class="material-input outlined" style="display:flex; gap:8px; align-items:flex-end;">
-                                    <div style="flex:1">
-                                        <input class="data-input form-control" data-field="discount" name="discount" type="text" placeholder="0">
-                                        <label class="form-label" style="font-size:13px;color:#555;">Discount</label>
+                                    <div class="material-input outlined">
+                                        <input class="data-input form-control bg-light"
+                                            data-field="contract_id" name="contract_id"
+                                            type="text" readonly>
+                                        <label class="form-label" style="font-size:13px;color:#555;">Unit Code / Room</label>
                                     </div>
-                                    <div style="width:85px;">
-                                        <select class="data-input form-control" data-field="discount_type" name="discount_type">
-                                            <option value="percent">%</option>
-                                            <option value="amount">$</option>
+                                    <div class="material-input outlined">
+                                        <select class="data-input form-control" data-field="monthly" name="monthly" data-style="material" placeholder="Monthly">
+                                            ${monthOptions}
                                         </select>
                                     </div>
-                                </div>
-                                <div class="material-input outlined">
-                                    <input class="data-input form-control" data-field="tax_rate" name="tax_rate" type="text" placeholder="0">
-                                    <label class="form-label" style="font-size:13px;color:#555;">Tax %</label>
-                                </div>
-                                <div style="grid-column: span 2;" class="material-input outlined">
-                                    <textarea class="data-input form-control" data-field="remark" name="remark" rows="3"></textarea>
-                                    <label class="form-label" style="font-size:13px;color:#555;">Remark</label>
-                                </div>
-                            `;
+                                    <div class="material-input outlined">
+                                        <input class="data-input form-control" data-field="start_date" name="start_date"
+                                            type="text" readonly>
+                                        <label class="form-label" style="font-size:13px;color:#555;">Start Date</label>
+                                    </div>
+                                    <div class="material-input outlined">
+                                        <input class="data-input form-control" data-field="end_date" name="end_date"
+                                            type="text" readonly>
+                                        <label class="form-label" style="font-size:13px;color:#555;">End Date</label>
+                                    </div>
+                                    <div class="material-input outlined">
+                                        <input class="data-input form-control" data-field="price" name="price"
+                                            type="text" readonly>
+                                        <label class="form-label" style="font-size:13px;color:#555;">Price (Effective)</label>
+                                    </div>
+                                    <div class="material-input outlined" style="display:flex; gap:8px; align-items:flex-end;">
+                                        <div style="flex:1">
+                                            <input class="data-input form-control" data-field="discount" name="discount"
+                                                type="text" placeholder="0">
+                                            <label class="form-label" style="font-size:13px;color:#555;">Discount</label>
+                                        </div>
+                                        <div style="width:85px;">
+                                            <select class="data-input form-control" data-field="discount_type" name="discount_type">
+                                                <option value="percent">%</option>
+                                                <option value="amount">$</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="material-input outlined">
+                                        <input class="data-input form-control" data-field="tax_rate" name="tax_rate"
+                                            type="text" placeholder="0">
+                                        <label class="form-label" style="font-size:13px;color:#555;">Tax %</label>
+                                    </div>
+                                    <div style="grid-column: span 2;" class="material-input outlined">
+                                        <textarea class="data-input form-control" data-field="remark" name="remark" rows="3"></textarea>
+                                        <label class="form-label" style="font-size:13px;color:#555;">Remark</label>
+                                    </div>
+                                `;
                                 return div;
                             },
 
                             onOpen(ibMe) {
-                                const elContract = document.querySelector(
-                                    '[data-field="contract_id"]'
-                                );
-                                const elMonthly = document.querySelector(
-                                    '[data-field="monthly"]'
-                                );
-                                const elPrice = document.querySelector(
-                                    '[data-field="price"]'
-                                );
-                                const elStartDate = document.querySelector(
-                                    '[data-field="start_date"]'
-                                );
-                                const elEndDate = document.querySelector(
-                                    '[data-field="end_date"]'
-                                );
+                                const elContract   = document.querySelector('[data-field="contract_id"]');
+                                const elMonthly    = document.querySelector('[data-field="monthly"]');
+                                const elPrice      = document.querySelector('[data-field="price"]');
+                                const elStartDate  = document.querySelector('[data-field="start_date"]');
+                                const elEndDate    = document.querySelector('[data-field="end_date"]');
 
-                                if (!elContract || !elMonthly) return;
+                                if (!elContract || !elMonthly || !elPrice) return;
 
-                                const updateDates = (
-                                    selectedMonth,
-                                    contractId
-                                ) => {
-                                    const matchedMonth = months.find(
-                                        m =>
-                                            String(m.contract_id) ===
-                                                String(contractId) &&
-                                            m.month === selectedMonth
+                                // Fill initial values
+                                elContract.value = matchedSpace.space_code || "(No code)";
+                                elContract.dataset.contractId = String(matchedSpace.contract_id);
+
+                                // IMPORTANT: Use effective_price instead of price
+                                if (elPrice) {
+                                    const effectivePrice = Number(matchedSpace.effective_price || 0);
+                                    elPrice.value = effectivePrice.toFixed(2);
+                                }
+
+                                // Set default month and dates
+                                const defaultMonth = months.find(m =>
+                                    String(m.contract_id) === String(matchedSpace.contract_id)
+                                ) || {};
+
+                                if (elMonthly) elMonthly.value = defaultMonth.month || "";
+                                if (elStartDate) elStartDate.value = defaultMonth.start_date || "";
+                                if (elEndDate)   elEndDate.value   = defaultMonth.end_date || "";
+
+                                // Update dates when month changes
+                                elMonthly.addEventListener("change", (e) => {
+                                    const selectedMonth = e.target.value;
+                                    const matchedMonth = months.find(m =>
+                                        String(m.contract_id) === String(matchedSpace.contract_id) &&
+                                        m.month === selectedMonth
                                     );
                                     if (matchedMonth) {
-                                        if (elStartDate)
-                                            elStartDate.value =
-                                                matchedMonth.start_date || "";
-                                        if (elEndDate)
-                                            elEndDate.value =
-                                                matchedMonth.end_date || "";
-                                    } else {
-                                        if (elStartDate) elStartDate.value = "";
-                                        if (elEndDate) elEndDate.value = "";
+                                        if (elStartDate) elStartDate.value = matchedMonth.start_date || "";
+                                        if (elEndDate)   elEndDate.value   = matchedMonth.end_date || "";
                                     }
-                                };
-
-                                elMonthly.addEventListener("change", e => {
-                                    const currentContractId =
-                                        elContract.dataset.contractId;
-                                    updateDates(
-                                        e.target.value,
-                                        currentContractId
-                                    );
                                 });
-
-                                const fillFields = contractId => {
-                                    if (!contractId) return;
-                                    const matchedSpace = spaces.find(
-                                        s =>
-                                            String(s.contract_id) ===
-                                            String(contractId)
-                                    );
-                                    const defaultMonth =
-                                        months.find(
-                                            m =>
-                                                String(m.contract_id) ===
-                                                String(contractId)
-                                        ) || {};
-                                    if (matchedSpace && elPrice) {
-                                        elPrice.value = Number(
-                                            matchedSpace.price || 0
-                                        ).toFixed(2);
-                                    }
-                                    if (elMonthly)
-                                        elMonthly.value =
-                                            defaultMonth.month || "";
-                                    if (elStartDate)
-                                        elStartDate.value =
-                                            defaultMonth.start_date || "";
-                                    if (elEndDate)
-                                        elEndDate.value =
-                                            defaultMonth.end_date || "";
-                                };
-
-                                let targetContractId = null;
-                                let displaySpaceCode = "";
-
-                                if (selectedSpaceId) {
-                                    const match = spaces.find(
-                                        s =>
-                                            String(s.space_id) ===
-                                            String(selectedSpaceId)
-                                    );
-                                    if (match) {
-                                        targetContractId = match.contract_id;
-                                        displaySpaceCode =
-                                            match.space_code || "";
-                                    }
-                                }
-
-                                if (!targetContractId && spaces.length > 0) {
-                                    targetContractId = spaces[0].contract_id;
-                                    displaySpaceCode =
-                                        spaces[0].space_code || "";
-                                }
-
-                                if (targetContractId) {
-                                    elContract.dataset.contractId = String(
-                                        targetContractId
-                                    );
-                                    elContract.value =
-                                        displaySpaceCode || "(No room code)";
-                                    fillFields(targetContractId);
-                                }
                             },
 
                             onConfirm(data, btn, ibMe) {
-                                const elContract = document.querySelector(
-                                    '[data-field="contract_id"]'
-                                );
-                                const realContractId =
-                                    elContract?.dataset.contractId ||
-                                    data.contract_id;
+                                const elContract = document.querySelector('[data-field="contract_id"]');
+                                const realContractId = elContract?.dataset.contractId || data.contract_id;
 
                                 if (!realContractId) {
-                                    cv_interact.error(
-                                        "Unit Code / Room is missing"
-                                    );
+                                    cv_interact.error("Unit Code / Room is missing");
                                     return;
                                 }
 
-                                const matchedSpace = spaces.find(
-                                    s =>
-                                        String(s.contract_id) ===
-                                        String(realContractId)
-                                );
-                                const roomCode =
-                                    matchedSpace?.space_code || "—";
-
-                                const filteredMonths = months.filter(
-                                    m =>
-                                        String(m.contract_id) ===
-                                        String(realContractId)
-                                );
-                                const matchedMonth =
-                                    filteredMonths.find(
-                                        m => m.month === data.monthly
-                                    ) ||
-                                    filteredMonths[0] ||
-                                    null;
-
-                                const elStartDate = document.querySelector(
-                                    '[data-field="start_date"]'
-                                );
-                                const elEndDate = document.querySelector(
-                                    '[data-field="end_date"]'
+                                const matchedSpace = spaces.find(s =>
+                                    String(s.contract_id) === String(realContractId)
                                 );
 
-                                const resolvedStartDate =
-                                    elStartDate?.value ||
-                                    matchedMonth?.start_date ||
-                                    "";
-                                const resolvedEndDate =
-                                    elEndDate?.value ||
-                                    matchedMonth?.end_date ||
-                                    "";
+                                if (!matchedSpace) return;
 
-                                me.itemsView.addRow(
-                                    {
-                                        item_id: realContractId,
-                                        item_name: `Rent - ${roomCode}`,
-                                        type: "rent",
-                                        price: Number(data.price) || 0,
-                                        // space_price: Number(data.price) || 0,
-                                        qty: 1,
-                                        remarks: `Rent - ${roomCode} (${data.monthly ||
-                                            "N/A"})`,
-                                        contract_id: realContractId,
-                                        start_date: resolvedStartDate,
-                                        end_date: resolvedEndDate,
-                                        space_code: roomCode,
-                                        discount: Number(data.discount) || 0,
-                                        discount_type: data.discount_type || "amount",
-                                        tax_rate: Number(data.tax_rate) || 0
-                                    },
-                                    0
+                                const roomCode = matchedSpace.space_code || "—";
+                                const filteredMonths = months.filter(m =>
+                                    String(m.contract_id) === String(realContractId)
                                 );
+                                const matchedMonth = filteredMonths.find(m => m.month === data.monthly) || filteredMonths[0];
+
+                                const resolvedStartDate = document.querySelector('[data-field="start_date"]')?.value ||
+                                                        matchedMonth?.start_date || "";
+                                const resolvedEndDate = document.querySelector('[data-field="end_date"]')?.value ||
+                                                        matchedMonth?.end_date || "";
+
+                                const finalPrice = Number(matchedSpace.effective_price || data.price || 0);
+
+                                me.itemsView.addRow({
+                                    item_id: realContractId,
+                                    item_name: `Rent - ${roomCode}`,
+                                    type: "rent",
+                                    price: finalPrice,
+                                    qty: 1,
+                                    remarks: `Rent - ${roomCode} (${data.monthly || "N/A"})`,
+                                    contract_id: realContractId,
+                                    start_date: resolvedStartDate,
+                                    end_date: resolvedEndDate,
+                                    space_code: roomCode,
+                                    discount: Number(data.discount) || 0,
+                                    discount_type: data.discount_type || "amount",
+                                    tax_rate: Number(data.tax_rate) || 0
+                                }, 0);
 
                                 cv_interact.success("Rent item added");
                                 ibMe.close();
@@ -1481,6 +1383,9 @@ const InvoiceDialog = (() => {
                             }
                         });
                     };
+
+
+                    // ==================Service Request=========
 
                     me.itemsView = new ItemsView(me.controls.divItemsView, {
                         currencyCode: "USD",
@@ -2216,14 +2121,6 @@ const ReceiveDialog = (() => {
                         });
                 }
             },
-            {
-                label: "Receive & Print",
-                cssClass: "btn btn-success",
-                click: (me, btn) => {
-                    const payload = me.convertPayment(me.getData());
-                    self._submitReceive(me, btn, payload, true);   // your existing print handler
-                }
-            }
         ]
     });
 
