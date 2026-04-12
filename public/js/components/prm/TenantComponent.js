@@ -431,6 +431,14 @@ var TenantComponent = new (function () {
         let html = `<div class="row g-3">`;
         if (Array.isArray(data) && data.length > 0) {
             data.forEach((d) => {
+                const prmNonEmpty = (v) =>
+                    v !== null && v !== undefined && String(v).trim() !== "";
+                /** Backend: status_id 2 = tenant with active contract; list also joins last contract (dates / space). */
+                const hasContractAlready =
+                    Number(d.status_id) === 2 ||
+                    prmNonEmpty(d.end_date) ||
+                    prmNonEmpty(d.start_date) ||
+                    prmNonEmpty(d.space_code);
                 const status = (d.status || "Pending").toLowerCase();
                 let statusClass = "";
                 switch (status) {
@@ -483,14 +491,14 @@ var TenantComponent = new (function () {
                                     <div class="col-2"></div>
                                     <div class="col-6">
                                         ${
-                                            d.end_date
+                                            hasContractAlready
                                                 ? `
                                                 <div class="d-flex flex-column text-center gap-1">
                                                     <span class="text-prm-custom fw-semibold">
                                                         Lease Expiry
                                                     </span>
                                                     <small class="text-muted">
-                                                        ${d.end_date}
+                                                        ${d.end_date || d.start_date || "—"}
                                                     </small>
                                                 </div>
                                             `
@@ -1049,28 +1057,6 @@ var TenantComponent = new (function () {
                                     <p class="h5 text-primary mb-0">${priceLine}</p>
                                     <small class="text-muted">${depositSmallHtml}</small>
                                 </div>
-                            </div>
-
-                            <div class="d-flex justify-content-between align-items-center mb-2 mt-2">
-                                <small class="text-muted fw-semibold">Renewal history</small>
-                                <small class="text-muted">${renewalsCount} renewals</small>
-                            </div>
-                            <div class="table-responsive">
-                                <table class="table table-sm table--white mb-0 renewal-history-table">
-                                    <thead class="bg-light">
-                                        <tr class="text-uppercase small">
-                                            <th class="border-0">Renewal date</th>
-                                            <th class="border-0">Start date</th>
-                                            <th class="border-0">End date</th>
-                                            <th class="border-0">Unit Code</th>
-                                            <th class="border-0">Remarks</th>
-                                            <th class="border-0">Updated by</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        ${renewalsTableRowsHtml}
-                                    </tbody>
-                                </table>
                             </div>
                         </div>
                     </div>
@@ -1638,7 +1624,7 @@ const CreateTenantDialog = (() => {
                                 ? me.tenantImageBox.getImage()
                                 : "";
                                 console.log(4444,op);
-                                
+
                             vsapi
                                 .call(
                                     [

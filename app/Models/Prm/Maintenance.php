@@ -257,11 +257,11 @@ class Maintenance extends VSModel
         $amenities = GeneralSettings::options_maintenance_amenity($ss);
         if (!empty($include_amenity_id)) {
             $hasIncludedAmenity = $amenities->contains(function ($a) use ($include_amenity_id) {
-                return (int) ($a->id ?? 0) === (int) $include_amenity_id;
+                return ($a->id ?? 0) === $include_amenity_id;
             });
             if (!$hasIncludedAmenity) {
                 $selectedAmenity = DB::table('amenities')
-                    ->where('id', (int) $include_amenity_id)
+                    ->where('id', $include_amenity_id)
                     ->selectRaw('id, name AS amenity, code as amenity_code, max_capacity, category_id')
                     ->first();
                 if ($selectedAmenity) {

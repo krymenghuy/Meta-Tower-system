@@ -238,10 +238,10 @@ class BuildingSpace
             ")
             ->first();
 
-        $totalUnits = (int) ($summaryRow->total_units ?? 0);
-        $available = (int) ($summaryRow->available_cnt ?? 0);
-        $booked = (int) ($summaryRow->booked_cnt ?? 0);
-        $occupied = (int) ($summaryRow->occupied_cnt ?? 0);
+        $totalUnits = ($summaryRow->total_units ?? 0);
+        $available =($summaryRow->available_cnt ?? 0);
+        $booked = ($summaryRow->booked_cnt ?? 0);
+        $occupied =($summaryRow->occupied_cnt ?? 0);
         // Occupancy = count of occupied units only (matches OCCUPIED on cards). Booked has its own summary.
         $occupancyCount = $occupied;
 
