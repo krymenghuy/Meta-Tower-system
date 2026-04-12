@@ -525,7 +525,7 @@ function checkUniqueTenantByPhone($phone_number, $id = null)
                     : ($contract->price * $contract->space_sqm_size);
                 // Generate months for this contract
                 $months = Contract::generateContractMonths(
-                    null,
+                    $contract->contract_id,
                     $contract->start_date,
                     $contract->end_date,
                     $ss
