@@ -486,17 +486,20 @@ console.log(123,op);
                         </div>
                     </div>
                     <div class="row g-3 mb-3">
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <div class="material-input outlined">
                                 <select data-style="material" class="data-input form-control" data-field="service_type_id" required placeholder="Service Type"></select>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <div class="material-input outlined">
                                 <select data-style="material" class="data-input form-control" data-field="service_id" required placeholder="Service"></select>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        
+                    </div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-3">
                             <div class="material-input outlined">
                                 <select data-style="material" class="data-input form-control" data-field="unit_type" disabled placeholder="Unit Type">
                                     <option value="">-- Select Unit --</option>
@@ -505,12 +508,9 @@ console.log(123,op);
                                 </select>
                             </div>
                         </div>
-                    </div>
-                    <div class="row g-3 mb-3">
-                        
-                        <div class="col-md-4 select-type-time" style="display:none;">
+                        <div class="col-md-3 select-type-time" style="display:none;">
                             <div class="material-input outlined">
-                                <select data-style="material" class="data-input form-control" data-field="duration_hours" placeholder="Duration (hours)">
+                                <select name="duration_hours" data-style="material" class="data-input form-control" data-field="duration_hours" placeholder="Duration (hours)">
                                     <option value="">-- Select Duration --</option>
                                     <option value="0.5">30 minutes</option>
                                     <option value="1">1 hour</option>
@@ -522,13 +522,13 @@ console.log(123,op);
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="material-input outlined">
                                 <input data-type="date" class="form-control data-input" data-field="scheduled_date" required />
                                 <label style="padding-left:6px;color:#777777;">Scheduled Date</label>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="material-input outlined">
                                 <input type="time" class="form-control data-input" data-field="start_time" placeholder=" " />
                                 <label style="color:#777777;padding-left:6px;">Start Time</label>
@@ -703,7 +703,8 @@ console.log(123,op);
                 if (me.controls.unit_type && detail.unit_type) {
                     me.controls.unit_type.value = detail.unit_type;
                 }
-
+                console.log(6666,me.detail);
+                
                 if (me.controls.duration_hours && detail.duration_hours) {
                     me.controls.duration_hours.value = detail.duration_hours;
                 }

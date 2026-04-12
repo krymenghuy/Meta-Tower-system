@@ -37,7 +37,7 @@ var BillComponent = (() => {
             className: "align-middle text-nowrap",
             data: (data) => {
                 return `<span class="d-block text-prm-custom text-capitalize">${data.vendor_name}</span>
-                <span class="d-block text-prm-custom small">(${data.phone_number})</span>`;
+                <span class="d-block text-prm-custom small">${data.phone_number}</span>`;
             },
         },
         
@@ -152,7 +152,7 @@ var BillComponent = (() => {
             rowCreated: (data, index, tr) => {
                 tr.dataset.id = data.id;
                 tr.dataset.statusid = data.status_id;
-                tr.dataset.vendorid = data.vendor_id;
+                tr.dataset.vendorId = data.vendor_id;
                 tr.dataset.billid   = data.bill_id;
                 tr.dataset.fileurl = data.file_image_url ?? "";
                 tr.classList.add("bill");
@@ -198,95 +198,8 @@ var BillComponent = (() => {
             }, 250);
         });
 
-            // new ExpandableRowConfig(tblBill.id, {
-            //     dontExpandByClickingOn: ["btn_dropdown_vendor_action"],
-            //     onOpen: (container, detail_tr, parent_tr) => {
-            //         const id = parent_tr.dataset.id;
-            //         if (id && !isNaN(id)) mThis.displayBillDetail(container, id);
-            //     }
-            // });
-
         mThis.initAlready = true;
     };
-
-    // mThis.displayBillDetail = (container, bill_id) => {
-    //     container.innerHTML = `<div class="text-center py-3"><div class="spinner-border text-primary" role="status"></div></div>`;
-
-    //     vsapi.call(`${main_view.base_url}/prm/bill-payment/form-options`, { bill_id })
-    //         .then(res => {
-    //             if (res.status_code !== 200) {
-    //                 container.innerHTML = `<div class="alert alert-danger m-3">Failed to load bill details</div>`;
-    //                 return;
-    //             }
-    //             mThis.renderBillDetail(container, res.data || {});
-    //         })
-    //         .catch(() => {
-    //             container.innerHTML = `<div class="alert alert-danger m-3">Network error loading bill details</div>`;
-    //         });
-    // };
-
-    // mThis.renderBillDetail = (container, data) => {
-    //     const bill     = data.bill || {};
-    //     const payments = data.payments || [];
-    //     const currency = "$";
-    //     const fmt = n => Number(n || 0).toLocaleString("en-US", { minimumFractionDigits: 2 });
-
-    //     const paymentsHtml = payments.map(p => `
-    //         <tr style="font-size:0.82rem;">
-    //             <td class="text-center text-nowrap text-muted">${p.payment_date ?? "—"}</td>
-    //             <td class="text-capitalize">${p.payer ?? "—"}</td>
-    //             <td class="text-center text-muted text-capitalize">${p.note ?? "—"}</td>
-    //             <td class="text-center">
-    //                 <span class="badge rounded-pill bg-light text-dark border text-capitalize" style="font-size:0.75rem;">${p.payment_method ?? "—"}</span>
-    //             </td>
-    //             <td class="text-center text-muted">${p.currency_code ?? "USD"}</td>
-    //             <td class="text-end fw-semibold pe-3" style="color:#059669;">${currency}${fmt(p.amount)}</td>
-    //         </tr>
-    //     `).join("");
-
-    //     container.innerHTML = `
-    //     <div style="background:#f8fafc; border-radius:10px; padding:10px 14px; font-size:0.875rem;">
-
-    //         <!-- Payments Table only -->
-    //         <div class="table-responsive" style="border-radius:8px; border:1px solid #e2e8f0; overflow:hidden;">
-    //             <table class="table table-sm mb-0" style="font-size:0.82rem;">
-    //                 <thead style="background:#f1f5f9; border-bottom:1px solid #e2e8f0;">
-    //                     <tr>
-    //                         <th class="text-center text-muted fw-semibold py-2" style="width:110px; font-size:0.72rem;">Date</th>
-    //                         <th class="text-muted fw-semibold py-2" style="font-size:0.72rem;">Payer</th>
-    //                         <th class="text-center text-muted fw-semibold py-2" style="font-size:0.72rem;">Remark</th>
-    //                         <th class="text-center text-muted fw-semibold py-2" style="width:100px; font-size:0.72rem;">Method</th>
-    //                         <th class="text-center text-muted fw-semibold py-2" style="width:70px; font-size:0.72rem;">Currency</th>
-    //                         <th class="text-end text-muted fw-semibold py-2" style="width:110px; font-size:0.72rem;">Paid</th>
-    //                     </tr>
-    //                 </thead>
-    //                 <tbody>
-    //                     ${paymentsHtml || `
-    //                     <tr>
-    //                         <td colspan="6" class="text-center py-3 text-muted" style="font-size:0.82rem;">
-    //                             <i class="fa-regular fa-folder-open me-1"></i> No payments recorded
-    //                         </td>
-    //                     </tr>`}
-    //                 </tbody>
-    //             </table>
-    //         </div>
-
-    //         <!-- Summary Footer -->
-    //         <div class="d-flex flex-wrap justify-content-end gap-2 mt-2">
-    //             ${[
-    //                 { label: "Total",     val: bill.total_amount, color: "#3b82f6" },
-    //                 { label: "Paid",      val: bill.paid_amount,  color: "#059669" },
-    //                 { label: "Remaining", val: bill.balance,      color: "#dc2626" },
-    //             ].map(s => `
-    //                 <div style="background:#fff; border:1px solid #e2e8f0; border-radius:8px; padding:6px 14px; text-align:right; min-width:120px;">
-    //                     <div class="text-muted" style="font-size:0.68rem; text-transform:uppercase; letter-spacing:0.05em;">${s.label}</div>
-    //                     <div class="fw-bold" style="font-size:0.95rem; color:${s.color};">${currency}${fmt(s.val)}</div>
-    //                 </div>
-    //             `).join("")}
-    //         </div>
-
-    //     </div>`;
-    // };
     mThis.getFilterData = () => {
         let p = {
             vendor_id: mThis.elFilter_vendor.value,
@@ -309,23 +222,24 @@ var BillComponent = (() => {
             actionButtonClass: "btn_dropdown_vendor_action",
             cssClass: "bg-white shadow",
             menus: [
+                
                 {
-                    html: '<span class="ps-2"> Pay Now</span>',
-                    icon: `<i class="fa-solid fa-circle-dollar-to-slot fa-lg" style="color: rgb(160, 2, 57);"></i>`,
-                    cssClass: "border-bottom pb-2",
-                    name: "bill_payment",
-                },
-                {
-                    html: '<span class="ps-2" vslang="titles.Modify Bill"></span>',
+                    html: '<span class="ps-2" vslang="titles.Modify"></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "modify_bill",
                 },
                 {
-                    html: '<span class="ps-2" vslang="titles.Delete Bill"></span>',
+                    html: '<span class="ps-2" vslang="titles.Delete"></span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "delete_bill",
+                },
+                {
+                    html: '<span class="ps-2"> Pay Now</span>',
+                    icon: `<i class="fa-solid fa-circle-dollar-to-slot fs-5 text-primary"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "bill_payment",
                 },
                 {
                     html: '<span class="ps-2">View Attachment</span>',  
@@ -336,11 +250,13 @@ var BillComponent = (() => {
             ],
             onShow: (me, container) => {
                 const menu = me.getActiveMenus(container);
-                const status_id = Number(container.dataset.statusid);
+                const status_id = container.dataset.statusid;
+                menu.modify_bill.style.display = status_id > 1 ? 'none' : 'block'
+                menu.delete_bill.style.display = status_id > 1 ? 'none' : 'block'
 
                 if (menu.bill_payment) {
-                    const isBlocked = status_id === 2;
-                    menu.bill_payment.style.display = isBlocked ? "none" : "block";
+                    const isBlocked = status_id == 2;
+                    menu.bill_payment.style.display = isBlocked ? 'none' : 'block';
                 }
             },
 
@@ -359,13 +275,12 @@ var BillComponent = (() => {
 
     mThis.editBill = (id, menuLink) => {
         const tr = menuLink.closest("tr");
-
-        let vendor_id = tr?.dataset.vendorid || null;
+        let vendor_id = tr?.dataset.vendorId || null;
         console.log(33333, vendor_id);
 
         const op = {
             id: parseInt(id, 10),
-            vendorid: vendor_id,
+            vendorId: vendor_id,
             btn: menuLink,
             onClose: () => {
                 mThis.BillListView.showPage(mThis.getFilterData());
@@ -373,7 +288,6 @@ var BillComponent = (() => {
         };
         BillDialog.show(op);
     };
-
     mThis.deleteBill = (id, menuLink) => {
         cv_interact.confirm(
             "Delete this Bill Record?",
@@ -403,11 +317,13 @@ var BillComponent = (() => {
             },
         );
     };
-
     mThis.billPayment = (id, menuLink) => {
+        const tr = menuLink.closest("tr");
+        let vendor_id = tr?.dataset.vendorId;
         let op = {
             id: null,
             bill_id: id,
+            vendorId:vendor_id,
             btn: menuLink,
             onClose: () => {
                 mThis.BillListView.showPage(mThis.getFilterData());
@@ -419,7 +335,6 @@ var BillComponent = (() => {
         };
         BillPaymentDialog.show(op);
     };
-
     mThis.viewAttachment = (id, menuLink) => {
         vsapi.call(`${main_view.base_url}/prm/bill/view-attachment`, { id: id }, false, false, false)
             .then((res) => {
@@ -467,7 +382,6 @@ var BillComponent = (() => {
                 document.body.appendChild(overlay);
             });
     };
-    
     mThis.prepareFormOptions = (onFinish) => {
         vsapi
             .call(`${main_view.base_url}/prm/bill/form-options`, null, null, null)

@@ -28,7 +28,7 @@ var ContractComponent = new (function () {
         },
         {
             transTitle: "titles.Contact Info",
-            className: "align-middle",
+            className: "align-middle text-nowrap",
             data: (data) => {
                 return `<span class="d-block">${data.phone_number ?? ''}</span>
                         <small class="d-block text-primary">${data.email}</small>`;

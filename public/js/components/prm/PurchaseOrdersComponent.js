@@ -42,7 +42,7 @@ var PurchaseOrdersComponent = (() => {
             }
         },
         {
-            title: "Discount Amount",
+            title: "Discount",
             className: "align-middle text-nowrap",
             data: (data) => {
                 return `<div class="d-flex justify-content-center"><span class='text-nowrap text-center'>${
