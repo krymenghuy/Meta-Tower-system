@@ -27,15 +27,6 @@ function checkUniqueTenantByNID($nid, $id = null)
     if ($x) return 'National ID ?? has been used by another Tenant::'. $nid;
     return null;
 }
-// function checkUniqueTenantByPhone($phone_number, $id = null)
-// {
-//     $str_id = "1=1";
-//     if (!$phone_number) return 'Phone number cannot be empty';
-//     if ($id > 0) $str_id = "t.id <> $id";
-//     $x = DB::table('tenants as t')->where('t.phone_number', $phone_number)->whereRaw($str_id)->select('id')->take(1)->exists();
-//     if ($x) return 'phone number"' . $phone_number . '" has been used by another tenant';
-//     return null;
-// }
 function checkUniqueTenantByPhone($phone_number, $id = null)
 {
     if (empty($phone_number)) {
@@ -85,7 +76,7 @@ function checkUniqueTenantByPhone($phone_number, $id = null)
         $age = $today->diff($birth)->y;
         if ($age < 18) return DV::error('Tenant must be 18 years or older.');
         if ($age > 120) return DV::error('Invalid date of birth age.');
-        
+
     }
     $nationality_id = $d->nationality_id ?? null;
     if ($nationality_id === 14) {

@@ -342,8 +342,6 @@ class Invoice extends VSModel
 
         return $query->value('id');
     }
-
-
     public function getListPaginate($arr, $ss)
 {
     $d            = (object) $arr;

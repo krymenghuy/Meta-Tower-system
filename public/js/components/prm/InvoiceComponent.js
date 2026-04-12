@@ -196,7 +196,6 @@ var InvoiceComponent = (() => {
             tableClass:
                 "table table--white rounded-2  header-uppercase",
             rowCreated: (data, index, tr) => {
-                tr.dataset.statusid = data.payment_status_id || 0;
                 tr.id = `invoice_id_${data.id}`;
                 tr.dataset.statusid = data.payment_status_id || 0;
                 tr.dataset.canceled = 0;
@@ -448,40 +447,21 @@ var InvoiceComponent = (() => {
 
             ],
             onShow: (me, menuContainer) => {
-                const statusId = Number(menuContainer.dataset.statusid || menuContainer.dataset.ispaid || 0);
+                const menu = me.getActiveMenus(menuContainer);
+                const statusId = Number(menuContainer.dataset.statusid);
 
-                let allowed = [];
-
-                if (statusId === 1) {
-                    allowed = [ "print_invoice"];
-                }
-                else if (statusId === 2 ) {
-                    allowed = [ "receive_invoice", "delete_invoice"];
-                }
-                 else if (statusId === 2 || statusId === 3) {
-                    allowed = [ "receive_invoice", "delete_invoice","print_invoice"];
-                }
-                else {
-                    allowed = [ "receive_invoice","print_invoice", "delete_invoice"];
-                }
-
-                const menuItems = me.getActiveMenus(menuContainer);
-                for (const key in menuItems) {
-                    if (menuItems[key]?.style) {
-                        menuItems[key].style.display =
-                            allowed.includes(menuItems[key].dataset.mnuaction || menuItems[key].dataset.name)
-                                ? "block"
-                                : "none";
-                    }
-                }
+                menu.print_invoice.style.display = (statusId === 1 || statusId === 3) ? 'block' : 'none';
+                menu.print_invoice.style.display = (statusId === 1 || statusId === 3) ? 'block' : 'none';
+                menu.receive_invoice.style.display = (statusId === 2 || statusId === 3) ? 'block' : 'none';
+                menu.delete_invoice.style.display = (statusId === 2) ? 'block' : 'none';
             },
             onClick: (menulink, id, name) => {
                 if (name === "delete_invoice") {
-                    mThis.deleteInvoice(id, menulink);
+                    mThis.deleteInvoice(id);
                 } else if (name === "print_invoice") {
-                    mThis.printInvoice(id, menulink);
+                    mThis.printInvoice(id);
                 }else if(name === "receive_invoice"){
-                    mThis.receiveInvoice(id, menulink);
+                    mThis.receiveInvoice(id);
                 }
             }
         };
@@ -625,19 +605,18 @@ const InvoiceDialog = (() => {
                                 <!-- Quick Add Buttons -->
                                 <div class="row mb-4">
                                     <div class="col-12 ">
-                                        <label class="form-label small text-muted mb-2 text-uppercase fw-bold text-center">Quick Add Items</label>
-                                        <div class="d-flex flex-wrap gap-2 justify-content-center">
-                                            <button name="btnRent" class="btn btn-outline-primary px-4 rounded-pill">
-                                                <i class="fa fa-home me-1"></i> Rent
+                                        <div class="d-flex flex-wrap gap-2 justify-content-end">
+                                            <button name="btnRent" class="btn btn-outline-primary px-3 rounded-pill ">
+                                                <i class="fa fa-home "></i> Rent
                                             </button>
-                                            <button name="btnService" class="btn btn-outline-warning px-4 rounded-pill">
-                                                <i class="fa fa-concierge-bell me-1"></i> Service
+                                            <button name="btnService" class="btn btn-outline-warning px-3 rounded-pill">
+                                                <i class="fa fa-concierge-bell "></i> Service
                                             </button>
-                                            <button name="btnElectric" class="btn btn-outline-success px-4 rounded-pill">
-                                                <i class="fa fa-bolt me-1"></i> Electric Bill
+                                            <button name="btnElectric" class="btn btn-outline-success px-3 rounded-pill">
+                                                <i class="fa fa-bolt "></i> Electric Bill
                                             </button>
-                                            <button name="btnWater" class="btn btn-outline-secondary px-4 rounded-pill">
-                                                <i class="fa fa-tint me-1"></i> Water Bill
+                                            <button name="btnWater" class="btn btn-outline-secondary px-3 rounded-pill">
+                                                <i class="fa fa-tint "></i> Water Bill
                                             </button>
                                         </div>
                                     </div>
@@ -741,6 +720,9 @@ const InvoiceDialog = (() => {
 
                         const spaces = me._tenantSpaces || [];
                         const months = me._tenantMonths || [];
+
+                        console.log("123",spaces);
+
 
                         const selectedSpaceId =
                             me.controls.space_id?.value ||
