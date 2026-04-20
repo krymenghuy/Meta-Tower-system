@@ -196,8 +196,13 @@ class Maintenance extends VSModel
         $statusIdToName = DB::table('maintenance_statuses')->pluck('name', 'id');
         foreach ($rows as $row) {
             self::applyScheduleDerivedStatus($row, $statusIdToName);
-            // setOfficialDates($row, [], ['updated_at', 'start_date', 'end_date'], []);
-            $processed = setOfficialDates($row, ['updated_at'], ['start_date','end_date'], []);
+            if (!empty($row->start_date)) {
+                $row->start_date = Carbon::parse($row->start_date)->format('d-M-Y h:i A');
+            }
+            if (!empty($row->end_date)) {
+                $row->end_date = Carbon::parse($row->end_date)->format('d-M-Y h:i A');
+            }
+            $processed = setOfficialDates($row, [], ['updated_at'], []);
             if ($processed) $row = $processed;
         }
 
@@ -261,7 +266,7 @@ class Maintenance extends VSModel
             if (!$hasIncludedAmenity) {
                 $selectedAmenity = DB::table('amenities')
                     ->where('id', $include_amenity_id)
-                    ->selectRaw('id, name AS amenity, code as amenity_code, max_capacity, category_id')
+                    ->selectRaw('id, building_id, name AS amenity, code as amenity_code, max_capacity, category_id')
                     ->first();
                 if ($selectedAmenity) {
                     $amenities->push($selectedAmenity);

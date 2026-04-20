@@ -367,7 +367,7 @@ static function options_maintenance_amenity($ss)
 {
     return DB::table('amenities')
         ->where('status_id',1)
-        ->selectRaw('id, name AS amenity, code as amenity_code, max_capacity,category_id')
+        ->selectRaw('id, building_id, name AS amenity, code as amenity_code, max_capacity,category_id')
         ->orderBy('name')
         ->get();
 }
@@ -578,7 +578,7 @@ static function options_maintenance_amenity($ss)
     {
         return DB::table('request_statuses')->selectRaw('id,name')->get();
     }
-    
+
      static function options_receipt_status($ss)
     {
         return DB::table('receipt_statuses')->selectRaw('id,name')->get();
