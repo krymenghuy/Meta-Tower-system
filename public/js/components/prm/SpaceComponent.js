@@ -951,7 +951,7 @@ const CreateBookingDialog = (() => {
                             <div class="col-12 col-md-6">
                                 <div class="material-input outlined">
                                     <input type="text" data-type="date" name="expired_booking_date" class="data-input form-control form_input" data-field="expired_booking_date" />
-                                    <label style="color:#777777;padding-left:6px;">Expired Booking Date</label>
+                                    <label style="color:#777777;padding-left:6px;">Expired  Date</label>
                                 </div>
 
                             </div>
