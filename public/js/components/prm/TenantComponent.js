@@ -90,12 +90,12 @@ var TenantComponent = new (function () {
             title: "Status",
             className: "align-middle text-center",
             data: (data) => {
-                const status = (data.status ?? "").toLowerCase();
+                const status = (data.status ?? "").toUpperCase();
 
                 let cls =
                     "badge text-warning bg-warning-subtle border border-warning";
 
-                if (status === "pending") {
+                if (status === "Pending") {
                     cls =
                         "badge text-warning bg-warning-subtle border border-warning";
                 } else if (status === "inactive") {
@@ -466,9 +466,9 @@ var TenantComponent = new (function () {
                                             <img src="${d.image_url || main_view.asset_url + "/images/default/default-staff1.png"}" alt="Profile" class="img-fluid w-100 h-100 object-fit-cover">
                                         </div>
                                         <div class="flex items-start justify-between mb-6">
-                                            <span class="fw-semibold text-start mb-1 text-dark">${d.name}</span>
+                                            <span class="fw-semibold text-start mb-1 text-dark text-capitalize">${d.name}</span>
                                             <div class="d-flex align-items-center mt-1 gap-2">
-                                                    <span class="${statusClass}" style="min-width:70px">${status}</span>
+                                                    <span class="${statusClass}" style="min-width:70px; text-transform: capitalize;">${status}</span>
                                             </div>
                                         </div>
                                         <div class="flex-shrink-0"> <a href="javascript:void(0)" class="btn-tenant-dropdown-action" data-id="${d.id}" data-statusid="${d.status_id}" aria-haspopup="true" aria-expanded="false">
@@ -1663,7 +1663,7 @@ const CreateTenantDialog = (() => {
                                             );
                                         } else {
                                             cv_interact.success(
-                                                "New tenant has been added successfully",
+                                                "New tenant has been added successfully.",
                                             );
                                         }
                                     } else {
@@ -1847,7 +1847,7 @@ const TenantDocumentDialog = (() => {
                                     if (res.status_code === 200) {
                                         me.hide(true, p);
                                         cv_interact.success(
-                                            "Document saved successfully",
+                                            "Document saved successfully.",
                                         );
                                     } else {
                                         cv_interact.error(res.error_message);

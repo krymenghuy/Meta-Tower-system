@@ -401,9 +401,9 @@ var VendorComponent = (() => {
         vsapi.call(`${main_view.base_url}/prm/vendor/form-options`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elFilter_type, d.types, 'id', 'vendor_type', '', 'All Type', '');
+                VSUtil.setComboItems(mThis.elFilter_type, d.types, 'id', 'vendor_type', '', 'All Types', '');
                 VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'vendor_status', '', 'All Statuses', '');
-                VSUtil.setComboItems(mThis.elFilter_category, d.categories, 'id', 'vendor_category', '', 'All Category', '');
+                VSUtil.setComboItems(mThis.elFilter_category, d.categories, 'id', 'vendor_category', '', 'All Categories', '');
                 if (typeof onFinish === 'function') onFinish();
             })
     }

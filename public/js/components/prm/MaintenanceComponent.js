@@ -306,7 +306,7 @@ var MaintenanceComponent = (() => {
             .then(res => {
                 if (res.status_code === 200) {
                     const d = res.data || {};
-                    VSUtil.setComboItems(mThis.elFilter_building, d.buildings || [], "id", "building", '', "All Building", '');
+                    VSUtil.setComboItems(mThis.elFilter_building, d.buildings || [], "id", "building", '', "All Buildings", '');
                     VSUtil.setComboItems(mThis.elFilter_status, d.maintenance_statuses || [], "id", "maintenance_status", '', "All Statuses", '');
                 }
                 if (typeof onFinish === "function") onFinish();
@@ -366,7 +366,7 @@ const CreateMaintenanceDialog = (() => {
                         </div>
                     </section>
                     <section class="maintenance-form-section border rounded-2 p-3 mb-3 bg-light">
-                        <h6 class="text-uppercase text-muted fw-semibold small mb-3 d-flex align-items-center gap-1"><i class="fas fa-calendar-alt"></i> Time stamp</h6>
+                        <h6 class="text-uppercase text-muted fw-semibold small mb-3 d-flex align-items-center gap-1"><i class="fas fa-calendar-alt"></i> Timestamp</h6>
                         <div class="row g-3">
                             <div class="col-6 col-md-3">
                                 <div class="material-input outlined">
@@ -395,7 +395,7 @@ const CreateMaintenanceDialog = (() => {
                         </div>
                     </section>
                     <section class="maintenance-form-section border rounded-2 p-3 mb-3 bg-light">
-                        <h6 class="text-uppercase text-muted fw-semibold small mb-3 d-flex align-items-center gap-1"><i class="fas fa-comment"></i> Remarks</h6>
+                        <h6 class="text-uppercase text-muted fw-semibold small mb-3 d-flex align-items-center gap-1"><i class="fas fa-comment"></i>Remark</h6>
                         <div class="material-input outlined">
                             <textarea name="remarks" class="data-input form-control" data-field="remarks" rows="2" placeholder=" "></textarea>
                             <label style="color:#777777;padding-left:6px;">Additional notes</label>
