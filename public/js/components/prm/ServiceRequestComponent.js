@@ -473,12 +473,12 @@ console.log(123,op);
                                 <select name="duration_hours" data-style="material" class="data-input form-control" data-field="duration_hours" placeholder="Duration (hours)">
                                     <option value=""> Select Duration </option>
                                     <option value="0.5">30 minutes</option>
-                                    <option value="1">1 hour</option>
+                                    <option value="1.0">1 hour</option>
                                     <option value="1.5">1.5 hours</option>
-                                    <option value="2">2 hours</option>
+                                    <option value="2.0">2 hours</option>
                                     <option value="2.5">2.5 hours</option>
-                                    <option value="3">3 hours</option>
-                                    <option value="4">4 hours</option>
+                                    <option value="3.0">3 hours</option>
+                                    <option value="4.0">4 hours</option>
                                 </select>
                             </div>
                         </div>

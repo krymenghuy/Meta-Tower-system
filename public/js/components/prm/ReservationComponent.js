@@ -49,7 +49,7 @@ var ReservationComponent = (() => {
                 const start12 = to12h((data.start_time ?? "").substring(0, 5));
                 const end12 = to12h((data.end_time ?? "").substring(0, 5));
                 return `<span class="d-block text-prm-custom">${data.booking_date ?? ""}</span>
-                            <small class="text-muted">${start12} - ${end12}</small>`;
+                            <small class="text-warning">${start12} - ${end12}</small>`;
             },
         },
         {
@@ -71,10 +71,10 @@ var ReservationComponent = (() => {
                 let cls = "badge border border-secondary text-secondary bg-secondary-subtle";
                 let label = "Upcoming";
                 if (status === "upcoming") {
-                    cls ="badge border border-info text-info bg-info-subtle";
+                    cls ="badge border border-warning text-warning bg-warning-subtle";
                     label = "Upcoming";
                 } else if (status === "in-progress") {
-                    cls ="badge border border-warning text-warning bg-warning-subtle";
+                    cls ="badge border border-primary text-primary bg-primary-subtle";
                     label = "In-Progress";
                 } else if (status === "completed") {
                     cls ="badge border border-success text-success bg-success-subtle";
