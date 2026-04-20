@@ -800,8 +800,8 @@ const ContractDialog = (() => {
             createContent: () => {
                 return [
                     `<div class="row justify-content-start">
-                 <div class="p-3 mb-4 bg-light border rounded">
-                    <div class="row g-3">
+                 <div class="">
+                    <div class="row">
                         <div class="col-6">
                             <div class="material-input outlined">
                                 <input name="tenant" class="data-input form-control" data-field="tenant_name" placeholder="Tenant" />
@@ -816,7 +816,7 @@ const ContractDialog = (() => {
                         </div>
                         <div class="col-6">
                             <div class="material-input outlined">
-                                <input type="text" data-type="date" name="start_date" required class="data-input form-control form_input" data-field="start_date" placeholder=" " />
+                                <input type="text" data-type="date" name="start_date" class="data-input form-control form_input" data-field="start_date" placeholder=" " />
                                 <label style="color:#777777;padding-left:6px;">Start Date</label>
                             </div>
                         </div>
@@ -826,34 +826,29 @@ const ContractDialog = (() => {
                                 <label style="color:#777777;padding-left:6px;">End Date</label>
                             </div>
                         </div>
-                        <div class="col-4">
+                        <div class="col-6">
 
                             <div class="material-input outlined">
                                 <select data-style="material" placeholder="Business Type" name="business_type_id" class="data-input form-control" data-field="business_type_id"> </select>
                             </div>
                         </div>
-                        <div class="col-4">
+                        <div class="col-3">
                           <div class="material-input outlined">
                      <select data-style="material" placeholder="Unit Code" name="code" class="data-input form-control" data-field="space_id"> </select>
                                 </div>
                         </div>
-                        <div class="col-4">
+                        <div class="col-3">
                             <div class="material-input outlined">
                                 <input type="number" name="deposit" class="data-input form-control" data-field="deposit" placeholder=" " />
                                 <label style="color:#777777;padding-left:6px;">Deposit <span class="text-danger">*</span></label>
                             </div>
                         </div>
-                        <div class="col-12">
-                            <div class="material-input outlined">
-                                <textarea class="data-input form-control" data-field="remarks" placeholder=" "></textarea>
-                                <label style="color:#777777;padding-left:6px;">Remarks</label>
-                            </div>
-                        </div>
+                       
                     </div>
                 </div>
-                <div class="col-12">
-                    <div class="p-3 bg-white border rounded shadow-lg">
-                        <h6 class="mb-3 text-primary">Create Contract</h6>
+                <div class="col-12 mb-3">
+                    <div class="p-3 bg-light border rounded shadow-sm">
+                        <h6 class="mb-3 text-primary">Unit Details</h6>
                         <div class="row g-3">
                             <div class="col-6">
                                 <div class="material-input outlined">
@@ -882,7 +877,13 @@ const ContractDialog = (() => {
                         </div>
                     </div>
                 </div>
-                    </div>`
+                 <div class="col-12 mt-3">
+                        <div class="material-input outlined">
+                            <textarea class="data-input form-control" data-field="remarks" placeholder=" "></textarea>
+                            <label style="color:#777777;padding-left:6px;">Remarks</label>
+                        </div>
+                    </div>
+                </div>`
                 ].join("");
             },
 
@@ -1194,26 +1195,26 @@ const RenewDialog = (() => {
                 return `
                     <div class="row g-3">
                         <div class="col-12">
-                            <div class="p-3 mb-3 bg-light border rounded">
-                                <h6 class="mb-3 text-secondary-custom">Old Contract</h6>
+                            <div class="p-3 mb-3 border rounded">
+                                <h6 class="mb-3 text-primary">Old Contract</h6>
                                 <div class="row g-2">
                                     <div class="col-4">
-
                                         <div class="material-input outlined">
-                                            <input placeholder="start date" data-style="material" type="date" name="old_contract_start" class="data-input form-control" data-field="old_contract_start" disabled />
+                                            <input  data-style="material" type="date" name="old_contract_start" class="data-input form-control" data-field="old_contract_start"  placeholder=" " disabled />
+                                            <label style="color:#777777;padding-left:6px;">Start Date</label>
                                         </div>
                                     </div>
                                     <div class="col-4">
-
                                         <div class="material-input outlined">
-                                            <input placeholder="end date" data-style="material" type="date" name="old_contract_end" class="data-input form-control" data-field="old_contract_end" disabled />
+                                            <input  data-style="material" type="date" name="old_contract_end" class="data-input form-control" data-field="old_contract_end" placeholder=" " disabled />
+                                            <label style="color:#777777;padding-left:6px;">End Date</label>
                                         </div>
                                     </div>
                                     <div class="col-4">
-
                                         <div class="material-input outlined">
-                                            <input placeholder="price" data-style="material" type="number" name="old_contract_price" class="data-input form-control" data-field="old_contract_price" disabled />
-                                        </div>
+                                            <input  data-style="material" type="number" name="old_contract_price" class="data-input form-control" data-field="old_contract_price" placeholder=" " disabled />
+                                            <label style="color:#777777;padding-left:6px;">Price</label>
+                                        </div> 
                                     </div>
                                 </div>
                             </div>
@@ -1224,40 +1225,31 @@ const RenewDialog = (() => {
                                 <h6 class="mb-3 text-primary">Renew Contract</h6>
                                 <div class="row g-2">
                                     <div class="col-4">
-
                                        <div class="material-input outlined">
-                                           <input placeholder="start date" data-style="material" type="date" name="start_date" class="data-input form-control" data-field="start_date" disabled />
+                                           <input  data-style="material" type="date" name="start_date" class="data-input form-control" data-field="start_date" placeholder=" " disabled />
+                                             <label style="color:#777777;padding-left:6px;">Start Date</label>
                                        </div>
                                    </div>
                                     <div class="col-4">
-
                                         <div class="material-input outlined">
-                                            <input placeholder="end date" data-style="material" type="date" name="end_date" class="data-input form-control" data-field="end_date" />
+                                            <input  data-style="material" type="date" name="end_date" class="data-input form-control" data-field="end_date" placeholder=" " />
+                                            <label style="color:#777777;padding-left:6px;">End Date</label>
                                         </div>
                                     </div>
                                     <div class="col-4">
-
                                         <div class="material-input outlined">
                                             <select placeholder="unit code" data-style="material" name="code" placeholder=" " class="data-input form-control" data-field="space_id">
                                             </select>
                                         </div>
                                     </div>
-
-
-                                    <div class="col-12">
-                                        <label style="color:#777777;padding-left:6px;">Remarks</label>
-                                        <div class="material-input outlined">
-                                            <textarea name="remarks" class="data-input form-control" data-field="remarks"></textarea>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
                         </div>
-                         <div class="col-12">
+
+                        <div class="col-12">
                             <div class="p-3 bg-white border rounded shadow-lg">
                                 <h6 class="mb-3 text-primary">Create Contract</h6>
                                 <div class="row g-2">
-
                                     <div class="col-6">
                                 <div class="material-input outlined">
                                     <input type="text" name="space_type_id" class="data-input form-control" data-field="space_type_id" placeholder=" " />
@@ -1283,6 +1275,12 @@ const RenewDialog = (() => {
                                 </div>
                             </div>
                                 </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <label style="color:#777777;padding-left:6px;">Remarks</label>
+                            <div class="material-input outlined">
+                                <textarea name="remarks" class="data-input form-control" data-field="remarks"></textarea>
                             </div>
                         </div>
                     </div>
@@ -1318,17 +1316,17 @@ const RenewDialog = (() => {
                 const oldStartIso = normalizeContractDateToIso(det.start_date);
                 const oldEndIso = normalizeContractDateToIso(det.end_date);
                 if (me.controls.old_contract_start) {
-                    me.controls.old_contract_start.value = oldStartIso || "";
+                    me.controls.old_contract_start.value = det.start_date || "";
                 }
                 if (me.controls.old_contract_end) {
-                    me.controls.old_contract_end.value = oldEndIso || "";
+                    me.controls.old_contract_end.value = det.end_date || "";
                 }
                 if (me.controls.old_contract_price) {
                     me.controls.old_contract_price.value =
                         det.price != null && det.price !== "" ? det.price : "";
                 }
                 // Renew period starts the same calendar day as the current contract end_date.
-                const renewStartIso = oldEndIso || "";
+                const renewStartIso = det.end_date || "";
                 if (me.controls.start_date) {
                     me.controls.start_date.value = renewStartIso;
                 }

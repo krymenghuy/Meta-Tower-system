@@ -1412,7 +1412,7 @@ const CreateTenantDialog = (() => {
                             </div>
                             <div class="col-12 col-md-6">
                                 <div class="material-input outlined">
-                                    <input type="text" data-type="date" name="date_of_birth" class="data-input form-control form_input" data-field="date_of_birth" />
+                                    <input type="text" data-type="date" name="date_of_birth" class="data-input form-control form_input" data-field="date_of_birth" placeholder=" " />
                                     <label style="color:#777777; padding-left:6px;">Date of Birth</label>
                                 </div>
                             </div>
