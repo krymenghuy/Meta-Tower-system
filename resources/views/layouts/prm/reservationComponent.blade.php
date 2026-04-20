@@ -4,12 +4,13 @@
             <div class="col-12 col-md-6 col-lg-3">
                 <input type="text" class="form-control rounded-2 pe-5 filter-field input-search" id="_search_reservation" placeholder="Search">
             </div>
-            <div class="col-12 col-md-3 col-lg-2">
-                <input id="booking_date" data-select="datepicker" class="form-control data-input filter-field" placeholder="Booking Date" data-field="booking_date">
-            </div>
             <div class="col-12 col-md-6 col-lg-2 ">
                 <select type="id" id="_reservation_status" class="data-input filter-field form-control" data-field="status_id"></select>
             </div>
+            <div class="col-12 col-md-3 col-lg-2">
+                <input id="booking_date" data-select="datepicker" class="form-control data-input filter-field" placeholder="Booking Date" data-field="booking_date">
+            </div>
+            
             
             {{-- <div class="col-12 col-md-3 col-lg-2 ms-auto text-md-end">
                 <button type="button" class="btnAddNewPrm w-100 w-md-auto" id="_btnReservation">

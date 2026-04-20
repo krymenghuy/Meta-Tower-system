@@ -53,7 +53,7 @@ var ReservationComponent = (() => {
             },
         },
         {
-            transTitle: "titles.Remarks",
+            transTitle: "titles.Remark",
             className: "align-middle",
             data: (data, index, tr) => {
                 return `
@@ -398,7 +398,7 @@ const CreateReservationDialog = (() => {
                             <div class="col-12">
                                 <div class="material-input outlined">
                                     <textarea name="remarks" class="data-input form-control" data-field="remarks" placeholder=" "></textarea>
-                                    <label style="color:#777777;padding-left:6px;">remarks</label>
+                                    <label style="color:#777777;padding-left:6px;">Remarks</label>
                                 </div>
                             </div>
                         </div>`,

@@ -30,7 +30,7 @@ var ServiceRequestComponent = (function () {
         },
         {
             transTitle: "titles.Tenant",
-            className: "align-middle text-nowrap",
+            className: "align-middle text-capitalize",
             data: (data) => {
                 return ` <div class="d-flex text-nowrap align-items-center gap-2">
                 <div>
@@ -123,7 +123,7 @@ var ServiceRequestComponent = (function () {
             className: "align-middle",
             data: (data, index, tr) => {
                 return `
-                    <div class="text-primary-custom" style="width:200px;">
+                    <div class="text-primary-custom text-capitalize" style="width:200px;">
                         <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ?? '...'}</span>
                     </div>
                 `;
@@ -148,7 +148,7 @@ var ServiceRequestComponent = (function () {
                 data-statusid= "${data.status_id}"
                 data-current-status="${statusId}"
                 class="${cls} ${isEditable} text-capitalize d-inline-block text-center"
-                style="min-width:70px; cursor:${isEditable ? 'pointer' : 'not-allowed'}"
+                style="min-width:70px; cursor:${isEditable }"
                 title="${isEditable ? 'Click to change status' : 'This status cannot be changed'}">
                 ${data.status_name ?? ''}
             </span>
@@ -319,7 +319,7 @@ var ServiceRequestComponent = (function () {
             showCancelButton: true,
             inputValidator: (value) => {
                 if(!value)
-                    return "Remarks required!";
+                    return "Remark required!";
                 else
                 {
                     op.remarks = value;
@@ -400,7 +400,7 @@ var ServiceRequestComponent = (function () {
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
                     VSUtil.setComboItems(mThis.elStatus, d.request_statuses, 'id', 'name', '', 'All Statuses', '');
-                    VSUtil.setComboItems(mThis.elService_type, d.service_types, 'id', 'service_type', '', 'All Category', '');
+                    VSUtil.setComboItems(mThis.elService_type, d.service_types, 'id', 'service_type', '', 'All Categories', '');
                 if (typeof onFinish === 'function') onFinish();
             });
     };
@@ -462,7 +462,7 @@ console.log(123,op);
                         <div class="col-md-3">
                             <div class="material-input outlined">
                                 <select data-style="material" class="data-input form-control" data-field="unit_type" disabled placeholder="Unit Type">
-                                    <option value="">-- Select Unit --</option>
+                                    <option value=""> Select Unit </option>
                                     <option value="1">One Time</option>
                                     <option value="2">Hour</option>
                                 </select>
@@ -471,7 +471,7 @@ console.log(123,op);
                         <div class="col-md-3 select-type-time" style="display:none;">
                             <div class="material-input outlined">
                                 <select name="duration_hours" data-style="material" class="data-input form-control" data-field="duration_hours" placeholder="Duration (hours)">
-                                    <option value="">-- Select Duration --</option>
+                                    <option value=""> Select Duration </option>
                                     <option value="0.5">30 minutes</option>
                                     <option value="1">1 hour</option>
                                     <option value="1.5">1.5 hours</option>
@@ -519,7 +519,7 @@ console.log(123,op);
                         <div class="col-12">
                             <div class="material-input outlined">
                                 <textarea class="data-input form-control" data-field="remarks" placeholder=" "></textarea>
-                                <label style="padding-left:6px;color:#777;">Remarks</label>
+                                <label style="padding-left:6px;color:#777;">Remark</label>
                             </div>
                         </div>
                     </div>
