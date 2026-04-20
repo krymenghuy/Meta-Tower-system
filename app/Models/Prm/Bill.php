@@ -142,7 +142,7 @@ class Bill
         if ($search_value) {
             $skip_rows    = 0;
             $search_value = escape_like_str($search_value);
-            $str_search   = "(v.name LIKE '%" . $search_value ."%' OR b.bill_number LIKE '%" . $search_value ."%')";
+            $str_search   = "(b.bill_number LIKE '%" . $search_value ."%' OR v.name LIKE '%" . $search_value ."%')";
         }
 
         if ($vendor_id) {
@@ -153,7 +153,7 @@ class Bill
             $str_moreWhere .= ' AND b.status_id = ' . $status_id;
         }
         if ($expense_type_id) {
-            $str_moreWhere .= ' AND b.expense_type_id = ' . $expenese_type_id;
+            $str_moreWhere .= ' AND b.expense_type_id = ' . $expense_type_id;
         }
 
         $query = DB::table('bills as b')
@@ -209,14 +209,12 @@ class Bill
     public function deleteBill($id = null, $ss = null)
     {
         $id = $id ?? $this->id;
-
-        $bill = DB::table('bills')->select('id', 'status_id')->where('id', $id)->first();
-        if (!$bill) {
+        $paid = DB::table('bills')->select('id', 'status_id','paid_amount')->where('id', $id)->first();
+        if (!$paid) {
             return DV::error('Bill not found.');
         }
-        if ($bill->status_id >= 2) {
-            return DV::error('Cannot delete bill already paid or partially paid.');
-        }
+        $is_paid = ($paid->paid_amount > 0 || $paid->status_id > 1);
+        if($is_paid) return DV::error('Cannot delete paid invoice');
         $deleted = DB::table('bills')->where('id', $id)->delete();
         if (!$deleted) {
             return DV::error('Delete failed.');

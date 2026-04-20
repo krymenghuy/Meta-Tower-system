@@ -141,7 +141,7 @@ function v_display($mod_id, $module_ids = null)
                         <span class="kt-menu__link-text font-color " vslang="menus.Purchase Orders"></span>
                     </a>
                 </li>
-                <li class="kt-menu__item" aria-haspopup="true" <?php v_display(206); ?>>
+                <li class="kt-menu__item d-none" aria-haspopup="true" <?php v_display(206); ?>>
                     <a href="ExpenseComponent" modid="270" class="menu-item kt-menu__link">
                         <span class="kt-menu__link-icon">
                             <img class="icons opacity-icons" src="{{ asset('assets/images/icons/expense.svg') }}" />
@@ -210,7 +210,7 @@ function v_display($mod_id, $module_ids = null)
                             <img class="icons opacity-icons"
                                 src="{{ asset('assets/images/icons/service_price.svg') }}" />
                         </span>
-                        <span class="kt-menu__link-text font-color " vslang="menus.Price Services"></span>
+                        <span class="kt-menu__link-text font-color " vslang="menus.Service Price"></span>
                     </a>
                 </li>
                 <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover"

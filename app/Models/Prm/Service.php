@@ -32,26 +32,20 @@ class Service
 
         $unit_type_char = ['@','.','-','_'];
         $description_char = ['@',',','-','.','#'];
-        $res = DBX::validateObject($arr,$v_rule,1,['name'=>$unit_type_char,'unit_type'=>$unit_type_char,'description'=> $description_char],$ss->lang,0,null);
+        $name_char = ['(',')','-','.','#'];
+        $res = DBX::validateObject($arr,$v_rule,1,['name'=>$name_char,'unit_type'=>$unit_type_char,'description'=> $description_char],$ss->lang,0,null);
         if($res->error) return DV::error($res->error);
         $inputs = $res->values;
-        // Check for duplicate service name if creating new
-        if(!$id) {
-            $exist = DB::table('services')
-                ->where('name', $inputs['name'])
-                ->exists();
-            if($exist){
-                return DV::error('Create failed: This service already exists');
-            }
-        } else {
-            // Check duplicate name for update (exclude current id)
-            $exist = DB::table('services')
-                ->where('name', $inputs['name'])
-                ->where('id', '<>', $id)
-                ->exists();
-            if($exist){
-                return DV::error('Update failed: Another service with this name already exists');
-            }
+        $exist = DB::table('services')
+            ->whereRaw('LOWER(name) = ?', [strtolower($inputs['name'])])
+            ->whereRaw('LOWER(unit_type) = ?', [strtolower($inputs['unit_type'])])
+            ->when($id, function ($q) use ($id) {
+                $q->where('id', '<>', $id);
+            })
+            ->exists();
+
+        if ($exist) {
+            return DV::error('This service already exists');
         }
         $id = DBX::saveData($ss, 'services', ['id'=>$id], $inputs, [], 1);
         if($id > 0){
@@ -93,7 +87,9 @@ class Service
         $count = $clone_query->count('s.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
         foreach($rows as $row){
-            $row = setOfficialDates($row,['updated_at'],[],[]);
+            // $row = setOfficialDates($row, [], ['updated_at'], []);
+            $processed = setOfficialDates($row, ['bill_date','due_date'], ['updated_at'], []);
+            if ($processed) $row = $processed;
         }
         return new LengthAwarePaginator($rows,$count,$per_page,$current_page);
 
@@ -124,6 +120,10 @@ class Service
         if($service->status_id == 1){
             return DV::error('cannot not delete active service.');
 
+        }
+        $service = DB::table('service_requests')->where('service_id',$id)->first();
+        if($service){
+            return DV::error('Cannot delete service that has been used in service request.');
         }
         $deleted = DB::table('services')->where('id',$id)->delete();
         return $deleted ? DV::depends($deleted,['action'=>'deleted']) : DV::error('Delete failed.');

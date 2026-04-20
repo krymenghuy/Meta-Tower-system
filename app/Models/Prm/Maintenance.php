@@ -186,8 +186,7 @@ class Maintenance extends VSModel
                 m.amenity_id, a.name as amenity_name, a.code as amenity_code, m.start_date, m.end_date,
                 m.status_id, ms.name as status_name,
                 m.remarks,
-                m.create_uid, m.create_user, m.update_uid, m.update_user,m.updated_at
-            ")
+                m.create_uid, m.create_user, m.update_uid, m.update_user,m.updated_at")
             ->orderBy('m.id', 'DESC');
 
         $clone_query = clone $query;
@@ -197,7 +196,9 @@ class Maintenance extends VSModel
         $statusIdToName = DB::table('maintenance_statuses')->pluck('name', 'id');
         foreach ($rows as $row) {
             self::applyScheduleDerivedStatus($row, $statusIdToName);
-            setOfficialDates($row, [], ['updated_at', 'start_date', 'end_date'], []);
+            // setOfficialDates($row, [], ['updated_at', 'start_date', 'end_date'], []);
+            $processed = setOfficialDates($row, [], ['start_date','end_date','updated_at'], []);
+            if ($processed) $row = $processed;
         }
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
@@ -223,7 +224,7 @@ class Maintenance extends VSModel
 
         if ($row) {
             self::applyScheduleDerivedStatus($row);
-            setOfficialDates($row, [], ['updated_at', 'start_date', 'end_date'], []);
+            // setOfficialDates($row, [], ['updated_at', 'start_date', 'end_date'], []);
         }
         return $row;
     }
@@ -255,11 +256,11 @@ class Maintenance extends VSModel
         $amenities = GeneralSettings::options_maintenance_amenity($ss);
         if (!empty($include_amenity_id)) {
             $hasIncludedAmenity = $amenities->contains(function ($a) use ($include_amenity_id) {
-                return (int) ($a->id ?? 0) === (int) $include_amenity_id;
+                return ($a->id ?? 0) === $include_amenity_id;
             });
             if (!$hasIncludedAmenity) {
                 $selectedAmenity = DB::table('amenities')
-                    ->where('id', (int) $include_amenity_id)
+                    ->where('id', $include_amenity_id)
                     ->selectRaw('id, name AS amenity, code as amenity_code, max_capacity, category_id')
                     ->first();
                 if ($selectedAmenity) {

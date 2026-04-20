@@ -31,29 +31,35 @@ var ServiceComponent = (() => {
             }
         },
         {
-            transTitle: "titles.Price",
-            className: "align-middle",
+            transTitle: "titles.Charge As",
+            className: "align-middle text-nowrap",
             data: (data) => {
-                // const cur_symbol = data.cur_symbol ?? '$';
-                // const formattedPrice = data.price ? Number(data.price).toLocaleString() : '-';
-                const currency = data.currency_code ?? 'USD';
-                // const currency =  'KHR';
-                const formattedPrice = VSMoney.formatAmount(data.price, currency);
-                const unitLabel = data.unit_type ? `/ ${data.unit_type}` : '';
-                return `<span class="text-nowrap fw-semibold text-primary">${formattedPrice} <small class="text-muted ">${unitLabel}</small></span>`;
+                const unit_type = data.unit_type == "hour" ? 'Hour' : 'One Time';
+                return `<span class="badge text-info bg-info-subtle border border-info text-nowrap" style="min-width:70px;">${unit_type}</span>`;
             }
         },
         {
-            transTitle: "titles.Remark",
+            transTitle: "titles.Price",
             className: "align-middle",
-            data: (data, index, tr) => {
-                return `
-                    <div class="text-primary-custom" style="width:120px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.description ?? ''}</span>
-                    </div>
-                `;
+            data: (data) => {
+                
+                const currency = data.currency_code ?? 'USD';
+                const unit_type = data.unit_type == "hour" ? 'Hour' : data.unit_type == "one_time" ? 'One Time' : '';
+                const formattedPrice = VSMoney.formatAmount(data.price, currency);
+                return `<span class="text-nowrap text-info">${formattedPrice} <small class="text-muted ">/ ${unit_type}</small></span>`;
             }
         },
+        // {
+        //     transTitle: "titles.Remark",
+        //     className: "align-middle",
+        //     data: (data, index, tr) => {
+        //         return `
+        //             <div class="text-primary-custom" style="width:120px;">
+        //                 <span class="text-wrap text-break" style ="word-break:break-word;">${data.description ?? ''}</span>
+        //             </div>
+        //         `;
+        //     }
+        // },
         {
             title: "Status",
             className: "align-middle text-center",
@@ -79,8 +85,8 @@ var ServiceComponent = (() => {
             className: 'align-middle',
             data: (data, index, tr) => {
                 return `<div class="d-flex flex-column">
-                    <span class="text-capitalize text-start text-yp-custom fw-semibold"><span>${data.update_user ?? ''}</span></span>
-                    <span class="text-muted">${data.updated_at ?? ''}</span>
+                    <span class="text-capitalize text-start text-prm-custom"><span>${data.update_user ?? ''}</span></span>
+                    <span class="text-muted small">${data.updated_at ?? ''}</span>
                 </div>`;
             }
         },
@@ -108,8 +114,6 @@ var ServiceComponent = (() => {
             columns: mThis.cols,
             tableClass: 'table table--white rounded-2 overflow-hidden header-uppercase',
             rowCreated: (data, index, tr) => {
-
-
                 tr.dataset.statusid = data.status_id;
                 tr.classList.add('service');
                 tr.setAttribute('id', ['service_id', data.id].join(''));
@@ -192,18 +196,22 @@ var ServiceComponent = (() => {
                     name: "change_service_status"
                 },
                 {
-                    html: '<span class="ps-2 " vslang="titles.Modify Service"></span>',
+                    html: '<span class="ps-2 " vslang="titles.Modify"></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "edit_service"
                 },
                 {
-                    html: '<span class="ps-2  " vslang="titles.Delete Service"></span>',
+                    html: '<span class="ps-2  " vslang="titles.Delete"></span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "delete_service"
                 },
             ],
+            onShow: (me,container) => {
+                const menu = me.getActiveMenus(container);
+                menu.change_service_status.style.display =  'none';
+            },
 
             onClick: (menuLink, id, name) => {
                 switch (name) {
@@ -290,9 +298,6 @@ var ServiceComponent = (() => {
                 mThis.ServiceListView.showPage(mThis.getFilterData());
             }
         };
-        console.log(89,op);
-        
-        // if (!AuthManager.allowed(242)) return;
         cv_interact.confirm('Delete this Service?', {
             transTitle: 'Delete Service',
             context: 'delete',
@@ -370,10 +375,7 @@ const CreateServiceDialog = (() => {
                                 <div class="material-input outlined">
                                     <select data-style="material" name="unit_type" class="data-input form-control" data-field="unit_type" placeholder="Unit Type">
                                         <option value="hour">Hour</option>
-                                        <option value="month">Monthly</option>
                                         <option value="one_time">One Time</option>
-                                        <option value="kwh">Kwh</option>
-                                        <option value="sqm">SQM</option>
                                     </select>
                                 </div>
                             </div>
@@ -412,9 +414,7 @@ const CreateServiceDialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
-                    const header = me.divModal.querySelector('.modal-header');
-                    const btnClose = header.querySelector('button');
-                    if (btnClose) btnClose.classList.add('d-none');
+                    me.controls.unit_type.value = data.service_details.unit_type;
                 },
 
 

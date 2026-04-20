@@ -98,8 +98,6 @@ var BuildingComponent = ( () => {
         },
     ];
 
-
-   
     mThis.init = () => {
         if (mThis.initAlready) return;
 

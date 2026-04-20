@@ -28,7 +28,7 @@ var ContractComponent = new (function () {
         },
         {
             transTitle: "titles.Contact Info",
-            className: "align-middle",
+            className: "align-middle text-nowrap",
             data: (data) => {
                 return `<span class="d-block">${data.phone_number ?? ''}</span>
                         <small class="d-block text-primary">${data.email}</small>`;
@@ -412,7 +412,6 @@ var ContractComponent = new (function () {
         }
 
         container.innerHTML = `
-
 
                  ${renewalTableHtml}`;
 
@@ -948,7 +947,8 @@ const ContractDialog = (() => {
                     params: (op) => {
                         return {
                             id: op.id,
-                            space_id: op.space_id ?? null
+                            space_id: op.space_id ?? null,
+                            tenant_id: op.tenant_id ?? null
                         };
                     },
                 },
@@ -1030,7 +1030,14 @@ const ContractDialog = (() => {
                     unitSelect.onchange = (e) => {
                         applyUnitData(e.target.value);
                     };
-                    const defaultSpaceId = me.dataOptions?.space_id ?? data?.contract_details?.space_id ?? '';
+                    const prefillSpaces = Array.isArray(data?.prefill_spaces) ? data.prefill_spaces : [];
+                    const prefillSpaceIds = prefillSpaces
+                        .map((s) => String(s?.id ?? "").trim())
+                        .filter((v) => v !== "");
+                    const defaultSpaceId = me.dataOptions?.space_id
+                        ?? data?.contract_details?.space_id
+                        ?? prefillSpaceIds[0]
+                        ?? '';
                     if (defaultSpaceId) {
                         unitSelect.value = defaultSpaceId;
                         applyUnitData(defaultSpaceId);

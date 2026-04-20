@@ -456,20 +456,21 @@ console.log(123,op);
                                 <select data-style="material" class="data-input form-control" data-field="service_id" required placeholder="Service"></select>
                             </div>
                         </div>
+                        
                     </div>
                     <div class="row g-3 mb-3">
-                        <div class="col-md-6">
+                        <div class="col-md-3">
                             <div class="material-input outlined">
-                                <select data-style="material" class="data-input form-control" data-field="unit_type" required placeholder="Unit Type">
+                                <select data-style="material" class="data-input form-control" data-field="unit_type" disabled placeholder="Unit Type">
                                     <option value="">-- Select Unit --</option>
                                     <option value="1">One Time</option>
                                     <option value="2">Hour</option>
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-6 select-type-time" style="display:none;">
+                        <div class="col-md-3 select-type-time" style="display:none;">
                             <div class="material-input outlined">
-                                <select data-style="material" class="data-input form-control" data-field="duration_hours" placeholder="Duration (hours)">
+                                <select name="duration_hours" data-style="material" class="data-input form-control" data-field="duration_hours" placeholder="Duration (hours)">
                                     <option value="">-- Select Duration --</option>
                                     <option value="0.5">30 minutes</option>
                                     <option value="1">1 hour</option>
@@ -479,6 +480,18 @@ console.log(123,op);
                                     <option value="3">3 hours</option>
                                     <option value="4">4 hours</option>
                                 </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="material-input outlined">
+                                <input data-type="date" class="form-control data-input" data-field="scheduled_date" required />
+                                <label style="padding-left:6px;color:#777777;">Scheduled Date</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="material-input outlined">
+                                <input type="time" class="form-control data-input" data-field="start_time" placeholder=" " />
+                                <label style="color:#777777;padding-left:6px;">Start Time</label>
                             </div>
                         </div>
                     </div>
@@ -501,20 +514,7 @@ console.log(123,op);
                         </div>
                     </div>
 
-                    <div class="row g-3">
-                        <div class="col-md-4">
-                            <div class="material-input outlined">
-                                <input data-type="date" class="form-control data-input" data-field="scheduled_date" required />
-                                <label style="padding-left:6px;color:#777777;">Scheduled Date</label>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="material-input outlined">
-                                <input type="time" class="form-control data-input" data-field="start_time" placeholder=" " />
-                                <label style="color:#777777;padding-left:6px;">Start Time</label>
-                            </div>
-                        </div>
-                    </div>
+                    
                     <div class="row g-3">
                         <div class="col-12">
                             <div class="material-input outlined">
@@ -560,7 +560,6 @@ console.log(123,op);
                     },
                     columns: { name: "Name", phone_number: "Phone" },
                     onSelect: (tenant) => {
-                        console.log(12553, tenant);
                         me.controls.tenant_id.value = tenant.id;
                         me.loadTenantOptions(tenant.id);
                     }
@@ -575,11 +574,7 @@ console.log(123,op);
                     }).then(res => {
                         const d = res.data || {};
                         me._availableServices = d.service || [];
-
-                        // Spaces
                         VSUtil.setComboItems(me.controls.space_id, d.spaces || [], 'space_id', 'space_code', '', '-- Select Room --');
-
-                        // Service types
                         const typesMap = {};
                         me._availableServices.forEach(s => {
                             if (!typesMap[s.service_type_id]) {
@@ -643,13 +638,9 @@ console.log(123,op);
                 });
             },
             onPrepareForm: (me, data) => {
-                console.log(4444444444,data.request_details);
-
                 me.detail = data.request_details;
                 if (!me.detail) return;
                 const detail = me.detail;
-
-                // scheduled_date
                 const raw = (detail.scheduled_date || '').trim();
                 if (raw) {
                     const d = new Date(raw);
@@ -661,31 +652,26 @@ console.log(123,op);
                     }
                 }
 
-                // start_time
                 if (detail.start_time && me.controls.start_time) {
                     me.controls.start_time.value = detail.start_time.substring(0, 5);
                 }
 
-                // description
                 if (me.controls.description) {
                     me.controls.description.value = detail.description || '';
                 }
 
-                // unit_type
                 if (me.controls.unit_type && detail.unit_type) {
                     me.controls.unit_type.value = detail.unit_type;
                 }
-
-                // duration_hours
+                console.log(6666,me.detail);
+                
                 if (me.controls.duration_hours && detail.duration_hours) {
                     me.controls.duration_hours.value = detail.duration_hours;
                 }
 
-                // Load tenant-dependent dropdowns
                 if (detail.tenant_id) {
                     me.controls.tenant_id.value = detail.tenant_id;
 
-                    // Restore tenant display
                     if (me.searchTenant) {
                         const tenantName = detail.tenant_name || String(detail.tenant_id);
                         if (typeof me.searchTenant.setValue === 'function') {
@@ -695,7 +681,6 @@ console.log(123,op);
                         }
                     }
 
-                    // Reuse shared loader — restoreValues causes it to pre-fill all saved fields
                     me.loadTenantOptions(detail.tenant_id, {
                         space_id: detail.space_id,
                         service_type_id: detail.service_type_id,

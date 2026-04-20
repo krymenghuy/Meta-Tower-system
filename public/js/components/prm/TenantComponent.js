@@ -93,7 +93,7 @@ var TenantComponent = new (function () {
                 const status = (data.status ?? "").toLowerCase();
 
                 let cls =
-                    "badge text-dark bg-warning-subtle border border-warning";
+                    "badge text-warning bg-warning-subtle border border-warning";
 
                 if (status === "pending") {
                     cls =
@@ -431,6 +431,14 @@ var TenantComponent = new (function () {
         let html = `<div class="row g-3">`;
         if (Array.isArray(data) && data.length > 0) {
             data.forEach((d) => {
+                const prmNonEmpty = (v) =>
+                    v !== null && v !== undefined && String(v).trim() !== "";
+                /** Backend: status_id 2 = tenant with active contract; list also joins last contract (dates / space). */
+                const hasContractAlready =
+                    Number(d.status_id) === 2 ||
+                    prmNonEmpty(d.end_date) ||
+                    prmNonEmpty(d.start_date) ||
+                    prmNonEmpty(d.space_code);
                 const status = (d.status || "Pending").toLowerCase();
                 let statusClass = "";
                 switch (status) {
@@ -483,14 +491,14 @@ var TenantComponent = new (function () {
                                     <div class="col-2"></div>
                                     <div class="col-6">
                                         ${
-                                            d.end_date
+                                            hasContractAlready
                                                 ? `
                                                 <div class="d-flex flex-column text-center gap-1">
                                                     <span class="text-prm-custom fw-semibold">
                                                         Lease Expiry
                                                     </span>
                                                     <small class="text-muted">
-                                                        ${d.end_date}
+                                                        ${d.end_date || d.start_date || "—"}
                                                     </small>
                                                 </div>
                                             `
@@ -820,7 +828,7 @@ var TenantComponent = new (function () {
                                             <th class="border-0 ps-3" style="letter-spacing: 0.05em;">Document Type</th>
                                             <th class="border-0">File Name</th>
                                             <th class="border-0">File Type</th>
-                                            <th class="border-0">Description</th>
+                                            <th class="border-0">Remarks</th>
                                             <th class="border-0 text-end pe-3">Actions</th>
                                         </tr>
                                     </thead>
@@ -840,7 +848,7 @@ var TenantComponent = new (function () {
                                                 <div class="fw-semibold text-dark">${data.ext ?? ""}</div>
                                             </td>
                                             <td>
-                                                <span class="text-muted small">${data.description ?? "No description"}</span>
+                                                <span class="text-muted small">${data.remarks ?? ""}</span>
                                             </td>
                                             <td class="text-end pe-3">
                                                 <button class="btn btn-sm text-muted p-0 ">
@@ -1050,28 +1058,6 @@ var TenantComponent = new (function () {
                                     <small class="text-muted">${depositSmallHtml}</small>
                                 </div>
                             </div>
-
-                            <div class="d-flex justify-content-between align-items-center mb-2 mt-2">
-                                <small class="text-muted fw-semibold">Renewal history</small>
-                                <small class="text-muted">${renewalsCount} renewals</small>
-                            </div>
-                            <div class="table-responsive">
-                                <table class="table table-sm table--white mb-0 renewal-history-table">
-                                    <thead class="bg-light">
-                                        <tr class="text-uppercase small">
-                                            <th class="border-0">Renewal date</th>
-                                            <th class="border-0">Start date</th>
-                                            <th class="border-0">End date</th>
-                                            <th class="border-0">Unit Code</th>
-                                            <th class="border-0">Remarks</th>
-                                            <th class="border-0">Updated by</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        ${renewalsTableRowsHtml}
-                                    </tbody>
-                                </table>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -1194,7 +1180,7 @@ var TenantComponent = new (function () {
                         </td>
                         <td>
                             <span class="fw-bold text-dark">
-                                ${doc.description || 'No description'}
+                                ${doc.remarks || ''}
                             </span>
                         </td>
                        <td class="text-end py-3 px-3">
@@ -1238,7 +1224,7 @@ var TenantComponent = new (function () {
                                     <th class="border-0 ps-3" style="letter-spacing: 0.05em;">Document Type</th>
                                     <th class="border-0">File</th>
                                     <th class="border-0">File Type</th>
-                                    <th class="border-0">Description</th>
+                                    <th class="border-0">Remarks</th>
                                     <th class="border-0 text-end">Actions</th>
                                 </tr>
                             </thead>
@@ -1638,7 +1624,7 @@ const CreateTenantDialog = (() => {
                                 ? me.tenantImageBox.getImage()
                                 : "";
                                 console.log(4444,op);
-                                
+
                             vsapi
                                 .call(
                                     [
@@ -1707,8 +1693,8 @@ const TenantDocumentDialog = (() => {
                     </div>
                      <div class="col-12">
                         <div class="material-input outlined">
-                            <textarea type="text" name="description" required class="data-input form-control" data-field="description" placeholder=" " /></textarea>
-                            <label style="color:#777777;padding-left:6px;">Description</label>
+                            <textarea type="text" name="remarks" required class="data-input form-control" data-field="remarks" placeholder=" " /></textarea>
+                            <label style="color:#777777;padding-left:6px;">Remarks</label>
                         </div>
                     </div>
 
@@ -1821,7 +1807,7 @@ const TenantDocumentDialog = (() => {
                                 tenant_id: me.dataOptions.tenant_id,
                                 ext: me.fileData.ext,
                                 data: me.fileData.dataUrl,
-                                description: me.controls.description.value,
+                                remarks: me.controls.remarks.value,
                                 document_type_id:
                                     me.controls.document_type.value,
                             };

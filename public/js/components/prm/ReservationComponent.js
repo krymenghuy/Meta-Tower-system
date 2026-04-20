@@ -8,6 +8,8 @@ var ReservationComponent = (() => {
     mThis.divFilter = mThis.self.querySelector("#_divFilter_reservation");
     mThis.elFilter_status = mThis.self.querySelector("#_reservation_status");
     mThis.elAmenity = mThis.self.querySelector("#amenity_id");
+    mThis.elBookingDate = mThis.self.querySelector("#booking_date");
+    
     mThis.elSearch = mThis.self.querySelector("#_search_reservation");
 
     mThis.cols = [
@@ -15,7 +17,6 @@ var ReservationComponent = (() => {
             title: "",
             className: "align-middle text-capitalize",
         },
-        
         {
             transTitle: "titles.Amenity Info",
             className: "align-middle",
@@ -33,7 +34,7 @@ var ReservationComponent = (() => {
             },
         },
         {
-            transTitle: "titles.Schedule Date",
+            transTitle: "titles.Booking Date",
             className: "align-middle",
             data: (data) => {
                 const to12h = (hhmm) => {
@@ -91,8 +92,8 @@ var ReservationComponent = (() => {
             className: "align-middle",
             data: (data, index, tr) => {
                 return `<div class="d-flex flex-column">
-                    <span class="text-capitalize text-start text-prm-custom fw-semibold"><span>${data.update_user ?? ""}</span></span>
-                    <span class="text-muted">${data.updated_at ?? ""}</span>
+                    <span class="text-capitalize text-start text-prm-custom"><span>${data.update_user ?? ""}</span></span>
+                    <span class="text-muted small">${data.updated_at ?? ""}</span>
                 </div>`;
             },
         },
@@ -101,7 +102,7 @@ var ReservationComponent = (() => {
             className: "col_action align-middle",
             data: (data) => `
                 <div class="d-flex justify-content-center align-items-end">
-                    <a href="javascript:void(0)" class="btn--Options ${data.action_id > 1 ? "d-none" : "btn_leave_action"}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
+                    <a href="javascript:void(0)" class="btn--Options btn_reservation_action" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
                        <i class="fa-solid fa-ellipsis-vertical text-black fs-5"></i>
                     </a>
                 </div>`,
@@ -166,6 +167,7 @@ var ReservationComponent = (() => {
                 mThis.ReservationListView.showPage(mThis.getFilterData());
             }, 250);
         });
+      
 
         mThis.initAlready = true;
     };
@@ -182,26 +184,25 @@ var ReservationComponent = (() => {
             const f = el.dataset.field;
             p[f] = el.value;
         });
-
+        
         return p;
     };
 
     mThis.initDropdownMenus = (table) => {
         const menuOptopns = {
             containerElement: table,
-            actionButtonClass: "btn_leave_action",
+            actionButtonClass: "btn_reservation_action",
             cssClass: "bg-white shadow",
-            //menuItemClass:"",
             menus: [
                
                 {
-                    html: '<span class="ps-2 " vslang="titles.Modify Reservation"></span>',
+                    html: '<span class="ps-2" vslang="titles.Modify"></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "edit_reservation",
                 },
                 {
-                    html: '<span class="ps-2  " vslang="titles.Delete Record"></span>',
+                    html: '<span class="ps-2 " vslang="titles.Delete"></span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "delete_reservation",
@@ -218,11 +219,11 @@ var ReservationComponent = (() => {
                     menu.edit_reservation.style.display = isBlocked ? "none" : "block";
                 }
 
-                if (menu.delete_reservation) {
+                // if (menu.delete_reservation) {
                     // Hide only if status is 2
-                    const isBlocked = status_id === 2;
-                    menu.delete_reservation.style.display = isBlocked ? "none" : "block";
-                }
+                //     const isBlocked = status_id === 2;
+                //     menu.delete_reservation.style.display = isBlocked ? "none" : "block";
+                // }
             },
 
             onClick: (menuLink, id, name) => {
@@ -347,7 +348,7 @@ const CreateReservationDialog = (() => {
                             </div>
                             <div class="col-6">
                                 <div class="material-input outlined">
-                                    <input name="phone_number" class="data-input form-control" data-field="phone_number" placeholder=" "></input>
+                                    <input name="phone_number" class="data-input form-control" data-field="phone_number" disabled placeholder=" "></input>
                                     <label style="color:#777777; padding-left:6px;">Phone Number</label>
                                 </div>
                             </div>
@@ -359,26 +360,26 @@ const CreateReservationDialog = (() => {
                             </div>
                             <div class="col-6">
                                 <div class="material-input outlined">
-                                    <select data-style="material" name="amenity_category" class="data-input form-control" data-field="category_id"  placeholder="Amenity Category"  >
+                                    <select data-style="material" name="amenity_category"  class="data-input form-control" data-field="category_id"  placeholder="Amenity Category"  >
                                     </select>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="material-input outlined">
-                                    <input style="cursor: not-allowed;" type="text" class="data-input form-control" data-field="amenity_code" placeholder=" " readonly />
+                                    <input type="text" class="data-input form-control" data-field="amenity_code" placeholder=" " disabled />
                                     <label style="color:#777777;padding-left:6px;" for="amenity">Amenity Code</label>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="material-input outlined " >
-                                    <input style="cursor: not-allowed;" type="text" class="data-input form-control" data-field="amenity_capacity" placeholder=" " readonly />
+                                    <input type="text" class="data-input form-control" data-field="amenity_capacity" placeholder=" " disabled />
                                     <label style="color:#777777;padding-left:6px;" for="amenity">Max Occupancy</label>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="material-input outlined">
                                     <input type="text" data-type="date" name="booking_date" required class="data-input form-control form_input" data-field="booking_date" />
-                                    <label style="color:#777777;padding-left:6px;">Schedule Date</label>
+                                    <label style="color:#777777;padding-left:6px;">Booking Date</label>
                                 </div>
                             </div>
                             <div class="col-3">
@@ -533,13 +534,13 @@ const CreateReservationDialog = (() => {
                         click: (me, btn) => {
                             const op = me.getData();
                             op.id = me.dataOptions.id;
-                            if (
-                                me._selectedTenantId != null &&
-                                me._selectedTenantId !== undefined
-                            ) {
-                                op.tenant_id = me._selectedTenantId;
-                            }
-                            op.date = op.booking_date || op.date;
+                            // if (me._selectedTenantId != null && me._selectedTenantId !== undefined) {
+                            //     op.tenant_id = me._selectedTenantId;
+                            // }
+
+                            op.tenant_id = me._selectedTenantId;
+                            console.log(123,op);
+                            
                             vsapi
                                 .call(
                                     [

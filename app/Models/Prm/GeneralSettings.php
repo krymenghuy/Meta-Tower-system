@@ -517,10 +517,27 @@ static function options_maintenance_amenity($ss)
         return DB::table('business_types')->selectRaw('id,name AS business_type')->get();
     }
 
+    /** Join + columns shared by options_building_space and options_building_space_rows_by_ids. */
+    private static function buildingSpaceOptionRowsBaseQuery()
+    {
+        return DB::table('building_spaces')
+            ->join('space_types as st', 'st.id', '=', 'building_spaces.space_type_id')
+            ->selectRaw('
+                building_spaces.id,
+                building_spaces.code,
+                building_spaces.code as floor_id,
+                building_spaces.building_id,
+                building_spaces.space_type_id,
+                st.name as space_type,
+                building_spaces.sqm_size,
+                building_spaces.price_type,
+                building_spaces.price
+            ');
+    }
+
     static function options_building_space($ss, $include_space_id = null, $exclude_under_maintenance = false)
     {
-        $query = DB::table('building_spaces')
-            ->join('space_types as st', 'st.id', '=', 'building_spaces.space_type_id')
+        $query = self::buildingSpaceOptionRowsBaseQuery()
             ->where(function ($q) use ($include_space_id) {
                 $q->where('building_spaces.status_id', 1); // available
                 if (!empty($include_space_id)) {
@@ -536,21 +553,25 @@ static function options_maintenance_amenity($ss)
                 }
             });
         }
-        $rows = $query->selectRaw('
-                building_spaces.id,
-                building_spaces.code,
-                building_spaces.code as floor_id,
-                building_spaces.building_id,
-                building_spaces.space_type_id,
-                st.name as space_type,
-                building_spaces.sqm_size,
-                building_spaces.price_type,
-                building_spaces.price
-            ')
+
+        return $query->orderBy('building_spaces.code')->get();
+    }
+
+    /**
+     * Same columns as options_building_space for dropdowns, but only the given ids and no status filter
+     * (so occupied / booked spaces can still appear when editing contracts).
+     */
+    static function options_building_space_rows_by_ids(array $ids)
+    {
+        $ids = array_values(array_unique(array_filter(array_map('intval', $ids))));
+        if ($ids === []) {
+            return collect();
+        }
+
+        return self::buildingSpaceOptionRowsBaseQuery()
+            ->whereIn('building_spaces.id', $ids)
             ->orderBy('building_spaces.code')
             ->get();
-
-        return $rows;
     }
 
     static function options_request_status($ss)

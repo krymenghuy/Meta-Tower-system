@@ -7,8 +7,9 @@ var BillPaymentComponent = (() => {
     mThis.self = main_view.VSAppContent.querySelector("#_main_bill_payment_component");
     mThis.btnAdd = mThis.self.querySelector("#_btnBillPayment");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_bill");
-    mThis.elFilter_vendor = mThis.self.querySelector("#_bill_vendor_id");
+    mThis.elFilter_category = mThis.self.querySelector("#_bill_expense_type_id");
     mThis.elFilter_status = mThis.self.querySelector("#_bill_status_id");
+    mThis.elFilter_date = mThis.self.querySelector("#_payment_date");
     mThis.elSearch = mThis.self.querySelector("#_search_bill_payment"); 
 
     mThis.cols = [
@@ -30,18 +31,18 @@ var BillPaymentComponent = (() => {
                     <span class="d-block text-nowrap text-prm-custom ">${data.bill_number ?? ""}</span>`;
             },
         },
-        {
-            transTitle: "titles.Vendor",
-            className: "align-middle",
-            data: (data) => `<span class="d-block text-prm-custom text-capitalize">${data.vendor_name ?? ""}</span>`,
-        },
-        {
-            transTitle: "titles.Expense Type",
-            className: "align-middle",
-            data: (data) => {
-                return `<span class="d-block text-prm-custom ">${data.expense_type_name ?? "_"}</span>`;
-            },
-        },
+        // {
+        //     transTitle: "titles.Vendor",
+        //     className: "align-middle",
+        //     data: (data) => `<span class="d-block text-prm-custom text-capitalize">${data.vendor_name ?? ""}</span>`,
+        // },
+        // {
+        //     transTitle: "titles.Expense Type",
+        //     className: "align-middle",
+        //     data: (data) => {
+        //         return `<span class="d-block text-prm-custom ">${data.expense_type_name ?? "_"}</span>`;
+        //     },
+        // },
         {
             transTitle: "titles.Payer",
             className: "align-middle",
@@ -52,30 +53,47 @@ var BillPaymentComponent = (() => {
         //     className: "align-middle",
         //     data: (data) => `<span class="d-block text-prm-custom">${data.ref_no ?? "_"}</span>`,
         // },
-        {
-            transTitle: "titles.Payment Method",
-            className: "align-middle",
-            data: (data) => `<span class="d-block text-prm-custom text-capitalize">${data.payment_method ?? "_"}</span>`,
-        },
+        
         {
             title: " Amount",
             className: "align-middle text-end",
             data: (data) => {
                 const amount = VSMoney.formatAmount(data.amount, data.currency_code ?? 'USD');
-                return `<span class="d-block text-prm-custom fw-semibold" style="color:#1d4ed8;">${amount}</span>`;
+                return `<span class="d-block text-primary">${amount}</span>`;
             },
         },
         {
-            title: "Description",
-            className: "align-middle text-end",
-            data: (data) => `<span class="d-block text-prm-custom fw-semibold">${data.note ?? "_"}</span>`,
+            transTitle: "titles.Payment Details",
+            className: "align-middle",
+            data: (data) => `<span class="d-block text-prm-custom text-capitalize">${data.payment_method ?? ""}</span>`,
+        },
+        {
+            transTitle: "titles.Remarks",
+            className: "align-middle",
+            data: (data, index, tr) => {
+                return `
+                    <div class="text-prm-custom" style="width:100px;">
+                        <span class="small text-wrap text-break" style ="word-break:break-word;">${data.note ?? ''}</span>
+                    </div>
+                `;
+            }
+        },
+        {
+            transTitle: "titles.Cashier",
+            className: "align-middle text-nowrap",
+            data: (data, index, tr) => {
+                return `<div class="d-flex flex-column">
+                    <span class="text-capitalize text-start text-prm-custom"><span>${data.update_user ?? ""}</span></span>
+                    <span class="text-muted small">${data.updated_at ?? ""}</span>
+                </div>`;
+            },
         },
         {
             transTitle: "titles.Action",
             className: "col_action align-middle",
             data: (data) => `
                 <div class="d-flex justify-content-center align-items-end">
-                    <a href="javascript:void(0)" class="btn--Options btn_dropdown_vendor_action"
+                    <a href="javascript:void(0)" class="btn--Options btn_bill_action"
                         data-id="${data.id}" data-vendorId="${data.vendor_id || ''}"
                         data-statusid="${data.status_id || ''}" aria-haspopup="true" aria-expanded="false">
                         <i class="fa-solid fa-ellipsis-vertical text-black fs-5"></i>
@@ -140,151 +158,52 @@ var BillPaymentComponent = (() => {
             }, 250);
         });
 
-        // new ExpandableRowConfig(tblBill.id, {
-        //     dontExpandByClickingOn: ["btn_dropdown_vendor_action"],
-        //     onOpen: (container, detail_tr, parent_tr) => {
-        //         const bill_id = parent_tr.dataset.billid;
-        //         if (bill_id && !isNaN(bill_id)) mThis.displayBillDetail(container, bill_id);
-        //     }
-        // });
-
         mThis.initAlready = true;
     };
 
-    // mThis.displayBillDetail = (container, bill_id) => {
-    //     container.innerHTML = `<div class="text-center py-3"><div class="spinner-border text-primary" role="status"></div></div>`;
-
-    //     vsapi.call(`${main_view.base_url}/prm/bill-payment/form-options`, { bill_id })
-    //         .then(res => {
-    //             if (res.status_code !== 200) {
-    //                 container.innerHTML = `<div class="alert alert-danger m-3">Failed to load bill details</div>`;
-    //                 return;
-    //             }
-    //             mThis.renderBillDetail(container, res.data || {});
-    //         })
-    //         .catch(() => {
-    //             container.innerHTML = `<div class="alert alert-danger m-3">Network error loading bill details</div>`;
-    //         });
-    // };
-
-    // mThis.renderBillDetail = (container, data) => {
-    //     const bill     = data.bill || {};
-    //     const payments = data.payments || [];
-    //     const currency = "$";
-    //     const fmt = n => Number(n || 0).toLocaleString("en-US", { minimumFractionDigits: 2 });
-
-    //     const paymentsHtml = payments.map(p => `
-    //         <tr style="font-size:0.82rem;">
-    //             <td class="text-center text-nowrap text-muted">${p.payment_date ?? "—"}</td>
-    //             <td class="text-capitalize">${p.payer ?? "—"}</td>
-    //             <td class="text-center text-muted text-capitalize">${p.note ?? "—"}</td>
-    //             <td class="text-center">
-    //                 <span class="badge rounded-pill bg-light text-dark border text-capitalize" style="font-size:0.75rem;">${p.payment_method ?? "—"}</span>
-    //             </td>
-    //             <td class="text-center text-muted">${p.currency_code ?? "USD"}</td>
-    //             <td class="text-end fw-semibold pe-3" style="color:#059669;">${currency}${fmt(p.amount)}</td>
-    //         </tr>
-    //     `).join("");
-
-    //     container.innerHTML = `
-    //     <div style="background:#f8fafc; border-radius:10px; padding:10px 14px; font-size:0.875rem;">
-
-    //         <!-- Payments Table only -->
-    //         <div class="table-responsive" style="border-radius:8px; border:1px solid #e2e8f0; overflow:hidden;">
-    //             <table class="table table-sm mb-0" style="font-size:0.82rem;">
-    //                 <thead style="background:#f1f5f9; border-bottom:1px solid #e2e8f0;">
-    //                     <tr>
-    //                         <th class="text-center text-muted fw-semibold py-2" style="width:110px; font-size:0.72rem;">Date</th>
-    //                         <th class="text-muted fw-semibold py-2" style="font-size:0.72rem;">Payer</th>
-    //                         <th class="text-center text-muted fw-semibold py-2" style="font-size:0.72rem;">Remark</th>
-    //                         <th class="text-center text-muted fw-semibold py-2" style="width:100px; font-size:0.72rem;">Method</th>
-    //                         <th class="text-center text-muted fw-semibold py-2" style="width:70px; font-size:0.72rem;">Currency</th>
-    //                         <th class="text-end text-muted fw-semibold py-2 pe-3" style="width:110px; font-size:0.72rem;">Paid</th>
-    //                     </tr>
-    //                 </thead>
-    //                 <tbody>
-    //                     ${paymentsHtml || `
-    //                     <tr>
-    //                         <td colspan="6" class="text-center py-3 text-muted" style="font-size:0.82rem;">
-    //                             <i class="fa-regular fa-folder-open me-1"></i> No payments recorded
-    //                         </td>
-    //                     </tr>`}
-    //                 </tbody>
-    //             </table>
-    //         </div>
-
-    //         <!-- Summary Footer -->
-    //         <div class="d-flex flex-wrap justify-content-end gap-2 mt-2">
-    //             ${[
-    //                 { label: "Total",     val: bill.total_amount, color: "#3b82f6" },
-    //                 { label: "Paid",      val: bill.paid_amount,  color: "#059669" },
-    //                 { label: "Remaining", val: bill.balance,      color: "#dc2626" },
-    //             ].map(s => `
-    //                 <div style="background:#fff; border:1px solid #e2e8f0; border-radius:8px; padding:6px 14px; text-align:right; min-width:120px;">
-    //                     <div class="text-muted" style="font-size:0.68rem; text-transform:uppercase; letter-spacing:0.05em;">${s.label}</div>
-    //                     <div class="fw-bold" style="font-size:0.95rem; color:${s.color};">${currency}${fmt(s.val)}</div>
-    //                 </div>
-    //             `).join("")}
-    //         </div>
-
-    //     </div>`;
-    // };
-
     mThis.getFilterData = () => {
         let p = {
-            vendor_id: mThis.elFilter_vendor.value,
+            
             status_id: mThis.elFilter_status.value,
             search_value: mThis.elSearch.value,
+            payment_date:    mThis.elFilter_date?.value ?? "",
+            // expense_type_id: mThis.elFilter_category.value, 
         };
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             p[el.dataset.field] = el.value;
         });
+        console.log("Filter data:", p);
         return p;
-    };
-    mThis.refreshList = (filter) => {
-        mThis._seenBillNumbers = new Set();
-        mThis.BillPaymentListView.showPage(filter ?? mThis.getFilterData());
     };
 
     mThis.initDropdownMenus = (table) => {
         const menuOptopns = {
             containerElement: table,
-            actionButtonClass: "btn_dropdown_vendor_action",
+            actionButtonClass: "btn_bill_action",
             cssClass: "bg-white shadow",
             menus: [
                 {
-                    html: '<span class="ps-2" vslang="titles.Delete Bill Record"></span>',
+                    html: '<span class="ps-2" vslang="titles.Delete Payment"></span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "delete_bill",
+                    name: "delete_payment",
                 },
                 // {
-                //     html: '<span class="ps-2">View Detail</span>',
+                //     html: '<span class="ps-2">Cancel Payment</span>',
                 //     icon: `<i class="fa-solid fa-print" style="color: rgb(22, 80, 137);"></i>`,
                 //     cssClass: "border-bottom pb-2",
-                //     name: "view_bill",
+                //     name: "cancel_payment",
                 // },
             ],
             onClick: (menuLink, id, name) => {
                 switch (name) {
-                    case "delete_bill": mThis.deleteBill(id, menuLink); break;
-                    case "view_bill":   mThis.viewBill(id, menuLink);   break;
+                    case "delete_payment": mThis.deletePayment(id, menuLink); break;
+                    case "cancel_payment":   mThis.cancelPayment(id, menuLink);   break;
                     default: break;
                 }
             },
         };
         new VSDropdownMenu(menuOptopns);
-    };
-
-    mThis.viewBill = (id, menuLink) => {
-        const tr = menuLink.closest("tr");
-        const bill_id = tr?.dataset.billid;
-        if (!bill_id) return cv_interact.error("Bill ID not found.");
-
-        const expandedContainer = tr?.nextElementSibling?.querySelector(".expandable-content");
-        if (expandedContainer) {
-            mThis.displayBillDetail(expandedContainer, bill_id);
-        }
     };
 
     mThis.editBill = (id, menuLink) => {
@@ -299,18 +218,49 @@ var BillPaymentComponent = (() => {
         BillPaymentDialog.show(op);
     };
 
-    mThis.deleteBill = (id, menuLink) => {
-        cv_interact.confirm("Delete this Bill Record?",
-            { transTitle: "Delete Bill Record", context: "delete", confirmButtonText: "Delete" },
+    mThis.deletePayment = (id, menuLink) => {
+        const op = {
+             id,
+             btn: menuLink,
+             onClose: () =>
+             mThis.BillPaymentListView.showPage(mThis.getFilterData()),
+        }
+        cv_interact.confirm("Delete this Payment?",
+            { context: "delete", confirmButtonText: "Delete" },
             function (e) {
                 if (e) {
-                    vsapi.call(`${main_view.base_url}/prm/bill/delete`, { id }, false, false, false)
+                    vsapi.call(`${main_view.base_url}/prm/bill-payment/delete`, { id }, false, false, false)
                         .then((res) => {
                             if (res.status_code == 200) {
                                 cv_interact.success(res.message || "Bill record has been deleted.");
                                 mThis.BillPaymentListView.showPage(mThis.getFilterData());
                             } else {
                                 cv_interact.error(res.error_message || "Failed to delete bill record.");
+                            }
+                        });
+                }
+            }
+        );
+    };
+
+    mThis.cancelPayment = (id, menuLink) => {
+        const op = {
+            id,
+            btn: menuLink,
+            onClose: () =>
+                mThis.BillPaymentListView.showPage(mThis.getFilterData()),
+        }
+        cv_interact.confirm("Cancel this Bill Payment?",
+            { context: "warning", confirmButtonText: "Cancel Bill" },
+            function (e) {
+                if (e) {
+                    vsapi.call(`${main_view.base_url}/prm/bill-payment/cancel`, { id }, false, false, false)
+                        .then((res) => {
+                            if (res.status_code == 200) {
+                                cv_interact.success(res.message || "Bill payment has been cancelled.");
+                                mThis.BillPaymentListView.showPage(mThis.getFilterData());
+                            } else {
+                                cv_interact.error(res.error_message || "Failed to cancel bill payment.");
                             }
                         });
                 }
@@ -375,12 +325,11 @@ var BillPaymentComponent = (() => {
         });
     };
     
-
     mThis.prepareFormOptions = (onFinish) => {
         vsapi.call(`${main_view.base_url}/prm/bill/form-options`, null, null, null)
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elFilter_vendor, d.vendors, "id", "vendor", "", "All Vendor", "");
+                VSUtil.setComboItems(mThis.elFilter_category, d.expense_types, "id", "expense_category", "", "All Category", "");
                 VSUtil.setComboItems(mThis.elFilter_status, d.bill_statuses, "id", "bill_status", "", "All Statuses", "");
                 if (typeof onFinish === "function") onFinish();
             });
@@ -414,16 +363,19 @@ const BillPaymentDialog = (() => {
                 return [
                     `<div class="row g-3">
                         <input name="vendorid" class="d-none data-input form-control" data-field="vendor_id">
-
-                        <div class="col-md-5">
+                        <div class="col-md-6">
                             <div class="material-input outlined">
                                 <input style="cursor: not-allowed;" name="vendor" class="data-input form-control" data-field="vendor_name" placeholder="Payee (Vendor)" readonly>
-                                <label style="color:#777777;padding-left:6px;">Vendor</label>
+                                <label style="color:#777777;padding-left:6px;">Pay To</label>
                             </div>
+                        </div>
+                        <div class="col-md-6">
                             <div class="material-input outlined">
-                                <input style="cursor: not-allowed;" name="phone_number" class="data-input form-control" data-field="phone_number" placeholder=" " readonly>
-                                <label style="color:#777777;padding-left:6px;">Contact</label>
+                                <input type="text" data-type="date" name="payment_date" required class="data-input form-control" data-field="payment_date" />
+                                <label style="color:#777777;padding-left:6px;">Payment Date</label>
                             </div>
+                        </div>
+                        <div class="col-md-6">
                             <div class="material-input outlined">
                                <select data-style="material" name="payment_method" class="data-input form-control" data-field="payment_method" placeholder="Payment Method">
                                     <option value="cash">Cash</option>
@@ -432,32 +384,14 @@ const BillPaymentDialog = (() => {
                                     <option value="other">Other</option>
                                 </select>
                             </div>
+                        </div>
+                        <div class="col-md-6">
                             <div class="material-input outlined">
                                 <input type="text" name="payer" class="data-input form-control" data-field="payer" placeholder=" " >
                                 <label style="color:#777777;padding-left:6px;">Payer</label>
                             </div>
                         </div>
-                        <div class="col-md-2"></div>
-                        <div class="col-md-5">
-                            <div class="material-input outlined">
-                                <input type="text" data-type="date" name="payment_date" required class="data-input form-control" data-field="payment_date" />
-                                <label style="color:#777777;padding-left:6px;">Payment Date</label>
-                            </div>
-                            <div class="material-input outlined">
-                                <input style="cursor: not-allowed;" name="bill_number" class="data-input form-control" data-field="bill_number" placeholder=" " readonly>
-                                <label style="color:#777777;padding-left:6px;">Bill Number</label>
-                            </div>
-                            <div class="material-input outlined">
-                                <input style="cursor: not-allowed;" name="expense_type" class="data-input form-control" placeholder=" " readonly>
-                                <label style="color:#777777;padding-left:6px;">Expense Type</label>
-                            </div>
-                            <div class="material-input outlined">
-                                <select data-style="material" name="currency_code" class="data-input form-control" data-field="currency_code" placeholder="Currency">
-                                    <option value="USD">USD - $</option>
-                                    <option value="KHR">KHR - ៛</option>
-                                </select>
-                            </div>
-                        </div>
+                        
                         <div class="col-3">
                             <div class="material-input outlined bg-light rounded">
                                 <input name="total_amount" class="form-control text-end" style="cursor:not-allowed;" readonly>
@@ -501,7 +435,7 @@ const BillPaymentDialog = (() => {
                         <div class="col-12">
                             <div class="material-input outlined">
                                 <textarea class="data-input form-control" data-field="note" placeholder=" "></textarea>
-                                <label style="color:#777777;padding-left:6px;">Description</label>
+                                <label style="color:#777777;padding-left:6px;">Remarks</label>
                             </div>
                         </div>
                     </div>`
@@ -510,7 +444,7 @@ const BillPaymentDialog = (() => {
 
             prepareFormOptions: {
                 createTitle: "Bill Payment Voucher",
-                modifyTitle: "Process Payment",
+                modifyTitle: "Pay Bill",
                 targetProp: "bill",
                 api: {
                     endpoint: `${main_view.base_url}/prm/bill-payment/form-options`,
@@ -519,39 +453,47 @@ const BillPaymentDialog = (() => {
                     })
                 }
             },
-
+             onShow: (me) => {
+                const title = me.divModal.querySelector('.modal-title');
+                if (title) {
+                    const isModify = !!me.dataOptions?.id;
+                    title.innerHTML = isModify
+                        ? '<h2 class="text-prm-custom text-start fw-bold">Pay Bills</h2>'
+                        : '<h2 class="text-prm-custom text-start fw-bold">Pay Bill</h2>';
+                }
+            },
             onPrepareForm: (me, data) => {
                 const bill = data?.bill || data?.bill_details;
 
-                if (!bill || !bill.id) {
-                    console.error("Bill data is missing in response", data);
-                    cv_interact.warning("Could not load bill details.");
-                    return;
-                }
+                // if (!bill || !bill.id) {
+                //     console.error("Bill data is missing in response", data);
+                //     cv_interact.warning("Could not load bill details.");
+                //     return;
+                // }
 
-                if (me.controls.vendor)       me.controls.vendor.value       = '';
-                if (me.controls.phone_number) me.controls.phone_number.value = '';
-                if (me.controls.expense_type) me.controls.expense_type.value = '';
-                if (me.controls.bill_number)  me.controls.bill_number.value  = '';
+                // if (me.controls.vendor)       me.controls.vendor.value       = '';
+                // if (me.controls.phone_number) me.controls.phone_number.value = '';
+                // if (me.controls.expense_type) me.controls.expense_type.value = '';
+                // if (me.controls.bill_number)  me.controls.bill_number.value  = '';
                 if (me.controls.total_amount) me.controls.total_amount.value = '';
                 if (me.controls.paid_amount)  me.controls.paid_amount.value  = '';
                 if (me.controls.balance)      me.controls.balance.value      = '';
                 if (me.controls.amount)       me.controls.amount.value       = '';
-                if (me.controls.payer)        me.controls.payer.value        = '';
-                if (me.controls.note)         me.controls.note.value         = '';
+                // if (me.controls.payer)        me.controls.payer.value        = '';
+                // if (me.controls.note)         me.controls.note.value         = '';
 
-                if (me.controls.vendor)       { me.controls.vendor.value       = bill.vendor_name || '';                    me.controls.vendor.readOnly       = true; }
-                if (me.controls.phone_number) { me.controls.phone_number.value = bill.phone_number || '';                   me.controls.phone_number.readOnly = true; }
-                if (me.controls.expense_type) { me.controls.expense_type.value = bill.expense_type_name || '';              me.controls.expense_type.readOnly = true; }
-                if (me.controls.bill_number)  { me.controls.bill_number.value  = bill.bill_number || '';                    me.controls.bill_number.readOnly  = true; }
+                // if (me.controls.vendor)       { me.controls.vendor.value       = bill.vendor_name || '';                    me.controls.vendor.readOnly       = true; }
+                // if (me.controls.phone_number) { me.controls.phone_number.value = bill.phone_number || '';                   me.controls.phone_number.readOnly = true; }
+                // if (me.controls.expense_type) { me.controls.expense_type.value = bill.expense_type_name || '';              me.controls.expense_type.readOnly = true; }
+                // if (me.controls.bill_number)  { me.controls.bill_number.value  = bill.bill_number || '';                    me.controls.bill_number.readOnly  = true; }
                 if (me.controls.total_amount) { me.controls.total_amount.value = Number(bill.total_amount || 0).toFixed(2); me.controls.total_amount.readOnly = true; }
                 if (me.controls.paid_amount)  { me.controls.paid_amount.value  = Number(bill.paid_amount  || 0).toFixed(2); me.controls.paid_amount.readOnly  = true; }
                 if (me.controls.balance)      { me.controls.balance.value      = Number(bill.balance      || 0).toFixed(2); me.controls.balance.readOnly      = true; }
-                if (me.controls.due_date)     {me.controls.due_date.value     = bill.due_date || '';                       me.controls.due_date.readOnly     = true; }
+                // if (me.controls.due_date)     {me.controls.due_date.value      = bill.due_date || '';                       me.controls.due_date.readOnly     = true; }
 
-                if (me.controls.payment_date) {
-                    me.controls.payment_date.value = new Date().toISOString().split('T')[0];
-                }
+                // if (me.controls.payment_date) {
+                //     me.controls.payment_date.value = new Date().toISOString().split('T')[0];
+                // }
 
                 if (me._amountHandler && me.controls.amount) {
                     me.controls.amount.removeEventListener('input', me._amountHandler);
@@ -570,34 +512,9 @@ const BillPaymentDialog = (() => {
                     amountInput.addEventListener('input', me._amountHandler);
                 }
 
-                const dlgRate    = me.divModal.querySelector("#_dlg_conv_rate");
-                const dlgResult  = me.divModal.querySelector("#_dlg_conv_result");
-                const dlgConvRow = me.divModal.querySelector("#_dlg_conv_row");
-                const currSelect = me.controls.currency_code;
-
-                if (dlgRate && BillPaymentComponent?.elExchangeRate?.value) {
-                    dlgRate.value = BillPaymentComponent.elExchangeRate.value;
-                }
-
-                const updateDlgConv = () => {
-                    const rate   = parseFloat(dlgRate?.value) || 4100;
-                    const paying = parseFloat(amountInput?.value) || 0;
-                    if (dlgResult) dlgResult.textContent = `៛ ${Math.round(paying * rate).toLocaleString("en-US")}`;
-                };
-
-                const toggleConvRow = () => {
-                    const isKHR = currSelect?.value === "KHR";
-                    if (dlgConvRow) dlgConvRow.style.display = isKHR ? "block" : "none";
-                    if (isKHR) updateDlgConv();
-                };
-
-                if (currSelect)  currSelect.addEventListener("change", toggleConvRow);
-                if (dlgRate)     dlgRate.addEventListener("input", updateDlgConv);
-                if (amountInput) amountInput.addEventListener("input", () => {
-                    if (currSelect?.value === "KHR") updateDlgConv();
-                });
-
-                toggleConvRow();
+                // if (me.controls.note) {
+                //     me.controls.note.value = data?.bill_details?.note || '';
+                // }
             },
 
             buttons: [
@@ -611,13 +528,13 @@ const BillPaymentDialog = (() => {
                     cssClass: "btn btn-primary",
                     click: (me, btn) => {
                         const op = me.getData();
-                        op.bill_id = me.dataOptions.bill_id || null;
+                        console.log(9988,me.dataOptions);
 
-                        if (!op.bill_id) {
-                            cv_interact.error("Bill ID is missing.");
-                            return;
-                        }
+                        op.bill_id = me.dataOptions.bill_id;
+                        op.vendor_id = me.dataOptions.vendorId;
 
+                        console.log(9988,op);
+                        
                         vsapi.call(`${main_view.base_url}/prm/bill-payment/save`, op, btn, null)
                             .then((res) => {
                                 if (res.status_code === 200) {
