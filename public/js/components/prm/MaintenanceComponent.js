@@ -36,24 +36,40 @@ var MaintenanceComponent = (() => {
             className: "align-middle text-center",
             data: (data) => {
 
-                const formatTime12h = (hhmm) => {
-                    if (!hhmm) return "";
-                    const [h = 0, m = 0] = hhmm.split(":").map(Number);
-                    const hour = h % 24;
-                    const suffix = hour < 12 ? "AM" : "PM";
-                    const hour12 = hour === 0 ? 12 : (hour > 12 ? hour - 12 : hour);
-                    return `${hour12}:${String(m).padStart(2, "0")} ${suffix}`;
+                const normalizeTime12h = (rawTime) => {
+                    if (!rawTime) return "";
+                    const s = String(rawTime).trim().toUpperCase();
+                    const m12 = s.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+                    if (m12) {
+                        const h = Number(m12[1]);
+                        const mm = m12[2];
+                        const ap = m12[3].toUpperCase();
+                        const h12 = h === 0 ? 12 : (h > 12 ? h - 12 : h);
+                        return `${h12}:${mm} ${ap}`;
+                    }
+                    const m24 = s.match(/^(\d{1,2}):(\d{2})$/);
+                    if (m24) {
+                        const h = Number(m24[1]);
+                        const mm = m24[2];
+                        const hour = h % 24;
+                        const ap = hour < 12 ? "AM" : "PM";
+                        const h12 = hour === 0 ? 12 : (hour > 12 ? hour - 12 : hour);
+                        return `${h12}:${mm} ${ap}`;
+                    }
+                    return "";
                 };
 
                 const parseDateTime = (value) => {
                     if (!value) return { date: "—", time: "", time12h: "" };
 
-                    const [dateStr, timeStr = "00:00"] = String(value).trim().split(/\s+/);
+                    const parts = String(value).trim().split(/\s+/);
+                    const dateStr = parts[0] || "—";
+                    const timeStr = parts.length > 2 ? `${parts[1]} ${parts[2]}` : (parts[1] || "");
 
                     return {
                         date: dateStr, // ✅ keep original format (12-Apr-2026)
-                        time: timeStr.substring(0, 5),
-                        time12h: formatTime12h(timeStr.substring(0, 5))
+                        time: timeStr,
+                        time12h: normalizeTime12h(timeStr)
                     };
                 };
 
@@ -225,14 +241,13 @@ var MaintenanceComponent = (() => {
             onShow: (me, container) => {
                 const menu = me.getActiveMenus(container);
                 const status_id = container.dataset.statusid;
-                console.log(5555,status_id);
-                menu.finish_maintenance.style.display = status_id == 3 ? 'none' : 'block';
-                menu.cancel_maintenance.style.display = status_id == 3 ? 'none' : 'block';
+                menu.finish_maintenance.style.display = status_id >= 3 ? 'none' : 'block';
+                // menu.cancel_maintenance.style.display = status_id == 3 ? 'none' : 'block';
                 menu.cancel_maintenance.style.display = status_id > 1 ? 'none' : 'block';
                 menu.modify.style.display = status_id > 1 ? 'none' : 'block';
-               
 
-    
+
+
             },
             onClick: (menuLink, id, name) => {
                 if (name === "modify") {
@@ -428,10 +443,24 @@ const CreateMaintenanceDialog = (() => {
                 }
             },
             onPrepareForm: (me, data) => {
-           console.log(123123123, data);
-
-
                 me.detail = data.maintenance_details || null;
+                const allSpaces = Array.isArray(data.building_spaces) ? data.building_spaces : [];
+                const allAmenities = Array.isArray(data.amenities) ? data.amenities : [];
+                const applyBuildingFilter = () => {
+                    const buildingId = Number(me.controls?.building_id?.value || 0);
+                    const oldSpaceId = me.controls?.space_id?.value || "";
+                    const oldAmenityId = me.controls?.amenity_id?.value || "";
+                    const spaces = buildingId ? allSpaces.filter((x) => Number(x.building_id) === buildingId) : [];
+                    const amenities = buildingId ? allAmenities.filter((x) => Number(x.building_id) === buildingId) : [];
+                    VSUtil.setComboItems(me.controls?.space_id, spaces, "id", "code", "", "Select space", "");
+                    VSUtil.setComboItems(me.controls?.amenity_id, amenities, "id", "amenity_code", "", "Select code amenity", "");
+                    if (me.controls?.space_id && spaces.some((x) => String(x.id) === String(oldSpaceId))) me.controls.space_id.value = oldSpaceId;
+                    if (me.controls?.amenity_id && amenities.some((x) => String(x.id) === String(oldAmenityId))) me.controls.amenity_id.value = oldAmenityId;
+                };
+                if (me._onBuildingChange) me.controls?.building_id?.removeEventListener("change", me._onBuildingChange);
+                me._onBuildingChange = () => applyBuildingFilter();
+                me.controls?.building_id?.addEventListener("change", me._onBuildingChange);
+
                 if (me.dataOptions?.space_id) {
                     me.detail = me.detail || {};
                     me.detail.type_unit = "space";
@@ -454,6 +483,9 @@ const CreateMaintenanceDialog = (() => {
                     if (me.detail?.space_id && me.controls?.space_id) me.controls.space_id.value = me.detail.space_id;
                     if (me.detail?.amenity_id && me.controls?.amenity_id) me.controls.amenity_id.value = me.detail.amenity_id;
                     if (me.detail?.building_id && me.controls?.building_id) me.controls.building_id.value = me.detail.building_id;
+                    applyBuildingFilter();
+                    if (me.detail?.space_id && me.controls?.space_id) me.controls.space_id.value = me.detail.space_id;
+                    if (me.detail?.amenity_id && me.controls?.amenity_id) me.controls.amenity_id.value = me.detail.amenity_id;
                     if (spaceRow && amenityRow) {
                         const val = typeUnit?.value || "";
                         spaceRow.style.display = val === "space" ? "" : "none";
