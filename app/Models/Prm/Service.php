@@ -33,12 +33,30 @@ class Service
         $unit_type_char = ['@','.','-','_'];
         $description_char = ['@',',','-','.','#'];
         $name_char = ['(',')','-','.','#'];
-        $res = DBX::validateObject($arr,$v_rule,1,['name'=>$name_char,'unit_type'=>$unit_type_char,'description'=> $description_char],$ss->lang,0,null);
+
+        $res = DBX::validateObject(
+            $arr,
+            $v_rule,
+            1,
+            ['name'=>$name_char,'unit_type'=>$unit_type_char,'description'=> $description_char],
+            $ss->lang,
+            0,
+            null
+        );
+
         if($res->error) return DV::error($res->error);
+
         $inputs = $res->values;
+
+        // ✅ build full name
+        $baseName = trim($inputs['name']);
+        $unitType = trim($inputs['unit_type'] ?? '');
+
+        $fullName = $unitType ? "{$baseName} ({$unitType})" : $baseName;
+
+        // ✅ check duplicate using full name
         $exist = DB::table('services')
-            ->whereRaw('LOWER(name) = ?', [strtolower($inputs['name'])])
-            ->whereRaw('LOWER(unit_type) = ?', [strtolower($inputs['unit_type'])])
+            ->whereRaw('LOWER(name) = ?', [strtolower($fullName)])
             ->when($id, function ($q) use ($id) {
                 $q->where('id', '<>', $id);
             })
@@ -47,10 +65,16 @@ class Service
         if ($exist) {
             return DV::error('This service already exists');
         }
+
+        // ✅ save full name
+        $inputs['name'] = $fullName;
+
         $id = DBX::saveData($ss, 'services', ['id'=>$id], $inputs, [], 1);
+
         if($id > 0){
             return DV::depends(1, ['services'=>$inputs, 'id'=>$id]);
         }
+
         return DV::error('Error saving service!');
     }
 
