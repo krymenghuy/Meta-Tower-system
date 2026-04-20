@@ -97,10 +97,10 @@ var TenantComponent = new (function () {
 
                 if (status === "pending") {
                     cls =
-                        "badge text-dark bg-warning-subtle border border-warning";
+                        "badge text-warning bg-warning-subtle border border-warning";
                 } else if (status === "inactive") {
                     cls =
-                        "badge text-dark bg-danger-subtle border border-danger";
+                        "badge text-danger bg-danger-subtle border border-danger";
                 } else if (status === "active") {
                     cls =
                         "badge text-success bg-success-subtle border border-success";
@@ -276,12 +276,9 @@ var TenantComponent = new (function () {
                 console.log(123456, status_id);
 
                 // menu.edit_student.style.display = enroll_finalized == 1 ? 'none' : 'block';
-                menu.create_contract.style.display =
-                    status_id == 1 ? "block" : "none";
-                menu.service_request.style.display =
-                    status_id == 2 ? "block" : "none";
-                menu.upload_document.style.display =
-                    status_id == 1 || status_id == 2  ? "block" : "none";
+                menu.create_contract.style.display = status_id == 1 ? "block" : "none";
+                menu.service_request.style.display = "none";
+                menu.upload_document.style.display =status_id == 1 || status_id == 2  ? "block" : "none";
             },
             // adjustPosition: {
             //     top: -200,

@@ -35,54 +35,53 @@ var MaintenanceComponent = (() => {
             transTitle: "titles.Date",
             className: "align-middle text-center",
             data: (data) => {
+
                 const formatTime12h = (hhmm) => {
                     if (!hhmm) return "";
-                    const [rawHour, rawMinute] = String(hhmm).trim().split(":").map(Number);
-                    const hour24 = Number.isNaN(rawHour) ? 0 : rawHour % 24;
-                    const minute = Number.isNaN(rawMinute) ? 0 : rawMinute;
-                    const suffix = hour24 < 12 ? "AM" : "PM";
-                    const hour12 = hour24 === 0 ? 12 : (hour24 > 12 ? hour24 - 12 : hour24);
-                    return `${hour12}:${String(minute).padStart(2, "0")} ${suffix}`;
+                    const [h = 0, m = 0] = hhmm.split(":").map(Number);
+                    const hour = h % 24;
+                    const suffix = hour < 12 ? "AM" : "PM";
+                    const hour12 = hour === 0 ? 12 : (hour > 12 ? hour - 12 : hour);
+                    return `${hour12}:${String(m).padStart(2, "0")} ${suffix}`;
                 };
 
                 const parseDateTime = (value) => {
-                    if (!value) {
-                        return { date: "—", time: "", time12h: "" };
-                    }
-                    const parts = String(value).trim().split(/\s+/);
-                    const datePart = parts[0] || "";
-                    const timePart = (parts[1] || "00:00").substring(0, 5);
-                    const parsed = new Date(datePart + (parts[1] ? " " + parts[1] : ""));
-                    const normalizedDate = Number.isNaN(parsed.getTime())
-                        ? datePart
-                        : `${parsed.getFullYear()}-${String(parsed.getMonth() + 1).padStart(2, "0")}-${String(parsed.getDate()).padStart(2, "0")}`;
+                    if (!value) return { date: "—", time: "", time12h: "" };
+
+                    const [dateStr, timeStr = "00:00"] = String(value).trim().split(/\s+/);
+
                     return {
-                        date: normalizedDate,
-                        time: timePart,
-                        time12h: formatTime12h(timePart),
+                        date: dateStr, // ✅ keep original format (12-Apr-2026)
+                        time: timeStr.substring(0, 5),
+                        time12h: formatTime12h(timeStr.substring(0, 5))
                     };
                 };
 
                 const start = parseDateTime(data.start_date);
                 const end = parseDateTime(data.end_date);
+
                 const isSameDate = start.date !== "—" && end.date !== "—" && start.date === end.date;
 
                 const dateHtml = isSameDate
                     ? `<div class="date-cell-date fw-medium text-prm-custom">${start.date}</div>`
-                    : `<div class="d-flex align-items-center justify-content-center gap-1 flex-wrap date-cell-date fw-medium text-prm-custom"><span>${start.date}</span><i class="fa-solid fa-arrow-right fa-xs text-muted" style="opacity:0.8"></i><span>${end.date}</span></div>`;
+                    : `<div class="d-flex align-items-center justify-content-center gap-1 flex-wrap date-cell-date fw-medium text-prm-custom">
+                            <span>${start.date}</span>
+                            <i class="fa-solid fa-arrow-right fa-xs text-muted" style="opacity:0.8"></i>
+                            <span>${end.date}</span>
+                    </div>`;
 
-                const timeHtml = isSameDate && (start.time12h || end.time12h)
+                const timeHtml = (start.time12h || end.time12h)
                     ? `<div class="d-flex align-items-center justify-content-center gap-1 mt-1 py-1 px-2 rounded small text-muted bg-light" style="font-size:0.8rem;">
-                        <span>${start.time12h || "—"}</span>
-                        <i class="fa-solid fa-arrow-right fa-xs" style="opacity:0.7"></i>
-                        <span>${end.time12h || "—"}</span>
+                            <span>${start.time12h || "—"}</span>
+                            <i class="fa-solid fa-arrow-right fa-xs" style="opacity:0.7"></i>
+                            <span>${end.time12h || "—"}</span>
                     </div>`
                     : "";
 
                 return `<div class="d-flex flex-column align-items-center date-cell py-1">
-                    ${dateHtml}
-                    ${timeHtml}
-                </div>`;
+                            ${dateHtml}
+                            ${timeHtml}
+                        </div>`;
             }
         },
         {
@@ -94,7 +93,7 @@ var MaintenanceComponent = (() => {
                     1: { text: "Planned", cls: "badge bg-warning-subtle text-warning border border-warning" },
                     2: { text: "In Progress", cls: "badge bg-info-subtle text-info border border-info" },
                     3: { text: "Completed", cls: "badge bg-success-subtle text-success border border-success" },
-                    4: { text: "Cancelled", cls: "badge bg-secondary-subtle text-secondary border border-secondary" },
+                    4: { text: "Cancelled", cls: "badge bg-danger-subtle text-danger border border-danger" },
                 };
                 const m = map[statusId] || null;
                 const label = m?.text || data.status_name || "—";
@@ -105,7 +104,7 @@ var MaintenanceComponent = (() => {
         {
             transTitle: "titles.Updated By",
             className: "align-middle text-nowrap",
-            data: (data) => `<div class="d-flex flex-column"><span class="text-capitalize text-prm-custom fw-semibold">${data.update_user ?? ""}</span><span class="text-muted small">${data.updated_at ?? ""}</span></div>`
+            data: (data) => `<div class="d-flex flex-column"><span class="text-capitalize text-prm-custom">${data.update_user ?? ""}</span><span class="text-muted small">${data.updated_at ?? ""}</span></div>`
         },
         {
             transTitle: "titles.Action",
@@ -219,26 +218,21 @@ var MaintenanceComponent = (() => {
             cssClass: "bg-white shadow",
             menus: [
                 { html: '<span class="ps-2" vslang="titles.Modify"></span>', icon: '<i class="fa-regular fa-edit fs-5 text-warning"></i>', cssClass: "border-bottom pb-2", name: "modify" },
-                { html: '<span class="ps-2" vslang="titles.Finish Maintenance"></span>', icon: '<i class="fa-solid fa-flag-checkered fs-5 text-success"></i>', cssClass: "border-bottom pb-2", name: "finish_maintenance" },
-                { html: '<span class="ps-2" vslang="titles.Cancel Maintenance"></span>', icon: '<i class="fa-solid fa-times-circle fs-5 text-secondary"></i>', cssClass: "border-bottom pb-2", name: "cancel_maintenance" },
-                { html: '<span class="ps-2" vslang="titles.Delete Maintenance"></span>', icon: '<i class="fa-regular fa-trash-can fs-5 text-danger"></i>', cssClass: "border-bottom pb-2", name: "delete" }
+                { html: '<span class="ps-2" vslang="titles.Finish"></span>', icon: '<i class="fa-solid fa-flag-checkered fs-5 text-success"></i>', cssClass: "border-bottom pb-2", name: "finish_maintenance" },
+                { html: '<span class="ps-2" vslang="titles.Cancel"></span>', icon: '<i class="fa-solid fa-times-circle fs-5 text-secondary"></i>', cssClass: "border-bottom pb-2", name: "cancel_maintenance" },
+                { html: '<span class="ps-2" vslang="titles.Delete"></span>', icon: '<i class="fa-regular fa-trash-can fs-5 text-danger"></i>', cssClass: "border-bottom pb-2", name: "delete" }
             ],
             onShow: (me, container) => {
                 const menu = me.getActiveMenus(container);
-                const statusId = Number(
-                    container.dataset.statusid ||
-                    container.closest("tr")?.dataset?.statusid ||
-                    0
-                );
+                const status_id = container.dataset.statusid;
+                console.log(5555,status_id);
+                menu.finish_maintenance.style.display = status_id == 3 ? 'none' : 'block';
+                menu.cancel_maintenance.style.display = status_id == 3 ? 'none' : 'block';
+                menu.cancel_maintenance.style.display = status_id > 1 ? 'none' : 'block';
+                menu.modify.style.display = status_id > 1 ? 'none' : 'block';
+               
 
-                const hideForCompleted = statusId === 3;
-
-                if (menu.cancel_maintenance) {
-                    menu.cancel_maintenance.style.display = hideForCompleted ? "none" : "block";
-                }
-                if (menu.delete) {
-                    menu.delete.style.display = hideForCompleted ? "none" : "block";
-                }
+    
             },
             onClick: (menuLink, id, name) => {
                 if (name === "modify") {
