@@ -186,8 +186,7 @@ class Maintenance extends VSModel
                 m.amenity_id, a.name as amenity_name, a.code as amenity_code, m.start_date, m.end_date,
                 m.status_id, ms.name as status_name,
                 m.remarks,
-                m.create_uid, m.create_user, m.update_uid, m.update_user,m.updated_at
-            ")
+                m.create_uid, m.create_user, m.update_uid, m.update_user,m.updated_at")
             ->orderBy('m.id', 'DESC');
 
         $clone_query = clone $query;
@@ -225,7 +224,7 @@ class Maintenance extends VSModel
 
         if ($row) {
             self::applyScheduleDerivedStatus($row);
-            setOfficialDates($row, [], ['updated_at', 'start_date', 'end_date'], []);
+            // setOfficialDates($row, [], ['updated_at', 'start_date', 'end_date'], []);
         }
         return $row;
     }

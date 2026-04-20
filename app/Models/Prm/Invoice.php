@@ -68,6 +68,14 @@ class Invoice extends VSModel
             return DV::error('Please add at least one item.');
         }
 
+        \Log::info("Saving invoice", [
+            'id' => $id,
+            'inputs' => $inputs,
+            'items' => $items,
+            'user' => $ss->name ?? 'Admin'
+        ]);
+
+
         DB::beginTransaction();
 
         try {
@@ -114,9 +122,7 @@ class Invoice extends VSModel
                     if ($contractPrice !== null) {
                         $price = (float)$contractPrice;
                     }
-                }
-
-                else if ($itemType === 'service' && $itemId) {
+                } else if ($itemType === 'service' && $itemId) {
                     $serviceData = DB::table('services')
                         ->where('id', $itemId)
                         ->select('price', 'unit_type')
@@ -145,8 +151,8 @@ class Invoice extends VSModel
                     'special_discount_value' => $item['special_discount_value'] ?? 0,
                     'special_discount_type'  => $item['special_discount_type'] ?? 'percent',
                     'tax_rate'               => (float)($item['tax_rate'] ?? 0),
-                    'start_date'             => $item['start_date'] ?? null,
-                    'end_date'               => $item['end_date'] ?? null,
+                    'start_date'             => convertDate($item['start_date']),
+                    'end_date'               => convertDate($item['end_date']),
                     'created_at'             => now(),
                     'updated_at'             => now(),
                 ];
@@ -269,13 +275,13 @@ class Invoice extends VSModel
 
                     'card_number'      => $bd['card_number'] ?? null,
                     'card_type'        => in_array(strtolower($bd['card_type'] ?? ''), ['credit', 'debit'])
-                                            ? strtolower($bd['card_type'])
-                                            : null,
+                        ? strtolower($bd['card_type'])
+                        : null,
 
                     'cheque_number'    => $bd['cheque_number'] ?? null,
                     'cheque_bank_name' => ($method === 'cheque')
-                                            ? ($bank_name ?? $bd['cheque_bank_name'] ?? null)
-                                            : null,
+                        ? ($bank_name ?? $bd['cheque_bank_name'] ?? null)
+                        : null,
 
                     'remarks'          => $bd['remarks'] ?? $remarks,
                     'created_at'       => now(),
@@ -319,10 +325,9 @@ class Invoice extends VSModel
                 'receipt_id'     => $receipt_id,
                 'code'           => $codeRes->code ?? 'R-' . str_pad($receipt_id, 5, '0', STR_PAD_LEFT),
                 'total_received' => $total_received,
-                'new_paid_amount'=> $new_paid_amount,
+                'new_paid_amount' => $new_paid_amount,
                 'is_fully_paid'  => (bool)$is_paid
             ]);
-
         } catch (\Exception $e) {
             DB::rollBack();
             \Log::error("Receive payment failed: " . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
@@ -342,76 +347,74 @@ class Invoice extends VSModel
 
         return $query->value('id');
     }
-
-
     public function getListPaginate($arr, $ss)
-{
-    $d            = (object) $arr;
-    $current_page = max(1, (int)($d->current_page ?? 1));
-    $per_page     = max(10, (int)($d->per_page ?? 10));
-    $skip         = ($current_page - 1) * $per_page;
+    {
+        $d            = (object) $arr;
+        $current_page = max(1, (int)($d->current_page ?? 1));
+        $per_page     = max(10, (int)($d->per_page ?? 10));
+        $skip         = ($current_page - 1) * $per_page;
 
-    $query = DB::table('invoices as i')
-        ->leftJoin('tenants as t',           't.id',  '=', 'i.tenant_id')
-        ->leftJoin('payment_statuses as ps', 'ps.id', '=', 'i.payment_status_id')
-        ->leftJoin('contracts as ct',        'ct.id', '=', 'i.contract_id')
-        ->leftJoin('building_spaces as bs',  'bs.id', '=', 'i.space_id')
-        ->leftJoin('invoice_items as ii',    'ii.invoice_id', '=', 'i.id')
-        ->select([
-            'i.id',
-            'i.code',
-            'i.tenant_id',
-            'i.space_id',
-            'i.amount',
-            'i.paid_amount',
-            'i.due_date',
-            'i.invoice_date',
-            'i.start_time',
-            'i.created_at',
-            'i.updated_at',
-            'i.update_user',
-            'i.payment_status_id',
-            'i.contract_id',
-            't.name as tenant_name',
-            't.legal_name as tenant_legal_name',
-            't.phone_number as tenant_phone',
-            't.email as tenant_email',
-            'ps.name as payment_status_name',
-            'bs.code as space_code',
-            'ct.price as contract_price',
-            DB::raw("GROUP_CONCAT(DISTINCT ii.remarks SEPARATOR '; ') as remarks"),
-            DB::raw('(i.amount - COALESCE(i.paid_amount, 0)) as balance')
-        ])
-        ->groupBy('i.id')
-        ->orderByDesc('i.id');
+        $query = DB::table('invoices as i')
+            ->leftJoin('tenants as t',           't.id',  '=', 'i.tenant_id')
+            ->leftJoin('payment_statuses as ps', 'ps.id', '=', 'i.payment_status_id')
+            ->leftJoin('contracts as ct',        'ct.id', '=', 'i.contract_id')
+            ->leftJoin('building_spaces as bs',  'bs.id', '=', 'i.space_id')
+            ->leftJoin('invoice_items as ii',    'ii.invoice_id', '=', 'i.id')
+            ->select([
+                'i.id',
+                'i.code',
+                'i.tenant_id',
+                'i.space_id',
+                'i.amount',
+                'i.paid_amount',
+                'i.due_date',
+                'i.invoice_date',
+                'i.start_time',
+                'i.created_at',
+                'i.updated_at',
+                'i.update_user',
+                'i.payment_status_id',
+                'i.contract_id',
+                't.name as tenant_name',
+                't.legal_name as tenant_legal_name',
+                't.phone_number as tenant_phone',
+                't.email as tenant_email',
+                'ps.name as payment_status_name',
+                'bs.code as space_code',
+                'ct.price as contract_price',
+                DB::raw("GROUP_CONCAT(DISTINCT ii.remarks SEPARATOR '; ') as remarks"),
+                DB::raw('(i.amount - COALESCE(i.paid_amount, 0)) as balance')
+            ])
+            ->groupBy('i.id')
+            ->orderByDesc('i.id');
 
-    // Filters
-    if (!empty($d->tenant_id)) {
-        $query->where('i.tenant_id', $d->tenant_id);
+        // Filters
+        if (!empty($d->tenant_id)) {
+            $query->where('i.tenant_id', $d->tenant_id);
+        }
+
+        if (!empty($d->payment_status_id)) {
+            $query->where('i.payment_status_id', $d->payment_status_id);
+        }
+
+        if (!empty($d->search_value)) {
+            $search = '%' . $d->search_value . '%';
+            $query->where(function ($q) use ($search) {
+                $q->where('i.code',    'like', $search)
+                    ->orWhere('t.name',  'like', $search)
+                    ->orWhere('bs.code', 'like', $search);
+            });
+        }
+
+        $count = (clone $query)->count();
+        $rows  = $query->skip($skip)->take($per_page)->get();
+
+        foreach ($rows as $row) {
+            $row = setOfficialDates($row, ['due_date', 'invoice_date'], ['updated_at', 'created_at'], []);
+        }
+
+        return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
-
-    if (!empty($d->payment_status_id)) {
-        $query->where('i.payment_status_id', $d->payment_status_id);
-    }
-
-    if (!empty($d->search_value)) {
-        $search = '%' . $d->search_value . '%';
-        $query->where(function ($q) use ($search) {
-            $q->where('i.code',    'like', $search)
-              ->orWhere('t.name',  'like', $search)
-              ->orWhere('bs.code', 'like', $search);
-        });
-    }
-
-    $count = (clone $query)->count();
-    $rows  = $query->skip($skip)->take($per_page)->get();
-
-    foreach ($rows as $row) {
-        $row = setOfficialDates($row, ['due_date', 'invoice_date'], ['updated_at', 'created_at'], []);
-    }
-
-    return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
-}
 
     public static function getInvoiceDetails($id)
     {
@@ -500,10 +503,33 @@ class Invoice extends VSModel
         ];
     }
 
+    // public function deleteInvoice($id = null)
+    // {
+    //     $id = $id ?? $this->id;
+    //     $X  = self::deleteBy(['id' => $id]);
+    //     return DV::depends($X, 'Failed to delete invoice.');
+    // }
+
     public function deleteInvoice($id = null)
     {
         $id = $id ?? $this->id;
-        $X  = self::deleteBy(['id' => $id]);
-        return DV::depends($X, 'Failed to delete invoice.');
+        DB::beginTransaction();
+        try {
+            DB::table('invoice_items')->where('invoice_id', $id)->delete();
+            $deleted = DB::table('invoices')->where('id', $id)->delete();
+
+            if ($deleted) {
+                DB::commit();
+                return DV::depends(1, 'Invoice and items deleted successfully.');
+            }
+
+            throw new \Exception('Invoice record not found.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error("Delete invoice failed: " . $e->getMessage());
+            return DV::error('Failed to delete invoice and items: ' . $e->getMessage());
+        }
     }
+
 }

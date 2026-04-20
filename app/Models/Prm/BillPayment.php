@@ -23,32 +23,32 @@ class BillPayment
             'bill_id'        => '1|number|exists=bills.id',
             'payment_date'   => '1|date',
             'amount'         => '1|number|min=0.01',
-            // 'total_amount'   => '0|number|min=0.01|exists=bills.total_amount',
-            // 'paid_amount'    => '0|number|min=0.01|exists=bills.paid_amount',
             'payer'          => '1|string|0-50',
-            'payment_method' => '1|string|0-50',
+            'payment_method' => '0|string|0-50',
             'ref_no'         => '0|string|0-100',
             'note'           => '0|string|0-255',
-            'currency_code' => '1|string|0-10',  
+            'currency_code' => '0|string|0-10|default=USD',  
         ];
 
         $res = DBX::validateObject($arr, $v_rule, 1, [], $ss->lang, 0, null);
         if ($res->error) return DV::error($res->error);
 
         $inputs  = $res->values;
-        $bill_id = $inputs['bill_id'];
 
+        $bill_id = $inputs['bill_id'];
+        $payment_date = date('Y-m-d', strtotime($inputs['payment_date']));
+        $today = date('Y-m-d');
+
+        if ($payment_date !== $today) {
+            return DV::error('Payment date must be today.');
+        }
         $bill = DB::table('bills')->where('id', $bill_id)->first();
         if (!$bill) return DV::error('Bill not found.');
         if ($bill->status_id == 2) return DV::error('This bill is already fully paid.');
-
         $total_paid = floatval(DB::table('bill_payments')->where('bill_id', $bill_id)->sum('amount'));
         $remaining = floatval($bill->total_amount) - floatval($total_paid);
-
         $total   = floatval($bill->total_amount);
         $balance = max(0, $total - $total_paid); 
-        
-        
         if (floatval($inputs['amount']) > $remaining + 0.001) {
             return DV::error("Payment amount exceeds remaining balance. Remaining: " . number_format($remaining, 2));
         }
@@ -163,7 +163,7 @@ class BillPayment
         $rows  = $query->skip($skip_rows)->take($per_page)->get();
 
         foreach ($rows as $row) {
-            $processed = setOfficialDates($row, ['payment_date', 'created_at', 'updated_at'], [], []);
+            $processed = setOfficialDates($row, ['payment_date'], ['updated_at'], []);
             if ($processed) $row = $processed;
         }
 

@@ -578,6 +578,7 @@ static function options_maintenance_amenity($ss)
     {
         return DB::table('request_statuses')->selectRaw('id,name')->get();
     }
+    
      static function options_receipt_status($ss)
     {
         return DB::table('receipt_statuses')->selectRaw('id,name')->get();

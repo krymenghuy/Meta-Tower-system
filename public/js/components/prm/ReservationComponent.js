@@ -219,11 +219,11 @@ var ReservationComponent = (() => {
                     menu.edit_reservation.style.display = isBlocked ? "none" : "block";
                 }
 
-                if (menu.delete_reservation) {
+                // if (menu.delete_reservation) {
                     // Hide only if status is 2
-                    const isBlocked = status_id === 2;
-                    menu.delete_reservation.style.display = isBlocked ? "none" : "block";
-                }
+                //     const isBlocked = status_id === 2;
+                //     menu.delete_reservation.style.display = isBlocked ? "none" : "block";
+                // }
             },
 
             onClick: (menuLink, id, name) => {
