@@ -1040,11 +1040,7 @@ var TenantComponent = new (function () {
             const renewalsCount = group.length;
 
             cards += `<div class="d-flex position-relative mb-4">
-                <div class="flex-shrink-0 text-center" style="width: 3rem; z-index: 10;">
-                    <div class="rounded-circle text-white shadow-lg d-flex align-items-center justify-content-center" style="background-color:${circleBg};width: 2.5rem; height: 2.5rem;">
-                        <i class="fa fa-file-text text-white"></i>
-                    </div>
-                </div>
+               
                 <div class="flex-grow-1 ms-3">
                     <div class="card shadow-sm" style="border-left: 6px solid ${accent};border-radius: 14px;">
                         <div class="card-body">

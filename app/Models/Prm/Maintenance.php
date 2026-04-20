@@ -39,7 +39,7 @@ class Maintenance extends VSModel
      */
     public static function applyScheduleDerivedStatus(object $row, $statusIdToName = null): void
     {
-        $sid = (int) ($row->status_id ?? 0);
+        $sid = ($row->status_id ?? 0);
         if (in_array($sid, [3, 4], true)) {
             return;
         }
@@ -52,7 +52,7 @@ class Maintenance extends VSModel
         } catch (\Throwable $e) {
             return;
         }
-        $id = (int) ($row->id ?? 0);
+        $id = ($row->id ?? 0);
         if ($id > 0 && $computed !== $sid) {
             DB::table('maintenances')->where('id', $id)->update(['status_id' => $computed]);
         }
@@ -106,7 +106,7 @@ class Maintenance extends VSModel
         }
 
         try {
-            $sid = (int) ($input['status_id'] ?? 0);
+            $sid = ($input['status_id'] ?? 0);
             if (!in_array($sid, [3, 4], true)) {
                 $start = $input['start_date'] ?? null;
                 if ($start) {
@@ -281,10 +281,10 @@ class Maintenance extends VSModel
             ->values()
             ->all();
         $amenities = $amenities->filter(function ($a) use ($under_maintenance_amenity_ids, $include_amenity_id) {
-            if (!empty($include_amenity_id) && (int) $a->id === (int) $include_amenity_id) {
+            if (!empty($include_amenity_id) &&  $a->id === $include_amenity_id) {
                 return true;
             }
-            return !in_array((int) $a->id, array_map('intval', $under_maintenance_amenity_ids), true);
+            return !in_array($a->id, array_map('intval', $under_maintenance_amenity_ids), true);
         })->values();
 
         return (object) [
@@ -312,7 +312,7 @@ class Maintenance extends VSModel
     {
         $ss = $ss ?? $this->userInfo;
         $id        = $arr['id'] ?? null;
-        $status_id = (int) ($arr['status_id'] ?? 0);
+        $status_id =  ($arr['status_id'] ?? 0);
 
         if (!$id || !$status_id) {
             return DV::error('Missing required parameters');
@@ -333,11 +333,11 @@ class Maintenance extends VSModel
         }
         // When Cancelled (4) or Completed (3): stop showing "(Under maintenance)" on the space card
         if ($status_id === 3 || $status_id === 4) {
-            $space_id = isset($row->space_id) ? (int) $row->space_id : 0;
+            $space_id = isset($row->space_id) ?  $row->space_id : 0;
             if ($space_id > 0) {
                 DB::table('building_spaces')->where('id', $space_id)->update(['maintenance_status_id' => 0]);
             }
-            $amenity_id = isset($row->amenity_id) ? (int) $row->amenity_id : 0;
+            $amenity_id = isset($row->amenity_id) ?  $row->amenity_id : 0;
             if ($amenity_id > 0) {
                 DB::table('amenities')->where('id', $amenity_id)->update([
                     'status_id'   => 1,
@@ -353,7 +353,7 @@ class Maintenance extends VSModel
     public function finishBySpaceId($arr, $ss = null)
     {
         $ss = $ss ?? $this->userInfo;
-        $space_id = isset($arr['space_id']) ? (int) $arr['space_id'] : 0;
+        $space_id = isset($arr['space_id']) ?  $arr['space_id'] : 0;
 
         if ($space_id <= 0) {
             return DV::error('Missing required parameters');
@@ -375,7 +375,7 @@ class Maintenance extends VSModel
     public function finishByAmenityId($arr, $ss = null)
     {
         $ss = $ss ?? $this->userInfo;
-        $amenity_id = isset($arr['amenity_id']) ? (int) $arr['amenity_id'] : 0;
+        $amenity_id = isset($arr['amenity_id']) ? $arr['amenity_id'] : 0;
 
         if ($amenity_id <= 0) {
             return DV::error('Missing required parameters');
