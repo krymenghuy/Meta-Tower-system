@@ -711,7 +711,7 @@ var ContractComponent = new (function () {
                 const d = res.status_code == 200 ? res.data : {};
                 // VSUtil.setComboItems(mThis.elTenant, d.tenants, 'id', 'tenant', '', 'All Tenants', null);
                 VSUtil.setComboItems(mThis.elStatus, d.statuses, 'id', 'status_name', '', 'All Statuses','');
-                VSUtil.setComboItems(mThis.elBusinessType, d.business_types, 'id', 'business_type', '', 'All Business Type', '');
+                VSUtil.setComboItems(mThis.elBusinessType, d.business_types, 'id', 'business_type', '', 'All Business Types', '');
 
                 if (typeof onFinish === 'function') onFinish();
             })

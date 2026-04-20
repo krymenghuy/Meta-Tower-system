@@ -77,7 +77,7 @@ var PurchaseOrdersComponent = (() => {
             }
         },
         {
-            title: "Remarks",
+            title: "Remark",
             className: "align-middle text-nowrap",
             data: (data) => {
                 const remarks = String(data.remarks || '').trim();
@@ -707,7 +707,7 @@ var PurchaseOrdersComponent = (() => {
         vsapi.call(`${main_view.base_url}/prm/purchase/order/form-options`)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elFilter_vendor, d.vendors, 'id', 'vendor', '', 'All Vendor', '');
+                VSUtil.setComboItems(mThis.elFilter_vendor, d.vendors, 'id', 'vendor', '', 'All Vendors', '');
                 VSUtil.setComboItems(mThis.elFilter_status, d.po_statuses, 'id', 'name', '', 'All Statuses', '');
                 if (typeof onFinish === 'function') onFinish();
             });

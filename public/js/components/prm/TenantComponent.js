@@ -90,12 +90,12 @@ var TenantComponent = new (function () {
             title: "Status",
             className: "align-middle text-center",
             data: (data) => {
-                const status = (data.status ?? "").toLowerCase();
+                const status = (data.status ?? "").toUpperCase();
 
                 let cls =
                     "badge text-warning bg-warning-subtle border border-warning";
 
-                if (status === "pending") {
+                if (status === "Pending") {
                     cls =
                         "badge text-warning bg-warning-subtle border border-warning";
                 } else if (status === "inactive") {
@@ -466,9 +466,9 @@ var TenantComponent = new (function () {
                                             <img src="${d.image_url || main_view.asset_url + "/images/default/default-staff1.png"}" alt="Profile" class="img-fluid w-100 h-100 object-fit-cover">
                                         </div>
                                         <div class="flex items-start justify-between mb-6">
-                                            <span class="fw-semibold text-start mb-1 text-dark">${d.name}</span>
+                                            <span class="fw-semibold text-start mb-1 text-dark text-capitalize">${d.name}</span>
                                             <div class="d-flex align-items-center mt-1 gap-2">
-                                                    <span class="${statusClass}" style="min-width:70px">${status}</span>
+                                                    <span class="${statusClass}" style="min-width:70px; text-transform: capitalize;">${status}</span>
                                             </div>
                                         </div>
                                         <div class="flex-shrink-0"> <a href="javascript:void(0)" class="btn-tenant-dropdown-action" data-id="${d.id}" data-statusid="${d.status_id}" aria-haspopup="true" aria-expanded="false">
@@ -958,16 +958,22 @@ var TenantComponent = new (function () {
             let accent = "#adb5bd";
             let circleBg = "#6c757d";
             let headerBadgeHtml = "";
+            let priceColor = "#212529";
+            let depositBadgeStyle = "color:#4a4a4a;background-color:#f6f4ee;border:1px solid #e5dfd1;";
             if (hasCurrent || contractStatusLower === "active") {
                 accent = "#0f49bd";
                 circleBg = "#0f49bd";
+                priceColor = "#3f51d8";
+                depositBadgeStyle = "color:#3f51d8;background-color:#e7efff;border:1px solid #cfdbff;";
                 headerBadgeHtml = `<span class="badge text-uppercase rounded-4 text-white ms-1" style="background-color:#0f49bd;">CURRENT</span>`;
             } else if (contractStatusLower === "pending") {
                 accent = "#fd7e14";
                 circleBg = "#fd7e14";
+                priceColor = "#fd7e14";
+                depositBadgeStyle = "color:#9a5a19;background-color:#fff1e6;border:1px solid #ffd9bf;";
                 headerBadgeHtml = `<span class="badge text-uppercase rounded-4 text-white ms-1" style="background-color:#fd7e14;">PENDING</span>`;
             } else {
-                headerBadgeHtml = `<span class="badge text-uppercase rounded-4 text-dark bg-light border ms-1">${mThis._escapeHtml(contractStatusName || "—")}</span>`;
+                headerBadgeHtml = `<span class="badge text-uppercase rounded-4 ms-1" style="color:#4a4a4a;background-color:#f6f4ee;border:1px solid #e5dfd1;">${mThis._escapeHtml(contractStatusName || "—")}</span>`;
             }
 
             const start = mThis._escapeHtml(first.contract_start_date ?? "");
@@ -980,18 +986,37 @@ var TenantComponent = new (function () {
                     ? `${mThis._fmtMoney(first.sqm_size)} sqm`
                     : "—";
             const bldg = first.building_name ? mThis._escapeHtml(first.building_name) : "";
-            const subtitle = `Unit ${unitPart} • ${sqmPart}${bldg ? ` • ${bldg}` : ""}`;
+            const detailPillsHtml = `
+                <div class="d-flex flex-wrap gap-2 mt-2">
+                    <span class="badge rounded-pill fw-normal px-3 py-2" style="color:#4a4a4a;background-color:#f6f4ee;border:1px solid #e5dfd1;">Unit ${unitPart}</span>
+                    <span class="badge rounded-pill fw-normal px-3 py-2" style="color:#4a4a4a;background-color:#f6f4ee;border:1px solid #e5dfd1;">${sqmPart}</span>
+                    ${bldg ? `<span class="badge rounded-pill fw-normal px-3 py-2" style="color:#4a4a4a;background-color:#f6f4ee;border:1px solid #e5dfd1;">${bldg}</span>` : ""}
+                </div>`;
 
-            const pt = mThis._escapeHtml((first.price_type ?? "sqm").toString());
-            const priceLine = `$ ${mThis._fmtMoney(first.price)} <small class="text-muted">/${pt}</small>`;
+            const priceNum = Number(first.price ?? 0);
+            const sqmNum = Number(first.sqm_size ?? 0);
+            const isTotalPriceType =
+                String(first.price_type ?? "sqm").toLowerCase() === "total";
+            const totalPriceNum = isTotalPriceType
+                ? priceNum
+                : sqmNum > 0
+                  ? priceNum * sqmNum
+                  : null;
+            const priceLine =
+                totalPriceNum != null && !Number.isNaN(totalPriceNum)
+                    ? `$ ${mThis._fmtMoney(totalPriceNum)}`
+                    : "—";
 
             const dep = first.deposit != null && first.deposit !== "";
-            let depositSmallHtml = dep ? `Deposit: $${mThis._fmtMoney(first.deposit)}` : "\u00a0";
+            let depositSmallHtml = dep ? `Deposit $${mThis._fmtMoney(first.deposit)}` : "";
             if (first.deposit_remarks) {
                 depositSmallHtml = dep
                     ? `${depositSmallHtml} <span class="text-muted">• ${mThis._escapeHtml(first.deposit_remarks)}</span>`
                     : `<span class="text-muted">${mThis._escapeHtml(first.deposit_remarks)}</span>`;
             }
+            const depositBadgeHtml = depositSmallHtml
+                ? `<span class="badge rounded-pill fw-semibold px-3 py-2" style="${depositBadgeStyle}">${depositSmallHtml}</span>`
+                : "";
 
             const renewalsTableRowsHtml = group
                 .map((r) => {
@@ -1037,22 +1062,19 @@ var TenantComponent = new (function () {
             const renewalsCount = group.length;
 
             cards += `<div class="d-flex position-relative mb-4">
-                <div class="flex-shrink-0 text-center" style="width: 3rem; z-index: 10;">
-                    <div class="rounded-circle text-white shadow-lg d-flex align-items-center justify-content-center" style="background-color:${circleBg};width: 2.5rem; height: 2.5rem;">
-                        <i class="fa fa-file-text text-white"></i>
-                    </div>
-                </div>
+
                 <div class="flex-grow-1 ms-3">
                     <div class="card shadow-sm" style="border-left: 6px solid ${accent};border-radius: 14px;">
                         <div class="card-body">
                             <div class="d-flex justify-content-between flex-column flex-md-row mb-3">
                                 <div>
                                     <h5 class="card-title mb-1">${title} ${headerBadgeHtml}</h5>
-                                    <p class="text-muted mb-0">${subtitle}</p>
+                                    ${detailPillsHtml}
                                 </div>
                                 <div class="text-end mt-2 mt-md-0">
-                                    <p class="h5 text-primary mb-0">${priceLine}</p>
-                                    <small class="text-muted">${depositSmallHtml}</small>
+                                    <small class="text-muted d-block mb-1">Total Price</small>
+                                    <p class="h5 mb-0" style="color:${priceColor};">${priceLine}</p>
+                                    <div class="mt-2">${depositBadgeHtml}</div>
                                 </div>
                             </div>
                         </div>
@@ -1641,7 +1663,7 @@ const CreateTenantDialog = (() => {
                                             );
                                         } else {
                                             cv_interact.success(
-                                                "New tenant has been added successfully",
+                                                "New tenant has been added successfully.",
                                             );
                                         }
                                     } else {
@@ -1825,7 +1847,7 @@ const TenantDocumentDialog = (() => {
                                     if (res.status_code === 200) {
                                         me.hide(true, p);
                                         cv_interact.success(
-                                            "Document saved successfully",
+                                            "Document saved successfully.",
                                         );
                                     } else {
                                         cv_interact.error(res.error_message);

@@ -70,6 +70,18 @@ class Bill
             return DV::error('Bill number already exists');
         }
     }
+
+    if(!empty($inputs{'ref_no'})) {
+        $exists = DB::table('bills') 
+            ->where('ref_no', $inputs['ref_no'])
+            ->when($id, fn($q) => $q->where('id', '<>', $id))
+            ->exists ();
+
+        if ($exists) {
+            return DV::error('Reference number already exists');
+        }
+    }
+    
     DB::beginTransaction();
     try {
 

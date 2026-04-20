@@ -262,11 +262,25 @@ var BillComponent = (() => {
 
             onClick: (menuLink, id, name) => {
                 switch (name) {
-                    case "modify_bill":     mThis.editBill(id, menuLink);       break;
-                    case "delete_bill":     mThis.deleteBill(id, menuLink);     break;
-                    case "view_attachment": mThis.viewAttachment(id, menuLink); break;
-                    case "bill_payment":    mThis.billPayment(id, menuLink);    break;
-                    default: break;
+                    case "modify_bill":   { 
+                        mThis.editBill(id, menuLink);       
+                        break;
+                    }
+                    case "delete_bill":    { 
+                        mThis.deleteBill(id, menuLink);     
+                        break;
+                    }
+                    case "view_attachment": {
+                        mThis.viewAttachment(id, menuLink); 
+                        break;
+                    }
+                    case "bill_payment": {   
+                        mThis.billPayment(id, menuLink);    
+                        break;
+                    }
+                    default:  {  
+                        break;
+                    }
                 }
             },
         };
@@ -390,7 +404,7 @@ var BillComponent = (() => {
                 console.log("form-options data:", d); 
                 VSUtil.setComboItems(mThis.elFilter_vendor, d.vendors, "id", "vendor", "", "All Vendor", "");
                 VSUtil.setComboItems(mThis.elFilter_status, d.bill_statuses, "id", "bill_status", "", "All Statuses", "");
-                VSUtil.setComboItems(mThis.elFilter_category, d.expense_types, "id", "expense_category", "", "All Category", "");
+                VSUtil.setComboItems(mThis.elFilter_category, d.expense_types, "id", "expense_category", "", "All Categories", "");
                 if (typeof onFinish === "function") onFinish();
             });
     };
@@ -411,7 +425,7 @@ const BillDialog = (() => {
     let dialog = null;
 
     self.show = (op) => {
-        console.log("DEBUG 1: Opening Dialog with op:", op);
+        // console.log("DEBUG 1: Opening Dialog with op:", op);
 
         dialog =
             dialog ||
@@ -437,7 +451,7 @@ const BillDialog = (() => {
                             </div>
                             <div class="col-6 col-md-6">
                                 <div class=" material-input outlined">
-                                    <input type="text" data-type="date" name="bill_date" required class="data-input form-control form_input" data-field="bill_date" />
+                                    <input data-type="date" name="bill_date" required class="data-input form-control form_input" data-field="bill_date" />
                                     <label style="color:#777777;padding-left:6px;">Invoice Date</label>
                                 </div>
                             </div>

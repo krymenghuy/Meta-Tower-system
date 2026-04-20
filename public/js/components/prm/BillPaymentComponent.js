@@ -63,12 +63,12 @@ var BillPaymentComponent = (() => {
             },
         },
         {
-            transTitle: "titles.Payment Details",
+            transTitle: "titles.Payment Method",
             className: "align-middle",
             data: (data) => `<span class="d-block text-prm-custom text-capitalize">${data.payment_method ?? ""}</span>`,
         },
         {
-            transTitle: "titles.Remarks",
+            transTitle: "titles.Remark",
             className: "align-middle",
             data: (data, index, tr) => {
                 return `
@@ -329,7 +329,7 @@ var BillPaymentComponent = (() => {
         vsapi.call(`${main_view.base_url}/prm/bill/form-options`, null, null, null)
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elFilter_category, d.expense_types, "id", "expense_category", "", "All Category", "");
+                VSUtil.setComboItems(mThis.elFilter_category, d.expense_types, "id", "expense_category", "", "All Categories", "");
                 VSUtil.setComboItems(mThis.elFilter_status, d.bill_statuses, "id", "bill_status", "", "All Statuses", "");
                 if (typeof onFinish === "function") onFinish();
             });
