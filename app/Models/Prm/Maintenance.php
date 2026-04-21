@@ -34,8 +34,7 @@ class Maintenance extends VSModel
      * Persist and reflect schedule-derived status when not Completed (3) or Cancelled (4).
      * Call before setOfficialDates() so date fields are still parseable DB values.
      *
-     * @param object $row list/detail row with id, status_id, start_date, end_date, status_name
-     * @param \Illuminate\Support\Collection|array|null $statusIdToName pluck('name','id') optional
+    
      */
     public static function applyScheduleDerivedStatus(object $row, $statusIdToName = null): void
     {

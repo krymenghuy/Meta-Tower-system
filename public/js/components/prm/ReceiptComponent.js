@@ -76,7 +76,7 @@ var ReceiptComponent = new (function() {
                 return ` <div class="d-flex text-warning align-items-center gap-2">
                 <div>
 
-                    <span class="d-block text-warning">
+                    <span class="d-block text-prm-custom ">
                         ${data.space_code ?? ""}
                     </span>
                 </div>
@@ -92,7 +92,7 @@ var ReceiptComponent = new (function() {
             }
         },
         {
-            transTitle: "titles.Payment Methods",
+            transTitle: "titles.Mode of Payment",
             className: "align-middle text-nowrap",
             data: data => {
                 return `
