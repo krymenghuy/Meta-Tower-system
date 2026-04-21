@@ -33,9 +33,9 @@ class Invoice extends VSModel
             'space_id'          => '1|integer|exists:building_spaces,id',
             'due_date'          => '1|date',
             'invoice_date'      => '0|date',
-            'start_time'        => '1|time',
             'payment_status_id' => '0|integer|exists:payment_statuses,id|default=2',
             'items'             => '1|array|min:1'
+        
         ];
 
         $allowed_chars = ['@', ',', '-', '.', '#', '!', '?', '(', ')', "\n"];
@@ -74,6 +74,13 @@ class Invoice extends VSModel
             'items' => $items,
             'user' => $ss->name ?? 'Admin'
         ]);
+
+        $dueDate = $inputs['due_date'];
+        $now = time();
+        $startDT = strtotime($dueDate . ' ');
+        if ($startDT <= $now) {
+            return DV::error('Cannot set due date in the past.');
+        }
 
 
         DB::beginTransaction();
@@ -146,11 +153,11 @@ class Invoice extends VSModel
                     'amount'                 => $item['amount'],
                     'unit_type'              => $unitType,
                     'remarks'                => $item['remarks'] ?? $item['description'] ?? '',
-                    'discount'               => $item['discount_value'] ?? 0,
+                    'discount'               => ($item['discount_value'] ?? 0),
                     'discount_type'          => $item['discount_type'] ?? 0,
                     'special_discount_value' => $item['special_discount_value'] ?? 0,
                     'special_discount_type'  => $item['special_discount_type'] ?? 'percent',
-                    'tax_rate'               => (float)($item['tax_rate'] ?? 0),
+                    'tax_rate'               => ($item['tax_rate'] ?? 0),
                     'start_date'             => convertDate($item['start_date']),
                     'end_date'               => convertDate($item['end_date']),
                     'created_at'             => now(),
@@ -432,6 +439,7 @@ class Invoice extends VSModel
                 'i.amount',
                 'i.paid_amount',
                 'i.start_time',
+                'i.due_date',
                 DB::raw('(i.amount - COALESCE(i.paid_amount, 0)) as balance'),
                 'i.payment_status_id',
                 'i.contract_id',
@@ -503,71 +511,48 @@ class Invoice extends VSModel
         ];
     }
 
-
-    // public function deleteInvoice($id = null)
-    // {
-    //     $id = $id ?? $this->id;
-    //     DB::beginTransaction();
-    //     try {
-    //         DB::table('invoice_items')->where('invoice_id', $id)->delete();
-    //         $deleted = DB::table('invoices')->where('id', $id)->delete();
-
-    //         if ($deleted) {
-    //             DB::commit();
-    //             return DV::depends(1, 'Invoice and items deleted successfully.');
-    //         }
-
-    //         throw new \Exception('Invoice record not found.');
-
-    //     } catch (\Exception $e) {
-    //         DB::rollBack();
-    //         \Log::error("Delete invoice failed: " . $e->getMessage());
-    //         return DV::error('Failed to delete invoice and items: ' . $e->getMessage());
-    //     }
-    // }
-
-public function deleteInvoice($id = null)
-{
-    $id = $id ?? $this->id;
-    DB::beginTransaction();
-    try {
-        $currentItem = DB::table('invoice_items')
-            ->where('invoice_id', $id)
-            ->where('type', 'rent')
-            ->first();
-
-        if ($currentItem) {
-            $nextInvoice = DB::table('invoice_items')
-                ->where('item_id', $currentItem->item_id)
+    public function deleteInvoice($id = null)
+    {
+        $id = $id ?? $this->id;
+        DB::beginTransaction();
+        try {
+            $currentItem = DB::table('invoice_items')
+                ->where('invoice_id', $id)
                 ->where('type', 'rent')
-                ->where('start_date', '>', $currentItem->start_date)
-                ->exists();
+                ->first();
 
-            if ($nextInvoice) {
-                return DV::error('Cannot delete this invoice. You must delete the most recent invoice before deleting the previous one ');
+            if ($currentItem) {
+                $nextInvoice = DB::table('invoice_items')
+                    ->where('item_id', $currentItem->item_id)
+                    ->where('type', 'rent')
+                    ->where('start_date', '>', $currentItem->start_date)
+                    ->exists();
+
+                if ($nextInvoice) {
+                    return DV::error('Cannot delete this invoice. You must delete the most recent invoice before deleting the previous one ');
+                }
             }
+
+            $invoiceHeader = DB::table('invoices')->where('id', $id)->first();
+            if ($invoiceHeader && $invoiceHeader->paid_amount > 0) {
+                return DV::error('Cannot delete an invoice that has already been paid.');
+            }
+
+            DB::table('invoice_items')->where('invoice_id', $id)->delete();
+            $deleted = DB::table('invoices')->where('id', $id)->delete();
+
+            if ($deleted) {
+                DB::commit();
+                return DV::depends(1, 'Invoice and items deleted successfully.');
+            }
+
+            throw new \Exception('Invoice record not found.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error("Delete invoice failed: " . $e->getMessage());
+            return DV::error('Failed to delete: ' . $e->getMessage());
         }
-
-        $invoiceHeader = DB::table('invoices')->where('id', $id)->first();
-        if ($invoiceHeader && $invoiceHeader->paid_amount > 0) {
-            return DV::error('Cannot delete an invoice that has already been paid.');
-        }
-
-        DB::table('invoice_items')->where('invoice_id', $id)->delete();
-        $deleted = DB::table('invoices')->where('id', $id)->delete();
-
-        if ($deleted) {
-            DB::commit();
-            return DV::depends(1, 'Invoice and items deleted successfully.');
-        }
-
-        throw new \Exception('Invoice record not found.');
-
-    } catch (\Exception $e) {
-        DB::rollBack();
-        \Log::error("Delete invoice failed: " . $e->getMessage());
-        return DV::error('Failed to delete: ' . $e->getMessage());
     }
-}
 
 }
