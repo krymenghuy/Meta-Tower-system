@@ -495,7 +495,7 @@ const CreateVendorDialog = (() => {
                             </div>
                             <div class="col-12">
                                 <div class="material-input outlined">
-                                    <textarea class="data-input form-control" data-field="address" placeholder=" "></textarea>
+                                    <textarea name="address" class="data-input form-control" data-field="address" placeholder=" "></textarea>
                                     <label style="color:#777777;padding-left:6px;">Address</label>
                                 </div>
                             </div>

@@ -293,9 +293,11 @@ var ServiceRequestComponent = (function () {
              onShow: (me, container) => {
                 const menu = me.getActiveMenus(container);
                 const status_id = container.dataset.statusid;
-
+               menu.edit_request.style.display = (status_id >= 2) ? 'none' : 'block';
+            //    menu.delete_request.style.display = (status_id >= 2) ? 'none' : 'block';
                menu.accept_request.style.display = (status_id >= 2) ? 'none' : 'block';
                menu.reject_request.style.display = (status_id >= 2) ? 'none' : 'block';
+               
 
 
             },
@@ -518,7 +520,7 @@ console.log(123,op);
                     <div class="row g-3">
                         <div class="col-12">
                             <div class="material-input outlined">
-                                <textarea class="data-input form-control" data-field="remarks" placeholder=" "></textarea>
+                                <textarea name="remarks" class="data-input form-control" data-field="remarks" placeholder=" "></textarea>
                                 <label style="padding-left:6px;color:#777;">Remark</label>
                             </div>
                         </div>

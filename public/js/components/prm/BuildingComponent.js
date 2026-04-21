@@ -18,7 +18,7 @@ var BuildingComponent = ( () => {
             className: "align-middle",
             data: (data) => `
                 <div class="d-flex flex-row align-items-center">
-                    <img class="btn-view-member-photo" data-id="${data.id}" src="${data.image_url || `${main_view.base_url}/assets/images/meta/building_img.jpg`}" alt="" style="width: 50px; height: 50px; border-radius: 6px; margin-right: 10px; object-fit: cover;"/>
+                    <img class="btn-view-member-photo" data-id="${data.id}" src="${data.image_url || `${main_view.base_url}/assets/images/meta/building-default.jfif`}" alt="" style="width: 50px; height: 50px; border-radius: 6px; margin-right: 10px; object-fit: cover;"/>
 
                   <div class="d-flex flex-column">
                     <span class="text-prm-custom d-inline-block" style="min-width:150px; ">
