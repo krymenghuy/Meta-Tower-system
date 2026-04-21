@@ -959,7 +959,7 @@ const CreateBookingDialog = (() => {
 
                             <div class="col-6">
                                 <div class="material-input outlined">
-                                    <input type="number" name="booking_fee" class="data-input form-control" data-field="booking_fee" placeholder=" " />
+                                    <input type="number" min="1" step="0.01" name="booking_fee" class="data-input form-control" data-field="booking_fee" placeholder=" " />
                                     <label style="color:#777777;padding-left:6px;">Booking Amount</label>
                                 </div>
                             </div>
@@ -974,20 +974,22 @@ const CreateBookingDialog = (() => {
                         </div>`
                     ].join("");
                 },
-
-
                 contentCreated: (me) => {
-
-
-                    //  me.controls.price_type.onchange = (e) => {
-                    //         const sqmWrapper = me.controls.sqm_size.closest('.sqm-wrapper');
-                    //         if (!sqmWrapper) return;
-                    //         sqmWrapper.style.display = e.target.value === 'sqm' ? '' : 'none';
-                    //     };
-
+                   me.controls.booking_fee.addEventListener('input', (e) => {
+                    let v = parseFloat(e.target.value);
+                    if (isNaN(v)) {
+                        e.target.value = '';
+                        return;
+                    }
+                    if (v <= 0) {
+                        e.target.value = '';
+                        return;
+                    }
+                    e.target.value = v;
+                });
+                       
                 },
                 configSelect: [
-
                 ],
                 prepareFormOptions: {
                     createTitle: "Create Booking",
