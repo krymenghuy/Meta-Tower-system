@@ -325,14 +325,7 @@ var SpaceComponent = new (function () {
             cssClass: "bg-white shadow",
             //menuItemClass:"",
             menus: [
-                
                 {
-                    html: '<span class="ps-2" vslang="titles.Contract">Contract</span>',
-                    icon: `<i class="fa-regular fa-file-lines fs-5 text-primary"></i>`,
-                    cssClass: "border-bottom pb-2",
-                    name: "create_contract"
-                },
-                 {
                     html: '<span class="ps-2 " vslang="titles.Modify">Modify</span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
@@ -343,6 +336,12 @@ var SpaceComponent = new (function () {
                     icon: `<i class="fa-solid fa-bold fs-5 text-info-emphasis"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "create_booking"
+                },
+                {
+                    html: '<span class="ps-2" vslang="titles.Contract">Contract</span>',
+                    icon: `<i class="fa-regular fa-file-lines fs-5 text-primary"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "create_contract"
                 },
                 {
                     html: '<span class="ps-2" vslang="titles.Maintenance">Maintenance</span>',
@@ -738,7 +737,7 @@ const BuildingSpaceDialog = (() => {
         dialog =
             dialog ||
             new GeneralDialog({
-                cssClass: "modal-lg vs-modal",
+                cssClass: "modal-md vs-modal",
                 backdrop: "static",
                 keyboard: true,
                 createContent: () => {
@@ -749,12 +748,6 @@ const BuildingSpaceDialog = (() => {
                                     <select data-style="material" placeholder="Building" name="building_id" class="data-input form-control" data-field="building_id">
                                     </select>
 
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="material-input outlined">
-                                    <select data-style="material" name="space_type_id" placeholder="Type" class="data-input form-control" data-field="space_type_id">
-                                    </select>
                                 </div>
                             </div>
                             <div class="col-6">
@@ -770,16 +763,31 @@ const BuildingSpaceDialog = (() => {
                                     <label style="color:#777777;padding-left:6px;">Unit Code</label>
                                 </div>
                             </div>
+                            <div class="col-6">
+                                <div class="material-input outlined">
+                                    <select data-style="material" name="space_type_id" placeholder="Type" class="data-input form-control" data-field="space_type_id">
+                                    </select>
+                                </div>
+                            </div>
+                            
                             <!-- <div class="col-12 sqm-wrapper" style="display:none;"> -->
                             <div class="col-6">
                                 <div class="material-input outlined">
-                                    <input type="number" name="sqm_size" class="data-input form-control" data-field="sqm_size" placeholder=" " />
+                                    <input type="number" min="0" step="0.01" name="sqm_size" class="data-input form-control" data-field="sqm_size" placeholder=" " />
                                     <label style="color:#777777;padding-left:6px;">Size (m²)</label>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="material-input outlined">
-                                    <input type="number" name="price" class="data-input form-control" data-field="price" placeholder=" " />
+                                        <input 
+                                            type="number" 
+                                            name="price" 
+                                            class="data-input form-control" 
+                                            data-field="price" 
+                                            placeholder=" " 
+                                            min="0"
+                                            step="0.01"
+                                        />
                                     <label style="color:#777777;padding-left:6px;">Price</label>
                                 </div>
                             </div>
@@ -800,13 +808,10 @@ const BuildingSpaceDialog = (() => {
 
 
                 contentCreated: (me) => {
-
-
-                    //  me.controls.price_type.onchange = (e) => {
-                    //         const sqmWrapper = me.controls.sqm_size.closest('.sqm-wrapper');
-                    //         if (!sqmWrapper) return;
-                    //         sqmWrapper.style.display = e.target.value === 'sqm' ? '' : 'none';
-                    //     };
+                   
+                   
+           
+                    
 
                 },
                 configSelect: [
@@ -846,6 +851,15 @@ const BuildingSpaceDialog = (() => {
                     },
 
                 ],
+                onShow: (me) => {
+                const title = me.divModal.querySelector('.modal-title');
+                if (title) {
+                    const isModify = !!me.dataOptions?.id;
+                    title.innerHTML = isModify
+                        ? '<h4 class="text-prm-custom text-start fw-bold">Modify Space</h4>'
+                        : '<h4 class="text-prm-custom text-start fw-bold">Create Space</h4>';
+                }
+            },
                 prepareFormOptions: {
                     createTitle: "Create Space",
                     modifyTitle: "Modify Space ",
@@ -859,6 +873,8 @@ const BuildingSpaceDialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
+                    const isReadOnly = me.dataOptions.id > 0;
+                    me.setReadOnly(isReadOnly, ["building_id","code","floor_id"]);
                     me.controls.price_type.value = data.space_details.price_type;
                 },
 
@@ -913,12 +929,10 @@ const CreateBookingDialog = (() => {
     let dialog = null;
 
     self.show = (op) => {
-        console.log(123, op);
-
         dialog =
             dialog ||
             new GeneralDialog({
-                cssClass: "modal-lg vs-modal",
+                cssClass: "modal-md vs-modal",
                 backdrop: "static",
                 keyboard: true,
                 createContent: () => {
@@ -966,7 +980,7 @@ const CreateBookingDialog = (() => {
                             <div class="col-12">
                                 <div class="material-input outlined">
                                     <textarea class="data-input form-control" data-field="remarks" rows="3" placeholder=" "></textarea>
-                                    <label style="color:#777777;padding-left:6px;">Remarks</label>
+                                    <label style="color:#777777;padding-left:6px;">Remark</label>
                                 </div>
                             </div>
 
@@ -975,7 +989,7 @@ const CreateBookingDialog = (() => {
                     ].join("");
                 },
                 contentCreated: (me) => {
-                   me.controls.booking_fee.addEventListener('input', (e) => {
+                me.controls.booking_fee.addEventListener('input', (e) => {
                     let v = parseFloat(e.target.value);
                     if (isNaN(v)) {
                         e.target.value = '';

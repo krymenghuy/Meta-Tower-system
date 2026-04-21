@@ -49,7 +49,7 @@ var VendorComponent = (() => {
                 </div>
 
                 <div>
-                    <span class="text-prm-custom d-block">
+                    <span class="text-prm-custom d-block text-capitalize">
                         ${name}
                     </span>
                     <span class="d-block text-muted small">
@@ -98,7 +98,7 @@ var VendorComponent = (() => {
             transTitle: "titles.Contact Person",
             className: "align-middle text-nowrap",
             data: (data) => {
-                return `<span class="d-block text-prm-custom"> ${data.contact_person ?? ""}</span>
+                return `<span class="d-block text-prm-custom text-capitalize"> ${data.contact_person ?? ""}</span>
                          <span class="d-block text-muted small"> ${data.contact_phone ?? ""}</span>`;
             }
         },
@@ -495,7 +495,7 @@ const CreateVendorDialog = (() => {
                             </div>
                             <div class="col-12">
                                 <div class="material-input outlined">
-                                    <textarea class="data-input form-control" data-field="address" placeholder=" "></textarea>
+                                    <textarea name="address" class="data-input form-control" data-field="address" placeholder=" "></textarea>
                                     <label style="color:#777777;padding-left:6px;">Address</label>
                                 </div>
                             </div>

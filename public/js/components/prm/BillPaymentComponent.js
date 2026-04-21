@@ -435,7 +435,7 @@ const BillPaymentDialog = (() => {
                         <div class="col-12">
                             <div class="material-input outlined">
                                 <textarea class="data-input form-control" data-field="note" placeholder=" "></textarea>
-                                <label style="color:#777777;padding-left:6px;">Remarks</label>
+                                <label style="color:#777777;padding-left:6px;">Remark</label>
                             </div>
                         </div>
                     </div>`
@@ -452,7 +452,7 @@ const BillPaymentDialog = (() => {
                         bill_id: op.bill_id || op.id || null
                     })
                 }
-            },
+            }, 
              onShow: (me) => {
                 const title = me.divModal.querySelector('.modal-title');
                 if (title) {
