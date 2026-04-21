@@ -49,7 +49,7 @@ var VendorComponent = (() => {
                 </div>
 
                 <div>
-                    <span class="text-prm-custom d-block">
+                    <span class="text-prm-custom d-block text-capitalize">
                         ${name}
                     </span>
                     <span class="d-block text-muted small">
@@ -98,7 +98,7 @@ var VendorComponent = (() => {
             transTitle: "titles.Contact Person",
             className: "align-middle text-nowrap",
             data: (data) => {
-                return `<span class="d-block text-prm-custom"> ${data.contact_person ?? ""}</span>
+                return `<span class="d-block text-prm-custom text-capitalize"> ${data.contact_person ?? ""}</span>
                          <span class="d-block text-muted small"> ${data.contact_phone ?? ""}</span>`;
             }
         },

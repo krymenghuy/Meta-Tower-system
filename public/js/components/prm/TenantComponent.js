@@ -52,7 +52,7 @@ var TenantComponent = new (function () {
                           : "Other";
                 return `
                     <div class="text-prm-custom" style="width:120px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.name ?? ""}</span>
+                        <span class="text-wrap text-break text-capitalize" style ="word-break:break-word;">${data.name ?? ""}</span>
                         <small class="d-block text-muted">${sexLabel}</small>
                     </div>
                 `;
@@ -788,7 +788,7 @@ var TenantComponent = new (function () {
                             <h5 class="fw-bold mb-2"><i class="fa fa-user me-1 text-primary"></i> Personal Information</h5>
                             <div class="row g-4 mb-5">
                                 <div class="col-md-4"><small class="text-muted">Name</small><div class="fw-semibold">${data.name ?? ""}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Sex</small><div class="fw-semibold">${data.sex == "M" ? "Male" : data.sex == "F" ? "Female" : ""}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Gender</small><div class="fw-semibold">${data.sex == "M" ? "Male" : data.sex == "F" ? "Female" : ""}</div></div>
                                 <div class="col-md-4"><small class="text-muted">Date of Birth</small><div class="fw-semibold">${data.date_of_birth ?? ""}</div></div>
                                 <div class="col-md-4"><small class="text-muted">Legal Name</small><div class="fw-semibold">${data.legal_name ?? ""}</div></div>
                                 <div class="col-md-4"><small class="text-muted">National ID</small><div class="fw-semibold">${data.national_id ?? ""}</div></div>
@@ -825,7 +825,7 @@ var TenantComponent = new (function () {
                                             <th class="border-0 ps-3" style="letter-spacing: 0.05em;">Document Type</th>
                                             <th class="border-0">File Name</th>
                                             <th class="border-0">File Type</th>
-                                            <th class="border-0">Remarks</th>
+                                            <th class="border-0">Remark</th>
                                             <th class="border-0 text-end pe-3">Actions</th>
                                         </tr>
                                     </thead>
@@ -1243,7 +1243,7 @@ var TenantComponent = new (function () {
                                     <th class="border-0 ps-3" style="letter-spacing: 0.05em;">Document Type</th>
                                     <th class="border-0">File</th>
                                     <th class="border-0">File Type</th>
-                                    <th class="border-0">Remarks</th>
+                                    <th class="border-0">Remark</th>
                                     <th class="border-0 text-end">Actions</th>
                                 </tr>
                             </thead>
@@ -1707,13 +1707,13 @@ const TenantDocumentDialog = (() => {
                     </div>
                     <div class="col-12">
                         <div class="material-input outlined d-flex">
-                            <input type="text" name="documents" class="d-none form-control"  accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg" />
-                        </div>
+                            <input type="text" name="documents" class="d-none form-control"  accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg" /disabled>
+                        </div> 
                     </div>
                      <div class="col-12">
                         <div class="material-input outlined">
                             <textarea type="text" name="remarks" required class="data-input form-control" data-field="remarks" placeholder=" " /></textarea>
-                            <label style="color:#777777;padding-left:6px;">Remarks</label>
+                            <label style="color:#777777;padding-left:6px;">Remark</label>
                         </div>
                     </div>
 
@@ -1800,8 +1800,8 @@ const TenantDocumentDialog = (() => {
                 ],
 
                 prepareFormOptions: {
-                    createTitle: "Upload Documents",
-                    modifyTitle: "Modify Documents",
+                    createTitle: "Upload Document",
+                    modifyTitle: "Modify Document",
                     targetProp: "document_details",
                     api: {
                         endpoint: [
