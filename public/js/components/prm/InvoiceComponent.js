@@ -2024,6 +2024,420 @@ const InvoiceDialog = (() => {
     return self;
 })();
 
+// const ReceiveDialog = (() => {
+//     const self = {};
+//     let dialog = null;
+
+//     self.show = op => {
+//         dialog =
+//             dialog ||
+//             new GeneralDialog({
+//                 title: "Receive Payment",
+//                 cssClass: "modal-lg vs-modal",
+//                 backdrop: "static",
+//                 keyboard: true,
+
+//                 createContent: () => `
+//                 <div class="container-fluid px-0">
+
+//                     <!-- 3-col summary header -->
+//                     <div class="row g-0" style="border-radius:8px;overflow:hidden;margin-bottom:1.5rem;">
+//                         <div class="col-4" style="padding:0.75rem 1.25rem;border-right:1px solid white; background:#e1e5f2;">
+//                             <div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#1a1647;margin-bottom:4px;">Balance Due</div>
+//                             <div style="font-size:17px;font-weight:600;color:#5665E1;" id="f_due">$0.00</div>
+//                         </div>
+//                         <div class="col-4" style="padding:0.75rem 1.25rem;border-right:1px solid white; text-align:center;background:#e1e5f2;">
+//                             <div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#1a1647;margin-bottom:4px;">Total Paid</div>
+//                             <div style="font-size:17px;font-weight:600;color:#19BF9B;" id="f_tot">$0.00</div>
+//                         </div>
+//                         <div class="col-4" style="padding:0.75rem 1.25rem;text-align:right;background:#e1e5f2;">
+//                             <div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#1a1647;margin-bottom:4px;">Remaining</div>
+//                             <div style="font-size:17px;font-weight:600;color:#FAB31C;" id="f_bal">$0.00</div>
+//                         </div>
+//                     </div>
+
+//                     <div style="display:flex;flex-direction:column;">
+
+//                         <!-- Cash -->
+//                         <div>
+//                             <div class="d-flex align-items-center gap-2 mb-2">
+//                                 <span class="payment-badge" style="color:#27500A;">Cash</span>
+//                                 <div style="flex:1;height:1px;background:#dee2e6;"></div>
+//                                 <span style="font-size:11px;color:#27500A;">Entered: <strong id="c_e" style="color:#212529;">—</strong></span>
+//                             </div>
+//                             <div style="display:flex;flex-direction:row;gap:8px;flex-wrap:wrap;margin-bottom: 0.5rem;">
+//                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
+//                                     <input name="cash" type="number" class="form-control data-input" data-field="cash"
+//                                         min="0" step="0.01" placeholder=" "/>
+//                                     <label style="padding-left:6px;color:#777777;">Amount ($)</label>
+//                                 </div>
+//                             </div>
+//                         </div>
+
+//                         <!-- Bank Transfer -->
+//                         <div>
+//                             <div class="d-flex align-items-center gap-2 mb-2">
+//                                 <span class="payment-badge" style=";color:#0C447C;">Bank Transfer</span>
+//                                 <div style="flex:1;height:1px;background:#dee2e6;"></div>
+//                                 <span style="font-size:11px;color:#0C447C;">Entered: <strong id="b_e" style="color:#212529;">—</strong></span>
+//                             </div>
+//                             <div style="display:flex;flex-direction:row;gap:8px;flex-wrap:wrap;margin-bottom: 0.5rem;">
+//                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
+//                                     <select name="bank_transfer_bank_id" class="form-select data-input"
+//                                             data-field="bank_transfer_bank_id" data-style="material" placeholder="Bank"></select>
+//                                 </div>
+//                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
+//                                     <input name="transfer_amount" type="number" class="form-control data-input"
+//                                         data-field="transfer_amount" min="0" step="0.01" placeholder=" "/>
+//                                     <label style="padding-left:6px;color:#777777;">Amount ($)</label>
+//                                 </div>
+//                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
+//                                     <input name="bank_ref_number" type="text" class="form-control data-input"
+//                                         data-field="bank_ref_number" placeholder=" "/>
+//                                     <label style="padding-left:6px;color:#777777;">Ref Number</label>
+//                                 </div>
+//                             </div>
+//                         </div>
+
+//                         <!-- Card -->
+//                         <div>
+//                             <div class="d-flex align-items-center gap-2 mb-2">
+//                                 <span class="payment-badge" style="color:#3C3489;">Card</span>
+//                                 <div style="flex:1;height:1px;background:#dee2e6;"></div>
+//                                 <span style="font-size:11px;color:#3C3489;">Entered: <strong id="ca_e" style="color:#212529;">—</strong></span>
+//                             </div>
+//                             <div style="display:flex;flex-direction:row;gap:8px;flex-wrap:wrap;margin-bottom: 0.5rem;">
+//                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
+//                                     <select name="card_type" class="form-select data-input" data-field="card_type"
+//                                             data-style="material">
+//                                         <option value="">None</option>
+//                                         <option value="credit">Credit</option>
+//                                         <option value="debit">Debit</option>
+//                                     </select>
+//                                 </div>
+//                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
+//                                     <input name="card_amount" type="number" class="form-control data-input"
+//                                         data-field="card_amount" min="0" step="0.01" placeholder=" "/>
+//                                     <label style="padding-left:6px;color:#777777;">Amount ($)</label>
+//                                 </div>
+//                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
+//                                     <input name="card_number" type="text" class="form-control data-input"
+//                                         data-field="card_number" placeholder=""/>
+//                                     <label style="padding-left:6px;color:#777777;">Card Number</label>
+//                                 </div>
+//                             </div>
+//                         </div>
+
+//                         <!-- Cheque -->
+//                         <div>
+//                             <div class="d-flex align-items-center gap-2 mb-2">
+//                                 <span class="payment-badge" style="color:#633806;">Cheque</span>
+//                                 <div style="flex:1;height:1px;background:#dee2e6;"></div>
+//                                 <span style="font-size:11px;color:#633806;">Entered: <strong id="ch_e" style="color:#212529;">—</strong></span>
+//                             </div>
+//                             <div style="display:flex;flex-direction:row;gap:8px;flex-wrap:wrap;margin-bottom: 0.5rem;">
+//                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
+//                                     <select name="cheque_bank_id" class="form-select data-input"
+//                                             data-field="cheque_bank_id" data-style="material" placeholder="Cheque Bank"></select>
+//                                 </div>
+//                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
+//                                     <input name="cheque_amount" type="number" class="form-control data-input"
+//                                         data-field="cheque_amount" min="0" step="0.01" placeholder=" "/>
+//                                     <label style="padding-left:6px;color:#777777;">Amount ($)</label>
+//                                 </div>
+//                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
+//                                     <input name="cheque_number" type="text" class="form-control data-input"
+//                                         data-field="cheque_number" placeholder=" "/>
+//                                     <label style="padding-left:6px;color:#777777;">Cheque Number</label>
+//                                 </div>
+//                             </div>
+//                         </div>
+
+//                         <!-- Remarks -->
+//                         <div>
+//                             <div class="material-input outlined" style="margin:0;">
+//                                 <textarea name="remarks" class="form-control data-input" data-field="remarks"
+//                                         rows="2" style="height:55px;" placeholder=""></textarea>
+//                                 <label style="padding-left:6px;color:#777777;">Remarks</label>
+//                             </div>
+//                         </div>
+
+//                     </div>
+//                 </div>`,
+
+//                 contentCreated: me => {
+//                     // ====================== LIVE TOTALS ======================
+//                     const updateTotals = () => {
+//                         const getValue = name => {
+//                             const el = me.divModal.querySelector(
+//                                 `[name="${name}"]`
+//                             );
+//                             return el ? parseFloat(el.value) || 0 : 0;
+//                         };
+
+//                         const cash = getValue("cash");
+//                         const bank = getValue("transfer_amount");
+//                         const card = getValue("card_amount");
+//                         const cheque = getValue("cheque_amount");
+
+//                         const totalPaid = cash + bank + card + cheque;
+
+//                         const remarkParts = [];
+//                         if (cash > 0)
+//                             remarkParts.push(
+//                                 `Paid $${cash.toFixed(2)} via Cash`
+//                             );
+//                         if (bank > 0)
+//                             remarkParts.push(
+//                                 `Paid $${bank.toFixed(2)} via Bank Transfer`
+//                             );
+//                         if (card > 0)
+//                             remarkParts.push(
+//                                 `Paid $${card.toFixed(2)} via Card`
+//                             );
+//                         if (cheque > 0)
+//                             remarkParts.push(
+//                                 `Paid $${cheque.toFixed(2)} via Cheque`
+//                             );
+
+//                         const remarkEl = me.divModal.querySelector(
+//                             '[name="remarks"]'
+//                         );
+//                         if (remarkEl) {
+//                             remarkEl.value = remarkParts.join(", ");
+//                             remarkEl.dispatchEvent(new Event("change"));
+//                         }
+//                         let due = 0;
+//                         const dueEl = me.divModal.querySelector("#f_due");
+//                         if (dueEl) {
+//                             due =
+//                                 parseFloat(
+//                                     dueEl.textContent.replace(/[^0-9.-]+/g, "")
+//                                 ) || 0;
+//                         }
+
+//                         const remaining = Math.max(0, due - totalPaid);
+
+//                         const fmt = n => "$" + Number(n).toFixed(2);
+
+//                         me.divModal.querySelector("#f_tot").textContent = fmt(
+//                             totalPaid
+//                         );
+//                         me.divModal.querySelector("#f_bal").textContent = fmt(
+//                             remaining
+//                         );
+
+//                         const balEl = me.divModal.querySelector("#f_bal");
+//                         if (balEl) {
+//                             balEl.style.color =
+//                                 remaining <= 0.001 ? "#3B6D11" : "#FAB31C";
+//                         }
+
+//                         me.divModal.querySelector("#c_e").textContent =
+//                             cash > 0 ? fmt(cash) : "—";
+//                         me.divModal.querySelector("#b_e").textContent =
+//                             bank > 0 ? fmt(bank) : "—";
+//                         me.divModal.querySelector("#ca_e").textContent =
+//                             card > 0 ? fmt(card) : "—";
+//                         me.divModal.querySelector("#ch_e").textContent =
+//                             cheque > 0 ? fmt(cheque) : "—";
+//                     };
+
+//                     const amountFields = [
+//                         "cash",
+//                         "transfer_amount",
+//                         "card_amount",
+//                         "cheque_amount"
+//                     ];
+//                     amountFields.forEach(name => {
+//                         const input = me.divModal.querySelector(
+//                             `[name="${name}"]`
+//                         );
+//                         if (input) {
+//                             input.addEventListener("input", updateTotals);
+//                             input.addEventListener("change", updateTotals);
+//                         }
+//                     });
+
+//                     me.convertPayment = data => {
+//                         const parseAmt = v =>
+//                             isNaN(parseFloat(v)) ? 0 : parseFloat(v);
+//                         const breakdowns = [];
+
+//                         // Cash
+//                         if (parseAmt(data.cash) > 0) {
+//                             breakdowns.push({
+//                                 method: "Cash",
+//                                 amount: parseAmt(data.cash),
+//                                 currency_code: "USD"
+//                             });
+//                         }
+
+//                         // Bank Transfer
+//                         if (parseAmt(data.transfer_amount) > 0) {
+//                             breakdowns.push({
+//                                 method: "Bank",
+//                                 amount: parseAmt(data.transfer_amount),
+//                                 currency_code: "USD",
+//                                 bank_id:
+//                                     parseInt(data.bank_transfer_bank_id) ||
+//                                     null,
+//                                 bank_name: me.getSelectText
+//                                     ? me.getSelectText("bank_transfer_bank_id")
+//                                     : null,
+//                                 bank_ref_number: data.bank_ref_number || null
+//                             });
+//                         }
+
+//                         // Card
+//                         if (parseAmt(data.card_amount) > 0) {
+//                             breakdowns.push({
+//                                 method: "Card",
+//                                 amount: parseAmt(data.card_amount),
+//                                 currency_code: "USD",
+//                                 card_type: data.card_type || null,
+//                                 card_number: data.card_number || null
+//                             });
+//                         }
+
+//                         // Cheque
+//                         if (parseAmt(data.cheque_amount) > 0) {
+//                             breakdowns.push({
+//                                 method: "Cheque",
+//                                 amount: parseAmt(data.cheque_amount),
+//                                 currency_code: "USD",
+//                                 bank_id: parseInt(data.cheque_bank_id) || null,
+//                                 cheque_bank_name: me.getSelectText
+//                                     ? me.getSelectText("cheque_bank_id")
+//                                     : null,
+//                                 cheque_number: data.cheque_number || null
+//                             });
+//                         }
+//                         return {
+//                             invoice_id: me.dataOptions?.invoice_id || null,
+//                             remarks: (data.remarks || "").trim(),
+//                             pmt_breakdowns: breakdowns
+//                         };
+//                     };
+//                 },
+
+//                 onPrepareForm: me => {
+//                     const opts = me.dataOptions || {};
+
+//                     // Load invoice details
+//                     if (opts.invoice_id) {
+//                         vsapi
+//                             .call(`${main_view.base_url}/prm/invoice/details`, {
+//                                 id: opts.invoice_id
+//                             })
+//                             .then(res => {
+//                                 if (res.status_code === 200) {
+//                                     const d = res.data || {};
+//                                     const bal = Number(d.balance || 0).toFixed(
+//                                         2
+//                                     );
+
+//                                     const set = (id, val) => {
+//                                         const el = me.divModal.querySelector(
+//                                             "#" + id
+//                                         );
+//                                         if (el) el.textContent = val;
+//                                     };
+
+//                                     set("f_due", "$" + bal);
+//                                     set("f_bal", "$" + bal);
+//                                     set("f_tot", "$0.00");
+
+//                                     if (d.tenant_name)
+//                                         set("lbl_tenant", d.tenant_name);
+//                                     if (d.code) set("lbl_invoice", d.code);
+//                                 }
+//                             });
+//                     }
+
+//                     // Load banks
+//                     vsapi
+//                         .call(`${main_view.base_url}/prm/invoice/form-options`)
+//                         .then(res => {
+//                             const banks = res?.data?.banks || [];
+//                             if (me.controls.bank_transfer_bank_id) {
+//                                 VSUtil.setComboItems(
+//                                     me.controls.bank_transfer_bank_id,
+//                                     banks,
+//                                     "id",
+//                                     "name",
+//                                     true,
+//                                     "— Select Bank —"
+//                                 );
+//                             }
+//                             if (me.controls.cheque_bank_id) {
+//                                 VSUtil.setComboItems(
+//                                     me.controls.cheque_bank_id,
+//                                     banks,
+//                                     "id",
+//                                     "name",
+//                                     true,
+//                                     "— Select Bank —"
+//                                 );
+//                             }
+//                         });
+//                 },
+
+//                 buttons: [
+//                     {
+//                         label: "Cancel",
+//                         cssClass: "btn btn-secondary",
+//                         click: me => me.hide(false)
+//                     },
+//                     {
+//                         label: "Receive",
+//                         cssClass: "btn btn-primary",
+//                         click: (me, btn) => {
+//                             const payload = me.convertPayment(me.getData());
+
+//                             if (
+//                                 !payload.pmt_breakdowns ||
+//                                 payload.pmt_breakdowns.length === 0
+//                             ) {
+//                                 return cv_interact.error(
+//                                     "Please enter at least one payment amount."
+//                                 );
+//                             }
+
+//                             vsapi
+//                                 .call(
+//                                     `${main_view.base_url}/prm/invoice/receive`,
+//                                     payload,
+//                                     btn
+//                                 )
+//                                 .then(res => {
+//                                     if (res.status_code === 200) {
+//                                         cv_interact.success(
+//                                             "Payment Received Successfully"
+//                                         );
+//                                         me.hide(true);
+//                                     } else {
+//                                         cv_interact.error(
+//                                             res.error_message || "Save failed"
+//                                         );
+//                                     }
+//                                 })
+//                                 .catch(err => {
+//                                     console.error(err);
+//                                     cv_interact.error("Network error occurred");
+//                                 });
+//                         }
+//                     }
+//                 ]
+//             });
+
+//         dialog.show(op);
+//     };
+
+//     return self;
+// })();
+
+
 const ReceiveDialog = (() => {
     const self = {};
     let dialog = null;
@@ -2040,7 +2454,6 @@ const ReceiveDialog = (() => {
                 createContent: () => `
                 <div class="container-fluid px-0">
 
-                    <!-- 3-col summary header -->
                     <div class="row g-0" style="border-radius:8px;overflow:hidden;margin-bottom:1.5rem;">
                         <div class="col-4" style="padding:0.75rem 1.25rem;border-right:1px solid white; background:#e1e5f2;">
                             <div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#1a1647;margin-bottom:4px;">Balance Due</div>
@@ -2058,7 +2471,6 @@ const ReceiveDialog = (() => {
 
                     <div style="display:flex;flex-direction:column;">
 
-                        <!-- Cash -->
                         <div>
                             <div class="d-flex align-items-center gap-2 mb-2">
                                 <span class="payment-badge" style="color:#27500A;">Cash</span>
@@ -2074,7 +2486,6 @@ const ReceiveDialog = (() => {
                             </div>
                         </div>
 
-                        <!-- Bank Transfer -->
                         <div>
                             <div class="d-flex align-items-center gap-2 mb-2">
                                 <span class="payment-badge" style=";color:#0C447C;">Bank Transfer</span>
@@ -2099,7 +2510,6 @@ const ReceiveDialog = (() => {
                             </div>
                         </div>
 
-                        <!-- Card -->
                         <div>
                             <div class="d-flex align-items-center gap-2 mb-2">
                                 <span class="payment-badge" style="color:#3C3489;">Card</span>
@@ -2128,7 +2538,6 @@ const ReceiveDialog = (() => {
                             </div>
                         </div>
 
-                        <!-- Cheque -->
                         <div>
                             <div class="d-flex align-items-center gap-2 mb-2">
                                 <span class="payment-badge" style="color:#633806;">Cheque</span>
@@ -2153,7 +2562,6 @@ const ReceiveDialog = (() => {
                             </div>
                         </div>
 
-                        <!-- Remarks -->
                         <div>
                             <div class="material-input outlined" style="margin:0;">
                                 <textarea name="remarks" class="form-control data-input" data-field="remarks"
@@ -2166,14 +2574,13 @@ const ReceiveDialog = (() => {
                 </div>`,
 
                 contentCreated: me => {
-                    // ====================== LIVE TOTALS ======================
                     const updateTotals = () => {
                         const getValue = name => {
-                            const el = me.divModal.querySelector(
-                                `[name="${name}"]`
-                            );
+                            const el = me.divModal.querySelector(`[name="${name}"]`);
                             return el ? parseFloat(el.value) || 0 : 0;
                         };
+
+                        const fmt = n => "$" + Number(n).toFixed(2);
 
                         const cash = getValue("cash");
                         const bank = getValue("transfer_amount");
@@ -2182,77 +2589,52 @@ const ReceiveDialog = (() => {
 
                         const totalPaid = cash + bank + card + cheque;
 
-                        const remarkParts = [];
-                        if (cash > 0)
-                            remarkParts.push(
-                                `Paid $${cash.toFixed(2)} via Cash`
-                            );
-                        if (bank > 0)
-                            remarkParts.push(
-                                `Paid $${bank.toFixed(2)} via Bank Transfer`
-                            );
-                        if (card > 0)
-                            remarkParts.push(
-                                `Paid $${card.toFixed(2)} via Card`
-                            );
-                        if (cheque > 0)
-                            remarkParts.push(
-                                `Paid $${cheque.toFixed(2)} via Cheque`
-                            );
+                        // Get Due amount safely
+                        let due = 0;
+                        const dueEl = me.divModal.querySelector("#f_due");
+                        if (dueEl) {
+                            due = parseFloat(dueEl.textContent.replace(/[^0-9.-]+/g, "")) || 0;
+                        }
 
-                        const remarkEl = me.divModal.querySelector(
-                            '[name="remarks"]'
-                        );
+                        const remaining = due - totalPaid;
+
+                        // --- Update Summary Header ---
+                        me.divModal.querySelector("#f_tot").textContent = fmt(totalPaid);
+
+                        const balEl = me.divModal.querySelector("#f_bal");
+                        if (balEl) {
+                            if (totalPaid > (due + 0.001)) {
+                                balEl.style.color = "#dc3545"; // Red for Error
+                                balEl.textContent = "Overpaid: " + fmt(Math.abs(remaining));
+                            } else {
+                                balEl.style.color = remaining <= 0.001 ? "#3B6D11" : "#FAB31C";
+                                balEl.textContent = fmt(Math.max(0, remaining));
+                            }
+                        }
+
+                        // --- Update Badge Displays ---
+                        me.divModal.querySelector("#c_e").textContent = cash > 0 ? fmt(cash) : "—";
+                        me.divModal.querySelector("#b_e").textContent = bank > 0 ? fmt(bank) : "—";
+                        me.divModal.querySelector("#ca_e").textContent = card > 0 ? fmt(card) : "—";
+                        me.divModal.querySelector("#ch_e").textContent = cheque > 0 ? fmt(cheque) : "—";
+
+                        // --- Sync Remarks ---
+                        const remarkParts = [];
+                        if (cash > 0) remarkParts.push(`Paid ${fmt(cash)} via Cash`);
+                        if (bank > 0) remarkParts.push(`Paid ${fmt(bank)} via Bank Transfer`);
+                        if (card > 0) remarkParts.push(`Paid ${fmt(card)} via Card`);
+                        if (cheque > 0) remarkParts.push(`Paid ${fmt(cheque)} via Cheque`);
+
+                        const remarkEl = me.divModal.querySelector('[name="remarks"]');
                         if (remarkEl) {
                             remarkEl.value = remarkParts.join(", ");
                             remarkEl.dispatchEvent(new Event("change"));
                         }
-                        let due = 0;
-                        const dueEl = me.divModal.querySelector("#f_due");
-                        if (dueEl) {
-                            due =
-                                parseFloat(
-                                    dueEl.textContent.replace(/[^0-9.-]+/g, "")
-                                ) || 0;
-                        }
-
-                        const remaining = Math.max(0, due - totalPaid);
-
-                        const fmt = n => "$" + Number(n).toFixed(2);
-
-                        me.divModal.querySelector("#f_tot").textContent = fmt(
-                            totalPaid
-                        );
-                        me.divModal.querySelector("#f_bal").textContent = fmt(
-                            remaining
-                        );
-
-                        const balEl = me.divModal.querySelector("#f_bal");
-                        if (balEl) {
-                            balEl.style.color =
-                                remaining <= 0.001 ? "#3B6D11" : "#FAB31C";
-                        }
-
-                        me.divModal.querySelector("#c_e").textContent =
-                            cash > 0 ? fmt(cash) : "—";
-                        me.divModal.querySelector("#b_e").textContent =
-                            bank > 0 ? fmt(bank) : "—";
-                        me.divModal.querySelector("#ca_e").textContent =
-                            card > 0 ? fmt(card) : "—";
-                        me.divModal.querySelector("#ch_e").textContent =
-                            cheque > 0 ? fmt(cheque) : "—";
                     };
 
-                    const amountFields = [
-                        "cash",
-                        "transfer_amount",
-                        "card_amount",
-                        "cheque_amount"
-                    ];
+                    const amountFields = ["cash", "transfer_amount", "card_amount", "cheque_amount"];
                     amountFields.forEach(name => {
-                        const input = me.divModal.querySelector(
-                            `[name="${name}"]`
-                        );
+                        const input = me.divModal.querySelector(`[name="${name}"]`);
                         if (input) {
                             input.addEventListener("input", updateTotals);
                             input.addEventListener("change", updateTotals);
@@ -2260,36 +2642,22 @@ const ReceiveDialog = (() => {
                     });
 
                     me.convertPayment = data => {
-                        const parseAmt = v =>
-                            isNaN(parseFloat(v)) ? 0 : parseFloat(v);
+                        const parseAmt = v => isNaN(parseFloat(v)) ? 0 : parseFloat(v);
                         const breakdowns = [];
 
-                        // Cash
                         if (parseAmt(data.cash) > 0) {
-                            breakdowns.push({
-                                method: "Cash",
-                                amount: parseAmt(data.cash),
-                                currency_code: "USD"
-                            });
+                            breakdowns.push({ method: "Cash", amount: parseAmt(data.cash), currency_code: "USD" });
                         }
-
-                        // Bank Transfer
                         if (parseAmt(data.transfer_amount) > 0) {
                             breakdowns.push({
                                 method: "Bank",
                                 amount: parseAmt(data.transfer_amount),
                                 currency_code: "USD",
-                                bank_id:
-                                    parseInt(data.bank_transfer_bank_id) ||
-                                    null,
-                                bank_name: me.getSelectText
-                                    ? me.getSelectText("bank_transfer_bank_id")
-                                    : null,
+                                bank_id: parseInt(data.bank_transfer_bank_id) || null,
+                                bank_name: me.getSelectText ? me.getSelectText("bank_transfer_bank_id") : null,
                                 bank_ref_number: data.bank_ref_number || null
                             });
                         }
-
-                        // Card
                         if (parseAmt(data.card_amount) > 0) {
                             breakdowns.push({
                                 method: "Card",
@@ -2299,17 +2667,13 @@ const ReceiveDialog = (() => {
                                 card_number: data.card_number || null
                             });
                         }
-
-                        // Cheque
                         if (parseAmt(data.cheque_amount) > 0) {
                             breakdowns.push({
                                 method: "Cheque",
                                 amount: parseAmt(data.cheque_amount),
                                 currency_code: "USD",
                                 bank_id: parseInt(data.cheque_bank_id) || null,
-                                cheque_bank_name: me.getSelectText
-                                    ? me.getSelectText("cheque_bank_id")
-                                    : null,
+                                cheque_bank_name: me.getSelectText ? me.getSelectText("cheque_bank_id") : null,
                                 cheque_number: data.cheque_number || null
                             });
                         }
@@ -2323,62 +2687,31 @@ const ReceiveDialog = (() => {
 
                 onPrepareForm: me => {
                     const opts = me.dataOptions || {};
-
-                    // Load invoice details
                     if (opts.invoice_id) {
-                        vsapi
-                            .call(`${main_view.base_url}/prm/invoice/details`, {
-                                id: opts.invoice_id
-                            })
+                        vsapi.call(`${main_view.base_url}/prm/invoice/details`, { id: opts.invoice_id })
                             .then(res => {
                                 if (res.status_code === 200) {
                                     const d = res.data || {};
-                                    const bal = Number(d.balance || 0).toFixed(
-                                        2
-                                    );
-
+                                    const bal = Number(d.balance || 0).toFixed(2);
                                     const set = (id, val) => {
-                                        const el = me.divModal.querySelector(
-                                            "#" + id
-                                        );
+                                        const el = me.divModal.querySelector("#" + id);
                                         if (el) el.textContent = val;
                                     };
-
                                     set("f_due", "$" + bal);
                                     set("f_bal", "$" + bal);
                                     set("f_tot", "$0.00");
-
-                                    if (d.tenant_name)
-                                        set("lbl_tenant", d.tenant_name);
-                                    if (d.code) set("lbl_invoice", d.code);
                                 }
                             });
                     }
 
-                    // Load banks
-                    vsapi
-                        .call(`${main_view.base_url}/prm/invoice/form-options`)
+                    vsapi.call(`${main_view.base_url}/prm/invoice/form-options`)
                         .then(res => {
                             const banks = res?.data?.banks || [];
                             if (me.controls.bank_transfer_bank_id) {
-                                VSUtil.setComboItems(
-                                    me.controls.bank_transfer_bank_id,
-                                    banks,
-                                    "id",
-                                    "name",
-                                    true,
-                                    "— Select Bank —"
-                                );
+                                VSUtil.setComboItems(me.controls.bank_transfer_bank_id, banks, "id", "name", true, "— Select Bank —");
                             }
                             if (me.controls.cheque_bank_id) {
-                                VSUtil.setComboItems(
-                                    me.controls.cheque_bank_id,
-                                    banks,
-                                    "id",
-                                    "name",
-                                    true,
-                                    "— Select Bank —"
-                                );
+                                VSUtil.setComboItems(me.controls.cheque_bank_id, banks, "id", "name", true, "— Select Bank —");
                             }
                         });
                 },
@@ -2392,41 +2725,36 @@ const ReceiveDialog = (() => {
                     {
                         label: "Receive",
                         cssClass: "btn btn-primary",
-                        click: (me, btn) => {
-                            const payload = me.convertPayment(me.getData());
+                       click: (me, btn) => {
+                        const rawData = me.getData();
+                        const payload = me.convertPayment(rawData);
+                        const totalInput = payload.pmt_breakdowns.reduce((sum, item) => sum + item.amount, 0);
+                        const dueEl = me.divModal.querySelector("#f_due");
+                        const balanceDue = dueEl ? parseFloat(dueEl.textContent.replace(/[^0-9.-]+/g, "")) || 0 : 0;
 
-                            if (
-                                !payload.pmt_breakdowns ||
-                                payload.pmt_breakdowns.length === 0
-                            ) {
-                                return cv_interact.error(
-                                    "Please enter at least one payment amount."
-                                );
-                            }
-
-                            vsapi
-                                .call(
-                                    `${main_view.base_url}/prm/invoice/receive`,
-                                    payload,
-                                    btn
-                                )
-                                .then(res => {
-                                    if (res.status_code === 200) {
-                                        cv_interact.success(
-                                            "Payment Received Successfully"
-                                        );
-                                        me.hide(true);
-                                    } else {
-                                        cv_interact.error(
-                                            res.error_message || "Save failed"
-                                        );
-                                    }
-                                })
-                                .catch(err => {
-                                    console.error(err);
-                                    cv_interact.error("Network error occurred");
-                                });
+                        if (totalInput <= 0) {
+                            return cv_interact.error("Please enter a payment amount.");
                         }
+
+                        if (totalInput > (balanceDue + 0.01)) { 
+                            return cv_interact.error(
+                                `Blocked: Payment amount ($${totalInput.toFixed(2)}) cannot be greater than the balance due ($${balanceDue.toFixed(2)}).`
+                            );
+                        }
+
+                        vsapi.call(`${main_view.base_url}/prm/invoice/receive`, payload, btn)
+                            .then(res => {
+                                if (res.status_code === 200) {
+                                    cv_interact.success("Payment Received Successfully");
+                                    me.hide(true);
+                                } else {
+                                    cv_interact.error(res.error_message || "Save failed");
+                                }
+                            }).catch(err => {
+                                console.error(err);
+                                cv_interact.error("Network error occurred");
+                            });
+                    }
                     }
                 ]
             });
