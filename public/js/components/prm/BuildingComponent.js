@@ -453,7 +453,7 @@ const BuildingDialog = (() => {
                                 if (me.dataOptions.id > 0) {
                                     cv_interact.success("Building has been updated successfully");
                                 } else {
-                                    cv_interact.success("New building has been added successfully");
+                                    cv_interact.success("New building has been added successfully.");
                                 }
                             } else {
                                 cv_interact.error(res.error_message);
