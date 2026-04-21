@@ -10,11 +10,11 @@ var BillPaymentComponent = (() => {
     mThis.elFilter_category = mThis.self.querySelector("#_bill_expense_type_id");
     mThis.elFilter_status = mThis.self.querySelector("#_bill_status_id");
     mThis.elFilter_date = mThis.self.querySelector("#_payment_date");
-    mThis.elSearch = mThis.self.querySelector("#_search_bill_payment"); 
+    mThis.elSearch = mThis.self.querySelector("#_search_bill_payment");
 
     mThis.cols = [
         { title: "", className: "align-middle" },
-        
+
         {
             transTitle: "titles.Payment Date",
             className: "align-middle",
@@ -53,7 +53,7 @@ var BillPaymentComponent = (() => {
         //     className: "align-middle",
         //     data: (data) => `<span class="d-block text-prm-custom">${data.ref_no ?? "_"}</span>`,
         // },
-        
+
         {
             title: " Amount",
             className: "align-middle text-end",
@@ -163,11 +163,11 @@ var BillPaymentComponent = (() => {
 
     mThis.getFilterData = () => {
         let p = {
-            
+
             status_id: mThis.elFilter_status.value,
             search_value: mThis.elSearch.value,
             payment_date:    mThis.elFilter_date?.value ?? "",
-            // expense_type_id: mThis.elFilter_category.value, 
+            // expense_type_id: mThis.elFilter_category.value,
         };
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             p[el.dataset.field] = el.value;
@@ -324,7 +324,7 @@ var BillPaymentComponent = (() => {
             },
         });
     };
-    
+
     mThis.prepareFormOptions = (onFinish) => {
         vsapi.call(`${main_view.base_url}/prm/bill/form-options`, null, null, null)
             .then((res) => {
@@ -391,7 +391,7 @@ const BillPaymentDialog = (() => {
                                 <label style="color:#777777;padding-left:6px;">Payer</label>
                             </div>
                         </div>
-                        
+
                         <div class="col-3">
                             <div class="material-input outlined bg-light rounded">
                                 <input name="total_amount" class="form-control text-end" style="cursor:not-allowed;" readonly>
@@ -534,7 +534,7 @@ const BillPaymentDialog = (() => {
                         op.vendor_id = me.dataOptions.vendorId;
 
                         console.log(9988,op);
-                        
+
                         vsapi.call(`${main_view.base_url}/prm/bill-payment/save`, op, btn, null)
                             .then((res) => {
                                 if (res.status_code === 200) {

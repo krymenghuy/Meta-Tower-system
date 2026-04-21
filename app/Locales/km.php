@@ -72,6 +72,11 @@ return [
         'Category' => 'ប្រភេទ',
         'Delete' => 'លុបចោល',
         'Modify' => 'កែប្រែ',
+        'Space' => 'បន្ទប់',
+        'Invoice No' => 'លេខវិក្កយបត្រ',
+        'Expiration Date' => 'កាលបរិច្ឆេទផុតកំណត់',
+        'Receipt No' => 'លេខបង្កាន់ដៃ',
+        'Mode of Payment' => 'របៀបទូទាត់',
 
 
 
@@ -142,6 +147,7 @@ return [
         'Service Request' => 'សំណើសេវាកម្ម',
         'Purchase Orders' => 'ការបញ្ជាទិញ',
         'Invoices' => 'វិក័យប័ត្រ',
+        'Receipts' => 'បង្កាន់ដៃ',
         'Reservation' => 'ការចុះឈ្មោះ',
         'Vendors' => 'អ្នកផ្ញើរ',
         'Bills' => 'វិក័យប័ត្រ',

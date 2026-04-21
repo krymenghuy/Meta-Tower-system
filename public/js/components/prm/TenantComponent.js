@@ -90,18 +90,17 @@ var TenantComponent = new (function () {
             title: "Status",
             className: "align-middle text-center",
             data: (data) => {
-                const status = (data.status ?? "").toUpperCase();
-
+                const status = data.status;
                 let cls =
                     "badge text-warning bg-warning-subtle border border-warning";
 
-                if (status === "Pending") {
+                if (status == "Pending") {
                     cls =
                         "badge text-warning bg-warning-subtle border border-warning";
-                } else if (status === "inactive") {
+                } else if (status === "Inactive") {
                     cls =
                         "badge text-danger bg-danger-subtle border border-danger";
-                } else if (status === "active") {
+                } else if (status == "Active") {
                     cls =
                         "badge text-success bg-success-subtle border border-success";
                 }
@@ -650,6 +649,34 @@ var TenantComponent = new (function () {
     };
     mThis.getPageContainer = (pageName) => {
         return mThis.pages[pageName];
+    };
+    mThis.openTenantDocument = async (id, mode = "view") => {
+        const res = await vsapi.call(
+            [main_view.base_url, "/prm/tenant/document/download"].join(""),
+            { id },
+            false,
+            null,
+        );
+        if (res.status_code !== 200) {
+            cv_interact.error(res.error_message || "Failed to open document.");
+            return;
+        }
+        const { data_url, file_name } = res.data || {};
+        if (!data_url) {
+            cv_interact.error("Document URL is missing.");
+            return;
+        }
+        if (mode === "download") {
+            const a = document.createElement("a");
+            a.href = data_url;
+            a.download = file_name || "document";
+            a.target = "_blank";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            return;
+        }
+        window.open(data_url, "_blank");
     };
     mThis.showPage = async (pageName, op = {}) => {
         if (this.self.style.display !== "block") {
@@ -1204,7 +1231,10 @@ var TenantComponent = new (function () {
                         </td>
                        <td class="text-end py-3 px-3">
                             <div class="d-flex justify-content-end">
-                                <button type="button" class="btn btn-outline-secondary btn-sm border-0 shadow-none hover-primary view-doc" data-id="${doc.id}" title="Download Document" aria-label="Download Document">
+                                <button type="button" class="btn btn-outline-primary btn-sm border-0 shadow-none view-doc" data-id="${doc.id}" title="View Document" aria-label="View Document">
+                                    <i class="fa-regular fa-eye"></i>
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm border-0 shadow-none download-doc" data-id="${doc.id}" title="Download Document" aria-label="Download Document">
                                     <i class="fa-solid fa-cloud-arrow-down"></i>
                                 </button>
                                 <button type="button" class="btn btn-outline-danger btn-sm border-0 shadow-none delete-doc-btn" data-id="${doc.id}" title="Delete Document "aria-label="Delete Document">
@@ -1272,27 +1302,13 @@ var TenantComponent = new (function () {
             div.querySelectorAll('.view-doc').forEach(btn => {
                 btn.addEventListener('click', async (e) => {
                     const id = e.currentTarget.dataset.id;
-
-                    const res = await vsapi.call(
-                        [main_view.base_url, "/prm/tenant/document/download"].join(""),
-                        { id: id },
-                        false,
-                        null
-                    );
-
-                    if (res.status_code === 200) {
-                        const { data_url, file_name } = res.data;
-
-                        // Create a temporary anchor and trigger download
-                        const a = document.createElement('a');
-                        a.href = data_url;
-                        a.download = file_name || 'document';
-                        document.body.appendChild(a);
-                        a.click();
-                        document.body.removeChild(a);
-                    } else {
-                        cv_interact.error(res.error_message || "Failed to download document.");
-                    }
+                    mThis.openTenantDocument(id, "view");
+                });
+            });
+            div.querySelectorAll('.download-doc').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = e.currentTarget.dataset.id;
+                    mThis.openTenantDocument(id, "download");
                 });
             });
 
