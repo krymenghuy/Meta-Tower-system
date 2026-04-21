@@ -444,22 +444,22 @@ const CreateMaintenanceDialog = (() => {
             },
             onPrepareForm: (me, data) => {
                 me.detail = data.maintenance_details || null;
-                const allSpaces = Array.isArray(data.building_spaces) ? data.building_spaces : [];
-                const allAmenities = Array.isArray(data.amenities) ? data.amenities : [];
-                const applyBuildingFilter = () => {
-                    const buildingId = Number(me.controls?.building_id?.value || 0);
-                    const oldSpaceId = me.controls?.space_id?.value || "";
-                    const oldAmenityId = me.controls?.amenity_id?.value || "";
-                    const spaces = buildingId ? allSpaces.filter((x) => Number(x.building_id) === buildingId) : [];
-                    const amenities = buildingId ? allAmenities.filter((x) => Number(x.building_id) === buildingId) : [];
-                    VSUtil.setComboItems(me.controls?.space_id, spaces, "id", "code", "", "Select space", "");
-                    VSUtil.setComboItems(me.controls?.amenity_id, amenities, "id", "amenity_code", "", "Select code amenity", "");
-                    if (me.controls?.space_id && spaces.some((x) => String(x.id) === String(oldSpaceId))) me.controls.space_id.value = oldSpaceId;
-                    if (me.controls?.amenity_id && amenities.some((x) => String(x.id) === String(oldAmenityId))) me.controls.amenity_id.value = oldAmenityId;
-                };
-                if (me._onBuildingChange) me.controls?.building_id?.removeEventListener("change", me._onBuildingChange);
-                me._onBuildingChange = () => applyBuildingFilter();
-                me.controls?.building_id?.addEventListener("change", me._onBuildingChange);
+                // const allSpaces = Array.isArray(data.building_spaces) ? data.building_spaces : [];
+                // const allAmenities = Array.isArray(data.amenities) ? data.amenities : [];
+                // const applyBuildingFilter = () => {
+                //     const buildingId = Number(me.controls?.building_id?.value || 0);
+                //     const oldSpaceId = me.controls?.space_id?.value || "";
+                //     const oldAmenityId = me.controls?.amenity_id?.value || "";
+                //     const spaces = buildingId ? allSpaces.filter((x) => Number(x.building_id) === buildingId) : [];
+                //     const amenities = buildingId ? allAmenities.filter((x) => Number(x.building_id) === buildingId) : [];
+                //     VSUtil.setComboItems(me.controls?.space_id, spaces, "id", "code", "", "Select space", "");
+                //     VSUtil.setComboItems(me.controls?.amenity_id, amenities, "id", "amenity_code", "", "Select code amenity", "");
+                //     if (me.controls?.space_id && spaces.some((x) => String(x.id) === String(oldSpaceId))) me.controls.space_id.value = oldSpaceId;
+                //     if (me.controls?.amenity_id && amenities.some((x) => String(x.id) === String(oldAmenityId))) me.controls.amenity_id.value = oldAmenityId;
+                // };
+                // if (me._onBuildingChange) me.controls?.building_id?.removeEventListener("change", me._onBuildingChange);
+                // me._onBuildingChange = () => applyBuildingFilter();
+                // me.controls?.building_id?.addEventListener("change", me._onBuildingChange);
 
                 if (me.dataOptions?.space_id) {
                     me.detail = me.detail || {};
@@ -483,9 +483,9 @@ const CreateMaintenanceDialog = (() => {
                     if (me.detail?.space_id && me.controls?.space_id) me.controls.space_id.value = me.detail.space_id;
                     if (me.detail?.amenity_id && me.controls?.amenity_id) me.controls.amenity_id.value = me.detail.amenity_id;
                     if (me.detail?.building_id && me.controls?.building_id) me.controls.building_id.value = me.detail.building_id;
-                    applyBuildingFilter();
-                    if (me.detail?.space_id && me.controls?.space_id) me.controls.space_id.value = me.detail.space_id;
-                    if (me.detail?.amenity_id && me.controls?.amenity_id) me.controls.amenity_id.value = me.detail.amenity_id;
+                    // applyBuildingFilter();
+                    // if (me.detail?.space_id && me.controls?.space_id) me.controls.space_id.value = me.detail.space_id;
+                    // if (me.detail?.amenity_id && me.controls?.amenity_id) me.controls.amenity_id.value = me.detail.amenity_id;
                     if (spaceRow && amenityRow) {
                         const val = typeUnit?.value || "";
                         spaceRow.style.display = val === "space" ? "" : "none";

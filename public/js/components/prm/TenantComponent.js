@@ -90,18 +90,17 @@ var TenantComponent = new (function () {
             title: "Status",
             className: "align-middle text-center",
             data: (data) => {
-                const status = (data.status ?? "").toUpperCase();
-
+                const status = data.status;
                 let cls =
                     "badge text-warning bg-warning-subtle border border-warning";
 
-                if (status === "Pending") {
+                if (status == "Pending") {
                     cls =
                         "badge text-warning bg-warning-subtle border border-warning";
-                } else if (status === "inactive") {
+                } else if (status === "Inactive") {
                     cls =
                         "badge text-danger bg-danger-subtle border border-danger";
-                } else if (status === "active") {
+                } else if (status == "Active") {
                     cls =
                         "badge text-success bg-success-subtle border border-success";
                 }
