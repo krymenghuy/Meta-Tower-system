@@ -95,8 +95,8 @@ ${fontLink}${biLink}${styleHTML}
             let discDisplay = `<span style="color:#9CA3AF;">—</span>`;
             if (disc > 0) {
                 discDisplay = (discType === "amount" || discType === "$")
-                    ? `<span style="color:#EF4444;font-weight:600;">-${currency}${fmt(disc)}</span>`
-                    : `<span style="color:#EF4444;font-weight:600;">-${fmt(disc)}%</span>`;
+                    ? `<span style="color:#EF4444;font-weight:600;">${currency}${fmt(disc)}</span>`
+                    : `<span style="color:#EF4444;font-weight:600;">${fmt(disc)}%</span>`;
             }
 
             const rowBg = i % 2 !== 0 ? '#FAFBFF' : '#FFFFFF';
@@ -120,7 +120,7 @@ ${fontLink}${biLink}${styleHTML}
                 <td style="padding:11px 10px;text-align:center;color:#6B7280;font-size:11px;border-bottom:1px solid #EEF0F5;">${formatDate(item.end_date)}</td>
                 <td style="padding:11px 14px;text-align:right;color:#374151;font-size:12px;border-bottom:1px solid #EEF0F5;">${currency}${fmt(price)}</td>
                 <td style="padding:11px 14px;text-align:right;border-bottom:1px solid #EEF0F5;">${discDisplay}</td>
-                <td style="padding:11px 10px;text-align:center;font-size:11px;border-bottom:1px solid #EEF0F5;color:${taxRate > 0 ? '#2563EB' : '#9CA3AF'};">${taxRate > 0 ? `+${taxRate}%` : "—"}</td>
+                <td style="padding:11px 10px;text-align:center;font-size:11px;border-bottom:1px solid #EEF0F5;color:${taxRate > 0 ? '#2563EB' : '#9CA3AF'};">${taxRate > 0 ? `${taxRate}%` : "—"}</td>
                 <td style="padding:11px 14px;text-align:right;font-weight:700;color:#1A3D91;font-size:13px;border-bottom:1px solid #EEF0F5;">${currency}${fmt(total)}</td>
             </tr>`;
         }).join("");
@@ -184,9 +184,9 @@ ${fontLink}${biLink}${styleHTML}
         <div style="position:absolute;right:60px;top:20px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,0.05);pointer-events:none;"></div>
 
         <div style="display:flex;gap:18px;align-items:flex-start;position:relative;">
-            <div style="width:60px;height:60px;border-radius:14px;background:rgba(255,255,255,0.12);border:1.5px solid rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;">
+            <div style="width:70px;height:76px;background:rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;">
                 <img src="../assets/images/meta/Meta_logo1.png" alt="Logo"
-                    style="width:54px;height:54px;object-fit:contain;"
+                    style="width:60px;height:63px;object-fit:contain;"
                     onerror="this.parentElement.innerHTML='<span style=\'font-size:22px;font-weight:900;color:#fff;font-family:Playfair Display,serif;\'>M</span>'">
             </div>
             <div>
@@ -228,23 +228,15 @@ ${fontLink}${biLink}${styleHTML}
         </div>
 
         <!-- Dates -->
-        <div style="padding:18px 24px;display:flex;flex-direction:column;justify-content:center;gap:10px;border-right:1px solid #EEF0F5;min-width:160px;">
-            ${invoice.due_date ? `
-            <div>
-                <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#9CA3AF;margin-bottom:3px;">Due Date</div>
-                <div style="font-size:13px;font-weight:600;color:#111827;">${formatDate(invoice.due_date)}</div>
-            </div>` : ""}
-            ${invoice.updated_at ? `
-            <div>
-                <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#9CA3AF;margin-bottom:3px;">Issued On</div>
-                <div style="font-size:13px;font-weight:600;color:#111827;">${formatDate(invoice.updated_at)}</div>
-            </div>` : ""}
+        <div style="padding:18px 24px;display:flex;flex-direction:column;justify-content:center;min-width:160px;border-right:1px solid #EEF0F5;">
+            <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#9CA3AF;margin-bottom:3px;">Due Date</div>
+            <div style="font-size:15px;font-weight:600;color:#111827;">${formatDate(invoice.due_date)}</div>
         </div>
 
         <!-- Amount Due -->
         <div style="padding:18px 24px;display:flex;flex-direction:column;justify-content:center;align-items:flex-end;min-width:180px;background:#F8FAFF;">
             <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#9CA3AF;margin-bottom:6px;">Amount Due</div>
-            <div style="font-size:28px;font-weight:800;font-family:'Playfair Display',serif;color:#0F2060;letter-spacing:-0.5px;line-height:1;">
+            <div style="font-size:28px;font-weight:800; color:#0F2060;letter-spacing:-0.5px;line-height:1;">
                 ${currency}${fmt(balance > 0 ? balance : grandTotal)}
             </div>
             <div style="margin-top:4px;font-size:11px;color:#6B7280;">
@@ -259,15 +251,15 @@ ${fontLink}${biLink}${styleHTML}
             <thead>
                 <tr>
                     <th style="text-align:left;">Description</th>
-                    <th style="text-align:center;width:85px;">Type</th>
-                    <th style="text-align:center;width:55px;">Qty</th>
-                    <th style="text-align:center;width:65px;">Unit</th>
-                    <th style="text-align:center;width:90px;">Start</th>
-                    <th style="text-align:center;width:90px;">End</th>
-                    <th style="text-align:right;width:90px;">Unit Price</th>
-                    <th style="text-align:right;width:85px;">Discount</th>
-                    <th style="text-align:center;width:60px;">Tax</th>
-                    <th style="text-align:right;width:95px;">Total</th>
+                    <th style="text-align:center;">Type</th>
+                    <th style="text-align:center;">Qty</th>
+                    <th style="text-align:center;">Unit</th>
+                    <th style="text-align:center;">Start</th>
+                    <th style="text-align:center;">End</th>
+                    <th style="text-align:right;">Unit Price</th>
+                    <th style="text-align:right;">Discount</th>
+                    <th style="text-align:center;">Tax</th>
+                    <th style="text-align:right;">Total</th>
                 </tr>
             </thead>
             <tbody>
@@ -295,7 +287,7 @@ ${fontLink}${biLink}${styleHTML}
                 </tr>
                 <tr style="background:linear-gradient(135deg,#0F2060,#1A3D91);">
                     <td style="padding:14px 16px;color:#fff;font-weight:700;font-size:13px;letter-spacing:0.3px;">Balance Due</td>
-                    <td style="padding:14px 16px;text-align:right;font-weight:800;color:#FDE68A;font-size:15px;font-family:'Playfair Display',serif;">${currency}${fmt(balance)}</td>
+                    <td style="padding:14px 16px;text-align:right;font-weight:800;color:#FDE68A;font-size:15px;">${currency}${fmt(balance)}</td>
                 </tr>
             </table>
         </div>

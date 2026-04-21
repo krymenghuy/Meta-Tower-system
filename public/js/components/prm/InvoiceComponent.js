@@ -60,7 +60,7 @@ var InvoiceComponent = (() => {
                 return ` <div class="d-flex text-warning align-items-center gap-2">
                 <div>
 
-                    <span class="d-block text-warning">
+                    <span class="d-block text-prm-custom ">
                         ${data.space_code ?? ""}
                     </span>
                 </div>
@@ -107,32 +107,10 @@ var InvoiceComponent = (() => {
             transTitle: "titles.Expiration Date",
             className: "align-middle text-nowrap text-center",
             data: data => {
-                const formatTime = time => {
-                    if (!time) return "";
-
-                    // Support HH:mm:ss or HH:mm
-                    let parts = time.split(":");
-                    let hour = parseInt(parts[0], 10);
-                    let minute = parts[1] ?? "00";
-
-                    if (isNaN(hour)) return "";
-
-                    const ampm = hour >= 12 ? "PM" : "AM";
-                    hour = hour % 12 || 12;
-
-                    // ensure 2-digit minute
-                    minute = minute.padStart(2, "0");
-
-                    return `${hour}:${minute} ${ampm}`;
-                };
-
                 return `
-                    <div class="d-flex flex-column align-items-start">
+                    <div class="d-flex flex-column align-items-center">
                         <span class="text-prm-custom text-nowrap">${data.due_date ??
                             ""}</span>
-                        <span class="text-warning small text-nowrap">
-                            Start Time:${formatTime(data.start_time)}
-                        </span>
                     </div>
                 `;
             }
@@ -142,7 +120,7 @@ var InvoiceComponent = (() => {
             className: "align-middle text-nowrap text-center",
             data: data => {
                 return `
-                    <div class="text-primary-custom" style="width:150px;">
+                    <div class="text-primary-custom" style="width:200px;">
                         <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ??
                             "..."}</span>
                     </div>
@@ -168,7 +146,7 @@ var InvoiceComponent = (() => {
                     cls =
                         "badge text-warning bg-warning-subtle border border-warning"; // Partially Paid
 
-                return `<span class="badge ${cls} text-capitalize px-3 py-2">
+                return `<span class="badge ${cls} text-capitalize d-inline-block text-center" style="min-width:90px">
                             ${data.payment_status_name || "—"}
                         </span>`;
             }
@@ -352,7 +330,7 @@ var InvoiceComponent = (() => {
                         "—"}
                     </td>
                     <td class="text-center">
-                        <span class="badge rounded-pill ${badgeClass} px-3 py-1 text-capitalize">
+                        <span class="badge ${badgeClass} px-3 py-1 text-capitalize">
                             ${rawType}
                         </span>
                     </td>
@@ -421,8 +399,8 @@ var InvoiceComponent = (() => {
                             <tr>
                                 <td colspan="9" class="text-end text-uppercase text-primary">Summary</td>
                                 <td class="text-end text-success fs-5">${currency}${fmt(
-            foot.total
-        )}</td>
+                                foot.total
+                            )}</td>
                             </tr>
                         </tfoot>
                     </table>
@@ -617,56 +595,36 @@ const InvoiceDialog = (() => {
                                         <div class="field-row">
                                             <label class="field-label fw-semibold">Phone Number</label>
                                             <span class="field-sep">:</span>
-                                            <input name="phone_number" class="data-input form-control field-input bg-light" readonly placeholder=" ">
+                                            <input name="phone_number" class="data-input form-control field-input bg-light cursor-blocked" readonly placeholder=" ">
                                         </div>
                                         <div class="field-row">
                                             <label class="field-label fw-semibold">Email Address</label>
                                             <span class="field-sep">:</span>
-                                            <input name="email" class="data-input form-control field-input" placeholder=" ">
+                                            <input name="email" class="data-input form-control field-input cursor-blocked" placeholder=" ">
                                         </div>
                                     </div>
 
-                                    <!-- RIGHT: Space / Date / Time -->
+                                    <!-- RIGHT: Space / Button -->
                                     <div>
-                                        <div class="field-row">
+                                        <div class="field-row ">
                                             <label class="field-label fw-semibold">Space / Room</label>
                                             <span class="field-sep">:</span>
-                                            <select name="space" class="data-input field-input" data-field="space_id" required>
-                                            </select>
+                                                <select name="space"  data-style="material" class="data-input form-control" data-field="space_id" required placeholder=" ">
+                                                </select>
                                         </div>
-                                        <div class="field-row">
+                                        <div class="field-row ">
                                             <label class="field-label fw-semibold">Due Date <span class="text-danger">*</span></label>
                                             <span class="field-sep">:</span>
                                             <input type="text" data-type="date" name="due_date" class="form-control data-input field-input" required placeholder=" ">
                                         </div>
-                                        <div class="field-row">
-                                            <label class="field-label fw-semibold">Time</label>
-                                            <span class="field-sep">:</span>
-                                            <input type="time" name="start_time" class="form-control data-input field-input" data-field="start_time" placeholder=" ">
-                                        </div>
-                                    </div>
-
-                                </div>
-
-                                <!-- Quick Add Buttons -->
-                                <div class="row mb-4">
-                                    <div class="col-12 ">
-                                        <div class="d-flex flex-wrap gap-2 justify-content-end">
-                                            <button name="btnRent" class="btn btn-outline-primary px-3 rounded-pill">
-                                                <i class="fa fa-home"></i> Rent
-                                            </button>
-                                            <button name="btnService" class="btn btn-outline-warning px-3 rounded-pill">
-                                                <i class="fa fa-tools"></i> Service
-                                            </button>
-                                            <button name="btnRequest" class="btn btn-outline-info px-3 rounded-pill">
-                                                <i class="fa fa-clipboard-list"></i> Request
-                                            </button>
-                                            <button name="btnElectric" class="btn btn-outline-success px-3 rounded-pill">
-                                                <i class="fa fa-bolt"></i> Electric
-                                            </button>
-                                            <button name="btnWater" class="btn btn-outline-info px-3 rounded-pill">   <!-- changed color to info -->
-                                                <i class="fa fa-tint"></i> Water
-                                            </button>
+                                        <div class="field-row w-100 justify-content-end">
+                                            <div class="d-flex flex-wrap gap-2 justify-content-end ">
+                                                <button name="btnRent" class="custom-button">Rent</button>
+                                                <button name="btnService" class="custom-button">Service</button>
+                                                <button name="btnRequest" class="custom-button">Request</button>
+                                                <button name="btnElectric" class="custom-button">Electric</button>
+                                                <button name="btnWater" class="custom-button">Water</button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -738,7 +696,29 @@ const InvoiceDialog = (() => {
                             width: var(--field-width) !important;
                             z-index: 9999;
                         }
+                        .custom-button {
+                            color: #090909;
+                            padding: 10px;
+                            font-size: 12px;
+                            border-radius: 0.5em;
+                            background: #e1e5f2;
+                            cursor: pointer;
+                            border: 1px solid #e8e8e8;
+                            transition: all 0.3s;
+                        }
+
+                        .custom-button:active {
+                            color: #666;
+                            box-shadow: inset 4px 4px 12px #c5c5c5, inset -4px -4px 12px #ffffff;
+                        }
+
+                        .cursor-blocked {
+                            cursor: not-allowed !important;
+                        }
+
                         </style>
+
+
                     `,
 
                 contentCreated: me => {
@@ -818,7 +798,7 @@ const InvoiceDialog = (() => {
                                         <input class="data-input form-control bg-light"
                                             data-field="contract_id" name="contract_id"
                                             type="text" readonly>
-                                        <label class="form-label" style="font-size:13px;color:#555;">Unit Code / Room</label>
+                                        <label style="padding-left:6px;color:#777777;">Unit Code / Room</label>
                                     </div>
                                     <div class="material-input outlined">
                                         <select class="data-input form-control" data-field="monthly" name="monthly" data-style="material" placeholder="Monthly">
@@ -828,23 +808,23 @@ const InvoiceDialog = (() => {
                                     <div class="material-input outlined">
                                         <input class="data-input form-control" data-field="start_date" name="start_date"
                                             type="text" readonly>
-                                        <label class="form-label" style="font-size:13px;color:#555;">Start Date</label>
+                                        <label style="padding-left:6px;color:#777777;"">Start Date</label>
                                     </div>
                                     <div class="material-input outlined">
                                         <input class="data-input form-control" data-field="end_date" name="end_date"
                                             type="text" readonly>
-                                        <label class="form-label" style="font-size:13px;color:#555;">End Date</label>
+                                        <label style="padding-left:6px;color:#777777;"">End Date</label>
                                     </div>
                                     <div class="material-input outlined">
                                         <input class="data-input form-control" data-field="price" name="price"
                                             type="text" readonly>
-                                        <label class="form-label" style="font-size:13px;color:#555;">Price (Effective)</label>
+                                        <label style="padding-left:6px;color:#777777;">Price (Effective)</label>
                                     </div>
                                     <div class="material-input outlined" style="display:flex; gap:8px; align-items:flex-end;">
                                         <div style="flex:1">
                                             <input class="data-input form-control" data-field="discount" name="discount"
-                                                type="text" placeholder="0">
-                                            <label class="form-label" style="font-size:13px;color:#555;">Discount</label>
+                                                type="number" placeholder="0" >
+                                            <label style="padding-left:6px;color:#777777;">Discount</label>
                                         </div>
                                         <div style="width:85px;">
                                             <select class="data-input form-control" data-field="discount_type" name="discount_type">
@@ -855,12 +835,12 @@ const InvoiceDialog = (() => {
                                     </div>
                                     <div class="material-input outlined">
                                         <input class="data-input form-control" data-field="tax_rate" name="tax_rate"
-                                            type="text" placeholder="0">
-                                        <label class="form-label" style="font-size:13px;color:#555;">Tax %</label>
+                                            type="number" placeholder="0">
+                                        <label style="padding-left:6px;color:#777777;">Tax %</label>
                                     </div>
                                     <div style="grid-column: span 2;" class="material-input outlined">
                                         <textarea class="data-input form-control" data-field="remark" name="remark" rows="3"></textarea>
-                                        <label class="form-label" style="font-size:13px;color:#555;">Remark</label>
+                                        <label style="padding-left:6px;color:#777777;">Remark</label>
                                     </div>
                                 `;
                                 return div;
@@ -992,7 +972,7 @@ const InvoiceDialog = (() => {
                                         0
                                 );
 
-                                console.log(111111111111, {
+                                  console.log(11, {
                                     start_date: resolvedStartDate,
                                     end_date: resolvedEndDate
                                 });
@@ -1044,35 +1024,35 @@ const InvoiceDialog = (() => {
                                 div.innerHTML = `
                                     <div class="material-input outlined">
                                         <input class="data-input form-control" data-field="old_electric" name="old_electric" type="number" placeholder="0" min="0">
-                                        <label class="form-label" style="font-size:13px;color:#555;">Old Reading (kWh)</label>
+                                        <label style="padding-left:6px;color:#777777;">Old Reading (kWh)</label>
                                     </div>
                                     <div class="material-input outlined">
                                         <input class="data-input form-control" data-field="new_electric" name="new_electric" type="number" placeholder="0" min="0">
-                                        <label class="form-label" style="font-size:13px;color:#555;">New Reading (kWh)</label>
+                                        <label style="padding-left:6px;color:#777777;">New Reading (kWh)</label>
                                     </div>
                                     <div class="material-input outlined">
                                         <input class="data-input form-control bg-light" data-field="units_used" name="units_used" type="text" readonly placeholder="Auto calc">
-                                        <label class="form-label" style="font-size:13px;color:#555;">Units Used (kWh)</label>
+                                        <label style="padding-left:6px;color:#777777;">Units Used (kWh)</label>
                                     </div>
                                     <div class="material-input outlined">
                                         <input class="data-input form-control" data-field="price_per_unit" name="price_per_unit" type="number" placeholder="0.00" min="0" step="0.01">
-                                        <label class="form-label" style="font-size:13px;color:#555;">Price per kWh ($)</label>
+                                        <label style="padding-left:6px;color:#777777;">Price per kWh ($)</label>
                                     </div>
                                     <div class="material-input outlined">
                                         <input class="data-input form-control" data-field="start_date" name="start_date" type="text" data-type="date" placeholder="Start Date">
-                                        <label class="form-label" style="font-size:13px;color:#555;">Start Date</label>
+                                        <label style="padding-left:6px;color:#777777;">Start Date</label>
                                     </div>
                                     <div class="material-input outlined">
                                         <input class="data-input form-control" data-field="end_date" name="end_date" type="text" data-type="date" placeholder="End Date">
-                                        <label class="form-label" style="font-size:13px;color:#555;">End Date</label>
+                                        <label style="padding-left:6px;color:#777777;">End Date</label>
                                     </div>
                                     <div class="material-input outlined" style="grid-column: span 2;">
                                         <input class="data-input form-control bg-light" data-field="total_amount" name="total_amount" type="text" readonly placeholder="Auto calc">
-                                        <label class="form-label" style="font-size:13px;color:#555;">Total Amount ($)</label>
+                                        <label style="padding-left:6px;color:#777777;">Total Amount ($)</label>
                                     </div>
                                     <div style="grid-column: span 2;" class="material-input outlined">
                                         <textarea class="data-input form-control" data-field="remark" name="remark" rows="2"></textarea>
-                                        <label class="form-label" style="font-size:13px;color:#555;">Remark</label>
+                                        <label style="padding-left:6px;color:#777777;">Remark</label>
                                     </div>
                                 `;
                                 return div;
@@ -1212,35 +1192,35 @@ const InvoiceDialog = (() => {
                                 div.innerHTML = `
                                     <div class="material-input outlined">
                                         <input class="data-input form-control" data-field="old_water" name="old_water" type="number" placeholder="0" min="0">
-                                        <label class="form-label" style="font-size:13px;color:#555;">Old Reading (m³)</label>
+                                        <label style="padding-left:6px;color:#777777;">Old Reading (m³)</label>
                                     </div>
                                     <div class="material-input outlined">
                                         <input class="data-input form-control" data-field="new_water" name="new_water" type="number" placeholder="0" min="0">
-                                        <label class="form-label" style="font-size:13px;color:#555;">New Reading (m³)</label>
+                                        <label style="padding-left:6px;color:#777777;">New Reading (m³)</label>
                                     </div>
                                     <div class="material-input outlined">
                                         <input class="data-input form-control bg-light" data-field="units_used" name="units_used" type="text" readonly placeholder="Auto calc">
-                                        <label class="form-label" style="font-size:13px;color:#555;">Units Used (m³)</label>
+                                        <label style="padding-left:6px;color:#777777;">Units Used (m³)</label>
                                     </div>
                                     <div class="material-input outlined">
                                         <input class="data-input form-control" data-field="price_per_unit" name="price_per_unit" type="number" placeholder="0.00" min="0" step="0.01">
-                                        <label class="form-label" style="font-size:13px;color:#555;">Price per m³ ($)</label>
+                                        <label style="padding-left:6px;color:#777777;">Price per m³ ($)</label>
                                     </div>
                                     <div class="material-input outlined">
                                         <input class="data-input form-control" data-field="start_date" name="start_date" type="text" data-type="date" placeholder="Start Date">
-                                        <label class="form-label" style="font-size:13px;color:#555;">Start Date</label>
+                                        <label style="padding-left:6px;color:#777777;">Start Date</label>
                                     </div>
                                     <div class="material-input outlined">
                                         <input class="data-input form-control" data-field="end_date" name="end_date" type="text" data-type="date" placeholder="End Date">
-                                        <label class="form-label" style="font-size:13px;color:#555;">End Date</label>
+                                        <label style="padding-left:6px;color:#777777;">End Date</label>
                                     </div>
                                     <div class="material-input outlined" style="grid-column: span 2;">
                                         <input class="data-input form-control bg-light" data-field="total_amount" name="total_amount" type="text" readonly placeholder="Auto calc">
-                                        <label class="form-label" style="font-size:13px;color:#555;">Total Amount ($)</label>
+                                        <label style="padding-left:6px;color:#777777;">Total Amount ($)</label>
                                     </div>
                                     <div style="grid-column: span 2;" class="material-input outlined">
                                         <textarea class="data-input form-control" data-field="remark" name="remark" rows="2"></textarea>
-                                        <label class="form-label" style="font-size:13px;color:#555;">Remark</label>
+                                        <label style="padding-left:6px;color:#777777;">Remark</label>
                                     </div>
                                 `;
                                 return div;
@@ -1396,15 +1376,15 @@ const InvoiceDialog = (() => {
                                 </div>
                                 <div class="material-input outlined">
                                     <input class="data-input form-control" data-field="unit_type" name="unit_type" type="text" readonly placeholder="Auto fill">
-                                    <label class="form-label" style="font-size:13px;color:#555;">Unit Type</label>
+                                    <label style="padding-left:6px;color:#777777;">Unit Type</label>
                                 </div>
                                 <div class="material-input outlined">
                                     <input class="data-input form-control" data-field="price" name="price" type="text" readonly placeholder="Auto fill">
-                                    <label class="form-label" style="font-size:13px;color:#555;">Price</label>
+                                    <label style="padding-left:6px;color:#777777;">Price</label>
                                 </div>
                                 <div class="material-input outlined" style="display:flex; gap:8px;">
-                                    <input class="data-input form-control" data-field="discount" name="discount" type="text" placeholder="0">
-                                    <label class="form-label" style="font-size:13px;color:#555;">Discount</label>
+                                    <input class="data-input form-control" data-field="discount" name="discount" type="number" placeholder="0">
+                                    <label style="padding-left:6px;color:#777777;">Discount</label>
                                     <div style="display:flex; gap:8px;">
                                         <select class="data-input form-control" data-field="discount_type" name="discount_type" style="width:80px;">
                                             <option value="percent">%</option>
@@ -1413,12 +1393,12 @@ const InvoiceDialog = (() => {
                                     </div>
                                 </div>
                                 <div class="material-input outlined">
-                                    <input class="data-input form-control" data-field="tax_rate" name="tax_rate" type="text" placeholder="0">
-                                    <label class="form-label" style="font-size:13px;color:#555;">Tax %</label>
+                                    <input class="data-input form-control" data-field="tax_rate" name="tax_rate" type="number" placeholder="0">
+                                    <label style="padding-left:6px;color:#777777;">Tax %</label>
                                 </div>
                                 <div style="grid-column: span 2;" class="material-input outlined">
                                     <textarea class="data-input form-control" data-field="remark" name="remark" rows="3"></textarea>
-                                    <label class="form-label" style="font-size:13px;color:#555;">Remark</label>
+                                    <label style="padding-left:6px;color:#777777;">Remark</label>
                                 </div>
                             `;
                                 return div;
@@ -1514,151 +1494,111 @@ const InvoiceDialog = (() => {
                     // ==================Service Request=========
                     me.controls.btnRequest.onclick = () => {
                         if (!me._selectedTenantId) {
-                            return cv_interact.error(
-                                "Please select Tenant first"
-                            );
+                            return cv_interact.error("Please select Tenant first");
                         }
+                        const requests = me._requestedServices || [];
 
-                        const services = availableItem || [];
-                        if (services.length === 0) {
-                            return cv_interact.error("No services available");
-                        }
+                        const serviceRequestOption = requests.map(
+                            sr => `<option value="${sr.request_id}">${sr.code} (${sr.space_code})</option>`
+                        ).join("");
 
-                        const serviceOptions = services
-                            .map(
-                                s =>
-                                    `<option value="${s.id}">${s.service ||
-                                        s.name ||
-                                        `Service #${s.id}`}</option>`
-                            )
-                            .join("");
+                        InputBox.resetInstance("requestPopUp");
 
                         InputBox.show({
-                            title: "Add Service",
-                            instanceKey: "servicePopUp",
-
+                            title: "Service Request",
+                            instanceKey: "requestPopUp",
                             createContent() {
                                 const div = document.createElement("div");
-                                div.style.cssText =
-                                    "display:grid; grid-template-columns:1fr 1fr; gap:14px; padding:4px 2px;";
+                                div.style.cssText = "display:grid; grid-template-columns:1fr 1fr; gap:14px; padding:4px 2px;";
+
                                 div.innerHTML = `
-                                <div class="material-input outlined">
-                                    <select class="data-input form-control" data-style="material" data-field="service_id" name="service_id" placeholder="Select Service">
-                                        ${serviceOptions}
-                                    </select>
-                                </div>
-                                <div class="material-input outlined">
-                                    <input class="data-input form-control" data-field="unit_type" name="unit_type" type="text" readonly placeholder="Auto fill">
-                                    <label class="form-label" style="font-size:13px;color:#555;">Unit Type</label>
-                                </div>
-                                <div class="material-input outlined">
-                                    <input class="data-input form-control" data-field="price" name="price" type="text" readonly placeholder="Auto fill">
-                                    <label class="form-label" style="font-size:13px;color:#555;">Price</label>
-                                </div>
-                                <div class="material-input outlined" style="display:flex; gap:8px;">
-                                    <input class="data-input form-control" data-field="discount" name="discount" type="text" placeholder="0">
-                                    <label class="form-label" style="font-size:13px;color:#555;">Discount</label>
-                                    <div style="display:flex; gap:8px;">
-                                        <select class="data-input form-control" data-field="discount_type" name="discount_type" style="width:80px;">
-                                            <option value="percent">%</option>
-                                            <option value="amount">$</option>
+                                    <div class="material-input outlined">
+                                        <select class="data-input form-control" data-field="request_id" name="request_id" data-style="material"  placeholder="Request No">
+                                            ${serviceRequestOption}
                                         </select>
                                     </div>
-                                </div>
-                                <div class="material-input outlined">
-                                    <input class="data-input form-control" data-field="tax_rate" name="tax_rate" type="text" placeholder="0">
-                                    <label class="form-label" style="font-size:13px;color:#555;">Tax %</label>
-                                </div>
-                                <div style="grid-column: span 2;" class="material-input outlined">
-                                    <textarea class="data-input form-control" data-field="remark" name="remark" rows="3"></textarea>
-                                    <label class="form-label" style="font-size:13px;color:#555;">Remark</label>
-                                </div>
-                            `;
+                                    <div class="material-input outlined">
+                                        <input class="data-input form-control bg-light" data-field="service_name" name="service_name" type="text" readonly>
+                                        <label style="padding-left:6px;color:#777777;">Service Name</label>
+                                    </div>
+                                    <div class="material-input outlined">
+                                        <input class="data-input form-control bg-light" data-field="duration_hours" name="duration_hours" type="text" readonly>
+                                        <label style="padding-left:6px;color:#777777;">Duration (Hours)</label>
+                                    </div>
+                                    <div class="material-input outlined">
+                                        <input class="data-input form-control bg-light" data-field="total_price" name="total_price" type="text" readonly>
+                                        <label style="padding-left:6px;color:#777777;">Price</label>
+                                    </div>
+                                    <div class="material-input outlined" style="display:flex; gap:8px; align-items:flex-end;">
+                                        <div style="flex:1">
+                                            <input class="data-input form-control" data-field="discount" name="discount" type="number" placeholder="0">
+                                            <label style="padding-left:6px;color:#777777;">Discount</label>
+                                        </div>
+                                        <div style="width:85px;">
+                                            <select class="data-input form-control" data-field="discount_type" name="discount_type">
+                                                <option value="percent">%</option>
+                                                <option value="amount">$</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="material-input outlined">
+                                        <input class="data-input form-control" data-field="tax_rate" name="tax_rate" type="number" placeholder="0" >
+                                        <label style="padding-left:6px;color:#777777;">Tax %</label>
+                                    </div>
+                                    <div style="grid-column: span 2;" class="material-input outlined">
+                                        <textarea class="data-input form-control" data-field="remark" name="remark" rows="3"></textarea>
+                                        <label style="padding-left:6px;color:#777777;">Remark</label>
+                                    </div>
+                                `;
                                 return div;
                             },
 
                             onOpen(ibMe) {
-                                const elService = document.querySelector(
-                                    '[data-field="service_id"]'
-                                );
-                                const elUnitType = document.querySelector(
-                                    '[data-field="unit_type"]'
-                                );
-                                const elPrice = document.querySelector(
-                                    '[data-field="price"]'
-                                );
-                                const elDiscount = document.querySelector(
-                                    '[data-field="discount"]'
-                                );
+                                const elRequest = document.querySelector('[data-field="request_id"]');
+                                const elDuration = document.querySelector('[data-field="duration_hours"]');
+                                const elPrice = document.querySelector('[data-field="total_price"]');
+                                const elServiceName = document.querySelector('[data-field="service_name"]');
+                                const elRemark = document.querySelector('[data-field="remark"]');
 
-                                if (elService) elService.value = "";
-                                if (elUnitType) elUnitType.value = "";
-                                if (elPrice) elPrice.value = "";
-                                if (elDiscount) elDiscount.value = "";
+                                elRequest.addEventListener("change", e => {
+                                    const selectedId = Number(e.target.value);
+                                    const matched = requests.find(r => r.request_id === selectedId);
 
-                                const fillFields = serviceId => {
-                                    const selected = services.find(
-                                        s => String(s.id) === String(serviceId)
-                                    );
-                                    if (!selected) return;
-                                    if (elUnitType)
-                                        elUnitType.value =
-                                            selected.unit_type || "—";
-                                    if (elPrice)
-                                        elPrice.value = Number(
-                                            selected.price || 0
-                                        ).toFixed(2);
-                                };
-
-                                if (elService) {
-                                    elService.addEventListener("change", e => {
-                                        fillFields(e.target.value);
-                                    });
-                                }
+                                    if (matched) {
+                                        elDuration.value = matched.duration_hours || "0";
+                                        elPrice.value = Number(matched.total_price).toFixed(2);
+                                        elServiceName.value = matched.service_name || "";
+                                        elRemark.value = matched.remarks || "";
+                                    } else {
+                                        [elDuration, elPrice, elDate, elRemark].forEach(el => el.value = "");
+                                    }
+                                });
                             },
 
                             onConfirm(data, btn, ibMe) {
-                                if (!data.service_id) {
-                                    cv_interact.error(
-                                        "Please select a Service"
-                                    );
-                                    return;
+                                const selectedRequest = requests.find(r => r.request_id === Number(data.request_id));
+
+                                if (!selectedRequest) {
+                                    return cv_interact.error("Please select a service request");
                                 }
 
-                                const selectedService = services.find(
-                                    s =>
-                                        String(s.id) === String(data.service_id)
-                                );
-                                if (!selectedService) return;
+                                me.itemsView.addRow({
+                                    item_id: selectedRequest.request_id,
+                                    item_name: `${selectedRequest.service_name} (${selectedRequest.code})`,
+                                    type: "Service Request",
+                                    price: Number(selectedRequest.total_price),
+                                    qty: 1,
+                                    unit_type: `${selectedRequest.duration_hours || 0} hour`,
+                                    remarks: data.remark || selectedRequest.remarks || "",
+                                    space_id: selectedRequest.space_id,
+                                    space_code: selectedRequest.space_code,
+                                    discount: Number(data.discount) || 0,
+                                    discount_type: data.discount_type || "amount",
+                                    tax_rate: Number(data.tax_rate) || 0,
+                                    request_id: selectedRequest.request_id
+                                }, 0);
 
-                                const serviceDisplayName =
-                                    selectedService.service ||
-                                    selectedService.name ||
-                                    `Service #${selectedService.id}`;
-
-                                me.itemsView.addRow(
-                                    {
-                                        item_id: data.service_id,
-                                        item_name: serviceDisplayName,
-                                        type: "service",
-                                        price:
-                                            Number(selectedService.price) || 0,
-                                        qty: 1,
-                                        remarks:
-                                            selectedService.service ||
-                                            selectedService.name ||
-                                            "Service",
-                                        unit_type:
-                                            selectedService.unit_type || "—",
-                                        discount: Number(data.discount) || 0,
-                                        discount_type:
-                                            data.discount_type || "percent",
-                                        tax_rate: Number(data.tax_rate) || 0
-                                    },
-                                    0
-                                );
-
-                                cv_interact.success("Service added at the top");
+                                cv_interact.success("Service request added to invoice");
                                 ibMe.close();
                             }
                         });
@@ -1870,6 +1810,7 @@ const InvoiceDialog = (() => {
                                     me._tenantData = d;
                                     me._tenantSpaces = d.spaces || [];
                                     me._tenantMonths = d.months || [];
+                                    me._requestedServices = d.service_requests || [];
 
                                     VSUtil.setComboItems(
                                         me.controls.space,
@@ -1885,8 +1826,6 @@ const InvoiceDialog = (() => {
                     });
 
                     me.searchTenant.reset("");
-
-                    // === Save data helper ===
                     me.saveData = () => {
                         const header = me.getData();
                         const items = me.itemsView.getItems(); // Retrieves all row data
@@ -1896,7 +1835,6 @@ const InvoiceDialog = (() => {
                             header.tenant_id = me._selectedTenantId;
                         }
 
-                        // Helper to format dates for MySQL
                         const toMySQLDate = dateStr => {
                             if (!dateStr) return null;
                             const d = new Date(dateStr);
@@ -1950,10 +1888,6 @@ const InvoiceDialog = (() => {
 
                 onPrepareForm: (me, data) => {
                     availableItem = data.services || [];
-                    ServiceRequest = data.service_requests || [];
-                    console.log("Service Requests:", ServiceRequest);
-                    console.log("Available Items:", availableItem);
-
                     me._selectedTenantId = null;
                     me._tenantData = null;
                     me._tenantSpaces = [];
@@ -2135,7 +2069,7 @@ const ReceiveDialog = (() => {
                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
                                     <input name="cash" type="number" class="form-control data-input" data-field="cash"
                                         min="0" step="0.01" placeholder=" "/>
-                                    <label>Amount ($)</label>
+                                    <label style="padding-left:6px;color:#777777;">Amount ($)</label>
                                 </div>
                             </div>
                         </div>
@@ -2155,12 +2089,12 @@ const ReceiveDialog = (() => {
                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
                                     <input name="transfer_amount" type="number" class="form-control data-input"
                                         data-field="transfer_amount" min="0" step="0.01" placeholder=" "/>
-                                    <label>Amount ($)</label>
+                                    <label style="padding-left:6px;color:#777777;">Amount ($)</label>
                                 </div>
                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
                                     <input name="bank_ref_number" type="text" class="form-control data-input"
                                         data-field="bank_ref_number" placeholder=" "/>
-                                    <label>Ref Number</label>
+                                    <label style="padding-left:6px;color:#777777;">Ref Number</label>
                                 </div>
                             </div>
                         </div>
@@ -2184,12 +2118,12 @@ const ReceiveDialog = (() => {
                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
                                     <input name="card_amount" type="number" class="form-control data-input"
                                         data-field="card_amount" min="0" step="0.01" placeholder=" "/>
-                                    <label>Amount ($)</label>
+                                    <label style="padding-left:6px;color:#777777;">Amount ($)</label>
                                 </div>
                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
                                     <input name="card_number" type="text" class="form-control data-input"
                                         data-field="card_number" placeholder=""/>
-                                    <label>Card Number</label>
+                                    <label style="padding-left:6px;color:#777777;">Card Number</label>
                                 </div>
                             </div>
                         </div>
@@ -2209,12 +2143,12 @@ const ReceiveDialog = (() => {
                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
                                     <input name="cheque_amount" type="number" class="form-control data-input"
                                         data-field="cheque_amount" min="0" step="0.01" placeholder=" "/>
-                                    <label>Amount ($)</label>
+                                    <label style="padding-left:6px;color:#777777;">Amount ($)</label>
                                 </div>
                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
                                     <input name="cheque_number" type="text" class="form-control data-input"
                                         data-field="cheque_number" placeholder=" "/>
-                                    <label>Cheque Number</label>
+                                    <label style="padding-left:6px;color:#777777;">Cheque Number</label>
                                 </div>
                             </div>
                         </div>
@@ -2224,7 +2158,7 @@ const ReceiveDialog = (() => {
                             <div class="material-input outlined" style="margin:0;">
                                 <textarea name="remarks" class="form-control data-input" data-field="remarks"
                                         rows="2" style="height:55px;" placeholder=""></textarea>
-                                <label>Remarks</label>
+                                <label style="padding-left:6px;color:#777777;">Remarks</label>
                             </div>
                         </div>
 
