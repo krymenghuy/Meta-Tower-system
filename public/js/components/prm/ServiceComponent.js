@@ -322,7 +322,7 @@ var ServiceComponent = (() => {
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
 
-                VSUtil.setComboItems(mThis.elFilter_type, d.service_types, 'id', 'service_type', '', 'All Category ', '');
+                VSUtil.setComboItems(mThis.elFilter_type, d.service_types, 'id', 'service_type', '', 'All Categories ', '');
                 if (typeof onFinish === 'function') onFinish();
             })
     }
@@ -356,7 +356,7 @@ const CreateServiceDialog = (() => {
                             <div class="col-6">
                                 <div class="material-input outlined">
                                     <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder="" />
-                                    <label style="padding-left:6px;color:#777777;">Name</label>
+                                    <label style="padding-left:6px;color:#777777;">Service Name</label>
                                 </div>
                             </div>
                             <div class="col-6">
@@ -382,7 +382,7 @@ const CreateServiceDialog = (() => {
                             <div class="col-12">
                                 <div class="material-input outlined">
                                     <textarea class="data-input form-control" data-field="description" placeholder=" "></textarea>
-                                    <label style="padding-left:6px;color:#777777;">Remarks</label>
+                                    <label style="padding-left:6px;color:#777777;">Remark</label>
                                 </div>
                             </div>
                         </div>`

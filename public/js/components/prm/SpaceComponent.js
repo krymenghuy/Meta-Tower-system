@@ -695,8 +695,8 @@ var SpaceComponent = new (function () {
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
                 VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'space_status', '', 'All Statuses', '');
-                VSUtil.setComboItems(mThis.elBuilding, d.buildings, 'id', 'building', '', 'All Building', '');
-                VSUtil.setComboItems(mThis.elFloor, d.floors, 'id', 'name', '', 'All Floor', '');
+                VSUtil.setComboItems(mThis.elBuilding, d.buildings, 'id', 'building', '', 'All Buildings', '');
+                VSUtil.setComboItems(mThis.elFloor, d.floors, 'id', 'name', '', 'All Floors', '');
                 VSUtil.setComboItems(mThis.elSpaceType, d.space_types, 'id', 'space_type', '', 'All Space Type', '');
 
                 // mThis.elBuilding.onchange = function (e) {
@@ -785,8 +785,8 @@ const BuildingSpaceDialog = (() => {
                             </div>
                             <div class="col-6">
                                 <div class="material-input outlined">
-                                    <select data-style="material" name="price_type" required placeholder="price type" class="data-input form-control" data-field="price_type">
-                                        <option value="">Select price type</option>
+                                    <select data-style="material" name="price_type" required placeholder="Price Type" class="data-input form-control" data-field="price_type">
+                                        <option value="">Select Price Type</option>
                                         <option value="sqm">Per Square Meter</option>
                                         <option value="total">Whole Room</option>
                                     </select>
@@ -951,7 +951,7 @@ const CreateBookingDialog = (() => {
                             <div class="col-12 col-md-6">
                                 <div class="material-input outlined">
                                     <input type="text" data-type="date" name="expired_booking_date" class="data-input form-control form_input" data-field="expired_booking_date" />
-                                    <label style="color:#777777;padding-left:6px;">Expired Booking Date</label>
+                                    <label style="color:#777777;padding-left:6px;">Expired  Date</label>
                                 </div>
 
                             </div>
@@ -959,7 +959,7 @@ const CreateBookingDialog = (() => {
 
                             <div class="col-6">
                                 <div class="material-input outlined">
-                                    <input type="number" name="booking_fee" class="data-input form-control" data-field="booking_fee" placeholder=" " />
+                                    <input type="number" min="1" step="0.01" name="booking_fee" class="data-input form-control" data-field="booking_fee" placeholder=" " />
                                     <label style="color:#777777;padding-left:6px;">Booking Amount</label>
                                 </div>
                             </div>
@@ -974,20 +974,22 @@ const CreateBookingDialog = (() => {
                         </div>`
                     ].join("");
                 },
-
-
                 contentCreated: (me) => {
-
-
-                    //  me.controls.price_type.onchange = (e) => {
-                    //         const sqmWrapper = me.controls.sqm_size.closest('.sqm-wrapper');
-                    //         if (!sqmWrapper) return;
-                    //         sqmWrapper.style.display = e.target.value === 'sqm' ? '' : 'none';
-                    //     };
-
+                   me.controls.booking_fee.addEventListener('input', (e) => {
+                    let v = parseFloat(e.target.value);
+                    if (isNaN(v)) {
+                        e.target.value = '';
+                        return;
+                    }
+                    if (v <= 0) {
+                        e.target.value = '';
+                        return;
+                    }
+                    e.target.value = v;
+                });
+                       
                 },
                 configSelect: [
-
                 ],
                 prepareFormOptions: {
                     createTitle: "Create Booking",

@@ -439,8 +439,8 @@ var AmenityComponent = (() => {
                 `${main_view.base_url}/prm/amenity/form-options`,null,null,null,)
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elFilter_status,d.amenity_statuses,"id","amenity_status","","All Status",'');
-                VSUtil.setComboItems(mThis.elBuilding, d.buildings, 'id', 'building', '', 'All Building', '');
+                VSUtil.setComboItems(mThis.elFilter_status,d.amenity_statuses,"id","amenity_status","","All Statuses",'');
+                VSUtil.setComboItems(mThis.elBuilding, d.buildings, 'id', 'building', '', 'All Buildings', '');
                 VSUtil.setComboItems(mThis.elFloor, d.floors, 'id', 'name', '', 'All Floor', '');
                 VSUtil.setComboItems(mThis.elFilter_category, d.amenity_categories, 'id', 'amenity_category', '', 'All Categories', '');
                 // VSUtil.setComboItems(mThis.elFilter_type, d.service_types, 'id', 'service_type', true, 'All Services type', null);

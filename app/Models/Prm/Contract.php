@@ -52,7 +52,7 @@ class Contract
         $d = (object) $arr;
         $space_id = $d->space_id;
         $tenant_id = $inputs['tenant_id'] ?? null;
-        $bookingPhoneValidation = self::validateBookingTenantPhone((int) $space_id, $tenant_id, true);
+        $bookingPhoneValidation = self::validateBookingTenantPhone( $space_id, $tenant_id, true);
         if (!($bookingPhoneValidation->status ?? false)) {
             return DV::error($bookingPhoneValidation->message ?? 'Please create tenant before creating contract.');
         }
@@ -275,10 +275,10 @@ class Contract
     public function getListRenewalsPaginate($arr, $ss = null)
     {
         $d = (object) $arr;
-        $contract_id = isset($d->contract_id) && is_numeric($d->contract_id) ? (int) $d->contract_id : null;
+        $contract_id = isset($d->contract_id) && is_numeric($d->contract_id) ?  $d->contract_id : null;
         $search_value = $d->search_value ?? null;
-        $current_page = isset($d->current_page) && is_numeric($d->current_page) ? (int) $d->current_page : 1;
-        $per_page = isset($d->per_page) && is_numeric($d->per_page) ? (int) $d->per_page : 10;
+        $current_page = isset($d->current_page) && is_numeric($d->current_page) ? $d->current_page : 1;
+        $per_page = isset($d->per_page) && is_numeric($d->per_page) ? $d->per_page : 10;
         if ($current_page < 1) {
             $current_page = 1;
         }
@@ -293,7 +293,7 @@ class Contract
             $str_where .= " AND (cr.remarks LIKE '%" . $search_value . "%')";
         }
         if ($ss && isset($ss->branch_id) && $ss->branch_id !== null && $ss->branch_id !== '') {
-            $str_where .= ' AND (cr.branch_id IS NULL OR cr.branch_id = ' . (int) $ss->branch_id . ')';
+            $str_where .= ' AND (cr.branch_id IS NULL OR cr.branch_id = ' . $ss->branch_id . ')';
         }
 
         $renewal_date = DBX::formatDate('cr.renewal_date', 'renewal_date');
@@ -320,7 +320,7 @@ class Contract
 
     public static function contractDetails($id)
     {
-        return DB::table('contracts as c')
+        $row =  DB::table('contracts as c')
             ->join('tenants as t', 't.id', '=', 'c.tenant_id')
             ->join('building_spaces as bs', 'bs.id', '=', 'c.space_id')
             ->join('business_types as bt', 'bt.id', '=', 'c.business_type_id')
@@ -347,6 +347,10 @@ class Contract
                             st.name as space_name
                             ')
             ->first();
+            if ($row) {
+                setOfficialDates($row, ['start_date', 'end_date'], [], []);
+            }
+        return $row;
     }
 
     public static function getFormOptions($id, $ss, $space_id = null, $include_space_ids = [], $restrict_to_include_spaces = false)
@@ -429,7 +433,7 @@ class Contract
     public static function phoneValidationResponse($status, $message = null, $extra = [])
     {
         return (object) array_merge([
-            'status' => (bool) $status,
+            'status' => $status,
             'message' => $message,
         ], $extra);
     }
@@ -640,7 +644,7 @@ class Contract
             return DV::error('End date must be after start date');
         }
 
-        $new_space_id = isset($inputs['space_id']) && $inputs['space_id'] ? (int) $inputs['space_id'] : (int) $old->space_id;
+        $new_space_id = isset($inputs['space_id']) && $inputs['space_id'] ? $inputs['space_id'] : $old->space_id;
         if ($new_space_id && $new_space_id != $old->space_id) {
             $dup_id = self::checkDuplicateContract($new_space_id, $old->id);
             if ($dup_id) {
@@ -652,7 +656,7 @@ class Contract
         // Renewal data (period, date, etc.) is stored only in contract_renewals.
         // When unit code is changed on renew: do NOT update contract.space_id yet; it will be updated
         // when current date equals the renewal start_date (see applyPendingRenewalUnitChanges).
-        $unitChanged = $new_space_id && (int) $old->space_id !== (int) $new_space_id;
+        $unitChanged = $new_space_id && $old->space_id !== $new_space_id;
         $updateContract = [
             'start_date' => $inputs['start_date'],
             'end_date'   => $inputs['end_date'],
@@ -728,9 +732,9 @@ class Contract
             ->get();
 
         foreach ($pending as $row) {
-            $contractId = (int) $row->contract_id;
-            $newSpaceId = (int) $row->new_space_id;
-            $oldSpaceId = (int) $row->old_space_id;
+            $contractId = $row->contract_id;
+            $newSpaceId = $row->new_space_id;
+            $oldSpaceId = $row->old_space_id;
             if ($newSpaceId === $oldSpaceId) {
                 continue;
             }

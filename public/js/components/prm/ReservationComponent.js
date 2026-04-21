@@ -49,11 +49,11 @@ var ReservationComponent = (() => {
                 const start12 = to12h((data.start_time ?? "").substring(0, 5));
                 const end12 = to12h((data.end_time ?? "").substring(0, 5));
                 return `<span class="d-block text-prm-custom">${data.booking_date ?? ""}</span>
-                            <small class="text-muted">${start12} - ${end12}</small>`;
+                            <small class="text-warning">${start12} - ${end12}</small>`;
             },
         },
         {
-            transTitle: "titles.Remarks",
+            transTitle: "titles.Remark",
             className: "align-middle",
             data: (data, index, tr) => {
                 return `
@@ -71,10 +71,10 @@ var ReservationComponent = (() => {
                 let cls = "badge border border-secondary text-secondary bg-secondary-subtle";
                 let label = "Upcoming";
                 if (status === "upcoming") {
-                    cls ="badge border border-info text-info bg-info-subtle";
+                    cls ="badge border border-warning text-warning bg-warning-subtle";
                     label = "Upcoming";
                 } else if (status === "in-progress") {
-                    cls ="badge border border-warning text-warning bg-warning-subtle";
+                    cls ="badge border border-primary text-primary bg-primary-subtle";
                     label = "In-Progress";
                 } else if (status === "completed") {
                     cls ="badge border border-success text-success bg-success-subtle";
@@ -398,7 +398,7 @@ const CreateReservationDialog = (() => {
                             <div class="col-12">
                                 <div class="material-input outlined">
                                     <textarea name="remarks" class="data-input form-control" data-field="remarks" placeholder=" "></textarea>
-                                    <label style="color:#777777;padding-left:6px;">remarks</label>
+                                    <label style="color:#777777;padding-left:6px;">Remarks</label>
                                 </div>
                             </div>
                         </div>`,
@@ -534,12 +534,6 @@ const CreateReservationDialog = (() => {
                         click: (me, btn) => {
                             const op = me.getData();
                             op.id = me.dataOptions.id;
-                            // if (me._selectedTenantId != null && me._selectedTenantId !== undefined) {
-                            //     op.tenant_id = me._selectedTenantId;
-                            // }
-
-                            op.tenant_id = me._selectedTenantId;
-                            console.log(123,op);
                             
                             vsapi
                                 .call(

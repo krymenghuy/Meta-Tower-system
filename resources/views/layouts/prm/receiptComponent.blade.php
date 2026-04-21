@@ -11,12 +11,12 @@
             <div id="_dateFilter_receipt" class="d-flex gap-3 align-items-center">
                 <div class="material-input outlined flex-fill" style="margin-bottom: 0;">
                     <input data-select="datepicker" class="form-control filter-field" placeholder="d-m-y" data-field="date_from" />
-                    <label class="form-label">Date From</label>
+                    <label class="form-label">From Date</label>
                 </div>
 
                 <div class="material-input outlined flex-fill" style="margin-bottom: 0;">
                     <input data-select="datepicker" class="form-control filter-field" placeholder="d-m-y" data-field="date_to" />
-                    <label class="form-label">Date To</label>
+                    <label class="form-label">To Date </label>
                 </div>
             </div>
         </div>

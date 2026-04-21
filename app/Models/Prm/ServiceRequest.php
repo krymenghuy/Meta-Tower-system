@@ -210,7 +210,7 @@ class ServiceRequest extends VSModel
 
     static function getServiceRequestDetails($id, $ss = null)
     {
-        return DB::table('service_requests as sr')
+        $row =  DB::table('service_requests as sr')
             ->join('tenants as t', 't.id', '=', 'sr.tenant_id')
             ->join('services as s', 's.id', '=', 'sr.service_id')
             ->join('building_spaces as bs', 'bs.id', '=', 'sr.space_id')
@@ -224,22 +224,11 @@ class ServiceRequest extends VSModel
                 sr.updated_at, sr.total_price, sr.duration_hours,
                 sr.unit_type, sr.status_id,t.name as tenant_name, bs.code as space_code, s.name as service_name, st.name as service_type
             ")
-            // ->select(
-            //     'sr.id', 'sr.code', 'sr.tenant_id', 'sr.space_id', 'sr.service_id', 's.service_type_id',
-            //     's.price as service_price', 's.unit_type',
-            //     'sr.request_date', 'sr.remarks',
-            //     'sr.update_user',
-            //     'sr.start_time',
-            //     'sr.scheduled_date', 'sr.complete_date', 'sr.create_uid',
-            //     'sr.updated_at', 'sr.total_price', 'sr.duration_hours',
-            //     'bs.code as space_code',
-            //     't.name as tenant_name',
-            //     'st.name as service_type',
-            //     's.name as service_name',
-            //     'rs.id as status_id',
-            //     'rs.name as status_name'
-            // )
             ->first();
+                if($row){
+                    setOfficialDates($row, ['scheduled_date','complete_date'], [], []);
+                }
+            return $row;
     }
 
 

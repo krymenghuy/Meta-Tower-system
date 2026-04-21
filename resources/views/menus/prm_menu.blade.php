@@ -108,7 +108,7 @@ function v_display($mod_id, $module_ids = null)
                         <span class="kt-menu__link-icon">
                             <img class="icons opacity-icons" src="{{ asset('assets/images/icons/service.png') }}" />
                         </span>
-                        <span class="kt-menu__link-text font-color " vslang="menus.Service Request"></span>
+                        <span class="kt-menu__link-text font-color " vslang="menus.Service Requests"></span>
                     </a>
                 </li>
 

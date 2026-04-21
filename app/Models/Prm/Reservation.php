@@ -200,13 +200,17 @@ public function upsert($arr = [], $id = null, $ss = null){
     }
 
     public static function reservationDetails($id){
-        return DB::table('reservations as r')
+        $row =  DB::table('reservations as r')
             ->join('amenities as a', 'a.id', '=', 'r.amenity_id')
             ->join('amenity_categories as ac', 'ac.id', '=', 'a.category_id')
             ->join('tenants as t', 't.id', '=', 'r.tenant_id')
             ->where('r.id',$id)
             ->selectRaw('r.id,r.booking_date,r.start_time,r.end_time,r.status_id,r.amenity_id,a.name as amenity_name,a.code as amenity_code,a.category_id,ac.name as amenity_category,a.max_capacity as amenity_capacity,r.tenant_id,t.name as tenant_name,t.phone_number as phone_number,r.remarks')
             ->first();
+            if($row){
+                setOfficialDates($row, ['booking_date'], ['updated_at'], ['start_time','end_time']);
+            }
+            return $row;
     }
 
     public static function getFormOptions($id,$ss)

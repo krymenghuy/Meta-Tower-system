@@ -14,7 +14,7 @@ var BuildingComponent = ( () => {
             className: "align-middle",
         },
         {
-            title: "Building",
+            title: "Building Name",
             className: "align-middle",
             data: (data) => `
                 <div class="d-flex flex-row align-items-center">
@@ -32,7 +32,7 @@ var BuildingComponent = ( () => {
             `,
         },
         {
-            title: "Total Area",
+            title: "Total Areas",
             className: "align-middle",
             data: (data) => {
                 let area = data.total_area ?? '';
@@ -47,7 +47,7 @@ var BuildingComponent = ( () => {
             `,
         },
         {
-            title: "Total Space",
+            title: "Total Spaces",
             className: "align-middle",
             data: (data) => `<span class="text-primary-custom">${data.total_space ?? '0'}</span>`,
         },
@@ -383,7 +383,7 @@ const BuildingDialog = (() => {
                         <div class="col-12">
                             <div class="material-input outlined">
                                 <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder=" " />
-                                <label style="color:#777777;padding-left:6px;">Name</label>
+                                <label style="color:#777777;padding-left:6px;">Building Name</label>
                             </div>
                         </div>
                         <div class="col-12">
@@ -395,13 +395,13 @@ const BuildingDialog = (() => {
                         <div class="col-6">
                             <div class="material-input outlined">
                                 <input type="number" name="total_area" required class="data-input form-control" data-field="total_area" placeholder=" " />
-                                <label style="color:#777777;padding-left:6px;">Total Area</label>
+                                <label style="color:#777777;padding-left:6px;">Total Areas</label>
                             </div>
                         </div>
                         <div class="col-6">
                             <div class="material-input outlined">
                                 <input type="number" name="total_space" required class="data-input form-control" data-field="total_space" placeholder=" " />
-                                <label style="color:#777777;padding-left:6px;">Total Space</label>
+                                <label style="color:#777777;padding-left:6px;">Total Spaces</label>
                             </div>
                         </div>
                         <div class="col-12">
