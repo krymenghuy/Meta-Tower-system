@@ -243,7 +243,7 @@ var ContractComponent = new (function () {
 
                 // Re-initialize tooltips after filter
                 setTimeout(() => {
-                    $('[data-bs-toggle="tooltip"]').tooltip('dispose');
+                    // $('[data-bs-toggle="tooltip"]').tooltip('dispose');
                     $('[data-bs-toggle="tooltip"]').tooltip();
                 }, 500);
             }
@@ -258,7 +258,7 @@ var ContractComponent = new (function () {
 
                 // Re-initialize tooltips after search
                 setTimeout(() => {
-                    $('[data-bs-toggle="tooltip"]').tooltip('dispose');
+                    // $('[data-bs-toggle="tooltip"]').tooltip('dispose');
                     $('[data-bs-toggle="tooltip"]').tooltip();
                 }, 500);
             }, 250);
@@ -843,7 +843,7 @@ const ContractDialog = (() => {
                                 <label style="color:#777777;padding-left:6px;">Deposit <span class="text-danger">*</span></label>
                             </div>
                         </div>
-                       
+
                     </div>
                 </div>
                 <div class="col-12 mb-3">
@@ -1214,7 +1214,7 @@ const RenewDialog = (() => {
                                         <div class="material-input outlined">
                                             <input  data-style="material" type="number" name="old_contract_price" class="data-input form-control" data-field="old_contract_price" placeholder=" " disabled />
                                             <label style="color:#777777;padding-left:6px;">Price</label>
-                                        </div> 
+                                        </div>
                                     </div>
                                 </div>
                             </div>

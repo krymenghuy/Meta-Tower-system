@@ -27,7 +27,7 @@ class BillPayment
             'payment_method' => '0|string|0-50',
             'ref_no'         => '0|string|0-100',
             'note'           => '0|string|0-255',
-            'currency_code' => '0|string|0-10|default=USD',  
+            'currency_code' => '0|string|0-10|default=USD',
         ];
 
         $res = DBX::validateObject($arr, $v_rule, 1, [], $ss->lang, 0, null);
@@ -48,7 +48,7 @@ class BillPayment
         $total_paid = floatval(DB::table('bill_payments')->where('bill_id', $bill_id)->sum('amount'));
         $remaining = floatval($bill->total_amount) - floatval($total_paid);
         $total   = floatval($bill->total_amount);
-        $balance = max(0, $total - $total_paid); 
+        $balance = max(0, $total - $total_paid);
         if (floatval($inputs['amount']) > $remaining + 0.001) {
             return DV::error("Payment amount exceeds remaining balance. Remaining: " . number_format($remaining, 2));
         }
@@ -76,7 +76,7 @@ class BillPayment
             $total   = floatval($bill->total_amount);
             $balance = max(0, $total - $total_paid);
 
-            $status_id = ($total > 0 && $total_paid >= $total) ? 2 
+            $status_id = ($total > 0 && $total_paid >= $total) ? 2
                     : ($total_paid > 0 ? 3 : 1);
 
             DB::table('bills')->where('id', $bill_id)->update([
@@ -103,7 +103,7 @@ class BillPayment
             return DV::error('Failed to save payment. Please check logs.');
         }
     }
-    
+
     public function getListPaginate(array $arr = [], $ss = null)
     {
         $ss = $ss ?? $this->userInfo;
@@ -114,7 +114,7 @@ class BillPayment
 
         $search_value = $d->search_value ?? null;
         $bill_id      = $d->bill_id      ?? null;
-        $expense_type_id    = $d->expense_type_id    ?? null; 
+        $expense_type_id    = $d->expense_type_id    ?? null;
         $payment_date       = $d->payment_date       ?? null;
         $status_id    = $d->status_id    ?? null;
         $current_page = $d->current_page ?? 1;
@@ -189,7 +189,7 @@ class BillPayment
         }
         return (object) [
             'bill' => $bill,
-            'payments' => $payments, 
+            'payments' => $payments,
         ];
     }
 
@@ -300,5 +300,5 @@ class BillPayment
         }
     }
 
-    
+
 }
