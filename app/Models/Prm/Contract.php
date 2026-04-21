@@ -320,7 +320,7 @@ class Contract
 
     public static function contractDetails($id)
     {
-        return DB::table('contracts as c')
+        $row =  DB::table('contracts as c')
             ->join('tenants as t', 't.id', '=', 'c.tenant_id')
             ->join('building_spaces as bs', 'bs.id', '=', 'c.space_id')
             ->join('business_types as bt', 'bt.id', '=', 'c.business_type_id')
@@ -347,6 +347,10 @@ class Contract
                             st.name as space_name
                             ')
             ->first();
+            if ($row) {
+                setOfficialDates($row, ['start_date', 'end_date'], [], []);
+            }
+        return $row;
     }
 
     public static function getFormOptions($id, $ss, $space_id = null, $include_space_ids = [], $restrict_to_include_spaces = false)
