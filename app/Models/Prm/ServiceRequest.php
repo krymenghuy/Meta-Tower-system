@@ -82,6 +82,8 @@ class ServiceRequest extends VSModel
         if ($overlap) {
             return DV::error('Time slot overlaps with an existing pending request.');
         }
+     
+
         if ($input['unit_type'] == 2) {
             $service = DB::table('services')
                 ->where('id', $input['service_id'])
@@ -91,8 +93,12 @@ class ServiceRequest extends VSModel
             if (($service->price ?? 0) <= 0) return DV::error('Service price not defined.');
 
             $input['total_price'] = round($service->price * $duration, 2);
+
         } else {
-            $input['total_price'] = null;
+            $service = DB::table('services')->where('id', $input['service_id'])->first(['price']);
+            if (!$service) return DV::error('Service not found.');
+            if (($service->price ?? 0) <= 0) return DV::error('Service price not defined.');
+            $input['total_price'] = round($service->price, 2);
         }
 
         $input['request_date'] = !empty($input['request_date'])? date('Ymd', strtotime($input['request_date'])): date('Ymd');
