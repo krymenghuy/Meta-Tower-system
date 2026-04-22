@@ -15,6 +15,8 @@ var InvoiceComponent = (() => {
     mThis.elTenant = mThis.self.querySelector("#tenant_id");
     mThis.elSearch = mThis.self.querySelector("#_search_invoice");
     mThis.tblReceive = mThis.self.querySelector("#_tblReceive");
+
+    let InvoiceItemDialog = null;
     mThis.cols = [
         { transTitle: "", className: "align-middle text-capitalize" },
         {
@@ -569,14 +571,12 @@ var InvoiceComponent = (() => {
 
 
 const InvoiceDialog = (() => {
-    let dlg = null;
+    const self = {};
+    let dialog = null;
     let availableItem = [];
 
-    const self = {};
     self.show = op => {
-        dlg =
-            dlg ||
-            new GeneralDialog({
+        dialog =  new GeneralDialog({
                 cssClass: "modal-xl vs-modal",
                 backdrop: "static",
                 keyboard: true,
@@ -1993,9 +1993,8 @@ const InvoiceDialog = (() => {
                 ]
             });
 
-        dlg.show(op);
+        dialog.show(op);
     };
-
     return self;
 })();
 
@@ -2005,9 +2004,7 @@ const ReceiveDialog = (() => {
     let dialog = null;
 
     self.show = op => {
-        dialog =
-            dialog ||
-            new GeneralDialog({
+        dialog = new GeneralDialog({
                 title: "Receive Payment",
                 cssClass: "modal-lg vs-modal",
                 backdrop: "static",
