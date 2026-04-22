@@ -916,6 +916,8 @@ const ContractDialog = (() => {
                         me.controls.legal_name.value = item?.legal_name || "";
                     }
                 });
+             
+                
             },
 
             configSelect: [
@@ -955,9 +957,11 @@ const ContractDialog = (() => {
             },
 
             onPrepareForm: (me, data) => {
-                  const isReadOnly = me.dataOptions.tenant_id > 0;
-                  
-                    me.controls.tenant.disabled = isReadOnly;
+                console.log(123,data);
+                
+                const isReadOnly = me.dataOptions.tenant_id > 0 || data.prefill_tenant_id;
+                me.controls.tenant.disabled = isReadOnly;
+
                 if (me.searchTenant && typeof me.searchTenant.reset === "function") {
                     me.searchTenant.reset();
                 }
