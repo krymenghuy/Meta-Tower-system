@@ -1052,7 +1052,7 @@ const ContractDialog = (() => {
                     }
                 }
 
-             
+
             },
 
             buttons: [
@@ -1245,25 +1245,25 @@ const RenewDialog = (() => {
                                 <div class="row g-2">
                                     <div class="col-6">
                                 <div class="material-input outlined">
-                                    <input type="text" name="space_type_id" class="data-input form-control" data-field="space_type_id" placeholder=" " />
+                                    <input type="text" name="space_type_id" class="data-input form-control" data-field="space_type_id" placeholder=" " readonly disabled />
                                     <label style="color:#777777;padding-left:6px;" for="spaceType">Unit Type</label>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="material-input outlined">
-                                    <input type="number" name="sqm_size" class="data-input form-control" data-field="sqm_size" placeholder=" " />
+                                    <input type="number" name="sqm_size" class="data-input form-control" data-field="sqm_size" placeholder=" " readonly disabled />
                                     <label style="color:#777777;padding-left:6px;">Size (m²)</label>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="material-input outlined">
-                                    <input type="text" name="price_type" class="data-input form-control" data-field="price_type" placeholder=" " />
+                                    <input type="text" name="price_type" class="data-input form-control" data-field="price_type" placeholder=" " readonly disabled />
                                     <label style="color:#777777;padding-left:6px;" for="priceType">Unit Price</label>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="material-input outlined">
-                                    <input type="number" name="price" class="data-input form-control" data-field="price" placeholder=" " />
+                                    <input type="number" name="price" class="data-input form-control" data-field="price" placeholder=" " readonly disabled />
                                     <label style="color:#777777;padding-left:6px;">Price</label>
                                 </div>
                             </div>
@@ -1337,7 +1337,6 @@ const RenewDialog = (() => {
                         me.controls.end_date.value = "";
                     }
                 }, 0);
-
                 const unitSelect = me.divModal.querySelector('[data-field="space_id"]');
                 const spaceRows = Array.isArray(data?.building_spaces) ? data.building_spaces : [];
                 const spaceTypes = Array.isArray(data?.space_types) ? data.space_types : [];
