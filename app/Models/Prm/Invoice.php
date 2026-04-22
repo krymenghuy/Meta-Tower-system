@@ -300,20 +300,23 @@ class Invoice extends VSModel
             }
 
             // Update invoice payment status
-            $new_paid_amount = (float)$invoice->paid_amount + $total_received;
-            $total_invoice_amount = (float)$invoice->amount;
-            $new_due_amount = max(0, $total_invoice_amount - $new_paid_amount);
+            $invoice_amount = (float)$invoice->amount;
+            $already_paid   = (float)$invoice->paid_amount;
+            $current_balance_due = $invoice_amount - $already_paid;
 
             $payment_status_id = 2;
             $is_paid = 0;
 
-            if ($new_due_amount <= 0.001) {
-                $payment_status_id = 1;
-                $is_paid = 1;
-            } elseif ($new_paid_amount > 0) {
-                $payment_status_id = 3; // partial
+            if ($total_received > ($current_balance_due + 0.01)) {
+                throw new \Exception("Payment failed! You entered $" . number_format($total_received, 2) . 
+                                    ", but the remaining balance is only $" . number_format($current_balance_due, 2) . ".");
             }
 
+            $new_paid_amount = $already_paid + $total_received;
+            $new_due_amount  = max(0, $invoice_amount - $new_paid_amount);
+
+            $is_paid = ($new_due_amount <= 0.01) ? 1 : 0;
+            $payment_status_id = ($is_paid === 1) ? 1 : 2;
             DB::table('invoices')
                 ->where('id', $invoice_id)
                 ->update([
