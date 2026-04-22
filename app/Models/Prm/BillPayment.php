@@ -35,6 +35,10 @@ class BillPayment
 
         $inputs  = $res->values;
 
+        if(floatval($inputs['amount']) <= 0) {
+            return DV::error('Payment amount must be greater than zero.');
+        }
+       
         $bill_id = $inputs['bill_id'];
         $payment_date = date('Y-m-d', strtotime($inputs['payment_date']));
         $today = date('Y-m-d');

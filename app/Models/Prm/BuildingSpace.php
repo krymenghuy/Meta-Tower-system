@@ -27,6 +27,8 @@ class BuildingSpace
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
 
+        $isCreate = empty($id);
+
         $v_rule = [
             'building_id' => '1|number|exists=buildings.id',
             'space_type_id' => '1|number|exists=space_types.id',
@@ -34,64 +36,64 @@ class BuildingSpace
             'sqm_size' => '1|number',
             'price' => '1|number',
             'price_type' => '0|string|default=sqm',
-            'status_id' => '0|number|exists=space_statuses.id',
             'code' => '0|string|max=50',
         ];
-        $code_char = ['@', '.', '-', '_'];
-        $res = DBX::validateObject($arr, $v_rule, 1, ['code' => $code_char,], $ss->lang, 0, null);
-        if ($res->error)
-            return DV::error($res->error);
 
+        $code_char = ['@', '.', '-', '_'];
+        $res = DBX::validateObject($arr,$v_rule,1,['code' => $code_char],$ss->lang,0,null);
+        if ($res->error) return DV::error($res->error);
         $inputs = $res->values;
         $d = (object) $inputs;
+       
         if (!empty($d->code)) {
             $exists = DB::table('building_spaces')
                 ->where('code', $d->code)
                 ->when($id, fn($q) => $q->where('id', '<>', $id))
                 ->exists();
+            if ($exists) return DV::error('Space code already exists');
+        }
 
-            if ($exists)
-                return DV::error('Space code already exists');
-        }
-        if ($id && !isset($inputs['status_id'])) {
-            $inputs['status_id'] = DB::table('building_spaces')
-                ->where('id', $id)
-                ->value('status_id');
-        }
         $floor = DB::table('floors')
             ->select('floor_number')
             ->where('id', $d->floor_id)
             ->first();
+        if (!$floor) return DV::error('Invalid floor selected.');
+        DB::beginTransaction();
+        try {
+            $space_id = DBX::saveData($ss, 'building_spaces', ['id' => $id], $inputs, [], 1);
 
-        if (!$floor)
-            return DV::error('Invalid floor selected.');
+            if (!$space_id) {
+                DB::rollBack();
+                return DV::error('Error saving Building Space ...!');
+            }
+            if ($isCreate && empty($d->code)) {
+                self::createBuildingSpaceCode(
+                    $branch_id,
+                    $d->building_id,
+                    $floor->floor_number,
+                    $space_id
+                );
+            }
 
-        $created = !$id;
+            $total_space = DB::table('building_spaces')
+                ->where('building_id', $d->building_id)
+                ->count();
 
-        $id = DBX::saveData($ss, 'building_spaces', ['id' => $id], $inputs, [], 1);
+            DB::table('buildings')
+                ->where('id', $d->building_id)
+                ->update(['total_space' => $total_space]);
 
-        if ($id && $created && empty($d->code)) {
-            self::createBuildingSpaceCode(
-                $branch_id,
-                $d->building_id,
-                $floor->floor_number,
-                $id
-            );
+            DB::commit();
+
+            return DV::depends(1, [
+                'building_spaces' => $inputs,
+                'id' => $space_id
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return DV::error('Transaction failed. Please try again.');
         }
-
-        $total_space = DB::table('building_spaces')
-            ->where('building_id', $d->building_id)
-            ->count();
-
-        DB::table('buildings')
-            ->where('id', $d->building_id)
-            ->update(['total_space' => $total_space]);
-
-        if ($id > 0) {
-            return DV::depends(1, ['building_spaces' => $inputs, 'id' => $id]);
-        }
-
-        return DV::error('Error saving Building Space ...!');
     }
 
 

@@ -18,63 +18,65 @@ class Service
         $this->userInfo = $userInfo;
     }
 
-    public function saveService($arr = [], $id = null, $ss = null){
+   public function saveService($arr = [], $id = null, $ss = null)
+    {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
 
         $v_rule = [
-            'name' => '1|string|0-200|text=Service name must be provided',
+            'name' => '1|string|0-200',
             'service_type_id' => '1|number|exists=service_types.id',
             'price' => '0|price',
             'unit_type' => '0|string|0-50',
             'description' => '0|string|0-350',
         ];
 
-        $unit_type_char = ['@','.','-','_'];
-        $description_char = ['@',',','-','.','#'];
-        $name_char = ['(',')','-','.','#'];
+        $unit_type_char = ['@', '.', '-', '_'];
+        $description_char = ['@', ',', '-', '.', '#'];
+        $name_char = ['(', ')', '-', '.', '#'];
 
         $res = DBX::validateObject(
             $arr,
             $v_rule,
             1,
-            ['name'=>$name_char,'unit_type'=>$unit_type_char,'description'=> $description_char],
+            [
+                'name' => $name_char,
+                'unit_type' => $unit_type_char,
+                'description' => $description_char
+            ],
             $ss->lang,
             0,
             null
         );
 
-        if($res->error) return DV::error($res->error);
+        if ($res->error) {
+            return DV::error($res->error);
+        }
 
         $inputs = $res->values;
 
-        // ✅ build full name
+        //remove old "(unit)" if exists
         $baseName = trim($inputs['name']);
+        if (preg_match('/^(.*)\s\((.*)\)$/', $baseName, $m)) {
+            $baseName = trim($m[1]);
+        }
         $unitType = trim($inputs['unit_type'] ?? '');
-
         $fullName = $unitType ? "{$baseName} ({$unitType})" : $baseName;
-
-        // ✅ check duplicate using full name
         $exist = DB::table('services')
             ->whereRaw('LOWER(name) = ?', [strtolower($fullName)])
-            ->when($id, function ($q) use ($id) {
-                $q->where('id', '<>', $id);
-            })
+            ->when($id, fn($q) => $q->where('id', '<>', $id))
             ->exists();
-
         if ($exist) {
             return DV::error('This service already exists');
         }
-
-        // ✅ save full name
         $inputs['name'] = $fullName;
-
-        $id = DBX::saveData($ss, 'services', ['id'=>$id], $inputs, [], 1);
-
-        if($id > 0){
-            return DV::depends(1, ['services'=>$inputs, 'id'=>$id]);
+        $id = DBX::saveData($ss, 'services', ['id' => $id], $inputs, [], 1);
+        if ($id > 0) {
+            return DV::depends(1, [
+                'services' => $inputs,
+                'id' => $id
+            ]);
         }
-
         return DV::error('Error saving service!');
     }
 

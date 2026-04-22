@@ -487,14 +487,14 @@ const BillDialog = (() => {
                             </div>
                             <div class="col-8">
                                 <div class="material-input outlined d-flex ">
-                                    <input type="text" name="documents" class="d-none form-control " accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg" />
-                                    <label style="display:none;color:#777777;padding-left:6px;">File</label>
+                                    <input type="text" name="documents" class="d-none form-control " accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg" /disabled>
+                                    <label style="display:none;color:#777777;padding-left:6px;">File</label > 
                                 </div>
                             </div>
                             <div class="col-12 ">
                                 <div class="material-input outlined">
                                     <textarea class="data-input form-control" data-field="remark" placeholder=" "></textarea>
-                                    <label style="color:#777777;padding-left:6px;">Description</label>
+                                    <label style="color:#777777;padding-left:6px;">Remark</label>
                                 </div>
                             </div>
                             <div class="col-6">
@@ -680,9 +680,9 @@ const BillDialog = (() => {
                                     if (res.status_code === 200) {
                                         me.hide(true, op);
                                         if (me.dataOptions.id > 0) {
-                                            cv_interact.success("Bill has been updated successfully");
+                                            cv_interact.success("Bill has been updated successfully.");
                                         } else {
-                                            cv_interact.success("New bill has been added successfully");
+                                            cv_interact.success("New bill has been added successfully.");
                                         }
                                     } else {
                                         cv_interact.error(res.error_message);
