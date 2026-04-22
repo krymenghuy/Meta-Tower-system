@@ -748,7 +748,7 @@ var TenantComponent = new (function () {
                                 class="rounded-circle border shadow-sm"
                                 width="130" height="130">
                         </div>
-                        <h4 class="fw-bold mb-2">${data.name}</h4>
+                        <h4 class="fw-bold mb-2 text-capitalize">${data.name}</h4>
                         <div class="mb-3">
                             <span class="${cls_class} px-3 py-2">${data.status}</span>
                         </div>
@@ -814,7 +814,7 @@ var TenantComponent = new (function () {
                         <div class="tab-pane py-2 active" id="overview_tenant_detail">
                             <h5 class="fw-bold mb-2"><i class="fa fa-user me-1 text-primary"></i> Personal Information</h5>
                             <div class="row g-4 mb-5">
-                                <div class="col-md-4"><small class="text-muted">Name</small><div class="fw-semibold">${data.name ?? ""}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Name</small><div class="fw-semibold text-capitalize">${data.name ?? ""}</div></div>
                                 <div class="col-md-4"><small class="text-muted">Gender</small><div class="fw-semibold">${data.sex == "M" ? "Male" : data.sex == "F" ? "Female" : ""}</div></div>
                                 <div class="col-md-4"><small class="text-muted">Date of Birth</small><div class="fw-semibold">${data.date_of_birth ?? ""}</div></div>
                                 <div class="col-md-4"><small class="text-muted">Legal Name</small><div class="fw-semibold">${data.legal_name ?? ""}</div></div>
@@ -822,12 +822,12 @@ var TenantComponent = new (function () {
                                 <div class="col-md-4"><small class="text-muted">Passport Number</small><div class="fw-semibold">${data.passport_number ?? ""}</div></div>
                                 <div class="col-md-4"><small class="text-muted">Phone</small><div class="fw-semibold text-primary">${data.phone_number ?? ""}</div></div>
                                 <div class="col-md-4"><small class="text-muted">Email</small><div class="fw-semibold text-primary">${data.email ?? ""}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Address</small><div class="fw-semibold text-prm-custom">${data.address ?? ""}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Address</small><div class="fw-semibold text-prm-custom text-capitalize">${data.address ?? ""}</div></div>
                             </div>
 
                             <h5 class="fw-bold mb-4"><i class="fa fa-phone me-1 text-primary"></i> Emergency Contact</h5>
                             <div class="row g-4">
-                                <div class="col-md-4"><small class="text-muted">Contact Name</small><div class="fw-semibold">${data.name}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Contact Name</small><div class="fw-semibold text-capitalize">${data.name}</div></div>
                                 <div class="col-md-4"><small class="text-muted">Relationship</small><div class="fw-semibold">Partner</div></div>
                                 <div class="col-md-4"><small class="text-muted">Emergency Phone</small><div class="fw-semibold">${data.phone_number}</div></div>
                             </div>
@@ -1143,7 +1143,7 @@ var TenantComponent = new (function () {
 
                             <h5 class="fw-bold mb-4"><i class="fa fa-phone me-1 text-primary"></i> Emergency Contact</h5>
                             <div class="row g-4">
-                                <div class="col-md-4"><small class="text-muted">Contact Name</small><div class="fw-semibold">${d.name}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Contact Name</small><div class="fw-semibold text-capitalize">${d.name}</div></div>
                                 <div class="col-md-4"><small class="text-muted">Relationship</small><div class="fw-semibold">Partner</div></div>
                                 <div class="col-md-4"><small class="text-muted">Emergency Phone</small><div class="fw-semibold">${d.phone_number}</div></div>
                             </div>
@@ -1675,7 +1675,7 @@ const CreateTenantDialog = (() => {
                                         me.hide(true, op);
                                         if (me.dataOptions.id > 0) {
                                             cv_interact.success(
-                                                "Tenant has been updated successfully",
+                                                "Tenant has been updated successfully.",
                                             );
                                         } else {
                                             cv_interact.success(

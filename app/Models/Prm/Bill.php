@@ -3,11 +3,11 @@
 namespace App\Models\Prm;
 
 use App\Models\Prm\GeneralSettings;
-use DV;
+use Vsd\Response\DV;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
-use DBX;
-use XPublicStorage;
+use Vsd\Database\DBX;
+use Vsd\Storage\PublicStorage as XPublicStorage;
 use Log;
 
 class Bill
@@ -59,7 +59,7 @@ class Bill
     $dueDate  = strtotime($inputs['due_date']);
 
     if ($dueDate < $billDate) {
-        return DV::error('Due date cannot be before bill date.');
+        return DV::error('Due date cannot be before invoice date.');
     }
     unset($inputs['photo'], $inputs['ext']);
     $total = floatval($inputs['total_amount'] ?? 0);
@@ -88,7 +88,7 @@ class Bill
             ->exists ();
 
         if ($exists) {
-            return DV::error('Reference number already exists');
+            return DV::error('Reference number already exists.');
         }
     }
     

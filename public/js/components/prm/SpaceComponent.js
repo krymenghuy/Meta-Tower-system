@@ -903,11 +903,11 @@ const BuildingSpaceDialog = (() => {
                                     me.hide(true, op);
                                     if (me.dataOptions.id > 0) {
                                         cv_interact.success(
-                                            "Space has been updated successfully"
+                                            "Space has been updated successfully."
                                         );
                                     } else {
                                         cv_interact.success(
-                                            "New space has been added successfully"
+                                            "New space has been added successfully."
                                         );
                                     }
                                 } else {

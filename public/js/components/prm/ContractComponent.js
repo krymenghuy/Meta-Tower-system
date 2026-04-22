@@ -108,7 +108,7 @@ var ContractComponent = new (function () {
             className: "align-middle",
             data: (data, index, tr) => {
                 return `
-                    <div class="text-prm-custom">
+                    <div class="text-prm-custom text-capitalize">
                         <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ?? 'N/A'}</span>
                     </div>
                 `;
@@ -1093,9 +1093,9 @@ const ContractDialog = (() => {
                             if (res.status_code === 200) {
                                 me.hide(true, op);
                                 if (me.dataOptions.id > 0) {
-                                    cv_interact.success("Contract has been updated successfully");
+                                    cv_interact.success("Contract has been updated successfully.");
                                 } else {
-                                    cv_interact.success("New contract has been added successfully");
+                                    cv_interact.success("New contract has been added successfully.");
                                 }
                             } else {
                                 cv_interact.error(res.error_message);
