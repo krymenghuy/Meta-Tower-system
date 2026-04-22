@@ -144,21 +144,20 @@ class Building //extends Model
     public function getListFloor($id, $ss = null)
     {
         $ss = $ss ?? $this->userInfo;
-        $branch_id = $ss->branch_id;
-        $updated_at = DBX::formatTime('bf.updated_at', 'updated_at');
-
-        $cols = 'bf.id,bf.building_id,b.name as building_name,bf.floor_id,f.name as floor_name,f.floor_number as floor_no,bf.description,bf.status_id,bf.update_user,' . $updated_at . ' ';
+        $cols = 'bf.id,bf.building_id,b.name as building_name,bf.floor_id,f.name as floor_name,f.floor_number as floor_no,bf.description,bf.status_id,bf.update_user,bf.updated_at';
         $rows = DB::table('building_floors as bf')
             ->join('buildings as b', 'b.id', '=', 'bf.building_id')
             ->join('floors as f', 'f.id', '=', 'bf.floor_id')
             ->where('bf.building_id', $id)
             ->selectRaw($cols)
-            // ->where('f.branch_id',$branch_id)
             ->orderByRaw('bf.id ASC')->get();
         foreach ($rows as $row) {
             $row->total_space = DB::table('building_spaces')
-                ->where('floor_id', $row->id)
+                ->where('building_id', $row->building_id)
+                ->where('floor_id', $row->floor_id)
                 ->count();
+
+                setOfficialDates($row, [''],['updated_at'],[]);
         }
         return $rows;
     }
