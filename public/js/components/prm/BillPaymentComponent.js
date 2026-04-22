@@ -452,7 +452,7 @@ const BillPaymentDialog = (() => {
                         bill_id: op.bill_id || op.id || null
                     })
                 }
-            }, 
+            },
              onShow: (me) => {
                 const title = me.divModal.querySelector('.modal-title');
                 if (title) {
