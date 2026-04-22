@@ -231,7 +231,7 @@ function checkUniqueTenantByPhone($phone_number, $id = null)
 
     static function defaultPhoto($subs_id)
     {
-        return url('') . '/assets/images/meta/default_tenant.jpg';
+        return url('') . '/assets/images/default/default-staff1.png';
     }
     public static function getDetails($id, $ss = null){
         $start_date = DBX::formatDate("c.start_date", 'start_date');
