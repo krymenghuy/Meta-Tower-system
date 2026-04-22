@@ -567,6 +567,7 @@ var InvoiceComponent = (() => {
     return mThis;
 })();
 
+
 const InvoiceDialog = (() => {
     let dlg = null;
     let availableItem = [];
@@ -772,7 +773,7 @@ const InvoiceDialog = (() => {
 
                                 div.innerHTML = `
                                     <div>
-                                        <div class="d-flex align-items-center  mb-2">
+                                        <div class="d-flex align-items-center  mb-3">
                                             <span style="font-weight:bold; color:#0C447C; font-size:13px;">Contract Details</span>
                                             <div style="flex:1; height:1px; background:#e0e0e0;"></div>
                                         </div>
@@ -790,7 +791,7 @@ const InvoiceDialog = (() => {
                                     </div>
 
                                     <div>
-                                        <div class="d-flex align-items-center mb-2">
+                                        <div class="d-flex align-items-center mb-3">
                                             <span style="font-weight:bold; color:#0C447C; font-size:13px;">Billing Period</span>
                                             <div style="flex:1; height:1px; background:#e0e0e0;"></div>
                                         </div>
@@ -807,7 +808,7 @@ const InvoiceDialog = (() => {
                                     </div>
 
                                     <div>
-                                        <div class="d-flex align-items-center mb-2">
+                                        <div class="d-flex align-items-center mb-3">
                                             <span style="font-weight:bold; color:#0C447C; font-size:13px;">Financials</span>
                                             <div style="flex:1; height:1px; background:#e0e0e0;"></div>
                                         </div>
@@ -884,7 +885,6 @@ const InvoiceDialog = (() => {
                                 if (!realContractId) {
                                     return ibMe.setError("Unit Code / Room is missing");
                                 }
-
                                 const roomCode = matchedSpace.space_code || "—";
                                 const finalPrice = Number(data.price || matchedSpace.effective_price || 0);
 
@@ -927,7 +927,7 @@ const InvoiceDialog = (() => {
 
                                 div.innerHTML = `
                                     <div>
-                                        <div class="d-flex align-items-center  mb-2">
+                                        <div class="d-flex align-items-center  mb-3">
                                             <span style="font-weight:bold; color:#0C447C; font-size:13px;">Readings</span>
                                             <div style="flex:1; height:1px; background:#e0e0e0;"></div>
                                         </div>
@@ -944,7 +944,7 @@ const InvoiceDialog = (() => {
                                     </div>
 
                                     <div>
-                                        <div class="d-flex align-items-center  mb-2">
+                                        <div class="d-flex align-items-center  mb-3">
                                             <span style="font-weight:bold; color:#0C447C; font-size:13px;">Billing Period</span>
                                             <div style="flex:1; height:1px; background:#e0e0e0;"></div>
                                         </div>
@@ -961,7 +961,7 @@ const InvoiceDialog = (() => {
                                     </div>
 
                                     <div>
-                                        <div class="d-flex align-items-center mb-2">
+                                        <div class="d-flex align-items-center mb-3">
                                             <span style="font-weight:bold; color:#0C447C; font-size:13px;">Calculation</span>
                                             <div style="flex:1; height:1px; background:#e0e0e0;"></div>
                                         </div>
@@ -1089,7 +1089,7 @@ const InvoiceDialog = (() => {
                                 
                                 div.innerHTML = `
                                     <div>
-                                        <div class="d-flex align-items-center gap-2 mb-2">
+                                        <div class="d-flex align-items-center gap-2 mb-3">
                                             <span style="font-weight:bold; color:#0C447C; font-size:13px;">Readings</span>
                                             <div style="flex:1; height:1px; background:#e0e0e0;"></div>
                                         </div>
@@ -1106,7 +1106,7 @@ const InvoiceDialog = (() => {
                                     </div>
 
                                     <div>
-                                        <div class="d-flex align-items-center gap-2 mb-2">
+                                        <div class="d-flex align-items-center gap-2 mb-3">
                                             <span style="font-weight:bold; color:#0C447C; font-size:13px;">Billing Period</span>
                                             <div style="flex:1; height:1px; background:#e0e0e0;"></div>
                                         </div>
@@ -1123,7 +1123,7 @@ const InvoiceDialog = (() => {
                                     </div>
 
                                     <div>
-                                        <div class="d-flex align-items-center gap-2 mb-2">
+                                        <div class="d-flex align-items-center gap-2 mb-3">
                                             <span style="font-weight:bold; color:#0C447C; font-size:13px;">Calculation</span>
                                             <div style="flex:1; height:1px; background:#e0e0e0;"></div>
                                         </div>
@@ -1258,7 +1258,7 @@ const InvoiceDialog = (() => {
 
                                 div.innerHTML = `
                                     <div>
-                                        <div class="d-flex align-items-center  mb-2">
+                                        <div class="d-flex align-items-center  mb-3">
                                             <span style="font-weight:bold; color:#0C447C; font-size:13px;">Service Selection</span>
                                             <div style="flex:1; height:1px; background:#e0e0e0;"></div>
                                         </div>
@@ -1280,7 +1280,7 @@ const InvoiceDialog = (() => {
                                     </div>
 
                                     <div>
-                                        <div class="d-flex align-items-center  mb-2">
+                                        <div class="d-flex align-items-center  mb-3">
                                             <span style="font-weight:bold; color:#0C447C; font-size:13px;">Financials</span>
                                             <div style="flex:1; height:1px; background:#e0e0e0;"></div>
                                         </div>
@@ -1383,7 +1383,7 @@ const InvoiceDialog = (() => {
 
                                 div.innerHTML = `
                                     <div>
-                                        <div class="d-flex align-items-center mb-2">
+                                        <div class="d-flex align-items-center mb-3">
                                             <span style="font-weight:bold; color:#0C447C; font-size:13px;">Request Info</span>
                                             <div style="flex:1; height:1px; background:#e0e0e0;"></div>
                                         </div>
@@ -1409,7 +1409,7 @@ const InvoiceDialog = (() => {
                                     </div>
 
                                     <div>
-                                        <div class="d-flex align-items-center mb-2">
+                                        <div class="d-flex align-items-center mb-3">
                                             <span style="font-weight:bold; color:#0C447C; font-size:13px;">Financials</span>
                                             <div style="flex:1; height:1px; background:#e0e0e0;"></div>
                                         </div>
@@ -1727,8 +1727,6 @@ const InvoiceDialog = (() => {
                         const items = me.itemsView.getItems(); // Retrieves all row data
                         const totals = me.itemsView.getCurrentTotals?.() || {};
 
-                        console.log("Preparing to save invoice with items:", items);
-
                         if (me._selectedTenantId) {
                             header.tenant_id = me._selectedTenantId;
                         }
@@ -1760,21 +1758,100 @@ const InvoiceDialog = (() => {
                                         item.remarks || item.description || "",
                                     start_date: item.start_date,
                                     end_date: item.end_date,
-
-                                    // Fields for the calculation audit trail
                                     discount: parseFloat(item.discount || 0),
-                                    // special_discount_value: parseFloat(
-                                    //     item.discount || 0
-                                    // ),
-                                    // special_discount_type:
-                                    //     item.discount_type || "percent",
                                     tax_rate: parseFloat(item.tax_rate || 0),
 
                                     amount: parseFloat(item.total || 0)
                                 };
                             });
 
-                        // Return the full payload to your API
+                            const hasOverlap = (a, b) => {
+                            const aStart = new Date(a.start_date);
+                            const aEnd   = new Date(a.end_date);
+                            const bStart = new Date(b.start_date);
+                            const bEnd   = new Date(b.end_date);
+                            if (isNaN(aStart) || isNaN(aEnd) || isNaN(bStart) || isNaN(bEnd)) return false;
+                            return aStart <= bEnd && aEnd >= bStart;
+                        };
+
+                        const rentItems = mappedItems.filter(item => item.type === "rent");
+                            for (let i = 0; i < rentItems.length; i++) {
+                                for (let j = i + 1; j < rentItems.length; j++) {
+                                    const a = rentItems[i];
+                                    const b = rentItems[j];
+                                    if (String(a.contract_id) !== String(b.contract_id)) continue;
+                                    if (hasOverlap(a, b)) {
+                                        cv_interact.error(
+                                            `Duplicate rent detected for "${a.item_name}". ` +
+                                            `Row ${i + 1} (${a.start_date} ~ ${a.end_date}) ` +
+                                            `and Row ${j + 1} (${b.start_date} ~ ${b.end_date}) ` +
+                                            `have overlapping dates. Please remove one before saving.`
+                                        );
+                                        return null;
+                                    }
+                                }
+                            }
+
+                            const electricItems = mappedItems.filter(item => item.item_name === "Electric");
+                            for (let i = 0; i < electricItems.length; i++) {
+                                for (let j = i + 1; j < electricItems.length; j++) {
+                                    const a = electricItems[i];
+                                    const b = electricItems[j];
+                                    if (hasOverlap(a, b)) {
+                                        cv_interact.error(
+                                            `Duplicate electricity record detected. ` +
+                                            `Row ${i + 1} (${a.start_date} ~ ${a.end_date}) ` +
+                                            `and Row ${j + 1} (${b.start_date} ~ ${b.end_date}) ` +
+                                            `have overlapping dates. Please remove one before saving.`
+                                        );
+                                        return null;
+                                    }
+                                }
+                            }
+
+                            const waterItems = mappedItems.filter(item => item.item_name === "Water");
+                            for (let i = 0; i < waterItems.length; i++) {
+                                for (let j = i + 1; j < waterItems.length; j++) {
+                                    const a = waterItems[i];
+                                    const b = waterItems[j];
+                                    if (hasOverlap(a, b)) {
+                                        cv_interact.error(
+                                            `Duplicate water record detected. ` +
+                                            `Row ${i + 1} (${a.start_date} ~ ${a.end_date}) ` +
+                                            `and Row ${j + 1} (${b.start_date} ~ ${b.end_date}) ` +
+                                            `have overlapping dates. Please remove one before saving.`
+                                        );
+                                        return null;
+                                    }
+                                }
+                            }
+
+                            const requestItems = mappedItems.filter(item => item.type === "Service Request");
+                            const seenRequestIds = new Set();
+                            for (const item of requestItems) {
+                                if (seenRequestIds.has(item.request_id)) {
+                                    cv_interact.error(
+                                        `Service request "${item.item_name}" has already been added. ` +
+                                        `Each service request can only be invoiced once.`
+                                    );
+                                    return null;
+                                }
+                                seenRequestIds.add(item.request_id);
+                            }
+
+                            const serviceItems = mappedItems.filter(item => item.type === "service");
+                                const seenServiceIds = new Set();
+                                for (const item of serviceItems) {
+                                    if (seenServiceIds.has(String(item.item_id))) {
+                                        cv_interact.error(
+                                            `Service "${item.item_name}" has already been added. ` +
+                                            `Each service can only be added once per invoice.`
+                                        );
+                                        return null;
+                                    }
+                                    seenServiceIds.add(String(item.item_id));
+                                }
+
                         return {
                             ...header,
                             items: mappedItems,
@@ -1881,7 +1958,7 @@ const InvoiceDialog = (() => {
                         click: (me, btn) => {
                             const formData = me.saveData();
 
-                            console.log(123123123, formData);
+                            if (!formData) return;
 
                             if (
                                 !formData.items ||
@@ -1957,7 +2034,7 @@ const ReceiveDialog = (() => {
                     <div style="display:flex;flex-direction:column;">
 
                         <div>
-                            <div class="d-flex align-items-center gap-2 mb-2">
+                            <div class="d-flex align-items-center gap-2 mb-3">
                                 <span class="payment-badge" style="color:#27500A;">Cash</span>
                                 <div style="flex:1;height:1px;background:#dee2e6;"></div>
                                 <span style="font-size:11px;color:#27500A;">Entered: <strong id="c_e" style="color:#212529;">—</strong></span>
@@ -1972,7 +2049,7 @@ const ReceiveDialog = (() => {
                         </div>
 
                         <div>
-                            <div class="d-flex align-items-center gap-2 mb-2">
+                            <div class="d-flex align-items-center gap-2 mb-3">
                                 <span class="payment-badge" style=";color:#0C447C;">Bank Transfer</span>
                                 <div style="flex:1;height:1px;background:#dee2e6;"></div>
                                 <span style="font-size:11px;color:#0C447C;">Entered: <strong id="b_e" style="color:#212529;">—</strong></span>
@@ -1996,7 +2073,7 @@ const ReceiveDialog = (() => {
                         </div>
 
                         <div>
-                            <div class="d-flex align-items-center gap-2 mb-2">
+                            <div class="d-flex align-items-center gap-2 mb-3">
                                 <span class="payment-badge" style="color:#3C3489;">Card</span>
                                 <div style="flex:1;height:1px;background:#dee2e6;"></div>
                                 <span style="font-size:11px;color:#3C3489;">Entered: <strong id="ca_e" style="color:#212529;">—</strong></span>
@@ -2024,7 +2101,7 @@ const ReceiveDialog = (() => {
                         </div>
 
                         <div>
-                            <div class="d-flex align-items-center gap-2 mb-2">
+                            <div class="d-flex align-items-center gap-2 mb-3">
                                 <span class="payment-badge" style="color:#633806;">Cheque</span>
                                 <div style="flex:1;height:1px;background:#dee2e6;"></div>
                                 <span style="font-size:11px;color:#633806;">Entered: <strong id="ch_e" style="color:#212529;">—</strong></span>
