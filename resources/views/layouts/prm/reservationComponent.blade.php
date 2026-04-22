@@ -2,7 +2,7 @@
      <div id="_divFilter_reservation" class="rounded-2 p-3 bg-white shadow-sm">
         <div class="row g-3 align-items-center">
             <div class="col-12 col-md-6 col-lg-3">
-                <input type="text" class="form-control rounded-2 pe-5 filter-field input-search" id="_search_reservation" placeholder="Search">
+                <input type="text" class="form-control rounded-2 pe-5 filter-field input-search" id="_search_reservation" placeholder="Search By Name or Phone">
             </div>
             <div class="col-12 col-md-6 col-lg-2 ">
                 <select type="id" id="_reservation_status" class="data-input filter-field form-control" data-field="status_id"></select>

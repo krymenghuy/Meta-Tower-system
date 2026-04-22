@@ -48,7 +48,6 @@ class Vendor //extends Model
             return DV::error($res->error);
 
         $inputs = $res->values;
-
         $exist = DB::table('vendors')
             ->whereRaw('LOWER(name)=?', [strtolower($inputs['name'])])
             ->when($id, function ($q) use ($id) {
