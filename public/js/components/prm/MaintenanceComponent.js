@@ -114,7 +114,7 @@ var MaintenanceComponent = (() => {
                 const m = map[statusId] || null;
                 const label = m?.text || data.status_name || "—";
                 const cls = m?.cls || "badge bg-light text-muted";
-                return `<span class="badge ${cls}">${label}</span>`;
+                return `<span class="badge ${cls}" style="min-width: 100px;">${label}</span>`;
             }
         },
         {

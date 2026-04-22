@@ -485,4 +485,16 @@ class BuildingSpace
     }
 }
 
+public function viewBookingDetails($id)
+{
+    $row = DB::table('space_bookings as sb')
+        ->join('building_spaces as bs', 'bs.id', '=', 'sb.space_id')
+        ->where('sb.space_id', $id)
+        ->selectRaw('sb.id, sb.booker_name, sb.booker_phone, sb.booker_email, sb.booking_date, sb.expired_booking_date, sb.booking_fee, sb.remarks, bs.code as space_code')
+        ->first();
+    if ($row) {
+        setOfficialDates($row, ['booking_date', 'expired_booking_date'], [], []);
+    }
+    return $row;
+}
 }

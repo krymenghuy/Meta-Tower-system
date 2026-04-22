@@ -3,7 +3,7 @@
         <div class="row g-3 align-items-center">
             <div class="col-12 col-md-6 col-lg-4">
                 <div class="position-relative w-100">
-                <input type="text" class="form-control rounded-2 pe-5 filter-field input-search" id="_search_invoice" placeholder="Search By Name or Invoice Num">
+                <input type="text" class="form-control rounded-2 pe-5 filter-field input-search" id="_search_invoice" placeholder="Search By Tenant or Invoice No">
             </div>
          </div>
 
