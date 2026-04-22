@@ -623,9 +623,9 @@ const AmenityDialog = (() => {
                                     if (res.status_code === 200) {
                                         me.hide(true, op);
                                          if (me.dataOptions.id > 0) {
-                                            cv_interact.success("Amenity has been updated successfully");
+                                            cv_interact.success("Amenity has been updated successfully.");
                                         } else {
-                                            cv_interact.success("New Amenity has been added successfully");
+                                            cv_interact.success("New Amenity has been added successfully.");
                                         }
                                     } else {
                                         cv_interact.error(res.error_message);

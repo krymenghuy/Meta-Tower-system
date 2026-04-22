@@ -34,8 +34,8 @@ public function upsert($arr = [], $id = null, $ss = null){
         if (!empty($arr['end_time'])) {
             $arr['end_time'] = date('H:i:s', strtotime($arr['end_time']));
         }
-        
-       
+
+
         $v_rule = [
             'tenant_id'          => '1|number|exists=tenants.id',
             'amenity_id'         => '1|number|exists=amenities.id',
@@ -61,7 +61,7 @@ public function upsert($arr = [], $id = null, $ss = null){
         $start_time = date('H:i:s', strtotime($d->start_time));
 
         $dateTimestamp = strtotime("$booking_date $start_time");
-        $currentTime = time(); 
+        $currentTime = time();
         if ($dateTimestamp < ($currentTime - 60)) {
             return DV::error('Start time cannot be in the past. Current time is ' . date('h:i A'));
         }
@@ -85,8 +85,8 @@ public function upsert($arr = [], $id = null, $ss = null){
             }
         }
         if ($d->amenity_id && $d->booking_date && $d->start_time && $d->end_time) {
-    
-        
+
+
         $bufferedEndTime = date('H:i:s', strtotime($d->end_time . ' +15 minutes'));
 
         $exists = self::where('amenity_id', $d->amenity_id)
@@ -112,7 +112,7 @@ public function upsert($arr = [], $id = null, $ss = null){
         }
 
         return DV::error('Error saving reservation!');
-    } 
+    }
 
     static function checkDuplicateReservation($amenity_id, $booking_date, $id = null)
     {
@@ -135,7 +135,7 @@ public function upsert($arr = [], $id = null, $ss = null){
         $status_id = $d->status_id ?? null;
         $booking_date = isset($d->booking_date) ? convertDate($d->booking_date) : null;
         if (!is_numeric($current_page)) {
-            $current_page = 1;  
+            $current_page = 1;
         }
         $skip_rows = ($current_page - 1) * $per_page;
         $str_search = "1=1";
@@ -147,7 +147,7 @@ public function upsert($arr = [], $id = null, $ss = null){
             $str_search = "(a.name LIKE '%" . $search_value . "%' OR a.code LIKE '%" . $search_value . "%' OR t.name LIKE '%" . $search_value . "%' OR t.phone_number LIKE '%" . $search_value . "%')";
         }
 
-        if($tenant_id){ 
+        if($tenant_id){
             $str_moreWhere .= ' AND r.tenant_id =' . $tenant_id;
         }
         if($amenity_id){
@@ -174,7 +174,7 @@ public function upsert($arr = [], $id = null, $ss = null){
         $rows = $query->skip($skip_rows)->take($per_page)->get();
 
         // --- AUTO STATUS LOGIC STARTS HERE ---
-        $now = \Carbon\Carbon::now('Asia/Phnom_Penh'); 
+        $now = \Carbon\Carbon::now('Asia/Phnom_Penh');
 
         foreach($rows as $row) {
             $now = \Carbon\Carbon::now('Asia/Phnom_Penh');
@@ -217,14 +217,14 @@ public function upsert($arr = [], $id = null, $ss = null){
     {
         $ss = $ss ? $ss : $this->userInfo;
         $reservation_details = $id ? self::reservationDetails($id) : null;
-        
+
         return (object) [
             'reservation_details' => $reservation_details,
             'amenities'      => GeneralSettings::options_amenity($ss),
             'tenants'        => GeneralSettings::options_tenant($ss),
             'reservation_statuses' => GeneralSettings::options_reservation_status($ss),
             'amenity_categories' => GeneralSettings::options_amenity_category($ss),
-            
+
         ];
     }
 
@@ -236,7 +236,7 @@ public function upsert($arr = [], $id = null, $ss = null){
             return DV::error('Cannot delete an in-progress reservation.');
         }
         if ($status_id == 3) {
-            return DV::error('Cannot delete a completed reservation.');
+       return DV::error('Cannot delete a completed reservation.');
         }
         $deleted = DB::table('reservations')->where('id', $id)->delete();
         return $deleted ? DV::depends($deleted,['action'=>'deleted']) : DV::error('Delete failed.');
@@ -257,7 +257,7 @@ public function upsert($arr = [], $id = null, $ss = null){
         return DV::depends($x, ['reservation status', 'updated']);
     }
 
-    
 
-    
+
+
 }

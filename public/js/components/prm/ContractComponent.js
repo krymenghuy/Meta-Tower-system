@@ -243,7 +243,7 @@ var ContractComponent = new (function () {
 
                 // Re-initialize tooltips after filter
                 setTimeout(() => {
-                    $('[data-bs-toggle="tooltip"]').tooltip('dispose');
+                    // $('[data-bs-toggle="tooltip"]').tooltip('dispose');
                     $('[data-bs-toggle="tooltip"]').tooltip();
                 }, 500);
             }
@@ -258,7 +258,7 @@ var ContractComponent = new (function () {
 
                 // Re-initialize tooltips after search
                 setTimeout(() => {
-                    $('[data-bs-toggle="tooltip"]').tooltip('dispose');
+                    // $('[data-bs-toggle="tooltip"]').tooltip('dispose');
                     $('[data-bs-toggle="tooltip"]').tooltip();
                 }, 500);
             }, 250);
@@ -753,10 +753,8 @@ const ContractDialog = (() => {
     let dialog = null;
     const parseDateInput = (value) => {
         if (!value) return null;
-
         const raw = String(value).trim();
         if (!raw) return null;
-
         if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) {
             const [year, month, day] = raw.split('-').map(Number);
             return new Date(year, month - 1, day);
@@ -804,7 +802,7 @@ const ContractDialog = (() => {
                     <div class="row">
                         <div class="col-6">
                             <div class="material-input outlined">
-                                <input name="tenant" class="data-input form-control" data-field="tenant_name" placeholder="Tenant" />
+                                <input name="tenant" class="data-input form-control" data-field="tenant_name"  placeholder="Tenant" />
                                 <!-- <label style="color:#777777;padding-left:6px;" for="tenant">Tenant</label> -->
                             </div>
                         </div>
@@ -843,7 +841,7 @@ const ContractDialog = (() => {
                                 <label style="color:#777777;padding-left:6px;">Deposit <span class="text-danger">*</span></label>
                             </div>
                         </div>
-                       
+
                     </div>
                 </div>
                 <div class="col-12 mb-3">
@@ -880,7 +878,7 @@ const ContractDialog = (() => {
                  <div class="col-12 mt-3">
                         <div class="material-input outlined">
                             <textarea class="data-input form-control" data-field="remarks" placeholder=" "></textarea>
-                            <label style="color:#777777;padding-left:6px;">Remarks</label>
+                            <label style="color:#777777;padding-left:6px;">Remark</label>
                         </div>
                     </div>
                 </div>`
@@ -956,9 +954,9 @@ const ContractDialog = (() => {
             },
 
             onPrepareForm: (me, data) => {
-                LocaleManager.translateZone(me.divModal);
-                //   const isReadOnly = me.dataOptions.id > 0;
-                    // me.setReadOnly(isReadOnly, ["business_type_id"]);
+                  const isReadOnly = me.dataOptions.tenant_id > 0;
+                  
+                    me.controls.tenant.disabled = isReadOnly;
                 if (me.searchTenant && typeof me.searchTenant.reset === "function") {
                     me.searchTenant.reset();
                 }
@@ -1049,17 +1047,7 @@ const ContractDialog = (() => {
                     }
                 }
 
-                // const isReadOnly = me.dataOptions.data.code > 0;
-                // me.setReadOnly(isReadOnly, ['code','space_type_id','price_type','price','sqm_size']);
-                const header = me.divModal.querySelector('.modal-header');
-                const btnClose = header.querySelector('button');
-                if(btnClose) btnClose.classList.add('d-none');
-
-                // me.controls.space_type_id.value = me.dataOptions.data.space_type_id;
-                // me.controls.code.value = me.dataOptions.data.code;
-                // me.controls.price_type.value = me.dataOptions.data.price_type;
-                // me.controls.price.value = me.dataOptions.data.price;
-                // me.controls.sqm_size.value = me.dataOptions.data.sqm_size;
+             
             },
 
             buttons: [
@@ -1214,7 +1202,7 @@ const RenewDialog = (() => {
                                         <div class="material-input outlined">
                                             <input  data-style="material" type="number" name="old_contract_price" class="data-input form-control" data-field="old_contract_price" placeholder=" " disabled />
                                             <label style="color:#777777;padding-left:6px;">Price</label>
-                                        </div> 
+                                        </div>
                                     </div>
                                 </div>
                             </div>

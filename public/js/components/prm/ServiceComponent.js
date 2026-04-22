@@ -356,7 +356,9 @@ const CreateServiceDialog = (() => {
                             <div class="col-6">
                                 <div class="material-input outlined">
                                     <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder="" />
-                                    <label style="padding-left:6px;color:#777777;">Service Name</label>
+                                    <label style="padding-left:6px;color:#777777;">Service 
+                                    
+                                    Name</label>
                                 </div>
                             </div>
                             <div class="col-6">

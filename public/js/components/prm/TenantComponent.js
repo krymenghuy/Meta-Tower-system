@@ -52,7 +52,7 @@ var TenantComponent = new (function () {
                           : "Other";
                 return `
                     <div class="text-prm-custom" style="width:120px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.name ?? ""}</span>
+                        <span class="text-wrap text-break text-capitalize" style ="word-break:break-word;">${data.name ?? ""}</span>
                         <small class="d-block text-muted">${sexLabel}</small>
                     </div>
                 `;
@@ -650,6 +650,34 @@ var TenantComponent = new (function () {
     mThis.getPageContainer = (pageName) => {
         return mThis.pages[pageName];
     };
+    mThis.openTenantDocument = async (id, mode = "view") => {
+        const res = await vsapi.call(
+            [main_view.base_url, "/prm/tenant/document/download"].join(""),
+            { id },
+            false,
+            null,
+        );
+        if (res.status_code !== 200) {
+            cv_interact.error(res.error_message || "Failed to open document.");
+            return;
+        }
+        const { data_url, file_name } = res.data || {};
+        if (!data_url) {
+            cv_interact.error("Document URL is missing.");
+            return;
+        }
+        if (mode === "download") {
+            const a = document.createElement("a");
+            a.href = data_url;
+            a.download = file_name || "document";
+            a.target = "_blank";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            return;
+        }
+        window.open(data_url, "_blank");
+    };
     mThis.showPage = async (pageName, op = {}) => {
         if (this.self.style.display !== "block") {
             main_view.setContentView(this.self, this.title_prop);
@@ -787,7 +815,7 @@ var TenantComponent = new (function () {
                             <h5 class="fw-bold mb-2"><i class="fa fa-user me-1 text-primary"></i> Personal Information</h5>
                             <div class="row g-4 mb-5">
                                 <div class="col-md-4"><small class="text-muted">Name</small><div class="fw-semibold">${data.name ?? ""}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Sex</small><div class="fw-semibold">${data.sex == "M" ? "Male" : data.sex == "F" ? "Female" : ""}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Gender</small><div class="fw-semibold">${data.sex == "M" ? "Male" : data.sex == "F" ? "Female" : ""}</div></div>
                                 <div class="col-md-4"><small class="text-muted">Date of Birth</small><div class="fw-semibold">${data.date_of_birth ?? ""}</div></div>
                                 <div class="col-md-4"><small class="text-muted">Legal Name</small><div class="fw-semibold">${data.legal_name ?? ""}</div></div>
                                 <div class="col-md-4"><small class="text-muted">National ID</small><div class="fw-semibold">${data.national_id ?? ""}</div></div>
@@ -824,7 +852,7 @@ var TenantComponent = new (function () {
                                             <th class="border-0 ps-3" style="letter-spacing: 0.05em;">Document Type</th>
                                             <th class="border-0">File Name</th>
                                             <th class="border-0">File Type</th>
-                                            <th class="border-0">Remarks</th>
+                                            <th class="border-0">Remark</th>
                                             <th class="border-0 text-end pe-3">Actions</th>
                                         </tr>
                                     </thead>
@@ -1203,7 +1231,10 @@ var TenantComponent = new (function () {
                         </td>
                        <td class="text-end py-3 px-3">
                             <div class="d-flex justify-content-end">
-                                <button type="button" class="btn btn-outline-secondary btn-sm border-0 shadow-none hover-primary view-doc" data-id="${doc.id}" title="Download Document" aria-label="Download Document">
+                                <button type="button" class="btn btn-outline-primary btn-sm border-0 shadow-none view-doc" data-id="${doc.id}" title="View Document" aria-label="View Document">
+                                    <i class="fa-regular fa-eye"></i>
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm border-0 shadow-none download-doc" data-id="${doc.id}" title="Download Document" aria-label="Download Document">
                                     <i class="fa-solid fa-cloud-arrow-down"></i>
                                 </button>
                                 <button type="button" class="btn btn-outline-danger btn-sm border-0 shadow-none delete-doc-btn" data-id="${doc.id}" title="Delete Document "aria-label="Delete Document">
@@ -1242,7 +1273,7 @@ var TenantComponent = new (function () {
                                     <th class="border-0 ps-3" style="letter-spacing: 0.05em;">Document Type</th>
                                     <th class="border-0">File</th>
                                     <th class="border-0">File Type</th>
-                                    <th class="border-0">Remarks</th>
+                                    <th class="border-0">Remark</th>
                                     <th class="border-0 text-end">Actions</th>
                                 </tr>
                             </thead>
@@ -1271,27 +1302,13 @@ var TenantComponent = new (function () {
             div.querySelectorAll('.view-doc').forEach(btn => {
                 btn.addEventListener('click', async (e) => {
                     const id = e.currentTarget.dataset.id;
-
-                    const res = await vsapi.call(
-                        [main_view.base_url, "/prm/tenant/document/download"].join(""),
-                        { id: id },
-                        false,
-                        null
-                    );
-
-                    if (res.status_code === 200) {
-                        const { data_url, file_name } = res.data;
-
-                        // Create a temporary anchor and trigger download
-                        const a = document.createElement('a');
-                        a.href = data_url;
-                        a.download = file_name || 'document';
-                        document.body.appendChild(a);
-                        a.click();
-                        document.body.removeChild(a);
-                    } else {
-                        cv_interact.error(res.error_message || "Failed to download document.");
-                    }
+                    mThis.openTenantDocument(id, "view");
+                });
+            });
+            div.querySelectorAll('.download-doc').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = e.currentTarget.dataset.id;
+                    mThis.openTenantDocument(id, "download");
                 });
             });
 
@@ -1706,13 +1723,13 @@ const TenantDocumentDialog = (() => {
                     </div>
                     <div class="col-12">
                         <div class="material-input outlined d-flex">
-                            <input type="text" name="documents" class="d-none form-control"  accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg" />
-                        </div>
+                            <input type="text" name="documents" class="d-none form-control"  accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg" /disabled>
+                        </div> 
                     </div>
                      <div class="col-12">
                         <div class="material-input outlined">
                             <textarea type="text" name="remarks" required class="data-input form-control" data-field="remarks" placeholder=" " /></textarea>
-                            <label style="color:#777777;padding-left:6px;">Remarks</label>
+                            <label style="color:#777777;padding-left:6px;">Remark</label>
                         </div>
                     </div>
 
@@ -1799,8 +1816,8 @@ const TenantDocumentDialog = (() => {
                 ],
 
                 prepareFormOptions: {
-                    createTitle: "Upload Documents",
-                    modifyTitle: "Modify Documents",
+                    createTitle: "Upload Document",
+                    modifyTitle: "Modify Document",
                     targetProp: "document_details",
                     api: {
                         endpoint: [
