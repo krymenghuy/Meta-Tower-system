@@ -315,8 +315,6 @@ class Invoice extends VSModel
             $new_paid_amount = $already_paid + $total_received;
             $new_due_amount  = max(0, $invoice_amount - $new_paid_amount);
 
-            // Logic: If new_due_amount is 0, it's fully paid (Status 1)
-            // Otherwise, it's partially paid (Status 2)
             $is_paid = ($new_due_amount <= 0.01) ? 1 : 0;
             $payment_status_id = ($is_paid === 1) ? 1 : 2;
             DB::table('invoices')
