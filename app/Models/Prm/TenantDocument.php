@@ -10,13 +10,13 @@ use DV;
 use Log;
 use XPublicStorage;
 
-class TenantDocument 
+class TenantDocument
 {
     protected $id = null;
     protected $userInfo = null;
     protected static $img_dir = 'tenant_documents';
     protected $table = 'tenant_documents';
-    
+
 
     protected static $allowed_image_extensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
     protected static $allowed_doc_extensions   = ['pdf', 'doc', 'docx', 'xls', 'xlsx'];
@@ -62,11 +62,11 @@ public function saveTenantDocument($arr = [], $ss = null)
 
         // $res = XPublicStorage::savefile(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], $ext, $data, $category);
         $data = preg_replace('#^data:.*;base64,#', '', $data);
-        
+
         $res= XPublicStorage::savefile(['subs_id' => $ss->subs_id, 'dir' => self::$img_dir], $ext, $data, $category);
         if ($res->status === "Error") {
             return DV::error($res->error_message);
-            
+
         }
         unset($inputs['data']);
         $inputs['file_name'] = $res->file_name;
@@ -164,21 +164,6 @@ public function downloadTenantDocument($id = null, $ss = null)
         return DV::error('Document not found.');
     }
 
-     $file = XPublicStorage::getUrl(['subs_id' => $ss->subs_id, 'dir' => 'tenant_documents'], 'images') . $doc->file_name;
-
-    $relativePath = str_replace('\\', '/', $file);
-
-    // Optional: make it dynamic if subs_id is always available
-    // $relativePath = "{$ss->subs_id}/tenant_documents/images/{$doc->file_name}";
-
-    Log::info('Attempting to fetch from storage path: ' . $relativePath);
-
-    // Check existence first – prevents exception
-    if (!$relativePath) {
-        Log::warning("File missing in storage: {$relativePath}");
-        return DV::error('File not found in storage.');
-    }
-
     $mimeTypes = [
         'pdf'  => 'application/pdf',
         'doc'  => 'application/msword',
@@ -190,7 +175,20 @@ public function downloadTenantDocument($id = null, $ss = null)
         'jpeg' => 'image/jpeg',
     ];
 
-    $ext      = strtolower(ltrim($doc->ext ?? pathinfo($doc->file_name, PATHINFO_EXTENSION), '.'));
+    $ext = strtolower(ltrim($doc->ext ?? pathinfo($doc->file_name, PATHINFO_EXTENSION), '.'));
+    // Must match XPublicStorage::savefile() categories: image → /images/, document → /documents/ (e.g. PDF).
+    $storageCategory = in_array($ext, self::$allowed_image_extensions, true) ? 'image' : 'document';
+    $file = XPublicStorage::getUrl(['subs_id' => $ss->subs_id, 'dir' => 'tenant_documents'], $storageCategory) . $doc->file_name;
+
+    $relativePath = str_replace('\\', '/', $file);
+
+    Log::info('Attempting to fetch from storage path: ' . $relativePath);
+
+    if (!$relativePath) {
+        Log::warning("File missing in storage: {$relativePath}");
+        return DV::error('File not found in storage.');
+    }
+
     $mimeType = $mimeTypes[$ext] ?? 'application/octet-stream';
 
     return DV::depends(1, [
