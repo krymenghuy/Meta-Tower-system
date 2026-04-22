@@ -717,20 +717,22 @@ var TenantComponent = new (function () {
         targetPage.style.display = "block";
     };
     mThis.renderProfile = (data) => {
+        console.log(123,data);
+        
         let cls_class = "";
         if (data && data.status) {
             switch (data.status) {
                 case "Pending":
                     cls_class =
-                        "badge text-dark bg-warning-subtle border border-warning";
+                        "badge text-warning bg-warning-subtle border border-warning";
                     break;
                 case "Active":
                     cls_class =
-                        "badge text-dark bg-success-subtle border border-success";
+                        "badge text-success bg-success-subtle border border-success";
                     break;
                 case "Inactive":
                     cls_class =
-                        "badge text-dark bg-danger-subtle border border-danger";
+                        "badge text-danger bg-danger-subtle border border-danger";
                     break;
                 default:
                     cls_class = "badge text-muted bg-light";
@@ -1483,7 +1485,7 @@ const CreateTenantDialog = (() => {
                             <div class="col-12 col-md-4">
                                 <div class="material-input outlined">
                                     <input type="number" name="phone_number" class="data-input form-control" data-field="phone_number" placeholder=" " />
-                                    <label style="color:#777777;padding-left:6px;">Phone Number </label>
+                                    <label style="color:#777777;padding-left:6px;">Phone Number</label>
                                 </div>
                             </div>
                             <div class="col-12 col-md-4">
@@ -1494,7 +1496,7 @@ const CreateTenantDialog = (() => {
                             </div>
                         <div class="col-12">
                             <div class="material-input outlined">
-                                <textarea class="data-input form-control" data-field="address" rows="3" placeholder=" "></textarea>
+                                <textarea name="address" class="data-input form-control" data-field="address" rows="3" placeholder=" "></textarea>
                                 <label style="color:#777777;padding-left:6px;">Address</label>
                             </div>
                         </div>
