@@ -778,11 +778,11 @@ const InvoiceDialog = (() => {
                                             <div style="flex:1; height:1px; background:#e0e0e0;"></div>
                                         </div>
                                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                                            <div class="material-input outlined">
+                                            <div class="material-input outlined" style="margin-bottom: 1rem;">
                                                 <input class="data-input form-control bg-light" data-field="contract_id" name="contract_id" type="text" readonly>
                                                 <label style="color:#777;">Unit Code / Room</label>
                                             </div>
-                                            <div class="material-input outlined">
+                                            <div class="material-input outlined " style="margin-bottom: 1rem;">
                                                 <select class="data-input form-control" data-field="monthly" name="monthly" data-style="material" placeholder="Monthly">
                                                     ${monthOptions}
                                                 </select>
@@ -796,11 +796,11 @@ const InvoiceDialog = (() => {
                                             <div style="flex:1; height:1px; background:#e0e0e0;"></div>
                                         </div>
                                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                                            <div class="material-input outlined">
+                                            <div class="material-input outlined" style="margin-bottom: 1rem;">
                                                 <input class="data-input form-control bg-light cursor-blocked" data-field="start_date" name="start_date" type="text" readonly placeholder="yyyy-mm-dd">
                                                 <label style="color:#777;">Start Date</label>
                                             </div>
-                                            <div class="material-input outlined">
+                                            <div class="material-input outlined" style="margin-bottom: 1rem;">
                                                 <input class="data-input form-control bg-light cursor-blocked" data-field="end_date" name="end_date" type="text" readonly placeholder="yyyy-mm-dd">
                                                 <label style="color:#777;">End Date</label>
                                             </div>
@@ -813,15 +813,15 @@ const InvoiceDialog = (() => {
                                             <div style="flex:1; height:1px; background:#e0e0e0;"></div>
                                         </div>
                                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                                            <div class="material-input outlined">
+                                            <div class="material-input outlined" style="margin-bottom: 1rem;">
                                                 <input class="data-input form-control bg-light cursor-blocked" data-field="price" name="price" type="text" readonly style="font-weight:bold; color:#0c447c;">
                                                 <label style="color:#777;">Effective Price ($)</label>
                                             </div>
-                                            <div class="material-input outlined">
+                                            <div class="material-input outlined" style="margin-bottom: 1rem;">
                                                 <input class="data-input form-control" data-field="tax_rate" name="tax_rate" type="number" placeholder="0">
                                                 <label style="color:#777;">Tax %</label>
                                             </div>
-                                            <div class="material-input outlined" style="display:flex; gap:8px; align-items:flex-end; grid-column: span 2;">
+                                            <div class="material-input outlined" style=" display:flex; gap:8px; align-items:flex-end; grid-column: span 2; ">
                                                 <div style="flex:1">
                                                     <input class="data-input form-control" data-field="discount" name="discount" type="number" placeholder="0">
                                                     <label style="color:#777;">Discount</label>
@@ -836,7 +836,7 @@ const InvoiceDialog = (() => {
                                         </div>
                                     </div>
 
-                                    <div class="material-input outlined">
+                                    <div class="material-input outlined" style="margin-bottom: 1rem;">
                                         <textarea class="data-input form-control" data-field="remark" name="remark" rows="2" placeholder=" "></textarea>
                                         <label style="color:#777;">Remark</label>
                                     </div>
@@ -932,11 +932,11 @@ const InvoiceDialog = (() => {
                                             <div style="flex:1; height:1px; background:#e0e0e0;"></div>
                                         </div>
                                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                                            <div class="material-input outlined">
+                                            <div class="material-input outlined" style="margin-bottom: 1rem;">
                                                 <input class="data-input form-control" data-field="old_electric" name="old_electric" type="number" placeholder="0" min="0">
                                                 <label style="color:#777;">Old Reading (kWh)</label>
                                             </div>
-                                            <div class="material-input outlined">
+                                            <div class="material-input outlined" style="margin-bottom: 1rem;">
                                                 <input class="data-input form-control" data-field="new_electric" name="new_electric" type="number" placeholder="0" min="0">
                                                 <label style="color:#777;">New Reading (kWh)</label>
                                             </div>
@@ -949,11 +949,11 @@ const InvoiceDialog = (() => {
                                             <div style="flex:1; height:1px; background:#e0e0e0;"></div>
                                         </div>
                                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                                            <div class="material-input outlined">
+                                            <div class="material-input outlined" style="margin-bottom: 1rem;">
                                                 <input class="data-input form-control" data-field="start_date" name="start_date" type="text" data-type="date" placeholder="d-m-y">
                                                 <label style="color:#777;">Start Date</label>
                                             </div>
-                                            <div class="material-input outlined">
+                                            <div class="material-input outlined" style="margin-bottom: 1rem;">
                                                 <input class="data-input form-control" data-field="end_date" name="end_date" type="text" data-type="date" placeholder="d-m-y">
                                                 <label style="color:#777;">End Date</label>
                                             </div>
@@ -966,11 +966,11 @@ const InvoiceDialog = (() => {
                                             <div style="flex:1; height:1px; background:#e0e0e0;"></div>
                                         </div>
                                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                                            <div class="material-input outlined">
+                                            <div class="material-input outlined" >
                                                 <input class="data-input form-control bg-light cursor-blocked" data-field="units_used" name="units_used" type="text" readonly style="font-weight:bold;">
                                                 <label style="color:#777;">Units Used (kWh)</label>
                                             </div>
-                                            <div class="material-input outlined">
+                                            <div class="material-input outlined" >
                                                 <input class="data-input form-control" data-field="price_per_unit" name="price_per_unit" type="number" placeholder="0.00" step="0.01">
                                                 <label style="color:#777;">Price per kWh ($)</label>
                                             </div>
@@ -978,7 +978,7 @@ const InvoiceDialog = (() => {
                                     </div>
 
                                     <div style="display:flex; flex-direction:column;">
-                                        <div class="material-input outlined">
+                                        <div class="material-input outlined" >
                                             <input class="data-input form-control cursor-blocked" data-field="total_amount" name="total_amount" type="text" readonly 
                                                 style="background-color: #f0f7ff; border-color: #0c447c; color: #0c447c; font-weight: bold; font-size: 1.1em;">
                                             <label style="color:#0c447c; font-weight:bold;">Total Amount ($)</label>
@@ -1094,11 +1094,11 @@ const InvoiceDialog = (() => {
                                             <div style="flex:1; height:1px; background:#e0e0e0;"></div>
                                         </div>
                                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                                            <div class="material-input outlined">
+                                            <div class="material-input outlined" style="margin-bottom: 1rem;">
                                                 <input class="data-input form-control" data-field="old_water" name="old_water" type="number" placeholder="0" min="0">
                                                 <label style="color:#777;">Old Reading (m³)</label>
                                             </div>
-                                            <div class="material-input outlined">
+                                            <div class="material-input outlined" style="margin-bottom: 1rem;">
                                                 <input class="data-input form-control" data-field="new_water" name="new_water" type="number" placeholder="0" min="0">
                                                 <label style="color:#777;">New Reading (m³)</label>
                                             </div>
@@ -1111,11 +1111,11 @@ const InvoiceDialog = (() => {
                                             <div style="flex:1; height:1px; background:#e0e0e0;"></div>
                                         </div>
                                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                                            <div class="material-input outlined">
+                                            <div class="material-input outlined" style="margin-bottom: 1rem;">
                                                 <input class="data-input form-control" data-field="start_date" name="start_date" type="text" data-type="date" placeholder="d-m-y">
                                                 <label style="color:#777;">Start Date</label>
                                             </div>
-                                            <div class="material-input outlined">
+                                            <div class="material-input outlined" style="margin-bottom: 1rem;">
                                                 <input class="data-input form-control" data-field="end_date" name="end_date" type="text" data-type="date" placeholder="d-m-y">
                                                 <label style="color:#777;">End Date</label>
                                             </div>
@@ -1132,7 +1132,7 @@ const InvoiceDialog = (() => {
                                                 <input class="data-input form-control bg-light cursor-blocked" data-field="units_used" name="units_used" type="text" readonly style="font-weight:bold;">
                                                 <label style="color:#777;">Units Used (m³)</label>
                                             </div>
-                                            <div class="material-input outlined">
+                                            <div class="material-input outlined" >
                                                 <input class="data-input form-control" data-field="price_per_unit" name="price_per_unit" type="number" placeholder="0.00" step="0.01">
                                                 <label style="color:#777;">Price per m³ ($)</label>
                                             </div>
@@ -1263,16 +1263,16 @@ const InvoiceDialog = (() => {
                                             <div style="flex:1; height:1px; background:#e0e0e0;"></div>
                                         </div>
                                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                                            <div class="material-input outlined">
+                                            <div class="material-input outlined" style="margin-bottom: 1rem;">
                                                 <select class="data-input form-control" data-style="material" data-field="service_id" name="service_id" placeholder="Select Service">
                                                     ${serviceOptions}
                                                 </select>
                                             </div>
-                                            <div class="material-input outlined">
+                                            <div class="material-input outlined" style="margin-bottom: 1rem;">
                                                 <input class="data-input form-control bg-light" data-field="unit_type" name="unit_type" type="text" readonly placeholder=" ">
                                                 <label style="color:#777;">Unit Type</label>
                                             </div>
-                                            <div class="material-input outlined">
+                                            <div class="material-input outlined" style="margin-bottom: 1rem;">
                                                 <input class="data-input form-control bg-light" data-field="price" name="price" type="text" readonly placeholder=" ">
                                                 <label style="color:#777;">Unit Price ($)</label>
                                             </div>
@@ -1368,6 +1368,7 @@ const InvoiceDialog = (() => {
                         }
                         
                         const requests = me._requestedServices || [];
+                        console.log("request",requests)
                         const serviceRequestOption = requests.map(
                             sr => `<option value="${sr.request_id}">${sr.code} (${sr.space_code})</option>`
                         ).join("");
@@ -1388,20 +1389,20 @@ const InvoiceDialog = (() => {
                                             <div style="flex:1; height:1px; background:#e0e0e0;"></div>
                                         </div>
                                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                                            <div class="material-input outlined">
+                                            <div class="material-input outlined" style="margin-bottom: 1rem;">
                                                 <select class="data-input form-control" data-field="request_id" name="request_id" data-style="material"  placeholder="Request No">
                                                     ${serviceRequestOption}
                                                 </select>
                                             </div>
-                                            <div class="material-input outlined" >
+                                            <div class="material-input outlined" style="margin-bottom: 1rem;" >
                                                 <input class="data-input form-control bg-light cursor-blocked" data-field="service_name" name="service_name" type="text" readonly placeholder=" ">
                                                 <label style="color:#777;">Service Name</label>
                                             </div>
-                                            <div class="material-input outlined">
+                                            <div class="material-input outlined" style="margin-bottom: 1rem;">
                                                 <input class="data-input form-control bg-light cursor-blocked" data-field="duration_hours" name="duration_hours" type="text" readonly placeholder=" ">
                                                 <label style="color:#777;">Duration (Hours)</label>
                                             </div>
-                                            <div class="material-input outlined">
+                                            <div class="material-input outlined" style="margin-bottom: 1rem;">
                                                 <input class="data-input form-control bg-light cursor-blocked" data-field="total_price" name="total_price" type="text" readonly placeholder=" ">
                                                 <label style="color:#777;">Original Price ($)</label>
                                             </div>
@@ -1480,8 +1481,8 @@ const InvoiceDialog = (() => {
                                     item_name: `${selectedRequest.service_name} (${selectedRequest.code})`,
                                     type: "Service Request",
                                     price: Number(selectedRequest.total_price),
-                                    qty: 1,
-                                    unit_type: `${selectedRequest.duration_hours || 0} hour`,
+                                    qty: `${selectedRequest.duration_hours || 0}`,
+                                    unit_type: `${selectedRequest.unit_type || 0}`,
                                     remarks: data.remark || selectedRequest.remarks || "",
                                     space_id: selectedRequest.space_id,
                                     space_code: selectedRequest.space_code,
