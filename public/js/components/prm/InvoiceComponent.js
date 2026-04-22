@@ -742,261 +742,167 @@ const InvoiceDialog = (() => {
                     // ================ Rent ====================
                     me.controls.btnRent.onclick = () => {
                         if (!me._selectedTenantId) {
-                            return cv_interact.error(
-                                "Please select Tenant first"
-                            );
+                            return cv_interact.error("Please select Tenant first");
                         }
 
                         const spaces = me._tenantSpaces || [];
                         const months = me._tenantMonths || [];
+                        const selectedSpaceId = me.controls.space?.value || me.controls.space_id?.value || "";
 
-                        console.log("Tenant Spaces:", spaces); // For debugging
-
-                        const selectedSpaceId =
-                            me.controls.space?.value ||
-                            me.controls.space_id?.value ||
-                            "";
-
-                        const matchedSpace =
-                            spaces.find(
-                                s =>
-                                    String(s.space_id) ===
-                                    String(selectedSpaceId)
-                            ) || spaces[0]; // fallback to first space
+                        const matchedSpace = spaces.find(s => String(s.space_id) === String(selectedSpaceId)) || spaces[0];
 
                         if (!matchedSpace) {
                             return cv_interact.error("No space/contract found");
                         }
 
                         const defaultContractId = matchedSpace.contract_id;
-
-                        // Filter months for the selected contract
                         const monthOptions = months
-                            .filter(
-                                m =>
-                                    String(m.contract_id) ===
-                                    String(defaultContractId)
-                            )
-                            .map(
-                                m =>
-                                    `<option value="${m.month}">${m.month}</option>`
-                            )
+                            .filter(m => String(m.contract_id) === String(defaultContractId))
+                            .map(m => `<option value="${m.month}">${m.month}</option>`)
                             .join("");
 
                         InputBox.resetInstance("rentPopUp");
 
                         InputBox.show({
-                            title: "Rent",
+                            title: "Rent Detail",
                             instanceKey: "rentPopUp",
                             createContent() {
                                 const div = document.createElement("div");
-                                div.style.cssText =
-                                    "display:grid; grid-template-columns:1fr 1fr; gap:14px; padding:4px 2px;";
+                                div.style.cssText = "display:flex; flex-direction:column; ";
 
                                 div.innerHTML = `
-                                    <div class="material-input outlined">
-                                        <input class="data-input form-control bg-light"
-                                            data-field="contract_id" name="contract_id"
-                                            type="text" readonly>
-                                        <label style="padding-left:6px;color:#777777;">Unit Code / Room</label>
-                                    </div>
-                                    <div class="material-input outlined">
-                                        <select class="data-input form-control" data-field="monthly" name="monthly" data-style="material" placeholder="Monthly">
-                                            ${monthOptions}
-                                        </select>
-                                    </div>
-                                    <div class="material-input outlined">
-                                        <input class="data-input form-control" data-field="start_date" name="start_date"
-                                            type="text" readonly>
-                                        <label style="padding-left:6px;color:#777777;"">Start Date</label>
-                                    </div>
-                                    <div class="material-input outlined">
-                                        <input class="data-input form-control" data-field="end_date" name="end_date"
-                                            type="text" readonly>
-                                        <label style="padding-left:6px;color:#777777;"">End Date</label>
-                                    </div>
-                                    <div class="material-input outlined">
-                                        <input class="data-input form-control" data-field="price" name="price"
-                                            type="text" readonly>
-                                        <label style="padding-left:6px;color:#777777;">Price (Effective)</label>
-                                    </div>
-                                    <div class="material-input outlined" style="display:flex; gap:8px; align-items:flex-end;">
-                                        <div style="flex:1">
-                                            <input class="data-input form-control" data-field="discount" name="discount"
-                                                type="number" placeholder="0" >
-                                            <label style="padding-left:6px;color:#777777;">Discount</label>
+                                    <div>
+                                        <div class="d-flex align-items-center  mb-2">
+                                            <span style="font-weight:bold; color:#0C447C; font-size:13px;">Contract Details</span>
+                                            <div style="flex:1; height:1px; background:#e0e0e0;"></div>
                                         </div>
-                                        <div style="width:85px;">
-                                            <select class="data-input form-control" data-field="discount_type" name="discount_type">
-                                                <option value="percent">%</option>
-                                                <option value="amount">$</option>
-                                            </select>
+                                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                                            <div class="material-input outlined">
+                                                <input class="data-input form-control bg-light" data-field="contract_id" name="contract_id" type="text" readonly>
+                                                <label style="color:#777;">Unit Code / Room</label>
+                                            </div>
+                                            <div class="material-input outlined">
+                                                <select class="data-input form-control" data-field="monthly" name="monthly" data-style="material" placeholder="Monthly">
+                                                    ${monthOptions}
+                                                </select>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="material-input outlined">
-                                        <input class="data-input form-control" data-field="tax_rate" name="tax_rate"
-                                            type="number" placeholder="0">
-                                        <label style="padding-left:6px;color:#777777;">Tax %</label>
+
+                                    <div>
+                                        <div class="d-flex align-items-center mb-2">
+                                            <span style="font-weight:bold; color:#0C447C; font-size:13px;">Billing Period</span>
+                                            <div style="flex:1; height:1px; background:#e0e0e0;"></div>
+                                        </div>
+                                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                                            <div class="material-input outlined">
+                                                <input class="data-input form-control bg-light cursor-blocked" data-field="start_date" name="start_date" type="text" readonly placeholder="yyyy-mm-dd">
+                                                <label style="color:#777;">Start Date</label>
+                                            </div>
+                                            <div class="material-input outlined">
+                                                <input class="data-input form-control bg-light cursor-blocked" data-field="end_date" name="end_date" type="text" readonly placeholder="yyyy-mm-dd">
+                                                <label style="color:#777;">End Date</label>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div style="grid-column: span 2;" class="material-input outlined">
-                                        <textarea class="data-input form-control" data-field="remark" name="remark" rows="3"></textarea>
-                                        <label style="padding-left:6px;color:#777777;">Remark</label>
+
+                                    <div>
+                                        <div class="d-flex align-items-center mb-2">
+                                            <span style="font-weight:bold; color:#0C447C; font-size:13px;">Financials</span>
+                                            <div style="flex:1; height:1px; background:#e0e0e0;"></div>
+                                        </div>
+                                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                                            <div class="material-input outlined">
+                                                <input class="data-input form-control bg-light cursor-blocked" data-field="price" name="price" type="text" readonly style="font-weight:bold; color:#0c447c;">
+                                                <label style="color:#777;">Effective Price ($)</label>
+                                            </div>
+                                            <div class="material-input outlined">
+                                                <input class="data-input form-control" data-field="tax_rate" name="tax_rate" type="number" placeholder="0">
+                                                <label style="color:#777;">Tax %</label>
+                                            </div>
+                                            <div class="material-input outlined" style="display:flex; gap:8px; align-items:flex-end; grid-column: span 2;">
+                                                <div style="flex:1">
+                                                    <input class="data-input form-control" data-field="discount" name="discount" type="number" placeholder="0">
+                                                    <label style="color:#777;">Discount</label>
+                                                </div>
+                                                <div style="width:100px;">
+                                                    <select class="data-input form-control" data-field="discount_type" name="discount_type">
+                                                        <option value="percent">%</option>
+                                                        <option value="amount">$</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="material-input outlined">
+                                        <textarea class="data-input form-control" data-field="remark" name="remark" rows="2" placeholder=" "></textarea>
+                                        <label style="color:#777;">Remark</label>
                                     </div>
                                 `;
                                 return div;
                             },
 
                             onOpen(ibMe) {
-                                const elContract = document.querySelector(
-                                    '[data-field="contract_id"]'
-                                );
-                                const elMonthly = document.querySelector(
-                                    '[data-field="monthly"]'
-                                );
-                                const elPrice = document.querySelector(
-                                    '[data-field="price"]'
-                                );
-                                const elStartDate = document.querySelector(
-                                    '[data-field="start_date"]'
-                                );
-                                const elEndDate = document.querySelector(
-                                    '[data-field="end_date"]'
-                                );
+                                const elContract = document.querySelector('[data-field="contract_id"]');
+                                const elMonthly = document.querySelector('[data-field="monthly"]');
+                                const elPrice = document.querySelector('[data-field="price"]');
+                                const elStartDate = document.querySelector('[data-field="start_date"]');
+                                const elEndDate = document.querySelector('[data-field="end_date"]');
 
-                                if (!elContract || !elMonthly || !elPrice)
-                                    return;
+                                if (!elContract || !elMonthly || !elPrice) return;
 
-                                // Fill initial values
-                                elContract.value =
-                                    matchedSpace.space_code || "(No code)";
-                                elContract.dataset.contractId = String(
-                                    matchedSpace.contract_id
-                                );
+                                // Initial Data Load
+                                elContract.value = matchedSpace.space_code || "(No code)";
+                                elContract.dataset.contractId = String(matchedSpace.contract_id);
+                                
+                                const effectivePrice = Number(matchedSpace.effective_price || 0);
+                                elPrice.value = effectivePrice.toFixed(2);
 
-                                // IMPORTANT: Use effective_price instead of price
-                                if (elPrice) {
-                                    const effectivePrice = Number(
-                                        matchedSpace.effective_price || 0
-                                    );
-                                    elPrice.value = effectivePrice.toFixed(2);
-                                }
-
-                                // Set default month and dates
-                                const defaultMonth =
-                                    months.find(
-                                        m =>
-                                            String(m.contract_id) ===
-                                            String(matchedSpace.contract_id)
-                                    ) || {};
-
-                                if (elMonthly)
-                                    elMonthly.value = defaultMonth.month || "";
-                                if (elStartDate)
-                                    elStartDate.value =
-                                        defaultMonth.start_date || "";
-                                if (elEndDate)
-                                    elEndDate.value =
-                                        defaultMonth.end_date || "";
-
-                                // Update dates when month changes
-                                elMonthly.addEventListener("change", e => {
-                                    const selectedMonth = e.target.value;
-                                    const matchedMonth = months.find(
-                                        m =>
-                                            String(m.contract_id) ===
-                                                String(
-                                                    matchedSpace.contract_id
-                                                ) && m.month === selectedMonth
+                                const updateDates = (monthVal) => {
+                                    const matchedMonth = months.find(m => 
+                                        String(m.contract_id) === String(matchedSpace.contract_id) && m.month === monthVal
                                     );
                                     if (matchedMonth) {
-                                        if (elStartDate)
-                                            elStartDate.value =
-                                                matchedMonth.start_date || "";
-                                        if (elEndDate)
-                                            elEndDate.value =
-                                                matchedMonth.end_date || "";
+                                        if (elStartDate) elStartDate.value = matchedMonth.start_date || "";
+                                        if (elEndDate) elEndDate.value = matchedMonth.end_date || "";
                                     }
-                                });
+                                };
+
+                                // Set default month
+                                const defaultMonth = months.find(m => String(m.contract_id) === String(matchedSpace.contract_id)) || {};
+                                elMonthly.value = defaultMonth.month || "";
+                                updateDates(elMonthly.value);
+
+                                elMonthly.addEventListener("change", (e) => updateDates(e.target.value));
                             },
 
                             onConfirm(data, btn, ibMe) {
-                                const elContract = document.querySelector(
-                                    '[data-field="contract_id"]'
-                                );
-                                const realContractId =
-                                    elContract?.dataset.contractId ||
-                                    data.contract_id;
+                                const elContract = document.querySelector('[data-field="contract_id"]');
+                                const realContractId = elContract?.dataset.contractId || data.contract_id;
 
                                 if (!realContractId) {
-                                    cv_interact.error(
-                                        "Unit Code / Room is missing"
-                                    );
-                                    return;
+                                    return ibMe.setError("Unit Code / Room is missing");
                                 }
 
-                                const matchedSpace = spaces.find(
-                                    s =>
-                                        String(s.contract_id) ===
-                                        String(realContractId)
-                                );
-
-                                if (!matchedSpace) return;
-
                                 const roomCode = matchedSpace.space_code || "—";
-                                const filteredMonths = months.filter(
-                                    m =>
-                                        String(m.contract_id) ===
-                                        String(realContractId)
-                                );
-                                const matchedMonth =
-                                    filteredMonths.find(
-                                        m => m.month === data.monthly
-                                    ) || filteredMonths[0];
+                                const finalPrice = Number(data.price || matchedSpace.effective_price || 0);
 
-                                const resolvedStartDate =
-                                    document.querySelector(
-                                        '[data-field="start_date"]'
-                                    )?.value ||
-                                    matchedMonth?.start_date ||
-                                    "";
-                                const resolvedEndDate =
-                                    document.querySelector(
-                                        '[data-field="end_date"]'
-                                    )?.value ||
-                                    matchedMonth?.end_date ||
-                                    "";
-
-                                const finalPrice = Number(
-                                    matchedSpace.effective_price ||
-                                        data.price ||
-                                        0
-                                );
-
-                                  console.log(11, {
-                                    start_date: resolvedStartDate,
-                                    end_date: resolvedEndDate
-                                });
-
-                                me.itemsView.addRow(
-                                    {
-                                        item_id: realContractId,
-                                        item_name: `Rent - ${roomCode}`,
-                                        type: "rent",
-                                        price: finalPrice,
-                                        qty: 1,
-                                        remarks: `Rent - ${roomCode} (${data.monthly ||
-                                            "N/A"})`,
-                                        contract_id: realContractId,
-                                        start_date: resolvedStartDate,
-                                        end_date: resolvedEndDate,
-                                        space_code: roomCode,
-                                        discount: Number(data.discount) || 0,
-                                        discount_type:
-                                            data.discount_type || "amount",
-                                        tax_rate: Number(data.tax_rate) || 0
-                                    },
-                                    0
-                                );
+                                me.itemsView.addRow({
+                                    item_id: realContractId,
+                                    item_name: `Rent - ${roomCode}`,
+                                    type: "rent",
+                                    price: finalPrice,
+                                    qty: 1,
+                                    remarks: data.remark || `Rent - ${roomCode} (${data.monthly || "N/A"})`,
+                                    contract_id: realContractId,
+                                    start_date: data.start_date || "",
+                                    end_date: data.end_date || "",
+                                    space_code: roomCode,
+                                    discount: Number(data.discount) || 0,
+                                    discount_type: data.discount_type || "amount",
+                                    tax_rate: Number(data.tax_rate) || 0
+                                }, 0);
 
                                 cv_interact.success("Rent item added");
                                 ibMe.close();
@@ -1331,9 +1237,7 @@ const InvoiceDialog = (() => {
                     // ===================== Service =================
                     me.controls.btnService.onclick = () => {
                         if (!me._selectedTenantId) {
-                            return cv_interact.error(
-                                "Please select Tenant first"
-                            );
+                            return cv_interact.error("Please select Tenant first");
                         }
 
                         const services = availableItem || [];
@@ -1342,140 +1246,116 @@ const InvoiceDialog = (() => {
                         }
 
                         const serviceOptions = services
-                            .map(
-                                s =>
-                                    `<option value="${s.id}">${s.service ||
-                                        s.name ||
-                                        `Service #${s.id}`}</option>`
-                            )
+                            .map(s => `<option value="${s.id}">${s.service || s.name || `Service #${s.id}`}</option>`)
                             .join("");
 
                         InputBox.show({
                             title: "Add Service",
                             instanceKey: "servicePopUp",
-
                             createContent() {
                                 const div = document.createElement("div");
-                                div.style.cssText =
-                                    "display:grid; grid-template-columns:1fr 1fr; gap:14px; padding:4px 2px;";
+                                div.style.cssText = "display:flex; flex-direction:column;";
+
                                 div.innerHTML = `
-                                <div class="material-input outlined">
-                                    <select class="data-input form-control" data-style="material" data-field="service_id" name="service_id" placeholder="Select Service">
-                                        ${serviceOptions}
-                                    </select>
-                                </div>
-                                <div class="material-input outlined">
-                                    <input class="data-input form-control" data-field="unit_type" name="unit_type" type="text" readonly placeholder="Auto fill">
-                                    <label style="padding-left:6px;color:#777777;">Unit Type</label>
-                                </div>
-                                <div class="material-input outlined">
-                                    <input class="data-input form-control" data-field="price" name="price" type="text" readonly placeholder="Auto fill">
-                                    <label style="padding-left:6px;color:#777777;">Price</label>
-                                </div>
-                                <div class="material-input outlined" style="display:flex; gap:8px;">
-                                    <input class="data-input form-control" data-field="discount" name="discount" type="number" placeholder="0">
-                                    <label style="padding-left:6px;color:#777777;">Discount</label>
-                                    <div style="display:flex; gap:8px;">
-                                        <select class="data-input form-control" data-field="discount_type" name="discount_type" style="width:80px;">
-                                            <option value="percent">%</option>
-                                            <option value="amount">$</option>
-                                        </select>
+                                    <div>
+                                        <div class="d-flex align-items-center  mb-2">
+                                            <span style="font-weight:bold; color:#0C447C; font-size:13px;">Service Selection</span>
+                                            <div style="flex:1; height:1px; background:#e0e0e0;"></div>
+                                        </div>
+                                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                                            <div class="material-input outlined">
+                                                <select class="data-input form-control" data-style="material" data-field="service_id" name="service_id" placeholder="Select Service">
+                                                    ${serviceOptions}
+                                                </select>
+                                            </div>
+                                            <div class="material-input outlined">
+                                                <input class="data-input form-control bg-light" data-field="unit_type" name="unit_type" type="text" readonly placeholder=" ">
+                                                <label style="color:#777;">Unit Type</label>
+                                            </div>
+                                            <div class="material-input outlined">
+                                                <input class="data-input form-control bg-light" data-field="price" name="price" type="text" readonly placeholder=" ">
+                                                <label style="color:#777;">Unit Price ($)</label>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="material-input outlined">
-                                    <input class="data-input form-control" data-field="tax_rate" name="tax_rate" type="number" placeholder="0">
-                                    <label style="padding-left:6px;color:#777777;">Tax %</label>
-                                </div>
-                                <div style="grid-column: span 2;" class="material-input outlined">
-                                    <textarea class="data-input form-control" data-field="remark" name="remark" rows="3"></textarea>
-                                    <label style="padding-left:6px;color:#777777;">Remark</label>
-                                </div>
-                            `;
+
+                                    <div>
+                                        <div class="d-flex align-items-center  mb-2">
+                                            <span style="font-weight:bold; color:#0C447C; font-size:13px;">Financials</span>
+                                            <div style="flex:1; height:1px; background:#e0e0e0;"></div>
+                                        </div>
+                                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                                            <div class="material-input outlined" style="display:flex; gap:8px; align-items:flex-end;">
+                                                <div style="flex:1">
+                                                    <input class="data-input form-control" data-field="discount" name="discount" type="number" placeholder="0">
+                                                    <label style="color:#777;">Discount</label>
+                                                </div>
+                                                <div style="width:80px;">
+                                                    <select class="data-input form-control" data-field="discount_type" name="discount_type">
+                                                        <option value="percent">%</option>
+                                                        <option value="amount">$</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="material-input outlined">
+                                                <input class="data-input form-control" data-field="tax_rate" name="tax_rate" type="number" placeholder="0">
+                                                <label style="color:#777;">Tax (%)</label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="material-input outlined">
+                                        <textarea class="data-input form-control" data-field="remark" name="remark" rows="2" placeholder=" "></textarea>
+                                        <label style="color:#777;">Remark </label>
+                                    </div>
+                                `;
                                 return div;
                             },
-
                             onOpen(ibMe) {
-                                const elService = document.querySelector(
-                                    '[data-field="service_id"]'
-                                );
-                                const elUnitType = document.querySelector(
-                                    '[data-field="unit_type"]'
-                                );
-                                const elPrice = document.querySelector(
-                                    '[data-field="price"]'
-                                );
-                                const elDiscount = document.querySelector(
-                                    '[data-field="discount"]'
-                                );
+                            const elService = document.querySelector('[data-field="service_id"]');
+                            const elUnitType = document.querySelector('[data-field="unit_type"]');
+                            const elPrice = document.querySelector('[data-field="price"]');
 
-                                if (elService) elService.value = "";
-                                if (elUnitType) elUnitType.value = "";
-                                if (elPrice) elPrice.value = "";
-                                if (elDiscount) elDiscount.value = "";
-
-                                const fillFields = serviceId => {
-                                    const selected = services.find(
-                                        s => String(s.id) === String(serviceId)
-                                    );
-                                    if (!selected) return;
-                                    if (elUnitType)
-                                        elUnitType.value =
-                                            selected.unit_type || "—";
-                                    if (elPrice)
-                                        elPrice.value = Number(
-                                            selected.price || 0
-                                        ).toFixed(2);
-                                };
-
-                                if (elService) {
-                                    elService.addEventListener("change", e => {
-                                        fillFields(e.target.value);
-                                    });
+                            const fillFields = (serviceId) => {
+                                const selected = services.find(s => String(s.id) === String(serviceId));
+                                if (selected) {
+                                    if (elUnitType) elUnitType.value = selected.unit_type || "—";
+                                    if (elPrice) elPrice.value = Number(selected.price || 0).toFixed(2);
                                 }
-                            },
+                            };
+
+                            if (elService) {
+                                if (elService.value) {
+                                    fillFields(elService.value);
+                                }
+                                elService.addEventListener("change", (e) => fillFields(e.target.value));
+                            }
+                        },
 
                             onConfirm(data, btn, ibMe) {
                                 if (!data.service_id) {
-                                    cv_interact.error(
-                                        "Please select a Service"
-                                    );
-                                    return;
+                                    return ibMe.setError("Please select a Service");
                                 }
 
-                                const selectedService = services.find(
-                                    s =>
-                                        String(s.id) === String(data.service_id)
-                                );
+                                const selectedService = services.find(s => String(s.id) === String(data.service_id));
                                 if (!selectedService) return;
 
-                                const serviceDisplayName =
-                                    selectedService.service ||
-                                    selectedService.name ||
-                                    `Service #${selectedService.id}`;
+                                const serviceDisplayName = selectedService.service || selectedService.name || `Service #${selectedService.id}`;
 
-                                me.itemsView.addRow(
-                                    {
-                                        item_id: data.service_id,
-                                        item_name: serviceDisplayName,
-                                        type: "service",
-                                        price:
-                                            Number(selectedService.price) || 0,
-                                        qty: 1,
-                                        remarks:
-                                            selectedService.service ||
-                                            selectedService.name ||
-                                            "Service",
-                                        unit_type:
-                                            selectedService.unit_type || "—",
-                                        discount: Number(data.discount) || 0,
-                                        discount_type:
-                                            data.discount_type || "percent",
-                                        tax_rate: Number(data.tax_rate) || 0
-                                    },
-                                    0
-                                );
+                                me.itemsView.addRow({
+                                    item_id: data.service_id,
+                                    item_name: serviceDisplayName,
+                                    type: "service",
+                                    price: Number(selectedService.price) || 0,
+                                    qty: 1,
+                                    remarks: data.remark || serviceDisplayName,
+                                    unit_type: selectedService.unit_type || "—",
+                                    discount: Number(data.discount) || 0,
+                                    discount_type: data.discount_type || "percent",
+                                    tax_rate: Number(data.tax_rate) || 0
+                                }, 0);
 
-                                cv_interact.success("Service added at the top");
+                                cv_interact.success("Service item added");
                                 ibMe.close();
                             }
                         });
@@ -1486,8 +1366,8 @@ const InvoiceDialog = (() => {
                         if (!me._selectedTenantId) {
                             return cv_interact.error("Please select Tenant first");
                         }
+                        
                         const requests = me._requestedServices || [];
-
                         const serviceRequestOption = requests.map(
                             sr => `<option value="${sr.request_id}">${sr.code} (${sr.space_code})</option>`
                         ).join("");
@@ -1499,45 +1379,63 @@ const InvoiceDialog = (() => {
                             instanceKey: "requestPopUp",
                             createContent() {
                                 const div = document.createElement("div");
-                                div.style.cssText = "display:grid; grid-template-columns:1fr 1fr; gap:14px; padding:4px 2px;";
+                                div.style.cssText = "display:flex; flex-direction:column; ";
 
                                 div.innerHTML = `
-                                    <div class="material-input outlined">
-                                        <select class="data-input form-control" data-field="request_id" name="request_id" data-style="material"  placeholder="Request No">
-                                            ${serviceRequestOption}
-                                        </select>
-                                    </div>
-                                    <div class="material-input outlined">
-                                        <input class="data-input form-control bg-light" data-field="service_name" name="service_name" type="text" readonly>
-                                        <label style="padding-left:6px;color:#777777;">Service Name</label>
-                                    </div>
-                                    <div class="material-input outlined">
-                                        <input class="data-input form-control bg-light" data-field="duration_hours" name="duration_hours" type="text" readonly>
-                                        <label style="padding-left:6px;color:#777777;">Duration (Hours)</label>
-                                    </div>
-                                    <div class="material-input outlined">
-                                        <input class="data-input form-control bg-light" data-field="total_price" name="total_price" type="text" readonly>
-                                        <label style="padding-left:6px;color:#777777;">Price</label>
-                                    </div>
-                                    <div class="material-input outlined" style="display:flex; gap:8px; align-items:flex-end;">
-                                        <div style="flex:1">
-                                            <input class="data-input form-control" data-field="discount" name="discount" type="number" placeholder="0">
-                                            <label style="padding-left:6px;color:#777777;">Discount</label>
+                                    <div>
+                                        <div class="d-flex align-items-center mb-2">
+                                            <span style="font-weight:bold; color:#0C447C; font-size:13px;">Request Info</span>
+                                            <div style="flex:1; height:1px; background:#e0e0e0;"></div>
                                         </div>
-                                        <div style="width:85px;">
-                                            <select class="data-input form-control" data-field="discount_type" name="discount_type">
-                                                <option value="percent">%</option>
-                                                <option value="amount">$</option>
-                                            </select>
+                                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                                            <div class="material-input outlined">
+                                                <select class="data-input form-control" data-field="request_id" name="request_id" data-style="material"  placeholder="Request No">
+                                                    ${serviceRequestOption}
+                                                </select>
+                                            </div>
+                                            <div class="material-input outlined" >
+                                                <input class="data-input form-control bg-light cursor-blocked" data-field="service_name" name="service_name" type="text" readonly placeholder=" ">
+                                                <label style="color:#777;">Service Name</label>
+                                            </div>
+                                            <div class="material-input outlined">
+                                                <input class="data-input form-control bg-light cursor-blocked" data-field="duration_hours" name="duration_hours" type="text" readonly placeholder=" ">
+                                                <label style="color:#777;">Duration (Hours)</label>
+                                            </div>
+                                            <div class="material-input outlined">
+                                                <input class="data-input form-control bg-light cursor-blocked" data-field="total_price" name="total_price" type="text" readonly placeholder=" ">
+                                                <label style="color:#777;">Original Price ($)</label>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="material-input outlined">
-                                        <input class="data-input form-control" data-field="tax_rate" name="tax_rate" type="number" placeholder="0" >
-                                        <label style="padding-left:6px;color:#777777;">Tax %</label>
+
+                                    <div>
+                                        <div class="d-flex align-items-center mb-2">
+                                            <span style="font-weight:bold; color:#0C447C; font-size:13px;">Financials</span>
+                                            <div style="flex:1; height:1px; background:#e0e0e0;"></div>
+                                        </div>
+                                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                                            <div class="material-input outlined" style="display:flex; gap:8px; align-items:flex-end;">
+                                                <div style="flex:1">
+                                                    <input class="data-input form-control" data-field="discount" name="discount" type="number" placeholder="0">
+                                                    <label style="color:#777;">Discount</label>
+                                                </div>
+                                                <div style="width:80px;">
+                                                    <select class="data-input form-control" data-field="discount_type" name="discount_type">
+                                                        <option value="percent">%</option>
+                                                        <option value="amount">$</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="material-input outlined">
+                                                <input class="data-input form-control" data-field="tax_rate" name="tax_rate" type="number" placeholder="0">
+                                                <label style="color:#777;">Tax (%)</label>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div style="grid-column: span 2;" class="material-input outlined">
-                                        <textarea class="data-input form-control" data-field="remark" name="remark" rows="3"></textarea>
-                                        <label style="padding-left:6px;color:#777777;">Remark</label>
+
+                                    <div class="material-input outlined">
+                                        <textarea class="data-input form-control" data-field="remark" name="remark" rows="2" placeholder=" "></textarea>
+                                        <label style="color:#777;"> Remark</label>
                                     </div>
                                 `;
                                 return div;
@@ -1550,21 +1448,26 @@ const InvoiceDialog = (() => {
                                 const elServiceName = document.querySelector('[data-field="service_name"]');
                                 const elRemark = document.querySelector('[data-field="remark"]');
 
-                                elRequest.addEventListener("change", e => {
-                                    const selectedId = Number(e.target.value);
-                                    const matched = requests.find(r => r.request_id === selectedId);
-
+                                const fillRequestData = (selectedId) => {
+                                    const matched = requests.find(r => r.request_id === Number(selectedId));
                                     if (matched) {
                                         elDuration.value = matched.duration_hours || "0";
                                         elPrice.value = Number(matched.total_price).toFixed(2);
                                         elServiceName.value = matched.service_name || "";
                                         elRemark.value = matched.remarks || "";
-                                    } else {
-                                        [elDuration, elPrice, elDate, elRemark].forEach(el => el.value = "");
                                     }
+                                };
+
+                                if (requests.length > 0) {
+                                    const firstId = requests[0].request_id;
+                                    elRequest.value = firstId;
+                                    fillRequestData(firstId);
+                                }
+
+                                elRequest.addEventListener("change", e => {
+                                    fillRequestData(e.target.value);
                                 });
                             },
-
                             onConfirm(data, btn, ibMe) {
                                 const selectedRequest = requests.find(r => r.request_id === Number(data.request_id));
 
