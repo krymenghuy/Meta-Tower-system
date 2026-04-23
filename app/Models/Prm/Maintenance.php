@@ -31,10 +31,40 @@ class Maintenance extends VSModel
     }
 
     /**
+     * Derive space-level maintenance state from active maintenances.
+     * Priority: In Progress (2) > Planned (1) > none (0).
+     */
+    public static function resolveSpaceMaintenanceStatusId($spaceId)
+    {
+        $spaceId = $spaceId;
+        if ($spaceId <= 0) {
+            return 0;
+        }
+
+        $hasInProgress = DB::table('maintenances')
+            ->where('space_id', $spaceId)
+            ->where('status_id', 2)
+            ->exists();
+        if ($hasInProgress) {
+            return 2;
+        }
+
+        $hasPlanned = DB::table('maintenances')
+            ->where('space_id', $spaceId)
+            ->where('status_id', 1)
+            ->exists();
+        if ($hasPlanned) {
+            return 1;
+        }
+
+        return 0;
+    }
+
+    /**
      * Persist and reflect schedule-derived status when not Completed (3) or Cancelled (4).
      * Call before setOfficialDates() so date fields are still parseable DB values.
      *
-    
+
      */
     public static function applyScheduleDerivedStatus(object $row, $statusIdToName = null): void
     {
@@ -55,6 +85,12 @@ class Maintenance extends VSModel
         if ($id > 0 && $computed !== $sid) {
             DB::table('maintenances')->where('id', $id)->update(['status_id' => $computed]);
         }
+        $spaceId = ($row->space_id ?? 0);
+        if ($spaceId > 0) {
+            DB::table('building_spaces')
+                ->where('id', $spaceId)
+                ->update(['maintenance_status_id' => self::resolveSpaceMaintenanceStatusId($spaceId)]);
+        }
         $row->status_id = $computed;
         if ($statusIdToName !== null) {
             $name = $statusIdToName[$computed] ?? null;
@@ -66,6 +102,9 @@ class Maintenance extends VSModel
             if ($name !== null) {
                 $row->status_name = $name;
             }
+        }
+        if ((int) $row->status_id === 1) {
+            $row->status_name = 'Planned';
         }
     }
 
@@ -104,6 +143,11 @@ class Maintenance extends VSModel
             );
         }
 
+        $isCreate = !$id;
+        if ($isCreate && $startAt->lt(Carbon::now())) {
+            return DV::error('Start date and time cannot be in the past.');
+        }
+
         try {
             $sid = ($input['status_id'] ?? 0);
             if (!in_array($sid, [3, 4], true)) {
@@ -122,7 +166,13 @@ class Maintenance extends VSModel
                 return DV::error('Failed to save maintenance.');
             }
             if (!empty($input['space_id'])) {
-                DB::table('building_spaces')->where('id', $input['space_id'])->update(['maintenance_status_id' => 1]);
+                $spaceMaintenanceStatusId = 0;
+                if (($input['status_id'] ?? 0) === 1) {
+                    $spaceMaintenanceStatusId = 1; // upcoming
+                } elseif (($input['status_id'] ?? 0) === 2) {
+                    $spaceMaintenanceStatusId = 2; // in maintenance
+                }
+                DB::table('building_spaces')->where('id', $input['space_id'])->update(['maintenance_status_id' => $spaceMaintenanceStatusId]);
             }
             if (!empty($input['amenity_id'])) {
                 $underMaintenanceId = DB::table('amenity_statuses')->whereRaw('LOWER(TRIM(name)) = ?', ['maintenance'])->value('id');
@@ -344,12 +394,19 @@ class Maintenance extends VSModel
         if ($updated === 0) {
             return DV::error('No changes made');
         }
-        // When Cancelled (4) or Completed (3): stop showing "(Under maintenance)" on the space card
-        if ($status_id === 3 || $status_id === 4) {
-            $space_id = isset($row->space_id) ?  $row->space_id : 0;
-            if ($space_id > 0) {
-                DB::table('building_spaces')->where('id', $space_id)->update(['maintenance_status_id' => 0]);
+        $space_id = isset($row->space_id) ?  $row->space_id : 0;
+        if ($space_id > 0) {
+            $spaceMaintenanceStatusId = 0;
+            if ((int)$status_id === 1) {
+                $spaceMaintenanceStatusId = 1; // upcoming
+            } elseif ((int)$status_id === 2) {
+                $spaceMaintenanceStatusId = 2; // in maintenance
             }
+            DB::table('building_spaces')->where('id', $space_id)->update(['maintenance_status_id' => $spaceMaintenanceStatusId]);
+        }
+
+        // When Cancelled (4) or Completed (3): release amenity to available
+        if ($status_id === 3 || $status_id === 4) {
             $amenity_id = isset($row->amenity_id) ?  $row->amenity_id : 0;
             if ($amenity_id > 0) {
                 DB::table('amenities')->where('id', $amenity_id)->update([
