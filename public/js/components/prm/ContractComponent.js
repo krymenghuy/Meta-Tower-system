@@ -851,7 +851,7 @@ const ContractDialog = (() => {
                         <div class="row g-3">
                             <div class="col-6">
                                 <div class="material-input outlined">
-                                    <input type="text" name="space_type_id" class="data-input form-control" data-field="space_type_id" placeholder=" " />
+                                    <input type="text" name="space_name" class="data-input form-control" data-field="space_name" placeholder=" " />
                                     <label style="color:#777777;padding-left:6px;" for="spaceType">Unit Type</label>
                                 </div>
                             </div>
@@ -916,6 +916,8 @@ const ContractDialog = (() => {
                         me.controls.legal_name.value = item?.legal_name || "";
                     }
                 });
+             
+                
             },
 
             configSelect: [
@@ -955,9 +957,11 @@ const ContractDialog = (() => {
             },
 
             onPrepareForm: (me, data) => {
-                  const isReadOnly = me.dataOptions.tenant_id > 0;
+                console.log(123,data);
+                
+                const isReadOnly = me.dataOptions.tenant_id > 0 || data.prefill_tenant_id;
+                me.controls.tenant.disabled = isReadOnly;
 
-                    me.controls.tenant.disabled = isReadOnly;
                 if (me.searchTenant && typeof me.searchTenant.reset === "function") {
                     me.searchTenant.reset();
                 }
@@ -998,7 +1002,7 @@ const ContractDialog = (() => {
                 const unitSelect = me.divModal.querySelector('[data-field="space_id"]');
                 const spaceRows = Array.isArray(data?.building_spaces) ? data.building_spaces : [];
                 const toggleUnitInputs = (isDisabled) => {
-                    ['space_type_id', 'sqm_size', 'price_type', 'price'].forEach((field) => {
+                    ['space_name', 'sqm_size', 'price_type', 'price'].forEach((field) => {
                         if (me.controls[field]) {
                             me.controls[field].disabled = isDisabled;
                         }
@@ -1017,8 +1021,8 @@ const ContractDialog = (() => {
                         return;
                     }
                     me._createContractSpaceTypeId = selected.space_type_id ?? null;
-                    if (me.controls.space_type_id) {
-                        me.controls.space_type_id.value = selected.space_type ?? getSpaceTypeName(selected.space_type_id) ?? '';
+                    if (me.controls.space_name) {
+                        me.controls.space_name.value = selected.space_type ?? getSpaceTypeName(selected.space_type_id) ?? '';
                     }
                     if (me.controls.sqm_size) me.controls.sqm_size.value = selected.sqm_size ?? '';
                     if (me.controls.price_type) me.controls.price_type.value = selected.price_type ?? '';
@@ -1241,7 +1245,7 @@ const RenewDialog = (() => {
                                 <div class="row g-2">
                                     <div class="col-6">
                                 <div class="material-input outlined">
-                                    <input type="text" name="space_type_id" class="data-input form-control" data-field="space_type_id" placeholder=" " readonly disabled />
+                                    <input type="text" name="space_name" class="data-input form-control" data-field="space_name" placeholder=" " readonly disabled />
                                     <label style="color:#777777;padding-left:6px;" for="spaceType">Unit Type</label>
                                 </div>
                             </div>
@@ -1342,8 +1346,8 @@ const RenewDialog = (() => {
                 };
                 const setUnitFields = (unitData) => {
                     if (!unitData) return;
-                    if (me.controls.space_type_id) {
-                        me.controls.space_type_id.value = unitData.space_type ?? getSpaceTypeName(unitData.space_type_id);
+                    if (me.controls.space_name) {
+                        me.controls.space_name.value = unitData.space_type ?? getSpaceTypeName(unitData.space_type_id);
                     }
                     if (me.controls.sqm_size) me.controls.sqm_size.value = unitData.sqm_size ?? '';
                     if (me.controls.price_type) me.controls.price_type.value = unitData.price_type ?? '';
