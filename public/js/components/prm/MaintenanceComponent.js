@@ -512,6 +512,7 @@ const CreateMaintenanceDialog = (() => {
                     click: (me, btn) => {
                         const op = me.getData();
                         op.id = me.dataOptions?.id;
+
                         if (op.type_unit === 'space') {
                             op.amenity_id = null;
                             if (!op.space_id) {
