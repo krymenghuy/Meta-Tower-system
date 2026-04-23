@@ -600,6 +600,9 @@ const AmenityDialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
+
+                    const isReadOnly = me.dataOptions.id > 0;
+                    me.setReadOnly(isReadOnly, ["building_id","code","floor_id"]);
                     me.controls.requires_booking.value = data.amenity_details.requires_booking;
                 },
 

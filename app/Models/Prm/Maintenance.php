@@ -138,6 +138,17 @@ class Maintenance extends VSModel
         if ($startAt->isSameDay($now) && $startAtMinute->lt($nowMinute)) {
             return DV::error('Start time cannot be in the past.');
         }
+         if (!empty($input['amenity_id'])) {
+
+        $hasReservation = DB::table('reservations')
+            ->where('amenity_id', $input['amenity_id'])
+            ->where('status_id', '<=', 2) // Upcoming + In Progress
+            ->exists();
+
+        if ($hasReservation) {
+            return DV::error('Cannot schedule maintenance: amenity has active or upcoming reservations.');
+        }
+    }
 
         try {
             $sid = ($input['status_id'] ?? 0);
