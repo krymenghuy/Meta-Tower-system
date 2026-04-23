@@ -103,7 +103,7 @@ var BuildingComponent = ( () => {
 
         mThis.BuildingListView = new ListView('_building_list', {
             fetchApi: `${main_view.base_url}/prm/building/list-paginate`,
-            perPage: 10,
+            perPage: 7,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
             tableClass: 'table table--white rounded-2 header-uppercase',
@@ -429,9 +429,9 @@ const BuildingDialog = (() => {
                 },
             },
             onPrepareForm: (me, data) => {
-                const header = me.divModal.querySelector('.modal-header');
-                const btnClose = header.querySelector('button');
-                if(btnClose) btnClose.classList.add('d-none');
+               const isReadOnly = me.dataOptions.id > 0;
+               me.setReadOnly(isReadOnly, ["total_floor"]);
+
             },
             buttons: [
                 {

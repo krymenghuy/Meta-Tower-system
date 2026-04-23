@@ -182,7 +182,7 @@ class BuildingSpace
         if ($search_value) {
             $skip_rows = 0;
             $search_value = escape_like_str($search_value);
-            $str_search = "(bs.code LIKE '%" . $search_value . "%' OR bs.floor_id LIKE '%" . $search_value . "%' OR b.name LIKE '%" . $search_value . "%' )";
+            $str_search = "(bs.code LIKE '%" . $search_value . "%' OR b.name LIKE '%" . $search_value . "%' )";
         }
         if ($building_id) {
             $str_moreWhere .= ' AND bs.building_id = ' . $building_id;
@@ -476,4 +476,16 @@ class BuildingSpace
     }
 }
 
+public function viewBookingDetails($id)
+{
+    $row = DB::table('space_bookings as sb')
+        ->join('building_spaces as bs', 'bs.id', '=', 'sb.space_id')
+        ->where('sb.space_id', $id)
+        ->selectRaw('sb.id, sb.booker_name, sb.booker_phone, sb.booker_email, sb.booking_date, sb.expired_booking_date, sb.booking_fee, sb.remarks, bs.code as space_code')
+        ->first();
+    if ($row) {
+        setOfficialDates($row, ['booking_date', 'expired_booking_date'], [], []);
+    }
+    return $row;
+}
 }

@@ -355,7 +355,17 @@ var SpaceComponent = new (function () {
                     cssClass: "border-bottom pb-2",
                     name: "finish_maintenance"
                 },
+<<<<<<< HEAD
 
+=======
+                {
+                    html: '<span class="ps-2" vslang="titles.View Booking">View Booking</span>',
+                    icon: `<i class="fa-regular fa-hard-drive fs-5 text-info"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "view_booking"
+                },
+               
+>>>>>>> 7581b5c18091091bff744221902d07e8f3af01cd
             ],
             // adjustPosition: {
             //     top: -200,
@@ -373,10 +383,15 @@ var SpaceComponent = new (function () {
                 const hasActiveMaintenance = isUpcomingMaintenance || isMaintenance;
 
                 menu.create_booking.style.display =  status_id >= 2 ? 'none' : 'block';
-                menu.create_contract.style.display = status_id >= 2 ? 'none' : 'block';
+                menu.create_contract.style.display = status_id >= 3 ? 'none' : 'block';
                 menu.edit_space.style.display = status_id == 3 ? 'none' : 'block';
                 menu.finish_maintenance.style.display = isMaintenance ? 'block' : 'none';
+<<<<<<< HEAD
                 menu.set_maintenance.style.display = hasActiveMaintenance ? 'none' : 'block';
+=======
+                menu.set_maintenance.style.display = isMaintenance ? 'none' : 'block';
+                menu.view_booking.style.display = status_id == 2 ? 'block' : 'none';
+>>>>>>> 7581b5c18091091bff744221902d07e8f3af01cd
             },
 
             onClick: (menulink, id, name) => {
@@ -405,7 +420,10 @@ var SpaceComponent = new (function () {
                         mThis.deleteSpace(id, menulink);
                         break;
                     }
-
+                     case 'view_booking': {
+                        mThis.viewBooking(id, menulink);
+                        break;
+                    }
                     default: {
                         break;
                     }
@@ -674,6 +692,19 @@ var SpaceComponent = new (function () {
 
         });
     }
+    mThis.viewBooking = (id, menuLink) => {
+        let op = {
+            id: id,
+            // booker_id: menuLink.dataset.bookerid,
+            // space_id: menuLink.dataset.id,
+            // tenant_id: menuLink.dataset.tenantid,
+            onClose: () => {
+                mThis.applyListFilters();
+
+            }
+        };
+        ViewBookingDialog.show(op);
+    };
 
     mThis.setAction = (tbl) => {
         tbl.addEventListener('click', (e) => {
@@ -1070,6 +1101,138 @@ const CreateBookingDialog = (() => {
                     },
                 ],
             });
+        dialog.show(op);
+    };
+
+    return self;
+})();
+
+const ViewBookingDialog = (() => {
+    const self = {};
+    let dialog = null;
+    self.show = (op) => {
+        console.log(12345,op);
+        
+        dialog = dialog ||
+            new GeneralDialog({
+                cssClass: "modal-lg modal-content-vs-dialog",
+                backdrop: "static",
+                TriggerOnClose: true,
+                createContent: () =>{return ['<div name="container_fluid"></div>'].join('');},
+                contentCreated: (me) => {
+                    me.renderProfile = (div, data) => {
+                        let html = '';
+
+                        html += `
+                            <style>
+                                .booker_profile {
+                                    border: 1px solid #ccc;
+                                    border-radius: 5px;
+                                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                                    padding: 5px;
+                                    width: 100%;
+                                }
+                                .student_header {
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    position: relative;
+                                    padding: 10px;
+                                    padding-bottom: 20px;
+                                }
+                                .school_logo {
+                                    position: absolute;
+                                    left: 0;
+                                }
+                                .info_title {
+                                    text-align: center;
+                                    flex-grow: 1;
+                                }
+                                .booker_info {
+                                    gap: 10px;
+                                    justify-content: center;
+                                    border: 1px solid #ccc;
+                                    padding: 10px;
+                                    border-radius: 5px;
+                                }
+                            </style>
+
+                            <div class="booker_profile overflow-y-auto overflow-x-hidden">
+                                <div class="info_title p-2 text-primary-custom">
+                                        <h5>Unit ${data.space_code ?? 'N/A'}</h5>
+                                </div>
+
+                                <div class="booker_info">
+                                    <div class="row cols-2 mb-0">
+                                        <div class="col-4 p_profile_left">
+                                            <div class="d-flex">
+                                                <p class="text-nowrap text-muted width-p">Booking Name</p>
+                                                <p class="px-3">:</p>
+                                                <p class="text-nowrap text-capitalize data-get">${data.booker_name ?? 'N/A'}</p>
+                                            </div>
+                                            <div class="d-flex">
+                                                <p class="text-nowrap text-muted width-p">Booking Date</p>
+                                                <p class="px-3">:</p>
+                                                <p class="text-nowrap text-capitalize data-get">${data.booking_date ?? 'N/A'}</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-4 p_profile_center">
+                                            <div class="d-flex">
+                                                <p class="text-nowrap text-muted width-p">Booking Phone</p>
+                                                <p class="px-3">:</p>
+                                                <p class="text-nowrap text-capitalize data-get">${data.booker_phone ?? 'N/A'}</p>
+                                            </div>
+                                            <div class="d-flex">
+                                                <p class="text-nowrap text-muted width-p">Expired Date</p>
+                                                <p class="px-3">:</p>
+                                                <p class="text-nowrap text-capitalize data-get">${data.expired_booking_date ?? 'N/A'}</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-4 p_profile_right">
+                                            <div class="d-flex">
+                                                <p class="text-nowrap text-muted width-p">Booking Email</p>
+                                                <p class="px-3">:</p>
+                                                <p class="text-nowrap data-get">${data.booker_email ?? 'N/A'}</p>
+                                            </div>
+                                            <div class="d-flex">
+                                                <p class="text-nowrap text-muted width-p">Booking Amount</p>
+                                                <p class="px-3">:</p>
+                                                <p class="text-nowrap text-capitalize data-get">${VSMoney.formatAmount(data.booking_fee, data.currency ?? 'USD') ?? 'N/A'}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>`;
+                        div.innerHTML = html;
+                    };
+                },
+
+                buttons: [
+                    {
+                        label: '<span vslang="buttons.Close"></span>',
+                        cssClass: 'btn btn-danger',
+                        click: (me, btn) => {
+                            me.hide(false);
+                        },
+                    },
+                   
+                ],
+                prepareFormOptions: {
+                    createTitle: "Booking Details",
+                    modifyTitle: "Booking Details",
+                    targetProp: "divModal",
+                    api: {
+                        endpoint: `${main_view.base_url}/prm/building-space/view-booking`,
+                        params: (op) => {
+                            return { id: op.id };
+                        },
+                    },
+                },
+                onPrepareForm: (me, d) => {
+                    me.renderProfile(me.controls.container_fluid,d);
+                },
+            });
+
         dialog.show(op);
     };
 

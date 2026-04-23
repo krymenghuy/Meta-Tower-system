@@ -31,7 +31,7 @@ var ContractComponent = new (function () {
             className: "align-middle text-nowrap",
             data: (data) => {
                 return `<span class="d-block">${data.phone_number ?? ''}</span>
-                        <small class="d-block text-primary">${data.email}</small>`;
+                        <span class="d-block text-primary">${data.email}</span>`;
             }
         },
          {
@@ -468,6 +468,7 @@ var ContractComponent = new (function () {
                               const showRenew = isActive && endDate && mThis.isWithinNextThreeMonths(endDate);
 
                 menu.edit_contract.style.display = isActive ? 'none' : 'block';
+                menu.print_contract.style.display ='none';
                 menu.renew_contract.style.display = showRenew ? 'block' : 'none';
                 if (menu.terminate_contract) {
                     // show terminate only when status is active
@@ -915,6 +916,8 @@ const ContractDialog = (() => {
                         me.controls.legal_name.value = item?.legal_name || "";
                     }
                 });
+             
+                
             },
 
             configSelect: [
@@ -954,9 +957,11 @@ const ContractDialog = (() => {
             },
 
             onPrepareForm: (me, data) => {
-                  const isReadOnly = me.dataOptions.tenant_id > 0;
+                console.log(123,data);
+                
+                const isReadOnly = me.dataOptions.tenant_id > 0 || data.prefill_tenant_id;
+                me.controls.tenant.disabled = isReadOnly;
 
-                    me.controls.tenant.disabled = isReadOnly;
                 if (me.searchTenant && typeof me.searchTenant.reset === "function") {
                     me.searchTenant.reset();
                 }

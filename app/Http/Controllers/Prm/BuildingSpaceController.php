@@ -86,5 +86,16 @@ class BuildingSpaceController extends Controller
         return JDV::raw($res);
 
     }
-    
+    public function viewBookingDetails(Request $req){
+        $ss = XAuthService::verifyAuth($req, -1);
+        if($ss->status_code !==200){
+            return JDV::raw($ss);
+        }
+        if(!isset($req->id) || !is_numeric($req->id)){
+            return JDV::error('Invalid ID');
+        }
+        $building_space = new BuildingSpace();
+        $res = $building_space->viewBookingDetails($req->id);
+        return JDV::result($res);
+    }
 }

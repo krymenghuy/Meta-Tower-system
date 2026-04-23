@@ -383,7 +383,7 @@ const CreateServiceDialog = (() => {
                             </div>
                             <div class="col-12">
                                 <div class="material-input outlined">
-                                    <textarea class="data-input form-control" data-field="description" placeholder=" "></textarea>
+                                    <textarea name="description" class="data-input form-control" data-field="description" placeholder=" "></textarea>
                                     <label style="padding-left:6px;color:#777777;">Remark</label>
                                 </div>
                             </div>
