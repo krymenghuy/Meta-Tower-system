@@ -192,9 +192,6 @@ var SpaceComponent = new (function () {
         mThis.tblBuildingSpace = mThis.SpaceListView.getTable();
         mThis.initDropdownMenus(mThis.tblBuildingSpace);
 
-
-
-
         mThis.bindSpaceFilterListeners();
 
         mThis.elSearch.addEventListener('keyup', (e) => {
@@ -355,17 +352,13 @@ var SpaceComponent = new (function () {
                     cssClass: "border-bottom pb-2",
                     name: "finish_maintenance"
                 },
-<<<<<<< HEAD
-
-=======
                 {
                     html: '<span class="ps-2" vslang="titles.View Booking">View Booking</span>',
                     icon: `<i class="fa-regular fa-hard-drive fs-5 text-info"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "view_booking"
                 },
-               
->>>>>>> 7581b5c18091091bff744221902d07e8f3af01cd
+
             ],
             // adjustPosition: {
             //     top: -200,
@@ -386,12 +379,8 @@ var SpaceComponent = new (function () {
                 menu.create_contract.style.display = status_id >= 3 ? 'none' : 'block';
                 menu.edit_space.style.display = status_id == 3 ? 'none' : 'block';
                 menu.finish_maintenance.style.display = isMaintenance ? 'block' : 'none';
-<<<<<<< HEAD
-                menu.set_maintenance.style.display = hasActiveMaintenance ? 'none' : 'block';
-=======
                 menu.set_maintenance.style.display = isMaintenance ? 'none' : 'block';
                 menu.view_booking.style.display = status_id == 2 ? 'block' : 'none';
->>>>>>> 7581b5c18091091bff744221902d07e8f3af01cd
             },
 
             onClick: (menulink, id, name) => {
@@ -1112,7 +1101,7 @@ const ViewBookingDialog = (() => {
     let dialog = null;
     self.show = (op) => {
         console.log(12345,op);
-        
+
         dialog = dialog ||
             new GeneralDialog({
                 cssClass: "modal-lg modal-content-vs-dialog",
@@ -1215,7 +1204,7 @@ const ViewBookingDialog = (() => {
                             me.hide(false);
                         },
                     },
-                   
+
                 ],
                 prepareFormOptions: {
                     createTitle: "Booking Details",
