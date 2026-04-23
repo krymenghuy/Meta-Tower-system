@@ -475,7 +475,7 @@ const BillDialog = (() => {
                             </div>
                             <div class="col-6">
                                 <div class="material-input outlined">
-                                    <input name="total_amount" class="data-input form-control" data-field="total_amount" placeholder=" "></input>
+                                    <input name="total_amount" type="number" class="data-input form-control" data-field="total_amount" placeholder=" "></input>
                                     <label style="color:#777777; padding-left:6px;">Total Amount $</label>
                                 </div>
                             </div>
@@ -487,7 +487,7 @@ const BillDialog = (() => {
                             </div>
                             <div class="col-8">
                                 <div class="material-input outlined d-flex ">
-                                    <input type="text" name="documents" class="d-none form-control " accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg" /disabled>
+                                    <input type="text" name="documents" class="d-none form-control " accept=".png,.jpg,.jpeg" /disabled>
                                     <label style="display:none;color:#777777;padding-left:6px;">File</label > 
                                 </div>
                             </div>
@@ -561,7 +561,7 @@ const BillDialog = (() => {
                     me.controls.btn_chooseFile.onclick = () => {
                         FileChooser.chooseFile(
                             {
-                                accept: ".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg",
+                                accept: ".png,.jpg,.jpeg",
                             },
                             (d) => {
                                 me.fileData = d;
@@ -640,6 +640,36 @@ const BillDialog = (() => {
                             }
                         });
                     }
+
+                    setTimeout(() => {
+                        const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+                        const toFormatted = (val) => {
+                            if (/^\d{2}-[A-Za-z]{3}-\d{4}$/.test(val)) return val; // already correct format
+                            const parsed = new Date(val);
+                            if (isNaN(parsed)) return val;
+                            const d = String(parsed.getDate()).padStart(2, '0');
+                            const m = months[parsed.getMonth()];
+                            const y = parsed.getFullYear();
+                            return `${d}-${m}-${y}`;
+                        };
+
+                        if (me.controls.bill_date) {
+                            if (!me.controls.bill_date.value) {
+                                const now = new Date();
+                                const d = String(now.getDate()).padStart(2, '0');
+                                const m = months[now.getMonth()];
+                                const y = now.getFullYear();
+                                me.controls.bill_date.value = `${d}-${m}-${y}`;
+                            } else {
+                                me.controls.bill_date.value = toFormatted(me.controls.bill_date.value);
+                            }
+                        }
+
+                        if (me.controls.due_date && me.controls.due_date.value) {
+                            me.controls.due_date.value = toFormatted(me.controls.due_date.value);
+                        }
+                    }, 0);
                 },
 
                 buttons: [

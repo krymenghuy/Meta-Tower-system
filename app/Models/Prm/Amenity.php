@@ -62,6 +62,9 @@ class Amenity extends VSModel
                 return DV::error('Update failed: Another Amenity with this name already exists');
             }
         }
+        if ($id && self::hasActiveReservation($id)) {
+            return DV::error('Cannot modify this amenity because it is currently in use (In-Progress reservation).');
+        }
 
         if (!empty($d->code)) {
             $exists = DB::table('amenities')
@@ -97,6 +100,8 @@ class Amenity extends VSModel
             return DV::depends(1, ['amenities' => $inputs, 'id' => $id]);
         }
         return DV::error('Error saving Amenity...!');
+
+        
     }
     function createAmenityCode($branch_id, $building_id, $floor_number, $amenity_id)
     {
@@ -240,6 +245,10 @@ class Amenity extends VSModel
     public function deleteAmenity($id = null)
     {
         $id = $id ?? $this->id;
+
+        if (self::hasActiveReservation($id)) {
+            return DV::error('Cannot delete this amenity because it is currently in use (In-Progress reservation).');
+        }
         $exists = DB::table('reservations')->where('amenity_id', $id)->exists();
         if ($exists) {
             return DV::error('Cannot delete this amenity because it has reservation records.');
@@ -265,5 +274,12 @@ class Amenity extends VSModel
         return DV::depends($x, ['amenity status', 'updated']);
     }
    
+    private static function hasActiveReservation($amenity_id): bool
+    {
+        return DB::table('reservations')
+            ->where('amenity_id', $amenity_id)
+            ->whereIn('status_id', [1, 2]) // 1 = Upcoming, 2 = In-Progress
+            ->exists();
+    }
 
 }
