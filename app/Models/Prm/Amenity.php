@@ -4,8 +4,8 @@ namespace App\Models\Prm;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
-use DBX;
-use DV;
+use Vsd\Database\DBX;
+use Vsd\Response\DV;
 use XPublicStorage;
 use App\Models\Prm\GeneralSettings;
 use Vsd\Vsloquent\VSModel;
@@ -125,7 +125,8 @@ class Amenity extends VSModel
 
         // $fullCode = $prefixLetters . '-' . $floorPrefix . '-R' . $roomNumber;
         // $fullCode = $floorPrefix . '-R-' . $roomNumber;
-        $fullCode = 'AMN-' . $roomNumber;
+        // $fullCode = 'AMN-' . $roomNumber;
+        $fullCode = $roomNumber;
 
         DB::table('amenities')
             ->where('id', $amenity_id)
@@ -242,7 +243,7 @@ class Amenity extends VSModel
         $id = $id ?? $this->id;
         $exists = DB::table('reservations')->where('amenity_id', $id)->exists();
         if ($exists) {
-            return DV::error('Cannot delete this amenity because it has reservation records.');
+            return DV::error('Cannot delete because it has reservation records.');
         }
         $deleted = DB::table('amenities')->where('id', $id)->delete();
         if($deleted){
@@ -253,6 +254,14 @@ class Amenity extends VSModel
 
     function updateAmenityStatus($status_id, $id = null, $ss = null) {
         $ss = $ss ? $ss : $this->userInfo;
+        $hasActiveReservation = DB::table('reservations')
+            ->where('amenity_id', $id)
+            ->where('status_id', '<=', 2)
+            ->exists();
+
+        if ($hasActiveReservation) {
+            return DV::error('Cannot change status due to inprogress or upcoming reservations.');
+        }
         $currentStatus = DB::table('amenities')->where('id', $id)->value('status_id');
         if ($currentStatus == $status_id) {
             return DV::error('It is the same current status.');

@@ -53,6 +53,15 @@ class BuildingSpace
             if ($exists) return DV::error('Space code already exists');
         }
 
+
+        // return DV::success('1');
+        if ((float) $inputs['price'] <= 0 ){
+            return DV::error('Price cannot be a negative number.');
+        }
+        if ((float) $inputs['sqm_size'] <= 0 ){
+            return DV::error('Size cannot be a negative number.');
+        }
+
         $floor = DB::table('floors')
             ->select('floor_number')
             ->where('id', $d->floor_id)

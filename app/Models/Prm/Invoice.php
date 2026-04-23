@@ -76,10 +76,14 @@ class Invoice extends VSModel
         ]);
 
         $dueDate = $inputs['due_date'];
-        $now = time();
-        $startDT = strtotime($dueDate . ' ');
-        if ($startDT <= $now) {
-            return DV::error('Cannot set due date in the past.');
+        $dueDT   = strtotime($dueDate);
+        $todayDT = strtotime(now()->toDateString());
+        if (!$dueDT) {
+            return DV::error('Invalid due date.');
+        }
+
+        if ($dueDT < $todayDT) {
+            return DV::error('Due date cannot be in the past.');
         }
 
 

@@ -213,7 +213,7 @@ public function upsert($arr = [], $id = null, $ss = null){
             return $row;
     }
 
-    public static function getFormOptions($id,$ss)
+    public static function getFormOptions($id,$ss)  
     {
         $ss = $ss ? $ss : $this->userInfo;
         $reservation_details = $id ? self::reservationDetails($id) : null;
