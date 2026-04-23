@@ -355,6 +355,9 @@ var SpaceComponent = new (function () {
                     cssClass: "border-bottom pb-2",
                     name: "finish_maintenance"
                 },
+<<<<<<< HEAD
+
+=======
                 {
                     html: '<span class="ps-2" vslang="titles.View Booking">View Booking</span>',
                     icon: `<i class="fa-regular fa-hard-drive fs-5 text-info"></i>`,
@@ -362,6 +365,7 @@ var SpaceComponent = new (function () {
                     name: "view_booking"
                 },
                
+>>>>>>> 7581b5c18091091bff744221902d07e8f3af01cd
             ],
             // adjustPosition: {
             //     top: -200,
@@ -372,16 +376,22 @@ var SpaceComponent = new (function () {
                 const menu = me.getActiveMenus(container);
 
                 const status_id = container.dataset.statusid;
-                const maintenance_status_id = container.dataset.maintenancestatusid;
-                
-                const isMaintenance = maintenance_status_id == 1;
+                const maintenance_status_id = Number(container.dataset.maintenancestatusid || 0);
+
+                const isUpcomingMaintenance = maintenance_status_id === 1;
+                const isMaintenance = maintenance_status_id === 2;
+                const hasActiveMaintenance = isUpcomingMaintenance || isMaintenance;
 
                 menu.create_booking.style.display =  status_id >= 2 ? 'none' : 'block';
                 menu.create_contract.style.display = status_id >= 3 ? 'none' : 'block';
                 menu.edit_space.style.display = status_id == 3 ? 'none' : 'block';
                 menu.finish_maintenance.style.display = isMaintenance ? 'block' : 'none';
+<<<<<<< HEAD
+                menu.set_maintenance.style.display = hasActiveMaintenance ? 'none' : 'block';
+=======
                 menu.set_maintenance.style.display = isMaintenance ? 'none' : 'block';
                 menu.view_booking.style.display = status_id == 2 ? 'block' : 'none';
+>>>>>>> 7581b5c18091091bff744221902d07e8f3af01cd
             },
 
             onClick: (menulink, id, name) => {
@@ -477,7 +487,14 @@ var SpaceComponent = new (function () {
                     : `${symbol} ${price.toLocaleString()}`;
 
                 const priceLabelPerMonth = `${symbol} ${pricePerMonth.toLocaleString()}`;
-                const isUnderMaintenance = Number(d.maintenance_status_id) === 1;
+                const maintenanceStatusId = Number(d.maintenance_status_id || 0);
+                const maintenanceStatusName = String(d.maintenance_status ?? d.maintenance_status_name ?? '').trim().toLowerCase();
+                const isPlannedMaintenance = maintenanceStatusId === 1 || maintenanceStatusName === 'planned' || maintenanceStatusName === 'upcoming';
+                const maintenanceLabel = isPlannedMaintenance
+                    ? ' <span class="text-warning fw-semibold">(Upcoming)</span>'
+                    : (maintenanceStatusId === 2
+                        ? ' <span class="text-warning fw-semibold">(Maintenance)</span>'
+                        : '');
                 html += `
                 <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
                     <div class="unit-card position-relative overflow-hidden h-100" style="background-image:url('${d.bg_image ?? '/assets/images/default/bg-card1.jpg'}');">
@@ -488,7 +505,7 @@ var SpaceComponent = new (function () {
                                         Unit ${d.code ?? ''}
                                     </h5>
                                     <p class="unit-floor text-muted small mb-0">
-                                        ${d.floor_number ?? '-'} • ${d.building_name ?? ''}${isUnderMaintenance ? ' <span class="text-warning fw-semibold">(Maintenance)</span>' : ''}
+                                        ${d.floor_number ?? '-'} • ${d.building_name ?? ''}${maintenanceLabel}
                                     </p>
                                    <p class="unit-floor text-muted small mb-0">
                                         Charge as ( ${d.price_type === 'total' ? `${symbol} ${price.toLocaleString()}/month` : `${symbol} ${price.toLocaleString()}/ m²`} )
@@ -792,7 +809,7 @@ const BuildingSpaceDialog = (() => {
                                     </select>
                                 </div>
                             </div>
-                            
+
                             <!-- <div class="col-12 sqm-wrapper" style="display:none;"> -->
                             <div class="col-6">
                                 <div class="material-input outlined">
@@ -802,12 +819,12 @@ const BuildingSpaceDialog = (() => {
                             </div>
                             <div class="col-6">
                                 <div class="material-input outlined">
-                                        <input 
-                                            type="number" 
-                                            name="price" 
-                                            class="data-input form-control" 
-                                            data-field="price" 
-                                            placeholder=" " 
+                                        <input
+                                            type="number"
+                                            name="price"
+                                            class="data-input form-control"
+                                            data-field="price"
+                                            placeholder=" "
                                             min="0"
                                             step="0.01"
                                         />
@@ -831,10 +848,10 @@ const BuildingSpaceDialog = (() => {
 
 
                 contentCreated: (me) => {
-                   
-                   
-           
-                    
+
+
+
+
 
                 },
                 configSelect: [
@@ -916,7 +933,7 @@ const BuildingSpaceDialog = (() => {
                             const op = me.getData();
                             op.id = me.dataOptions.id;
                             console.log(220,op);
-                            
+
                             // if (!op.price_type) {
                             //     cv_interact.error("Please select Price Type");
                             //     return;
@@ -1024,7 +1041,7 @@ const CreateBookingDialog = (() => {
                     }
                     e.target.value = v;
                 });
-                       
+
                 },
                 configSelect: [
                 ],
