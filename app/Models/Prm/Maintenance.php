@@ -15,11 +15,6 @@ class Maintenance extends VSModel
     protected $userInfo = null;
     protected $table = 'maintenances';
 
-    /**
-     * Planned (1) / In Progress (2) from schedule window vs current time.
-     * Before start -> 1, from start onwards -> 2.
-     * Completed (3) must be set manually via finish action.
-     */
     public static function computeScheduleStatusId($startDate, $endDate = null): int
     {
         $now = Carbon::now();
@@ -30,10 +25,7 @@ class Maintenance extends VSModel
         return 2;
     }
 
-    /**
-     * Derive space-level maintenance state from active maintenances.
-     * Priority: In Progress (2) > Planned (1) > none (0).
-     */
+
     public static function resolveSpaceMaintenanceStatusId($spaceId)
     {
         $spaceId = $spaceId;
@@ -60,12 +52,6 @@ class Maintenance extends VSModel
         return 0;
     }
 
-    /**
-     * Persist and reflect schedule-derived status when not Completed (3) or Cancelled (4).
-     * Call before setOfficialDates() so date fields are still parseable DB values.
-     *
-
-     */
     public static function applyScheduleDerivedStatus(object $row, $statusIdToName = null): void
     {
         $sid = ($row->status_id ?? 0);
@@ -143,9 +129,14 @@ class Maintenance extends VSModel
             );
         }
 
-        $isCreate = !$id;
-        if ($isCreate && $startAt->lt(Carbon::now())) {
-            return DV::error('Start date and time cannot be in the past.');
+        $startAtMinute = $startAt->copy()->seconds(0);
+        $now = Carbon::now();
+        $nowMinute = $now->copy()->seconds(0);
+        if ($startAt->toDateString() < $now->toDateString()) {
+            return DV::error('Start date cannot be in the past.');
+        }
+        if ($startAt->isSameDay($now) && $startAtMinute->lt($nowMinute)) {
+            return DV::error('Start time cannot be in the past.');
         }
 
         try {
