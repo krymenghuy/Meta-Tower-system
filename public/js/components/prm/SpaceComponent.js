@@ -377,7 +377,7 @@ var SpaceComponent = new (function () {
                 const isMaintenance = maintenance_status_id == 1;
 
                 menu.create_booking.style.display =  status_id >= 2 ? 'none' : 'block';
-                menu.create_contract.style.display = status_id >= 2 ? 'none' : 'block';
+                menu.create_contract.style.display = status_id >= 3 ? 'none' : 'block';
                 menu.edit_space.style.display = status_id == 3 ? 'none' : 'block';
                 menu.finish_maintenance.style.display = isMaintenance ? 'block' : 'none';
                 menu.set_maintenance.style.display = isMaintenance ? 'none' : 'block';
@@ -1098,7 +1098,7 @@ const ViewBookingDialog = (() => {
         
         dialog = dialog ||
             new GeneralDialog({
-                cssClass: "modal-xl modal-content-vs-dialog",
+                cssClass: "modal-lg modal-content-vs-dialog",
                 backdrop: "static",
                 TriggerOnClose: true,
                 createContent: () =>{return ['<div name="container_fluid"></div>'].join('');},
@@ -1149,7 +1149,7 @@ const ViewBookingDialog = (() => {
                                     <div class="row cols-2 mb-0">
                                         <div class="col-4 p_profile_left">
                                             <div class="d-flex">
-                                                <p class="text-nowrap text-muted width-p">Booker Name</p>
+                                                <p class="text-nowrap text-muted width-p">Booking Name</p>
                                                 <p class="px-3">:</p>
                                                 <p class="text-nowrap text-capitalize data-get">${data.booker_name ?? 'N/A'}</p>
                                             </div>
@@ -1161,7 +1161,7 @@ const ViewBookingDialog = (() => {
                                         </div>
                                         <div class="col-4 p_profile_center">
                                             <div class="d-flex">
-                                                <p class="text-nowrap text-muted width-p">Booker Phone</p>
+                                                <p class="text-nowrap text-muted width-p">Booking Phone</p>
                                                 <p class="px-3">:</p>
                                                 <p class="text-nowrap text-capitalize data-get">${data.booker_phone ?? 'N/A'}</p>
                                             </div>
@@ -1173,12 +1173,12 @@ const ViewBookingDialog = (() => {
                                         </div>
                                         <div class="col-4 p_profile_right">
                                             <div class="d-flex">
-                                                <p class="text-nowrap text-muted width-p">Booker Email</p>
+                                                <p class="text-nowrap text-muted width-p">Booking Email</p>
                                                 <p class="px-3">:</p>
                                                 <p class="text-nowrap data-get">${data.booker_email ?? 'N/A'}</p>
                                             </div>
                                             <div class="d-flex">
-                                                <p class="text-nowrap text-muted width-p">Booking Fee</p>
+                                                <p class="text-nowrap text-muted width-p">Booking Amount</p>
                                                 <p class="px-3">:</p>
                                                 <p class="text-nowrap text-capitalize data-get">${VSMoney.formatAmount(data.booking_fee, data.currency ?? 'USD') ?? 'N/A'}</p>
                                             </div>
@@ -1192,7 +1192,7 @@ const ViewBookingDialog = (() => {
 
                 buttons: [
                     {
-                        label: '<span vslang="buttons.close"></span>',
+                        label: '<span vslang="buttons.Close"></span>',
                         cssClass: 'btn btn-danger',
                         click: (me, btn) => {
                             me.hide(false);
@@ -1201,8 +1201,8 @@ const ViewBookingDialog = (() => {
                    
                 ],
                 prepareFormOptions: {
-                    createTitle: "Booker Details",
-                    modifyTitle: "Booker Details",
+                    createTitle: "Booking Details",
+                    modifyTitle: "Booking Details",
                     targetProp: "divModal",
                     api: {
                         endpoint: `${main_view.base_url}/prm/building-space/view-booking`,

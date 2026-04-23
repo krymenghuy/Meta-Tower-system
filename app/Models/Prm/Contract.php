@@ -468,7 +468,7 @@ class Contract
 
         $tenant = self::findTenantByNormalizedPhone($booker_phone);
         if (!$tenant) {
-            return self::phoneValidationResponse(false, 'Booking phone number does not match any tenant. Please create tenant first.', [
+            return self::phoneValidationResponse(false, 'Tenant not found. Please create a tenant.', [
                 'has_booking' => true,
                 'booker_phone' => $booker_phone_raw,
             ]);
