@@ -224,7 +224,7 @@ var AmenityComponent = (() => {
                 },
                 {
                     html: '<span class="ps-2" vslang="titles.Finish">Finish</span>',
-                    icon: '<i class="fa-solid fa-screwdriver-wrench fs-5 text-prm-custom"></i>',
+                    icon: '<i class="fa-solid fa-clipboard-check fs-5 text-success"></i>',
                     cssClass: "border-bottom pb-2",
                     name: "finish_maintenance",
                 },

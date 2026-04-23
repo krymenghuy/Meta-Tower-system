@@ -100,46 +100,53 @@ class Maintenance extends VSModel
         $this->userInfo = $userInfo;
     }
 
-    public function upsert($arr = [], $id = null, $ss = null)
-    {
-        $id = $id ?? $this->id;
-        $ss = $ss ?? $this->userInfo;
+   public function upsert($arr = [], $id = null, $ss = null)
+{
+    $id = $id ?? $this->id;
+    $ss = $ss ?? $this->userInfo;
 
-        $v_rule = [
-            'building_id'          => '1|number|exists=buildings.id',
-            'space_id'             => '0|number|exists=building_spaces.id',
-            'amenity_id'           => '0|number|exists=amenities.id',
-            'start_date'           => '1|TIMESTAMP',
-            'end_date'             => '1|TIMESTAMP',
-            'remarks'              => '0|string|0-255',
-        ];
+    $v_rule = [
+        'building_id' => '1|number|exists=buildings.id',
+        'space_id'    => '0|number|exists=building_spaces.id',
+        'amenity_id'  => '0|number|exists=amenities.id',
+        'start_date'  => '1|TIMESTAMP',
+        'end_date'    => '1|TIMESTAMP',
+        'remarks'     => '0|string|0-255',
+    ];
 
-        $allowed_chars = ['@', ',', '-', '.', '#', '!', '?', '(', ')', "\n"];
-        $res = DBX::validateObject($arr,$v_rule,1,['remarks' => $allowed_chars],$ss->lang ?? 'en',0,null);
-        if ($res->error) {
-            return DV::error($res->error);
-        }
-        $input = $res->values;
+    $allowed_chars = ['@', ',', '-', '.', '#', '!', '?', '(', ')', "\n"];
 
-        $startAt = Carbon::parse($input['start_date']);
-        $endAt = Carbon::parse($input['end_date']);
-        if ($startAt->greaterThanOrEqualTo($endAt)) {
-            return DV::error(
-                'Start date and time must be before end date and time. Expected format: YYYY-MM-DD hh:mm AM/PM.'
-            );
-        }
+    $res = DBX::validateObject($arr,$v_rule,1,['remarks' => $allowed_chars],$ss->lang ?? 'en',0,null);
+    if ($res->error) {
+        return DV::error($res->error);
+    }
 
-        $startAtMinute = $startAt->copy()->seconds(0);
-        $now = Carbon::now();
-        $nowMinute = $now->copy()->seconds(0);
-        if ($startAt->toDateString() < $now->toDateString()) {
-            return DV::error('Start date cannot be in the past.');
-        }
-        if ($startAt->isSameDay($now) && $startAtMinute->lt($nowMinute)) {
-            return DV::error('Start time cannot be in the past.');
-        }
-         if (!empty($input['amenity_id'])) {
-
+    $input = $res->values;
+    $startDate = $input['start_date'];
+    $endDate   = $input['end_date'];
+    $startTime = $input['start_time'] ?? '00:00';
+    $endTime   = $input['end_time'] ?? '00:00';
+    $today = date('Y-m-d');
+    $nowTime = date('H:i');
+    if ($startDate < $today) {
+        return DV::error('Start date cannot be in the past.');
+    }
+    if ($endDate < $today) {
+        return DV::error('End date cannot be in the past.');
+    }
+    if ($startDate > $endDate) {
+        return DV::error('Start date must be before end date.');
+    }
+    if ($startDate === $endDate && $startTime >= $endTime) {
+        return DV::error('For same day maintenance, start time must be before end time.');
+    }
+    if ($startDate === $today && $startTime < $nowTime) {
+        return DV::error('Start time cannot be in the past.');
+    }
+    if ($endDate === $today && $endTime < $nowTime) {
+        return DV::error('End time cannot be in the past.');
+    }
+    if (!empty($input['amenity_id'])) {
         $hasReservation = DB::table('reservations')
             ->where('amenity_id', $input['amenity_id'])
             ->where('status_id', '<=', 2) // Upcoming + In Progress
@@ -150,49 +157,66 @@ class Maintenance extends VSModel
         }
     }
 
-        try {
-            $sid = ($input['status_id'] ?? 0);
-            if (!in_array($sid, [3, 4], true)) {
-                $start = $input['start_date'] ?? null;
-                if ($start) {
-                    $input['status_id'] = self::computeScheduleStatusId($start);
-                }
-            }
-        } catch (\Exception $e) {
-            // ignore auto-sync errors
+   
+    try {
+        $sid = $input['status_id'] ?? 0;
+
+        if (!in_array($sid, [3, 4], true)) {
+            $input['status_id'] = self::computeScheduleStatusId($startDate);
+        }
+    } catch (\Exception $e) {
+    }
+
+    
+    try {
+        $save_id = DBX::saveData($ss, 'maintenances', ['id' => $id], $input, [], 0);
+
+        if (!$save_id) {
+            return DV::error('Failed to save maintenance.');
         }
 
-        try {
-            $save_id = DBX::saveData($ss, 'maintenances', ['id' => $id], $input, [], 0);
-            if (!$save_id) {
-                return DV::error('Failed to save maintenance.');
+        if (!empty($input['space_id'])) {
+
+            $spaceStatus = 0;
+
+            if (($input['status_id'] ?? 0) == 1) {
+                $spaceStatus = 1; // upcoming
+            } elseif (($input['status_id'] ?? 0) == 2) {
+                $spaceStatus = 2; // in maintenance
             }
-            if (!empty($input['space_id'])) {
-                $spaceMaintenanceStatusId = 0;
-                if (($input['status_id'] ?? 0) === 1) {
-                    $spaceMaintenanceStatusId = 1; // upcoming
-                } elseif (($input['status_id'] ?? 0) === 2) {
-                    $spaceMaintenanceStatusId = 2; // in maintenance
-                }
-                DB::table('building_spaces')->where('id', $input['space_id'])->update(['maintenance_status_id' => $spaceMaintenanceStatusId]);
-            }
-            if (!empty($input['amenity_id'])) {
-                $underMaintenanceId = DB::table('amenity_statuses')->whereRaw('LOWER(TRIM(name)) = ?', ['maintenance'])->value('id');
-                if ($underMaintenanceId) {
-                    DB::table('amenities')->where('id', $input['amenity_id'])->update([
+
+            DB::table('building_spaces')
+                ->where('id', $input['space_id'])
+                ->update(['maintenance_status_id' => $spaceStatus]);
+        }
+
+        
+        if (!empty($input['amenity_id'])) {
+
+            $underMaintenanceId = DB::table('amenity_statuses')
+                ->whereRaw('LOWER(TRIM(name)) = ?', ['maintenance'])
+                ->value('id');
+
+            if ($underMaintenanceId) {
+                DB::table('amenities')
+                    ->where('id', $input['amenity_id'])
+                    ->update([
                         'status_id'   => $underMaintenanceId,
                         'update_user' => $ss->full_name ?? 'System',
                         'update_uid'  => $ss->id ?? null,
                         'updated_at'  => getNowTime(),
                     ]);
-                }
             }
-            $message = !$id ? 'Maintenance created successfully' : 'Maintenance updated successfully';
-            return DV::success(['message' => $message]);
-        } catch (\Exception $e) {
-            return DV::error('Error saving maintenance: ' . $e->getMessage());
         }
+
+        return DV::success([
+            'message' => $id ? 'Maintenance updated successfully' : 'Maintenance created successfully'
+        ]);
+
+    } catch (\Exception $e) {
+        return DV::error('Error saving maintenance: ' . $e->getMessage());
     }
+}
 
     public function getMaintenanceList($arr, $ss = null)
     {
@@ -280,7 +304,7 @@ class Maintenance extends VSModel
 
         if ($row) {
             self::applyScheduleDerivedStatus($row);
-            // setOfficialDates($row, [], ['updated_at', 'start_date', 'end_date'], []);
+            setOfficialDates($row, [''], ['updated_at', 'start_date', 'end_date'], []);
         }
         return $row;
     }

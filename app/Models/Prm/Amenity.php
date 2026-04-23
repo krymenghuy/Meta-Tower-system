@@ -125,7 +125,8 @@ class Amenity extends VSModel
 
         // $fullCode = $prefixLetters . '-' . $floorPrefix . '-R' . $roomNumber;
         // $fullCode = $floorPrefix . '-R-' . $roomNumber;
-        $fullCode = 'AMN-' . $roomNumber;
+        // $fullCode = 'AMN-' . $roomNumber;
+        $fullCode = $roomNumber;
 
         DB::table('amenities')
             ->where('id', $amenity_id)
