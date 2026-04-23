@@ -234,9 +234,9 @@ var MaintenanceComponent = (() => {
             cssClass: "bg-white shadow",
             menus: [
                 { html: '<span class="ps-2" vslang="titles.Modify"></span>', icon: '<i class="fa-regular fa-edit fs-5 text-warning"></i>', cssClass: "border-bottom pb-2", name: "modify" },
-                { html: '<span class="ps-2" vslang="titles.Finish"></span>', icon: '<i class="fa-solid fa-flag-checkered fs-5 text-success"></i>', cssClass: "border-bottom pb-2", name: "finish_maintenance" },
-                { html: '<span class="ps-2" vslang="titles.Cancel"></span>', icon: '<i class="fa-solid fa-times-circle fs-5 text-secondary"></i>', cssClass: "border-bottom pb-2", name: "cancel_maintenance" },
-                { html: '<span class="ps-2" vslang="titles.Delete"></span>', icon: '<i class="fa-regular fa-trash-can fs-5 text-danger"></i>', cssClass: "border-bottom pb-2", name: "delete" }
+                { html: '<span class="ps-2" vslang="titles.Delete"></span>', icon: '<i class="fa-regular fa-trash-can fs-5 text-danger"></i>', cssClass: "border-bottom pb-2", name: "delete" },
+                { html: '<span class="ps-2" vslang="titles.Cancel"></span>', icon: '<i class="fa-regular fa-rectangle-xmark fs-5 text-warning-emphasis"></i>', cssClass: "border-bottom pb-2", name: "cancel_maintenance" },
+                { html: '<span class="ps-2" vslang="titles.Finish"></span>', icon: '<i class="fa-solid fa-clipboard-check fs-5 text-success"></i>', cssClass: "border-bottom pb-2", name: "finish_maintenance" },
             ],
             onShow: (me, container) => {
                 const menu = me.getActiveMenus(container);

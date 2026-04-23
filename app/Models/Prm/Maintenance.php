@@ -201,7 +201,7 @@ class Maintenance extends VSModel
             if (!empty($row->end_date)) {
                 $row->end_date = Carbon::parse($row->end_date)->format('d-M-Y h:i A');
             }
-            $processed = setOfficialDates($row, ['updated_at'], ['updated_at'], []);
+            $processed = setOfficialDates($row, [''], ['updated_at'], []);
             if ($processed) $row = $processed;
         }
 
