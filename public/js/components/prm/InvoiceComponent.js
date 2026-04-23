@@ -856,12 +856,12 @@ const InvoiceDialog = (() => {
                                 // Initial Data Load
                                 elContract.value = matchedSpace.space_code || "(No code)";
                                 elContract.dataset.contractId = String(matchedSpace.contract_id);
-                                
+
                                 const effectivePrice = Number(matchedSpace.effective_price || 0);
                                 elPrice.value = effectivePrice.toFixed(2);
 
                                 const updateDates = (monthVal) => {
-                                    const matchedMonth = months.find(m => 
+                                    const matchedMonth = months.find(m =>
                                         String(m.contract_id) === String(matchedSpace.contract_id) && m.month === monthVal
                                     );
                                     if (matchedMonth) {
@@ -979,7 +979,7 @@ const InvoiceDialog = (() => {
 
                                     <div style="display:flex; flex-direction:column;">
                                         <div class="material-input outlined" >
-                                            <input class="data-input form-control cursor-blocked" data-field="total_amount" name="total_amount" type="text" readonly 
+                                            <input class="data-input form-control cursor-blocked" data-field="total_amount" name="total_amount" type="text" readonly
                                                 style="background-color: #f0f7ff; border-color: #0c447c; color: #0c447c; font-weight: bold; font-size: 1.1em;">
                                             <label style="color:#0c447c; font-weight:bold;">Total Amount ($)</label>
                                         </div>
@@ -1006,16 +1006,16 @@ const InvoiceDialog = (() => {
                                     const oldVal = parseFloat(elOld?.value) || 0;
                                     const newVal = parseFloat(elNew?.value) || 0;
                                     const ppu = parseFloat(elPPU?.value) || 0;
-                                    
+
                                     const units = newVal - oldVal;
                                     if (elUnits) {
                                         elUnits.value = units > 0 ? units.toFixed(2) : "0.00";
                                         elUnits.style.color = units < 0 ? "red" : "#212529";
                                     }
-                                    
+
                                     const total = Math.max(0, units) * ppu;
                                     if (elTotal) elTotal.value = total.toFixed(2);
-                                    
+
                                     if (elRemark) {
                                         const start = elStartDate?.value || "";
                                         const end = elEndDate?.value || "";
@@ -1086,7 +1086,7 @@ const InvoiceDialog = (() => {
                             createContent() {
                                 const div = document.createElement("div");
                                 div.style.cssText = "display:flex; flex-direction:column;";
-                                
+
                                 div.innerHTML = `
                                     <div>
                                         <div class="d-flex align-items-center gap-2 mb-3">
@@ -1141,7 +1141,7 @@ const InvoiceDialog = (() => {
 
                                     <div style="display:flex; flex-direction:column;">
                                         <div class="material-input outlined">
-                                            <input class="data-input form-control cursor-blocked" data-field="total_amount" name="total_amount" type="text" readonly 
+                                            <input class="data-input form-control cursor-blocked" data-field="total_amount" name="total_amount" type="text" readonly
                                                 style="background-color: #f0f7ff; border-color: #0c447c; color: #0c447c; font-weight: bold; font-size: 1.1em;">
                                             <label style="color:#0c447c; font-weight:bold;">Total Amount ($)</label>
                                         </div>
@@ -1169,13 +1169,13 @@ const InvoiceDialog = (() => {
                                     const oldVal = parseFloat(elOld?.value) || 0;
                                     const newVal = parseFloat(elNew?.value) || 0;
                                     const ppu = parseFloat(elPPU?.value) || 0;
-                                    
+
                                     const units = Math.max(0, newVal - oldVal);
                                     if (elUnits) elUnits.value = units.toFixed(2);
-                                    
+
                                     const total = units * ppu;
                                     if (elTotal) elTotal.value = total.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
-                                    
+
                                     if (elRemark) {
                                         const start = elStartDate?.value || "";
                                         const end = elEndDate?.value || "";
@@ -1366,7 +1366,7 @@ const InvoiceDialog = (() => {
                         if (!me._selectedTenantId) {
                             return cv_interact.error("Please select Tenant first");
                         }
-                        
+
                         const requests = me._requestedServices || [];
                         console.log("request",requests)
                         const serviceRequestOption = requests.map(
@@ -1399,6 +1399,10 @@ const InvoiceDialog = (() => {
                                                 <label style="color:#777;">Service Name</label>
                                             </div>
                                             <div class="material-input outlined" style="margin-bottom: 1rem;">
+                                                <input class="data-input form-control bg-light" data-field="unit_type" name="unit_type" type="text" readonly placeholder=" ">
+                                                <label style="color:#777;">Unit Type</label>
+                                            </div>
+                                            <div class="material-input outlined" data-wrapper="duration" style="margin-bottom: 1rem;">
                                                 <input class="data-input form-control bg-light cursor-blocked" data-field="duration_hours" name="duration_hours" type="text" readonly placeholder=" ">
                                                 <label style="color:#777;">Duration (Hours)</label>
                                             </div>
@@ -1448,6 +1452,8 @@ const InvoiceDialog = (() => {
                                 const elPrice = document.querySelector('[data-field="total_price"]');
                                 const elServiceName = document.querySelector('[data-field="service_name"]');
                                 const elRemark = document.querySelector('[data-field="remark"]');
+                                const elUnitType = document.querySelector('[data-field="unit_type"]');
+                                const elDurationWrapper = document.querySelector('[data-wrapper="duration"]');
 
                                 const fillRequestData = (selectedId) => {
                                     const matched = requests.find(r => r.request_id === Number(selectedId));
@@ -1456,6 +1462,13 @@ const InvoiceDialog = (() => {
                                         elPrice.value = Number(matched.total_price).toFixed(2);
                                         elServiceName.value = matched.service_name || "";
                                         elRemark.value = matched.remarks || "";
+                                        elUnitType.value = matched.unit_type || "";
+
+                                        if(matched.unit_type ==="Hour"){
+                                            elDurationWrapper.style.display = "block";
+                                        }else{
+                                            elDurationWrapper.style.display = "none"
+                                        }
                                     }
                                 };
 
@@ -1475,15 +1488,14 @@ const InvoiceDialog = (() => {
                                 if (!selectedRequest) {
                                     return cv_interact.error("Please select a service request");
                                 }
-
                                 me.itemsView.addRow({
                                     item_id: selectedRequest.request_id,
-                                    item_name: `${selectedRequest.service_name} (${selectedRequest.code})`,
+                                    item_name: `${selectedRequest.code}`,
                                     type: "Service Request",
                                     price: Number(selectedRequest.total_price),
-                                    qty: `${selectedRequest.duration_hours || 0}`,
+                                    qty: selectedRequest.unit_type === "Hour" ? (selectedRequest.duration_hours || 0) : 1,
                                     unit_type: `${selectedRequest.unit_type || 0}`,
-                                    remarks: data.remark || selectedRequest.remarks || "",
+                                    remarks: data.remark || "",
                                     space_id: selectedRequest.space_id,
                                     space_code: selectedRequest.space_code,
                                     discount: Number(data.discount) || 0,
@@ -1826,18 +1838,21 @@ const InvoiceDialog = (() => {
                                     }
                                 }
                             }
-
                             const requestItems = mappedItems.filter(item => item.type === "Service Request");
                             const seenRequestIds = new Set();
                             for (const item of requestItems) {
-                                if (seenRequestIds.has(item.request_id)) {
+                                const reqId = item.request_id || item.item_id;
+
+                                if (!reqId) continue; // Skip if no ID is found
+
+                                if (seenRequestIds.has(String(reqId))) {
                                     cv_interact.error(
-                                        `Service request "${item.item_name}" has already been added. ` +
-                                        `Each service request can only be invoiced once.`
+                                        `Duplicate Service Request: "${item.item_name}" has been added more than once. ` +
+                                        `Each specific request record can only be invoiced once.`
                                     );
                                     return null;
                                 }
-                                seenRequestIds.add(item.request_id);
+                                seenRequestIds.add(String(reqId));
                             }
 
                             const serviceItems = mappedItems.filter(item => item.type === "service");

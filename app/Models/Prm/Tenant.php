@@ -522,7 +522,6 @@ class Tenant
                 'sr.total_price',
                 'sr.duration_hours',
                 'sr.request_date',
-                'sr.remarks',
                 'sr.unit_type',
             )
             ->get();
