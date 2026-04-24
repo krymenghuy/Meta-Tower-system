@@ -388,7 +388,7 @@ var ServiceRequestComponent = (function () {
                 vsapi.call(`${main_view.base_url}/prm/service-request/delete`, { id }, false, false, false)
                     .then(res => {
                         if (res.status_code === 200) {
-                            cv_interact.success('Service request deleted');
+                            cv_interact.success('Service request deleted.');
                             mThis.ServiceRequestListView.showPage();
                         } else {
                             cv_interact.error(res.error_message);

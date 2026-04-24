@@ -56,10 +56,10 @@ class BuildingSpace
 
         // return DV::success('1');
         if ((float) $inputs['price'] <= 0 ){
-            return DV::error('Price cannot be a negative number.');
+            return DV::error('Price must be greater than zero.');
         }
         if ((float) $inputs['sqm_size'] <= 0 ){
-            return DV::error('Size cannot be a negative number.');
+            return DV::error('Size must be greater than zero.');
         }
 
         $floor = DB::table('floors')
