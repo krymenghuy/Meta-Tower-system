@@ -461,34 +461,34 @@ const BillDialog = (() => {
                                     <label style="color:#777777;padding-left:6px;">Due Date</label>
                                 </div>
                             </div>
-                            <div class="col-6">
+                            <div class="col-4">
                                 <div class="material-input outlined">
                                     <input name="ref_no" class="data-input form-control" data-field="ref_no" placeholder=" "></input>
                                     <label style="color:#777777; padding-left:6px;">Reference No.</label>
                                 </div>
                             </div>
-                            <div class="col-6">
+                            <div class="col-4">
                                 <div class="material-input outlined">
                                     <select name="expense_type_id" data-style="material" class="data-input form-control" data-field="expense_type_id" placeholder="Category">
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-6">
+                            <div class="col-4">
                                 <div class="material-input outlined">
                                     <input name="total_amount" type="number" class="data-input form-control" data-field="total_amount" placeholder=" "></input>
                                     <label style="color:#777777; padding-left:6px;">Total Amount $</label>
+                                </div>
+                            </div>
+                            <div class="col-8">
+                                <div class="material-input outlined d-flex ">
+                                    <input type="text" name="documents" class=" form-control " accept=".png,.jpg,.jpeg" /disabled>
+                                    <label style="display:none;color:#777777;padding-left:6px;">File</label > 
                                 </div>
                             </div>
                             <div class="col-4">
                                 <div class="material-input outlined d-flex ">
                                     <button name ="btn_chooseFile"  class="btn btn-block" style="background-color: #e1e5f2; padding: 0.5rem 0.75rem !important;">Choose File </button>
                                     <label style="display:none;color:#777777;padding-left:6px;">File</label>
-                                </div>
-                            </div>
-                            <div class="col-8">
-                                <div class="material-input outlined d-flex ">
-                                    <input type="text" name="documents" class="d-none form-control " accept=".png,.jpg,.jpeg" /disabled>
-                                    <label style="display:none;color:#777777;padding-left:6px;">File</label > 
                                 </div>
                             </div>
                             <div class="col-12 ">
