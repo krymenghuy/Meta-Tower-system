@@ -435,9 +435,9 @@ class Maintenance extends VSModel
         $space_id = isset($row->space_id) ?  $row->space_id : 0;
         if ($space_id > 0) {
             $spaceMaintenanceStatusId = 0;
-            if ((int)$status_id === 1) {
+            if ($status_id === 1) {
                 $spaceMaintenanceStatusId = 1; // upcoming
-            } elseif ((int)$status_id === 2) {
+            } elseif ($status_id === 2) {
                 $spaceMaintenanceStatusId = 2; // in maintenance
             }
             DB::table('building_spaces')->where('id', $space_id)->update(['maintenance_status_id' => $spaceMaintenanceStatusId]);
