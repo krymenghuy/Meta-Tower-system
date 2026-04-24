@@ -676,7 +676,25 @@ var TenantComponent = new (function () {
             document.body.removeChild(a);
             return;
         }
-        window.open(data_url, "_blank");
+        // window.open(data_url, "_blank");
+        const newWindow = window.open("", "_blank");
+
+newWindow.document.write(`
+  <html>
+    <head>
+      <title>Preview</title>
+      <style>
+        body { font-family: Arial; padding: 20px; }
+      </style>
+    </head>
+    <body>
+      <h2>Preview Content</h2>
+      <iframe src="${data_url}" style="width:100%; height:500px;"></iframe>
+    </body>
+  </html>
+`);
+
+newWindow.document.close();
     };
     mThis.showPage = async (pageName, op = {}) => {
         if (this.self.style.display !== "block") {
@@ -718,7 +736,7 @@ var TenantComponent = new (function () {
     };
     mThis.renderProfile = (data) => {
         console.log(123,data);
-        
+
         let cls_class = "";
         if (data && data.status) {
             switch (data.status) {
@@ -1726,7 +1744,7 @@ const TenantDocumentDialog = (() => {
                     <div class="col-12">
                         <div class="material-input outlined d-flex">
                             <input type="text" name="documents" class="d-none form-control"  accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg" /disabled>
-                        </div> 
+                        </div>
                     </div>
                      <div class="col-12">
                         <div class="material-input outlined">
