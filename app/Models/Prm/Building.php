@@ -152,10 +152,13 @@ class Building //extends Model
             ->selectRaw($cols)
             ->orderByRaw('bf.id ASC')->get();
         foreach ($rows as $row) {
-            $row->total_space = DB::table('building_spaces')
-                ->where('building_id', $row->building_id)
-                ->where('floor_id', $row->floor_id)
-                ->count();
+            $amenity_count = DB::table('amenities')->where('floor_id', $row->floor_id)->count();
+            $space_count = DB::table('building_spaces')->where('building_id', $row->building_id)->where('floor_id', $row->floor_id)->count();
+            $row->total_space = $space_count + $amenity_count;
+            // $row->total_space = DB::table('building_spaces')
+            //     ->where('building_id', $row->building_id)
+            //     ->where('floor_id', $row->floor_id)
+            //     ->count();
 
                 setOfficialDates($row, [''],['updated_at'],[]);
         }

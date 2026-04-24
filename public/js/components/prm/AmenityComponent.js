@@ -224,7 +224,7 @@ var AmenityComponent = (() => {
                 },
                 {
                     html: '<span class="ps-2" vslang="titles.Finish">Finish</span>',
-                    icon: '<i class="fa-solid fa-screwdriver-wrench fs-5 text-prm-custom"></i>',
+                    icon: '<i class="fa-solid fa-clipboard-check fs-5 text-success"></i>',
                     cssClass: "border-bottom pb-2",
                     name: "finish_maintenance",
                 },
@@ -600,6 +600,9 @@ const AmenityDialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
+
+                    const isReadOnly = me.dataOptions.id > 0;
+                    me.setReadOnly(isReadOnly, ["building_id","code","floor_id"]);
                     me.controls.requires_booking.value = data.amenity_details.requires_booking;
                 },
 
