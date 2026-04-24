@@ -118,7 +118,7 @@ class Contracts  //extends Model
     }
 
     public function getFormOptions($id,$ss){
-        $contracts = $id ? self::contractsDetails($id) : null;
+        $contracts = $id ? self::contractDetails($id) : null;
         return (object)[
             'contracts' => $contracts,
             'statuses' => GeneralSettings::options_acc_staff_status($ss),

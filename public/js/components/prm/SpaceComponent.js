@@ -17,116 +17,6 @@ var SpaceComponent = new (function () {
 
     mThis.divSummary = mThis.self.querySelector('#_space_div_summary');
 
-
-
-    // mThis.cols = [
-
-    //         {
-    //             title: "",
-    //             className: "align-middle text-capitalize",
-    //         },
-
-    //         {
-    //             title: "Building",
-    //             className: "align-middle",
-    //             data: (data,index) => `<span class="text-primary-custom">${data.building_name}</span>`,
-    //         },
-
-    //         {
-    //             title: "Floor",
-    //             className: "align-middle",
-    //             data: (data) => {
-    //                 const floor = data.floor_number ?? '';
-    //                 let floorText = `${floor}th Floor`;
-
-    //                 return `<span class="text-primary-custom">${floorText}</span>`;
-    //             }
-    //         },
-    //         {
-    //             title: "Code",
-    //             className: "align-middle ",
-    //             data: (data) => `<span class="text-primary-custom">${data.code}</span>`,
-    //         },
-    //         {
-    //             title: "Space Type",
-    //             className: "align-middle ",
-    //             data: (data) => `<span class="text-primary-custom">${data.space_type}</span>`,
-    //         },
-    //         {
-    //             title: "Size",
-    //             className: "align-middle",
-    //             data: (data) => {
-    //                 return data.price_type === 'total'
-    //                     ? `<span class="text-primary-custom">Whole Room</span>`
-    //                     : `<span class="text-primary-custom">${data.sqm_size ?? '-'} <small class="text-danger">(sqm)</small></span>`;
-    //             }
-    //         },
-    //         {
-    //             title: "Price",
-    //             className: "align-middle",
-    //             data: (data) => {
-    //                 const cur_symbol = data.cur_symbol ?? '$';
-    //                 const formattedPrice = data.price ? Number(data.price).toLocaleString() : '-';
-
-    //             return data.price_type === 'total'
-    //                 ? `<span class="fw-semibold">${cur_symbol} ${formattedPrice} <small class="text-muted">/monthly</small></span>`
-    //                 : `<span class="text-primary-custom">${cur_symbol} ${formattedPrice} <small class="text-muted">/sqm</small></span>`;
-    //         }
-    //     },
-
-    //     {
-    //         title: "Location",
-    //         className: "align-middle text-capitalize",
-    //         data: (data, index, tr) => {
-    //             return `
-    //                 <div class="text-yp-custom" style="width:150px;">
-    //                     <small><i class="fa-solid fa-location-dot text-primary me-2"></i></small><small class="text-wrap text-break" style ="word-break:break-word;">${data.address ?? 'N/A'}</small>
-    //                 </div>
-    //             `;
-    //         }
-    //     },
-
-    //     {
-    //         title: "Status",
-    //         className: "align-middle",
-    //         data: (data) => {
-    //             const status = (data.status ?? '').toLowerCase();
-    //             let cls = 'text-info';
-
-    //             if (status === 'available') {
-    //                 cls = 'text-success px-2 py-1 d-inline-block';
-    //             } else if (status === 'unavailable') {
-    //                 cls = 'text-danger px-2 py-1 d-inline-block';
-    //             } else if (status === 'maintainance') {
-    //                 cls = 'text-warning px-2 py-1 d-inline-block';
-    //             }
-
-    //             return `<span class="${cls} text-capitalize" data-status_id="${data.status_id}"><small>${data.status ?? ''}</small></span>`;
-    //         },
-    //     },
-
-
-    //         {
-    //             title: "Updated By",
-    //             className: 'align-middle',
-    //             data: (data, index, tr) => {
-    //                 return `<div class="d-flex flex-column">
-    //                     <span class="text-capitalize text-start fw-semibold"><small>${data.update_user ?? ''}</small></span>
-    //                     <small class="text-muted">${data.updated_at ?? ''}</small>
-    //                 </div>`;
-    //             }
-    //         },
-    //         {
-    //             className: 'col_action align-middle',
-    //             data: (data) => `
-    //                 <div class="d-flex justify-content-center align-items-end">
-    //                     <a href="javascript:void(0)" class="btn--Options ${data.action_id > 1 ? 'd-none' : 'btn_space_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
-    //                     <i class="fa-solid fa-ellipsis-vertical text-white fs-5"></i>
-    //                     </a>
-    //                 </div>`
-    //         },
-
-    // ];
     mThis.init = () => {
         if (mThis.initAlready) return;
 
@@ -164,21 +54,6 @@ var SpaceComponent = new (function () {
             };
             BuildingSpaceDialog.show(op);
         };
-        // mThis.elBuilding.addEventListener('change',(e)=>{
-        //     e.preventDefault();
-        //     mThis.SpaceListView.showPage(mThis.getFilterData());
-
-        //     const p = {
-        //         building_id: e.target.value
-        //     }
-        //     console.log(5555,p);
-
-        //     vsapi.call([main_view.base_url, '/prm/settings/options-floors'].join(''), p, null, false).then((res) => {
-        //         const data = res.status_code == 200 ? res.data : [];
-        //         VSUtil.setComboItems(mThis.elFloor, data, 'id', 'name', '',"All Floor", null);
-        //     });
-        // });
-
         mThis.pr_tbl = mThis.SpaceListView.getListContainer();
         mThis.setAction(div);
 
@@ -191,9 +66,7 @@ var SpaceComponent = new (function () {
         }
         mThis.tblBuildingSpace = mThis.SpaceListView.getTable();
         mThis.initDropdownMenus(mThis.tblBuildingSpace);
-
         mThis.bindSpaceFilterListeners();
-
         mThis.elSearch.addEventListener('keyup', (e) => {
             e.preventDefault();
             clearTimeout(mThis.search_timeout);
@@ -205,7 +78,6 @@ var SpaceComponent = new (function () {
 
         mThis.initAlready = true;
     };
-    // Align accent + value colors with unit-card status colors in renderSpace (available / booked / occupied).
     mThis.summaryPalette = {
         total: '#5867dd',
         occupancy: '#fd397a',
@@ -291,11 +163,6 @@ var SpaceComponent = new (function () {
 
         return p;
     };
-
-    /**
-     * ListView merges cached api_params; falsy values get overwritten by stale params.
-     * We send "0" for "All …" selects (PHP treats as no filter). setParams keeps cache aligned.
-     */
     mThis.applyListFilters = () => {
         const d = mThis.getFilterData();
         if (mThis.SpaceListView && typeof mThis.SpaceListView.setParams === "function") {
@@ -303,7 +170,6 @@ var SpaceComponent = new (function () {
         }
         mThis.SpaceListView.showPage(d);
     };
-
     mThis.bindSpaceFilterListeners = () => {
         if (mThis._spaceFilterListenersBound) {
             return;
