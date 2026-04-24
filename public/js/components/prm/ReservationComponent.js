@@ -99,12 +99,20 @@ var ReservationComponent = (() => {
         {
             transTitle: "titles.Action",
             className: "col_action align-middle",
-            data: (data) => `
-                <div class="d-flex justify-content-center align-items-end">
+            data: (data) => {
+                console.log(444,data.status_id);
+                
+                if(data.status_id > 2){
+                    return '';
+                }
+                return `<div class="d-flex justify-content-center align-items-end">
                     <a href="javascript:void(0)" class="btn--Options btn_reservation_action" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
                        <i class="fa-solid fa-ellipsis-vertical text-black fs-5"></i>
                     </a>
-                </div>`,
+                </div>`;
+            },
+            
+                
         },
     ];
 
@@ -209,28 +217,14 @@ var ReservationComponent = (() => {
             ],
 
             onShow: (me, container) => {
-                const menu = me.getActiveMenus(container);
-                const status_id = Number(container.dataset.statusid);
-
-                if (menu.edit_reservation) {
-                    // Hide if status is 2 or 3
-                    const isBlocked = status_id === 2 || status_id === 3;
-                    menu.edit_reservation.style.display = isBlocked ? "none" : "block";
-                }
-
-                // if (menu.delete_reservation) {
-                    // Hide only if status is 2
-                //     const isBlocked = status_id === 2;
-                //     menu.delete_reservation.style.display = isBlocked ? "none" : "block";
-                // }
+                // const menu = me.getActiveMenus(container);
+                // const status_id = container.dataset.statusid;
+                // menu.edit_reservation.style.display = (status_id >= 2) ? 'none' : 'block';
+               
             },
 
             onClick: (menuLink, id, name) => {
                 switch (name) {
-                    case "change_status": {
-                        mThis.changeStatus(id, menuLink);
-                        break;
-                    }
                     case "edit_reservation": {
                         mThis.editReservation(id, menuLink);
                         break;
@@ -329,7 +323,6 @@ const CreateReservationDialog = (() => {
     let dialog = null;
 
     self.show = (op) => {
-        console.log("DEBUG 1: Opening Dialog with op:", op);
         dialog =
             dialog ||
             new GeneralDialog({

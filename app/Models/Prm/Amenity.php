@@ -50,7 +50,7 @@ class Amenity extends VSModel
                 ->where('name', $inputs['name'])
                 ->exists();
             if($exist){
-                return DV::error('Create failed: This Amenity name already exists');
+                return DV::error('This Amenity name already exists');
             }
         } else {
             // Check duplicate name for update (exclude current id)
@@ -59,7 +59,7 @@ class Amenity extends VSModel
                 ->where('id', '<>', $id)
                 ->exists();
             if($exist){
-                return DV::error('Update failed: Another Amenity with this name already exists');
+                return DV::error('Another Amenity with this name already exists');
             }
         }
         if ($id && self::hasActiveReservation($id)) {
@@ -207,7 +207,7 @@ class Amenity extends VSModel
             ->join('floors as f', 'f.floor_number', '=', 'a.floor_id')
             ->whereRaw($str_search)
             ->whereRaw($str_moreWhere)
-            ->selectRaw("a.id,a.name,a.code,a.description,a.building_id,b.name as building_name,a.floor_id,f.name as floor_number,a.category_id,ac.name as category,a.access_level,a.requires_booking,a.max_capacity,a.status_id,as.name as status,a.updated_at,a.update_user")
+            ->selectRaw("a.id,a.name,a.code,a.description,a.building_id,b.name as building_name,a.floor_id,f.name as floor_number,a.category_id,ac.name as category,a.access_level,a.requires_booking,a.max_capacity,a.is_reserved,a.status_id,as.name as status,a.updated_at,a.update_user")
             ->orderBy('a.id','DESC');
         $clone_query = clone $query;
         $count = $clone_query->count('a.id');
@@ -219,10 +219,12 @@ class Amenity extends VSModel
     }
 
     public static function amenityDetails($id){
-        return DB::table('amenities as a')
+        $row = DB::table('amenities as a')
             ->where('a.id',$id)
-            ->selectRaw('a.id,a.name,a.code,a.building_id,a.floor_id,a.category_id,a.access_level,a.requires_booking,a.max_capacity,a.description,a.status_id')
+            ->selectRaw('a.id,a.name,a.code,a.building_id,a.floor_id,a.category_id,a.access_level,a.requires_booking,a.max_capacity,a.description,a.is_reserved,a.status_id')
             ->first();
+        
+        return $row;
     }
 
     public function getFormOptions($id, $ss = null){
@@ -248,12 +250,9 @@ class Amenity extends VSModel
         $id = $id ?? $this->id;
 
         if (self::hasActiveReservation($id)) {
-            return DV::error('Cannot delete this amenity because it is currently in use (In-Progress reservation).');
-        }
-        $exists = DB::table('reservations')->where('amenity_id', $id)->exists();
-        if ($exists) {
             return DV::error('Cannot delete because it has reservation records.');
         }
+      
         $deleted = DB::table('amenities')->where('id', $id)->delete();
         if($deleted){
             DB::table('maintenances')->where('amenity_id', $id)->delete();
@@ -301,5 +300,26 @@ class Amenity extends VSModel
 
         return $rows;
     }
+   public static function checkAmenityReservation($id, $ss = null)
+{
+    $hasReservation = DB::table('reservations')
+        ->where('amenity_id', $id)
+        ->whereIn('status_id', [1, 2])
+        ->exists();
 
+    if ($hasReservation) {
+        return DV::error('Amenity is currently reserved.');
+    }
+
+    return DV::success();
+}
+public static function hasActiveReservation($amenity_id): bool
+    {
+        return DB::table('reservations')
+            ->where('amenity_id', $amenity_id)
+            ->whereIn('status_id', [1, 2]) 
+            ->exists();
+    
+
+}
 }
