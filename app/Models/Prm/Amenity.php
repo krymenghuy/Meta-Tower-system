@@ -282,6 +282,24 @@ class Amenity extends VSModel
         return DV::depends($x, ['amenity status', 'updated']);
     }
    
+    public static function hasActiveReservation($amenity_id): bool
+    {
+        $rows = DB::table('reservation as r')
+            ->join('reservation_statuses as rs', 'rs.id', '=', 'r.status_id')
+            ->join('tenants as t', 't.id', '=', 'r.tenant_id')
+            ->where('r.amenity_id', $amenity_id)
+            ->whereIn('r.status_id', [1, 2])
+            ->selectRaw('r.id, r.booking_date, r.start_time, r.end_time, r.status_id, rs.name as status, t.name as tenant_name, t.phone_number. r.remarks')
+            ->orderBy('r.booking_date', 'ASC')
+            ->oderBy('r.start_time', 'ASC')
+            ->get();
+
+        foreach ($rows as $row) {
+            $row = setOfficialDates($row, ['booking_date'], [], ['start_time', 'end_time']);
+        }    
+
+        return $rows;
+    }
    public static function checkAmenityReservation($id, $ss = null)
 {
     $hasReservation = DB::table('reservations')
