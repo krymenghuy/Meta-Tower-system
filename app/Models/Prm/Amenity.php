@@ -250,12 +250,9 @@ class Amenity extends VSModel
         $id = $id ?? $this->id;
 
         if (self::hasActiveReservation($id)) {
-            return DV::error('Cannot delete this amenity because it is currently in use (In-Progress reservation).');
-        }
-        $exists = DB::table('reservations')->where('amenity_id', $id)->exists();
-        if ($exists) {
             return DV::error('Cannot delete because it has reservation records.');
         }
+      
         $deleted = DB::table('amenities')->where('id', $id)->delete();
         if($deleted){
             DB::table('maintenances')->where('amenity_id', $id)->delete();
@@ -298,6 +295,13 @@ class Amenity extends VSModel
 
     return DV::success();
 }
+public static function hasActiveReservation($amenity_id): bool
+    {
+        return DB::table('reservations')
+            ->where('amenity_id', $amenity_id)
+            ->whereIn('status_id', [1, 2]) 
+            ->exists();
     
 
+}
 }

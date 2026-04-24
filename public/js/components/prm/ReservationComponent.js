@@ -530,7 +530,7 @@ const CreateReservationDialog = (() => {
                             //     op.tenant_id = me._selectedTenantId;
                             // }
 
-                            // op.tenant_id = me._selectedTenantId;
+                            op.tenant_id = me._selectedTenantId;
                             console.log(123,op);
                             
                             vsapi
