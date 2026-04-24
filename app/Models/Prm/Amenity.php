@@ -207,7 +207,7 @@ class Amenity extends VSModel
             ->join('floors as f', 'f.floor_number', '=', 'a.floor_id')
             ->whereRaw($str_search)
             ->whereRaw($str_moreWhere)
-            ->selectRaw("a.id,a.name,a.code,a.description,a.building_id,b.name as building_name,a.floor_id,f.name as floor_number,a.category_id,ac.name as category,a.access_level,a.requires_booking,a.max_capacity,a.status_id,as.name as status,a.updated_at,a.update_user")
+            ->selectRaw("a.id,a.name,a.code,a.description,a.building_id,b.name as building_name,a.floor_id,f.name as floor_number,a.category_id,ac.name as category,a.access_level,a.requires_booking,a.max_capacity,a.is_reserved,a.status_id,as.name as status,a.updated_at,a.update_user")
             ->orderBy('a.id','DESC');
         $clone_query = clone $query;
         $count = $clone_query->count('a.id');
@@ -219,10 +219,12 @@ class Amenity extends VSModel
     }
 
     public static function amenityDetails($id){
-        return DB::table('amenities as a')
+        $row = DB::table('amenities as a')
             ->where('a.id',$id)
-            ->selectRaw('a.id,a.name,a.code,a.building_id,a.floor_id,a.category_id,a.access_level,a.requires_booking,a.max_capacity,a.description,a.status_id')
+            ->selectRaw('a.id,a.name,a.code,a.building_id,a.floor_id,a.category_id,a.access_level,a.requires_booking,a.max_capacity,a.description,a.is_reserved,a.status_id')
             ->first();
+        
+        return $row;
     }
 
     public function getFormOptions($id, $ss = null){
@@ -283,12 +285,19 @@ class Amenity extends VSModel
         return DV::depends($x, ['amenity status', 'updated']);
     }
    
-    private static function hasActiveReservation($amenity_id): bool
-    {
-        return DB::table('reservations')
-            ->where('amenity_id', $amenity_id)
-            ->whereIn('status_id', [1, 2]) // 1 = Upcoming, 2 = In-Progress
-            ->exists();
+   public static function checkAmenityReservation($id, $ss = null)
+{
+    $hasReservation = DB::table('reservations')
+        ->where('amenity_id', $id)
+        ->whereIn('status_id', [1, 2])
+        ->exists();
+
+    if ($hasReservation) {
+        return DV::error('Amenity is currently reserved.');
     }
+
+    return DV::success();
+}
+    
 
 }
