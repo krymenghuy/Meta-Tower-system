@@ -224,6 +224,7 @@ var SpaceComponent = new (function () {
                     cssClass: "border-bottom pb-2",
                     name: "view_booking"
                 },
+               
             ],
             // adjustPosition: {
             //     top: -200,

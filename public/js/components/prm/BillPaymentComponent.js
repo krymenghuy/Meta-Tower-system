@@ -512,9 +512,19 @@ const BillPaymentDialog = (() => {
                     amountInput.addEventListener('input', me._amountHandler);
                 }
 
+                
                 // if (me.controls.note) {
                 //     me.controls.note.value = data?.bill_details?.note || '';
                 // }
+
+                if (me.controls.payment_date && !me.controls.payment_date.value) {
+                    const now = new Date();
+                    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+                    const day = String(now.getDate()).padStart(2, '0');
+                    const month = months[now.getMonth()];
+                    const year = now.getFullYear();
+                    me.controls.payment_date.value = `${day}-${month}-${year}`;
+                }
             },
 
             buttons: [

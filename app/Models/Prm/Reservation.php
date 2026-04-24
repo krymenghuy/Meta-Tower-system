@@ -235,9 +235,9 @@ public function upsert($arr = [], $id = null, $ss = null){
         if ($status_id == 2) {
             return DV::error('Cannot delete an in-progress reservation.');
         }
-        if ($status_id == 3) {
-       return DV::error('Cannot delete a completed reservation.');
-        }
+        // if ($status_id == 3) {
+        // return DV::error('Cannot delete a completed reservation.');
+        // }
         $deleted = DB::table('reservations')->where('id', $id)->delete();
         return $deleted ? DV::depends($deleted,['action'=>'deleted']) : DV::error('Delete failed.');
     }
