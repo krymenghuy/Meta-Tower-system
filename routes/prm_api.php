@@ -248,6 +248,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('amenity')->gr
     Route::post('/delete', [AmenityController::class, 'deleteAmenity']);
     Route::post('/update-status', [AmenityController::class, 'updateAmenityStatus']);
     Route::post('/options-amenity-info', [AmenityController::class, 'option_select_all_amenity_info']);
+    Route::post('/active-reservations', [AmenityController::class, 'hasActiveReservations']);
 });
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('reservation')->group(function () {

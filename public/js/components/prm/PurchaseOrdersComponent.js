@@ -554,7 +554,7 @@ var PurchaseOrdersComponent = (() => {
                     click: (me) => {
                         me.saveData(res => {
                             if (res.status_code == 200) {
-                                cv_interact.success("New purchase order has been added successfully");
+                                cv_interact.success("New purchase order has been added successfully.");
                                 me.hide(true);
                                 mThis.PoListView.showPage(mThis.getFilterData());
                             } else {

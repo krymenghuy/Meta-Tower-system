@@ -228,11 +228,17 @@ var AmenityComponent = (() => {
                     cssClass: "border-bottom pb-2",
                     name: "finish_maintenance",
                 },
-                 {
+                {
                     html: '<span class="ps-2"  vslang="titles.Change Status">Change Status</span>',
                     icon: `<i class="fa fa-exchange fs-5 text-success"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "change_status",
+                },
+                {
+                    html: '<span class="ps-2"  vslang="titles.View Reservation">View Reservation</span>',
+                    icon: `<i class="fa fa-exchange fs-5 text-success"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "view_reservation",
                 },
             ],
             onShow: (me, container) => {
@@ -245,11 +251,16 @@ var AmenityComponent = (() => {
                 menu.finish_maintenance.style.display = status_id == 3 ? 'block' : 'none';
                 menu.set_maintenance.style.display = status_id != 3 ? 'block' : 'none';
                 menu.change_status.style.display = status_id != 3 ? 'block' : 'none';
+                menu.view_reservation.style.display = 'block';
                 // menu.set_maintenance.style.display = (!isMaintenance && status_id === 3) ? 'block' : 'none';
             },
 
             onClick: (menuLink, id, name) => {
                 switch (name) {
+                    case "view_reservation": {
+                        mThis.viewReservation(id, menuLink);
+                        break;
+                    }
                     case "change_status": {
                         mThis.changeStatus(id, menuLink);
                         break;
@@ -432,6 +443,15 @@ var AmenityComponent = (() => {
         };
         InputBox.show(inputOptions);
     };
+    mThis.viewReservation = (id, menuLink) => {
+        const tr = menuLink?.closest("tr");
+        amenityReservationDialog.show({
+            amenity_id: id,
+            amenity_name: tr?.querySelector('.text-prm-custom')?.innerText || '',
+            btn: menuLink,
+        });
+    };
+    
 
     mThis.prepareFormOptions = (onFinish) => {
         vsapi
@@ -644,4 +664,43 @@ const AmenityDialog = (() => {
     };
 
     return self;
+
 })();
+
+
+const AmenityReservationDialog = (() => {
+    const self = {};
+
+    const statusBadge = (status_id, status) => {
+        const map = {
+            1: 'border-info text-info bg-info-subtle',
+            2: 'border-warning text-warning bg-waning-subtle',
+        };
+        const cls = map[status_id] || 'border-secondary text-secondary bg-secondary-subtle';
+        return `<span class = "badge border ${cls} px-2 py-1 text-capitalize">${status ?? ''}</span>`;
+    };
+
+    const to12h = (hhmm) => {
+        if(!hhmm) return '';
+        const [h, m] = String(hhmm).trim().split(':').map(Number);
+        const ampm = h < 12 ? 'AM' : 'PM';
+        const h12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
+        return `${h12}:${String(m).padStart(2, '0')} ${ampm}`;
+    };
+
+    const rederRows = (rows) => {
+        if (!rows || rows.length === 0) {
+            return `<tr><td colspan = "5" class = "text-center text-muted py-4">No upcoming or in-progress reservation.</td></tr>`;
+        }
+        return rows.map(r => `
+            <tr>
+                <td class = "align-middle">
+                    <span class="d-block text-prm-custom">${r.booking_date ?? ''}</span>
+                    <small class="text-muted">${to12h(r.start_time)} - ${to12h(r.end_time)}</small>
+                </td>
+                <td class = "align-middle">
+                    <span class="   
+            
+        `)
+    }
+})
