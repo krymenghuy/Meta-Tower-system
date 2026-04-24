@@ -192,9 +192,6 @@ var SpaceComponent = new (function () {
         mThis.tblBuildingSpace = mThis.SpaceListView.getTable();
         mThis.initDropdownMenus(mThis.tblBuildingSpace);
 
-
-
-
         mThis.bindSpaceFilterListeners();
 
         mThis.elSearch.addEventListener('keyup', (e) => {
@@ -1104,7 +1101,7 @@ const ViewBookingDialog = (() => {
     let dialog = null;
     self.show = (op) => {
         console.log(12345,op);
-        
+
         dialog = dialog ||
             new GeneralDialog({
                 cssClass: "modal-lg modal-content-vs-dialog",
@@ -1207,7 +1204,7 @@ const ViewBookingDialog = (() => {
                             me.hide(false);
                         },
                     },
-                   
+
                 ],
                 prepareFormOptions: {
                     createTitle: "Booking Details",
