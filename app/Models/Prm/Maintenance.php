@@ -122,12 +122,18 @@ class Maintenance extends VSModel
     }
 
     $input = $res->values;
-    $startDate = $input['start_date'];
-    $endDate   = $input['end_date'];
-    $startTime = $input['start_time'] ?? '00:00';
-    $endTime   = $input['end_time'] ?? '00:00';
+    $startDateTime = $input['start_date'];
+    $endDateTime   = $input['end_date'];
+
+    $startDate = date('Y-m-d', strtotime($startDateTime));
+    $endDate   = date('Y-m-d', strtotime($endDateTime));
+
+    $startTime = date('H:i', strtotime($startDateTime));
+    $endTime   = date('H:i', strtotime($endDateTime));
+
     $today = date('Y-m-d');
     $nowTime = date('H:i');
+
     if ($startDate < $today) {
         return DV::error('Start date cannot be in the past.');
     }
@@ -137,9 +143,12 @@ class Maintenance extends VSModel
     if ($startDate > $endDate) {
         return DV::error('Start date must be before end date.');
     }
+
+    
     if ($startDate === $endDate && $startTime >= $endTime) {
         return DV::error('For same day maintenance, start time must be before end time.');
     }
+
     if ($startDate === $today && $startTime < $nowTime) {
         return DV::error('Start time cannot be in the past.');
     }
@@ -237,7 +246,7 @@ class Maintenance extends VSModel
         if ($search_value) {
             $skip_rows = 0;
             $search_value = escape_like_str($search_value);
-            $str_search = "(b.name LIKE '%" .$search_value ."%' OR bs.code LIKE '%" .$search_value ."%' OR a.code LIKE '%" .$search_value ."%')";
+            $str_search = "(bs.code LIKE '%" .$search_value ."%' OR a.code LIKE '%" .$search_value ."%')";
         }
         if ($building_id) {
             $str_moreWhere .= ' AND m.building_id = ' . $building_id;
@@ -286,7 +295,8 @@ class Maintenance extends VSModel
 
     public static function getMaintenanceDetails($id)
     {
-        $row = DB::table('maintenances as m')
+         
+           $row = DB::table('maintenances as m')
             ->join('buildings as b', 'b.id', '=', 'm.building_id')
             ->leftJoin('building_spaces as bs', 'bs.id', '=', 'm.space_id')
             ->leftJoin('amenities as a', 'a.id', '=', 'm.amenity_id')
@@ -301,6 +311,8 @@ class Maintenance extends VSModel
                 'ms.name as status_name'
             ])
             ->first();
+          
+            
 
         if ($row) {
             self::applyScheduleDerivedStatus($row);
