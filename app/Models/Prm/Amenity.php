@@ -50,7 +50,7 @@ class Amenity extends VSModel
                 ->where('name', $inputs['name'])
                 ->exists();
             if($exist){
-                return DV::error('Create failed: This Amenity name already exists');
+                return DV::error('This Amenity name already exists');
             }
         } else {
             // Check duplicate name for update (exclude current id)
@@ -59,7 +59,7 @@ class Amenity extends VSModel
                 ->where('id', '<>', $id)
                 ->exists();
             if($exist){
-                return DV::error('Update failed: Another Amenity with this name already exists');
+                return DV::error('Another Amenity with this name already exists');
             }
         }
 
