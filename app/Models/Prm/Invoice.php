@@ -202,6 +202,7 @@ class Invoice extends VSModel
 
         $invoice_id     = (int)($data['invoice_id'] ?? 0);
         $remarks        = trim($data['remarks'] ?? '');
+        $price_penal    = (float)($data['price_penal'] ?? 0); // penalty per day from frontend
         $pmt_breakdowns = $data['pmt_breakdowns'] ?? $data['payment_breakdown'] ?? [];
 
         if ($invoice_id <= 0) {
@@ -224,14 +225,47 @@ class Invoice extends VSModel
                 throw new \Exception('Invoice is already fully paid.');
             }
 
-            $total_received = array_sum(array_column($pmt_breakdowns, 'amount'));
+            // ── Calculate Penalty ──────────────────────────────────────────
+            $penalty   = 0;
+            $days_late = 0;
+            $today     = \Carbon\Carbon::now('Asia/Phnom_Penh')->startOfDay();
+            $due_date  = \Carbon\Carbon::parse($invoice->due_date)->startOfDay(); // raw DB value
 
+            if ($today->greaterThan($due_date) && $price_penal > 0) {
+                $days_late = $due_date->diffInDays($today); // today - due_date
+                $penalty   = $days_late * $price_penal;     // days * price per day
+            }
+            // ──────────────────────────────────────────────────────────────
+
+            \Log::info("Penalty calculation", [
+                'invoice_id'  => $invoice_id,
+                'due_date'    => $due_date->toDateString(),
+                'today'       => $today->toDateString(),
+                'days_late'   => $days_late,
+                'price_penal' => $price_penal,
+                'penalty'     => $penalty,
+            ]);
+
+            $invoice_amount      = (float)$invoice->amount;
+            $already_paid        = (float)$invoice->paid_amount;
+            $total_received      = array_sum(array_column($pmt_breakdowns, 'amount'));
+            $current_balance_due = ($invoice_amount - $already_paid) + $penalty;
+
+            if ($total_received > $current_balance_due) {
+                DB::rollBack();
+                return DV::error('Receive amount must not be greater than due amount. Balance due: $' . number_format($current_balance_due, 2));
+            }
+
+            // ── Save Receipt ───────────────────────────────────────────────
             $receiptData = [
                 'receipt_date'   => now()->toDateString(),
                 'invoice_id'     => $invoice_id,
                 'tenant_id'      => $invoice->tenant_id,
                 'branch_id'      => $ss->branch_id ?? $invoice->branch_id ?? 1,
                 'total_received' => $total_received,
+                'penalty'        => $penalty,
+                'days_late'      => $days_late,
+                'price_penal'    => $price_penal,
                 'remarks'        => $remarks,
                 'create_user'    => $ss->name ?? 'Admin',
                 'create_uid'     => $ss->uid ?? 1,
@@ -242,7 +276,6 @@ class Invoice extends VSModel
                 throw new \Exception('Failed to create receipt.');
             }
 
-            // Generate receipt code
             $codeRes = setOfficialCode(
                 $receiptData['branch_id'],
                 'receipt_code_control',
@@ -253,27 +286,23 @@ class Invoice extends VSModel
                 null
             );
 
-
+            // ── Save Receipt Breakdowns ────────────────────────────────────
             $methodMap = [
-                'cash'          => 'Cash',
-                'bank'          => 'Bank',
-                'card'          => 'Card',
-                'cheque'        => 'Cheque'
+                'cash'   => 'Cash',
+                'bank'   => 'Bank',
+                'card'   => 'Card',
+                'cheque' => 'Cheque',
             ];
+
             $detailRows = [];
             foreach ($pmt_breakdowns as $bd) {
-                $method = $methodMap[strtolower(trim($bd['method'] ?? ''))] ?? 'Cash';
-
-                $bank_id = $bd['bank_id'] ?? null;
+                $method    = $methodMap[strtolower(trim($bd['method'] ?? ''))] ?? 'Cash';
+                $bank_id   = $bd['bank_id'] ?? null;
                 $bank_name = null;
 
                 if ($bank_id) {
-                    $bank_name = DB::table('banks')
-                        ->where('id', $bank_id)
-                        ->value('name');
+                    $bank_name = DB::table('banks')->where('id', $bank_id)->value('name');
                 }
-
-
 
                 $detailRows[] = [
                     'receipt_id'       => $receipt_id,
@@ -283,17 +312,14 @@ class Invoice extends VSModel
                     'currency_code'    => $bd['currency_code'] ?? 'USD',
                     'bank_ref_number'  => $bd['bank_ref_number'] ?? null,
                     'bank_name'        => $bank_name ?? $bd['bank_name'] ?? null,
-
                     'card_number'      => $bd['card_number'] ?? null,
                     'card_type'        => in_array(strtolower($bd['card_type'] ?? ''), ['credit', 'debit'])
                         ? strtolower($bd['card_type'])
                         : null,
-
                     'cheque_number'    => $bd['cheque_number'] ?? null,
-                    'cheque_bank_name' => ($method === 'cheque')
+                    'cheque_bank_name' => ($method === 'Cheque')
                         ? ($bank_name ?? $bd['cheque_bank_name'] ?? null)
                         : null,
-
                     'remarks'          => $bd['remarks'] ?? $remarks,
                     'created_at'       => now(),
                 ];
@@ -303,36 +329,29 @@ class Invoice extends VSModel
                 DB::table('receipt_breakdowns')->insert($detailRows);
             }
 
-
-            // Update invoice payment status
-            $invoice_amount = (float)$invoice->amount;
-            $already_paid   = (float)$invoice->paid_amount;
-            // $current_balance_due = (float)$invoice->due_amount;
-            $current_balance_due = (float)($invoice_amount-$already_paid);
-
-
-            if ($total_received > ($current_balance_due)) {
-                return DV::error("Receive amount must not greater than due amount");
-            }
-
+            // ── Update Invoice ─────────────────────────────────────────────
             $new_paid_amount = $already_paid + $total_received;
-            $new_due_amount  = $invoice_amount - $new_paid_amount;
+            $new_due_amount  = ($invoice_amount + $penalty) - $new_paid_amount;
 
-
-            $payment_status_id = 2;
-
-            if ($new_due_amount == 0) {
-                $payment_status_id = 1;
-            } else if ($new_due_amount < $invoice_amount) {
-                $payment_status_id = 3;
+            if ($new_due_amount < 0) {
+                $new_due_amount = 0;
             }
 
-            $is_paid = ($payment_status_id == 1) ? 1 : 0;
+            $payment_status_id = 2; // unpaid
+            if ($new_due_amount == 0) {
+                $payment_status_id = 1; // fully paid
+            } elseif ($new_paid_amount > 0) {
+                $payment_status_id = 3; // partial
+            }
+
+            $is_paid = ($payment_status_id === 1) ? 1 : 0;
+
             DB::table('invoices')
                 ->where('id', $invoice_id)
                 ->update([
                     'paid_amount'       => $new_paid_amount,
                     'due_amount'        => $new_due_amount,
+                    'penalty'           => $penalty,
                     'is_paid'           => $is_paid,
                     'payment_status_id' => $payment_status_id,
                     'updated_at'        => now(),
@@ -343,12 +362,17 @@ class Invoice extends VSModel
             DB::commit();
 
             return DV::depends(1, [
-                'receipt_id'     => $receipt_id,
-                'code'           => $codeRes->code ?? 'R-' . str_pad($receipt_id, 5, '0', STR_PAD_LEFT),
-                'total_received' => $total_received,
+                'receipt_id'      => $receipt_id,
+                'code'            => $codeRes->code ?? 'R-' . str_pad($receipt_id, 5, '0', STR_PAD_LEFT),
+                'total_received'  => $total_received,
                 'new_paid_amount' => $new_paid_amount,
-                'is_fully_paid'  => (bool)$is_paid
+                'new_due_amount'  => $new_due_amount,
+                'days_late'       => $days_late,
+                'price_penal'     => $price_penal,
+                'penalty'         => $penalty,
+                'is_fully_paid'   => (bool)$is_paid,
             ]);
+
         } catch (\Exception $e) {
             DB::rollBack();
             \Log::error("Receive payment failed: " . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
@@ -374,6 +398,7 @@ class Invoice extends VSModel
         $current_page = max(1, (int)($d->current_page ?? 1));
         $per_page     = max(10, (int)($d->per_page ?? 10));
         $skip         = ($current_page - 1) * $per_page;
+
 
         $query = DB::table('invoices as i')
             ->leftJoin('tenants as t',           't.id',  '=', 'i.tenant_id')
@@ -409,7 +434,10 @@ class Invoice extends VSModel
             ->groupBy('i.id')
             ->orderByDesc('i.id');
 
-        // Filters
+
+
+
+            // Filters
         if (!empty($d->tenant_id)) {
             $query->where('i.tenant_id', $d->tenant_id);
         }
@@ -430,7 +458,14 @@ class Invoice extends VSModel
         $count = (clone $query)->count();
         $rows  = $query->skip($skip)->take($per_page)->get();
 
+        $now = \Carbon\Carbon::now('Asia/Phnom_Penh');
+
         foreach ($rows as $row) {
+            $dueDate = \Carbon\Carbon::parse($row->due_date, 'Asia/Phnom_Penh');
+            if (in_array((int)$row->payment_status_id, [2, 3]) && $dueDate->lessThan($now)) {
+                $row->payment_status_id   = 4;
+                $row->payment_status_name = 'Over Due';
+            }
             $row = setOfficialDates($row, ['due_date', 'invoice_date'], ['updated_at', 'created_at'], []);
         }
 
