@@ -115,7 +115,7 @@ var ContractComponent = new (function () {
                 `;
             }
         },
-         {
+        {
             transTitle: "titles.Status",
             className: "align-middle",
             data: (data) => {
