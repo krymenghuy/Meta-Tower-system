@@ -18,7 +18,7 @@ var BuildingComponent = ( () => {
             className: "align-middle",
             data: (data) => `
                 <div class="d-flex flex-row align-items-center">
-                    <img class="btn-view-member-photo" data-id="${data.id}" src="${data.image_url || `${main_view.base_url}/assets/images/meta/building-default.jfif`}" alt="" style="width: 50px; height: 50px; border-radius: 6px; margin-right: 10px; object-fit: cover;"/>
+                    <!-- <img class="btn-view-member-photo" data-id="${data.id}" src="${data.image_url || `${main_view.base_url}/assets/images/meta/building-default.jfif`}" alt="" style="width: 50px; height: 50px; border-radius: 6px; margin-right: 10px; object-fit: cover;"/> -->
 
                   <div class="d-flex flex-column">
                     <span class="text-prm-custom d-inline-block" style="min-width:150px; ">
@@ -187,7 +187,7 @@ var BuildingComponent = ( () => {
 
             html = `${canAddFloor ? `<div class="rounded-3 p-2 bg-danger-subtle mb-2">
                 <button data-buildingid="${id}" class="btn-add-floor btnAddNewPrm" type="button">
-                    <span class="">${LocaleManager.trans('Add Floor','buttons')}</span>
+                    <span class="">${LocaleManager.trans('New Floor','buttons')}</span>
                 </button>
             </div>` : ''}
             <table class="table table-sm table-hover align-middle tbl_list_floor">
@@ -400,8 +400,8 @@ const BuildingDialog = (() => {
                         </div>
                         <div class="col-6">
                             <div class="material-input outlined">
-                                <input type="number" name="total_space" required class="data-input form-control" data-field="total_space" placeholder=" " />
-                                <label style="color:#777777;padding-left:6px;">Total Spaces</label>
+                                <input type="number" name="total_space"  class="data-input form-control" data-field="total_space" placeholder=" " />
+                                <label style="color:#777777;padding-left:6px;">Total Spaces (Optional)</label>
                             </div>
                         </div>
                         <div class="col-12">
@@ -427,6 +427,15 @@ const BuildingDialog = (() => {
                         return { id: op.id };
                     },
                 },
+            },
+            onShow: (me) => {
+                const title = me.divModal.querySelector('.modal-title');
+                if (title) {
+                    const isModify = !!me.dataOptions?.id;
+                    title.innerHTML = isModify
+                        ? '<h4 class="text-prm-custom text-start fw-bold">Modify Building</h4>'
+                        : '<h4 class="text-prm-custom text-start fw-bold">Create Building</h4>';
+                }
             },
             onPrepareForm: (me, data) => {
                const isReadOnly = me.dataOptions.id > 0;
@@ -511,13 +520,16 @@ const CreateFloorDialog = (() => {
                     params: (op) => ({ id: op.id, building_id: op.building_id }),
                 },
             },
-           onPrepareForm: (me) => {
-                const header = me.divModal.querySelector('.modal-header');
-                if (header) {
-                    const btnClose = header.querySelector('button');
-                    if(btnClose) btnClose.classList.add('d-none');
+            onShow: (me) => {
+                const title = me.divModal.querySelector('.modal-title');
+                if (title) {
+                    const isModify = !!me.dataOptions?.id;
+                    title.innerHTML = isModify
+                        ? '<h4 class="text-prm-custom text-start fw-bold">Modify Floor</h4>'
+                        : '<h4 class="text-prm-custom text-start fw-bold">New Floor</h4>';
                 }
-
+            },
+           onPrepareForm: (me) => {
                 const floorNumber = me.divModal.querySelector('[data-field="floor_number"]');
                 const floorName = me.divModal.querySelector('[data-field="name"]');
                 const isCreate = !(me.dataOptions?.id > 0);

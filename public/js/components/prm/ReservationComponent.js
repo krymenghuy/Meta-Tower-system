@@ -350,24 +350,14 @@ const CreateReservationDialog = (() => {
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-6">
-                                <div class="material-input outlined">
-                                    <select data-style="material" name="amenity_category"  class="data-input form-control" data-field="category_id"  placeholder="Amenity Category"  >
-                                    </select>
-                                </div>
-                            </div>
+                            
                             <div class="col-6">
                                 <div class="material-input outlined">
                                     <input type="text" class="data-input form-control" data-field="amenity_code" placeholder=" " disabled />
                                     <label style="color:#777777;padding-left:6px;" for="amenity">Amenity Code</label>
                                 </div>
                             </div>
-                            <div class="col-6">
-                                <div class="material-input outlined " >
-                                    <input type="text" class="data-input form-control" data-field="amenity_capacity" placeholder=" " disabled />
-                                    <label style="color:#777777;padding-left:6px;" for="amenity">Max Occupancy</label>
-                                </div>
-                            </div>
+                           
                             <div class="col-6">
                                 <div class="material-input outlined">
                                     <input type="text" data-type="date" name="booking_date" required class="data-input form-control form_input" data-field="booking_date" />
@@ -440,12 +430,7 @@ const CreateReservationDialog = (() => {
                         textField: "amenity",
                         valueField: "id",
                     },
-                    {
-                        name: "category_id",
-                        data: "amenity_categories",
-                        textField: "amenity_category",
-                        valueField: "id",
-                    },
+                    
                     {
                         name: "reservation_statuses",
                         data: "reservation_statuses",
@@ -472,40 +457,23 @@ const CreateReservationDialog = (() => {
 
 
                 onPrepareForm: (me, data) => {
-                    LocaleManager.translateZone(me.divModal);
                     const details = data?.reservation_details || {};
                     const amenitySelect = me.divModal.querySelector('[data-field="amenity_id"]');
-                    const categorySelect = me.divModal.querySelector('[data-field="category_id"]');
                     const applyAmenityData = (amenityId) => {
-                        const amenities = Array.isArray(data?.amenities) ? data.amenities: [];
-                        const selected = amenities.find((item) => String(item.id) === String(amenityId));
-
-
-                        const codeInput = me.divModal.querySelector('[data-field="amenity_code"]');
-                        const capacityInput = me.divModal.querySelector('[data-field="amenity_capacity"]');
-                        const categoryInput = me.divModal.querySelector('[data-field="category_id"]');
-                        if (codeInput)
-                            codeInput.value = selected?.amenity_code ?? "";
-                        if (capacityInput)
-                            capacityInput.value = selected?.max_capacity ?? "";
-                        console.log(7777,categoryInput.value = selected?.category_id ?? "");
-                        if (categoryInput)
-                            categoryInput.value = selected?.category_id ?? "";
+                    const amenities = Array.isArray(data?.amenities) ? data.amenities: [];
+                    const selected = amenities.find((item) => String(item.id) === String(amenityId));
+                    const codeInput = me.divModal.querySelector('[data-field="amenity_code"]');
+                    if (codeInput)
+                        codeInput.value = selected?.amenity_code ?? "";
                     };
 
                     amenitySelect.onchange = (e) => applyAmenityData(e.target.value);
-
-                    // Manual Force-Fill for Modify Mode
                     if (me.dataOptions.id > 0) {
                         setTimeout(() => {
-                            if (details.category_id) {
-                                categorySelect.value = details.category_id;
-                            }
                             if (details.amenity_id) {
                                 amenitySelect.value = details.amenity_id;
                                 applyAmenityData(details.amenity_id);
                             }
-                            $(categorySelect).trigger("change");
                             $(amenitySelect).trigger("change");
                         }, 500);
                     }
