@@ -68,6 +68,10 @@ public function upsert($arr = [], $id = null, $ss = null){
         if (strtotime($d->start_time) >= strtotime($d->end_time)) {
             return DV::error('End time must be greater than start time.');
         }
+        if ((strtotime($d->end_time) - strtotime($d->start_time)) < 1800) {
+            return DV::error('Reservation must be at least 30 minutes.');
+        }
+     
         if ($d->amenity_id && $d->booking_date && $d->start_time && $d->end_time) {
             $exists = self::where('amenity_id', $d->amenity_id)
                 ->where('booking_date', $d->booking_date)
@@ -106,7 +110,11 @@ public function upsert($arr = [], $id = null, $ss = null){
     }
 
         $id = DBX::saveData($ss, 'reservations', ['id'=>$id], $inputs, [], 1);
-
+        // if($id){
+        //     DB::table('amenities')
+        //     ->where('id', $d->amenity_id)
+        //     ->update(['is_reserved' => 1]);
+        // }
         if($id > 0){
             return DV::depends(1, ['reservations'=>$inputs, 'id'=>$id]);
         }
@@ -213,7 +221,7 @@ public function upsert($arr = [], $id = null, $ss = null){
             return $row;
     }
 
-    public static function getFormOptions($id,$ss)
+    public static function getFormOptions($id,$ss)  
     {
         $ss = $ss ? $ss : $this->userInfo;
         $reservation_details = $id ? self::reservationDetails($id) : null;
@@ -235,10 +243,11 @@ public function upsert($arr = [], $id = null, $ss = null){
         if ($status_id == 2) {
             return DV::error('Cannot delete an in-progress reservation.');
         }
-        if ($status_id == 3) {
-       return DV::error('Cannot delete a completed reservation.');
-        }
+        // if ($status_id == 3) {
+        // return DV::error('Cannot delete a completed reservation.');
+        // }
         $deleted = DB::table('reservations')->where('id', $id)->delete();
+        
         return $deleted ? DV::depends($deleted,['action'=>'deleted']) : DV::error('Delete failed.');
     }
 

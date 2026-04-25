@@ -38,7 +38,8 @@ var ContractComponent = new (function () {
             transTitle: "titles.Start Date",
             className: "align-middle",
             data: (data, index, tr) => {
-                const displayDate = (data.last_renewal_date && data.last_renewal_date.trim()) ? data.last_renewal_date : (data.start_date ?? '');
+                // const displayDate = (data.last_renewal_date && data.last_renewal_date.trim()) ? data.last_renewal_date : (data.start_date ?? '');
+                const displayDate = data.start_date ?? '';
                 return `<small class="px-2 py-2 bg-body-secondary text-nowrap text-muted rounded-2"><i class="fa-regular fa-clock"></i> ${displayDate}</small>`;
             }
         },
@@ -108,7 +109,7 @@ var ContractComponent = new (function () {
             className: "align-middle",
             data: (data, index, tr) => {
                 return `
-                    <div class="text-prm-custom">
+                    <div class="text-prm-custom text-capitalize">
                         <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ?? 'N/A'}</span>
                     </div>
                 `;
@@ -141,14 +142,14 @@ var ContractComponent = new (function () {
                     dot  = 'bg-danger';
                 }
                 else if (status === 'terminated') {
-                    cls  = 'badge border border-dark text-white bg-dark';
+                    cls  = 'badge border border-danger text-danger bg-danger-subtle';
                     icon = 'fa-regular fa-circle-xmark';
-                    dot  = 'bg-dark';
+                    dot  = 'bg-danger';
                 }
 
                 const statusLabel = (status === 'terminated') ? 'Terminated' : (data.status ?? '');
                 return `
-                    <span class="${cls} px-3 py-2 d-inline-flex align-items-center gap-2"
+                    <span class="${cls}"
                         style="min-width:110px"
                         data-status_id="${data.status_id}">
                         <i class="${icon}" style="font-size:13px;"></i>
@@ -432,7 +433,7 @@ var ContractComponent = new (function () {
                 },
                 {
                     html: '<span class="ps-2 " vslang="titles.Renew Contract"></span>',
-                    icon: `<i class="fa-solid fa-arrows-rotate fs-5 text-prm-custom"></i>`,
+                    icon: `<i class="fa-solid fa-arrow-up-right-from-square fs-5 text-prm-custom"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "renew_contract"
                 },
@@ -780,16 +781,6 @@ const ContractDialog = (() => {
         const parsed = new Date(raw);
         return Number.isNaN(parsed.getTime()) ? null : parsed;
     };
-    const hasAtLeastOneMonth = (startDate, endDate) => {
-        const monthsDiff =
-            (endDate.getFullYear() - startDate.getFullYear()) * 12 +
-            (endDate.getMonth() - startDate.getMonth());
-
-        if (monthsDiff > 1) return true;
-        if (monthsDiff < 1) return false;
-
-        return endDate.getDate() >= startDate.getDate();
-    };
 
     self.show = (op) => {
         dialog = dialog || new GeneralDialog({
@@ -878,7 +869,7 @@ const ContractDialog = (() => {
                 </div>
                  <div class="col-12 mt-3">
                         <div class="material-input outlined">
-                            <textarea class="data-input form-control" data-field="remarks" placeholder=" "></textarea>
+                            <textarea name="remarks" class="data-input form-control" data-field="remarks" placeholder=" "></textarea>
                             <label style="color:#777777;padding-left:6px;">Remark</label>
                         </div>
                     </div>
@@ -1083,24 +1074,15 @@ const ContractDialog = (() => {
                         op.tenant_id = me.tenant_id;
                         op.id = me.dataOptions.id;
                         op.tenant_id = me.tenant_id;
-                        const startDate = parseDateInput(op.start_date);
-                        const endDate = parseDateInput(op.end_date);
-                        if (op.start_date && op.end_date && startDate && endDate && startDate >= endDate) {
-                            cv_interact.error("Start date must be before end date");
-                            return;
-                        }
-                        if (op.start_date && op.end_date && startDate && endDate && !hasAtLeastOneMonth(startDate, endDate)) {
-                            cv_interact.error("Duration between start date and end date must be at least 1 month");
-                            return;
-                        }
+                     
                         console.log(123,op);
                         vsapi.call([main_view.base_url, "/prm/contract/save",].join(""), op, btn, null).then((res) => {
                             if (res.status_code === 200) {
                                 me.hide(true, op);
                                 if (me.dataOptions.id > 0) {
-                                    cv_interact.success("Contract has been updated successfully");
+                                    cv_interact.success("Contract has been updated successfully.");
                                 } else {
-                                    cv_interact.success("New contract has been added successfully");
+                                    cv_interact.success("New contract has been added successfully.");
                                 }
                             } else {
                                 cv_interact.error(res.error_message);
@@ -1319,7 +1301,8 @@ const RenewDialog = (() => {
                         det.price != null && det.price !== "" ? det.price : "";
                 }
                 // Renew period starts the same calendar day as the current contract end_date.
-                const renewStartIso = det.end_date || "";
+                const renewStartIso = det.renew_start_date || "";
+                
                 if (me.controls.start_date) {
                     me.controls.start_date.value = renewStartIso;
                 }
@@ -1401,30 +1384,7 @@ const RenewDialog = (() => {
                         delete op.old_contract_start;
                         delete op.old_contract_end;
                         delete op.old_contract_price;
-                        op.id = me.dataOptions.id; // existing contract id
-                        const startDate = new Date(op.start_date);
-                        const endDate = new Date(op.end_date);
-                        if (
-                            op.start_date &&
-                            op.end_date &&
-                            !Number.isNaN(startDate.getTime()) &&
-                            !Number.isNaN(endDate.getTime()) &&
-                            startDate >= endDate
-                        ) {
-                            cv_interact.error("Start date must be before end date");
-                            return;
-                        }
-                        if (
-                            op.start_date &&
-                            op.end_date &&
-                            !Number.isNaN(startDate.getTime()) &&
-                            !Number.isNaN(endDate.getTime()) &&
-                            !hasAtLeastOneMonth(startDate, endDate)
-                        ) {
-                            cv_interact.error("Duration between start date and end date must be at least 1 month");
-                            return;
-                        }
-
+                        op.id = me.dataOptions.id;
                         vsapi.call([main_view.base_url, "/prm/contract/renew"].join(""), op, btn, null)
                             .then((res) => {
                                 if (res.status_code === 200) {

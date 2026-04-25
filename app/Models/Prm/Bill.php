@@ -3,11 +3,11 @@
 namespace App\Models\Prm;
 
 use App\Models\Prm\GeneralSettings;
-use DV;
+use Vsd\Response\DV;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
-use DBX;
-use XPublicStorage;
+use Vsd\Database\DBX;
+use Vsd\Storage\PublicStorage as XPublicStorage;
 use Log;
 
 class Bill
@@ -37,15 +37,15 @@ class Bill
     $ref_no_char = ['@', '.', '-', '_'];
 
     $v_rule = [
-        'expense_type_id' => '1|number|exists=expense_categories.id',
-        'ref_no'          => '1|string|0-25',
         'vendor_id'       => '1|number|exists=vendors.id',
         'bill_date'       => '1|date',
         'due_date'        => '1|date',
+        'ref_no'          => '1|string|0-25',
+        'expense_type_id' => '1|number|exists=expense_categories.id|Please select category.',
         'total_amount'    => '1|number|min=0',
         'remark'          => '0|string|0-255',
         'photo'           => '0|string',
-        'ext'             => '0|string',
+        'ext'             => '0|string|in=jpg,jpeg,png',
     ];
 
     $res = DBX::validateObject($arr,$v_rule,1,['photo'  => GeneralSettings::$image_chars,'remark' => $remark_char,'ref_no' => $ref_no_char],$ss->lang);
@@ -59,7 +59,7 @@ class Bill
     $dueDate  = strtotime($inputs['due_date']);
 
     if ($dueDate < $billDate) {
-        return DV::error('Due date cannot be before bill date.');
+        return DV::error('Due date cannot be before invoice date.');
     }
     unset($inputs['photo'], $inputs['ext']);
     $total = floatval($inputs['total_amount'] ?? 0);
@@ -88,7 +88,7 @@ class Bill
             ->exists ();
 
         if ($exists) {
-            return DV::error('Reference number already exists');
+            return DV::error('Reference number already exists.');
         }
     }
     
@@ -296,7 +296,7 @@ class Bill
             'png'  => 'image/png',
             'jpg'  => 'image/jpeg',
             'jpeg' => 'image/jpeg',
-            'pdf'  => 'application/pdf',
+            // 'pdf'  => 'application/pdf',
         ];
         $mimeType = $mimeTypes[$ext] ?? 'application/octet-stream';
 

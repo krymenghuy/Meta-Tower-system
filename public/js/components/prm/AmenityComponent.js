@@ -102,12 +102,15 @@ var AmenityComponent = (() => {
         {
             title: "Action",
             className: "col_action align-middle text-nowrap",
-            data: (data) => `
-                <div class="d-flex justify-content-center align-items-end">
-                    <a href="javascript:void(0)" class="btn--Options btn_amenity_action" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
+            data: (data) => {
+                
+                return `<div class="d-flex justify-content-center align-items-end">
+                    <a href="javascript:void(0)" class="btn--Options btn_amenity_action" data-id="${data.id}" data-statusid="${data.status_id}" data-isreserved="${data.is_reserved}" aria-haspopup="true" aria-expanded="false">
                        <i class="fa-solid fa-ellipsis-vertical text-black fs-5"></i>
                     </a>
-                </div>`,
+                </div>`;
+            },
+                
         },
     ];
 
@@ -125,6 +128,7 @@ var AmenityComponent = (() => {
                 tr.dataset.statusid = data.status_id;
                 tr.dataset.buildingid = data.building_id ?? "";
                 tr.dataset.floorid = data.floor_id ?? "";
+                tr.dataset.isreserved = data.is_reserved ?? "";
                 tr.classList.add("amenity");
                 tr.setAttribute("id", `amenity_id${data.id}`);
             },
@@ -224,7 +228,7 @@ var AmenityComponent = (() => {
                 },
                 {
                     html: '<span class="ps-2" vslang="titles.Finish">Finish</span>',
-                    icon: '<i class="fa-solid fa-screwdriver-wrench fs-5 text-prm-custom"></i>',
+                    icon: '<i class="fa-solid fa-clipboard-check fs-5 text-success"></i>',
                     cssClass: "border-bottom pb-2",
                     name: "finish_maintenance",
                 },
@@ -284,6 +288,7 @@ var AmenityComponent = (() => {
         const tr = menuLink?.closest("tr");
         const buildingId = tr?.dataset?.buildingid || null;
         const floorId = tr?.dataset?.floorid || null;
+        const isReserved = tr?.dataset?.isreserved || null;
         let op = {
             id: id,
             data: {
@@ -294,12 +299,14 @@ var AmenityComponent = (() => {
             onClose: () =>
                 mThis.AmenityListView.showPage(mThis.getFilterData()),
         };
+        
         AmenityDialog.show(op);
     };
 
-    mThis.setMaintenance = (id, menuLink) => {
+    mThis.setMaintenance = async (id, menuLink) => {
         const tr = menuLink?.closest("tr");
         const buildingId = tr?.dataset?.buildingid || null;
+
         const op = {
             amenity_id: id,
             building_id: buildingId || null,
@@ -307,9 +314,9 @@ var AmenityComponent = (() => {
             onClose: () =>
                 mThis.AmenityListView.showPage(mThis.getFilterData()),
         };
-        if (typeof CreateMaintenanceDialog !== "undefined") {
-            CreateMaintenanceDialog.show(op);
-        }
+        const ok = await mThis.checkActiveReservation(op.amenity_id);
+        if (!ok) return;
+        CreateMaintenanceDialog.show(op);
     };
 
     mThis.finishMaintenance = (id, menuLink) => {
@@ -432,6 +439,20 @@ var AmenityComponent = (() => {
         };
         InputBox.show(inputOptions);
     };
+    mThis.checkActiveReservation = async (amenity_id) => {
+        const res = await vsapi.call(
+            `${main_view.base_url}/prm/amenity/check-amenity-reservation`,
+            { amenity_id },
+            null,
+            null
+        );
+        if (res.status_code == 200) {
+            return true;
+        }
+        cv_interact.error(res.error_message);
+        return false;
+    };
+
 
     mThis.prepareFormOptions = (onFinish) => {
         vsapi
@@ -600,6 +621,9 @@ const AmenityDialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
+
+                    const isReadOnly = me.dataOptions.id > 0;
+                    me.setReadOnly(isReadOnly, ["building_id","code","floor_id"]);
                     me.controls.requires_booking.value = data.amenity_details.requires_booking;
                 },
 

@@ -86,13 +86,14 @@ var MaintenanceComponent = (() => {
                             <span>${end.date}</span>
                     </div>`;
 
-                const timeHtml = (start.time12h || end.time12h)
-                    ? `<div class="d-flex align-items-center justify-content-center gap-1 mt-1 py-1 px-2 rounded small text-muted bg-light" style="font-size:0.8rem;">
+                const timeHtml =
+                    isSameDate && (start.time12h || end.time12h)
+                        ? `<div class="d-flex align-items-center justify-content-center gap-1 mt-1 py-1 px-2 rounded small text-muted bg-light" style="font-size:0.8rem;">
                             <span>${start.time12h || "—"}</span>
                             <i class="fa-solid fa-arrow-right fa-xs" style="opacity:0.7"></i>
                             <span>${end.time12h || "—"}</span>
                     </div>`
-                    : "";
+                        : "";
 
                 return `<div class="d-flex flex-column align-items-center date-cell py-1">
                             ${dateHtml}
@@ -234,9 +235,9 @@ var MaintenanceComponent = (() => {
             cssClass: "bg-white shadow",
             menus: [
                 { html: '<span class="ps-2" vslang="titles.Modify"></span>', icon: '<i class="fa-regular fa-edit fs-5 text-warning"></i>', cssClass: "border-bottom pb-2", name: "modify" },
-                { html: '<span class="ps-2" vslang="titles.Finish"></span>', icon: '<i class="fa-solid fa-flag-checkered fs-5 text-success"></i>', cssClass: "border-bottom pb-2", name: "finish_maintenance" },
-                { html: '<span class="ps-2" vslang="titles.Cancel"></span>', icon: '<i class="fa-solid fa-times-circle fs-5 text-secondary"></i>', cssClass: "border-bottom pb-2", name: "cancel_maintenance" },
-                { html: '<span class="ps-2" vslang="titles.Delete"></span>', icon: '<i class="fa-regular fa-trash-can fs-5 text-danger"></i>', cssClass: "border-bottom pb-2", name: "delete" }
+                { html: '<span class="ps-2" vslang="titles.Delete"></span>', icon: '<i class="fa-regular fa-trash-can fs-5 text-danger"></i>', cssClass: "border-bottom pb-2", name: "delete" },
+                { html: '<span class="ps-2" vslang="titles.Cancel"></span>', icon: '<i class="fa-regular fa-rectangle-xmark fs-5 text-warning-emphasis"></i>', cssClass: "border-bottom pb-2", name: "cancel_maintenance" },
+                { html: '<span class="ps-2" vslang="titles.Finish"></span>', icon: '<i class="fa-solid fa-clipboard-check fs-5 text-success"></i>', cssClass: "border-bottom pb-2", name: "finish_maintenance" },
             ],
             onShow: (me, container) => {
                 const menu = me.getActiveMenus(container);
@@ -489,9 +490,12 @@ const CreateMaintenanceDialog = (() => {
                         amenityRow.style.display = val === "amenity" ? "" : "none";
                     }
                     const fromSpace = !!me.dataOptions?.space_id;
-                    [me.controls?.building_id, me.controls?.type_unit, me.controls?.space_id].forEach(el => {
-                        if (el) el.disabled = fromSpace;
-                    });
+                    const fromAmenity = !!me.dataOptions?.amenity_id;
+                    const lockContext = fromSpace || fromAmenity;
+                    if (me.controls?.building_id) me.controls.building_id.disabled = lockContext;
+                    if (me.controls?.type_unit) me.controls.type_unit.disabled = lockContext;
+                    if (me.controls?.space_id) me.controls.space_id.disabled = lockContext;
+                    if (me.controls?.amenity_id) me.controls.amenity_id.disabled = lockContext;
                     if (me.detail?.start_date && me.controls?.start_date) {
                         const s = String(me.detail.start_date).trim().split(/\s+/);
                         me.controls.start_date.value = s[0] || "";
@@ -512,7 +516,8 @@ const CreateMaintenanceDialog = (() => {
                     click: (me, btn) => {
                         const op = me.getData();
                         op.id = me.dataOptions?.id;
-
+                        console.log(8888,op);
+                        (888, op);
                         if (op.type_unit === 'space') {
                             op.amenity_id = null;
                             if (!op.space_id) {
@@ -533,6 +538,8 @@ const CreateMaintenanceDialog = (() => {
                         if (op.end_date && op.end_time) op.end_date = op.end_date + " " + op.end_time;
                         delete op.start_time;
                         delete op.end_time;
+                        console.log(9999,op);
+                        
                         vsapi.call(`${main_view.base_url}/prm/maintenance/save`, op, btn, null)
                             .then(res => {
                                 if (res.status_code === 200) {

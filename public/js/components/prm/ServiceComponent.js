@@ -439,7 +439,7 @@ const CreateServiceDialog = (() => {
                                     me.hide(true, op);
                                     if (me.dataOptions.id > 0) {
                                         cv_interact.success(
-                                            "Service has been updated successfully"
+                                            "Service has been updated successfully."
                                         );
                                     } else {
                                         cv_interact.success(

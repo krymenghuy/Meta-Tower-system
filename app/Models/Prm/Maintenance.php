@@ -15,11 +15,6 @@ class Maintenance extends VSModel
     protected $userInfo = null;
     protected $table = 'maintenances';
 
-    /**
-     * Planned (1) / In Progress (2) from schedule window vs current time.
-     * Before start -> 1, from start onwards -> 2.
-     * Completed (3) must be set manually via finish action.
-     */
     public static function computeScheduleStatusId($startDate, $endDate = null): int
     {
         $now = Carbon::now();
@@ -30,10 +25,7 @@ class Maintenance extends VSModel
         return 2;
     }
 
-    /**
-     * Derive space-level maintenance state from active maintenances.
-     * Priority: In Progress (2) > Planned (1) > none (0).
-     */
+
     public static function resolveSpaceMaintenanceStatusId($spaceId)
     {
         $spaceId = $spaceId;
@@ -60,12 +52,6 @@ class Maintenance extends VSModel
         return 0;
     }
 
-    /**
-     * Persist and reflect schedule-derived status when not Completed (3) or Cancelled (4).
-     * Call before setOfficialDates() so date fields are still parseable DB values.
-     *
-
-     */
     public static function applyScheduleDerivedStatus(object $row, $statusIdToName = null): void
     {
         $sid = ($row->status_id ?? 0);
@@ -114,83 +100,132 @@ class Maintenance extends VSModel
         $this->userInfo = $userInfo;
     }
 
-    public function upsert($arr = [], $id = null, $ss = null)
-    {
-        $id = $id ?? $this->id;
-        $ss = $ss ?? $this->userInfo;
+   public function upsert($arr = [], $id = null, $ss = null)
+{
+    $id = $id ?? $this->id;
+    $ss = $ss ?? $this->userInfo;
 
-        $v_rule = [
-            'building_id'          => '1|number|exists=buildings.id',
-            'space_id'             => '0|number|exists=building_spaces.id',
-            'amenity_id'           => '0|number|exists=amenities.id',
-            'start_date'           => '1|TIMESTAMP',
-            'end_date'             => '1|TIMESTAMP',
-            'remarks'              => '0|string|0-255',
-        ];
+    $v_rule = [
+        'building_id' => '1|number|exists=buildings.id',
+        'space_id'    => '0|number|exists=building_spaces.id',
+        'amenity_id'  => '0|number|exists=amenities.id',
+        'start_date'  => '1|TIMESTAMP',
+        'end_date'    => '1|TIMESTAMP',
+        'remarks'     => '0|string|0-255',
+    ];
 
-        $allowed_chars = ['@', ',', '-', '.', '#', '!', '?', '(', ')', "\n"];
-        $res = DBX::validateObject($arr,$v_rule,1,['remarks' => $allowed_chars],$ss->lang ?? 'en',0,null);
-        if ($res->error) {
-            return DV::error($res->error);
+    $allowed_chars = ['@', ',', '-', '.', '#', '!', '?', '(', ')', "\n"];
+
+    $res = DBX::validateObject($arr,$v_rule,1,['remarks' => $allowed_chars],$ss->lang ?? 'en',0,null);
+    if ($res->error) {
+        return DV::error($res->error);
+    }
+
+    $input = $res->values;
+    $startDateTime = $input['start_date'];
+    $endDateTime   = $input['end_date'];
+
+    $startDate = date('Y-m-d', strtotime($startDateTime));
+    $endDate   = date('Y-m-d', strtotime($endDateTime));
+
+    $startTime = date('H:i', strtotime($startDateTime));
+    $endTime   = date('H:i', strtotime($endDateTime));
+
+    $today = date('Y-m-d');
+    $nowTime = date('H:i');
+
+    if ($startDate < $today) {
+        return DV::error('Start date cannot be in the past.');
+    }
+    if ($endDate < $today) {
+        return DV::error('End date cannot be in the past.');
+    }
+    if ($startDate > $endDate) {
+        return DV::error('Start date must be before end date.');
+    }
+
+    
+    if ($startDate === $endDate && $startTime >= $endTime) {
+        return DV::error('For same day maintenance, start time must be before end time.');
+    }
+
+    if ($startDate === $today && $startTime < $nowTime) {
+        return DV::error('Start time cannot be in the past.');
+    }
+    if ($endDate === $today && $endTime < $nowTime) {
+        return DV::error('End time cannot be in the past.');
+    }
+    if (!empty($input['amenity_id'])) {
+        $hasReservation = DB::table('reservations')
+            ->where('amenity_id', $input['amenity_id'])
+            ->where('status_id', '<=', 2) // Upcoming + In Progress
+            ->exists();
+
+        if ($hasReservation) {
+            return DV::error('Cannot schedule maintenance: amenity has active or upcoming reservations.');
         }
-        $input = $res->values;
+    }
 
-        $startAt = Carbon::parse($input['start_date']);
-        $endAt = Carbon::parse($input['end_date']);
-        if ($startAt->greaterThanOrEqualTo($endAt)) {
-            return DV::error(
-                'Start date and time must be before end date and time. Expected format: YYYY-MM-DD hh:mm AM/PM.'
-            );
+   
+    try {
+        $sid = $input['status_id'] ?? 0;
+
+        if (!in_array($sid, [3, 4], true)) {
+            $input['status_id'] = self::computeScheduleStatusId($startDate);
+        }
+    } catch (\Exception $e) {
+    }
+
+    
+    try {
+        $save_id = DBX::saveData($ss, 'maintenances', ['id' => $id], $input, [], 0);
+
+        if (!$save_id) {
+            return DV::error('Failed to save maintenance.');
         }
 
-        $isCreate = !$id;
-        if ($isCreate && $startAt->lt(Carbon::now())) {
-            return DV::error('Start date and time cannot be in the past.');
-        }
+        if (!empty($input['space_id'])) {
 
-        try {
-            $sid = ($input['status_id'] ?? 0);
-            if (!in_array($sid, [3, 4], true)) {
-                $start = $input['start_date'] ?? null;
-                if ($start) {
-                    $input['status_id'] = self::computeScheduleStatusId($start);
-                }
+            $spaceStatus = 0;
+
+            if (($input['status_id'] ?? 0) == 1) {
+                $spaceStatus = 1; // upcoming
+            } elseif (($input['status_id'] ?? 0) == 2) {
+                $spaceStatus = 2; // in maintenance
             }
-        } catch (\Exception $e) {
-            // ignore auto-sync errors
+
+            DB::table('building_spaces')
+                ->where('id', $input['space_id'])
+                ->update(['maintenance_status_id' => $spaceStatus]);
         }
 
-        try {
-            $save_id = DBX::saveData($ss, 'maintenances', ['id' => $id], $input, [], 0);
-            if (!$save_id) {
-                return DV::error('Failed to save maintenance.');
-            }
-            if (!empty($input['space_id'])) {
-                $spaceMaintenanceStatusId = 0;
-                if (($input['status_id'] ?? 0) === 1) {
-                    $spaceMaintenanceStatusId = 1; // upcoming
-                } elseif (($input['status_id'] ?? 0) === 2) {
-                    $spaceMaintenanceStatusId = 2; // in maintenance
-                }
-                DB::table('building_spaces')->where('id', $input['space_id'])->update(['maintenance_status_id' => $spaceMaintenanceStatusId]);
-            }
-            if (!empty($input['amenity_id'])) {
-                $underMaintenanceId = DB::table('amenity_statuses')->whereRaw('LOWER(TRIM(name)) = ?', ['maintenance'])->value('id');
-                if ($underMaintenanceId) {
-                    DB::table('amenities')->where('id', $input['amenity_id'])->update([
+        
+        if (!empty($input['amenity_id'])) {
+
+            $underMaintenanceId = DB::table('amenity_statuses')
+                ->whereRaw('LOWER(TRIM(name)) = ?', ['maintenance'])
+                ->value('id');
+
+            if ($underMaintenanceId) {
+                DB::table('amenities')
+                    ->where('id', $input['amenity_id'])
+                    ->update([
                         'status_id'   => $underMaintenanceId,
                         'update_user' => $ss->full_name ?? 'System',
                         'update_uid'  => $ss->id ?? null,
                         'updated_at'  => getNowTime(),
                     ]);
-                }
             }
-            $message = !$id ? 'Maintenance created successfully' : 'Maintenance updated successfully';
-            return DV::success(['message' => $message]);
-        } catch (\Exception $e) {
-            return DV::error('Error saving maintenance: ' . $e->getMessage());
         }
+
+        return DV::success([
+            'message' => $id ? 'Maintenance updated successfully' : 'Maintenance created successfully'
+        ]);
+
+    } catch (\Exception $e) {
+        return DV::error('Error saving maintenance: ' . $e->getMessage());
     }
+}
 
     public function getMaintenanceList($arr, $ss = null)
     {
@@ -211,7 +246,7 @@ class Maintenance extends VSModel
         if ($search_value) {
             $skip_rows = 0;
             $search_value = escape_like_str($search_value);
-            $str_search = "(b.name LIKE '%" .$search_value ."%' OR bs.code LIKE '%" .$search_value ."%' OR a.code LIKE '%" .$search_value ."%')";
+            $str_search = "(bs.code LIKE '%" .$search_value ."%' OR a.code LIKE '%" .$search_value ."%')";
         }
         if ($building_id) {
             $str_moreWhere .= ' AND m.building_id = ' . $building_id;
@@ -251,7 +286,7 @@ class Maintenance extends VSModel
             if (!empty($row->end_date)) {
                 $row->end_date = Carbon::parse($row->end_date)->format('d-M-Y h:i A');
             }
-            $processed = setOfficialDates($row, ['updated_at'], ['updated_at'], []);
+            $processed = setOfficialDates($row, [''], ['updated_at'], []);
             if ($processed) $row = $processed;
         }
 
@@ -260,7 +295,8 @@ class Maintenance extends VSModel
 
     public static function getMaintenanceDetails($id)
     {
-        $row = DB::table('maintenances as m')
+         
+           $row = DB::table('maintenances as m')
             ->join('buildings as b', 'b.id', '=', 'm.building_id')
             ->leftJoin('building_spaces as bs', 'bs.id', '=', 'm.space_id')
             ->leftJoin('amenities as a', 'a.id', '=', 'm.amenity_id')
@@ -275,10 +311,12 @@ class Maintenance extends VSModel
                 'ms.name as status_name'
             ])
             ->first();
+          
+            
 
         if ($row) {
             self::applyScheduleDerivedStatus($row);
-            // setOfficialDates($row, [], ['updated_at', 'start_date', 'end_date'], []);
+            setOfficialDates($row, [''], ['updated_at', 'start_date', 'end_date'], []);
         }
         return $row;
     }
