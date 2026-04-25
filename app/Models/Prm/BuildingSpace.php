@@ -20,6 +20,22 @@ class BuildingSpace
         $this->id = $id;
         $this->userInfo = $userInfo;
     }
+    public static function updateTotalSpace($building_id)
+{
+    $space_count = DB::table('building_spaces')
+        ->where('building_id', $building_id)
+        ->count();
+
+    $amenity_count = DB::table('amenities')
+        ->where('building_id', $building_id)
+        ->count();
+
+    $total_space = $space_count + $amenity_count;
+
+    DB::table('buildings')
+        ->where('id', $building_id)
+        ->update(['total_space' => $total_space]);
+}
 
     public function saveBuildingSpace($arr = [], $id = null, $ss = null)
     {
@@ -52,16 +68,12 @@ class BuildingSpace
                 ->exists();
             if ($exists) return DV::error('Space code already exists');
         }
-
-
-        // return DV::success('1');
         if ((float) $inputs['price'] <= 0 ){
             return DV::error('Price must be greater than zero.');
         }
         if ((float) $inputs['sqm_size'] <= 0 ){
             return DV::error('Size must be greater than zero.');
         }
-
         $floor = DB::table('floors')
             ->select('floor_number')
             ->where('id', $d->floor_id)
@@ -83,15 +95,7 @@ class BuildingSpace
                     $space_id
                 );
             }
-
-            $total_space = DB::table('building_spaces')
-                ->where('building_id', $d->building_id)
-                ->count();
-
-            DB::table('buildings')
-                ->where('id', $d->building_id)
-                ->update(['total_space' => $total_space]);
-
+            self::updateTotalSpace($d->building_id);
             DB::commit();
 
             return DV::depends(1, [
@@ -223,8 +227,7 @@ class BuildingSpace
             }
         }
 
-        $updated_at = DBX::formatTime("bs.updated_at", "updated_at");
-        $selectCols = 'bs.id,bs.building_id,b.name as building_name,bs.code,bs.floor_id,f.name as floor_number,bs.space_type_id,st.name as space_type,bs.sqm_size,bs.price,bs.price_type,bs.status_id,bs.maintenance_status_id,ss.name as status,bs.update_user,' . $updated_at . '';
+        $selectCols = 'bs.id,bs.building_id,b.name as building_name,bs.code,bs.floor_id,f.name as floor_number,bs.space_type_id,st.name as space_type,bs.sqm_size,bs.price,bs.price_type,bs.status_id,bs.maintenance_status_id,ss.name as status,bs.update_user,bs.updated_at';
         $query = DB::table('building_spaces as bs')
             ->join('buildings as b', 'b.id', '=', 'bs.building_id')
             ->join('floors as f', 'f.floor_number', '=', 'bs.floor_id')
@@ -232,12 +235,14 @@ class BuildingSpace
             ->join('space_statuses as ss', 'ss.id', '=', 'bs.status_id')
             ->whereRaw($str_search)
             ->whereRaw($str_moreWhere)
-            ->selectRaw($selectCols);
-        $query->orderByRaw('bs.id desc');
+            ->selectRaw($selectCols)
+            ->orderByRaw('bs.id desc');
         $clone_query = clone $query;
         $count = $clone_query->count('bs.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
-
+        foreach ($rows as $row) {
+            setOfficialDates($row, [''], ['updated_at'], []);
+        }
         $summaryRow = DB::table('building_spaces as bs')
             ->join('buildings as b', 'b.id', '=', 'bs.building_id')
             ->join('floors as f', 'f.floor_number', '=', 'bs.floor_id')

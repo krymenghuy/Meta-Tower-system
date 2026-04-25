@@ -97,6 +97,7 @@ class Amenity extends VSModel
         }
 
         if ($id > 0) {
+            BuildingSpace::updateTotalSpace($d->building_id);
             return DV::depends(1, ['amenities' => $inputs, 'id' => $id]);
         }
         return DV::error('Error saving Amenity...!');
@@ -130,8 +131,8 @@ class Amenity extends VSModel
 
         // $fullCode = $prefixLetters . '-' . $floorPrefix . '-R' . $roomNumber;
         // $fullCode = $floorPrefix . '-R-' . $roomNumber;
-        // $fullCode = 'AMN-' . $roomNumber;
-        $fullCode = $roomNumber;
+        $fullCode = 'A-' . $roomNumber;
+        // $fullCode = $roomNumber;
 
         DB::table('amenities')
             ->where('id', $amenity_id)
@@ -208,6 +209,7 @@ class Amenity extends VSModel
             ->whereRaw($str_search)
             ->whereRaw($str_moreWhere)
             ->selectRaw("a.id,a.name,a.code,a.description,a.building_id,b.name as building_name,a.floor_id,f.name as floor_number,a.category_id,ac.name as category,a.access_level,a.requires_booking,a.max_capacity,a.is_reserved,a.status_id,as.name as status,a.updated_at,a.update_user")
+            ->orderBy('a.status_id', 'ASC')
             ->orderBy('a.id','DESC');
         $clone_query = clone $query;
         $count = $clone_query->count('a.id');
@@ -282,24 +284,24 @@ class Amenity extends VSModel
         return DV::depends($x, ['amenity status', 'updated']);
     }
    
-    public static function hasActiveReservation($amenity_id): bool
-    {
-        $rows = DB::table('reservation as r')
-            ->join('reservation_statuses as rs', 'rs.id', '=', 'r.status_id')
-            ->join('tenants as t', 't.id', '=', 'r.tenant_id')
-            ->where('r.amenity_id', $amenity_id)
-            ->whereIn('r.status_id', [1, 2])
-            ->selectRaw('r.id, r.booking_date, r.start_time, r.end_time, r.status_id, rs.name as status, t.name as tenant_name, t.phone_number. r.remarks')
-            ->orderBy('r.booking_date', 'ASC')
-            ->oderBy('r.start_time', 'ASC')
-            ->get();
+    // public static function hasActiveReservation($amenity_id): bool
+    // {
+    //     $rows = DB::table('reservation as r')
+    //         ->join('reservation_statuses as rs', 'rs.id', '=', 'r.status_id')
+    //         ->join('tenants as t', 't.id', '=', 'r.tenant_id')
+    //         ->where('r.amenity_id', $amenity_id)
+    //         ->whereIn('r.status_id', [1, 2])
+    //         ->selectRaw('r.id, r.booking_date, r.start_time, r.end_time, r.status_id, rs.name as status, t.name as tenant_name, t.phone_number. r.remarks')
+    //         ->orderBy('r.booking_date', 'ASC')
+    //         ->oderBy('r.start_time', 'ASC')
+    //         ->get();
 
-        foreach ($rows as $row) {
-            $row = setOfficialDates($row, ['booking_date'], [], ['start_time', 'end_time']);
-        }    
+    //     foreach ($rows as $row) {
+    //         $row = setOfficialDates($row, ['booking_date'], [], ['start_time', 'end_time']);
+    //     }    
 
-        return $rows;
-    }
+    //     return $rows;
+    // }
    public static function checkAmenityReservation($id, $ss = null)
 {
     $hasReservation = DB::table('reservations')
@@ -322,4 +324,5 @@ public static function hasActiveReservation($amenity_id): bool
     
 
 }
+
 }

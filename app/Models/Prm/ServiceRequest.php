@@ -164,7 +164,7 @@ class ServiceRequest extends VSModel
         if ($search_value) {
             $skip_rows = 0;
             $search_value = escape_like_str($search_value);
-            $str_search = "(sr.code LIKE '%" .$search_value . "%' OR t.name LIKE '%" . $search_value . "%')";
+            $str_search = "(sr.code LIKE '%" .$search_value . "%' OR bs.code LIKE '%" . $search_value . "%' OR t.name LIKE '%" . $search_value . "%')";
         }
 
         if ($service_type_id) {
