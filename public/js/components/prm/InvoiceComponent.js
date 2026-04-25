@@ -138,16 +138,19 @@ var InvoiceComponent = (() => {
                 let cls = "bg-secondary";
                 let icon = "bi bi-question-circle";
 
-                if (statusId === 1) { // Paid
-                    cls = "text-success bg-success-subtle border border-success";
+                if (statusId === 1) {
+                    // Paid
+                    cls =
+                        "text-success bg-success-subtle border border-success";
                     icon = "fa-regular fa-circle-check";
-                }
-                else if (statusId === 2) { // Unpaid
+                } else if (statusId === 2) {
+                    // Unpaid
                     cls = "text-danger bg-danger-subtle border border-danger";
                     icon = "fa-regular fa-clock";
-                }
-                else if (statusId === 3) { // Partially Paid
-                    cls = "text-warning bg-warning-subtle border border-warning";
+                } else if (statusId === 3) {
+                    // Partially Paid
+                    cls =
+                        "text-warning bg-warning-subtle border border-warning";
                     icon = "fa-regular fa-hourglass-half";
                 }
                 return `
@@ -405,8 +408,8 @@ var InvoiceComponent = (() => {
                             <tr>
                                 <td colspan="9" class="text-end text-uppercase text-primary">Summary</td>
                                 <td class="text-end text-success fs-5">${currency}${fmt(
-                                    foot.total
-                                )}</td>
+            foot.total
+        )}</td>
                             </tr>
                         </tfoot>
                     </table>
@@ -465,7 +468,7 @@ var InvoiceComponent = (() => {
                     name: "delete_invoice"
                 }
             ],
-          onShow: (me, menuContainer) => {
+            onShow: (me, menuContainer) => {
                 const menu = me.getActiveMenus(menuContainer);
                 const statusId = Number(menuContainer.dataset.statusid);
 
@@ -982,7 +985,7 @@ const InvoiceDialog = (() => {
                     if (!me._selectedTenantId) {
                         return cv_interact.error("Please select Tenant first");
                     }
-                     if (
+                    if (
                         !me.controls.space.value ||
                         me.controls.space.value === ""
                     ) {
@@ -1587,16 +1590,21 @@ const InvoiceDialog = (() => {
                     // ) {
                     //     return cv_interact.error("Please select Space");
                     // }
-                    const selectedSpaceId = me.controls.space?.value || me.controls.space_id?.value;
+                    const selectedSpaceId =
+                        me.controls.space?.value || me.controls.space_id?.value;
                     if (!selectedSpaceId || selectedSpaceId === "") {
                         return cv_interact.error("Please select Space");
                     }
 
                     const requests = me._requestedServices || [];
-                    const filteredRequests = requests.filter(r => String(r.space_id) === String(selectedSpaceId));
+                    const filteredRequests = requests.filter(
+                        r => String(r.space_id) === String(selectedSpaceId)
+                    );
 
                     if (filteredRequests.length === 0) {
-                        return cv_interact.error("No Requests relate to this space");
+                        return cv_interact.error(
+                            "No Requests relate to this space"
+                        );
                     }
 
                     const serviceRequestOption = filteredRequests
@@ -2650,16 +2658,6 @@ const ReceiveDialog = (() => {
                         if (totalInput <= 0) {
                             return cv_interact.error(
                                 "Please enter a payment amount."
-                            );
-                        }
-
-                        if (totalInput > balanceDue + 0.01) {
-                            return cv_interact.error(
-                                `Blocked: Payment amount ($${totalInput.toFixed(
-                                    2
-                                )}) cannot be greater than the balance due ($${balanceDue.toFixed(
-                                    2
-                                )}).`
                             );
                         }
 

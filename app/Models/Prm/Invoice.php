@@ -35,7 +35,7 @@ class Invoice extends VSModel
             'invoice_date'      => '0|date',
             'payment_status_id' => '0|integer|exists:payment_statuses,id|default=2',
             'items'             => '1|array|min:1'
-        
+
         ];
 
         $allowed_chars = ['@', ',', '-', '.', '#', '!', '?', '(', ')', "\n"];
@@ -303,24 +303,31 @@ class Invoice extends VSModel
                 DB::table('receipt_breakdowns')->insert($detailRows);
             }
 
+
             // Update invoice payment status
             $invoice_amount = (float)$invoice->amount;
             $already_paid   = (float)$invoice->paid_amount;
-            $current_balance_due = $invoice_amount - $already_paid;
+            // $current_balance_due = (float)$invoice->due_amount;
+            $current_balance_due = (float)($invoice_amount-$already_paid);
 
-            $payment_status_id = 2;
-            $is_paid = 0;
 
-            if ($total_received > ($current_balance_due + 0.01)) {
-                throw new \Exception("Payment failed! You entered $" . number_format($total_received, 2) . 
-                                    ", but the remaining balance is only $" . number_format($current_balance_due, 2) . ".");
+            if ($total_received > ($current_balance_due)) {
+                return DV::error("Receive amount must not greater than due amount");
             }
 
             $new_paid_amount = $already_paid + $total_received;
-            $new_due_amount  = max(0, $invoice_amount - $new_paid_amount);
+            $new_due_amount  = $invoice_amount - $new_paid_amount;
 
-            $is_paid = ($new_due_amount <= 0.01) ? 1 : 0;
-            $payment_status_id = ($is_paid === 1) ? 1 : 2;
+
+            $payment_status_id = 2;
+
+            if ($new_due_amount == 0) {
+                $payment_status_id = 1;
+            } else if ($new_due_amount < $invoice_amount) {
+                $payment_status_id = 3;
+            }
+
+            $is_paid = ($payment_status_id == 1) ? 1 : 0;
             DB::table('invoices')
                 ->where('id', $invoice_id)
                 ->update([
@@ -554,12 +561,10 @@ class Invoice extends VSModel
             }
 
             throw new \Exception('Invoice record not found.');
-
         } catch (\Exception $e) {
             DB::rollBack();
             \Log::error("Delete invoice failed: " . $e->getMessage());
             return DV::error('Failed to delete: ' . $e->getMessage());
         }
     }
-
 }

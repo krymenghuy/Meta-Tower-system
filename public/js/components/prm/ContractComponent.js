@@ -114,7 +114,7 @@ var ContractComponent = new (function () {
                 `;
             }
         },
-         {
+        {
             transTitle: "titles.Status",
             className: "align-middle",
             data: (data) => {
@@ -916,8 +916,8 @@ const ContractDialog = (() => {
                         me.controls.legal_name.value = item?.legal_name || "";
                     }
                 });
-             
-                
+
+
             },
 
             configSelect: [
@@ -958,7 +958,7 @@ const ContractDialog = (() => {
 
             onPrepareForm: (me, data) => {
                 console.log(123,data);
-                
+
                 const isReadOnly = me.dataOptions.tenant_id > 0 || data.prefill_tenant_id;
                 me.controls.tenant.disabled = isReadOnly;
 
