@@ -1074,7 +1074,7 @@ const ContractDialog = (() => {
                         op.tenant_id = me.tenant_id;
                         op.id = me.dataOptions.id;
                         op.tenant_id = me.tenant_id;
-                     
+
                         console.log(123,op);
                         vsapi.call([main_view.base_url, "/prm/contract/save",].join(""), op, btn, null).then((res) => {
                             if (res.status_code === 200) {
@@ -1302,7 +1302,7 @@ const RenewDialog = (() => {
                 }
                 // Renew period starts the same calendar day as the current contract end_date.
                 const renewStartIso = det.renew_start_date || "";
-                
+
                 if (me.controls.start_date) {
                     me.controls.start_date.value = renewStartIso;
                 }
@@ -1404,4 +1404,3 @@ const RenewDialog = (() => {
 
     return self;
 })();
-
