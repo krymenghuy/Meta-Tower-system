@@ -745,9 +745,9 @@ const ActiveReservationDialog = (() => {
             title: 'Active Reservations',
             instanceKey: 'activeReservationView',
             context: 'info',
-            confirmButtonText: null,   
+            // confirmButtonText: null,   
+            // showconfirmButtonText: false,  
             cancelButtonText: 'Close',
-            showconfirmButtonText: false,  
 
             createContent() {
                 const div = document.createElement('div');
@@ -783,6 +783,11 @@ const ActiveReservationDialog = (() => {
             },
 
             onOpen(ibMe) {
+
+                const divInputboxCard = InputBox._store.get('activeReservationView').container.closest('.inputbox-card');
+                const btnOk = divInputboxCard.querySelector('.inputbox-btn.ok');
+                btnOk.classList.add('d-none');
+
                 const loader    = document.getElementById('_arv_loader');
                 const tableWrap = document.getElementById('_arv_table_wrap');
                 const tbody     = document.getElementById('_arv_tbody');
