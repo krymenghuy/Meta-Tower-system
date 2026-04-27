@@ -34,7 +34,8 @@ class Invoice extends VSModel
             'due_date'          => '1|date',
             'invoice_date'      => '0|date',
             'payment_status_id' => '0|integer|exists:payment_statuses,id|default=2',
-            'items'             => '1|array|min:1'
+            'items'             => '1|array|min:1',
+            'general_remark'    => '0|string|0-350',
 
         ];
 
@@ -235,7 +236,6 @@ class Invoice extends VSModel
                 $over_due_day = $due_date->diffInDays($today);
                 $penal_amount   = $over_due_day * $penal_rate;
             }
-            // ──────────────────────────────────────────────────────────────
 
             \Log::info("Penalty calculation", [
                 'invoice_id'  => $invoice_id,
@@ -414,6 +414,7 @@ class Invoice extends VSModel
                 'i.amount',
                 'i.paid_amount',
                 'i.due_date',
+                'i.general_remark',
                 'i.invoice_date',
                 'i.start_time',
                 'i.created_at',
