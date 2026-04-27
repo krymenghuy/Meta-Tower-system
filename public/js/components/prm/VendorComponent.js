@@ -99,7 +99,7 @@ var VendorComponent = (() => {
             className: "align-middle text-nowrap",
             data: (data) => {
                 return `<span class="d-block text-prm-custom text-capitalize"> ${data.contact_person ?? ""}</span>
-                         <span class="d-block text-muted small"> ${data.contact_phone ?? ""}</span>`;
+                         <span class="d-block text-muted"> ${data.contact_phone ?? ""}</span>`;
             }
         },
         {

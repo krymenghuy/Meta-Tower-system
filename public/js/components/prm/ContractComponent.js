@@ -103,13 +103,12 @@ var ContractComponent = new (function () {
                 return `<span class="text-prm-custom">${deposit}</span>`;
             }
         },
-
         {
-            transTitle: "titles.remark",
+            transTitle: "titles.Remark",
             className: "align-middle",
             data: (data, index, tr) => {
                 return `
-                    <div class="text-prm-custom text-capitalize">
+                    <div class="text-primary-prm text-capitalize" style="width:200px;">
                         <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ?? 'N/A'}</span>
                     </div>
                 `;
@@ -149,7 +148,7 @@ var ContractComponent = new (function () {
 
                 const statusLabel = (status === 'terminated') ? 'Terminated' : (data.status ?? '');
                 return `
-                    <span class="${cls}"
+                    <span class="badge ${cls}"
                         style="min-width:110px"
                         data-status_id="${data.status_id}">
                         <i class="${icon}" style="font-size:13px;"></i>
