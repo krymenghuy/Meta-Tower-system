@@ -129,27 +129,33 @@ var InvoiceComponent = (() => {
                 const statusId = Number(data.payment_status_id || 0);
                 return `
                     <div class="d-flex flex-column align-items-center">
-                        <span class="text-prm-custom text-nowrap">${data.due_date ?? ""}</span>
-                        ${statusId === 4 ? `
+                        <span class="text-prm-custom text-nowrap">${data.due_date ??
+                            ""}</span>
+                        ${
+                            statusId === 4
+                                ? `
                         <span class="text-primary small">
                             ${data.payment_status_name}
-                        </span>` : ""}
+                        </span>`
+                                : ""
+                        }
                     </div>
                 `;
             }
         },
-        // {
-        //     transTitle: "titles.Remark",
-        //     className: "align-middle text-nowrap text-center",
-        //     data: data => {
-        //         return `
-        //             <div class="text-primary-custom" style="width:200px;">
-        //                 <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ??
-        //                     "..."}</span>
-        //             </div>
-        //         `;
-        //     }
-        // },
+        {
+            transTitle: "titles.Remark",
+            className: "align-middle text-nowrap text-center",
+            data: data => {
+                return `
+                    <div class="text-primary-custom" style="width:200px;">
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.general_remark ??
+                            "..."}</span>
+                    </div>
+                `;
+            }
+        },
+
 
         {
             transTitle: "titles.Status",
@@ -175,8 +181,9 @@ var InvoiceComponent = (() => {
                     icon = "fa-regular fa-hourglass-half";
                 } else if (statusId === 4) {
                     // Overdue
-                cls  = "text-primary bg-primary-subtle border border-primary";
-                icon = "fa-solid fa-triangle-exclamation";
+                    cls =
+                        "text-primary bg-primary-subtle border border-primary";
+                    icon = "fa-solid fa-triangle-exclamation";
                 }
                 return `
                     <span class="badge ${cls} text-capitalize d-inline-flex align-items-center justify-content-center px-3 py-2 gap-2" style="min-width:110px">
@@ -198,15 +205,20 @@ var InvoiceComponent = (() => {
         {
             transTitle: "titles.Action",
             className: "col_action align-middle text-center text-nowrap",
-            data: data => `
-                <div class="d-flex justify-content-center">
+            data: data => {
+                if (data.payment_status_id === 4) {
+                    return "";
+                }
+
+                return `<div class="d-flex justify-content-center">
                     <a href="javascript:void(0)" class="btn--Options btn_leave_action"
                         data-id="${
                             data.id
                         }" data-statusid="${data.payment_status_id || ""}">
                         <i class="fa-solid fa-ellipsis-vertical text-black fs-5"></i>
                     </a>
-                </div>`
+                </div>`;
+            }
         }
     ];
 
@@ -498,9 +510,12 @@ var InvoiceComponent = (() => {
                 const statusId = Number(menuContainer.dataset.statusid);
 
                 menu.print_invoice.style.display =
-                    statusId === 1 || statusId === 3 || statusId === 2 ? "block" : "none";
+                    statusId === 1 || statusId === 3 || statusId === 2
+                        ? "block"
+                        : "none";
                 menu.receive_invoice.style.display =
-                    statusId === 2 || statusId === 3 || statusId === 4 ? "block" : "none";
+                    // statusId === 2 || statusId === 3 || statusId === 4 ? "block" : "none";
+                    statusId === 2 || statusId === 3 ? "block" : "none";
                 menu.delete_invoice.style.display =
                     statusId === 2 ? "block" : "none";
             },
@@ -665,7 +680,7 @@ const InvoiceDialog = (() => {
                                 </div>
 
                                 <div class="material-input outlined">
-                                    <textarea class="data-input form-control" data-field="remark" name="remark" rows="1" placeholder=" "></textarea>
+                                    <textarea class="data-input form-control" data-field="general_remark" name="general_remark" rows="1" placeholder=" "></textarea>
                                     <label style="color:#777;">Remark</label>
                                 </div>
 
@@ -781,16 +796,23 @@ const InvoiceDialog = (() => {
                     if (!me._selectedTenantId) {
                         return cv_interact.error("Please select Tenant first");
                     }
-                    if (!me.controls.space.value || me.controls.space.value === "") {
+                    if (
+                        !me.controls.space.value ||
+                        me.controls.space.value === ""
+                    ) {
                         return cv_interact.error("Please select Space");
                     }
                     const spaces = me._tenantSpaces || [];
                     const months = me._tenantMonths || [];
-                    const selectedSpaceId = me.controls.space?.value || me.controls.space_id?.value || "";
+                    const selectedSpaceId =
+                        me.controls.space?.value ||
+                        me.controls.space_id?.value ||
+                        "";
 
-                    const matchedSpace = spaces.find(
-                        s => String(s.space_id) === String(selectedSpaceId)
-                    ) || spaces[0];
+                    const matchedSpace =
+                        spaces.find(
+                            s => String(s.space_id) === String(selectedSpaceId)
+                        ) || spaces[0];
 
                     if (!matchedSpace) {
                         return cv_interact.error("No space/contract found");
@@ -804,7 +826,8 @@ const InvoiceDialog = (() => {
                         instanceKey: "rentPopUp",
                         createContent() {
                             const div = document.createElement("div");
-                            div.style.cssText = "display:flex; flex-direction:column;";
+                            div.style.cssText =
+                                "display:flex; flex-direction:column;";
 
                             div.innerHTML = `
                                 <div>
@@ -879,58 +902,94 @@ const InvoiceDialog = (() => {
                         },
 
                         onOpen(ibMe) {
-                            const elContract = document.querySelector('[data-field="contract_id"]');
-                            const elMonthly = document.querySelector('[data-field="monthly"]');
-                            const elPrice = document.querySelector('[data-field="price"]');
-                            const elStartDate = document.querySelector('[data-field="start_date"]');
-                            const elEndDate = document.querySelector('[data-field="end_date"]');
+                            const elContract = document.querySelector(
+                                '[data-field="contract_id"]'
+                            );
+                            const elMonthly = document.querySelector(
+                                '[data-field="monthly"]'
+                            );
+                            const elPrice = document.querySelector(
+                                '[data-field="price"]'
+                            );
+                            const elStartDate = document.querySelector(
+                                '[data-field="start_date"]'
+                            );
+                            const elEndDate = document.querySelector(
+                                '[data-field="end_date"]'
+                            );
 
                             if (!elContract || !elMonthly || !elPrice) return;
 
                             // Load Contract Info
-                            elContract.value = matchedSpace.space_code || "(No code)";
-                            elContract.dataset.contractId = String(matchedSpace.contract_id);
+                            elContract.value =
+                                matchedSpace.space_code || "(No code)";
+                            elContract.dataset.contractId = String(
+                                matchedSpace.contract_id
+                            );
 
                             // Load Price
-                            const effectivePrice = Number(matchedSpace.effective_price || 0);
+                            const effectivePrice = Number(
+                                matchedSpace.effective_price || 0
+                            );
                             elPrice.value = effectivePrice.toFixed(2);
 
                             // Auto-Find and Set Month Data (Read-Only)
-                            const matchedMonth = months.find(m =>
-                                String(m.contract_id) === String(matchedSpace.contract_id)
-                            ) || {};
+                            const matchedMonth =
+                                months.find(
+                                    m =>
+                                        String(m.contract_id) ===
+                                        String(matchedSpace.contract_id)
+                                ) || {};
 
                             elMonthly.value = matchedMonth.month || "";
-                            if (elStartDate) elStartDate.value = matchedMonth.start_date || "";
-                            if (elEndDate) elEndDate.value = matchedMonth.end_date || "";
+                            if (elStartDate)
+                                elStartDate.value =
+                                    matchedMonth.start_date || "";
+                            if (elEndDate)
+                                elEndDate.value = matchedMonth.end_date || "";
                         },
 
                         onConfirm(data, btn, ibMe) {
-                            const elContract = document.querySelector('[data-field="contract_id"]');
-                            const realContractId = elContract?.dataset.contractId || data.contract_id;
+                            const elContract = document.querySelector(
+                                '[data-field="contract_id"]'
+                            );
+                            const realContractId =
+                                elContract?.dataset.contractId ||
+                                data.contract_id;
 
                             if (!realContractId) {
-                                return ibMe.setError("Unit Code / Room is missing");
+                                return ibMe.setError(
+                                    "Unit Code / Room is missing"
+                                );
                             }
 
                             const roomCode = matchedSpace.space_code || "—";
-                            const finalPrice = Number(data.price || matchedSpace.effective_price || 0);
+                            const finalPrice = Number(
+                                data.price || matchedSpace.effective_price || 0
+                            );
 
-                            me.itemsView.addRow({
-                                item_id: realContractId,
-                                item_name: `Rent - ${roomCode}`,
-                                type: "rent",
-                                price: finalPrice,
-                                qty: 1,
-                                remarks: data.remark || `Rent - ${roomCode} (${data.monthly || "N/A"})`,
-                                contract_id: realContractId,
-                                start_date: data.start_date || "",
-                                end_date: data.end_date || "",
-                                space_code: roomCode,
-                                discount: Number(data.discount) || 0,
-                                discount_type: data.discount_type || "amount",
-                                tax_rate: Number(data.tax_rate) || 0
-                            }, 0);
+                            me.itemsView.addRow(
+                                {
+                                    item_id: realContractId,
+                                    item_name: `Rent - ${roomCode}`,
+                                    type: "rent",
+                                    price: finalPrice,
+                                    qty: 1,
+                                    remarks:
+                                        data.remark ||
+                                        `Rent - ${roomCode} (${data.monthly ||
+                                            "N/A"})`,
+                                    contract_id: realContractId,
+                                    start_date: data.start_date || "",
+                                    end_date: data.end_date || "",
+                                    space_code: roomCode,
+                                    discount: Number(data.discount) || 0,
+                                    discount_type:
+                                        data.discount_type || "amount",
+                                    tax_rate: Number(data.tax_rate) || 0
+                                },
+                                0
+                            );
 
                             cv_interact.success("Rent item added");
                             ibMe.close();
