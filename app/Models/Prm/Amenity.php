@@ -313,13 +313,11 @@ class Amenity extends VSModel
 
     return DV::success();
 }
-public static function hasActiveReservation($amenity_id): bool
+    public static function hasActiveReservation($amenity_id): bool
     {
         return DB::table('reservations')
             ->where('amenity_id', $amenity_id)
             ->whereIn('status_id', [1, 2]) 
             ->exists();
-    
-
-}
+    }
 }

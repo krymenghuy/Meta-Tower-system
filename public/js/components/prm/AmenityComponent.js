@@ -240,7 +240,7 @@ var AmenityComponent = (() => {
                 },
                 {
                     html: '<span class="ps-2"  vslang="titles.View Reservation">View Reservation</span>',
-                    icon: `<i class="fa fa-exchange fs-5 text-success"></i>`,
+                    icon: `<i class="fa-solid fa-calendar"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "view_reservation",
                 },
@@ -466,7 +466,7 @@ var AmenityComponent = (() => {
 
     mThis.viewReservation = (id, menuLink) => {
         const tr = menuLink?.closest("tr");
-        amenityReservationDialog.show({
+        ActiveReservationDialog.show({
             amenity_id: id,
             amenity_name: tr?.querySelector('.text-prm-custom')?.innerText || '',
             btn: menuLink,
@@ -689,39 +689,133 @@ const AmenityDialog = (() => {
 })();
 
 
-const AmenityReservationDialog = (() => {
+const ActiveReservationDialog = (() => {
     const self = {};
 
     const statusBadge = (status_id, status) => {
         const map = {
             1: 'border-info text-info bg-info-subtle',
-            2: 'border-warning text-warning bg-waning-subtle',
+            2: 'border-warning text-warning bg-warning-subtle',
         };
         const cls = map[status_id] || 'border-secondary text-secondary bg-secondary-subtle';
-        return `<span class = "badge border ${cls} px-2 py-1 text-capitalize">${status ?? ''}</span>`;
+        return `<span class="badge border ${cls} px-2 py-1 text-capitalize">${status ?? ''}</span>`;
     };
 
     const to12h = (hhmm) => {
-        if(!hhmm) return '';
+        if (!hhmm) return '';
         const [h, m] = String(hhmm).trim().split(':').map(Number);
         const ampm = h < 12 ? 'AM' : 'PM';
         const h12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
         return `${h12}:${String(m).padStart(2, '0')} ${ampm}`;
     };
 
-    const rederRows = (rows) => {
+    const renderRows = (tbody, rows) => {
         if (!rows || rows.length === 0) {
-            return `<tr><td colspan = "5" class = "text-center text-muted py-4">No upcoming or in-progress reservation.</td></tr>`;
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="4" class="text-center text-muted py-4">
+                        <i class="fa-regular fa-calendar-xmark fs-4 d-block mb-2 text-muted"></i>
+                        No upcoming or in-progress reservations.
+                    </td>
+                </tr>`;
+            return;
         }
-        return rows.map(r => `
+        tbody.innerHTML = rows.map(r => `
             <tr>
-                <td class = "align-middle">
-                    <span class="d-block text-prm-custom">${r.booking_date ?? ''}</span>
-                    <small class="text-muted">${to12h(r.start_time)} - ${to12h(r.end_time)}</small>
+                <td class="align-middle">
+                    <span class="d-block  fw-bold text-prm-custom">${r.booking_date ?? ''}</span>
+                    <small class="text-muted">${to12h(r.start_time)} – ${to12h(r.end_time)}</small>
                 </td>
-                <td class = "align-middle">
-                    <span class="   
-            
-        `)
-    }
-})
+                <td class="align-middle">
+                    <span class="d-block fw-bold text-capitalize">${r.tenant_name ?? ''}</span>
+                    <small class="text-muted">${r.phone_number ?? ''}</small>
+                </td>
+                <td class="align-middle text-center">${statusBadge(r.status_id, r.status)}</td>
+                <td class="align-middle">
+                    <small class="text-muted">${r.remarks ?? '—'}</small>
+                </td>
+            </tr>
+        `).join('');
+    };
+
+    self.show = ({ amenity_id, amenity_name, btn }) => {
+        InputBox.resetInstance('activeReservationView');
+
+        InputBox.show({
+            title: 'Active Reservations',
+            instanceKey: 'activeReservationView',
+            context: 'info',
+            confirmButtonText: null,   
+            cancelButtonText: 'Close',
+            showconfirmButtonText: false,  
+
+            createContent() {
+                const div = document.createElement('div');
+                div.innerHTML = `
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="fa-regular fa-calendar-check text-primary me-2"></i>
+                        <span class="badge text-primary border border-primary bg-primary-subtle px-3 py-1 fs-6">
+                            ${amenity_name || `Amenity #${amenity_id}`}
+                        </span>
+                        <div style="flex:1; height:1px; background:#e0e0e0; margin-left:10px;"></div>
+                    </div>
+
+                    <div id="_arv_loader" class="text-center py-4">
+                        <div class="spinner-border spinner-border-sm text-primary"></div>
+                        <span class="ms-2 text-muted small">Loading...</span>
+                    </div>
+
+                    <div id="_arv_table_wrap" class="d-none">
+                        <table class="table table-sm table--white rounded-2 overflow-hidden">
+                            <thead class="header-uppercase">
+                                <tr > 
+                                    <th>Date / Time</th>
+                                    <th>Tenant</th>
+                                    <th class="text-center">Status</th>
+                                    <th>Remark</th>
+                                </tr>
+                            </thead>
+                            <tbody id="_arv_tbody"></tbody>
+                        </table>
+                    </div>
+                `;
+                return div;
+            },
+
+            onOpen(ibMe) {
+                const loader    = document.getElementById('_arv_loader');
+                const tableWrap = document.getElementById('_arv_table_wrap');
+                const tbody     = document.getElementById('_arv_tbody');
+
+                vsapi.call(
+                    `${main_view.base_url}/prm/reservation/list-paginate`,
+                    { amenity_id, per_page: 50 },
+                    null,
+                    null,
+                ).then((res) => {
+                    // console.log('reservation res:', res); // remove after confirmed working
+                    loader.classList.add('d-none');
+                    tableWrap.classList.remove('d-none');
+
+                    const allRows = Array.isArray(res.data)
+                        ? res.data
+                        : (res.data?.data ?? []);
+
+                    const rows = allRows.filter(r => r.status_id == 1 || r.status_id == 2);
+                    renderRows(tbody, rows);
+                }).catch(() => {
+                    loader.classList.add('d-none');
+                    tableWrap.classList.remove('d-none');
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="4" class="text-center text-danger py-3">
+                                Failed to load reservations.
+                            </td>
+                        </tr>`;
+                });
+            },
+        });
+    };
+
+    return self;
+})();
