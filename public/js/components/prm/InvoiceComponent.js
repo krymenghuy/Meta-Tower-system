@@ -105,14 +105,35 @@ var InvoiceComponent = (() => {
                 return `<span class="d-block text-yp-custom fw-semibold">${mThis.currency_symbol}${amt}</span>`;
             }
         },
+        // {
+        //     transTitle: "titles.Due Date",
+        //     className: "align-middle text-nowrap text-center",
+        //     data: data => {
+        //         const statusId = data.payment_status_id=4;
+        //         return `
+        //             <div class="d-flex flex-column align-items-center">
+        //                 <span class="text-prm-custom text-nowrap">${data.due_date ??""}</span>
+
+        //                 <span class="text-danger-emphasis small">
+        //                 ${data.payment_status_name}
+        //             </span>
+        //             </div>
+        //         `;
+        //     }
+        // },
+
         {
-            transTitle: "titles.Expiration Date",
+            transTitle: "titles.Due Date",
             className: "align-middle text-nowrap text-center",
             data: data => {
+                const statusId = Number(data.payment_status_id || 0);
                 return `
                     <div class="d-flex flex-column align-items-center">
-                        <span class="text-prm-custom text-nowrap">${data.due_date ??
-                            ""}</span>
+                        <span class="text-prm-custom text-nowrap">${data.due_date ?? ""}</span>
+                        ${statusId === 4 ? `
+                        <span class="text-primary small">
+                            ${data.payment_status_name}
+                        </span>` : ""}
                     </div>
                 `;
             }
@@ -138,17 +159,24 @@ var InvoiceComponent = (() => {
                 let cls = "bg-secondary";
                 let icon = "bi bi-question-circle";
 
-                if (statusId === 1) { // Paid
-                    cls = "text-success bg-success-subtle border border-success";
+                if (statusId === 1) {
+                    // Paid
+                    cls =
+                        "text-success bg-success-subtle border border-success";
                     icon = "fa-regular fa-circle-check";
-                }
-                else if (statusId === 2) { // Unpaid
+                } else if (statusId === 2) {
+                    // Unpaid
                     cls = "text-danger bg-danger-subtle border border-danger";
                     icon = "fa-regular fa-clock";
-                }
-                else if (statusId === 3) { // Partially Paid
-                    cls = "text-warning bg-warning-subtle border border-warning";
+                } else if (statusId === 3) {
+                    // Partially Paid
+                    cls =
+                        "text-warning bg-warning-subtle border border-warning";
                     icon = "fa-regular fa-hourglass-half";
+                } else if (statusId === 4) {
+                    // Overdue
+                cls  = "text-primary bg-primary-subtle border border-primary";
+                icon = "fa-solid fa-triangle-exclamation";
                 }
                 return `
                     <span class="badge ${cls} text-capitalize d-inline-flex align-items-center justify-content-center px-3 py-2 gap-2" style="min-width:110px">
@@ -158,7 +186,7 @@ var InvoiceComponent = (() => {
             }
         },
         {
-            transTitle: "titles.Updated By",
+            transTitle: "titles.Last Updated",
             className: "align-middle text-nowrap",
             data: data => `
                 <div class="d-flex flex-column">
@@ -405,8 +433,8 @@ var InvoiceComponent = (() => {
                             <tr>
                                 <td colspan="9" class="text-end text-uppercase text-primary">Summary</td>
                                 <td class="text-end text-success fs-5">${currency}${fmt(
-                                    foot.total
-                                )}</td>
+            foot.total
+        )}</td>
                             </tr>
                         </tfoot>
                     </table>
@@ -465,16 +493,14 @@ var InvoiceComponent = (() => {
                     name: "delete_invoice"
                 }
             ],
-          onShow: (me, menuContainer) => {
+            onShow: (me, menuContainer) => {
                 const menu = me.getActiveMenus(menuContainer);
                 const statusId = Number(menuContainer.dataset.statusid);
 
                 menu.print_invoice.style.display =
-                    statusId === 1 || statusId === 3 ? "block" : "none";
-                menu.print_invoice.style.display =
-                    statusId === 1 || statusId === 3 ? "block" : "none";
+                    statusId === 1 || statusId === 3 || statusId === 2 ? "block" : "none";
                 menu.receive_invoice.style.display =
-                    statusId === 2 || statusId === 3 ? "block" : "none";
+                    statusId === 2 || statusId === 3 || statusId === 4 ? "block" : "none";
                 menu.delete_invoice.style.display =
                     statusId === 2 ? "block" : "none";
             },
@@ -592,7 +618,7 @@ const InvoiceDialog = (() => {
                                     <!-- LEFT: Tenant Info -->
                                     <div>
                                         <div class="field-row">
-                                            <label class="field-label fw-semibold">Tenant Name <span class="text-danger">*</span></label>
+                                            <label class="field-label fw-semibold">Tenant Name </label>
                                             <span class="field-sep">:</span>
                                             <input name="tenant" class="data-input form-control field-input" data-field="tenant_id" placeholder=" " autocomplete="off">
                                         </div>
@@ -617,7 +643,7 @@ const InvoiceDialog = (() => {
                                                 </select>
                                         </div>
                                         <div class="field-row ">
-                                            <label class="field-label fw-semibold">Due Date <span class="text-danger">*</span></label>
+                                            <label class="field-label fw-semibold">Due Date </label>
                                             <span class="field-sep">:</span>
                                             <input type="text" data-type="date" name="due_date" class="form-control data-input field-input" required placeholder=" ">
                                         </div>
@@ -634,9 +660,16 @@ const InvoiceDialog = (() => {
                                 </div>
 
                                 <div name="divItemsView" ></div>
-                                <div class="mt-4 d-flex justify-content-end">
+                                <div class="mt-4 d-flex justify-content-end mb-3">
                                     <div name="div_invoice_summary" class="w-100" style="max-width: 400px;"></div>
                                 </div>
+
+                                <div class="material-input outlined">
+                                    <textarea class="data-input form-control" data-field="remark" name="remark" rows="1" placeholder=" "></textarea>
+                                    <label style="color:#777;">Remark</label>
+                                </div>
+
+
                             </div>
                         </div>
 
@@ -693,7 +726,7 @@ const InvoiceDialog = (() => {
                             box-shadow: 0 0 0 3px rgba(13,110,253,0.15) !important;
                             outline: none !important;
                         }
-                        .field-row .choices[data-type*="select-one"] .choices__button {
+                        .field-row .choices[data-type="select-one"] .choices__button {
                             display: none !important;
                         }
                         .field-row .choices .choices__list--dropdown {
@@ -748,42 +781,22 @@ const InvoiceDialog = (() => {
                     if (!me._selectedTenantId) {
                         return cv_interact.error("Please select Tenant first");
                     }
-                    if (
-                        !me.controls.space.value ||
-                        me.controls.space.value === ""
-                    ) {
+                    if (!me.controls.space.value || me.controls.space.value === "") {
                         return cv_interact.error("Please select Space");
                     }
-
                     const spaces = me._tenantSpaces || [];
                     const months = me._tenantMonths || [];
-                    const selectedSpaceId =
-                        me.controls.space?.value ||
-                        me.controls.space_id?.value ||
-                        "";
+                    const selectedSpaceId = me.controls.space?.value || me.controls.space_id?.value || "";
 
-                    const matchedSpace =
-                        spaces.find(
-                            s => String(s.space_id) === String(selectedSpaceId)
-                        ) || spaces[0];
+                    const matchedSpace = spaces.find(
+                        s => String(s.space_id) === String(selectedSpaceId)
+                    ) || spaces[0];
 
                     if (!matchedSpace) {
                         return cv_interact.error("No space/contract found");
                     }
 
-                    const defaultContractId = matchedSpace.contract_id;
-                    const monthOptions = months
-                        .filter(
-                            m =>
-                                String(m.contract_id) ===
-                                String(defaultContractId)
-                        )
-                        .map(
-                            m =>
-                                `<option value="${m.month}">${m.month}</option>`
-                        )
-                        .join("");
-
+                    // 3. Popup Initialization
                     InputBox.resetInstance("rentPopUp");
 
                     InputBox.show({
@@ -791,185 +804,133 @@ const InvoiceDialog = (() => {
                         instanceKey: "rentPopUp",
                         createContent() {
                             const div = document.createElement("div");
-                            div.style.cssText =
-                                "display:flex; flex-direction:column; ";
+                            div.style.cssText = "display:flex; flex-direction:column;";
 
                             div.innerHTML = `
-                                    <div>
-                                        <div class="d-flex align-items-center  mb-3">
-                                            <span style="font-weight:bold; color:#0C447C; font-size:13px;">Contract Details</span>
-                                            <div style="flex:1; height:1px; background:#e0e0e0;"></div>
+                                <div>
+                                    <div class="d-flex align-items-center mb-3">
+                                        <span style="font-weight:bold; color:#0C447C; font-size:13px;">Contract Details</span>
+                                        <div style="flex:1; height:1px; background:#e0e0e0;"></div>
+                                    </div>
+                                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                                        <div class="material-input outlined" style="margin-bottom: 1rem;">
+                                            <input class="data-input form-control bg-light" data-field="contract_id" name="contract_id" type="text" readonly>
+                                            <label style="color:#777;">Unit Code / Room</label>
                                         </div>
-                                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                                            <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                                <input class="data-input form-control bg-light" data-field="contract_id" name="contract_id" type="text" readonly>
-                                                <label style="color:#777;">Unit Code / Room</label>
+                                        <div class="material-input outlined" style="margin-bottom: 1rem;">
+                                            <input class="data-input form-control bg-light cursor-blocked" data-field="monthly" name="monthly" type="text" readonly>
+                                            <label style="color:#777;">Monthly</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <div class="d-flex align-items-center mb-3">
+                                        <span style="font-weight:bold; color:#0C447C; font-size:13px;">Billing Period</span>
+                                        <div style="flex:1; height:1px; background:#e0e0e0;"></div>
+                                    </div>
+                                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                                        <div class="material-input outlined" style="margin-bottom: 1rem;">
+                                            <input class="data-input form-control bg-light cursor-blocked" data-field="start_date" name="start_date" type="text" readonly placeholder="yyyy-mm-dd">
+                                            <label style="color:#777;">Start Date</label>
+                                        </div>
+                                        <div class="material-input outlined" style="margin-bottom: 1rem;">
+                                            <input class="data-input form-control bg-light cursor-blocked" data-field="end_date" name="end_date" type="text" readonly placeholder="yyyy-mm-dd">
+                                            <label style="color:#777;">End Date</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <div class="d-flex align-items-center mb-3">
+                                        <span style="font-weight:bold; color:#0C447C; font-size:13px;">Financials</span>
+                                        <div style="flex:1; height:1px; background:#e0e0e0;"></div>
+                                    </div>
+                                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                                        <div class="material-input outlined" style="margin-bottom: 1rem;">
+                                            <input class="data-input form-control bg-light cursor-blocked" data-field="price" name="price" type="text" readonly style="font-weight:bold; color:#0c447c;">
+                                            <label style="color:#777;">Effective Price ($)</label>
+                                        </div>
+                                        <div class="material-input outlined" style="margin-bottom: 1rem;">
+                                            <input class="data-input form-control" data-field="tax_rate" name="tax_rate" type="number" placeholder="0">
+                                            <label style="color:#777;">Tax %</label>
+                                        </div>
+                                        <div class="material-input outlined" style="display:flex; gap:8px; align-items:flex-end; grid-column: span 2;">
+                                            <div style="flex:1">
+                                                <input class="data-input form-control" data-field="discount" name="discount" type="number" placeholder="0">
+                                                <label style="color:#777;">Discount</label>
                                             </div>
-                                            <div class="material-input outlined " style="margin-bottom: 1rem;">
-                                                <select class="data-input form-control" data-field="monthly" name="monthly" data-style="material" placeholder="Monthly">
-                                                    ${monthOptions}
+                                            <div style="width:100px;">
+                                                <select class="data-input form-control" data-field="discount_type" name="discount_type">
+                                                    <option value="percent">%</option>
+                                                    <option value="amount">$</option>
                                                 </select>
                                             </div>
                                         </div>
                                     </div>
+                                </div>
 
-                                    <div>
-                                        <div class="d-flex align-items-center mb-3">
-                                            <span style="font-weight:bold; color:#0C447C; font-size:13px;">Billing Period</span>
-                                            <div style="flex:1; height:1px; background:#e0e0e0;"></div>
-                                        </div>
-                                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                                            <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                                <input class="data-input form-control bg-light cursor-blocked" data-field="start_date" name="start_date" type="text" readonly placeholder="yyyy-mm-dd">
-                                                <label style="color:#777;">Start Date</label>
-                                            </div>
-                                            <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                                <input class="data-input form-control bg-light cursor-blocked" data-field="end_date" name="end_date" type="text" readonly placeholder="yyyy-mm-dd">
-                                                <label style="color:#777;">End Date</label>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <div class="d-flex align-items-center mb-3">
-                                            <span style="font-weight:bold; color:#0C447C; font-size:13px;">Financials</span>
-                                            <div style="flex:1; height:1px; background:#e0e0e0;"></div>
-                                        </div>
-                                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                                            <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                                <input class="data-input form-control bg-light cursor-blocked" data-field="price" name="price" type="text" readonly style="font-weight:bold; color:#0c447c;">
-                                                <label style="color:#777;">Effective Price ($)</label>
-                                            </div>
-                                            <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                                <input class="data-input form-control" data-field="tax_rate" name="tax_rate" type="number" placeholder="0">
-                                                <label style="color:#777;">Tax %</label>
-                                            </div>
-                                            <div class="material-input outlined" style=" display:flex; gap:8px; align-items:flex-end; grid-column: span 2; ">
-                                                <div style="flex:1">
-                                                    <input class="data-input form-control" data-field="discount" name="discount" type="number" placeholder="0">
-                                                    <label style="color:#777;">Discount</label>
-                                                </div>
-                                                <div style="width:100px;">
-                                                    <select class="data-input form-control" data-field="discount_type" name="discount_type">
-                                                        <option value="percent">%</option>
-                                                        <option value="amount">$</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                        <textarea class="data-input form-control" data-field="remark" name="remark" rows="2" placeholder=" "></textarea>
-                                        <label style="color:#777;">Remark</label>
-                                    </div>
-                                `;
+                                <div class="material-input outlined" style="margin-bottom: 1rem;">
+                                    <textarea class="data-input form-control" data-field="remark" name="remark" rows="2" placeholder=" "></textarea>
+                                    <label style="color:#777;">Remark</label>
+                                </div>
+                            `;
                             return div;
                         },
 
                         onOpen(ibMe) {
-                            const elContract = document.querySelector(
-                                '[data-field="contract_id"]'
-                            );
-                            const elMonthly = document.querySelector(
-                                '[data-field="monthly"]'
-                            );
-                            const elPrice = document.querySelector(
-                                '[data-field="price"]'
-                            );
-                            const elStartDate = document.querySelector(
-                                '[data-field="start_date"]'
-                            );
-                            const elEndDate = document.querySelector(
-                                '[data-field="end_date"]'
-                            );
+                            const elContract = document.querySelector('[data-field="contract_id"]');
+                            const elMonthly = document.querySelector('[data-field="monthly"]');
+                            const elPrice = document.querySelector('[data-field="price"]');
+                            const elStartDate = document.querySelector('[data-field="start_date"]');
+                            const elEndDate = document.querySelector('[data-field="end_date"]');
 
                             if (!elContract || !elMonthly || !elPrice) return;
 
-                            // Initial Data Load
-                            elContract.value =
-                                matchedSpace.space_code || "(No code)";
-                            elContract.dataset.contractId = String(
-                                matchedSpace.contract_id
-                            );
+                            // Load Contract Info
+                            elContract.value = matchedSpace.space_code || "(No code)";
+                            elContract.dataset.contractId = String(matchedSpace.contract_id);
 
-                            const effectivePrice = Number(
-                                matchedSpace.effective_price || 0
-                            );
+                            // Load Price
+                            const effectivePrice = Number(matchedSpace.effective_price || 0);
                             elPrice.value = effectivePrice.toFixed(2);
 
-                            const updateDates = monthVal => {
-                                const matchedMonth = months.find(
-                                    m =>
-                                        String(m.contract_id) ===
-                                            String(matchedSpace.contract_id) &&
-                                        m.month === monthVal
-                                );
-                                if (matchedMonth) {
-                                    if (elStartDate)
-                                        elStartDate.value =
-                                            matchedMonth.start_date || "";
-                                    if (elEndDate)
-                                        elEndDate.value =
-                                            matchedMonth.end_date || "";
-                                }
-                            };
+                            // Auto-Find and Set Month Data (Read-Only)
+                            const matchedMonth = months.find(m =>
+                                String(m.contract_id) === String(matchedSpace.contract_id)
+                            ) || {};
 
-                            // Set default month
-                            const defaultMonth =
-                                months.find(
-                                    m =>
-                                        String(m.contract_id) ===
-                                        String(matchedSpace.contract_id)
-                                ) || {};
-                            elMonthly.value = defaultMonth.month || "";
-                            updateDates(elMonthly.value);
-
-                            elMonthly.addEventListener("change", e =>
-                                updateDates(e.target.value)
-                            );
+                            elMonthly.value = matchedMonth.month || "";
+                            if (elStartDate) elStartDate.value = matchedMonth.start_date || "";
+                            if (elEndDate) elEndDate.value = matchedMonth.end_date || "";
                         },
 
                         onConfirm(data, btn, ibMe) {
-                            const elContract = document.querySelector(
-                                '[data-field="contract_id"]'
-                            );
-                            const realContractId =
-                                elContract?.dataset.contractId ||
-                                data.contract_id;
+                            const elContract = document.querySelector('[data-field="contract_id"]');
+                            const realContractId = elContract?.dataset.contractId || data.contract_id;
 
                             if (!realContractId) {
-                                return ibMe.setError(
-                                    "Unit Code / Room is missing"
-                                );
+                                return ibMe.setError("Unit Code / Room is missing");
                             }
-                            const roomCode = matchedSpace.space_code || "—";
-                            const finalPrice = Number(
-                                data.price || matchedSpace.effective_price || 0
-                            );
 
-                            me.itemsView.addRow(
-                                {
-                                    item_id: realContractId,
-                                    item_name: `Rent - ${roomCode}`,
-                                    type: "rent",
-                                    price: finalPrice,
-                                    qty: 1,
-                                    remarks:
-                                        data.remark ||
-                                        `Rent - ${roomCode} (${data.monthly ||
-                                            "N/A"})`,
-                                    contract_id: realContractId,
-                                    start_date: data.start_date || "",
-                                    end_date: data.end_date || "",
-                                    space_code: roomCode,
-                                    discount: Number(data.discount) || 0,
-                                    discount_type:
-                                        data.discount_type || "amount",
-                                    tax_rate: Number(data.tax_rate) || 0
-                                },
-                                0
-                            );
+                            const roomCode = matchedSpace.space_code || "—";
+                            const finalPrice = Number(data.price || matchedSpace.effective_price || 0);
+
+                            me.itemsView.addRow({
+                                item_id: realContractId,
+                                item_name: `Rent - ${roomCode}`,
+                                type: "rent",
+                                price: finalPrice,
+                                qty: 1,
+                                remarks: data.remark || `Rent - ${roomCode} (${data.monthly || "N/A"})`,
+                                contract_id: realContractId,
+                                start_date: data.start_date || "",
+                                end_date: data.end_date || "",
+                                space_code: roomCode,
+                                discount: Number(data.discount) || 0,
+                                discount_type: data.discount_type || "amount",
+                                tax_rate: Number(data.tax_rate) || 0
+                            }, 0);
 
                             cv_interact.success("Rent item added");
                             ibMe.close();
@@ -982,7 +943,7 @@ const InvoiceDialog = (() => {
                     if (!me._selectedTenantId) {
                         return cv_interact.error("Please select Tenant first");
                     }
-                     if (
+                    if (
                         !me.controls.space.value ||
                         me.controls.space.value === ""
                     ) {
@@ -1587,16 +1548,21 @@ const InvoiceDialog = (() => {
                     // ) {
                     //     return cv_interact.error("Please select Space");
                     // }
-                    const selectedSpaceId = me.controls.space?.value || me.controls.space_id?.value;
+                    const selectedSpaceId =
+                        me.controls.space?.value || me.controls.space_id?.value;
                     if (!selectedSpaceId || selectedSpaceId === "") {
                         return cv_interact.error("Please select Space");
                     }
 
                     const requests = me._requestedServices || [];
-                    const filteredRequests = requests.filter(r => String(r.space_id) === String(selectedSpaceId));
+                    const filteredRequests = requests.filter(
+                        r => String(r.space_id) === String(selectedSpaceId)
+                    );
 
                     if (filteredRequests.length === 0) {
-                        return cv_interact.error("No Requests relate to this space");
+                        return cv_interact.error(
+                            "No Requests relate to this space"
+                        );
                     }
 
                     const serviceRequestOption = filteredRequests
@@ -2650,16 +2616,6 @@ const ReceiveDialog = (() => {
                         if (totalInput <= 0) {
                             return cv_interact.error(
                                 "Please enter a payment amount."
-                            );
-                        }
-
-                        if (totalInput > balanceDue + 0.01) {
-                            return cv_interact.error(
-                                `Blocked: Payment amount ($${totalInput.toFixed(
-                                    2
-                                )}) cannot be greater than the balance due ($${balanceDue.toFixed(
-                                    2
-                                )}).`
                             );
                         }
 

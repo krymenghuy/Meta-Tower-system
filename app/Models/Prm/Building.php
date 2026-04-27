@@ -45,7 +45,7 @@ class Building //extends Model
         $inputs = $res->values;
         $isCreate = !$id || $id == 0;
 
-        // 1 or 2  datascope  subid is binary
+       
 
 
         $id = DBX::saveData($ss, 'buildings', ['id' => $id], $inputs, [], 1);
@@ -75,16 +75,18 @@ class Building //extends Model
             $str_search = DBX::whereLowerCase('b.name', "%$search_value%", 'like');
         }
 
-        $updated_at = DBX::formatTime('b.updated_at', 'updated_at');
         $query = DB::table('buildings as b')
             // ->join('um_branches as um', 'um.id', '=', 'b.campus_id')
             ->whereRaw($str_search)
-            ->selectRaw('b.id, b.name,b.address, b.total_floor, b.total_area, b.total_space, ' . $updated_at . ', b.update_user')
+            ->selectRaw('b.id, b.name,b.address, b.total_floor, b.total_area, b.total_space,b.updated_at, b.update_user')
             ->orderBy('b.id', 'asc');
 
         $clone_query = clone $query;
         $count = $clone_query->count('b.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
+        foreach ($rows as $row) {
+            setOfficialDates($row, [''], ['updated_at'], []);
+        }
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
@@ -155,12 +157,7 @@ class Building //extends Model
             $amenity_count = DB::table('amenities')->where('floor_id', $row->floor_id)->count();
             $space_count = DB::table('building_spaces')->where('building_id', $row->building_id)->where('floor_id', $row->floor_id)->count();
             $row->total_space = $space_count + $amenity_count;
-            // $row->total_space = DB::table('building_spaces')
-            //     ->where('building_id', $row->building_id)
-            //     ->where('floor_id', $row->floor_id)
-            //     ->count();
-
-                setOfficialDates($row, [''],['updated_at'],[]);
+            setOfficialDates($row, [''],['updated_at'],[]);
         }
         return $rows;
     }

@@ -37,7 +37,7 @@ var AmenityComponent = (() => {
             title: "Category",
             className: "align-middle text-nowrap",
             data: (data) =>
-                `<span class="badge text-primary border border-primary bg-primary-subtle px-3 py-2" style="min-width:100px">${data.category ?? ""}</span>`,
+                `<span class="text-nowrap" style="min-width:100px">${data.category ?? ""}</span>`,
         },
 
         {
