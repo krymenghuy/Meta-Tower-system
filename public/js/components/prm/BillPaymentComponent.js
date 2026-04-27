@@ -2,7 +2,7 @@
 
 var BillPaymentComponent = (() => {
     const mThis = {};
-    mThis.title_prop = "Bill Payment Record Management";
+    mThis.title_prop = "Bill Payments";
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_bill_payment_component");
     mThis.btnAdd = mThis.self.querySelector("#_btnBillPayment");
@@ -24,42 +24,24 @@ var BillPaymentComponent = (() => {
             },
         },
         {
-            transTitle: "titles.Bill Number",
+            transTitle: "titles.Bill No",
             className: "align-middle",
             data: (data) => {
                 return `
                     <span class="d-block text-nowrap text-prm-custom ">${data.bill_number ?? ""}</span>`;
             },
         },
-        // {
-        //     transTitle: "titles.Vendor",
-        //     className: "align-middle",
-        //     data: (data) => `<span class="d-block text-prm-custom text-capitalize">${data.vendor_name ?? ""}</span>`,
-        // },
-        // {
-        //     transTitle: "titles.Expense Type",
-        //     className: "align-middle",
-        //     data: (data) => {
-        //         return `<span class="d-block text-prm-custom ">${data.expense_type_name ?? "_"}</span>`;
-        //     },
-        // },
         {
-            transTitle: "titles.Payer",
+            transTitle: "titles.Vendor",
             className: "align-middle",
-            data: (data) => `<span class="d-block text-prm-custom text-capitalize">${data.payer ?? ""}</span>`,
+            data: (data) => `<span class="d-block text-prm-custom text-capitalize">${data.vendor_name ?? ""}</span>`,
         },
-        // {
-        //     transTitle: "titles.Reference No",
-        //     className: "align-middle",
-        //     data: (data) => `<span class="d-block text-prm-custom">${data.ref_no ?? "_"}</span>`,
-        // },
-
         {
             title: " Amount",
             className: "align-middle text-end",
             data: (data) => {
                 const amount = VSMoney.formatAmount(data.amount, data.currency_code ?? 'USD');
-                return `<span class="d-block text-primary">${amount}</span>`;
+                return `<span class="d-block fw-semibold text-primary">${amount}</span>`;
             },
         },
         {
@@ -72,22 +54,23 @@ var BillPaymentComponent = (() => {
             className: "align-middle",
             data: (data, index, tr) => {
                 return `
-                    <div class="text-prm-custom" style="width:100px;">
-                        <span class="small text-wrap text-break" style ="word-break:break-word;">${data.note ?? ''}</span>
+                    <div class="text-prm-custom" style="width:200px;">
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.note ?? ''}</span>
                     </div>
                 `;
             }
         },
         {
-            transTitle: "titles.Cashier",
+            transTitle: "titles.Updated By",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
                 return `<div class="d-flex flex-column">
                     <span class="text-capitalize text-start text-prm-custom"><span>${data.update_user ?? ""}</span></span>
-                    <span class="text-muted small">${data.updated_at ?? ""}</span>
+                    <small>${data.updated_at ?? ""}</small>
                 </div>`;
             },
         },
+       
         {
             transTitle: "titles.Action",
             className: "col_action align-middle",

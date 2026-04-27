@@ -960,11 +960,9 @@ const ViewBookingDialog = (() => {
     const self = {};
     let dialog = null;
     self.show = (op) => {
-        console.log(12345,op);
-
         dialog = dialog ||
             new GeneralDialog({
-                cssClass: "modal-lg modal-content-vs-dialog",
+                cssClass: "modal-xl modal-content-vs-dialog",
                 backdrop: "static",
                 TriggerOnClose: true,
                 createContent: () =>{return ['<div name="container_fluid"></div>'].join('');},

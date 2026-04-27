@@ -2,7 +2,7 @@
 
 var BillComponent = (() => {
     const mThis = {};
-    mThis.title_prop = "Bill Record Management";
+    mThis.title_prop = "Bill Management";
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_bill_component");
     mThis.btnAdd = mThis.self.querySelector("#_btnBill");
@@ -18,18 +18,30 @@ var BillComponent = (() => {
             className: "align-middle",
         },
         {
-            title: "Bill Date",
+            title: "Bill No",
             className: "align-middle text-nowrap",
             data: (data) =>
-                `<span class="d-block text-nowrap text-primary">${data.bill_number ?? ""}</span> 
-                    <hr class="m-0 border border-secondary opacity-100">
-                 <span class="d-block text-prm-custom small">${data.bill_date}</span>`,
+                `<span class="d-block text-nowrap">${data.bill_number ?? ""}</span>`,
+        },
+         {
+            transTitle: "titles.Invoice No",
+            className: "align-middle text-nowrap",
+            data: (data) => {
+                return `<span class="d-block text-prm-custom">${data.ref_no ?? "N/A"}</span>`;
+            },
+        },
+        {
+            transTitle: "titles.Issue Date",
+            className: "align-middle text-nowrap",
+            data: (data) => {
+                return `<span class="d-block text-prm-custom ">${data.bill_date ?? "N/A"}</span>`;
+            },
         },
         {
             transTitle: "titles.Due Date",
             className: "align-middle text-nowrap",
             data: (data) => {
-                return `<span class="d-block text-prm-custom ">${data.due_date ?? "_"}</span>`;
+                return `<span class="d-block text-prm-custom ">${data.due_date ?? "N/A"}</span>`;
             },
         },
         {
@@ -37,7 +49,7 @@ var BillComponent = (() => {
             className: "align-middle text-nowrap",
             data: (data) => {
                 return `<span class="d-block text-prm-custom text-capitalize">${data.vendor_name}</span>
-                <span class="d-block text-prm-custom small">${data.phone_number}</span>`;
+                <span class="d-block text-prm-custom">${data.phone_number}</span>`;
             },
         },
         
@@ -48,20 +60,14 @@ var BillComponent = (() => {
                 return `<span class="d-block text-prm-custom ">${data.expense_type_name ?? "_"}</span>`;
             },
         },
-        {
-            transTitle: "titles.Ref No",
-            className: "align-middle text-nowrap",
-            data: (data) => {
-                return `<span class="d-block text-prm-custom">${data.ref_no ?? "_"}</span>`;
-            },
-        },
+        
         
         {
-            title: "Amount",
+            title: "Due",
             className: "align-middle text-nowrap",
             data: (data) => {
                 const total = VSMoney.formatAmount(data.total_amount, data.currency_code ?? 'USD');
-                return `<span class="d-block text-prm-custom" style="color:#1d4ed8;">${total}</span>`;
+                return `<span class="d-block fw-semibold text-primary">${total}</span>`;
             },
         },
         {
@@ -69,7 +75,7 @@ var BillComponent = (() => {
             className: "align-middle text-nowrap",
             data: (data) => {
                 const paid = VSMoney.formatAmount(data.paid_amount, data.currency_code ?? 'USD');
-                return `<span class="d-block text-prm-custom">${paid}</span>`;
+                return `<span class="d-block fw-semibold text-success">${paid}</span>`;
             },
         },
         {
@@ -87,7 +93,7 @@ var BillComponent = (() => {
                           : "#94a3b8";
 
                 return `
-                    <span class="d-block" style="color:${color};">
+                    <span class="d-block fw-semibold" style="color:${color};">
                        ${VSMoney.formatAmount(data.balance, data.currency_code ?? 'USD')}
                     </span>`;
             },
@@ -212,7 +218,8 @@ var BillComponent = (() => {
             const f = el.dataset.field;
             p[f] = el.value;
         });
-
+        console.log(566,p);
+        
         return p;
     };
 
@@ -236,7 +243,7 @@ var BillComponent = (() => {
                     name: "delete_bill",
                 },
                 {
-                    html: '<span class="ps-2"> Pay Now</span>',
+                    html: '<span class="ps-2">Pay Now</span>',
                     icon: `<i class="fa-solid fa-circle-dollar-to-slot fs-5 text-primary"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "bill_payment",
@@ -423,10 +430,7 @@ var BillComponent = (() => {
 const BillDialog = (() => {
     const self = {};
     let dialog = null;
-
     self.show = (op) => {
-        // console.log("DEBUG 1: Opening Dialog with op:", op);
-
         dialog =
             dialog ||
             new GeneralDialog({
@@ -452,7 +456,7 @@ const BillDialog = (() => {
                             <div class="col-6 col-md-6">
                                 <div class=" material-input outlined">
                                     <input data-type="date" name="bill_date" required class="data-input form-control form_input" data-field="bill_date" />
-                                    <label style="color:#777777;padding-left:6px;">Invoice Date</label>
+                                    <label style="color:#777777;padding-left:6px;">Issue Date</label>
                                 </div>
                             </div>
                             <div class="col-6 col-md-6">
@@ -493,7 +497,7 @@ const BillDialog = (() => {
                             </div>
                             <div class="col-12 ">
                                 <div class="material-input outlined">
-                                    <textarea class="data-input form-control" data-field="remark" placeholder=" "></textarea>
+                                    <textarea name="remark" class="data-input form-control" data-field="remark" placeholder=" "></textarea>
                                     <label style="color:#777777;padding-left:6px;">Remark</label>
                                 </div>
                             </div>
@@ -580,10 +584,18 @@ const BillDialog = (() => {
                         valueField: "id",
                     },
                 ],
-
+                onShow: (me) => {
+                const title = me.divModal.querySelector('.modal-title');
+                    if (title) {
+                        const isModify = !!me.dataOptions?.id;
+                        title.innerHTML = isModify
+                            ? '<h4 class="text-prm-custom text-start fw-bold">Modify Bill</h4>'
+                            : '<h4 class="text-prm-custom text-start fw-bold">Generate Bill</h4>';
+                    }
+                },
                 prepareFormOptions: {
-                    createTitle: "Add New Bill Record",
-                    modifyTitle: "Modify Bill Record",
+                    createTitle: "Generate Bill",
+                    modifyTitle: "Modify Bill",
                     targetProp: "bill_details",
                     api: {
                         endpoint: [main_view.base_url, "/prm/bill/form-options"].join(""),
@@ -612,10 +624,6 @@ const BillDialog = (() => {
                 // },
 
                 onPrepareForm: (me, data) => {
-                    const header = me.divModal.querySelector(".modal-header");
-                    const btnClose = header.querySelector("button[data-bs-dismiss]");
-                    if (btnClose) btnClose.classList.add("d-none");
-
                     const details = data?.bill_details;
                     if (details?.file_image) {
                         me.controls.documents.value = details.file_image;
@@ -640,36 +648,6 @@ const BillDialog = (() => {
                             }
                         });
                     }
-
-                    setTimeout(() => {
-                        const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-
-                        const toFormatted = (val) => {
-                            if (/^\d{2}-[A-Za-z]{3}-\d{4}$/.test(val)) return val; // already correct format
-                            const parsed = new Date(val);
-                            if (isNaN(parsed)) return val;
-                            const d = String(parsed.getDate()).padStart(2, '0');
-                            const m = months[parsed.getMonth()];
-                            const y = parsed.getFullYear();
-                            return `${d}-${m}-${y}`;
-                        };
-
-                        if (me.controls.bill_date) {
-                            if (!me.controls.bill_date.value) {
-                                const now = new Date();
-                                const d = String(now.getDate()).padStart(2, '0');
-                                const m = months[now.getMonth()];
-                                const y = now.getFullYear();
-                                me.controls.bill_date.value = `${d}-${m}-${y}`;
-                            } else {
-                                me.controls.bill_date.value = toFormatted(me.controls.bill_date.value);
-                            }
-                        }
-
-                        if (me.controls.due_date && me.controls.due_date.value) {
-                            me.controls.due_date.value = toFormatted(me.controls.due_date.value);
-                        }
-                    }, 0);
                 },
 
                 buttons: [
