@@ -261,6 +261,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('reservation')
     Route::post('/delete', [ReservationController::class, 'deleteReservation']);
     Route::post('/update-status', [ReservationController::class, 'updateReservationStatus']);
     Route::post('/get-amenity-info', [ReservationController::class, 'getAmenityInfo']);
+    Route::post('/cancel', [ReservationController::class, 'cancelReservation']);
 });
 
 Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('purchase/order')->group(function(){

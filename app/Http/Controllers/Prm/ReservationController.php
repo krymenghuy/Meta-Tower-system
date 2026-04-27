@@ -111,4 +111,23 @@ class ReservationController extends Controller
          $id = $req->tenant_id ?? $req->id;
         return JDV::result($this->tenants->getAmenityInfo($id,$ss));
     }
+
+    public function cancelReservation(Request $req)
+    {
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+
+        $id = $req->input('id');
+        if (!$id || !is_numeric($id)) {
+            return JDV::error('Invalid or missing ID');
+        }
+
+        $res = $this->reservation->cancelReservation($id, $ss);
+
+        return JDV::raw($res);
+    }
+
+
 }
