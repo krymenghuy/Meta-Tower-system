@@ -97,6 +97,7 @@ class Amenity extends VSModel
         }
 
         if ($id > 0) {
+            BuildingSpace::updateTotalSpace($d->building_id);
             return DV::depends(1, ['amenities' => $inputs, 'id' => $id]);
         }
         return DV::error('Error saving Amenity...!');
@@ -130,8 +131,8 @@ class Amenity extends VSModel
 
         // $fullCode = $prefixLetters . '-' . $floorPrefix . '-R' . $roomNumber;
         // $fullCode = $floorPrefix . '-R-' . $roomNumber;
-        // $fullCode = 'AMN-' . $roomNumber;
-        $fullCode = $roomNumber;
+        $fullCode = 'A-' . $roomNumber;
+        // $fullCode = $roomNumber;
 
         DB::table('amenities')
             ->where('id', $amenity_id)
@@ -208,6 +209,7 @@ class Amenity extends VSModel
             ->whereRaw($str_search)
             ->whereRaw($str_moreWhere)
             ->selectRaw("a.id,a.name,a.code,a.description,a.building_id,b.name as building_name,a.floor_id,f.name as floor_number,a.category_id,ac.name as category,a.access_level,a.requires_booking,a.max_capacity,a.is_reserved,a.status_id,as.name as status,a.updated_at,a.update_user")
+            ->orderBy('a.status_id', 'ASC')
             ->orderBy('a.id','DESC');
         $clone_query = clone $query;
         $count = $clone_query->count('a.id');

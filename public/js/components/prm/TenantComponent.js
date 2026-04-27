@@ -777,13 +777,13 @@ newWindow.document.close();
                             <div class="col-6">
                                 <div class="p-3 bg-light rounded">
                                     <div class="text-muted small">ID</div>
-                                    <div class="fw-semibold">${data.code ?? "N/A"}</div>
+                                    <div class="">${data.code ?? "N/A"}</div>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="p-3 bg-light rounded">
                                     <div class="text-muted small">Unit</div>
-                                    <div class="fw-semibold">${data.space_code ?? "N/A"}</div>
+                                    <div class="">${data.space_code ?? "N/A"}</div>
                                 </div>
                             </div>
                             <div class="col-12">
@@ -792,11 +792,11 @@ newWindow.document.close();
                                     <div class="row text-center">
                                         <div class="col-6 border-end border-info">
                                             <div class="text-muted mb-1 small">Start Date</div>
-                                            <div class="fw-semibold small">${data.start_date ?? "N/A"}</div>
+                                            <div class="small">${data.start_date ?? "N/A"}</div>
                                         </div>
                                         <div class="col-6">
                                             <div class="text-muted mb-1 small">End Date</div>
-                                            <div class="fw-semibold small">${data.end_date ?? "N/A"}</div>
+                                            <div class="small">${data.end_date ?? "N/A"}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -834,22 +834,22 @@ newWindow.document.close();
                         <div class="tab-pane py-2 active" id="overview_tenant_detail">
                             <h5 class="fw-bold mb-2"><i class="fa fa-user me-1 text-primary"></i> Personal Information</h5>
                             <div class="row g-4 mb-5">
-                                <div class="col-md-4"><small class="text-muted">Name</small><div class="fw-semibold text-capitalize">${data.name ?? ""}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Gender</small><div class="fw-semibold">${data.sex == "M" ? "Male" : data.sex == "F" ? "Female" : ""}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Date of Birth</small><div class="fw-semibold">${data.date_of_birth ?? ""}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Legal Name</small><div class="fw-semibold">${data.legal_name ?? ""}</div></div>
-                                <div class="col-md-4"><small class="text-muted">National ID</small><div class="fw-semibold">${data.national_id ?? ""}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Passport Number</small><div class="fw-semibold">${data.passport_number ?? ""}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Phone</small><div class="fw-semibold text-primary">${data.phone_number ?? ""}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Email</small><div class="fw-semibold text-primary">${data.email ?? ""}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Address</small><div class="fw-semibold text-prm-custom text-capitalize">${data.address ?? ""}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Name</small><div class="text-capitalize">${data.name ?? ""}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Gender</small><div class="">${data.sex == "M" ? "Male" : data.sex == "F" ? "Female" : ""}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Date of Birth</small><div class="">${data.date_of_birth ?? ""}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Legal Name</small><div class="">${data.legal_name ?? ""}</div></div>
+                                <div class="col-md-4"><small class="text-muted">National ID</small><div class="">${data.national_id ?? "N/A"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Passport Number</small><div class="">${data.passport_number ?? "N/A"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Phone</small><div class="">${data.phone_number ?? ""}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Email</small><div class=" text-primary">${data.email ?? "N/A"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Address</small><div class="text-prm-custom text-capitalize">${data.address ?? "N/A"}</div></div>
                             </div>
 
                             <h5 class="fw-bold mb-4"><i class="fa fa-phone me-1 text-primary"></i> Emergency Contact</h5>
                             <div class="row g-4">
-                                <div class="col-md-4"><small class="text-muted">Contact Name</small><div class="fw-semibold text-capitalize">${data.name}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Relationship</small><div class="fw-semibold">Partner</div></div>
-                                <div class="col-md-4"><small class="text-muted">Emergency Phone</small><div class="fw-semibold">${data.phone_number}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Contact Name</small><div class="text-capitalize">${data.name}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Relationship</small><div class="">Partner</div></div>
+                                <div class="col-md-4"><small class="text-muted">Emergency Phone</small><div class="">${data.phone_number}</div></div>
                             </div>
                         </div>
 
@@ -873,7 +873,7 @@ newWindow.document.close();
                                             <th class="border-0">File Name</th>
                                             <th class="border-0">File Type</th>
                                             <th class="border-0">Remark</th>
-                                            <th class="border-0 text-end pe-3">Actions</th>
+                                            <th class="border-0 text-start">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -1150,22 +1150,22 @@ newWindow.document.close();
                     html += `<div class="tab-pane py-2 active" id="overview_tenant_detail">
                             <h5 class="fw-bold mb-2"><i class="fa fa-user me-1 text-primary"></i> Personal Information</h5>
                             <div class="row g-4 mb-5">
-                                <div class="col-md-4"><small class="text-muted">Name</small><div class="fw-semibold">${data.name ?? ""}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Sex</small><div class="fw-semibold">${data.sex == "M" ? "Male" : data.sex == "F" ? "Female" : ""}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Date of Birth</small><div class="fw-semibold">${data.date_of_birth ?? ""}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Legal Name</small><div class="fw-semibold">${data.legal_name ?? ""}</div></div>
-                                <div class="col-md-4"><small class="text-muted">National ID</small><div class="fw-semibold">${data.national_id ?? ""}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Passport Number</small><div class="fw-semibold">${data.passport_number ?? ""}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Phone</small><div class="fw-semibold text-primary">${data.phone_number ?? ""}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Email</small><div class="fw-semibold text-primary">${data.email ?? ""}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Address</small><div class="fw-semibold text-prm-custom">${data.address ?? ""}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Name</small><div class="">${data.name ?? ""}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Sex</small><div class="">${data.sex == "M" ? "Male" : data.sex == "F" ? "Female" : ""}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Date of Birth</small><div class="">${data.date_of_birth ?? ""}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Legal Name</small><div class="">${data.legal_name ?? ""}</div></div>
+                                <div class="col-md-4"><small class="text-muted">National ID</small><div class="">${data.national_id ?? ""}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Passport Number</small><div class="">${data.passport_number ?? ""}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Phone</small><div class="">${data.phone_number ?? ""}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Email</small><div class=" text-primary">${data.email ?? ""}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Address</small><div class="text-prm-custom">${data.address ?? ""}</div></div>
                             </div>
 
                             <h5 class="fw-bold mb-4"><i class="fa fa-phone me-1 text-primary"></i> Emergency Contact</h5>
                             <div class="row g-4">
-                                <div class="col-md-4"><small class="text-muted">Contact Name</small><div class="fw-semibold text-capitalize">${d.name}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Relationship</small><div class="fw-semibold">Partner</div></div>
-                                <div class="col-md-4"><small class="text-muted">Emergency Phone</small><div class="fw-semibold">${d.phone_number}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Contact Name</small><div class="text-capitalize">${d.name}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Relationship</small><div class="">Partner</div></div>
+                                <div class="col-md-4"><small class="text-muted">Emergency Phone</small><div class="">${d.phone_number}</div></div>
                             </div>
                         </div>`;
                     div.innerHTML = html;
@@ -1228,38 +1228,48 @@ newWindow.document.close();
                         <td class="ps-3 py-3">
                             <div class="d-flex align-items-center">
                                 <div>
-                                    <div class="fw-bold text-dark">
+                                    <div class="text-dark">
                                         ${doc.document_type || doc.document_type_id || '—'}
                                     </div>
                                 </div>
                             </div>
                         </td>
                         <td>
-                            <div class="fw-bold text-dark">
+                            <div class="text-dark">
                                 ${doc.file_name || '—'}
                             </div>
                         </td>
                         <td>
-                            <div class="fw-semibold text-dark">
+                            <div class="text-dark">
                                 ${doc.ext ? doc.ext.toUpperCase() : '—'}
                             </div>
                         </td>
                         <td>
-                            <span class="fw-bold text-dark">
+                            <span class="text-dark">
                                 ${doc.remarks || ''}
                             </span>
                         </td>
                        <td class="text-end py-3 px-3">
-                            <div class="d-flex justify-content-end">
-                                <button type="button" class="btn btn-outline-primary btn-sm border-0 shadow-none view-doc" data-id="${doc.id}" title="View Document" aria-label="View Document">
-                                    <i class="fa-regular fa-eye"></i>
-                                </button>
-                                <button type="button" class="btn btn-outline-secondary btn-sm border-0 shadow-none download-doc" data-id="${doc.id}" title="Download Document" aria-label="Download Document">
-                                    <i class="fa-solid fa-cloud-arrow-down"></i>
-                                </button>
-                                <button type="button" class="btn btn-outline-danger btn-sm border-0 shadow-none delete-doc-btn" data-id="${doc.id}" title="Delete Document "aria-label="Delete Document">
-                                    <i class="fa-solid fa-trash-can"></i>
-                                </button>
+                            <div class="d-flex justify-content-start gap-2">
+                                <a href="javascript:void(0)" class="view-doc"  data-id="${doc.id}">
+                                    <span class="tool-tip">
+                                        <i class="fa-regular fa-eye text-success fs-5"></i>
+                                        <span class="tool-tiptext fs-6">View Document</span>
+                                    </span>
+                                </a>
+                                <a href="javascript:void(0)" class="download-doc" data-id="${doc.id}">
+                                    <span class="tool-tip">
+                                        <i class="fa-solid fa-cloud-arrow-down text-primary fs-5"></i>
+                                        <span class="tool-tiptext fs-6">Download Document</span>
+                                    </span>
+                                </a>
+                                <a href="javascript:void(0)" class="delete-doc-btn"  data-id="${doc.id}">
+                                    <span class="tool-tip">
+                                        <i class="fa-regular fa-trash-can text-danger fs-5"></i>
+                                        <span class="tool-tiptext fs-6">Delete Document</span>
+                                    </span>
+                                </a>
+                               
                             </div>
                         </td>
                     </tr>
@@ -1287,14 +1297,14 @@ newWindow.document.close();
                     </div>
 
                     <div class="table-responsive">
-                        <table class="table align-middle mb-0">
+                        <table class="table align-middle mb-3">
                             <thead class="bg-light">
                                 <tr class="text-uppercase small">
                                     <th class="border-0 ps-3" style="letter-spacing: 0.05em;">Document Type</th>
                                     <th class="border-0">File</th>
                                     <th class="border-0">File Type</th>
                                     <th class="border-0">Remark</th>
-                                    <th class="border-0 text-end">Actions</th>
+                                    <th class="border-0 text-start">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
