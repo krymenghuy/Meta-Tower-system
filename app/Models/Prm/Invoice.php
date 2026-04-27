@@ -35,7 +35,7 @@ class Invoice extends VSModel
             'invoice_date'      => '0|date',
             'payment_status_id' => '0|integer|exists:payment_statuses,id|default=2',
             'items'             => '1|array|min:1',
-            'general_remark'    => '0|string|0-350',
+            'general_remark'    => '1|string|0-350',
 
         ];
 
@@ -459,10 +459,10 @@ class Invoice extends VSModel
         $count = (clone $query)->count();
         $rows  = $query->skip($skip)->take($per_page)->get();
 
-        $now = \Carbon\Carbon::now('Asia/Phnom_Penh');
+        $now = \Carbon\Carbon::now('Asia/Phnom_Penh')->startOfDay();
 
         foreach ($rows as $row) {
-            $dueDate = \Carbon\Carbon::parse($row->due_date, 'Asia/Phnom_Penh');
+            $dueDate = \Carbon\Carbon::parse($row->due_date, 'Asia/Phnom_Penh')->startOfDay();
             if (in_array((int)$row->payment_status_id, [2, 3]) && $dueDate->lessThan($now)) {
                 $row->payment_status_id   = 4;
                 $row->payment_status_name = 'Over Due';
