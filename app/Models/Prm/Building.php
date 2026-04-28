@@ -300,15 +300,34 @@ class Building //extends Model
         ]);
     }
 
-    public function deleteFloor($id = null)
-    {
-        $id = $id ?? $this->id;
-        $check_floor = DB::table('floors')->where('id', $id)->exists();
-        if ($check_floor) {
-            return DV::error('Cannot delete floor.');
-        }
-        $deleted = DB::table('building_floors')->where('floor_id', $id)->delete();
 
-        return $deleted ? DV::depends(['action' => 'deleted'], 'Delete successful') : DV::error('Delete failed.');
+    public function deleteFloor($id = null)
+{
+    $id = $id ?? $this->id;
+
+    $floor = DB::table('building_floors')->where('id', $id)->first();
+    if (!$floor) {
+        return DV::error('Floor not found.');
     }
+
+    $maxFloor = DB::table('building_floors')
+        ->where('building_id', $floor->building_id)
+        ->max('floor_id');
+
+    if ($floor->floor_id != $maxFloor) {
+        return DV::error('Cannot delete this floor. Please delete the highest floor first.');
+    }
+    $check_space = DB::table('building_spaces')
+        ->where('building_id', $floor->building_id)
+        ->where('floor_id', $floor->floor_id)
+        ->exists();
+
+    if ($check_space) {
+        return DV::error('Cannot delete floor because it has associated spaces.');
+    }
+    $deleted = DB::table('building_floors')->where('id', $id)->delete();
+    return $deleted
+        ? DV::depends(['action' => 'deleted'], 'Delete successful')
+        : DV::error('Delete failed.');
+}
 }

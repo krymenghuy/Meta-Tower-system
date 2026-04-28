@@ -278,11 +278,11 @@ var BuildingComponent = ( () => {
                 </td>
                 <td class="text-nowrap">
                     <a href="javascript:void(0)" class="btn-edit-floor me-2 text-warning"
-                       data-id="${level.floor_id}" data-buildingid="${buildingId}">
+                       data-id="${level.id}" data-floorid="${level.floor_id}" data-buildingid="${buildingId}">
                         <i class="fa-regular fa-edit fs-6"></i>
                     </a>
                     <a href="javascript:void(0)" class="btn-delete-floor text-danger"
-                       data-id="${level.floor_id}" data-buildingid="${buildingId}">
+                       data-id="${level.id}" data-floorid="${level.floor_id}" data-buildingid="${buildingId}">
                         <i class="fa-regular fa-trash-can fs-6"></i>
                     </a>
                 </td>
