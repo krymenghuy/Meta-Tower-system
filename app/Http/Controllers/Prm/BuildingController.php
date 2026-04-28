@@ -96,6 +96,18 @@ class BuildingController extends Controller
 
         return JDV::result($list);
     }
+    public function deleteFloor(Request $req)
+    {
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+            if (!isset($req->id) || !is_numeric($req->id)) {
+                return JDV::error('Invalid ID');
+            }
+        $res = $this->buildings->deleteFloor($req->id);
+        return JDV::raw($res);
+    }
 
 
 

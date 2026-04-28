@@ -60,7 +60,7 @@ class BuildingSpace
         if ($res->error) return DV::error($res->error);
         $inputs = $res->values;
         $d = (object) $inputs;
-       
+
         if (!empty($d->code)) {
             $exists = DB::table('building_spaces')
                 ->where('code', $d->code)
