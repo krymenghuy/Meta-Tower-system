@@ -14,7 +14,7 @@ var BuildingComponent = ( () => {
             className: "align-middle",
         },
         {
-            title: "Building Name",
+            title: "Name",
             className: "align-middle",
             data: (data) => `
                 <div class="d-flex flex-row align-items-center">

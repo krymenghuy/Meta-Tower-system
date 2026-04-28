@@ -23,7 +23,7 @@
     text-decoration: none;
 
 } */
-/* .btnAddNewPrm {
+.btnAddNewPrm {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -36,7 +36,7 @@
     cursor: pointer;
     border: none;
 
-} */
+}
 
 /* .btnAddNewPrm:hover {
     transform: translateY(-2px);
@@ -56,125 +56,39 @@
     overflow: visible !important;
 }
 
-.btnAddNewPrm {
-    position: relative;
-    overflow: visible;
-    border-radius: 6px;
-    border: 1px solid transparent;
-    cursor: pointer;
-    color: #1a1647;
-    font-weight: 600;
-    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
-    padding: 0.55rem 1.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    transition: transform 0.2s ease-in-out;
-    z-index: 1;
+/* .btnAddNewPrm {
+  background: #F6D673;
+  color: #3B2A00;
+  border: 1px solid rgba(160,120,0,0.2);
+  border-radius: 8px;
+  padding: 9px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  cursor: pointer;
+  white-space: nowrap;
+  line-height: 1;
+  box-shadow: 0 1px 3px rgba(160,120,0,0.18);
+  transition: background 0.14s, transform 0.12s, box-shadow 0.14s;
+}
 
-    background-image:
-        linear-gradient(#e1e5f2, #e1e5f2),
-        linear-gradient(135deg, #7c6af5, #e86af5, #f5a36a, #6af5c8);
-    background-origin: border-box;
-    background-clip: padding-box, border-box;
+.btnAddNewPrm:hover {
+  background: #f2c94e;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(160,120,0,0.22);
 }
 
 .btnAddNewPrm:active {
-    transform: scale(0.96);
+  transform: scale(0.97);
+  box-shadow: 0 1px 3px rgba(160,120,0,0.15);
 }
 
-.btnAddNewPrm:before,
-.btnAddNewPrm:after {
-    position: absolute;
-    content: "";
-    width: 150%;
-    left: 50%;
-    height: 100%;
-    transform: translateX(-50%);
-    z-index: -1;
-    background-repeat: no-repeat;
-    pointer-events: none;
-}
-
-.btnAddNewPrm:hover:before {
-    top: -70%;
-    background-image:
-        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
-        radial-gradient(circle, transparent 20%, #e1e5f2 20%, transparent 30%),
-        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
-        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
-        radial-gradient(circle, transparent 10%, #e1e5f2 15%, transparent 20%),
-        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
-        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
-        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
-        radial-gradient(circle, #e1e5f2 20%, transparent 20%);
-    background-size:
-        10% 10%, 20% 20%, 15% 15%, 20% 20%, 18% 18%,
-        10% 10%, 15% 15%, 10% 10%, 18% 18%;
-    background-position: 50% 120%;
-    animation: greentopBubbles 0.6s ease;
-}
-
-@keyframes greentopBubbles {
-    0% {
-        background-position:
-            5% 90%, 10% 90%, 10% 90%, 15% 90%, 25% 90%,
-            25% 90%, 40% 90%, 55% 90%, 70% 90%;
-    }
-    50% {
-        background-position:
-            0% 80%, 0% 20%, 10% 40%, 20% 0%, 30% 30%,
-            22% 50%, 50% 50%, 65% 20%, 90% 30%;
-    }
-    100% {
-        background-position:
-            0% 70%, 0% 10%, 10% 30%, 20% -10%, 30% 20%,
-            22% 40%, 50% 40%, 65% 10%, 90% 20%;
-        background-size:
-            0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
-    }
-}
-
-.btnAddNewPrm:hover::after {
-    bottom: -70%;
-    background-image:
-        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
-        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
-        radial-gradient(circle, transparent 10%, #e1e5f2 15%, transparent 20%),
-        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
-        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
-        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
-        radial-gradient(circle, #e1e5f2 20%, transparent 20%);
-    background-size:
-        15% 15%, 20% 20%, 18% 18%, 20% 20%,
-        15% 15%, 20% 20%, 18% 18%;
-    background-position: 50% 0%;
-    animation: greenbottomBubbles 0.6s ease;
-}
-
-@keyframes greenbottomBubbles {
-    0% {
-        background-position:
-            10% -10%, 30% 10%, 55% -10%, 70% -10%,
-            85% -10%, 70% -10%, 70% 0%;
-    }
-    50% {
-        background-position:
-            0% 80%, 20% 80%, 45% 60%, 60% 100%,
-            75% 70%, 95% 60%, 105% 0%;
-    }
-    100% {
-        background-position:
-            0% 90%, 20% 90%, 45% 70%, 60% 110%,
-            75% 80%, 95% 70%, 110% 10%;
-        background-size:
-            0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
-    }
-}
-
-
-
+.btnAddNewPrm:disabled, .btn-disabled {
+  opacity: 0.38;
+  pointer-events: none;
+} */
 
 .btnAddNewPrm i {
     font-size: 1.1rem;
@@ -389,6 +303,7 @@ li.kt-menu__section {
 
 .menu-selected {
     background-color: #48456c;
+     /* background-color: #2ec723; */
     box-shadow: 1px 1px 1px #000 !important;
     border-radius: 10px;
 }
@@ -2602,8 +2517,8 @@ tr.row-selected td {
 }
 
 .table--white thead th {
-    color: #1A1647 !important;
-    background-color:  #e1e5f2 !important;
+    color: #1a1647 !important;
+    background-color:  #e1e5f2 ;
     font-size: 14px !important;
     padding: 10px !important;
 }

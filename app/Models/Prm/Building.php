@@ -145,6 +145,9 @@ class Building //extends Model
             return DV::error('Cannot delete building because it has associated spaces.');
         }
         $deleted = DB::table('buildings')->where('id', $id)->delete();
+        if ($deleted) {
+            DB::table('building_floors')->where('building_id', $id)->delete();
+        }
 
         return $deleted
             ? DV::depends(['action' => 'deleted'], 'Delete successful')

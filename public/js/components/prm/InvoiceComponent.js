@@ -71,56 +71,40 @@ var InvoiceComponent = (() => {
         },
         {
             transTitle: "titles.Amount",
-            className: "align-middle text-primary text-nowrap",
+            className: "align-middle text-nowrap",
             data: data => {
                 const amt = data.amount
                     ? Number(data.amount).toLocaleString("en-US", {
                           minimumFractionDigits: 2
                       })
                     : "0.00";
-                return `<span class="d-block text-yp-custom fw-semibold">${mThis.currency_symbol}${amt}</span>`;
+                return `<span class="d-block  fw-semibold">${mThis.currency_symbol}${amt}</span>`;
             }
         },
         {
             transTitle: "titles.Paid",
-            className: "align-middle text-success text-nowrap",
+            className: "align-middle text-success  text-nowrap",
             data: data => {
                 const amt = data.paid_amount
                     ? Number(data.paid_amount).toLocaleString("en-US", {
                           minimumFractionDigits: 2
                       })
                     : "0.00";
-                return `<span class="d-block text-yp-custom fw-semibold">${mThis.currency_symbol}${amt}</span>`;
+                return `<span class="d-block  fw-semibold">${mThis.currency_symbol}${amt}</span>`;
             }
         },
         {
             transTitle: "titles.Balance",
-            className: "align-middle text-danger text-nowrap",
+            className: "align-middle text-danger  text-nowrap",
             data: data => {
                 const amt = data.balance
                     ? Number(data.balance).toLocaleString("en-US", {
                           minimumFractionDigits: 2
                       })
                     : "0.00";
-                return `<span class="d-block text-yp-custom fw-semibold">${mThis.currency_symbol}${amt}</span>`;
+                return `<span class="d-block  fw-semibold">${mThis.currency_symbol}${amt}</span>`;
             }
         },
-        // {
-        //     transTitle: "titles.Due Date",
-        //     className: "align-middle text-nowrap text-center",
-        //     data: data => {
-        //         const statusId = data.payment_status_id=4;
-        //         return `
-        //             <div class="d-flex flex-column align-items-center">
-        //                 <span class="text-prm-custom text-nowrap">${data.due_date ??""}</span>
-
-        //                 <span class="text-danger-emphasis small">
-        //                 ${data.payment_status_name}
-        //             </span>
-        //             </div>
-        //         `;
-        //     }
-        // },
 
         {
             transTitle: "titles.Due Date",
@@ -182,7 +166,7 @@ var InvoiceComponent = (() => {
                 } else if (statusId === 4) {
                     // Overdue
                     cls =
-                        "text-primary bg-primary-subtle border border-primary";
+                        "text-primary bg-primary-subtle border border-primary ";
                     icon = "fa-solid fa-triangle-exclamation";
                 }
                 return `
@@ -225,13 +209,14 @@ var InvoiceComponent = (() => {
     mThis.init = () => {
         if (mThis.initAlready) return;
 
-        mThis.InvoiceListView = new ListView("_invoice_list", {
+        mThis.InvoiceListView = new ListView("_invoices_list", {
             fetchApi: `${main_view.base_url}/prm/invoice/list-paginate`,
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
-            tableClass: "table table--white rounded-2  header-uppercase",
+            tableClass: "table table--white rounded-2 rounded-2 overflow-hidden header-uppercase",
             rowCreated: (data, index, tr) => {
+                tr.classList.add("invoice","cursor-pointer");
                 tr.id = `invoice_id_${data.id}`;
                 tr.dataset.statusid = data.payment_status_id || 0;
                 tr.dataset.canceled = 0;
@@ -423,8 +408,8 @@ var InvoiceComponent = (() => {
             <div class="bg-white rounded shadow-sm">
                 <div class="table-responsive">
                     <table class="table table-sm table-bordered mb-0">
-                        <thead style="background:#f0f4ff;">
-                            <tr>
+                        <thead style="background:#e1e5f2;">
+                            <tr style= background-color:#E1E5F2;" >
                                 <th class="text-center" style="min-width:150px;">Item Description </th>
                                 <th class="text-center" style="width:100px;">Type</th>
                                 <th class="text-center" style="width:0px;">Quantity</th>

@@ -10,7 +10,7 @@
 
             <div class="col-12 col-md-3 col-lg-2 ms-auto text-md-end">
                 <button type="button" class="btnAddNewPrm w-100 w-md-auto" id="_btnAddBuilding">
-                   <i class="fa-regular fa-building"></i>
+                   <i class="fa-regular fa-building me-2"></i>
                     <span vslang="buttons.Create Building"></span>
                 </button>
             </div>

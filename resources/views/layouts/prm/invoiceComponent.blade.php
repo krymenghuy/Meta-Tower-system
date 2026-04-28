@@ -7,9 +7,7 @@
             </div>
          </div>
 
-            {{-- <div class="col-12 col-md-6 col-lg-2 ">
-                <select id="building_id" class="data-input filter-field form-control" data-field="building_id"></select>
-            </div> --}}
+
            <div class="col-12 col-md-6 col-lg-2">
                 <select id="payment_status" class="data-input filter-field form-control" data-field="status_id"></select>
             </div>
@@ -24,7 +22,7 @@
 
     </div>
 
-    <div id="_invoice_list" class="table-responsive  mt-3 bg-white rounded-2 border"></div>
+    <div id="_invoices_list" class="table-r esponsive  mt-3 bg-white rounded-2 border"></div>
 </div>
 
 <script src="{{ asset('js/components/prm/PrintInvoiceDialog.js') }}"></script>
