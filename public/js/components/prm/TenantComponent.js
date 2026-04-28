@@ -504,7 +504,7 @@ var TenantComponent = new (function () {
                                                     class="create-tenant-contract fw-semibold"
                                                     data-id="${d.id}" data-name="${d.name}">
                                                         <span class="tool-tip">
-                                                            <i class="fa-solid fa-file-circle-plus text-prm-custom fs-5"></i>
+                                                            <i class="fa-solid fa-file-circle-plus text-prm-custom fs-6"></i>
                                                             <span class="tool-tiptext fs-6">Create Contract</span>
                                                         </span>
                                                     </a>
@@ -757,65 +757,59 @@ newWindow.document.close();
                     break;
             }
         }
-
         let html = `
-        <div class="row g-4">
-            <div class="col-12 col-lg-3">
-                <div class="card shadow-sm mb-4">
-                    <div class="card-body text-center">
+        <div class="row g-4 d-flex align-items-stretch"> <div class="col-12 col-lg-3">
+                <div class="card shadow-sm mb-3 h-100">
+                    <div class="card-body text-center d-flex flex-column">
                         <div class="position-relative d-inline-block mb-3">
                             <img src="${data.image_url || `${main_view.base_url}/assets/images/default/default-staff1.png`}"
                                 class="rounded-circle border shadow-sm"
-                                width="130" height="130">
+                                width="140" height="140"
+                                style="object-fit: cover; object-position: center;">
                         </div>
                         <h4 class="fw-bold mb-2 text-capitalize">${data.name}</h4>
                         <div class="mb-3">
                             <span class="${cls_class} px-3 py-2">${data.status}</span>
                         </div>
                         <hr class="my-3">
-                        <div class="row g-3 text-center">
-                            <div class="col-6">
-                                <div class="p-3 bg-light rounded">
-                                    <div class="text-muted small">ID</div>
-                                    <div class="">${data.code ?? "N/A"}</div>
+
+                        <div class="mt-auto">
+                            <div class="row g-3 text-center">
+                                <div class="col-6">
+                                    <div class="p-3 bg-light rounded">
+                                        <div class="text-muted small">ID</div>
+                                        <div class="">${data.code ?? "N/A"}</div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="p-3 bg-light rounded">
-                                    <div class="text-muted small">Unit</div>
-                                    <div class="">${data.space_code ?? "N/A"}</div>
+                                <div class="col-6">
+                                    <div class="p-3 bg-light rounded">
+                                        <div class="text-muted small">Unit</div>
+                                        <div class="">${data.space_code ?? "N/A"}</div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-12">
-                                <div class="p-3 bg-light rounded text-center">
-                                    <h6 class="mb-3">Lease Terms</h6>
-                                    <div class="row text-center">
-                                        <div class="col-6 border-end border-info">
-                                            <div class="text-muted mb-1 small">Start Date</div>
-                                            <div class="small">${data.start_date ?? "N/A"}</div>
-                                        </div>
-                                        <div class="col-6">
-                                            <div class="text-muted mb-1 small">End Date</div>
-                                            <div class="small">${data.end_date ?? "N/A"}</div>
+                                <div class="col-12 mb-2">
+                                    <div class="p-3 bg-light rounded text-center">
+                                        <h6 class="mb-3">Lease Terms</h6>
+                                        <div class="row text-center">
+                                            <div class="col-6 border-end border-info">
+                                                <div class="text-muted mb-1 small">Start Date</div>
+                                                <div class="small">${data.start_date ?? "N/A"}</div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="text-muted mb-1 small">End Date</div>
+                                                <div class="small">${data.end_date ?? "N/A"}</div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-
                         </div>
-
-
                     </div>
                 </div>
-
             </div>
 
-            <!-- RIGHT COLUMN -->
             <div class="col-12 col-lg-9">
-                <div class="card shadow-sm h-100">
-
-                    <!-- Tabs -->
-                    <div class="card-header bg-white">
+                <div class="card shadow-sm h-100"> <div class="card-header bg-white">
                         <ul class="nav nav-tabs card-header-tabs" id="tenantTabs">
                             <li class="nav-item">
                                 <a class="nav-link active fw-semibold" href="#overview_tenant_detail">Overview</a>
@@ -829,10 +823,11 @@ newWindow.document.close();
                         </ul>
                     </div>
 
-                    <!-- Tab Content -->
-                    <div class="card-body  tab-content">
+                    <div class="card-body tab-content">
                         <div class="tab-pane py-2 active" id="overview_tenant_detail">
-                            <h5 class="fw-bold mb-2"><i class="fa fa-user me-1 text-primary"></i> Personal Information</h5>
+                            <h5 class="fw-bold mb-2 d-flex align-items-center">
+                                <i class="fa fa-user me-2 text-primary"></i> Personal Information
+                            </h5>
                             <div class="row g-4 mb-5">
                                 <div class="col-md-4"><small class="text-muted">Name</small><div class="text-capitalize">${data.name ?? ""}</div></div>
                                 <div class="col-md-4"><small class="text-muted">Gender</small><div class="">${data.sex == "M" ? "Male" : data.sex == "F" ? "Female" : ""}</div></div>
@@ -840,23 +835,16 @@ newWindow.document.close();
                                 <div class="col-md-4"><small class="text-muted">Legal Name</small><div class="">${data.legal_name ?? ""}</div></div>
                                 <div class="col-md-4"><small class="text-muted">National ID</small><div class="">${data.national_id ?? "N/A"}</div></div>
                                 <div class="col-md-4"><small class="text-muted">Passport Number</small><div class="">${data.passport_number ?? "N/A"}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Phone</small><div class="">${data.phone_number ?? ""}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Phone</small><div class=" text-primary">${data.phone_number ?? ""}</div></div>
                                 <div class="col-md-4"><small class="text-muted">Email</small><div class=" text-primary">${data.email ?? "N/A"}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Address</small><div class="text-prm-custom text-capitalize">${data.address ?? "N/A"}</div></div>
-                            </div>
-
-                            <h5 class="fw-bold mb-4"><i class="fa fa-phone me-1 text-primary"></i> Emergency Contact</h5>
-                            <div class="row g-4">
-                                <div class="col-md-4"><small class="text-muted">Contact Name</small><div class="text-capitalize">${data.name}</div></div>
                                 <div class="col-md-4"><small class="text-muted">Relationship</small><div class="">Partner</div></div>
-                                <div class="col-md-4"><small class="text-muted">Emergency Phone</small><div class="">${data.phone_number}</div></div>
+                                <div class="col-12"><small class="text-muted">Address</small><div class="text-prm-custom text-capitalize">${data.address ?? "N/A"}</div></div>
                             </div>
                         </div>
 
                         <div class="tab-pane" id="lease_tenant_history">
-                            <h5 class="fw-bold mb-2">
-                                <i class="fa fa-file-text me-1 text-primary"></i>
-                                Renewal History
+                            <h5 class="fw-bold mb-2 d-flex align-items-center">
+                                <i class="fa fa-file-text me-2 text-primary"></i> Renewal History
                             </h5>
                             <div class="container py-4 position-relative overflow-auto lease-history-scroll" style="max-height: 360px; scrollbar-width: thin;scrollbar-color: #888 #f1f1f1;">
                                 <p class="text-muted small mb-0">Open this tab to load contracts.</p>
@@ -864,11 +852,13 @@ newWindow.document.close();
                         </div>
 
                         <div class="tab-pane" id="document_tenant_list">
-                            <h5 class="fw-bold mb-4"><i class="fa fa-folder me-1 text-primary"></i> Documents</h5>
+                            <h5 class="fw-bold mb-4 d-flex align-items-center">
+                                <i class="fa fa-folder me-2 text-primary"></i> Documents
+                            </h5>
                             <div class="table-responsive">
                                 <table class="table align-middle">
                                     <thead class="bg-light">
-                                        <tr class=" text-uppercase ">
+                                        <tr class="text-uppercase">
                                             <th class="border-0 ps-3" style="letter-spacing: 0.05em;">Document Type</th>
                                             <th class="border-0">File Name</th>
                                             <th class="border-0">File Type</th>
@@ -879,21 +869,11 @@ newWindow.document.close();
                                     <tbody>
                                         <tr class="border-bottom">
                                             <td class="ps-3 py-3">
-                                                <div class="d-flex align-items-center">
-                                                    <div>
-                                                        <div class="fw-bold text-dark">${data.document_type_id ?? ""}</div>
-                                                    </div>
-                                                </div>
+                                                <div class="fw-bold text-dark">${data.document_type_id ?? ""}</div>
                                             </td>
-                                            <td>
-                                                <div class="fw-bold text-dark">${data.file_name ?? ""}</div>
-                                            </td>
-                                            <td>
-                                                <div class="fw-semibold text-dark">${data.ext ?? ""}</div>
-                                            </td>
-                                            <td>
-                                                <span class="text-muted small">${data.remarks ?? ""}</span>
-                                            </td>
+                                            <td><div class="fw-bold text-dark">${data.file_name ?? ""}</div></td>
+                                            <td><div class="fw-semibold text-dark">${data.ext ?? ""}</div></td>
+                                            <td><span class="text-muted small">${data.remarks ?? ""}</span></td>
                                             <td class="text-end pe-3">
                                                 <button class="btn btn-sm text-muted p-0 ">
                                                     <i class="fa-solid fa-ellipsis fa-shake"></i>
@@ -903,24 +883,12 @@ newWindow.document.close();
                                     </tbody>
                                 </table>
                             </div>
-
                         </div>
-
                     </div>
-                    <!-- Footer -->
-                 <!--   <div class="  card-footer bg-light d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 ">
-                        <small class="d-none text-muted">Managed by <strong>Admin: chhorng</strong></small>
-                        <div>
-                            <a href="javascript:void(0)" class="btn btn-prm-custom btn-sm me-2 d-none">View Logs</a>
-                            <a href="javascript:void(0)" class="btn edit_tenant_profile_info btn-prm-custom btn-sm rounded-2 d-none" data-id="${data.id}" data-status ="${data.status_id}"><i class="fa fa-edit me-1"></i> Edit Profile</a>
-                        </div>
-                    </div> -->
-
                 </div>
+            </div>
         </div>
-
-
-        `;
+    `;
 
         mThis.profile_info_tenant.innerHTML = html;
 
@@ -1158,14 +1126,8 @@ newWindow.document.close();
                                 <div class="col-md-4"><small class="text-muted">Passport Number</small><div class="">${data.passport_number ?? ""}</div></div>
                                 <div class="col-md-4"><small class="text-muted">Phone</small><div class="">${data.phone_number ?? ""}</div></div>
                                 <div class="col-md-4"><small class="text-muted">Email</small><div class=" text-primary">${data.email ?? ""}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Address</small><div class="text-prm-custom">${data.address ?? ""}</div></div>
-                            </div>
-
-                            <h5 class="fw-bold mb-4"><i class="fa fa-phone me-1 text-primary"></i> Emergency Contact</h5>
-                            <div class="row g-4">
-                                <div class="col-md-4"><small class="text-muted">Contact Name</small><div class="text-capitalize">${d.name}</div></div>
                                 <div class="col-md-4"><small class="text-muted">Relationship</small><div class="">Partner</div></div>
-                                <div class="col-md-4"><small class="text-muted">Emergency Phone</small><div class="">${d.phone_number}</div></div>
+                                <div class="col-12"><small class="text-muted">Address</small><div class="text-prm-custom text-capitalize">${data.address ?? "N/A"}</div></div>
                             </div>
                         </div>`;
                     div.innerHTML = html;
@@ -1253,23 +1215,23 @@ newWindow.document.close();
                             <div class="d-flex justify-content-start gap-2">
                                 <a href="javascript:void(0)" class="view-doc"  data-id="${doc.id}">
                                     <span class="tool-tip">
-                                        <i class="fa-regular fa-eye text-success fs-5"></i>
+                                        <i class="fa-regular fa-eye text-success fs-6"></i>
                                         <span class="tool-tiptext fs-6">View Document</span>
                                     </span>
                                 </a>
                                 <a href="javascript:void(0)" class="download-doc" data-id="${doc.id}">
                                     <span class="tool-tip">
-                                        <i class="fa-solid fa-cloud-arrow-down text-primary fs-5"></i>
+                                        <i class="fa-solid fa-cloud-arrow-down text-primary fs-6"></i>
                                         <span class="tool-tiptext fs-6">Download Document</span>
                                     </span>
                                 </a>
                                 <a href="javascript:void(0)" class="delete-doc-btn"  data-id="${doc.id}">
                                     <span class="tool-tip">
-                                        <i class="fa-regular fa-trash-can text-danger fs-5"></i>
+                                        <i class="fa-regular fa-trash-can text-danger fs-6"></i>
                                         <span class="tool-tiptext fs-6">Delete Document</span>
                                     </span>
                                 </a>
-                               
+
                             </div>
                         </td>
                     </tr>
@@ -1290,13 +1252,13 @@ newWindow.document.close();
                 <div class="tab-pane active" id="document_tenant_list">
 
                     <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h6 class="fw-light mb-0">Identity Documents</h6>
+                        <h5 class="fw-bold mb-2"><i class="fa fa-address-card me-2 text-primary"></i> Identity Documents</h5>
                         <button type="button" class="fw-light btn btn-primary w-16 w-md-auto btnAddNewPrm" id="_btnDocument">
                             <span vslang="buttons.Upload Document">Upload Document</span>
                         </button>
                     </div>
 
-                    <div class="table-responsive">
+                    <div class="table-responsive " style="max-height: 290px; overflow-y: auto; scrollbar-width: thin;">
                         <table class="table align-middle mb-3">
                             <thead class="bg-light">
                                 <tr class="text-uppercase small">
