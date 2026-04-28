@@ -21,7 +21,7 @@ var MaintenanceComponent = (() => {
             data: (data) => `<span class="text-nowrap text-prm-custom">${data.building_name ?? ""}</span>`
         },
         {
-            transTitle: "titles.Type unit",
+            transTitle: "titles.unit",
             className: "align-middle",
             data: (data) => {
                 const space = data.space_id && data.space_code ? data.space_code : null;
@@ -32,73 +32,52 @@ var MaintenanceComponent = (() => {
             }
         },
         {
-            transTitle: "titles.Date",
-            className: "align-middle text-center",
+            transTitle: "titles.Schedule",
+            className: "align-middle text-start",
             data: (data) => {
 
-                const normalizeTime12h = (rawTime) => {
-                    if (!rawTime) return "";
-                    const s = String(rawTime).trim().toUpperCase();
-                    const m12 = s.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
-                    if (m12) {
-                        const h = Number(m12[1]);
-                        const mm = m12[2];
-                        const ap = m12[3].toUpperCase();
-                        const h12 = h === 0 ? 12 : (h > 12 ? h - 12 : h);
-                        return `${h12}:${mm} ${ap}`;
-                    }
-                    const m24 = s.match(/^(\d{1,2}):(\d{2})$/);
-                    if (m24) {
-                        const h = Number(m24[1]);
-                        const mm = m24[2];
-                        const hour = h % 24;
-                        const ap = hour < 12 ? "AM" : "PM";
-                        const h12 = hour === 0 ? 12 : (hour > 12 ? hour - 12 : hour);
-                        return `${h12}:${mm} ${ap}`;
-                    }
-                    return "";
+                const to12h = (t) => {
+                    if (!t) return "";
+                    const m = String(t).match(/(\d{1,2}):(\d{2})(?:\s*(AM|PM))?/i);
+                    if (!m) return "";
+                    let h = +m[1], mm = m[2];
+                    if (m[3]) return `${h > 12 ? h - 12 : (h || 12)}:${mm} ${m[3].toUpperCase()}`;
+                    const ap = h < 12 ? "AM" : "PM";
+                    h = h % 12 || 12;
+                    return `${h}:${mm} ${ap}`;
                 };
 
-                const parseDateTime = (value) => {
-                    if (!value) return { date: "—", time: "", time12h: "" };
-
-                    const parts = String(value).trim().split(/\s+/);
-                    const dateStr = parts[0] || "—";
-                    const timeStr = parts.length > 2 ? `${parts[1]} ${parts[2]}` : (parts[1] || "");
-
-                    return {
-                        date: dateStr, // ✅ keep original format (12-Apr-2026)
-                        time: timeStr,
-                        time12h: normalizeTime12h(timeStr)
-                    };
+                const parse = (v) => {
+                    if (!v) return { d: "—", t: "" };
+                    const [d, t1, t2] = String(v).split(" ");
+                    return { d, t: to12h(t2 ? `${t1} ${t2}` : t1) };
                 };
 
-                const start = parseDateTime(data.start_date);
-                const end = parseDateTime(data.end_date);
+                const s = parse(data.start_date);
+                const e = parse(data.end_date);
+                const same = s.d === e.d;
 
-                const isSameDate = start.date !== "—" && end.date !== "—" && start.date === end.date;
-
-                const dateHtml = isSameDate
-                    ? `<div class="date-cell-date fw-medium text-prm-custom">${start.date}</div>`
-                    : `<div class="d-flex align-items-center justify-content-center gap-1 flex-wrap date-cell-date fw-medium text-prm-custom">
-                            <span>${start.date}</span>
-                            <i class="fa-solid fa-arrow-right fa-xs text-muted" style="opacity:0.8"></i>
-                            <span>${end.date}</span>
-                    </div>`;
-
-                const timeHtml =
-                    isSameDate && (start.time12h || end.time12h)
-                        ? `<div class="d-flex align-items-center justify-content-center gap-1 mt-1 py-1 px-2 rounded small text-muted bg-light" style="font-size:0.8rem;">
-                            <span>${start.time12h || "—"}</span>
-                            <i class="fa-solid fa-arrow-right fa-xs" style="opacity:0.7"></i>
-                            <span>${end.time12h || "—"}</span>
-                    </div>`
-                        : "";
-
-                return `<div class="d-flex flex-column align-items-center date-cell py-1">
-                            ${dateHtml}
-                            ${timeHtml}
-                        </div>`;
+                return `
+                <div class="text-start">
+                    <div class="fw-medium text-prm-custom">
+                        ${same ? s.d : `${s.d} <i class="fa fa-arrow-right mx-1"></i> ${e.d}`}
+                    </div>
+                    ${same && (s.t || e.t) ? `
+                    <div class="small text-muted rounded mt-1">
+                        ${s.t || "—"} <i class="fa fa-arrow-right mx-1"></i> ${e.t || "—"}
+                    </div>` : ""}
+                </div>`;
+            }
+        },
+        {
+            transTitle: "titles.Remark",
+            className: "align-middle",
+            data: (data, index, tr) => {
+                return `
+                    <div class="text-prm-custom text-capitalize" style="width:220px;">
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ?? 'N/A'}</span>
+                    </div>
+                `;
             }
         },
         {

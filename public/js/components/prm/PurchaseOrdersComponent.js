@@ -225,7 +225,7 @@ var PurchaseOrdersComponent = (() => {
                   name: "delete_purchase_order"
                 },
                 { html: '<span class="ps-2" vslang="titles.Authorized PO"></span>', 
-                  icon: `<i class="fa-solid fa-check-to-slot fs-5 text-primary"></i>`, 
+                  icon: `<i class="fa-solid fa-check-to-slot fs-5 text-success"></i>`, 
                   cssClass: "border-bottom pb-2", 
                   name: "authorized_purchase_order" },
                 { html: '<span class="ps-2" vslang="titles.Receive PO"></span>', 
@@ -233,7 +233,7 @@ var PurchaseOrdersComponent = (() => {
                   name: "receive_purchase_order" 
                 },
                 { html: '<span class="ps-2" vslang="titles.Generate Bill"></span>', 
-                  icon: `<i class="fa-solid fa-file-invoice-dollar fs-5 text-success"></i>`, 
+                  icon: `<i class="fa-solid fa-file-invoice-dollar fs-5 text-primary"></i>`, 
                   name: "generate_bill" 
                 },
             ],
@@ -570,22 +570,14 @@ var PurchaseOrdersComponent = (() => {
                 if (me.dataOptions.id) {
                     console.log(8888,data);
                      me.purchaseItemsView.setData(data.po_detail);
-                    // me.purchaseItemsView.setData({
-                    //     currency_code: data.po_detail?.currency_code || "USD",
-                    //     items: data.items || [],
-                    //     totals: data.totals || {
-                    //         discount_type: "amount",
-                    //         discount_value: 0,
-                    //         extra_items: {}
-                    //     }
-                    // });
-
                 } else {
                     me.clear();
                     if (me.searchVendor && typeof me.searchVendor.reset === 'function') {
                         me.searchVendor.reset();
                     }
                 }
+                console.log(5555,me.controls.div_purchase_summary);
+                
             },
             onShow: (me) => {
                 const title = me.divModal.querySelector('.modal-title');

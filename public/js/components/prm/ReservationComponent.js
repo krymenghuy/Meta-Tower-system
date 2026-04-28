@@ -209,6 +209,12 @@ var ReservationComponent = (() => {
                     name: "edit_reservation",
                 },
                 {
+                    html: '<span class="ps-2">Cancel</span>',
+                    icon: `<i class="fa-solid fa-circle-xmark" style="color: rgb(120, 123, 128);"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "cancel_reservation",
+                },
+                {
                     html: '<span class="ps-2 " vslang="titles.Delete"></span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
@@ -217,9 +223,9 @@ var ReservationComponent = (() => {
             ],
 
             onShow: (me, container) => {
-                // const menu = me.getActiveMenus(container);
-                // const status_id = container.dataset.statusid;
-                // menu.edit_reservation.style.display = (status_id >= 2) ? 'none' : 'block';
+                const menu = me.getActiveMenus(container);
+                const status_id = container.dataset.statusid;
+                menu.edit_reservation.style.display = (status_id == 1) ? 'none' : 'block';
                
             },
 
@@ -227,6 +233,10 @@ var ReservationComponent = (() => {
                 switch (name) {
                     case "edit_reservation": {
                         mThis.editReservation(id, menuLink);
+                        break;
+                    }
+                    case "cancel_reservation": {
+                        mThis.cancelReservation(id, menuLink);
                         break;
                     }
                     case "delete_reservation": {
@@ -253,6 +263,34 @@ var ReservationComponent = (() => {
         };
         CreateReservationDialog.show(op);
     };
+
+    mThis.cancelReservation = (id, menuLink) => {
+        if (!AuthManager.allowed(242)) return;
+        cv_interact.confirm(
+            "Cancel this reservation",
+            {
+                transTitle: "Cancel Reservation",
+                context:"delete",
+                confirmButtonText: "Cancel Reservation",
+            },
+            (confirmed) => {
+                if(!confirmed) return;
+                vsapi.call(
+                    `${main_view.base_url}/prm/reservation/cancel`,
+                    { id: id },
+                    false, false, false,
+                ).then((res) => {
+                    if (res.status_code === 200){
+                        cv_interact.success("Reservation cancelled.");
+                        mThis.ReservationListView.showPage(mThis.getFilterData());
+                    } else {
+                        cv_interact.error(res.error_message || "Cancel failed");
+                    }
+                });
+            }
+        );
+    };
+
     mThis.deleteReservation = (id, menuLink) => {
         if (!AuthManager.allowed(242)) return;
         cv_interact.confirm(
@@ -516,11 +554,11 @@ const CreateReservationDialog = (() => {
                                         me.hide(true, op);
                                         if (me.dataOptions.id > 0) {
                                             cv_interact.success(
-                                                "Reservation has been updated successfully",
+                                                "Reservation has been updated successfully.",
                                             );
                                         } else {
                                             cv_interact.success(
-                                                "New reservation has been added successfully",
+                                                "New reservation has been added successfully.",
                                             );
                                         }
                                     } else {
