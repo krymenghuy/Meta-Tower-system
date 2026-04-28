@@ -126,7 +126,7 @@ var SpaceComponent = new (function () {
                     <div class="metric-value-sm fw-bold px-4" style="color:${pal.booked};">${booked}</div>
                 </div>
             </div>
-            
+
             <div class="col-12 col-sm-6 col-lg-2">
                 <div class="metric-card-sm" style="border-left:6px solid ${pal.occupancy};">
                     <div class="metric-head-sm">
@@ -148,12 +148,13 @@ var SpaceComponent = new (function () {
             status_id: nz(mThis.elFilter_status && mThis.elFilter_status.value),
             building_id: nz(mThis.elBuilding && mThis.elBuilding.value),
             floor_id: nz(mThis.elFloor && mThis.elFloor.value),
+            space_type_id: nz(mThis.elSpaceType && mThis.elSpaceType.value),
         };
 
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             const f = el.dataset.field;
             if (f) {
-                if (f === "status_id" || f === "building_id" || f === "floor_id") {
+                if (f === "status_id" || f === "building_id" || f === "floor_id" || f === "space_type_id") {
                     p[f] = nz(el.value);
                 } else {
                     p[f] = el.value;
@@ -588,7 +589,7 @@ var SpaceComponent = new (function () {
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
                 VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'space_status', '', 'All Statuses', '');
-                VSUtil.setComboItems(mThis.elBuilding, d.buildings, 'id', 'building', '', 'All Buildings', '');
+                VSUtil.setComboItems(mThis.elBuilding, d.buildings, 'id', 'building', '', 'iildings', '');
                 VSUtil.setComboItems(mThis.elFloor, d.floors, 'id', 'name', '', 'All Floors', '');
                 VSUtil.setComboItems(mThis.elSpaceType, d.space_types, 'id', 'space_type', '', 'All Space Type', '');
 
@@ -702,11 +703,6 @@ const BuildingSpaceDialog = (() => {
 
 
                 contentCreated: (me) => {
-
-
-
-
-
                 },
                 configSelect: [
                     {
