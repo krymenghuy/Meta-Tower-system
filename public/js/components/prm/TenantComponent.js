@@ -1253,19 +1253,19 @@ newWindow.document.close();
                             <div class="d-flex justify-content-start gap-2">
                                 <a href="javascript:void(0)" class="view-doc"  data-id="${doc.id}">
                                     <span class="tool-tip">
-                                        <i class="fa-regular fa-eye text-success fs-5"></i>
+                                        <i class="fa-regular fa-eye text-success fs-6"></i>
                                         <span class="tool-tiptext fs-6">View Document</span>
                                     </span>
                                 </a>
                                 <a href="javascript:void(0)" class="download-doc" data-id="${doc.id}">
                                     <span class="tool-tip">
-                                        <i class="fa-solid fa-cloud-arrow-down text-primary fs-5"></i>
+                                        <i class="fa-solid fa-cloud-arrow-down text-primary fs-6"></i>
                                         <span class="tool-tiptext fs-6">Download Document</span>
                                     </span>
                                 </a>
                                 <a href="javascript:void(0)" class="delete-doc-btn"  data-id="${doc.id}">
                                     <span class="tool-tip">
-                                        <i class="fa-regular fa-trash-can text-danger fs-5"></i>
+                                        <i class="fa-regular fa-trash-can text-danger fs-6"></i>
                                         <span class="tool-tiptext fs-6">Delete Document</span>
                                     </span>
                                 </a>
@@ -1296,7 +1296,7 @@ newWindow.document.close();
                         </button>
                     </div>
 
-                    <div class="table-responsive">
+                    <div class="">
                         <table class="table align-middle mb-3">
                             <thead class="bg-light">
                                 <tr class="text-uppercase small">

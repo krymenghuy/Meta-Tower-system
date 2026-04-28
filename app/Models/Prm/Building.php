@@ -30,8 +30,8 @@ class Building //extends Model
         $v_rule = [
             'name' => '1|string|0-255',
             'total_floor' => '1|number',
-            'address' => '0|string|0-250',
-            'total_area' => '0|number',
+            'address' => '1|string|0-250',
+            'total_area' => '1|number',
             'total_space' => '0|number',
             'occupancy' => '0|number',
         ];
@@ -41,15 +41,9 @@ class Building //extends Model
         if ($res->error) {
             return DV::error($res->error);
         }
-
         $inputs = $res->values;
         $isCreate = !$id || $id == 0;
-
-       
-
-
         $id = DBX::saveData($ss, 'buildings', ['id' => $id], $inputs, [], 1);
-
         if ($id > 0) {
             return DV::depends(1, ['buildings' => $inputs, 'id' => $id]);
         }
@@ -154,7 +148,7 @@ class Building //extends Model
             ->selectRaw($cols)
             ->orderByRaw('bf.id ASC')->get();
         foreach ($rows as $row) {
-            $amenity_count = DB::table('amenities')->where('floor_id', $row->floor_id)->count();
+            $amenity_count = DB::table('amenities')->where('building_id', $row->building_id)->where('floor_id', $row->floor_id)->count();
             $space_count = DB::table('building_spaces')->where('building_id', $row->building_id)->where('floor_id', $row->floor_id)->count();
             $row->total_space = $space_count + $amenity_count;
             setOfficialDates($row, [''],['updated_at'],[]);

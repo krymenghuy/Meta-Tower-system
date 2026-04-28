@@ -277,13 +277,13 @@ var BuildingComponent = ( () => {
             cssClass: "bg-white shadow",
             menus: [
                 {
-                    html: '<span class="ps-2 " vslang="titles.Edit Building"></span>',
+                    html: '<span class="ps-2 " vslang="titles.Modify"></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "edit_building"
                 },
                 {
-                    html: '<span class="ps-2  " vslang="titles.Delete Building"></span>',
+                    html: '<span class="ps-2  " vslang="titles.Delete"></span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "delete_building"
@@ -386,7 +386,7 @@ const BuildingDialog = (() => {
                                 <label style="color:#777777;padding-left:6px;">Building Name</label>
                             </div>
                         </div>
-                        <div class="col-12">
+                        <div class="col-6">
                             <div class="material-input outlined">
                                 <input type="text" name="total_floor" required class="data-input form-control" data-field="total_floor" placeholder=" " />
                                 <label style="color:#777777;padding-left:6px;">Total Floors</label>
@@ -398,12 +398,7 @@ const BuildingDialog = (() => {
                                 <label style="color:#777777;padding-left:6px;">Total Areas</label>
                             </div>
                         </div>
-                        <div class="col-6">
-                            <div class="material-input outlined">
-                                <input type="number" name="total_space"  class="data-input form-control" data-field="total_space" placeholder=" " />
-                                <label style="color:#777777;padding-left:6px;">Total Spaces (Optional)</label>
-                            </div>
-                        </div>
+                       
                         <div class="col-12">
                             <div class="material-input outlined">
                                 <textarea type="number" name="address" class="data-input form-control" data-field="address" placeholder=" "></textarea>
@@ -501,7 +496,6 @@ const CreateFloorDialog = (() => {
                         </div>
                     </div>
                     <div class="col-12">
-
                         <div class="material-input outlined">
                             <textarea name="description" class="data-input form-control" data-field="description" placeholder=" "></textarea>
                             <label style="color:#777777;padding-left:6px;">Description</label>
