@@ -30,8 +30,8 @@ class Building //extends Model
         $v_rule = [
             'name' => '1|string|0-255',
             'total_floor' => '1|number',
-            'address' => '0|string|0-250',
-            'total_area' => '0|number',
+            'address' => '1|string|0-250',
+            'total_area' => '1|number',
             'total_space' => '0|number',
             'occupancy' => '0|number',
         ];
@@ -41,15 +41,9 @@ class Building //extends Model
         if ($res->error) {
             return DV::error($res->error);
         }
-
         $inputs = $res->values;
         $isCreate = !$id || $id == 0;
-
-
-
-
         $id = DBX::saveData($ss, 'buildings', ['id' => $id], $inputs, [], 1);
-
         if ($id > 0) {
             return DV::depends(1, ['buildings' => $inputs, 'id' => $id]);
         }
@@ -151,6 +145,9 @@ class Building //extends Model
             return DV::error('Cannot delete building because it has associated spaces.');
         }
         $deleted = DB::table('buildings')->where('id', $id)->delete();
+        if ($deleted) {
+            DB::table('building_floors')->where('building_id', $id)->delete();
+        }
 
         return $deleted
             ? DV::depends(['action' => 'deleted'], 'Delete successful')
@@ -169,7 +166,7 @@ class Building //extends Model
             ->selectRaw($cols)
             ->orderByRaw('bf.id ASC')->get();
         foreach ($rows as $row) {
-            $amenity_count = DB::table('amenities')->where('floor_id', $row->floor_id)->count();
+            $amenity_count = DB::table('amenities')->where('building_id', $row->building_id)->where('floor_id', $row->floor_id)->count();
             $space_count = DB::table('building_spaces')->where('building_id', $row->building_id)->where('floor_id', $row->floor_id)->count();
             $row->total_space = $space_count + $amenity_count;
             setOfficialDates($row, [''],['updated_at'],[]);
@@ -306,15 +303,34 @@ class Building //extends Model
         ]);
     }
 
-    public function deleteFloor($id = null)
-    {
-        $id = $id ?? $this->id;
-        $check_floor = DB::table('floors')->where('id', $id)->exists();
-        if ($check_floor) {
-            return DV::error('Cannot delete floor.');
-        }
-        $deleted = DB::table('building_floors')->where('floor_id', $id)->delete();
 
-        return $deleted ? DV::depends(['action' => 'deleted'], 'Delete successful') : DV::error('Delete failed.');
+    public function deleteFloor($id = null)
+{
+    $id = $id ?? $this->id;
+
+    $floor = DB::table('building_floors')->where('id', $id)->first();
+    if (!$floor) {
+        return DV::error('Floor not found.');
     }
+
+    $maxFloor = DB::table('building_floors')
+        ->where('building_id', $floor->building_id)
+        ->max('floor_id');
+
+    if ($floor->floor_id != $maxFloor) {
+        return DV::error('Cannot delete this floor. Please delete the highest floor first.');
+    }
+    $check_space = DB::table('building_spaces')
+        ->where('building_id', $floor->building_id)
+        ->where('floor_id', $floor->floor_id)
+        ->exists();
+
+    if ($check_space) {
+        return DV::error('Cannot delete floor because it has associated spaces.');
+    }
+    $deleted = DB::table('building_floors')->where('id', $id)->delete();
+    return $deleted
+        ? DV::depends(['action' => 'deleted'], 'Delete successful')
+        : DV::error('Delete failed.');
+}
 }

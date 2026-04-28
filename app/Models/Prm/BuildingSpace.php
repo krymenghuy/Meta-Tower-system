@@ -424,9 +424,9 @@ class BuildingSpace
         'booker_name' => '1|string|1-50',
         'booker_phone' => '1|string|1-25',
         'booker_email' => '0|string|1-100',
-        'booking_date' => '1|date',
-        'expired_booking_date' => '1|date',
-        'booking_fee' => '1|number|min=0',
+        'booking_date' => '1|date|text=Booking date is required.',
+        'expired_booking_date' => '1|date|text=Expired booking date is required.',
+        'booking_fee' => '1|number|min=0|text=Booking fee is required and must be a non-negative number.',
         'remarks' => '0|string|1-255',
     ];
 
@@ -437,10 +437,6 @@ class BuildingSpace
 
     $inputs = $res->values;
     $d = (object) $inputs;
-
-    if (!isset($inputs['booking_fee']) || $inputs['booking_fee'] === null) {
-        return DV::error('Booking fee is required.');
-    }
     $today = date('Y-m-d');
     if ($d->booking_date != $today) {
         return DV::error('Booking date must be today.');
