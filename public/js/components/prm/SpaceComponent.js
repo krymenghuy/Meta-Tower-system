@@ -654,7 +654,7 @@ const BuildingSpaceDialog = (() => {
                             <div class="col-6">
                                 <div class="material-input outlined">
                                     <input type="text" name="code" class="data-input form-control" data-field="code" placeholder=" " />
-                                    <label style="color:#777777;padding-left:6px;">Unit Code</label>
+                                    <label style="color:#777777;padding-left:6px;">Unit Code  <span style="color:#bbbbbb; font-size:0.8em; font-weight:400;">(Optional)</span></label>
                                 </div>
                             </div>
                             <div class="col-6">
