@@ -30,7 +30,7 @@
     overflow: hidden;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
 }
 
 .vs-modal .modal-header::before {
@@ -47,7 +47,7 @@
     font-weight: 700 !important;
     font-size: 17px;
     letter-spacing: 0.2px;
-    text-align: center;
+    text-align: left !important;
     flex: 1;
 }
 
