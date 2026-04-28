@@ -244,7 +244,7 @@ var SpaceComponent = new (function () {
                 menu.create_contract.style.display = status_id >= 3 ? 'none' : 'block';
                 menu.edit_space.style.display = status_id == 3 ? 'none' : 'block';
                 menu.finish_maintenance.style.display = isMaintenance ? 'block' : 'none';
-                menu.set_maintenance.style.display = isMaintenance ? 'none' : 'block';
+                menu.set_maintenance.style.display = hasActiveMaintenance ? 'none' : 'block';
                 menu.view_booking.style.display = status_id == 2 ? 'block' : 'none';
             },
 
@@ -345,7 +345,7 @@ var SpaceComponent = new (function () {
                 const maintenanceStatusName = String(d.maintenance_status ?? d.maintenance_status_name ?? '').trim().toLowerCase();
                 const isPlannedMaintenance = maintenanceStatusId === 1 || maintenanceStatusName === 'planned' || maintenanceStatusName === 'upcoming';
                 const maintenanceLabel = isPlannedMaintenance
-                    ? ' <span class="text-warning fw-semibold">(Upcoming)</span>'
+                    ? ' <span class="text-warning fw-semibold">(Upcoming Maintenance)</span>'
                     : (maintenanceStatusId === 2
                         ? ' <span class="text-warning fw-semibold">(Maintenance)</span>'
                         : '');
