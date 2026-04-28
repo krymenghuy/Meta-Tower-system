@@ -111,7 +111,7 @@ class Maintenance extends VSModel
         'amenity_id'  => '0|number|exists=amenities.id',
         'start_date'  => '1|TIMESTAMP',
         'end_date'    => '1|TIMESTAMP',
-        'remarks'     => '0|string|0-255',
+        'remarks'     => '1|string|0-255',
     ];
 
     $allowed_chars = ['@', ',', '-', '.', '#', '!', '?', '(', ')', "\n"];
