@@ -170,7 +170,7 @@ var BuildingComponent = ( () => {
         mThis.initAlready = true;
     };
     mThis.displayFloorNumber = (container, id, totalFloor = 0) => {
-        let html = null;
+        let html = '';
         container.innerHTML = '';
         console.log(444,id);
 
@@ -198,6 +198,7 @@ var BuildingComponent = ( () => {
                     <th>${LocaleManager.trans('Total Space')}</th>
                     <th>${LocaleManager.trans('Description')}</th>
                     <th>${LocaleManager.trans('Last Updated')}</th>
+                    <th>${LocaleManager.trans('Action')}</th>
                 </tr>
             </thead>
             <tbody></tbody>`;
@@ -226,11 +227,35 @@ var BuildingComponent = ( () => {
                 });
             }
 
-            mThis.renderFloorList(tbody, data);
+            mThis.renderFloorList(tbody, data, id);
+
+            tbody.addEventListener('click', (e) => {
+                const btnEdit = e.target.closest('.btn-edit-floor');
+                const btnDelete = e.target.closest('.btn-delete-floor');
+                if (btnEdit) {
+                    e.preventDefault();
+                    mThis.editFloor({
+                        id: btnEdit.dataset.id,
+                        building_id: btnEdit.dataset.buildingid
+                    }, () => {
+                        mThis.displayFloorNumber(container, id, totalFloor);
+                    });
+                    return;
+                }
+                if (btnDelete) {
+                    e.preventDefault();
+                    mThis.deleteFloor({
+                        id: btnDelete.dataset.id,
+                        building_id: btnDelete.dataset.buildingid
+                    }, () => {
+                        mThis.displayFloorNumber(container, id, totalFloor);
+                    });
+                }
+            });
         });
     }
-    mThis.renderFloorList = (tbody, data) => {
-        let html = null;
+    mThis.renderFloorList = (tbody, data, buildingId) => {
+        let html = '';
         if(!data) data = [];
 
         (data || []).map(level => {
@@ -251,11 +276,49 @@ var BuildingComponent = ( () => {
                         <small>${level.updated_at ?? ''}</small>
                     </span>
                 </td>
+                <td class="text-nowrap">
+                    <a href="javascript:void(0)" class="btn-edit-floor me-2 text-warning"
+                       data-id="${level.floor_id}" data-buildingid="${buildingId}">
+                        <i class="fa-regular fa-edit fs-6"></i>
+                    </a>
+                    <a href="javascript:void(0)" class="btn-delete-floor text-danger"
+                       data-id="${level.floor_id}" data-buildingid="${buildingId}">
+                        <i class="fa-regular fa-trash-can fs-6"></i>
+                    </a>
+                </td>
             </tr>`].join('');
         });
         tbody.innerHTML = html;
 
     }
+
+    mThis.editFloor = (op, onDone) => {
+        CreateFloorDialog.show({
+            id: parseInt(op.id || 0, 10),
+            building_id: parseInt(op.building_id || 0, 10),
+            onClose: (success) => {
+                if (success && typeof onDone === 'function') onDone();
+            }
+        });
+    };
+
+    mThis.deleteFloor = (op, onDone) => {
+        cv_interact.confirm('Delete this Floor?', {
+            title: 'Delete Floor',
+            context: 'delete',
+            confirmButtonText: "Delete"
+        }, function (isConfirm) {
+            if (!isConfirm) return;
+            vsapi.call(`${main_view.base_url}/prm/building/delete-floor`, op, false, false, false).then(res => {
+                if (res.status_code === 200) {
+                    cv_interact.success("Floor has been deleted successfully.");
+                    if (typeof onDone === 'function') onDone();
+                } else {
+                    cv_interact.error(res.error_message || 'Delete failed');
+                }
+            });
+        });
+    };
 
     mThis.getFilterData = () => {
         let p = {
