@@ -119,7 +119,7 @@ class Building //extends Model
                     ->where('bf.building_id', $building_id)
                     ->max('f.floor_number');
 
-                $next_floor_no = ((int) $max_floor_no) + 1;
+                $next_floor_no = ($max_floor_no) + 1;
                 if ($next_floor_no <= 0) {
                     $next_floor_no = 1;
                 }
@@ -300,49 +300,15 @@ class Building //extends Model
         ]);
     }
 
-    public function deleteFloor($arr = [], $ss = null)
+    public function deleteFloor($id = null)
     {
-        $ss = $ss ?? $this->userInfo;
-        $v_rule = [
-            'building_id' => '1|number|exists=buildings.id',
-            'id' => '1|number|exists=floors.id',
-        ];
-        $res = DBX::validateObject($arr, $v_rule, true, [], $ss->lang, false);
-        if ($res->error) {
-            return DV::error($res->error);
+        $id = $id ?? $this->id;
+        $check_floor = DB::table('floors')->where('id', $id)->exists();
+        if ($check_floor) {
+            return DV::error('Cannot delete floor.');
         }
+        $deleted = DB::table('building_floors')->where('floor_id', $id)->delete();
 
-        $inputs = $res->values;
-        $building_id = (int) $inputs['building_id'];
-        $floor_id = (int) $inputs['id'];
-
-        $exists = DB::table('building_floors')
-            ->where('building_id', $building_id)
-            ->where('floor_id', $floor_id)
-            ->exists();
-        if (!$exists) {
-            return DV::error('Floor not found in this building.');
-        }
-
-        $space_count = DB::table('building_spaces')
-            ->where('building_id', $building_id)
-            ->where('floor_id', $floor_id)
-            ->count();
-        $amenity_count = DB::table('amenities')
-            ->where('building_id', $building_id)
-            ->where('floor_id', $floor_id)
-            ->count();
-        if ($space_count > 0 || $amenity_count > 0) {
-            return DV::error('Cannot delete floor because it has associated spaces or amenities.');
-        }
-
-        $deleted = DB::table('building_floors')
-            ->where('building_id', $building_id)
-            ->where('floor_id', $floor_id)
-            ->delete();
-
-        return $deleted
-            ? DV::depends(1, ['action' => 'deleted'])
-            : DV::error('Delete failed.');
+        return $deleted ? DV::depends(['action' => 'deleted'], 'Delete successful') : DV::error('Delete failed.');
     }
 }
