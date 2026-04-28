@@ -96,24 +96,39 @@ class Building //extends Model
 
     public function getFormOptions($id, $building_id = null)
     {
-        $building_details = self::buildingDetails($id) ?? null;
+        $building_details = null;
         $floor_details = null;
 
-        if ($building_id && is_numeric($building_id)) {
-            $max_floor_no = DB::table('building_floors as bf')
+        if ($id && is_numeric($id) && (!$building_id || !is_numeric($building_id))) {
+            $building_details = self::buildingDetails($id) ?? null;
+        }
+
+        if ($id && is_numeric($id) && $building_id && is_numeric($building_id)) {
+            $floor_details = DB::table('building_floors as bf')
                 ->join('floors as f', 'f.id', '=', 'bf.floor_id')
                 ->where('bf.building_id', $building_id)
-                ->max('f.floor_number');
+                ->where('f.id', $id)
+                ->selectRaw('f.id,f.floor_number,f.name,bf.description,bf.building_id')
+                ->first();
+        }
 
-            $next_floor_no = ((int) $max_floor_no) + 1;
-            if ($next_floor_no <= 0) {
-                $next_floor_no = 1;
+        if ($building_id && is_numeric($building_id)) {
+            if (!$floor_details) {
+                $max_floor_no = DB::table('building_floors as bf')
+                    ->join('floors as f', 'f.id', '=', 'bf.floor_id')
+                    ->where('bf.building_id', $building_id)
+                    ->max('f.floor_number');
+
+                $next_floor_no = ((int) $max_floor_no) + 1;
+                if ($next_floor_no <= 0) {
+                    $next_floor_no = 1;
+                }
+
+                $floor_details = (object) [
+                    'floor_number' => $next_floor_no,
+                    'name' => "Floor {$next_floor_no}",
+                ];
             }
-
-            $floor_details = (object) [
-                'floor_number' => $next_floor_no,
-                'name' => "Floor {$next_floor_no}",
-            ];
         }
 
         return (object) [
@@ -283,5 +298,51 @@ class Building //extends Model
             'description' => $d->description ?? null,
             'floor_data' => $floor_data
         ]);
+    }
+
+    public function deleteFloor($arr = [], $ss = null)
+    {
+        $ss = $ss ?? $this->userInfo;
+        $v_rule = [
+            'building_id' => '1|number|exists=buildings.id',
+            'id' => '1|number|exists=floors.id',
+        ];
+        $res = DBX::validateObject($arr, $v_rule, true, [], $ss->lang, false);
+        if ($res->error) {
+            return DV::error($res->error);
+        }
+
+        $inputs = $res->values;
+        $building_id = (int) $inputs['building_id'];
+        $floor_id = (int) $inputs['id'];
+
+        $exists = DB::table('building_floors')
+            ->where('building_id', $building_id)
+            ->where('floor_id', $floor_id)
+            ->exists();
+        if (!$exists) {
+            return DV::error('Floor not found in this building.');
+        }
+
+        $space_count = DB::table('building_spaces')
+            ->where('building_id', $building_id)
+            ->where('floor_id', $floor_id)
+            ->count();
+        $amenity_count = DB::table('amenities')
+            ->where('building_id', $building_id)
+            ->where('floor_id', $floor_id)
+            ->count();
+        if ($space_count > 0 || $amenity_count > 0) {
+            return DV::error('Cannot delete floor because it has associated spaces or amenities.');
+        }
+
+        $deleted = DB::table('building_floors')
+            ->where('building_id', $building_id)
+            ->where('floor_id', $floor_id)
+            ->delete();
+
+        return $deleted
+            ? DV::depends(1, ['action' => 'deleted'])
+            : DV::error('Delete failed.');
     }
 }
