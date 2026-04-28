@@ -170,7 +170,7 @@ class Tenant
                 c.start_date,c.end_date,t.updated_at,t.update_user
             ")
             ->orderBy('t.status_id', 'asc')
-            ->orderBy('t.id', 'desc');
+            ->orderBy('t.updated_at', 'desc');
 
         // ->orderBy('t.id','DESC');
         $clone_query = clone $query;

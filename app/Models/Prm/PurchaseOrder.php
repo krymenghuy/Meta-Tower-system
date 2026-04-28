@@ -231,6 +231,10 @@ class PurchaseOrder extends VSModel
             ->join('purchase_order_items as pi', 'pi.po_id', '=', 'po.id')
             ->where('po.id', $id)
             ->selectRaw('po.id,po.po_number,po.vendor_id,v.name,v.phone_number,v.address,po.po_date,po.status_id,po.remarks,po.discount_value,po.discount_type,po.sub_total,po.tax_total,po.total_amount,pi.item_id,pi.qty,pi.unit_price,pi.total_price')->first();
+
+            if($row){
+                setOfficialDates($row, ['po_date'], [], []);
+            }
         return $row;
     }
     public static function getFormOptions($id = null, $ss = null)

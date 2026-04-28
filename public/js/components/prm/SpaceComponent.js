@@ -79,7 +79,7 @@ var SpaceComponent = new (function () {
         mThis.initAlready = true;
     };
     mThis.summaryPalette = {
-        total: '#5867dd',
+        total: '#f6d673',
         occupancy: '#fd397a',
         available: '#0abb87',
         booked: '#5578eb',
@@ -108,16 +108,6 @@ var SpaceComponent = new (function () {
             </div>
 
             <div class="col-12 col-sm-6 col-lg-2">
-                <div class="metric-card-sm" style="border-left:6px solid ${pal.occupancy};">
-                    <div class="metric-head-sm">
-                        <span class="metric-dot d-inline-block rounded-circle" style="width:8px;height:8px;background:${pal.occupancy};"></span>
-                        <span>Occupancy</span>
-                    </div>
-                    <div class="metric-value-sm fw-bold px-4" style="color:${pal.occupancy};">${occ}</div>
-                </div>
-            </div>
-
-            <div class="col-12 col-sm-6 col-lg-2">
                 <div class="metric-card-sm" style="border-left:6px solid ${pal.available};">
                     <div class="metric-head-sm">
                         <span class="metric-dot d-inline-block rounded-circle" style="width:8px;height:8px;background:${pal.available};"></span>
@@ -134,6 +124,16 @@ var SpaceComponent = new (function () {
                         <span>Booked</span>
                     </div>
                     <div class="metric-value-sm fw-bold px-4" style="color:${pal.booked};">${booked}</div>
+                </div>
+            </div>
+            
+            <div class="col-12 col-sm-6 col-lg-2">
+                <div class="metric-card-sm" style="border-left:6px solid ${pal.occupancy};">
+                    <div class="metric-head-sm">
+                        <span class="metric-dot d-inline-block rounded-circle" style="width:8px;height:8px;background:${pal.occupancy};"></span>
+                        <span>Occupancy</span>
+                    </div>
+                    <div class="metric-value-sm fw-bold px-4" style="color:${pal.occupancy};">${occ}</div>
                 </div>
             </div>`;
 
@@ -224,7 +224,6 @@ var SpaceComponent = new (function () {
                     cssClass: "border-bottom pb-2",
                     name: "view_booking"
                 },
-               
             ],
             // adjustPosition: {
             //     top: -200,
@@ -363,7 +362,7 @@ var SpaceComponent = new (function () {
                                         ${d.floor_number ?? '-'} • ${d.building_name ?? ''}${maintenanceLabel}
                                     </p>
                                    <p class="unit-floor text-muted small mb-0">
-                                        Charge as ( ${d.price_type === 'total' ? `${symbol} ${price.toLocaleString()}/month` : `${symbol} ${price.toLocaleString()}/ m²`} )
+                                        Charge as ( ${d.price_type === 'total' ? `${symbol} ${price.toLocaleString()} / month` : `${symbol} ${price.toLocaleString()} / m²`} )
                                     </p>
 
                                 </div>
@@ -747,14 +746,14 @@ const BuildingSpaceDialog = (() => {
 
                 ],
                 onShow: (me) => {
-                const title = me.divModal.querySelector('.modal-title');
-                if (title) {
-                    const isModify = !!me.dataOptions?.id;
-                    title.innerHTML = isModify
-                        ? '<h4 class="text-prm-custom text-start fw-bold">Modify Space</h4>'
-                        : '<h4 class="text-prm-custom text-start fw-bold">Create Space</h4>';
-                }
-            },
+                    const title = me.divModal.querySelector('.modal-title');
+                    if (title) {
+                        const isModify = !!me.dataOptions?.id;
+                        title.innerHTML = isModify
+                            ? '<h4 class="text-prm-custom text-start fw-bold">Modify Space</h4>'
+                            : '<h4 class="text-prm-custom text-start fw-bold">Create Space</h4>';
+                    }
+                },
                 prepareFormOptions: {
                     createTitle: "Create Space",
                     modifyTitle: "Modify Space ",
@@ -913,11 +912,6 @@ const CreateBookingDialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
-                    // LocaleManager.translateZone(me.divModal);
-                    // console.log(12,data);
-                    const header = me.divModal.querySelector('.modal-header');
-                    const btnClose = header.querySelector('button');
-                    if (btnClose) btnClose.classList.add('d-none');
                 },
 
                 buttons: [
