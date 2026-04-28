@@ -236,7 +236,9 @@ class BuildingSpace
             ->whereRaw($str_search)
             ->whereRaw($str_moreWhere)
             ->selectRaw($selectCols)
-            ->orderByRaw('bs.id desc');
+            ->orderByRaw('bs.status_id ASC')
+            ->orderByRaw('bs.updated_at DESC');
+
         $clone_query = clone $query;
         $count = $clone_query->count('bs.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();

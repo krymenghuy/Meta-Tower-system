@@ -64,7 +64,7 @@ class Bill
     unset($inputs['photo'], $inputs['ext']);
     $total = floatval($inputs['total_amount'] ?? 0);
     if ($total < 0 ){
-        return  DV::error ('Total amount cannot be nagative.');
+        return  DV::error ('Total amount cannot be negative.');
     }
 
     $inputs['total_amount'] = $total;
@@ -152,34 +152,46 @@ class Bill
         $vendor_id    = $d->vendor_id    ?? null;
         $status_id    = $d->status_id    ?? null;
         $expense_type_id    = $d->expense_type_id    ?? null;
+        $start_date = $d->bill_date_start ?? null;
+        $end_date   = $d->bill_date_end ?? null;
         $current_page = $d->current_page ?? 1;
         $per_page     = $d->per_page     ?? 10;
 
         if(!is_numeric($current_page)){ $current_page = 1; }
 
         $skip_rows = ($current_page - 1) * $per_page;
-        $str_search = '1=1';
-        $str_moreWhere = '2=2';
+        $str_search = "1=1";
+        $str_moreWhere = "2=2";
 
         if ($search_value) {
             $skip_rows    = 0;
             $search_value = escape_like_str($search_value);
-            $str_search   = "(b.bill_number LIKE '%" . $search_value ."%' OR v.name LIKE '%" . $search_value ."%')";
-        }
+            $str_search   = "(b.bill_number LIKE '%" . $search_value ."%' OR b.ref_no LIKE '%" . $search_value ."%' OR v.name LIKE '%" . $search_value ."%')";
+        }else{
+            if ($start_date) {
+                $start_date = date('Y-m-d', strtotime($start_date));
+                $str_moreWhere .= " AND b.bill_date >= '$start_date'";
+            }
 
-        if ($vendor_id) {
-            $str_moreWhere .= ' AND b.vendor_id = ' . $vendor_id;
-        }
+            if ($end_date) {
+                $end_date = date('Y-m-d', strtotime($end_date));
+                $str_moreWhere .= " AND b.bill_date <= '$end_date'";
+            }
+            if ($vendor_id) {
+                $str_moreWhere .= ' AND b.vendor_id = ' . $vendor_id;
+            }
 
-        if ($status_id) {
-            $str_moreWhere .= ' AND b.status_id = ' . $status_id;
+            if ($status_id) {
+                $str_moreWhere .= ' AND b.status_id = ' . $status_id;
+            }
+            if ($expense_type_id) {
+                $str_moreWhere .= ' AND b.expense_type_id = ' . $expense_type_id;
+            }
         }
-        if ($expense_type_id) {
-            $str_moreWhere .= ' AND b.expense_type_id = ' . $expense_type_id;
-        }
+        
+        
 
         $query = DB::table('bills as b')
-            // ->leftJoin('purchase_orders as po', 'po.id', 'b.po_number')
             ->leftJoin('vendors as v', 'v.id', 'b.vendor_id')
             ->leftJoin('bill_statuses as s', 's.id', 'b.status_id')
             ->leftJoin('expense_categories as ex', 'ex.id', 'b.expense_type_id')
@@ -212,6 +224,8 @@ class Bill
             ->first();
         if ($row) {
             $row->file_image_url = self::getBillImageUrl($row->file_image, $ss);
+            $processed = setOfficialDates($row, ['bill_date','due_date'], ['updated_at'], []);
+            if ($processed) $row = $processed;
         }
         return $row;
     }

@@ -69,14 +69,14 @@ var TenantComponent = new (function () {
             title: "National ID",
             className: "align-middle",
             data: (data) => {
-                return `<span class="text-prm-custom text-nowrap">${data.national_id ?? ""}</span>`;
+                return `<span class="text-prm-custom text-nowrap">${data.national_id ?? "N/A"}</span>`;
             },
         },
         {
             title: "Passport",
             className: "align-middle",
             data: (data) => {
-                return `<span class="text-prm-custom text-nowrap">${data.passport_number ?? ""}</span>`;
+                return `<span class="text-prm-custom text-nowrap">${data.passport_number ?? "N/A"}</span>`;
             },
         },
         {
@@ -1453,10 +1453,9 @@ const CreateTenantDialog = (() => {
 
                     <!-- Profile Section -->
                         <div class="col-md-4 pb-3 text-center d-flex flex-column justify-content-center">
-                            <div class="tenant-photo-wrapper border border-prm-custom rounded-3 d-flex align-items-center justify-content-center mx-auto"
+                            <div class="data-input tenant-photo-wrapper border border-prm-custom rounded-3 d-flex align-items-center justify-content-center mx-auto"
                                 style="width: 210px; height: 140px; cursor: pointer; background-color: #f8f8f8;">
-                                <div name="div_tenant_photo"
-                                    class="w-100 h-100">
+                                <div name="div_tenant_photo" class="data-input w-100 h-100" data-field="photo_file_name">
                                 </div>
                             </div>
                            <!-- <small class="text-muted d-block mt-2">Profile Photo</small> -->
@@ -1535,25 +1534,6 @@ const CreateTenantDialog = (() => {
                 },
 
                 contentCreated: (me) => {
-                    // DateTimePicker.init(me.controls.date_of_birth);
-
-                    // const footer = me.divModal.querySelector('.modal-footer');
-                    // const header = me.divModal.querySelector('.modal-header');
-                    // const headerTitle = header.querySelector('.modal-title');
-                    // const btnClose = header.querySelector('button');
-
-                    // if (btnClose) btnClose.classList.add('d-none');
-                    // header.classList.add('bg-prm-custom', 'modal-header-custom');
-                    // header.parentElement.classList.add('overflow-hidden');
-                    // header.parentElement.style = 'border-radius: 20px !important;';
-
-                    // const headerWrapper = document.createElement('div');
-                    // headerWrapper.classList.add('d-flex', 'flex-column', 'align-items-center', 'w-100');
-                    // headerTitle.classList.add('text-white', 'text-center', 'w-100');
-                    // headerWrapper.appendChild(headerTitle);
-                    // header.innerHTML = '';
-                    // header.appendChild(headerWrapper);
-
                     const div_tenant_photo = me.controls.div_tenant_photo;
                     me.tenantImageBox = new ImageBox(div_tenant_photo, {
                         defaultPhotoName: "default-skill",
