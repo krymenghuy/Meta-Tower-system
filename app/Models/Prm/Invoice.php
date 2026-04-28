@@ -30,12 +30,12 @@ class Invoice extends VSModel
 
         $v_rule = [
             'tenant_id'         => '1|integer|exists:tenants,id',
-            'space_id'          => '1|integer|exists:building_spaces,id',
+            'space_id'          => '1|integer|exists:building_spaces,id ',
             'due_date'          => '1|date',
             'invoice_date'      => '0|date',
             'payment_status_id' => '0|integer|exists:payment_statuses,id|default=2',
             'items'             => '1|array|min:1',
-            'general_remark'    => '1|string|0-350',
+            'general_remark'    => '1|string|0-350|text= Please enter Remark.',
 
         ];
 

@@ -70,8 +70,29 @@ var InvoiceComponent = (() => {
             }
         },
         {
+            transTitle: "titles.Due Date",
+            className: "align-middle text-nowrap text-center",
+            data: data => {
+                const statusId = Number(data.payment_status_id || 0);
+                return `
+                    <div class="d-flex flex-column align-items-center ">
+                        <span class="text-prm-custom text-nowrap">${data.due_date ??
+                            ""}</span>
+                        ${
+                            statusId === 4
+                                ? `
+                        <span class="text-primary small">
+                            ${data.payment_status_name}
+                        </span>`
+                                : ""
+                        }
+                    </div>
+                `;
+            }
+        },
+        {
             transTitle: "titles.Amount",
-            className: "align-middle text-nowrap",
+            className: "align-middle text-nowrap text-primary",
             data: data => {
                 const amt = data.amount
                     ? Number(data.amount).toLocaleString("en-US", {
@@ -103,40 +124,6 @@ var InvoiceComponent = (() => {
                       })
                     : "0.00";
                 return `<span class="d-block  fw-semibold">${mThis.currency_symbol}${amt}</span>`;
-            }
-        },
-
-        {
-            transTitle: "titles.Due Date",
-            className: "align-middle text-nowrap text-center",
-            data: data => {
-                const statusId = Number(data.payment_status_id || 0);
-                return `
-                    <div class="d-flex flex-column align-items-center">
-                        <span class="text-prm-custom text-nowrap">${data.due_date ??
-                            ""}</span>
-                        ${
-                            statusId === 4
-                                ? `
-                        <span class="text-primary small">
-                            ${data.payment_status_name}
-                        </span>`
-                                : ""
-                        }
-                    </div>
-                `;
-            }
-        },
-        {
-            transTitle: "titles.Remark",
-            className: "align-middle text-nowrap text-center",
-            data: data => {
-                return `
-                    <div class="text-primary-custom" style="width:200px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.general_remark ??
-                            "..."}</span>
-                    </div>
-                `;
             }
         },
 
@@ -176,6 +163,19 @@ var InvoiceComponent = (() => {
                     </span>`;
             }
         },
+        {
+            transTitle: "titles.Remark",
+            className: "align-middle text-nowrap text-center",
+            data: data => {
+                return `
+                    <div class="text-primary-custom" style="width:200px;">
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.general_remark ??
+                            "..."}</span>
+                    </div>
+                `;
+            }
+        },
+
         {
             transTitle: "titles.Last Updated",
             className: "align-middle text-nowrap",
@@ -234,6 +234,28 @@ var InvoiceComponent = (() => {
             });
         };
 
+// mThis.btnAdd.onclick = e => {
+//     e.preventDefault();
+//     const btn = mThis.btnAdd;
+
+//     // Disable immediately to prevent double-clicks
+//     btn.disabled = true;
+
+//     InvoiceDialog.show({
+//         id: null,
+//         btn: btn,
+//         // This function must run whenever the dialog disappears
+//         onClose: (isSaved) => {
+//             // 1. Always re-enable the button so they can try again
+//             btn.disabled = false;
+
+//             // 2. Only refresh the list if they actually created something
+//             if (isSaved) {
+//                 mThis.InvoiceListView.showPage(mThis.getFilterData());
+//             }
+//         }
+//     });
+// };
         mThis.listContainer = mThis.InvoiceListView.getListContainer();
         const sh_parent = mThis.listContainer.parentElement;
         sh_parent.style.maxHeight = window.innerHeight - 220 + "px";
