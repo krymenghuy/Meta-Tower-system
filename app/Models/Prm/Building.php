@@ -219,7 +219,7 @@ class Building //extends Model
                 ->where('bf.building_id', $d->building_id)
                 ->max('f.floor_number');
 
-            $floor_number = ((int) $max_floor_no) + 1;
+            $floor_number = ($max_floor_no) + 1;
             if ($floor_number <= 0) {
                 $floor_number = 1;
             }
