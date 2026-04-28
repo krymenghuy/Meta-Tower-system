@@ -232,10 +232,10 @@ var PurchaseOrdersComponent = (() => {
                   icon: `<i class="fa-solid fa-box-open fs-5 text-success"></i>`, 
                   name: "receive_purchase_order" 
                 },
-                { html: '<span class="ps-2" vslang="titles.Generate Bill"></span>', 
-                  icon: `<i class="fa-solid fa-file-invoice-dollar fs-5 text-primary"></i>`, 
-                  name: "generate_bill" 
-                },
+                // { html: '<span class="ps-2" vslang="titles.Generate Bill"></span>', 
+                //   icon: `<i class="fa-solid fa-file-invoice-dollar fs-5 text-primary"></i>`, 
+                //   name: "generate_bill" 
+                // },
             ],
             onShow: (me, container) => {
                 const menu = me.getActiveMenus(container);

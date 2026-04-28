@@ -105,7 +105,7 @@ var ReservationComponent = (() => {
             data: (data) => {
                 console.log(444,data.status_id);
                 
-                if (data.status_id > 2 || data.status_id == 4) return '';
+                if (data.status_id == 2) return '';
                 return `<div class="d-flex justify-content-center align-items-end">
                     <a href="javascript:void(0)" class="btn--Options btn_reservation_action" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
                        <i class="fa-solid fa-ellipsis-vertical text-black fs-5"></i>
@@ -225,10 +225,20 @@ var ReservationComponent = (() => {
 
             onShow: (me, container) => {
                 const menu = me.getActiveMenus(container);
-                const status_id = container.dataset.statusid;
-                menu.edit_reservation.style.display = (status_id == 1 && status_id === 2) ? 'none' : 'block';
-                menu.cancel_reservation.style.display = (status_id == 1) ? 'block' : 'none';
-               
+                const status_id = parseInt(container.dataset.statusid);
+
+                menu.edit_reservation.style.display = 'none';
+                menu.cancel_reservation.style.display = 'none';
+                menu.delete_reservation.style.display = 'none';
+
+                if (status_id === 1) {
+                    menu.edit_reservation.style.display = 'block';
+                    menu.cancel_reservation.style.display = 'block';
+                    menu.delete_reservation.style.display = 'block';
+                } 
+                else if (status_id === 3 || status_id === 4) {
+                    menu.delete_reservation.style.display = 'block';
+                }
             },
 
             onClick: (menuLink, id, name) => {
