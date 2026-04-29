@@ -195,6 +195,12 @@ var SpaceComponent = new (function () {
                     cssClass: "border-bottom pb-2",
                     name: "edit_space"
                 },
+                     {
+                    html: '<span class="ps-2  " vslang="titles.Delete"></span>',
+                    icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "delete_space"
+                },
                 {
                     html: '<span class="ps-2" vslang="titles.Booking">Booking</span>',
                     icon: `<i class="fa-solid fa-bold fs-5 text-info-emphasis"></i>`,
@@ -247,6 +253,7 @@ var SpaceComponent = new (function () {
                 menu.finish_maintenance.style.display = isMaintenance ? 'block' : 'none';
                 menu.set_maintenance.style.display = hasActiveMaintenance ? 'none' : 'block';
                 menu.view_booking.style.display = status_id == 2 ? 'block' : 'none';
+                menu.delete_space.style.display = status_id > 1 ? 'none' : 'block';
             },
 
             onClick: (menulink, id, name) => {
