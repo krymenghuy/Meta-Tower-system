@@ -32,7 +32,7 @@ var MaintenanceComponent = (() => {
             }
         },
         {
-            transTitle: "titles.Schedule",
+            transTitle: "titles.Schedule Date",
             className: "align-middle text-start",
             data: (data) => {
 
