@@ -465,7 +465,7 @@ const CreateMaintenanceDialog = (() => {
                     // if (me.detail?.amenity_id && me.controls?.amenity_id) me.controls.amenity_id.value = me.detail.amenity_id;
                     if (spaceRow && amenityRow) {
                         const val = typeUnit?.value || "";
-                        spaceRow.style.display = val === "space" ? "" : "none";
+                       spaceRow.style.display  = val === "space" ? "" : "none";
                         amenityRow.style.display = val === "amenity" ? "" : "none";
                     }
                     const fromSpace = !!me.dataOptions?.space_id;
@@ -518,7 +518,7 @@ const CreateMaintenanceDialog = (() => {
                         delete op.start_time;
                         delete op.end_time;
                         console.log(9999,op);
-                        
+
                         vsapi.call(`${main_view.base_url}/prm/maintenance/save`, op, btn, null)
                             .then(res => {
                                 if (res.status_code === 200) {
