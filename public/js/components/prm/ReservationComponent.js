@@ -28,7 +28,7 @@ var ReservationComponent = (() => {
             transTitle: "titles.Tenant",
             className: "align-middle",
             data: (data) => {
-                return `<span class="text-primary-custom">${data.tenant_name ?? ""}</span>
+                return `<span class="text-primary-custom text-capitalize">${data.tenant_name ?? ""}</span>
                         <small class="d-block text-muted">${data.phone_number ?? ""}</small>`;
             },
         },
@@ -175,6 +175,10 @@ var ReservationComponent = (() => {
                 mThis.ReservationListView.showPage(mThis.getFilterData());
             }, 250);
         });
+
+        mThis.autoRefreshInterval = setInterval(() => {
+            mThis.ReservationListView.showPage(mThis.getFilterData());
+        }, 60 * 1000);
 
 
         mThis.initAlready = true;
@@ -365,6 +369,13 @@ var ReservationComponent = (() => {
             mThis.ReservationListView.showPage(mThis.getFilterData());
         });
     };
+    mThis.hide = () => {
+        if (mThis.autoRefreshInternal) {
+            clearInterval(mThis.autoRefreshInterval);
+            mThis.autoRefreshInterval = null;
+            mThis.initAlready = false;
+        }
+    }
     return mThis;
 })();
 
