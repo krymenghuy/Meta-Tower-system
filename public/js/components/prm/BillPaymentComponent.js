@@ -24,11 +24,11 @@ var BillPaymentComponent = (() => {
             },
         },
         {
-            transTitle: "titles.Bill No",
+            transTitle: "titles.Ref No",
             className: "align-middle",
             data: (data) => {
                 return `
-                    <span class="d-block text-nowrap text-prm-custom ">${data.bill_number ?? ""}</span>`;
+                    <span class="d-block text-nowrap text-prm-custom ">${data.ref_no ?? ""}</span>`;
             },
         },
         {

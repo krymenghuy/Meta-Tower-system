@@ -10,7 +10,7 @@
              <div class="col-12 col-md-6 col-lg-2">
                 <select type="id" id="_po_status_id" class="data-input filter-field form-control" data-field="status_id"></select>
             </div>
-            <div class="col-12 col-md-3 col-lg-2 ms-auto text-md-end" style="overflow:visible;">
+            <div class="col-12 col-md-auto ms-md-auto text-md-end" style="overflow:visible;">
                 <button type="button" class="btnAddNewPrm w-100 w-md-auto" id="_btnPurchases">
                     <i class="fa-brands fa-first-order me-2"></i>
                     <span vslang="buttons.Purchase Orders"></span>
