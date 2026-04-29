@@ -13,9 +13,9 @@
             <div class="col-12 col-md-6 col-lg-2">
                 <select id="_service_request_type_id" class="data-input filter-field form-control" data-field="service_type_id"></select>
             </div>
-            <div class="col-12 col-md-3 col-lg-2 ms-auto text-md-end">
+            <div class="col-12 col-md-auto ms-md-auto text-md-end">
                 <button type="button" class="btnAddNewPrm w-100 w-md-auto" id="_btnServiceRequest">
-                        <i class="fa-brands fa-wpforms"></i>
+                        <i class="fa-brands fa-wpforms me-2"></i>
                     <span vslang="buttons.Create New Request"></span>
                 </button>
             </div>
