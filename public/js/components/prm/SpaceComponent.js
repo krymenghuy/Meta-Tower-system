@@ -467,6 +467,7 @@ var SpaceComponent = new (function () {
         html += `</div>`;
         container.innerHTML = html;
     };
+
     mThis.createContract = (id, menulink) => {
         vsapi.call(
             `${main_view.base_url}/prm/contract/form-options`,
@@ -729,15 +730,7 @@ const BuildingSpaceDialog = (() => {
                             </div>
                             <div class="col-6">
                                 <div class="material-input outlined">
-                                        <input
-                                            type="number"
-                                            name="price"
-                                            class="data-input form-control"
-                                            data-field="price"
-                                            placeholder=" "
-                                            min="0"
-                                            step="0.01"
-                                        />
+                                        <input type="text" inputmode="decimal" name="price" class="data-input form-control" data-field="price" placeholder=" " />
                                     <label style="color:#777777;padding-left:6px;">Price</label>
                                 </div>
                             </div>
@@ -756,8 +749,31 @@ const BuildingSpaceDialog = (() => {
                     ].join("");
                 },
 
-
                 contentCreated: (me) => {
+                    me.controls.price.addEventListener('input', (e) => {
+                        let v = e.target.value;
+                        v = v.replace(/[^0-9.]/g, '');
+
+                        const parts = v.split('.');
+                        if (parts.length > 2) {
+                            v = parts[0] + '.' + parts[1];
+                        }
+                        if (parts[1] !== undefined) {
+                            v = parts[0] + '.' + parts[1].slice(0, 2);
+                        }
+
+                        e.target.value = v;
+                    });
+                    me.controls.price.addEventListener('blur', (e) => {
+                        let v = parseFloat(e.target.value);
+
+                        if (isNaN(v) || v <= 0) {
+                            e.target.value = '';
+                            return;
+                        }
+                        e.target.value = v;
+                    });
+
                 },
                 configSelect: [
                     {

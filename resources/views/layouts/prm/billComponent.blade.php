@@ -21,7 +21,7 @@
                 </div>
             </div>
             <div class="col-12 col-md-6 col-lg-4">
-                <input type="text" class="form-control rounded-2 pe-5 filter-field input-search" id="_search_bill" placeholder="Search by Bill No or Ref No" >
+                <input type="text" class="form-control rounded-2 pe-5 filter-field input-search" id="_search_bill" placeholder="Search by Ref No" >
             </div>
             <div class="col-12 col-md-auto ms-md-auto text-md-end">
                 <button type="button" class="btnAddNewPrm w-100 w-md-auto" id="_btnBill">
