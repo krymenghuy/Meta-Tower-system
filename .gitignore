@@ -40,3 +40,6 @@ public/assets/.DS_Store
 storage/logs/laravel.log
 laravel.log
 *.log
+
+# ingore copy files
+*copy*
