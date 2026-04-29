@@ -24,7 +24,7 @@ var ItemsComponent = (() => {
             }
         },
         {
-            transTitle: "titles.Item Name",
+            transTitle: "titles.Name",
             className: "align-middle",
             data: (data) => {
                 return `<span class="text-primary-custom text-capitalize">${data.name ?? ''}</span>`;
