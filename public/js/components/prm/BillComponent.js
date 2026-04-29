@@ -17,13 +17,13 @@ var BillComponent = (() => {
             title: "",
             className: "align-middle",
         },
+        // {
+        //     title: "Bill No",
+        //     className: "align-middle text-nowrap",
+        //     data: (data) =>
+        //         `<span class="d-block text-nowrap">${data.bill_number ?? ""}</span>`,
+        // },
         {
-            title: "Bill No",
-            className: "align-middle text-nowrap",
-            data: (data) =>
-                `<span class="d-block text-nowrap">${data.bill_number ?? ""}</span>`,
-        },
-         {
             transTitle: "titles.Ref No",
             className: "align-middle text-nowrap",
             data: (data) => {
