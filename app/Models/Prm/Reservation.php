@@ -196,11 +196,25 @@ public function upsert($arr = [], $id = null, $ss = null){
                 $calculatedStatusId = 3;
             }
 
-            if ($row->status_id != $calculatedStatusId) {
+            // if ($row->status_id != $calculatedStatusId) {
+            //     DB::table('reservations')->where('id', $row->id)->update(['status_id' => $calculatedStatusId]);
+            //     $row->status_id = $calculatedStatusId;
+            // }
+            
+            // $row->status = ($row->status_id == 1) ? "Upcoming" : (($row->status_id == 2) ? "In-Progress" : "Completed");
+
+            if ($row->status_id != 4 && $row->status_id != $calculatedStatusId) {
                 DB::table('reservations')->where('id', $row->id)->update(['status_id' => $calculatedStatusId]);
                 $row->status_id = $calculatedStatusId;
             }
-            $row->status = ($row->status_id == 1) ? "Upcoming" : (($row->status_id == 2) ? "In-Progress" : "Completed");
+
+            $row->status = match((int)$row->status_id) {
+                1 => 'Upcoming',
+                2 => 'In-Progress',
+                3 => 'Completed',
+                4 => 'Cancelled',
+                default => 'Unknown',
+            };
 
             $row = setOfficialDates($row, ['booking_date'], ['updated_at'], ['start_time','end_time']);
         }
@@ -266,33 +280,6 @@ public function upsert($arr = [], $id = null, $ss = null){
         return DV::depends($x, ['reservation status', 'updated']);
     }
 
-    // public function cancelReservation($id, $ss, $row)
-    // {
-    //     $id = $id ?? $this->id;
-    //     $status_id = DB::table('reservations')->where('id', $id)->value('status_id');
-
-    //     if ($status_id != 1) {
-    //         return DV::error('Only upcoming reservations can be cancelled.');
-    //     }
-
-    //     date_default_timezone_set('Asia/Phnom_Penh');
-    //     $bookingStart = strtotime($row->booking_date . ' ' . $row->start_time);
-    //     $now = time();
-
-    //     if (($bookingStart - $now) < (15 * 60)){
-    //         return DV::error('Cannot cancel a reservation less than 15 minutes before the start time.');
-    //     }
-
-    //     $cancelled = DB::table('reservations')->where('id', $id)->update([
-    //         'status_id'   => 4, 
-    //         'update_user' => $ss->full_name,
-    //         'updated_at'  => getNowTime(),
-    //     ]);
-
-    //     return $cancelled
-    //         ? DV::depends($cancelled, ['action' => 'cancelled'])
-    //         : DV::error('Failed to cancel reservation.');
-    // }
 
 
     public function cancelReservation($id, $ss)

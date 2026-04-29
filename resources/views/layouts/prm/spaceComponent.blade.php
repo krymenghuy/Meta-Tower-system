@@ -19,29 +19,30 @@
                     <div class="col-12 col-md-3">
                         <select id="building_id"  class="data-input filter-field form-control" data-field="building_id" placeholder="Building"></select>
                     </div>
-                    <div class="col-12 col-md-3">
+                    <div class="col-12 col-md-2">
                         <select id="floor_id" class="data-input filter-field form-control" data-field="floor_id" placeholder="Floor"></select>
                     </div>
-                    <div class="col-12 col-md-3">
+                    <div class="col-12 col-md-2">
                         <select id="space_type_id" class="data-input filter-field form-control" data-field="space_type_id" placeholder="Type"></select>
                     </div>
-                    <div class="col-12 col-md-3">
+                    <div class="col-12 col-md-2">
                         <select type="id" id="_space_status" class="data-input filter-field form-control" data-field="status_id" placeholder="Status"></select>
                     </div>
+                    <div class="col-12 col-md-auto ms-md-auto text-md-end">
+                <button type="button" class="btnAddNewPrm w-100 w-md-auto" id="_btnSpace">
+                    <i class="fa-brands fa-firstdraft me-2"></i>
+                    <span vslang="buttons.Create Space"></span>
+                </button>
+            </div>
                 </div>
             </div>
-            <div class="col-12 col-md-4 col-lg-5">
+            <div class="col-12 col-md-4 col-lg-3">
                 <div class="position-relative w-100">
                     <input type="text" class="form-control rounded-2 pe-5 filter-field " id="_search_space" placeholder="Search by Unit Code">
                     <i class="fa fa-search fs-6 text-muted position-absolute" style="right: 15px; top: 50%; transform: translateY(-50%);"></i>
                 </div>
             </div>
-            <div class="col-12 col-md-auto ms-md-auto text-md-end">
-                <button type="button" class="btnAddNewPrm w-100 w-md-auto" id="_btnSpace">
-                    <i class="fa-brands fa-firstdraft"></i>
-                    <span vslang="buttons.Create Space"></span>
-                </button>
-            </div>
+        
         </div>
     </div>
  <div id="_space_div_summary" class="container-fluid bg-white rounded-2 shadow my-3 p-3">

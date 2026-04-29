@@ -24,7 +24,7 @@ var BillComponent = (() => {
                 `<span class="d-block text-nowrap">${data.bill_number ?? ""}</span>`,
         },
          {
-            transTitle: "titles.Invoice No",
+            transTitle: "titles.Ref No",
             className: "align-middle text-nowrap",
             data: (data) => {
                 return `<span class="d-block text-prm-custom">${data.ref_no ?? "N/A"}</span>`;
@@ -79,7 +79,7 @@ var BillComponent = (() => {
             },
         },
         {
-            title: "Balance",
+            title: "Payable",
             className: "align-middle text-nowrap",
             data: (data) => {
                 const balance = Number(data.balance || 0);

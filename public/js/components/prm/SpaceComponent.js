@@ -241,11 +241,11 @@ var SpaceComponent = new (function () {
                 const isMaintenance = maintenance_status_id === 2;
                 const hasActiveMaintenance = isUpcomingMaintenance || isMaintenance;
 
-                menu.create_booking.style.display =  status_id >= 2 ? 'none' : 'block';
+                menu.create_booking.style.display = status_id >= 2 ? 'none' : 'block';
                 menu.create_contract.style.display = status_id >= 3 ? 'none' : 'block';
                 menu.edit_space.style.display = status_id == 3 ? 'none' : 'block';
                 menu.finish_maintenance.style.display = isMaintenance ? 'block' : 'none';
-                menu.set_maintenance.style.display = isMaintenance ? 'none' : 'block';
+                menu.set_maintenance.style.display = hasActiveMaintenance ? 'none' : 'block';
                 menu.view_booking.style.display = status_id == 2 ? 'block' : 'none';
             },
 
@@ -275,7 +275,7 @@ var SpaceComponent = new (function () {
                         mThis.deleteSpace(id, menulink);
                         break;
                     }
-                     case 'view_booking': {
+                    case 'view_booking': {
                         mThis.viewBooking(id, menulink);
                         break;
                     }
@@ -346,7 +346,7 @@ var SpaceComponent = new (function () {
                 const maintenanceStatusName = String(d.maintenance_status ?? d.maintenance_status_name ?? '').trim().toLowerCase();
                 const isPlannedMaintenance = maintenanceStatusId === 1 || maintenanceStatusName === 'planned' || maintenanceStatusName === 'upcoming';
                 const maintenanceLabel = isPlannedMaintenance
-                    ? ' <span class="text-warning fw-semibold">(Upcoming)</span>'
+                    ? ' <span class="text-warning fw-semibold">(Upcoming Maintenance)</span>'
                     : (maintenanceStatusId === 2
                         ? ' <span class="text-warning fw-semibold">(Maintenance)</span>'
                         : '');
@@ -415,7 +415,7 @@ var SpaceComponent = new (function () {
                             <div class="mt-auto">
                                 <div class="d-flex justify-content-between text-muted small">
                                     <div class="d-flex align-items-center gap-1">
-                                        <div class="text-muted">Create By :</i> ${d.update_user ?? ''}</div>
+                                        <div class="text-muted">Last Updated By :</i> ${d.update_user ?? ''}</div>
                                     </div>
                                     <div class="d-flex align-items-center gap-1">
                                         <div class="text-muted"><i class="fa-regular fa-clock"></i> <span>${d.updated_at ?? ''}</span></div>
@@ -589,7 +589,7 @@ var SpaceComponent = new (function () {
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
                 VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'space_status', '', 'All Statuses', '');
-                VSUtil.setComboItems(mThis.elBuilding, d.buildings, 'id', 'building', '', 'Buildings', '');
+                VSUtil.setComboItems(mThis.elBuilding, d.buildings, 'id', 'building', '', 'All buildings', '');
                 VSUtil.setComboItems(mThis.elFloor, d.floors, 'id', 'name', '', 'All Floors', '');
                 VSUtil.setComboItems(mThis.elSpaceType, d.space_types, 'id', 'space_type', '', 'All Space Type', '');
 
@@ -655,7 +655,7 @@ const BuildingSpaceDialog = (() => {
                             <div class="col-6">
                                 <div class="material-input outlined">
                                     <input type="text" name="code" class="data-input form-control" data-field="code" placeholder=" " />
-                                    <label style="color:#777777;padding-left:6px;">Unit Code</label>
+                                    <label style="color:#777777;padding-left:6px;">Unit Code  <span style="color:#bbbbbb; font-size:0.8em; font-weight:400;">(Optional)</span></label>
                                 </div>
                             </div>
                             <div class="col-6">
@@ -764,7 +764,7 @@ const BuildingSpaceDialog = (() => {
 
                 onPrepareForm: (me, data) => {
                     const isReadOnly = me.dataOptions.id > 0;
-                    me.setReadOnly(isReadOnly, ["building_id","code","floor_id"]);
+                    me.setReadOnly(isReadOnly, ["building_id", "code", "floor_id"]);
                     me.controls.price_type.value = data.space_details.price_type;
                 },
 
@@ -782,7 +782,7 @@ const BuildingSpaceDialog = (() => {
                         click: (me, btn) => {
                             const op = me.getData();
                             op.id = me.dataOptions.id;
-                            console.log(220,op);
+                            console.log(220, op);
 
                             // if (!op.price_type) {
                             //     cv_interact.error("Please select Price Type");
@@ -863,7 +863,11 @@ const CreateBookingDialog = (() => {
 
                             <div class="col-6">
                                 <div class="material-input outlined">
-                                    <input type="number" min="1" step="0.01" name="booking_fee" class="data-input form-control" data-field="booking_fee" placeholder=" " />
+                                    <input type="text" inputmode="decimal"
+                                        name="booking_fee"
+                                        class="data-input form-control"
+                                        data-field="booking_fee"
+                                        placeholder=" " />
                                     <label style="color:#777777;padding-left:6px;">Booking Amount</label>
                                 </div>
                             </div>
@@ -879,18 +883,29 @@ const CreateBookingDialog = (() => {
                     ].join("");
                 },
                 contentCreated: (me) => {
-                me.controls.booking_fee.addEventListener('input', (e) => {
-                    let v = parseFloat(e.target.value);
-                    if (isNaN(v)) {
-                        e.target.value = '';
-                        return;
-                    }
-                    if (v <= 0) {
-                        e.target.value = '';
-                        return;
-                    }
-                    e.target.value = v;
-                });
+                    me.controls.booking_fee.addEventListener('input', (e) => {
+                        let v = e.target.value;
+                        v = v.replace(/[^0-9.]/g, '');
+
+                        const parts = v.split('.');
+                        if (parts.length > 2) {
+                            v = parts[0] + '.' + parts[1];
+                        }
+                        if (parts[1] !== undefined) {
+                            v = parts[0] + '.' + parts[1].slice(0, 2);
+                        }
+
+                        e.target.value = v;
+                    });
+                    me.controls.booking_fee.addEventListener('blur', (e) => {
+                        let v = parseFloat(e.target.value);
+
+                        if (isNaN(v) || v <= 0) {
+                            e.target.value = '';
+                            return;
+                        }
+                        e.target.value = v;
+                    });
 
                 },
                 configSelect: [
@@ -961,7 +976,7 @@ const ViewBookingDialog = (() => {
                 cssClass: "modal-xl modal-content-vs-dialog",
                 backdrop: "static",
                 TriggerOnClose: true,
-                createContent: () =>{return ['<div name="container_fluid"></div>'].join('');},
+                createContent: () => { return ['<div name="container_fluid"></div>'].join(''); },
                 contentCreated: (me) => {
                     me.renderProfile = (div, data) => {
                         let html = '';
@@ -1072,7 +1087,7 @@ const ViewBookingDialog = (() => {
                     },
                 },
                 onPrepareForm: (me, d) => {
-                    me.renderProfile(me.controls.container_fluid,d);
+                    me.renderProfile(me.controls.container_fluid, d);
                 },
             });
 

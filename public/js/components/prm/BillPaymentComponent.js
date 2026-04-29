@@ -364,7 +364,6 @@ const BillPaymentDialog = (() => {
                                     <option value="cash">Cash</option>
                                     <option value="bank">Bank Transfer</option>
                                     <option value="cheque">Cheque</option>
-                                    <option value="other">Other</option>
                                 </select>
                             </div>
                         </div>

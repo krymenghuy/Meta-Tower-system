@@ -1,41 +1,43 @@
 <div id="_main_bill_component" class="mobile-padding p-3" style="display:none;">
      <div id="_divFilter_bill" class="rounded-2 p-3 bg-white shadow-sm">
         <div class="row g-3 align-items-center">
-            <div class="col-12 col-md-6 col-lg-3">
+            <div class="col-12 col-md-6 col-lg-4">
                 <input type="text" class="form-control rounded-2 pe-5 filter-field input-search" id="_search_bill" placeholder="Search by Bill or Invoice No" >
             </div>
-            <div class="col-12 col-md-6 col-lg-2 d-none ">
-                <select type="id" id="_bill_vendor_id" class="data-input filter-field form-control" data-field="vendor_id"></select>
-            </div>
-            <div class="col-12 col-md-6 col-lg-2">
-                <select type="id" id="_bill_status_id" class="data-input filter-field form-control" data-field="status_id"></select>
-            </div>
-            <div class="d-none col-12 col-md-6 col-lg-2">
-                <select type="id" id="_bill_expense_type_id" class="data-input filter-field form-control" data-field="expanse_type_id"></select>
-            </div>
-            <div class="col-6 col-md-3 col-lg-2">
-                <input 
-                    data-select="datepicker" 
-                    class="form-control filter-field" 
-                    placeholder="From date" 
-                    data-field="bill_date_start" />
-            </div>
 
-            <div class="col-6 col-md-3 col-lg-2">
-                <input 
-                    data-select="datepicker" 
-                    class="form-control filter-field" 
-                    placeholder="To date" 
-                    data-field="bill_date_end" />
-            </div>
-            <!-- <div class="col-12 col-md-6 col-lg-2">
-                <input data-select="datepicker" class="form-control filter-field" placeholder="Filter date" data-field="bill_date" />
-            </div> -->
             <div class="col-12 col-md-3 col-lg-2 ms-auto text-md-end" style="overflow:visible;">
                 <button type="button" class="btnAddNewPrm w-100 w-md-auto" id="_btnBill">
                     <i class="fa-solid fa-bars-staggered"></i>
                     <span vslang="buttons.Generate Bill"></span>
                 </button>
+            </div>
+
+            <div class="row g-3 align-items-center">
+                <div class="col-12 col-md-6 col-lg-2  ">
+                    <select type="id" id="_bill_vendor_id" class="data-input filter-field form-control" data-field="vendor_id"></select>
+                </div>
+                <div class="col-12 col-md-6 col-lg-2">
+                    <select type="id" id="_bill_status_id" class="data-input filter-field form-control" data-field="status_id"></select>
+                </div>
+                <div class="d-none col-12 col-md-6 col-lg-2">
+                    <select type="id" id="_bill_expense_type_id" class="data-input filter-field form-control" data-field="expanse_type_id"></select>
+                </div>
+                <div class="col-6 col-md-3 col-lg-2">
+                    <input 
+                        data-select="datepicker" 
+                        class="form-control filter-field" 
+                        placeholder="From date" 
+                        data-field="bill_date_start" />
+                </div>
+
+                <div class="col-6 col-md-3 col-lg-2">
+                    <input 
+                        data-select="datepicker" 
+                        class="form-control filter-field" 
+                        placeholder="To date" 
+                        data-field="bill_date_end" />
+                </div>
+
             </div>
         </div>
     </div>
