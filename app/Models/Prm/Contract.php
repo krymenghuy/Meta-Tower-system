@@ -499,6 +499,9 @@ class Contract
             }
 
             $space_id = $contract->space_id ?? null;
+            if ($space_id) {
+                DB::table('space_bookings')->where('space_id', $space_id)->delete();
+            }
             if ($space_id && !self::checkDuplicateContract($space_id, null)) {
                 $availableId = self::getSpaceAvailableStatusId();
                 if ($availableId) {
