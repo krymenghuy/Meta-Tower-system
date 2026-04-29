@@ -214,8 +214,8 @@ var MaintenanceComponent = (() => {
             cssClass: "bg-white shadow",
             menus: [
                 { html: '<span class="ps-2" vslang="titles.Modify"></span>', icon: '<i class="fa-regular fa-edit fs-5 text-warning"></i>', cssClass: "border-bottom pb-2", name: "modify" },
+                { html: '<span class="ps-2" vslang="titles.Cancel"></span>', icon: '<i class="fa-regular fa-rectangle-xmark fs-5 text-danger-emphasis"></i>', cssClass: "border-bottom pb-2", name: "cancel_maintenance" },
                 { html: '<span class="ps-2" vslang="titles.Delete"></span>', icon: '<i class="fa-regular fa-trash-can fs-5 text-danger"></i>', cssClass: "border-bottom pb-2", name: "delete" },
-                { html: '<span class="ps-2" vslang="titles.Cancel"></span>', icon: '<i class="fa-regular fa-rectangle-xmark fs-5 text-warning-emphasis"></i>', cssClass: "border-bottom pb-2", name: "cancel_maintenance" },
                 { html: '<span class="ps-2" vslang="titles.Finish"></span>', icon: '<i class="fa-solid fa-clipboard-check fs-5 text-success"></i>', cssClass: "border-bottom pb-2", name: "finish_maintenance" },
             ],
             onShow: (me, container) => {
@@ -224,7 +224,7 @@ var MaintenanceComponent = (() => {
                 menu.finish_maintenance.style.display = status_id == 2  ? 'block' : 'none';
                 // menu.cancel_maintenance.style.display = status_id == 3 ? 'none' : 'block';
                 menu.cancel_maintenance.style.display = status_id > 1 ? 'none' : 'block';
-                menu.modify.style.display = status_id > 1 ? 'none' : 'block';
+                menu.modify.style.display = 'none';
 
 
 
