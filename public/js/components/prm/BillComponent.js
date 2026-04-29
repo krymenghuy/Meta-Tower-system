@@ -49,7 +49,7 @@ var BillComponent = (() => {
             className: "align-middle text-nowrap",
             data: (data) => {
                 return `<span class="d-block text-prm-custom text-capitalize">${data.vendor_name}</span>
-                <span class="d-block text-prm-custom">${data.phone_number}</span>`;
+                <span class="d-block text-prm-custom text-muted">${data.phone_number}</span>`;
             },
         },
         

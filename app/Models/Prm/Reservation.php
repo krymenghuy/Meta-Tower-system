@@ -181,9 +181,10 @@ public function upsert($arr = [], $id = null, $ss = null){
         $count = (clone $query)->count('r.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
 
-        // --- AUTO STATUS LOGIC STARTS HERE ---
+        
         $now = \Carbon\Carbon::now('Asia/Phnom_Penh');
 
+        $updates = [];
         foreach($rows as $row) {
             $now = \Carbon\Carbon::now('Asia/Phnom_Penh');
             $start = \Carbon\Carbon::parse($row->booking_date . ' ' . $row->start_time, 'Asia/Phnom_Penh');
@@ -195,16 +196,8 @@ public function upsert($arr = [], $id = null, $ss = null){
             } elseif ($now->gt($end)) {
                 $calculatedStatusId = 3;
             }
-
-            // if ($row->status_id != $calculatedStatusId) {
-            //     DB::table('reservations')->where('id', $row->id)->update(['status_id' => $calculatedStatusId]);
-            //     $row->status_id = $calculatedStatusId;
-            // }
-            
-            // $row->status = ($row->status_id == 1) ? "Upcoming" : (($row->status_id == 2) ? "In-Progress" : "Completed");
-
             if ($row->status_id != 4 && $row->status_id != $calculatedStatusId) {
-                DB::table('reservations')->where('id', $row->id)->update(['status_id' => $calculatedStatusId]);
+                $this->updateReservationStatus($calculatedStatusId, $row->id, $ss);
                 $row->status_id = $calculatedStatusId;
             }
 
