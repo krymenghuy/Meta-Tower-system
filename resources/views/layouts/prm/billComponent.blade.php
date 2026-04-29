@@ -2,7 +2,7 @@
      <div id="_divFilter_bill" class="rounded-2 p-3 bg-white shadow-sm">
         <div class="row g-3 align-items-center">
             <div class="col-12 col-md-6 col-lg-4">
-                <input type="text" class="form-control rounded-2 pe-5 filter-field input-search" id="_search_bill" placeholder="Search by Bill or Invoice No" >
+                <input type="text" class="form-control rounded-2 pe-5 filter-field input-search" id="_search_bill" placeholder="Search by Bill No or Ref No" >
             </div>
 
             <div class="col-12 col-md-3 col-lg-2 ms-auto text-md-end" style="overflow:visible;">
