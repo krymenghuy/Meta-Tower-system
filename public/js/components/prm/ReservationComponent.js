@@ -9,8 +9,10 @@ var ReservationComponent = (() => {
     mThis.elFilter_status = mThis.self.querySelector("#_reservation_status");
     mThis.elAmenity = mThis.self.querySelector("#amenity_id");
     mThis.elBookingDate = mThis.self.querySelector("#booking_date");
-
     mThis.elSearch = mThis.self.querySelector("#_search_reservation");
+    mThis.autoRefreshMs = 60000;
+    mThis.autoRefreshTimer = null;
+    mThis.autoRefreshStartTimeout = null;
 
     mThis.cols = [
         {
@@ -176,10 +178,6 @@ var ReservationComponent = (() => {
             }, 250);
         });
 
-        mThis.autoRefreshInterval = setInterval(() => {
-            mThis.ReservationListView.showPage(mThis.getFilterData());
-        }, 60 * 1000);
-
 
         mThis.initAlready = true;
     };
@@ -198,6 +196,25 @@ var ReservationComponent = (() => {
         });
 
         return p;
+    };
+
+    mThis.isActiveView = () => !!(mThis.self && mThis.self.offsetParent !== null);
+    mThis.refreshListIfActive = () => {
+        if (!mThis.initAlready || !mThis.isActiveView()) return;
+        mThis.ReservationListView.showPage(mThis.getFilterData());
+    };
+
+    mThis.startAutoRefresh = () => {
+        clearInterval(mThis.autoRefreshTimer);
+        clearTimeout(mThis.autoRefreshStartTimeout);
+        const now = Date.now();
+        const msToNextMinute = 60000 - (now % 60000);
+        mThis.autoRefreshStartTimeout = setTimeout(() => {
+            mThis.refreshListIfActive();
+            mThis.autoRefreshTimer = setInterval(() => {
+                mThis.refreshListIfActive();
+            }, mThis.autoRefreshMs);
+        }, msToNextMinute);
     };
 
     mThis.initDropdownMenus = (table) => {
@@ -367,15 +384,10 @@ var ReservationComponent = (() => {
         mThis.prepareFormOptions(() => {
             main_view.setContentView(mThis.self, mThis.title_prop);
             mThis.ReservationListView.showPage(mThis.getFilterData());
+            mThis.startAutoRefresh();
+
         });
     };
-    mThis.hide = () => {
-        if (mThis.autoRefreshInternal) {
-            clearInterval(mThis.autoRefreshInterval);
-            mThis.autoRefreshInterval = null;
-            mThis.initAlready = false;
-        }
-    }
     return mThis;
 })();
 

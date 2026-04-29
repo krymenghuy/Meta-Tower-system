@@ -19,8 +19,9 @@
                 </button>
             </div> --}}
 
-            <div class="col-12 col-md-3 col-lg-2 ms-auto text-md-end" style="overflow:visible;">
+            <div class="col-12 col-md-auto  ms-md-auto text-md-end" style="overflow:visible;">
                 <button type="button" class="btnAddNewPrm w-100 w-md-auto" id="_btnReservation">
+                    <i class="fa-solid fa-calendar me-2" style="color: rgb(249, 251, 255);"></i>     
                     <span vslang="buttons.Create Reservation"></span>
                 </button>
             </div>
