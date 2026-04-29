@@ -283,7 +283,6 @@ public function upsert($arr = [], $id = null, $ss = null){
         if (!$row) {
             return DV::error('Reservation not found.');
         }
-
         if ($row->status_id != 1) {
             return DV::error('Only upcoming reservations can be cancelled.');
         }

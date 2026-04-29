@@ -18,7 +18,7 @@
             </div>
             <div class="col-12 col-md-3 col-lg-2 ms-auto text-md-end" style="overflow:visible;">
                 <button type="button" class="btnAddNewPrm w-100 w-md-auto" id="_btnAmenity">
-                    <i class="fa-brands fa-buffer"></i>
+                    <i class="fa-brands fa-buffer me-2"></i>
                     <span vslang="buttons.Create Amenity"></span>
                 </button>
             </div>
