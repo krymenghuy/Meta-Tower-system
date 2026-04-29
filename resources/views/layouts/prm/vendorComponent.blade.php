@@ -14,7 +14,7 @@
                 <select type="id" id="_vendor_status_id" class="data-input filter-field form-control" data-field="status_id"></select>
             </div>
 
-            <div class="col-12 col-md-3 col-lg-2 ms-auto text-md-end" style="overflow:visible;">
+            <div class="col-12 col-md-auto ms-md-auto text-md-end">
                 <button type="button" class="btnAddNewPrm w-100 w-md-auto" id="_btnVendor">
                     <i class="fa-solid fa-user-plus me-2"></i>
                     <span vslang="buttons.Create Vendor"></span>
