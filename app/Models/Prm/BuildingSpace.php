@@ -530,7 +530,7 @@ public function updateBooking($arr = [], $ss = null)
     DB::beginTransaction();
     try {
         $booking = DB::table('space_bookings')->where('id', $d->booking_id)->first();
-        if (!$booking || (int) $booking->space_id !== (int) $d->space_id) {
+        if (!$booking || $booking->space_id !== $d->space_id) {
             DB::rollBack();
             return DV::error('Booking not found for this space.');
         }
@@ -542,7 +542,7 @@ public function updateBooking($arr = [], $ss = null)
             DB::rollBack();
             return DV::error('Selected space does not exist.');
         }
-        if ((int) $space->status_id !== 2) {
+        if ($space->status_id !== 2) {
             DB::rollBack();
             return DV::error('This space does not have an active booking.');
         }
@@ -563,13 +563,50 @@ public function updateBooking($arr = [], $ss = null)
     }
 }
 
+// public function cancelBooking($arr = [], $ss = null)
+// {
+//     $ss = $ss ?? $this->userInfo;
+//     $v_rule = ['space_id' => '1|number|exists=building_spaces.id'];
+//     $res = DBX::validateObject($arr, $v_rule, 1, [], $ss->lang, 0, null);
+//     if ($res->error) return DV::error($res->error);
+//     $space_id =$res->values['space_id'];
+
+//     DB::beginTransaction();
+//     try {
+//         $space = DB::table('building_spaces')
+//             ->where('id', $space_id)
+//             ->lockForUpdate()
+//             ->first();
+//         if (!$space) {
+//             DB::rollBack();
+//             return DV::error('Space not found.');
+//         }
+//         if ($space->status_id !== 2) {
+//             DB::rollBack();
+//             return DV::error('This space does not have an active booking.');
+//         }
+
+//         DB::table('space_bookings')->where('space_id', $space_id)->delete();
+//         DB::table('building_spaces')
+//             ->where('id', $space_id)
+//             ->update(['status_id' => 1]);
+
+//         DB::commit();
+
+//         return DV::depends(1, ['action' => 'cancelled', 'space_id' => $space_id]);
+//     } catch (\Exception $e) {
+//         DB::rollBack();
+//         return DV::error('Unable to cancel booking.');
+//     }
+// }
 public function cancelBooking($arr = [], $ss = null)
 {
     $ss = $ss ?? $this->userInfo;
-    $v_rule = ['space_id' => '1|number|exists=building_spaces.id'];
-    $res = DBX::validateObject($arr, $v_rule, 1, [], $ss->lang, 0, null);
-    if ($res->error) return DV::error($res->error);
-    $space_id = (int) $res->values['space_id'];
+    $space_id = isset($arr['space_id']) ? $arr['space_id'] : null;
+
+    if (!$space_id || !is_numeric($space_id)) {
+        return DV::error('Invalid space_id.');
+    }
 
     DB::beginTransaction();
     try {
@@ -577,11 +614,12 @@ public function cancelBooking($arr = [], $ss = null)
             ->where('id', $space_id)
             ->lockForUpdate()
             ->first();
+
         if (!$space) {
             DB::rollBack();
             return DV::error('Space not found.');
         }
-        if ((int) $space->status_id !== 2) {
+        if ($space->status_id !== 2) {
             DB::rollBack();
             return DV::error('This space does not have an active booking.');
         }
@@ -599,5 +637,4 @@ public function cancelBooking($arr = [], $ss = null)
         return DV::error('Unable to cancel booking.');
     }
 }
-
 }
