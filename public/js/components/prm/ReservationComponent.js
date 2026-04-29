@@ -20,18 +20,18 @@ var ReservationComponent = (() => {
             className: "align-middle text-capitalize",
         },
         {
-            transTitle: "titles.Reservation",
-            className: "align-middle",
-            data: (data) => {
-                return `<span class="text-primary-custom">${data.amenity_name ?? ""}</span>`;
-            },
-        },
-        {
             transTitle: "titles.Tenant",
             className: "align-middle",
             data: (data) => {
                 return `<span class="text-primary-custom text-capitalize">${data.tenant_name ?? ""}</span>
-                        <small class="d-block text-muted">${data.phone_number ?? ""}</small>`;
+                        <span class="d-block text-primary">${data.phone_number ?? ""}</span>`;
+            },
+        },
+        {
+            transTitle: "titles.Reservation",
+            className: "align-middle",
+            data: (data) => {
+                return `<span class="text-primary-custom">${data.amenity_name ?? ""}</span>`;
             },
         },
         {
@@ -50,7 +50,7 @@ var ReservationComponent = (() => {
                 const start12 = to12h((data.start_time ?? "").substring(0, 5));
                 const end12 = to12h((data.end_time ?? "").substring(0, 5));
                 return `<span class="d-block text-prm-custom">${data.booking_date ?? ""}</span>
-                            <small class="text-muted">${start12} - ${end12}</small>`;
+                            <span class="text-primary">${start12} - ${end12}</span>`;
             },
         },
         {
@@ -232,7 +232,7 @@ var ReservationComponent = (() => {
                 },
                 {
                     html: '<span class="ps-2">Cancel</span>',
-                    icon: `<i class="fa-solid fa-circle-xmark" style="color: rgb(120, 123, 128);"></i>`,
+                    icon: `<i class="fa-solid fa-circle-xmark fs-5 text-danger-emphasis"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "cancel_reservation",
                 },
@@ -253,7 +253,6 @@ var ReservationComponent = (() => {
                 menu.delete_reservation.style.display = 'none';
 
                 if (status_id === 1) {
-                    menu.edit_reservation.style.display = 'block';
                     menu.cancel_reservation.style.display = 'block';
                     menu.delete_reservation.style.display = 'block';
                 } 
@@ -304,7 +303,7 @@ var ReservationComponent = (() => {
             {
                 transTitle: "Cancel Reservation",
                 context:"delete",
-                confirmButtonText: "Cancel Reservation",
+                confirmButtonText: "Cancel",
             },
             (confirmed) => {
                 if(!confirmed) return;

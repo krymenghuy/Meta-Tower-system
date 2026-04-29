@@ -42,7 +42,7 @@
                     <i class="fa fa-search fs-6 text-muted position-absolute" style="right: 15px; top: 50%; transform: translateY(-50%);"></i>
                 </div>
             </div>
-            
+        
         </div>
     </div>
  <div id="_space_div_summary" class="container-fluid bg-white rounded-2 shadow my-3 p-3">
