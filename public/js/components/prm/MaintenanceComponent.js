@@ -530,7 +530,7 @@ const CreateMaintenanceDialog = (() => {
                         delete op.start_time;
                         delete op.end_time;
                         console.log(9999,op);
-                        
+
                         vsapi.call(`${main_view.base_url}/prm/maintenance/save`, op, btn, null)
                             .then(res => {
                                 if (res.status_code === 200) {
