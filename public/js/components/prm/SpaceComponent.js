@@ -225,6 +225,19 @@ var SpaceComponent = new (function () {
                     cssClass: "border-bottom pb-2",
                     name: "view_booking"
                 },
+                {
+                    html: '<span class="ps-2" vslang="titles.Edit Booking">Edit Booking</span>',
+                    icon: `<i class="fa-regular fa-pen-to-square fs-5 text-warning"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "edit_booking"
+                },
+                {
+                    html: '<span class="ps-2" vslang="titles.Cancel Booking">Cancel Booking</span>',
+                    icon: `<i class="fa-regular fa-circle-xmark fs-5 text-danger"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "cancel_booking"
+                },
+
             ],
             // adjustPosition: {
             //     top: -200,
@@ -241,12 +254,15 @@ var SpaceComponent = new (function () {
                 const isMaintenance = maintenance_status_id === 2;
                 const hasActiveMaintenance = isUpcomingMaintenance || isMaintenance;
 
-                menu.create_booking.style.display = status_id >= 2 ? 'none' : 'block';
+                const booked = String(status_id) === '2';
+                menu.view_booking.style.display = booked ? 'block' : 'none';
+                menu.edit_booking.style.display = booked ? 'block' : 'none';
+                menu.cancel_booking.style.display = booked ? 'block' : 'none';
+                menu.create_booking.style.display = booked ? 'none' : 'block';
                 menu.create_contract.style.display = status_id >= 3 ? 'none' : 'block';
                 menu.edit_space.style.display = status_id == 3 ? 'none' : 'block';
                 menu.finish_maintenance.style.display = isMaintenance ? 'block' : 'none';
                 menu.set_maintenance.style.display = hasActiveMaintenance ? 'none' : 'block';
-                menu.view_booking.style.display = status_id == 2 ? 'block' : 'none';
             },
 
             onClick: (menulink, id, name) => {
@@ -279,6 +295,15 @@ var SpaceComponent = new (function () {
                         mThis.viewBooking(id, menulink);
                         break;
                     }
+                    case 'edit_booking': {
+                        mThis.editBooking(id, menulink);
+                        break;
+                    }
+                    case 'cancel_booking': {
+                        mThis.cancelBooking(id, menulink);
+                        break;
+                    }
+
                     default: {
                         break;
                     }
@@ -550,15 +575,45 @@ var SpaceComponent = new (function () {
     mThis.viewBooking = (id, menuLink) => {
         let op = {
             id: id,
-            // booker_id: menuLink.dataset.bookerid,
-            // space_id: menuLink.dataset.id,
-            // tenant_id: menuLink.dataset.tenantid,
             onClose: () => {
                 mThis.applyListFilters();
 
             }
         };
         ViewBookingDialog.show(op);
+    };
+    mThis.editBooking = (id, menuLink) => {
+        vsapi.call(`${main_view.base_url}/prm/building-space/view-booking`, { id }, menuLink, null).then((res) => {
+            if (res.status_code !== 200 || !res.data) {
+                cv_interact.error(res.error_message || "Booking not found.");
+                return;
+            }
+            CreateBookingDialog.show({
+                space_id: id,
+                booking: res.data,
+                detail: { space_id: id, booking: res.data },
+                dataOptions: { space_id: id, booking: res.data },
+                btn: menuLink,
+                onClose: () => { mThis.applyListFilters(); },
+            });
+        });
+    };
+    mThis.cancelBooking = (id, menuLink) => {
+        cv_interact.confirm("Cancel this booking and set the unit back to Available?", {
+            title: "Cancel Booking",
+            context: "delete",
+            confirmButtonText: "Cancel booking",
+        }, (yes) => {
+            if (!yes) return;
+            vsapi.call(`${main_view.base_url}/prm/building-space/cancel-booking`, { space_id: id }, menuLink, null).then((res) => {
+                if (res.status_code === 200) {
+                    cv_interact.success("Booking has been cancelled.");
+                    mThis.applyListFilters();
+                } else {
+                    cv_interact.error(res.error_message || "Failed.");
+                }
+            });
+        });
     };
 
     mThis.setAction = (tbl) => {
@@ -923,6 +978,17 @@ const CreateBookingDialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
+                    const b = me.dataOptions?.booking ?? me.detail?.booking;
+                    if (!b || !me.controls) return;
+                    const c = me.controls;
+                    const sv = (k, v) => { if (c[k]) c[k].value = v != null ? String(v) : ""; };
+                    sv("booker_name", b.booker_name);
+                    sv("booker_phone", b.booker_phone);
+                    sv("booker_email", b.booker_email);
+                    sv("booking_date", b.booking_date);
+                    sv("expired_booking_date", b.expired_booking_date);
+                    sv("booking_fee", b.booking_fee);
+                    sv("remarks", b.remarks);
                 },
 
                 buttons: [
@@ -939,20 +1005,19 @@ const CreateBookingDialog = (() => {
                         click: (me, btn) => {
                             const op = me.getData();
                             op.space_id = me.dataOptions.space_id;
-                            console.log(9099000, op);
+                            const editId = me.dataOptions?.booking?.id ?? me.detail?.booking?.id;
+                            const isEdit = Boolean(editId);
+                            if (isEdit) op.booking_id = editId;
+                            const url = isEdit ? "/prm/building-space/update-booking" : "/prm/building-space/create-booking";
 
-                            vsapi.call([main_view.base_url, "/prm/building-space/create-booking",].join(""), op, btn, null).then((res) => {
+                            vsapi.call([main_view.base_url, url].join(""), op, btn, null).then((res) => {
                                 if (res.status_code === 200) {
                                     me.hide(true, op);
-                                    if (me.dataOptions.id > 0) {
-                                        cv_interact.success(
-                                            "Booking has been updated successfully"
-                                        );
-                                    } else {
-                                        cv_interact.success(
-                                            "New booking has been created successfully"
-                                        );
-                                    }
+                                    cv_interact.success(
+                                        isEdit
+                                            ? "Booking has been updated successfully."
+                                            : "New booking has been created successfully"
+                                    );
                                 } else {
                                     cv_interact.error(res.error_message);
                                 }
