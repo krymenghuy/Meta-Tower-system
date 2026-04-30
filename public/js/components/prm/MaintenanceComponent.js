@@ -32,7 +32,7 @@ var MaintenanceComponent = (() => {
             }
         },
         {
-            transTitle: "titles.Schedule",
+            transTitle: "titles.Schedule Date",
             className: "align-middle text-start",
             data: (data) => {
 
@@ -63,7 +63,7 @@ var MaintenanceComponent = (() => {
                         ${same ? s.d : `${s.d} <i class="fa fa-arrow-right mx-1"></i> ${e.d}`}
                     </div>
                     ${same && (s.t || e.t) ? `
-                    <div class="small text-muted rounded mt-1">
+                    <div class="text-primary mt-1">
                         ${s.t || "—"} <i class="fa fa-arrow-right mx-1"></i> ${e.t || "—"}
                     </div>` : ""}
                 </div>`;
@@ -214,17 +214,17 @@ var MaintenanceComponent = (() => {
             cssClass: "bg-white shadow",
             menus: [
                 { html: '<span class="ps-2" vslang="titles.Modify"></span>', icon: '<i class="fa-regular fa-edit fs-5 text-warning"></i>', cssClass: "border-bottom pb-2", name: "modify" },
+                { html: '<span class="ps-2" vslang="titles.Cancel"></span>', icon: '<i class="fa-regular fa-rectangle-xmark fs-5 text-danger-emphasis"></i>', cssClass: "border-bottom pb-2", name: "cancel_maintenance" },
                 { html: '<span class="ps-2" vslang="titles.Delete"></span>', icon: '<i class="fa-regular fa-trash-can fs-5 text-danger"></i>', cssClass: "border-bottom pb-2", name: "delete" },
-                { html: '<span class="ps-2" vslang="titles.Cancel"></span>', icon: '<i class="fa-regular fa-rectangle-xmark fs-5 text-warning-emphasis"></i>', cssClass: "border-bottom pb-2", name: "cancel_maintenance" },
                 { html: '<span class="ps-2" vslang="titles.Finish"></span>', icon: '<i class="fa-solid fa-clipboard-check fs-5 text-success"></i>', cssClass: "border-bottom pb-2", name: "finish_maintenance" },
             ],
             onShow: (me, container) => {
                 const menu = me.getActiveMenus(container);
                 const status_id = container.dataset.statusid;
-                menu.finish_maintenance.style.display = status_id >= 3 ? 'none' : 'block';
+                menu.finish_maintenance.style.display = status_id == 2  ? 'block' : 'none';
                 // menu.cancel_maintenance.style.display = status_id == 3 ? 'none' : 'block';
                 menu.cancel_maintenance.style.display = status_id > 1 ? 'none' : 'block';
-                menu.modify.style.display = status_id > 1 ? 'none' : 'block';
+                menu.modify.style.display = 'none';
 
 
 
@@ -237,7 +237,7 @@ var MaintenanceComponent = (() => {
                         onClose: () => mThis.MaintenanceListView.showPage(mThis.getFilterData())
                     });
                 } else if (name === "finish_maintenance") {
-                    cv_interact.confirm("Mark this maintenance as finished (Completed)?", { transTitle: "Finish Maintenance", context: "confirm", confirmButtonText: "Finish" }, (e) => {
+                    cv_interact.confirm("Finish this maintenance?", { transTitle: "Finish Maintenance", context: "confirm", confirmButtonText: "Finish" }, (e) => {
                         if (e) {
                             vsapi.call(`${main_view.base_url}/prm/maintenance/set-status`, { id: id, status_id: 3 }, menuLink, null).then(res => {
                                 if (res.status_code === 200) {
@@ -353,7 +353,7 @@ const CreateMaintenanceDialog = (() => {
                             </div>
                             <div class="col-6 col-md-3">
                                 <div class="material-input outlined">
-                                    <input type="time" name="start_time" class="data-input form-control" data-field="start_time" value="00:00" placeholder=" ">
+                                    <input type="time" name="start_time" class="data-input form-control" data-field="start_time"  placeholder=" ">
                                     <label style="color:#777777;padding-left:6px;">Start time</label>
                                 </div>
                             </div>
@@ -365,7 +365,7 @@ const CreateMaintenanceDialog = (() => {
                             </div>
                             <div class="col-6 col-md-3">
                                 <div class="material-input outlined">
-                                    <input type="time" name="end_time" class="data-input form-control" data-field="end_time" value="00:00" placeholder=" ">
+                                    <input type="time" name="end_time" class="data-input form-control" data-field="end_time" placeholder=" ">
                                     <label style="color:#777777;padding-left:6px;">End time</label>
                                 </div>
                             </div>
@@ -421,23 +421,6 @@ const CreateMaintenanceDialog = (() => {
             },
             onPrepareForm: (me, data) => {
                 me.detail = data.maintenance_details || null;
-                // const allSpaces = Array.isArray(data.building_spaces) ? data.building_spaces : [];
-                // const allAmenities = Array.isArray(data.amenities) ? data.amenities : [];
-                // const applyBuildingFilter = () => {
-                //     const buildingId = Number(me.controls?.building_id?.value || 0);
-                //     const oldSpaceId = me.controls?.space_id?.value || "";
-                //     const oldAmenityId = me.controls?.amenity_id?.value || "";
-                //     const spaces = buildingId ? allSpaces.filter((x) => Number(x.building_id) === buildingId) : [];
-                //     const amenities = buildingId ? allAmenities.filter((x) => Number(x.building_id) === buildingId) : [];
-                //     VSUtil.setComboItems(me.controls?.space_id, spaces, "id", "code", "", "Select space", "");
-                //     VSUtil.setComboItems(me.controls?.amenity_id, amenities, "id", "amenity_code", "", "Select code amenity", "");
-                //     if (me.controls?.space_id && spaces.some((x) => String(x.id) === String(oldSpaceId))) me.controls.space_id.value = oldSpaceId;
-                //     if (me.controls?.amenity_id && amenities.some((x) => String(x.id) === String(oldAmenityId))) me.controls.amenity_id.value = oldAmenityId;
-                // };
-                // if (me._onBuildingChange) me.controls?.building_id?.removeEventListener("change", me._onBuildingChange);
-                // me._onBuildingChange = () => applyBuildingFilter();
-                // me.controls?.building_id?.addEventListener("change", me._onBuildingChange);
-
                 if (me.dataOptions?.space_id) {
                     me.detail = me.detail || {};
                     me.detail.type_unit = "space";
@@ -452,40 +435,69 @@ const CreateMaintenanceDialog = (() => {
                     if (me.detail.space_id) me.detail.type_unit = "space";
                     else if (me.detail.amenity_id) me.detail.type_unit = "amenity";
                 }
-                setTimeout(function () {
-                    const typeUnit = me.controls?.type_unit;
-                    const spaceRow = me.divModal?.querySelector("#_maintenance_unit_space_row");
-                    const amenityRow = me.divModal?.querySelector("#_maintenance_unit_amenity_row");
-                    if (typeUnit && me.detail?.type_unit) typeUnit.value = me.detail.type_unit;
-                    if (me.detail?.space_id && me.controls?.space_id) me.controls.space_id.value = me.detail.space_id;
-                    if (me.detail?.amenity_id && me.controls?.amenity_id) me.controls.amenity_id.value = me.detail.amenity_id;
-                    if (me.detail?.building_id && me.controls?.building_id) me.controls.building_id.value = me.detail.building_id;
-                    // applyBuildingFilter();
-                    // if (me.detail?.space_id && me.controls?.space_id) me.controls.space_id.value = me.detail.space_id;
-                    // if (me.detail?.amenity_id && me.controls?.amenity_id) me.controls.amenity_id.value = me.detail.amenity_id;
-                    if (spaceRow && amenityRow) {
-                        const val = typeUnit?.value || "";
-                        spaceRow.style.display = val === "space" ? "" : "none";
-                        amenityRow.style.display = val === "amenity" ? "" : "none";
+               setTimeout(function () {
+                const typeUnit = me.controls?.type_unit;
+                const spaceRow = me.divModal?.querySelector("#_maintenance_unit_space_row");
+                const amenityRow = me.divModal?.querySelector("#_maintenance_unit_amenity_row");
+
+                if (typeUnit && me.detail?.type_unit) typeUnit.value = me.detail.type_unit;
+                if (me.detail?.space_id && me.controls?.space_id) me.controls.space_id.value = me.detail.space_id;
+                if (me.detail?.amenity_id && me.controls?.amenity_id) me.controls.amenity_id.value = me.detail.amenity_id;
+                if (me.detail?.building_id && me.controls?.building_id) me.controls.building_id.value = me.detail.building_id;
+
+                if (spaceRow && amenityRow) {
+                    const val = typeUnit?.value || "";
+                    spaceRow.style.display = val === "space" ? "" : "none";
+                    amenityRow.style.display = val === "amenity" ? "" : "none";
+                }
+
+                const fromSpace = !!me.dataOptions?.space_id;
+                const fromAmenity = !!me.dataOptions?.amenity_id;
+                const lockContext = fromSpace || fromAmenity;
+
+                if (me.controls?.building_id) me.controls.building_id.disabled = lockContext;
+                if (me.controls?.type_unit) me.controls.type_unit.disabled = lockContext;
+                if (me.controls?.space_id) me.controls.space_id.disabled = lockContext;
+                if (me.controls?.amenity_id) me.controls.amenity_id.disabled = lockContext;
+
+                // ✅ helper: convert 12h → 24h
+                const to24h = (time, ampm) => {
+                    if (!time) return "00:00";
+                    let [h, m] = time.split(':').map(Number);
+
+                    if (ampm === 'PM' && h < 12) h += 12;
+                    if (ampm === 'AM' && h === 12) h = 0;
+
+                    return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+                };
+
+                // ✅ START DATE
+                if (me.detail?.start_date && me.controls?.start_date) {
+                    const s = String(me.detail.start_date).trim().split(/\s+/);
+
+                    me.controls.start_date.value = s[0] || "";
+
+                    if (me.controls.start_time) {
+                        const time = s[1] || "00:00";
+                        const ampm = s[2] || "AM";
+                        me.controls.start_time.value = to24h(time, ampm);
                     }
-                    const fromSpace = !!me.dataOptions?.space_id;
-                    const fromAmenity = !!me.dataOptions?.amenity_id;
-                    const lockContext = fromSpace || fromAmenity;
-                    if (me.controls?.building_id) me.controls.building_id.disabled = lockContext;
-                    if (me.controls?.type_unit) me.controls.type_unit.disabled = lockContext;
-                    if (me.controls?.space_id) me.controls.space_id.disabled = lockContext;
-                    if (me.controls?.amenity_id) me.controls.amenity_id.disabled = lockContext;
-                    if (me.detail?.start_date && me.controls?.start_date) {
-                        const s = String(me.detail.start_date).trim().split(/\s+/);
-                        me.controls.start_date.value = s[0] || "";
-                        if (me.controls.start_time) me.controls.start_time.value = (s[1] || "00:00").substring(0, 5);
+                }
+
+                // ✅ END DATE
+                if (me.detail?.end_date && me.controls?.end_date) {
+                    const e = String(me.detail.end_date).trim().split(/\s+/);
+
+                    me.controls.end_date.value = e[0] || "";
+
+                    if (me.controls.end_time) {
+                        const time = e[1] || "00:00";
+                        const ampm = e[2] || "AM";
+                        me.controls.end_time.value = to24h(time, ampm);
                     }
-                    if (me.detail?.end_date && me.controls?.end_date) {
-                        const e = String(me.detail.end_date).trim().split(/\s+/);
-                        me.controls.end_date.value = e[0] || "";
-                        if (me.controls.end_time) me.controls.end_time.value = (e[1] || "00:00").substring(0, 5);
-                    }
-                }, 0);
+                }
+
+            }, 0);
             },
             buttons: [
                 { label: '<span vslang="buttons.Cancel"></span>', cssClass: "btn btn-secondary", click: (me) => me.hide(false) },
@@ -518,7 +530,7 @@ const CreateMaintenanceDialog = (() => {
                         delete op.start_time;
                         delete op.end_time;
                         console.log(9999,op);
-                        
+
                         vsapi.call(`${main_view.base_url}/prm/maintenance/save`, op, btn, null)
                             .then(res => {
                                 if (res.status_code === 200) {

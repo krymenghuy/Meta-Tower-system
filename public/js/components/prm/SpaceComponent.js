@@ -305,6 +305,15 @@ var SpaceComponent = new (function() {
                         mThis.viewBooking(id, menulink);
                         break;
                     }
+                    case 'edit_booking': {
+                        mThis.editBooking(id, menulink);
+                        break;
+                    }
+                    case 'cancel_booking': {
+                        mThis.cancelBooking(id, menulink);
+                        break;
+                    }
+
                     default: {
                         break;
                     }
@@ -677,14 +686,44 @@ var SpaceComponent = new (function() {
     mThis.viewBooking = (id, menuLink) => {
         let op = {
             id: id,
-            // booker_id: menuLink.dataset.bookerid,
-            // space_id: menuLink.dataset.id,
-            // tenant_id: menuLink.dataset.tenantid,
             onClose: () => {
                 mThis.applyListFilters();
             }
         };
         ViewBookingDialog.show(op);
+    };
+    mThis.editBooking = (id, menuLink) => {
+        vsapi.call(`${main_view.base_url}/prm/building-space/view-booking`, { id }, menuLink, null).then((res) => {
+            if (res.status_code !== 200 || !res.data) {
+                cv_interact.error(res.error_message || "Booking not found.");
+                return;
+            }
+            CreateBookingDialog.show({
+                space_id: id,
+                booking: res.data,
+                detail: { space_id: id, booking: res.data },
+                dataOptions: { space_id: id, booking: res.data },
+                btn: menuLink,
+                onClose: () => { mThis.applyListFilters(); },
+            });
+        });
+    };
+    mThis.cancelBooking = (id, menuLink) => {
+        cv_interact.confirm("Cancel this booking and set the unit back to Available?", {
+            title: "Cancel Booking",
+            context: "delete",
+            confirmButtonText: "Cancel booking",
+        }, (yes) => {
+            if (!yes) return;
+            vsapi.call(`${main_view.base_url}/prm/building-space/cancel-booking`, { space_id: id }, menuLink, null).then((res) => {
+                if (res.status_code === 200) {
+                    cv_interact.success("Booking has been cancelled.");
+                    mThis.applyListFilters();
+                } else {
+                    cv_interact.error(res.error_message || "Failed.");
+                }
+            });
+        });
     };
 
     mThis.setAction = tbl => {
@@ -836,15 +875,7 @@ const BuildingSpaceDialog = (() => {
                             </div>
                             <div class="col-6">
                                 <div class="material-input outlined">
-                                        <input
-                                            type="number"
-                                            name="price"
-                                            class="data-input form-control"
-                                            data-field="price"
-                                            placeholder=" "
-                                            min="0"
-                                            step="0.01"
-                                        />
+                                        <input type="text" inputmode="decimal" name="price" class="data-input form-control" data-field="price" placeholder=" " />
                                     <label style="color:#777777;padding-left:6px;">Price</label>
                                 </div>
                             </div>
@@ -1039,7 +1070,11 @@ const CreateBookingDialog = (() => {
 
                             <div class="col-6">
                                 <div class="material-input outlined">
-                                    <input type="number" min="1" step="0.01" name="booking_fee" class="data-input form-control" data-field="booking_fee" placeholder=" " />
+                                    <input type="text" inputmode="decimal"
+                                        name="booking_fee"
+                                        class="data-input form-control"
+                                        data-field="booking_fee"
+                                        placeholder=" " />
                                     <label style="color:#777777;padding-left:6px;">Booking Amount</label>
                                 </div>
                             </div>
@@ -1100,7 +1135,10 @@ const CreateBookingDialog = (() => {
                         click: (me, btn) => {
                             const op = me.getData();
                             op.space_id = me.dataOptions.space_id;
-                            console.log(9099000, op);
+                            const editId = me.dataOptions?.booking?.id ?? me.detail?.booking?.id;
+                            const isEdit = Boolean(editId);
+                            if (isEdit) op.booking_id = editId;
+                            const url = isEdit ? "/prm/building-space/update-booking" : "/prm/building-space/create-booking";
 
                             vsapi
                                 .call(

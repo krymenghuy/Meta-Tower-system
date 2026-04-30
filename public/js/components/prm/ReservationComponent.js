@@ -9,8 +9,10 @@ var ReservationComponent = (() => {
     mThis.elFilter_status = mThis.self.querySelector("#_reservation_status");
     mThis.elAmenity = mThis.self.querySelector("#amenity_id");
     mThis.elBookingDate = mThis.self.querySelector("#booking_date");
-
     mThis.elSearch = mThis.self.querySelector("#_search_reservation");
+    mThis.autoRefreshMs = 60000;
+    mThis.autoRefreshTimer = null;
+    mThis.autoRefreshStartTimeout = null;
 
     mThis.cols = [
         {
@@ -18,18 +20,18 @@ var ReservationComponent = (() => {
             className: "align-middle text-capitalize",
         },
         {
+            transTitle: "titles.Tenant",
+            className: "align-middle",
+            data: (data) => {
+                return `<span class="text-primary-custom text-capitalize">${data.tenant_name ?? ""}</span>
+                        <span class="d-block text-primary">${data.phone_number ?? ""}</span>`;
+            },
+        },
+        {
             transTitle: "titles.Reservation",
             className: "align-middle",
             data: (data) => {
                 return `<span class="text-primary-custom">${data.amenity_name ?? ""}</span>`;
-            },
-        },
-        {
-            transTitle: "titles.Tenant",
-            className: "align-middle",
-            data: (data) => {
-                return `<span class="text-primary-custom">${data.tenant_name ?? ""}</span>
-                        <small class="d-block text-muted">${data.phone_number ?? ""}</small>`;
             },
         },
         {
@@ -48,7 +50,7 @@ var ReservationComponent = (() => {
                 const start12 = to12h((data.start_time ?? "").substring(0, 5));
                 const end12 = to12h((data.end_time ?? "").substring(0, 5));
                 return `<span class="d-block text-prm-custom">${data.booking_date ?? ""}</span>
-                            <small class="text-muted">${start12} - ${end12}</small>`;
+                            <span class="text-primary">${start12} - ${end12}</span>`;
             },
         },
         {
@@ -196,6 +198,25 @@ var ReservationComponent = (() => {
         return p;
     };
 
+    mThis.isActiveView = () => !!(mThis.self && mThis.self.offsetParent !== null);
+    mThis.refreshListIfActive = () => {
+        if (!mThis.initAlready || !mThis.isActiveView()) return;
+        mThis.ReservationListView.showPage(mThis.getFilterData());
+    };
+
+    mThis.startAutoRefresh = () => {
+        clearInterval(mThis.autoRefreshTimer);
+        clearTimeout(mThis.autoRefreshStartTimeout);
+        const now = Date.now();
+        const msToNextMinute = 60000 - (now % 60000);
+        mThis.autoRefreshStartTimeout = setTimeout(() => {
+            mThis.refreshListIfActive();
+            mThis.autoRefreshTimer = setInterval(() => {
+                mThis.refreshListIfActive();
+            }, mThis.autoRefreshMs);
+        }, msToNextMinute);
+    };
+
     mThis.initDropdownMenus = (table) => {
         const menuOptopns = {
             containerElement: table,
@@ -211,7 +232,7 @@ var ReservationComponent = (() => {
                 },
                 {
                     html: '<span class="ps-2">Cancel</span>',
-                    icon: `<i class="fa-solid fa-circle-xmark" style="color: rgb(120, 123, 128);"></i>`,
+                    icon: `<i class="fa-solid fa-circle-xmark fs-5 text-danger-emphasis"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "cancel_reservation",
                 },
@@ -232,7 +253,6 @@ var ReservationComponent = (() => {
                 menu.delete_reservation.style.display = 'none';
 
                 if (status_id === 1) {
-                    menu.edit_reservation.style.display = 'block';
                     menu.cancel_reservation.style.display = 'block';
                     menu.delete_reservation.style.display = 'block';
                 } 
@@ -283,7 +303,7 @@ var ReservationComponent = (() => {
             {
                 transTitle: "Cancel Reservation",
                 context:"delete",
-                confirmButtonText: "Cancel Reservation",
+                confirmButtonText: "Cancel",
             },
             (confirmed) => {
                 if(!confirmed) return;
@@ -363,6 +383,8 @@ var ReservationComponent = (() => {
         mThis.prepareFormOptions(() => {
             main_view.setContentView(mThis.self, mThis.title_prop);
             mThis.ReservationListView.showPage(mThis.getFilterData());
+            mThis.startAutoRefresh();
+
         });
     };
     return mThis;

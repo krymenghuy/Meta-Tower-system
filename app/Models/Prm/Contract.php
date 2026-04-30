@@ -224,7 +224,7 @@ class Contract
         return $terminatedId ?: 3;
     }
 
-    /** Get space_statuses.id for "Occupied" (used when a contract is created/uses a unit). */
+
     public static function getSpaceOccupiedStatusId()
     {
         $id = DB::table('space_statuses')
@@ -254,7 +254,7 @@ class Contract
     {
         if (!$space_id) return null;
 
-        // Only treat as duplicate if the space has an Active or Pending contract.
+
         // Expired or Terminated contracts do not block creating a new contract for the same space.
         $activeId = self::getActiveStatusId();
         $pendingId = self::getPendingStatusId();
@@ -355,10 +355,7 @@ class Contract
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
-    /**
-     * Paginated list of contract_renewals (old renew contracts).
-     * Optional filters: contract_id, search_value (remarks). Optional branch_id scope.
-     */
+
     public function getListRenewalsPaginate($arr, $ss = null)
     {
         $d = (object) $arr;
@@ -463,8 +460,7 @@ class Contract
             $building_spaces = GeneralSettings::options_building_space($ss, $current_space_id);
         }
         if (!empty($normalizedIncludeIds)) {
-            // When editing / multi-space context, ensure included space rows exist in the list even if
-            // options_building_space (available-only) or restrict_to_include_spaces would omit them — same idea as Maintenance::getFormOptions.
+
             $alreadyLoadedById = $building_spaces
                 ->filter(function ($row) {
                     return ($row->id ?? 0) > 0;
@@ -490,8 +486,50 @@ class Contract
     public static function deleteContract($id = null)
     {
         $id = $id ?? $this->id;
-        $deleted = DB::table('contracts')->where('id', $id)->delete();
-        return $deleted ? DV::depends($deleted, ['action' => 'deleted']) : DV::error('Deleted failed.');
+        $contract = DB::table('contracts')->where('id', $id)->first();
+        if (!$contract) {
+            return DV::error('Contract not found.');
+        }
+
+        DB::beginTransaction();
+        try {
+            $deleted = DB::table('contracts')->where('id', $id)->delete();
+            if (!$deleted) {
+                DB::rollBack();
+                return DV::error('Deleted failed.');
+            }
+
+            $space_id = $contract->space_id ?? null;
+            if ($space_id) {
+                DB::table('space_bookings')->where('space_id', $space_id)->delete();
+            }
+            if ($space_id && !self::checkDuplicateContract($space_id, null)) {
+                $availableId = self::getSpaceAvailableStatusId();
+                if ($availableId) {
+                    DB::table('building_spaces')->where('id', $space_id)->update(['status_id' => $availableId]);
+                }
+            }
+
+            $tenant_id = $contract->tenant_id ?? null;
+            if ($tenant_id) {
+                $terminatedStatusId = self::getTerminatedStatusId();
+                $hasActive = DB::table('contracts')
+                    ->where('tenant_id', $tenant_id)
+                    ->whereDate('end_date', '>=', now())
+                    ->where('status_id', '!=', $terminatedStatusId)
+                    ->exists();
+                DB::table('tenants')->where('id', $tenant_id)
+                    ->update(['status_id' => $hasActive ? 2 : 3]); // 2=Active, 3=Inactive
+            }
+
+            DB::commit();
+
+            return DV::depends($deleted, ['action' => 'deleted']);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            return DV::error('Delete failed.');
+        }
     }
 
     public static function normalizePhone($phone)
@@ -725,7 +763,7 @@ class Contract
             return DV::error('End date cannot be in the past');
         }
 
-        // ✅ at least 1 calendar month
+     
         $minEnd = strtotime('+1 month', $start);
 
         // fix month-end cases (31 Jan → Feb end)

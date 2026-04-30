@@ -24,11 +24,11 @@ var BillPaymentComponent = (() => {
             },
         },
         {
-            transTitle: "titles.Bill No",
+            transTitle: "titles.Ref No",
             className: "align-middle",
             data: (data) => {
                 return `
-                    <span class="d-block text-nowrap text-prm-custom ">${data.bill_number ?? ""}</span>`;
+                    <span class="d-block text-nowrap text-prm-custom ">${data.ref_no ?? ""}</span>`;
             },
         },
         {
@@ -46,8 +46,8 @@ var BillPaymentComponent = (() => {
         },
         {
             transTitle: "titles.Payment Method",
-            className: "align-middle",
-            data: (data) => `<span class="d-block text-prm-custom text-capitalize">${data.payment_method ?? ""}</span>`,
+            className: "align-middle text-center ",
+            data: (data) => `<span class="d-block text-prm-custom text-capitalize ">${data.payment_method ?? ""}</span>`,
         },
         {
             transTitle: "titles.Remark",
@@ -364,7 +364,6 @@ const BillPaymentDialog = (() => {
                                     <option value="cash">Cash</option>
                                     <option value="bank">Bank Transfer</option>
                                     <option value="cheque">Cheque</option>
-                                    <option value="other">Other</option>
                                 </select>
                             </div>
                         </div>
@@ -389,7 +388,7 @@ const BillPaymentDialog = (() => {
                         </div>
                         <div class="col-3">
                             <div class="material-input outlined border-primary">
-                                <input name="amount" data-field="amount" class="data-input form-control text-end fw-bold" placeholder="0.00 $">
+                                <input type="text" inputmode="decimal" name="amount" data-field="amount" class="data-input form-control text-end fw-bold" placeholder="0.00 $">
                                 <label class="text-primary px-2">Paying Now</label>
                             </div>
                         </div>
@@ -403,14 +402,14 @@ const BillPaymentDialog = (() => {
                             <div style="border:1px dashed #bfdbfe; border-radius:6px; padding:8px 14px; background:#eff6ff; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
                                 <div class="d-flex align-items-center gap-2">
                                     <span style="font-size:11px; color:#1d4ed8; white-space:nowrap;">1 USD =</span>
-                                    <input id="_dlg_conv_rate" type="number" min="1" value="4100"
+                                    <input id="_conv_rate" type="number" min="1" value="4100"
                                         style="width:80px; border:1px solid #93c5fd; border-radius:4px; background:#fff; padding:2px 8px; font-size:12px; color:#1d4ed8; font-weight:500; text-align:right; outline:none;">
                                     <span style="font-size:11px; color:#1d4ed8;">KHR</span>
                                 </div>
                                 <div class="d-flex align-items-center gap-2">
                                     <span style="font-size:11px; color:#3b82f6;">Paying Now</span>
                                     <span style="font-size:13px; color:#1d4ed8;">→</span>
-                                    <span id="_dlg_conv_result" style="font-size:14px; color:#1d4ed8; font-weight:500;">៛ 0</span>
+                                    <span id="_conv_result" style="font-size:14px; color:#1d4ed8; font-weight:500;">៛ 0</span>
                                 </div>
                             </div>
                         </div>
@@ -424,6 +423,33 @@ const BillPaymentDialog = (() => {
                     </div>`
                 ].join("");
             },
+
+            contentCreated: (me) => {
+                    me.controls.amount.addEventListener('input', (e) => {
+                        let v = e.target.value;
+                        v = v.replace(/[^0-9.]/g, '');
+
+                        const parts = v.split('.');
+                        if (parts.length > 2) {
+                            v = parts[0] + '.' + parts[1];
+                        }
+                        if (parts[1] !== undefined) {
+                            v = parts[0] + '.' + parts[1].slice(0, 2);
+                        }
+
+                        e.target.value = v;
+                    });
+                    me.controls.amount.addEventListener('blur', (e) => {
+                        let v = parseFloat(e.target.value);
+
+                        if (isNaN(v) || v <= 0) {
+                            e.target.value = '';
+                            return;
+                        }
+                        e.target.value = v;
+                    });
+
+                },
 
             prepareFormOptions: {
                 createTitle: "Bill Payment Voucher",

@@ -37,7 +37,7 @@ var ServiceRequestComponent = (function () {
                     <span class="text-prm-custom d-block">
                         ${data.tenant_name ?? ''}
                     </span>
-                    <span class="d-block text-warning">
+                    <span class="d-block text-primary">
                         ${data.space_code ?? ""}
                     </span>
                 </div>
@@ -110,7 +110,7 @@ var ServiceRequestComponent = (function () {
                 return `
                     <div class="d-flex flex-column align-items-start">
                         <span class="text-prm-custom text-nowrap">${data.scheduled_date ?? ''}</span>
-                        <span class="text-warning small text-nowrap">
+                        <span class="text-primary text-nowrap">
                             Start Time: ${formatTime(data.start_time)}
                         </span>
                     </div>
