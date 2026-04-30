@@ -463,11 +463,13 @@ var ContractComponent = new (function () {
                 const isActive = statusText === 'active' || statusId === 2;
                 const endDate = mThis.parseSafeDate(container.dataset.endDate ?? row?.dataset?.endDate ?? '');
                 const isPending = statusText === 'pending';
+                const isExpired = statusText === 'expired';
                 const isTerminated = statusText === 'terminated';
                               // show renew only when status is active and end date is within next 3 months (not for pending)
                               const showRenew = isActive && endDate && mThis.isWithinNextThreeMonths(endDate);
+                const canModify = !isActive && !isExpired && !isTerminated;
 
-                menu.edit_contract.style.display = isActive ? 'none' : 'block';
+                menu.edit_contract.style.display = canModify ? 'block' : 'none';
                 menu.print_contract.style.display ='none';
                 menu.renew_contract.style.display = showRenew ? 'block' : 'none';
                 if (menu.terminate_contract) {
@@ -978,7 +980,7 @@ const ContractDialog = (() => {
                 //     });
                 // };
                 applyNumberInput(me.controls.deposit);
-                
+
 
             },
 
@@ -1452,6 +1454,16 @@ const RenewDialog = (() => {
                     cssClass: 'btn btn-primary',
                     click: (me, btn) => {
                         const op = me.getData();
+                        const renewStart = op.start_date ? new Date(op.start_date) : null;
+                        const renewEnd = op.end_date ? new Date(op.end_date) : null;
+                        if (!renewEnd || Number.isNaN(renewEnd.getTime())) {
+                            cv_interact.error("Please select a valid Renew End Date.");
+                            return;
+                        }
+                        if (renewStart && !Number.isNaN(renewStart.getTime()) && renewEnd <= renewStart) {
+                            cv_interact.error("Renew End Date must be after Renew Start Date.");
+                            return;
+                        }
                         delete op.old_contract_start;
                         delete op.old_contract_end;
                         delete op.old_contract_price;
