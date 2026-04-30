@@ -43,6 +43,21 @@ class Building //extends Model
         }
         $inputs = $res->values;
         $isCreate = !$id || $id == 0;
+
+        $nameNorm = strtolower(trim((string) ($inputs['name'] ?? '')));
+        $dup = DB::table('buildings')
+            ->whereRaw('LOWER(TRIM(name)) = ?', [$nameNorm])
+            ->when(!$isCreate, fn ($q) => $q->where('id', '<>', $id))
+            ->exists();
+
+        if ($dup) {
+            return DV::error(
+                $isCreate
+                    ? 'A building with this name already exists.'
+                    : 'Another building already uses this name.'
+            );
+        }
+
         $id = DBX::saveData($ss, 'buildings', ['id' => $id], $inputs, [], 1);
         if ($id > 0) {
             return DV::depends(1, ['buildings' => $inputs, 'id' => $id]);
@@ -73,7 +88,8 @@ class Building //extends Model
             // ->join('um_branches as um', 'um.id', '=', 'b.campus_id')
             ->whereRaw($str_search)
             ->selectRaw('b.id, b.name,b.address, b.total_floor, b.total_area, b.total_space,b.updated_at, b.update_user')
-            ->orderBy('b.id', 'asc');
+            ->orderByDesc('b.updated_at')
+            ->orderByDesc('b.id');
 
         $clone_query = clone $query;
         $count = $clone_query->count('b.id');
