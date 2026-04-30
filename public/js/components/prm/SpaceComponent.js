@@ -1032,7 +1032,7 @@ const CreateBookingDialog = (() => {
                                     cv_interact.success(
                                         isEdit
                                             ? "Booking has been updated successfully."
-                                            : "New booking has been created successfully"
+                                            : "New booking has been created successfully."
                                     );
                                 } else {
                                     cv_interact.error(res.error_message);
