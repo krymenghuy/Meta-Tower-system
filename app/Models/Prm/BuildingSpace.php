@@ -318,13 +318,7 @@ class BuildingSpace
             return DV::error('This space cannot be deleted because it is not available.');
         $deleted = DB::table('building_spaces')->where('id', $id)->delete();
         if ($deleted) {
-
-            $total_space = DB::table('building_spaces')
-                ->where('building_id', $building_id)
-                ->count();
-            DB::table('buildings')
-                ->where('id', $building_id)
-                ->update(['total_space' => $total_space]);
+            self::updateTotalSpace($building_id);
         }
 
         return $deleted
