@@ -2,7 +2,7 @@
     <div id="_divFilter_maintenance" class="rounded-2 p-3 bg-white shadow-sm">
        <div class="row g-3 align-items-center">
            <div class="col-12 col-md-6 col-lg-3">
-               <input type="text" class="form-control rounded-2 pe-5 filter-field input-search" id="_search_maintenance" placeholder="Search by Code">
+               <input type="text" class="form-control rounded-2 pe-5 filter-field input-search" id="_search_maintenance" placeholder="Search by Unit">
            </div>
            <div class="col-12 col-md-6 col-lg-2">
                <select id="_maintenance_building_id" class="data-input filter-field form-control" data-field="building_id"></select>
