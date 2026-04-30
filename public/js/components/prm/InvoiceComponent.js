@@ -77,15 +77,7 @@ var InvoiceComponent = (() => {
                 return `
                     <div class="d-flex flex-column align-items-center ">
                         <span class="text-prm-custom text-nowrap">${data.due_date ??
-                            ""}</span>
-                        ${
-                            statusId === 4
-                                ? `
-                        <span class="text-primary small">
-                            ${data.payment_status_name}
-                        </span>`
-                                : ""
-                        }
+                            ""}
                     </div>
                 `;
             }
@@ -148,12 +140,12 @@ var InvoiceComponent = (() => {
                 } else if (statusId === 3) {
                     // Partially Paid
                     cls =
-                        "text-warning bg-warning-subtle border border-warning";
+                        "text-warning bg-warning-subtle border border-warning ";
                     icon = "fa-regular fa-hourglass-half";
                 } else if (statusId === 4) {
                     // Overdue
                     cls =
-                        "text-primary bg-primary-subtle border border-primary ";
+                        "status-overdue";
                     icon = "fa-solid fa-triangle-exclamation";
                 }
                 return `
@@ -428,7 +420,7 @@ var InvoiceComponent = (() => {
             n.toLocaleString("en-US", { minimumFractionDigits: 2 });
         container.innerHTML = `
             <div class="bg-white rounded shadow-sm">
-                <div class="table-responsive">
+                <div class="table-responsive table--dropdown">
                     <table class="table table-sm table-bordered mb-0">
                         <thead style="background:#e1e5f2;">
                             <tr style= background-color:#E1E5F2;" >
