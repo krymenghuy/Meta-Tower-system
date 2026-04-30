@@ -1,36 +1,34 @@
 "use strict";
 
-var SpaceComponent = new (function() {
+var SpaceComponent = new (function () {
     const mThis = this;
     mThis.title_prop = "Space Management";
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_space_component");
     mThis.btnAdd = mThis.self.querySelector("#_btnSpace");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_space");
-    mThis.elBuilding = mThis.self.querySelector("#building_id");
-    mThis.elFloor = mThis.self.querySelector("#floor_id");
-    mThis.elSpaceType = mThis.self.querySelector("#space_type_id");
-    mThis.elFilter_status = mThis.self.querySelector("#_space_status");
+    mThis.elBuilding = mThis.self.querySelector('#building_id');
+    mThis.elFloor = mThis.self.querySelector('#floor_id');
+    mThis.elSpaceType = mThis.self.querySelector('#space_type_id');
+    mThis.elFilter_status = mThis.self.querySelector('#_space_status');
     mThis.elSearch = mThis.self.querySelector("#_search_space");
     let div = mThis.self.querySelector("#_space_list");
-    mThis.paginationContainer = mThis.self.querySelector(
-        "#space_container_pagination"
-    );
+    mThis.paginationContainer = mThis.self.querySelector("#space_container_pagination");
 
-    mThis.divSummary = mThis.self.querySelector("#_space_div_summary");
+    mThis.divSummary = mThis.self.querySelector('#_space_div_summary');
 
     mThis.init = () => {
         if (mThis.initAlready) return;
 
-        mThis.SpaceListView = new ListView("_space_list", {
+        mThis.SpaceListView = new ListView('_space_list', {
             fetchApi: `${main_view.base_url}/prm/building-space/list-paginate`,
             perPage: 8,
             apiCluster: main_view.apiCluster,
             paginationContainer: mThis.paginationContainer,
-            tableClass:
-                "table table--white rounded-2 overflow-hidden header-uppercase",
-            rowCreated: (data, index, tr) => {},
-            processResponse: res => {
+            tableClass: 'table table--white rounded-2 overflow-hidden header-uppercase',
+            rowCreated: (data, index, tr) => {
+            },
+            processResponse: (res) => {
                 const payload = res.data;
                 if (payload && payload.summary) {
                     mThis.setDataSummary(payload.summary);
@@ -45,7 +43,7 @@ var SpaceComponent = new (function() {
             listContainerClass: null
         });
 
-        mThis.btnAdd.onclick = function(e) {
+        mThis.btnAdd.onclick = function (e) {
             e.preventDefault();
             const op = {
                 id: null,
@@ -60,16 +58,16 @@ var SpaceComponent = new (function() {
         mThis.setAction(div);
 
         const sh_parent = mThis.pr_tbl.parentElement;
-        sh_parent.style.maxHeight = window.innerHeight - 320 + "px";
+        sh_parent.style.maxHeight = (window.innerHeight - 320) + 'px';
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            sh_parent.style.maxHeight = window.innerHeight - 320 + "px";
-        };
+            sh_parent.style.maxHeight = (window.innerHeight - 320) + 'px';
+        }
         mThis.tblBuildingSpace = mThis.SpaceListView.getTable();
         mThis.initDropdownMenus(mThis.tblBuildingSpace);
         mThis.bindSpaceFilterListeners();
-        mThis.elSearch.addEventListener("keyup", e => {
+        mThis.elSearch.addEventListener('keyup', (e) => {
             e.preventDefault();
             clearTimeout(mThis.search_timeout);
             mThis.search_timeout = setTimeout(() => {
@@ -77,21 +75,21 @@ var SpaceComponent = new (function() {
             }, 250);
         });
 
+
         mThis.initAlready = true;
     };
     mThis.summaryPalette = {
-        total: "#f6d673",
-        occupancy: "#fd397a",
-        available: "#0abb87",
-        booked: "#5578eb"
+        total: '#f6d673',
+        occupancy: '#fd397a',
+        available: '#0abb87',
+        booked: '#5578eb',
     };
 
-    mThis.setDataSummary = summary => {
+    mThis.setDataSummary = (summary) => {
         const pal = mThis.summaryPalette;
-        const s =
-            summary && typeof summary === "object"
-                ? summary
-                : { total_units: 0, occupancy: 0, available: 0, booked: 0 };
+        const s = summary && typeof summary === 'object'
+            ? summary
+            : { total_units: 0, occupancy: 0, available: 0, booked: 0 };
         const total = Number(s.total_units ?? 0);
         const occ = Number(s.occupancy ?? 0);
         const avail = Number(s.available ?? 0);
@@ -144,23 +142,19 @@ var SpaceComponent = new (function() {
     };
 
     mThis.getFilterData = () => {
-        const nz = v =>
-            v === "" || v === null || v === undefined ? "0" : String(v);
+        const nz = (v) => (v === "" || v === null || v === undefined ? "0" : String(v));
         let p = {
             search_value: mThis.elSearch.value || "",
             status_id: nz(mThis.elFilter_status && mThis.elFilter_status.value),
             building_id: nz(mThis.elBuilding && mThis.elBuilding.value),
-            floor_id: nz(mThis.elFloor && mThis.elFloor.value)
+            floor_id: nz(mThis.elFloor && mThis.elFloor.value),
+            space_type_id: nz(mThis.elSpaceType && mThis.elSpaceType.value),
         };
 
-        mThis.divFilter.querySelectorAll(".filter-field").forEach(el => {
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             const f = el.dataset.field;
             if (f) {
-                if (
-                    f === "status_id" ||
-                    f === "building_id" ||
-                    f === "floor_id"
-                ) {
+                if (f === "status_id" || f === "building_id" || f === "floor_id" || f === "space_type_id") {
                     p[f] = nz(el.value);
                 } else {
                     p[f] = el.value;
@@ -172,10 +166,7 @@ var SpaceComponent = new (function() {
     };
     mThis.applyListFilters = () => {
         const d = mThis.getFilterData();
-        if (
-            mThis.SpaceListView &&
-            typeof mThis.SpaceListView.setParams === "function"
-        ) {
+        if (mThis.SpaceListView && typeof mThis.SpaceListView.setParams === "function") {
             mThis.SpaceListView.setParams(d);
         }
         mThis.SpaceListView.showPage(d);
@@ -185,13 +176,13 @@ var SpaceComponent = new (function() {
             return;
         }
         mThis._spaceFilterListenersBound = true;
-        mThis.divFilter.addEventListener("change", e => {
+        mThis.divFilter.addEventListener("change", (e) => {
             e.preventDefault();
             mThis.applyListFilters();
         });
     };
 
-    mThis.initDropdownMenus = table => {
+    mThis.initDropdownMenus = (table) => {
         const menuOptopns = {
             containerElement: table,
             actionButtonClass: "btn_space_action",
@@ -199,47 +190,54 @@ var SpaceComponent = new (function() {
             //menuItemClass:"",
             menus: [
                 {
-                    html:
-                        '<span class="ps-2 " vslang="titles.Modify">Modify</span>',
+                    html: '<span class="ps-2 " vslang="titles.Modify">Modify</span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "edit_space"
                 },
                 {
-                    html:
-                        '<span class="ps-2" vslang="titles.Booking">Booking</span>',
+                    html: '<span class="ps-2" vslang="titles.Booking">Booking</span>',
                     icon: `<i class="fa-solid fa-bold fs-5 text-info-emphasis"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "create_booking"
                 },
                 {
-                    html:
-                        '<span class="ps-2" vslang="titles.Contract">Contract</span>',
+                    html: '<span class="ps-2" vslang="titles.Contract">Contract</span>',
                     icon: `<i class="fa-regular fa-file-lines fs-5 text-primary"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "create_contract"
                 },
                 {
-                    html:
-                        '<span class="ps-2" vslang="titles.Maintenance">Maintenance</span>',
+                    html: '<span class="ps-2" vslang="titles.Maintenance">Maintenance</span>',
                     icon: `<i class="fa-solid fa-screwdriver-wrench fs-5 text-warning-emphasis"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "set_maintenance"
                 },
                 {
-                    html:
-                        '<span class="ps-2  " vslang="titles.Finish">Finish</span>',
+                    html: '<span class="ps-2  " vslang="titles.Finish">Finish</span>',
                     icon: `<i class="fa-solid fa-clipboard-check fs-5 text-success"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "finish_maintenance"
                 },
                 {
-                    html:
-                        '<span class="ps-2" vslang="titles.View Booking">View Booking</span>',
+                    html: '<span class="ps-2" vslang="titles.View Booking">View Booking</span>',
                     icon: `<i class="fa-regular fa-hard-drive fs-5 text-info"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "view_booking"
-                }
+                },
+                {
+                    html: '<span class="ps-2" vslang="titles.Edit Booking">Edit Booking</span>',
+                    icon: `<i class="fa-regular fa-pen-to-square fs-5 text-warning"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "edit_booking"
+                },
+                {
+                    html: '<span class="ps-2" vslang="titles.Cancel Booking">Cancel Booking</span>',
+                    icon: `<i class="fa-regular fa-circle-xmark fs-5 text-danger"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "cancel_booking"
+                },
+
             ],
             // adjustPosition: {
             //     top: -200,
@@ -250,58 +248,50 @@ var SpaceComponent = new (function() {
                 const menu = me.getActiveMenus(container);
 
                 const status_id = container.dataset.statusid;
-                const maintenance_status_id = Number(
-                    container.dataset.maintenancestatusid || 0
-                );
+                const maintenance_status_id = Number(container.dataset.maintenancestatusid || 0);
 
                 const isUpcomingMaintenance = maintenance_status_id === 1;
                 const isMaintenance = maintenance_status_id === 2;
-                const hasActiveMaintenance =
-                    isUpcomingMaintenance || isMaintenance;
+                const hasActiveMaintenance = isUpcomingMaintenance || isMaintenance;
 
-                menu.create_booking.style.display =
-                    status_id >= 2 ? "none" : "block";
-                menu.create_contract.style.display =
-                    status_id >= 3 ? "none" : "block";
-                menu.edit_space.style.display =
-                    status_id == 3 ? "none" : "block";
-                menu.finish_maintenance.style.display = isMaintenance
-                    ? "block"
-                    : "none";
-                menu.set_maintenance.style.display = isMaintenance
-                    ? "none"
-                    : "block";
-                menu.view_booking.style.display =
-                    status_id == 2 ? "block" : "none";
+                const booked = String(status_id) === '2';
+                menu.view_booking.style.display = booked ? 'block' : 'none';
+                menu.edit_booking.style.display = booked ? 'block' : 'none';
+                menu.cancel_booking.style.display = booked ? 'block' : 'none';
+                menu.create_booking.style.display = booked ? 'none' : 'block';
+                menu.create_contract.style.display = status_id >= 3 ? 'none' : 'block';
+                menu.edit_space.style.display = status_id == 3 ? 'none' : 'block';
+                menu.finish_maintenance.style.display = isMaintenance ? 'block' : 'none';
+                menu.set_maintenance.style.display = hasActiveMaintenance ? 'none' : 'block';
             },
 
             onClick: (menulink, id, name) => {
                 switch (name) {
-                    case "set_maintenance": {
+                    case 'set_maintenance': {
                         mThis.setMaintenance(id, menulink);
                         break;
                     }
-                    case "finish_maintenance": {
+                    case 'finish_maintenance': {
                         mThis.finishMaintenance(id, menulink);
                         break;
                     }
-                    case "create_booking": {
+                    case 'create_booking': {
                         mThis.createBooking(id, menulink);
                         break;
                     }
-                    case "create_contract": {
+                    case 'create_contract': {
                         mThis.createContract(id, menulink);
                         break;
                     }
-                    case "edit_space": {
+                    case 'edit_space': {
                         mThis.editSpace(id, menulink);
                         break;
                     }
-                    case "delete_space": {
+                    case 'delete_space': {
                         mThis.deleteSpace(id, menulink);
                         break;
                     }
-                    case "view_booking": {
+                    case 'view_booking': {
                         mThis.viewBooking(id, menulink);
                         break;
                     }
@@ -319,9 +309,9 @@ var SpaceComponent = new (function() {
                     }
                 }
             }
-        };
+        }
         new VSDropdownMenu(menuOptopns);
-    };
+    }
     mThis.renderSpaceCard = (div, data) => {
         data = data ?? [];
         // if(!AuthManager)
@@ -331,106 +321,79 @@ var SpaceComponent = new (function() {
         // }
 
         AuthManager.init().then(user => {
-            mThis.renderSpace(div, data);
+            mThis.renderSpace(div, data)
         });
-    };
+    }
     mThis.renderSpace = (container, data) => {
         container.innerHTML = "";
         let html = `<div class="row g-3">`;
         if (Array.isArray(data) && data.length > 0) {
             data.forEach(d => {
+
                 const status = (d.status || "Available").toLowerCase();
                 let statusClass = "";
                 let statusColor = "#08b9d5";
                 switch (status) {
                     case "available":
-                        statusClass =
-                            "badge text-uppercase text-white shadow-sm bg-success";
+                        statusClass = "badge text-uppercase text-white shadow-sm bg-success";
                         statusColor = "#0abb87";
                         break;
                     case "booked":
-                        statusClass =
-                            "badge text-uppercase text-white shadow-sm  bg-info";
+                        statusClass = "badge text-uppercase text-white shadow-sm  bg-info";
                         statusColor = "#5578eb";
                         break;
                     case "occupied":
-                        statusClass =
-                            "badge text-uppercase text-white bg-danger shadow-sm ";
+                        statusClass = "badge text-uppercase text-white bg-danger shadow-sm ";
                         statusColor = "#fd397a";
 
                         break;
                     default:
-                        statusClass =
-                            "badge text-uppercase text-white bg-warning shadow-sm ";
+                        statusClass = "badge text-uppercase text-white bg-warning shadow-sm ";
                         statusColor = "#ffb822";
                         break;
                 }
-                const symbol = d.cur_symbol || "$";
+                const symbol = d.cur_symbol || '$';
                 const size = Number(d.sqm_size || 0);
                 const price = Number(d.price || 0);
 
-                const sizeLabel = size ? `${size} m²` : "";
+                const sizeLabel = size ? `${size} m²` : '';
 
-                const pricePerMonth =
-                    d.price_type === "total" ? price : price * size;
+                const pricePerMonth = d.price_type === 'total'
+                    ? price
+                    : price * size;
 
-                const priceLabel =
-                    d.price_type === "total"
-                        ? `${symbol} ${price.toLocaleString()} /month`
-                        : `${symbol} ${price.toLocaleString()}`;
+                const priceLabel = d.price_type === 'total'
+                    ? `${symbol} ${price.toLocaleString()} /month`
+                    : `${symbol} ${price.toLocaleString()}`;
 
                 const priceLabelPerMonth = `${symbol} ${pricePerMonth.toLocaleString()}`;
-                const maintenanceStatusId = Number(
-                    d.maintenance_status_id || 0
-                );
-                const maintenanceStatusName = String(
-                    d.maintenance_status ?? d.maintenance_status_name ?? ""
-                )
-                    .trim()
-                    .toLowerCase();
-                const isPlannedMaintenance =
-                    maintenanceStatusId === 1 ||
-                    maintenanceStatusName === "planned" ||
-                    maintenanceStatusName === "upcoming";
+                const maintenanceStatusId = Number(d.maintenance_status_id || 0);
+                const maintenanceStatusName = String(d.maintenance_status ?? d.maintenance_status_name ?? '').trim().toLowerCase();
+                const isPlannedMaintenance = maintenanceStatusId === 1 || maintenanceStatusName === 'planned' || maintenanceStatusName === 'upcoming';
                 const maintenanceLabel = isPlannedMaintenance
-                    ? ' <span class="text-warning fw-semibold">(Upcoming)</span>'
-                    : maintenanceStatusId === 2
-                    ? ' <span class="text-warning fw-semibold">(Maintenance)</span>'
-                    : "";
+                    ? ' <span class="text-warning fw-semibold">(Upcoming Maintenance)</span>'
+                    : (maintenanceStatusId === 2
+                        ? ' <span class="text-warning fw-semibold">(Maintenance)</span>'
+                        : '');
                 html += `
                 <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
-                    <div class="unit-card position-relative overflow-hidden h-100" style="background-image:url('${d.bg_image ??
-                        "/assets/images/default/bg-card1.jpg"}');">
+                    <div class="unit-card position-relative overflow-hidden h-100" style="background-image:url('${d.bg_image ?? '/assets/images/default/bg-card1.jpg'}');">
                         <div class="p-4 d-flex flex-column gap-2">
                             <div class="d-flex justify-content-between align-items-start">
                                 <div>
                                     <h5 class="unit-name mb-1 text-prm-custom" style="font-weight: 700;">
-                                        Unit ${d.code ?? ""}
+                                        Unit ${d.code ?? ''}
                                     </h5>
                                     <p class="unit-floor text-muted small mb-0">
-                                        ${d.floor_number ??
-                                            "-"} • ${d.building_name ??
-                    ""}${maintenanceLabel}
+                                        ${d.floor_number ?? '-'} • ${d.building_name ?? ''}${maintenanceLabel}
                                     </p>
                                    <p class="unit-floor text-muted small mb-0">
-                                        Charge as ( ${
-                                            d.price_type === "total"
-                                                ? `${symbol} ${price.toLocaleString()} / month`
-                                                : `${symbol} ${price.toLocaleString()} / m²`
-                                        } )
+                                        Charge as ( ${d.price_type === 'total' ? `${symbol} ${price.toLocaleString()} / month` : `${symbol} ${price.toLocaleString()} / m²`} )
                                     </p>
 
                                 </div>
                                 <span>
-                                    <a href="javascript:void(0)" class="btn_space_action" data-id="${
-                                        d.id
-                                    }" data-buildingid="${
-                    d.building_id
-                }" data-floorid="${d.floor_id}" data-statusid="${
-                    d.status_id
-                }" data-maintenanceStatusId="${
-                    d.maintenance_status_id
-                }" aria-haspopup="true" aria-expanded="false">
+                                    <a href="javascript:void(0)" class="btn_space_action" data-id="${d.id}" data-buildingid="${d.building_id}" data-floorid="${d.floor_id}" data-statusid="${d.status_id}" data-maintenanceStatusId="${d.maintenance_status_id}" aria-haspopup="true" aria-expanded="false">
                                         <i class="fa-solid fa-ellipsis-vertical text-primary-custom fs-5"></i>
                                     </a>
                                 </span>
@@ -438,8 +401,7 @@ var SpaceComponent = new (function() {
                             <div class="d-flex justify-content-between text-muted">
                                 <div class="d-flex align-items-center text-muted gap-2">
                                     <i class="fa-regular fa-building text-primary-custom"></i>
-                                    <span class="space-type">${d.space_type ??
-                                        ""}</span>
+                                    <span class="space-type">${d.space_type ?? ''}</span>
                                 </div>
                                 <div class="d-flex align-items-center text-muted gap-2">
                                     <span class="${statusClass}" style="min-width:80px">${status}</span>
@@ -478,12 +440,10 @@ var SpaceComponent = new (function() {
                             <div class="mt-auto">
                                 <div class="d-flex justify-content-between text-muted small">
                                     <div class="d-flex align-items-center gap-1">
-                                        <div class="text-muted">Create By :</i> ${d.update_user ??
-                                            ""}</div>
+                                        <div class="text-muted">Last Updated By :</i> ${d.update_user ?? ''}</div>
                                     </div>
                                     <div class="d-flex align-items-center gap-1">
-                                        <div class="text-muted"><i class="fa-regular fa-clock"></i> <span>${d.updated_at ??
-                                            ""}</span></div>
+                                        <div class="text-muted"><i class="fa-regular fa-clock"></i> <span>${d.updated_at ?? ''}</span></div>
                                     </div>
                                 </div>
 
@@ -494,7 +454,8 @@ var SpaceComponent = new (function() {
                 </div>
                 `;
             });
-        } else {
+        }
+        else {
             html += `
             <div class="col-12">
                 <div class="bg-white rounded-3 p-4 text-center">
@@ -507,7 +468,7 @@ var SpaceComponent = new (function() {
         container.innerHTML = html;
     };
 
-    mThis.createContract = (id, menulink) => {
+ mThis.createContract = (id, menulink) => {
         vsapi.call(
             `${main_view.base_url}/prm/contract/form-options`,
             { space_id: id },
@@ -568,27 +529,22 @@ var SpaceComponent = new (function() {
             });
         });
     };
-
-
-
-
-
-
     mThis.editSpace = (id, menulink) => {
         let op = {
             id: id,
             data: {
                 building_id: menulink?.dataset?.buildingid ?? null,
-                floor_id: menulink?.dataset?.floorid ?? null
+                floor_id: menulink?.dataset?.floorid ?? null,
             },
             btn: menulink,
             onClose: () => {
+                ;
                 mThis.applyListFilters();
             }
         };
 
         BuildingSpaceDialog.show(op);
-    };
+    }
     mThis.setMaintenance = (id, menulink) => {
         const op = {
             space_id: id,
@@ -603,35 +559,18 @@ var SpaceComponent = new (function() {
         }
     };
     mThis.finishMaintenance = (id, menulink) => {
-        cv_interact.confirm(
-            "Mark this maintenance as finished (Completed)?",
-            {
-                transTitle: "Finish Maintenance",
-                context: "confirm",
-                confirmButtonText: "Finish"
-            },
-            e => {
-                if (e) {
-                    vsapi
-                        .call(
-                            `${main_view.base_url}/prm/maintenance/finish-by-space`,
-                            { space_id: id },
-                            menulink,
-                            null
-                        )
-                        .then(res => {
-                            if (res.status_code === 200) {
-                                cv_interact.success("Maintenance finished.");
-                                mThis.applyListFilters();
-                            } else {
-                                cv_interact.error(
-                                    res.error_message || "Failed"
-                                );
-                            }
-                        });
-                }
+        cv_interact.confirm("Mark this maintenance as finished (Completed)?", { transTitle: "Finish Maintenance", context: "confirm", confirmButtonText: "Finish" }, (e) => {
+            if (e) {
+                vsapi.call(`${main_view.base_url}/prm/maintenance/finish-by-space`, { space_id: id }, menulink, null).then(res => {
+                    if (res.status_code === 200) {
+                        cv_interact.success("Maintenance finished.");
+                        mThis.applyListFilters();
+                    } else {
+                        cv_interact.error(res.error_message || "Failed");
+                    }
+                });
             }
-        );
+        });
     };
     mThis.createBooking = (id, menulink) => {
         let op = {
@@ -644,7 +583,7 @@ var SpaceComponent = new (function() {
         };
 
         CreateBookingDialog.show(op);
-    };
+    }
     mThis.deleteSpace = (id, menulink) => {
         let op = {
             id: id,
@@ -654,40 +593,31 @@ var SpaceComponent = new (function() {
             }
         };
         // if (!AuthManager.allowed(242)) return;
-        cv_interact.confirm(
-            "Delete this Space?",
-            {
-                title: "Delete ",
-                context: "delete",
-                confirmButtonText: "Delete"
-            },
-            function(e) {
-                if (e) {
-                    vsapi
-                        .call(
-                            `${main_view.base_url}/prm/building-space/delete`,
-                            op,
-                            false,
-                            false,
-                            false
-                        )
-                        .then(res => {
-                            if (res.status_code == 200) {
-                                cv_interact.success("Space has been deleted");
-                                mThis.applyListFilters();
-                            } else {
-                                cv_interact.error(res.error_message);
-                            }
-                        });
-                }
+        cv_interact.confirm('Delete this Space?', {
+            title: 'Delete ',
+            context: 'delete',
+            confirmButtonText: "Delete"
+        }, function (e) {
+            if (e) {
+                vsapi.call(`${main_view.base_url}/prm/building-space/delete`, op, false, false, false).then(res => {
+                    if (res.status_code == 200) {
+
+                        cv_interact.success('Space has been deleted')
+                        mThis.applyListFilters();
+                    } else {
+                        cv_interact.error(res.error_message);
+                    }
+                })
             }
-        );
-    };
+
+        });
+    }
     mThis.viewBooking = (id, menuLink) => {
         let op = {
             id: id,
             onClose: () => {
                 mThis.applyListFilters();
+
             }
         };
         ViewBookingDialog.show(op);
@@ -726,9 +656,9 @@ var SpaceComponent = new (function() {
         });
     };
 
-    mThis.setAction = tbl => {
-        tbl.addEventListener("click", e => {
-            let btn = VSUtil.closestLimited(e.target, ".btn-create-contract");
+    mThis.setAction = (tbl) => {
+        tbl.addEventListener('click', (e) => {
+            let btn = VSUtil.closestLimited(e.target, '.btn-create-contract');
             if (btn) {
                 e.preventDefault();
                 const op = {
@@ -738,7 +668,7 @@ var SpaceComponent = new (function() {
                         code: btn.dataset.spaceid,
                         price_type: btn.dataset.pricetype,
                         price: btn.dataset.price,
-                        sqm_size: btn.dataset.sqmsize
+                        sqm_size: btn.dataset.sqmsize,
                     },
                     btn: e.target,
                     onClose: () => {
@@ -747,54 +677,16 @@ var SpaceComponent = new (function() {
                 };
                 ContractDialog.show(op);
             }
-        });
-    };
-    mThis.prepareFormOptions = onFinish => {
-        vsapi
-            .call(
-                `${main_view.base_url}/prm/building-space/form-options`,
-                null,
-                null,
-                null
-            )
+        })
+    }
+    mThis.prepareFormOptions = (onFinish) => {
+        vsapi.call(`${main_view.base_url}/prm/building-space/form-options`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(
-                    mThis.elFilter_status,
-                    d.statuses,
-                    "id",
-                    "space_status",
-                    "",
-                    "All Statuses",
-                    ""
-                );
-                VSUtil.setComboItems(
-                    mThis.elBuilding,
-                    d.buildings,
-                    "id",
-                    "building",
-                    "",
-                    "All Buildings",
-                    ""
-                );
-                VSUtil.setComboItems(
-                    mThis.elFloor,
-                    d.floors,
-                    "id",
-                    "name",
-                    "",
-                    "All Floors",
-                    ""
-                );
-                VSUtil.setComboItems(
-                    mThis.elSpaceType,
-                    d.space_types,
-                    "id",
-                    "space_type",
-                    "",
-                    "All Space Type",
-                    ""
-                );
+                VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'space_status', '', 'All Statuses', '');
+                VSUtil.setComboItems(mThis.elBuilding, d.buildings, 'id', 'building', '', 'All buildings', '');
+                VSUtil.setComboItems(mThis.elFloor, d.floors, 'id', 'name', '', 'All Floors', '');
+                VSUtil.setComboItems(mThis.elSpaceType, d.space_types, 'id', 'space_type', '', 'All Space Type', '');
 
                 // mThis.elBuilding.onchange = function (e) {
                 //     e.preventDefault();
@@ -810,10 +702,11 @@ var SpaceComponent = new (function() {
                 //     });
                 // };
 
-                if (typeof onFinish === "function") onFinish();
+                if (typeof onFinish === 'function') onFinish();
             });
+
     };
-    mThis.show = options => {
+    mThis.show = (options) => {
         mThis.init();
         mThis.options = options;
         mThis.prepareFormOptions(() => {
@@ -821,6 +714,7 @@ var SpaceComponent = new (function() {
             mThis.setDataSummary(null);
             mThis.applyListFilters();
         });
+
     };
     return mThis;
 })();
@@ -829,7 +723,7 @@ const BuildingSpaceDialog = (() => {
     const self = {};
     let dialog = null;
 
-    self.show = op => {
+    self.show = (op) => {
         dialog =
             dialog ||
             new GeneralDialog({
@@ -894,13 +788,38 @@ const BuildingSpaceDialog = (() => {
                     ].join("");
                 },
 
-                contentCreated: me => {},
+                contentCreated: (me) => {
+                    me.controls.price.addEventListener('input', (e) => {
+                        let v = e.target.value;
+                        v = v.replace(/[^0-9.]/g, '');
+
+                        const parts = v.split('.');
+                        if (parts.length > 2) {
+                            v = parts[0] + '.' + parts[1];
+                        }
+                        if (parts[1] !== undefined) {
+                            v = parts[0] + '.' + parts[1].slice(0, 2);
+                        }
+
+                        e.target.value = v;
+                    });
+                    me.controls.price.addEventListener('blur', (e) => {
+                        let v = parseFloat(e.target.value);
+
+                        if (isNaN(v) || v <= 0) {
+                            e.target.value = '';
+                            return;
+                        }
+                        e.target.value = v;
+                    });
+
+                },
                 configSelect: [
                     {
                         name: "building_id",
                         data: "buildings",
                         textField: "building",
-                        valueField: "id"
+                        valueField: "id",
                     },
                     {
                         name: "floor_id",
@@ -914,24 +833,26 @@ const BuildingSpaceDialog = (() => {
                             api: {
                                 endpoint: `${main_view.base_url}/prm/settings/options-floors`,
                                 params: (me, op) => {
-                                    let building_id =
-                                        me.controls.building_id.value;
+                                    let building_id = me.controls.building_id.value;
                                     return {
-                                        building_id: building_id
+                                        building_id: building_id,
+
                                     };
-                                }
-                            }
-                        }
+                                },
+                            },
+                        },
+
                     },
                     {
                         name: "space_type_id",
                         data: "space_types",
                         textField: "space_type",
-                        valueField: "id"
-                    }
+                        valueField: "id",
+                    },
+
                 ],
-                onShow: me => {
-                    const title = me.divModal.querySelector(".modal-title");
+                onShow: (me) => {
+                    const title = me.divModal.querySelector('.modal-title');
                     if (title) {
                         const isModify = !!me.dataOptions?.id;
                         title.innerHTML = isModify
@@ -944,38 +865,30 @@ const BuildingSpaceDialog = (() => {
                     modifyTitle: "Modify Space ",
                     targetProp: "space_details",
                     api: {
-                        endpoint: [
-                            main_view.base_url,
-                            "/prm/building-space/form-options"
-                        ].join(""),
-                        params: op => {
+                        endpoint: [main_view.base_url, "/prm/building-space/form-options",].join(""),
+                        params: (op) => {
                             return { id: op.id };
-                        }
-                    }
+                        },
+                    },
                 },
 
                 onPrepareForm: (me, data) => {
                     const isReadOnly = me.dataOptions.id > 0;
-                    me.setReadOnly(isReadOnly, [
-                        "building_id",
-                        "code",
-                        "floor_id"
-                    ]);
-                    me.controls.price_type.value =
-                        data.space_details.price_type;
+                    me.setReadOnly(isReadOnly, ["building_id", "code", "floor_id"]);
+                    me.controls.price_type.value = data.space_details.price_type;
                 },
 
                 buttons: [
                     {
                         label: '<span vslang="buttons.Cancel"></span>',
-                        cssClass: "btn btn-secondary",
+                        cssClass: 'btn btn-secondary',
                         click: (me, btn) => {
                             me.hide(false);
-                        }
+                        },
                     },
                     {
                         label: '<span vslang="buttons.Save"></span>',
-                        cssClass: "btn btn-primary",
+                        cssClass: 'btn btn-primary',
                         click: (me, btn) => {
                             const op = me.getData();
                             op.id = me.dataOptions.id;
@@ -985,35 +898,25 @@ const BuildingSpaceDialog = (() => {
                             //     cv_interact.error("Please select Price Type");
                             //     return;
                             // }
-                            vsapi
-                                .call(
-                                    [
-                                        main_view.base_url,
-                                        "/prm/building-space/save"
-                                    ].join(""),
-                                    op,
-                                    btn,
-                                    null
-                                )
-                                .then(res => {
-                                    if (res.status_code === 200) {
-                                        me.hide(true, op);
-                                        if (me.dataOptions.id > 0) {
-                                            cv_interact.success(
-                                                "Space has been updated successfully."
-                                            );
-                                        } else {
-                                            cv_interact.success(
-                                                "New space has been added successfully."
-                                            );
-                                        }
+                            vsapi.call([main_view.base_url, "/prm/building-space/save",].join(""), op, btn, null).then((res) => {
+                                if (res.status_code === 200) {
+                                    me.hide(true, op);
+                                    if (me.dataOptions.id > 0) {
+                                        cv_interact.success(
+                                            "Space has been updated successfully."
+                                        );
                                     } else {
-                                        cv_interact.error(res.error_message);
+                                        cv_interact.success(
+                                            "New space has been added successfully."
+                                        );
                                     }
-                                });
-                        }
-                    }
-                ]
+                                } else {
+                                    cv_interact.error(res.error_message);
+                                }
+                            });
+                        },
+                    },
+                ],
             });
         dialog.show(op);
     };
@@ -1025,7 +928,7 @@ const CreateBookingDialog = (() => {
     const self = {};
     let dialog = null;
 
-    self.show = op => {
+    self.show = (op) => {
         dialog =
             dialog ||
             new GeneralDialog({
@@ -1089,49 +992,71 @@ const CreateBookingDialog = (() => {
                         </div>`
                     ].join("");
                 },
-                contentCreated: me => {
-                    me.controls.booking_fee.addEventListener("input", e => {
-                        let v = parseFloat(e.target.value);
-                        if (isNaN(v)) {
-                            e.target.value = "";
-                            return;
+                contentCreated: (me) => {
+                    me.controls.booking_fee.addEventListener('input', (e) => {
+                        let v = e.target.value;
+                        v = v.replace(/[^0-9.]/g, '');
+
+                        const parts = v.split('.');
+                        if (parts.length > 2) {
+                            v = parts[0] + '.' + parts[1];
                         }
-                        if (v <= 0) {
-                            e.target.value = "";
+                        if (parts[1] !== undefined) {
+                            v = parts[0] + '.' + parts[1].slice(0, 2);
+                        }
+
+                        e.target.value = v;
+                    });
+                    me.controls.booking_fee.addEventListener('blur', (e) => {
+                        let v = parseFloat(e.target.value);
+
+                        if (isNaN(v) || v <= 0) {
+                            e.target.value = '';
                             return;
                         }
                         e.target.value = v;
                     });
+
                 },
-                configSelect: [],
+                configSelect: [
+                ],
                 prepareFormOptions: {
                     createTitle: "Create Booking",
                     modifyTitle: "Edit Booking",
                     targetProp: "space_details",
                     api: {
-                        endpoint: [
-                            main_view.base_url,
-                            "/prm/building-space/form-options"
-                        ].join(""),
-                        params: op => {
+                        endpoint: [main_view.base_url, "/prm/building-space/form-options",].join(""),
+                        params: (op) => {
                             return { id: op.id };
-                        }
-                    }
+                        },
+                    },
                 },
 
-                onPrepareForm: (me, data) => {},
+                onPrepareForm: (me, data) => {
+                    const b = me.dataOptions?.booking ?? me.detail?.booking;
+                    if (!b || !me.controls) return;
+                    const c = me.controls;
+                    const sv = (k, v) => { if (c[k]) c[k].value = v != null ? String(v) : ""; };
+                    sv("booker_name", b.booker_name);
+                    sv("booker_phone", b.booker_phone);
+                    sv("booker_email", b.booker_email);
+                    sv("booking_date", b.booking_date);
+                    sv("expired_booking_date", b.expired_booking_date);
+                    sv("booking_fee", b.booking_fee);
+                    sv("remarks", b.remarks);
+                },
 
                 buttons: [
                     {
                         label: '<span vslang="buttons.Cancel"></span>',
-                        cssClass: "btn btn-secondary",
+                        cssClass: 'btn btn-secondary',
                         click: (me, btn) => {
                             me.hide(false);
-                        }
+                        },
                     },
                     {
                         label: '<span vslang="buttons.Save"></span>',
-                        cssClass: "btn btn-primary",
+                        cssClass: 'btn btn-primary',
                         click: (me, btn) => {
                             const op = me.getData();
                             op.space_id = me.dataOptions.space_id;
@@ -1140,35 +1065,21 @@ const CreateBookingDialog = (() => {
                             if (isEdit) op.booking_id = editId;
                             const url = isEdit ? "/prm/building-space/update-booking" : "/prm/building-space/create-booking";
 
-                            vsapi
-                                .call(
-                                    [
-                                        main_view.base_url,
-                                        "/prm/building-space/create-booking"
-                                    ].join(""),
-                                    op,
-                                    btn,
-                                    null
-                                )
-                                .then(res => {
-                                    if (res.status_code === 200) {
-                                        me.hide(true, op);
-                                        if (me.dataOptions.id > 0) {
-                                            cv_interact.success(
-                                                "Booking has been updated successfully"
-                                            );
-                                        } else {
-                                            cv_interact.success(
-                                                "New booking has been created successfully"
-                                            );
-                                        }
-                                    } else {
-                                        cv_interact.error(res.error_message);
-                                    }
-                                });
-                        }
-                    }
-                ]
+                            vsapi.call([main_view.base_url, url].join(""), op, btn, null).then((res) => {
+                                if (res.status_code === 200) {
+                                    me.hide(true, op);
+                                    cv_interact.success(
+                                        isEdit
+                                            ? "Booking has been updated successfully."
+                                            : "New booking has been created successfully"
+                                    );
+                                } else {
+                                    cv_interact.error(res.error_message);
+                                }
+                            });
+                        },
+                    },
+                ],
             });
         dialog.show(op);
     };
@@ -1179,19 +1090,16 @@ const CreateBookingDialog = (() => {
 const ViewBookingDialog = (() => {
     const self = {};
     let dialog = null;
-    self.show = op => {
-        dialog =
-            dialog ||
+    self.show = (op) => {
+        dialog = dialog ||
             new GeneralDialog({
                 cssClass: "modal-xl modal-content-vs-dialog",
                 backdrop: "static",
                 TriggerOnClose: true,
-                createContent: () => {
-                    return ['<div name="container_fluid"></div>'].join("");
-                },
-                contentCreated: me => {
+                createContent: () => { return ['<div name="container_fluid"></div>'].join(''); },
+                contentCreated: (me) => {
                     me.renderProfile = (div, data) => {
-                        let html = "";
+                        let html = '';
 
                         html += `
                             <style>
@@ -1229,8 +1137,7 @@ const ViewBookingDialog = (() => {
 
                             <div class="booker_profile overflow-y-auto overflow-x-hidden">
                                 <div class="info_title p-2 text-primary-custom">
-                                        <h5>Unit ${data.space_code ??
-                                            "N/A"}</h5>
+                                        <h5>Unit ${data.space_code ?? 'N/A'}</h5>
                                 </div>
 
                                 <div class="booker_info">
@@ -1239,44 +1146,36 @@ const ViewBookingDialog = (() => {
                                             <div class="d-flex">
                                                 <p class="text-nowrap text-muted width-p">Booking Name</p>
                                                 <p class="px-3">:</p>
-                                                <p class="text-nowrap text-capitalize data-get">${data.booker_name ??
-                                                    "N/A"}</p>
+                                                <p class="text-nowrap text-capitalize data-get">${data.booker_name ?? 'N/A'}</p>
                                             </div>
                                             <div class="d-flex">
                                                 <p class="text-nowrap text-muted width-p">Booking Date</p>
                                                 <p class="px-3">:</p>
-                                                <p class="text-nowrap text-capitalize data-get">${data.booking_date ??
-                                                    "N/A"}</p>
+                                                <p class="text-nowrap text-capitalize data-get">${data.booking_date ?? 'N/A'}</p>
                                             </div>
                                         </div>
                                         <div class="col-4 p_profile_center">
                                             <div class="d-flex">
                                                 <p class="text-nowrap text-muted width-p">Booking Phone</p>
                                                 <p class="px-3">:</p>
-                                                <p class="text-nowrap text-capitalize data-get">${data.booker_phone ??
-                                                    "N/A"}</p>
+                                                <p class="text-nowrap text-capitalize data-get">${data.booker_phone ?? 'N/A'}</p>
                                             </div>
                                             <div class="d-flex">
                                                 <p class="text-nowrap text-muted width-p">Expired Date</p>
                                                 <p class="px-3">:</p>
-                                                <p class="text-nowrap text-capitalize data-get">${data.expired_booking_date ??
-                                                    "N/A"}</p>
+                                                <p class="text-nowrap text-capitalize data-get">${data.expired_booking_date ?? 'N/A'}</p>
                                             </div>
                                         </div>
                                         <div class="col-4 p_profile_right">
                                             <div class="d-flex">
                                                 <p class="text-nowrap text-muted width-p">Booking Email</p>
                                                 <p class="px-3">:</p>
-                                                <p class="text-nowrap data-get">${data.booker_email ??
-                                                    "N/A"}</p>
+                                                <p class="text-nowrap data-get">${data.booker_email ?? 'N/A'}</p>
                                             </div>
                                             <div class="d-flex">
                                                 <p class="text-nowrap text-muted width-p">Booking Amount</p>
                                                 <p class="px-3">:</p>
-                                                <p class="text-nowrap text-capitalize data-get">${VSMoney.formatAmount(
-                                                    data.booking_fee,
-                                                    data.currency ?? "USD"
-                                                ) ?? "N/A"}</p>
+                                                <p class="text-nowrap text-capitalize data-get">${VSMoney.formatAmount(data.booking_fee, data.currency ?? 'USD') ?? 'N/A'}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -1289,11 +1188,12 @@ const ViewBookingDialog = (() => {
                 buttons: [
                     {
                         label: '<span vslang="buttons.Close"></span>',
-                        cssClass: "btn btn-danger",
+                        cssClass: 'btn btn-danger',
                         click: (me, btn) => {
                             me.hide(false);
-                        }
-                    }
+                        },
+                    },
+
                 ],
                 prepareFormOptions: {
                     createTitle: "Booking Details",
@@ -1301,14 +1201,14 @@ const ViewBookingDialog = (() => {
                     targetProp: "divModal",
                     api: {
                         endpoint: `${main_view.base_url}/prm/building-space/view-booking`,
-                        params: op => {
+                        params: (op) => {
                             return { id: op.id };
-                        }
-                    }
+                        },
+                    },
                 },
                 onPrepareForm: (me, d) => {
                     me.renderProfile(me.controls.container_fluid, d);
-                }
+                },
             });
 
         dialog.show(op);
