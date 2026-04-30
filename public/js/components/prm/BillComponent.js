@@ -49,7 +49,7 @@ var BillComponent = (() => {
             className: "align-middle text-nowrap",
             data: (data) => {
                 return `<span class="d-block text-prm-custom text-capitalize">${data.vendor_name}</span>
-                <span class="d-block text-prm-custom text-muted">${data.phone_number}</span>`;
+                <span class="d-block text-primary ">${data.phone_number}</span>`;
             },
         },
         
@@ -479,7 +479,7 @@ const BillDialog = (() => {
                             </div>
                             <div class="col-4">
                                 <div class="material-input outlined">
-                                    <input name="total_amount" type="number" class="data-input form-control" data-field="total_amount" placeholder=" "></input>
+                                    <input type="text" inputmode="decimal" name="total_amount" type="number" class="data-input form-control" data-field="total_amount" placeholder=" "></input>
                                     <label style="color:#777777; padding-left:6px;">Total Amount $</label>
                                 </div>
                             </div>
@@ -574,6 +574,29 @@ const BillDialog = (() => {
                             },
                         );
                     };
+
+                    me.controls.total_amount.addEventListener('input', (e) => {
+                        let v =e.target.value;
+                        v = v.replace(/[^0-9.]/g, '');
+
+                        const parts = v.split('.');
+                        if (parts.length > 2){
+                            v = parts[0] + '.' + parts[1];
+                        }
+                        if (parts[1] !== undefined) {
+                            v = parts[0] + '.' + parts[1].slice(0,2);
+                        }
+                        e.target.value = v;
+                    });
+                    me.controls.total_amount.addEvenListener('blur',(e) => {
+                        let v = parseFloat(e.target.value);
+
+                        if (isNaN(v) || v <= 0) {
+                            e.target.value = '';
+                            return;
+                        }
+                        e.target.value = v;
+                    })
                 },
 
                 configSelect: [

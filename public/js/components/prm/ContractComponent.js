@@ -828,7 +828,7 @@ const ContractDialog = (() => {
                         </div>
                         <div class="col-3">
                             <div class="material-input outlined">
-                                <input type="number" name="deposit" class="data-input form-control" data-field="deposit" placeholder=" " />
+                                <input type="text" inputmode="decimal" name="deposit" class="data-input form-control" data-field="deposit" placeholder=" " />
                                 <label style="color:#777777;padding-left:6px;">Deposit <span class="text-danger">*</span></label>
                             </div>
                         </div>
@@ -907,6 +907,78 @@ const ContractDialog = (() => {
                     }
                 });
 
+                // me.controls.deposit.addEventListener('input', (e) => {
+                //     let v = e.target.value;
+                //     v = v.replace(/[^0-9.]/g, '');
+
+                //     const parts = v.split('.');
+                //     if (parts.length > 2) {
+                //         v = parts[0] + '.' + parts[1];
+                //     }
+                //     if (parts[1] !== undefined) {
+                //         v = parts[0] + '.' + parts[1].slice(0, 2);
+                //     }
+
+                //     e.target.value = v;
+                // });
+                // me.controls.deposit.addEventListener('blur', (e) => {
+                //     let v = parseFloat(e.target.value);
+
+                //     if (isNaN(v) || v <= 0) {
+                //         e.target.value = '';
+                //         return;
+                //     }
+                //     e.target.value = v;
+                // });
+
+                // me.controls.deposit.addEventListener('input', (e) => {
+                //     let v = e.target.value;
+                //     v = v.replace(/[^0-9.]/g, '');
+
+                //     const parts = v.split('.');
+                //     if (parts.length > 2) {
+                //         v = parts[0] + '.' + parts[1];
+                //     }
+                //     if (parts[1] !== undefined) {
+                //         v = parts[0] + '.' + parts[1].slice(0, 2);
+                //     }
+
+                //     e.target.value = v;
+                // });
+                // me.controls.deposit.addEventListener('blur', (e) => {
+                //     let v = parseFloat(e.target.value);
+
+                //     if (isNaN(v) || v <= 0) {
+                //         e.target.value = '';
+                //         return;
+                //     }
+                //     e.target.value = v;
+                // });
+
+                // const applyMoneyInput = (inputEl) => {
+                //     inputEl.addEventListener('input', (e) => {
+                //         let v = e.target.value;
+                //         v = v.replace(/[^0-9.]/g, '');
+                //         const parts = v.split('.');
+                //         if (parts.length > 2) {
+                //             v = parts[0] + '.' + parts[1];
+                //         }
+                //         if (parts[1] !== undefined) {
+                //             v = parts[0] + '.' + parts[1].slice(0, 2);
+                //         }
+                //         e.target.value = v;
+                //     });
+                //     inputEl.addEventListener('blur', (e) => {
+                //         let v = parseFloat(e.target.value);
+                //         if (isNaN(v) || v <= 0) {
+                //             e.target.value = '';
+                //             return;
+                //         }
+                //         e.target.value = v;
+                //     });
+                // };
+                applyNumberInput(me.controls.deposit);
+                
 
             },
 
