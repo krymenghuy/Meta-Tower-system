@@ -119,12 +119,12 @@ var VendorComponent = (() => {
             data: (data) => {
 
                 const status = (data.status ?? '').toLowerCase();
-                let cls = 'badge text-dark bg-warning-subtle border border-warning';
+                let cls = 'badge text-warning bg-warning-subtle border border-warning';
                 if (status === 'active') {
                     cls = 'badge text-success bg-success-subtle border border-success';
                 }
                 else if (status === 'inactive') {
-                    cls = 'badge text-dark bg-danger-subtle border border-danger';
+                    cls = 'badge text-danger bg-danger-subtle border border-danger';
                 }
                 return `
                     <span class="${cls} text-capitalize d-inline-block text-center" style="min-width:70px">
@@ -251,12 +251,6 @@ var VendorComponent = (() => {
                     name: "create_expense"
                 },
                 {
-                    html: '<span class="ps-2 " vslang="titles.Change Status"></span>',
-                    icon: `<i class="fa-solid fa-bolt fs-5 text-primary"></i>`,
-                    cssClass: "border-bottom pb-2",
-                    name: "change_vendor_status"
-                },
-                {
                     html: '<span class="ps-2 " vslang="titles.Modify"></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
@@ -268,10 +262,16 @@ var VendorComponent = (() => {
                     cssClass: "border-bottom pb-2",
                     name: "delete_vendor"
                 },
+                {
+                    html: '<span class="ps-2 " vslang="titles.Change Status"></span>',
+                    icon: `<i class="fa-solid fa-arrow-right-arrow-left fs-5 text-primary"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "change_vendor_status"
+                },
             ],
             onShow:(me,container)=>{
                 const menu = me.getActiveMenus(container);
-                menu.change_vendor_status.style.display =  'none';
+                // menu.change_vendor_status.style.display =  'none';
                 menu.create_expense.style.display =  'none';
             },
 
