@@ -222,7 +222,7 @@ var MaintenanceComponent = (() => {
                 const menu = me.getActiveMenus(container);
                 const status_id = container.dataset.statusid;
                 menu.finish_maintenance.style.display = status_id == 2  ? 'block' : 'none';
-                // menu.cancel_maintenance.style.display = status_id == 3 ? 'none' : 'block';
+                menu.delete.style.display = status_id > 1 ? 'none' : 'block';
                 menu.cancel_maintenance.style.display = status_id > 1 ? 'none' : 'block';
                 menu.modify.style.display = 'none';
 

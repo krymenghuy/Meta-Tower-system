@@ -47,8 +47,8 @@ class BuildingSpace
 
         $v_rule = [
             'building_id' => '1|number|exists=buildings.id',
-            'space_type_id' => '1|number|exists=space_types.id',
             'floor_id' => '1|number|exists=floors.id',
+            'space_type_id' => '1|number|exists=space_types.id',
             'sqm_size' => '1|number',
             'price' => '1|number',
             'price_type' => '0|string|default=sqm',
@@ -237,7 +237,7 @@ class BuildingSpace
             ->whereRaw($str_moreWhere)
             ->selectRaw($selectCols)
             ->orderByRaw('bs.status_id ASC')
-            ->orderByRaw('bs.updated_at DESC');
+            ->orderByRaw('bs.created_at DESC');
 
         $clone_query = clone $query;
         $count = $clone_query->count('bs.id');
@@ -417,20 +417,40 @@ class BuildingSpace
         'space_id' => '1|number|exists=building_spaces.id',
         'booker_name' => '1|string|1-50',
         'booker_phone' => '1|string|1-25',
-        'booker_email' => '0|string|1-100',
+        'booker_email' => '0|email',
         'booking_date' => '1|date|text=Booking date is required.',
         'expired_booking_date' => '1|date|text=Expired booking date is required.',
         'booking_fee' => '1|number|min=0|text=Booking fee is required and must be a non-negative number.',
         'remarks' => '0|string|1-255',
     ];
+    $email_char = ['@', '.', '_', '-', '+'];
 
-    $email_char = ['@', '.', '-', '_'];
+    $res = DBX::validateObject(
+        $arr,
+        $v_rule,
+        1,
+        ['booker_email' => $email_char],
+        $ss->lang,
+        0,
+        null
+    );
 
-    $res = DBX::validateObject($arr, $v_rule, 1, ['booker_email' => $email_char], $ss->lang, 0, null);
     if ($res->error) return DV::error($res->error);
 
     $inputs = $res->values;
     $d = (object) $inputs;
+    $booker_email = $d->booker_email ?? null;
+    if ($booker_email !== null && $booker_email !== '') {
+
+        if (strpos($booker_email, '@') === false) {
+            return DV::error('Email must contain @');
+        }
+
+        if (!filter_var($booker_email, FILTER_VALIDATE_EMAIL)) {
+            return DV::error('Invalid email format');
+        }
+    }
+    
     $today = date('Y-m-d');
     if ($d->booking_date != $today) {
         return DV::error('Booking date must be today.');
@@ -504,18 +524,37 @@ public function updateBooking($arr = [], $ss = null)
         'space_id' => '1|number|exists=building_spaces.id',
         'booker_name' => '1|string|1-50',
         'booker_phone' => '1|string|1-25',
-        'booker_email' => '0|string|1-100',
+        'booker_email' => '0|email',
         'booking_date' => '1|date|text=Booking date is required.',
         'expired_booking_date' => '1|date|text=Expired booking date is required.',
         'booking_fee' => '1|number|min=0|text=Booking fee is required and must be a non-negative number.',
         'remarks' => '0|string|1-255',
     ];
-    $email_char = ['@', '.', '-', '_'];
-    $res = DBX::validateObject($arr, $v_rule, 1, ['booker_email' => $email_char], $ss->lang, 0, null);
+    $email_char = ['@', '.', '_', '-', '+'];
+
+    $res = DBX::validateObject(
+        $arr,
+        $v_rule,
+        1,
+        ['booker_email' => $email_char],
+        $ss->lang,
+        0,
+        null
+    );
+
     if ($res->error) return DV::error($res->error);
 
     $inputs = $res->values;
     $d = (object) $inputs;
+    $booker_email = $d->booker_email ?? null;
+    if ($booker_email !== null && $booker_email !== '') {
+
+      
+
+        if (!filter_var($booker_email, FILTER_VALIDATE_EMAIL)) {
+            return DV::error('Invalid email format');
+        }
+    }
     $minExpire = date('Y-m-d', strtotime($d->booking_date . ' +14 days'));
     if (strtotime($d->expired_booking_date) < strtotime($minExpire)) {
         return DV::error('Expired booking date must be at least 14 days after booking date.');
