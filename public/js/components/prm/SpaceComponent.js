@@ -1027,6 +1027,19 @@ const CreateBookingDialog = (() => {
                     });
 
                 },
+                onShow: (me) => {
+                    const title = me.divModal.querySelector('.modal-title');
+                    if (!title) return;
+                    const bookingId =
+                        me.dataOptions?.booking?.id ?? me.detail?.booking?.id;
+                    const isEdit = Number(bookingId) > 0;
+                    title.innerHTML = isEdit
+                        ? '<h4 class="text-prm-custom text-start fw-bold">Edit Booking</h4>'
+                        : '<h4 class="text-prm-custom text-start fw-bold">Create Booking</h4>';
+                    const c = me.controls;
+                    if (c?.booking_date) c.booking_date.disabled = isEdit;
+                    if (c?.expired_booking_date) c.expired_booking_date.disabled = isEdit;
+                },
                 configSelect: [
                 ],
                 prepareFormOptions: {
@@ -1036,15 +1049,19 @@ const CreateBookingDialog = (() => {
                     api: {
                         endpoint: [main_view.base_url, "/prm/building-space/form-options",].join(""),
                         params: (op) => {
-                            return { id: op.id };
+                            return { id: op.space_id ?? op.id };
                         },
                     },
                 },
 
                 onPrepareForm: (me, data) => {
-                    const b = me.dataOptions?.booking ?? me.detail?.booking;
-                    if (!b || !me.controls) return;
                     const c = me.controls;
+                    if (!c) return;
+                    const b = me.dataOptions?.booking ?? me.detail?.booking;
+                    const isEdit = Boolean(b && Number(b.id) > 0);
+                    if (c.booking_date) c.booking_date.disabled = isEdit;
+                    if (c.expired_booking_date) c.expired_booking_date.disabled = isEdit;
+                    if (!b) return;
                     const sv = (k, v) => { if (c[k]) c[k].value = v != null ? String(v) : ""; };
                     sv("booker_name", b.booker_name);
                     sv("booker_phone", b.booker_phone);
@@ -1072,6 +1089,14 @@ const CreateBookingDialog = (() => {
                             const editId = me.dataOptions?.booking?.id ?? me.detail?.booking?.id;
                             const isEdit = Boolean(editId);
                             if (isEdit) op.booking_id = editId;
+                            if (isEdit && me.controls) {
+                                if (me.controls.booking_date) {
+                                    op.booking_date = me.controls.booking_date.value;
+                                }
+                                if (me.controls.expired_booking_date) {
+                                    op.expired_booking_date = me.controls.expired_booking_date.value;
+                                }
+                            }
                             const url = isEdit ? "/prm/building-space/update-booking" : "/prm/building-space/create-booking";
 
                             vsapi.call([main_view.base_url, url].join(""), op, btn, null).then((res) => {
