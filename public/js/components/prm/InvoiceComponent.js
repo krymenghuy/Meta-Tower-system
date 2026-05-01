@@ -818,6 +818,7 @@ const InvoiceDialog = (() => {
                     }
 
                     // 3. Popup Initialization
+                    let rentDiv = null;
                     InputBox.resetInstance("rentPopUp");
 
                     InputBox.show({
@@ -825,6 +826,7 @@ const InvoiceDialog = (() => {
                         instanceKey: "rentPopUp",
                         createContent() {
                             const div = document.createElement("div");
+                            rentDiv = div;
                             div.style.cssText =
                                 "display:flex; flex-direction:column;";
 
@@ -874,12 +876,12 @@ const InvoiceDialog = (() => {
                                             <label style="color:#777;">Effective Price ($)</label>
                                         </div>
                                         <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                            <input class="data-input form-control" data-field="tax_rate" name="tax_rate" type="number" placeholder="0">
+                                            <input class="data-input form-control" data-field="tax_rate" name="tax_rate" type="text" inputmode="decimal" placeholder="0">
                                             <label style="color:#777;">Tax %</label>
                                         </div>
                                         <div class="material-input outlined" style="display:flex; gap:8px; align-items:flex-end; grid-column: span 2;">
                                             <div style="flex:1">
-                                                <input class="data-input form-control" data-field="discount" name="discount" type="number" placeholder="0">
+                                                <input class="data-input form-control" data-field="discount" name="discount" type="text" inputmode="decimal" placeholder="0">
                                                 <label style="color:#777;">Discount</label>
                                             </div>
                                             <div style="width:100px;">
@@ -896,6 +898,7 @@ const InvoiceDialog = (() => {
                                     <textarea class="data-input form-control" data-field="remark" name="remark" rows="2" placeholder=" "></textarea>
                                     <label style="color:#777;">Remark</label>
                                 </div>
+
                             `;
                             return div;
                         },
@@ -946,6 +949,23 @@ const InvoiceDialog = (() => {
                                     matchedMonth.start_date || "";
                             if (elEndDate)
                                 elEndDate.value = matchedMonth.end_date || "";
+
+                            [rentDiv.querySelector('[data-field="discount"]'), 
+                            rentDiv.querySelector('[data-field="tax_rate"]')].forEach(input => {
+                                if (!input) return;
+                                input.addEventListener('input', (e) => {
+                                    let v = e.target.value.replace(/[^0-9.]/g, '');
+                                    const parts = v.split('.');
+                                    if (parts.length > 2) v = parts[0] + '.' + parts[1];
+                                    if (parts[1] !== undefined) v = parts[0] + '.' + parts[1].slice(0, 2);
+                                    e.target.value = v;
+                                });
+                                input.addEventListener('blur', (e) => {
+                                    let v = parseFloat(e.target.value);
+                                    if (isNaN(v) || v < 0) { e.target.value = ''; return; }
+                                    e.target.value = v.toFixed(2);
+                                });
+                            });
                         },
 
                         onConfirm(data, btn, ibMe) {
@@ -996,6 +1016,7 @@ const InvoiceDialog = (() => {
                     });
                 };
 
+
                 // ================== Electric ================
                 me.controls.btnElectric.onclick = () => {
                     if (!me._selectedTenantId) {
@@ -1008,6 +1029,7 @@ const InvoiceDialog = (() => {
                         return cv_interact.error("Please select Space");
                     }
 
+                    let electricDiv = null;
                     InputBox.resetInstance("electricPopUp");
                     InputBox.show({
                         title: "Electricity Utility",
@@ -1015,6 +1037,7 @@ const InvoiceDialog = (() => {
 
                         createContent() {
                             const div = document.createElement("div");
+                            electricDiv = div;
                             div.style.cssText =
                                 "display:flex; flex-direction:column;";
 
@@ -1026,11 +1049,11 @@ const InvoiceDialog = (() => {
                                         </div>
                                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
                                             <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                                <input class="data-input form-control" data-field="old_electric" name="old_electric" type="number" placeholder="0" min="0">
+                                                <input class="data-input form-control" data-field="old_electric" name="old_electric" type="text" inputmode="decimal" placeholder="0" min="0">
                                                 <label style="color:#777;">Old Reading (kWh)</label>
                                             </div>
                                             <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                                <input class="data-input form-control" data-field="new_electric" name="new_electric" type="number" placeholder="0" min="0">
+                                                <input class="data-input form-control" data-field="new_electric" name="new_electric" type="text" inputmode="decimal" placeholder="0" min="0">
                                                 <label style="color:#777;">New Reading (kWh)</label>
                                             </div>
                                         </div>
@@ -1064,7 +1087,7 @@ const InvoiceDialog = (() => {
                                                 <label style="color:#777;">Units Used (kWh)</label>
                                             </div>
                                             <div class="material-input outlined" >
-                                                <input class="data-input form-control" data-field="price_per_unit" name="price_per_unit" type="number" placeholder="0.00" step="0.01">
+                                                <input class="data-input form-control" data-field="price_per_unit" name="price_per_unit" type="text" inputmode="decimal" placeholder="0.00" step="0.01">
                                                 <label style="color:#777;">Price per kWh ($)</label>
                                             </div>
                                         </div>
@@ -1141,12 +1164,26 @@ const InvoiceDialog = (() => {
                                 }
                             };
 
-                            [elOld, elNew, elPPU].forEach(el =>
-                                el?.addEventListener("input", recalc)
-                            );
-                            [elStartDate, elEndDate].forEach(el =>
-                                el?.addEventListener("change", recalc)
-                            );
+                        [elOld, elNew, elPPU].forEach(el => {
+                        if (!el) return;
+                        el.addEventListener("input", recalc);
+                        el.addEventListener("input", (e) => {
+                            let v = e.target.value.replace(/[^0-9.]/g, '');
+                            const parts = v.split('.');
+                            if (parts.length > 2) v = parts[0] + '.' + parts[1];
+                            if (parts[1] !== undefined) v = parts[0] + '.' + parts[1].slice(0, 2);
+                            e.target.value = v;
+                        });
+                        el.addEventListener('blur', (e) => {
+                            let v = parseFloat(e.target.value);
+                            if (isNaN(v) || v < 0) { e.target.value = ''; return; }
+                            e.target.value = v.toFixed(2);
+                        });
+                    });
+
+                    [elStartDate, elEndDate].forEach(el =>
+                        el?.addEventListener("change", recalc)
+);
                         },
 
                         onConfirm(data, btn, ibMe) {
@@ -1226,6 +1263,7 @@ const InvoiceDialog = (() => {
                     }
 
                     InputBox.resetInstance("waterPopUp");
+                    let waterDiv = null;
                     InputBox.show({
                         title: "Water Utility",
                         instanceKey: "waterPopUp",
@@ -1243,11 +1281,11 @@ const InvoiceDialog = (() => {
                                         </div>
                                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
                                             <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                                <input class="data-input form-control" data-field="old_water" name="old_water" type="number" placeholder="0" min="0">
+                                                <input class="data-input form-control" data-field="old_water" name="old_water" type="text" inputmode="decimal" placeholder="0" min="0">
                                                 <label style="color:#777;">Old Reading (m³)</label>
                                             </div>
                                             <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                                <input class="data-input form-control" data-field="new_water" name="new_water" type="number" placeholder="0" min="0">
+                                                <input class="data-input form-control" data-field="new_water" name="new_water" type="text" inputmode="decimal" placeholder="0" min="0">
                                                 <label style="color:#777;">New Reading (m³)</label>
                                             </div>
                                         </div>
@@ -1281,7 +1319,7 @@ const InvoiceDialog = (() => {
                                                 <label style="color:#777;">Units Used (m³)</label>
                                             </div>
                                             <div class="material-input outlined" >
-                                                <input class="data-input form-control" data-field="price_per_unit" name="price_per_unit" type="number" placeholder="0.00" step="0.01">
+                                                <input class="data-input form-control" data-field="price_per_unit" name="price_per_unit" type="text" inputmode="decimalq" placeholder="0.00" step="0.01">
                                                 <label style="color:#777;">Price per m³ ($)</label>
                                             </div>
                                         </div>
@@ -1360,12 +1398,28 @@ const InvoiceDialog = (() => {
                                 }
                             };
 
-                            [elOld, elNew, elPPU].forEach(el =>
-                                el?.addEventListener("input", recalc)
-                            );
-                            [elStartDate, elEndDate].forEach(el =>
-                                el?.addEventListener("change", recalc)
-                            );
+                            [elOld, elNew, elPPU].forEach(el => {
+                            if (!el) return;
+                            el.addEventListener("input", recalc);
+                            el.addEventListener("input", (e) => {
+                                let v = e.target.value.replace(/[^0-9.]/g, '');
+                                const parts = v.split('.');
+                                if (parts.length > 2) v = parts[0] + '.' + parts[1];
+                                if (parts[1] !== undefined) v = parts[0] + '.' + parts[1].slice(0, 2);
+                                e.target.value = v;
+                            });
+                            el.addEventListener('blur', (e) => {
+                                let v = parseFloat(e.target.value);
+                                if (isNaN(v) || v < 0) { e.target.value = ''; return; }
+                                e.target.value = v.toFixed(2);
+                            });
+                        });
+
+                        [elStartDate, elEndDate].forEach(el =>
+                            el?.addEventListener("change", recalc)
+                        );
+
+                            
                         },
 
                         onConfirm(data, btn, ibMe) {
@@ -1458,11 +1512,13 @@ const InvoiceDialog = (() => {
                         )
                         .join("");
 
+                    let serviceDiv = null;
                     InputBox.show({
                         title: "Add Service",
                         instanceKey: "servicePopUp",
                         createContent() {
                             const div = document.createElement("div");
+                            serviceDiv = div;
                             div.style.cssText =
                                 "display:flex; flex-direction:column;";
 
@@ -1497,7 +1553,7 @@ const InvoiceDialog = (() => {
                                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
                                             <div class="material-input outlined" style="display:flex; gap:8px; align-items:flex-end;">
                                                 <div style="flex:1">
-                                                    <input class="data-input form-control" data-field="discount" name="discount" type="number" placeholder="0">
+                                                    <input class="data-input form-control" data-field="discount" name="discount" type="text" inputmode="decimal" placeholder="0">
                                                     <label style="color:#777;">Discount</label>
                                                 </div>
                                                 <div style="width:80px;">
@@ -1555,6 +1611,22 @@ const InvoiceDialog = (() => {
                                     fillFields(e.target.value)
                                 );
                             }
+                            [serviceDiv.querySelector('[data-field="discount"]'),
+                            serviceDiv.querySelector('[data-field="tax_rate"]')].forEach(input => {
+                                if (!input) return;
+                                input.addEventListener('input', (e) => {
+                                    let v = e.target.value.replace(/[^0-9.]/g, '');
+                                    const parts = v.split('.');
+                                    if (parts.length > 2) v = parts[0] + '.' + parts[1];
+                                    if (parts[1] !== undefined) v = parts[0] + '.' + parts[1].slice(0, 2);
+                                    e.target.value = v;
+                                });
+                                input.addEventListener('blur', (e) => {
+                                    let v = parseFloat(e.target.value);
+                                    if (isNaN(v) || v < 0) { e.target.value = ''; return; }
+                                    e.target.value = v.toFixed(2);
+                                });
+                            });
                         },
 
                         onConfirm(data, btn, ibMe) {
@@ -1632,11 +1704,13 @@ const InvoiceDialog = (() => {
 
                     InputBox.resetInstance("requestPopUp");
 
+                    let requestDiv  = null;
                     InputBox.show({
                         title: "Service Request",
                         instanceKey: "requestPopUp",
                         createContent() {
                             const div = document.createElement("div");
+                            requestDiv = div;
                             div.style.cssText =
                                 "display:flex; flex-direction:column; ";
 
@@ -1679,7 +1753,7 @@ const InvoiceDialog = (() => {
                                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
                                             <div class="material-input outlined" style="display:flex; gap:8px; align-items:flex-end;">
                                                 <div style="flex:1">
-                                                    <input class="data-input form-control" data-field="discount" name="discount" type="number" placeholder="0">
+                                                    <input class="data-input form-control" data-field="discount" name="discount" type="text" inputmode="decimal" placeholder="0">
                                                     <label style="color:#777;">Discount</label>
                                                 </div>
                                                 <div style="width:80px;">
@@ -1690,7 +1764,7 @@ const InvoiceDialog = (() => {
                                                 </div>
                                             </div>
                                             <div class="material-input outlined">
-                                                <input class="data-input form-control" data-field="tax_rate" name="tax_rate" type="number" placeholder="0">
+                                                <input class="data-input form-control" data-field="tax_rate" name="tax_rate" type="text" placeholder="0">
                                                 <label style="color:#777;">Tax (%)</label>
                                             </div>
                                         </div>
@@ -1760,6 +1834,23 @@ const InvoiceDialog = (() => {
                             }
                             elRequest.addEventListener("change", e => {
                                 fillRequestData(e.target.value);
+                            });
+
+                            [requestDiv.querySelector('[data-field="discount"]'),
+                            requestDiv.querySelector('[data-field="tax_rate"]')].forEach(input => {
+                                if (!input) return;
+                                input.addEventListener('input', (e) => {
+                                    let v = e.target.value.replace(/[^0-9.]/g, '');
+                                    const parts = v.split('.');
+                                    if (parts.length > 2) v = parts[0] + '.' + parts[1];
+                                    if (parts[1] !== undefined) v = parts[0] + '.' + parts[1].slice(0, 2);
+                                    e.target.value = v;
+                                });
+                                input.addEventListener('blur', (e) => {
+                                    let v = parseFloat(e.target.value);
+                                    if (isNaN(v) || v < 0) { e.target.value = ''; return; }
+                                    e.target.value = v.toFixed(2);
+                                });
                             });
                         },
                         onConfirm(data, btn, ibMe) {
@@ -2014,7 +2105,7 @@ const InvoiceDialog = (() => {
                                     "space_id",
                                     "space_code",
                                     "",
-                                    "-- Select Space --",
+                                    "Select Space",
                                     ""
                                 );
                             });
@@ -2357,7 +2448,7 @@ const ReceiveDialog = (() => {
                             </div>
                             <div style="display:flex;flex-direction:row;gap:8px;flex-wrap:wrap;margin-bottom: 0.5rem;">
                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
-                                    <input name="cash" type="number" class="form-control data-input" data-field="cash"
+                                    <input name="cash" type="text" class="form-control data-input" data-field="cash"
                                         min="0" step="0.01" placeholder=" "/>
                                     <label style="padding-left:6px;color:#777777;">Amount ($)</label>
                                 </div>
@@ -2372,11 +2463,10 @@ const ReceiveDialog = (() => {
                             </div>
                             <div style="display:flex;flex-direction:row;gap:8px;flex-wrap:wrap;margin-bottom: 0.5rem;">
                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
-                                    <select name="bank_transfer_bank_id" class="form-select data-input"
-                                            data-field="bank_transfer_bank_id" data-style="material" placeholder="Bank"></select>
+                                    <select name="bank_transfer_bank_id" class="form-select data-input" data-field="bank_transfer_bank_id" data-style="material" placeholder="Bank"></select>
                                 </div>
                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
-                                    <input name="transfer_amount" type="number" class="form-control data-input"
+                                    <input name="transfer_amount" type="text" class="form-control data-input"
                                         data-field="transfer_amount" min="0" step="0.01" placeholder=" "/>
                                     <label style="padding-left:6px;color:#777777;">Amount ($)</label>
                                 </div>
@@ -2404,7 +2494,7 @@ const ReceiveDialog = (() => {
                                     </select>
                                 </div>
                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
-                                    <input name="card_amount" type="number" class="form-control data-input"
+                                    <input name="card_amount" type="text" class="form-control data-input"
                                         data-field="card_amount" min="0" step="0.01" placeholder=" "/>
                                     <label style="padding-left:6px;color:#777777;">Amount ($)</label>
                                 </div>
@@ -2428,7 +2518,7 @@ const ReceiveDialog = (() => {
                                             data-field="cheque_bank_id" data-style="material" placeholder="Cheque Bank"></select>
                                 </div>
                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
-                                    <input name="cheque_amount" type="number" class="form-control data-input"
+                                    <input name="cheque_amount" type="text" class="form-control data-input"
                                         data-field="cheque_amount" min="0" step="0.01" placeholder=" "/>
                                     <label style="padding-left:6px;color:#777777;">Amount ($)</label>
                                 </div>
@@ -2595,6 +2685,11 @@ const ReceiveDialog = (() => {
                         pmt_breakdowns: breakdowns
                     };
                 };
+
+                applyNumberInput(me.controls.cash);
+                applyNumberInput(me.controls.cheque_amount);
+                applyNumberInput(me.controls.card_amount);
+                applyNumberInput(me.controls.transfer_amount);
             },
 
             onPrepareForm: me => {

@@ -9,26 +9,27 @@
                     <div class="col-12 col-md-6 col-lg-2">
                         <select type="id" id="_bill_status_id" class="data-input filter-field form-control" data-field="status_id"></select>
                     </div>
-                    <div class="d-none col-12 col-md-6 col-lg-2">
+                    <div class="    col-12 col-md-6 col-lg-2">
                         <select type="id" id="_bill_expense_type_id" class="data-input filter-field form-control" data-field="expanse_type_id"></select>
                     </div>
                     <div class="col-6 col-md-3 col-lg-2">
-                        <input data-select="datepicker" class="form-control filter-field" placeholder="From date" data-field="bill_date_start" />
+                        <input data-select="datepicker" class="form-control filter-field" placeholder="From Issue date" data-field="bill_date_start" />
                     </div>
                     <div class="col-6 col-md-3 col-lg-2">
-                        <input data-select="datepicker" class="form-control filter-field" placeholder="To date" data-field="bill_date_end" />
+                        <input data-select="datepicker" class="form-control filter-field" placeholder="To Issue date" data-field="bill_date_end" />
+                    </div>
+                    <div class="col-12 col-md-auto ms-md-auto text-md-end">
+                        <button type="button" class="btnAddNewPrm w-100 w-md-auto" id="_btnBill">
+                            <i class="fa-solid fa-bars-staggered me-2"></i>
+                            <span vslang="buttons.Generate Bill"></span>
+                        </button>
                     </div>
                 </div>
             </div>
             <div class="col-12 col-md-6 col-lg-4">
-                <input type="text" class="form-control rounded-2 pe-5 filter-field input-search" id="_search_bill" placeholder="Search by Ref No" >
+                <input type="text" class="form-control rounded-2 pe-5 filter-field input-search" id="_search_bill" placeholder="Search by Reference No" >
             </div>
-            <div class="col-12 col-md-auto ms-md-auto text-md-end">
-                <button type="button" class="btnAddNewPrm w-100 w-md-auto" id="_btnBill">
-                    <i class="fa-solid fa-bars-staggered me-2"></i>
-                    <span vslang="buttons.Generate Bill"></span>
-                </button>
-            </div>
+            
         </div>
     </div>
     <div id="_bill_list" class="table-responsive mt-3  rounded-2"></div>

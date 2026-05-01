@@ -573,14 +573,14 @@ console.log(123,op);
                     }).then(res => {
                         const d = res.data || {};
                         me._availableServices = d.service || [];
-                        VSUtil.setComboItems(me.controls.space_id, d.spaces || [], 'space_id', 'space_code', '', '-- Select Room --');
+                        VSUtil.setComboItems(me.controls.space_id, d.spaces || [], 'space_id', 'space_code', '', 'Select Room');
                         const typesMap = {};
                         me._availableServices.forEach(s => {
                             if (!typesMap[s.service_type_id]) {
                                 typesMap[s.service_type_id] = { id: s.service_type_id, service_type: s.service_type };
                             }
                         });
-                        VSUtil.setComboItems(me.controls.service_type_id, Object.values(typesMap), 'id', 'service_type', '', '-- Select Category --');
+                        VSUtil.setComboItems(me.controls.service_type_id, Object.values(typesMap), 'id', 'service_type', '', 'Select Category');
 
                         if (restoreValues) {
                             // Restore mode: set saved values
@@ -597,7 +597,7 @@ console.log(123,op);
                             // Filter services by type then restore
                             let filtered = me._availableServices;
                             if (resolvedTypeId) filtered = filtered.filter(s => String(s.service_type_id) === String(resolvedTypeId));
-                            VSUtil.setComboItems(me.controls.service_id, filtered, 'id', 'service_name', '', '-- Select Service --');
+                            VSUtil.setComboItems(me.controls.service_id, filtered, 'id', 'service_name', '', 'Select Service');
                             if (restoreValues.service_id) me.controls.service_id.value = String(restoreValues.service_id);
 
                             // Restore service price
@@ -609,7 +609,7 @@ console.log(123,op);
                             if (me.controls.duration_hours && restoreValues.duration_hours) me.controls.duration_hours.value = restoreValues.duration_hours;
                         } else {
                             // Create mode: just reset service dropdowns
-                            me.controls.service_id.innerHTML = '<option value="">-- Select Service --</option>';
+                            me.controls.service_id.innerHTML = '<option value="">Select Service</option>';
                         }
 
                         updatePricePreview();
@@ -627,7 +627,7 @@ console.log(123,op);
                     const typeId = me.controls.service_type_id.value;
                     let filtered = me._availableServices || [];
                     if (typeId) filtered = filtered.filter(s => String(s.service_type_id) === typeId);
-                    VSUtil.setComboItems(me.controls.service_id, filtered, 'id', 'service_name', '', '-- Select Service --');
+                    VSUtil.setComboItems(me.controls.service_id, filtered, 'id', 'service_name', '', 'Select Service');
                     me.controls.service_id.value = '';
                     me.servicePrice = 0;
                     updatePricePreview();

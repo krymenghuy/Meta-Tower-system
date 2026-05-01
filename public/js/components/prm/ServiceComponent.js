@@ -393,6 +393,7 @@ const CreateServicePriceDialog = (() => {
 
 
                 contentCreated: (me) => {
+                    applyNumberInput(me.controls.price);
                 },
                 configSelect: [
                     {
