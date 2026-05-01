@@ -188,7 +188,7 @@ class Contract
         return $pendingId ?: 1;
     }
 
-    protected static function getActiveStatusId()
+    public static function getActiveStatusId()
     {
         $activeId = DB::table('contract_statuses')
             ->where(function ($q) {
@@ -238,7 +238,7 @@ class Contract
     }
 
     /** Get space_statuses.id for "Available". */
-    protected static function getSpaceAvailableStatusId()
+    public static function getSpaceAvailableStatusId()
     {
         $id = DB::table('space_statuses')
             ->where(function ($q) {
@@ -273,6 +273,31 @@ class Contract
 
         return $query->value('id');
     }
+//  Set building_spaces to Available when no Active/Pending contract remains on that space.
+
+    public static function syncBuildingSpaceAvailabilityForSpaceIds($spaceIds): void
+    {
+        $availableId = self::getSpaceAvailableStatusId();
+        if (!$availableId) {
+            return;
+        }
+
+        $seen = [];
+        foreach ($spaceIds as $sid) {
+            $sid = $sid;
+            if ($sid <= 0 || isset($seen[$sid])) {
+                continue;
+            }
+            $seen[$sid] = true;
+
+            if (self::checkDuplicateContract($sid, null)) {
+                continue;
+            }
+
+            DB::table('building_spaces')->where('id', $sid)->update(['status_id' => $availableId]);
+        }
+    }
+
     public function getListPaginate($arr, $ss = null)
     {
 
@@ -300,11 +325,19 @@ class Contract
             ->whereDate('end_date', '>=', $today)
             ->update(['status_id' => $activeStatusId]);
 
-        // Active/Pending -> Expired when contract end date has passed.
+        // Active/Pending -> Expired when contract end date has passed; free units with no other live contract.
+        $expiringSpaceIds = DB::table('contracts')
+            ->whereIn('status_id', [$activeStatusId, $pendingStatusId])
+            ->whereDate('end_date', '<', $today)
+            ->pluck('space_id');
+
         DB::table('contracts')
             ->whereIn('status_id', [$activeStatusId, $pendingStatusId])
             ->whereDate('end_date', '<', $today)
             ->update(['status_id' => $expiredStatusId]);
+
+        self::syncBuildingSpaceAvailabilityForSpaceIds($expiringSpaceIds);
+
         $str_search = '1=1';
         $str_moreWhere = '2=2';
         if ($search_value) {
@@ -404,6 +437,12 @@ class Contract
 
     public static function contractDetails($id)
     {
+        $latestRenewal = DB::table('contract_renewals')
+            ->where('contract_id', $id)
+            ->orderByDesc('id')
+            ->select('space_id')
+            ->first();
+
         $row =  DB::table('contracts as c')
             ->join('tenants as t', 't.id', '=', 'c.tenant_id')
             ->join('building_spaces as bs', 'bs.id', '=', 'c.space_id')
@@ -432,6 +471,16 @@ class Contract
                             ')
             ->first();
             if ($row) {
+                $renewalSpaceId = $latestRenewal->space_id ?? null;
+                if (!empty($renewalSpaceId) && $renewalSpaceId > 0) {
+                    $renewalSpaceCode = DB::table('building_spaces')
+                        ->where('id',  $renewalSpaceId)
+                        ->value('code');
+                    if (!empty($renewalSpaceCode)) {
+                        $row->space_id = $renewalSpaceId;
+                        $row->space_code = $renewalSpaceCode;
+                    }
+                }
                 $endTs = strtotime($row->end_date);
                 $row->renew_start_date = date('Y-m-d', strtotime('+1 day', $endTs));
                 setOfficialDates($row, ['start_date', 'end_date','renew_start_date'], [], []);
@@ -738,6 +787,14 @@ class Contract
         if ($old->status_id == 3) {
             return DV::error('Terminated contract cannot be renewed');
         }
+        $latestRenewal = DB::table('contract_renewals')
+            ->where('contract_id', $old->id)
+            ->orderByDesc('id')
+            ->select('space_id')
+            ->first();
+        $effectiveOldSpaceId = !empty($latestRenewal->space_id)
+            ? (int) $latestRenewal->space_id
+            : (int) $old->space_id;
         $v_rule = [
             'start_date' => '1|date',
             'end_date'   => '1|date',
@@ -763,7 +820,7 @@ class Contract
             return DV::error('End date cannot be in the past');
         }
 
-     
+
         $minEnd = strtotime('+1 month', $start);
 
         // fix month-end cases (31 Jan → Feb end)
@@ -774,14 +831,14 @@ class Contract
         if ($end < strtotime('-1 day', $minEnd)) {
             return DV::error('Contract must be at least 1 month');
         }
-        $new_space_id = !empty($inputs['space_id']) ? $inputs['space_id'] : $old->space_id;
-        if ($new_space_id != $old->space_id) {
+        $new_space_id = !empty($inputs['space_id']) ? (int) $inputs['space_id'] : $effectiveOldSpaceId;
+        if ($new_space_id != $effectiveOldSpaceId) {
             $dup_id = self::checkDuplicateContract($new_space_id, $old->id);
             if ($dup_id) {
                 return DV::error('The selected unit already has a contract.');
             }
         }
-        $unitChanged = $new_space_id != $old->space_id;
+        $unitChanged = $new_space_id != $effectiveOldSpaceId;
         $updateContract = [
             'end_date'   => $inputs['end_date'],
             'price'      => $inputs['price'] ?? $old->price,

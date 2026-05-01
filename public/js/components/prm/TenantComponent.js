@@ -116,7 +116,7 @@ var TenantComponent = new (function () {
         },
 
         {
-            title: "Updated By",
+            title: "Last Updated",
             className: "align-middle",
             data: (data) => {
                 return `<div class="d-flex flex-column">
@@ -537,7 +537,7 @@ var TenantComponent = new (function () {
                             </div>
                             <div class="d-flex justify-content-between rounded-bottom-2  align-items-center bg-secondary px-3 p-2 small">
                                 <span class="text-muted">
-                                    Create By : ${d.update_user || ""}
+                                    Last Updated : ${d.update_user || ""}
                                 </span>
                                 <a href="javascript:void(0)"
                                 class="text-primary-custom see-tenant-detail"
@@ -815,7 +815,7 @@ newWindow.document.close();
                                 <a class="nav-link active fw-semibold" href="#overview_tenant_detail">Overview</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link fw-semibold" href="#lease_tenant_history">Renewal History</a>
+                                <a class="nav-link fw-semibold" href="#lease_tenant_history">Contract</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link fw-semibold" href="#document_tenant_list">Documents</a>
@@ -844,7 +844,7 @@ newWindow.document.close();
 
                         <div class="tab-pane" id="lease_tenant_history">
                             <h5 class="fw-bold mb-2 d-flex align-items-center">
-                                <i class="fa fa-file-text me-2 text-primary"></i> Renewal History
+                                <i class="fa fa-file-text me-2 text-primary"></i> Contract
                             </h5>
                             <div class="container py-4 position-relative overflow-auto lease-history-scroll" style="max-height: 360px; scrollbar-width: thin;scrollbar-color: #888 #f1f1f1;">
                                 <p class="text-muted small mb-0">Open this tab to load contracts.</p>
@@ -949,7 +949,7 @@ newWindow.document.close();
         if (!entries.length) {
             return `<div class="text-center py-5 text-muted">
                 <i class="fa fa-file-text fa-2x mb-2 opacity-50 d-block"></i>
-                <p class="mb-0">No renewal history recorded for this tenant.</p>
+                <p class="mb-0">No contract recorded for this tenant.</p>
             </div>`;
         }
 
@@ -1152,7 +1152,7 @@ newWindow.document.close();
                     div.innerHTML = `<div class="tab-pane active" id="lease_tenant_history">
                             <h5 class="fw-bold mb-2">
                                 <i class="fa fa-file-text me-1 text-primary"></i>
-                                Renewal History
+                                Contract
                             </h5>
                             <div class=" py-4 position-relative overflow-auto lease-history-scroll" style="max-height: 360px; scrollbar-width: thin;scrollbar-color: #888 #f1f1f1;">
                                 ${cardsHtml}
@@ -1163,7 +1163,7 @@ newWindow.document.close();
                     div.innerHTML = `<div class="tab-pane active" id="lease_tenant_history">
                             <h5 class="fw-bold mb-2">
                                 <i class="fa fa-file-text me-1 text-primary"></i>
-                                Renewal History
+                                Contract
                             </h5>
                             <div class="alert alert-danger m-3">Failed to load contracts: ${mThis._escapeHtml(err && err.message ? err.message : "Unknown error")}</div>
                         </div>`;

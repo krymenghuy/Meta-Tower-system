@@ -70,6 +70,12 @@ class Tenant
         $inputs = $res->values;
         $d = (object) $inputs;
         $dob = $d->date_of_birth ?? null;
+        $email = $d->email ?? null;
+        if ($email !== null && $email !== '') {
+                if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                    return DV::error('Invalid email format');
+                }
+        }
         if ($dob) {
             $birth = new \DateTime($dob);
             $today = new \DateTime();

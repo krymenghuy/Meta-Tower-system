@@ -483,7 +483,7 @@ static function options_maintenance_amenity($ss)
     static function options_service_type_request($ss){
         return DB::table('service_types')
             ->selectRaw('id, name as service_type')
-            ->whereIn('id', [1,4])
+            // ->whereIn('id', [1,4])
             // ->whereIn('id', [1, 4])
             ->orderBy('id')
             ->get();

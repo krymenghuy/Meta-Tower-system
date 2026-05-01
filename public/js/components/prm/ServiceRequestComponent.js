@@ -18,12 +18,9 @@ var ServiceRequestComponent = (function () {
             className: "align-middle text-nowrap text-start",
             data: (data) => {
                 const code = data.code ? `<span class="text-prm-custom">${data.code}</span>`: `<span class="text-muted fst-italic">N/A</span>`;
-                const date = data.request_date ? `<span class="text-danger-emphasis small">${data.request_date}</span>`: `<span class="text-muted fst-italic small">N/A</span>`;
                 return `
                     <div class="d-flex flex-column">
                         ${code}
-                        <hr class="m-0 border border-secondary border-3 opacity-75">
-                        ${date}
                     </div>
                 `;
             }

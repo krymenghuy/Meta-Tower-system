@@ -234,8 +234,9 @@ var BuildingComponent = ( () => {
                 const btnDelete = e.target.closest('.btn-delete-floor');
                 if (btnEdit) {
                     e.preventDefault();
+                    /* Use master floor id (floors.id) for form/API; bf.id stays on data-id only for parity with delete which needs building_floors.id */
                     mThis.editFloor({
-                        id: btnEdit.dataset.id,
+                        id: btnEdit.dataset.floorid,
                         building_id: btnEdit.dataset.buildingid
                     }, () => {
                         mThis.displayFloorNumber(container, id, totalFloor);
@@ -589,21 +590,11 @@ const CreateFloorDialog = (() => {
            onPrepareForm: (me) => {
                 const floorNumber = me.divModal.querySelector('[data-field="floor_number"]');
                 const floorName = me.divModal.querySelector('[data-field="name"]');
-                const isCreate = !(me.dataOptions?.id > 0);
 
+                /* Floor identity is fixed once defined; only description should be editable in New and Modify flows */
                 if (floorNumber && floorName) {
-                    if (isCreate) {
-                        floorNumber.setAttribute('disabled', 'disabled');
-                        floorName.setAttribute('disabled', 'disabled');
-                    } else {
-                        floorNumber.removeAttribute('disabled');
-                        floorName.removeAttribute('disabled');
-                    }
-
-                    floorNumber.addEventListener('input', function () {
-                        const num = this.value;
-                        floorName.value = num ? `Floor ${num}` : '';
-                    });
+                    floorNumber.setAttribute('disabled', 'disabled');
+                    floorName.setAttribute('disabled', 'disabled');
                 }
             },
             buttons: [

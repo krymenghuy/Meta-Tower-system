@@ -370,17 +370,17 @@ var PurchaseOrdersComponent = (() => {
                             <span class="fw-bold" style="min-width:90px;">Vendor</span>
                             <span class="mx-2 fw-bold">:</span>
                             <input type="hidden" name="vendor_id" class="data-input" data-field="vendor_id">
-                            <input type="text" name="vendor" class="data-input form-control flex-grow-1">
+                            <input type="text" name="vendor" class="data-input form-control flex-grow-1" Readonly>
                         </div>
                         <div class="d-flex align-items-center mb-2">
                             <span class="fw-bold" style="min-width:90px;">Phone</span>
                             <span class="mx-2 fw-bold">:</span>
-                            <input type="text" name="phone_number" class="data-input form-control flex-grow-1">
+                            <input type="text" name="phone_number" class="data-input form-control flex-grow-1" Readonly>
                         </div>
                         <div class="d-flex align-items-center mb-2">
                             <span class="fw-bold" style="min-width:90px;">Address</span>
                             <span class="mx-2 fw-bold">:</span>
-                            <input type="text" name="address" class="data-input form-control flex-grow-1">
+                            <input type="text" name="address" class="data-input form-control flex-grow-1" Readonly>
                         </div>
                     </div>
                     <div class="col-md-5"></div>
@@ -400,11 +400,10 @@ var PurchaseOrdersComponent = (() => {
                 </div>`;
             },
             contentCreated: (me) => {
-
+                
                 me.controls.div_purchase_summary = me.divModal.querySelector(
                     '[name="div_purchase_summary"]'
                 );
-
                 const applyVendorInfo = (vendorId) => {
                     me._selectedVendorId = vendorId || '';
                     if (me.controls.vendor_id) me.controls.vendor_id.value = vendorId || '';

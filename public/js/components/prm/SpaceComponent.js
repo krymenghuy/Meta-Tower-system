@@ -647,10 +647,10 @@ var SpaceComponent = new (function () {
         });
     };
     mThis.cancelBooking = (id, menuLink) => {
-        cv_interact.confirm("Cancel this booking and set the unit back to Available?", {
+        cv_interact.confirm("Cancel this booking ?", {
             title: "Cancel Booking",
             context: "delete",
-            confirmButtonText: "Cancel booking",
+            confirmButtonText: "Yes",
         }, (yes) => {
             if (!yes) return;
             vsapi.call(`${main_view.base_url}/prm/building-space/cancel-booking`, { space_id: id }, menuLink, null).then((res) => {
@@ -991,7 +991,7 @@ const CreateBookingDialog = (() => {
                             </div>
                             <div class="col-12">
                                 <div class="material-input outlined">
-                                    <textarea class="data-input form-control" data-field="remarks" rows="3" placeholder=" "></textarea>
+                                    <textarea name="remarks" class="data-input form-control" data-field="remarks" rows="3" placeholder=" "></textarea>
                                     <label style="color:#777777;padding-left:6px;">Remark</label>
                                 </div>
                             </div>
@@ -1204,8 +1204,8 @@ const ViewBookingDialog = (() => {
 
                 ],
                 prepareFormOptions: {
-                    createTitle: "Booking Details",
-                    modifyTitle: "Booking Details",
+                    createTitle: "Booking Detail",
+                    modifyTitle: "Booking Detail",
                     targetProp: "divModal",
                     api: {
                         endpoint: `${main_view.base_url}/prm/building-space/view-booking`,
