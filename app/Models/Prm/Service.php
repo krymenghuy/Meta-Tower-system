@@ -18,31 +18,27 @@ class Service
         $this->userInfo = $userInfo;
     }
 
-   public function saveService($arr = [], $id = null, $ss = null)
+  public function saveService($arr = [], $id = null, $ss = null)
     {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
 
         $v_rule = [
-            'name' => '1|string|0-200',
-            'service_type_id' => '1|number|exists=service_types.id',
-            'price' => '0|price',
-            'unit_type' => '0|string|0-50',
-            'description' => '0|string|0-350',
+            'name'            => '1|string|0-200',
+            'service_type_id' => '1|number|exists=service_types.id|text=Please select a valid service type',
+            'price'           => '1|number|min=0|text=Please enter a valid price',
+            'unit_type'       => '0|string|0-50',
+            'description'     => '0|string|0-350',
         ];
-
-        $unit_type_char = ['@', '.', '-', '_'];
-        $description_char = ['@', ',', '-', '.', '#'];
-        $name_char = ['(', ')', '-', '.', '#'];
 
         $res = DBX::validateObject(
             $arr,
             $v_rule,
             1,
             [
-                'name' => $name_char,
-                'unit_type' => $unit_type_char,
-                'description' => $description_char
+                'name' => ['(', ')', '-', '.', '#'],
+                'unit_type' => ['@', '.', '-', '_'],
+                'description' => ['@', ',', '-', '.', '#']
             ],
             $ss->lang,
             0,
@@ -54,30 +50,30 @@ class Service
         }
 
         $inputs = $res->values;
-
-        //remove old "(unit)" if exists
         $baseName = trim($inputs['name']);
-        if (preg_match('/^(.*)\s\((.*)\)$/', $baseName, $m)) {
-            $baseName = trim($m[1]);
-        }
+        $baseName = preg_replace('/\s*\(.*?\)\s*/', '', $baseName);
         $unitType = trim($inputs['unit_type'] ?? '');
+        $unitType = ucwords(str_replace('_', ' ', strtolower($unitType)));
         $fullName = $unitType ? "{$baseName} ({$unitType})" : $baseName;
+        $inputs['name'] = $fullName;
         $exist = DB::table('services')
             ->whereRaw('LOWER(name) = ?', [strtolower($fullName)])
             ->when($id, fn($q) => $q->where('id', '<>', $id))
             ->exists();
+
         if ($exist) {
             return DV::error('This service already exists');
         }
-        $inputs['name'] = $fullName;
+        $inputs['price'] = (float)($inputs['price'] ?? 0);
         $id = DBX::saveData($ss, 'services', ['id' => $id], $inputs, [], 1);
-        if ($id > 0) {
-            return DV::depends(1, [
-                'services' => $inputs,
-                'id' => $id
-            ]);
+        if (!$id) {
+            return DV::error('Error saving service!');
         }
-        return DV::error('Error saving service!');
+
+        return DV::depends(1, [
+            'services' => $inputs,
+            'id' => $id
+        ]);
     }
 
 
@@ -86,6 +82,8 @@ class Service
         $branch_id = $ss->branch_id;
         $search_value = $d->search_value ?? null;
         $service_type_id = $d->service_type_id ?? null;
+        $status_id = $d->status_id ?? null;
+        $charge_as = $d->unit_type ?? null;
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 10;
         if(!is_numeric($current_page)){
@@ -102,6 +100,12 @@ class Service
         }
         if($service_type_id){
             $str_moreWhere .= ' AND s.service_type_id =' . $service_type_id ;
+        }
+        if($status_id){
+            $str_moreWhere .= ' AND s.status_id =' . $status_id ;
+        }
+        if($charge_as){
+            $str_moreWhere .= ' AND s.unit_type =' . $charge_as ;
         }
         $query = DB::table('services as s')
             ->join('service_types as st','st.id','=','s.service_type_id')

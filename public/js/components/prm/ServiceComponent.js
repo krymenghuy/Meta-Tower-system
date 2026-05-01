@@ -1,12 +1,13 @@
 "use strict";
 var ServiceComponent = (() => {
     const mThis = {};
-    mThis.title_prop = "Service Management";
+    mThis.title_prop = "Service Prices";
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_service_component");
     mThis.btnAdd = mThis.self.querySelector("#_btnService");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_service");
     mThis.elFilter_type = mThis.self.querySelector('#_service_type_id');
+    mThis.elFilter_status = mThis.self.querySelector('#_status_id');
     mThis.elSearch = mThis.self.querySelector("#_search_service");
 
 
@@ -71,7 +72,7 @@ var ServiceComponent = (() => {
                     cls = 'badge text-success bg-success-subtle border border-success';
                 }
                 else if (status === 'inactive') {
-                    cls = 'badge text-dark bg-danger-subtle border border-danger';
+                    cls = 'badge text-danger bg-danger-subtle border border-danger';
                 }
                 return `
                     <span class="${cls} text-capitalize d-inline-block text-center" style="min-width:70px">
@@ -132,7 +133,7 @@ var ServiceComponent = (() => {
                 }
             };
             // if (!AuthManager.allowed(240)) return;
-            CreateServiceDialog.show(op);
+            CreateServicePriceDialog.show(op);
         };
 
 
@@ -171,6 +172,7 @@ var ServiceComponent = (() => {
     mThis.getFilterData = () => {
         let p = {
             service_type_id: mThis.elFilter_type.value,
+            status_id: mThis.elFilter_status.value,
             search_value: mThis.elSearch.value,
         };
 
@@ -190,12 +192,6 @@ var ServiceComponent = (() => {
             cssClass: "bg-white shadow",
             menus: [
                 {
-                    html: '<span class="ps-2 " vslang="titles.Change Status"></span>',
-                    icon: `<i class="fa-solid fa-bolt fs-5 text-primary"></i>`,
-                    cssClass: "border-bottom pb-2",
-                    name: "change_service_status"
-                },
-                {
                     html: '<span class="ps-2 " vslang="titles.Modify"></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
@@ -207,10 +203,16 @@ var ServiceComponent = (() => {
                     cssClass: "border-bottom pb-2",
                     name: "delete_service"
                 },
+                 {
+                    html: '<span class="ps-2 " vslang="titles.Change Status"></span>',
+                    icon: `<i class="fa-solid fa-bolt fs-5 text-primary"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "change_service_status"
+                },
             ],
             onShow: (me,container) => {
                 const menu = me.getActiveMenus(container);
-                menu.change_service_status.style.display =  'none';
+                // menu.change_service_status.style.display =  'none';
             },
 
             onClick: (menuLink, id, name) => {
@@ -288,7 +290,7 @@ var ServiceComponent = (() => {
             }
         };
 
-        CreateServiceDialog.show(op);
+        CreateServicePriceDialog.show(op);
     }
     mThis.deleteService = (id, menuLink) => {
         let op = {
@@ -321,8 +323,8 @@ var ServiceComponent = (() => {
         vsapi.call(`${main_view.base_url}/prm/service/form-options`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
-
                 VSUtil.setComboItems(mThis.elFilter_type, d.service_types, 'id', 'service_type', '', 'All Categories ', '');
+                VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'status_name', '', 'All Statuses ', '');
                 if (typeof onFinish === 'function') onFinish();
             })
     }
@@ -339,7 +341,7 @@ var ServiceComponent = (() => {
     return mThis;
 })();
 
-const CreateServiceDialog = (() => {
+const CreateServicePriceDialog = (() => {
     const self = {};
     let dialog = null;
 
@@ -356,9 +358,7 @@ const CreateServiceDialog = (() => {
                             <div class="col-6">
                                 <div class="material-input outlined">
                                     <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder="" />
-                                    <label style="padding-left:6px;color:#777777;">Service 
-                                    
-                                    Name</label>
+                                    <label style="padding-left:6px;color:#777777;">Name</label>
                                 </div>
                             </div>
                             <div class="col-6">
@@ -404,8 +404,8 @@ const CreateServiceDialog = (() => {
 
                 ],
                 prepareFormOptions: {
-                    createTitle: "Create Service",
-                    modifyTitle: "Modify Service ",
+                    createTitle: "Create Service Price",
+                    modifyTitle: "Modify Service Price",
                     targetProp: "service_details",
                     api: {
                         endpoint: [main_view.base_url, "/prm/service/form-options",].join(""),

@@ -21,133 +21,153 @@ class Amenity extends VSModel
         $this->userInfo = $userInfo;
     }
 
-    public function upsert($arr = [], $id = null, $ss = null){
+   public function upsert($arr = [], $id = null, $ss = null)
+    {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
+
         $v_rule = [
-            'name' => '1|string|0-100|text= Amenity name must be provided',
-            'building_id' => '1|number|exists=buildings.id',
-            'floor_id' => '1|number|exists=floors.id',
-            'category_id' => '1|number|exists=amenity_categories.id',
-            'access_level' => '1|string|0-50|default=All Tenants|text= Access level must be provided',
-            'requires_booking' => '1|choice|0,1',
-            'max_capacity' => '0|number',
-            'description' => '0|string',
-            'code' => '0|string|max=50',
+            'name'            => '1|string|0-100|text=Amenity name must be provided',
+            'building_id'     => '1|number|exists=buildings.id|text=Please select a valid building',
+            'floor_id'        => '1|number|exists=floors.id|text=Please select a valid floor',
+            'category_id'     => '1|number|exists=amenity_categories.id|text=Please select a valid category',
+            'access_level'    => '1|string|0-50|default=All Tenants|text=Access level must be provided',
+            'requires_booking'=> '1|choice|0,1',
+            'max_capacity'    => '0|number',
+            'description'     => '0|string',
+            'code'            => '0|string|max=50',
         ];
-        $description_char = ['@',',','-','.','#'];
+
+        $chars = ['@', ',', '-', '.', '#'];
         $code_char = ['@', '.', '-', '_'];
-        $res = DBX::validateObject( $arr, $v_rule, 1, ['name'=>$description_char,'description'=> $description_char, 'code' => $code_char], $ss->lang, 0, null );
-        if($res->error) return DV::error($res->error);
+
+        $res = DBX::validateObject(
+            $arr,
+            $v_rule,
+            1,
+            ['name'=>$chars, 'description'=>$chars, 'code'=>$code_char],
+            $ss->lang,
+            0,
+            null
+        );
+
+        if ($res->error) return DV::error($res->error);
+
         $inputs = $res->values;
-        $d = (object) $inputs;
+        $d = (object)$inputs;
 
-        // $d->requires_booking = isset($d->requires_booking) ? (int)$d->requires_booking : 0;
+        $d->name = trim($d->name);
 
-        if(!$id) {
-            $exist = DB::table('amenities')
-                ->where('name', $inputs['name'])
-                ->exists();
-            if($exist){
-                return DV::error('This Amenity name already exists');
-            }
-        } else {
-            // Check duplicate name for update (exclude current id)
-            $exist = DB::table('amenities')
-                ->where('name', $inputs['name'])
-                ->where('id', '<>', $id)
-                ->exists();
-            if($exist){
-                return DV::error('Another Amenity with this name already exists');
-            }
+        $exist = DB::table('amenities')
+            ->whereRaw('LOWER(TRIM(name)) = ?', [strtolower($d->name)])
+            ->where('building_id', $d->building_id)
+            ->when($id, fn($q) => $q->where('id', '<>', $id))
+            ->exists();
+
+        if ($exist) {
+            return DV::error($id 
+                ? 'Another amenity with this name already exists'
+                : 'This amenity name already exists'
+            );
         }
-        if ($id && self::hasActiveReservation($id)) {
-            return DV::error('Cannot modify this amenity because it is currently in use (In-Progress reservation).');
-        }
+
+        // if ($id && self::hasActiveReservation($id)) {
+        //     return DV::error('Cannot modify this amenity because it is currently in use.');
+        // }
 
         if (!empty($d->code)) {
             $exists = DB::table('amenities')
                 ->where('code', $d->code)
+                ->where('building_id', $d->building_id)
                 ->when($id, fn($q) => $q->where('id', '<>', $id))
                 ->exists();
 
-            if ($exists)
-                return DV::error('Create failed: This code already exists');
+            if ($exists) {
+                return DV::error('This code already exists.');
+            }
         }
-        $floor = DB::table('floors')
-            ->select('floor_number')
-            ->where('id', $d->floor_id)
-            ->first();
 
-        if (!$floor)
+        $floor = DB::table('floors')
+            ->where('id', $d->floor_id)
+            ->value('floor_number');
+
+        if (!$floor) {
             return DV::error('Invalid floor selected.');
+        }
 
         $created = !$id;
 
         $id = DBX::saveData($ss, 'amenities', ['id' => $id], $inputs, [], 1);
 
-        if ($id && $created && empty($d->code)) {
+        if (!$id) {
+            return DV::error('Error saving amenity.');
+        }
+
+        if ($created && empty($d->code)) {
             self::createAmenityCode(
                 $branch_id,
                 $d->building_id,
-                $floor->floor_number,
+                $floor,
                 $id
             );
         }
 
-        if ($id > 0) {
-            BuildingSpace::updateTotalSpace($d->building_id);
-            return DV::depends(1, ['amenities' => $inputs, 'id' => $id]);
-        }
-        return DV::error('Error saving Amenity...!');
+        BuildingSpace::updateTotalSpace($d->building_id);
 
-        
+        return DV::depends(1, [
+            'amenities' => $inputs,
+            'id' => $id
+        ]);
     }
     function createAmenityCode($branch_id, $building_id, $floor_number, $amenity_id)
     {
         $buildingName = DB::table('buildings')
             ->where('id', $building_id)
             ->value('name');
+
         $prefixLetters = 'B';
+
         if ($buildingName) {
             $words = explode(' ', $buildingName);
             $prefixLetters = '';
+
             foreach ($words as $word) {
                 if (!empty($word)) {
                     $prefixLetters .= strtoupper(substr($word, 0, 1));
                 }
             }
         }
+
         $floorPrefix = 'F' . $floor_number;
+
         $row = DB::table('amenity_code_control')
             ->where('branch_id', $branch_id)
+            ->where('building_id', $building_id)
             ->where('prefix', $floor_number)
             ->first();
 
         $next_num = $row ? $row->last_id + 1 : 1;
+
         $roomNumber = ($floor_number * 100) + $next_num;
 
-
-        // $fullCode = $prefixLetters . '-' . $floorPrefix . '-R' . $roomNumber;
-        // $fullCode = $floorPrefix . '-R-' . $roomNumber;
         $fullCode = 'A-' . $roomNumber;
-        // $fullCode = $roomNumber;
 
         DB::table('amenities')
             ->where('id', $amenity_id)
             ->update(['code' => $fullCode]);
+
         if ($row) {
             DB::table('amenity_code_control')
-                ->where('branch_id', $branch_id)
-                ->where('prefix', $floor_number)
+                ->where('id', $row->id)
                 ->update(['last_id' => $next_num]);
         } else {
             DB::table('amenity_code_control')
                 ->insert([
-                    'branch_id' => $branch_id,
-                    'prefix' => $floor_number,
-                    'last_id' => $next_num,
+                    'branch_id'   => $branch_id,
+                    'building_id' => $building_id, // ✅ important
+                    'prefix'      => $floor_number,
+                    'last_id'     => $next_num,
                 ]);
         }
 

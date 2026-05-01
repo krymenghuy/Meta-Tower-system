@@ -28,12 +28,12 @@ class Building //extends Model
         $subs_id = $ss->subs_id ?? getCurrentSubsId(true);
 
         $v_rule = [
-            'name' => '1|string|0-255',
-            'total_floor' => '1|number',
-            'address' => '1|string|0-250',
-            'total_area' => '1|number',
+            'name' => '1|string|0-255|text=Building name is required',
+            'total_floor' => '1|number|min=1|text=Total floors is required',
+            'total_area' => '1|number|min=0|text=Total area is required',
             'total_space' => '0|number',
             'occupancy' => '0|number',
+            'address' => '0|string|0-250',
         ];
 
         $allowSign = ['$', '#', '@', '!', '.', '-', ',', '_', '=', '?'];
@@ -42,6 +42,15 @@ class Building //extends Model
             return DV::error($res->error);
         }
         $inputs = $res->values;
+        $total_floor = $inputs['total_floor'] ?? 0;
+        $total_area = $inputs['total_area'] ?? 0;
+
+        if ($total_floor <= 0) {
+            return DV::error('Total floors must be greater than 0.');
+        }
+        if ($total_area <= 0) {
+            return DV::error('Total area must be greater than 0.');
+        }
         $isCreate = !$id || $id == 0;
 
         $nameNorm = strtolower(trim((string) ($inputs['name'] ?? '')));

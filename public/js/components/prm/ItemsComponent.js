@@ -268,7 +268,7 @@ const CreateItemsDialog = (() => {
                            <div class="col-12">
                                 <div class="material-input outlined">
                                     <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder=" " />
-                                    <label style="padding-left:6px;color:#777777;">Item Name</label>
+                                    <label style="padding-left:6px;color:#777777;">Name</label>
                                 </div>
                             </div>
                             <div class="col-6">
