@@ -477,8 +477,8 @@ var ContractComponent = new (function () {
                     menu.terminate_contract.style.display = isActive ? 'block' : 'none';
                 }
                 if (menu.delete_contract) {
-                    // show delete when status is pending or terminated
-                    menu.delete_contract.style.display = (isPending || isTerminated) ? 'block' : 'none';
+                    // show delete when status is pending, expired, or terminated
+                    menu.delete_contract.style.display = (isPending || isExpired || isTerminated) ? 'block' : 'none';
                 }
             },
             onClick: (menuLink, id, name) => {
