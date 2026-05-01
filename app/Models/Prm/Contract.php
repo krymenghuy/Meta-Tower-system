@@ -9,6 +9,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use DBX;
 use XPublicStorage;
 
+
 class Contract
 {
     protected $id = null;
@@ -644,7 +645,7 @@ class Contract
 
         $tenant = self::findTenantByNormalizedPhone($booker_phone);
         if (!$tenant) {
-            return self::phoneValidationResponse(false, 'Tenant not found. Please create a tenant.', [
+            return self::phoneValidationResponse(false, 'Tenant', [
                 'has_booking' => true,
                 'booker_phone' => $booker_phone_raw,
             ]);

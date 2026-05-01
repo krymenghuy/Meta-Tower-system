@@ -100,6 +100,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('building-spac
     Route::post('/update-booking', [BuildingSpaceController::class, 'updateBooking']);
     Route::post('/cancel-booking', [BuildingSpaceController::class, 'cancelBooking']);
     Route::post('/view-booking', [BuildingSpaceController::class, 'viewBookingDetails']);
+    Route::post('/latest-booking', [BuildingSpaceController::class, 'getLatestBooking']);
     Route::post('/list-paginate', [BuildingSpaceController::class, 'getListPaginate']);
     Route::post('/details', [BuildingSpaceController::class, 'getDetails']);
     Route::post('/form-options', [BuildingSpaceController::class, 'getFormOptions']);

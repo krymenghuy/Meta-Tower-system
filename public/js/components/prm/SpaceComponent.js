@@ -476,28 +476,67 @@ var SpaceComponent = new (function () {
         container.innerHTML = html;
     };
 
-    mThis.createContract = (id, menulink) => {
+ mThis.createContract = (id, menulink) => {
         vsapi.call(
             `${main_view.base_url}/prm/contract/form-options`,
             { space_id: id },
             menulink,
             null
-        ).then((res) => {
-            if (res.status_code !== 200) {
+        ).then(res => {
+            if (res.status_code !== 200 && res.error_message === "Tenant") {
+                const status_id = Number(menulink?.dataset?.statusid || 0);
+
+                if (status_id === 2) {
+                    vsapi.call(
+                        `${main_view.base_url}/prm/building-space/latest-booking`,
+                        { space_id: id },
+                        menulink,
+                        null
+                    ).then(bookingRes => {
+                        const booking = bookingRes?.data?.data || bookingRes?.data || {};
+                        let op  = {
+                            id: null,
+                            phone_number: booking.booker_phone || "",
+                            name: booking.booker_name || "",
+                            email: booking.booker_email || "",
+                            onClose: newTenantId => {
+                                if (newTenantId) {
+                                    vsapi.call(
+                                        `${main_view.base_url}/prm/contract/form-options`,
+                                        { space_id: id, tenant_id: newTenantId },
+                                        menulink,
+                                        null
+                                    ).then(finalRes => {
+                                        ContractDialog.show({
+                                            id: null,
+                                            space_id: id,
+                                            tenant_id: newTenantId,
+                                            data: finalRes.data,
+                                            btn: menulink,
+                                            onClose: () => mThis.applyListFilters()
+                                        });
+                                    });
+                                } else {
+                                    mThis.applyListFilters();
+                                }
+                            }
+                        }
+                        CreateTenantDialog.show(op);
+                    });
+                    return;
+                }
                 cv_interact.error(res.error_message || "Please create tenant first.");
                 return;
             }
-            let op = {
+            ContractDialog.show({
                 id: null,
                 space_id: id,
+                data: res.data,
                 btn: menulink,
-                onClose: () => {
-                    mThis.applyListFilters();
-                }
-            };
-            ContractDialog.show(op);
+                onClose: () => mThis.applyListFilters()
+            });
         });
-    }
+    };
     mThis.editSpace = (id, menulink) => {
         let op = {
             id: id,

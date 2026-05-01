@@ -1601,9 +1601,15 @@ const CreateTenantDialog = (() => {
                         },
                     },
                 },
+
                 onPrepareForm: (me, data) => {
+                    console.log(1122,me.dataOptions);
 
-
+                    if(me.dataOptions.phone_number){
+                        me.controls.name.value = me.dataOptions.name;
+                        me.controls.phone_number.value = me.dataOptions.phone_number;
+                        me.controls.email.value = me.dataOptions.email;
+                    }
                 },
 
                 extendMethod: {
@@ -1644,7 +1650,8 @@ const CreateTenantDialog = (() => {
                                 )
                                 .then((res) => {
                                     if (res.status_code === 200) {
-                                        me.hide(true, op);
+                                        const newTenantId = res.data?.id || null;
+                                        me.hide(true, op,newTenantId);
                                         if (me.dataOptions.id > 0) {
                                             cv_interact.success(
                                                 "Tenant has been updated successfully.",

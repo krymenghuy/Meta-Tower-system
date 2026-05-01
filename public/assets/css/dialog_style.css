@@ -23,7 +23,7 @@
    HEADER
 ========================= */
 .vs-modal .modal-header {
-    background: #e1e5f2;
+    background: #c4c4c7;
     padding: 18px 24px;
     border: none;
     position: relative;
@@ -283,128 +283,24 @@
 ========================= */
 .vs-modal .modal-footer .btn-primary,
 .vs-modal .modal-footer .btn-submit {
-    color: #1a1647;
-    background-image:
-        linear-gradient(#e1e5f2, #e1e5f2),
-        linear-gradient(135deg, #7c6af5, #e86af5, #f5a36a, #6af5c8);
-    background-origin: border-box;
-    background-clip: padding-box, border-box;
+    color: #ffffff !important;
+    background-color: #1a1647;
+    border: 1px solid #0F2554 !important;
 }
 
-.vs-modal .modal-footer .btn-primary:hover:before,
-.vs-modal .modal-footer .btn-submit:hover:before {
-    top: -70%;
-    background-image:
-        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
-        radial-gradient(circle, transparent 20%, #e1e5f2 20%, transparent 30%),
-        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
-        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
-        radial-gradient(circle, transparent 10%, #e1e5f2 15%, transparent 20%),
-        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
-        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
-        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
-        radial-gradient(circle, #e1e5f2 20%, transparent 20%);
-    background-size:
-        10% 10%, 20% 20%, 15% 15%, 20% 20%, 18% 18%,
-        10% 10%, 15% 15%, 10% 10%, 18% 18%;
-    background-position: 50% 120%;
-    animation: greentopBubbles 0.6s ease;
-}
 
-.vs-modal .modal-footer .btn-primary:hover::after,
-.vs-modal .modal-footer .btn-submit:hover::after {
-    bottom: -70%;
-    background-image:
-        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
-        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
-        radial-gradient(circle, transparent 10%, #e1e5f2 15%, transparent 20%),
-        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
-        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
-        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
-        radial-gradient(circle, #e1e5f2 20%, transparent 20%);
-    background-size:
-        15% 15%, 20% 20%, 18% 18%, 20% 20%,
-        15% 15%, 20% 20%, 18% 18%;
-    background-position: 50% 0%;
-    animation: greenbottomBubbles 0.6s ease;
-}
 
 /* =========================
    CANCEL BUTTON — red
 ========================= */
 .vs-modal .modal-footer .btn-secondary,
 .vs-modal .modal-footer .btn-cancel {
-    color: #dc3545;
-    background-image:
-        linear-gradient(#e1e5f2, #e1e5f2),
-        linear-gradient(135deg, #ff4d4d, #dc3545, #ff6b6b);
-    background-origin: border-box;
-    background-clip: padding-box, border-box;
+    color: #e60d23;
+    background-color: rgba(178, 34, 34, 0.1);
+    border: 1px solid #fd397a;
 }
 
-.vs-modal .modal-footer .btn-secondary:hover,
-.vs-modal .modal-footer .btn-cancel:hover {
-    background-image:
-        linear-gradient(#fdf0f0, #fdf0f0),
-        linear-gradient(135deg, #ff4d4d, #dc3545, #ff6b6b);
-    background-origin: border-box;
-    background-clip: padding-box, border-box;
-}
 
-.vs-modal .modal-footer .btn-secondary:hover:before,
-.vs-modal .modal-footer .btn-cancel:hover:before {
-    top: -70%;
-    background-image:
-        radial-gradient(circle, #ffcccc 20%, transparent 20%),
-        radial-gradient(circle, transparent 20%, #ffcccc 20%, transparent 30%),
-        radial-gradient(circle, #ffcccc 20%, transparent 20%),
-        radial-gradient(circle, #ffcccc 20%, transparent 20%),
-        radial-gradient(circle, transparent 10%, #ffcccc 15%, transparent 20%),
-        radial-gradient(circle, #ffcccc 20%, transparent 20%),
-        radial-gradient(circle, #ffcccc 20%, transparent 20%),
-        radial-gradient(circle, #ffcccc 20%, transparent 20%),
-        radial-gradient(circle, #ffcccc 20%, transparent 20%);
-    background-size:
-        10% 10%, 20% 20%, 15% 15%, 20% 20%, 18% 18%,
-        10% 10%, 15% 15%, 10% 10%, 18% 18%;
-    background-position: 50% 120%;
-    animation: greentopBubbles 0.6s ease;
-}
-
-.vs-modal .modal-footer .btn-secondary:hover::after,
-.vs-modal .modal-footer .btn-cancel:hover::after {
-    bottom: -70%;
-    background-image:
-        radial-gradient(circle, #ffcccc 20%, transparent 20%),
-        radial-gradient(circle, #ffcccc 20%, transparent 20%),
-        radial-gradient(circle, transparent 10%, #ffcccc 15%, transparent 20%),
-        radial-gradient(circle, #ffcccc 20%, transparent 20%),
-        radial-gradient(circle, #ffcccc 20%, transparent 20%),
-        radial-gradient(circle, #ffcccc 20%, transparent 20%),
-        radial-gradient(circle, #ffcccc 20%, transparent 20%);
-    background-size:
-        15% 15%, 20% 20%, 18% 18%, 20% 20%,
-        15% 15%, 20% 20%, 18% 18%;
-    background-position: 50% 0%;
-    animation: greenbottomBubbles 0.6s ease;
-}
-
-/* =========================
-   KEYFRAMES
-========================= */
-@keyframes greentopBubbles {
-    0%   { background-position: 5% 90%, 10% 90%, 10% 90%, 15% 90%, 25% 90%, 25% 90%, 40% 90%, 55% 90%, 70% 90%; }
-    50%  { background-position: 0% 80%, 0% 20%, 10% 40%, 20% 0%, 30% 30%, 22% 50%, 50% 50%, 65% 20%, 90% 30%; }
-    100% { background-position: 0% 70%, 0% 10%, 10% 30%, 20% -10%, 30% 20%, 22% 40%, 50% 40%, 65% 10%, 90% 20%;
-           background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%; }
-}
-
-@keyframes greenbottomBubbles {
-    0%   { background-position: 10% -10%, 30% 10%, 55% -10%, 70% -10%, 85% -10%, 70% -10%, 70% 0%; }
-    50%  { background-position: 0% 80%, 20% 80%, 45% 60%, 60% 100%, 75% 70%, 95% 60%, 105% 0%; }
-    100% { background-position: 0% 90%, 20% 90%, 45% 70%, 60% 110%, 75% 80%, 95% 70%, 110% 10%;
-           background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%; }
-}
 .vs-modal .choices__inner{
     /* border-radius: 4px !important; */
     height:44.4 !important;

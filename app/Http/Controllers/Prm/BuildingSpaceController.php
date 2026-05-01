@@ -98,6 +98,16 @@ class BuildingSpaceController extends Controller
         $res = $building_space->viewBookingDetails($req->id);
         return JDV::result($res);
     }
+    public function getLatestBooking(Request $req)
+        {
+            $ss = XAuthService::verifyAuth($req, -1);
+            if ($ss->status_code !== 200) {
+                return JDV::raw($ss);
+            }
+            $building_space = new BuildingSpace();
+            $res = $building_space->getLatestBooking($req->space_id); // ← space_id, not id
+            return JDV::result($res);
+        }
 
     public function updateBooking(Request $req)
     {
