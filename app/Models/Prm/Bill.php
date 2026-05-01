@@ -37,11 +37,11 @@ class Bill
     $ref_no_char = ['@', '.', '-', '_'];
 
     $v_rule = [
-        'vendor_id'       => '1|number|exists=vendors.id',
+        'vendor_id'       => '1|number|exists=vendors.id|text=Please enter a valid name for vendor.',
         'bill_date'       => '1|date',
-        'due_date'        => '1|date',
-        'ref_no'          => '1|string|0-25',
-        'expense_type_id' => '1|number|exists=expense_categories.id|Please select category.',
+        'due_date'        => '1|date|text=Please enter valid Due Date.',
+        'ref_no'          => '1|string|0-25|text=Please enter Reference No.',
+        'expense_type_id' => '1|number|exists=expense_categories.id|Please select valid category.',
         'total_amount'    => '1|number|min=0',
         'remark'          => '0|string|0-255',
         'photo'           => '0|string',
@@ -310,7 +310,7 @@ class Bill
             'png'  => 'image/png',
             'jpg'  => 'image/jpeg',
             'jpeg' => 'image/jpeg',
-            // 'pdf'  => 'application/pdf',
+            'pdf'  => 'application/pdf',
         ];
         $mimeType = $mimeTypes[$ext] ?? 'application/octet-stream';
 

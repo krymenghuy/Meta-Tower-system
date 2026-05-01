@@ -480,6 +480,8 @@ static function options_maintenance_amenity($ss)
         ->get();
     }
 
+  
+
     static function options_service_type_request($ss){
         return DB::table('service_types')
             ->selectRaw('id, name as service_type')

@@ -22,10 +22,10 @@ class BillPayment
         $v_rule = [
             'bill_id'        => '1|number|exists=bills.id',
             'payment_date'   => '1|date',
-            'amount'         => '1|number|min=0.01',
             'payer'          => '1|string|0-50',
+            'amount'         => '1|number|min=0.01',
             'payment_method' => '0|string|0-50',
-            'ref_no'         => '0|string|0-100',
+            'ref_no'         => '1|string|0-100',
             'note'           => '0|string|0-255',
             'currency_code' => '0|string|0-10|default=USD',
         ];

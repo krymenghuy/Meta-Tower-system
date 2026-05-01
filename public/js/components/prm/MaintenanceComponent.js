@@ -507,8 +507,6 @@ const CreateMaintenanceDialog = (() => {
                     click: (me, btn) => {
                         const op = me.getData();
                         op.id = me.dataOptions?.id;
-                        console.log(8888,op);
-                        (888, op);
                         if (op.type_unit === 'space') {
                             op.amenity_id = null;
                             if (!op.space_id) {
@@ -519,8 +517,7 @@ const CreateMaintenanceDialog = (() => {
                             op.space_id = null;
 
                             if (!op.amenity_id) {
-                                cv_interact.error("Space is required.");
-                                // cv_interact.error("Amenity is required.");
+                                cv_interact.error("Amenity is required.");
                                 return;
                             }
                         }
@@ -529,7 +526,6 @@ const CreateMaintenanceDialog = (() => {
                         if (op.end_date && op.end_time) op.end_date = op.end_date + " " + op.end_time;
                         delete op.start_time;
                         delete op.end_time;
-                        console.log(9999,op);
 
                         vsapi.call(`${main_view.base_url}/prm/maintenance/save`, op, btn, null)
                             .then(res => {

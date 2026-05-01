@@ -343,10 +343,10 @@ var ContractComponent = new (function () {
     };
 
     mThis.renderContractDetail = (container, d, contractId, renewals) => {
-        const cur = (d.cur_symbol != null) ? d.cur_symbol : '$';
-        const priceLabel = (d.price_type === 'total') ? 'Whole Room' : 'Per sqm';
-        const priceVal = d.price != null ? Number(d.price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '—';
-        const depositVal = (d.deposit != null && d.deposit !== '') ? Number(d.deposit).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '—';
+        // const cur = (d.cur_symbol != null) ? d.cur_symbol : '$';
+        // const priceLabel = (d.price_type === 'total') ? 'Whole Room' : 'Per sqm';
+        // const priceVal = d.price != null ? Number(d.price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '—';
+        // const depositVal = (d.deposit != null && d.deposit !== '') ? Number(d.deposit).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '—';
 
         const renewalsList = Array.isArray(renewals) ? renewals : [];
         const currentSpaceCode = (d.space_code ?? '').trim();
@@ -477,8 +477,8 @@ var ContractComponent = new (function () {
                     menu.terminate_contract.style.display = isActive ? 'block' : 'none';
                 }
                 if (menu.delete_contract) {
-                    // show delete when status is pending or terminated
-                    menu.delete_contract.style.display = (isPending || isTerminated) ? 'block' : 'none';
+                    // show delete when status is pending, expired, or terminated
+                    menu.delete_contract.style.display = (isPending || isExpired || isTerminated) ? 'block' : 'none';
                 }
             },
             onClick: (menuLink, id, name) => {
@@ -909,78 +909,35 @@ const ContractDialog = (() => {
                     }
                 });
 
-                // me.controls.deposit.addEventListener('input', (e) => {
-                //     let v = e.target.value;
-                //     v = v.replace(/[^0-9.]/g, '');
+                me.controls.deposit.addEventListener('input', (e) => {
+                    let v = e.target.value;
+                    v = v.replace(/[^0-9.]/g, '');
 
-                //     const parts = v.split('.');
-                //     if (parts.length > 2) {
-                //         v = parts[0] + '.' + parts[1];
-                //     }
-                //     if (parts[1] !== undefined) {
-                //         v = parts[0] + '.' + parts[1].slice(0, 2);
-                //     }
+                    const parts = v.split('.');
+                    if (parts.length > 2) {
+                        v = parts[0] + '.' + parts[1];
+                    }
+                    if (parts[1] !== undefined) {
+                        v = parts[0] + '.' + parts[1].slice(0, 2);
+                    }
 
-                //     e.target.value = v;
-                // });
-                // me.controls.deposit.addEventListener('blur', (e) => {
-                //     let v = parseFloat(e.target.value);
+                    e.target.value = v;
+                });
+                me.controls.deposit.addEventListener('blur', (e) => {
+                    let v = parseFloat(e.target.value);
 
-                //     if (isNaN(v) || v <= 0) {
-                //         e.target.value = '';
-                //         return;
-                //     }
-                //     e.target.value = v;
-                // });
+                    if (isNaN(v) || v <= 0) {
+                        e.target.value = '';
+                        return;
+                    }
+                    e.target.value = v;
+                });
 
-                // me.controls.deposit.addEventListener('input', (e) => {
-                //     let v = e.target.value;
-                //     v = v.replace(/[^0-9.]/g, '');
-
-                //     const parts = v.split('.');
-                //     if (parts.length > 2) {
-                //         v = parts[0] + '.' + parts[1];
-                //     }
-                //     if (parts[1] !== undefined) {
-                //         v = parts[0] + '.' + parts[1].slice(0, 2);
-                //     }
-
-                //     e.target.value = v;
-                // });
-                // me.controls.deposit.addEventListener('blur', (e) => {
-                //     let v = parseFloat(e.target.value);
-
-                //     if (isNaN(v) || v <= 0) {
-                //         e.target.value = '';
-                //         return;
-                //     }
-                //     e.target.value = v;
-                // });
-
-                // const applyMoneyInput = (inputEl) => {
-                //     inputEl.addEventListener('input', (e) => {
-                //         let v = e.target.value;
-                //         v = v.replace(/[^0-9.]/g, '');
-                //         const parts = v.split('.');
-                //         if (parts.length > 2) {
-                //             v = parts[0] + '.' + parts[1];
-                //         }
-                //         if (parts[1] !== undefined) {
-                //             v = parts[0] + '.' + parts[1].slice(0, 2);
-                //         }
-                //         e.target.value = v;
-                //     });
-                //     inputEl.addEventListener('blur', (e) => {
-                //         let v = parseFloat(e.target.value);
-                //         if (isNaN(v) || v <= 0) {
-                //             e.target.value = '';
-                //             return;
-                //         }
-                //         e.target.value = v;
-                //     });
-                // };
                 applyNumberInput(me.controls.deposit);
+                applyNumberInput(me.controls.sqm_size);
+                applyNumberInput(me.controls.price);
 
+                
 
             },
 

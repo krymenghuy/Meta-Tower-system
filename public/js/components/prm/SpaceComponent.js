@@ -254,23 +254,24 @@ var SpaceComponent = new (function () {
                 const menu = me.getActiveMenus(container);
 
                 const status_id = container.dataset.statusid;
+                const statusIdNum = Number(status_id);
                 const maintenance_status_id = Number(container.dataset.maintenancestatusid || 0);
 
                 const isUpcomingMaintenance = maintenance_status_id === 1;
                 const isMaintenance = maintenance_status_id === 2;
                 const hasActiveMaintenance = isUpcomingMaintenance || isMaintenance;
 
-                const booked = String(status_id) === '2';
+                const booked = statusIdNum === 2;
+                const occupiedOrNotBookable = statusIdNum >= 3;
                 menu.view_booking.style.display = booked ? 'block' : 'none';
                 menu.edit_booking.style.display = booked ? 'block' : 'none';
                 menu.cancel_booking.style.display = booked ? 'block' : 'none';
-                menu.create_booking.style.display = booked ? 'none' : 'block';
-                menu.create_contract.style.display = status_id >= 3 ? 'none' : 'block';
+                menu.create_booking.style.display = booked || occupiedOrNotBookable ? 'none' : 'block';
+                menu.create_contract.style.display = statusIdNum >= 3 ? 'none' : 'block';
                 menu.edit_space.style.display = status_id == 3 ? 'none' : 'block';
                 menu.finish_maintenance.style.display = isMaintenance ? 'block' : 'none';
                 menu.set_maintenance.style.display = hasActiveMaintenance ? 'none' : 'block';
-                menu.view_booking.style.display = status_id == 2 ? 'block' : 'none';
-                menu.delete_space.style.display = status_id > 1 ? 'none' : 'block';
+                menu.delete_space.style.display = statusIdNum > 1 ? 'none' : 'block';
             },
 
             onClick: (menulink, id, name) => {
@@ -797,30 +798,31 @@ const BuildingSpaceDialog = (() => {
                 },
 
                 contentCreated: (me) => {
-                    me.controls.price.addEventListener('input', (e) => {
-                        let v = e.target.value;
-                        v = v.replace(/[^0-9.]/g, '');
+                    // me.controls.price.addEventListener('input', (e) => {
+                    //     let v = e.target.value;
+                    //     v = v.replace(/[^0-9.]/g, '');
 
-                        const parts = v.split('.');
-                        if (parts.length > 2) {
-                            v = parts[0] + '.' + parts[1];
-                        }
-                        if (parts[1] !== undefined) {
-                            v = parts[0] + '.' + parts[1].slice(0, 2);
-                        }
+                    //     const parts = v.split('.');
+                    //     if (parts.length > 2) {
+                    //         v = parts[0] + '.' + parts[1];
+                    //     }
+                    //     if (parts[1] !== undefined) {
+                    //         v = parts[0] + '.' + parts[1].slice(0, 2);
+                    //     }
 
-                        e.target.value = v;
-                    });
-                    me.controls.price.addEventListener('blur', (e) => {
-                        let v = parseFloat(e.target.value);
+                    //     e.target.value = v;
+                    // });
+                    // me.controls.price.addEventListener('blur', (e) => {
+                    //     let v = parseFloat(e.target.value);
 
-                        if (isNaN(v) || v <= 0) {
-                            e.target.value = '';
-                            return;
-                        }
-                        e.target.value = v;
-                    });
-
+                    //     if (isNaN(v) || v <= 0) {
+                    //         e.target.value = '';
+                    //         return;
+                    //     }
+                    //     e.target.value = v;
+                    // });
+                    applyNumberInput(me.controls.sqm_size);
+                    applyNumberInput(me.controls.price);
                 },
                 configSelect: [
                     {
@@ -1026,6 +1028,19 @@ const CreateBookingDialog = (() => {
                     });
 
                 },
+                onShow: (me) => {
+                    const title = me.divModal.querySelector('.modal-title');
+                    if (!title) return;
+                    const bookingId =
+                        me.dataOptions?.booking?.id ?? me.detail?.booking?.id;
+                    const isEdit = Number(bookingId) > 0;
+                    title.innerHTML = isEdit
+                        ? '<h4 class="text-prm-custom text-start fw-bold">Edit Booking</h4>'
+                        : '<h4 class="text-prm-custom text-start fw-bold">Create Booking</h4>';
+                    const c = me.controls;
+                    if (c?.booking_date) c.booking_date.disabled = isEdit;
+                    if (c?.expired_booking_date) c.expired_booking_date.disabled = isEdit;
+                },
                 configSelect: [
                 ],
                 prepareFormOptions: {
@@ -1035,15 +1050,19 @@ const CreateBookingDialog = (() => {
                     api: {
                         endpoint: [main_view.base_url, "/prm/building-space/form-options",].join(""),
                         params: (op) => {
-                            return { id: op.id };
+                            return { id: op.space_id ?? op.id };
                         },
                     },
                 },
 
                 onPrepareForm: (me, data) => {
-                    const b = me.dataOptions?.booking ?? me.detail?.booking;
-                    if (!b || !me.controls) return;
                     const c = me.controls;
+                    if (!c) return;
+                    const b = me.dataOptions?.booking ?? me.detail?.booking;
+                    const isEdit = Boolean(b && Number(b.id) > 0);
+                    if (c.booking_date) c.booking_date.disabled = isEdit;
+                    if (c.expired_booking_date) c.expired_booking_date.disabled = isEdit;
+                    if (!b) return;
                     const sv = (k, v) => { if (c[k]) c[k].value = v != null ? String(v) : ""; };
                     sv("booker_name", b.booker_name);
                     sv("booker_phone", b.booker_phone);
@@ -1071,6 +1090,14 @@ const CreateBookingDialog = (() => {
                             const editId = me.dataOptions?.booking?.id ?? me.detail?.booking?.id;
                             const isEdit = Boolean(editId);
                             if (isEdit) op.booking_id = editId;
+                            if (isEdit && me.controls) {
+                                if (me.controls.booking_date) {
+                                    op.booking_date = me.controls.booking_date.value;
+                                }
+                                if (me.controls.expired_booking_date) {
+                                    op.expired_booking_date = me.controls.expired_booking_date.value;
+                                }
+                            }
                             const url = isEdit ? "/prm/building-space/update-booking" : "/prm/building-space/create-booking";
 
                             vsapi.call([main_view.base_url, url].join(""), op, btn, null).then((res) => {
@@ -1079,7 +1106,7 @@ const CreateBookingDialog = (() => {
                                     cv_interact.success(
                                         isEdit
                                             ? "Booking has been updated successfully."
-                                            : "New booking has been created successfully"
+                                            : "New booking has been created successfully."
                                     );
                                 } else {
                                     cv_interact.error(res.error_message);

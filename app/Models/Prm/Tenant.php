@@ -125,13 +125,24 @@ class Tenant
         }
 
         XPublicStorage::saveImage(['branch_id' => null, 'subs_id'   => $ss->subs_id, 'dir' => self::$img_dir], null, $photo, null, ['id' => $id, 'store' => 'tenants.photo_file_name']);
-        $hasActive = DB::table('contracts')->where('tenant_id', $id)->whereDate('end_date', '>=', now())->exists();
-        DB::table('tenants')->where('id', $id)->update(['status_id' => $hasActive ? 2 : 1]);
+        // 2=Active, 3=Inactive (historical/expired contracts only); 1=Pending when tenant has never had a contract
+        $today = date('Y-m-d');
+        $terminatedStatusId = Contract::getTerminatedStatusId();
+        $hasLiveContract = DB::table('contracts')
+            ->where('tenant_id', $id)
+            ->whereDate('end_date', '>=', $today)
+            ->where('status_id', '!=', $terminatedStatusId)
+            ->exists();
+        $hadContract = DB::table('contracts')->where('tenant_id', $id)->exists();
+        $tenantStatusId = $hasLiveContract ? 2 : ($hadContract ? 3 : 1);
+        DB::table('tenants')->where('id', $id)->update(['status_id' => $tenantStatusId]);
         return DV::depends(1, ['tenants' => $inputs, 'id' => $id]);
     }
 
     public function getListPaginate($arr, $ss = null)
     {
+        Contract::applyAutomaticContractRollups();
+
         $d = (object) $arr;
         $branch_id = $ss->branch_id;
         $status_id = $d->status_id ?? null;

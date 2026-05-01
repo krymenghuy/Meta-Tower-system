@@ -10,6 +10,7 @@ var ReservationComponent = (() => {
     mThis.elAmenity = mThis.self.querySelector("#amenity_id");
     mThis.elBookingDate = mThis.self.querySelector("#booking_date");
     mThis.elSearch = mThis.self.querySelector("#_search_reservation");
+    mThis.elBookingDateTo = mThis.self.querySelector("booking_date_to");
     mThis.autoRefreshMs = 60000;
     mThis.autoRefreshTimer = null;
     mThis.autoRefreshStartTimeout = null;
@@ -28,7 +29,7 @@ var ReservationComponent = (() => {
             },
         },
         {
-            transTitle: "titles.Reservation",
+            transTitle: "titles.Amenity Name",
             className: "align-middle",
             data: (data) => {
                 return `<span class="text-primary-custom">${data.amenity_name ?? ""}</span>`;
@@ -121,6 +122,11 @@ var ReservationComponent = (() => {
 
     mThis.init = () => {
         if (mThis.initAlready) return;
+
+        if (mThis.elBookingDateTo && !mThis.elBookingDateTo.value) {
+            const today = new Date().toISOString().split('T')[0];
+            mThis.elBookingDateTo.value = today;
+        }
 
         mThis.ReservationListView = new ListView("_reservation_list", {
             fetchApi: `${main_view.base_url}/prm/reservation/list-paginate`,
@@ -254,7 +260,6 @@ var ReservationComponent = (() => {
 
                 if (status_id === 1) {
                     menu.cancel_reservation.style.display = 'block';
-                    menu.delete_reservation.style.display = 'block';
                 } 
                 else if (status_id === 3 || status_id === 4) {
                     menu.delete_reservation.style.display = 'block';
