@@ -400,7 +400,6 @@ var PurchaseOrdersComponent = (() => {
                 </div>`;
             },
             contentCreated: (me) => {
-
                 me.controls.div_purchase_summary = me.divModal.querySelector(
                     '[name="div_purchase_summary"]'
                 );
@@ -545,6 +544,33 @@ var PurchaseOrdersComponent = (() => {
                         return Number.isFinite(id) && id > 0 && Number.isFinite(qty) && qty > 0;
                     });
                 };
+                me.controls.purchaseItemList.addEventListener('input', (e) => {
+                    const target = e.target;
+                    if (!target.closest('td[data-name="unit_price"]')) return;
+
+                    let v = target.value;
+                    v = v.replace(/[^0-9.]/g, '');
+                    const parts = v.split('.');
+                    if (parts.length > 2) v = parts[0] + '.' + parts[1];
+                    if (parts[1] !== undefined) v = parts[0] + '.' + parts[1].slice(0, 2);
+                    target.value = v;
+                });
+
+                me.controls.purchaseItemList.addEventListener('blur', (e) => {
+                    const target = e.target;
+                    if (!target.closest('td[data-name="unit_price"]')) return;
+
+                    let v = parseFloat(target.value);
+                    if (isNaN(v) || v <= 0) {
+                        target.value = '';
+                        return;
+                    }
+                    target.value = v.toFixed(2);
+                }, true);
+
+                me.controls.purchaseItemList.addEventListener('input', (e) => {
+                    console.log('INPUT HIT:', e.target.outerHTML); // check this in console
+                });
             },
             buttons: [
                 { label: "Cancel", cssClass: "btn btn-warning", click: (me) => me.hide(false) },
@@ -641,6 +667,7 @@ var PurchaseOrdersComponent = (() => {
                     </div>
                 </div>`;
             },
+            
             // Note: Receive dialog contentCreated and other logic can be added similarly if needed
             buttons: [
                 { label: "Cancel", 
@@ -677,7 +704,7 @@ var PurchaseOrdersComponent = (() => {
 
                 let tBody = '';
                 const items = res.data || [];
-                if (items.length > 0) {
+                if (items.length > 0) { 
                     items.forEach(item => {
                         tBody += `<tr>
                             <td class="text-nowrap">${item.item_code || item.code || ''}</td>
