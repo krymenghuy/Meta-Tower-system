@@ -116,122 +116,118 @@ return 2; // In Progress
         $this->userInfo = $userInfo;
     }
 
-public function upsert($arr = [], $id = null, $ss = null)
-{
-    $id = $id ?? $this->id;
-    $ss = $ss ?? $this->userInfo;
+    public function upsert($arr = [], $id = null, $ss = null)
+    {
+        $id = $id ?? $this->id;
+        $ss = $ss ?? $this->userInfo;
 
-    $v_rule = [
-        'building_id' => '1|number|exists=buildings.id',
-        'space_id'    => '0|number|exists=building_spaces.id',
-        'amenity_id'  => '0|number|exists=amenities.id',
-        'start_date'  => '1|TIMESTAMP',
-        'end_date'    => '1|TIMESTAMP',
-        'remarks'     => '1|string|0-255',
-    ];
+        $v_rule = [
+            'building_id' => '1|number|exists=buildings.id',
+            'space_id'    => '0|number|exists=building_spaces.id',
+            'amenity_id'  => '0|number|exists=amenities.id',
+            'start_date'  => '1|TIMESTAMP|text=Start date is required',
+            'end_date'    => '1|TIMESTAMP|text=End date is required',
+            'remarks'     => '0|string|0-255',
+        ];
 
-    $res = DBX::validateObject(
-        $arr,
-        $v_rule,
-        1,
-        ['remarks' => ['@', ',', '-', '.', '#', '!', '?', '(', ')', "\n"]],
-        $ss->lang ?? 'en'
-    );
+        $res = DBX::validateObject(
+            $arr,
+            $v_rule,
+            1,
+            ['remarks' => ['@', ',', '-', '.', '#', '!', '?', '(', ')', "\n"]],
+            $ss->lang ?? 'en'
+        );
 
-    if ($res->error) return DV::error($res->error);
+        if ($res->error) return DV::error($res->error);
 
-    $input = $res->values;
+        $input = $res->values;
 
-    $start = strtotime($input['start_date']);
-    $end   = strtotime($input['end_date']);
-    $now   = time();
+        $start = strtotime($input['start_date']);
+        $end   = strtotime($input['end_date']);
+        $now   = time();
 
-    if ($start < strtotime(date('Y-m-d'))) {
-        return DV::error('Start date cannot be in the past.');
-    }
-
-    if ($end < strtotime(date('Y-m-d'))) {
-        return DV::error('End date cannot be in the past.');
-    }
-
-    if ($start > $end) {
-        return DV::error('Start must be before end.');
-    }
-
-    if (date('Y-m-d', $start) === date('Y-m-d', $end) && $start >= $end) {
-        return DV::error('Start time must be before end time.');
-    }
-
-    if ($start < $now) {
-        return DV::error('Start time cannot be in the past.');
-    }
-
-    if ($end < $now) {
-        return DV::error('End time cannot be in the past.');
-    }
-
-    if (!empty($input['amenity_id'])) {
-        $hasReservation = DB::table('reservations')
-            ->where('amenity_id', $input['amenity_id'])
-            ->whereIn('status_id', [1, 2])
-            ->exists();
-
-        if ($hasReservation) {
-            return DV::error('Amenity has active or upcoming reservations.');
+        if ($start < strtotime(date('Y-m-d'))) {
+            return DV::error('Start date cannot be in the past.');
         }
-    }
 
-    $sid = $input['status_id'] ?? 0;
-    // if (!in_array($sid, [3, 4], true)) {
-    //     $input['status_id'] = self::computeScheduleStatusId(date('Y-m-d', $start));
-    // }
+        if ($end < strtotime(date('Y-m-d'))) {
+            return DV::error('End date cannot be in the past.');
+        }
 
-    if (!in_array($sid, [3, 4], true)) {
-    $input['status_id'] = self::computeScheduleStatusId(
-        $input['start_date'],
-        $input['end_date']
-    );
-}
+        if ($start > $end) {
+            return DV::error('Start must be before end.');
+        }
 
-    try {
-        $save_id = DBX::saveData($ss, 'maintenances', ['id' => $id], $input);
+        if (date('Y-m-d', $start) === date('Y-m-d', $end) && $start >= $end) {
+            return DV::error('Start time must be before end time.');
+        }
 
-        if (!$save_id) return DV::error('Save failed.');
+        if ($start < $now) {
+            return DV::error('Start time cannot be in the past.');
+        }
 
-        if (!empty($input['space_id'])) {
-            $map = [1 => 1, 2 => 2];
-            DB::table('building_spaces')
-                ->where('id', $input['space_id'])
-                ->update([
-                    'maintenance_status_id' => $map[$input['status_id']] ?? 0
-                ]);
+        if ($end < $now) {
+            return DV::error('End time cannot be in the past.');
         }
 
         if (!empty($input['amenity_id'])) {
-            $statusId = DB::table('amenity_statuses')
-                ->whereRaw('LOWER(TRIM(name)) = ?', ['maintenance'])
-                ->value('id');
+            $hasReservation = DB::table('reservations')
+                ->where('amenity_id', $input['amenity_id'])
+                ->whereIn('status_id', [1, 2])
+                ->exists();
 
-            if ($statusId) {
-                DB::table('amenities')
-                    ->where('id', $input['amenity_id'])
-                    ->update([
-                        'status_id'   => $statusId,
-                        'update_user' => $ss->full_name ?? 'System',
-                        'update_uid'  => $ss->id ?? null,
-                        'updated_at'  => getNowTime(),
-                    ]);
+            if ($hasReservation) {
+                return DV::error('Amenity has active or upcoming reservations.');
             }
         }
 
-        return DV::success([
-            'message' => $id ? 'Updated successfully' : 'Created successfully'
-        ]);
+        $sid = $input['status_id'] ?? 0;
+        // if (!in_array($sid, [3, 4], true)) {
+        //     $input['status_id'] = self::computeScheduleStatusId(date('Y-m-d', $start));
+        // }
 
-    } catch (\Exception $e) {
-        return DV::error('Error: ' . $e->getMessage());
+        if (!in_array($sid, [3, 4], true)) {
+            $input['status_id'] = self::computeScheduleStatusId(
+                $input['start_date'],
+                $input['end_date']
+            );
+        }
+        try {
+            $save_id = DBX::saveData($ss, 'maintenances', ['id' => $id], $input);
+            if (!$save_id) return DV::error('Save failed.');
+            if (!empty($input['space_id'])) {
+                $map = [1 => 1, 2 => 2];
+                DB::table('building_spaces')
+                    ->where('id', $input['space_id'])
+                    ->update([
+                        'maintenance_status_id' => $map[$input['status_id']] ?? 0
+                    ]);
+            }
+            if (!empty($input['amenity_id'])) {
+                $statusId = DB::table('amenity_statuses')
+                    ->whereRaw('LOWER(TRIM(name)) = ?', ['maintenance'])
+                    ->value('id');
+
+                if ($statusId) {
+                    DB::table('amenities')
+                        ->where('id', $input['amenity_id'])
+                        ->update([
+                            'status_id'   => $statusId,
+                            'update_user' => $ss->full_name ?? 'System',
+                            'update_uid'  => $ss->id ?? null,
+                            'updated_at'  => getNowTime(),
+                        ]);
+                }
+            }
+
+            return DV::success([
+                'message' => $id ? 'Updated successfully' : 'Created successfully'
+            ]);
+
+        } catch (\Exception $e) {
+            return DV::error('Error: ' . $e->getMessage());
+        }
     }
-}
 
     public function getMaintenanceList($arr, $ss = null)
     {

@@ -32,24 +32,24 @@ var BuildingComponent = ( () => {
             `,
         },
         {
-            title: "Total Areas",
+            title: "Total Area",
             className: "align-middle",
             data: (data) => {
-                let area = data.total_area ?? '';
-                return `<span class="text-primary-custom">${area}${area ? ' (sqm)' : ''}</span>`;
+                let area = data.total_area ? parseFloat(data.total_area).toLocaleString() : '';
+                return `<span class="text-prm-custom">${area}${area ? ' (sqm)' : ''}</span>`;
             },
         },
         {
-            title: "Total Floors",
+            title: "Total Floor",
             className: "align-middle",
             data: (data) => `
-                <span class="text-primary-custom">${data.total_floor ?? '0'}</span>
+                <span class="text-prm-custom">${data.total_floor ?? '0'}</span>
             `,
         },
         {
             title: "Total Spaces",
             className: "align-middle",
-            data: (data) => `<span class="text-primary-custom">${data.total_space ?? '0'}</span>`,
+            data: (data) => `<span class="text-prm-custom">${data.total_space ?? '0'}</span>`,
         },
         // {
         //     title: "Occupancy",
@@ -446,20 +446,20 @@ const BuildingDialog = (() => {
                     `<div class="row justify-content-center">
                         <div class="col-12">
                             <div class="material-input outlined">
-                                <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder=" " />
+                                <input type="text" name="name" class="data-input form-control" data-field="name" placeholder=" " />
                                 <label style="color:#777777;padding-left:6px;">Building Name</label>
                             </div>
                         </div>
                         <div class="col-6">
                             <div class="material-input outlined">
-                                <input type="text" name="total_floor" required class="data-input form-control" data-field="total_floor" placeholder=" " />
-                                <label style="color:#777777;padding-left:6px;">Total Floors</label>
+                                <input type="number" step="1" min="1" name="total_floor" class="data-input form-control" data-field="total_floor" placeholder=" " />
+                                <label style="color:#777777;padding-left:6px;">Total Floor</label>
                             </div>
                         </div>
                         <div class="col-6">
                             <div class="material-input outlined">
-                                <input type="number" name="total_area" required class="data-input form-control" data-field="total_area" placeholder=" " />
-                                <label style="color:#777777;padding-left:6px;">Total Areas</label>
+                                <input type="number" step="0.01" min="0.01" name="total_area" class="data-input form-control" data-field="total_area" placeholder=" " />
+                                <label style="color:#777777;padding-left:6px;">Total Area (sqm)</label>
                             </div>
                         </div>
                        
@@ -475,6 +475,7 @@ const BuildingDialog = (() => {
             contentCreated: (me) => {
                 header.innerHTML = '';
                 header.appendChild(headerWrapper);
+                 
             },
             prepareFormOptions: {
                 createTitle: "Create Building",

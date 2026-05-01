@@ -29,11 +29,11 @@
                         <select type="id" id="_space_status" class="data-input filter-field form-control" data-field="status_id" placeholder="Status"></select>
                     </div>
                     <div class="col-12 col-md-auto ms-md-auto text-md-end">
-                <button type="button" class="btnAddNewPrm w-100 w-md-auto" id="_btnSpace">
-                    <i class="fa-brands fa-firstdraft me-2"></i>
-                    <span vslang="buttons.Create Space"></span>
-                </button>
-            </div>
+                        <button type="button" class="btnAddNewPrm w-100 w-md-auto" id="_btnSpace">
+                            <i class="fa-brands fa-firstdraft me-2"></i>
+                            <span vslang="buttons.Create Space"></span>
+                        </button>
+                    </div>
                 </div>
             </div>
             <div class="col-12 col-md-4 col-lg-3">

@@ -6749,7 +6749,7 @@ button.bg-primary:focus {
 }
 
 .bg-secondary {
-  background-color: #e1e1ef !important;
+  background-color: #c4c4c7 !important;
 }
 
 a.bg-secondary:hover,
@@ -16283,7 +16283,7 @@ canvas {
 }
 
 /* Customize website's scrollbar like Mac OS */
-/* 
+/*
 ::-webkit-scrollbar {
     background-color:#f6f6f6;
     width:14px;

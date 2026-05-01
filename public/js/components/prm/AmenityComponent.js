@@ -32,25 +32,28 @@ var AmenityComponent = (() => {
                     <span class="text-wrap text-break" style ="word-break:break-word;">${data.name ?? ""}</span>
                 </div>`,
         },
-
         {
             title: "Category",
             className: "align-middle text-nowrap",
             data: (data) =>
                 `<span class="text-nowrap" style="min-width:100px">${data.category ?? ""}</span>`,
         },
-
         {
-            title: "Location",
+            title: "Building",
             className: "align-middle text-nowrap",
             data: (data) =>
-                `
-                    <div class="text-prm-custom" style="width:120px;">
-                        <span>${data.building_name ?? ""}, ${data.floor_number ?? ""}</span>
-                    </div>
-                `
+                `<div class="text-prm-custom">
+                    <span>${data.building_name ?? ""}</span>
+                </div>`
         },
-
+        {
+            title: "Floor",
+            className: "align-middle text-nowrap",
+            data: (data) =>
+                `<div class="text-prm-custom">
+                    <span>${data.floor_number ?? ""}</span>
+                </div>`
+        },
         {
             title: "Capacity",
             className: "align-middle text-nowrap text-center",

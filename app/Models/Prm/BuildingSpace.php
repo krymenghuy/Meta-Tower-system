@@ -110,54 +110,60 @@ class BuildingSpace
     }
 
 
-    function createBuildingSpaceCode($branch_id, $building_id, $floor_number, $space_id)
-    {
-        $buildingName = DB::table('buildings')
-            ->where('id', $building_id)
-            ->value('name');
-        $prefixLetters = 'B';
-        if ($buildingName) {
-            $words = explode(' ', $buildingName);
-            $prefixLetters = '';
-            foreach ($words as $word) {
-                if (!empty($word)) {
-                    $prefixLetters .= strtoupper(substr($word, 0, 1));
-                }
+   function createBuildingSpaceCode($branch_id, $building_id, $floor_number, $space_id)
+{
+    $buildingName = DB::table('buildings')
+        ->where('id', $building_id)
+        ->value('name');
+
+    $prefixLetters = 'B';
+
+    if ($buildingName) {
+        $words = explode(' ', $buildingName);
+        $prefixLetters = '';
+
+        foreach ($words as $word) {
+            if (!empty($word)) {
+                $prefixLetters .= strtoupper(substr($word, 0, 1));
             }
         }
-        $floorPrefix = 'F' . $floor_number;
-        $row = DB::table('space_code_control')
-            ->where('branch_id', $branch_id)
-            ->where('prefix', $floor_number)
-            ->first();
-
-        $next_num = $row ? $row->last_id + 1 : 1;
-        $roomNumber = ($floor_number * 100) + $next_num;
-
-
-        // $fullCode = $prefixLetters . '-' . $floorPrefix . '-R' . $roomNumber;
-        // $fullCode = $floorPrefix . '-R-' . $roomNumber;
-        $fullCode = 'R-' . $roomNumber;
-
-        DB::table('building_spaces')
-            ->where('id', $space_id)
-            ->update(['code' => $fullCode]);
-        if ($row) {
-            DB::table('space_code_control')
-                ->where('branch_id', $branch_id)
-                ->where('prefix', $floor_number)
-                ->update(['last_id' => $next_num]);
-        } else {
-            DB::table('space_code_control')
-                ->insert([
-                    'branch_id' => $branch_id,
-                    'prefix' => $floor_number,
-                    'last_id' => $next_num,
-                ]);
-        }
-
-        return $fullCode;
     }
+
+    $floorPrefix = 'F' . $floor_number;
+
+    // ✅ FIX: include building_id
+    $row = DB::table('space_code_control')
+        ->where('branch_id', $branch_id)
+        ->where('building_id', $building_id)
+        ->where('prefix', $floor_number)
+        ->first();
+
+    $next_num = $row ? $row->last_id + 1 : 1;
+
+    $roomNumber = ($floor_number * 100) + $next_num;
+
+    $fullCode = 'R-' . $roomNumber;
+
+    DB::table('building_spaces')
+        ->where('id', $space_id)
+        ->update(['code' => $fullCode]);
+
+    if ($row) {
+        DB::table('space_code_control')
+            ->where('id', $row->id)
+            ->update(['last_id' => $next_num]);
+    } else {
+        DB::table('space_code_control')
+            ->insert([
+                'branch_id'   => $branch_id,
+                'building_id' => $building_id,
+                'prefix'      => $floor_number,
+                'last_id'     => $next_num,
+            ]);
+    }
+
+    return $fullCode;
+}
 
 
     static function checkDuplicateSpaceCode($building_id, $floor_id, $space_code, $space_id = null)
@@ -516,6 +522,36 @@ public function viewBookingDetails($id)
     return $row;
 }
 
+
+public function getLatestBooking($space_id)
+{
+    if (!$space_id) {
+        return DV::error('space_id is required.');
+    }
+
+    $row = DB::table('space_bookings')
+        ->where('space_id', $space_id)
+        ->orderByDesc('id')
+        ->select(
+            'id',
+            'space_id',
+            'booker_name',
+            'booker_phone',
+            'booker_email',
+            'booking_date',
+            'expired_booking_date',
+            'booking_fee',
+            'remarks'
+        )
+        ->first();
+
+    if (!$row) {
+        return DV::depends(1, []);
+    }
+    $data = json_decode(json_encode($row, JSON_UNESCAPED_UNICODE), true);
+
+    return DV::depends(1, $data);
+}
 public function updateBooking($arr = [], $ss = null)
 {
     $ss = $ss ?? $this->userInfo;
