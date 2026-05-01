@@ -195,6 +195,12 @@ var SpaceComponent = new (function () {
                     cssClass: "border-bottom pb-2",
                     name: "edit_space"
                 },
+                     {
+                    html: '<span class="ps-2  " vslang="titles.Delete"></span>',
+                    icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "delete_space"
+                },
                 {
                     html: '<span class="ps-2" vslang="titles.Booking">Booking</span>',
                     icon: `<i class="fa-solid fa-bold fs-5 text-info-emphasis"></i>`,
@@ -263,6 +269,8 @@ var SpaceComponent = new (function () {
                 menu.edit_space.style.display = status_id == 3 ? 'none' : 'block';
                 menu.finish_maintenance.style.display = isMaintenance ? 'block' : 'none';
                 menu.set_maintenance.style.display = hasActiveMaintenance ? 'none' : 'block';
+                menu.view_booking.style.display = status_id == 2 ? 'block' : 'none';
+                menu.delete_space.style.display = status_id > 1 ? 'none' : 'block';
             },
 
             onClick: (menulink, id, name) => {
@@ -600,10 +608,10 @@ var SpaceComponent = new (function () {
         });
     };
     mThis.cancelBooking = (id, menuLink) => {
-        cv_interact.confirm("Cancel this booking and set the unit back to Available?", {
+        cv_interact.confirm("Cancel this booking ?", {
             title: "Cancel Booking",
             context: "delete",
-            confirmButtonText: "Cancel booking",
+            confirmButtonText: "Yes",
         }, (yes) => {
             if (!yes) return;
             vsapi.call(`${main_view.base_url}/prm/building-space/cancel-booking`, { space_id: id }, menuLink, null).then((res) => {
@@ -945,7 +953,7 @@ const CreateBookingDialog = (() => {
                             </div>
                             <div class="col-12">
                                 <div class="material-input outlined">
-                                    <textarea class="data-input form-control" data-field="remarks" rows="3" placeholder=" "></textarea>
+                                    <textarea name="remarks" class="data-input form-control" data-field="remarks" rows="3" placeholder=" "></textarea>
                                     <label style="color:#777777;padding-left:6px;">Remark</label>
                                 </div>
                             </div>
@@ -1158,8 +1166,8 @@ const ViewBookingDialog = (() => {
 
                 ],
                 prepareFormOptions: {
-                    createTitle: "Booking Details",
-                    modifyTitle: "Booking Details",
+                    createTitle: "Booking Detail",
+                    modifyTitle: "Booking Detail",
                     targetProp: "divModal",
                     api: {
                         endpoint: `${main_view.base_url}/prm/building-space/view-booking`,

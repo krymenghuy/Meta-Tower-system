@@ -2,7 +2,7 @@
      <div id="_divFilter_purchases" class="rounded-2 p-3 bg-white shadow-sm">
         <div class="row g-3 align-items-center">
             <div class="col-12 col-md-6 col-lg-3">
-                <input type="text" class="form-control rounded-2 pe-5 filter-field input-search" id="_po_search" placeholder="Search By name or Po Number">
+                <input type="text" class="form-control rounded-2 pe-5 filter-field input-search" id="_po_search" placeholder="Search By Po Number or Vendor">
             </div>
             <div class="col-12 col-md-6 col-lg-2">
                 <select type="id" id="_po_vendor_id" class="data-input filter-field form-control" data-field="vendor_id"></select>

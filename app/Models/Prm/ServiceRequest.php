@@ -29,16 +29,19 @@ class ServiceRequest extends VSModel
         $branch_id = $ss->branch_id;
         $v_rule = [
             'tenant_id'         => '1|number|exists=tenants.id',
-            'service_id'        => '1|number|exists=services.id',
+            
             'space_id'          => '1|number|exists=building_spaces.id',
             'service_type_id'   => '1|number|exists=service_types.id',
-            'remarks'           => '0|string|0-255',
-            'duration_hours'    => '0|numeric|min:0.5|max:99.9',
+            'service_id'        => '1|number|exists=services.id',
+            
+            
             'unit_type'         => '0|choice|1,2',
+            'duration_hours'    => '1|numeric|min:0.5|max:99.9|text=Duration hours is required when unit type is Hour.',
             'request_date'      => '0|date',
             'scheduled_date'    => '1|date',
             'start_time'        => '1|time',
             'complete_date'     => '0|date',
+            'remarks'           => '0|string|0-255',
         ];
 
         $allowed_chars = ['@', ',', '-', '.', '#', '!', '?', '(', ')', "\n"];
@@ -164,7 +167,7 @@ class ServiceRequest extends VSModel
         if ($search_value) {
             $skip_rows = 0;
             $search_value = escape_like_str($search_value);
-            $str_search = "(sr.code LIKE '%" .$search_value . "%' OR bs.code LIKE '%" . $search_value . "%' OR t.name LIKE '%" . $search_value . "%')";
+            $str_search = "(sr.code LIKE '%" .$search_value . "%' OR t.name LIKE '%" . $search_value . "%')";
         }
 
         if ($service_type_id) {

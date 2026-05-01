@@ -15,39 +15,42 @@ var ReceiptComponent = new (function() {
     mThis.cols = [
         { transTitle: "", className: "align-middle" },
         {
-            transTitle: "titles.Receipt No",
-            className: "align-middle text-nowrap text-start",
-            data: data => {
-                const code = data.code
-                    ? `<span class="text-prm-custom">${data.code}</span>`
-                    : `<span class="text-muted fst-italic">N/A</span>`;
-                const date = data.receipt_date
-                    ? `<span class="text-danger-emphasis small">${data.receipt_date}</span>`
-                    : `<span class="text-muted fst-italic small">N/A</span>`;
+            transTitle: "titles.Payment Date",
+            className: "align-middle text-nowrap",
+            data: data => { 
+                const date = data.receipt_date;
                 return `
                     <div class="d-flex flex-column">
-                        ${code}
-                        <hr class="m-0 border border-secondary border-3 opacity-75">
                         ${date}
                     </div>
                 `;
             }
         },
         {
+            transTitle: "titles.Receipt No",
+            className: "align-middle text-nowrap",
+            data: data => {
+                const code = data.code
+                    ? `<span class="text-prm-custom">${data.code}</span>`
+                    : `<span class="text-muted fst-italic">N/A</span>`;
+                
+                return `
+                    <div class="d-flex flex-column">
+                        ${code}
+                    </div>
+                `;
+            }
+        },
+        {
             transTitle: "titles.Invoice No",
-            className: "align-middle  text-start",
+            className: "align-middle text-nowrap",
             data: data => {
                 const code = data.invoice_code
                     ? `<span class="text-prm-custom ">${data.invoice_code}</span>`
                     : `<span class="text-muted fst-italic">N/A</span>`;
-                const date = data.invoice_date
-                    ? `<span class="text-danger-emphasis small">${data.invoice_date}</span>`
-                    : `<span class="text-muted fst-italic small">N/A</span>`;
                 return `
                     <div class="d-flex flex-column ">
                         ${code}
-                        <hr class="m-0 border border-secondary border-3 opacity-75">
-                        ${date}
                     </div>
                 `;
             }
@@ -62,7 +65,7 @@ var ReceiptComponent = new (function() {
                     <span class="text-prm-custom d-block">
                         ${data.tenant_name ?? ""}
                     </span>
-                    <span class="text-danger-emphasis small">
+                    <span class="text-primary">
                         ${data.tenant_phone ?? ""}
                     </span>
                 </div>
@@ -85,7 +88,7 @@ var ReceiptComponent = new (function() {
         },
         {
             transTitle: "titles.Amount",
-            className: "align-middle ",
+            className: "align-middle text-nowrap",
             data: data => {
                 const val = parseFloat(data.total_received || 0).toFixed(2);
                 return `<span class="text-success fw-bold">$ ${val}</span>`;
@@ -104,10 +107,10 @@ var ReceiptComponent = new (function() {
 
         {
             transTitle: "titles.Remark",
-            className: "align-middle",
+            className: "align-middle text-nowrap",
             data: data => {
                 return `
-                    <div class="text-primary-custom" style="width:150px;">
+                    <div class="text-primary-custom" style="width:200px;">
                         <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ??
                             "..."}</span>
                     </div>
@@ -121,7 +124,7 @@ var ReceiptComponent = new (function() {
                 const statusId = parseInt(data.receipt_status_id) || 1;
 
                 const statusClasses = {
-                    1: "badge text-primary bg-primary-subtle border border-primary", // Active
+                    1: "badge text-success bg-success-subtle border border-success", // Active
                     2: "badge text-danger bg-danger-subtle border border-danger" // Canceled
                 };
 
@@ -153,8 +156,7 @@ var ReceiptComponent = new (function() {
             className: "align-middle text-nowrap",
             data: data => `
             <div class="d-flex flex-column">
-                <span class="text-capitalize text-primary-custom fw-semibold">${data.update_user ??
-                    ""}</span>
+                <span class="text-capitalize text-prm-custom">${data.update_user ?? ""}</span>
                 <span class="text-muted small">${data.updated_at ?? ""}</span>
             </div>`
         },

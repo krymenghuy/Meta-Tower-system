@@ -48,7 +48,7 @@ var InvoiceComponent = (() => {
                     <span class="text-prm-custom d-block">
                         ${data.tenant_name ?? ""}
                     </span>
-                    <span class="text-danger-emphasis small">
+                    <span class="text-primary">
                         ${data.tenant_phone ?? ""}
                     </span>
                 </div>
@@ -78,7 +78,7 @@ var InvoiceComponent = (() => {
                           minimumFractionDigits: 2
                       })
                     : "0.00";
-                return `<span class="d-block  fw-semibold">${mThis.currency_symbol}${amt}</span>`;
+                return `<span class="d-block text-primary fw-semibold">${mThis.currency_symbol}${amt}</span>`;
             }
         },
         {
@@ -181,7 +181,7 @@ var InvoiceComponent = (() => {
             className: "align-middle text-nowrap",
             data: data => `
                 <div class="d-flex flex-column">
-                    <span class="text-capitalize text-yp-custom fw-semibold">${data.update_user ||
+                    <span class="text-capitalize text-prm-custom">${data.update_user ||
                         "—"}</span>
                     <small class="text-muted">${data.updated_at || "—"}</small>
                 </div>`
