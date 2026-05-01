@@ -35,7 +35,7 @@ class Invoice extends VSModel
             'invoice_date'      => '0|date',
             'payment_status_id' => '0|integer|exists:payment_statuses,id|default=2',
             'items'             => '1|array|min:1',
-            'general_remark'    => '1|string|0-350|text= Please enter Remark.',
+            'general_remark'    => '0|string|0-350|',
 
         ];
 
