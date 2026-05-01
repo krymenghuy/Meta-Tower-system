@@ -29,14 +29,14 @@ class ServiceRequest extends VSModel
         $branch_id = $ss->branch_id;
         $v_rule = [
             'tenant_id'         => '1|number|exists=tenants.id',
-            
+
             'space_id'          => '1|number|exists=building_spaces.id',
             'service_type_id'   => '1|number|exists=service_types.id',
             'service_id'        => '1|number|exists=services.id',
-            
-            
+
+
             'unit_type'         => '0|choice|1,2',
-            'duration_hours'    => '1|numeric|min:0.5|max:99.9|text=Duration hours is required when unit type is Hour.',
+            'duration_hours'    => '0|numeric|min:0.5|max:99.9|text=Duration hours is required when unit type is Hour.',
             'request_date'      => '0|date',
             'scheduled_date'    => '1|date',
             'start_time'        => '1|time',
@@ -85,7 +85,6 @@ class ServiceRequest extends VSModel
         if ($overlap) {
             return DV::error('Time slot overlaps with an existing pending request.');
         }
-     
 
         if ($input['unit_type'] == 2) {
             $service = DB::table('services')
@@ -96,12 +95,16 @@ class ServiceRequest extends VSModel
             if (($service->price ?? 0) <= 0) return DV::error('Service price not defined.');
 
             $input['total_price'] = round($service->price * $duration, 2);
+            $input['price'] = $service->price;
 
         } else {
             $service = DB::table('services')->where('id', $input['service_id'])->first(['price']);
+
             if (!$service) return DV::error('Service not found.');
             if (($service->price ?? 0) <= 0) return DV::error('Service price not defined.');
+
             $input['total_price'] = round($service->price, 2);
+            $input['price'] = $service->price;
         }
 
         $input['request_date'] = !empty($input['request_date'])? date('Ymd', strtotime($input['request_date'])): date('Ymd');
@@ -231,7 +234,7 @@ class ServiceRequest extends VSModel
                 sr.start_time,
                 sr.scheduled_date, sr.complete_date, sr.create_uid,
                 sr.updated_at, sr.total_price, sr.duration_hours,
-                sr.unit_type, sr.status_id,t.name as tenant_name, bs.code as space_code, s.name as service_name, st.name as service_type
+                sr.unit_type, sr.status_id,t.name as tenant_name, bs.code as space_code,s.price as price, s.name as service_name, st.name as service_type
             ")
             ->first();
                 if($row){

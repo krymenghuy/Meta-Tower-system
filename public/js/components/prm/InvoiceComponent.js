@@ -853,11 +853,11 @@ const InvoiceDialog = (() => {
                                     </div>
                                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
                                         <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                            <input class="data-input form-control bg-light cursor-blocked" data-field="start_date" name="start_date" type="text" readonly placeholder="yyyy-mm-dd">
+                                            <input class="data-input form-control bg-light cursor-blocked" data-field="start_date" name="start_date" type="text" readonly placeholder="d-m-y">
                                             <label style="color:#777;">Start Date</label>
                                         </div>
                                         <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                            <input class="data-input form-control bg-light cursor-blocked" data-field="end_date" name="end_date" type="text" readonly placeholder="yyyy-mm-dd">
+                                            <input class="data-input form-control bg-light cursor-blocked" data-field="end_date" name="end_date" type="text" readonly placeholder="d-m-y">
                                             <label style="color:#777;">End Date</label>
                                         </div>
                                     </div>
@@ -1665,7 +1665,7 @@ const InvoiceDialog = (() => {
                                                 <label style="color:#777;">Duration (Hours)</label>
                                             </div>
                                             <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                                <input class="data-input form-control bg-light cursor-blocked" data-field="total_price" name="total_price" type="text" readonly placeholder=" ">
+                                                <input class="data-input form-control bg-light cursor-blocked" data-field="price" name="price" type="text" readonly placeholder=" ">
                                                 <label style="color:#777;">Original Price ($)</label>
                                             </div>
                                         </div>
@@ -1712,7 +1712,7 @@ const InvoiceDialog = (() => {
                                 '[data-field="duration_hours"]'
                             );
                             const elPrice = document.querySelector(
-                                '[data-field="total_price"]'
+                                '[data-field="price"]'
                             );
                             const elServiceName = document.querySelector(
                                 '[data-field="service_name"]'
@@ -1736,7 +1736,7 @@ const InvoiceDialog = (() => {
                                     elDuration.value =
                                         matched.duration_hours || "0";
                                     elPrice.value = Number(
-                                        matched.total_price
+                                        matched.price
                                     ).toFixed(2);
                                     elServiceName.value =
                                         matched.service_name || "";
@@ -1780,7 +1780,7 @@ const InvoiceDialog = (() => {
                                     item_id: selectedRequest.request_id,
                                     item_name: `${selectedRequest.code}`,
                                     type: "Service Request",
-                                    price: Number(selectedRequest.total_price),
+                                    price: Number(selectedRequest.price),
                                     qty:
                                         selectedRequest.unit_type === "Hour"
                                             ? selectedRequest.duration_hours ||

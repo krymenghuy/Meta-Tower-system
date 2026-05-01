@@ -14,18 +14,18 @@ var ReceiptComponent = new (function() {
 
     mThis.cols = [
         { transTitle: "", className: "align-middle" },
-        {
-            transTitle: "titles.Payment Date",
-            className: "align-middle text-nowrap",
-            data: data => { 
-                const date = data.receipt_date;
-                return `
-                    <div class="d-flex flex-column">
-                        ${date}
-                    </div>
-                `;
-            }
-        },
+        // {
+        //     transTitle: "titles.Payment Date",
+        //     className: "align-middle text-nowrap",
+        //     data: data => {
+        //         const date = data.receipt_date;
+        //         return `
+        //             <div class="d-flex flex-column">
+        //                 ${date}
+        //             </div>
+        //         `;
+        //     }
+        // },
         {
             transTitle: "titles.Receipt No",
             className: "align-middle text-nowrap",
@@ -33,7 +33,7 @@ var ReceiptComponent = new (function() {
                 const code = data.code
                     ? `<span class="text-prm-custom">${data.code}</span>`
                     : `<span class="text-muted fst-italic">N/A</span>`;
-                
+
                 return `
                     <div class="d-flex flex-column">
                         ${code}
@@ -41,35 +41,32 @@ var ReceiptComponent = new (function() {
                 `;
             }
         },
-        {
-            transTitle: "titles.Invoice No",
-            className: "align-middle text-nowrap",
-            data: data => {
-                const code = data.invoice_code
-                    ? `<span class="text-prm-custom ">${data.invoice_code}</span>`
-                    : `<span class="text-muted fst-italic">N/A</span>`;
-                return `
-                    <div class="d-flex flex-column ">
-                        ${code}
-                    </div>
-                `;
-            }
-        },
+        // {
+        //     transTitle: "titles.Invoice No",
+        //     className: "align-middle text-nowrap",
+        //     data: data => {
+        //         const code = data.invoice_code
+        //             ? `<span class="text-prm-custom ">${data.invoice_code}</span>`
+        //             : `<span class="text-muted fst-italic">N/A</span>`;
+        //         return `
+        //             <div class="d-flex flex-column ">
+        //                 ${code}
+        //             </div>
+        //         `;
+        //     }
+        // },
 
         {
             transTitle: "titles.Tenant",
             className: "align-middle text-nowrap",
             data: data => {
-                return ` <div class="d-flex text-warning align-items-center gap-2">
-                <div>
-                    <span class="text-prm-custom d-block">
-                        ${data.tenant_name ?? ""}
-                    </span>
-                    <span class="text-primary">
-                        ${data.tenant_phone ?? ""}
-                    </span>
-                </div>
-            </div>`;
+                return `
+                        <div class="d-flex flex-column">
+                            ${data.tenant_name ?? ""}
+                            <hr class="m-0 border border-secondary border-3 opacity-75">
+                            ${data.tenant_phone ?? ""}
+                        </div>`;
+
             }
         },
         {
@@ -86,14 +83,7 @@ var ReceiptComponent = new (function() {
             </div>`;
             }
         },
-        {
-            transTitle: "titles.Amount",
-            className: "align-middle text-nowrap",
-            data: data => {
-                const val = parseFloat(data.total_received || 0).toFixed(2);
-                return `<span class="text-success fw-bold">$ ${val}</span>`;
-            }
-        },
+
         {
             transTitle: "titles.Mode of Payment",
             className: "align-middle text-nowrap",
@@ -104,19 +94,16 @@ var ReceiptComponent = new (function() {
                     </div>`;
             }
         },
-
-        {
-            transTitle: "titles.Remark",
+         {
+            transTitle: "titles.Amount",
             className: "align-middle text-nowrap",
             data: data => {
-                return `
-                    <div class="text-primary-custom" style="width:200px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ??
-                            "..."}</span>
-                    </div>
-                `;
+                const val = parseFloat(data.total_received || 0).toFixed(2);
+                return `<span class="text-primary fw-bold">$ ${val}</span>`;
             }
         },
+
+
         {
             transTitle: "titles.Status",
             className: "align-middle text-nowrap text-center",
@@ -148,6 +135,18 @@ var ReceiptComponent = new (function() {
                         ${data.receipt_status_name ??
                             (statusId === 1 ? "Active" : "Canceled")}
                     </span>
+                `;
+            }
+        },
+                {
+            transTitle: "titles.Remark",
+            className: "align-middle text-nowrap",
+            data: data => {
+                return `
+                    <div class="text-primary-custom" style="width:200px;">
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ??
+                            "..."}</span>
+                    </div>
                 `;
             }
         },

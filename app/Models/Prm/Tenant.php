@@ -526,6 +526,7 @@ class Tenant
                 'sr.space_id',
                 'bs.code as space_code',
                 'sr.total_price',
+                'sr.price',
                 'sr.duration_hours',
                 'sr.request_date',
                 'sr.unit_type',
@@ -542,6 +543,7 @@ class Tenant
         $spaces = DB::table('contracts as c')
             ->join('building_spaces as bs', 'bs.id', '=', 'c.space_id')
             ->where('c.tenant_id', $id)
+            ->where('c.status_id',2)
             ->select(
                 'c.id as contract_id',
                 'bs.id as space_id',
