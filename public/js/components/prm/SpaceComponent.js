@@ -254,23 +254,24 @@ var SpaceComponent = new (function () {
                 const menu = me.getActiveMenus(container);
 
                 const status_id = container.dataset.statusid;
+                const statusIdNum = Number(status_id);
                 const maintenance_status_id = Number(container.dataset.maintenancestatusid || 0);
 
                 const isUpcomingMaintenance = maintenance_status_id === 1;
                 const isMaintenance = maintenance_status_id === 2;
                 const hasActiveMaintenance = isUpcomingMaintenance || isMaintenance;
 
-                const booked = String(status_id) === '2';
+                const booked = statusIdNum === 2;
+                const occupiedOrNotBookable = statusIdNum >= 3;
                 menu.view_booking.style.display = booked ? 'block' : 'none';
                 menu.edit_booking.style.display = booked ? 'block' : 'none';
                 menu.cancel_booking.style.display = booked ? 'block' : 'none';
-                menu.create_booking.style.display = booked ? 'none' : 'block';
-                menu.create_contract.style.display = status_id >= 3 ? 'none' : 'block';
+                menu.create_booking.style.display = booked || occupiedOrNotBookable ? 'none' : 'block';
+                menu.create_contract.style.display = statusIdNum >= 3 ? 'none' : 'block';
                 menu.edit_space.style.display = status_id == 3 ? 'none' : 'block';
                 menu.finish_maintenance.style.display = isMaintenance ? 'block' : 'none';
                 menu.set_maintenance.style.display = hasActiveMaintenance ? 'none' : 'block';
-                menu.view_booking.style.display = status_id == 2 ? 'block' : 'none';
-                menu.delete_space.style.display = status_id > 1 ? 'none' : 'block';
+                menu.delete_space.style.display = statusIdNum > 1 ? 'none' : 'block';
             },
 
             onClick: (menulink, id, name) => {

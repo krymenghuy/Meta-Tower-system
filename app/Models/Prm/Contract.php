@@ -93,13 +93,7 @@ class Contract
                 ->where('id', $space_id)
                 ->update(['status_id' => $occupiedStatusId]);
         }
-        $hasActive = DB::table('contracts')
-            ->where('tenant_id', $tenant_id)
-            ->whereDate('end_date', '>=', date('Y-m-d'))
-            ->exists();
-        DB::table('tenants')
-            ->where('id', $tenant_id)
-            ->update(['status_id' => $hasActive ? 2 : 3]);
+        self::syncTenantStatusForTenantIds([$tenant_id]);
     }
     if ($id > 0) {
         return DV::depends(1, ['contracts' => $inputs, 'id' => $id]);
@@ -297,6 +291,75 @@ class Contract
         }
     }
 
+    /** Recalculate tenants.status_id: Active (2) vs Inactive (3); mirrors deleteContract / terminate semantics. */
+    public static function syncTenantStatusForTenantIds($tenantIds): void
+    {
+        $ids = [];
+        foreach ($tenantIds as $tid) {
+            $tid = $tid;
+            if ($tid > 0) {
+                $ids[$tid] = true;
+            }
+        }
+        if ($ids === []) {
+            return;
+        }
+
+        $terminatedStatusId = self::getTerminatedStatusId();
+        $today = date('Y-m-d');
+        foreach (array_keys($ids) as $tenant_id) {
+            $hasActive = DB::table('contracts')
+                ->where('tenant_id', $tenant_id)
+                ->whereDate('end_date', '>=', $today)
+                ->where('status_id', '!=', $terminatedStatusId)
+                ->exists();
+            DB::table('tenants')->where('id', $tenant_id)
+                ->update(['status_id' => $hasActive ? 2 : 3]);
+        }
+    }
+
+    /** Date-based Pending→Active, Active/Pending→Expired; sync spaces and affected tenant statuses. */
+    public static function applyAutomaticContractRollups(): void
+    {
+        $today = date('Y-m-d');
+        $activeStatusId = self::getActiveStatusId();
+        $pendingStatusId = self::getPendingStatusId();
+        $expiredStatusId = self::getExpiredStatusId();
+
+        $activatingTenantIds = DB::table('contracts')
+            ->where('status_id', $pendingStatusId)
+            ->whereDate('start_date', '<=', $today)
+            ->whereDate('end_date', '>=', $today)
+            ->pluck('tenant_id');
+
+        DB::table('contracts')
+            ->where('status_id', $pendingStatusId)
+            ->whereDate('start_date', '<=', $today)
+            ->whereDate('end_date', '>=', $today)
+            ->update(['status_id' => $activeStatusId]);
+
+        $expiringSpaceIds = DB::table('contracts')
+            ->whereIn('status_id', [$activeStatusId, $pendingStatusId])
+            ->whereDate('end_date', '<', $today)
+            ->pluck('space_id');
+        $expiringTenantIds = DB::table('contracts')
+            ->whereIn('status_id', [$activeStatusId, $pendingStatusId])
+            ->whereDate('end_date', '<', $today)
+            ->pluck('tenant_id');
+
+        DB::table('contracts')
+            ->whereIn('status_id', [$activeStatusId, $pendingStatusId])
+            ->whereDate('end_date', '<', $today)
+            ->update(['status_id' => $expiredStatusId]);
+
+        self::syncBuildingSpaceAvailabilityForSpaceIds($expiringSpaceIds);
+
+        self::syncTenantStatusForTenantIds(array_merge(
+            $activatingTenantIds->all(),
+            $expiringTenantIds->all(),
+        ));
+    }
+
     public function getListPaginate($arr, $ss = null)
     {
 
@@ -312,30 +375,8 @@ class Contract
             $current_page = 1;
         }
         $skip_rows = ($current_page - 1) * $per_page;
-        $today = date('Y-m-d');
-        $activeStatusId = self::getActiveStatusId();
-        $pendingStatusId = self::getPendingStatusId();
-        $expiredStatusId = self::getExpiredStatusId();
 
-        // Pending -> Active when contract starts.
-        DB::table('contracts')
-            ->where('status_id', $pendingStatusId)
-            ->whereDate('start_date', '<=', $today)
-            ->whereDate('end_date', '>=', $today)
-            ->update(['status_id' => $activeStatusId]);
-
-        // Active/Pending -> Expired when contract end date has passed; free units with no other live contract.
-        $expiringSpaceIds = DB::table('contracts')
-            ->whereIn('status_id', [$activeStatusId, $pendingStatusId])
-            ->whereDate('end_date', '<', $today)
-            ->pluck('space_id');
-
-        DB::table('contracts')
-            ->whereIn('status_id', [$activeStatusId, $pendingStatusId])
-            ->whereDate('end_date', '<', $today)
-            ->update(['status_id' => $expiredStatusId]);
-
-        self::syncBuildingSpaceAvailabilityForSpaceIds($expiringSpaceIds);
+        self::applyAutomaticContractRollups();
 
         $str_search = '1=1';
         $str_moreWhere = '2=2';
@@ -533,10 +574,22 @@ class Contract
     }
     public static function deleteContract($id = null)
     {
-        $id = $id ?? $this->id;
+        if ($id === null || $id === '' || !is_numeric($id)) {
+            return DV::error('Invalid ID.');
+        }
         $contract = DB::table('contracts')->where('id', $id)->first();
         if (!$contract) {
             return DV::error('Contract not found.');
+        }
+
+        $sid = $contract->status_id;
+        $canDelete = in_array($sid, [
+             self::getPendingStatusId(),
+             self::getExpiredStatusId(),
+             self::getTerminatedStatusId(),
+        ], true);
+        if (!$canDelete) {
+            return DV::error('Only pending, expired, or terminated contracts can be deleted.');
         }
 
         DB::beginTransaction();
@@ -560,14 +613,7 @@ class Contract
 
             $tenant_id = $contract->tenant_id ?? null;
             if ($tenant_id) {
-                $terminatedStatusId = self::getTerminatedStatusId();
-                $hasActive = DB::table('contracts')
-                    ->where('tenant_id', $tenant_id)
-                    ->whereDate('end_date', '>=', now())
-                    ->where('status_id', '!=', $terminatedStatusId)
-                    ->exists();
-                DB::table('tenants')->where('id', $tenant_id)
-                    ->update(['status_id' => $hasActive ? 2 : 3]); // 2=Active, 3=Inactive
+                self::syncTenantStatusForTenantIds([$tenant_id]);
             }
 
             DB::commit();
@@ -757,14 +803,7 @@ class Contract
 
             $tenant_id = $contract->tenant_id ?? null;
             if ($tenant_id) {
-                $hasActive = DB::table('contracts')
-                    ->where('tenant_id', $tenant_id)
-                    ->where('id', '!=', $id)
-                    ->whereDate('end_date', '>=', now())
-                    ->where('status_id', '!=', $terminatedStatusId)
-                    ->exists();
-                DB::table('tenants')->where('id', $tenant_id)
-                    ->update(['status_id' => $hasActive ? 2 : 3]); // 2=Active, 3=Inactive
+                self::syncTenantStatusForTenantIds([$tenant_id]);
             }
 
             DB::commit();
@@ -885,6 +924,8 @@ class Contract
         DB::table('contract_renewals')->insert($renewalRow);
 
         DB::commit();
+
+        self::syncTenantStatusForTenantIds([$old->tenant_id]);
 
         return DV::depends(1, [
             'contract_id' => $old->id
@@ -1161,7 +1202,7 @@ class Contract
             ->first();
 
         if ($lastPaidEntry && !empty($lastPaidEntry->end_date)) {
-            // Even if end_date is a string "2025-04-29", Carbon::parse handles it.
+
             // We add 1 day to start the next period.
             $start_date = \Carbon\Carbon::parse($lastPaidEntry->end_date)->addDay()->format('Y-m-d');
 
