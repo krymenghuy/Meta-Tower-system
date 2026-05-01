@@ -1035,11 +1035,11 @@ const InvoiceDialog = (() => {
                                         </div>
                                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
                                             <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                                <input class="data-input form-control" data-field="old_electric" name="old_electric" type="number" placeholder="0" min="0">
+                                                <input class="data-input form-control" data-field="old_electric" name="old_electric" type="text" inputmode="decimal" placeholder="0" min="0">
                                                 <label style="color:#777;">Old Reading (kWh)</label>
                                             </div>
                                             <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                                <input class="data-input form-control" data-field="new_electric" name="new_electric" type="number" placeholder="0" min="0">
+                                                <input class="data-input form-control" data-field="new_electric" name="new_electric" type="text" inputmode="decimal" placeholder="0" min="0">
                                                 <label style="color:#777;">New Reading (kWh)</label>
                                             </div>
                                         </div>
@@ -1073,7 +1073,7 @@ const InvoiceDialog = (() => {
                                                 <label style="color:#777;">Units Used (kWh)</label>
                                             </div>
                                             <div class="material-input outlined" >
-                                                <input class="data-input form-control" data-field="price_per_unit" name="price_per_unit" type="number" placeholder="0.00" step="0.01">
+                                                <input class="data-input form-control" data-field="price_per_unit" name="price_per_unit" type="text" inputmode="decimal" placeholder="0.00" step="0.01">
                                                 <label style="color:#777;">Price per kWh ($)</label>
                                             </div>
                                         </div>
@@ -1150,31 +1150,26 @@ const InvoiceDialog = (() => {
                                 }
                             };
 
-                            [elOld, elNew, elPPU].forEach(el =>
-                                el?.addEventListener("input", recalc)
-                            );
-                            [elStartDate, elEndDate].forEach(el =>
-                                el?.addEventListener("change", recalc)
-                            );
+                        [elOld, elNew, elPPU].forEach(el => {
+                        if (!el) return;
+                        el.addEventListener("input", recalc);
+                        el.addEventListener("input", (e) => {
+                            let v = e.target.value.replace(/[^0-9.]/g, '');
+                            const parts = v.split('.');
+                            if (parts.length > 2) v = parts[0] + '.' + parts[1];
+                            if (parts[1] !== undefined) v = parts[0] + '.' + parts[1].slice(0, 2);
+                            e.target.value = v;
+                        });
+                        el.addEventListener('blur', (e) => {
+                            let v = parseFloat(e.target.value);
+                            if (isNaN(v) || v < 0) { e.target.value = ''; return; }
+                            e.target.value = v.toFixed(2);
+                        });
+                    });
 
-                           const elDiscount = rentContainer.querySelector('[data-field="discount"]');
-                            const elTaxRate = rentContainer.querySelector('[data-field="tax_rate"]');
-
-                            [elDiscount, elTaxRate].forEach(input => {
-                                if (!input) return;
-                                input.addEventListener('input', (e) => {
-                                    let v = e.target.value.replace(/[^0-9.]/g, '');
-                                    const parts = v.split('.');
-                                    if (parts.length > 2) v = parts[0] + '.' + parts[1];
-                                    if (parts[1] !== undefined) v = parts[0] + '.' + parts[1].slice(0, 2);
-                                    e.target.value = v;
-                                });
-                                input.addEventListener('blur', (e) => {
-                                    let v = parseFloat(e.target.value);
-                                    if (isNaN(v) || v < 0) { e.target.value = ''; return; }
-                                    e.target.value = v.toFixed(2);
-                                });
-                            });
+                    [elStartDate, elEndDate].forEach(el =>
+                        el?.addEventListener("change", recalc)
+);
                         },
 
                         onConfirm(data, btn, ibMe) {
@@ -1254,6 +1249,7 @@ const InvoiceDialog = (() => {
                     }
 
                     InputBox.resetInstance("waterPopUp");
+                    let waterDiv = null;
                     InputBox.show({
                         title: "Water Utility",
                         instanceKey: "waterPopUp",
@@ -1271,11 +1267,11 @@ const InvoiceDialog = (() => {
                                         </div>
                                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
                                             <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                                <input class="data-input form-control" data-field="old_water" name="old_water" type="number" placeholder="0" min="0">
+                                                <input class="data-input form-control" data-field="old_water" name="old_water" type="text" inputmode="decimal" placeholder="0" min="0">
                                                 <label style="color:#777;">Old Reading (m³)</label>
                                             </div>
                                             <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                                <input class="data-input form-control" data-field="new_water" name="new_water" type="number" placeholder="0" min="0">
+                                                <input class="data-input form-control" data-field="new_water" name="new_water" type="text" inputmode="decimal" placeholder="0" min="0">
                                                 <label style="color:#777;">New Reading (m³)</label>
                                             </div>
                                         </div>
@@ -1309,7 +1305,7 @@ const InvoiceDialog = (() => {
                                                 <label style="color:#777;">Units Used (m³)</label>
                                             </div>
                                             <div class="material-input outlined" >
-                                                <input class="data-input form-control" data-field="price_per_unit" name="price_per_unit" type="number" placeholder="0.00" step="0.01">
+                                                <input class="data-input form-control" data-field="price_per_unit" name="price_per_unit" type="text" inputmode="decimalq" placeholder="0.00" step="0.01">
                                                 <label style="color:#777;">Price per m³ ($)</label>
                                             </div>
                                         </div>
@@ -1388,12 +1384,28 @@ const InvoiceDialog = (() => {
                                 }
                             };
 
-                            [elOld, elNew, elPPU].forEach(el =>
-                                el?.addEventListener("input", recalc)
-                            );
-                            [elStartDate, elEndDate].forEach(el =>
-                                el?.addEventListener("change", recalc)
-                            );
+                            [elOld, elNew, elPPU].forEach(el => {
+                            if (!el) return;
+                            el.addEventListener("input", recalc);
+                            el.addEventListener("input", (e) => {
+                                let v = e.target.value.replace(/[^0-9.]/g, '');
+                                const parts = v.split('.');
+                                if (parts.length > 2) v = parts[0] + '.' + parts[1];
+                                if (parts[1] !== undefined) v = parts[0] + '.' + parts[1].slice(0, 2);
+                                e.target.value = v;
+                            });
+                            el.addEventListener('blur', (e) => {
+                                let v = parseFloat(e.target.value);
+                                if (isNaN(v) || v < 0) { e.target.value = ''; return; }
+                                e.target.value = v.toFixed(2);
+                            });
+                        });
+
+                        [elStartDate, elEndDate].forEach(el =>
+                            el?.addEventListener("change", recalc)
+                        );
+
+                            
                         },
 
                         onConfirm(data, btn, ibMe) {

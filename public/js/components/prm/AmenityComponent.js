@@ -58,7 +58,7 @@ var AmenityComponent = (() => {
                 `<span class="text-primary-custom">${data.max_capacity ?? "-"}</span> <small class="text-muted">PAX/Room</small>`,
         },
         {
-            title: "Booking",
+            title: "Bookable",
             className: "align-middle text-nowrap text-center",
             data: function (data) {
                 const val = data.requires_booking ?? "";
