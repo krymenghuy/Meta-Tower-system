@@ -23,11 +23,11 @@
     text-decoration: none;
 
 } */
-.btnAddNewPrm {
+/* .btnAddNewPrm {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #2B3A95;
+    background-color: #1a1647;
     color: #ffffff;
     box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
     padding: 0.55rem 1.5rem;
@@ -36,12 +36,31 @@
     cursor: pointer;
     border: none;
 
-}
-
-/* .btnAddNewPrm:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 16px rgba(106, 94, 94, 0.2);
 } */
+
+.btnAddNewPrm {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    background-color: #1a1647;
+    color: #ffffff;
+    padding: 9px 20px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+.btnAddNewPrm:hover {
+    background-color: #2a2660;
+    transform: translateY(-1px);
+}
+.btnAddNewPrm:active {
+    transform: translateY(0);
+}
 
 .btnAddNewPrm i {
     font-size: 1.1rem;
@@ -55,43 +74,6 @@
     overflow: visible !important;
 }
 
-/* .btnAddNewPrm {
-  background: #F6D673;
-  color: #3B2A00;
-  border: 1px solid rgba(160,120,0,0.2);
-  border-radius: 8px;
-  padding: 9px 20px;
-  font-size: 13px;
-  font-weight: 600;
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  cursor: pointer;
-  white-space: nowrap;
-  line-height: 1;
-  box-shadow: 0 1px 3px rgba(160,120,0,0.18);
-  transition: background 0.14s, transform 0.12s, box-shadow 0.14s;
-}
-
-.btnAddNewPrm:hover {
-  background: #f2c94e;
-  transform: translateY(-1px);
-  box-shadow: 0 3px 10px rgba(160,120,0,0.22);
-}
-
-.btnAddNewPrm:active {
-  transform: scale(0.97);
-  box-shadow: 0 1px 3px rgba(160,120,0,0.15);
-}
-
-.btnAddNewPrm:disabled, .btn-disabled {
-  opacity: 0.38;
-  pointer-events: none;
-} */
-
-.btnAddNewPrm i {
-    font-size: 1.1rem;
-}
 
 
 .form-control {
@@ -367,37 +349,36 @@ a.menu-selected .kt-menu__link-text {
     background: none;
 }
 
-/* .choose--language {
-   background-color: #36c1dd;
-    padding: 8px 15px;
-    border-radius: 6px;
-    margin-left: 15px;
-} */
-
-
-.choose--language {
+ .choose--language {
     position: relative;
     overflow: visible;
     padding: 8px 15px;
     border-radius: 6px;
-    border: 1px solid transparent;
+    border: 1px solid #9290aa;
     color: #1a1647;
     cursor: pointer;
     transition: all 0.2s ease;
     z-index: 1;
-
-    background-image:
-        linear-gradient(#CCDAFF, #CCDAFF),
-        linear-gradient(135deg, #7c6af5, #e86af5, #f5a36a, #6af5c8);
-    background-origin: border-box;
-    background-clip: padding-box, border-box;
+    background-color: #d4d4db;      /* French Gray — cool tone matches navy */
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 13px;
+    font-weight: 500;
+}
+.choose--language:hover {
+    background-color: #b9b9c9;
+    border-color: #1a1647;
 }
 
+
+
+/* ── Notification button — matches language button ── */
 .nav--notification {
     position: relative;
     overflow: visible;
     border-radius: 6px;
-    border: 1px solid transparent;
+    border: 1px solid #9290aa;          /* same as language */
     width: 45px;
     height: 40px;
     padding: 0;
@@ -409,17 +390,41 @@ a.menu-selected .kt-menu__link-text {
     justify-content: center;
     margin-left: 15px;
     z-index: 1;
-
-    background-image:
-        linear-gradient(#CCDAFF, #CCDAFF),
-        linear-gradient(135deg, #7c6af5, #e86af5, #f5a36a, #6af5c8);
-    background-origin: border-box;
-    background-clip: padding-box, border-box;
+    background-color: #d4d4db;          /* same as language */
+}
+.nav--notification:hover {
+    background-color: #b9b9c9;
+    border-color: #1a1647;
 }
 
+/* ── App list button — same system ── */
+.app--list {
+    position: relative;
+    overflow: visible;
+    border-radius: 6px;
+    border: 1px solid #9290aa;          /* same as language */
+    width: 45px;
+    height: 40px;
+    padding: 0;
+    color: #1a1647;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 15px;
+    z-index: 1;
+    background-color: #d4d4db;
+}
+.app--list:hover {
+    background-color: #b9b9c9;
+    border-color: #1a1647;
+}
+
+/* ── Notification badge — unchanged ── */
 .number--notification {
     color: #fff;
-    background-color: #f00;
+    background-color: #e74c3c;
     position: absolute;
     top: -6px;
     right: -6px;
@@ -431,34 +436,8 @@ a.menu-selected .kt-menu__link-text {
     line-height: 18px;
     text-align: center;
     padding: 0 4px;
-    box-shadow: 0 0 0 2px #fff; /* ✅ white ring so it stands out */
+    box-shadow: 0 0 0 2px #fff;
 }
-
-
-
-.app--list {
-    position: relative;
-    overflow: visible;
-    border-radius: 6px;
-    border: 1px solid transparent;
-    width: 45px;
-    height: 40px;
-    padding: 0;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-left: 15px;
-    z-index: 1;
-
-    background-image:
-        linear-gradient(#CCDAFF, #CCDAFF),
-        linear-gradient(135deg, #7c6af5, #e86af5, #f5a36a, #6af5c8);
-    background-origin: border-box;
-    background-clip: padding-box, border-box;
-}
-
 
 .button-select-enhanced {
     background-color: #1A1647;
@@ -553,20 +532,24 @@ a.menu-selected .kt-menu__link-text {
 .user--info {
     position: relative;
     overflow: visible;
-    padding: 8px 10px;
+    padding: 8px 12px;
     border-radius: 6px;
-    border: 1px solid transparent;
+    border: 1px solid #9290aa;        /* same as language & notification */
     color: #1a1647;
     cursor: pointer;
     transition: all 0.2s ease;
     margin-left: 15px;
     z-index: 1;
-
- background-image:
-        linear-gradient(#CCDAFF, #CCDAFF),
-        linear-gradient(135deg, #7c6af5, #e86af5, #f5a36a, #6af5c8);
-    background-origin: border-box;
-    background-clip: padding-box, border-box;
+    background-color: #d4d4db;        /* same as language & notification */
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 500;
+}
+.user--info:hover {
+    background-color: #b9b9c9;
+    border-color: #1a1647;
 }
 
 
@@ -2142,79 +2125,114 @@ tr.row-selected td {
   color: #fff;
 }
 
+
+/* ── Table base ───────────────────────────── */
 .table--white {
     background: #ffffff !important;
     color: #000000 !important;
     font-size: 14px !important;
     font-weight: 300 !important;
-    /* text-align: left !important; */
     text-align: start !important;
     border-radius: 15px;
+    border-collapse: collapse;
+    width: 100%;
 }
 
+/* ── Outer wrapper ── */
+.table-container {
+    border-radius: 15px;
+    overflow: hidden;
+    border: 1px solid #e2e2e5;
+    background: #ffffff;
+}
+
+/* ── Header ── */
 .table--white thead th {
-    color: #ffffff !important;
-    /* background-color:  #e1e5f2 ; */
-    background-color:  #2B3A95 ;
+    color: #1a1647 !important;
+    background-color: #c4c4c7;
     font-size: 14px !important;
-    padding: 10px !important;
-}
-.table--white thead th, .table--white thead th{
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    padding: 10px 16px !important;
     border: none;
+    white-space: nowrap;
 }
-tbody,
-td,
-tfoot,
-th,
-thead,
-tr {
-    padding: 10px !important;
+
+/* ── Row dividers ── */
+.table--white tbody tr {
+    border-bottom: 1px solid #f0f0f2;
+    transition: background 0.12s ease;
 }
-.table--white tr:hover td {
-    /* background: rgb(224, 231, 234) !important; */
-     background-color:  #EDF0FF ;
-    /* color: #626786 !important; */
-    /* font-size: small !important; */
+.table--white tbody tr:last-child {
+    border-bottom: none;
+}
+
+/* ── Cells ── */
+tbody td,
+tfoot td,
+thead th {
+    padding: 10px 16px !important;
+}
+
+/* ── Hover ONLY on outer table--white ── */
+.table--white > tbody > tr:hover > td {
+    background-color: #f1f2f5 !important;
     font-weight: normal !important;
-    /* text-align: start !important; */
-    /* border: 0 !important; */
 }
+
+/* ── Explicitly block hover inside nested dropdown ── */
+.table--white .table--dropdown tr:hover td {
+    background-color: transparent !important;
+    font-weight: 300 !important;
+}
+
+.table--white tbody td { border-right: 1px solid #f0f0f2; }
+.table--white thead tr { border-bottom: 2px solid #9898a8; }
+
+
+/* ════════════════════════════════════════════
+   DROPDOWN TABLE (nested inside table--white)
+   ════════════════════════════════════════════ */
+
 .table--dropdown {
     background: #ffffff !important;
-    color: #000000 !important;
+    color: #0F2554 !important;
     font-size: 14px !important;
     font-weight: 300 !important;
-    /* text-align: left !important; */
     text-align: start !important;
     border-radius: 15px;
+    border-collapse: collapse;
+}
+
+.table--dropdown-wrapper {
+    border-radius: 15px;
+    overflow: hidden;
+    border: 1px solid #d4d4db;
 }
 
 .table--dropdown thead th {
     color: #0F2554 !important;
-    /* background-color:  #e1e5f2 ; */
-    background-color:  #CCDAFF ;
+    background-color: #ecedf1;
     font-size: 14px !important;
-    padding: 10px !important;
-}
-.table--dropdown thead th, .table--dropdown thead th{
+    font-weight: 500 !important;
+    padding: 10px 16px !important;
     border: none;
+    letter-spacing: 0.02em;
 }
-tbody,
-td,
-tfoot,
-th,
-thead,
-tr {
-    padding: 10px !important;
+
+.table--dropdown tbody tr {
+    border-bottom: 1px solid #e3e3eb;
+    transition: background 0.12s ease;
 }
+.table--dropdown tbody tr:last-child {
+    border-bottom: none;
+}
+
+/* ── NO hover on dropdown — completely disabled ── */
 .table--dropdown tr:hover td {
-    /* background: rgb(224, 231, 234) !important; */
-     background-color:  #EDF0FF ;
-    /* color: #626786 !important; */
-    /* font-size: small !important; */
-    font-weight: normal !important;
-    /* text-align: start !important; */
-    /* border: 0 !important; */
+    background-color: transparent !important;
+    font-weight: 300 !important;
+    cursor: default;
 }
 
 .text-remark {

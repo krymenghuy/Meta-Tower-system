@@ -30,7 +30,7 @@
 .status-overdue {
     color: #990000 !important;
     background-color: rgba(178, 34, 34, 0.1);
-    border: 1px solid rgba(178, 34, 34, 0.3);
+    border: 1px solid #fd397a;
     padding: 0.25rem 0.6rem;
     border-radius: 4px;
     font-weight: 600;

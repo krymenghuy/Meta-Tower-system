@@ -43,17 +43,13 @@ var InvoiceComponent = (() => {
             transTitle: "titles.Tenant",
             className: "align-middle text-nowrap",
             data: data => {
-                return ` <div class="d-flex text-warning align-items-center gap-2">
-                <div>
-                    <span class="text-prm-custom d-block">
-                        ${data.tenant_name ?? ""}
-                    </span>
-                    <span class="text-primary">
-                        ${data.tenant_phone ?? ""}
-                    </span>
-                </div>
-            </div>`;
-            }
+                return `
+                        <div class="d-flex flex-column">
+                            ${data.tenant_name ?? ""}
+                            <hr class="m-0 border border-secondary border-3 opacity-75">
+                            ${data.tenant_phone ?? ""}
+                        </div>`;
+                }
         },
         {
             transTitle: "titles.Space",
@@ -748,14 +744,18 @@ const InvoiceDialog = (() => {
                             z-index: 9999;
                         }
                         .custom-button {
-                            color: #090909;
+                            color: #1a1647;
                             padding: 10px;
                             font-size: 12px;
                             border-radius: 0.5em;
-                            background: #e1e5f2;
+                            background: ##d4d4db;
                             cursor: pointer;
-                            border: 1px solid #e8e8e8;
+                            border: 1px solid #9290aa;
                             transition: all 0.3s;
+                        }
+                        .custom-button:hover {
+                            background-color: #b9b9c9;
+                            border-color: #1a1647;
                         }
 
                         .custom-button:active {

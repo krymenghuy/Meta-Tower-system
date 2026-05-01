@@ -552,7 +552,7 @@ class Invoice extends VSModel
             $dueDate = \Carbon\Carbon::parse($row->due_date, 'Asia/Phnom_Penh')->startOfDay();
             if (in_array((int)$row->payment_status_id, [2, 3]) && $dueDate->lessThan($now)) {
                 $row->payment_status_id = 4;
-                $row->payment_status_name = 'Over Due';
+                $row->payment_status_name = 'Overdue';
             }
             $row = setOfficialDates($row, ['due_date', 'invoice_date'], ['updated_at', 'created_at'], []);
         }
