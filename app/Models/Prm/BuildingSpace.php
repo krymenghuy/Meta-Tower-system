@@ -522,6 +522,36 @@ public function viewBookingDetails($id)
     return $row;
 }
 
+
+public function getLatestBooking($space_id)
+{
+    if (!$space_id) {
+        return DV::error('space_id is required.');
+    }
+
+    $row = DB::table('space_bookings')
+        ->where('space_id', $space_id)
+        ->orderByDesc('id')
+        ->select(
+            'id',
+            'space_id',
+            'booker_name',
+            'booker_phone',
+            'booker_email',
+            'booking_date',
+            'expired_booking_date',
+            'booking_fee',
+            'remarks'
+        )
+        ->first();
+
+    if (!$row) {
+        return DV::depends(1, []);
+    }
+    $data = json_decode(json_encode($row, JSON_UNESCAPED_UNICODE), true);
+
+    return DV::depends(1, $data);
+}
 public function updateBooking($arr = [], $ss = null)
 {
     $ss = $ss ?? $this->userInfo;

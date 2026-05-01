@@ -134,10 +134,10 @@ var PurchaseOrdersComponent = (() => {
             className: 'col_action align-middle',
             data: (data) => {
                 return `<div class="d-flex justify-content-center align-items-end">
-                    <a href="javascript:void(0)" class="btn--Options btn_dropdown_purchase_action" 
-                       data-id="${data.id}" 
-                       data-authorized="${data.authorized}" 
-                       data-statusid="${data.status_id}" 
+                    <a href="javascript:void(0)" class="btn--Options btn_dropdown_purchase_action"
+                       data-id="${data.id}"
+                       data-authorized="${data.authorized}"
+                       data-statusid="${data.status_id}"
                        aria-haspopup="true" aria-expanded="false">
                         <i class="fa-solid fa-ellipsis-vertical text-black fs-5"></i>
                     </a>
@@ -214,27 +214,27 @@ var PurchaseOrdersComponent = (() => {
             actionButtonClass: "btn_dropdown_purchase_action",
             cssClass: "bg-white shadow",
             menus: [
-                { html: '<span class="ps-2" vslang="titles.Modify PO"></span>', 
-                  icon: `<i class="fa-solid fa-square-pen fs-5 text-warning"></i>`, 
-                  cssClass: "border-bottom pb-2", 
-                  name: "modify_purchase_order" 
+                { html: '<span class="ps-2" vslang="titles.Modify PO"></span>',
+                  icon: `<i class="fa-solid fa-square-pen fs-5 text-warning"></i>`,
+                  cssClass: "border-bottom pb-2",
+                  name: "modify_purchase_order"
                 },
-                { html: '<span class="ps-2" vslang="titles.Delete PO"></span>', 
-                  icon: `<i class="fa-solid fa-rectangle-xmark fs-5 text-danger"></i>`, 
-                  cssClass: "border-bottom pb-2", 
+                { html: '<span class="ps-2" vslang="titles.Delete PO"></span>',
+                  icon: `<i class="fa-solid fa-rectangle-xmark fs-5 text-danger"></i>`,
+                  cssClass: "border-bottom pb-2",
                   name: "delete_purchase_order"
                 },
-                { html: '<span class="ps-2" vslang="titles.Authorized PO"></span>', 
-                  icon: `<i class="fa-solid fa-check-to-slot fs-5 text-success"></i>`, 
-                  cssClass: "border-bottom pb-2", 
+                { html: '<span class="ps-2" vslang="titles.Authorized PO"></span>',
+                  icon: `<i class="fa-solid fa-check-to-slot fs-5 text-success"></i>`,
+                  cssClass: "border-bottom pb-2",
                   name: "authorized_purchase_order" },
-                { html: '<span class="ps-2" vslang="titles.Receive PO"></span>', 
-                  icon: `<i class="fa-solid fa-box-open fs-5 text-success"></i>`, 
-                  name: "receive_purchase_order" 
+                { html: '<span class="ps-2" vslang="titles.Receive PO"></span>',
+                  icon: `<i class="fa-solid fa-box-open fs-5 text-success"></i>`,
+                  name: "receive_purchase_order"
                 },
-                // { html: '<span class="ps-2" vslang="titles.Generate Bill"></span>', 
-                //   icon: `<i class="fa-solid fa-file-invoice-dollar fs-5 text-primary"></i>`, 
-                //   name: "generate_bill" 
+                // { html: '<span class="ps-2" vslang="titles.Generate Bill"></span>',
+                //   icon: `<i class="fa-solid fa-file-invoice-dollar fs-5 text-primary"></i>`,
+                //   name: "generate_bill"
                 // },
             ],
             onShow: (me, container) => {
@@ -451,7 +451,7 @@ var PurchaseOrdersComponent = (() => {
                 if (me._selectedVendorId) {
                         applyVendorInfo(me._selectedVendorId);
                     }
-               
+
 
                 me.purchaseItemsView = new ItemsView(me.controls.purchaseItemList, {
                     currencyCode: "USD",
@@ -483,7 +483,7 @@ var PurchaseOrdersComponent = (() => {
 
                         const d = res.data ?? {};
                         console.log(123,d);
-                        
+
                         tr.dataset.code = d.code || '';
                         me.setTotal(col_name, tr, d);
                     },
@@ -493,7 +493,7 @@ var PurchaseOrdersComponent = (() => {
                         me.setTotal(col_name, tr, item);
                     },
                 });
-               
+
                 me.saveData = (onFinish) => {
                     let p = me.getData();
                     let po_data = me.purchaseItemsView.getData();
@@ -527,10 +527,10 @@ var PurchaseOrdersComponent = (() => {
                 me.setTotal = (col_name, tr,item) => {
                     if (!tr) return;
                     console.log(1233322,item);
-                    
+
                     const d = me.purchaseItemsView.getDataRow(tr);
                     me.purchaseItemsView.setCellValue(tr, 'unit', item.unit || '');
-                
+
                 };
                 me.hasValidPOItems = (items) => {
                     if (!Array.isArray(items) || items.length === 0) return false;
@@ -547,9 +547,9 @@ var PurchaseOrdersComponent = (() => {
             },
             buttons: [
                 { label: "Cancel", cssClass: "btn btn-warning", click: (me) => me.hide(false) },
-                { 
-                    label: "<span>Save</span>", 
-                    cssClass: "btn btn-primary", 
+                {
+                    label: "<span>Save</span>",
+                    cssClass: "btn btn-primary",
                     click: (me) => {
                         me.saveData(res => {
                             if (res.status_code == 200) {
@@ -576,7 +576,7 @@ var PurchaseOrdersComponent = (() => {
                     }
                 }
                 console.log(5555,me.controls.div_purchase_summary);
-                
+
             },
             onShow: (me) => {
                 const title = me.divModal.querySelector('.modal-title');
@@ -642,12 +642,12 @@ var PurchaseOrdersComponent = (() => {
             },
             // Note: Receive dialog contentCreated and other logic can be added similarly if needed
             buttons: [
-                { label: "Cancel", 
-                  cssClass: "btn btn-warning", 
-                  click: (me) => me.hide(false) 
+                { label: "Cancel",
+                  cssClass: "btn btn-warning",
+                  click: (me) => me.hide(false)
                 },
-                { label: "<span>Save</span>", 
-                  cssClass: "btn btn-primary", 
+                { label: "<span>Save</span>",
+                  cssClass: "btn btn-primary",
                   click: (me) => me.hide(true)
                 },
             ],
@@ -688,9 +688,9 @@ var PurchaseOrdersComponent = (() => {
                     });
                 }
 
-                html = `<table class="table">${tHead}<tbody>${tBody}</tbody></table>`;
+                html = `<table class="table table--dropdown">${tHead}<tbody>${tBody}</tbody></table>`;
                 elBody.innerHTML = html;
-                elBody.classList.add('p-3', 'table-responsive');
+                elBody.classList.add('p-3', 'table-responsive ');
             });
     };
 

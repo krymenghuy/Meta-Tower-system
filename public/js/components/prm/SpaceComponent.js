@@ -254,23 +254,24 @@ var SpaceComponent = new (function () {
                 const menu = me.getActiveMenus(container);
 
                 const status_id = container.dataset.statusid;
+                const statusIdNum = Number(status_id);
                 const maintenance_status_id = Number(container.dataset.maintenancestatusid || 0);
 
                 const isUpcomingMaintenance = maintenance_status_id === 1;
                 const isMaintenance = maintenance_status_id === 2;
                 const hasActiveMaintenance = isUpcomingMaintenance || isMaintenance;
 
-                const booked = String(status_id) === '2';
+                const booked = statusIdNum === 2;
+                const occupiedOrNotBookable = statusIdNum >= 3;
                 menu.view_booking.style.display = booked ? 'block' : 'none';
                 menu.edit_booking.style.display = booked ? 'block' : 'none';
                 menu.cancel_booking.style.display = booked ? 'block' : 'none';
-                menu.create_booking.style.display = booked ? 'none' : 'block';
-                menu.create_contract.style.display = status_id >= 3 ? 'none' : 'block';
+                menu.create_booking.style.display = booked || occupiedOrNotBookable ? 'none' : 'block';
+                menu.create_contract.style.display = statusIdNum >= 3 ? 'none' : 'block';
                 menu.edit_space.style.display = status_id == 3 ? 'none' : 'block';
                 menu.finish_maintenance.style.display = isMaintenance ? 'block' : 'none';
                 menu.set_maintenance.style.display = hasActiveMaintenance ? 'none' : 'block';
-                menu.view_booking.style.display = status_id == 2 ? 'block' : 'none';
-                menu.delete_space.style.display = status_id > 1 ? 'none' : 'block';
+                menu.delete_space.style.display = statusIdNum > 1 ? 'none' : 'block';
             },
 
             onClick: (menulink, id, name) => {
@@ -476,28 +477,67 @@ var SpaceComponent = new (function () {
         container.innerHTML = html;
     };
 
-    mThis.createContract = (id, menulink) => {
+ mThis.createContract = (id, menulink) => {
         vsapi.call(
             `${main_view.base_url}/prm/contract/form-options`,
             { space_id: id },
             menulink,
             null
-        ).then((res) => {
-            if (res.status_code !== 200) {
+        ).then(res => {
+            if (res.status_code !== 200 && res.error_message === "Tenant") {
+                const status_id = Number(menulink?.dataset?.statusid || 0);
+
+                if (status_id === 2) {
+                    vsapi.call(
+                        `${main_view.base_url}/prm/building-space/latest-booking`,
+                        { space_id: id },
+                        menulink,
+                        null
+                    ).then(bookingRes => {
+                        const booking = bookingRes?.data?.data || bookingRes?.data || {};
+                        let op  = {
+                            id: null,
+                            phone_number: booking.booker_phone || "",
+                            name: booking.booker_name || "",
+                            email: booking.booker_email || "",
+                            onClose: newTenantId => {
+                                if (newTenantId) {
+                                    vsapi.call(
+                                        `${main_view.base_url}/prm/contract/form-options`,
+                                        { space_id: id, tenant_id: newTenantId },
+                                        menulink,
+                                        null
+                                    ).then(finalRes => {
+                                        ContractDialog.show({
+                                            id: null,
+                                            space_id: id,
+                                            tenant_id: newTenantId,
+                                            data: finalRes.data,
+                                            btn: menulink,
+                                            onClose: () => mThis.applyListFilters()
+                                        });
+                                    });
+                                } else {
+                                    mThis.applyListFilters();
+                                }
+                            }
+                        }
+                        CreateTenantDialog.show(op);
+                    });
+                    return;
+                }
                 cv_interact.error(res.error_message || "Please create tenant first.");
                 return;
             }
-            let op = {
+            ContractDialog.show({
                 id: null,
                 space_id: id,
+                data: res.data,
                 btn: menulink,
-                onClose: () => {
-                    mThis.applyListFilters();
-                }
-            };
-            ContractDialog.show(op);
+                onClose: () => mThis.applyListFilters()
+            });
         });
-    }
+    };
     mThis.editSpace = (id, menulink) => {
         let op = {
             id: id,
@@ -987,6 +1027,19 @@ const CreateBookingDialog = (() => {
                     });
 
                 },
+                onShow: (me) => {
+                    const title = me.divModal.querySelector('.modal-title');
+                    if (!title) return;
+                    const bookingId =
+                        me.dataOptions?.booking?.id ?? me.detail?.booking?.id;
+                    const isEdit = Number(bookingId) > 0;
+                    title.innerHTML = isEdit
+                        ? '<h4 class="text-prm-custom text-start fw-bold">Edit Booking</h4>'
+                        : '<h4 class="text-prm-custom text-start fw-bold">Create Booking</h4>';
+                    const c = me.controls;
+                    if (c?.booking_date) c.booking_date.disabled = isEdit;
+                    if (c?.expired_booking_date) c.expired_booking_date.disabled = isEdit;
+                },
                 configSelect: [
                 ],
                 prepareFormOptions: {
@@ -996,15 +1049,19 @@ const CreateBookingDialog = (() => {
                     api: {
                         endpoint: [main_view.base_url, "/prm/building-space/form-options",].join(""),
                         params: (op) => {
-                            return { id: op.id };
+                            return { id: op.space_id ?? op.id };
                         },
                     },
                 },
 
                 onPrepareForm: (me, data) => {
-                    const b = me.dataOptions?.booking ?? me.detail?.booking;
-                    if (!b || !me.controls) return;
                     const c = me.controls;
+                    if (!c) return;
+                    const b = me.dataOptions?.booking ?? me.detail?.booking;
+                    const isEdit = Boolean(b && Number(b.id) > 0);
+                    if (c.booking_date) c.booking_date.disabled = isEdit;
+                    if (c.expired_booking_date) c.expired_booking_date.disabled = isEdit;
+                    if (!b) return;
                     const sv = (k, v) => { if (c[k]) c[k].value = v != null ? String(v) : ""; };
                     sv("booker_name", b.booker_name);
                     sv("booker_phone", b.booker_phone);
@@ -1032,6 +1089,14 @@ const CreateBookingDialog = (() => {
                             const editId = me.dataOptions?.booking?.id ?? me.detail?.booking?.id;
                             const isEdit = Boolean(editId);
                             if (isEdit) op.booking_id = editId;
+                            if (isEdit && me.controls) {
+                                if (me.controls.booking_date) {
+                                    op.booking_date = me.controls.booking_date.value;
+                                }
+                                if (me.controls.expired_booking_date) {
+                                    op.expired_booking_date = me.controls.expired_booking_date.value;
+                                }
+                            }
                             const url = isEdit ? "/prm/building-space/update-booking" : "/prm/building-space/create-booking";
 
                             vsapi.call([main_view.base_url, url].join(""), op, btn, null).then((res) => {
