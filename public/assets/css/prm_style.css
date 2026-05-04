@@ -12,31 +12,6 @@
     opacity: 0.5; /* Optional: Visual indicator */
 }
 
-/* .btn_add {
-    padding: 10px 20px;
-    color: #ffffff;
-    background: linear-gradient(135deg, #1A1647 0%, #3c2fa3 100%);
-    border-radius: 6px;
-    margin-top: 1px;
-    cursor: pointer;
-    border: none;
-    text-decoration: none;
-
-} */
-/* .btnAddNewPrm {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #1a1647;
-    color: #ffffff;
-    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
-    padding: 0.55rem 1.5rem;
-    border-radius: 6px;
-    transition: transform 0.2s ease-in-out;
-    cursor: pointer;
-    border: none;
-
-} */
 
 .btnAddNewPrm {
     display: flex;
@@ -2186,7 +2161,7 @@ thead th {
     font-weight: 300 !important;
 }
 
-.table--white tbody td { border-right: 1px solid #f0f0f2; }
+/* .table--white tbody td { border-right: 1px solid #f0f0f2; } */
 .table--white thead tr { border-bottom: 2px solid #9898a8; }
 
 

@@ -392,86 +392,8 @@ class Invoice extends VSModel
 
         return $query->value('id');
     }
-    // public function getListPaginate($arr, $ss)
-    // {
-    //     $d            = (object) $arr;
-    //     $current_page = max(1, (int)($d->current_page ?? 1));
-    //     $per_page     = max(10, (int)($d->per_page ?? 10));
-    //     $skip         = ($current_page - 1) * $per_page;
-
-
-    //     $query = DB::table('invoices as i')
-    //         ->leftJoin('tenants as t',           't.id',  '=', 'i.tenant_id')
-    //         ->leftJoin('payment_statuses as ps', 'ps.id', '=', 'i.payment_status_id')
-    //         ->leftJoin('contracts as ct',        'ct.id', '=', 'i.contract_id')
-    //         ->leftJoin('building_spaces as bs',  'bs.id', '=', 'i.space_id')
-    //         ->leftJoin('invoice_items as ii',    'ii.invoice_id', '=', 'i.id')
-    //         ->select([
-    //             'i.id',
-    //             'i.code',
-    //             'i.tenant_id',
-    //             'i.space_id',
-    //             'i.amount',
-    //             'i.paid_amount',
-    //             'i.due_date',
-    //             'i.general_remark',
-    //             'i.invoice_date',
-    //             'i.start_time',
-    //             'i.created_at',
-    //             'i.updated_at',
-    //             'i.update_user',
-    //             'i.payment_status_id',
-    //             'i.contract_id',
-    //             't.name as tenant_name',
-    //             't.legal_name as tenant_legal_name',
-    //             't.phone_number as tenant_phone',
-    //             't.email as tenant_email',
-    //             'ps.name as payment_status_name',
-    //             'bs.code as space_code',
-    //             'ct.price as contract_price',
-    //             DB::raw("GROUP_CONCAT(DISTINCT ii.remarks SEPARATOR '; ') as remarks"),
-    //             DB::raw('(i.amount - COALESCE(i.paid_amount, 0)) as balance')
-    //         ])
-    //         ->groupBy('i.id')
-    //         ->orderByDesc('i.id');
-
-
-
-
-    //         // Filters
-    //     if (!empty($d->tenant_id)) {
-    //         $query->where('i.tenant_id', $d->tenant_id);
-    //     }
-
-    //     if (!empty($d->payment_status_id)) {
-    //         $query->where('i.payment_status_id', $d->payment_status_id);
-    //     }
-
-    //     if (!empty($d->search_value)) {
-    //         $search = '%' . $d->search_value . '%';
-    //         $query->where(function ($q) use ($search) {
-    //             $q->where('i.code',    'like', $search)
-    //                 ->orWhere('t.name',  'like', $search)
-    //                 ->orWhere('bs.code', 'like', $search);
-    //         });
-    //     }
-
-    //     $count = (clone $query)->count();
-    //     $rows  = $query->skip($skip)->take($per_page)->get();
-
-    //     $now = \Carbon\Carbon::now('Asia/Phnom_Penh')->startOfDay();
-
-    //     foreach ($rows as $row) {
-    //         $dueDate = \Carbon\Carbon::parse($row->due_date, 'Asia/Phnom_Penh')->startOfDay();
-    //         if (in_array((int)$row->payment_status_id, [2, 3]) && $dueDate->lessThan($now)) {
-    //             $row->payment_status_id   = 4;
-    //             $row->payment_status_name = 'Over Due';
-    //         }
-    //         $row = setOfficialDates($row, ['due_date', 'invoice_date'], ['updated_at', 'created_at'], []);
-    //     }
-
-    //     return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
-    // }
+     
+    
 
     public function getListPaginate($arr, $ss)
     {
@@ -572,6 +494,7 @@ class Invoice extends VSModel
                 'i.id',
                 'i.tenant_id',
                 'i.space_id',
+                'i.general_remark',
                 'i.code',
                 'i.amount',
                 'i.paid_amount',
