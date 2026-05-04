@@ -15,29 +15,36 @@ class BillPaymentController extends Controller
     public function __construct()
     {
         $this->billPayment = new BillPayment();
-    } 
+    }
 
     public function savePayment(Request $req)
     {
         $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) return JDV::raw($ss);
 
-        $id      = $req->id ?? null;
+        $id           = $req->id ?? null;
         $bill_payment = new BillPayment($id, $ss);
         return JDV::raw($bill_payment->savePayment($req->all(), $id, $ss));
     }
 
-
     public function getListPaginate(Request $req)
     {
         $ss = XAuthService::verifyAuth($req, -1);
-        if ($ss->status_code !== 200) {
-            return JDV::raw($ss);
-        }
+        if ($ss->status_code !== 200) return JDV::raw($ss);
 
         $payment = new BillPayment(null, $ss);
         return JDV::result($payment->getListPaginate($req->all(), $ss));
     }
+
+    public function getFormOptions(Request $req)
+    {
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) return JDV::raw($ss);
+
+        $bill_id = $req->bill_id ?? $req->id ?? null;
+        return JDV::result(BillPayment::getFormOptions($bill_id, $ss));
+    }
+
     public function deletePayment(Request $req)
     {
         $ss = XAuthService::verifyAuth($req, -1);
@@ -51,23 +58,21 @@ class BillPaymentController extends Controller
         return JDV::raw($payment->deletePayment($req->id, $ss));
     }
 
-  
-    public function getFormOptions(Request $req)
+    public function cancelPayment(Request $req)
     {
         $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) return JDV::raw($ss);
 
-        $bill_id = $req->bill_id ?? $req->id ?? null;   
+        if (!isset($req->id) || !is_numeric($req->id)) {
+            return JDV::error('Invalid payment ID.');
+        }
 
-        return JDV::result(BillPayment::getFormOptions($bill_id, $ss));
-    }
+        $d = (object)[
+            'id'             => $req->id,
+            'cancel_remarks' => $req->cancel_remarks ?? 'Cancelled by ' . ($ss->full_name ?? 'user'),
+        ];
 
-    function cancelPayment(Request $req)
-    {
-        $ss = XAuthService::verifyAuth($req, 217);
-        if($ss->status_code != 200) return JDV::raw($ss);
         $x = new BillPayment();
-        $cancel = $x->cancelPayment($req, $ss);
-        return JDV::raw($cancel);
+        return JDV::raw($x->cancelPayment($d, $ss));
     }
 }

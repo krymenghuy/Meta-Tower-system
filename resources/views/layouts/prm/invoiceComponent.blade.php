@@ -33,7 +33,7 @@
     border: 1px solid #fd397a;
     padding: 0.25rem 0.6rem;
     border-radius: 4px;
-    font-weight: 600;
+    font-weight: 400;
     display: inline-block;
 }
 /* Professional Green for Paid Status */

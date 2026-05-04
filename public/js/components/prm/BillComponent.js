@@ -102,23 +102,28 @@ var BillComponent = (() => {
             title: "Status",
             className: "align-middle text-nowrap text-center",
             data: (data) => {
-                const status_id = data.status_id;
-                let cls =
-                    "badge text-warning bg-danger-subtle border border-danger";
-
-                if (status_id == 3) {
+                const status_id = data.display_status_id ?? data.status_id;
+                let cls = "bg-secondary";
+                let icon = "bi bi-question-circle";
+                   
+                if (status_id == 4) {
                     cls =
-                        "badge text-warning bg-warning-subtle border border-warning";
+                        "status-overdue";
+                    icon = "fa-solid fa-triangle-exclamation";
+                }else if (status_id == 3) {
+                    cls =
+                        "badge border border-warning text-warning bg-warning-subtle";
                 } else if (status_id == 2) {
                     cls =
-                        "badge text-success bg-success-subtle border border-success";
+                        "badge border border-success text-success bg-success-subtle";
                 } else if (status_id == 1) {
                     cls =
-                        "badge text-danger bg-danger-subtle border border-danger";
+                        "badge border border-danger text-danger bg-danger-subtle";
                 }
 
                 return `
                     <span class="${cls} text-capitalize d-inline-block text-center" style="min-width:90px">
+                        <i class="${icon}" style="font-size:10px;"></i>
                         ${data.status ?? ""}
                     </span>
                 `;
@@ -158,6 +163,7 @@ var BillComponent = (() => {
             rowCreated: (data, index, tr) => {
                 tr.dataset.id = data.id;
                 tr.dataset.statusid = data.status_id;
+                tr.dataset.displaystatusid = data.display_status_id ?? data.status_id;
                 tr.dataset.vendorId = data.vendor_id;
                 tr.dataset.billid   = data.bill_id;
                 tr.dataset.fileurl = data.file_image_url ?? "";
@@ -258,6 +264,7 @@ var BillComponent = (() => {
             onShow: (me, container) => {
                 const menu = me.getActiveMenus(container);
                 const status_id = container.dataset.statusid;
+                const locked = status_id > 1 || display_status_id == 4;
                 menu.modify_bill.style.display = status_id > 1 ? 'none' : 'block'
                 menu.delete_bill.style.display = status_id > 1 ? 'none' : 'block'
 
@@ -651,8 +658,6 @@ const BillDialog = (() => {
                             }
                         });
                     }
-
-                    // ── date auto-fill / reformat ──────────────────────────────
                     setTimeout(() => {
                         const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
                         const toFormatted = (val) => {
@@ -679,7 +684,6 @@ const BillDialog = (() => {
                             me.controls.due_date.value = toFormatted(me.controls.due_date.value);
                         }
                     }, 0);
-                    // ──────────────────────────────────────────────────────────
                 },
 
                 buttons: [

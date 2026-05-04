@@ -124,7 +124,7 @@ var ReservationComponent = (() => {
         if (mThis.initAlready) return;
 
         if (mThis.elBookingDateTo && !mThis.elBookingDateTo.value) {
-            const today = new Date().toISOString().split('T')[0];
+            const today = new Date().toISOString().split('T')[0];   
             mThis.elBookingDateTo.value = today;
         }
 

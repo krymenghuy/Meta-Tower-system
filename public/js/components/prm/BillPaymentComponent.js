@@ -53,12 +53,44 @@ var BillPaymentComponent = (() => {
             transTitle: "titles.Remark",
             className: "align-middle",
             data: (data, index, tr) => {
+                const note = data.note
+                    ? `<span class="text-wrap text-break" style="word-break:break-word;">${data.note}</span>`
+                    : '';
+
+                const cancelRemarks = data.cancel_remarks
+                    ? `<span class="text-wrap text-break text-danger" style="word-break:break-word;">
+                        <i class="fa-solid fa-ban me-1" style="font-size:11px;"></i>${data.cancel_remarks}
+                    </span>`
+                    : '';
+
                 return `
-                    <div class="text-prm-custom" style="width:200px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.note ?? ''}</span>
+                    <div class="text-prm-custom d-flex flex-column gap-1" style="width:200px;">
+                        ${note}
+                        <!-- ${cancelRemarks} -->
                     </div>
                 `;
             }
+        },
+        {
+            transTitle: "titles.Status",
+            className: "align-middle",
+            data: (data) => {
+                const isCancelled = parseInt(data.status_id) === 2;      
+
+                let cls = "badge border border-success text-success bg-success-subtle";
+                let label = "Active";
+
+                if (isCancelled) {
+                    cls = "badge border border-danger text-danger bg-danger-subtle";
+                    label = "Cancelled";
+                }
+
+                return `
+                    <span class="${cls} px-3 py-2 d-inline-block text-center gap-2" style="min-width:90px">
+                        ${label}
+                    </span>
+                `;
+            },
         },
         {
             transTitle: "titles.Updated By",
@@ -102,6 +134,7 @@ var BillPaymentComponent = (() => {
                 tr.classList.add("bill");
                 tr.setAttribute("id", `bill_id${data.id}`);
 
+               
             },
             listContainerClass: null,
         });
@@ -166,17 +199,18 @@ var BillPaymentComponent = (() => {
             cssClass: "bg-white shadow",
             menus: [
                 {
+                    html: '<span class="ps-2">Cancel Payment</span>',
+                    icon: `<i class="fa-solid fa-circle-xmark" style="color: rgb(209, 23, 54);"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "cancel_payment",
+                },
+                {
                     html: '<span class="ps-2" vslang="titles.Delete Payment"></span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "delete_payment",
                 },
-                // {
-                //     html: '<span class="ps-2">Cancel Payment</span>',
-                //     icon: `<i class="fa-solid fa-print" style="color: rgb(22, 80, 137);"></i>`,
-                //     cssClass: "border-bottom pb-2",
-                //     name: "cancel_payment",
-                // },
+                
             ],
             onClick: (menuLink, id, name) => {
                 switch (name) {
@@ -462,14 +496,16 @@ const BillPaymentDialog = (() => {
                     })
                 }
             },
-             onShow: (me) => {
-                const title = me.divModal.querySelector('.modal-title');
-                if (title) {
-                    const isModify = !!me.dataOptions?.id;
-                    title.innerHTML = isModify
-                        ? '<h2 class="text-prm-custom text-start fw-bold">Pay Bills</h2>'
-                        : '<h2 class="text-prm-custom text-start fw-bold">Pay Bill</h2>';
-                }
+            onShow: (me, container) => {
+                const menu = me.getActiveMenus(container);
+                const status_id = container.dataset.statusid;
+                
+
+                // menu.edit_student.style.display = enroll_finalized == 1 ? 'none' : 'block';
+                menu.create_contract.style.display = status_id == 1 ? "block" : "none";
+                menu.service_request.style.display = "none";
+                menu.upload_document.style.display =status_id == 1 || status_id == 2  ? "block" : "none";
+            
             },
             onPrepareForm: (me, data) => {
                 const bill = data?.bill || data?.bill_details;
