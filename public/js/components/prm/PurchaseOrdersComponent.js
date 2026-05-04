@@ -590,20 +590,74 @@ var PurchaseOrdersComponent = (() => {
                     }
                 },
             ],
+            // onPrepareForm: (me, data) => {
+            //     me.controls.vendor.value = data.po_detail?.name || '';
+            //     me.purchaseItemsView.setSelectOptions('item_id',data.item_options,null);
+            //     if (me.dataOptions.id) {
+            //         console.log(8888,data);
+            //          me.purchaseItemsView.setData(data.po_detail);
+            //     } else {
+            //         me.clear();
+            //         if (me.searchVendor && typeof me.searchVendor.reset === 'function') {
+            //             me.searchVendor.reset();
+            //         }
+            //     }
+            //     console.log(5555,me.controls.div_purchase_summary);
+
+            // },
             onPrepareForm: (me, data) => {
                 me.controls.vendor.value = data.po_detail?.name || '';
-                me.purchaseItemsView.setSelectOptions('item_id',data.item_options,null);
+                me.purchaseItemsView.setSelectOptions('item_id', data.item_options, null);
+
                 if (me.dataOptions.id) {
-                    console.log(8888,data);
-                     me.purchaseItemsView.setData(data.po_detail);
+                    const po = data.po_detail || {};
+
+                    // Fill vendor info
+                    me.controls.vendor.value = po.name || po.vendor_name || '';
+                    if (po.vendor_id) {
+                        me._selectedVendorId = po.vendor_id;
+                        if (me.controls.vendor_id) me.controls.vendor_id.value = po.vendor_id;
+                        // Trigger vendor info load (phone, address)
+                        vsapi.post(`${main_view.base_url}/prm/vendor/options-vendor-info`, { vendor_id: po.vendor_id }, {})
+                            .then(res => {
+                                const v = res.data?.vendor || {};
+                                if (me.controls.phone_number) me.controls.phone_number.value = v.phone_number || '';
+                                if (me.controls.address) me.controls.address.value = v.address || '';
+                            });
+                    }
+
+                    // Fill PO date
+                    if (po.po_date && me.controls.po_date) {
+                        me.controls.po_date.value = po.po_date;
+                    }
+
+                    // Clear items first, then inject rows one by one (same as Invoice)
+                    me.purchaseItemsView.setData(null);
+
+                    const items = po.items || [];
+                    items.forEach((item, index) => {
+                        console.log(`Injecting PO row ${index + 1}:`, item);
+                        me.purchaseItemsView.addRow({
+                            item_id:     item.item_id || item.id,
+                            qty:         parseFloat(item.qty || 1),
+                            unit:        item.unit || '',
+                            unit_price:  parseFloat(item.unit_price || 0),
+                            total_price: parseFloat(item.total_price || item.total || 0),
+                        }, 0);
+                    });
+
+                    // Restore discount/totals if your ItemsView summary supports it
+                    if (po.discount_type || po.discount_value) {
+                        // Set summary-level discount if your totalSummary widget exposes a setter
+                        // e.g. me.purchaseItemsView.setSummaryDiscount?.(po.discount_type, po.discount_value);
+                    }
+
                 } else {
                     me.clear();
                     if (me.searchVendor && typeof me.searchVendor.reset === 'function') {
                         me.searchVendor.reset();
                     }
                 }
-                console.log(5555,me.controls.div_purchase_summary);
-
             },
             onShow: (me) => {
                 const title = me.divModal.querySelector('.modal-title');

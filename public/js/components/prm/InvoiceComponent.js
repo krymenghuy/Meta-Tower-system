@@ -2385,23 +2385,31 @@ const InvoiceDialog = (() => {
                                 });
                             }
 
-                            // ── items ──
-                            if (me.itemsView && detail.items?.length > 0) {
-                                const mappedItems = detail.items.map(item => ({
-                                    ...item,
-                                    total: item.amount,
-                                    price: item.price,
-                                    qty: item.qty,
-                                    discount: parseFloat(item.discount || item.special_discount_value || 0),
-                                    discount_type: item.special_discount_type || "percent",
-                                    tax_rate: parseFloat(item.tax_rate || 0),
-                                    unit_type: item.unit_type || "-",
-                                    remarks: item.remarks || "",
-                                    start_date: item.start_date || "",
-                                    end_date: item.end_date || "",
-                                }));
-                                me.itemsView.setData(mappedItems);
+                            if (me.itemsView) {
+                                let finalItems = [];
+
+                                // Map data from the API detail
+                                if (detail.items && detail.items.length > 0) {
+                                    finalItems = detail.items.map(item => ({
+                                        ...item,
+                                        item_id: item.item_id || item.id,
+                                        item_name: item.item_name || item.name,
+                                        qty: parseFloat(item.qty || 1),
+                                        price: parseFloat(item.price || 0),
+                                        total: parseFloat(item.total || 0),
+                                        unit_type: item.unit_type || "-",
+                                        remarks: item.remarks || ""
+                                    }));
+                                }
+
+
+                                // Add each real row manually from mapped data
+                                finalItems.forEach((itemData, index) => {
+                                    console.log(`Injecting row ${index + 1}:`, itemData.item_name);
+                                    me.itemsView.addRow(itemData, 0);
+                                });
                             }
+
                         });
 
                 }
