@@ -587,7 +587,7 @@ public function updateBooking($arr = [], $ss = null)
     $booker_email = $d->booker_email ?? null;
     if ($booker_email !== null && $booker_email !== '') {
 
-      
+
 
         if (!filter_var($booker_email, FILTER_VALIDATE_EMAIL)) {
             return DV::error('Invalid email format');

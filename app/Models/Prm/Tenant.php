@@ -504,9 +504,13 @@ class Tenant
             ->select('id', 'name', 'legal_name', 'email', 'phone_number')
             ->first();
 
+        // by status, with a date guard for contracts whose status auto-update lags.
+        $today = date('Y-m-d');
         $spaces = DB::table('contracts as c')
             ->join('building_spaces as bs', 'bs.id', '=', 'c.space_id')
             ->where('c.tenant_id', $id)
+            ->where('c.status_id', '=', Contract::getActiveStatusId())
+            ->whereRaw(DBX::whereDate('c.end_date', '>=', $today))
             ->select(
                 'c.id as contract_id',
                 'bs.id as space_id',
