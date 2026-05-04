@@ -165,7 +165,7 @@ class Amenity extends VSModel
             DB::table('amenity_code_control')
                 ->insert([
                     'branch_id'   => $branch_id,
-                    'building_id' => $building_id, // ✅ important
+                    'building_id' => $building_id, 
                     'prefix'      => $floor_number,
                     'last_id'     => $next_num,
                 ]);
