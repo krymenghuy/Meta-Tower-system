@@ -27,8 +27,8 @@ class Receipt extends Model
     {
         $d = (object) $arr;
 
-        $current_page = max(1, (int) ($d->current_page ?? 1));
-        $per_page     = max(1, (int) ($d->per_page ?? 10));
+        $current_page = max(1, ($d->current_page ?? 1));
+        $per_page     = max(1, ($d->per_page ?? 10));
         $search_value      = $d->search_value ?? null;
         $status_id         = $d->status_id ?? null;
         $skip_rows = ($current_page - 1) * $per_page;
