@@ -1,0 +1,275 @@
+/* ============================================================
+   🎯 VS SELECT MATERIAL STYLE (FINAL — PERFECT ALIGNMENT)
+   - depends on vs_select.base.css
+   - stable, smooth, pixel-consistent
+============================================================ */
+
+/* ============================================================
+   🔷 ROOT
+============================================================ */
+[data-vs-style="material"].choices {
+  position: relative;
+  font-family: inherit;
+  overflow: visible;
+}
+
+/* ============================================================
+   🔷 FIELD
+============================================================ */
+[data-vs-style="material"] .choices__inner {
+  height: 40px;
+  min-height: 40px;
+  max-height: 40px;
+
+  /* 🔥 balanced spacing for label + value */
+  padding: 18px 10px 4px 10px;
+
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+
+  background: var(--vs-field-bg, #fff);
+
+  display: flex;
+  align-items: center;
+
+  box-sizing: border-box;
+
+  transition:
+    border-color 0.18s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ============================================================
+   🔵 FOCUS
+============================================================ */
+[data-vs-style="material"].is-focused .choices__inner,
+[data-vs-style="material"].is-open .choices__inner {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59,130,246,0.15);
+}
+
+/* ============================================================
+   🔷 VALUE
+============================================================ */
+[data-vs-style="material"] .choices__list--single .choices__item {
+  display: flex;
+  align-items: center;
+
+  font-size: 14px;
+  line-height: 1.25;
+  padding-bottom: 6px;
+  color: #111;
+
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  position: relative;
+  z-index: 2;
+}
+
+/* hide placeholder */
+[data-vs-style="material"].is-placeholder
+.choices__list--single .choices__item {
+  opacity: 0;
+}
+
+/* ============================================================
+   🔷 FLOATING LABEL (PERFECT BASE ALIGNMENT)
+============================================================ */
+[data-vs-style="material"]::before {
+  content: attr(data-placeholder);
+
+  position: absolute;
+  left: 10px;
+
+  /* 🔥 visually centered in field */
+  top: 50%;
+  transform: translateY(-50%) scale(1);
+
+  transform-origin: left center;
+
+  /* 🔥 readable + balanced */
+  font-size: 14px;
+  line-height: 1;
+
+  color: #727478;
+  letter-spacing: 0.01em;
+
+  /* 🔥 border cut */
+  background: var(--vs-field-bg, #fff);
+  padding: 0 5px;
+
+  pointer-events: none;
+  z-index: 5;
+
+  /* 🔥 smooth + responsive */
+  transition:
+    transform 0.18s cubic-bezier(0.4, 0, 0.2, 1),
+    top 0.18s cubic-bezier(0.4, 0, 0.2, 1),
+    color 0.15s ease;
+
+  will-change: transform, top;
+}
+
+/* ============================================================
+   🔥 FLOAT STATE (PERFECT BORDER ALIGNMENT)
+============================================================ */
+[data-vs-style="material"].has-value::before,
+[data-vs-style="material"].is-focused::before,
+[data-vs-style="material"].is-open::before {
+
+  /* 🔥 sits cleanly above border */
+  top: -7px;
+
+  /* 🔥 natural Material scale */
+  transform: scale(0.78);
+}
+
+/* ============================================================
+   🎯 LABEL COLORS
+============================================================ */
+
+/* default filled */
+[data-vs-style="material"].has-value:not(.is-focused):not(.is-open)::before {
+  color: #6b6d70;
+}
+
+/* focus */
+[data-vs-style="material"].is-focused::before,
+[data-vs-style="material"].is-open::before {
+  color: #3b82f6;
+}
+
+/* empty */
+[data-vs-style="material"].is-placeholder::before {
+  color: #8a8c8f;
+}
+
+/* ============================================================
+   🔷 DROPDOWN
+============================================================ */
+[data-vs-style="material"] .choices__list--dropdown {
+  margin-top: 4px;
+
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+
+  background: #fff;
+  overflow: hidden;
+}
+
+/* ============================================================
+   🔷 ITEMS
+============================================================ */
+[data-vs-style="material"] .choices__item--choice {
+  padding: 8px 12px;
+  font-size: 13px;
+}
+
+[data-vs-style="material"] .choices__item--choice.is-highlighted {
+  background: #f1f5f9;
+}
+
+[data-vs-style="material"] .choices__item--choice.is-selected {
+  background: #e0f2fe;
+}
+
+/* ============================================================
+   🔷 SEARCH
+============================================================ */
+[data-vs-style="material"] .choices__input--cloned {
+  font-size: 13px;
+  padding: 6px 4px;
+
+  border: none;
+  border-bottom: 1px solid #eceef3;
+
+  outline: none;
+  background: transparent;
+  width: 100%;
+}
+
+/* ============================================================
+   🔷 ARROW
+============================================================ */
+[data-vs-style="material"]::after {
+  content: '';
+  position: absolute;
+
+  right: 12px;
+  top: 50%;
+
+  width: 6px;
+  height: 6px;
+
+  border-right: 2px solid #6b7280;
+  border-bottom: 2px solid #6b7280;
+
+  transform: translateY(-50%) rotate(45deg);
+
+  pointer-events: none;
+
+  transition:
+    transform 0.18s cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 0.15s ease;
+}
+
+[data-vs-style="material"].is-open::after {
+  transform: translateY(-50%) rotate(-135deg);
+}
+
+[data-vs-style="material"].is-focused::after,
+[data-vs-style="material"].is-open::after {
+  border-color: #3b82f6;
+}
+
+/* ============================================================
+   🔷 DISABLED
+============================================================ */
+[data-vs-style="material"].is-disabled .choices__inner {
+  background: #f9fafb;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+/* ============================================================
+   🔷 COMPACT
+============================================================ */
+[data-vs-style="material"][data-size="sm"] .choices__inner {
+  height: 34px;
+  min-height: 34px;
+  padding: 16px 8px 4px 8px;
+}
+
+[data-vs-style="material"][data-size="sm"]::before {
+  font-size: 12px;
+}
+
+/* ============================================================
+   🔷 LOADING
+============================================================ */
+.choices__item[data-value="__loading__"] {
+  opacity: 0.7;
+  font-style: italic;
+  pointer-events: none;
+}
+
+.choices__item[data-value="__loading__"]::before {
+  content: '';
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-right: 8px;
+
+  border: 2px solid #ccc;
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+
+  animation: vs-spin 0.6s linear infinite;
+}
+
+@keyframes vs-spin {
+  to { transform: rotate(360deg); }
+}

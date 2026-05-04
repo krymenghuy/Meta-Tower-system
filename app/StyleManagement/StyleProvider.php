@@ -27,9 +27,10 @@ class StyleProvider
                 'assets/css/demo1/style.bundle.css',
                 // 'assets/dist/css/adminlte.min.css',
                 'assets/css/choices.min.css',
-                
-                 // 'assets/css/choices.custom.css',
-                 'assets/css/vs_select.material.theme.css', 
+            
+                 'assets/css/vs_select.base.css', 
+                 'assets/css/vs_select.material.css', 
+                   'assets/css/vs_input.material.css', 
 
                 'assets/css/dialog_style.css',
                 //'assets/css/vsa_dropdown_button.css',
@@ -99,9 +100,11 @@ class StyleProvider
                 //'assets/css/select2.min.css',
                 'assets/css/choices.min.css',
                 // 'assets/css/choices.custom.css',
-                'assets/css/choices_style.css',
                 
-                'assets/css/vs_select.material.theme.css', 
+                //'assets/css/choices_style.css',
+                 'assets/css/vs_select.base.css', 
+                 'assets/css/vs_select.material.css', 
+                 'assets/css/vs_input.material.css', 
 
                 //'assets/vendors/general/owl.carousel/dist/assets/owl.theme.default.css',
                 //'assets/vendors/general/dropzone/dist/dropzone.css',
@@ -149,8 +152,7 @@ class StyleProvider
                 
                 'assets/css/choices.min.css',
                 //'assets/css/choices_style.css',
-                'assets/css/vs_select.material.theme.css', 
-            
+                
                 'assets/css/dialog_style.css',
                 //'assets/css/vsa_dropdown_button.css',
                 //'assets/css/vs-dropdown-menu.css',
