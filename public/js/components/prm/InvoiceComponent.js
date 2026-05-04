@@ -178,9 +178,9 @@ var InvoiceComponent = (() => {
             transTitle: "titles.Action",
             className: "col_action align-middle text-center text-nowrap",
             data: data => {
-                if (data.payment_status_id === 4) {
-                    return "";
-                }
+                // if (data.payment_status_id === 4) {
+                //     return "";
+                // }
 
                 return `<div class="d-flex justify-content-center">
                     <a href="javascript:void(0)" class="btn--Options btn_leave_action"
@@ -222,28 +222,6 @@ var InvoiceComponent = (() => {
             });
         };
 
-// mThis.btnAdd.onclick = e => {
-//     e.preventDefault();
-//     const btn = mThis.btnAdd;
-
-//     // Disable immediately to prevent double-clicks
-//     btn.disabled = true;
-
-//     InvoiceDialog.show({
-//         id: null,
-//         btn: btn,
-//         // This function must run whenever the dialog disappears
-//         onClose: (isSaved) => {
-//             // 1. Always re-enable the button so they can try again
-//             btn.disabled = false;
-
-//             // 2. Only refresh the list if they actually created something
-//             if (isSaved) {
-//                 mThis.InvoiceListView.showPage(mThis.getFilterData());
-//             }
-//         }
-//     });
-// };
         mThis.listContainer = mThis.InvoiceListView.getListContainer();
         const sh_parent = mThis.listContainer.parentElement;
         sh_parent.style.maxHeight = window.innerHeight - 220 + "px";
@@ -480,21 +458,28 @@ var InvoiceComponent = (() => {
             menus: [
                 {
                     html:
-                        '<span class="ps-2" vslang="titles.Receive Payment"></span>',
+                        '<span class="ps-2" vslang="titles.Receive"></span>',
                     icon: `<i class="fa-solid fa-hand-holding-dollar text-success fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "receive_invoice"
                 },
                 {
                     html:
-                        '<span class="ps-2" vslang="titles.Print Invoice"></span>',
+                        '<span class="ps-2" vslang="titles.Modify"></span>',
+                    icon: `<i class="fa-solid fa-edit text-primary fs-5"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "modify_invoice"
+                },
+                {
+                    html:
+                        '<span class="ps-2" vslang="titles.Print"></span>',
                     icon: `<i class="fa-solid fa-receipt text-primary fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "print_invoice"
                 },
                 {
                     html:
-                        '<span class="ps-2" vslang="titles.Delete Invoice"></span>',
+                        '<span class="ps-2" vslang="titles.Delete"></span>',
                     icon: `<i class="fa-regular fa-trash-can text-danger fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "delete_invoice"
@@ -509,9 +494,11 @@ var InvoiceComponent = (() => {
                         ? "block"
                         : "none";
                 menu.receive_invoice.style.display =
-                    // statusId === 2 || statusId === 3 || statusId === 4 ? "block" : "none";
+                    statusId === 2 || statusId === 3 || statusId === 4 ? "block" : "none";
                     statusId === 2 || statusId === 3 ? "block" : "none";
                 menu.delete_invoice.style.display =
+                    statusId === 2 ? "block" : "none";
+                menu.modify_invoice.style.display =
                     statusId === 2 ? "block" : "none";
             },
             onClick: (menulink, id, name) => {
@@ -521,7 +508,10 @@ var InvoiceComponent = (() => {
                     mThis.printInvoice(id);
                 } else if (name === "receive_invoice") {
                     mThis.receiveInvoice(id);
+                } else if (name === "modify_invoice") {
+                    mThis.editInvoice(id, menulink);
                 }
+
             }
         };
 
@@ -562,6 +552,16 @@ var InvoiceComponent = (() => {
             }
         );
     };
+       
+    
+    mThis.editInvoice = (id, menulink) => {
+        console.log("editInvoice id:", id);
+        InvoiceDialog.show({    
+            id : id,
+            btn: menulink,
+            onClose: () => mThis.InvoiceListView.showPage(mThis.getFilterData())
+        });
+    }
 
     mThis.receiveInvoice = (id, menulink) => {
         ReceiveDialog.show({
@@ -816,6 +816,13 @@ const InvoiceDialog = (() => {
                     if (!matchedSpace) {
                         return cv_interact.error("No space/contract found");
                     }
+                    const availableMonths = months.filter(
+                        m => String(m.contract_id) === String(matchedSpace.contract_id)
+                    );
+
+                    if (!availableMonths || availableMonths.length === 0) {
+                        return cv_interact.error("Rent has already reached the final month of the contract.");
+                    }
 
                     // 3. Popup Initialization
                     let rentDiv = null;
@@ -950,7 +957,7 @@ const InvoiceDialog = (() => {
                             if (elEndDate)
                                 elEndDate.value = matchedMonth.end_date || "";
 
-                            [rentDiv.querySelector('[data-field="discount"]'), 
+                            [rentDiv.querySelector('[data-field="discount"]'),
                             rentDiv.querySelector('[data-field="tax_rate"]')].forEach(input => {
                                 if (!input) return;
                                 input.addEventListener('input', (e) => {
@@ -1419,7 +1426,7 @@ const InvoiceDialog = (() => {
                             el?.addEventListener("change", recalc)
                         );
 
-                            
+
                         },
 
                         onConfirm(data, btn, ibMe) {
@@ -1984,7 +1991,6 @@ const InvoiceDialog = (() => {
                             isNumeric: true
                         }
                     ],
-
                     calc: {
                         mode: "auto",
                         qtyField: "qty",
@@ -1994,14 +2000,14 @@ const InvoiceDialog = (() => {
                         currencyPrecision: 2
                     },
 
-                    // totalSummary: {
-                    //     container: me.controls.div_invoice_summary,
-                    //     showTax: false,
-                    //     allowDiscount: false,
-                    //     discountBeforeTax: false,
-                    //     discountTypeDefault: "percent",
-                    //     currency: "USD"
-                    // },
+                    totalSummary: {
+                        container: me.controls.div_invoice_summary,
+                        showTax: false,
+                        allowDiscount: false,
+                        discountBeforeTax: false,
+                        discountTypeDefault: "percent",
+                        currency: "USD"
+                    },
 
                     showColumnHeaders: true,
                     showAddLineButton: false,
@@ -2121,6 +2127,10 @@ const InvoiceDialog = (() => {
                     if (me._selectedTenantId) {
                         header.tenant_id = me._selectedTenantId;
                     }
+                    if (me.dataOptions?.id) {
+                        header.id = me.dataOptions.id;
+                    }
+
 
                     const toMySQLDate = dateStr => {
                         if (!dateStr) return null;
@@ -2290,63 +2300,135 @@ const InvoiceDialog = (() => {
                 me._tenantSpaces = [];
                 me._tenantMonths = [];
 
+                // Clear all inputs
                 if (me.controls) {
                     Object.values(me.controls).forEach(el => {
-                        if (
-                            el &&
-                            (el.tagName === "INPUT" ||
-                                el.tagName === "TEXTAREA")
-                        ) {
+                        if (el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA")) {
                             el.value = "";
                         }
                     });
-
                     if (me.controls.space) {
-                        me.controls.space.innerHTML =
-                            '<option value="">-- Select Room / Space --</option>';
+                        me.controls.space.innerHTML = '<option value="">-- Select Room / Space --</option>';
                         me.controls.space.value = "";
-                        me.controls.space.dispatchEvent(
-                            new Event("change", { bubbles: true })
-                        );
+                        me.controls.space.dispatchEvent(new Event("change", { bubbles: true }));
                     }
                 }
-                me.detail = data.invoice_details;
-                if (me.detail) {
-                    const raw = (me.detail.due_date || "").trim();
-                    if (raw) {
-                        const d = new Date(raw);
-                        if (!isNaN(d.getTime())) {
-                            const y = d.getFullYear();
-                            const m = String(d.getMonth() + 1).padStart(2, "0");
-                            const day = String(d.getDate()).padStart(2, "0");
-                            me.controls.due_date.value = `${y}-${m}-${day}`;
-                        }
-                    }
-                    if (me.detail.start_time && me.controls.start_time) {
-                        me.controls.start_time.value = me.detail.start_time.substring(
-                            0,
-                            5
-                        );
-                    }
-                }
-
                 if (me.searchTenant) me.searchTenant.reset("");
                 if (me.itemsView) me.itemsView.setData([]);
 
-                me.detail = op.id ? data.invoice_details || {} : {};
+                if (me.dataOptions.id) {
+                    vsapi.call(`${main_view.base_url}/prm/invoice/details`, { id: me.dataOptions.id })
+                        .then(res => {
+                            if (res.status_code !== 200) {
+                                cv_interact.error("Failed to load invoice details");
+                                return;
+                            }
+                            const detail = res.data || {};
+                            console.log("invoice detail:", detail);
 
-                setTimeout(() => {
-                    if (me.populateItemDropdown) me.populateItemDropdown();
-                }, 300);
+                            // ── due_date ──
+                            const raw = (detail.due_date || "").trim();
+                            if (raw) {
+                                const d = new Date(raw);
+                                if (!isNaN(d.getTime())) {
+                                    const y = d.getFullYear();
+                                    const m = String(d.getMonth() + 1).padStart(2, "0");
+                                    const day = String(d.getDate()).padStart(2, "0");
+                                    me.controls.due_date.value = `${y}-${m}-${day}`;
+                                }
+                            }
+                            if (me.controls.general_remark) {
+                                me.controls.general_remark.value = detail.general_remark || "";
+                            }
+                            if (me.controls.tenant) {
+                                me.controls.tenant.value = detail.tenant_name || "";
+                            }
+                            if (detail.tenant_id) {
+                                me._selectedTenantId = detail.tenant_id;
+                                me.controls.phone_number.value = detail.tenant_phone || "";
+                                me.controls.email.value = detail.tenant_email || "";
+
+                                vsapi.post(
+                                    `${main_view.base_url}/prm/tenant/option-tenant-with-contract`,
+                                    { tenant_id: detail.tenant_id }, {}
+                                ).then(res => {
+                                    const d = res.data || {};
+                                    me._tenantSpaces = d.spaces || [];
+                                    me._tenantMonths = d.months || [];
+                                    me._requestedServices = d.service_requests || [];
+
+                                    VSUtil.setComboItems(
+                                        me.controls.space,
+                                        d.spaces || [],
+                                        "space_id", "space_code", "", "Select Space", ""
+                                    );
+                                    setTimeout(() => {
+                                        if (detail.space_id) {
+                                            me.controls.space.value = String(detail.space_id);
+
+                                            // ✅ Verify — if Choices.js overrides, force via option.selected
+                                            if (me.controls.space.value !== String(detail.space_id)) {
+                                                const opt = Array.from(me.controls.space.options)
+                                                    .find(o => String(o.value) === String(detail.space_id));
+                                                if (opt) {
+                                                    opt.selected = true;
+                                                    me.controls.space.dispatchEvent(new Event("change", { bubbles: true }));
+                                                    console.log("space restored via option.selected:", opt.text);
+                                                } else {
+                                                    console.warn("space option not found for id:", detail.space_id);
+                                                }
+                                            } else {
+                                                console.log("space restored:", me.controls.space.value);
+                                            }
+                                        }
+                                    }, 100);
+                                });
+                            }
+
+                            // ── items ──
+                            if (me.itemsView && detail.items?.length > 0) {
+                                const mappedItems = detail.items.map(item => ({
+                                    ...item,
+                                    total: item.amount,
+                                    price: item.price,
+                                    qty: item.qty,
+                                    discount: parseFloat(item.discount || item.special_discount_value || 0),
+                                    discount_type: item.special_discount_type || "percent",
+                                    tax_rate: parseFloat(item.tax_rate || 0),
+                                    unit_type: item.unit_type || "-",
+                                    remarks: item.remarks || "",
+                                    start_date: item.start_date || "",
+                                    end_date: item.end_date || "",
+                                }));
+                                me.itemsView.setData(mappedItems);
+                            }
+                        });
+
+                }
+                // ── CREATE MODE — already cleared above ──
+            },
+
+
+            onShow: (me) => {
+                const title = me.divModal.querySelector(".modal-title");
+                if (title) {
+                    const isModify = !!me.dataOptions?.id;
+                    title.innerHTML = isModify
+                        ? '<h2 class="text-prm-custom text-start fw-bold">Modify Invoice</h2>'
+                        : '<h2 class="text-prm-custom text-start fw-bold">Create Invoice</h2>';
+                }
             },
 
             prepareFormOptions: {
-                createTitle: "Create Invoice",
                 modifyTitle: "Modify Invoice",
+                createTitle: "Create Invoice",
                 targetProp: "invoice_details",
                 api: {
                     endpoint: `${main_view.base_url}/prm/invoice/form-options`,
-                    params: op => ({ id: op.id })
+                    params: (op) => {
+                        console.log("API params op:", op);
+                        return { id: op.id };
+                    }
                 }
             },
 
