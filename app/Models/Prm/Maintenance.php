@@ -219,6 +219,31 @@ return 2; // In Progress
                         ]);
                 }
             }
+            // if (!empty($input['amenity_id'])) {
+
+            //     $isMaintenance = self::shouldBeMaintenance(
+            //         $input['start_date'],
+            //         $input['status_id']
+            //     );
+
+            //     if ($isMaintenance) {
+
+            //         $statusId = DB::table('amenity_statuses')
+            //             ->whereRaw('LOWER(TRIM(name)) = ?', ['maintenance'])
+            //             ->value('id');
+
+            //         if ($statusId) {
+            //             DB::table('amenities')
+            //                 ->where('id', $input['amenity_id'])
+            //                 ->update([
+            //                     'status_id'   => $statusId,
+            //                     'update_user' => $ss->full_name ?? 'System',
+            //                     'update_uid'  => $ss->id ?? null,
+            //                     'updated_at'  => getNowTime(),
+            //                 ]);
+            //         }
+            //     }
+            // }
 
             return DV::success([
                 'message' => $id ? 'Updated successfully' : 'Created successfully'
@@ -228,6 +253,14 @@ return 2; // In Progress
             return DV::error('Error: ' . $e->getMessage());
         }
     }
+//     private static function shouldBeMaintenance($startDate, $statusId)
+// {
+//     $now = time();
+//     $start = strtotime($startDate);
+
+//     return in_array($statusId, [2], true) || $now >= $start;
+//     // 2 = In-Progress (example)
+// }
 
     public function getMaintenanceList($arr, $ss = null)
     {
@@ -297,7 +330,7 @@ return 2; // In Progress
 
     public static function getMaintenanceDetails($id)
     {
-         
+
            $row = DB::table('maintenances as m')
             ->join('buildings as b', 'b.id', '=', 'm.building_id')
             ->leftJoin('building_spaces as bs', 'bs.id', '=', 'm.space_id')
@@ -313,8 +346,8 @@ return 2; // In Progress
                 'ms.name as status_name'
             ])
             ->first();
-          
-            
+
+
 
         if ($row) {
             self::applyScheduleDerivedStatus($row);
