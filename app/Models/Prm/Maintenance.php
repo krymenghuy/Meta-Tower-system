@@ -15,31 +15,22 @@ class Maintenance extends VSModel
     protected $userInfo = null;
     protected $table = 'maintenances';
 
-    // public static function computeScheduleStatusId($startDate, $endDate = null): int
-    // {
-    //     $now = Carbon::now();
-    //     $startAt = Carbon::parse($startDate);
-    //     if ($now->lt($startAt)) {
-    //         return 1;
-    //     }
-    //     return 2;
-    // }
-    public static function computeScheduleStatusId($startDate, $endDate = null): int
-{
-   $now = Carbon::now();
-$start = Carbon::parse($startDate);
-$end = Carbon::parse($endDate);
+    public static function computeScheduleStatusId($startDate, $endDate = null)
+    {
+        $now = Carbon::now();
+        $start = Carbon::parse($startDate);
+        $end = Carbon::parse($endDate);
 
-if ($now->lt($start)) {
-    return 1; // Planned
-}
+        if ($now->lt($start)) {
+            return 1; // Planned
+        }
 
-if ($now->gt($end)) {
-    return 3; // Completed
-}
+        if ($now->gt($end)) {
+            return 3; // Completed
+        }
 
-return 2; // In Progress
-}
+        return 2; // In Progress
+    }
 
 
     public static function resolveSpaceMaintenanceStatusId($spaceId)
@@ -68,6 +59,45 @@ return 2; // In Progress
         return 0;
     }
 
+    // Amenity is considered "under maintenance" only when the schedule is
+    // already In-Progress (status_id = 2) or its start time has arrived.
+    private static function shouldBeMaintenance($startDate, $statusId)
+    {
+        if ($statusId === 2) {
+            return true;
+        }
+        if (empty($startDate)) {
+            return false;
+        }
+        return time() >= strtotime($startDate);
+    }
+
+    // Centralised amenity status writer used by upsert/setStatus/auto-derive.
+    private static function syncAmenityStatus($amenityId, $toMaintenance, $ss = null)
+    {
+        if ($amenityId <= 0) {
+            return;
+        }
+        if ($toMaintenance) {
+            $statusId = DB::table('amenity_statuses')
+                ->whereRaw('LOWER(TRIM(name)) = ?', ['maintenance'])
+                ->value('id');
+            if (!$statusId) {
+                return;
+            }
+        } else {
+            $statusId = 1; // Active
+        }
+        DB::table('amenities')
+            ->where('id', $amenityId)
+            ->update([
+                'status_id'   => $statusId,
+                'update_user' => $ss->full_name ?? 'System',
+                'update_uid'  => $ss->id ?? null,
+                'updated_at'  => getNowTime(),
+            ]);
+    }
+
     public static function applyScheduleDerivedStatus(object $row, $statusIdToName = null): void
     {
         $sid = ($row->status_id ?? 0);
@@ -78,8 +108,9 @@ return 2; // In Progress
         if (!$start) {
             return;
         }
+        $end = $row->end_date ?? null;
         try {
-            $computed = self::computeScheduleStatusId($start);
+            $computed = self::computeScheduleStatusId($start, $end);
         } catch (\Throwable $e) {
             return;
         }
@@ -92,6 +123,22 @@ return 2; // In Progress
             DB::table('building_spaces')
                 ->where('id', $spaceId)
                 ->update(['maintenance_status_id' => self::resolveSpaceMaintenanceStatusId($spaceId)]);
+        }
+        $amenityId = ($row->amenity_id ?? 0);
+        if ($amenityId > 0) {
+            if ($computed === 2) {
+                self::syncAmenityStatus($amenityId, true, null);
+            } elseif ($computed === 3) {
+                // Only release if no other planned/in-progress maintenance exists for this amenity.
+                $otherActive = DB::table('maintenances')
+                    ->where('amenity_id', $amenityId)
+                    ->where('id', '!=', $id)
+                    ->whereIn('status_id', [1, 2])
+                    ->exists();
+                if (!$otherActive) {
+                    self::syncAmenityStatus($amenityId, false, null);
+                }
+            }
         }
         $row->status_id = $computed;
         if ($statusIdToName !== null) {
@@ -182,10 +229,6 @@ return 2; // In Progress
         }
 
         $sid = $input['status_id'] ?? 0;
-        // if (!in_array($sid, [3, 4], true)) {
-        //     $input['status_id'] = self::computeScheduleStatusId(date('Y-m-d', $start));
-        // }
-
         if (!in_array($sid, [3, 4], true)) {
             $input['status_id'] = self::computeScheduleStatusId(
                 $input['start_date'],
@@ -204,46 +247,10 @@ return 2; // In Progress
                     ]);
             }
             if (!empty($input['amenity_id'])) {
-                $statusId = DB::table('amenity_statuses')
-                    ->whereRaw('LOWER(TRIM(name)) = ?', ['maintenance'])
-                    ->value('id');
-
-                if ($statusId) {
-                    DB::table('amenities')
-                        ->where('id', $input['amenity_id'])
-                        ->update([
-                            'status_id'   => $statusId,
-                            'update_user' => $ss->full_name ?? 'System',
-                            'update_uid'  => $ss->id ?? null,
-                            'updated_at'  => getNowTime(),
-                        ]);
+                if (self::shouldBeMaintenance($input['start_date'], $input['status_id'])) {
+                    self::syncAmenityStatus($input['amenity_id'], true, $ss);
                 }
             }
-            // if (!empty($input['amenity_id'])) {
-
-            //     $isMaintenance = self::shouldBeMaintenance(
-            //         $input['start_date'],
-            //         $input['status_id']
-            //     );
-
-            //     if ($isMaintenance) {
-
-            //         $statusId = DB::table('amenity_statuses')
-            //             ->whereRaw('LOWER(TRIM(name)) = ?', ['maintenance'])
-            //             ->value('id');
-
-            //         if ($statusId) {
-            //             DB::table('amenities')
-            //                 ->where('id', $input['amenity_id'])
-            //                 ->update([
-            //                     'status_id'   => $statusId,
-            //                     'update_user' => $ss->full_name ?? 'System',
-            //                     'update_uid'  => $ss->id ?? null,
-            //                     'updated_at'  => getNowTime(),
-            //                 ]);
-            //         }
-            //     }
-            // }
 
             return DV::success([
                 'message' => $id ? 'Updated successfully' : 'Created successfully'
@@ -253,14 +260,6 @@ return 2; // In Progress
             return DV::error('Error: ' . $e->getMessage());
         }
     }
-//     private static function shouldBeMaintenance($startDate, $statusId)
-// {
-//     $now = time();
-//     $start = strtotime($startDate);
-
-//     return in_array($statusId, [2], true) || $now >= $start;
-//     // 2 = In-Progress (example)
-// }
 
     public function getMaintenanceList($arr, $ss = null)
     {
@@ -483,16 +482,14 @@ return 2; // In Progress
             DB::table('building_spaces')->where('id', $space_id)->update(['maintenance_status_id' => $spaceMaintenanceStatusId]);
         }
 
-        // When Cancelled (4) or Completed (3): release amenity to available
-        if ($status_id === 3 || $status_id === 4) {
-            $amenity_id = isset($row->amenity_id) ?  $row->amenity_id : 0;
-            if ($amenity_id > 0) {
-                DB::table('amenities')->where('id', $amenity_id)->update([
-                    'status_id'   => 1,
-                    'update_user' => $ss->full_name ?? 'System',
-                    'update_uid'  => $ss->id ?? null,
-                    'updated_at'  => getNowTime(),
-                ]);
+        $amenity_id = isset($row->amenity_id) ?  $row->amenity_id : 0;
+        if ($amenity_id > 0) {
+            // In-Progress (2): mark amenity as Maintenance.
+            // Cancelled (4) or Completed (3): release amenity to Active.
+            if ($status_id === 2) {
+                self::syncAmenityStatus($amenity_id, true, $ss);
+            } elseif ($status_id === 3 || $status_id === 4) {
+                self::syncAmenityStatus($amenity_id, false, $ss);
             }
         }
         return DV::success(['message' => 'Status updated successfully']);
