@@ -272,7 +272,7 @@ var TenantComponent = new (function () {
             onShow: (me, container) => {
                 const menu = me.getActiveMenus(container);
                 const status_id = container.dataset.statusid;
-                console.log(123456, status_id);
+                // console.log(123456, status_id);
 
                 // menu.edit_student.style.display = enroll_finalized == 1 ? 'none' : 'block';
                 menu.create_contract.style.display = status_id == 1 ? "block" : "none";

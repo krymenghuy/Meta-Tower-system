@@ -357,7 +357,7 @@ class GeneralSettings //extends Model
 {
     return DB::table('amenities')
         ->where('status_id',1)
-        ->where('requires_booking',1)
+        // ->where('requires_booking',1)
         ->selectRaw('id, name AS amenity, code as amenity_code, max_capacity,category_id')
         ->orderBy('name')
         ->get();
@@ -672,7 +672,7 @@ static function options_maintenance_amenity($ss)
     static function options_vendor($ss)
     {
         return DB::table('vendors')
-            ->where('status_id', 1)
+            // ->where('status_id', 1)
             ->selectRaw('id, name AS vendor, phone_number')
             ->get();
     }

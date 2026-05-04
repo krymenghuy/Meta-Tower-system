@@ -45,7 +45,7 @@ class Bill
         'total_amount'    => '1|number|min=0',
         'remark'          => '0|string|0-255',
         'photo'           => '0|string',
-        'ext'             => '0|string|in=jpg,jpeg,png',
+        'ext'             => '0|string|in=jpg,jpeg,png,pdf',
     ];
 
     $res = DBX::validateObject($arr,$v_rule,1,['photo'  => GeneralSettings::$image_chars,'remark' => $remark_char,'ref_no' => $ref_no_char],$ss->lang);
@@ -112,12 +112,13 @@ class Bill
                     'dir'     => self::$img_dir
                 ], 'images', $old_file);
             }
-            $photo = preg_replace('#^data:.*;base64,#', '', $photo);
+           $storageType = ($ext === 'pdf') ? 'document' : 'image';
+
             $file = XPublicStorage::savefile(
                 ['subs_id' => $ss->subs_id, 'dir' => self::$img_dir],
                 $ext,
                 $photo,
-                'image'
+                $storageType  
             );
 
             if ($file->status === 'Error') {
@@ -189,16 +190,30 @@ class Bill
             }
         }
         
-        
-
         $query = DB::table('bills as b')
             ->leftJoin('vendors as v', 'v.id', 'b.vendor_id')
             ->leftJoin('bill_statuses as s', 's.id', 'b.status_id')
             ->leftJoin('expense_categories as ex', 'ex.id', 'b.expense_type_id')
             ->whereRaw($str_search)
             ->whereRaw($str_moreWhere)
-            ->selectRaw("b.id, b.bill_number, b.ref_no, b.expense_type_id,ex.name as expense_type_name,b.vendor_id,v.name as vendor_name, v.phone_number, b.bill_date,b.due_date,
-                b.total_amount, b.balance, b.paid_amount,b.status_id, s.name as status,b.file_image, b.update_user, b.remark, b.updated_at")
+            ->selectRaw("   b.id, b.bill_number, b.ref_no, b.expense_type_id,
+                            ex.name as expense_type_name, b.vendor_id,
+                            v.name as vendor_name, v.phone_number,
+                            b.bill_date, b.due_date,
+                            b.total_amount, b.balance, b.paid_amount,
+                            b.status_id,
+                            CASE
+                                WHEN b.status_id = 2 THEN s.name
+                                WHEN b.balance > 0 AND b.due_date < CURDATE() THEN 'Overdue'
+                                ELSE s.name
+                            END AS status,
+                            CASE
+                                WHEN b.status_id = 2 THEN b.status_id
+                                WHEN b.balance > 0 AND b.due_date < CURDATE() THEN 4
+                                ELSE b.status_id
+                            END AS display_status_id,
+                            b.file_image, b.update_user, b.remark, b.updated_at
+                        ")
             ->orderBy('b.id', 'desc');
         $count = (clone $query)->count('b.id');
         $rows  = $query->skip($skip_rows)->take($per_page)->get();
@@ -298,13 +313,14 @@ class Bill
         if (!$bill) return DV::error('Bill not found.');
         if (!$bill->file_image) return DV::error('No attachment found for this bill.');
 
+        $ext = strtolower(pathinfo($bill->file_image, PATHINFO_EXTENSION));
+        $category = ($ext === 'pdf') ? 'document' : 'images'; // ← determine category by ext
 
         $fileUrl = XPublicStorage::getUrl(
-            ['subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 
-            'images'
+            ['subs_id' => $ss->subs_id, 'dir' => self::$img_dir],
+            $category  // ← was hardcoded 'images'
         ) . $bill->file_image;
 
-        $ext      = strtolower(pathinfo($bill->file_image, PATHINFO_EXTENSION));
         $mimeTypes = [
             'gif'  => 'image/gif',
             'png'  => 'image/png',
