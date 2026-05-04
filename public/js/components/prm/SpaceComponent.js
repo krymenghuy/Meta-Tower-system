@@ -798,30 +798,31 @@ const BuildingSpaceDialog = (() => {
                 },
 
                 contentCreated: (me) => {
-                    me.controls.price.addEventListener('input', (e) => {
-                        let v = e.target.value;
-                        v = v.replace(/[^0-9.]/g, '');
+                    // me.controls.price.addEventListener('input', (e) => {
+                    //     let v = e.target.value;
+                    //     v = v.replace(/[^0-9.]/g, '');
 
-                        const parts = v.split('.');
-                        if (parts.length > 2) {
-                            v = parts[0] + '.' + parts[1];
-                        }
-                        if (parts[1] !== undefined) {
-                            v = parts[0] + '.' + parts[1].slice(0, 2);
-                        }
+                    //     const parts = v.split('.');
+                    //     if (parts.length > 2) {
+                    //         v = parts[0] + '.' + parts[1];
+                    //     }
+                    //     if (parts[1] !== undefined) {
+                    //         v = parts[0] + '.' + parts[1].slice(0, 2);
+                    //     }
 
-                        e.target.value = v;
-                    });
-                    me.controls.price.addEventListener('blur', (e) => {
-                        let v = parseFloat(e.target.value);
+                    //     e.target.value = v;
+                    // });
+                    // me.controls.price.addEventListener('blur', (e) => {
+                    //     let v = parseFloat(e.target.value);
 
-                        if (isNaN(v) || v <= 0) {
-                            e.target.value = '';
-                            return;
-                        }
-                        e.target.value = v;
-                    });
-
+                    //     if (isNaN(v) || v <= 0) {
+                    //         e.target.value = '';
+                    //         return;
+                    //     }
+                    //     e.target.value = v;
+                    // });
+                    applyNumberInput(me.controls.sqm_size);
+                    applyNumberInput(me.controls.price);
                 },
                 configSelect: [
                     {
@@ -1105,7 +1106,7 @@ const CreateBookingDialog = (() => {
                                     cv_interact.success(
                                         isEdit
                                             ? "Booking has been updated successfully."
-                                            : "New booking has been created successfully"
+                                            : "New booking has been created successfully."
                                     );
                                 } else {
                                     cv_interact.error(res.error_message);

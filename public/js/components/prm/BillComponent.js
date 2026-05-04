@@ -449,8 +449,8 @@ const BillDialog = (() => {
                             </div>
                             <div class="col-6">
                                 <div class="material-input outlined">
-                                    <input name="phone_number" class="data-input form-control" data-field="phone_number" placeholder=" "></input>
-                                    <label style="color:#777777; padding-left:6px;">Phone Number</label>
+                                    <input name="phone_number" class="data-input form-control" data-field="phone_number" placeholder=" " disabled />
+                                    <label style="color:#777777; padding-left:6px;">Phone Number</label >
                                 </div>
                             </div>
                             <div class="col-6 col-md-6">
@@ -575,28 +575,8 @@ const BillDialog = (() => {
                         );
                     };
 
-                    me.controls.total_amount.addEventListener('input', (e) => {
-                        let v =e.target.value;
-                        v = v.replace(/[^0-9.]/g, '');
-
-                        const parts = v.split('.');
-                        if (parts.length > 2){
-                            v = parts[0] + '.' + parts[1];
-                        }
-                        if (parts[1] !== undefined) {
-                            v = parts[0] + '.' + parts[1].slice(0,2);
-                        }
-                        e.target.value = v;
-                    });
-                    me.controls.total_amount.addEvenListener('blur',(e) => {
-                        let v = parseFloat(e.target.value);
-
-                        if (isNaN(v) || v <= 0) {
-                            e.target.value = '';
-                            return;
-                        }
-                        e.target.value = v;
-                    })
+                    applyNumberInput(me.controls.total_amount);
+                    applyNumberInput(me.controls.ref_no);
                 },
 
                 configSelect: [
@@ -671,6 +651,35 @@ const BillDialog = (() => {
                             }
                         });
                     }
+
+                    // ── date auto-fill / reformat ──────────────────────────────
+                    setTimeout(() => {
+                        const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+                        const toFormatted = (val) => {
+                            if (/^\d{2}-[A-Za-z]{3}-\d{4}$/.test(val)) return val;
+                            const parsed = new Date(val);
+                            if (isNaN(parsed)) return val;
+                            const d = String(parsed.getDate()).padStart(2, '0');
+                            const m = months[parsed.getMonth()];
+                            const y = parsed.getFullYear();
+                            return `${d}-${m}-${y}`;
+                        };
+                        if (me.controls.bill_date) {
+                            if (!me.controls.bill_date.value) {
+                                const now = new Date();
+                                const d = String(now.getDate()).padStart(2, '0');
+                                const m = months[now.getMonth()];
+                                const y = now.getFullYear();
+                                me.controls.bill_date.value = `${d}-${m}-${y}`;
+                            } else {
+                                me.controls.bill_date.value = toFormatted(me.controls.bill_date.value);
+                            }
+                        }
+                        if (me.controls.due_date && me.controls.due_date.value) {
+                            me.controls.due_date.value = toFormatted(me.controls.due_date.value);
+                        }
+                    }, 0);
+                    // ──────────────────────────────────────────────────────────
                 },
 
                 buttons: [

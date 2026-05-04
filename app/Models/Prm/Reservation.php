@@ -37,11 +37,11 @@ public function upsert($arr = [], $id = null, $ss = null){
 
 
         $v_rule = [
-            'tenant_id'          => '1|number|exists=tenants.id',
-            'amenity_id'         => '1|number|exists=amenities.id',
-            'booking_date'       => '1|date',
-            'start_time'         => '1|time',
-            'end_time'           => '1|time',
+            'tenant_id'          => '1|number|exists=tenants.id|text=Please select a valid tenant.',
+            'amenity_id'         => '1|number|exists=amenities.id|text=Please select a valid amenity.',
+            'booking_date'       => '1|date|text=Please enter a valid booking date.',
+            'start_time'         => '1|time|Please enter a valid check-in time.',
+            'end_time'           => '1|time|text=Please enter a valid check-out time.',
             'remarks'            => '0|string|0-350',
             'status_id'          => '0|number|default=1',
             'reference_code'     => '0|string|0-50',
@@ -142,6 +142,7 @@ public function upsert($arr = [], $id = null, $ss = null){
         $per_page = $d->per_page ?? 10;
         $status_id = $d->status_id ?? null;
         $booking_date = isset($d->booking_date) ? convertDate($d->booking_date) : null;
+        $booking_date_to = isset($d->booking_date_to) ? convertDate ($d->booking_date_to) : null;
         if (!is_numeric($current_page)) {
             $current_page = 1;
         }
@@ -164,8 +165,9 @@ public function upsert($arr = [], $id = null, $ss = null){
         if($status_id){
             $str_moreWhere .= ' AND r.status_id =' . $status_id;
         }
-        if($booking_date){
-            $str_moreWhere .= " AND r.booking_date = '" . $booking_date . "'";
+        if ($booking_date) {
+            $booking_date_to = $booking_date_to ?? date('Y-m-d'); 
+            $str_moreWhere .= " AND r.booking_date BETWEEN '" . $booking_date . "' AND '" . $booking_date_to . "'";
         }
 
         $query = DB::table('reservations as r')
@@ -292,7 +294,7 @@ public function upsert($arr = [], $id = null, $ss = null){
         $now = time();
 
         if (($bookingStart - $now) < (15 * 60)) {
-            return DV::error('Cannot cancel a reservation less than 15 minutes before the start time.');
+            return DV::error('Reservations cannot be canceled within 15 minutes of the start time.');
         }
 
         $cancelled = DB::table('reservations')->where('id', $id)->update([
