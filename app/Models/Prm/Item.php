@@ -29,34 +29,30 @@ class Item //extends Model
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
         $v_rule = [
-            'name' => '1|string|1-150',
-            'category_id' => '1|number|exists=item_categories.id',
-            'unit' => '1|string|0-30'
+            'name' => '1|string|1-150|text=Name is required.',
+            'category_id' => '1|number|exists=item_categories.id|text=Please select a valid category.',
+            'unit' => '1|string|0-30|text=Unit is required.'
         ];
-
-        $res = DBX::validateObject($arr, $v_rule, 1, [], $ss->lang, 0, null);
+        $name_char = ['&', '.', '/','-'];
+        $res = DBX::validateObject($arr, $v_rule, 1, ['name' => $name_char], $ss->lang, 0, null);
         if ($res->error) {
             return DV::error($res->error);
         }
-
         $inputs = $res->values;
-
         $exist = DB::table('items')
             ->whereRaw('LOWER(name)=?', [strtolower($inputs['name'])])
             ->when($id, function ($q) use ($id) {
                 $q->where('id', '<>', $id);
             })
             ->exists();
-
         if ($exist) {
             return DV::error('Item name already exists!');
         }
         $created = !$id;
         $id = DBX::saveData($ss, 'items', ['id' => $id], $inputs, [], 1);
         if ($id && $created) {
-
             $prefix = 'ITM-';
-            $res = setOfficialCode($branch_id, 'item_code_control', 'items', ['id' => $id], $prefix, 5, null);
+            $res = setOfficialCode($branch_id, 'item_code_control', 'items', ['id' => $id], $prefix, 4, null);
 
         }
         if ($id > 0) {

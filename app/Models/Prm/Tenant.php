@@ -288,12 +288,26 @@ class Tenant
     {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
-        $hasContract = DB::table('contracts')->where('tenant_id', $id)->exists();
-        if ($hasContract) {
-            return DV::error('Cannot delete this tenant because an active contract exists.');
+
+        $tenant = DB::table('tenants')->where('id', $id)->first();
+        if (!$tenant) {
+            return DV::error('Tenant not found or already deleted.');
         }
+
+        $hasActiveContract = DB::table('contracts')
+            ->where('tenant_id', $id)
+            ->where('status_id', '!=', Contract::getTerminatedStatusId())
+            ->exists();
+
+        if ($hasActiveContract) {
+            return DV::error('Cannot delete tenant with active contracts. Please terminate all contracts first.');
+        }
+
         $deleted = DB::table('tenants')->where('id', $id)->delete();
-        return $deleted ? DV::depends($deleted, ['action' => 'deleted']) : DV::error('Delete failed.');
+
+        return $deleted 
+            ? DV::depends($deleted, ['action' => 'deleted']) 
+            : DV::error('Delete failed.');
     }
 
 

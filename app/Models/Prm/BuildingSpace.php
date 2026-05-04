@@ -426,16 +426,17 @@ class BuildingSpace
         'booker_email' => '0|email',
         'booking_date' => '1|date|text=Booking date is required.',
         'expired_booking_date' => '1|date|text=Expired booking date is required.',
-        'booking_fee' => '1|number|min=0|text=Booking fee is required and must be a non-negative number.',
+        'booking_fee' => '1|number|min=0|text=Booking fee is required.',
         'remarks' => '0|string|1-255',
     ];
     $email_char = ['@', '.', '_', '-', '+'];
+    $remarks_char = ['@', '.', '_', '-', '+'];
 
     $res = DBX::validateObject(
         $arr,
         $v_rule,
         1,
-        ['booker_email' => $email_char],
+        ['booker_email' => $email_char, 'remarks' => $remarks_char],
         $ss->lang,
         0,
         null
@@ -456,7 +457,6 @@ class BuildingSpace
             return DV::error('Invalid email format');
         }
     }
-    
     $today = date('Y-m-d');
     if ($d->booking_date != $today) {
         return DV::error('Booking date must be today.');
@@ -466,7 +466,7 @@ class BuildingSpace
         return DV::error('Expired booking date must be at least 14 days after booking date.');
     }
     if (empty($inputs['remarks'])) {
-        $inputs['remarks'] = "Booking created by {$d->booker_name} on " . date('Y-m-d H:i:s');
+        $inputs['remarks'] = "Booking created by {$d->booker_name} on " . date('d-M-Y H:i:s');
     }
     DB::beginTransaction();
     try {
@@ -563,16 +563,18 @@ public function updateBooking($arr = [], $ss = null)
         'booker_email' => '0|email',
         'booking_date' => '1|date|text=Booking date is required.',
         'expired_booking_date' => '1|date|text=Expired booking date is required.',
-        'booking_fee' => '1|number|min=0|text=Booking fee is required and must be a non-negative number.',
+        'booking_fee' => '1|number|min=0|text=Booking fee is required.',
         'remarks' => '0|string|1-255',
     ];
     $email_char = ['@', '.', '_', '-', '+'];
+
+    $remarks_char = ['@', '.', '_', '-', ':'];
 
     $res = DBX::validateObject(
         $arr,
         $v_rule,
         1,
-        ['booker_email' => $email_char],
+        ['booker_email' => $email_char, 'remarks' => $remarks_char],
         $ss->lang,
         0,
         null

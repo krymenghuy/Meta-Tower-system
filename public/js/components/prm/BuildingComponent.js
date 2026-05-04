@@ -452,7 +452,7 @@ const BuildingDialog = (() => {
                         </div>
                         <div class="col-6">
                             <div class="material-input outlined">
-                                <input type="number" step="1" min="1" name="total_floor" class="data-input form-control" data-field="total_floor" placeholder=" " />
+                                <input type="number" min="1" max="999" step="1" name="total_floor" oninput="if (this.value.length > 3) this.value = this.value.slice(0,3);" class="data-input form-control" data-field="total_floor" placeholder=" " />
                                 <label style="color:#777777;padding-left:6px;">Total Floor</label>
                             </div>
                         </div>
