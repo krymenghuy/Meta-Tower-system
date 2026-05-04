@@ -86,8 +86,10 @@ var MaintenanceComponent = (() => {
             data: (data) => {
                 const statusId = parseInt(data.effective_status_id ?? data.status_id, 10);
                 const map = {
-                    1: { text: "Planned", cls: "badge bg-warning-subtle text-warning border border-warning" },
-                    2: { text: "In Progress", cls: "badge bg-info-subtle text-info border border-info" },
+
+                    1: { text: "Planned", cls: "badge bg-info-subtle text-info border border-info" },
+
+                    2: { text: "In Progress", cls: " bg-warning-subtle text-warning border border-warning" },
                     3: { text: "Completed", cls: "badge bg-success-subtle text-success border border-success" },
                     4: { text: "Cancelled", cls: "badge bg-danger-subtle text-danger border border-danger" },
                 };
