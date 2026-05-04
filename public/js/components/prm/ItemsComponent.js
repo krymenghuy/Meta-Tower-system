@@ -9,7 +9,6 @@ var ItemsComponent = (() => {
     mThis.elFilter_Category = mThis.self.querySelector('#_item_category_id');
     mThis.elSearch = mThis.self.querySelector("#_search_item");
 
-
     mThis.cols = [
 
         {
@@ -27,23 +26,21 @@ var ItemsComponent = (() => {
             transTitle: "titles.Name",
             className: "align-middle",
             data: (data) => {
-                return `<span class="text-primary-custom text-capitalize">${data.name ?? ''}</span>`;
-            }
-        },
-
-
-        {
-            transTitle: "titles.UOM",
-            className: "align-middle",
-            data: (data) => {
-                return `<span class="text-primary-custom">${data.unit ?? ''}</span>`;
+                return `<span class="text-prm-custom text-capitalize">${data.name ?? ''}</span>`;
             }
         },
         {
             transTitle: "titles.Category",
             className: "align-middle",
             data: (data) => {
-                return `<span class="text-primary-custom">${data.category_name ?? ''}</span>`;
+                return `<span class="text-prm-custom">${data.category_name ?? ''}</span>`;
+            }
+        },
+        {
+            transTitle: "titles.Unit",
+            className: "align-middle",
+            data: (data) => {
+                return `<span class="text-prm-custom text-capitalize">${data.unit ?? ''}</span>`;
             }
         },
         {
@@ -106,11 +103,11 @@ var ItemsComponent = (() => {
 
         mThis.pr_tbl = mThis.ItemListView.getListContainer();
         const sh_parent = mThis.pr_tbl.parentElement;
-        sh_parent.style.maxHeight = (window.innerHeight - 200) + 'px';
+        sh_parent.style.maxHeight = (window.innerHeight - 170) + 'px';
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            sh_parent.style.maxHeight = (window.innerHeight - 200) + 'px';
+            sh_parent.style.maxHeight = (window.innerHeight - 170) + 'px';
         }
         mThis.tblItem = mThis.ItemListView.getTable();
         mThis.initDropdownMenus(mThis.tblItem);
@@ -264,22 +261,22 @@ const CreateItemsDialog = (() => {
                 createContent: () => {
                     return [
                         `<div class="row justify-content-center">
-
                            <div class="col-12">
                                 <div class="material-input outlined">
                                     <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder=" " />
                                     <label style="padding-left:6px;color:#777777;">Name</label>
                                 </div>
                             </div>
-                            <div class="col-6">
+                            <div class="col-8">
                                 <div class="material-input outlined">
                                     <select  data-style="material" name="category_id" class="data-input form-control" data-field="category_id" placeholder="Category">
                                     </select>
                                 </div>
                            </div>
-                            <div class="col-6">
+                            <div class="col-4">
                                 <div class="material-input outlined">
                                     <select name="unit" data-style="material" class="data-input form-control" data-field="unit" placeholder="Unit">
+                                        <option value="">Select Unit</option>
                                         <option value="pcs">pcs</option>
                                         <option value="box">box</option>
                                         <option value="set">set</option>
@@ -323,11 +320,9 @@ const CreateItemsDialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
-                    // LocaleManager.translateZone(me.divModal);
-                    // console.log(12,data);
-                    const header = me.divModal.querySelector('.modal-header');
-                    const btnClose = header.querySelector('button');
-                    if (btnClose) btnClose.classList.add('d-none');
+                    console.log(123,data);
+                    
+                  me.controls.unit.value = data.item_details.unit ?? '';
                 },
 
 
