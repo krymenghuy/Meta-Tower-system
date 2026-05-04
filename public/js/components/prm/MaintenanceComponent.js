@@ -220,9 +220,10 @@ var MaintenanceComponent = (() => {
             ],
             onShow: (me, container) => {
                 const menu = me.getActiveMenus(container);
-                const status_id = container.dataset.statusid;
-                menu.finish_maintenance.style.display = status_id == 2  ? 'block' : 'none';
-                menu.delete.style.display = status_id > 1 ? 'none' : 'block';
+                const status_id = parseInt(container.dataset.statusid, 10) || 0;
+                menu.finish_maintenance.style.display = status_id === 2 ? 'block' : 'none';
+                // Planned (1): allow delete before work starts; Completed (3): allow cleanup of history row.
+                menu.delete.style.display = (status_id === 1 || status_id === 3) ? 'block' : 'none';
                 menu.cancel_maintenance.style.display = status_id > 1 ? 'none' : 'block';
                 menu.modify.style.display = 'none';
 
