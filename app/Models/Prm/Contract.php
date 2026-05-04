@@ -101,74 +101,7 @@ class Contract
     }
     return DV::error($created ? 'Create failed.' : 'Update failed.');
 }
-    // public function saveContract($arr = [], $id = null, $ss = null)
-    // {
-    //     $id = $id ?? $this->id;
-    //     $ss = $ss ?? $this->userInfo;
-    //     $subs_id = $ss->subs_id ?? getCurrentSubsId(true);
 
-    //     $v_rule = [
-    //         'tenant_id'        => '1|number|exists=tenants.id',
-    //         'legal_name'       => '0|string|0-100',
-    //         'business_type_id' => '1|number|exists=business_types.id',
-    //         'space_type_id'    => '1|number|exists=space_types.id',
-    //         'status_id'        => '1|number|default = 1', //-- 1=active, 2=expired, 3=terminated
-    //         'space_id'         => '1|number|exists=building_spaces.id',
-    //         // 'space_status_id'  => '1|number|in=3,4', // Reserved | Occupied
-    //         'sqm_size'         => '0|number',
-    //         'price'            => '0|number',
-    //         'price_type'       => '0|string|default=sqm',
-    //         'start_date'       => '1|date',
-    //         'end_date'         => '1|date',
-    //         'deposit'   => '0|number',
-    //         'deposit_remarks'  => '0|string|0-255',
-    //         'remarks'          => '0|string|0-255',
-    //     ];
-    //     $legal_name_char = ['@', ',', '.', '#'];
-
-    //     $res = DBX::validateObject($arr, $v_rule, 1, ['legal_name' => $legal_name_char], $ss->lang, 0, null);
-    //     if ($res->error) return DV::error($res->error);
-    //     // $allowSign = ['$', '#', '@', '!', '.', '-', '_', '=', '?'];
-    //     $inputs = $res->values;
-    //     $d = (object) $arr;
-    //     $space_id = $d->space_id;
-    //     $tenant_id = $inputs['tenant_id'] ?? null;
-    //     $bookingPhoneValidation = self::validateBookingTenantPhone( $space_id, $tenant_id, true);
-    //     if (!($bookingPhoneValidation->status ?? false)) {
-    //         return DV::error($bookingPhoneValidation->message ?? 'Please create tenant before creating contract.');
-    //     }
-    //     $dup_id = self::checkDuplicateContract($space_id ?? null, $id);
-    //     if ($dup_id) {
-    //         return DV::error('This space already has a contract.');
-    //     }
-    //     $created = !$id;
-    //     if ($created) {
-    //         // New contract is Active when start date is today/past, otherwise Pending.
-    //         $today = date('Y-m-d');
-    //         $isActiveNow = !empty($inputs['start_date']) && $inputs['start_date'] <= $today;
-    //         $inputs['status_id'] = $isActiveNow ? self::getActiveStatusId() : self::getPendingStatusId();
-    //     }
-    //     $id = DBX::saveData($ss, 'contracts', ['id' => $id], $inputs, [], 1);
-    //     if ($id) {
-    //         // Mark the unit (space) as Occupied when a contract uses it
-    //         $occupiedStatusId = self::getSpaceOccupiedStatusId();
-    //         if ($space_id && $occupiedStatusId) {
-    //             DB::table('building_spaces')->where('id', $space_id)->update(['status_id' => $occupiedStatusId]);
-    //         }
-    //         $hasActive = DB::table('contracts')
-    //             ->where('tenant_id', $inputs['tenant_id'])
-    //             ->whereDate('end_date', '>=', now())
-    //             ->exists();
-
-    //         DB::table('tenants')->where('id', $inputs['tenant_id'])
-    //             ->update(['status_id' => $hasActive ? 2 : 3]); // 2=Active, 3=Inactive
-    //     }
-    //     if ($id > 0) {
-    //         return DV::depends(1, ['contracts' => $inputs, 'id' => $id]);
-    //     }
-
-    //     return DV::error($created ? 'Create failed.' : 'Update failed.');
-    // }
 
     public static function getPendingStatusId()
     {
@@ -832,8 +765,8 @@ class Contract
             ->select('space_id')
             ->first();
         $effectiveOldSpaceId = !empty($latestRenewal->space_id)
-            ? (int) $latestRenewal->space_id
-            : (int) $old->space_id;
+            ? $latestRenewal->space_id
+            : $old->space_id;
         $v_rule = [
             'start_date' => '1|date',
             'end_date'   => '1|date',
@@ -932,120 +865,7 @@ class Contract
             'contract_id' => $old->id
         ]);
     }
-    // public function renewContract($arr = [], $id = null, $ss = null)
-    // {
-    //     $id = $id ?? $this->id;
-    //     $ss = $ss ?? $this->userInfo;
 
-    //     if (!$id) return DV::error('Contract not found');
-
-    //     $old = DB::table('contracts')->where('id', $id)->first();
-    //     if (!$old) return DV::error('Contract not found');
-    //     if ($old->status_id == 3) {
-    //         return DV::error('Terminated contract cannot be renewed');
-    //     }
-
-
-    //     $v_rule = [
-    //         'start_date' => '1|date',
-    //         'end_date'   => '1|date',
-    //         'price'      => '0|number',
-    //         'price_type' => '0|string|default=sqm',
-    //         'remarks'    => '0|string|0-255',
-    //         'space_id'   => '0|number|exists=building_spaces.id',
-    //     ];
-
-    //     $res = DBX::validateObject($arr, $v_rule, 1, [], $ss->lang, 0, null);
-    //     if ($res->error) return DV::error($res->error);
-
-    //     $inputs = $res->values;
-
-    //     $today = date('Y-m-d');
-
-    //     if ($old->status_id == 1 && strtotime($inputs['start_date']) < strtotime($old->end_date)) {
-    //         return DV::error('New start date must be on or after current end date');
-    //     }
-    //     if ($old->status_id == 2 && $inputs['start_date'] < $today) {
-    //         return DV::error('Renew start date must be today or later');
-    //     }
-
-    //     if ($inputs['end_date'] < $today) {
-    //         return DV::error('End date cannot be in the past');
-    //     }
-
-    //     if ($inputs['end_date'] <= $inputs['start_date']) {
-    //         return DV::error('End date must be after start date');
-    //     }
-
-    //     $new_space_id = isset($inputs['space_id']) && $inputs['space_id'] ? $inputs['space_id'] : $old->space_id;
-    //     if ($new_space_id && $new_space_id != $old->space_id) {
-    //         $dup_id = self::checkDuplicateContract($new_space_id, $old->id);
-    //         if ($dup_id) {
-    //             return DV::error('The selected unit already has a contract.');
-    //         }
-    //     }
-
-    //     // Renew = update existing contract (new period); do NOT insert a new row in contracts.
-    //     // Renewal data (period, date, etc.) is stored only in contract_renewals.
-    //     // When unit code is changed on renew: do NOT update contract.space_id yet; it will be updated
-    //     // when current date equals the renewal start_date (see applyPendingRenewalUnitChanges).
-    //     $unitChanged = $new_space_id && $old->space_id !== $new_space_id;
-    //     $updateContract = [
-    //         'start_date' => $inputs['start_date'],
-    //         'end_date'   => $inputs['end_date'],
-    //         'price'      => $inputs['price'] ?? $old->price,
-    //         'price_type' => $inputs['price_type'] ?? $old->price_type,
-    //         'remarks'    => $inputs['remarks'] ?? $old->remarks,
-    //     ];
-    //     if (!$unitChanged) {
-    //         $updateContract['space_id'] = $new_space_id ?: $old->space_id;
-    //     }
-
-    //     DB::beginTransaction();
-
-    //     $updated = DBX::saveData($ss, 'contracts', ['id' => $old->id], $updateContract, [], 1);
-    //     if (!$updated) {
-    //         DB::rollBack();
-    //         return DV::error('Renew failed');
-    //     }
-
-    //     // When unit code is unchanged on renew: set new space to Occupied (contract already updated above).
-    //     // When unit code is changed: defer space status and contract.space_id update until renewal start_date.
-    //     if (!$unitChanged && $new_space_id) {
-    //         $occupiedId = self::getSpaceOccupiedStatusId();
-    //         if ($occupiedId) {
-    //             DB::table('building_spaces')->where('id', $new_space_id)->update(['status_id' => $occupiedId]);
-    //         }
-    //     }
-
-    //     // Store renewal record only in contract_renewals (not in contracts table)
-    //     $now = getNowTime();
-    //     $renewalRow = [
-    //         'contract_id'   => $old->id,
-    //         'space_id'     => $new_space_id ?: $old->space_id,
-    //         'renewal_date' => $today,
-    //         'start_date'   => $inputs['start_date'],
-    //         'end_date'     => $inputs['end_date'],
-    //         'status'       => 'active',
-    //         'remarks'      => trim((string) ($inputs['remarks'] ?? '')),
-    //         'created_at'   => $now,
-    //         'updated_at'   => $now,
-    //         'create_uid'   => $ss->user_id ?? null,
-    //         'update_uid'   => $ss->user_id ?? null,
-    //         'create_user'  => $ss->full_name ?? null,
-    //         'update_user'  => $ss->full_name ?? null,
-    //     ];
-    //     if (isset($ss->branch_id) && $ss->branch_id !== null && $ss->branch_id !== '') {
-    //         $renewalRow['branch_id'] = $ss->branch_id;
-    //     }
-    //     DB::table('contract_renewals')->insert($renewalRow);
-
-    //     DB::commit();
-
-    //     return DV::depends(1, [
-    //         'contract_id' => $old->id
-    //     ]);
-    // }
 
     public static function applyPendingRenewalUnitChanges()
     {
@@ -1117,67 +937,6 @@ class Contract
         return $row;
     }
 
-
-    // static function generateContractMonths($contract_id, $start_date = null, $end_date = null, $ss = null)
-    // {
-    //     if (!$start_date || !$end_date) {
-    //         $contract = DB::table('contracts')
-    //             ->where('id', $contract_id)
-    //             ->select('start_date', 'end_date')
-    //             ->first();
-
-    //         $start_date = $contract->start_date;
-    //         $end_date   = $contract->end_date;
-    //     }
-
-    //     try {
-    //         $start = \Carbon\Carbon::parse($start_date)->startOfDay();
-    //         $end   = \Carbon\Carbon::parse($end_date)->endOfDay();
-    //     } catch (\Exception $e) {
-    //         \Log::error("Invalid date format in generateContractMonths", [
-    //             'contract_id' => $contract_id,
-    //             'start_date'  => $start_date,
-    //             'end_date'    => $end_date,
-    //             'error'       => $e->getMessage()
-    //         ]);
-    //         return [];
-    //     }
-
-    //     if ($end->lt($start)) {
-    //         \Log::warning("Contract end date is before start date", [
-    //             'contract_id' => $contract_id,
-    //             'start'       => $start_date,
-    //             'end'         => $end_date
-    //         ]);
-    //         return [];
-    //     }
-
-    //     $months = [];
-    //     $current = $start->copy()->startOfMonth();
-
-    //     while ($current->lte($end)) {
-    //         $monthStart = $current->copy()->startOfMonth();
-    //         $monthEnd   = $current->copy()->endOfMonth();
-
-    //         if ($current->format('Y-m') === $start->format('Y-m') && $start->day > 1) {
-    //             $monthStart = $start->copy();
-    //         }
-    //         if ($monthEnd->gt($end)) {
-    //             $monthEnd = $end->copy();
-    //         }
-    //         $monthLabel = $current->format('M Y');
-
-    //         $months[] = [
-    //             'month'      => $monthLabel,
-    //             'start_date' => $monthStart->format('j-M-Y'),
-    //             'end_date'   => $monthEnd->format('j-M-Y'),
-    //         ];
-
-    //         $current->addMonthNoOverflow();
-    //     }
-
-    //     return $months;
-    // }
 
     static function generateContractMonths($contract_id, $start_date = null, $end_date = null, $ss = null)
     {
