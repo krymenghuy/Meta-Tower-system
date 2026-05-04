@@ -456,7 +456,7 @@ class BuildingSpace
             return DV::error('Invalid email format');
         }
     }
-    
+
     $today = date('Y-m-d');
     if ($d->booking_date != $today) {
         return DV::error('Booking date must be today.');
@@ -585,7 +585,7 @@ public function updateBooking($arr = [], $ss = null)
     $booker_email = $d->booker_email ?? null;
     if ($booker_email !== null && $booker_email !== '') {
 
-      
+
 
         if (!filter_var($booker_email, FILTER_VALIDATE_EMAIL)) {
             return DV::error('Invalid email format');
