@@ -35,8 +35,8 @@ var ServiceComponent = (() => {
             transTitle: "titles.Charge As",
             className: "align-middle text-nowrap",
             data: (data) => {
-                const unit_type = data.unit_type == "hour" ? 'Hour' : 'One Time';
-                return `<span class="badge text-info bg-info-subtle border border-info text-nowrap" style="min-width:70px;">${unit_type}</span>`;
+                // const unit_type = data.unit_type == "hour" ? 'Hour' : 'One Time';
+                return `<span class="badge text-info bg-info-subtle border border-info text-nowrap" style="min-width:70px;">${data.unit_type}</span>`;
             }
         },
         {
@@ -355,13 +355,13 @@ const CreateServicePriceDialog = (() => {
                 createContent: () => {
                     return [
                         `<div class="row justify-content-center">
-                            <div class="col-6">
+                            <div class="col-12">
                                 <div class="material-input outlined">
                                     <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder="" />
                                     <label style="padding-left:6px;color:#777777;">Name</label>
                                 </div>
                             </div>
-                            <div class="col-6">
+                            <div class="col-12">
                                 <div class="material-input outlined">
                                     <select data-style="material" name="service_types" class="data-input form-control" data-field="service_type_id" placeholder="Service Type">
                                     </select>
@@ -377,7 +377,12 @@ const CreateServicePriceDialog = (() => {
                                 <div class="material-input outlined">
                                     <select data-style="material" name="unit_type" class="data-input form-control" data-field="unit_type" placeholder="Unit Type">
                                         <option value="hour">Hour</option>
+                                        <option value="per_unit">Per Unit</option>
                                         <option value="one_time">One Time</option>
+                                        <option value="per_point">Per Point</option>
+                                        <option value="per_meter">Per m</option>
+                                        <option value="per_sqm">Per m²</option>
+                                        <option value="per_m3">Per m³</option>
                                     </select>
                                 </div>
                             </div>

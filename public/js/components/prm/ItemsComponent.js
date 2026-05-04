@@ -261,7 +261,6 @@ const CreateItemsDialog = (() => {
                 createContent: () => {
                     return [
                         `<div class="row justify-content-center">
-
                            <div class="col-12">
                                 <div class="material-input outlined">
                                     <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder=" " />

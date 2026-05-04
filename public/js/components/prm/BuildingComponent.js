@@ -21,10 +21,10 @@ var BuildingComponent = ( () => {
                     <!-- <img class="btn-view-member-photo" data-id="${data.id}" src="${data.image_url || `${main_view.base_url}/assets/images/meta/building-default.jfif`}" alt="" style="width: 50px; height: 50px; border-radius: 6px; margin-right: 10px; object-fit: cover;"/> -->
 
                   <div class="d-flex flex-column">
-                    <span class="text-prm-custom d-inline-block" style="min-width:150px; ">
+                    <span class="text-prm-custom fs-bold d-inline-block" style="min-width:150px; ">
                         ${data.name ?? ''}
                     </span>
-                    <small class="text-muted text-break" style="max-width:250px;">
+                    <small class="text-golden text-break" style="max-width:250px;">
                         ${data.address ?? ''}
                     </small>
                   </div>
@@ -32,24 +32,35 @@ var BuildingComponent = ( () => {
             `,
         },
         {
-            title: "Total Area",
+            title: "Total Areas",
             className: "align-middle",
             data: (data) => {
                 let area = data.total_area ? parseFloat(data.total_area).toLocaleString() : '';
-                return `<span class="text-prm-custom">${area}${area ? ' (sqm)' : ''}</span>`;
+                return `<div class="d-flex flex-column">
+                    <span class="text-start  text-prm-custom"><span>${area}${area ? ' sqm' : ''}</span></span>
+                    <span class="text-muted">Building Area</span>
+                </div>`;
             },
         },
         {
-            title: "Total Floor",
+            title: "Total Floors",
             className: "align-middle",
-            data: (data) => `
-                <span class="text-prm-custom">${data.total_floor ?? '0'}</span>
-            `,
+            data: (data) =>{
+                return `<div class="d-flex flex-column">
+                    <span class="text-capitalize text-start text-prm-custom">${data.total_floor ?? '0'}</span></span>
+                    <span class="text-muted">Floors</span>
+                </div>`;
+            } 
         },
         {
-            title: "Total Spaces",
+            title: "Total Units",
             className: "align-middle",
-            data: (data) => `<span class="text-prm-custom">${data.total_space ?? '0'}</span>`,
+            data: (data) =>{
+                return `<div class="d-flex flex-column">
+                    <span class="text-capitalize text-start text-prm-custom">${data.total_space ?? '0'}</span></span>
+                    <span class="text-muted">Units</span>
+                </div>`;
+            } 
         },
         // {
         //     title: "Occupancy",
