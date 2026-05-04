@@ -178,9 +178,9 @@ var InvoiceComponent = (() => {
             transTitle: "titles.Action",
             className: "col_action align-middle text-center text-nowrap",
             data: data => {
-                if (data.payment_status_id === 4) {
-                    return "";
-                }
+                // if (data.payment_status_id === 4) {
+                //     return "";
+                // }
 
                 return `<div class="d-flex justify-content-center">
                     <a href="javascript:void(0)" class="btn--Options btn_leave_action"
@@ -509,7 +509,7 @@ var InvoiceComponent = (() => {
                         ? "block"
                         : "none";
                 menu.receive_invoice.style.display =
-                    // statusId === 2 || statusId === 3 || statusId === 4 ? "block" : "none";
+                    statusId === 2 || statusId === 3 || statusId === 4 ? "block" : "none";
                     statusId === 2 || statusId === 3 ? "block" : "none";
                 menu.delete_invoice.style.display =
                     statusId === 2 ? "block" : "none";
@@ -816,6 +816,13 @@ const InvoiceDialog = (() => {
                     if (!matchedSpace) {
                         return cv_interact.error("No space/contract found");
                     }
+                    const availableMonths = months.filter(
+                        m => String(m.contract_id) === String(matchedSpace.contract_id)
+                    );
+
+                    if (!availableMonths || availableMonths.length === 0) {
+                        return cv_interact.error("Rent has already reached the final month of the contract.");
+                    }
 
                     // 3. Popup Initialization
                     let rentDiv = null;
@@ -950,7 +957,7 @@ const InvoiceDialog = (() => {
                             if (elEndDate)
                                 elEndDate.value = matchedMonth.end_date || "";
 
-                            [rentDiv.querySelector('[data-field="discount"]'), 
+                            [rentDiv.querySelector('[data-field="discount"]'),
                             rentDiv.querySelector('[data-field="tax_rate"]')].forEach(input => {
                                 if (!input) return;
                                 input.addEventListener('input', (e) => {
@@ -1419,7 +1426,7 @@ const InvoiceDialog = (() => {
                             el?.addEventListener("change", recalc)
                         );
 
-                            
+
                         },
 
                         onConfirm(data, btn, ibMe) {
