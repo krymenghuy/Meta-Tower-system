@@ -14,7 +14,7 @@ var ServiceComponent = (() => {
     mThis.cols = [
 
         {
-            title: "",
+            transTitle: "",
             className: "align-middle text-capitalize",
         },
         {

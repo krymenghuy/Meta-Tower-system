@@ -21,18 +21,16 @@ var ContractComponent = new (function () {
             className: "align-middle",
         },
         {
-            transTitle: "titles.Name",
+            transTitle: "titles.Tenant",
             className: "align-middle text-nowrap",
-            data: (data, index) => `
-                        <span class="text-prm-custom">${data.tenant_name ?? ''}</span>`,
-        },
-        {
-            transTitle: "titles.Contact Info",
-            className: "align-middle text-nowrap",
-            data: (data) => {
-                return `<span class="d-block">${data.phone_number ?? ''}</span>
-                        <span class="d-block text-primary">${data.email}</span>`;
-            }
+            data: (data,index) => {
+                return `
+                        <div class="d-flex flex-column">
+                            ${data.tenant_name ?? ''}
+                            <hr class="m-0 border border-secondary border-3 opacity-75">
+                           ${data.phone_number ?? ''}
+                        </div>`;
+                }
         },
          {
             transTitle: "titles.Start Date",
@@ -57,6 +55,13 @@ var ContractComponent = new (function () {
                 return `<span class="text-nowrap text-prm-custom">${data.business_type ?? ''}</span>`;
             }
         },
+         {
+            transTitle: "titles.Type",
+            className: "align-middle",
+            data: (data) => {
+                return `<span class="text-nowrap text-prm-custom">${data.space_type ?? ''}</span>`;
+            }
+        },
         {
             transTitle: "titles.Unit",
             className: "align-middle",
@@ -64,13 +69,7 @@ var ContractComponent = new (function () {
                 return `<span class="px-2 py-1 bg-prm-custom text-nowrap text-white rounded font-medium">${data.space_code ?? ''}</span>`;
             }
         },
-        {
-            transTitle: "titles.Type",
-            className: "align-middle",
-            data: (data) => {
-                return `<span class="text-nowrap text-prm-custom">${data.space_type ?? ''}</span>`;
-            }
-        },
+
         {
             transTitle: "titles.Price",
             className: "align-middle",
@@ -159,7 +158,7 @@ var ContractComponent = new (function () {
             },
         },
         {
-            transTitle: "titles.Updated By",
+            transTitle: "titles.Last Updated",
             className: 'align-middle text-nowrap',
             data: (data, index, tr) => {
                 return `<div class="d-flex flex-column">
@@ -937,7 +936,7 @@ const ContractDialog = (() => {
                 applyNumberInput(me.controls.sqm_size);
                 applyNumberInput(me.controls.price);
 
-                
+
 
             },
 
