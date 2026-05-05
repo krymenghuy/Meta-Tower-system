@@ -555,7 +555,8 @@ Search input class, to be applied to input
 }
 
 .input-search:focus {
-    border-color: #3b2d75;   /* matches dialog header tone */
+    border-color: #3b82f6;   /* matches dialog header tone */
     /* box-shadow: 0 0 0 2px rgba(59,45,117,.15); */
+
 }
 
