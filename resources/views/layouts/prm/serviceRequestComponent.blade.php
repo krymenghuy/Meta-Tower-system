@@ -3,8 +3,7 @@
         <div class="row g-3 align-items-center">
             <div class="col-12 col-md-6 col-lg-3">
                 <div class="position-relative w-100">
-                <input type="text" class="form-control rounded-2 pe-5 filter-field " id="_search_service_request" placeholder="Search by Tenant or Request No">
-                <i class="fa fa-search fs-6 text-muted position-absolute" style="right: 15px; top: 50%; transform: translateY(-50%);"></i>
+                <input type="text" class="rounded-2 filter-field input-search" id="_search_service_request" placeholder="Search by request no or tenant">
             </div>
         </div>
             <div class="col-12 col-md-6 col-lg-2">

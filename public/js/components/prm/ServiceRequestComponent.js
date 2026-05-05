@@ -27,7 +27,7 @@ var ServiceRequestComponent = (function () {
         },
         {
             transTitle: "titles.Tenant",
-            className: "align-middle text-capitalize",
+            className: "align-middle",
             data: (data) => {
                 return ` <div class="d-flex text-nowrap align-items-center gap-2">
                 <div>
