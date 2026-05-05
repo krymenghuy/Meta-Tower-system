@@ -43,7 +43,7 @@ var ServiceComponent = (() => {
             transTitle: "titles.Price",
             className: "align-middle",
             data: (data) => {
-                
+
                 const currency = data.currency_code ?? 'USD';
                 const unit_type = data.unit_type == "hour" ? 'Hour' : data.unit_type == "one_time" ? 'One Time' : '';
                 const formattedPrice = VSMoney.formatAmount(data.price, currency);
@@ -135,7 +135,6 @@ var ServiceComponent = (() => {
             // if (!AuthManager.allowed(240)) return;
             CreateServicePriceDialog.show(op);
         };
-
 
         mThis.pr_tbl = mThis.ServiceListView.getListContainer();
         const sh_parent = mThis.pr_tbl.parentElement;

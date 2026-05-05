@@ -229,8 +229,6 @@ var MaintenanceComponent = (() => {
                 menu.cancel_maintenance.style.display = status_id > 1 ? 'none' : 'block';
                 menu.modify.style.display = 'none';
 
-
-
             },
             onClick: (menuLink, id, name) => {
                 if (name === "modify") {

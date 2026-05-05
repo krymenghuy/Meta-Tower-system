@@ -67,12 +67,38 @@ class Building //extends Model
             );
         }
 
-        $id = DBX::saveData($ss, 'buildings', ['id' => $id], $inputs, [], 1);
-        if ($id > 0) {
-            return DV::depends(1, ['buildings' => $inputs, 'id' => $id]);
-        }
+        DB::beginTransaction();
+        try {
+            $id = DBX::saveData($ss, 'buildings', ['id' => $id], $inputs, [], 1);
+            if ($id <= 0) {
+                DB::rollBack();
+                return DV::error($isCreate ? 'Create failed.' : 'Update failed.');
+            }
 
-        return DV::error($isCreate ? 'Create failed.' : 'Update failed.');
+            if ($isCreate) {
+                $total_floor = (int) $total_floor;
+                for ($floor_no = 1; $floor_no <= $total_floor; $floor_no++) {
+                    $floor_result = $this->addFloor([
+                        'id' => 0,
+                        'building_id' => $id,
+                        'floor_number' => $floor_no,
+                        'name' => "Floor {$floor_no}",
+                        'description' => null,
+                    ], $id, $ss);
+
+                    if (is_object($floor_result) && !empty($floor_result->error)) {
+                        DB::rollBack();
+                        return DV::error($floor_result->error);
+                    }
+                }
+            }
+
+            DB::commit();
+            return DV::depends(1, ['buildings' => $inputs, 'id' => $id]);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return DV::error($isCreate ? 'Create failed.' : 'Update failed.');
+        }
     }
 
     public function getListBuilding($arr, $ss = null)
