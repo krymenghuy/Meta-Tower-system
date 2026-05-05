@@ -131,14 +131,14 @@ class BillPayment
         $ss = $ss ?? $this->userInfo;
         $d  = (object) $arr;
 
-        $date_from       = $d->date_from       ?? null;
-        $date_to         = $d->date_to         ?? null;
-        $search_value    = $d->search_value    ?? null;
-        $bill_id         = $d->bill_id         ?? null;
+        $date_from = $d->date_from ?? null;
+        $date_to = $d->date_to ?? null;
+        $search_value = $d->search_value ?? null;
+        $bill_id = $d->bill_id ?? null;
         $expense_type_id = $d->expense_type_id ?? null;
-        $status_id       = $d->status_id       ?? null;
-        $current_page    = $d->current_page    ?? 1;
-        $per_page        = $d->per_page        ?? 10;
+        $status_id = $d->status_id ?? null;
+        $current_page = $d->current_page ?? 1;
+        $per_page = $d->per_page ?? 10;
 
         if (!is_numeric($current_page)) $current_page = 1;
 
@@ -277,7 +277,7 @@ class BillPayment
         $paid = DB::table('bill_payments')
             ->where('id', $id)
             ->where('status_id', 1)
-            ->where('branch_id', $ss->branch_id)
+            // ->where('branch_id', $ss->branch_id)
             ->selectRaw('bill_id, amount')
             ->first();
 
@@ -289,8 +289,9 @@ class BillPayment
         DB::beginTransaction();
         try {
             DB::table('bill_payments')->where('id', $id)->update([
-                'status_id'      => 2,
-                'updated_at'     => getNowTime(),
+                'status_id' => 2,
+                'note' => $d->note ?? null,
+                'updated_at' => getNowTime(),
             ]);
 
             $total_paid = floatval(
@@ -325,4 +326,8 @@ class BillPayment
             return DV::error('Something went wrong on server side');
         }
     }
+
+    
+
+
 }

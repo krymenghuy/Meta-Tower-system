@@ -31,9 +31,9 @@ class PurchaseOrder extends VSModel
         $ss = $ss ?? $this->userInfo;
 
         $v_rule = [
-            'vendor_id' => '1|number|exists=vendors.id|Vendor identity is not correct',
+            'vendor_id' => '1|number|exists=vendors.id|text=Please select valid Vendor',
             'po_number' => '0|string|0-25',
-            'po_date' => '0|timestamp',
+            'po_date' => '1|timestamp|text=PO date is required',
             'remarks' => '0|string|1-255',
             'items' => '1|array',
         ];
@@ -46,12 +46,18 @@ class PurchaseOrder extends VSModel
         $items = $inputs['items'] ?? [];
         $totals = $arr['totals'] ?? [];
         $po_date = convertDate($inputs['po_date'] ?? null);
+        $today = date('Y-m-d');
         if (!$po_date || !strtotime($po_date)) {
-            $po_date = date('Y-m-d');
+            $po_date = $today;
         }
-        if ($po_date > date('Y-m-d')) {
+
+        if($po_date < $today){
+            return DV::error('PO date cannot be in the past');
+        }
+        if ($po_date > $today) {
             return DV::error('PO date cannot be later than today');
         }
+
         $inputs['po_date'] = $po_date;
         $inputs['sub_total'] = $totals['subtotal'] ?? 0;
         $inputs['discount_value'] = $totals['discount_value'] ?? 0;

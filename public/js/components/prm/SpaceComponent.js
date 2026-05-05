@@ -957,13 +957,13 @@ const CreateBookingDialog = (() => {
                             <div class="col-6">
                                 <div class="material-input outlined">
                                     <input type="number" name="booker_phone" class="data-input form-control" data-field="booker_phone" placeholder=" " />
-                                    <label style="color:#777777;padding-left:6px;">Phone Number</label>
+                                    <label style="color:#777777;padding-left:6px;">Booker Phone</label>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="material-input outlined">
                                     <input type="email" name="booker_email" class="data-input form-control" data-field="booker_email" placeholder=" " />
-                                    <label style="color:#777777;padding-left:6px;">Email</label>
+                                    <label style="color:#777777;padding-left:6px;">Email <span style="color:#bbbbbb; font-size:0.8em; font-weight:400;">(Optional)</span></label>
                                 </div>
                             </div>
                             <div class="col-6">
@@ -1026,6 +1026,9 @@ const CreateBookingDialog = (() => {
                         }
                         e.target.value = v;
                     });
+                    
+
+
 
                 },
                 onShow: (me) => {
@@ -1056,6 +1059,16 @@ const CreateBookingDialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
+                    const today = new Date();
+
+                    const dd = String(today.getDate()).padStart(2, '0');
+                    const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+                    const mm = months[today.getMonth()];
+                    const yyyy = today.getFullYear();
+
+                    const formattedDate = `${dd}-${mm}-${yyyy}`;
+
+                    me.controls.booking_date.value = formattedDate;
                     const c = me.controls;
                     if (!c) return;
                     const b = me.dataOptions?.booking ?? me.detail?.booking;

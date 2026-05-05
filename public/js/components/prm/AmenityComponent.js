@@ -58,7 +58,7 @@ var AmenityComponent = (() => {
             title: "Capacity",
             className: "align-middle text-nowrap text-center",
             data: (data) =>
-                `<span class="text-primary-custom">${data.max_capacity ?? "-"}</span> <small class="text-muted">PAX/Room</small>`,
+                `<span class="text-prm-custom">${data.max_capacity ?? "-"}</span> <small class="text-muted">PAX/Room</small>`,
         },
         {
             title: "Bookable",
@@ -517,24 +517,17 @@ const AmenityDialog = (() => {
                 keyboard: true,
 
                 createContent: () => {
-                    return [
-                        `
-                    <div class="row g-3">
-                        <div class="col-6">
+                    return [`<div class="row">
+                        <div class="col-12">
                             <div class="material-input outlined">
                                 <input type="text" name="amenity" required class="data-input form-control" data-field="name" placeholder=" " />
                                 <label style="color:#777777;padding-left:6px;">Name</label>
                             </div>
                         </div>
+                       
                         <div class="col-6">
                             <div class="material-input outlined">
-                                <input type="text" name="code" class="data-input form-control" data-field="code" placeholder=" " />
-                                <label style="color:#777777; padding-left:6px;">Code <span style="color:#bbbbbb; font-size:0.8em; font-weight:400;">(Optional)</span></label>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="material-input outlined">
-                                <select data-style="material" name="building_id" class="data-input form-control" data-field="building_id" placeholder="Building Name">
+                                <select data-style="material" name="building_id" class="data-input form-control" data-field="building_id" placeholder="Building">
                                 </select>
                             </div>
                         </div>
@@ -546,7 +539,13 @@ const AmenityDialog = (() => {
                         </div>
                         <div class="col-6">
                             <div class="material-input outlined">
-                                <select data-style="material" type="text" name="category_id"  class="data-input form-control" data-field="category_id" placeholder="Amenity Category" >
+                                <input type="text" name="code" class="data-input form-control" data-field="code" placeholder=" " />
+                                <label style="color:#777777; padding-left:6px;">Code <span style="color:#bbbbbb; font-size:0.8em; font-weight:400;">(Optional)</span></label>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="material-input outlined">
+                                <select data-style="material" type="text" name="category_id"  class="data-input form-control" data-field="category_id" placeholder="Category" >
                                 </select>
                             </div>
                         </div>
@@ -562,7 +561,7 @@ const AmenityDialog = (() => {
                                 </select>
                             </div>
                         </div>
-                        <div class="col-12">
+                        <div class="col-6">
                             <div class="material-input outlined">
                                 <input type="number" name="capacity" required class="data-input form-control" data-field="max_capacity" min="0" value="0 " placeholder=" " />
                                 <label style="color:#777777;padding-left:6px;">Capacity</label>
@@ -659,7 +658,7 @@ const AmenityDialog = (() => {
                         },
                     },
                     {
-                        label: '<span vslang="buttons.Submit"></span>',
+                        label: '<span vslang="buttons.Save"></span>',
                         cssClass: "btn btn-primary",
                         click: (me, btn) => {
                             const op = me.getData();

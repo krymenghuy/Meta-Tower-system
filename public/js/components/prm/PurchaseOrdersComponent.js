@@ -498,6 +498,8 @@ var PurchaseOrdersComponent = (() => {
                     let p = me.getData();
                     let po_data = me.purchaseItemsView.getData();
                     let items = po_data.items || [];
+                    console.log(6666, p);
+
                    if (!me.hasValidPOItems(items)) {
                         return cv_interact.error('Please select at least one item before saving the purchase order.');
                     }
@@ -573,7 +575,7 @@ var PurchaseOrdersComponent = (() => {
                 });
             },
             buttons: [
-                { label: "Cancel", cssClass: "btn btn-warning", click: (me) => me.hide(false) },
+                { label: "Cancel", cssClass: "btn btn-secondary", click: (me) => me.hide(false) },
                 {
                     label: "<span>Save</span>",
                     cssClass: "btn btn-primary",
@@ -725,7 +727,7 @@ var PurchaseOrdersComponent = (() => {
             // Note: Receive dialog contentCreated and other logic can be added similarly if needed
             buttons: [
                 { label: "Cancel",
-                  cssClass: "btn btn-warning",
+                  cssClass: "btn btn-secondary",
                   click: (me) => me.hide(false)
                 },
                 { label: "<span>Save</span>",

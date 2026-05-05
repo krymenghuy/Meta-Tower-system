@@ -68,11 +68,11 @@ class BillPaymentController extends Controller
         }
 
         $d = (object)[
-            'id'             => $req->id,
-            'cancel_remarks' => $req->cancel_remarks ?? 'Cancelled by ' . ($ss->full_name ?? 'user'),
+            'id'  => $req->id,
+            'note' => $req->note ?? null ,
         ];
 
-        $x = new BillPayment();
+        $x = new BillPayment(null, $ss);
         return JDV::raw($x->cancelPayment($d, $ss));
     }
 }

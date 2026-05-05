@@ -21,10 +21,10 @@ var BuildingComponent = ( () => {
                     <!-- <img class="btn-view-member-photo" data-id="${data.id}" src="${data.image_url || `${main_view.base_url}/assets/images/meta/building-default.jfif`}" alt="" style="width: 50px; height: 50px; border-radius: 6px; margin-right: 10px; object-fit: cover;"/> -->
 
                   <div class="d-flex flex-column">
-                    <span class="text-prm-custom d-inline-block" style="min-width:150px; ">
+                    <span class="text-prm-custom fs-bold d-inline-block" style="min-width:150px; ">
                         ${data.name ?? ''}
                     </span>
-                    <small class="text-muted text-break" style="max-width:250px;">
+                    <small class="text-golden text-break" style="max-width:250px;">
                         ${data.address ?? ''}
                     </small>
                   </div>
@@ -32,24 +32,35 @@ var BuildingComponent = ( () => {
             `,
         },
         {
-            title: "Total Area",
+            title: "Total Areas",
             className: "align-middle",
             data: (data) => {
                 let area = data.total_area ? parseFloat(data.total_area).toLocaleString() : '';
-                return `<span class="text-prm-custom">${area}${area ? ' (sqm)' : ''}</span>`;
+                return `<div class="d-flex flex-column">
+                    <span class="text-start  text-prm-custom"><span>${area}${area ? ' sqm' : ''}</span></span>
+                    <span class="text-muted">Building Area</span>
+                </div>`;
             },
         },
         {
-            title: "Total Floor",
+            title: "Total Floors",
             className: "align-middle",
-            data: (data) => `
-                <span class="text-prm-custom">${data.total_floor ?? '0'}</span>
-            `,
+            data: (data) =>{
+                return `<div class="d-flex flex-column">
+                    <span class="text-capitalize text-start text-prm-custom">${data.total_floor ?? '0'}</span></span>
+                    <span class="text-muted">Floors</span>
+                </div>`;
+            } 
         },
         {
-            title: "Total Spaces",
+            title: "Total Units",
             className: "align-middle",
-            data: (data) => `<span class="text-prm-custom">${data.total_space ?? '0'}</span>`,
+            data: (data) =>{
+                return `<div class="d-flex flex-column">
+                    <span class="text-capitalize text-start text-prm-custom">${data.total_space ?? '0'}</span></span>
+                    <span class="text-muted">Units</span>
+                </div>`;
+            } 
         },
         // {
         //     title: "Occupancy",
@@ -172,13 +183,11 @@ var BuildingComponent = ( () => {
     mThis.displayFloorNumber = (container, id, totalFloor = 0) => {
         let html = '';
         container.innerHTML = '';
-        console.log(444,id);
 
         vsapi.call(`${main_view.base_url}/prm/building/list-floor`,{
                 id: id
         },null).then(res => {
             const data = res.status_code === 200 ? res.data : [];
-            console.log(444,data);
             const maxFloorNo = (data || []).reduce((max, level) => {
                 const floorNo = parseInt(level.floor_no || '0', 10);
                 return floorNo > max ? floorNo : max;
@@ -452,7 +461,7 @@ const BuildingDialog = (() => {
                         </div>
                         <div class="col-6">
                             <div class="material-input outlined">
-                                <input type="number" step="1" min="1" name="total_floor" class="data-input form-control" data-field="total_floor" placeholder=" " />
+                                <input type="number" min="1" max="999" step="1" name="total_floor" oninput="if (this.value.length > 3) this.value = this.value.slice(0,3);" class="data-input form-control" data-field="total_floor" placeholder=" " />
                                 <label style="color:#777777;padding-left:6px;">Total Floor</label>
                             </div>
                         </div>
@@ -611,7 +620,6 @@ const CreateFloorDialog = (() => {
                         const op = me.getData();
                         op.building_id = me.dataOptions.building_id;
                         op.id = me.dataOptions?.id || 0;
-                        console.log(444,op);
 
                         vsapi.call(main_view.base_url + "/prm/building/add-floor", op, btn)
                         .then((res) => {
