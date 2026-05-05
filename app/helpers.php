@@ -273,7 +273,7 @@ function processOfficialColumn(&$row, string $definition, string $format): void
 
 function setOfficialCode($branch_id,$code_control_table,$target_table,$key_field=[],$def_prefix="",$len=5,Closure $onSuccess = null){
     if (!$key_field) return null;
-    if(!$len) $len=5;
+    if(!$len) $len=4;
 
     $where_branch ="1=1";
     if($branch_id>0){
