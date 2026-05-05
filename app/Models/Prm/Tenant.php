@@ -49,11 +49,11 @@ class Tenant
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
         $v_rule = [
-            'name'            => '1|string|0-30|text=Tenant name must be provided',
-            'sex'             => '1|choice|F,M',
-            'date_of_birth'   => '1|date',
-            'nationality_id'  => '1|number',
+            'name'            => '1|string|0-30|text=Tenant name is required',
+            'sex'             => '1|choice|F,M|text=Please select a valid gender',
+            'date_of_birth'   => '1|date|text=Date of birth is required',
             'legal_name'      => '1|string|0-100',
+            'nationality_id'  => '1|number',
             'national_id'     => '0|string|0-50',
             'passport_number' => '0|string|0-50',
             'phone_number'    => '0|string',

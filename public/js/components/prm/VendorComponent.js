@@ -420,8 +420,6 @@ var VendorComponent = (() => {
     return mThis;
 })();
 
-
-
 const CreateVendorDialog = (() => {
     const self = {};
     let dialog = null;
@@ -435,68 +433,65 @@ const CreateVendorDialog = (() => {
                 keyboard: true,
                 createContent: () => {
                     return `
-                <div class="vendor-form row p-1">
-                        <div class="col-12 row pb-3">
+                <div class="vendor-form">
+                        <div class="col-12 row g-3">
                             <div class="col-12 col-md-6">
-                               <!-- <label style="color:#777777;padding-left:6px;">Name</label> -->
-                                <div class="material-input outlined">
+                                <div class="vs-material-field">
                                     <input type="text" name="name" class="data-input form-control" data-field="name" placeholder=" " />
-                                    <label style="color:#777777;padding-left:6px;">Name</label>
+                                    <label>Name</label>
                                 </div>
                             </div>
                              <div class="col-12 col-md-6">
-                                <div class="material-input outlined">
+                                <div class="vs-material-field">
                                     <input type="text" name="tax_number" class="data-input form-control" data-field="tax_number" placeholder=" " />
-                                    <label style="color:#777777;padding-left:6px;">Tax Number (optional)</label>
+                                    <label>Tax Number (optional)</label>
                                 </div>
                             </div>
                             <div class="col-12 col-md-6">
-                                <div class="material-input outlined">
+                                <div class="vs-material-field">
                                     <select data-style="material" name="vendor_type_id" class="data-input form-control" data-field="vendor_type_id" placeholder="Vendor Type">
                                     <!-- <option value="" selected hidden></option> -->
                                     </select>
                                 </div>
                             </div>
                              <div class="col-12 col-md-6">
-                                <div class="material-input outlined">
+                                <div class="vs-material-field">
                                     <select data-style="material" name="vendor_category_id" class="data-input form-control" data-field="category_id" placeholder="Category">
                                     </select>
                                 </div>
                             </div>
 
                             <div class="col-12 col-md-6">
-                                <div class="material-input outlined">
+                                <div class="vs-material-field">
                                     <input type="number" name="phone_number" class="data-input form-control" data-field="phone_number" placeholder=" " />
-                                    <label style="color:#777777;padding-left:6px;">Phone Number </label>
+                                    <label>Phone Number</label>
 
                                 </div>
                             </div>
                             <div class="col-12 col-md-6">
-
-                                <div class="material-input outlined">
+                                <div class="vs-material-field">
                                     <input type="email" name="email" class="data-input form-control" data-field="email" placeholder=" " />
-                                    <label style="color:#777777;padding-left:6px;">Email</label>
+                                    <label>Email</label>
                                 </div>
 
                             </div>
                             <div class="col-12 col-md-6">
-
-                                <div class="material-input outlined">
+                                <div class="vs-material-field">
                                     <input type="text" name="contact_person" class="data-input form-control" data-field="contact_person" placeholder=" " />
-                                    <label style="color:#777777;padding-left:6px;">Contact Person</label>
+                                    <label>Contact Person</label>
                                 </div>
                             </div>
                             <div class="col-12 col-md-6">
 
-                                <div class="material-input outlined">
+                                <div class="vs-material-field">
                                     <input type="text" name="contact_phone" class="data-input form-control" data-field="contact_phone" placeholder=" " />
-                                    <label style="color:#777777;padding-left:6px;">Contact Phone</label>
+                                    <label>Contact Phone</label>
                                 </div>
                             </div>
                             <div class="col-12">
-                                <div class="material-input outlined">
+                                <div class="vs-material-field">
                                     <textarea name="address" class="data-input form-control" data-field="address" placeholder=" "></textarea>
-                                    <label style="color:#777777;padding-left:6px;">Address</label>
+                                    <label>Address</label>
                                 </div>
                             </div>
                          </div>

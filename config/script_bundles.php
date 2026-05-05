@@ -43,26 +43,29 @@ return [
             'output_file' => '/dist/js/dms.primary-defer.js?v=53',
             'files' => [
                 'https://cdn.vectoraclouds.com/frontcore/sanitizer/sanitizer.js',
-                'https://cdn.vectoraclouds.com/frontcore/utils/vsutils.v2.js',
-                'https://cdn.vectoraclouds.com/frontcore/components/FilterPanel.js',
+                'https://cdn.vectoraclouds.com/beta-frontcore/utils/vsutils.v2.js',
+                'https://cdn.vectoraclouds.com/beta-frontcore/components/FilterPanel.js',
                 '/assets/js/sweetalert2.all.min.js',
                 '/assets/js/sweetalert2.toast.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/ExpandableTableRowConfig.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/UMExpandItemView.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/VSDropdownMenu.js',
 
-                'https://cdn.vectoraclouds.com/vfc/vfc.utils.configSelect.js',
+                'https://cdn.vectoraclouds.com/beta-vfc/vfc.utils.configSelect.js',
                 'https://cdn.vectoraclouds.com/vfc/vfc.utils.inputFormat.js',
-                'https://cdn.vectoraclouds.com/vfc/vfc.form.js',
+                'https://cdn.vectoraclouds.com/beta-vfc/vfc.form.js',
+                'https://cdn.vectoraclouds.com/beta-vfc/vfc.material.js',
 
-                'https://cdn.vectoraclouds.com/frontcore/components/GeneralDialog.bs.v2.js',
+                'https://cdn.vectoraclouds.com/beta-frontcore/components/GeneralDialog.bs.v2.js',
                 // 'https://cdn.vectoraclouds.com/frontcore/components/GeneralDialog.bs5.js',
 
                 '/assets/vendors/general/popper.js/dist/umd/popper.js',
                 //'/assets/material-js/bootstrap.min.js',
                 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js',
-                'https://cdn.vectoraclouds.com/frontcore/components/vs_choices.js',
-                //'assets/js/vs_choices.js',
+
+                'assets/js/choices.11.2.js',
+                'https://cdn.vectoraclouds.com/beta-frontcore/components/vs_choices.js',
+             
                 'https://cdn.vectoraclouds.com/frontcore/utils/validator.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/cv_interact.js',
                 //'/assets/js/date.js',
@@ -91,10 +94,10 @@ return [
             'single_file' => 1,
             'output_file' => '/dist/js/bhr.components.js',
             'files' => [
-                'https://cdn.vectoraclouds.com/frontcore/components/SearchInput/VSSearchInput.js',
+                'https://cdn.vectoraclouds.com/beta-frontcore/components/SearchInput/VSSearchInput.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/SearchInput/VSSearchInputHelper.js',
 
-                'https://cdn.vectoraclouds.com/frontcore/components/InputBox.v2.js',
+                'https://cdn.vectoraclouds.com/beta-frontcore/components/InputBox.v2.js',
                 'https://cdn.jsdelivr.net/gh/tomik23/circular-progress-bar@latest/docs/circularProgressBar.min.js',
                 'https://cdn.vectoraclouds.com/frontcore/vsroute/vsroute.js',
                 '/js/layout/prm/main.js',
@@ -105,7 +108,7 @@ return [
                 // 'https://cdn.vectoraclouds.com/frontcore/components/ExpandableTableRowConfig.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/FileChooser.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/listview/listview.v2.js',
-                'https://cdn.vectoraclouds.com/frontcore/components/SearchInput/VSSearchInput.js',
+ 
                 //'/assets/js/xlsx/xlsx.full.min.js',
                 'assets/js/pusher/pusher.min.js',
                 '/js/components/common/FindPersonDialog.js',
@@ -155,8 +158,8 @@ return [
             'single_file' => 1,
             'output_file' => '/dist/js/bhr.components.js',
             'files' => [
-                'https://cdn.vectoraclouds.com/frontcore/components/SearchInput/VSSearchInput.js',
-                'https://cdn.vectoraclouds.com/frontcore/components/SearchInput/VSSearchInputHelper.js',
+                'https://cdn.vectoraclouds.com/beta-frontcore/components/SearchInput/VSSearchInput.js',
+                'https://cdn.vectoraclouds.com/beta-frontcore/components/SearchInput/VSSearchInputHelper.js',
 
                 'https://cdn.vectoraclouds.com/frontcore/components/InputBox.v2.js',
                 'https://cdn.jsdelivr.net/gh/tomik23/circular-progress-bar@latest/docs/circularProgressBar.min.js',
@@ -201,11 +204,12 @@ return [
                 'https://cdn.vectoraclouds.com/frontcore/components/VSDropdownMenu.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/VSDropdownButton.js',
 
-                'https://cdn.vectoraclouds.com/vfc/vfc.utils.configSelect.js',
+                'https://cdn.vectoraclouds.com/beta-vfc/vfc.utils.configSelect.js',
                 'https://cdn.vectoraclouds.com/vfc/vfc.utils.inputFormat.js',
-                'https://cdn.vectoraclouds.com/vfc/vfc.form.js',
+                'https://cdn.vectoraclouds.com/beta-vfc/vfc.form.js',
+                'https://cdn.vectoraclouds.com/beta-vfc/vfc.material.js',
 
-                'https://cdn.vectoraclouds.com/frontcore/components/GeneralDialog.bs.v2.js',
+                'https://cdn.vectoraclouds.com/beta-frontcore/components/GeneralDialog.bs.v2.js',
                 //'/assets/vendors/general/popper.js/dist/umd/popper.js',
                 // '/assets/material-js/bootstrap.min.js',
                 'https://cdn.vectoraclouds.com/frontcore/utils/validator.js',
@@ -215,13 +219,11 @@ return [
                 //'/assets/js/date.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/DateTimePicker/DateTimePicker.js',
                 'https://cdn.jsdelivr.net/npm/fuse.js@7.1.0',
-                '/assets/js/choices.js',
-                'https://cdn.vectoraclouds.com/frontcore/components/vs_choices.js',
-                //'/assets/js/vs_choices.js',
+                '/assets/js/choices.11.2.js',
+                'https://cdn.vectoraclouds.com/beta-frontcore/components/vs_choices.js',
                 '/assets/js/toastr.min.js',
                 '/assets/js/init.toastr.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/layout.js',
-                //'/assets/js/VSLayoutManager.js',
                 '/assets/js/browsercontrol.js',
                 '/assets/js/qrcode.min.js',
                 'https://raw.githack.com/SortableJS/Sortable/master/Sortable.js'
@@ -236,16 +238,20 @@ return [
             'single_file'=>1,
             'output_file'=>'/dist/js/umt.components.js',
             'files'=>[
-                'https://cdn.vectoraclouds.com/frontcore/components/InputBox.v2.js',
+                'https://cdn.vectoraclouds.com/beta-frontcore/components/InputBox.v2.js',
                 //'https://cdn.jsdelivr.net/gh/tomik23/circular-progress-bar@latest/docs/circularProgressBar.min.js',
                 'https://cdn.vectoraclouds.com/frontcore/vsroute/vsroute.js',
                 '/js/layout/umt/main.js',
                 // '/js/components/abm/PDFReport.js',
                 '/js/components/tutor/RenderTableReport.js',
                 '/assets/js/ImageBox.js',
-               'https://cdn.vectoraclouds.com/frontcore/components/ImageHelper.js',
+             
+                 'https://cdn.vectoraclouds.com/frontcore/components/SearchInput/VSSearchInputHelper.js',
+                 'https://cdn.vectoraclouds.com/beta-frontcore/components/SearchInput/VSSearchInput.js',
+
+                'https://cdn.vectoraclouds.com/frontcore/components/ImageHelper.js',
                 // 'https://cdn.vectoraclouds.com/frontcore/components/ImageBox.js',
-                'https://cdn.vectoraclouds.com/frontcore/components/SearchInput/VSSearchInput.js',
+              
                 'https://cdn.vectoraclouds.com/frontcore/components/VSMoney.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/FileChooser.js',
               'https://cdn.vectoraclouds.com/frontcore/components/listview/listview.v2.js',
