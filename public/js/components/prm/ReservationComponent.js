@@ -408,56 +408,54 @@ const CreateReservationDialog = (() => {
                 keyboard: true,
                 createContent: () => {
                     return [
-                        `<div class="row justify-content-center">
+                        `<div class="row g-3 justify-content-center">
                                 <input name="tenant_id" class="d-none data-input form-control" data-field="tenant_id">
                             <div class="col-6">
-                                <div class="material-input outlined">
-                                    <input  name="tenant" class="data-input form-control" data-field="tenant_name" placeholder="Tenant"></input>
+                                <div class="vs-material-field">
+                                    <input name="tenant" class="data-input form-control" data-field="tenant_name" placeholder="Tenant"></input>
+                                    <label>Tenant</label>
                                 </div>
                             </div>
                             <div class="col-6">
-                                <div class="material-input outlined">
+                                <div class="vs-material-field">
                                     <input name="phone_number" class="data-input form-control" data-field="phone_number" disabled placeholder=" "></input>
-                                    <label style="color:#777777; padding-left:6px;">Phone Number</label>
+                                    <label>Phone Number</label>
                                 </div>
                             </div>
                             <div class="col-6">
-                                <div class="material-input outlined">
-                                    <select data-style="material" name="amenity" class="data-input form-control" data-field="amenity_id" placeholder="Amenity Name">
-                                    </select>
-                                </div>
+                                <select data-style="material" name="amenity" class="data-input form-control" data-field="amenity_id" placeholder="Amenity Name">
+                                </select>
                             </div>
                             
                             <div class="col-6">
-                                <div class="material-input outlined">
+                                <div class="vs-material-field">
                                     <input type="text" class="data-input form-control" data-field="amenity_code" placeholder=" " disabled />
-                                    <label style="color:#777777;padding-left:6px;" for="amenity">Amenity Code</label>
+                                    <label>Amenity Code</label>
                                 </div>
                             </div>
-                           
                             <div class="col-6">
-                                <div class="material-input outlined">
+                                <div class="vs-material-field">
                                     <input type="text" data-type="date" name="booking_date" required class="data-input form-control form_input" data-field="booking_date" />
-                                    <label style="color:#777777;padding-left:6px;">Booking Date</label>
+                                    <label>Booking Date</label>
                                 </div>
                             </div>
                             <div class="col-3">
-                                <div class="material-input outlined">
-                                    <input type="time" name="start_time" required class="data-input form-control form_input" data-field="start_time" placeholder=" " />
-                                    <label style="color:#777777;padding-left:6px;">Check-in Time</label>
+                                <div class="vs-material-field">
+                                    <input type="time" name="start_time" class="data-input form-control form_input" data-field="start_time" placeholder=" " />
+                                    <label>Check-in Time</label>
                                 </div>
                             </div>
                             <div class="col-3">
-                                <div class="material-input outlined">
+                                <div class="vs-material-field">
                                     <input type="time" name="end_time" required class="data-input form-control form_input" data-field="end_time" placeholder=" " />
-                                    <label style="color:#777777;padding-left:6px;">Check-out Time</label>
+                                    <label>Check-out Time</label>
                                 </div>
                             </div>
 
                             <div class="col-12">
-                                <div class="material-input outlined">
+                                <div class="vs-material-field">
                                     <textarea name="remarks" class="data-input form-control" data-field="remarks" placeholder=" "></textarea>
-                                    <label style="color:#777777;padding-left:6px;">Remark</label>
+                                    <label>Remark</label>
                                 </div>
                             </div>
                         </div>`,

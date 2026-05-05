@@ -517,40 +517,33 @@ const AmenityDialog = (() => {
                 keyboard: true,
 
                 createContent: () => {
-                    return [`<div class="row">
+                    return [`<div class="row g-3">
                         <div class="col-12">
-                            <div class="material-input outlined">
+                            <div class="vs-material-field">
                                 <input type="text" name="amenity" required class="data-input form-control" data-field="name" placeholder=" " />
-                                <label style="color:#777777;padding-left:6px;">Name</label>
-                            </div>
-                        </div>
-                       
-                        <div class="col-6">
-                            <div class="material-input outlined">
-                                <select data-style="material" name="building_id" class="data-input form-control" data-field="building_id" placeholder="Building">
-                                </select>
+                                <label>Name</label>
                             </div>
                         </div>
                         <div class="col-6">
-                            <div class="material-input outlined">
-                                <select data-style="material" name="floor_id" class="data-input form-control" data-field="floor_id" placeholder="Floor Number">
-                                </select>
-                            </div>
+                            <select data-style="material" name="building_id" class="data-input form-control" data-field="building_id" placeholder="Building">
+                            </select>
                         </div>
                         <div class="col-6">
-                            <div class="material-input outlined">
+                            <select data-style="material" name="floor_id" class="data-input form-control" data-field="floor_id" placeholder="Floor Number">
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <div class="vs-material-field">
                                 <input type="text" name="code" class="data-input form-control" data-field="code" placeholder=" " />
-                                <label style="color:#777777; padding-left:6px;">Code <span style="color:#bbbbbb; font-size:0.8em; font-weight:400;">(Optional)</span></label>
+                                <label>Code (Optional)</label>
                             </div>
                         </div>
                         <div class="col-6">
-                            <div class="material-input outlined">
-                                <select data-style="material" type="text" name="category_id"  class="data-input form-control" data-field="category_id" placeholder="Category" >
-                                </select>
-                            </div>
+                            <select data-style="material" type="text" name="category_id"  class="data-input form-control" data-field="category_id" placeholder="Category" >
+                            </select>
                         </div>
                         <div class="col-6">
-                            <div class="material-input outlined">
+                            <div class="vs-material-field">
                                 <select data-style="material"
                                         name="requires_booking"
                                         class="data-input form-control"
@@ -562,13 +555,13 @@ const AmenityDialog = (() => {
                             </div>
                         </div>
                         <div class="col-6">
-                            <div class="material-input outlined">
+                            <div class="vs-material-field">
                                 <input type="number" name="capacity" required class="data-input form-control" data-field="max_capacity" min="0" value="0 " placeholder=" " />
                                 <label style="color:#777777;padding-left:6px;">Capacity</label>
                             </div>
                         </div>
                         <div class="col-12">
-                            <div class="material-input outlined">
+                            <div class="vs-material-field">
                                 <textarea name="description" class="data-input form-control" data-field="description" placeholder=" "></textarea>
                                 <label style="color:#777777;padding-left:6px;">Description</label>
                             </div>

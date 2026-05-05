@@ -421,9 +421,6 @@ const CreateServiceRequestDialog = (() => {
     const self = {};
     let dialog = null;
     self.show = (op) => {
-
-console.log(123,op);
-
         dialog = new GeneralDialog({
             cssClass: "modal-lg vs-modal",
             backdrop: "static",
@@ -434,41 +431,33 @@ console.log(123,op);
                     <div class="row g-3 mb-3">
                         <input type="hidden" class="data-input" data-field="tenant_id">
                         <div class="col-md-6">
-                            <div class="material-input outlined">
+                            <div class="vs-material-field">
                                 <input name="tenant" class="form-control" data-field="tenant_id" placeholder="Tenant" autocomplete="off">
+                                <label>Tenant</label>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="material-input outlined">
-                                <select data-style="material" class="data-input form-control" data-field="space_id" required placeholder="Space"></select>
-                            </div>
+                            <select data-style="material" class="data-input form-control" data-field="space_id" required placeholder="Space"></select>
                         </div>
                     </div>
                     <div class="row g-3 mb-3">
                         <div class="col-md-6">
-                            <div class="material-input outlined">
-                                <select data-style="material" class="data-input form-control" data-field="service_type_id" required placeholder="Service Type"></select>
-                            </div>
+                            <select data-style="material" class="data-input form-control" data-field="service_type_id" required placeholder="Service Type"></select>
                         </div>
                         <div class="col-md-6">
-                            <div class="material-input outlined">
-                                <select data-style="material" class="data-input form-control" data-field="service_id" required placeholder="Service"></select>
-                            </div>
+                            <select data-style="material" class="data-input form-control" data-field="service_id" required placeholder="Service"></select>
                         </div>
                         
                     </div>
                     <div class="row g-3 mb-3">
                         <div class="col-md-3">
-                            <div class="material-input outlined">
-                                <select data-style="material" class="data-input form-control" data-field="unit_type" disabled placeholder="Unit Type">
-                                    <option value=""> Select Unit </option>
-                                    <option value="1">One Time</option>
-                                    <option value="2">Hour</option>
-                                </select>
-                            </div>
+                            <select data-style="material" class="data-input form-control" data-field="unit_type" disabled placeholder="Unit Type">
+                                <option value=""> Select Unit </option>
+                                <option value="1">One Time</option>
+                                <option value="2">Hour</option>
+                            </select>
                         </div>
                         <div class="col-md-3 select-type-time" style="display:none;">
-                            <div class="material-input outlined">
                                 <select name="duration_hours" data-style="material" class="data-input form-control" data-field="duration_hours" placeholder="Duration (hours)">
                                     <option value=""> Select Duration </option>
                                     <option value="0.5">30 minutes</option>
@@ -479,18 +468,17 @@ console.log(123,op);
                                     <option value="3.0">3 hours</option>
                                     <option value="4.0">4 hours</option>
                                 </select>
-                            </div>
                         </div>
                         <div class="col-md-3">
-                            <div class="material-input outlined">
+                            <div class="vs-material-field">
                                 <input data-type="date" class="form-control data-input" data-field="scheduled_date" required />
-                                <label style="padding-left:6px;color:#777777;">Scheduled Date</label>
+                                <label>Scheduled Date</label>
                             </div>
                         </div>
                         <div class="col-md-3">
-                            <div class="material-input outlined">
+                            <div class="vs-material-field">
                                 <input type="time" class="form-control data-input" data-field="start_time" placeholder=" " />
-                                <label style="color:#777777;padding-left:6px;">Start Time</label>
+                                <label>Start Time</label>
                             </div>
                         </div>
                     </div>
@@ -516,9 +504,9 @@ console.log(123,op);
                     
                     <div class="row g-3">
                         <div class="col-12">
-                            <div class="material-input outlined">
+                            <div class="vs-material-field">
                                 <textarea name="remarks" class="data-input form-control" data-field="remarks" placeholder=" "></textarea>
-                                <label style="padding-left:6px;color:#777;">Remark</label>
+                                <label>Remarks</label>
                             </div>
                         </div>
                     </div>

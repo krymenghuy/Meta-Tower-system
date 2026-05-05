@@ -35,19 +35,56 @@ var ServiceComponent = (() => {
             transTitle: "titles.Charge As",
             className: "align-middle text-nowrap",
             data: (data) => {
-                // const unit_type = data.unit_type == "hour" ? 'Hour' : 'One Time';
-                return `<span class="badge text-info bg-info-subtle border border-info text-nowrap" style="min-width:70px;">${data.unit_type}</span>`;
+
+                const unitMap = {
+                    per_point: "Per Point",
+                    per_unit: "Per Unit",
+                    per_job: "Per Job",
+                    per_visit: "Per Visit",
+                    one_time: "One Time",
+                    hour: "Per Hour",
+                    day: "Per Day",
+                    month: "Per Month",
+                    per_m: "Per m",
+                    per_sqm: "Per m²",
+                    per_m3: "Per m³"
+                };
+
+                const label = unitMap[data.unit_type] || "-";
+
+                return `<span class="badge text-info bg-info-subtle border border-info text-nowrap" style="min-width:90px;">${label}</span>`;
             }
         },
         {
             transTitle: "titles.Price",
             className: "align-middle",
             data: (data) => {
-                
+
                 const currency = data.currency_code ?? 'USD';
-                const unit_type = data.unit_type == "hour" ? 'Hour' : data.unit_type == "one_time" ? 'One Time' : '';
+
+                const unitMap = {
+                    per_point: "Point",
+                    per_unit: "Unit",
+                    per_job: "Job",
+                    per_visit: "Visit",
+                    one_time: "One Time",
+                    hour: "Hour",
+                    day: "Day",
+                    month: "Month",
+                    per_m: "m",
+                    per_sqm: "m²",
+                    per_m3: "m³"
+                };
+
+                const unit = unitMap[data.unit_type] || '';
                 const formattedPrice = VSMoney.formatAmount(data.price, currency);
-                return `<span class="text-nowrap text-info">${formattedPrice} <small class="text-muted ">/ ${unit_type}</small></span>`;
+
+                return `
+                    <span class="text-nowrap text-info">
+                        ${formattedPrice}
+                        ${unit ? `<small class="text-muted"> / ${unit}</small>` : ''}
+                    </span>
+                `;
             }
         },
         // {
@@ -354,42 +391,40 @@ const CreateServicePriceDialog = (() => {
                 keyboard: true,
                 createContent: () => {
                     return [
-                        `<div class="row justify-content-center">
+                        `<div class="row g-3 justify-content-center">
                             <div class="col-12">
-                                <div class="material-input outlined">
+                                <div class="vs-material-field">
                                     <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder="" />
-                                    <label style="padding-left:6px;color:#777777;">Name</label>
+                                    <label>Name</label>
                                 </div>
                             </div>
                             <div class="col-12">
-                                <div class="material-input outlined">
-                                    <select data-style="material" name="service_types" class="data-input form-control" data-field="service_type_id" placeholder="Service Type">
-                                    </select>
-                                </div>
+                                <select data-style="material" name="service_types" class="data-input form-control" data-field="service_type_id" placeholder="Service Type">
+                                </select>
                            </div>
                             <div class="col-6">
-                                <div class="material-input outlined">
+                                <div class="vs-material-field">
                                     <input type="number" name="price" required class="data-input form-control" data-field="price" placeholder="" />
-                                    <label style="padding-left:6px;color:#777777;">Price</label>
+                                    <label>Price</label>
                                 </div>
                             </div>
                             <div class="col-6">
-                                <div class="material-input outlined">
+                                <div class="vs-material-field">
                                     <select data-style="material" name="unit_type" class="data-input form-control" data-field="unit_type" placeholder="Unit Type">
-                                        <option value="hour">Hour</option>
+                                        <option value="per_point">Per Point</option>
                                         <option value="per_unit">Per Unit</option>
                                         <option value="one_time">One Time</option>
-                                        <option value="per_point">Per Point</option>
-                                        <option value="per_meter">Per m</option>
+                                        <option value="hour">Hour</option>
+                                        <option value="per_visit">Per Visit</option>
                                         <option value="per_sqm">Per m²</option>
                                         <option value="per_m3">Per m³</option>
                                     </select>
                                 </div>
                             </div>
                             <div class="col-12">
-                                <div class="material-input outlined">
+                                <div class="vs-material-field">
                                     <textarea name="description" class="data-input form-control" data-field="description" placeholder=" "></textarea>
-                                    <label style="padding-left:6px;color:#777777;">Remark</label>
+                                    <label>Remark</label>
                                 </div>
                             </div>
                         </div>`

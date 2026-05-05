@@ -4,7 +4,7 @@
             <div class="row g-3 align-items-center">
                 <div class="col-12 col-md-6 col-lg-3">
                     <div class="position-relative w-100">
-                        <input type="text" class="form-control rounded-2 pe-5 filter-field input-search" id="_search_tenant_" placeholder="Search by name code or phone">
+                        <input type="text" class="rounded-2 filter-field input-search" id="_search_tenant_" placeholder="Search by name code or phone">
                         {{-- <i class="fa fa-search fs-6 text-muted position-absolute"
                             style="right: 15px; top: 50%; transform: translateY(-50%);"></i> --}}
                     </div>
@@ -13,7 +13,7 @@
                     <select id="_el_tenant_status" class="data-input filter-field form-control" data-field="status_id" placeholder="Status"></select>
                 </div>
                 <div class="col-12 col-md-6 col-lg-3">
-                    <div class="btn-group btn-group-sm gap-1 rounded" role="group">
+                    <div class="btn-group btn-group-sm gap-2 rounded" role="group">
                         <input type="radio" class="btn-check" name="tenant_view_mode" id="tenantViewCard" checked>
                         <label class="btn btn-outline-prm-custom rounded-3 px-3" for="tenantViewCard">
                             <i class="fa-solid fa-grip me-1"></i> View Card
@@ -24,7 +24,6 @@
                             <i class="fa-solid fa-rectangle-list me-1"></i> View List
                         </label>
                     </div>
-
                 </div>
                 <div class="col-12 col-md-auto ms-md-auto text-md-end">
                     <button type="button" class="btnAddNewPrm w-100 w-md-auto" id="_btnAddTenant">
