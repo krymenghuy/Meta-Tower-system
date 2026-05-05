@@ -42,7 +42,7 @@ var ServiceRequestComponent = (function () {
             }
         },
         {
-            title: "Request Type",
+            transTitle: "titles.Request Type",
             className: "align-middle text-nowrap",
             data: (data) =>
                 `<span class="d-block text-prm-custom text-nowrap">${data.service_type ?? ""}</span>
@@ -70,7 +70,7 @@ var ServiceRequestComponent = (function () {
             }
         },
         {
-            title: "Amount",
+            transTitle: "titles.Amount",
             className: "align-middle text-nowrap text-end",
             data: (data) =>{
                 const service_price = VSMoney.formatAmount(data.total_price,data.currency_code ?? 'USD');
@@ -127,7 +127,7 @@ var ServiceRequestComponent = (function () {
             }
         },
         {
-            title: "Status",
+            transTitle: "titles.Status",
             className: "align-middle text-nowrap",
             data: (data) => {
                 const status = (data.status_name ?? '').toLowerCase();
@@ -294,7 +294,7 @@ var ServiceRequestComponent = (function () {
             //    menu.delete_request.style.display = (status_id >= 2) ? 'none' : 'block';
                menu.accept_request.style.display = (status_id >= 2) ? 'none' : 'block';
                menu.reject_request.style.display = (status_id >= 2) ? 'none' : 'block';
-               
+
 
 
             },
@@ -447,7 +447,7 @@ const CreateServiceRequestDialog = (() => {
                         <div class="col-md-6">
                             <select data-style="material" class="data-input form-control" data-field="service_id" required placeholder="Service"></select>
                         </div>
-                        
+
                     </div>
                     <div class="row g-3 mb-3">
                         <div class="col-md-3">
@@ -501,7 +501,7 @@ const CreateServiceRequestDialog = (() => {
                         </div>
                     </div>
 
-                    
+
                     <div class="row g-3">
                         <div class="col-12">
                             <div class="vs-material-field">
@@ -651,7 +651,7 @@ const CreateServiceRequestDialog = (() => {
                     me.controls.unit_type.value = detail.unit_type;
                 }
                 console.log(6666,me.detail);
-                
+
                 if (me.controls.duration_hours && detail.duration_hours) {
                     me.controls.duration_hours.value = detail.duration_hours;
                 }

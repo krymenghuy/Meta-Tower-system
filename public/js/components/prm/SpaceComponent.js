@@ -101,7 +101,7 @@ var SpaceComponent = new (function () {
                 <div class="metric-card-sm" style="border-left:6px solid ${pal.total};">
                     <div class="metric-head-sm">
                         <span class="metric-dot d-inline-block rounded-circle" style="width:8px;height:8px;background:${pal.total};"></span>
-                        <span>Total Units</span>
+                        <span >Total Units</span>
                     </div>
                     <div class="metric-value-sm fw-bold px-4" style="color:${pal.total};">${total}</div>
                 </div>

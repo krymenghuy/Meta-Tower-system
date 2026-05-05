@@ -14,7 +14,7 @@ var ServiceComponent = (() => {
     mThis.cols = [
 
         {
-            title: "",
+            transTitle: "",
             className: "align-middle text-capitalize",
         },
         {
@@ -172,7 +172,6 @@ var ServiceComponent = (() => {
             // if (!AuthManager.allowed(240)) return;
             CreateServicePriceDialog.show(op);
         };
-
 
         mThis.pr_tbl = mThis.ServiceListView.getListContainer();
         const sh_parent = mThis.pr_tbl.parentElement;

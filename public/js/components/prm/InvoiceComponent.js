@@ -552,11 +552,11 @@ var InvoiceComponent = (() => {
             }
         );
     };
-       
-    
+
+
     mThis.editInvoice = (id, menulink) => {
         console.log("editInvoice id:", id);
-        InvoiceDialog.show({    
+        InvoiceDialog.show({
             id : id,
             btn: menulink,
             onClose: () => mThis.InvoiceListView.showPage(mThis.getFilterData())

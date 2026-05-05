@@ -4,9 +4,16 @@
     box-sizing: border-box;
     -webkit-user-drag: none;
     /* font-family: "Source Sans 3", sans-serif; */
+    font-family: 'Inter',  sans-serif;
+    font-size: 1rem;
+    /* font-family: "Roboto Slab", serif; */
+    font-optical-sizing: auto;
+    font-style: normal;
 
 
 }
+
+
   .disabled {
     pointer-events: none;
     opacity: 0.5; /* Optional: Visual indicator */

@@ -15,13 +15,15 @@
                 <div class="col-12 col-md-6 col-lg-3">
                     <div class="btn-group btn-group-sm gap-2 rounded" role="group">
                         <input type="radio" class="btn-check" name="tenant_view_mode" id="tenantViewCard" checked>
-                        <label class="btn btn-outline-prm-custom rounded-3 px-3" for="tenantViewCard">
-                            <i class="fa-solid fa-grip me-1"></i> View Card
+                        <label class="btn btn-outline-prm-custom rounded-3 " for="tenantViewCard">
+                            <i class="fa-solid fa-grip me-1"></i>
+                            <span vslang="buttons.View Card">View Card</span>
                         </label>
 
                         <input type="radio" class="btn-check" name="tenant_view_mode" id="tenantViewList">
-                        <label class="btn btn-outline-prm-custom rounded-3 px-3" for="tenantViewList">
-                            <i class="fa-solid fa-rectangle-list me-1"></i> View List
+                        <label class="btn btn-outline-prm-custom rounded-3 " for="tenantViewList">
+                            <i class="fa-solid fa-rectangle-list me-1"></i>
+                            <span vslang="buttons.View List">View List</span>
                         </label>
                     </div>
                 </div>

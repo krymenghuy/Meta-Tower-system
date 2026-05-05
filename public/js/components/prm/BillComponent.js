@@ -52,7 +52,7 @@ var BillComponent = (() => {
                 <span class="d-block text-primary ">${data.phone_number}</span>`;
             },
         },
-        
+
         {
             transTitle: "titles.Category",
             className: "align-middle text-nowrap",
@@ -60,10 +60,10 @@ var BillComponent = (() => {
                 return `<span class="d-block text-prm-custom ">${data.expense_type_name ?? "_"}</span>`;
             },
         },
-        
-        
+
+
         {
-            title: "Due",
+            transTitle: "titles.Due",
             className: "align-middle text-nowrap",
             data: (data) => {
                 const total = VSMoney.formatAmount(data.total_amount, data.currency_code ?? 'USD');
@@ -71,7 +71,7 @@ var BillComponent = (() => {
             },
         },
         {
-            title: "Paid",
+            transTitle: "titles.Paid",
             className: "align-middle text-nowrap",
             data: (data) => {
                 const paid = VSMoney.formatAmount(data.paid_amount, data.currency_code ?? 'USD');
@@ -79,7 +79,7 @@ var BillComponent = (() => {
             },
         },
         {
-            title: "Payable",
+            transTitle: "titles.Payable",
             className: "align-middle text-nowrap",
             data: (data) => {
                 const balance = Number(data.balance || 0);
@@ -99,13 +99,13 @@ var BillComponent = (() => {
             },
         },
         {
-            title: "Status",
+            transTitle: "titles.Status",
             className: "align-middle text-nowrap text-center",
             data: (data) => {
                 const status_id = data.display_status_id ?? data.status_id;
                 let cls = "bg-secondary";
                 let icon = "bi bi-question-circle";
-                   
+
                 if (status_id == 4) {
                     cls =
                         "status-overdue";
@@ -130,7 +130,7 @@ var BillComponent = (() => {
             },
         },
         {
-            transTitle: "titles.Updated By",
+            transTitle: "titles.Last Updated",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
                 return `<div class="d-flex flex-column">
@@ -144,7 +144,12 @@ var BillComponent = (() => {
             className: "col_action align-middle text-nowrap",
             data: (data) => `
                 <div class="d-flex justify-content-center align-items-end">
-                    <a href="javascript:void(0)" class="btn--Options btn_dropdown_vendor_action" data-id="${data.id}" data-vendorId="${data.vendor_id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
+                    <a href="javascript:void(0)" class="btn--Options btn_dropdown_vendor_action"
+                        data-id="${data.id}"
+                        data-vendorId="${data.vendor_id}"
+                        data-statusid="${data.status_id}"
+                        data-fileurl="${data.image_url ?? ''}"
+                        aria-haspopup="true" aria-expanded="false">
                         <i class="fa-solid fa-ellipsis-vertical text-black fs-5"></i>
                     </a>
                 </div>`,
@@ -166,7 +171,7 @@ var BillComponent = (() => {
                 tr.dataset.displaystatusid = data.display_status_id ?? data.status_id;
                 tr.dataset.vendorId = data.vendor_id;
                 tr.dataset.billid   = data.bill_id;
-                tr.dataset.fileurl = data.file_image_url ?? "";
+                tr.dataset.fileurl = data.image_url ?? "";
                 tr.classList.add("bill");
                 tr.setAttribute("id", `bill_payment_id${data.id}`);
             },
@@ -225,7 +230,7 @@ var BillComponent = (() => {
             p[f] = el.value;
         });
         console.log(566,p);
-        
+
         return p;
     };
 
@@ -235,7 +240,7 @@ var BillComponent = (() => {
             actionButtonClass: "btn_dropdown_vendor_action",
             cssClass: "bg-white shadow",
             menus: [
-                
+
                 {
                     html: '<span class="ps-2" vslang="titles.Modify"></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
@@ -255,44 +260,68 @@ var BillComponent = (() => {
                     name: "bill_payment",
                 },
                 {
-                    html: '<span class="ps-2">View Attachment</span>',  
+                    html: '<span class="ps-2">View Attachment</span>',
                     icon: `<i class="fa-solid fa-panorama" style="color: rgb(59, 125, 74);"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "view_attachment",
                 },
+                {
+                    html: '<span class="ps-2">Delete Attachment</span>',
+                    icon: `<i class="fa-regular fa-file-circle-xmark text-danger"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "delete_attachment",
+                }
             ],
-            onShow: (me, container) => {
-                const menu = me.getActiveMenus(container);
-                const status_id = container.dataset.statusid;
-                const locked = status_id > 1 || display_status_id == 4;
-                menu.modify_bill.style.display = status_id > 1 ? 'none' : 'block'
-                menu.delete_bill.style.display = status_id > 1 ? 'none' : 'block'
+                // onShow: (me, container) => {
+                //     const menu = me.getActiveMenus(container);
+                //     const status_id = container.dataset.statusid;
+                //     const fileUrl = container.dataset.fileurl;
+                //     const locked = status_id > 1 || display_status_id == 4;
 
-                if (menu.bill_payment) {
-                    const isBlocked = status_id == 2;
-                    menu.bill_payment.style.display = isBlocked ? 'none' : 'block';
+                //     menu.modify_bill.style.display = status_id > 1 ? 'none' : 'block'
+                //     menu.delete_bill.style.display = status_id > 1 ? 'none' : 'block'
+                //     menu.view_attachment.style.display  = fileUrl ? 'block' : 'none';
+                //     menu.delete_attachment.style.display = fileUrl ? 'block' : 'none';
+
+                //     if (menu.bill_payment) {
+                //         const isBlocked = status_id == 2;
+                //         menu.bill_payment.style.display = isBlocked ? 'none' : 'block';
+                //     }
+                // },
+            onShow: (me, container) => {
+                const menu      = me.getActiveMenus(container);
+                const status_id = container.dataset.statusid;
+                const fileUrl   = container.dataset.fileurl;
+
+                menu.modify_bill.style.display       = status_id > 1 ? 'none' : 'block';
+                menu.delete_bill.style.display       = status_id > 1 ? 'none' : 'block';
+                menu.bill_payment.style.display      = status_id == 2 ? 'none' : 'block';
+
+                if (!fileUrl) {
+                    menu.view_attachment.style.display   = 'none';
+                    menu.delete_attachment.style.display = 'none';
                 }
             },
 
             onClick: (menuLink, id, name) => {
                 switch (name) {
-                    case "modify_bill":   { 
-                        mThis.editBill(id, menuLink);       
+                    case "modify_bill":   {
+                        mThis.editBill(id, menuLink);
                         break;
                     }
-                    case "delete_bill":    { 
-                        mThis.deleteBill(id, menuLink);     
+                    case "delete_bill":    {
+                        mThis.deleteBill(id, menuLink);
                         break;
                     }
                     case "view_attachment": {
-                        mThis.viewAttachment(id, menuLink); 
+                        mThis.viewAttachment(id, menuLink);
                         break;
                     }
-                    case "bill_payment": {   
-                        mThis.billPayment(id, menuLink);    
+                    case "bill_payment": {
+                        mThis.billPayment(id, menuLink);
                         break;
                     }
-                    default:  {  
+                    default:  {
                         break;
                     }
                 }
@@ -410,12 +439,40 @@ var BillComponent = (() => {
                 document.body.appendChild(overlay);
             });
     };
+    mThis.deleteAttachment = (id, menuLink) => {
+        cv_interact.confirm(
+            "Delete this attachment?",
+            {
+                context: "delete",
+                confirmButtonText: "Delete"
+            },
+            function (confirmed) {
+                if (!confirmed) return;
+
+                vsapi.call(`${main_view.base_url}/prm/bill/delete-attachment`,
+                { id }, menuLink, false, false
+                ).then((res) => {
+                    if (res.status_code === 200) {
+                        cv_interact.success("Attachment deleted successfully.");
+                        mThis.BillListView.showPage(mThis.getFilterData());
+                    }else {
+                        cv_interact.error(
+                            res.error_message || "Failed to delete attachment."
+                        );
+                    }
+                })
+                .catch(() => {
+                    cv_interact.error("Network error while deleting attachment.");
+                });
+            }
+        );
+    }
     mThis.prepareFormOptions = (onFinish) => {
         vsapi
             .call(`${main_view.base_url}/prm/bill/form-options`, null, null, null)
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
-                console.log("form-options data:", d); 
+                console.log("form-options data:", d);
                 VSUtil.setComboItems(mThis.elFilter_vendor, d.vendors, "id", "vendor", "", "All Vendor", "");
                 VSUtil.setComboItems(mThis.elFilter_status, d.bill_statuses, "id", "bill_status", "", "All Statuses", "");
                 VSUtil.setComboItems(mThis.elFilter_category, d.expense_types, "id", "expense_category", "", "All Categories", "");
@@ -493,7 +550,7 @@ const BillDialog = (() => {
                             <div class="col-8">
                                 <div class="material-input outlined d-flex ">
                                     <input type="text" name="documents" class=" form-control " accept=".png,.jpg,.jpeg" /disabled>
-                                    <label style="display:none;color:#777777;padding-left:6px;">File</label > 
+                                    <label style="display:none;color:#777777;padding-left:6px;">File</label >
                                 </div>
                             </div>
                             <div class="col-4">
@@ -614,7 +671,7 @@ const BillDialog = (() => {
                         },
                     },
                 },
-               
+
                 // onPrepareForm: (me, data) => {
                 //     const header = me.divModal.querySelector(".modal-header");
                 //     const btnClose = header.querySelector("button[data-bs-dismiss]");
@@ -701,22 +758,22 @@ const BillDialog = (() => {
                             const op = me.getData();
                             op.id = me.dataOptions.id;
                             console.log(444, me.dataOptions);
-                            
+
                             if (me._selectedVendorId != null && me._selectedVendorId !== undefined) {
                                 op.vendor_id = me._selectedVendorId;
                             }
 
                             if (me.fileData) {
-                                op.photo = me.fileData.base64 
-                                    || me.fileData.data 
-                                    || me.fileData.fileData 
-                                    || me.fileData.content 
+                                op.photo = me.fileData.base64
+                                    || me.fileData.data
+                                    || me.fileData.fileData
+                                    || me.fileData.content
                                     || null;
 
                                 op.ext = me.fileData.ext
                                     || me.fileData.fileType
                                     || me.fileData.extension
-                                    || null;    
+                                    || null;
                             }
                             vsapi
                                 .call([main_view.base_url, "/prm/bill/save"].join(""), op, btn, null)

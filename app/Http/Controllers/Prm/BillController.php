@@ -96,5 +96,19 @@ class BillController extends Controller
         return JDV::raw($bill->viewBillAttachment($req->id, $ss));
     }
 
+    public function deleteAttachment(Request $req)
+    {
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+
+        if (!isset($req->id) || !is_numeric($req->id)) {
+            return JDV::error('Invalid ID');
+        }
+
+        $bill = new Bill($req->id, $ss);
+        return JDV::raw($bill->deleteAttachment($req->id, $ss));
+    }
 
 }

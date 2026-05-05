@@ -28,12 +28,12 @@ var PurchaseOrdersComponent = (() => {
             data: (data) => `<span class="d-block text-prm-custom">${data.vendor_name}</span>`,
         },
         {
-            title: 'Po Date',
+            transTitle: 'titles.Po Date',
             className: 'align-middle text-nowrap',
             data: (data) => `<span class="text-prm-custom text-nowrap">${data.po_date}</span>`,
         },
         {
-            title: "Subtotal",
+            transTitle: 'titles.Subtotal',
             className: "align-middle text-nowrap text-end",
             data: (data) => {
                 const sub_total = VSMoney.formatAmount(data.sub_total, data.currency_code ?? 'USD');
@@ -42,7 +42,7 @@ var PurchaseOrdersComponent = (() => {
             }
         },
         {
-            title: "Discount",
+            transTitle: 'titles.Discount',
             className: "align-middle text-nowrap",
             data: (data) => {
                 return `<div class="d-flex justify-content-center"><span class='text-nowrap text-center'>${
@@ -53,7 +53,7 @@ var PurchaseOrdersComponent = (() => {
             },
         },
         {
-            title: "Grand Total",
+            transTitle: 'titles.Grand Total',
             className: "align-middle text-nowrap text-end",
             data: (data) => {
                 const cls_color = data.total_amount > 0 ? 'text-prm-custom' : 'text-danger';
@@ -62,7 +62,7 @@ var PurchaseOrdersComponent = (() => {
             }
         },
         {
-            title: "Status",
+            transTitle: 'titles.Status',
             className: "align-middle text-nowrap text-center",
             data: (data) => {
                 const status = (data.status ?? '').toLowerCase();
@@ -77,7 +77,7 @@ var PurchaseOrdersComponent = (() => {
             }
         },
         {
-            title: "Remark",
+            transTitle: 'titles.Remark',
             className: "align-middle text-nowrap",
             data: (data) => {
                 const remarks = String(data.remarks || '').trim();
@@ -85,7 +85,7 @@ var PurchaseOrdersComponent = (() => {
             }
         },
         {
-            title: "Authorized",
+            transTitle: 'titles.Authorized',
             className: 'align-middle text-nowrap text-center',
             data: (data) => {
                 if (!data.authorizer) {
@@ -108,7 +108,7 @@ var PurchaseOrdersComponent = (() => {
             }
         },
         {
-            title: "Received",
+            transTitle: 'titles.Received',
             className: 'align-middle text-nowrap',
             data: (data) => {
                 if (!data.receiver) return `<div class="text-muted small">Not yet</div>`;
@@ -122,7 +122,7 @@ var PurchaseOrdersComponent = (() => {
             }
         },
         {
-            transTitle: 'titles.Updated By',
+            transTitle: 'titles.Last Updated',
             className: 'align-middle text-nowrap',
             data: (data) => `<div class="d-flex flex-column">
                 <span class="text-capitalize text-start text-prm-custom">${data.update_user ?? ''}</span>
@@ -400,7 +400,7 @@ var PurchaseOrdersComponent = (() => {
                 </div>`;
             },
             contentCreated: (me) => {
-                
+
                 me.controls.div_purchase_summary = me.divModal.querySelector(
                     '[name="div_purchase_summary"]'
                 );
@@ -723,7 +723,7 @@ var PurchaseOrdersComponent = (() => {
                     </div>
                 </div>`;
             },
-            
+
             // Note: Receive dialog contentCreated and other logic can be added similarly if needed
             buttons: [
                 { label: "Cancel",
@@ -760,7 +760,7 @@ var PurchaseOrdersComponent = (() => {
 
                 let tBody = '';
                 const items = res.data || [];
-                if (items.length > 0) { 
+                if (items.length > 0) {
                     items.forEach(item => {
                         tBody += `<tr>
                             <td class="text-nowrap">${item.item_code || item.code || ''}</td>
