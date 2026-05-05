@@ -8,10 +8,10 @@
                 <select type="id" id="_reservation_status" class="data-input filter-field" data-field="status_id"></select>
             </div>
             <div class="col-12 col-md-3 col-lg-2">
-                <input id="booking_date" data-select="datepicker" class="input-search rounded-2 data-input filter-field" placeholder="Booking Date" data-field="booking_date">
+                <input id="booking_date" data-select="datepicker" class="form-control rounded-2 data-input filter-field" placeholder="From Date" data-field="booking_date">
             </div>
             <div class="col-12 col-md-3 col-lg-2">
-                <input id="booking_date_to" data-select="datepicker" class="input-search rounded-2 data-input filter-field" placeholder="To Date" data-field="booking_date_to">
+                <input id="booking_date_to" data-select="datepicker" class="form-control rounded-2 data-input filter-field" placeholder="To Date" data-field="booking_date_to">
             </div>
             
             

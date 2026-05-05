@@ -60,7 +60,7 @@
 
 .form-control {
     width: 100%;
-    height: calc(1.15em + 1.3rem + 2px);
+    /* height: calc(1.15em + 1.3rem + 2px); */
     padding: 0.65rem 1rem;
     color: #554150 !important;
     background-color: #fff;
