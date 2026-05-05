@@ -24,24 +24,24 @@ var TenantComponent = new (function () {
     mThis.profile_info_tenant = this.divProfileView.querySelector("#profile_info_tenant",);
     mThis.cols = [
         {
-            title: "",
+            transTitle: "",
             className: "align-middle",
         },
         {
-            title: "photo",
+            transTitle: "titles.Photo",
             className: "align-middle",
             data: (data) =>
                 `<img class="btn-view-tenant-photo" data-id="${data.id}" src="${data.image_url || `${main_view.base_url}/assets/images/default/default-staff1.png`}" alt="" style="width: 50px; height: 50px; border-radius: 6px; margin-right: 10px;"/>`,
         },
          {
-            title: "Code",
+            transTitle: "titles.Code",
             className: "align-middle",
             data: (data) => {
                 return `<span class="text-prm-custom text-nowrap">${data.code ?? ""}</span>`;
             },
         },
         {
-            title: "Name",
+            transTitle: "titles.Name",
             className: "align-middle",
             data: (data) => {
                 const sexLabel =
@@ -59,35 +59,35 @@ var TenantComponent = new (function () {
             },
         },
         {
-            title: "Date of Birth",
+            transTitle: "titles.Date of Birth",
             className: "align-middle ",
             data: (data) => {
                 return `<span class="text-prm-custom text-nowrap">${data.date_of_birth ?? ""}</span>`;
             },
         },
         {
-            title: "National ID",
+            transTitle: "titles.National ID",
             className: "align-middle",
             data: (data) => {
                 return `<span class="text-prm-custom text-nowrap">${data.national_id ?? "N/A"}</span>`;
             },
         },
         {
-            title: "Passport",
+            transTitle: "titles.Passport",
             className: "align-middle",
             data: (data) => {
                 return `<span class="text-prm-custom text-nowrap">${data.passport_number ?? "N/A"}</span>`;
             },
         },
         {
-            title: "Contact Info",
+            transTitle: "titles.Contact Info",
             className: "align-middle",
             data: (data) =>
                 `<span class="d-block text-prm-custom"><i class="fa-solid text-success px-1 fa-phone" style="font-size:12px;"></i> ${data.phone_number ?? ""}</span>
                  <span class="d-block text-primary"><i class="fa-solid text-primary px-1 fa-envelope" style="font-size:12px;"></i> ${data.email ?? ""}</span>`,
         },
         {
-            title: "Status",
+            transTitle: "titles.Status",
             className: "align-middle text-center",
             data: (data) => {
                 const status = data.status;
@@ -116,7 +116,7 @@ var TenantComponent = new (function () {
         },
 
         {
-            title: "Last Updated",
+            transTitle: "titles.Last Updated",
             className: "align-middle",
             data: (data) => {
                 return `<div class="d-flex flex-column">
@@ -536,7 +536,7 @@ var TenantComponent = new (function () {
                                 </div>
                             </div>
                             <div class="d-flex justify-content-between rounded-bottom-2  align-items-center bg-secondary px-3 p-2 small">
-                                <span class="text-muted">
+                                <span class="text-muted" >
                                     Last Updated : ${d.update_user || ""}
                                 </span>
                                 <a href="javascript:void(0)"

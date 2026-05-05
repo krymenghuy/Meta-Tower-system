@@ -14,7 +14,7 @@ var ServiceComponent = (() => {
     mThis.cols = [
 
         {
-            title: "",
+            transTitle: "",
             className: "align-middle text-capitalize",
         },
         {
@@ -43,7 +43,7 @@ var ServiceComponent = (() => {
             transTitle: "titles.Price",
             className: "align-middle",
             data: (data) => {
-                
+
                 const currency = data.currency_code ?? 'USD';
                 const unit_type = data.unit_type == "hour" ? 'Hour' : data.unit_type == "one_time" ? 'One Time' : '';
                 const formattedPrice = VSMoney.formatAmount(data.price, currency);

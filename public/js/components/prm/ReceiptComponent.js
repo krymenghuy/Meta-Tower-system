@@ -41,20 +41,20 @@ var ReceiptComponent = new (function() {
                 `;
             }
         },
-        // {
-        //     transTitle: "titles.Invoice No",
-        //     className: "align-middle text-nowrap",
-        //     data: data => {
-        //         const code = data.invoice_code
-        //             ? `<span class="text-prm-custom ">${data.invoice_code}</span>`
-        //             : `<span class="text-muted fst-italic">N/A</span>`;
-        //         return `
-        //             <div class="d-flex flex-column ">
-        //                 ${code}
-        //             </div>
-        //         `;
-        //     }
-        // },
+        {
+            transTitle: "titles.Invoice No",
+            className: "align-middle text-nowrap",
+            data: data => {
+                const code = data.invoice_code
+                    ? `<span class="text-prm-custom ">${data.invoice_code}</span>`
+                    : `<span class="text-muted fst-italic">N/A</span>`;
+                return `
+                    <div class="d-flex flex-column ">
+                        ${code}
+                    </div>
+                `;
+            }
+        },
 
         {
             transTitle: "titles.Tenant",

@@ -33,7 +33,7 @@ var MaintenanceComponent = (() => {
         },
         {
             transTitle: "titles.Schedule Date",
-            className: "align-middle text-start",
+            className: "align-middle text-center" ,
             data: (data) => {
 
                 const to12h = (t) => {
@@ -58,7 +58,7 @@ var MaintenanceComponent = (() => {
                 const same = s.d === e.d;
 
                 return `
-                <div class="text-start">
+                <div class="text-center">
                     <div class="fw-medium text-prm-custom">
                         ${same ? s.d : `${s.d} <i class="fa fa-arrow-right mx-1"></i> ${e.d}`}
                     </div>
@@ -71,7 +71,7 @@ var MaintenanceComponent = (() => {
         },
         {
             transTitle: "titles.Remark",
-            className: "align-middle",
+            className: "align-middle text-center",
             data: (data, index, tr) => {
                 return `
                     <div class="text-prm-custom text-capitalize" style="width:220px;">
@@ -82,7 +82,7 @@ var MaintenanceComponent = (() => {
         },
         {
             transTitle: "titles.Status",
-            className: "align-middle",
+            className: "align-middle text-center",
             data: (data) => {
                 const statusId = parseInt(data.effective_status_id ?? data.status_id, 10);
                 const map = {
@@ -100,7 +100,7 @@ var MaintenanceComponent = (() => {
             }
         },
         {
-            transTitle: "titles.Updated By",
+            transTitle: "titles.Last Updated",
             className: "align-middle text-nowrap",
             data: (data) => `<div class="d-flex flex-column"><span class="text-capitalize text-prm-custom">${data.update_user ?? ""}</span><span class="text-muted small">${data.updated_at ?? ""}</span></div>`
         },
