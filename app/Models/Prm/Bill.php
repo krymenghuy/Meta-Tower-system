@@ -314,11 +314,11 @@ class Bill
         if (!$bill->file_image) return DV::error('No attachment found for this bill.');
 
         $ext = strtolower(pathinfo($bill->file_image, PATHINFO_EXTENSION));
-        $category = ($ext === 'pdf') ? 'document' : 'images'; // ← determine category by ext
+        $category = ($ext === 'pdf') ? 'document' : 'images';
 
         $fileUrl = XPublicStorage::getUrl(
             ['subs_id' => $ss->subs_id, 'dir' => self::$img_dir],
-            $category  // ← was hardcoded 'images'
+            $category  
         ) . $bill->file_image;
 
         $mimeTypes = [
