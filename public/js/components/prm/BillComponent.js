@@ -144,12 +144,7 @@ var BillComponent = (() => {
             className: "col_action align-middle text-nowrap",
             data: (data) => `
                 <div class="d-flex justify-content-center align-items-end">
-                    <a href="javascript:void(0)" class="btn--Options btn_dropdown_vendor_action"
-                        data-id="${data.id}"
-                        data-vendorId="${data.vendor_id}"
-                        data-statusid="${data.status_id}"
-                        data-fileurl="${data.image_url ?? ''}"
-                        aria-haspopup="true" aria-expanded="false">
+                    <a href="javascript:void(0)" class="btn--Options btn_dropdown_vendor_action" data-id="${data.id}" data-vendorId="${data.vendor_id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
                         <i class="fa-solid fa-ellipsis-vertical text-black fs-5"></i>
                     </a>
                 </div>`,
@@ -171,7 +166,7 @@ var BillComponent = (() => {
                 tr.dataset.displaystatusid = data.display_status_id ?? data.status_id;
                 tr.dataset.vendorId = data.vendor_id;
                 tr.dataset.billid   = data.bill_id;
-                tr.dataset.fileurl = data.image_url ?? "";
+                tr.dataset.fileurl = data.file_image_url ?? "";
                 tr.classList.add("bill");
                 tr.setAttribute("id", `bill_payment_id${data.id}`);
             },
@@ -265,41 +260,17 @@ var BillComponent = (() => {
                     cssClass: "border-bottom pb-2",
                     name: "view_attachment",
                 },
-                {
-                    html: '<span class="ps-2">Delete Attachment</span>',
-                    icon: `<i class="fa-regular fa-file-circle-xmark text-danger"></i>`,
-                    cssClass: "border-bottom pb-2",
-                    name: "delete_attachment",
-                }
             ],
-                // onShow: (me, container) => {
-                //     const menu = me.getActiveMenus(container);
-                //     const status_id = container.dataset.statusid;
-                //     const fileUrl = container.dataset.fileurl;
-                //     const locked = status_id > 1 || display_status_id == 4;
-
-                //     menu.modify_bill.style.display = status_id > 1 ? 'none' : 'block'
-                //     menu.delete_bill.style.display = status_id > 1 ? 'none' : 'block'
-                //     menu.view_attachment.style.display  = fileUrl ? 'block' : 'none';
-                //     menu.delete_attachment.style.display = fileUrl ? 'block' : 'none';
-
-                //     if (menu.bill_payment) {
-                //         const isBlocked = status_id == 2;
-                //         menu.bill_payment.style.display = isBlocked ? 'none' : 'block';
-                //     }
-                // },
             onShow: (me, container) => {
-                const menu      = me.getActiveMenus(container);
+                const menu = me.getActiveMenus(container);
                 const status_id = container.dataset.statusid;
-                const fileUrl   = container.dataset.fileurl;
+                const locked = status_id > 1 || display_status_id == 4;
+                menu.modify_bill.style.display = status_id > 1 ? 'none' : 'block'
+                menu.delete_bill.style.display = status_id > 1 ? 'none' : 'block'
 
-                menu.modify_bill.style.display       = status_id > 1 ? 'none' : 'block';
-                menu.delete_bill.style.display       = status_id > 1 ? 'none' : 'block';
-                menu.bill_payment.style.display      = status_id == 2 ? 'none' : 'block';
-
-                if (!fileUrl) {
-                    menu.view_attachment.style.display   = 'none';
-                    menu.delete_attachment.style.display = 'none';
+                if (menu.bill_payment) {
+                    const isBlocked = status_id == 2;
+                    menu.bill_payment.style.display = isBlocked ? 'none' : 'block';
                 }
             },
 
@@ -439,34 +410,6 @@ var BillComponent = (() => {
                 document.body.appendChild(overlay);
             });
     };
-    mThis.deleteAttachment = (id, menuLink) => {
-        cv_interact.confirm(
-            "Delete this attachment?",
-            {
-                context: "delete",
-                confirmButtonText: "Delete"
-            },
-            function (confirmed) {
-                if (!confirmed) return;
-
-                vsapi.call(`${main_view.base_url}/prm/bill/delete-attachment`,
-                { id }, menuLink, false, false
-                ).then((res) => {
-                    if (res.status_code === 200) {
-                        cv_interact.success("Attachment deleted successfully.");
-                        mThis.BillListView.showPage(mThis.getFilterData());
-                    }else {
-                        cv_interact.error(
-                            res.error_message || "Failed to delete attachment."
-                        );
-                    }
-                })
-                .catch(() => {
-                    cv_interact.error("Network error while deleting attachment.");
-                });
-            }
-        );
-    }
     mThis.prepareFormOptions = (onFinish) => {
         vsapi
             .call(`${main_view.base_url}/prm/bill/form-options`, null, null, null)
@@ -525,7 +468,7 @@ const BillDialog = (() => {
                             </div>
                             <div class="col-6 col-md-6">
                                 <div class=" material-input outlined">
-                                    <input type="text" data-type="date" name="due_date" required class="data-input form-control form_input" data-field="due_date" />
+                                    <input type="text" data-type="date" name="due_date" required class="data-input form-control form_input" data-field="due_date" placeholder="d-m-y "  />
                                     <label style="color:#777777;padding-left:6px;">Due Date</label>
                                 </div>
                             </div>
