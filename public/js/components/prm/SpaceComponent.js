@@ -741,55 +741,43 @@ const BuildingSpaceDialog = (() => {
                 keyboard: true,
                 createContent: () => {
                     return [
-                        `<div class="row justify-content-center">
+                        `<div class="row g-3 justify-content-center">
                             <div class="col-12">
-                                <div class="material-input outlined">
-                                    <select data-style="material" placeholder="Building" name="building_id" class="data-input form-control" data-field="building_id">
-                                    </select>
-
-                                </div>
+                                <select data-style="material" placeholder="Building" name="building_id" class="data-input form-control" data-field="building_id">
+                                </select>
                             </div>
                             <div class="col-6">
-                                <div class="material-input outlined">
-                                    <select data-style="material" name="floor_id" class="data-input form-control" data-field="floor_id" placeholder="Floor">
-                                    </select>
-
-                                </div>
+                                <select data-style="material" name="floor_id" class="data-input form-control" data-field="floor_id" placeholder="Floor">
+                                </select>
                             </div>
                             <div class="col-6">
-                                <div class="material-input outlined">
+                                <div class="vs-material-field">
                                     <input type="text" name="code" class="data-input form-control" data-field="code" placeholder=" " />
-                                    <label style="color:#777777;padding-left:6px;">Unit Code  <span style="color:#bbbbbb; font-size:0.8em; font-weight:400;">(Optional)</span></label>
+                                    <label>Unit Code (Optional)</label>
                                 </div>
                             </div>
                             <div class="col-6">
-                                <div class="material-input outlined">
-                                    <select data-style="material" name="space_type_id" placeholder="Type" class="data-input form-control" data-field="space_type_id">
-                                    </select>
-                                </div>
+                                <select data-style="material" name="space_type_id" placeholder="Type" class="data-input form-control" data-field="space_type_id">
+                                </select>
                             </div>
-
-                            <!-- <div class="col-12 sqm-wrapper" style="display:none;"> -->
                             <div class="col-6">
-                                <div class="material-input outlined">
+                                <div class="vs-material-field">
                                     <input type="number" min="0" step="0.01" name="sqm_size" class="data-input form-control" data-field="sqm_size" placeholder=" " />
-                                    <label style="color:#777777;padding-left:6px;">Size (m²)</label>
+                                    <label>Size (m²)</label>
                                 </div>
                             </div>
                             <div class="col-6">
-                                <div class="material-input outlined">
-                                        <input type="text" inputmode="decimal" name="price" class="data-input form-control" data-field="price" placeholder=" " />
-                                    <label style="color:#777777;padding-left:6px;">Price</label>
+                                <div class="vs-material-field">
+                                    <input type="text" inputmode="decimal" name="price" class="data-input form-control" data-field="price" placeholder=" " />
+                                    <label>Price</label>
                                 </div>
                             </div>
                             <div class="col-6">
-                                <div class="material-input outlined">
-                                    <select data-style="material" name="price_type" required placeholder="Price Type" class="data-input form-control" data-field="price_type">
-                                        <option value="">Select Price Type</option>
-                                        <option value="sqm">Per Square Meter</option>
-                                        <option value="total">Whole Room</option>
-                                    </select>
-                                </div>
+                                <select data-style="material" name="price_type" required placeholder="Price Type" class="data-input form-control" data-field="price_type">
+                                    <option value="">Select Price Type</option>
+                                    <option value="sqm">Per m²</option>
+                                    <option value="total">Whole Room</option>
+                                </select>
                             </div>
 
 
@@ -947,54 +935,54 @@ const CreateBookingDialog = (() => {
                 keyboard: true,
                 createContent: () => {
                     return [
-                        `<div class="row justify-content-center">
+                        `<div class="row g-3 justify-content-center">
                             <div class="col-6">
-                                <div class="material-input outlined">
+                                <div class="vs-material-field">
                                     <input type="text" name="booker_name" class="data-input form-control" data-field="booker_name" placeholder=" " />
-                                    <label style="color:#777777;padding-left:6px;">Booker Name</label>
+                                    <label>Booker Name</label>
                                 </div>
                             </div>
                             <div class="col-6">
-                                <div class="material-input outlined">
+                                <div class="vs-material-field">
                                     <input type="number" name="booker_phone" class="data-input form-control" data-field="booker_phone" placeholder=" " />
-                                    <label style="color:#777777;padding-left:6px;">Booker Phone</label>
+                                    <label>Booker Phone</label>
                                 </div>
                             </div>
                             <div class="col-6">
-                                <div class="material-input outlined">
+                                <div class="vs-material-field">
                                     <input type="email" name="booker_email" class="data-input form-control" data-field="booker_email" placeholder=" " />
-                                    <label style="color:#777777;padding-left:6px;">Email <span style="color:#bbbbbb; font-size:0.8em; font-weight:400;">(Optional)</span></label>
+                                    <label>Email (Optional)</label>
                                 </div>
                             </div>
                             <div class="col-6">
-                                <div class="material-input outlined">
+                                <div class="vs-material-field">
                                     <input type="text" data-type="date" name="booking_date" class="data-input form-control" data-field="booking_date" placeholder=" " />
-                                    <label style="color:#777777;padding-left:6px;">Booking Date</label>
+                                    <label>Booking Date</label>
                                 </div>
                             </div>
                             <div class="col-12 col-md-6">
-                                <div class="material-input outlined">
+                                <div class="vs-material-field">
                                     <input type="text" data-type="date" name="expired_booking_date" class="data-input form-control form_input" data-field="expired_booking_date" />
-                                    <label style="color:#777777;padding-left:6px;">Expired  Date</label>
+                                    <label>Expired  Date</label>
                                 </div>
 
                             </div>
 
 
                             <div class="col-6">
-                                <div class="material-input outlined">
+                                <div class="vs-material-field">
                                     <input type="text" inputmode="decimal"
                                         name="booking_fee"
                                         class="data-input form-control"
                                         data-field="booking_fee"
                                         placeholder=" " />
-                                    <label style="color:#777777;padding-left:6px;">Booking Amount</label>
+                                    <label>Booking Amount</label>
                                 </div>
                             </div>
                             <div class="col-12">
-                                <div class="material-input outlined">
+                                <div class="vs-material-field">
                                     <textarea name="remarks" class="data-input form-control" data-field="remarks" rows="3" placeholder=" "></textarea>
-                                    <label style="color:#777777;padding-left:6px;">Remark</label>
+                                    <label>Remark</label>
                                 </div>
                             </div>
 
@@ -1141,7 +1129,7 @@ const ViewBookingDialog = (() => {
     self.show = (op) => {
         dialog = dialog ||
             new GeneralDialog({
-                cssClass: "modal-xl modal-content-vs-dialog",
+                cssClass: "modal-xl vs-modal modal-content-vs-dialog",
                 backdrop: "static",
                 TriggerOnClose: true,
                 createContent: () => { return ['<div name="container_fluid"></div>'].join(''); },
@@ -1236,7 +1224,7 @@ const ViewBookingDialog = (() => {
                 buttons: [
                     {
                         label: '<span vslang="buttons.Close"></span>',
-                        cssClass: 'btn btn-danger',
+                        cssClass: 'btn btn-secondary',
                         click: (me, btn) => {
                             me.hide(false);
                         },

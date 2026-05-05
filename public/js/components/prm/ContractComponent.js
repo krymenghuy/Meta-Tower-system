@@ -789,88 +789,83 @@ const ContractDialog = (() => {
             keyboard: true,
             createContent: () => {
                 return [
-                    `<div class="row justify-content-start">
+                    `<div class="row g-3 justify-content-start">
                  <div class="">
-                    <div class="row">
+                    <div class="row g-3">
                         <div class="col-6">
-                            <div class="material-input outlined">
+                            <div class="vs-material-field">
                                 <input name="tenant" class="data-input form-control" data-field="tenant_name"  placeholder="Tenant" />
-                                <!-- <label style="color:#777777;padding-left:6px;" for="tenant">Tenant</label> -->
+                                <label>Tenant</label>
                             </div>
                         </div>
                         <div class="col-6">
-                            <div class="material-input outlined">
+                            <div class="vs-material-field">
                                 <input name="legal_name" class="data-input form-control" disabled data-field="legal_name" placeholder=" " />
-                                <label style="color:#777777;padding-left:6px;" for="legalName">Legal Name</label>
+                                <label>Legal Name</label>
                             </div>
                         </div>
                         <div class="col-6">
-                            <div class="material-input outlined">
+                            <div class="vs-material-field">
                                 <input type="text" data-type="date" name="start_date" class="data-input form-control form_input" data-field="start_date" placeholder=" " />
-                                <label style="color:#777777;padding-left:6px;">Start Date</label>
+                                <label>Start Date</label>
                             </div>
                         </div>
                         <div class="col-6">
-                            <div class="material-input outlined">
+                            <div class="vs-material-field">
                                 <input type="text" data-type="date" name="end_date" class="data-input form-control form_input" data-field="end_date" placeholder=" " />
-                                <label style="color:#777777;padding-left:6px;">End Date</label>
+                                <label>End Date</label>
                             </div>
                         </div>
                         <div class="col-6">
-
-                            <div class="material-input outlined">
-                                <select data-style="material" placeholder="Business Type" name="business_type_id" class="data-input form-control" data-field="business_type_id"> </select>
-                            </div>
+                            <select data-style="material" placeholder="Business Type" name="business_type_id" class="data-input form-control" data-field="business_type_id"> </select>
                         </div>
                         <div class="col-3">
-                          <div class="material-input outlined">
-                     <select data-style="material" placeholder="Unit Code" name="code" class="data-input form-control" data-field="space_id"> </select>
-                                </div>
+                            <select data-style="material" placeholder="Unit Code" name="code" class="data-input form-control" data-field="space_id"> </select>
                         </div>
                         <div class="col-3">
-                            <div class="material-input outlined">
+                            <div class="vs-material-field">
                                 <input type="text" inputmode="decimal" name="deposit" class="data-input form-control" data-field="deposit" placeholder=" " />
-                                <label style="color:#777777;padding-left:6px;">Deposit <span class="text-danger">*</span></label>
+                                <label>Deposit</label>
                             </div>
                         </div>
 
                     </div>
                 </div>
-                <div class="col-12 mb-3">
+                <div class="col-12">
                     <div class="p-3 bg-light border rounded shadow-sm">
                         <h6 class="mb-3 text-primary">Unit Details</h6>
                         <div class="row g-3">
                             <div class="col-6">
-                                <div class="material-input outlined">
+                                <div class="vs-material-field">
                                     <input type="text" name="space_name" class="data-input form-control" data-field="space_name" placeholder=" " />
-                                    <label style="color:#777777;padding-left:6px;" for="spaceType">Unit Type</label>
+                                    <label>Unit Type</label>
                                 </div>
                             </div>
                             <div class="col-6">
-                                <div class="material-input outlined">
+                                <div class="vs-material-field">
                                     <input type="number" name="sqm_size" class="data-input form-control" data-field="sqm_size" placeholder=" " />
-                                    <label style="color:#777777;padding-left:6px;">Size (m²)</label>
+                                    <label>Size (m²)</label>
                                 </div>
                             </div>
                             <div class="col-6">
-                                <div class="material-input outlined">
+                                <div class="vs-material-field">
                                     <input type="text" name="price_type" class="data-input form-control" data-field="price_type" placeholder=" " />
-                                    <label style="color:#777777;padding-left:6px;" for="priceType">Unit Price</label>
+                                    <label>Unit Price</label>
                                 </div>
                             </div>
                             <div class="col-6">
-                                <div class="material-input outlined">
+                                <div class="vs-material-field">
                                     <input type="number" name="price" class="data-input form-control" data-field="price" placeholder=" " />
-                                    <label style="color:#777777;padding-left:6px;">Price</label>
+                                    <label>Price</label>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
                  <div class="col-12 mt-3">
-                        <div class="material-input outlined">
+                        <div class="vs-material-field">
                             <textarea name="remarks" class="data-input form-control" data-field="remarks" placeholder=" "></textarea>
-                            <label style="color:#777777;padding-left:6px;">Remark</label>
+                            <label>Remark</label>
                         </div>
                     </div>
                 </div>`
@@ -1199,25 +1194,25 @@ const RenewDialog = (() => {
                 return `
                     <div class="row g-3">
                         <div class="col-12">
-                            <div class="p-3 mb-3 border rounded">
-                                <h6 class="mb-3 text-primary">Old Contract</h6>
+                            <div class="p-3 border rounded">
+                                <h6 class="mb-3 text-golden">Old Contract</h6>
                                 <div class="row g-2">
                                     <div class="col-4">
-                                        <div class="material-input outlined">
+                                        <div class="vs-material-field">
                                             <input  data-style="material" type="date" name="old_contract_start" class="data-input form-control" data-field="old_contract_start"  placeholder=" " disabled />
-                                            <label style="color:#777777;padding-left:6px;">Start Date</label>
+                                            <label>Start Date</label>
                                         </div>
                                     </div>
                                     <div class="col-4">
-                                        <div class="material-input outlined">
+                                        <div class="vs-material-field">
                                             <input  data-style="material" type="date" name="old_contract_end" class="data-input form-control" data-field="old_contract_end" placeholder=" " disabled />
-                                            <label style="color:#777777;padding-left:6px;">End Date</label>
+                                            <label>End Date</label>
                                         </div>
                                     </div>
                                     <div class="col-4">
-                                        <div class="material-input outlined">
+                                        <div class="vs-material-field">
                                             <input  data-style="material" type="number" name="old_contract_price" class="data-input form-control" data-field="old_contract_price" placeholder=" " disabled />
-                                            <label style="color:#777777;padding-left:6px;">Price</label>
+                                            <label>Price</label>
                                         </div>
                                     </div>
                                 </div>
@@ -1226,24 +1221,30 @@ const RenewDialog = (() => {
 
                         <div class="col-12">
                             <div class="p-3 bg-white border rounded shadow-sm">
-                                <h6 class="mb-3 text-primary">Renew Contract</h6>
-                                <div class="row g-2">
+                                <h6 class="mb-3 text-golden">Renew Contract</h6>
+                                <div class="row g-3">
                                     <div class="col-4">
-                                       <div class="material-input outlined">
+                                       <div class="vs-material-field">
                                            <input  data-style="material" type="date" name="start_date" class="data-input form-control" data-field="start_date" placeholder=" " disabled />
-                                             <label style="color:#777777;padding-left:6px;">Start Date</label>
+                                             <label>Start Date</label>
                                        </div>
                                    </div>
                                     <div class="col-4">
-                                        <div class="material-input outlined">
+                                        <div class="vs-material-field">
                                             <input  data-style="material" type="date" name="end_date" class="data-input form-control" data-field="end_date" placeholder=" " />
-                                            <label style="color:#777777;padding-left:6px;">End Date</label>
+                                            <label>End Date</label>
                                         </div>
                                     </div>
                                     <div class="col-4">
-                                        <div class="material-input outlined">
+                                        <div class="vs-material-field">
                                             <select placeholder="unit code" data-style="material" name="code" placeholder=" " class="data-input form-control" data-field="space_id">
                                             </select>
+                                        </div>
+                                    </div>
+                                     <div class="col-12">
+                                        <div class="vs-material-field">
+                                            <textarea name="remarks" class="data-input form-control" data-field="remarks"></textarea>
+                                            <label>Remarks</label>
                                         </div>
                                     </div>
                                 </div>
@@ -1252,41 +1253,36 @@ const RenewDialog = (() => {
 
                         <div class="col-12">
                             <div class="p-3 bg-white border rounded shadow-lg">
-                                <h6 class="mb-3 text-primary">Create Contract</h6>
-                                <div class="row g-2">
+                                <h6 class="mb-3 text-golden">Create Contract</h6>
+                                <div class="row g-3">
                                     <div class="col-6">
-                                <div class="material-input outlined">
+                                <div class="vs-material-field">
                                     <input type="text" name="space_name" class="data-input form-control" data-field="space_name" placeholder=" " readonly disabled />
-                                    <label style="color:#777777;padding-left:6px;" for="spaceType">Unit Type</label>
+                                    <label>Unit Type</label>
                                 </div>
                             </div>
                             <div class="col-6">
-                                <div class="material-input outlined">
+                                <div class="vs-material-field">
                                     <input type="number" name="sqm_size" class="data-input form-control" data-field="sqm_size" placeholder=" " readonly disabled />
-                                    <label style="color:#777777;padding-left:6px;">Size (m²)</label>
+                                    <label>Size (m²)</label>
                                 </div>
                             </div>
                             <div class="col-6">
-                                <div class="material-input outlined">
+                                <div class="vs-material-field">
                                     <input type="text" name="price_type" class="data-input form-control" data-field="price_type" placeholder=" " readonly disabled />
-                                    <label style="color:#777777;padding-left:6px;" for="priceType">Unit Price</label>
+                                    <label>Unit Price</label>
                                 </div>
                             </div>
                             <div class="col-6">
-                                <div class="material-input outlined">
+                                <div class="vs-material-field">
                                     <input type="number" name="price" class="data-input form-control" data-field="price" placeholder=" " readonly disabled />
-                                    <label style="color:#777777;padding-left:6px;">Price</label>
+                                    <label>Price</label>
                                 </div>
                             </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-12">
-                            <label style="color:#777777;padding-left:6px;">Remarks</label>
-                            <div class="material-input outlined">
-                                <textarea name="remarks" class="data-input form-control" data-field="remarks"></textarea>
-                            </div>
-                        </div>
+                       
                     </div>
                 `;
             },

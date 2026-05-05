@@ -260,18 +260,16 @@ const CreateItemsDialog = (() => {
                 keyboard: true,
                 createContent: () => {
                     return [
-                        `<div class="row justify-content-center">
+                        `<div class="row g-3 justify-content-center">
                            <div class="col-12">
-                                <div class="material-input outlined">
-                                    <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder=" " />
-                                    <label style="padding-left:6px;color:#777777;">Name</label>
+                                <div class="vs-material-field">
+                                    <input type="text" name="name" class="data-input form-control" data-field="name" placeholder=" " />
+                                    <label>Name</label>
                                 </div>
                             </div>
                             <div class="col-8">
-                                <div class="material-input outlined">
-                                    <select  data-style="material" name="category_id" class="data-input form-control" data-field="category_id" placeholder="Category">
-                                    </select>
-                                </div>
+                                <select  data-style="material" name="category_id" class="data-input form-control" data-field="category_id" placeholder="Category">
+                                </select>
                            </div>
                             <div class="col-4">
                                 <div class="material-input outlined">

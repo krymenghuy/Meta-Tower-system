@@ -3,8 +3,7 @@
         <div class="row g-3 align-items-center">
             <div class="col-12 col-md-6 col-lg-3">
                 <div class=" position-relative w-100">
-                    <input type="text" class="form-control rounded-2 pe-5 filter-field " id="_search_contract" placeholder="Search by Name, Phone or Unit">
-                    <i class="fa fa-search fs-6 text-muted position-absolute" style="right: 15px; top: 50%; transform: translateY(-50%);"></i>
+                    <input type="text" class="rounded-2 filter-field input-search" id="_search_contract" placeholder="Search by name, phone or unit">
                 </div>
             </div>
             <div class="col-12 col-md-6 col-lg-3">
@@ -13,7 +12,7 @@
             <div class="col-12 col-md-6 col-lg-2">
                 <select id="el_contract_status_id" class="data-input filter-field form-control" data-field="status_id"></select>
             </div>
-            <div class="col-12 col-md-auto ms-md-auto text-md-end mt-2">
+            <div class="col-12 col-md-auto ms-md-auto text-md-end">
             <button type="button" class="btnAddNewPrm w-100 w-md-auto" id="_btnAddContract">
                 <i class="fa-regular fa-file-lines me-2"></i>
                 <span vslang="buttons.Create Contract"></span>

@@ -2,9 +2,9 @@
      <div id="_divFilter_item" class="rounded-2 p-3 bg-white shadow-sm">
         <div class="row g-3 align-items-center">
             <div class="col-12 col-md-6 col-lg-3">
-                <input type="text" class="form-control rounded-2 pe-5 filter-field input-search" id="_search_item" placeholder="Search by name or code">
+                <input type="text" class="rounded-2 filter-field input-search" id="_search_item" placeholder="Search by name or code">
          </div>
-            <div class="col-12 col-md-6 col-lg-2">
+            <div class="col-12 col-md-6 col-lg-3">
                 <select type="id" id="_item_category_id" class="data-input filter-field form-control" data-field="category_id"></select>
             </div>
 
