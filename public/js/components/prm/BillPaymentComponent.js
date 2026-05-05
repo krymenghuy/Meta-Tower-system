@@ -51,22 +51,12 @@ var BillPaymentComponent = (() => {
         },
         {
             transTitle: "titles.Remark",
-            className: "align-middle",
-            data: (data, index, tr) => {
-                const note = data.note
-                    ? `<span class="text-wrap text-break" style="word-break:break-word;">${data.note}</span>`
-                    : '';
-
-                const cancelRemarks = data.cancel_remarks
-                    ? `<span class="text-wrap text-break text-danger" style="word-break:break-word;">
-                        <i class="fa-solid fa-ban me-1" style="font-size:11px;"></i>${data.cancel_remarks}
-                    </span>`
-                    : '';
-
+            className: "align-middle text-nowrap",
+            data: data => {
                 return `
-                    <div class="text-prm-custom d-flex flex-column gap-1" style="width:200px;">
-                        ${note}
-                        <!-- ${cancelRemarks} -->
+                    <div class="text-primary-custom" style="width:200px;">
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.note ??
+                            "..."}</span>
                     </div>
                 `;
             }
@@ -212,6 +202,14 @@ var BillPaymentComponent = (() => {
                 },
                 
             ],
+            onShow:(me, container) =>{
+                const menu = me.getActiveMenus(container);
+                const status_id = container.dataset.statusid;
+
+                menu.cancel_payment.style.display = status_id == 1 ? "block" : "none";
+                menu.delete_payment.style.display = status_id == 2 ? "block" : "none";
+            },
+               
             onClick: (menuLink, id, name) => {
                 switch (name) {
                     case "delete_payment": mThis.deletePayment(id, menuLink); break;
@@ -259,30 +257,72 @@ var BillPaymentComponent = (() => {
             }
         );
     };
+    
 
-    mThis.cancelPayment = (id, menuLink) => {
-        const op = {
-            id,
-            btn: menuLink,
-            onClose: () =>
-                mThis.BillPaymentListView.showPage(mThis.getFilterData()),
-        }
-        cv_interact.confirm("Cancel this Bill Payment?",
-            { context: "warning", confirmButtonText: "Cancel Bill" },
-            function (e) {
-                if (e) {
-                    vsapi.call(`${main_view.base_url}/prm/bill-payment/cancel`, { id }, false, false, false)
-                        .then((res) => {
-                            if (res.status_code == 200) {
-                                cv_interact.success(res.message || "Bill payment has been cancelled.");
-                                mThis.BillPaymentListView.showPage(mThis.getFilterData());
-                            } else {
-                                cv_interact.error(res.error_message || "Failed to cancel bill payment.");
-                            }
-                        });
-                }
-            }
-        );
+    // mThis.cancelPayment = (id, menuLink) => {
+    //     const op = {
+    //         id,
+    //         btn: menuLink,
+    //         onClose: () =>
+    //             mThis.BillPaymentListView.showPage(mThis.getFilterData()),
+    //     }
+    //     cv_interact.confirm("Cancel this Bill Payment?",
+    //         { context: "warning", confirmButtonText: "Cancel Bill" },
+    //         function (e) {
+    //             if (e) {
+    //                 vsapi.call(`${main_view.base_url}/prm/bill-payment/cancel`, { id }, false, false, false)
+    //                     .then((res) => {
+    //                         if (res.status_code == 200) {
+    //                             cv_interact.success(res.message || "Bill payment has been cancelled.");
+    //                             mThis.BillPaymentListView.showPage(mThis.getFilterData());
+    //                         } else {
+    //                             cv_interact.error(res.error_message || "Failed to cancel bill payment.");
+    //                         }
+    //                     });
+    //             }
+    //         }
+    //     );
+    // };
+
+    mThis.cancelPayment = id => {
+        Swal.fire({
+            title: "Cancel Payment?",
+            text: "This will restore the due balance on the bill.",
+            icon: "warning",
+            input: "textarea",
+            inputPlaceholder: "Reason for cancellation (required)...",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            confirmButtonText: "Yes, Cancel it!",
+            reverseButtons: true,
+            inputValidator: value => {
+                if (!value) return "You must provide a reason!";
+            },
+            showLoaderOnConfirm: true,
+            preConfirm: remark => {
+                let op = { id: id, note: remark };
+                return vsapi
+                    .call(`${mThis.base_url}/prm/bill-payment/cancel`, op, null)
+                    .then(res => {
+                        if (res.status_code !== 200) {
+                            throw new Error(
+                                res.error_message || "Failed to cancel"
+                            );
+                        }
+                        return res;
+                    })
+                    .catch(error => {
+                        Swal.showValidationMessage(`Request failed: ${error}`);
+                    });
+            },
+            allowOutsideClick: () => !Swal.isLoading()
+        }).then(request => {
+           if (request.isConfirmed) {
+                cv_interact.success("Payment has been canceled.");
+                mThis.BillPaymentListView.showPage(mThis.getFilterData());
+           } 
+        });    
+
     };
 
     mThis.viewAttachment = (id) => {
