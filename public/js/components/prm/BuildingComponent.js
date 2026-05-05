@@ -183,13 +183,11 @@ var BuildingComponent = ( () => {
     mThis.displayFloorNumber = (container, id, totalFloor = 0) => {
         let html = '';
         container.innerHTML = '';
-        console.log(444,id);
 
         vsapi.call(`${main_view.base_url}/prm/building/list-floor`,{
                 id: id
         },null).then(res => {
             const data = res.status_code === 200 ? res.data : [];
-            console.log(444,data);
             const maxFloorNo = (data || []).reduce((max, level) => {
                 const floorNo = parseInt(level.floor_no || '0', 10);
                 return floorNo > max ? floorNo : max;
@@ -622,7 +620,6 @@ const CreateFloorDialog = (() => {
                         const op = me.getData();
                         op.building_id = me.dataOptions.building_id;
                         op.id = me.dataOptions?.id || 0;
-                        console.log(444,op);
 
                         vsapi.call(main_view.base_url + "/prm/building/add-floor", op, btn)
                         .then((res) => {
