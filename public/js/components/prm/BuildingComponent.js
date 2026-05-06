@@ -14,7 +14,7 @@ var BuildingComponent = ( () => {
             className: "align-middle",
         },
         {
-            title: "Name",
+            transTitle: "titles.Name",
             className: "align-middle",
             data: (data) => `
                 <div class="d-flex flex-row align-items-center">
@@ -32,17 +32,18 @@ var BuildingComponent = ( () => {
             `,
         },
         {
-            title: "Total Areas",
+            transTitle: "titles.Total Areas",
             className: "align-middle",
             data: (data) => {
                 let area = data.total_area ? parseFloat(data.total_area).toLocaleString() : '';
                 return `<div class="d-flex flex-column">
                     <span class="text-start  text-prm-custom"><span>${area}${area ? ' m²' : ''}</span></span>
+
                 </div>`;
             },
         },
         {
-            title: "Total Floors",
+            transTitle: "titles.Total Floors",
             className: "align-middle",
             data: (data) =>{
                 return `<div class="d-flex flex-column">
@@ -51,7 +52,7 @@ var BuildingComponent = ( () => {
             }
         },
         {
-            title: "Total Units",
+            transTitle: "titles.Total Units",
             className: "align-middle",
             data: (data) =>{
                 return `<div class="d-flex flex-column">
@@ -81,7 +82,7 @@ var BuildingComponent = ( () => {
         //     }
         // },
         {
-            title: "Updated By",
+            transTitle: "titles.Last Updated",
             className: "align-middle",
             data: (data) => `
                 <div class="d-flex flex-column">
@@ -91,7 +92,7 @@ var BuildingComponent = ( () => {
             `,
         },
         {
-            title: "Action",
+            transTitle: "titles.Action",
             className: "col_action align-middle",
             data: (data) => `
                 <div class="d-flex justify-content-center align-items-center">
@@ -191,7 +192,7 @@ var BuildingComponent = ( () => {
             }, 0);
             const canAddFloor = (parseInt(totalFloor || '0', 10) > 0) && (maxFloorNo < parseInt(totalFloor || '0', 10));
 
-            html = `${canAddFloor ? `<div class="rounded-3 p-2 bg-danger-subtle mb-2">
+            html = `${canAddFloor ? `<div class="rounded-3 p-2 l mb-2">
                 <button data-buildingid="${id}" class="btn-add-floor btnAddNewPrm" type="button">
                     <span class="">${LocaleManager.trans('New Floor','buttons')}</span>
                 </button>

@@ -99,7 +99,7 @@ var ServiceComponent = (() => {
         //     }
         // },
         {
-            title: "Status",
+            transTitle: "titles.Status",
             className: "align-middle text-center",
             data: (data) => {
 
@@ -469,7 +469,7 @@ const CreateServicePriceDialog = (() => {
                         },
                     },
                     {
-                        label: '<span vslang="buttons.Submit"></span>',
+                        label: '<span vslang="buttons.Save"></span>',
                         cssClass: 'btn btn-primary',
                         click: (me, btn) => {
                             const op = me.getData();

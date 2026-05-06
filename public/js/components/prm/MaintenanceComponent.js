@@ -495,7 +495,7 @@ const CreateMaintenanceDialog = (() => {
             buttons: [
                 { label: '<span vslang="buttons.Cancel"></span>', cssClass: "btn btn-secondary", click: (me) => me.hide(false) },
                 {
-                    label: '<span vslang="buttons.Submit"></span>',
+                    label: '<span vslang="buttons.Save"></span>',
                     cssClass: "btn btn-primary",
                     click: (me, btn) => {
                         const op = me.getData();
