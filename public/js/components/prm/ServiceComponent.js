@@ -403,7 +403,7 @@ const CreateServicePriceDialog = (() => {
                            </div>
                             <div class="col-6">
                                 <div class="vs-material-field">
-                                    <input type="number" name="price" required class="data-input form-control" data-field="price" placeholder="" />
+                                    <input data-type="money" name="price" class="data-input inputbox-input form-control" data-field="price" placeholder="" />
                                     <label>Price</label>
                                 </div>
                             </div>
@@ -432,7 +432,7 @@ const CreateServicePriceDialog = (() => {
 
 
                 contentCreated: (me) => {
-                    applyNumberInput(me.controls.price);
+                    // applyNumberInput(me.controls.price);
                 },
                 configSelect: [
                     {
