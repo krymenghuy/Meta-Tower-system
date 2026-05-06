@@ -449,10 +449,10 @@ var SpaceComponent = new (function () {
                             <div class="mt-auto">
                                 <div class="d-flex justify-content-between text-muted small">
                                     <div class="d-flex align-items-center gap-1">
-                                        <div class="text-muted">Last Updated By :</i> ${d.update_user ?? ''}</div>
+                                        <div class="text-muted small">Last Updated :</i> ${d.update_user ?? ''}</div>
                                     </div>
                                     <div class="d-flex align-items-center gap-1">
-                                        <div class="text-muted"><i class="fa-regular fa-clock"></i> <span>${d.updated_at ?? ''}</span></div>
+                                        <div class="text-muted small"><i class="fa-regular fa-clock fs-6"></i> <span class="small">${d.updated_at ?? ''}</span></div>
                                     </div>
                                 </div>
 
@@ -762,7 +762,7 @@ const BuildingSpaceDialog = (() => {
                             </div>
                             <div class="col-6">
                                 <div class="vs-material-field">
-                                    <input type="number" min="0" step="0.01" name="sqm_size" class="data-input form-control" data-field="sqm_size" placeholder=" " />
+                                    <input type="text" name="sqm_size" class="data-input form-control" data-field="sqm_size" placeholder=" " />
                                     <label>Size (m²)</label>
                                 </div>
                             </div>
