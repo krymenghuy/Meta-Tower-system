@@ -448,38 +448,54 @@ const BuildingDialog = (() => {
             cssClass: "modal-md vs-modal",
             backdrop: "static",
             keyboard: true,
-            createContent: () => {
-                return [
-                    `<div class="row g-3 justify-content-center">
-                        <div class="col-12">
-                            <div class="vs-material-field">
-                                <input type="text" name="name" class="data-input form-control" data-field="name" placeholder=" " />
-                                <label> Name</label>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="vs-material-field">
-                                <input type="text" name="total_floor" class="data-input form-control" data-field="total_floor" placeholder=" " />
-                                <label>Total Floor</label>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="vs-material-field">
-                                <input type="text" name="total_area" class="data-input form-control" data-field="total_area" placeholder=" " />
-                                <label>Total Area (sqm)</label>
-                            </div>
-                        </div>
 
-                        <div class="col-12">
-                            <div class="vs-material-field">
-                                <textarea type="text" name="address" class="data-input form-control" data-field="address" placeholder=" "></textarea>
-                                <label>Address</label>
-                            </div>
+            createContent: () => `
+                <div class="row g-3 justify-content-center">
+
+                    <div class="col-12">
+                        <div class="vs-material-field">
+                            <input type="text" name="name" class="data-input form-control" data-field="name" placeholder=" " />
+                            <label>Name</label>
                         </div>
-                    </div>`
-                ].join("");
-            },
-           contentCreated: (me) => {
+                    </div>
+                    <div class="col-6">
+                        <div class="vs-material-field">
+                            <input
+                                type="text"
+                                inputmode="numeric"
+                                name="total_floor"
+                                class="data-input form-control"
+                                data-field="total_floor"
+                                placeholder=" "
+                            />
+                            <label>Total Floor</label>
+                        </div>
+                    </div>
+
+                    <div class="col-6">
+                        <div class="vs-material-field">
+                            <input
+                                type="text"
+                                inputmode="decimal"
+                                name="total_area"
+                                class="data-input form-control"
+                                data-field="total_area"
+                                placeholder=" "
+                            />
+                            <label>Total Area (m²)</label>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="vs-material-field">
+                            <textarea name="address" class="data-input form-control" data-field="address" placeholder=" "></textarea>
+                            <label>Address</label>
+                        </div>
+                    </div>
+
+                </div>
+            `,
+            contentCreated: (me) => {
                 const floor = me.divModal.querySelector('[name="total_floor"]');
                 const area = me.divModal.querySelector('[name="total_area"]');
 
