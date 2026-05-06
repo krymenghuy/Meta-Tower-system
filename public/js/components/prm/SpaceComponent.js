@@ -695,7 +695,7 @@ var SpaceComponent = new (function () {
                 VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'space_status', '', 'All Statuses', '');
                 VSUtil.setComboItems(mThis.elBuilding, d.buildings, 'id', 'building', '', 'All buildings', '');
                 VSUtil.setComboItems(mThis.elFloor, d.floors, 'id', 'name', '', 'All Floors', '');
-                VSUtil.setComboItems(mThis.elSpaceType, d.space_types, 'id', 'space_type', '', 'All Space Type', '');
+                VSUtil.setComboItems(mThis.elSpaceType, d.space_types, 'id', 'space_type', '', 'All Type', '');
 
                 // mThis.elBuilding.onchange = function (e) {
                 //     e.preventDefault();
