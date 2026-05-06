@@ -37,7 +37,7 @@ var BillPaymentComponent = (() => {
             data: (data) => `<span class="d-block text-prm-custom text-capitalize">${data.vendor_name ?? ""}</span>`,
         },
         {
-            title: " Amount",
+            transTitle: "titles.Amount",
             className: "align-middle text-end",
             data: (data) => {
                 const amount = VSMoney.formatAmount(data.amount, data.currency_code ?? 'USD');
@@ -65,7 +65,7 @@ var BillPaymentComponent = (() => {
             transTitle: "titles.Status",
             className: "align-middle",
             data: (data) => {
-                const isCancelled = parseInt(data.status_id) === 2;      
+                const isCancelled = parseInt(data.status_id) === 2;
 
                 let cls = "badge border border-success text-success bg-success-subtle";
                 let label = "Active";
@@ -92,7 +92,7 @@ var BillPaymentComponent = (() => {
                 </div>`;
             },
         },
-       
+
         {
             transTitle: "titles.Action",
             className: "col_action align-middle",
@@ -124,7 +124,7 @@ var BillPaymentComponent = (() => {
                 tr.classList.add("bill");
                 tr.setAttribute("id", `bill_id${data.id}`);
 
-               
+
             },
             listContainerClass: null,
         });
@@ -200,7 +200,7 @@ var BillPaymentComponent = (() => {
                     cssClass: "border-bottom pb-2",
                     name: "delete_payment",
                 },
-                
+
             ],
             onShow:(me, container) =>{
                 const menu = me.getActiveMenus(container);
@@ -209,7 +209,7 @@ var BillPaymentComponent = (() => {
                 menu.cancel_payment.style.display = status_id == 1 ? "block" : "none";
                 menu.delete_payment.style.display = status_id == 2 ? "block" : "none";
             },
-               
+
             onClick: (menuLink, id, name) => {
                 switch (name) {
                     case "delete_payment": mThis.deletePayment(id, menuLink); break;
@@ -257,7 +257,7 @@ var BillPaymentComponent = (() => {
             }
         );
     };
-    
+
 
     // mThis.cancelPayment = (id, menuLink) => {
     //     const op = {
@@ -320,8 +320,8 @@ var BillPaymentComponent = (() => {
            if (request.isConfirmed) {
                 cv_interact.success("Payment has been canceled.");
                 mThis.BillPaymentListView.showPage(mThis.getFilterData());
-           } 
-        });    
+           }
+        });
 
     };
 
@@ -631,6 +631,9 @@ const BillPaymentDialog = (() => {
             onShow: (me, container) => {
                 const menu = me.getActiveMenus(container);
                 const status_id = container.dataset.statusid;
+
+
+                // menu.edit_student.style.display = enroll_finalized == 1 ? 'none' : 'block';
                 menu.create_contract.style.display = status_id == 1 ? "block" : "none";
                 menu.service_request.style.display = "none";
                 menu.upload_document.style.display = status_id == 1 || status_id == 2 ? "block" : "none";

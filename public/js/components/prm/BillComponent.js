@@ -321,9 +321,9 @@ var BillComponent = (() => {
                         mThis.billPayment(id, menuLink);
                         break;
                     }
-                    case "delete_attachment": { 
-                        mThis.deleteAttachment(id, menuLink); 
-                        break; 
+                    case "delete_attachment": {
+                        mThis.deleteAttachment(id, menuLink);
+                        break;
                     }
                     default:  {
                         break;
@@ -756,7 +756,7 @@ const BillDialog = (() => {
                         },
                     },
                     {
-                        label: '<span vslang="buttons.Submit"></span>',
+                        label: '<span vslang="buttons.Save"></span>',
                         cssClass: "btn btn-primary",
                         click: (me, btn) => {
                             const op = me.getData();

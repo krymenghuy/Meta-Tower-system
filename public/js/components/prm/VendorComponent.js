@@ -40,7 +40,7 @@ var VendorComponent = (() => {
                     bgClass = 'bg-warning-subtle text-warning';
                 } else if (code === 'utility') {
                     bgClass = 'bg-success-subtle text-success';
-                } 
+                }
 
                 return `
             <div class="d-flex text-nowrap align-items-center gap-2">
@@ -60,7 +60,7 @@ var VendorComponent = (() => {
         `;
             }
         },
-       
+
         {
             transTitle: "titles.Category",
             className: "align-middle",
@@ -77,7 +77,7 @@ var VendorComponent = (() => {
                     bgClass = 'bg-warning-subtle text-warning';
                 } else if (code === 'utility') {
                     bgClass = 'bg-success-subtle text-success';
-                } 
+                }
 
                 return `<span class="badge ${bgClass} text-uppercase fw-bold" style="min-width:120px;">
                     ${name}
@@ -85,15 +85,15 @@ var VendorComponent = (() => {
             }
         },
 
-       
+
         {
-            title: "Contact Info",
+            transTitle: "titles.Contact Info",
             className: "align-middle",
             data: (data) =>
                 `<span class="d-block text-prm-custom text-nowrap"><i class="fa-solid text-success px-1 fa-phone" style="font-size:12px;"></i> ${data.phone_number ?? ""}</span>
                  <span class="d-block text-primary text-nowrap"><i class="fa-solid text-primary px-1 fa-envelope" style="font-size:12px;"></i> ${data.email ?? ""}</span>`,
         },
-        
+
         {
             transTitle: "titles.Contact Person",
             className: "align-middle text-nowrap",
@@ -114,7 +114,7 @@ var VendorComponent = (() => {
             }
         },
         {
-            title: "Status",
+            transTitle: "titles.Status",
             className: "align-middle text-center",
             data: (data) => {
 
@@ -134,7 +134,7 @@ var VendorComponent = (() => {
             },
         },
         {
-            transTitle: "titles.Updated By",
+            transTitle: "titles.Last Updated",
             className: 'align-middle text-nowrap',
             data: (data, index, tr) => {
                 return `<div class="d-flex flex-column">

@@ -1079,7 +1079,7 @@ const ContractDialog = (() => {
                     },
                 },
                 {
-                    label: '<span vslang="buttons.Submit"></span>',
+                    label: '<span vslang="buttons.Save"></span>',
                     cssClass: 'btn btn-primary',
                     click: (me, btn) => {
                         // front-end validation: deposit is required
@@ -1282,7 +1282,7 @@ const RenewDialog = (() => {
                                 </div>
                             </div>
                         </div>
-                       
+
                     </div>
                 `;
             },

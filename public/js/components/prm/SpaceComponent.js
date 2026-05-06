@@ -190,7 +190,7 @@ var SpaceComponent = new (function () {
             //menuItemClass:"",
             menus: [
                 {
-                    html: '<span class="ps-2 " vslang="titles.Modify">Modify</span>',
+                    html: '<span class="ps-2 " vslang="titles.Modify Space"></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "edit_space"
@@ -202,37 +202,37 @@ var SpaceComponent = new (function () {
                     name: "delete_space"
                 },
                 {
-                    html: '<span class="ps-2" vslang="titles.Booking">Booking</span>',
+                    html: '<span class="ps-2" vslang="titles.Booking"></span>',
                     icon: `<i class="fa-solid fa-bold fs-5 text-info-emphasis"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "create_booking"
                 },
                 {
-                    html: '<span class="ps-2" vslang="titles.Contract">Contract</span>',
-                    icon: `<i class="fa-regular fa-file-lines fs-5 text-primary"></i>`,
+                    html: '<span class="ps-2" vslang="titles.Create Contract"></span>',
+                    icon: `<i class="fa-regular fa-file-lines fs-5 text-success"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "create_contract"
                 },
                 {
-                    html: '<span class="ps-2" vslang="titles.Maintenance">Maintenance</span>',
+                    html: '<span class="ps-2" vslang="titles.Create Maintenance"></span>',
                     icon: `<i class="fa-solid fa-screwdriver-wrench fs-5 text-warning-emphasis"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "set_maintenance"
                 },
                 {
-                    html: '<span class="ps-2  " vslang="titles.Finish">Finish</span>',
+                    html: '<span class="ps-2  " vslang="titles.Finish Maintenance"></span>',
                     icon: `<i class="fa-solid fa-clipboard-check fs-5 text-success"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "finish_maintenance"
                 },
                 {
-                    html: '<span class="ps-2" vslang="titles.View Booking">View Booking</span>',
+                    html: '<span class="ps-2" vslang="titles.View Booking"></span>',
                     icon: `<i class="fa-regular fa-hard-drive fs-5 text-info"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "view_booking"
                 },
                 {
-                    html: '<span class="ps-2" vslang="titles.Edit Booking">Edit Booking</span>',
+                    html: '<span class="ps-2" vslang="titles.Modify Booking">Edit Booking</span>',
                     icon: `<i class="fa-regular fa-pen-to-square fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "edit_booking"
@@ -990,7 +990,7 @@ const CreateBookingDialog = (() => {
                         }
                         e.target.value = v;
                     });
-                    
+
 
 
 
