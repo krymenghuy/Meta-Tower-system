@@ -44,7 +44,7 @@ var ItemsComponent = (() => {
             }
         },
         {
-            transTitle: "titles.Updated By",
+            transTitle: "titles.Last Updated",
             className: 'align-middle',
             data: (data, index, tr) => {
                 return `<div class="d-flex flex-column">
@@ -286,7 +286,7 @@ const CreateItemsDialog = (() => {
                                 </div>
                             </div>
 
-                            
+
 
 
                         </div>`
@@ -319,7 +319,7 @@ const CreateItemsDialog = (() => {
 
                 onPrepareForm: (me, data) => {
                     console.log(123,data);
-                    
+
                   me.controls.unit.value = data.item_details.unit ?? '';
                 },
 

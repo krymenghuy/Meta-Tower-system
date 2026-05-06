@@ -19,13 +19,13 @@ var AmenityComponent = (() => {
             className: "align-middle text-nowrap text-capitalize",
         },
         {
-            title: "Code",
+            transTitle: "titles.Code",
             className: "align-middle text-nowrap",
             data: (data) =>
             `<span class="text-prm-custom">${data.code ?? ""}</span>`,
         },
         {
-            title: "Name",
+            transTitle: "titles.Name",
             className: "align-middle text-nowrap",
             data: (data) =>
                 `<div class="text-prm-custom text-capitalize" style="width:120px; ">
@@ -33,13 +33,13 @@ var AmenityComponent = (() => {
                 </div>`,
         },
         {
-            title: "Category",
+            transTitle: "titles.Category",
             className: "align-middle text-nowrap",
             data: (data) =>
                 `<span class="text-nowrap" style="min-width:100px">${data.category ?? ""}</span>`,
         },
         {
-            title: "Building",
+            transTitle: "titles.Building",
             className: "align-middle text-nowrap",
             data: (data) =>
                 `<div class="text-prm-custom">
@@ -47,7 +47,7 @@ var AmenityComponent = (() => {
                 </div>`
         },
         {
-            title: "Floor",
+            transTitle: "titles.Floor",
             className: "align-middle text-nowrap",
             data: (data) =>
                 `<div class="text-prm-custom">
@@ -55,13 +55,13 @@ var AmenityComponent = (() => {
                 </div>`
         },
         {
-            title: "Capacity",
+            transTitle: "titles.Capacity",
             className: "align-middle text-nowrap text-center",
             data: (data) =>
                 `<span class="text-prm-custom">${data.max_capacity ?? "-"}</span> <small class="text-muted">PAX/Room</small>`,
         },
         {
-            title: "Bookable",
+            transTitle: "titles.Bookable",
             className: "align-middle text-nowrap text-center",
             data: function (data) {
                 const val = data.requires_booking ?? "";
@@ -73,7 +73,7 @@ var AmenityComponent = (() => {
             },
         },
         {
-            title: "Status",
+            transTitle: "titles.Status",
             className: "align-middle text-nowrap text-center",
             data: (data) => {
                 const status = (data.status ?? "").toLowerCase();
@@ -94,7 +94,7 @@ var AmenityComponent = (() => {
             }
         },
         {
-            title: "Updated By",
+            transTitle: "titles.Last Updated",
             className: "align-middle text-nowrap",
             data: (data) => `
                 <div class="d-flex flex-column">
@@ -103,17 +103,17 @@ var AmenityComponent = (() => {
                 </div>`,
         },
         {
-            title: "Action",
+            transTitle: "titles.Action",
             className: "col_action align-middle text-nowrap",
             data: (data) => {
-                
+
                 return `<div class="d-flex justify-content-center align-items-end">
                     <a href="javascript:void(0)" class="btn--Options btn_amenity_action" data-id="${data.id}" data-statusid="${data.status_id}" data-isreserved="${data.is_reserved}" aria-haspopup="true" aria-expanded="false">
                        <i class="fa-solid fa-ellipsis-vertical text-black fs-5"></i>
                     </a>
                 </div>`;
             },
-                
+
         },
     ];
 
@@ -210,7 +210,7 @@ var AmenityComponent = (() => {
             actionButtonClass: "btn_amenity_action",
             cssClass: "bg-white shadow",
             menus: [
-                
+
                 {
                     html: '<span class="ps-2" vslang="titles.Modify">Modify</span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-primary"></i>`,
@@ -313,7 +313,7 @@ var AmenityComponent = (() => {
             onClose: () =>
                 mThis.AmenityListView.showPage(mThis.getFilterData()),
         };
-        
+
         AmenityDialog.show(op);
     };
 
@@ -475,7 +475,7 @@ var AmenityComponent = (() => {
             btn: menuLink,
         });
     };
-    
+
 
     mThis.prepareFormOptions = (onFinish) => {
         vsapi
@@ -656,7 +656,7 @@ const AmenityDialog = (() => {
                         click: (me, btn) => {
                             const op = me.getData();
                             console.log(123456,op);
-                            
+
                             op.id = me.dataOptions.id;
                             vsapi.call([main_view.base_url,"/prm/amenity/save",].join(""),op,btn,).then((res) => {
                                     if (res.status_code === 200) {
@@ -670,7 +670,7 @@ const AmenityDialog = (() => {
                                         cv_interact.error(res.error_message);
                                     }
                                 });
-                             
+
                         },
                     },
                 ],
@@ -740,8 +740,8 @@ const ActiveReservationDialog = (() => {
             title: 'Active Reservations',
             instanceKey: 'activeReservationView',
             context: 'info',
-            // confirmButtonText: null,   
-            // showconfirmButtonText: false,  
+            // confirmButtonText: null,
+            // showconfirmButtonText: false,
             cancelButtonText: 'Close',
 
             createContent() {
@@ -763,7 +763,7 @@ const ActiveReservationDialog = (() => {
                     <div id="_arv_table_wrap" class="d-none">
                         <table class="table table-sm table--white rounded-2 overflow-hidden">
                             <thead class="header-uppercase">
-                                <tr > 
+                                <tr >
                                     <th>Date / Time</th>
                                     <th>Tenant</th>
                                     <th class="text-center">Status</th>

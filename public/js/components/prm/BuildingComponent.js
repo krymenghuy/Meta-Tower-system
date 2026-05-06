@@ -14,7 +14,7 @@ var BuildingComponent = ( () => {
             className: "align-middle",
         },
         {
-            title: "Name",
+            transTitle: "titles.Name",
             className: "align-middle",
             data: (data) => `
                 <div class="d-flex flex-row align-items-center">
@@ -32,7 +32,7 @@ var BuildingComponent = ( () => {
             `,
         },
         {
-            title: "Total Areas",
+            transTitle: "titles.Total Areas",
             className: "align-middle",
             data: (data) => {
                 let area = data.total_area ? parseFloat(data.total_area).toLocaleString() : '';
@@ -43,24 +43,24 @@ var BuildingComponent = ( () => {
             },
         },
         {
-            title: "Total Floors",
+            transTitle: "titles.Total Floors",
             className: "align-middle",
             data: (data) =>{
                 return `<div class="d-flex flex-column">
                     <span class="text-capitalize text-start text-prm-custom">${data.total_floor ?? '0'}</span></span>
                     <span class="text-muted">Floors</span>
                 </div>`;
-            } 
+            }
         },
         {
-            title: "Total Units",
+            transTitle: "titles.Total Units",
             className: "align-middle",
             data: (data) =>{
                 return `<div class="d-flex flex-column">
                     <span class="text-capitalize text-start text-prm-custom">${data.total_space ?? '0'}</span></span>
                     <span class="text-muted">Units</span>
                 </div>`;
-            } 
+            }
         },
         // {
         //     title: "Occupancy",
@@ -84,7 +84,7 @@ var BuildingComponent = ( () => {
         //     }
         // },
         {
-            title: "Updated By",
+            transTitle: "titles.Last Updated",
             className: "align-middle",
             data: (data) => `
                 <div class="d-flex flex-column">
@@ -94,7 +94,7 @@ var BuildingComponent = ( () => {
             `,
         },
         {
-            title: "Action",
+            transTitle: "titles.Action",
             className: "col_action align-middle",
             data: (data) => `
                 <div class="d-flex justify-content-center align-items-center">
@@ -194,7 +194,7 @@ var BuildingComponent = ( () => {
             }, 0);
             const canAddFloor = (parseInt(totalFloor || '0', 10) > 0) && (maxFloorNo < parseInt(totalFloor || '0', 10));
 
-            html = `${canAddFloor ? `<div class="rounded-3 p-2 bg-danger-subtle mb-2">
+            html = `${canAddFloor ? `<div class="rounded-3 p-2 l mb-2">
                 <button data-buildingid="${id}" class="btn-add-floor btnAddNewPrm" type="button">
                     <span class="">${LocaleManager.trans('New Floor','buttons')}</span>
                 </button>
@@ -471,7 +471,7 @@ const BuildingDialog = (() => {
                                 <label style="color:#777777;padding-left:6px;">Total Area (sqm)</label>
                             </div>
                         </div>
-                       
+
                         <div class="col-12">
                             <div class="material-input outlined">
                                 <textarea type="number" name="address" class="data-input form-control" data-field="address" placeholder=" "></textarea>
@@ -484,7 +484,7 @@ const BuildingDialog = (() => {
             contentCreated: (me) => {
                 header.innerHTML = '';
                 header.appendChild(headerWrapper);
-                 
+
             },
             prepareFormOptions: {
                 createTitle: "Create Building",

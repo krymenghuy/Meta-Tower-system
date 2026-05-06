@@ -99,7 +99,7 @@ var ServiceComponent = (() => {
         //     }
         // },
         {
-            title: "Status",
+            transTitle: "titles.Status",
             className: "align-middle text-center",
             data: (data) => {
 
