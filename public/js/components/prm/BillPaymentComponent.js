@@ -636,12 +636,51 @@ const BillPaymentDialog = (() => {
                 menu.upload_document.style.display = status_id == 1 || status_id == 2 ? "block" : "none";
             },
 
+            // onPrepareForm: (me, data) => {
+            //     const bill = data?.bill || data?.bill_details;
+
+            //     const dueAmount = Number(bill?.total_amount || bill?.balance || 0);
+            //     const dueEl = me.divModal.querySelector("#f_due");
+            //     if (dueEl) dueEl.textContent = "$" + dueAmount.toFixed(2);
+
+            //     if (me.controls.total_amount) me.controls.total_amount.value = Number(bill.total_amount || 0).toFixed(2);
+            //     if (me.controls.paid_amount)  me.controls.paid_amount.value  = Number(bill.paid_amount  || 0).toFixed(2);
+            //     if (me.controls.balance)      me.controls.balance.value      = Number(bill.balance      || 0).toFixed(2);
+
+            //     if (me.controls.vendor) {
+            //         me.controls.vendor.value = bill.vendor_name || '';
+            //         me.controls.vendor.readOnly = true;
+            //     }
+
+            //     if (me.controls.payment_date && !me.controls.payment_date.value) {
+            //         const now = new Date();
+            //         const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+            //         const day = String(now.getDate()).padStart(2, '0');
+            //         const month = months[now.getMonth()];
+            //         const year = now.getFullYear();
+            //         me.controls.payment_date.value = `${day}-${month}-${year}`;
+            //     }
+
+            //     const banks = data?.banks ?? [];
+            //     const bankEl  = me.divModal.querySelector('[name="bank"]');
+            //     const chequeEl = me.divModal.querySelector('[name="cheque_bank_id"]');
+            //     if (bankEl)   VSUtil.setComboItems(bankEl,   banks, 'id', 'name', '', 'Select Bank', '');
+            //     if (chequeEl) VSUtil.setComboItems(chequeEl, banks, 'id', 'name', '', 'Select Bank', '');
+            // },
+
+
             onPrepareForm: (me, data) => {
                 const bill = data?.bill || data?.bill_details;
 
-                const dueAmount = Number(bill?.total_amount || bill?.balance || 0);
+                const dueAmount = Number(bill?.balance || 0);
                 const dueEl = me.divModal.querySelector("#f_due");
                 if (dueEl) dueEl.textContent = "$" + dueAmount.toFixed(2);
+
+                const balEl = me.divModal.querySelector("#f_bal");
+                if (balEl) {
+                    balEl.style.color = "#FAB31C";
+                    balEl.textContent = "$" + dueAmount.toFixed(2);
+                }
 
                 if (me.controls.total_amount) me.controls.total_amount.value = Number(bill.total_amount || 0).toFixed(2);
                 if (me.controls.paid_amount)  me.controls.paid_amount.value  = Number(bill.paid_amount  || 0).toFixed(2);
@@ -660,8 +699,13 @@ const BillPaymentDialog = (() => {
                     const year = now.getFullYear();
                     me.controls.payment_date.value = `${day}-${month}-${year}`;
                 }
-            },
 
+                const banks    = data?.banks ?? [];
+                const bankEl   = me.divModal.querySelector('[name="bank"]');
+                const chequeEl = me.divModal.querySelector('[name="cheque_bank_id"]');
+                if (bankEl)   VSUtil.setComboItems(bankEl,   banks, 'id', 'name', '', 'Select Bank', '');
+                if (chequeEl) VSUtil.setComboItems(chequeEl, banks, 'id', 'name', '', 'Select Bank', '');
+            },
             buttons: [
                 {
                     label: '<span vslang="buttons.Cancel"></span>',
