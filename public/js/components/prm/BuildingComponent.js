@@ -50,7 +50,7 @@ var BuildingComponent = ( () => {
                     <span class="text-capitalize text-start text-prm-custom">${data.total_floor ?? '0'}</span></span>
                     <span class="text-muted">Floors</span>
                 </div>`;
-            } 
+            }
         },
         {
             title: "Total Units",
@@ -60,7 +60,7 @@ var BuildingComponent = ( () => {
                     <span class="text-capitalize text-start text-prm-custom">${data.total_space ?? '0'}</span></span>
                     <span class="text-muted">Units</span>
                 </div>`;
-            } 
+            }
         },
         // {
         //     title: "Occupancy",
@@ -461,7 +461,7 @@ const BuildingDialog = (() => {
                         </div>
                         <div class="col-6">
                             <div class="material-input outlined">
-                                <input type="number" min="1" max="999" step="1" name="total_floor" oninput="if (this.value.length > 3) this.value = this.value.slice(0,3);" class="data-input form-control" data-field="total_floor" placeholder=" " />
+                                <input type="number" min="1" max="50" step="1" name="total_floor" oninput="if (this.value.length > 3) this.value = this.value.slice(0,3);" class="data-input form-control" data-field="total_floor" placeholder=" " />
                                 <label style="color:#777777;padding-left:6px;">Total Floor</label>
                             </div>
                         </div>
@@ -471,7 +471,7 @@ const BuildingDialog = (() => {
                                 <label style="color:#777777;padding-left:6px;">Total Area (sqm)</label>
                             </div>
                         </div>
-                       
+
                         <div class="col-12">
                             <div class="material-input outlined">
                                 <textarea type="number" name="address" class="data-input form-control" data-field="address" placeholder=" "></textarea>
@@ -484,7 +484,7 @@ const BuildingDialog = (() => {
             contentCreated: (me) => {
                 header.innerHTML = '';
                 header.appendChild(headerWrapper);
-                 
+
             },
             prepareFormOptions: {
                 createTitle: "Create Building",
