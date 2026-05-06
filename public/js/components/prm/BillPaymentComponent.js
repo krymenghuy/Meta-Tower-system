@@ -405,7 +405,6 @@ var BillPaymentComponent = (() => {
     return mThis;
 })();
 
-
 const BillPaymentDialog = (() => {
     const self = {};
     let dialog = null;
@@ -416,63 +415,117 @@ const BillPaymentDialog = (() => {
             backdrop: "static",
             keyboard: true,
 
-            createContent: () => {
-                return [
-                    `<div class="row g-3">
-                        <input name="vendorid" class="d-none data-input form-control" data-field="vendor_id">
-                        <div class="col-md-6">
+            createContent: () => `
+                <div class="container-fluid px-0">
+
+                    <div class="row g-0" style="border-radius:8px;overflow:hidden;margin-bottom:1.5rem;">
+                        <div class="col-4" style="padding:0.75rem 1.25rem;border-right:1px solid white; background:#e1e5f2;">
+                            <div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#1a1647;margin-bottom:4px;">Total Due</div>
+                            <div style="font-size:17px;font-weight:600;color:#5665E1;" id="f_due">$0.00</div>
+                        </div>
+                        <div class="col-4" style="padding:0.75rem 1.25rem;border-right:1px solid white; text-align:center;background:#e1e5f2;">
+                            <div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#1a1647;margin-bottom:4px;">Paying Now</div>
+                            <div style="font-size:17px;font-weight:600;color:#19BF9B;" id="f_tot">$0.00</div>
+                        </div>
+                        <div class="col-4" style="padding:0.75rem 1.25rem;text-align:right;background:#e1e5f2;">
+                            <div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#1a1647;margin-bottom:4px;">Remaining</div>
+                            <div style="font-size:17px;font-weight:600;color:#FAB31C;" id="f_bal">$0.00</div>
+                        </div>
+                    </div>
+
+                    <div style="display:flex;flex-direction:column;">
+
+                        <!-- Payee Info -->
+                        <div class="mb-3">
                             <div class="material-input outlined">
-                                <input style="cursor: not-allowed;" name="vendor" class="data-input form-control" data-field="vendor_name" placeholder="Payee (Vendor)" readonly>
+                                <input name="vendor" class="data-input form-control" data-field="vendor_name" placeholder="Payee (Vendor)" readonly>
                                 <label style="color:#777777;padding-left:6px;">Pay To</label>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="material-input outlined">
-                                <input type="text" data-type="date" name="payment_date" required class="data-input form-control" data-field="payment_date" />
-                                <label style="color:#777777;padding-left:6px;">Payment Date</label>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <div class="material-input outlined">
+                                    <input type="text" data-type="date" name="payment_date" class="data-input form-control" data-field="payment_date" />
+                                    <label style="color:#777777;padding-left:6px;">Payment Date</label>
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="material-input outlined">
-                               <select data-style="material" name="payment_method" class="data-input form-control" data-field="payment_method" placeholder="Payment Method">
-                                    <option value="cash">Cash</option>
-                                    <option value="bank">Bank Transfer</option>
-                                    <option value="cheque">Cheque</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="material-input outlined">
-                                <input type="text" name="payer" class="data-input form-control" data-field="payer" placeholder=" " >
-                                <label style="color:#777777;padding-left:6px;">Payer</label>
+                            <div class="col-md-6">
+                                <div class="material-input outlined">
+                                    <input type="text" name="payer" class="data-input form-control" data-field="payer" placeholder=" " >
+                                    <label style="color:#777777;padding-left:6px;">Payer</label>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="col-3">
-                            <div class="material-input outlined bg-light rounded">
-                                <input name="total_amount" class="form-control text-end" style="cursor:not-allowed;" readonly>
-                                <label class="text-muted small px-2">Total Amount</label>
+                        <div>
+                            <div class="d-flex align-items-center gap-2 mb-3">
+                                <span class="payment-badge" style="color:#27500A;">Cash</span>
+                                <div style="flex:1;height:1px;background:#dee2e6;"></div>
+                                <span style="font-size:11px;color:#27500A;">Entered: <strong id="c_e" style="color:#212529;">—</strong></span>
+                            </div>
+                            <div style="display:flex;flex-direction:row;gap:8px;flex-wrap:wrap;margin-bottom: 0.5rem;">
+                                <div style="flex:1;min-width:160px;" class="material-input outlined">
+                                    <input name="cash" type="text" class="form-control data-input" data-field="cash"
+                                        min="0" step="0.01" placeholder=" "/>
+                                    <label style="padding-left:6px;color:#777777;">Amount ($)</label>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-3">
-                            <div class="material-input outlined bg-light rounded">
-                                <input name="paid_amount" data-field="paid_amount" class="form-control text-end" style="cursor:not-allowed;" readonly>
-                                <label class="text-muted small px-2">Already Paid</label>
+
+                        <div>
+                            <div class="d-flex align-items-center gap-2 mb-3">
+                                <span class="payment-badge" style="color:#0C447C;">Bank Transfer</span>
+                                <div style="flex:1;height:1px;background:#dee2e6;"></div>
+                                <span style="font-size:11px;color:#0C447C;">Entered: <strong id="b_e" style="color:#212529;">—</strong></span>
+                            </div>
+                            <div style="display:flex;flex-direction:row;gap:8px;flex-wrap:wrap;margin-bottom: 0.5rem;">
+                                <div style="flex:1;min-width:140px;" class="material-input outlined">
+                                    <select name="bank" class="form-select data-input" data-field="bank" data-style="material" placeholder="Bank"></select>
+                                </div>
+                                <div style="flex:1;min-width:140px;" class="material-input outlined">
+                                    <input name="bank_amount" type="text" class="form-control data-input"
+                                        data-field="bank_amount" min="0" step="0.01" placeholder=" "/>
+                                    <label style="padding-left:6px;color:#777777;">Amount ($)</label>
+                                </div>
+                                <div style="flex:1;min-width:140px;" class="material-input outlined">
+                                    <input name="bank_ref_number" type="text" class="form-control data-input"
+                                        data-field="bank_ref_number" placeholder=" "/>
+                                    <label style="padding-left:6px;color:#777777;">Ref Number</label>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-3">
-                            <div class="material-input outlined border-primary">
-                                <input type="text" inputmode="decimal" name="amount" data-field="amount" class="data-input form-control text-end fw-bold" placeholder="0.00 $">
-                                <label class="text-primary px-2">Paying Now</label>
+
+                        <div>
+                            <div class="d-flex align-items-center gap-2 mb-3">
+                                <span class="payment-badge" style="color:#633806;">Cheque</span>
+                                <div style="flex:1;height:1px;background:#dee2e6;"></div>
+                                <span style="font-size:11px;color:#633806;">Entered: <strong id="ch_e" style="color:#212529;">—</strong></span>
+                            </div>
+                            <div style="display:flex;flex-direction:row;gap:8px;flex-wrap:wrap;margin-bottom: 0.5rem;">
+                                <div style="flex:1;min-width:140px;" class="material-input outlined">
+                                    <select name="cheque_bank_id" class="form-select data-input"
+                                            data-field="cheque_bank_id" data-style="material" placeholder="Cheque Bank"></select>
+                                </div>
+                                <div style="flex:1;min-width:140px;" class="material-input outlined">
+                                    <input name="cheque_amount" type="text" class="form-control data-input"
+                                        data-field="cheque_amount" min="0" step="0.01" placeholder=" "/>
+                                    <label style="padding-left:6px;color:#777777;">Amount ($)</label>
+                                </div>
+                                <div style="flex:1;min-width:140px;" class="material-input outlined">
+                                    <input name="cheque_number" type="text" class="form-control data-input"
+                                        data-field="cheque_number" placeholder=" "/>
+                                    <label style="padding-left:6px;color:#777777;">Cheque Number</label>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-3">
-                            <div class="material-input outlined bg-light rounded">
-                                <input name="balance" class="form-control text-end fw-bold" style="cursor:not-allowed; color:#dc3545;" readonly>
-                                <label class="fw-bold px-2" style="color:#dc3545;">Remaining</label>
-                            </div>
-                        </div>
-                        <div class="col-12" id="_dlg_conv_row" style="display:none;">
+
+                        <!-- Hidden fields for data compatibility -->
+                        <input name="vendorid" class="d-none data-input" data-field="vendor_id">
+                        <input name="payment_method" type="hidden" class="data-input" data-field="payment_method">
+
+                        <!-- Currency Conversion -->
+                        <div class="col-12 mb-3" id="_dlg_conv_row" style="display:none;">
                             <div style="border:1px dashed #bfdbfe; border-radius:6px; padding:8px 14px; background:#eff6ff; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
                                 <div class="d-flex align-items-center gap-2">
                                     <span style="font-size:11px; color:#1d4ed8; white-space:nowrap;">1 USD =</span>
@@ -488,42 +541,80 @@ const BillPaymentDialog = (() => {
                             </div>
                         </div>
 
-                        <div class="col-12">
-                            <div class="material-input outlined">
-                                <textarea class="data-input form-control" data-field="note" placeholder=" "></textarea>
-                                <label style="color:#777777;padding-left:6px;">Remark</label>
+                        <!-- Remark -->
+                        <div>
+                            <div class="material-input outlined" style="margin:0;">
+                                <textarea name="note" class="form-control data-input" data-field="note"
+                                        rows="2" style="height:55px;" placeholder=""></textarea>
+                                <label style="padding-left:6px;color:#777777;">Remark</label>
                             </div>
                         </div>
-                    </div>`
-                ].join("");
-            },
+
+                    </div>
+                </div>`,
 
             contentCreated: (me) => {
-                    me.controls.amount.addEventListener('input', (e) => {
-                        let v = e.target.value;
-                        v = v.replace(/[^0-9.]/g, '');
+                const updateTotals = () => {
+                    const getValue = name => {
+                        const el = me.divModal.querySelector(`[name="${name}"]`);
+                        return el ? parseFloat(el.value) || 0 : 0;
+                    };
 
+                    const fmt = n => "$" + Number(n).toFixed(2);
+
+                    const cash = getValue("cash");
+                    const bank = getValue("bank_amount");
+                    const cheque = getValue("cheque_amount");
+
+                    const totalPaid = cash + bank + cheque;
+
+                    let due = 0;
+                    const dueEl = me.divModal.querySelector("#f_due");
+                    if (dueEl) {
+                        due = parseFloat(dueEl.textContent.replace(/[^0-9.-]+/g, "")) || 0;
+                    }
+
+                    const remaining = due - totalPaid;
+
+                    me.divModal.querySelector("#f_tot").textContent = fmt(totalPaid);
+
+                    const balEl = me.divModal.querySelector("#f_bal");
+                    if (balEl) {
+                        if (totalPaid > due + 0.001) {
+                            balEl.style.color = "#dc3545";
+                            balEl.textContent = "Overpaid: " + fmt(Math.abs(remaining));
+                        } else {
+                            balEl.style.color = remaining <= 0.001 ? "#3B6D11" : "#FAB31C";
+                            balEl.textContent = fmt(Math.max(0, remaining));
+                        }
+                    }
+
+                    me.divModal.querySelector("#c_e").textContent = cash > 0 ? fmt(cash) : "—";
+                    me.divModal.querySelector("#b_e").textContent = bank > 0 ? fmt(bank) : "—";
+                    me.divModal.querySelector("#ch_e").textContent = cheque > 0 ? fmt(cheque) : "—";
+                };
+
+                const amountFields = ["cash", "bank_amount", "cheque_amount"];
+                amountFields.forEach(name => {
+                    const input = me.divModal.querySelector(`[name="${name}"]`);
+                    if (input) {
+                        input.addEventListener("input", updateTotals);
+                        input.addEventListener("change", updateTotals);
+                    }
+                });
+
+                // Original amount formatting
+                const amountInput = me.divModal.querySelector('[name="amount"]');
+                if (amountInput) {
+                    amountInput.addEventListener('input', (e) => {
+                        let v = e.target.value.replace(/[^0-9.]/g, '');
                         const parts = v.split('.');
-                        if (parts.length > 2) {
-                            v = parts[0] + '.' + parts[1];
-                        }
-                        if (parts[1] !== undefined) {
-                            v = parts[0] + '.' + parts[1].slice(0, 2);
-                        }
-
+                        if (parts.length > 2) v = parts[0] + '.' + parts[1];
+                        if (parts[1] !== undefined) v = parts[0] + '.' + parts[1].slice(0, 2);
                         e.target.value = v;
                     });
-                    me.controls.amount.addEventListener('blur', (e) => {
-                        let v = parseFloat(e.target.value);
-
-                        if (isNaN(v) || v <= 0) {
-                            e.target.value = '';
-                            return;
-                        }
-                        e.target.value = v;
-                    });
-
-                },
+                }
+            },
 
             prepareFormOptions: {
                 createTitle: "Bill Payment Voucher",
@@ -536,6 +627,7 @@ const BillPaymentDialog = (() => {
                     })
                 }
             },
+
             onShow: (me, container) => {
                 const menu = me.getActiveMenus(container);
                 const status_id = container.dataset.statusid;
@@ -544,63 +636,63 @@ const BillPaymentDialog = (() => {
                 // menu.edit_student.style.display = enroll_finalized == 1 ? 'none' : 'block';
                 menu.create_contract.style.display = status_id == 1 ? "block" : "none";
                 menu.service_request.style.display = "none";
-                menu.upload_document.style.display =status_id == 1 || status_id == 2  ? "block" : "none";
-
+                menu.upload_document.style.display = status_id == 1 || status_id == 2 ? "block" : "none";
             },
+
+            // onPrepareForm: (me, data) => {
+            //     const bill = data?.bill || data?.bill_details;
+
+            //     const dueAmount = Number(bill?.total_amount || bill?.balance || 0);
+            //     const dueEl = me.divModal.querySelector("#f_due");
+            //     if (dueEl) dueEl.textContent = "$" + dueAmount.toFixed(2);
+
+            //     if (me.controls.total_amount) me.controls.total_amount.value = Number(bill.total_amount || 0).toFixed(2);
+            //     if (me.controls.paid_amount)  me.controls.paid_amount.value  = Number(bill.paid_amount  || 0).toFixed(2);
+            //     if (me.controls.balance)      me.controls.balance.value      = Number(bill.balance      || 0).toFixed(2);
+
+            //     if (me.controls.vendor) {
+            //         me.controls.vendor.value = bill.vendor_name || '';
+            //         me.controls.vendor.readOnly = true;
+            //     }
+
+            //     if (me.controls.payment_date && !me.controls.payment_date.value) {
+            //         const now = new Date();
+            //         const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+            //         const day = String(now.getDate()).padStart(2, '0');
+            //         const month = months[now.getMonth()];
+            //         const year = now.getFullYear();
+            //         me.controls.payment_date.value = `${day}-${month}-${year}`;
+            //     }
+
+            //     const banks = data?.banks ?? [];
+            //     const bankEl  = me.divModal.querySelector('[name="bank"]');
+            //     const chequeEl = me.divModal.querySelector('[name="cheque_bank_id"]');
+            //     if (bankEl)   VSUtil.setComboItems(bankEl,   banks, 'id', 'name', '', 'Select Bank', '');
+            //     if (chequeEl) VSUtil.setComboItems(chequeEl, banks, 'id', 'name', '', 'Select Bank', '');
+            // },
+
+
             onPrepareForm: (me, data) => {
                 const bill = data?.bill || data?.bill_details;
 
-                // if (!bill || !bill.id) {
-                //     console.error("Bill data is missing in response", data);
-                //     cv_interact.warning("Could not load bill details.");
-                //     return;
-                // }
+                const dueAmount = Number(bill?.balance || 0);
+                const dueEl = me.divModal.querySelector("#f_due");
+                if (dueEl) dueEl.textContent = "$" + dueAmount.toFixed(2);
 
-                // if (me.controls.vendor)       me.controls.vendor.value       = '';
-                // if (me.controls.phone_number) me.controls.phone_number.value = '';
-                // if (me.controls.expense_type) me.controls.expense_type.value = '';
-                // if (me.controls.bill_number)  me.controls.bill_number.value  = '';
-                if (me.controls.total_amount) me.controls.total_amount.value = '';
-                if (me.controls.paid_amount)  me.controls.paid_amount.value  = '';
-                if (me.controls.balance)      me.controls.balance.value      = '';
-                if (me.controls.amount)       me.controls.amount.value       = '';
-                // if (me.controls.payer)        me.controls.payer.value        = '';
-                // if (me.controls.note)         me.controls.note.value         = '';
-
-                // if (me.controls.vendor)       { me.controls.vendor.value       = bill.vendor_name || '';                    me.controls.vendor.readOnly       = true; }
-                // if (me.controls.phone_number) { me.controls.phone_number.value = bill.phone_number || '';                   me.controls.phone_number.readOnly = true; }
-                // if (me.controls.expense_type) { me.controls.expense_type.value = bill.expense_type_name || '';              me.controls.expense_type.readOnly = true; }
-                // if (me.controls.bill_number)  { me.controls.bill_number.value  = bill.bill_number || '';                    me.controls.bill_number.readOnly  = true; }
-                if (me.controls.total_amount) { me.controls.total_amount.value = Number(bill.total_amount || 0).toFixed(2); me.controls.total_amount.readOnly = true; }
-                if (me.controls.paid_amount)  { me.controls.paid_amount.value  = Number(bill.paid_amount  || 0).toFixed(2); me.controls.paid_amount.readOnly  = true; }
-                if (me.controls.balance)      { me.controls.balance.value      = Number(bill.balance      || 0).toFixed(2); me.controls.balance.readOnly      = true; }
-                // if (me.controls.due_date)     {me.controls.due_date.value      = bill.due_date || '';                       me.controls.due_date.readOnly     = true; }
-
-                // if (me.controls.payment_date) {
-                //     me.controls.payment_date.value = new Date().toISOString().split('T')[0];
-                // }
-
-                if (me._amountHandler && me.controls.amount) {
-                    me.controls.amount.removeEventListener('input', me._amountHandler);
+                const balEl = me.divModal.querySelector("#f_bal");
+                if (balEl) {
+                    balEl.style.color = "#FAB31C";
+                    balEl.textContent = "$" + dueAmount.toFixed(2);
                 }
 
-                const remaining    = Number(bill.balance || 0);
-                const amountInput  = me.controls.amount;
-                const balanceInput = me.controls.balance;
+                if (me.controls.total_amount) me.controls.total_amount.value = Number(bill.total_amount || 0).toFixed(2);
+                if (me.controls.paid_amount)  me.controls.paid_amount.value  = Number(bill.paid_amount  || 0).toFixed(2);
+                if (me.controls.balance)      me.controls.balance.value      = Number(bill.balance      || 0).toFixed(2);
 
-                if (amountInput && balanceInput) {
-                    me._amountHandler = () => {
-                        let paying = parseFloat(amountInput.value) || 0;
-                        if (paying > remaining) { amountInput.value = remaining.toFixed(2); paying = remaining; }
-                        balanceInput.value = Math.max(0, remaining - paying).toFixed(2);
-                    };
-                    amountInput.addEventListener('input', me._amountHandler);
+                if (me.controls.vendor) {
+                    me.controls.vendor.value = bill.vendor_name || '';
+                    me.controls.vendor.readOnly = true;
                 }
-
-
-                // if (me.controls.note) {
-                //     me.controls.note.value = data?.bill_details?.note || '';
-                // }
 
                 if (me.controls.payment_date && !me.controls.payment_date.value) {
                     const now = new Date();
@@ -610,8 +702,13 @@ const BillPaymentDialog = (() => {
                     const year = now.getFullYear();
                     me.controls.payment_date.value = `${day}-${month}-${year}`;
                 }
-            },
 
+                const banks    = data?.banks ?? [];
+                const bankEl   = me.divModal.querySelector('[name="bank"]');
+                const chequeEl = me.divModal.querySelector('[name="cheque_bank_id"]');
+                if (bankEl)   VSUtil.setComboItems(bankEl,   banks, 'id', 'name', '', 'Select Bank', '');
+                if (chequeEl) VSUtil.setComboItems(chequeEl, banks, 'id', 'name', '', 'Select Bank', '');
+            },
             buttons: [
                 {
                     label: '<span vslang="buttons.Cancel"></span>',
@@ -623,12 +720,8 @@ const BillPaymentDialog = (() => {
                     cssClass: "btn btn-primary",
                     click: (me, btn) => {
                         const op = me.getData();
-                        console.log(9988,me.dataOptions);
-
                         op.bill_id = me.dataOptions.bill_id;
                         op.vendor_id = me.dataOptions.vendorId;
-
-                        console.log(9988,op);
 
                         vsapi.call(`${main_view.base_url}/prm/bill-payment/save`, op, btn, null)
                             .then((res) => {
