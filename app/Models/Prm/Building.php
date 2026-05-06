@@ -29,7 +29,7 @@ class Building //extends Model
 
         $v_rule = [
             'name' => '1|string|0-255|text=Building name is required',
-            'total_floor' => '1|number|1-50|text=Total floors is required',
+            'total_floor' => '1|number|1-50|text=Total floor limit is 50 floors.',
             'total_area' => '1|number|min=0|text=Total area is required',
             'total_space' => '0|number',
             'occupancy' => '0|number',
