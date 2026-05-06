@@ -321,6 +321,10 @@ var BillComponent = (() => {
                         mThis.billPayment(id, menuLink);
                         break;
                     }
+                    case "delete_attachment": { 
+                        mThis.deleteAttachment(id, menuLink); 
+                        break; 
+                    }
                     default:  {
                         break;
                     }
