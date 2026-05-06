@@ -676,25 +676,47 @@ var TenantComponent = new (function () {
             document.body.removeChild(a);
             return;
         }
-        // window.open(data_url, "_blank");
-        const newWindow = window.open("", "_blank");
+        const extFromName = (file_name || "").split(".").pop();
+        const ext = String((res.data && res.data.ext) || extFromName || "").toLowerCase();
 
-newWindow.document.write(`
-  <html>
-    <head>
-      <title>Preview</title>
-      <style>
-        body { font-family: Arial; padding: 20px; }
-      </style>
-    </head>
-    <body>
-      <h2>Preview Content</h2>
-      <iframe src="${data_url}" style="width:100%; height:500px;"></iframe>
-    </body>
-  </html>
-`);
+        const overlay = document.createElement("div");
+        overlay.style.cssText =
+            "position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:9999; display:flex; justify-content:center; align-items:center; cursor:pointer;";
 
-newWindow.document.close();
+        const wrapper = document.createElement("div");
+        wrapper.style.cssText = "position:relative; max-width:90vw; max-height:90vh;";
+
+        const isImage = ["png", "jpg", "jpeg"].includes(ext);
+        const isPdf = ext === "pdf";
+
+        if (isImage) {
+            const img = document.createElement("img");
+            img.src = data_url;
+            img.style.cssText = "max-width:100%; max-height:90vh; border-radius:8px; box-shadow:0 4px 32px #000;";
+            wrapper.appendChild(img);
+        } else if (isPdf) {
+            const iframe = document.createElement("iframe");
+            iframe.src = data_url;
+            iframe.style.cssText = "width:80vw; height:85vh; border:none; border-radius:8px;";
+            wrapper.appendChild(iframe);
+        } else {
+            window.open(data_url, "_blank");
+            return;
+        }
+
+        const btnClose = document.createElement("button");
+        btnClose.style.cssText =
+            "position:absolute; top:-16px; right:-16px; border:none; background:#fff; border-radius:50%; width:32px; height:32px; font-size:18px; cursor:pointer; line-height:1;";
+        btnClose.innerHTML = "&times;";
+        btnClose.onclick = (e) => {
+            e.stopPropagation();
+            document.body.removeChild(overlay);
+        };
+
+        wrapper.appendChild(btnClose);
+        overlay.appendChild(wrapper);
+        overlay.onclick = () => document.body.removeChild(overlay);
+        document.body.appendChild(overlay);
     };
     mThis.showPage = async (pageName, op = {}) => {
         if (this.self.style.display !== "block") {
