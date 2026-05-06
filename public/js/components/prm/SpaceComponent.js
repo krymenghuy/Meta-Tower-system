@@ -762,13 +762,13 @@ const BuildingSpaceDialog = (() => {
                             </div>
                             <div class="col-6">
                                 <div class="vs-material-field">
-                                    <input data-type="money" name="sqm_size" class="data-input inputbox-input form-control" data-field="sqm_size" placeholder=" " />
+                                    <input data-type="number" name="sqm_size" class="data-input  form-control" data-field="sqm_size" placeholder=" " />
                                     <label>Size (m²)</label>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="vs-material-field">
-                                    <input data-type="money" name="price" class="data-input inputbox-input form-control" data-field="price" placeholder=" " />
+                                    <input data-type="number" name="price" class="data-input form-control" data-field="price" placeholder=" " />
                                     <label>Price</label>
                                 </div>
                             </div>

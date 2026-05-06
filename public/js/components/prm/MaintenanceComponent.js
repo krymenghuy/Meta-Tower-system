@@ -519,6 +519,7 @@ const CreateMaintenanceDialog = (() => {
                         if (op.end_date && op.end_time) op.end_date = op.end_date + " " + op.end_time;
                         delete op.start_time;
                         delete op.end_time;
+                        console.log(123456,op);
 
                         vsapi.call(`${main_view.base_url}/prm/maintenance/save`, op, btn, null)
                             .then(res => {
