@@ -267,7 +267,7 @@ var BillComponent = (() => {
                 },
                 {
                     html: '<span class="ps-2">Delete Attachment</span>',
-                    icon: `<i class="fa-regular fa-file-circle-xmark text-danger"></i>`,
+                    icon: `<i class="fa-regular fa-rectangle-xmark" style="color: rgb(209, 23, 54);"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "delete_attachment",
                 }
