@@ -107,7 +107,7 @@ var ReservationComponent = (() => {
             className: "col_action align-middle",
             data: (data) => {
                 console.log(444,data.status_id);
-                
+
                 if (data.status_id == 2) return '';
                 return `<div class="d-flex justify-content-center align-items-end">
                     <a href="javascript:void(0)" class="btn--Options btn_reservation_action" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
@@ -115,8 +115,8 @@ var ReservationComponent = (() => {
                     </a>
                 </div>`;
             },
-            
-                
+
+
         },
     ];
 
@@ -124,7 +124,7 @@ var ReservationComponent = (() => {
         if (mThis.initAlready) return;
 
         if (mThis.elBookingDateTo && !mThis.elBookingDateTo.value) {
-            const today = new Date().toISOString().split('T')[0];   
+            const today = new Date().toISOString().split('T')[0];
             mThis.elBookingDateTo.value = today;
         }
 
@@ -260,7 +260,7 @@ var ReservationComponent = (() => {
 
                 if (status_id === 1) {
                     menu.cancel_reservation.style.display = 'block';
-                } 
+                }
                 else if (status_id === 3 || status_id === 4) {
                     menu.delete_reservation.style.display = 'block';
                 }
@@ -426,7 +426,7 @@ const CreateReservationDialog = (() => {
                                 <select data-style="material" name="amenity" class="data-input form-control" data-field="amenity_id" placeholder="Amenity Name">
                                 </select>
                             </div>
-                            
+
                             <div class="col-6">
                                 <div class="vs-material-field">
                                     <input type="text" class="data-input form-control" data-field="amenity_code" placeholder=" " disabled />
@@ -505,7 +505,7 @@ const CreateReservationDialog = (() => {
                         textField: "amenity",
                         valueField: "id",
                     },
-                    
+
                     {
                         name: "reservation_statuses",
                         data: "reservation_statuses",
@@ -564,7 +564,7 @@ const CreateReservationDialog = (() => {
                         },
                     },
                     {
-                        label: '<span vslang="buttons.Submit"></span>',
+                        label: '<span vslang="buttons.Save"></span>',
                         cssClass: "btn btn-primary",
                         click: (me, btn) => {
                             const op = me.getData();
@@ -575,7 +575,7 @@ const CreateReservationDialog = (() => {
 
                             op.tenant_id = me._selectedTenantId;
                             console.log(123,op);
-                            
+
                             vsapi
                                 .call(
                                     [
