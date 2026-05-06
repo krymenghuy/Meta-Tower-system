@@ -442,109 +442,129 @@ const BuildingDialog = (() => {
     const self = {};
     let dialog = null;
 
-    function onlyIntegerInput(el, maxLength = 3) {
-        let start = el.selectionStart;
-        let v = el.value.replace(/[^0-9]/g, '');
-        if (v.length > maxLength) {
-            v = v.slice(0, maxLength);
-        }
-        el.value = v;
-        el.setSelectionRange(start, start);
-    }
-    function decimalInput(el, maxInt = 8, maxDec = 2) {
-        let start = el.selectionStart;
-        let v = el.value.replace(/[^0-9.]/g, '');
-        let parts = v.split('.');
-        if (parts.length > 2) {
-            v = parts[0] + '.' + parts[1];
-        }
-        if (parts[1]) {
-            parts[1] = parts[1].slice(0, maxDec);
-            v = parts[0] + '.' + parts[1];
-        }
-        if (parts[0].length > maxInt) {
-            parts[0] = parts[0].slice(0, maxInt);
-            v = parts[0] + (parts[1] ? '.' + parts[1] : '');
-        }
-        el.value = v;
-        el.setSelectionRange(start, start);
-    }
-
     self.show = (op) => {
         dialog = dialog || new GeneralDialog({
             cssClass: "modal-md vs-modal",
             backdrop: "static",
             keyboard: true,
-
-            createContent: () => `
-                <div class="row g-3 justify-content-center">
-
-                    <div class="col-12">
-                        <div class="vs-material-field">
-                            <input type="text" name="name" class="data-input form-control" data-field="name" placeholder=" " />
-                            <label>Name</label>
+            createContent: () => {
+                return [
+                    `<div class="row g-3 justify-content-center">
+                        <div class="col-12">
+                            <div class="vs-material-field">
+                                <input type="text" name="name" class="data-input form-control" data-field="name" placeholder=" " />
+                                <label> Name</label>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="vs-material-field">
-                            <input 
-                                type="text"
-                                inputmode="numeric"
-                                name="total_floor"
-                                class="data-input form-control"
-                                data-field="total_floor"
-                                placeholder=" "
-                            />
-                            <label>Total Floor</label>
+                        <div class="col-6">
+                            <div class="vs-material-field">
+                                <input type="text" name="total_floor" class="data-input form-control" data-field="total_floor" placeholder=" " />
+                                <label>Total Floor</label>
+                            </div>
                         </div>
-                    </div>
-
-                    <div class="col-6">
-                        <div class="vs-material-field">
-                            <input 
-                                type="text"
-                                inputmode="decimal"
-                                name="total_area"
-                                class="data-input form-control"
-                                data-field="total_area"
-                                placeholder=" "
-                            />
-                            <label>Total Area (m²)</label>
+                        <div class="col-6">
+                            <div class="vs-material-field">
+                                <input type="text" name="total_area" class="data-input form-control" data-field="total_area" placeholder=" " />
+                                <label>Total Area (sqm)</label>
+                            </div>
                         </div>
-                    </div>
-
-                    <div class="col-12">
-                        <div class="vs-material-field">
-                            <textarea name="address" class="data-input form-control" data-field="address" placeholder=" "></textarea>
-                            <label>Address</label>
+                       
+                        <div class="col-12">
+                            <div class="vs-material-field">
+                                <textarea type="text" name="address" class="data-input form-control" data-field="address" placeholder=" "></textarea>
+                                <label>Address</label>
+                            </div>
                         </div>
-                    </div>
-
-                </div>
-            `,
-            contentCreated: (me) => {
+                    </div>`
+                ].join("");
+            },
+           contentCreated: (me) => {
                 const floor = me.divModal.querySelector('[name="total_floor"]');
                 const area = me.divModal.querySelector('[name="total_area"]');
+
                 if (floor) {
                     floor.addEventListener('input', function () {
-                        onlyIntegerInput(this, 3);
+                        let start = this.selectionStart;
+
+                        let v = this.value.replace(/[^0-9]/g, '');
+                        v = v.replace(/0/g, '');
+                        if (v.length > 3) {
+                            v = v.slice(0, 3);
+                        }
+
+                        this.value = v;
+                        this.setSelectionRange(start, start);
                     });
                 }
                 if (area) {
                     area.addEventListener('input', function () {
-                        decimalInput(this, 8, 2);
+                        let start = this.selectionStart;
+
+                        let v = this.value.replace(/[^0-9.]/g, '');
+
+                        let parts = v.split('.');
+
+                        if (parts.length > 2) {
+                            v = parts[0] + '.' + parts.slice(1).join('');
+                            parts = v.split('.');
+                        }
+
+                        parts[0] = parts[0].replace(/^0+/, '');
+
+                        if (parts[0] === '') {
+                            parts[0] = '';
+                        }
+
+                        if (parts[1] !== undefined) {
+                            parts[1] = parts[1].slice(0, 2);
+                            v = parts[0] + '.' + parts[1];
+                        } else {
+                            v = parts[0];
+                        }
+
+                        if (parts[0].length > 8) {
+                            parts[0] = parts[0].slice(0, 8);
+                            v = parts[0] + (parts[1] ? '.' + parts[1] : '');
+                        }
+
+                        this.value = v;
+                        this.setSelectionRange(start, start);
                     });
                 }
+                
             },
-            onPrepareForm: (me) => {
-                const isReadOnly = me.dataOptions.id > 0;
-                me.setReadOnly(isReadOnly, ["total_floor"]);
+            prepareFormOptions: {
+                createTitle: "Create Building",
+                modifyTitle: "Modify Building",
+                targetProp: "building_details",
+                api: {
+                    endpoint: [main_view.base_url, "/prm/building/form-options",].join(""),
+                    params: (op) => {
+                        return { id: op.id };
+                    },
+                },
+            },
+            onShow: (me) => {
+                const title = me.divModal.querySelector('.modal-title');
+                if (title) {
+                    const isModify = !!me.dataOptions?.id;
+                    title.innerHTML = isModify
+                        ? '<h4 class="text-prm-custom text-start fw-bold">Modify Building</h4>'
+                        : '<h4 class="text-prm-custom text-start fw-bold">Create Building</h4>';
+                }
+            },
+            onPrepareForm: (me, data) => {
+               const isReadOnly = me.dataOptions.id > 0;
+               me.setReadOnly(isReadOnly, ["total_floor"]);
+
             },
             buttons: [
                 {
                     label: '<span vslang="buttons.Cancel"></span>',
                     cssClass: 'btn btn-secondary',
-                    click: (me) => me.hide(false),
+                    click: (me, btn) => {
+                        me.hide(false);
+                    },
                 },
                 {
                     label: '<span vslang="buttons.Save"></span>',
@@ -552,16 +572,14 @@ const BuildingDialog = (() => {
                     click: (me, btn) => {
                         const op = me.getData();
                         op.id = me.dataOptions.id;
-
-                        vsapi.call([main_view.base_url, "/prm/building/save"].join(""), op, btn, null)
-                        .then((res) => {
+                        vsapi.call([main_view.base_url, "/prm/building/save",].join(""), op, btn, null).then((res) => {
                             if (res.status_code === 200) {
                                 me.hide(true, op);
-                                cv_interact.success(
-                                    me.dataOptions.id > 0
-                                        ? "Building updated successfully"
-                                        : "New building added successfully"
-                                );
+                                if (me.dataOptions.id > 0) {
+                                    cv_interact.success("Building has been updated successfully");
+                                } else {
+                                    cv_interact.success("New building has been added successfully.");
+                                }
                             } else {
                                 cv_interact.error(res.error_message);
                             }
@@ -570,7 +588,6 @@ const BuildingDialog = (() => {
                 },
             ],
         });
-
         dialog.show(op);
     };
 

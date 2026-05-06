@@ -762,13 +762,13 @@ const BuildingSpaceDialog = (() => {
                             </div>
                             <div class="col-6">
                                 <div class="vs-material-field">
-                                    <input type="text" name="sqm_size" class="data-input form-control" data-field="sqm_size" placeholder=" " />
+                                    <input data-type="money" name="sqm_size" class="data-input inputbox-input form-control" data-field="sqm_size" placeholder=" " />
                                     <label>Size (m²)</label>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="vs-material-field">
-                                    <input type="text" inputmode="decimal" name="price" class="data-input form-control" data-field="price" placeholder=" " />
+                                    <input data-type="money" name="price" class="data-input inputbox-input form-control" data-field="price" placeholder=" " />
                                     <label>Price</label>
                                 </div>
                             </div>
@@ -786,31 +786,7 @@ const BuildingSpaceDialog = (() => {
                 },
 
                 contentCreated: (me) => {
-                    // me.controls.price.addEventListener('input', (e) => {
-                    //     let v = e.target.value;
-                    //     v = v.replace(/[^0-9.]/g, '');
-
-                    //     const parts = v.split('.');
-                    //     if (parts.length > 2) {
-                    //         v = parts[0] + '.' + parts[1];
-                    //     }
-                    //     if (parts[1] !== undefined) {
-                    //         v = parts[0] + '.' + parts[1].slice(0, 2);
-                    //     }
-
-                    //     e.target.value = v;
-                    // });
-                    // me.controls.price.addEventListener('blur', (e) => {
-                    //     let v = parseFloat(e.target.value);
-
-                    //     if (isNaN(v) || v <= 0) {
-                    //         e.target.value = '';
-                    //         return;
-                    //     }
-                    //     e.target.value = v;
-                    // });
-                    applyNumberInput(me.controls.sqm_size);
-                    applyNumberInput(me.controls.price);
+                 
                 },
                 configSelect: [
                     {
