@@ -192,12 +192,12 @@ var BuildingComponent = ( () => {
             }, 0);
             const canAddFloor = (parseInt(totalFloor || '0', 10) > 0) && (maxFloorNo < parseInt(totalFloor || '0', 10));
 
-            html = `${canAddFloor ? `<div class="rounded-3 p-2 l mb-2">
+            html = `${canAddFloor ? `<div class="rounded-3 p-2 l mb-2 ">
                 <button data-buildingid="${id}" class="btn-add-floor btnAddNewPrm" type="button">
                     <span class="">${LocaleManager.trans('New Floor','buttons')}</span>
                 </button>
             </div>` : ''}
-            <table class="table table-sm table-hover align-middle tbl_list_floor">
+            <table class="table table-sm table-hover align-middle tbl_list_floor table--dropdown">
             <thead class="table-light text-nowrap">
                 <tr>
                     <th>${LocaleManager.trans('Name')}</th>
