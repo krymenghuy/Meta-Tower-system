@@ -260,17 +260,38 @@ var BillComponent = (() => {
                     cssClass: "border-bottom pb-2",
                     name: "view_attachment",
                 },
+                {
+                    html: '<span class="ps-2">Delete Attachment</span>',
+                    icon: `<i class="fa-regular fa-file-circle-xmark text-danger"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "delete_attachment",
+                }
             ],
-            onShow: (me, container) => {
-                const menu = me.getActiveMenus(container);
-                const status_id = container.dataset.statusid;
-                const locked = status_id > 1 || display_status_id == 4;
-                menu.modify_bill.style.display = status_id > 1 ? 'none' : 'block'
-                menu.delete_bill.style.display = status_id > 1 ? 'none' : 'block'
+            // onShow: (me, container) => {
+            //     const menu = me.getActiveMenus(container);
+            //     const status_id = container.dataset.statusid;
+            //     const locked = status_id > 1 || display_status_id == 4;
+            //     menu.modify_bill.style.display = status_id > 1 ? 'none' : 'block'
+            //     menu.delete_bill.style.display = status_id > 1 ? 'none' : 'block'
 
-                if (menu.bill_payment) {
-                    const isBlocked = status_id == 2;
-                    menu.bill_payment.style.display = isBlocked ? 'none' : 'block';
+            //     if (menu.bill_payment) {
+            //         const isBlocked = status_id == 2;
+            //         menu.bill_payment.style.display = isBlocked ? 'none' : 'block';
+            //     }
+            // },
+
+             onShow: (me, container) => {
+                const menu      = me.getActiveMenus(container);
+                const status_id = container.dataset.statusid;
+                const fileUrl   = container.dataset.fileurl;
+
+                menu.modify_bill.style.display       = status_id > 1 ? 'none' : 'block';
+                menu.delete_bill.style.display       = status_id > 1 ? 'none' : 'block';
+                menu.bill_payment.style.display      = status_id == 2 ? 'none' : 'block';
+
+                if (!fileUrl) {
+                    menu.view_attachment.style.display   = 'none';
+                    menu.delete_attachment.style.display = 'none';
                 }
             },
 
@@ -410,6 +431,36 @@ var BillComponent = (() => {
                 document.body.appendChild(overlay);
             });
     };
+
+     mThis.deleteAttachment = (id, menuLink) => {
+        cv_interact.confirm(
+            "Delete this attachment?",
+            {
+                context: "delete",
+                confirmButtonText: "Delete"
+            },
+            function (confirmed) {
+                if (!confirmed) return;
+
+                vsapi.call(`${main_view.base_url}/prm/bill/delete-attachment`,
+                { id }, menuLink, false, false
+                ).then((res) => {
+                    if (res.status_code === 200) {
+                        cv_interact.success("Attachment deleted successfully.");
+                        mThis.BillListView.showPage(mThis.getFilterData());
+                    }else {
+                        cv_interact.error(
+                            res.error_message || "Failed to delete attachment."
+                        );
+                    }
+                })
+                .catch(() => {
+                    cv_interact.error("Network error while deleting attachment.");
+                });
+            }
+        );
+    };
+    
     mThis.prepareFormOptions = (onFinish) => {
         vsapi
             .call(`${main_view.base_url}/prm/bill/form-options`, null, null, null)
