@@ -847,6 +847,8 @@ const BuildingSpaceDialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
+                    console.log(777,data);
+                    
                     const isReadOnly = me.dataOptions.id > 0;
                     me.setReadOnly(isReadOnly, ["building_id", "code", "floor_id"]);
                     me.controls.price_type.value = data.space_details.price_type;
