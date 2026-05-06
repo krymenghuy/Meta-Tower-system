@@ -37,8 +37,7 @@ var BuildingComponent = ( () => {
             data: (data) => {
                 let area = data.total_area ? parseFloat(data.total_area).toLocaleString() : '';
                 return `<div class="d-flex flex-column">
-                    <span class="text-start  text-prm-custom"><span>${area}${area ? ' sqm' : ''}</span></span>
-                    <span class="text-muted">Building Area</span>
+                    <span class="text-start  text-prm-custom"><span>${area}${area ? ' m²' : ''}</span></span>
                 </div>`;
             },
         },
@@ -48,7 +47,6 @@ var BuildingComponent = ( () => {
             data: (data) =>{
                 return `<div class="d-flex flex-column">
                     <span class="text-capitalize text-start text-prm-custom">${data.total_floor ?? '0'}</span></span>
-                    <span class="text-muted">Floors</span>
                 </div>`;
             }
         },
@@ -58,7 +56,6 @@ var BuildingComponent = ( () => {
             data: (data) =>{
                 return `<div class="d-flex flex-column">
                     <span class="text-capitalize text-start text-prm-custom">${data.total_space ?? '0'}</span></span>
-                    <span class="text-muted">Units</span>
                 </div>`;
             }
         },
@@ -445,25 +442,60 @@ const BuildingDialog = (() => {
     const self = {};
     let dialog = null;
 
+    function onlyIntegerInput(el, maxLength = 3) {
+        let start = el.selectionStart;
+        let v = el.value.replace(/[^0-9]/g, '');
+        if (v.length > maxLength) {
+            v = v.slice(0, maxLength);
+        }
+        el.value = v;
+        el.setSelectionRange(start, start);
+    }
+    function decimalInput(el, maxInt = 8, maxDec = 2) {
+        let start = el.selectionStart;
+        let v = el.value.replace(/[^0-9.]/g, '');
+        let parts = v.split('.');
+        if (parts.length > 2) {
+            v = parts[0] + '.' + parts[1];
+        }
+        if (parts[1]) {
+            parts[1] = parts[1].slice(0, maxDec);
+            v = parts[0] + '.' + parts[1];
+        }
+        if (parts[0].length > maxInt) {
+            parts[0] = parts[0].slice(0, maxInt);
+            v = parts[0] + (parts[1] ? '.' + parts[1] : '');
+        }
+        el.value = v;
+        el.setSelectionRange(start, start);
+    }
+
     self.show = (op) => {
         dialog = dialog || new GeneralDialog({
             cssClass: "modal-md vs-modal",
             backdrop: "static",
             keyboard: true,
-            createContent: () => {
-                return [
-                    `<div class="row justify-content-center">
-                        <div class="col-12">
-                            <div class="material-input outlined">
-                                <input type="text" name="name" class="data-input form-control" data-field="name" placeholder=" " />
-                                <label style="color:#777777;padding-left:6px;">Building Name</label>
-                            </div>
+
+            createContent: () => `
+                <div class="row g-3 justify-content-center">
+
+                    <div class="col-12">
+                        <div class="vs-material-field">
+                            <input type="text" name="name" class="data-input form-control" data-field="name" placeholder=" " />
+                            <label>Name</label>
                         </div>
-                        <div class="col-6">
-                            <div class="material-input outlined">
-                                <input type="number" min="1" max="999" step="1" name="total_floor" oninput="if (this.value.length > 3) this.value = this.value.slice(0,3);" class="data-input form-control" data-field="total_floor" placeholder=" " />
-                                <label style="color:#777777;padding-left:6px;">Total Floor</label>
-                            </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="vs-material-field">
+                            <input
+                                type="text"
+                                inputmode="numeric"
+                                name="total_floor"
+                                class="data-input form-control"
+                                data-field="total_floor"
+                                placeholder=" "
+                            />
+                            <label>Total Floor</label>
                         </div>
                         <div class="col-6">
                             <div class="material-input outlined">
@@ -478,9 +510,10 @@ const BuildingDialog = (() => {
                                 <label style="color:#777777;padding-left:6px;">Address</label>
                             </div>
                         </div>
-                    </div>`
-                ].join("");
-            },
+                    </div>
+
+                </div>
+            `,
             contentCreated: (me) => {
                 header.innerHTML = '';
                 header.appendChild(headerWrapper);
@@ -506,18 +539,15 @@ const BuildingDialog = (() => {
                         : '<h4 class="text-prm-custom text-start fw-bold">Create Building</h4>';
                 }
             },
-            onPrepareForm: (me, data) => {
-               const isReadOnly = me.dataOptions.id > 0;
-               me.setReadOnly(isReadOnly, ["total_floor"]);
-
+            onPrepareForm: (me) => {
+                const isReadOnly = me.dataOptions.id > 0;
+                me.setReadOnly(isReadOnly, ["total_floor"]);
             },
             buttons: [
                 {
                     label: '<span vslang="buttons.Cancel"></span>',
                     cssClass: 'btn btn-secondary',
-                    click: (me, btn) => {
-                        me.hide(false);
-                    },
+                    click: (me) => me.hide(false),
                 },
                 {
                     label: '<span vslang="buttons.Save"></span>',
@@ -525,14 +555,16 @@ const BuildingDialog = (() => {
                     click: (me, btn) => {
                         const op = me.getData();
                         op.id = me.dataOptions.id;
-                        vsapi.call([main_view.base_url, "/prm/building/save",].join(""), op, btn, null).then((res) => {
+
+                        vsapi.call([main_view.base_url, "/prm/building/save"].join(""), op, btn, null)
+                        .then((res) => {
                             if (res.status_code === 200) {
                                 me.hide(true, op);
-                                if (me.dataOptions.id > 0) {
-                                    cv_interact.success("Building has been updated successfully");
-                                } else {
-                                    cv_interact.success("New building has been added successfully.");
-                                }
+                                cv_interact.success(
+                                    me.dataOptions.id > 0
+                                        ? "Building updated successfully"
+                                        : "New building added successfully"
+                                );
                             } else {
                                 cv_interact.error(res.error_message);
                             }
@@ -541,6 +573,7 @@ const BuildingDialog = (() => {
                 },
             ],
         });
+
         dialog.show(op);
     };
 
