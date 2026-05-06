@@ -485,13 +485,14 @@ const BuildingDialog = (() => {
                 if (floor) {
                     floor.addEventListener('input', function () {
                         let start = this.selectionStart;
-
                         let v = this.value.replace(/[^0-9]/g, '');
-                        v = v.replace(/0/g, '');
-                        if (v.length > 3) {
-                            v = v.slice(0, 3);
+                        v = v.replace(/^0+/, '');
+                        if (v === '') {
+                            v = '';
                         }
-
+                        if (v.length > 2) {
+                            v = v.slice(0, 2);
+                        }
                         this.value = v;
                         this.setSelectionRange(start, start);
                     });

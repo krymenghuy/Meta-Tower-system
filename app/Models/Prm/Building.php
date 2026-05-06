@@ -123,7 +123,7 @@ class Building //extends Model
             // ->join('um_branches as um', 'um.id', '=', 'b.campus_id')
             ->whereRaw($str_search)
             ->selectRaw('b.id, b.name,b.address, b.total_floor, b.total_area, b.total_space,b.updated_at, b.update_user')
-            ->orderByDesc('b.updated_at')
+            ->orderByDesc('b.created_at')
             ->orderByDesc('b.id');
 
         $clone_query = clone $query;
