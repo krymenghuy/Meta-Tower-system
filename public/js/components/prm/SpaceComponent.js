@@ -449,10 +449,10 @@ var SpaceComponent = new (function () {
                             <div class="mt-auto">
                                 <div class="d-flex justify-content-between text-muted small">
                                     <div class="d-flex align-items-center gap-1">
-                                        <div class="text-muted">Last Updated By :</i> ${d.update_user ?? ''}</div>
+                                        <div class="text-muted small">Last Updated :</i> ${d.update_user ?? ''}</div>
                                     </div>
                                     <div class="d-flex align-items-center gap-1">
-                                        <div class="text-muted"><i class="fa-regular fa-clock"></i> <span>${d.updated_at ?? ''}</span></div>
+                                        <div class="text-muted small"><i class="fa-regular fa-clock fs-6"></i> <span class="small">${d.updated_at ?? ''}</span></div>
                                     </div>
                                 </div>
 
@@ -762,13 +762,13 @@ const BuildingSpaceDialog = (() => {
                             </div>
                             <div class="col-6">
                                 <div class="vs-material-field">
-                                    <input type="number" min="0" step="0.01" name="sqm_size" class="data-input form-control" data-field="sqm_size" placeholder=" " />
+                                    <input data-type="money" name="sqm_size" class="data-input inputbox-input form-control" data-field="sqm_size" placeholder=" " />
                                     <label>Size (m²)</label>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="vs-material-field">
-                                    <input type="text" inputmode="decimal" name="price" class="data-input form-control" data-field="price" placeholder=" " />
+                                    <input data-type="money" name="price" class="data-input inputbox-input form-control" data-field="price" placeholder=" " />
                                     <label>Price</label>
                                 </div>
                             </div>
@@ -786,31 +786,7 @@ const BuildingSpaceDialog = (() => {
                 },
 
                 contentCreated: (me) => {
-                    // me.controls.price.addEventListener('input', (e) => {
-                    //     let v = e.target.value;
-                    //     v = v.replace(/[^0-9.]/g, '');
-
-                    //     const parts = v.split('.');
-                    //     if (parts.length > 2) {
-                    //         v = parts[0] + '.' + parts[1];
-                    //     }
-                    //     if (parts[1] !== undefined) {
-                    //         v = parts[0] + '.' + parts[1].slice(0, 2);
-                    //     }
-
-                    //     e.target.value = v;
-                    // });
-                    // me.controls.price.addEventListener('blur', (e) => {
-                    //     let v = parseFloat(e.target.value);
-
-                    //     if (isNaN(v) || v <= 0) {
-                    //         e.target.value = '';
-                    //         return;
-                    //     }
-                    //     e.target.value = v;
-                    // });
-                    applyNumberInput(me.controls.sqm_size);
-                    applyNumberInput(me.controls.price);
+                 
                 },
                 configSelect: [
                     {

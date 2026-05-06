@@ -37,8 +37,7 @@ var BuildingComponent = ( () => {
             data: (data) => {
                 let area = data.total_area ? parseFloat(data.total_area).toLocaleString() : '';
                 return `<div class="d-flex flex-column">
-                    <span class="text-start  text-prm-custom"><span>${area}${area ? ' sqm' : ''}</span></span>
-                    <span class="text-muted">Building Area</span>
+                    <span class="text-start  text-prm-custom"><span>${area}${area ? ' m²' : ''}</span></span>
                 </div>`;
             },
         },
@@ -48,9 +47,8 @@ var BuildingComponent = ( () => {
             data: (data) =>{
                 return `<div class="d-flex flex-column">
                     <span class="text-capitalize text-start text-prm-custom">${data.total_floor ?? '0'}</span></span>
-                    <span class="text-muted">Floors</span>
                 </div>`;
-            } 
+            }
         },
         {
             title: "Total Units",
@@ -58,9 +56,8 @@ var BuildingComponent = ( () => {
             data: (data) =>{
                 return `<div class="d-flex flex-column">
                     <span class="text-capitalize text-start text-prm-custom">${data.total_space ?? '0'}</span></span>
-                    <span class="text-muted">Units</span>
                 </div>`;
-            } 
+            }
         },
         // {
         //     title: "Occupancy",
@@ -452,39 +449,89 @@ const BuildingDialog = (() => {
             keyboard: true,
             createContent: () => {
                 return [
-                    `<div class="row justify-content-center">
+                    `<div class="row g-3 justify-content-center">
                         <div class="col-12">
-                            <div class="material-input outlined">
+                            <div class="vs-material-field">
                                 <input type="text" name="name" class="data-input form-control" data-field="name" placeholder=" " />
-                                <label style="color:#777777;padding-left:6px;">Building Name</label>
+                                <label> Name</label>
                             </div>
                         </div>
                         <div class="col-6">
-                            <div class="material-input outlined">
-                                <input type="number" min="1" max="999" step="1" name="total_floor" oninput="if (this.value.length > 3) this.value = this.value.slice(0,3);" class="data-input form-control" data-field="total_floor" placeholder=" " />
-                                <label style="color:#777777;padding-left:6px;">Total Floor</label>
+                            <div class="vs-material-field">
+                                <input type="text" name="total_floor" class="data-input form-control" data-field="total_floor" placeholder=" " />
+                                <label>Total Floor</label>
                             </div>
                         </div>
                         <div class="col-6">
-                            <div class="material-input outlined">
-                                <input type="number" step="0.01" min="0.01" name="total_area" class="data-input form-control" data-field="total_area" placeholder=" " />
-                                <label style="color:#777777;padding-left:6px;">Total Area (sqm)</label>
+                            <div class="vs-material-field">
+                                <input type="text" name="total_area" class="data-input form-control" data-field="total_area" placeholder=" " />
+                                <label>Total Area (sqm)</label>
                             </div>
                         </div>
-                       
+
                         <div class="col-12">
-                            <div class="material-input outlined">
-                                <textarea type="number" name="address" class="data-input form-control" data-field="address" placeholder=" "></textarea>
-                                <label style="color:#777777;padding-left:6px;">Address</label>
+                            <div class="vs-material-field">
+                                <textarea type="text" name="address" class="data-input form-control" data-field="address" placeholder=" "></textarea>
+                                <label>Address</label>
                             </div>
                         </div>
                     </div>`
                 ].join("");
             },
-            contentCreated: (me) => {
-                header.innerHTML = '';
-                header.appendChild(headerWrapper);
-                 
+           contentCreated: (me) => {
+                const floor = me.divModal.querySelector('[name="total_floor"]');
+                const area = me.divModal.querySelector('[name="total_area"]');
+
+                if (floor) {
+                    floor.addEventListener('input', function () {
+                        let start = this.selectionStart;
+
+                        let v = this.value.replace(/[^0-9]/g, '');
+                        v = v.replace(/0/g, '');
+                        if (v.length > 3) {
+                            v = v.slice(0, 3);
+                        }
+
+                        this.value = v;
+                        this.setSelectionRange(start, start);
+                    });
+                }
+                if (area) {
+                    area.addEventListener('input', function () {
+                        let start = this.selectionStart;
+
+                        let v = this.value.replace(/[^0-9.]/g, '');
+
+                        let parts = v.split('.');
+
+                        if (parts.length > 2) {
+                            v = parts[0] + '.' + parts.slice(1).join('');
+                            parts = v.split('.');
+                        }
+
+                        parts[0] = parts[0].replace(/^0+/, '');
+
+                        if (parts[0] === '') {
+                            parts[0] = '';
+                        }
+
+                        if (parts[1] !== undefined) {
+                            parts[1] = parts[1].slice(0, 2);
+                            v = parts[0] + '.' + parts[1];
+                        } else {
+                            v = parts[0];
+                        }
+
+                        if (parts[0].length > 8) {
+                            parts[0] = parts[0].slice(0, 8);
+                            v = parts[0] + (parts[1] ? '.' + parts[1] : '');
+                        }
+
+                        this.value = v;
+                        this.setSelectionRange(start, start);
+                    });
+                }
+
             },
             prepareFormOptions: {
                 createTitle: "Create Building",
