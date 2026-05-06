@@ -51,7 +51,7 @@ class BuildingSpace
             'space_type_id' => '1|number|exists=space_types.id',
             'sqm_size' => '1|number',
             'price' => '1|number',
-            'price_type' => '0|string|default=sqm',
+            'price_type' => '1|string|1-25|text=Price type is required',
             'code' => '0|string|max=50',
         ];
 

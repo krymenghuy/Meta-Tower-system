@@ -543,27 +543,25 @@ const AmenityDialog = (() => {
                             </select>
                         </div>
                         <div class="col-6">
-                            <div class="vs-material-field">
-                                <select data-style="material"
-                                        name="requires_booking"
-                                        class="data-input form-control"
-                                        data-field="requires_booking"
-                                        placeholder="Requires Booking">
-                                    <option value="0" >No</option>
-                                    <option value="1">Yes</option>
-                                </select>
-                            </div>
+                            <select data-style="material"
+                                    name="requires_booking"
+                                    class="data-input form-control"
+                                    data-field="requires_booking"
+                                    placeholder="Requires Booking">
+                                <option value="0" >No</option>
+                                <option value="1">Yes</option>
+                            </select>
                         </div>
                         <div class="col-6">
                             <div class="vs-material-field">
                                 <input type="number" name="capacity" required class="data-input form-control" data-field="max_capacity" min="0" value="0 " placeholder=" " />
-                                <label style="color:#777777;padding-left:6px;">Capacity</label>
+                                <label>Capacity</label>
                             </div>
                         </div>
                         <div class="col-12">
                             <div class="vs-material-field">
                                 <textarea name="description" class="data-input form-control" data-field="description" placeholder=" "></textarea>
-                                <label style="color:#777777;padding-left:6px;">Description</label>
+                                <label>Description</label>
                             </div>
                         </div>
                     </div>`,
