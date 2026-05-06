@@ -48,7 +48,7 @@ var BuildingComponent = ( () => {
                 return `<div class="d-flex flex-column">
                     <span class="text-capitalize text-start text-prm-custom">${data.total_floor ?? '0'}</span></span>
                 </div>`;
-            } 
+            }
         },
         {
             title: "Total Units",
@@ -57,7 +57,7 @@ var BuildingComponent = ( () => {
                 return `<div class="d-flex flex-column">
                     <span class="text-capitalize text-start text-prm-custom">${data.total_space ?? '0'}</span></span>
                 </div>`;
-            } 
+            }
         },
         // {
         //     title: "Occupancy",
@@ -468,7 +468,7 @@ const BuildingDialog = (() => {
                                 <label>Total Area (sqm)</label>
                             </div>
                         </div>
-                       
+
                         <div class="col-12">
                             <div class="vs-material-field">
                                 <textarea type="text" name="address" class="data-input form-control" data-field="address" placeholder=" "></textarea>
@@ -532,7 +532,7 @@ const BuildingDialog = (() => {
                         this.setSelectionRange(start, start);
                     });
                 }
-                
+
             },
             prepareFormOptions: {
                 createTitle: "Create Building",

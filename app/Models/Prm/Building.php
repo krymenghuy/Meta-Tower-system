@@ -29,7 +29,7 @@ class Building //extends Model
 
         $v_rule = [
             'name' => '1|string|0-255|text=Building name is required',
-            'total_floor' => '1|number|min=1|text=Total floors is required',
+            'total_floor' => '1|number|1-50|text=Total floors is required',
             'total_area' => '1|number|min=0|text=Total area is required',
             'total_space' => '0|number',
             'occupancy' => '0|number',
@@ -75,30 +75,41 @@ class Building //extends Model
                 return DV::error($isCreate ? 'Create failed.' : 'Update failed.');
             }
 
-            if ($isCreate) {
-                $total_floor = (int) $total_floor;
-                for ($floor_no = 1; $floor_no <= $total_floor; $floor_no++) {
-                    $floor_result = $this->addFloor([
-                        'id' => 0,
-                        'building_id' => $id,
-                        'floor_number' => $floor_no,
-                        'name' => "Floor {$floor_no}",
-                        'description' => null,
-                    ], $id, $ss);
-
-                    if (is_object($floor_result) && !empty($floor_result->error)) {
-                        DB::rollBack();
-                        return DV::error($floor_result->error);
-                    }
-                }
+            if (!$isCreate) {
+                DB::commit();
+                return DV::depends(1, ['buildings' => $inputs, 'id' => $id]);
             }
 
             DB::commit();
-            return DV::depends(1, ['buildings' => $inputs, 'id' => $id]);
         } catch (\Throwable $e) {
             DB::rollBack();
             return DV::error($isCreate ? 'Create failed.' : 'Update failed.');
         }
+
+        try {
+            $total_floor = $total_floor;
+            for ($floor_no = 1; $floor_no <= $total_floor; $floor_no++) {
+                $floor_result = $this->addFloor([
+                    'id' => 0,
+                    'building_id' => $id,
+                    'floor_number' => $floor_no,
+                    'name' => "Floor {$floor_no}",
+                    'description' => null,
+                ], $id, $ss);
+
+                if (is_object($floor_result) && !empty($floor_result->error)) {
+                    DB::table('building_floors')->where('building_id', $id)->delete();
+                    DB::table('buildings')->where('id', $id)->delete();
+                    return DV::error($floor_result->error);
+                }
+            }
+        } catch (\Throwable $e) {
+            DB::table('building_floors')->where('building_id', $id)->delete();
+            DB::table('buildings')->where('id', $id)->delete();
+            return DV::error($isCreate ? 'Create failed.' : 'Update failed.');
+        }
+
+        return DV::depends(1, ['buildings' => $inputs, 'id' => $id]);
     }
 
     public function getListBuilding($arr, $ss = null)

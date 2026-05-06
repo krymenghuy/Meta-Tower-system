@@ -69,6 +69,11 @@
     border-radius: 6px;
     transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
+
+.form-control:disabled,
+.form-control[disabled] {
+    cursor: not-allowed;
+}
 /* .listview-container{
     border-radius: 15px;
     border: 1px solid #dee2e6 !important;
@@ -2374,6 +2379,26 @@ thead th {
       top: 0px;
       font-size: 12px;
       color: #cccccc;
+    }
+
+    .material-input.outlined input:disabled,
+    .material-input.outlined select:disabled,
+    .material-input.outlined textarea:disabled {
+      cursor: not-allowed;
+    }
+
+    .material-input.outlined:has(input:disabled, select:disabled, textarea:disabled) {
+      cursor: not-allowed;
+    }
+
+    .material-input.filled input:disabled,
+    .material-input.filled select:disabled,
+    .material-input.filled textarea:disabled {
+      cursor: not-allowed;
+    }
+
+    .material-input.filled:has(input:disabled, select:disabled, textarea:disabled) {
+      cursor: not-allowed;
     }
 
 
