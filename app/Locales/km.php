@@ -187,7 +187,13 @@ return [
         'Floor' => 'ចំនួនជាន់',
         'Capacity' => 'សមត្ថភាពផ្ទុក',
         'Bookable' => 'អាចកក់បាន',
-
+        'Create Contract' => 'បង្កើតកិច្ចសន្យា',
+        'Create Maintenance' => 'បង្កើតការថែទាំ',
+        'Finish Maintenance' => 'បញ្ចប់ការថែទាំ',
+        'View Booking' => 'មើលការកក់',
+        'Modify Booking' => 'កែប្រែការកក់',
+        'Cancel Booking' => 'បោះបង់ការកក់',
+        'Booking' => 'ការកក់',
 
     ],
     'menus' => [
