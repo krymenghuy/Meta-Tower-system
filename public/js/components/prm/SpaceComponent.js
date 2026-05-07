@@ -695,7 +695,7 @@ var SpaceComponent = new (function () {
                 VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'space_status', '', 'All Statuses', '');
                 VSUtil.setComboItems(mThis.elBuilding, d.buildings, 'id', 'building', '', 'All buildings', '');
                 VSUtil.setComboItems(mThis.elFloor, d.floors, 'id', 'name', '', 'All Floors', '');
-                VSUtil.setComboItems(mThis.elSpaceType, d.space_types, 'id', 'space_type', '', 'All Space Type', '');
+                VSUtil.setComboItems(mThis.elSpaceType, d.space_types, 'id', 'space_type', '', 'All Type', '');
 
                 // mThis.elBuilding.onchange = function (e) {
                 //     e.preventDefault();
@@ -762,13 +762,13 @@ const BuildingSpaceDialog = (() => {
                             </div>
                             <div class="col-6">
                                 <div class="vs-material-field">
-                                    <input data-type="money" name="sqm_size" class="data-input inputbox-input form-control" data-field="sqm_size" placeholder=" " />
+                                    <input data-type="number" name="sqm_size" class="data-input  form-control" data-field="sqm_size" placeholder=" " />
                                     <label>Size (m²)</label>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="vs-material-field">
-                                    <input data-type="money" name="price" class="data-input inputbox-input form-control" data-field="price" placeholder=" " />
+                                    <input data-type="number" name="price" class="data-input form-control" data-field="price" placeholder=" " />
                                     <label>Price</label>
                                 </div>
                             </div>
@@ -847,9 +847,13 @@ const BuildingSpaceDialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
+                    console.log(777,data);
+                    if(me.dataOptions.id) {
+                        me.controls.price_type.value = data.space_details.price_type;
+
+                    };
                     const isReadOnly = me.dataOptions.id > 0;
                     me.setReadOnly(isReadOnly, ["building_id", "code", "floor_id"]);
-                    me.controls.price_type.value = data.space_details.price_type;
                 },
 
                 buttons: [
