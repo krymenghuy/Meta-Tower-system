@@ -108,7 +108,7 @@ var ContractComponent = new (function () {
             data: (data, index, tr) => {
                 return `
                     <div class="text-primary-prm text-capitalize" style="width:200px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ?? 'N/A'}</span>
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ?? '__'}</span>
                     </div>
                 `;
             }

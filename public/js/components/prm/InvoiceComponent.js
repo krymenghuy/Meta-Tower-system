@@ -158,7 +158,7 @@ var InvoiceComponent = (() => {
                 return `
                     <div class="text-primary-custom" style="width:200px;">
                         <span class="text-wrap text-break" style ="word-break:break-word;">${data.general_remark ??
-                            "..."}</span>
+                            "__"}</span>
                     </div>
                 `;
             }
@@ -370,7 +370,7 @@ var InvoiceComponent = (() => {
                     <td class="text-end text-danger">${getDiscountDisplay(
                         item
                     )}</td>
-                    <td class="text-end text-info">${taxAmount}%</td>
+                    <td class="text-center text-info">${taxAmount}%</td>
                     <td class="text-end fw-bold">${currency}${total.toLocaleString(
                     "en-US",
                     { minimumFractionDigits: 2 }
