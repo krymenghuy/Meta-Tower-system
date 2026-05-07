@@ -786,7 +786,7 @@ const BuildingSpaceDialog = (() => {
                 },
 
                 contentCreated: (me) => {
-                 
+
                 },
                 configSelect: [
                     {
