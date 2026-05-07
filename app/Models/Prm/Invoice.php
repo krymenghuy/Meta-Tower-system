@@ -206,6 +206,7 @@ class Invoice extends VSModel
         $penal_rate    = (float)($data['penal_rate'] ?? 0); // penal_amount per day from frontend
         $pmt_breakdowns = $data['pmt_breakdowns'] ?? $data['payment_breakdown'] ?? [];
 
+        \Log::info($data);
         if ($invoice_id <= 0) {
             return DV::error('Invalid invoice ID.');
         }
