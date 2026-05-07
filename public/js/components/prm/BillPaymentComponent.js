@@ -4,10 +4,14 @@ var BillPaymentComponent = (() => {
     const mThis = {};
     mThis.title_prop = "Bill Payments";
     mThis.base_url = main_view.base_url;
-    mThis.self = main_view.VSAppContent.querySelector("#_main_bill_payment_component");
+    mThis.self = main_view.VSAppContent.querySelector(
+        "#_main_bill_payment_component",
+    );
     mThis.btnAdd = mThis.self.querySelector("#_btnBillPayment");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_bill");
-    mThis.elFilter_category = mThis.self.querySelector("#_bill_expense_type_id");
+    mThis.elFilter_category = mThis.self.querySelector(
+        "#_bill_expense_type_id",
+    );
     mThis.elFilter_status = mThis.self.querySelector("#_bill_status_id");
     mThis.elFilter_date = mThis.self.querySelector("#_payment_date");
     mThis.elSearch = mThis.self.querySelector("#_search_bill_payment");
@@ -34,32 +38,38 @@ var BillPaymentComponent = (() => {
         {
             transTitle: "titles.Vendor",
             className: "align-middle",
-            data: (data) => `<span class="d-block text-prm-custom text-capitalize">${data.vendor_name ?? ""}</span>`,
+            data: (data) =>
+                `<span class="d-block text-prm-custom text-capitalize">${data.vendor_name ?? ""}</span>`,
         },
         {
             transTitle: "titles.Amount",
             className: "align-middle text-end",
             data: (data) => {
-                const amount = VSMoney.formatAmount(data.amount, data.currency_code ?? 'USD');
+                const amount = VSMoney.formatAmount(
+                    data.amount,
+                    data.currency_code ?? "USD",
+                );
                 return `<span class="d-block fw-semibold text-primary">${amount}</span>`;
             },
         },
         {
             transTitle: "titles.Payment Method",
             className: "align-middle text-center ",
-            data: (data) => `<span class="d-block text-prm-custom text-capitalize ">${data.payment_method ?? ""}</span>`,
+            data: (data) =>
+                `<span class="d-block text-prm-custom text-capitalize ">${data.payment_method ?? ""}</span>`,
         },
         {
             transTitle: "titles.Remark",
             className: "align-middle text-nowrap",
-            data: data => {
+            data: (data) => {
                 return `
                     <div class="text-primary-custom" style="width:200px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.note ??
-                            "..."}</span>
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${
+                            data.note ?? "..."
+                        }</span>
                     </div>
                 `;
-            }
+            },
         },
         {
             transTitle: "titles.Status",
@@ -67,11 +77,13 @@ var BillPaymentComponent = (() => {
             data: (data) => {
                 const isCancelled = parseInt(data.status_id) === 2;
 
-                let cls = "badge border border-success text-success bg-success-subtle";
+                let cls =
+                    "badge border border-success text-success bg-success-subtle";
                 let label = "Active";
 
                 if (isCancelled) {
-                    cls = "badge border border-danger text-danger bg-danger-subtle";
+                    cls =
+                        "badge border border-danger text-danger bg-danger-subtle";
                     label = "Cancelled";
                 }
 
@@ -99,8 +111,8 @@ var BillPaymentComponent = (() => {
             data: (data) => `
                 <div class="d-flex justify-content-center align-items-end">
                     <a href="javascript:void(0)" class="btn--Options btn_bill_action"
-                        data-id="${data.id}" data-vendorId="${data.vendor_id || ''}"
-                        data-statusid="${data.status_id || ''}" aria-haspopup="true" aria-expanded="false">
+                        data-id="${data.id}" data-vendorId="${data.vendor_id || ""}"
+                        data-statusid="${data.status_id || ""}" aria-haspopup="true" aria-expanded="false">
                         <i class="fa-solid fa-ellipsis-vertical text-black fs-5"></i>
                     </a>
                 </div>`,
@@ -123,8 +135,6 @@ var BillPaymentComponent = (() => {
                 tr.dataset.fileurl = data.file_image_url ?? "";
                 tr.classList.add("bill");
                 tr.setAttribute("id", `bill_id${data.id}`);
-
-
             },
             listContainerClass: null,
         });
@@ -134,7 +144,8 @@ var BillPaymentComponent = (() => {
             const op = {
                 id: null,
                 btn: e.target,
-                onClose: () => mThis.BillPaymentListView.showPage(mThis.getFilterData()),
+                onClose: () =>
+                    mThis.BillPaymentListView.showPage(mThis.getFilterData()),
             };
             BillPaymentDialog.show(op);
         };
@@ -143,7 +154,9 @@ var BillPaymentComponent = (() => {
         const sh_parent = mThis.pr_tbl.parentElement;
         sh_parent.style.maxHeight = window.innerHeight - 200 + "px";
         sh_parent.classList.add("overflow-y-auto");
-        window.onresize = () => { sh_parent.style.maxHeight = window.innerHeight - 200 + "px"; };
+        window.onresize = () => {
+            sh_parent.style.maxHeight = window.innerHeight - 200 + "px";
+        };
 
         const tblBill = mThis.BillPaymentListView.getTable();
         if (!tblBill.id) tblBill.id = "_bill_payment_list_table";
@@ -169,10 +182,9 @@ var BillPaymentComponent = (() => {
 
     mThis.getFilterData = () => {
         let p = {
-
             status_id: mThis.elFilter_status.value,
             search_value: mThis.elSearch.value,
-            payment_date:    mThis.elFilter_date?.value ?? "",
+            payment_date: mThis.elFilter_date?.value ?? "",
             // expense_type_id: mThis.elFilter_category.value,
         };
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
@@ -200,21 +212,27 @@ var BillPaymentComponent = (() => {
                     cssClass: "border-bottom pb-2",
                     name: "delete_payment",
                 },
-
             ],
-            onShow:(me, container) =>{
+            onShow: (me, container) => {
                 const menu = me.getActiveMenus(container);
                 const status_id = container.dataset.statusid;
 
-                menu.cancel_payment.style.display = status_id == 1 ? "block" : "none";
-                menu.delete_payment.style.display = status_id == 2 ? "block" : "none";
+                menu.cancel_payment.style.display =
+                    status_id == 1 ? "block" : "none";
+                menu.delete_payment.style.display =
+                    status_id == 2 ? "block" : "none";
             },
 
             onClick: (menuLink, id, name) => {
                 switch (name) {
-                    case "delete_payment": mThis.deletePayment(id, menuLink); break;
-                    case "cancel_payment":   mThis.cancelPayment(id, menuLink);   break;
-                    default: break;
+                    case "delete_payment":
+                        mThis.deletePayment(id, menuLink);
+                        break;
+                    case "cancel_payment":
+                        mThis.cancelPayment(id, menuLink);
+                        break;
+                    default:
+                        break;
                 }
             },
         };
@@ -228,36 +246,52 @@ var BillPaymentComponent = (() => {
             bill_id: tr?.dataset.billid || null,
             vendorid: tr?.dataset.vendorid || null,
             btn: menuLink,
-            onClose: () => mThis.BillPaymentListView.showPage(mThis.getFilterData()),
+            onClose: () =>
+                mThis.BillPaymentListView.showPage(mThis.getFilterData()),
         };
         BillPaymentDialog.show(op);
     };
 
     mThis.deletePayment = (id, menuLink) => {
         const op = {
-             id,
-             btn: menuLink,
-             onClose: () =>
-             mThis.BillPaymentListView.showPage(mThis.getFilterData()),
-        }
-        cv_interact.confirm("Delete this Payment?",
+            id,
+            btn: menuLink,
+            onClose: () =>
+                mThis.BillPaymentListView.showPage(mThis.getFilterData()),
+        };
+        cv_interact.confirm(
+            "Delete this Payment?",
             { context: "delete", confirmButtonText: "Delete" },
             function (e) {
                 if (e) {
-                    vsapi.call(`${main_view.base_url}/prm/bill-payment/delete`, { id }, false, false, false)
+                    vsapi
+                        .call(
+                            `${main_view.base_url}/prm/bill-payment/delete`,
+                            { id },
+                            false,
+                            false,
+                            false,
+                        )
                         .then((res) => {
                             if (res.status_code == 200) {
-                                cv_interact.success(res.message || "Bill record has been deleted.");
-                                mThis.BillPaymentListView.showPage(mThis.getFilterData());
+                                cv_interact.success(
+                                    res.message ||
+                                        "Bill record has been deleted.",
+                                );
+                                mThis.BillPaymentListView.showPage(
+                                    mThis.getFilterData(),
+                                );
                             } else {
-                                cv_interact.error(res.error_message || "Failed to delete bill record.");
+                                cv_interact.error(
+                                    res.error_message ||
+                                        "Failed to delete bill record.",
+                                );
                             }
                         });
                 }
-            }
+            },
         );
     };
-
 
     // mThis.cancelPayment = (id, menuLink) => {
     //     const op = {
@@ -284,7 +318,7 @@ var BillPaymentComponent = (() => {
     //     );
     // };
 
-    mThis.cancelPayment = id => {
+    mThis.cancelPayment = (id) => {
         Swal.fire({
             title: "Cancel Payment?",
             text: "This will restore the due balance on the bill.",
@@ -295,56 +329,71 @@ var BillPaymentComponent = (() => {
             confirmButtonColor: "#d33",
             confirmButtonText: "Yes, Cancel it!",
             reverseButtons: true,
-            inputValidator: value => {
+            inputValidator: (value) => {
                 if (!value) return "You must provide a reason!";
             },
             showLoaderOnConfirm: true,
-            preConfirm: remark => {
+            preConfirm: (remark) => {
                 let op = { id: id, note: remark };
                 return vsapi
                     .call(`${mThis.base_url}/prm/bill-payment/cancel`, op, null)
-                    .then(res => {
+                    .then((res) => {
                         if (res.status_code !== 200) {
                             throw new Error(
-                                res.error_message || "Failed to cancel"
+                                res.error_message || "Failed to cancel",
                             );
                         }
                         return res;
                     })
-                    .catch(error => {
+                    .catch((error) => {
                         Swal.showValidationMessage(`Request failed: ${error}`);
                     });
             },
-            allowOutsideClick: () => !Swal.isLoading()
-        }).then(request => {
-           if (request.isConfirmed) {
+            allowOutsideClick: () => !Swal.isLoading(),
+        }).then((request) => {
+            if (request.isConfirmed) {
                 cv_interact.success("Payment has been canceled.");
                 mThis.BillPaymentListView.showPage(mThis.getFilterData());
-           }
+            }
         });
-
     };
 
     mThis.viewAttachment = (id) => {
-        vsapi.call(`${main_view.base_url}/prm/bill/view-attachment`, { id }, false, false, false)
+        vsapi
+            .call(
+                `${main_view.base_url}/prm/bill/view-attachment`,
+                { id },
+                false,
+                false,
+                false,
+            )
             .then((res) => {
-                if (res.status_code !== 200) { cv_interact.error(res.error_message || "No attachment found."); return; }
+                if (res.status_code !== 200) {
+                    cv_interact.error(
+                        res.error_message || "No attachment found.",
+                    );
+                    return;
+                }
                 const { data_url, ext } = res.data;
                 const overlay = document.createElement("div");
-                overlay.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;display:flex;justify-content:center;align-items:center;cursor:pointer;";
+                overlay.style.cssText =
+                    "position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;display:flex;justify-content:center;align-items:center;cursor:pointer;";
                 const wrapper = document.createElement("div");
-                wrapper.style.cssText = "position:relative;max-width:90vw;max-height:90vh;";
-                const isImage = ["png","jpg","jpeg"].includes(ext);
-                const isPdf   = ext === "pdf";
+                wrapper.style.cssText =
+                    "position:relative;max-width:90vw;max-height:90vh;";
+                const isImage = ["png", "jpg", "jpeg"].includes(ext);
+                const isPdf = ext === "pdf";
                 if (isImage) {
                     const img = document.createElement("img");
                     img.src = data_url;
-                    img.style.cssText = "max-width:100%;max-height:90vh;border-radius:8px;box-shadow:0 4px 32px #000;";
+                    img.style.cssText =
+                        "max-width:100%;max-height:90vh;border-radius:8px;box-shadow:0 4px 32px #000;";
                     wrapper.appendChild(img);
                 } else if (isPdf) {
                     const iframe = document.createElement("iframe");
                     iframe.src = data_url;
-                    iframe.style.cssText = "width:80vw;height:85vh;border:none;border-radius:8px;";
+                    iframe.style.cssText =
+                        "width:80vw;height:85vh;border:none;border-radius:8px;";
                     wrapper.appendChild(iframe);
                 } else {
                     document.body.removeChild(overlay);
@@ -352,9 +401,13 @@ var BillPaymentComponent = (() => {
                     return;
                 }
                 const btnClose = document.createElement("button");
-                btnClose.style.cssText = "position:absolute;top:-16px;right:-16px;border:none;background:#fff;border-radius:50%;width:32px;height:32px;font-size:18px;cursor:pointer;line-height:1;";
+                btnClose.style.cssText =
+                    "position:absolute;top:-16px;right:-16px;border:none;background:#fff;border-radius:50%;width:32px;height:32px;font-size:18px;cursor:pointer;line-height:1;";
                 btnClose.innerHTML = "&times;";
-                btnClose.onclick = (e) => { e.stopPropagation(); document.body.removeChild(overlay); };
+                btnClose.onclick = (e) => {
+                    e.stopPropagation();
+                    document.body.removeChild(overlay);
+                };
                 wrapper.appendChild(btnClose);
                 overlay.appendChild(wrapper);
                 overlay.onclick = () => document.body.removeChild(overlay);
@@ -383,11 +436,33 @@ var BillPaymentComponent = (() => {
     };
 
     mThis.prepareFormOptions = (onFinish) => {
-        vsapi.call(`${main_view.base_url}/prm/bill/form-options`, null, null, null)
+        vsapi
+            .call(
+                `${main_view.base_url}/prm/bill/form-options`,
+                null,
+                null,
+                null,
+            )
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elFilter_category, d.expense_types, "id", "expense_category", "", "All Categories", "");
-                VSUtil.setComboItems(mThis.elFilter_status, d.bill_statuses, "id", "bill_status", "", "All Statuses", "");
+                VSUtil.setComboItems(
+                    mThis.elFilter_category,
+                    d.expense_types,
+                    "id",
+                    "expense_category",
+                    "",
+                    "All Categories",
+                    "",
+                );
+                VSUtil.setComboItems(
+                    mThis.elFilter_status,
+                    d.bill_statuses,
+                    "id",
+                    "bill_status",
+                    "",
+                    "All Statuses",
+                    "",
+                );
                 if (typeof onFinish === "function") onFinish();
             });
     };
@@ -410,12 +485,14 @@ const BillPaymentDialog = (() => {
     let dialog = null;
 
     self.show = (op) => {
-        dialog = dialog || new GeneralDialog({
-            cssClass: "modal-lg vs-modal",
-            backdrop: "static",
-            keyboard: true,
+        dialog =
+            dialog ||
+            new GeneralDialog({
+                cssClass: "modal-lg vs-modal",
+                backdrop: "static",
+                keyboard: true,
 
-            createContent: () => `
+                createContent: () => `
                 <div class="container-fluid px-0">
 
                     <div class="row g-0" style="border-radius:8px;overflow:hidden;margin-bottom:1.5rem;">
@@ -520,11 +597,9 @@ const BillPaymentDialog = (() => {
                             </div>
                         </div>
 
-                        <!-- Hidden fields for data compatibility -->
                         <input name="vendorid" class="d-none data-input" data-field="vendor_id">
                         <input name="payment_method" type="hidden" class="data-input" data-field="payment_method">
 
-                        <!-- Currency Conversion -->
                         <div class="col-12 mb-3" id="_dlg_conv_row" style="display:none;">
                             <div style="border:1px dashed #bfdbfe; border-radius:6px; padding:8px 14px; background:#eff6ff; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
                                 <div class="d-flex align-items-center gap-2">
@@ -553,192 +628,363 @@ const BillPaymentDialog = (() => {
                     </div>
                 </div>`,
 
-            contentCreated: (me) => {
-                const updateTotals = () => {
-                    const getValue = name => {
-                        const el = me.divModal.querySelector(`[name="${name}"]`);
-                        return el ? parseFloat(el.value) || 0 : 0;
+                contentCreated: (me) => {
+                    const updateTotals = () => {
+                        const getValue = (name) => {
+                            const el = me.divModal.querySelector(
+                                `[name="${name}"]`,
+                            );
+                            return el ? parseFloat(el.value) || 0 : 0;
+                        };
+
+                        const fmt = (n) => "$" + Number(n).toFixed(2);
+
+                        const cash = getValue("cash");
+                        const bank = getValue("bank_amount");
+                        const cheque = getValue("cheque_amount");
+
+                        const totalPaid = cash + bank + cheque;
+
+                        let due = 0;
+                        const dueEl = me.divModal.querySelector("#f_due");
+                        if (dueEl) {
+                            due =
+                                parseFloat(
+                                    dueEl.textContent.replace(/[^0-9.-]+/g, ""),
+                                ) || 0;
+                        }
+
+                        const remaining = due - totalPaid;
+
+                        me.divModal.querySelector("#f_tot").textContent =
+                            fmt(totalPaid);
+
+                        const balEl = me.divModal.querySelector("#f_bal");
+                        if (balEl) {
+                            if (totalPaid > due + 0.001) {
+                                balEl.style.color = "#dc3545";
+                                balEl.textContent =
+                                    "Overpaid: " + fmt(Math.abs(remaining));
+                            } else {
+                                balEl.style.color =
+                                    remaining <= 0.001 ? "#3B6D11" : "#FAB31C";
+                                balEl.textContent = fmt(Math.max(0, remaining));
+                            }
+                        }
+
+                        me.divModal.querySelector("#c_e").textContent =
+                            cash > 0 ? fmt(cash) : "—";
+                        me.divModal.querySelector("#b_e").textContent =
+                            bank > 0 ? fmt(bank) : "—";
+                        me.divModal.querySelector("#ch_e").textContent =
+                            cheque > 0 ? fmt(cheque) : "—";
                     };
 
-                    const fmt = n => "$" + Number(n).toFixed(2);
+                    const amountFields = [
+                        "cash",
+                        "bank_amount",
+                        "cheque_amount",
+                    ];
+                    amountFields.forEach((name) => {
+                        const input = me.divModal.querySelector(
+                            `[name="${name}"]`,
+                        );
+                        if (input) {
+                            input.addEventListener("input", updateTotals);
+                            input.addEventListener("change", updateTotals);
+                        }
+                    });
 
-                    const cash = getValue("cash");
-                    const bank = getValue("bank_amount");
-                    const cheque = getValue("cheque_amount");
-
-                    const totalPaid = cash + bank + cheque;
-
-                    let due = 0;
-                    const dueEl = me.divModal.querySelector("#f_due");
-                    if (dueEl) {
-                        due = parseFloat(dueEl.textContent.replace(/[^0-9.-]+/g, "")) || 0;
+                    // Original amount formatting
+                    const amountInput =
+                        me.divModal.querySelector('[name="amount"]');
+                    if (amountInput) {
+                        amountInput.addEventListener("input", (e) => {
+                            let v = e.target.value.replace(/[^0-9.]/g, "");
+                            const parts = v.split(".");
+                            if (parts.length > 2) v = parts[0] + "." + parts[1];
+                            if (parts[1] !== undefined)
+                                v = parts[0] + "." + parts[1].slice(0, 2);
+                            e.target.value = v;
+                        });
                     }
 
-                    const remaining = due - totalPaid;
+                    me.convertPayment = (data) => {
 
-                    me.divModal.querySelector("#f_tot").textContent = fmt(totalPaid);
+                        console.log(3333333, data);
+                        
+
+                        const parseAmt = (v) =>
+                            isNaN(parseFloat(v)) ? 0 : parseFloat(v);
+                        const breakdowns = [];
+
+                        if (parseAmt(data.cash) > 0) {
+                            breakdowns.push({
+                                method: "Cash",
+                                payer: data.payer,
+                                amount: parseAmt(data.cash),
+                                currency_code: "USD",
+                            });
+                        }
+                        if (parseAmt(data.bank_amount) > 0) {
+                            breakdowns.push({
+                                method: "Bank",
+                                amount: parseAmt(data.bank_amount),
+                                currency_code: "USD",
+                                bank_id:
+                                    parseInt(data.bank) ||
+                                    null,
+                                bank_name: me.getSelectText
+                                    ? me.getSelectText("bank")
+                                    : null,
+                                bank_ref_number: data.bank_ref_number || null,
+                            });
+                        }
+                        if (parseAmt(data.cheque_amount) > 0) {
+                            breakdowns.push({
+                                method: "Cheque",
+                                amount: parseAmt(data.cheque_amount),
+                                currency_code: "USD",
+                                bank_id: parseInt(data.cheque_bank_id) || null,
+                                cheque_bank_name: me.getSelectText
+                                    ? me.getSelectText("cheque_bank_id")
+                                    : null,
+                                cheque_number: data.cheque_number || null,
+                            });
+                        }
+                        return {
+                            bill_id: me.dataOptions?.bill_id || null,
+                            remarks: (data.remarks || "").trim(),
+                            payer: data.payer,
+                            pmt_breakdowns: breakdowns,
+                        };
+                    };
+                },
+
+                prepareFormOptions: {
+                    createTitle: "Bill Payment Voucher",
+                    modifyTitle: "Pay Bill",
+                    targetProp: "bill",
+                    api: {
+                        endpoint: `${main_view.base_url}/prm/bill-payment/form-options`,
+                        params: (op) => ({
+                            bill_id: op.bill_id || op.id || null,
+                        }),
+                    },
+                },
+
+                onShow: (me, container) => {
+                    const menu = me.getActiveMenus(container);
+                    const status_id = container.dataset.statusid;
+
+                    // menu.edit_student.style.display = enroll_finalized == 1 ? 'none' : 'block';
+                    menu.create_contract.style.display =
+                        status_id == 1 ? "block" : "none";
+                    menu.service_request.style.display = "none";
+                    menu.upload_document.style.display =
+                        status_id == 1 || status_id == 2 ? "block" : "none";
+                },
+
+                // onPrepareForm: (me, data) => {
+                //     const bill = data?.bill || data?.bill_details;
+
+                //     const dueAmount = Number(bill?.total_amount || bill?.balance || 0);
+                //     const dueEl = me.divModal.querySelector("#f_due");
+                //     if (dueEl) dueEl.textContent = "$" + dueAmount.toFixed(2);
+
+                //     if (me.controls.total_amount) me.controls.total_amount.value = Number(bill.total_amount || 0).toFixed(2);
+                //     if (me.controls.paid_amount)  me.controls.paid_amount.value  = Number(bill.paid_amount  || 0).toFixed(2);
+                //     if (me.controls.balance)      me.controls.balance.value      = Number(bill.balance      || 0).toFixed(2);
+
+                //     if (me.controls.vendor) {
+                //         me.controls.vendor.value = bill.vendor_name || '';
+                //         me.controls.vendor.readOnly = true;
+                //     }
+
+                //     if (me.controls.payment_date && !me.controls.payment_date.value) {
+                //         const now = new Date();
+                //         const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+                //         const day = String(now.getDate()).padStart(2, '0');
+                //         const month = months[now.getMonth()];
+                //         const year = now.getFullYear();
+                //         me.controls.payment_date.value = `${day}-${month}-${year}`;
+                //     }
+
+                //     const banks = data?.banks ?? [];
+                //     const bankEl  = me.divModal.querySelector('[name="bank"]');
+                //     const chequeEl = me.divModal.querySelector('[name="cheque_bank_id"]');
+                //     if (bankEl)   VSUtil.setComboItems(bankEl,   banks, 'id', 'name', '', 'Select Bank', '');
+                //     if (chequeEl) VSUtil.setComboItems(chequeEl, banks, 'id', 'name', '', 'Select Bank', '');
+                // },
+
+                onPrepareForm: (me, data) => {
+                    const bill = data?.bill || data?.bill_details;
+
+                    const dueAmount = Number(bill?.balance || 0);
+                    const dueEl = me.divModal.querySelector("#f_due");
+                    if (dueEl) dueEl.textContent = "$" + dueAmount.toFixed(2);
 
                     const balEl = me.divModal.querySelector("#f_bal");
                     if (balEl) {
-                        if (totalPaid > due + 0.001) {
-                            balEl.style.color = "#dc3545";
-                            balEl.textContent = "Overpaid: " + fmt(Math.abs(remaining));
-                        } else {
-                            balEl.style.color = remaining <= 0.001 ? "#3B6D11" : "#FAB31C";
-                            balEl.textContent = fmt(Math.max(0, remaining));
-                        }
+                        balEl.style.color = "#FAB31C";
+                        balEl.textContent = "$" + dueAmount.toFixed(2);
                     }
 
-                    me.divModal.querySelector("#c_e").textContent = cash > 0 ? fmt(cash) : "—";
-                    me.divModal.querySelector("#b_e").textContent = bank > 0 ? fmt(bank) : "—";
-                    me.divModal.querySelector("#ch_e").textContent = cheque > 0 ? fmt(cheque) : "—";
-                };
+                    if (me.controls.total_amount)
+                        me.controls.total_amount.value = Number(
+                            bill.total_amount || 0,
+                        ).toFixed(2);
+                    if (me.controls.paid_amount)
+                        me.controls.paid_amount.value = Number(
+                            bill.paid_amount || 0,
+                        ).toFixed(2);
+                    if (me.controls.balance)
+                        me.controls.balance.value = Number(
+                            bill.balance || 0,
+                        ).toFixed(2);
 
-                const amountFields = ["cash", "bank_amount", "cheque_amount"];
-                amountFields.forEach(name => {
-                    const input = me.divModal.querySelector(`[name="${name}"]`);
-                    if (input) {
-                        input.addEventListener("input", updateTotals);
-                        input.addEventListener("change", updateTotals);
+                    if (me.controls.vendor) {
+                        me.controls.vendor.value = bill.vendor_name || "";
+                        me.controls.vendor.readOnly = true;
                     }
-                });
 
-                // Original amount formatting
-                const amountInput = me.divModal.querySelector('[name="amount"]');
-                if (amountInput) {
-                    amountInput.addEventListener('input', (e) => {
-                        let v = e.target.value.replace(/[^0-9.]/g, '');
-                        const parts = v.split('.');
-                        if (parts.length > 2) v = parts[0] + '.' + parts[1];
-                        if (parts[1] !== undefined) v = parts[0] + '.' + parts[1].slice(0, 2);
-                        e.target.value = v;
-                    });
-                }
-            },
+                    if (
+                        me.controls.payment_date &&
+                        !me.controls.payment_date.value
+                    ) {
+                        const now = new Date();
+                        const months = [
+                            "Jan",
+                            "Feb",
+                            "Mar",
+                            "Apr",
+                            "May",
+                            "Jun",
+                            "Jul",
+                            "Aug",
+                            "Sep",
+                            "Oct",
+                            "Nov",
+                            "Dec",
+                        ];
+                        const day = String(now.getDate()).padStart(2, "0");
+                        const month = months[now.getMonth()];
+                        const year = now.getFullYear();
+                        me.controls.payment_date.value = `${day}-${month}-${year}`;
+                    }
 
-            prepareFormOptions: {
-                createTitle: "Bill Payment Voucher",
-                modifyTitle: "Pay Bill",
-                targetProp: "bill",
-                api: {
-                    endpoint: `${main_view.base_url}/prm/bill-payment/form-options`,
-                    params: (op) => ({
-                        bill_id: op.bill_id || op.id || null
-                    })
-                }
-            },
-
-            onShow: (me, container) => {
-                const menu = me.getActiveMenus(container);
-                const status_id = container.dataset.statusid;
-
-
-                // menu.edit_student.style.display = enroll_finalized == 1 ? 'none' : 'block';
-                menu.create_contract.style.display = status_id == 1 ? "block" : "none";
-                menu.service_request.style.display = "none";
-                menu.upload_document.style.display = status_id == 1 || status_id == 2 ? "block" : "none";
-            },
-
-            // onPrepareForm: (me, data) => {
-            //     const bill = data?.bill || data?.bill_details;
-
-            //     const dueAmount = Number(bill?.total_amount || bill?.balance || 0);
-            //     const dueEl = me.divModal.querySelector("#f_due");
-            //     if (dueEl) dueEl.textContent = "$" + dueAmount.toFixed(2);
-
-            //     if (me.controls.total_amount) me.controls.total_amount.value = Number(bill.total_amount || 0).toFixed(2);
-            //     if (me.controls.paid_amount)  me.controls.paid_amount.value  = Number(bill.paid_amount  || 0).toFixed(2);
-            //     if (me.controls.balance)      me.controls.balance.value      = Number(bill.balance      || 0).toFixed(2);
-
-            //     if (me.controls.vendor) {
-            //         me.controls.vendor.value = bill.vendor_name || '';
-            //         me.controls.vendor.readOnly = true;
-            //     }
-
-            //     if (me.controls.payment_date && !me.controls.payment_date.value) {
-            //         const now = new Date();
-            //         const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-            //         const day = String(now.getDate()).padStart(2, '0');
-            //         const month = months[now.getMonth()];
-            //         const year = now.getFullYear();
-            //         me.controls.payment_date.value = `${day}-${month}-${year}`;
-            //     }
-
-            //     const banks = data?.banks ?? [];
-            //     const bankEl  = me.divModal.querySelector('[name="bank"]');
-            //     const chequeEl = me.divModal.querySelector('[name="cheque_bank_id"]');
-            //     if (bankEl)   VSUtil.setComboItems(bankEl,   banks, 'id', 'name', '', 'Select Bank', '');
-            //     if (chequeEl) VSUtil.setComboItems(chequeEl, banks, 'id', 'name', '', 'Select Bank', '');
-            // },
-
-
-            onPrepareForm: (me, data) => {
-                const bill = data?.bill || data?.bill_details;
-
-                const dueAmount = Number(bill?.balance || 0);
-                const dueEl = me.divModal.querySelector("#f_due");
-                if (dueEl) dueEl.textContent = "$" + dueAmount.toFixed(2);
-
-                const balEl = me.divModal.querySelector("#f_bal");
-                if (balEl) {
-                    balEl.style.color = "#FAB31C";
-                    balEl.textContent = "$" + dueAmount.toFixed(2);
-                }
-
-                if (me.controls.total_amount) me.controls.total_amount.value = Number(bill.total_amount || 0).toFixed(2);
-                if (me.controls.paid_amount)  me.controls.paid_amount.value  = Number(bill.paid_amount  || 0).toFixed(2);
-                if (me.controls.balance)      me.controls.balance.value      = Number(bill.balance      || 0).toFixed(2);
-
-                if (me.controls.vendor) {
-                    me.controls.vendor.value = bill.vendor_name || '';
-                    me.controls.vendor.readOnly = true;
-                }
-
-                if (me.controls.payment_date && !me.controls.payment_date.value) {
-                    const now = new Date();
-                    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-                    const day = String(now.getDate()).padStart(2, '0');
-                    const month = months[now.getMonth()];
-                    const year = now.getFullYear();
-                    me.controls.payment_date.value = `${day}-${month}-${year}`;
-                }
-
-                const banks    = data?.banks ?? [];
-                const bankEl   = me.divModal.querySelector('[name="bank"]');
-                const chequeEl = me.divModal.querySelector('[name="cheque_bank_id"]');
-                if (bankEl)   VSUtil.setComboItems(bankEl,   banks, 'id', 'name', '', 'Select Bank', '');
-                if (chequeEl) VSUtil.setComboItems(chequeEl, banks, 'id', 'name', '', 'Select Bank', '');
-            },
-            buttons: [
-                {
-                    label: '<span vslang="buttons.Cancel"></span>',
-                    cssClass: "btn btn-secondary",
-                    click: (me) => me.hide(false)
+                    const banks = data?.banks ?? [];
+                    const bankEl = me.divModal.querySelector('[name="bank"]');
+                    const chequeEl = me.divModal.querySelector(
+                        '[name="cheque_bank_id"]',
+                    );
+                    if (bankEl)
+                        VSUtil.setComboItems(
+                            bankEl,
+                            banks,
+                            "id",
+                            "name",
+                            "",
+                            "Select Bank",
+                            "",
+                        );
+                    if (chequeEl)
+                        VSUtil.setComboItems(
+                            chequeEl,
+                            banks,
+                            "id",
+                            "name",
+                            "",
+                            "Select Bank",
+                            "",
+                        );
                 },
-                {
-                    label: '<span vslang="buttons.Confirm Payment"></span>',
-                    cssClass: "btn btn-primary",
-                    click: (me, btn) => {
-                        const op = me.getData();
-                        op.bill_id = me.dataOptions.bill_id;
-                        op.vendor_id = me.dataOptions.vendorId;
+                buttons: [
+                    {
+                        label: '<span vslang="buttons.Cancel"></span>',
+                        cssClass: "btn btn-secondary",
+                        click: (me) => me.hide(false),
+                    },
+                    {
+                        label: '<span vslang="buttons.Confirm Payment"></span>',
+                        cssClass: "btn btn-primary",
+                        click: (me, btn) => {
+                            // const op = me.getData();
+                            // op.bill_id = me.dataOptions.bill_id;
+                            // op.vendor_id = me.dataOptions.vendorId;
+                            //     console.log(11,op);
+                            //     const cash      = parseFloat(op.cash)         || 0;
+                            //     const bankAmt   = parseFloat(op.bank_amount)  || 0;
+                            //     const chequeAmt = parseFloat(op.cheque_amount)|| 0;
+                            //     op.amount = op.cash + op.bank_amount + op.cheque_amount
+                            //     console.log(12,op);
 
-                        vsapi.call(`${main_view.base_url}/prm/bill-payment/save`, op, btn, null)
-                            .then((res) => {
-                                if (res.status_code === 200) {
-                                    me.hide(true, op);
-                                    cv_interact.success("Payment recorded successfully.");
-                                } else {
-                                    cv_interact.error(res.error_message || "Failed to record payment.");
-                                }
-                            })
-                            .catch(() => {
-                                cv_interact.error("Network error while saving payment.");
-                            });
-                    }
-                }
-            ]
-        });
+                            //     vsapi.call(`${main_view.base_url}/prm/bill-payment/save`, op, btn, null)
+                            //         .then((res) => {
+                            //             if (res.status_code === 200) {
+                            //                 me.hide(true, op);
+                            //                 cv_interact.success("Payment recorded successfully.");
+                            //             } else {
+                            //                 cv_interact.error(res.error_message || "Failed to record payment.");
+                            //             }
+                            //         })
+                            //         .catch(() => {
+                            //             cv_interact.error("Network error while saving payment.");
+                            //         });
+
+                            const rawData = me.getData();
+                            const payload = me.convertPayment(rawData);
+                            console.log(11111111, payload);
+
+                            const totalInput = payload.pmt_breakdowns.reduce(
+                                (sum, item) => sum + item.amount,
+                                0,
+                            );
+
+                            const dueEl = me.divModal.querySelector("#f_due");
+                            const balanceDue = dueEl
+                                ? parseFloat(
+                                      dueEl.textContent.replace(
+                                          /[^0-9.-]+/g,
+                                          "",
+                                      ),
+                                  ) || 0
+                                : 0;
+
+                            if (totalInput <= 0) {
+                                return cv_interact.error(
+                                    "Please enter a payment amount.",
+                                );
+                            }
+                            vsapi
+                                .call(
+                                    `${main_view.base_url}/prm/bill-payment/save`,
+                                    payload,
+                                    btn,
+                                    null,
+                                )
+                                .then((res) => {
+                                    if (res.status_code === 200) {
+                                        me.hide(true, op);
+                                        cv_interact.success(
+                                            "Payment recorded successfully.",
+                                        );
+                                    } else {
+                                        cv_interact.error(
+                                            res.error_message ||
+                                                "Failed to record payment.",
+                                        );
+                                    }
+                                })
+                                .catch(() => {
+                                    cv_interact.error(
+                                        "Network error while saving payment.",
+                                    );
+                                });
+                        },
+                    },
+                ],
+            });
 
         dialog.show(op);
     };
