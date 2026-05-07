@@ -468,7 +468,7 @@ static function options_maintenance_amenity($ss)
     static function options_service($ss)
     {
         return DB::table('services')
-        ->selectRaw('id,name AS service, price, unit_type')
+        ->selectRaw('id,name AS service, price, unit_type, type')
         ->get();
     }
 

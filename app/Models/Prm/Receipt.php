@@ -22,27 +22,34 @@ class Receipt extends Model
     }
 
 
-
     public function getListPaginate($arr = [], $ss = null, $id = null)
     {
         $d = (object) $arr;
 
-        $current_page = max(1, ($d->current_page ?? 1));
-        $per_page     = max(1, ($d->per_page ?? 10));
-        $search_value      = $d->search_value ?? null;
-        $status_id         = $d->status_id ?? null;
-        $skip_rows = ($current_page - 1) * $per_page;
-
+        $search_value = $d->search_value ?? null;
+        $status_id    = $d->status_id ?? null;
         $date_from    = $d->date_from ?? null;
         $date_to      = $d->date_to ?? null;
 
+        $current_page = $d->current_page ?? 1;
+        $per_page     = $d->per_page ?? 10;
+
+        if (!is_numeric($current_page) || !is_numeric($per_page)) {
+            return null;
+        }
+
+        $skip_rows = ($current_page - 1) * $per_page;
+
         $str_search = "1=1";
         $str_moreWhere = "2=2";
-        if ($search_value ) {
+
+        if ($search_value) {
             $skip_rows = 0;
+            $current_page = 1;
             $search_value = escape_like_str($search_value);
             $str_search = "(r.code LIKE '%" . $search_value . "%' OR t.name LIKE '%" .$search_value . "%' OR i.code LIKE '%" . $search_value . "%')";
         }
+
         if ($status_id) {
             $str_moreWhere .= ' AND r.receipt_status_id =' . (int)$status_id;
         }
@@ -72,7 +79,6 @@ class Receipt extends Model
                 'bs.code as space_code',
                 'rs.name as receipt_status_name',
                 DB::raw('ANY_VALUE(rb.method) as method'),
-
                 DB::raw("
                     GROUP_CONCAT(
                         DISTINCT CONCAT(
@@ -99,12 +105,11 @@ class Receipt extends Model
         if ($id) {
             $query->where('r.id', $id);
         }
+        $clone_query = clone $query;
+        $total = $clone_query->get()->count();
 
-        $total = (clone $query)->select('r.id')->distinct()->count();
+        $rows = $query->skip($skip_rows)->take($per_page)->get();
 
-         $rows  = $query->skip($skip_rows)->take($per_page)->get();
-
-        // Format dates
         foreach ($rows as $row) {
             $row = setOfficialDates($row, ['receipt_date', 'invoice_date'], ['updated_at'], []);
         }

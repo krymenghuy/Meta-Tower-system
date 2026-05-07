@@ -32,6 +32,22 @@ var ServiceComponent = (() => {
             }
         },
         {
+            transTitle: "titles.Model",
+            className: "align-middle text-nowrap text-start",
+            data: function (data) {
+                const val = data.type ?? "";
+                const isSubscription = val == 0;
+
+                return isSubscription
+                    ? `<span class="text-prm-custom">
+                        <i class="fa-solid fa-arrows-rotate text-success"></i> Subscription
+                    </span>`
+                    : `<span class="text-prm-custom">
+                        <i class="fa-solid fa-bolt text-warning"></i> Request
+                    </span>`;
+            },
+        },
+        {
             transTitle: "titles.Charge As",
             className: "align-middle text-nowrap",
             data: (data) => {
@@ -383,10 +399,20 @@ const CreateServicePriceDialog = (() => {
                                     <label>Name</label>
                                 </div>
                             </div>
-                            <div class="col-12">
+                            <div class="col-6">
                                 <select data-style="material" name="service_types" class="data-input form-control" data-field="service_type_id" placeholder="Service Type">
                                 </select>
-                           </div>
+                            </div>
+                            <div class="col-6">
+                                <select data-style="material"
+                                        name="type"
+                                        class="data-input form-control"
+                                        data-field="type"
+                                        placeholder=" Model">
+                                    <option value="0" >Subscription</option>
+                                    <option value="1">Request</option>
+                                </select>
+                            </div>
                             <div class="col-6">
                                 <div class="vs-material-field">
                                     <input data-type="money" name="price" class="data-input inputbox-input form-control" data-field="price" placeholder="" />

@@ -2294,7 +2294,9 @@ const InvoiceDialog = (() => {
             },
 
             onPrepareForm: (me, data) => {
-                availableItem = data.services || [];
+                // availableItem = (data.services || []);
+                availableItem = (data.services || []).filter(s => s.type == 0);
+                // console.log("Available services for invoice:", availableItem);
                 me._selectedTenantId = null;
                 me._tenantData = null;
                 me._tenantSpaces = [];
