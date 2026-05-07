@@ -121,7 +121,7 @@ var ServiceRequestComponent = (function () {
             data: (data, index, tr) => {
                 return `
                     <div class="text-primary-custom text-capitalize" style="width:200px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ?? '...'}</span>
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ?? '__'}</span>
                     </div>
                 `;
             }

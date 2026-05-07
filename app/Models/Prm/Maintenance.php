@@ -431,16 +431,9 @@ class Maintenance extends VSModel
         $id = $id ?? $this->id;
         $row = DB::table('maintenances')->where('id', $id)->first();
         $space_id = $row->space_id ?? null;
-
         if(!$row) {
             return DV::error('Maintenance not found');
         }
-        // if($row->status_id == 2) {
-        //     return DV::error('Cannot delete maintenance that is In Progress');
-        // }
-        // if($row->status_id == 3) {
-        //     return DV::error('Cannot delete maintenance that is Completed');
-        // }
         $deleted = self::deleteBy(['id' => $id]);
         if ($deleted && $space_id) {
             DB::table('building_spaces')->where('id', $space_id)->update(['maintenance_status_id' => 0]);
