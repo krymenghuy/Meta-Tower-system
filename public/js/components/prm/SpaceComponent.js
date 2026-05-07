@@ -221,7 +221,7 @@ var SpaceComponent = new (function () {
                 },
                 {
                     html: '<span class="ps-2" vslang="titles.Finish Maintenance"></span>',
-                    icon: `<i class="fa-regular fa-square-check fs-5 text-success"></i>`,
+                    icon: `<i class="fa-solid fa-clipboard-check fs-5 text-success"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "finish_maintenance"
                 },
@@ -564,7 +564,7 @@ var SpaceComponent = new (function () {
         }
     };
     mThis.finishMaintenance = (id, menulink) => {
-        cv_interact.confirm("Mark this maintenance as finished (Completed)?", { transTitle: "Finish Maintenance", context: "confirm", confirmButtonText: "Finish" }, (e) => {
+        cv_interact.confirm("Finish this maintenance?", { transTitle: "Finish Maintenance", context: "confirm", confirmButtonText: "Finish" }, (e) => {
             if (e) {
                 vsapi.call(`${main_view.base_url}/prm/maintenance/finish-by-space`, { space_id: id }, menulink, null).then(res => {
                     if (res.status_code === 200) {

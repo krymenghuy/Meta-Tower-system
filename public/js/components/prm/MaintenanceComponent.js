@@ -74,8 +74,8 @@ var MaintenanceComponent = (() => {
             className: "align-middle",
             data: (data, index, tr) => {
                 return `
-                    <div class="text-prm-custom text-capitalize" style="width:200px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ?? 'N/A'}</span>
+                    <div class="text-prm-custom text-capitalize" style="width:220px;">
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ?? '__'}</span>
                     </div>
                 `;
             }

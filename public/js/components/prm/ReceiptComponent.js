@@ -14,18 +14,6 @@ var ReceiptComponent = new (function() {
 
     mThis.cols = [
         { transTitle: "", className: "align-middle" },
-        // {
-        //     transTitle: "titles.Payment Date",
-        //     className: "align-middle text-nowrap",
-        //     data: data => {
-        //         const date = data.receipt_date;
-        //         return `
-        //             <div class="d-flex flex-column">
-        //                 ${date}
-        //             </div>
-        //         `;
-        //     }
-        // },
         {
             transTitle: "titles.Receipt No",
             className: "align-middle text-nowrap",
@@ -51,6 +39,18 @@ var ReceiptComponent = new (function() {
                 return `
                     <div class="d-flex flex-column ">
                         ${code}
+                    </div>
+                `;
+            }
+        },
+                {
+            transTitle: "titles.Payment Date",
+            className: "align-middle text-nowrap",
+            data: data => {
+                const date = data.receipt_date;
+                return `
+                    <div class="d-flex flex-column">
+                        ${date}
                     </div>
                 `;
             }

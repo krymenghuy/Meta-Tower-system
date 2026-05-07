@@ -158,7 +158,7 @@ var InvoiceComponent = (() => {
                 return `
                     <div class="text-primary-custom" style="width:200px;">
                         <span class="text-wrap text-break" style ="word-break:break-word;">${data.general_remark ??
-                            "..."}</span>
+                            "__"}</span>
                     </div>
                 `;
             }
@@ -370,7 +370,7 @@ var InvoiceComponent = (() => {
                     <td class="text-end text-danger">${getDiscountDisplay(
                         item
                     )}</td>
-                    <td class="text-end text-info">${taxAmount}%</td>
+                    <td class="text-center text-info">${taxAmount}%</td>
                     <td class="text-end fw-bold">${currency}${total.toLocaleString(
                     "en-US",
                     { minimumFractionDigits: 2 }
@@ -2294,7 +2294,9 @@ const InvoiceDialog = (() => {
             },
 
             onPrepareForm: (me, data) => {
-                availableItem = data.services || [];
+                // availableItem = (data.services || []);
+                availableItem = (data.services || []).filter(s => s.type == 0);
+                // console.log("Available services for invoice:", availableItem);
                 me._selectedTenantId = null;
                 me._tenantData = null;
                 me._tenantSpaces = [];
