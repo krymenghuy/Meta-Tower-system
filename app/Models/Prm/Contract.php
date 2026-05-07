@@ -31,42 +31,35 @@ class Contract
         'tenant_id'        => '1|number|exists=tenants.id',
         'legal_name'       => '0|string|0-100',
         'business_type_id' => '1|number|exists=business_types.id',
+        'space_id'         => '1|number|exists=building_spaces.id|text=Please select a valid unit code',
+        'deposit'          => '1|number|text=Deposit is required',
+        'start_date'       => '1|date|text=Please enter a valid contract start date.',
+        'end_date'         => '1|date|text=Please enter a valid contract end date.',
         'space_type_id'    => '1|number|exists=space_types.id',
         'status_id'        => '1|number|default = 1',
-        'space_id'         => '1|number|exists=building_spaces.id',
         'sqm_size'         => '0|number',
         'price'            => '0|number',
         'price_type'       => '0|string|default=sqm',
-        'start_date'       => '1|date',
-        'end_date'         => '1|date',
-        'deposit'          => '0|number',
         'deposit_remarks'  => '0|string|0-255',
         'remarks'          => '0|string|0-255',
     ];
-
     $legal_name_char = ['@', ',', '.', '#'];
-
     $res = DBX::validateObject($arr, $v_rule, 1, ['legal_name' => $legal_name_char], $ss->lang, 0, null);
     if ($res->error) return DV::error($res->error);
-
     $inputs = $res->values;
-
-   $start = strtotime($inputs['start_date']);
+    $start = strtotime($inputs['start_date']);
     $end   = strtotime($inputs['end_date']);
-
     if ($end <= $start) {
         return DV::error('End date must be after start date.');
     }
-
     $minEnd = strtotime('-1 day', strtotime('+1 month', $start));
     $startDay = date('d', $start);
     $calcDay  = date('d', strtotime('+1 month', $start));
-
     if ($startDay != $calcDay) {
         $minEnd = strtotime('-1 day', strtotime(date('Y-m-t', strtotime('+1 month', $start))));
     }
     if ($end < $minEnd) {
-        return DV::error('Contract must be at least 1 calendar month.');
+        return DV::error('Contract validity​​​ must be at least 1 month.');
     }
     $space_id  = $inputs['space_id'] ?? null;
     $tenant_id = $inputs['tenant_id'] ?? null;

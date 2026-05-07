@@ -28,7 +28,7 @@ class Building //extends Model
         $subs_id = $ss->subs_id ?? getCurrentSubsId(true);
 
         $v_rule = [
-            'name' => '1|string|0-255|text=Building name is required',
+            'name' => '1|string|0-50|text=Name is required',
             'total_floor' => '1|number|text=Total floor is required',
             'total_area' => '1|number|min=0|text=Total area is required',
             'total_space' => '0|number',
@@ -383,7 +383,7 @@ class Building //extends Model
         ->max('floor_id');
 
     if ($floor->floor_id != $maxFloor) {
-        return DV::error('Cannot delete this floor. Please delete the highest floor first.');
+        return DV::error('Cannot delete this floor. Delete the top floor first.');
     }
     $check_space = DB::table('building_spaces')
         ->where('building_id', $floor->building_id)
