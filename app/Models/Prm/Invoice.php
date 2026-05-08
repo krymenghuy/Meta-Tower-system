@@ -555,7 +555,12 @@ class Invoice extends VSModel
                 ")
             )
             ->get();
-
+            foreach($header->items as $i){
+                $i = setOfficialDates($i, ['end_date', 'start_date'], [], []);
+            }
+       if($header){
+                setOfficialDates($header, ['due_date', 'start_date'], [], []);
+            }
         return $header;
     }
 

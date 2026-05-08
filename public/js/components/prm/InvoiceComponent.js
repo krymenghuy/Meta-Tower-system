@@ -1911,36 +1911,60 @@ const InvoiceDialog = (() => {
                     columns: [
                         {
                             name: "item_id",
-                            displayType: "hidden",
+                            displayType: "text",
                             readOnly: true,
-                            width: "20px"
+                            width: "2px",
                         },
                         {
-                            name: "item_name",
+                            name: "remarks",
                             transTitle: "titles.Item",
                             displayType: "text",
                             dataType: "string",
                             readOnly: true,
-                            className: "col-item-name"
+                            className: "small col-item-name",
+                            width: "250px"
                         },
+                        // {
+                        //     name: "type",
+                        //     transTitle: "titles.Type",
+                        //     dataType: "text",
+                        //     readOnly: true,
+                        //     displayType: "hidden"
+                        // },
+                        // {
+                        //     name: "remarks",
+                        //     transTitle: "titles.Remarks",
+                        //     dataType: "string",
+                        //     readOnly: true
+                        // },
+                       
+                        // {
+                        //     name: "unit_type",
+                        //     transTitle: "titles.Charge As",
+                        //     dataType: "text",
+                        //     readOnly: true,
+                        //     defaultValue: "-"
+                        // },
                         {
-                            name: "type",
-                            transTitle: "titles.Type",
+                            name: "start_date",
+                            transTitle: "titles.Start Date",
                             dataType: "text",
                             readOnly: true,
-                            displayType: "hidden"
+                            width: "150px"
                         },
                         {
-                            name: "remarks",
-                            transTitle: "titles.Remarks",
-                            dataType: "string",
-                            readOnly: true
+                            name: "end_date",
+                            transTitle: "titles.End Date",
+                            dataType: "text",
+                            readOnly: true,
+                            width: "150px"
                         },
-                        {
+                         {
                             name: "qty",
-                            transTitle: "titles.Unit Used",
+                            transTitle: "titles.QTY",
                             dataType: "number",
-                            readOnly: true
+                            readOnly: true,
+                            className: "text-start",
                         },
                         {
                             name: "price",
@@ -1950,38 +1974,20 @@ const InvoiceDialog = (() => {
                             isNumeric: true
                         },
                         {
-                            name: "unit_type",
-                            transTitle: "titles.Charge As",
-                            dataType: "text",
-                            readOnly: true,
-                            defaultValue: "-"
-                        },
-                        {
-                            name: "start_date",
-                            transTitle: "titles.Start Date",
-                            dataType: "text",
-                            readOnly: true
-                        },
-                        {
-                            name: "end_date",
-                            transTitle: "titles.End Date",
-                            dataType: "text",
-                            readOnly: true
-                        },
-                        {
                             name: "discount",
                             transTitle: "titles.Disc",
                             isDiscount: true,
                             discountType: ["percent", "amount"],
                             defaultDiscountType: "percent",
                             discountBeforeTax: true,
-                            readOnly: true
+                            readOnly: true,
+                            width: "200px"
                         },
                         {
                             name: "tax_rate",
                             transTitle: "titles.Tax %",
                             dataType: "number",
-                            readOnly: true
+                            readOnly: false
                         },
                         {
                             name: "total",
@@ -2002,8 +2008,8 @@ const InvoiceDialog = (() => {
 
                     totalSummary: {
                         container: me.controls.div_invoice_summary,
-                        showTax: false,
-                        allowDiscount: false,
+                        showTax: true,
+                        allowDiscount: true,
                         discountBeforeTax: false,
                         discountTypeDefault: "percent",
                         currency: "USD"
@@ -2017,7 +2023,16 @@ const InvoiceDialog = (() => {
                         qty: "positive",
                         price: "positive"
                     },
+                    itemRendered:(me,tr,data,isLoading)=>{
+                        tr.dataset.remarks = data.remarks;
+                        console.log(333,tr.dataset.remarks);
 
+                        // me.setRowMeta(tr, {
+                        //     item_id:data.item_id,
+                        //     remark:data.remarks
+                        // })
+
+                    },
                     onItemChange: (rowId, item, fieldName, td, tr) => {
                         if (fieldName === "item_id") {
                             const selectedService = availableItem.find(
@@ -2121,7 +2136,11 @@ const InvoiceDialog = (() => {
                 me.searchTenant.reset("");
                 me.saveData = () => {
                     const header = me.getData();
-                    const items = me.itemsView.getItems(); // Retrieves all row data
+                    const items = me.itemsView.getItems({
+                        dataset:["remarks"]
+                    }); // Retrieves all row data
+                    console.log(5555,items);
+                    
                     const totals = me.itemsView.getCurrentTotals?.() || {};
 
                     if (me._selectedTenantId) {
@@ -2328,17 +2347,7 @@ const InvoiceDialog = (() => {
                             const detail = res.data || {};
                             console.log("invoice detail:", detail);
 
-                            // ── due_date ──
-                            const raw = (detail.due_date || "").trim();
-                            if (raw) {
-                                const d = new Date(raw);
-                                if (!isNaN(d.getTime())) {
-                                    const y = d.getFullYear();
-                                    const m = String(d.getMonth() + 1).padStart(2, "0");
-                                    const day = String(d.getDate()).padStart(2, "0");
-                                    me.controls.due_date.value = `${y}-${m}-${day}`;
-                                }
-                            }
+                            me.controls.due_date.value = detail.due_date;
                             if (me.controls.general_remark) {
                                 me.controls.general_remark.value = detail.general_remark || "";
                             }
