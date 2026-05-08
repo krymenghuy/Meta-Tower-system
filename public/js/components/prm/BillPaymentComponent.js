@@ -951,11 +951,11 @@ const BillPaymentDialog = (() => {
                                   ) || 0
                                 : 0;
 
-                            if (totalInput <= 0) {
-                                return cv_interact.error(
-                                    "Please enter a payment amount.",
-                                );
-                            }
+                            // if (totalInput <= 0) {
+                            //     return cv_interact.error(
+                            //         "Please enter a payment amount.",
+                            //     );
+                            // }
                             vsapi
                                 .call(
                                     `${main_view.base_url}/prm/bill-payment/save`,

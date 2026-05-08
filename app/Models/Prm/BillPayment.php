@@ -143,6 +143,7 @@ class BillPayment
     //         return DV::error('Failed to save payment. Please check logs.');
     //     }
     // }
+
     public function savePayment($data, $ss = null)
     {
         $ss = $ss ?? $this->userInfo;
@@ -370,13 +371,13 @@ class BillPayment
         $query->selectRaw("
             bp.id, bp.bill_id, b.bill_number, v.name as vendor_name,
             b.expense_type_id, ex.name as expense_type_name,
-            bp.payment_date, bpb.amount, bp.payer,
-            b.ref_no, bp.currency_code, bp.note,
+            bp.payment_date, bp.total_amount as amount, bp.payer,
+            b.ref_no, bp.currency_code, bp.note as remark,
             b.total_amount, b.paid_amount, b.balance,b.due_date,
             bp.status_id, ps.name as payment_status,
-            bpb.method as payment_method,
-            bp.create_user, bp.update_user, bp.created_at, bp.updated_at
-        ")->orderBy('bp.id', 'desc');
+            bp.create_user, bp.update_user, bp.created_at, bp.updated_at,
+            GROUP_CONCAT(CONCAT(bpb.method, ' ', bpb.amount, '\$') ORDER BY bpb.amount SEPARATOR ', ') AS payment_method
+        ")->groupBy('bp.id')->orderBy('bp.id', 'desc');
 
 
         $count = (clone $query)->count('bp.id');
@@ -442,7 +443,7 @@ class BillPayment
                 DB::table('bill_payments')
                     ->where('bill_id', $bill_id)
                     ->where('status_id', 1)
-                    ->sum('amount')
+                    ->sum('total_amount')
             );
 
             $total     = floatval($bill->total_amount);
@@ -457,6 +458,8 @@ class BillPayment
                 'updated_at'  => getNowTime(),
             ]);
 
+            DB::table('bill_payment_breakdowns')->where('bill_payment_id', $pay_id)->delete();
+
             DB::commit();
             return DV::depends(1, ['action' => 'deleted']);
         } catch (Exception $e) {
@@ -466,18 +469,77 @@ class BillPayment
         }
     }
 
+    // public function cancelPayment($d, $ss = null)
+    // {
+    //     $ss = $ss ?? $this->userInfo;
+
+    //     $id             = $d->id;
+
+    //     $paid = DB::table('bill_payments as bp')
+    //         ->where('bp.id', $id)
+    //         ->where('bp.status_id', 1)
+    //         ->selectRaw('bp.bill_id, bp.total_amount')
+    //         ->first();
+
+    //     if (!$paid) return DV::error('Payment record not found or already cancelled.');
+
+    //     $bill = DB::table('bills')->where('id', $paid->bill_id)->first();
+    //     if (!$bill) return DV::error('Bill not found.');
+
+    //     DB::beginTransaction();
+    //     try {
+    //         DB::table('bill_payments')
+    //             ->where('id', $id)
+    //             ->update([
+    //                 'status_id' => 2,
+    //                 'note' => $d->note ?? null,
+    //                 'updated_at' => getNowTime(),
+    //             ]);
+
+    //         $total_paid = floatval(
+    //             DB::table('bill_payment_breakdowns as bpb')
+    //                 ->where('bpb.bill_id', $paid->bill_id)
+    //                 ->where('status_id', 1)
+    //                 ->join('bill_payments as bp', 'bpb.bill_payment_id', 'bp.id')
+    //                 ->sum('total_amount')
+    //         );
+
+    //         $total     = floatval($bill->total_amount);
+    //         $balance   = max(0, $total - $total_paid);
+    //         $status_id = $total_paid <= 0 ? 1 : ($total_paid >= $total ? 2 : 3);
+
+    //         // Step 3: Update bill
+    //         $cancel = DB::table('bills')->where('id', $paid->bill_id)->update([
+    //             'paid_amount' => $total_paid,
+    //             'balance'     => $balance,
+    //             'status_id'   => $status_id,
+    //             'update_user' => $ss->full_name,
+    //             'updated_at'  => getNowTime(),
+    //         ]);
+
+    //         // CashAccount::rollBackTranxByBillPayment($id, $ss);
+
+    //         DB::commit();
+    //         return DV::depends($cancel, 'Cancelled', 'Something went wrong or bill not found.');
+    //     } catch (Exception $e) {
+    //         DB::rollBack();
+    //         Log::error('BillPayment::cancelPayment Error: ' . $e->getMessage());
+    //         Log::error($e->getTraceAsString());
+    //         return DV::error('Something went wrong on server side');
+    //     }
+    // }
+
     public function cancelPayment($d, $ss = null)
     {
         $ss = $ss ?? $this->userInfo;
 
         $id             = $d->id;
 
-        $paid = DB::table('bill_payment_breakdowns as bpb')
-            ->where('bp.id', $id)
+        $paid = DB::table('bill_payments')
+            ->where('id', $id)
             ->where('status_id', 1)
             // ->where('branch_id', $ss->branch_id)
             ->selectRaw('bill_id, total_amount')
-            ->join('bill_payments as bp', 'bpb.bill_payment_id', 'bp.id')
             ->first();
 
         if (!$paid) return DV::error('Payment record not found or already cancelled.');
@@ -487,20 +549,16 @@ class BillPayment
 
         DB::beginTransaction();
         try {
-            DB::table('bill_payment_breakdowns as bpb')
-                ->where('bp.id', $id)->join('bill_payments as bp', 'bpb.bill_payment_id', 'bp.id')
-                ->update([
-
-                    'status_id' => 2,
-                    'note' => $d->note ?? null,
-                    'updated_at' => getNowTime(),
-                ]);
+            DB::table('bill_payments')->where('id', $id)->update([
+                'status_id' => 2,
+                'note' => $d->note ?? null,
+                'updated_at' => getNowTime(),
+            ]);
 
             $total_paid = floatval(
-                DB::table('bill_payment_breakdowns as bpb')
-                    ->where('bp.bill_id', $paid->bill_id)
+                DB::table('bill_payments')
+                    ->where('bill_id', $paid->bill_id)
                     ->where('status_id', 1)
-                    ->join('bill_payments as bp', 'bpb.bill_payment_id', 'bp.id')
                     ->sum('total_amount')
             );
 
