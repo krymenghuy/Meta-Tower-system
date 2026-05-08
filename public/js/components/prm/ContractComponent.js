@@ -830,12 +830,12 @@ const ContractDialog = (() => {
                 </div>
                 <div class="col-12">
                     <div class="p-3 bg-white border rounded shadow-sm">
-                        <h6 class="mb-3 text-primary">Unit Details</h6>
+                        <h6 class="mb-3 text-golden">Unit Details</h6>
                         <div class="row g-3">
                             <div class="col-6">
                                 <div class="vs-material-field">
                                     <input type="text" name="space_name" class="data-input form-control" data-field="space_name" placeholder=" " />
-                                    <label>Unit Type</label>
+                                    <label>Type</label>
                                 </div>
                             </div>
                             <div class="col-6">

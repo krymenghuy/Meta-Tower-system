@@ -348,11 +348,6 @@ class GeneralSettings //extends Model
     {
         return DB::table('amenity_statuses')->selectRaw('id,name as amenity_status')->get();
     }
-    // static function options_amenity($ss)
-    // {
-    //     return DB::table('amenities')->selectRaw('id,name AS amenity,code as amenity_code, max_capacity')->get();
-    // }
-
     static function options_amenity($ss)
 {
     return DB::table('amenities')
@@ -522,18 +517,18 @@ static function options_maintenance_amenity($ss)
     /** Join + columns shared by options_building_space and options_building_space_rows_by_ids. */
     private static function buildingSpaceOptionRowsBaseQuery()
     {
-        return DB::table('building_spaces')
-            ->join('space_types as st', 'st.id', '=', 'building_spaces.space_type_id')
+        return DB::table('building_spaces as bs')
+            ->join('space_types as st', 'st.id', '=', 'bs.space_type_id')
             ->selectRaw('
-                building_spaces.id,
-                building_spaces.code,
-                building_spaces.code as floor_id,
-                building_spaces.building_id,
-                building_spaces.space_type_id,
+                bs.id,
+                bs.code,
+                bs.code as floor_id,
+                bs.building_id,
+                bs.space_type_id,
                 st.name as space_type,
-                building_spaces.sqm_size,
-                building_spaces.price_type,
-                building_spaces.price
+                bs.sqm_size,
+                bs.price_type,
+                bs.price
             ');
     }
 
@@ -541,22 +536,22 @@ static function options_maintenance_amenity($ss)
     {
         $query = self::buildingSpaceOptionRowsBaseQuery()
             ->where(function ($q) use ($include_space_id) {
-                $q->where('building_spaces.status_id', 1); // available
+                $q->where('bs.status_id', 1); // available
                 if (!empty($include_space_id)) {
-                    $q->orWhere('building_spaces.id', $include_space_id);
+                    $q->orWhere('bs.id', $include_space_id);
                 }
             });
         if ($exclude_under_maintenance) {
             $query->where(function ($q) use ($include_space_id) {
-                $q->where('building_spaces.maintenance_status_id', 0)
-                    ->orWhereNull('building_spaces.maintenance_status_id');
+                $q->where('bs.maintenance_status_id', 0)
+                    ->orWhereNull('bs.maintenance_status_id');
                 if (!empty($include_space_id)) {
-                    $q->orWhere('building_spaces.id', $include_space_id);
+                    $q->orWhere('bs.id', $include_space_id);
                 }
             });
         }
 
-        return $query->orderBy('building_spaces.code')->get();
+        return $query->orderBy('bs.code')->get();
     }
 
     /**
@@ -571,8 +566,8 @@ static function options_maintenance_amenity($ss)
         }
 
         return self::buildingSpaceOptionRowsBaseQuery()
-            ->whereIn('building_spaces.id', $ids)
-            ->orderBy('building_spaces.code')
+            ->whereIn('bs.id', $ids)
+            ->orderBy('bs.code')
             ->get();
     }
 
