@@ -376,10 +376,6 @@ var ContractComponent = new (function () {
             }).join('');
             renewalTableHtml = `
                     <div class="card  shadow-sm overflow-hidden">
-                        <div class="card-header bg-transparent border-bottom py-2 px-3 d-flex align-items-center gap-2">
-                            <h5 class="mb-0 fw-semibold text-dark">Renewal history</h5>
-                            <span class="badge bg-light text-dark border ms-auto">${renewalsList.length} ${renewalsList.length === 1 ? 'renewal' : 'renewals'}</span>
-                        </div>
                         <div class="card-body p-0">
                             <div class="table-responsive ">
                                 <table class="table table-hover table-sm mb-0 align-middle table--dropdown">
