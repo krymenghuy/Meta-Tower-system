@@ -82,19 +82,19 @@ class Item //extends Model
         if ($item_category_id) {
             $str_moreWhere .= ' AND i.category_id =' . $item_category_id;
         }
-
-        $updated_at = DBX::formatTime('i.updated_at', 'updated_at');
-
-
         $query = DB::table('items as i')
             ->join('item_categories as ic', 'ic.id', 'i.category_id')
             ->whereRaw($str_search)
             ->whereRaw($str_moreWhere)
-            ->selectRaw("i.id, i.name, i.code, i.unit, i.category_id, ic.name as category_name,i.update_user,$updated_at")
-            ->orderBy('i.id', 'desc');
+            ->selectRaw("i.id, i.name, i.code, i.unit, i.category_id, ic.name as category_name,i.update_user,i.updated_at")
+            ->orderBy('i.id', 'desc')
+            ->orderBy('i.created_at', 'desc');
         $clone_query = clone $query;
         $count = $clone_query->count('i.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
+        foreach ($rows as $row) {
+            setOfficialDates($row, [''],['updated_at'],['']);
+        }
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
 
 

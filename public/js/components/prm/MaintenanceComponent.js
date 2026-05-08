@@ -33,7 +33,7 @@ var MaintenanceComponent = (() => {
         },
         {
             transTitle: "titles.Schedule Date",
-            className: "align-middle text-center" ,
+            className: "align-middle" ,
             data: (data) => {
 
                 const to12h = (t) => {
@@ -58,7 +58,7 @@ var MaintenanceComponent = (() => {
                 const same = s.d === e.d;
 
                 return `
-                <div class="text-center">
+                <div class="text-start">
                     <div class="fw-medium text-prm-custom">
                         ${same ? s.d : `${s.d} <i class="fa fa-arrow-right mx-1"></i> ${e.d}`}
                     </div>
@@ -71,18 +71,18 @@ var MaintenanceComponent = (() => {
         },
         {
             transTitle: "titles.Remark",
-            className: "align-middle text-center",
+            className: "align-middle",
             data: (data, index, tr) => {
                 return `
                     <div class="text-prm-custom text-capitalize" style="width:220px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ?? 'N/A'}</span>
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ?? '__'}</span>
                     </div>
                 `;
             }
         },
         {
             transTitle: "titles.Status",
-            className: "align-middle text-center",
+            className: "align-middle",
             data: (data) => {
                 const statusId = parseInt(data.effective_status_id ?? data.status_id, 10);
                 const map = {
@@ -216,18 +216,17 @@ var MaintenanceComponent = (() => {
             cssClass: "bg-white shadow",
             menus: [
                 { html: '<span class="ps-2" vslang="titles.Modify"></span>', icon: '<i class="fa-regular fa-edit fs-5 text-warning"></i>', cssClass: "border-bottom pb-2", name: "modify" },
-                { html: '<span class="ps-2" vslang="titles.Cancel"></span>', icon: '<i class="fa-regular fa-rectangle-xmark fs-5 text-danger-emphasis"></i>', cssClass: "border-bottom pb-2", name: "cancel_maintenance" },
+                { html: '<span class="ps-2" vslang="titles.Cancel"></span>', icon: '<i class="fa-solid fa-square-xmark fs-5 text-danger"></i>', cssClass: "border-bottom pb-2", name: "cancel_maintenance" },
                 { html: '<span class="ps-2" vslang="titles.Delete"></span>', icon: '<i class="fa-regular fa-trash-can fs-5 text-danger"></i>', cssClass: "border-bottom pb-2", name: "delete" },
                 { html: '<span class="ps-2" vslang="titles.Finish"></span>', icon: '<i class="fa-solid fa-clipboard-check fs-5 text-success"></i>', cssClass: "border-bottom pb-2", name: "finish_maintenance" },
             ],
             onShow: (me, container) => {
                 const menu = me.getActiveMenus(container);
-                const status_id = parseInt(container.dataset.statusid, 10) || 0;
-                menu.finish_maintenance.style.display = status_id === 2 ? 'block' : 'none';
-                // Planned (1): allow delete before work starts; Completed (3): allow cleanup of history row.
-                menu.delete.style.display = (status_id === 1 || status_id === 3) ? 'block' : 'none';
-                menu.cancel_maintenance.style.display = status_id > 1 ? 'none' : 'block';
+                const status_id = container.dataset.statusid;
                 menu.modify.style.display = 'none';
+                menu.finish_maintenance.style.display = status_id == 2 ? 'block' : 'none';
+                menu.delete.style.display = status_id == 4  ? 'block' : 'none';
+                menu.cancel_maintenance.style.display = status_id == 1 || status_id == 3 ? 'block' : 'none';
 
             },
             onClick: (menuLink, id, name) => {
@@ -322,13 +321,13 @@ const CreateMaintenanceDialog = (() => {
                         <h6 class="text-uppercase text-muted fw-semibold small mb-3 d-flex align-items-center gap-1"><i class="fas fa-map-marker-alt"></i> Location & unit</h6>
                         <div class="row g-3">
                             <div class="col-12 col-sm-6">
-                                <select data-style="material" name="building_id" class="data-input form-control" data-field="building_id" placeholder="Building" required><option value="">Select building</option></select>
+                                <select data-style="material" name="building_id" class="data-input form-control" data-field="building_id" placeholder="Building"></select>
                             </div>
                             <div class="col-12 col-sm-3">
                                 <select data-style="material" name="type_unit" class="data-input form-control" data-field="type_unit" id="_maintenance_type_unit" placeholder="Type unit" required><option value="">Select type</option><option value="space">Space</option><option value="amenity">Amenity</option></select>
                             </div>
                             <div id="_maintenance_unit_space_row" class="col-3" style="display:none;">
-                                <select data-style="material" name="space_id" class="data-input form-control" data-field="space_id" id="_maintenance_space_id" placeholder="Select space"><option value="">Select space</option></select>
+                                <select data-style="material" name="space_id" class="data-input form-control" data-field="space_id" id="_maintenance_space_id" placeholder="Select space"></select>
                             </div>
                             <div id="_maintenance_unit_amenity_row" class="col-3" style="display:none;">
                                 <select data-style="material" name="amenity_id" class="data-input form-control" data-field="amenity_id" placeholder="Select amenity"><option value="">Select amenity</option></select>
@@ -428,69 +427,71 @@ const CreateMaintenanceDialog = (() => {
                     if (me.detail.space_id) me.detail.type_unit = "space";
                     else if (me.detail.amenity_id) me.detail.type_unit = "amenity";
                 }
-               setTimeout(function () {
-                const typeUnit = me.controls?.type_unit;
-                const spaceRow = me.divModal?.querySelector("#_maintenance_unit_space_row");
-                const amenityRow = me.divModal?.querySelector("#_maintenance_unit_amenity_row");
+                setTimeout(function () {
+                    const typeUnit = me.controls?.type_unit;
+                    const spaceRow = me.divModal?.querySelector("#_maintenance_unit_space_row");
+                    const amenityRow = me.divModal?.querySelector("#_maintenance_unit_amenity_row");
 
-                if (typeUnit && me.detail?.type_unit) typeUnit.value = me.detail.type_unit;
-                if (me.detail?.space_id && me.controls?.space_id) me.controls.space_id.value = me.detail.space_id;
-                if (me.detail?.amenity_id && me.controls?.amenity_id) me.controls.amenity_id.value = me.detail.amenity_id;
-                if (me.detail?.building_id && me.controls?.building_id) me.controls.building_id.value = me.detail.building_id;
+                    if (typeUnit && me.detail?.type_unit) typeUnit.value = me.detail.type_unit;
+                    if (me.detail?.space_id && me.controls?.space_id) me.controls.space_id.value = me.detail.space_id;
+                    if (me.detail?.amenity_id && me.controls?.amenity_id) me.controls.amenity_id.value = me.detail.amenity_id;
+                    if (me.detail?.building_id && me.controls?.building_id) me.controls.building_id.value = me.detail.building_id;
 
-                if (spaceRow && amenityRow) {
-                    const val = typeUnit?.value || "";
-                    spaceRow.style.display = val === "space" ? "" : "none";
-                    amenityRow.style.display = val === "amenity" ? "" : "none";
-                }
-
-                const fromSpace = !!me.dataOptions?.space_id;
-                const fromAmenity = !!me.dataOptions?.amenity_id;
-                const lockContext = fromSpace || fromAmenity;
-
-                if (me.controls?.building_id) me.controls.building_id.disabled = lockContext;
-                if (me.controls?.type_unit) me.controls.type_unit.disabled = lockContext;
-                if (me.controls?.space_id) me.controls.space_id.disabled = lockContext;
-                if (me.controls?.amenity_id) me.controls.amenity_id.disabled = lockContext;
-
-                // ✅ helper: convert 12h → 24h
-                const to24h = (time, ampm) => {
-                    if (!time) return "00:00";
-                    let [h, m] = time.split(':').map(Number);
-
-                    if (ampm === 'PM' && h < 12) h += 12;
-                    if (ampm === 'AM' && h === 12) h = 0;
-
-                    return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
-                };
-
-                // ✅ START DATE
-                if (me.detail?.start_date && me.controls?.start_date) {
-                    const s = String(me.detail.start_date).trim().split(/\s+/);
-
-                    me.controls.start_date.value = s[0] || "";
-
-                    if (me.controls.start_time) {
-                        const time = s[1] || "00:00";
-                        const ampm = s[2] || "AM";
-                        me.controls.start_time.value = to24h(time, ampm);
+                    if (spaceRow && amenityRow) {
+                        const val = typeUnit?.value || "";
+                        spaceRow.style.display = val === "space" ? "" : "none";
+                        amenityRow.style.display = val === "amenity" ? "" : "none";
                     }
-                }
 
-                // ✅ END DATE
-                if (me.detail?.end_date && me.controls?.end_date) {
-                    const e = String(me.detail.end_date).trim().split(/\s+/);
+                    const fromSpace = !!me.dataOptions?.space_id;
+                    const fromAmenity = !!me.dataOptions?.amenity_id;
+                    const lockContext = fromSpace || fromAmenity;
+                    console.log(345, lockContext);
+                    
+                    
+                    if (me.controls?.building_id) me.controls.building_id.disabled = lockContext;
+                    if (me.controls?.type_unit) me.controls.type_unit.disabled = lockContext;
+                    if (me.controls?.space_id) me.controls.space_id.disabled = lockContext;
+                    if (me.controls?.amenity_id) me.controls.amenity_id.disabled = lockContext;
 
-                    me.controls.end_date.value = e[0] || "";
+                    // ✅ helper: convert 12h → 24h
+                    const to24h = (time, ampm) => {
+                        if (!time) return "00:00";
+                        let [h, m] = time.split(':').map(Number);
 
-                    if (me.controls.end_time) {
-                        const time = e[1] || "00:00";
-                        const ampm = e[2] || "AM";
-                        me.controls.end_time.value = to24h(time, ampm);
+                        if (ampm === 'PM' && h < 12) h += 12;
+                        if (ampm === 'AM' && h === 12) h = 0;
+
+                        return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+                    };
+
+                    // ✅ START DATE
+                    if (me.detail?.start_date && me.controls?.start_date) {
+                        const s = String(me.detail.start_date).trim().split(/\s+/);
+
+                        me.controls.start_date.value = s[0] || "";
+
+                        if (me.controls.start_time) {
+                            const time = s[1] || "00:00";
+                            const ampm = s[2] || "AM";
+                            me.controls.start_time.value = to24h(time, ampm);
+                        }
                     }
-                }
 
-            }, 0);
+                    // ✅ END DATE
+                    if (me.detail?.end_date && me.controls?.end_date) {
+                        const e = String(me.detail.end_date).trim().split(/\s+/);
+
+                        me.controls.end_date.value = e[0] || "";
+
+                        if (me.controls.end_time) {
+                            const time = e[1] || "00:00";
+                            const ampm = e[2] || "AM";
+                            me.controls.end_time.value = to24h(time, ampm);
+                        }
+                    }
+
+                }, 0);
             },
             buttons: [
                 { label: '<span vslang="buttons.Cancel"></span>', cssClass: "btn btn-secondary", click: (me) => me.hide(false) },

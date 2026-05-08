@@ -32,22 +32,31 @@ var ServiceComponent = (() => {
             }
         },
         {
+            transTitle: "titles.Model",
+            className: "align-middle text-nowrap text-start",
+            data: function (data) {
+                const val = data.type ?? "";
+                const isSubscription = val == 0;
+
+                return isSubscription
+                    ? `<span class="text-prm-custom">
+                        <i class="fa-solid fa-arrows-rotate text-success"></i> Subscription
+                    </span>`
+                    : `<span class="text-prm-custom">
+                        <i class="fa-solid fa-bolt text-warning"></i> Request
+                    </span>`;
+            },
+        },
+        {
             transTitle: "titles.Charge As",
             className: "align-middle text-nowrap",
             data: (data) => {
 
                 const unitMap = {
-                    per_point: "Per Point",
                     per_unit: "Per Unit",
-                    per_job: "Per Job",
-                    per_visit: "Per Visit",
                     one_time: "One Time",
                     hour: "Per Hour",
-                    day: "Per Day",
                     month: "Per Month",
-                    per_m: "Per m",
-                    per_sqm: "Per m²",
-                    per_m3: "Per m³"
                 };
 
                 const label = unitMap[data.unit_type] || "-";
@@ -63,17 +72,10 @@ var ServiceComponent = (() => {
                 const currency = data.currency_code ?? 'USD';
 
                 const unitMap = {
-                    per_point: "Point",
                     per_unit: "Unit",
-                    per_job: "Job",
-                    per_visit: "Visit",
                     one_time: "One Time",
                     hour: "Hour",
-                    day: "Day",
-                    month: "Month",
-                    per_m: "m",
-                    per_sqm: "m²",
-                    per_m3: "m³"
+                    month: "Month"
                 };
 
                 const unit = unitMap[data.unit_type] || '';
@@ -397,10 +399,20 @@ const CreateServicePriceDialog = (() => {
                                     <label>Name</label>
                                 </div>
                             </div>
-                            <div class="col-12">
+                            <div class="col-6">
                                 <select data-style="material" name="service_types" class="data-input form-control" data-field="service_type_id" placeholder="Service Type">
                                 </select>
-                           </div>
+                            </div>
+                            <div class="col-6">
+                                <select data-style="material"
+                                        name="type"
+                                        class="data-input form-control"
+                                        data-field="type"
+                                        placeholder=" Model">
+                                    <option value="0" >Subscription</option>
+                                    <option value="1">Request</option>
+                                </select>
+                            </div>
                             <div class="col-6">
                                 <div class="vs-material-field">
                                     <input data-type="money" name="price" class="data-input inputbox-input form-control" data-field="price" placeholder="" />
@@ -410,13 +422,10 @@ const CreateServicePriceDialog = (() => {
                             <div class="col-6">
                                 <div class="vs-material-field">
                                     <select data-style="material" name="unit_type" class="data-input form-control" data-field="unit_type" placeholder="Unit Type">
-                                        <option value="per_point">Per Point</option>
-                                        <option value="per_unit">Per Unit</option>
-                                        <option value="one_time">One Time</option>
-                                        <option value="hour">Hour</option>
-                                        <option value="per_visit">Per Visit</option>
-                                        <option value="per_sqm">Per m²</option>
-                                        <option value="per_m3">Per m³</option>
+                                    <option value="per_unit">Per Unit</option>
+                                    <option value="one_time">One Time</option>
+                                    <option value="hour">Hour</option>
+                                    <option value="month">Per Month</option>
                                     </select>
                                 </div>
                             </div>

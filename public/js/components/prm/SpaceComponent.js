@@ -190,26 +190,26 @@ var SpaceComponent = new (function () {
             //menuItemClass:"",
             menus: [
                 {
-                    html: '<span class="ps-2 " vslang="titles.Modify Space"></span>',
-                    icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
+                    html: '<span class="ps-2" vslang="titles.Edit Space"></span>',
+                    icon: `<i class="fa-regular fa-pen-to-square fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "edit_space"
                 },
-                     {
-                    html: '<span class="ps-2  " vslang="titles.Delete"></span>',
+                {
+                    html: '<span class="ps-2" vslang="titles.Delete Space"></span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "delete_space"
                 },
                 {
-                    html: '<span class="ps-2" vslang="titles.Booking"></span>',
-                    icon: `<i class="fa-solid fa-bold fs-5 text-info-emphasis"></i>`,
+                    html: '<span class="ps-2" vslang="titles.Create Booking"></span>',
+                    icon: `<i class="fa-regular fa-square-plus fs-5 text-danger-emphasis"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "create_booking"
                 },
                 {
                     html: '<span class="ps-2" vslang="titles.Create Contract"></span>',
-                    icon: `<i class="fa-regular fa-file-lines fs-5 text-success"></i>`,
+                    icon: `<i class="fa-regular fa-file-lines fs-5 text-primary"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "create_contract"
                 },
@@ -220,30 +220,29 @@ var SpaceComponent = new (function () {
                     name: "set_maintenance"
                 },
                 {
-                    html: '<span class="ps-2  " vslang="titles.Finish Maintenance"></span>',
+                    html: '<span class="ps-2" vslang="titles.Finish Maintenance"></span>',
                     icon: `<i class="fa-solid fa-clipboard-check fs-5 text-success"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "finish_maintenance"
                 },
                 {
                     html: '<span class="ps-2" vslang="titles.View Booking"></span>',
-                    icon: `<i class="fa-regular fa-hard-drive fs-5 text-info"></i>`,
+                    icon: `<i class="fa-regular fa-eye fs-5 text-info"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "view_booking"
                 },
                 {
-                    html: '<span class="ps-2" vslang="titles.Modify Booking">Edit Booking</span>',
-                    icon: `<i class="fa-regular fa-pen-to-square fs-5 text-warning"></i>`,
+                    html: '<span class="ps-2" vslang="titles.Modify Booking"></span>',
+                    icon: `<i class="fa-solid fa-pencil fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "edit_booking"
                 },
                 {
-                    html: '<span class="ps-2" vslang="titles.Cancel Booking">Cancel Booking</span>',
-                    icon: `<i class="fa-regular fa-circle-xmark fs-5 text-danger"></i>`,
+                    html: '<span class="ps-2" vslang="titles.Cancel Booking"></span>',
+                    icon: `<i class="fa-solid fa-square-xmark fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "cancel_booking"
-                },
-
+                }
             ],
             // adjustPosition: {
             //     top: -200,
@@ -379,11 +378,8 @@ var SpaceComponent = new (function () {
                 const maintenanceStatusId = Number(d.maintenance_status_id || 0);
                 const maintenanceStatusName = String(d.maintenance_status ?? d.maintenance_status_name ?? '').trim().toLowerCase();
                 const isPlannedMaintenance = maintenanceStatusId === 1 || maintenanceStatusName === 'planned' || maintenanceStatusName === 'upcoming';
-                const maintenanceLabel = isPlannedMaintenance
-                    ? ' <span class="text-warning fw-semibold">(Upcoming Maintenance)</span>'
-                    : (maintenanceStatusId === 2
-                        ? ' <span class="text-warning fw-semibold">(Maintenance)</span>'
-                        : '');
+                const maintenanceLabel = isPlannedMaintenance ? ' <span class="text-warning small fw-semibold">(Upcoming Maintenance)</span>' : (maintenanceStatusId === 2 ? ' <span class="text-warning small fw-semibold">(Maintenance)</span>' : '');
+                const hideAction = isPlannedMaintenance ? 'd-none' : '';
                 html += `
                 <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
                     <div class="unit-card position-relative overflow-hidden h-100" style="background-image:url('${d.bg_image ?? '/assets/images/default/bg-card1.jpg'}');">
@@ -401,7 +397,7 @@ var SpaceComponent = new (function () {
                                     </p>
 
                                 </div>
-                                <span>
+                                <span class="${hideAction}">
                                     <a href="javascript:void(0)" class="btn_space_action" data-id="${d.id}" data-buildingid="${d.building_id}" data-floorid="${d.floor_id}" data-statusid="${d.status_id}" data-maintenanceStatusId="${d.maintenance_status_id}" aria-haspopup="true" aria-expanded="false">
                                         <i class="fa-solid fa-ellipsis-vertical text-primary-custom fs-5"></i>
                                     </a>
@@ -568,7 +564,7 @@ var SpaceComponent = new (function () {
         }
     };
     mThis.finishMaintenance = (id, menulink) => {
-        cv_interact.confirm("Mark this maintenance as finished (Completed)?", { transTitle: "Finish Maintenance", context: "confirm", confirmButtonText: "Finish" }, (e) => {
+        cv_interact.confirm("Finish this maintenance?", { transTitle: "Finish Maintenance", context: "confirm", confirmButtonText: "Finish" }, (e) => {
             if (e) {
                 vsapi.call(`${main_view.base_url}/prm/maintenance/finish-by-space`, { space_id: id }, menulink, null).then(res => {
                     if (res.status_code === 200) {
@@ -762,18 +758,18 @@ const BuildingSpaceDialog = (() => {
                             </div>
                             <div class="col-6">
                                 <div class="vs-material-field">
-                                    <input data-type="number" name="sqm_size" class="data-input  form-control" data-field="sqm_size" placeholder=" " />
+                                    <input type="text" name="sqm_size" class="data-input  form-control" data-field="sqm_size" placeholder=" " />
                                     <label>Size (m²)</label>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="vs-material-field">
-                                    <input data-type="number" name="price" class="data-input form-control" data-field="price" placeholder=" " />
+                                    <input type="text" name="price" class="data-input form-control" data-field="price" placeholder=" " />
                                     <label>Price</label>
                                 </div>
                             </div>
                             <div class="col-6">
-                                <select data-style="material" name="price_type" required placeholder="Price Type" class="data-input form-control" data-field="price_type">
+                                <select data-style="material" name="price_type" placeholder="Price Type" class="data-input form-control" data-field="price_type">
                                     <option value="">Select Price Type</option>
                                     <option value="sqm">Per m²</option>
                                     <option value="total">Whole Room</option>
@@ -786,6 +782,10 @@ const BuildingSpaceDialog = (() => {
                 },
 
                 contentCreated: (me) => {
+
+
+                    applyNumberInput(me.controls.sqm_size);
+                    applyNumberInput(me.controls.price);
 
                 },
                 configSelect: [

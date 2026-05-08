@@ -28,6 +28,7 @@ class Service
             'service_type_id' => '1|number|exists=service_types.id|text=Please select a valid service type',
             'price'           => '1|number|min=0|text=Please enter a valid price',
             'unit_type'       => '0|string|0-50',
+            'type'            => '1|choice|0,1',
             'description'     => '0|string|0-350',
         ];
 
@@ -112,7 +113,7 @@ class Service
             ->join('service_statuses as ss','ss.id','=','s.status_id')
             ->whereRaw($str_search)
             ->whereRaw($str_moreWhere)
-            ->selectRaw("s.id,s.name,s.service_type_id,st.name as service_type,s.unit_type,s.price,s.status_id,ss.name as status,s. description,s.updated_at,s.update_user")->orderBy('s.id','DESC');
+            ->selectRaw("s.id,s.name,s.service_type_id,st.name as service_type,s.unit_type,s.price,s.status_id,ss.name as status,s. description,s.updated_at,s.update_user,s.type")->orderBy('s.id','DESC');
         $clone_query = clone $query;
         $count = $clone_query->count('s.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();

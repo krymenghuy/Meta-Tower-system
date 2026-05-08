@@ -238,7 +238,7 @@ var ReservationComponent = (() => {
                 },
                 {
                     html: '<span class="ps-2">Cancel</span>',
-                    icon: `<i class="fa-solid fa-circle-xmark fs-5 text-danger-emphasis"></i>`,
+                    icon: `<i class="fa-solid fa-square-xmark fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "cancel_reservation",
                 },

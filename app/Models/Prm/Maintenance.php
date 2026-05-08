@@ -367,7 +367,6 @@ class Maintenance extends VSModel
         $id = $d->id ?? $this->id;
         $details = $id ? self::getMaintenanceDetails($id) : null;
 
-        // When creating from Space/Amenity context, request may pass ids so options lists include that row
         // (e.g. space already under maintenance would otherwise be excluded from building_spaces).
         $include_space_id = null;
         if ($details && !empty($details->space_id)) {
@@ -382,7 +381,30 @@ class Maintenance extends VSModel
             $include_amenity_id = $d->amenity_id;
         }
 
-        $building_spaces = GeneralSettings::options_building_space($ss, $include_space_id, true);
+        
+        // We only exclude units already under maintenance, except the selected one (edit/context).
+        $building_spaces = DB::table('building_spaces')
+            ->join('space_types as st', 'st.id', '=', 'building_spaces.space_type_id')
+            ->selectRaw('
+                building_spaces.id,
+                building_spaces.code,
+                building_spaces.code as floor_id,
+                building_spaces.building_id,
+                building_spaces.space_type_id,
+                st.name as space_type,
+                building_spaces.sqm_size,
+                building_spaces.price_type,
+                building_spaces.price
+            ')
+            ->where(function ($q) use ($include_space_id) {
+                $q->where('building_spaces.maintenance_status_id', 0)
+                    ->orWhereNull('building_spaces.maintenance_status_id');
+                if (!empty($include_space_id)) {
+                    $q->orWhere('building_spaces.id', $include_space_id);
+                }
+            })
+            ->orderBy('building_spaces.code')
+            ->get();
 
         $amenities = GeneralSettings::options_maintenance_amenity($ss);
         if (!empty($include_amenity_id)) {
@@ -431,16 +453,9 @@ class Maintenance extends VSModel
         $id = $id ?? $this->id;
         $row = DB::table('maintenances')->where('id', $id)->first();
         $space_id = $row->space_id ?? null;
-
         if(!$row) {
             return DV::error('Maintenance not found');
         }
-        // if($row->status_id == 2) {
-        //     return DV::error('Cannot delete maintenance that is In Progress');
-        // }
-        // if($row->status_id == 3) {
-        //     return DV::error('Cannot delete maintenance that is Completed');
-        // }
         $deleted = self::deleteBy(['id' => $id]);
         if ($deleted && $space_id) {
             DB::table('building_spaces')->where('id', $space_id)->update(['maintenance_status_id' => 0]);

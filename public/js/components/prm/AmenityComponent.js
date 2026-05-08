@@ -213,7 +213,7 @@ var AmenityComponent = (() => {
 
                 {
                     html: '<span class="ps-2" vslang="titles.Modify">Modify</span>',
-                    icon: `<i class="fa-regular fa-edit fs-5 text-primary"></i>`,
+                    icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "edit_amenity",
                 },
@@ -225,7 +225,7 @@ var AmenityComponent = (() => {
                 },
                 {
                     html: '<span class="ps-2" vslang="titles.Maintenance">Maintenance</span>',
-                    icon: `<i class="fa-solid fa-screwdriver-wrench fs-5 text-warning"></i>`,
+                    icon: `<i class="fa-solid fa-screwdriver-wrench fs-5 text-warning-emphasis"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "set_maintenance",
                 },
@@ -243,7 +243,7 @@ var AmenityComponent = (() => {
                 },
                 {
                     html: '<span class="ps-2"  vslang="titles.View Reservation">View Reservation</span>',
-                    icon: `<i class="fa-solid fa-calendar"></i>`,
+                    icon: `<i class="fa-regular fa-eye fs-5 text-info"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "view_reservation",
                 },
@@ -335,7 +335,7 @@ var AmenityComponent = (() => {
 
     mThis.finishMaintenance = (id, menuLink) => {
         cv_interact.confirm(
-            "Mark this maintenance as finished (Completed)?",
+            "Finish this maintenance?",
             {
                 transTitle: "Finish Maintenance",
                 context: "confirm",
@@ -707,21 +707,22 @@ const ActiveReservationDialog = (() => {
             tbody.innerHTML = `
                 <tr>
                     <td colspan="4" class="text-center text-muted py-4">
-                        <i class="fa-regular fa-calendar-xmark fs-4 d-block mb-2 text-muted"></i>
-                        No upcoming or in-progress reservations.
+                        
+                        No data to display
                     </td>
                 </tr>`;
             return;
         }
         tbody.innerHTML = rows.map(r => `
             <tr>
+               
                 <td class="align-middle">
-                    <span class="d-block  fw-bold text-prm-custom">${r.booking_date ?? ''}</span>
-                    <small class="text-muted">${to12h(r.start_time)} – ${to12h(r.end_time)}</small>
+                    <span class="d-block text-prm-custom text-capitalize">${r.tenant_name ?? ''}</span>
+                    <span class="text-muted">${r.phone_number ?? ''}</span>
                 </td>
                 <td class="align-middle">
-                    <span class="d-block fw-bold text-capitalize">${r.tenant_name ?? ''}</span>
-                    <small class="text-muted">${r.phone_number ?? ''}</small>
+                    <span class="d-block text-prm-custom">${r.booking_date ?? ''}</span>
+                    <small class="text-primary">${to12h(r.start_time)} – ${to12h(r.end_time)}</span>
                 </td>
                 <td class="align-middle text-center">${statusBadge(r.status_id, r.status)}</td>
                 <td class="align-middle">
@@ -735,7 +736,7 @@ const ActiveReservationDialog = (() => {
         InputBox.resetInstance('activeReservationView');
 
         InputBox.show({
-            title: 'Active Reservations',
+            title: 'Reservation Details',
             instanceKey: 'activeReservationView',
             context: 'info',
             // confirmButtonText: null,
@@ -746,7 +747,6 @@ const ActiveReservationDialog = (() => {
                 const div = document.createElement('div');
                 div.innerHTML = `
                     <div class="d-flex align-items-center mb-3">
-                        <i class="fa-regular fa-calendar-check text-primary me-2"></i>
                         <span class="badge text-primary border border-primary bg-primary-subtle px-3 py-1 fs-6">
                             ${amenity_name || `Amenity #${amenity_id}`}
                         </span>
@@ -761,9 +761,9 @@ const ActiveReservationDialog = (() => {
                     <div id="_arv_table_wrap" class="d-none">
                         <table class="table table-sm table--white rounded-2 overflow-hidden">
                             <thead class="header-uppercase">
-                                <tr >
-                                    <th>Date / Time</th>
+                                <tr>
                                     <th>Tenant</th>
+                                    <th>Schedule Date</th>
                                     <th class="text-center">Status</th>
                                     <th>Remark</th>
                                 </tr>

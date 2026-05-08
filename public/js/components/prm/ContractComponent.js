@@ -108,7 +108,7 @@ var ContractComponent = new (function () {
             data: (data, index, tr) => {
                 return `
                     <div class="text-primary-prm text-capitalize" style="width:200px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ?? 'N/A'}</span>
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ?? '__'}</span>
                     </div>
                 `;
             }
@@ -800,18 +800,7 @@ const ContractDialog = (() => {
                                 <label>Legal Name</label>
                             </div>
                         </div>
-                        <div class="col-6">
-                            <div class="vs-material-field">
-                                <input type="text" data-type="date" name="start_date" class="data-input form-control form_input" data-field="start_date" placeholder=" " />
-                                <label>Start Date</label>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="vs-material-field">
-                                <input type="text" data-type="date" name="end_date" class="data-input form-control form_input" data-field="end_date" placeholder=" " />
-                                <label>End Date</label>
-                            </div>
-                        </div>
+                        
                         <div class="col-6">
                             <select data-style="material" placeholder="Business Type" name="business_type_id" class="data-input form-control" data-field="business_type_id"> </select>
                         </div>
@@ -824,11 +813,23 @@ const ContractDialog = (() => {
                                 <label>Deposit</label>
                             </div>
                         </div>
+                        <div class="col-6">
+                            <div class="vs-material-field">
+                                <input type="text" data-type="date" name="start_date" class="data-input form-control form_input" data-field="start_date" placeholder=" " />
+                                <label>Start Date</label>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="vs-material-field">
+                                <input type="text" data-type="date" name="end_date" class="data-input form-control form_input" data-field="end_date" placeholder=" " />
+                                <label>End Date</label>
+                            </div>
+                        </div>
 
                     </div>
                 </div>
                 <div class="col-12">
-                    <div class="p-3 bg-light border rounded shadow-sm">
+                    <div class="p-3 bg-white border rounded shadow-sm">
                         <h6 class="mb-3 text-primary">Unit Details</h6>
                         <div class="row g-3">
                             <div class="col-6">
@@ -1078,14 +1079,13 @@ const ContractDialog = (() => {
                     label: '<span vslang="buttons.Save"></span>',
                     cssClass: 'btn btn-primary',
                     click: (me, btn) => {
-                        // front-end validation: deposit is required
-                        const depositCtrl = me.controls?.deposit;
-                        const depositVal = depositCtrl ? String(depositCtrl.value || "").trim() : "";
-                        if (!depositVal) {
-                            cv_interact.error("Deposit is required.");
-                            if (depositCtrl) depositCtrl.focus();
-                            return;
-                        }
+                        // const depositCtrl = me.controls?.deposit;
+                        // const depositVal = depositCtrl ? String(depositCtrl.value || "").trim() : "";
+                        // if (!depositVal) {
+                        //     cv_interact.error("Deposit is required.");
+                        //     if (depositCtrl) depositCtrl.focus();
+                        //     return;
+                        // }
 
                         const op = me.getData();
                         if (me._createContractSpaceTypeId !== undefined && me._createContractSpaceTypeId !== null) {
