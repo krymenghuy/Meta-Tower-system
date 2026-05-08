@@ -3,14 +3,13 @@
     margin: 0;
     box-sizing: border-box;
     -webkit-user-drag: none;
-    /* font-family: "Source Sans 3", sans-serif; */
-    font-family: 'Inter',  sans-serif;
+    font-family: 'Inter', 'Battambang', sans-serif;
+    /* Improved default settings */
     font-size: 1rem;
-    /* font-family: "Roboto Slab", serif; */
+    /* line-height: 1.5; */
     font-optical-sizing: auto;
     font-style: normal;
-
-
+    /* font-weight: 400; */
 }
 
 
@@ -33,7 +32,6 @@
     cursor: pointer;
     font-size: 13px;
     font-weight: 500;
-    letter-spacing: 0.01em;
     transition: background 0.2s ease, transform 0.2s ease;
 }
 .btnAddNewPrm:hover {
@@ -107,8 +105,8 @@
 
 }
 .text-golden {
-    color: #80714c;
-    font-family: "Marcellus", serif;
+    color: #0C447C;
+    /* font-family: "Marcellus", serif; */
     font-size: 14px;
 }
 
@@ -2123,7 +2121,7 @@ tr.row-selected td {
 .table--white {
     background: #ffffff !important;
     color: #000000 !important;
-    font-size: 14px !important;
+    font-size: 13px !important;
     font-weight: 300 !important;
     text-align: start !important;
     border-radius: 15px;
@@ -2145,7 +2143,7 @@ tr.row-selected td {
     background-color: #c4c4c7;
     font-size: 14px !important;
     font-weight: 500;
-    letter-spacing: 0.02em;
+    /* letter-spacing: 0.02em; */
     padding: 10px 16px !important;
     border: none;
     white-space: nowrap;

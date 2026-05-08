@@ -840,7 +840,7 @@ const InvoiceDialog = (() => {
                             div.innerHTML = `
                                 <div>
                                     <div class="d-flex align-items-center mb-3">
-                                        <span style="font-weight:bold; color:#0C447C; font-size:13px;">Contract Details</span>
+                                        <span style=" color:#0C447C; font-size:13px;">Contract Details</span>
                                         <div style="flex:1; height:1px; background:#e0e0e0;"></div>
                                     </div>
                                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
@@ -857,7 +857,7 @@ const InvoiceDialog = (() => {
 
                                 <div>
                                     <div class="d-flex align-items-center mb-3">
-                                        <span style="font-weight:bold; color:#0C447C; font-size:13px;">Billing Period</span>
+                                        <span style=" color:#0C447C; font-size:13px;">Billing Period</span>
                                         <div style="flex:1; height:1px; background:#e0e0e0;"></div>
                                     </div>
                                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
@@ -874,12 +874,12 @@ const InvoiceDialog = (() => {
 
                                 <div>
                                     <div class="d-flex align-items-center mb-3">
-                                        <span style="font-weight:bold; color:#0C447C; font-size:13px;">Financials</span>
+                                        <span style=" color:#0C447C; font-size:13px;">Financials</span>
                                         <div style="flex:1; height:1px; background:#e0e0e0;"></div>
                                     </div>
                                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
                                         <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                            <input class="data-input form-control bg-light cursor-blocked" data-field="price" name="price" type="text" readonly style="font-weight:bold; color:#0c447c;">
+                                            <input class="data-input form-control bg-light cursor-blocked" data-field="price" name="price" type="text" readonly style=" color:#0c447c;">
                                             <label style="color:#777;">Effective Price ($)</label>
                                         </div>
                                         <div class="material-input outlined" style="margin-bottom: 1rem;">
@@ -1051,7 +1051,7 @@ const InvoiceDialog = (() => {
                             div.innerHTML = `
                                     <div>
                                         <div class="d-flex align-items-center  mb-3">
-                                            <span style="font-weight:bold; color:#0C447C; font-size:13px;">Readings</span>
+                                            <span style=" color:#0C447C; font-size:13px;">Readings</span>
                                             <div style="flex:1; height:1px; background:#e0e0e0;"></div>
                                         </div>
                                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
@@ -1068,7 +1068,7 @@ const InvoiceDialog = (() => {
 
                                     <div>
                                         <div class="d-flex align-items-center  mb-3">
-                                            <span style="font-weight:bold; color:#0C447C; font-size:13px;">Billing Period</span>
+                                            <span style=" color:#0C447C; font-size:13px;">Billing Period</span>
                                             <div style="flex:1; height:1px; background:#e0e0e0;"></div>
                                         </div>
                                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
@@ -1085,12 +1085,12 @@ const InvoiceDialog = (() => {
 
                                     <div>
                                         <div class="d-flex align-items-center mb-3">
-                                            <span style="font-weight:bold; color:#0C447C; font-size:13px;">Calculation</span>
+                                            <span style=" color:#0C447C; font-size:13px;">Calculation</span>
                                             <div style="flex:1; height:1px; background:#e0e0e0;"></div>
                                         </div>
                                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
                                             <div class="material-input outlined" >
-                                                <input class="data-input form-control bg-light cursor-blocked" data-field="units_used" name="units_used" type="text" readonly style="font-weight:bold;">
+                                                <input class="data-input form-control bg-light cursor-blocked" data-field="units_used" name="units_used" type="text" readonly style="">
                                                 <label style="color:#777;">Units Used (kWh)</label>
                                             </div>
                                             <div class="material-input outlined" >
@@ -1104,7 +1104,7 @@ const InvoiceDialog = (() => {
                                         <div class="material-input outlined" >
                                             <input class="data-input form-control cursor-blocked" data-field="total_amount" name="total_amount" type="text" readonly
                                                 style="background-color: #f0f7ff; border-color: #0c447c; color: #0c447c; font-weight: bold; font-size: 1.1em;">
-                                            <label style="color:#0c447c; font-weight:bold;">Total Amount ($)</label>
+                                            <label style="color:#0c447c; ">Total Amount ($)</label>
                                         </div>
                                         <div class="material-input outlined">
                                             <textarea class="data-input form-control" data-field="remark" name="remark" rows="2" placeholder=" "></textarea>
@@ -1283,7 +1283,7 @@ const InvoiceDialog = (() => {
                             div.innerHTML = `
                                     <div>
                                         <div class="d-flex align-items-center gap-2 mb-3">
-                                            <span style="font-weight:bold; color:#0C447C; font-size:13px;">Readings</span>
+                                            <span style=" color:#0C447C; font-size:13px;">Readings</span>
                                             <div style="flex:1; height:1px; background:#e0e0e0;"></div>
                                         </div>
                                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
@@ -1300,7 +1300,7 @@ const InvoiceDialog = (() => {
 
                                     <div>
                                         <div class="d-flex align-items-center gap-2 mb-3">
-                                            <span style="font-weight:bold; color:#0C447C; font-size:13px;">Billing Period</span>
+                                            <span style=" color:#0C447C; font-size:13px;">Billing Period</span>
                                             <div style="flex:1; height:1px; background:#e0e0e0;"></div>
                                         </div>
                                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
@@ -1317,12 +1317,12 @@ const InvoiceDialog = (() => {
 
                                     <div>
                                         <div class="d-flex align-items-center gap-2 mb-3">
-                                            <span style="font-weight:bold; color:#0C447C; font-size:13px;">Calculation</span>
+                                            <span style=" color:#0C447C; font-size:13px;">Calculation</span>
                                             <div style="flex:1; height:1px; background:#e0e0e0;"></div>
                                         </div>
                                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
                                             <div class="material-input outlined">
-                                                <input class="data-input form-control bg-light cursor-blocked" data-field="units_used" name="units_used" type="text" readonly style="font-weight:bold;">
+                                                <input class="data-input form-control bg-light cursor-blocked" data-field="units_used" name="units_used" type="text" readonly style="">
                                                 <label style="color:#777;">Units Used (m³)</label>
                                             </div>
                                             <div class="material-input outlined" >
@@ -1336,7 +1336,7 @@ const InvoiceDialog = (() => {
                                         <div class="material-input outlined">
                                             <input class="data-input form-control cursor-blocked" data-field="total_amount" name="total_amount" type="text" readonly
                                                 style="background-color: #f0f7ff; border-color: #0c447c; color: #0c447c; font-weight: bold; font-size: 1.1em;">
-                                            <label style="color:#0c447c; font-weight:bold;">Total Amount ($)</label>
+                                            <label style="color:#0c447c; ">Total Amount ($)</label>
                                         </div>
                                         <div class="material-input outlined">
                                             <textarea class="data-input form-control" data-field="remark" name="remark" rows="2" placeholder=" "></textarea>
@@ -1532,7 +1532,7 @@ const InvoiceDialog = (() => {
                             div.innerHTML = `
                                     <div>
                                         <div class="d-flex align-items-center  mb-3">
-                                            <span style="font-weight:bold; color:#0C447C; font-size:13px;">Service Selection</span>
+                                            <span style=" color:#0C447C; font-size:13px;">Service Selection</span>
                                             <div style="flex:1; height:1px; background:#e0e0e0;"></div>
                                         </div>
                                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
@@ -1554,7 +1554,7 @@ const InvoiceDialog = (() => {
 
                                     <div>
                                         <div class="d-flex align-items-center  mb-3">
-                                            <span style="font-weight:bold; color:#0C447C; font-size:13px;">Financials</span>
+                                            <span style=" color:#0C447C; font-size:13px;">Financials</span>
                                             <div style="flex:1; height:1px; background:#e0e0e0;"></div>
                                         </div>
                                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
@@ -1724,7 +1724,7 @@ const InvoiceDialog = (() => {
                             div.innerHTML = `
                                     <div>
                                         <div class="d-flex align-items-center mb-3">
-                                            <span style="font-weight:bold; color:#0C447C; font-size:13px;">Request Info</span>
+                                            <span style=" color:#0C447C; font-size:13px;">Request Info</span>
                                             <div style="flex:1; height:1px; background:#e0e0e0;"></div>
                                         </div>
                                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
@@ -1754,7 +1754,7 @@ const InvoiceDialog = (() => {
 
                                     <div>
                                         <div class="d-flex align-items-center mb-3">
-                                            <span style="font-weight:bold; color:#0C447C; font-size:13px;">Financials</span>
+                                            <span style=" color:#0C447C; font-size:13px;">Financials</span>
                                             <div style="flex:1; height:1px; background:#e0e0e0;"></div>
                                         </div>
                                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
@@ -1917,7 +1917,7 @@ const InvoiceDialog = (() => {
                         },
                         {
                             name: "item_name",
-                            transTitle: "titles.Item",
+                            transTitle: "titles.Items",
                             displayType: "text",
                             dataType: "string",
                             readOnly: true,
@@ -1932,7 +1932,7 @@ const InvoiceDialog = (() => {
                         },
                         {
                             name: "remarks",
-                            transTitle: "titles.Remarks",
+                            transTitle: "titles.Remark",
                             dataType: "string",
                             readOnly: true
                         },
@@ -1970,7 +1970,7 @@ const InvoiceDialog = (() => {
                         },
                         {
                             name: "discount",
-                            transTitle: "titles.Disc",
+                            transTitle: "titles.Discount",
                             isDiscount: true,
                             discountType: ["percent", "amount"],
                             defaultDiscountType: "percent",
@@ -1979,7 +1979,7 @@ const InvoiceDialog = (() => {
                         },
                         {
                             name: "tax_rate",
-                            transTitle: "titles.Tax %",
+                            transTitle: "titles.Tax",
                             dataType: "number",
                             readOnly: true
                         },
@@ -2295,7 +2295,7 @@ const InvoiceDialog = (() => {
 
             onPrepareForm: (me, data) => {
                 // availableItem = (data.services || []);
-                availableItem = (data.services || []).filter(s => s.type == 0);
+                availableItem = (data.services || []).filter(s => s.type == 1);
                 // console.log("Available services for invoice:", availableItem);
                 me._selectedTenantId = null;
                 me._tenantData = null;
@@ -2534,9 +2534,9 @@ const ReceiveDialog = (() => {
 
                         <div>
                             <div class="d-flex align-items-center gap-2 mb-3">
-                                <span class="payment-badge" style="color:#27500A;">Cash</span>
+                                <span class="payment-badge" style="color:#0C447C;">Cash</span>
                                 <div style="flex:1;height:1px;background:#dee2e6;"></div>
-                                <span style="font-size:11px;color:#27500A;">Entered: <strong id="c_e" style="color:#212529;">—</strong></span>
+                                <span style="font-size:11px;color:#0C447C;">Entered: <strong id="c_e" style="color:#212529;">—</strong></span>
                             </div>
                             <div style="display:flex;flex-direction:row;gap:8px;flex-wrap:wrap;margin-bottom: 0.5rem;">
                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
@@ -2549,7 +2549,7 @@ const ReceiveDialog = (() => {
 
                         <div>
                             <div class="d-flex align-items-center gap-2 mb-3">
-                                <span class="payment-badge" style=";color:#0C447C;">Bank Transfer</span>
+                                <span class="payment-badge" style="color:#0C447C;">Bank Transfer</span>
                                 <div style="flex:1;height:1px;background:#dee2e6;"></div>
                                 <span style="font-size:11px;color:#0C447C;">Entered: <strong id="b_e" style="color:#212529;">—</strong></span>
                             </div>
@@ -2572,9 +2572,9 @@ const ReceiveDialog = (() => {
 
                         <div>
                             <div class="d-flex align-items-center gap-2 mb-3">
-                                <span class="payment-badge" style="color:#3C3489;">Card</span>
+                                <span class="payment-badge" style="color:#0C447C;">Card</span>
                                 <div style="flex:1;height:1px;background:#dee2e6;"></div>
-                                <span style="font-size:11px;color:#3C3489;">Entered: <strong id="ca_e" style="color:#212529;">—</strong></span>
+                                <span style="font-size:11px;color:#0C447C;">Entered: <strong id="ca_e" style="color:#212529;">—</strong></span>
                             </div>
                             <div style="display:flex;flex-direction:row;gap:8px;flex-wrap:wrap;margin-bottom: 0.5rem;">
                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
@@ -2600,9 +2600,9 @@ const ReceiveDialog = (() => {
 
                         <div>
                             <div class="d-flex align-items-center gap-2 mb-3">
-                                <span class="payment-badge" style="color:#633806;">Cheque</span>
+                                <span class="payment-badge" style="color:#0C447C;">Cheque</span>
                                 <div style="flex:1;height:1px;background:#dee2e6;"></div>
-                                <span style="font-size:11px;color:#633806;">Entered: <strong id="ch_e" style="color:#212529;">—</strong></span>
+                                <span style="font-size:11px;color:#0C447C;">Entered: <strong id="ch_e" style="color:#212529;">—</strong></span>
                             </div>
                             <div style="display:flex;flex-direction:row;gap:8px;flex-wrap:wrap;margin-bottom: 0.5rem;">
                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
