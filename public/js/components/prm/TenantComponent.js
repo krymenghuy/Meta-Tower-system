@@ -1069,9 +1069,7 @@ var TenantComponent = new (function () {
                     const rowStart = mThis._escapeHtml(r.renewal_start_date ?? "—");
                     const rowEnd = mThis._escapeHtml(r.renewal_end_date ?? "—");
 
-                    const rowUnitCode = mThis._escapeHtml(
-                        mThis._getUnitCode(r, mThis._getUnitCode(first, "—")),
-                    );
+                    const rowUnitCode = mThis._escapeHtml(mThis._getUnitCode(first, "—"));
                     const currentBadgeHtml = r.is_current
                         ? `<span class="badge text-uppercase rounded-4 text-white ms-1" style="background-color:#0f49bd;">Current</span>`
                         : "";
