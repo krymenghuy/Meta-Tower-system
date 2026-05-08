@@ -275,9 +275,9 @@ var TenantComponent = new (function () {
                 // console.log(123456, status_id);
 
                 // menu.edit_student.style.display = enroll_finalized == 1 ? 'none' : 'block';
-                menu.create_contract.style.display = status_id == 1 ? "block" : "none";
+                menu.create_contract.style.display = status_id == 1 || status_id == 3 ? "block" : "none";
                 menu.service_request.style.display = "none";
-                menu.upload_document.style.display =status_id == 1 || status_id == 2  ? "block" : "none";
+                // menu.upload_document.style.display =status_id == 1 || status_id == 2  ? "block" : "none";
             },
             // adjustPosition: {
             //     top: -200,
