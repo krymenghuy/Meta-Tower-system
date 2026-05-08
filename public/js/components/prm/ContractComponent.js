@@ -357,7 +357,7 @@ var ContractComponent = new (function () {
         };
         let renewalTableHtml = '';
         if (renewalsList.length > 0) {
-            const unitPillClass = 'px-2 py-1 bg-prm-custom text-white rounded font-medium';
+            const unitPillClass = 'px-2 py-1 bg-prm-custom text-white rounded font-medium ';
             const rows = renewalsList.map((r) => {
                 const spaceCode = (r.space_code ?? '').trim() || '—';
                 const unitChanged = currentSpaceCode && spaceCode !== '—' && spaceCode !== currentSpaceCode;
@@ -375,22 +375,18 @@ var ContractComponent = new (function () {
                 </tr>`;
             }).join('');
             renewalTableHtml = `
-                    <div class="card border-0 shadow-sm overflow-hidden">
-                        <div class="card-header bg-transparent border-bottom py-2 px-3 d-flex align-items-center gap-2">
-                            <h5 class="mb-0 fw-semibold text-dark">Renewal history</h5>
-                            <span class="badge bg-light text-dark border ms-auto">${renewalsList.length} ${renewalsList.length === 1 ? 'renewal' : 'renewals'}</span>
-                        </div>
+                    <div class="card  shadow-sm overflow-hidden">
                         <div class="card-body p-0">
-                            <div class="table-responsive">
-                                <table class="table table-hover table-sm mb-0 align-middle">
+                            <div class="table-responsive ">
+                                <table class="table table-hover table-sm mb-0 align-middle table--dropdown">
                                     <thead>
                                         <tr class="table-light">
-                                            <th class="text-nowrap border-0 py-2 px-3">Renewal date</th>
-                                            <th class="text-nowrap border-0 py-2 px-3">Start date</th>
-                                            <th class="text-nowrap border-0 py-2 px-3">End date</th>
-                                            <th class="text-nowrap border-0 py-2 px-3">Unit</th>
-                                            <th class="text-nowrap border-0 py-2 px-3">Remarks</th>
-                                            <th class="text-nowrap border-0 py-2 px-3">Updated by</th>
+                                            <th class="text-nowrap  py-2 px-3">Renewal date</th>
+                                            <th class="text-nowrap  py-2 px-3">Start date</th>
+                                            <th class="text-nowrap  py-2 px-3">End date</th>
+                                            <th class="text-nowrap  py-2 px-3">Unit</th>
+                                            <th class="text-nowrap  py-2 px-3">Remarks</th>
+                                            <th class="text-nowrap  py-2 px-3">Updated by</th>
                                         </tr>
                                     </thead>
                                     <tbody class="border-top">${rows}</tbody>
@@ -401,7 +397,7 @@ var ContractComponent = new (function () {
                 `;
         } else {
             renewalTableHtml = `
-                    <div class="card border-0 shadow-sm">
+                    <div class="card  shadow-sm">
                         <div class="card-body text-center py-4">
                             <span class="rounded-circle d-inline-flex align-items-center justify-content-center bg-light text-muted mb-2" style="width:48px;height:48px;"><i class="fa-solid fa-rotate-right fa-lg"></i></span>
                             <p class="text-muted mb-0">No renewal history for this contract.</p>

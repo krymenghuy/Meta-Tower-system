@@ -72,6 +72,28 @@ class Contract
         return DV::error('This space already has a contract.');
     }
     $created = !$id;
+    if ($created && $space_id && !empty($inputs['start_date']) && !empty($inputs['end_date'])) {
+        $latestRenewal = DB::table('contract_renewals')
+            ->where('space_id', $space_id)
+            ->orderByDesc('start_date')
+            ->select('start_date', 'end_date')
+            ->first();
+
+        if (!empty($latestRenewal?->start_date)) {
+            $newStart = $inputs['start_date'];
+            $newEnd = $inputs['end_date'];
+            $renewStart = $latestRenewal->start_date;
+            $renewEnd = $latestRenewal->end_date ?: $latestRenewal->start_date;
+            $isOverlapRenewal = $newStart <= $renewEnd && $newEnd >= $renewStart;
+
+            if ($newStart > $renewStart) {
+                return DV::error('Start date cannot be later than previous renewal start date for this unit.');
+            }
+            if ($isOverlapRenewal) {
+                return DV::error('Contract period overlaps previous renewal period for this unit.');
+            }
+        }
+    }
     if ($created) {
         $today = date('Y-m-d');
         $isActiveNow = !empty($inputs['start_date']) && $inputs['start_date'] <= $today;
