@@ -51,7 +51,7 @@ class BuildingSpace
             'space_type_id' => '1|number|exists=space_types.id',
             'sqm_size' => '1|number',
             'price' => '1|number',
-            'price_type' => '1|string|1-25|text=Price type is required',
+            'price_type' => '1|string|text=Please enter a valid price type.',
             'code' => '0|string|max=50',
         ];
 
@@ -421,12 +421,12 @@ class BuildingSpace
 
     $v_rule = [
         'space_id' => '1|number|exists=building_spaces.id',
-        'booker_name' => '1|string|1-50',
-        'booker_phone' => '1|string|1-25',
+        'booker_name' => '1|string|1-50|text=Booker name is required.',
+        'booker_phone' => '1|string|1-25|text=Booker phone is required.',
         'booker_email' => '0|email',
         'booking_date' => '1|date|text=Booking date is required.',
-        'expired_booking_date' => '1|date|text=Expired booking date is required.',
-        'booking_fee' => '1|number|min=0|text=Booking fee is required.',
+        'expired_booking_date' => '1|date|text=Expired date is required.',
+        'booking_fee' => '1|number|min=0|text=Booking amount is required.',
         'remarks' => '0|string|1-255',
     ];
     $email_char = ['@', '.', '_', '-', '+'];

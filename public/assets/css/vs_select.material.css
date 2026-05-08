@@ -58,8 +58,8 @@
   font-size: 14px;
   line-height: 1.25;
   padding-bottom: 6px;
-  color: #111;
-
+  /* color: #111; */
+  color: #564251;
   width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
