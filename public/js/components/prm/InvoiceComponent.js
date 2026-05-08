@@ -2024,8 +2024,8 @@ const InvoiceDialog = (() => {
                         price: "positive"
                     },
                     itemRendered:(me,tr,data,isLoading)=>{
-                        tr.dataset.remarks = data.remarks;
-                        console.log(333,tr.dataset.remarks);
+                        // tr.dataset.remarks = data.remarks;
+                        // console.log(333,tr.dataset.remarks);
 
                         // me.setRowMeta(tr, {
                         //     item_id:data.item_id,
