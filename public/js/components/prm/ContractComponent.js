@@ -800,7 +800,7 @@ const ContractDialog = (() => {
                                 <label>Legal Name</label>
                             </div>
                         </div>
-                        
+
                         <div class="col-6">
                             <select data-style="material" placeholder="Business Type" name="business_type_id" class="data-input form-control" data-field="business_type_id"> </select>
                         </div>

@@ -326,8 +326,8 @@ class Tenant
 
         $deleted = DB::table('tenants')->where('id', $id)->delete();
 
-        return $deleted 
-            ? DV::depends($deleted, ['action' => 'deleted']) 
+        return $deleted
+            ? DV::depends($deleted, ['action' => 'deleted'])
             : DV::error('Delete failed.');
     }
 
@@ -459,7 +459,8 @@ class Tenant
                     'contract_end_date' => $c->contract_end_date ?? null,
                     'business_type' => $c->business_type ?? null,
                     'space_type' => $c->space_type ?? null,
-                    'unit_code' => $r->space_code ?? $c->space_code ?? null,
+                    // Tenant contract history should always show contract unit code, not renewal switched unit.
+                    'unit_code' => $c->space_code ?? null,
                     'building_name' => $r->building_name ?? $c->building_name ?? null,
                     'sqm_size' => $c->sqm_size ?? null,
                     'price' => $c->price ?? null,
