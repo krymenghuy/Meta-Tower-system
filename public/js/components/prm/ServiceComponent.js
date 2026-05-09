@@ -32,7 +32,7 @@ var ServiceComponent = (() => {
             }
         },
         {
-            transTitle: "titles.Model",
+            transTitle: "titles.Type",
             className: "align-middle text-nowrap text-start",
             data: function (data) {
                 const val = data.type ?? "";
@@ -400,7 +400,7 @@ const CreateServicePriceDialog = (() => {
                                 </div>
                             </div>
                             <div class="col-6">
-                                <select data-style="material" name="service_types" class="data-input form-control" data-field="service_type_id" placeholder="Service Type">
+                                <select data-style="material" name="service_types" class="data-input form-control" data-field="service_type_id" placeholder="Category">
                                 </select>
                             </div>
                             <div class="col-6">
@@ -408,7 +408,7 @@ const CreateServicePriceDialog = (() => {
                                         name="type"
                                         class="data-input form-control"
                                         data-field="type"
-                                        placeholder=" Model">
+                                        placeholder=" Type">
                                     <option value="0" >Subscription</option>
                                     <option value="1">Request</option>
                                 </select>
@@ -465,7 +465,10 @@ const CreateServicePriceDialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
+                    console.log(123,data.service_details);
+                    
                     me.controls.unit_type.value = data.service_details.unit_type;
+                    me.controls.type.value = data.service_details.type;
                 },
 
 
