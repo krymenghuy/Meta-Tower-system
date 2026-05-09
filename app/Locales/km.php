@@ -85,7 +85,7 @@ return [
         'Unit' => 'បន្ទប់',
         'Type' => 'ប្រភេទ',
         'Remark' => 'កំណត់សម្គាល់',
-        'Category' => 'ប្រភេទ',
+        'Category' => 'ប្រភេទសេវាកម្ម',
         'Delete' => 'លុបចោល',
         'Modify' => 'កែប្រែ',
         'Space' => 'បន្ទប់',
@@ -194,6 +194,9 @@ return [
         'Modify Booking' => 'កែប្រែការកក់',
         'Cancel Booking' => 'បោះបង់ការកក់',
         'Booking' => 'ការកក់',
+        'Unit Used' => 'តម្លៃឯកតា',
+        'Tax' => 'ពន្ធ',
+        'Total' => 'សរុប',
 
     ],
     'menus' => [
