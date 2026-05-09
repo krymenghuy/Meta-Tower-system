@@ -190,10 +190,10 @@ var SpaceComponent = new (function () {
             //menuItemClass:"",
             menus: [
                 {
-                    html: '<span class="ps-2" vslang="titles.Edit Space"></span>',
+                    html: '<span class="ps-2" vslang="titles.Modify Space"></span>',
                     icon: `<i class="fa-regular fa-pen-to-square fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "edit_space"
+                    name: "modify_space"
                 },
                 {
                     html: '<span class="ps-2" vslang="titles.Delete Space"></span>',
@@ -220,12 +220,6 @@ var SpaceComponent = new (function () {
                     name: "set_maintenance"
                 },
                 {
-                    html: '<span class="ps-2" vslang="titles.Finish Maintenance"></span>',
-                    icon: `<i class="fa-solid fa-clipboard-check fs-5 text-success"></i>`,
-                    cssClass: "border-bottom pb-2",
-                    name: "finish_maintenance"
-                },
-                {
                     html: '<span class="ps-2" vslang="titles.View Booking"></span>',
                     icon: `<i class="fa-regular fa-eye fs-5 text-info"></i>`,
                     cssClass: "border-bottom pb-2",
@@ -242,7 +236,13 @@ var SpaceComponent = new (function () {
                     icon: `<i class="fa-solid fa-square-xmark fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "cancel_booking"
-                }
+                },
+                {
+                    html: '<span class="ps-2" vslang="titles.Finish Maintenance"></span>',
+                    icon: `<i class="fa-solid fa-clipboard-check fs-5 text-success"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "finish_maintenance"
+                },
             ],
             // adjustPosition: {
             //     top: -200,
@@ -267,7 +267,7 @@ var SpaceComponent = new (function () {
                 menu.cancel_booking.style.display = booked ? 'block' : 'none';
                 menu.create_booking.style.display = booked || occupiedOrNotBookable ? 'none' : 'block';
                 menu.create_contract.style.display = statusIdNum >= 3 ? 'none' : 'block';
-                menu.edit_space.style.display = status_id == 3 ? 'none' : 'block';
+                menu.modify_space.style.display = status_id == 3 ? 'none' : 'block';
                 menu.finish_maintenance.style.display = isMaintenance ? 'block' : 'none';
                 menu.set_maintenance.style.display = hasActiveMaintenance ? 'none' : 'block';
                 menu.delete_space.style.display = statusIdNum > 1 ? 'none' : 'block';
@@ -291,8 +291,8 @@ var SpaceComponent = new (function () {
                         mThis.createContract(id, menulink);
                         break;
                     }
-                    case 'edit_space': {
-                        mThis.editSpace(id, menulink);
+                    case 'modify_space': {
+                        mThis.modifySpace(id, menulink);
                         break;
                     }
                     case 'delete_space': {
@@ -534,7 +534,7 @@ var SpaceComponent = new (function () {
             });
         });
     };
-    mThis.editSpace = (id, menulink) => {
+    mThis.modifySpace = (id, menulink) => {
         let op = {
             id: id,
             data: {
@@ -782,7 +782,8 @@ const BuildingSpaceDialog = (() => {
                 },
 
                 contentCreated: (me) => {
-                
+
+
                     applyNumberInput(me.controls.sqm_size);
                     applyNumberInput(me.controls.price);
 

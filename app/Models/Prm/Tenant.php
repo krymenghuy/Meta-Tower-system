@@ -28,6 +28,18 @@ class Tenant
         if ($x) return 'National ID ?? has been used by another Tenant::' . $nid;
         return null;
     }
+    function checkUniqueTenantByPassport($passport, $id = null)
+    {
+        if (!$passport) return null;
+        $str_id = '1=1';
+        if (!$passport) return 'Passport number cannot be empty';
+        if ($id > 0) {
+            $str_id = "t.id <> $id";
+        }
+        $x = DB::table('tenants as t')->where('t.passport_number', $passport)->whereRaw($str_id)->select('id')->take(1)->exists();
+        if ($x) return 'Passport number ?? has been used by another Tenant::' . $passport;
+        return null;
+    }
     function checkUniqueTenantByPhone($phone_number, $id = null)
     {
         if (empty($phone_number)) {
@@ -87,17 +99,26 @@ class Tenant
         $nationality_id = $d->nationality_id ?? null;
         if ($nationality_id === 14) {
             $national_id = $d->national_id ?? null;
+            $passport = $d->passport_number ?? null;
+
             if (empty($national_id)) {
                 return DV::error('National ID is required for Khmer nationality.');
             }
             $nid_check = $this->checkUniqueTenantByNID($national_id, $id);
             if ($nid_check) return DV::error($nid_check);
+            $passport_check = $this->checkUniqueTenantByPassport($passport, $id);
+            if ($passport_check) return DV::error($passport_check);
         }
         if ($nationality_id !== 14) {
             $passport = $d->passport_number ?? null;
+            $national_id = $d->national_id ?? null;
             if (empty($passport)) {
                 return DV::error('Passport is required for foreign nationality.');
             }
+            $nid_check = $this->checkUniqueTenantByNID($national_id, $id);
+            if ($nid_check) return DV::error($nid_check);
+            $passport_check = $this->checkUniqueTenantByPassport($passport, $id);
+            if ($passport_check) return DV::error($passport_check);
         }
         $phone_number = isset($d->phone_number) ? str_replace(' ', '', $d->phone_number) : null;
         $phone_check = $this->checkUniqueTenantByPhone($phone_number, $id);
@@ -187,7 +208,7 @@ class Tenant
                 c.start_date,c.end_date,t.updated_at,t.update_user
             ")
             ->orderBy('t.status_id', 'asc')
-            ->orderBy('t.updated_at', 'desc');
+            ->orderBy('t.created_at', 'desc');
 
         // ->orderBy('t.id','DESC');
         $clone_query = clone $query;
@@ -305,8 +326,8 @@ class Tenant
 
         $deleted = DB::table('tenants')->where('id', $id)->delete();
 
-        return $deleted 
-            ? DV::depends($deleted, ['action' => 'deleted']) 
+        return $deleted
+            ? DV::depends($deleted, ['action' => 'deleted'])
             : DV::error('Delete failed.');
     }
 
@@ -438,7 +459,8 @@ class Tenant
                     'contract_end_date' => $c->contract_end_date ?? null,
                     'business_type' => $c->business_type ?? null,
                     'space_type' => $c->space_type ?? null,
-                    'unit_code' => $r->space_code ?? $c->space_code ?? null,
+                    // Tenant contract history should always show contract unit code, not renewal switched unit.
+                    'unit_code' => $c->space_code ?? null,
                     'building_name' => $r->building_name ?? $c->building_name ?? null,
                     'sqm_size' => $c->sqm_size ?? null,
                     'price' => $c->price ?? null,

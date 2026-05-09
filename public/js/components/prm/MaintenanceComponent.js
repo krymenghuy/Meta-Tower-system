@@ -324,13 +324,13 @@ const CreateMaintenanceDialog = (() => {
                                 <select data-style="material" name="building_id" class="data-input form-control" data-field="building_id" placeholder="Building"></select>
                             </div>
                             <div class="col-12 col-sm-3">
-                                <select data-style="material" name="type_unit" class="data-input form-control" data-field="type_unit" id="_maintenance_type_unit" placeholder="Type unit" required><option value="">Select type</option><option value="space">Space</option><option value="amenity">Amenity</option></select>
+                                <select data-style="material" name="type_unit" class="data-input form-control" data-field="type_unit" id="_maintenance_type_unit" placeholder="Type" required><option value="">Select type</option><option value="space">Space</option><option value="amenity">Amenity</option></select>
                             </div>
                             <div id="_maintenance_unit_space_row" class="col-3" style="display:none;">
-                                <select data-style="material" name="space_id" class="data-input form-control" data-field="space_id" id="_maintenance_space_id" placeholder="Select space"></select>
+                                <select data-style="material" name="space_id" class="data-input form-control" data-field="space_id" id="_maintenance_space_id" placeholder="Unit"></select>
                             </div>
                             <div id="_maintenance_unit_amenity_row" class="col-3" style="display:none;">
-                                <select data-style="material" name="amenity_id" class="data-input form-control" data-field="amenity_id" placeholder="Select amenity"><option value="">Select amenity</option></select>
+                                <select data-style="material" name="amenity_id" class="data-input form-control" data-field="amenity_id" placeholder="amenity"><option value="">Select amenity</option></select>
                             </div>
                         </div>
                     </section>

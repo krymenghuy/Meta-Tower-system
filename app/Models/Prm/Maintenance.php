@@ -382,7 +382,19 @@ class Maintenance extends VSModel
             $include_amenity_id = $d->amenity_id;
         }
 
-        $building_spaces = GeneralSettings::options_building_space($ss, $include_space_id, true);
+        // For maintenance, unit can be Available/Booked/Occupied.
+        // Keep excluding spaces already under maintenance, but do not filter by space status.
+        $spaceIds = DB::table('building_spaces')
+            ->where(function ($q) use ($include_space_id) {
+                $q->where('maintenance_status_id', 0)
+                    ->orWhereNull('maintenance_status_id');
+                if (!empty($include_space_id)) {
+                    $q->orWhere('id', $include_space_id);
+                }
+            })
+            ->pluck('id')
+            ->all();
+        $building_spaces = GeneralSettings::options_building_space_rows_by_ids($spaceIds);
 
         $amenities = GeneralSettings::options_maintenance_amenity($ss);
         if (!empty($include_amenity_id)) {

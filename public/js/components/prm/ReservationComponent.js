@@ -29,7 +29,7 @@ var ReservationComponent = (() => {
             },
         },
         {
-            transTitle: "titles.Amenity Name",
+            transTitle: "titles.Amenity",
             className: "align-middle",
             data: (data) => {
                 return `<span class="text-primary-custom">${data.amenity_name ?? ""}</span>`;
@@ -304,7 +304,7 @@ var ReservationComponent = (() => {
     mThis.cancelReservation = (id, menuLink) => {
         if (!AuthManager.allowed(242)) return;
         cv_interact.confirm(
-            "Cancel this reservation",
+            "Cancel this reservation ?",
             {
                 transTitle: "Cancel Reservation",
                 context:"delete",
@@ -423,7 +423,7 @@ const CreateReservationDialog = (() => {
                                 </div>
                             </div>
                             <div class="col-6">
-                                <select data-style="material" name="amenity" class="data-input form-control" data-field="amenity_id" placeholder="Amenity Name">
+                                <select data-style="material" name="amenity" class="data-input form-control" data-field="amenity_id" placeholder="Amenity">
                                 </select>
                             </div>
 
