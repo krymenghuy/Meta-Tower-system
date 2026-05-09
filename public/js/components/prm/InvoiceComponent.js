@@ -2023,16 +2023,16 @@ const InvoiceDialog = (() => {
                         qty: "positive",
                         price: "positive"
                     },
-                    itemRendered:(me,tr,data,isLoading)=>{
-                        // tr.dataset.remarks = data.remarks;
-                        // console.log(333,tr.dataset.remarks);
+                    // itemRendered:(me,tr,data,isLoading)=>{
+                    //     tr.dataset.remarks = data.remarks;
+                    //     console.log(333,tr.dataset.remarks);
 
-                        // me.setRowMeta(tr, {
-                        //     item_id:data.item_id,
-                        //     remark:data.remarks
-                        // })
+                    //     me.setRowMeta(tr, {
+                    //         item_id:data.item_id,
+                    //         remark:data.remarks
+                    //     })
 
-                    },
+                    // },
                     onItemChange: (rowId, item, fieldName, td, tr) => {
                         if (fieldName === "item_id") {
                             const selectedService = availableItem.find(
