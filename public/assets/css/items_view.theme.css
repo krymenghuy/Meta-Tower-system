@@ -239,4 +239,11 @@
     padding: 6px 10px;
     font-size: 13px;
   }
+
+
 }
+  .iv-wrapper table td, .iv-wrapper table th {
+      overflow: visible;
+      text-overflow: clip;
+      white-space: normal;
+  }
