@@ -64,9 +64,7 @@ var BillPaymentComponent = (() => {
             data: (data) => {
                 return `
                     <div class="text-primary-custom" style="width:200px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${
-                            data.note ?? "..."
-                        }</span>
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.remark ?? " __"}</span>
                     </div>
                 `;
             },
@@ -334,7 +332,7 @@ var BillPaymentComponent = (() => {
             },
             showLoaderOnConfirm: true,
             preConfirm: (remark) => {
-                let op = { id: id, note: remark };
+                let op = { id: id, remarks: remark };
                 return vsapi
                     .call(`${mThis.base_url}/prm/bill-payment/cancel`, op, null)
                     .then((res) => {
@@ -497,7 +495,7 @@ const BillPaymentDialog = (() => {
 
                     <div class="row g-0" style="border-radius:8px;overflow:hidden;margin-bottom:1.5rem;">
                         <div class="col-4" style="padding:0.75rem 1.25rem;border-right:1px solid white; background:#e1e5f2;">
-                            <div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#1a1647;margin-bottom:4px;">Total Due</div>
+                            <div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#1a1647;margin-bottom:4px;">Balance Due</div>
                             <div style="font-size:17px;font-weight:600;color:#5665E1;" id="f_due">$0.00</div>
                         </div>
                         <div class="col-4" style="padding:0.75rem 1.25rem;border-right:1px solid white; text-align:center;background:#e1e5f2;">
@@ -619,7 +617,7 @@ const BillPaymentDialog = (() => {
                         <!-- Remark -->
                         <div>
                             <div class="material-input outlined" style="margin:0;">
-                                <textarea name="note" class="form-control data-input" data-field="note"
+                                <textarea name="remark" class="form-control data-input" data-field="remarks"
                                         rows="2" style="height:55px;" placeholder=""></textarea>
                                 <label style="padding-left:6px;color:#777777;">Remark</label>
                             </div>

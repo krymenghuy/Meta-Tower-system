@@ -31,7 +31,7 @@ class Tenant
     function checkUniqueTenantByPhone($phone_number, $id = null)
     {
         if (empty($phone_number)) {
-            return 'Phone number cannot be empty';
+            return 'Phone number cannot be empty.';
         }
         $query = DB::table('tenants')
             ->where('phone_number', $phone_number);
@@ -39,7 +39,7 @@ class Tenant
             $query->where('id', '<>', $id);
         }
         if ($query->exists()) {
-            return 'Phone number "' . $phone_number . '" has already been used by another tenant';
+            return 'Phone number "' . $phone_number . '" has already been used by another tenant.';
         }
         return null;
     }
@@ -49,9 +49,9 @@ class Tenant
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
         $v_rule = [
-            'name'            => '1|string|0-30|text=Tenant name is required',
-            'sex'             => '1|choice|F,M|text=Please select a valid gender',
-            'date_of_birth'   => '1|date|text=Date of birth is required',
+            'name'            => '1|string|0-30|text=Tenant name is required.',
+            'sex'             => '1|choice|F,M|text=Please select a valid gender.',
+            'date_of_birth'   => '1|date|text=Date of birth is required.',
             'legal_name'      => '1|string|0-100',
             'nationality_id'  => '1|number',
             'national_id'     => '0|string|0-50',

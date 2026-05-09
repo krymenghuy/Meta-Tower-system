@@ -1452,15 +1452,20 @@ const CreateTenantDialog = (() => {
                                     <input type="text" name="name" class="data-input form-control" data-field="name" placeholder="" />
                                     <label>Full Name</label>
                                 </div>
-
                             </div>
-                            <div class="col-12 col-md-6">
+                            <div class="col-12 col-md-4">
+                                <select data-style="material" name="sex" class="data-input form-control" data-field="sex" placeholder="Tenant Type">
+                                    <option value="P">Premium</option>
+                                    <option value="S">Standard</option>
+                                </select>
+                            </div>
+                            <div class="col-12 col-md-4">
                                 <select data-style="material" name="sex" class="data-input form-control" data-field="sex" placeholder="Gender">
                                     <option value="M">Male</option>
                                     <option value="F">Female</option>
                                 </select>
                             </div>
-                            <div class="col-12 col-md-6">
+                            <div class="col-12 col-md-4">
                                 <div class="vs-material-field">
                                     <input type="text" data-type="date" name="date_of_birth" class="data-input form-control form_input" data-field="date_of_birth" placeholder=" " />
                                     <label>Date of Birth</label>
