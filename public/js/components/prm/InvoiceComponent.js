@@ -45,24 +45,33 @@ var InvoiceComponent = (() => {
             data: data => {
                 return `
                         <div class="d-flex flex-column">
-                            ${data.tenant_name ?? ""}
-                            <hr class="m-0 border border-secondary border-3 opacity-75">
-                            ${data.tenant_phone ?? ""}
+                            <span>${data.tenant_name ?? ""}</span>
+                            <span>${data.tenant_phone ?? ""}</span>
                         </div>`;
                 }
         },
         {
-            transTitle: "titles.Space",
+            transTitle: "titles.Unit",
             className: "align-middle text-nowrap",
             data: data => {
                 return ` <div class="d-flex text-warning align-items-center gap-2">
                 <div>
-
                     <span class="d-block text-prm-custom ">
                         ${data.space_code ?? ""}
                     </span>
                 </div>
             </div>`;
+            }
+        },
+        {
+            transTitle: "titles.Issue Date",
+            className: "align-middle text-nowrap text-center",
+            data: data => {
+                return `
+                    <div class="d-flex flex-column align-items-center">
+                        <span class="text-prm-custom text-nowrap">${data.invoice_date ?? ""}
+                    </div>
+                `;
             }
         },
         {
