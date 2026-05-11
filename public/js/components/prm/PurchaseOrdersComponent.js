@@ -451,9 +451,10 @@ var PurchaseOrdersComponent = (() => {
                 if (me._selectedVendorId) {
                         applyVendorInfo(me._selectedVendorId);
                     }
-
-
+                    
+                
                 me.purchaseItemsView = new ItemsView(me.controls.purchaseItemList, {
+
                     currencyCode: "USD",
                     columns: [
                         { name: "item_id", transTitle: "titles.Item", displayType: "select" },
@@ -493,6 +494,8 @@ var PurchaseOrdersComponent = (() => {
                         me.setTotal(col_name, tr, item);
                     },
                 });
+                console.log(777,me.purchaseItemsView);
+                
 
                 me.saveData = (onFinish) => {
                     let p = me.getData();
@@ -612,7 +615,16 @@ var PurchaseOrdersComponent = (() => {
             onPrepareForm: (me, data) => {
                 me.controls.vendor.value = data.po_detail?.name || '';
                 me.purchaseItemsView.setSelectOptions('item_id', data.item_options, null);
+                const today = new Date();
 
+                const dd = String(today.getDate()).padStart(2, '0');
+                const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+                const mm = months[today.getMonth()];
+                const yyyy = today.getFullYear();
+
+                const formattedDate = `${dd}-${mm}-${yyyy}`;
+
+                me.controls.po_date.value = formattedDate;
                 if (me.dataOptions.id) {
                     const po = data.po_detail || {};
                     console.log(14,po);
@@ -664,8 +676,7 @@ var PurchaseOrdersComponent = (() => {
 
         PurchaseOrderDialog.show(op);
     };
-
-    const showReceivePurchaseOrderDialog = (op) => {
+     const showReceivePurchaseOrderDialog = (op) => {
         ReceivePurchaseOrderDialog = ReceivePurchaseOrderDialog || new GeneralDialog({
             cssClass: "modal-xl vs-modal",
             createContent: () => {
@@ -680,12 +691,12 @@ var PurchaseOrdersComponent = (() => {
                         <div class="d-flex align-items-center mb-2">
                             <span class="fw-bold" style="min-width:90px;">Phone</span>
                             <span class="mx-2 fw-bold">:</span>
-                            <input type="text" name="phone_number" class="data-input form-control flex-grow-1">
+                            <input type="text" name="phone_number" class="data-input form-control flex-grow-1" Readonly>
                         </div>
                         <div class="d-flex align-items-center mb-2">
                             <span class="fw-bold" style="min-width:90px;">Address</span>
                             <span class="mx-2 fw-bold">:</span>
-                            <input type="text" name="address" class="data-input form-control flex-grow-1">
+                            <input type="text" name="address" class="data-input form-control flex-grow-1" Readonly>
                         </div>
                     </div>
                     <div class="col-md-5"></div>
@@ -704,19 +715,169 @@ var PurchaseOrdersComponent = (() => {
                     </div>
                 </div>`;
             },
+            contentCreated: (me) => {
 
-            // Note: Receive dialog contentCreated and other logic can be added similarly if needed
+                me.controls.div_purchase_summary = me.divModal.querySelector(
+                    '[name="div_purchase_summary"]'
+                );
+                me.purchaseItemsView = new ItemsView(me.controls.purchaseItemList, {
+
+                    currencyCode: "USD",
+                    columns: [
+                        { name: "item_id", transTitle: "titles.Item", displayType: "select",readOnly: true},
+                        { name: "qty", transTitle: "titles.Ordered Qty", dataType: "number", defaultValue: 1,readOnly: true, isNumeric: true },
+                        { name: 'receive_qty', transTitle: 'Received Qty', dataType: 'number', defaultValue: 0, isNumeric: true, readOnly: false },
+                        { name: "accept",transTitle: "titles.Accept",html: '<input type="checkbox" class="check_accept">'}
+
+                    ],
+                    // calc: { mode: "auto", qtyField: "qty", priceField: "unit_price", totalField: "total_price", currencyPrecision: 2 },
+
+                    // totalSummary: { container: me.controls.div_purchase_summary, showTax: false, allowDiscount: true, discountBeforeTax: true, currency: "USD" },
+                    validateColumns: { item_id: "positive", qty: "positive", receive_qty: "positive" },
+                    tableClass: 'table',
+                    showColumnHeaders: true,
+                    showAddLineButton: false,
+                    addLineButtonText: 'Add Item',
+                    itemRendered: (me,tr,data,isLoading) => {
+                        // const chk = tr.querySelector(".check_accept");
+                        // console.log(5555,chk);
+                        // if (chk && !chk.dataset.bound) {
+                        //     chk.dataset.bound = "1";
+                        //     chk.onchange = function(){
+                        //         me.purchaseItemsView.setRowMeta(tr,{checked: chk.checked});
+
+                        //     }
+
+                                
+                            
+                        // }
+                    },
+                    allItemsRendered:(table, container, summaryPanel)=>{
+                        console.log(123,table);
+                        console.log(12366,container);
+                        table.addEventListener()
+                        
+
+
+                    },
+                    onItemChange: async (row_id,item,col_name,td,tr) => {
+                        // if (col_name === "receive_qty") {
+                        //     const chk = tr.querySelector(".check_accept");
+                        //     chk.checked =Number(item.receive_qty || 0) > 0;
+                        //     me.purchaseItemsView.setRowMeta(tr,{checked: chk.checked});
+                        // }
+                    }
+                });
+
+                me.saveData = (onFinish) => {
+                    let p = me.getData();
+                    let items = me.purchaseItemsView.getItems();
+                    // let totals = me.purchaseItemsView.getCurrentTotals?.() || {};
+               
+                    p.items = items;
+                    console.log(2222,p.items);
+                    
+                    p.id = me.dataOptions.id;
+                    console.log(455,p);
+                    
+                    vsapi.call(`${main_view.base_url}/prm/purchase/order/receive`, p, false)
+                        .then(onFinish);
+                };
+                
+                me.clear = () => {
+                    for (const name in me.fields) {
+                        const el = me.fields[name];
+                        const tag = el.tagName;
+
+                        if (['SELECT', 'INPUT', 'TEXTAREA'].indexOf(tag) >= 0) {
+                            el.value = '';
+                        }
+                        else {
+                            el.textContent = '';
+                        }
+                    }
+                    me.purchaseItemsView.setData(null);
+                };
+            
+            },
             buttons: [
-                { label: "Cancel",
-                  cssClass: "btn btn-secondary",
-                  click: (me) => me.hide(false)
-                },
-                { label: "<span>Save</span>",
-                  cssClass: "btn btn-primary",
-                  click: (me) => me.hide(true)
+                { label: "Cancel", cssClass: "btn btn-secondary", click: (me) => me.hide(false) },
+                {
+                    label: "<span>Save</span>",
+                    cssClass: "btn btn-primary",
+                    click: (me) => {
+                        me.saveData(res => {
+                            if (res.status_code == 200) {
+                                cv_interact.success("New purchase order has been added successfully.");
+                                me.hide(true);
+                                mThis.PoListView.showPage(mThis.getFilterData());
+                            } else {
+                                cv_interact.error(res.error_message);
+                            }
+                        });
+                    }
                 },
             ],
+   
+            onPrepareForm: (me, data) => {
+                const isReadOnly = me.dataOptions.id > 0;
+                me.setReadOnly(isReadOnly,['po_date']);
+                me.controls.vendor.disabled = isReadOnly;
+                me.controls.vendor.value = data.po_detail?.name || '';
+                me.purchaseItemsView.setSelectOptions('item_id', data.item_options, null);
+                const today = new Date();
+
+                const dd = String(today.getDate()).padStart(2, '0');
+                const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+                const mm = months[today.getMonth()];
+                const yyyy = today.getFullYear();
+
+                const formattedDate = `${dd}-${mm}-${yyyy}`;
+
+                me.controls.po_date.value = formattedDate;
+                if (me.dataOptions.id) {
+                    const po = data.po_detail || {};
+
+                    console.log(14,po);
+                    me.controls.vendor.value = po.name || po.vendor_name || '';
+                    if (po.vendor_id) {
+                        me._selectedVendorId = po.vendor_id;
+                        if (me.controls.vendor_id) me.controls.vendor_id.value = po.vendor_id;
+                        // Trigger vendor info load (phone, address)
+                        vsapi.post(`${main_view.base_url}/prm/vendor/options-vendor-info`, { vendor_id: po.vendor_id }, {})
+                            .then(res => {
+                                const v = res.data?.vendor || {};
+                                if (me.controls.phone_number) me.controls.phone_number.value = v.phone_number || '';
+                                if (me.controls.address) me.controls.address.value = v.address || '';
+                            });
+                    }
+
+                    if (po.po_date && me.controls.po_date) {
+                        me.controls.po_date.value = po.po_date;
+                    }
+                    me.purchaseItemsView.setData(po);
+
+                   
+                } else {
+                    me.clear();
+                    if (me.searchVendor && typeof me.searchVendor.reset === 'function') {
+                        me.searchVendor.reset();
+                    }
+                }
+            },
+            onShow: (me) => {
+                const title = me.divModal.querySelector('.modal-title');
+                if (title) {
+                    const isModify = !!me.dataOptions?.id;
+                    title.innerHTML = isModify
+                        ? '<h2 class="text-prm-custom text-start fw-bold">Receive Purchase Order</h2>'
+                        : '<h2 class="text-prm-custom text-start fw-bold">Purchase Order</h2>';
+                }
+            },
             prepareFormOptions: {
+                modifyTitle: "Receive Purchase Order",
+                createTitle: "Purchase Order",
+                targetProp: "po_detail",
                 api: {
                     endpoint: `${main_view.base_url}/prm/purchase/order/po-form-options`,
                     params: (op) => ({ id: op.id })
@@ -726,6 +887,7 @@ var PurchaseOrdersComponent = (() => {
 
         ReceivePurchaseOrderDialog.show(op);
     };
+  
 
     const renderPurchaseOrderItems = (d, elBody) => {
         vsapi.call(`${main_view.base_url}/prm/purchase/order/items-by-po`, { po_id: d.po_id }, null, false)
@@ -747,7 +909,7 @@ var PurchaseOrdersComponent = (() => {
                             <td class="text-nowrap">${item.item_code || item.code || ''}</td>
                             <td class="text-nowrap">${item.item_name}</td>
                             <td class="text-nowrap">${VSMoney.formatAmount(item.unit_price || 0, 'USD')}</td>
-                            <td class="text-nowrap">${item.qty} <small>${item.unit ?? 'pcs'}</small></td>
+                            <td class="text-nowrap">${item.qty} <small class="text-golden text-capitalize">(${item.unit ?? 'pcs'})</small></td>
                             <td class="text-nowrap">${VSMoney.formatAmount(item.total_price || 0, 'USD')}</td>
                         </tr>`;
                     });
@@ -755,7 +917,7 @@ var PurchaseOrdersComponent = (() => {
 
                 html = `<table class="table table--dropdown">${tHead}<tbody>${tBody}</tbody></table>`;
                 elBody.innerHTML = html;
-                elBody.classList.add('p-3', 'table-responsive ');
+                elBody.classList.add(['p-3','table-responsive']);
             });
     };
 
