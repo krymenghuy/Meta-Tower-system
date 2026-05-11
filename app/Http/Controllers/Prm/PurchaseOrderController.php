@@ -136,6 +136,26 @@ class PurchaseOrderController extends Controller
             ];
             $po_detail->totals = $totals;
         }
+        // if ($po_detail) {
+        //     $model = new PurchaseOrder(null);
+        //    $items = $model->getItemsByPO(['po_id' => $id], $ss)->toArray();
+
+        //     $items = array_map(function ($item) {
+        //         $item->price = (float) $item->price;
+        //         $item->total_price = (float) $item->total_price;
+        //         return $item;
+        //     }, $items);
+
+        //     $po_detail->items = $items;
+
+        //     $totals = [
+        //         'discount_type'  => $po_detail->discount_type ?? 'amount',
+        //         'discount_value' => (float) ($po_detail->discount_value ?? 0),
+        //         'extra_items' => []
+        //     ];
+
+        //     $po_detail->totals = $totals;
+        // }
     }
 
     $data = [

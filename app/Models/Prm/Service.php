@@ -129,7 +129,7 @@ class Service
     public static function serviceDetails($id,$ss = null){
         return DB::table('services as s')
             ->where('s.id',$id)
-            ->selectRaw('s.id,s.name,s.service_type_id,s.unit_type,s.price,s.status_id,s.description')
+            ->selectRaw('s.id,s.name,s.service_type_id,s.type,s.unit_type,s.price,s.status_id,s.description')
             ->first();
     }
 

@@ -52,24 +52,33 @@ var InvoiceComponent = (() => {
             data: data => {
                 return `
                         <div class="d-flex flex-column">
-                            ${data.tenant_name ?? ""}
-                            <hr class="m-0 border border-secondary border-3 opacity-75">
-                            ${data.tenant_phone ?? ""}
+                            <span>${data.tenant_name ?? ""}</span>
+                            <span>${data.tenant_phone ?? ""}</span>
                         </div>`;
             }
         },
         {
-            transTitle: "titles.Space",
+            transTitle: "titles.Unit",
             className: "align-middle text-nowrap",
             data: data => {
                 return ` <div class="d-flex text-warning align-items-center gap-2">
                 <div>
-
                     <span class="d-block text-prm-custom ">
                         ${data.space_code ?? ""}
                     </span>
                 </div>
             </div>`;
+            }
+        },
+        {
+            transTitle: "titles.Issue Date",
+            className: "align-middle text-nowrap text-center",
+            data: data => {
+                return `
+                    <div class="d-flex flex-column align-items-center">
+                        <span class="text-prm-custom text-nowrap">${data.invoice_date ?? ""}
+                    </div>
+                `;
             }
         },
         {
@@ -2064,12 +2073,12 @@ const InvoiceDialog = (() => {
                 me.itemsView = new ItemsView(me.controls.divItemsView, {
                     currencyCode: "USD",
                     columns: [
-                        {
-                            name: "item_id",
-                            displayType: "text",
-                            readOnly: true,
-                            width: "2px",
-                        },
+                        // {
+                        //     name: "item_id",
+                        //     displayType: "text",
+                        //     readOnly: true,
+                        //     width: "2px",
+                        // },
                         {
                             name: "remarks",
                             transTitle: "titles.Item",
@@ -2179,13 +2188,14 @@ const InvoiceDialog = (() => {
                         price: "positive"
                     },
                     itemRendered:(me,tr,data,isLoading)=>{
-                        // tr.dataset.remarks = data.remarks;
-                        // console.log(333,tr.dataset.remarks);
+                        tr.dataset.remarks = data.remarks;
+                        console.log(333,tr.dataset.remarks);
 
-                        // me.setRowMeta(tr, {
-                        //     item_id:data.item_id,
-                        //     remark:data.remarks
-                        // })
+                        me.setRowMeta(tr, {
+                            item_id:data.item_id,
+                            remarks:data.remarks,
+                            abc:123,
+                        })
 
                     },
                     onItemChange: (rowId, item, fieldName, td, tr) => {
@@ -2292,7 +2302,7 @@ const InvoiceDialog = (() => {
                 me.saveData = () => {
                     const header = me.getData();
                     const items = me.itemsView.getItems({
-                        dataset:["remarks"]
+                        metaKeys:['item_id','abc','remark']
                     }); // Retrieves all row data
                     console.log(5555,items);
 
