@@ -458,12 +458,12 @@ var PurchaseOrdersComponent = (() => {
                     columns: [
                         { name: "item_id", transTitle: "titles.Item", displayType: "select" },
                         { name: "qty", transTitle: "titles.Qty", dataType: "number", defaultValue: 1, isNumeric: true },
-                        { name: "unit", transTitle: "titles.Unit", dataType: "string", displayType: "number", readOnly: true },
-                        { name: "price", transTitle: "titles.Price", dataType: "decimal",displayType:"input",currencySymbol: "$" },
+                        // { name: "unit", transTitle: "titles.Unit", dataType: "string", displayType: "number", readOnly: true },
+                        { name: "unit_price", transTitle: "titles.Unit Price", dataType: "decimal",displayType:"input",currencySymbol: "$" },
                         { name: "total_price", transTitle: "titles.Total",dataType: "decimal",displayType:"input",currencySymbol: "$" },
 
                     ],
-                    calc: { mode: "auto", qtyField: "qty", priceField: "price", totalField: "total_price", currencyPrecision: 2 },
+                    calc: { mode: "auto", qtyField: "qty", priceField: "unit_price", totalField: "total_price", currencyPrecision: 2 },
 
                     totalSummary: { container: me.controls.div_purchase_summary, showTax: false, allowDiscount: true, discountBeforeTax: true, currency: "USD" },
                     validateColumns: { item_id: "positive", qty: "positive", unit_price: "positive" },
@@ -496,22 +496,24 @@ var PurchaseOrdersComponent = (() => {
 
                 me.saveData = (onFinish) => {
                     let p = me.getData();
-                    let po_data = me.purchaseItemsView.getData();
-                    let items = po_data.items || [];
-                    console.log(6666, p);
-
+                    let items = me.purchaseItemsView.getItems();
+                    let totals = me.purchaseItemsView.getCurrentTotals?.() || {};
+                    console.log(5555,items);
+                    // let items = po_data.items || [];
                    if (!me.hasValidPOItems(items)) {
                         return cv_interact.error('Please select at least one item before saving the purchase order.');
                     }
                     p.items = items;
-                    p.totals = po_data.totals;
+                    // console.log(2222,p.items);
+                    
+                    p.totals = totals;
                     p.id = me.dataOptions.id;
-
-                    console.log(6666, p);
-
+                    console.log(455,p);
+                    
                     vsapi.call(`${main_view.base_url}/prm/purchase/order/save`, p, false)
                         .then(onFinish);
-                }
+                };
+                
                 me.clear = () => {
                     for (const name in me.fields) {
                         const el = me.fields[name];
@@ -531,7 +533,7 @@ var PurchaseOrdersComponent = (() => {
                     console.log(1233322,item);
 
                     const d = me.purchaseItemsView.getDataRow(tr);
-                    me.purchaseItemsView.setCellValue(tr, 'unit', item.unit || '');
+                    // me.purchaseItemsView.setCellValue(tr, 'unit', item.unit || '');
 
                 };
                 me.hasValidPOItems = (items) => {

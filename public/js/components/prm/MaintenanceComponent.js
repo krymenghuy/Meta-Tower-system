@@ -446,14 +446,8 @@ const CreateMaintenanceDialog = (() => {
                     const fromSpace = !!me.dataOptions?.space_id;
                     const fromAmenity = !!me.dataOptions?.amenity_id;
                     const lockContext = fromSpace || fromAmenity;
-                    console.log(345, lockContext);
+                    me.setReadOnly(lockContext,['building_id','type_unit','space_id','amenity_id']);
                     
-                    
-                    if (me.controls?.building_id) me.controls.building_id.disabled = lockContext;
-                    if (me.controls?.type_unit) me.controls.type_unit.disabled = lockContext;
-                    if (me.controls?.space_id) me.controls.space_id.disabled = lockContext;
-                    if (me.controls?.amenity_id) me.controls.amenity_id.disabled = lockContext;
-
                     // ✅ helper: convert 12h → 24h
                     const to24h = (time, ampm) => {
                         if (!time) return "00:00";
