@@ -92,12 +92,14 @@ const PrintInvoiceDialog = (() => {
             const taxRate  = parseFloat(item.tax_rate || 0);
             const cfg      = typeConfig[rawType] || typeConfig.service;
 
-            let discDisplay = `<span style="color:#9CA3AF;">—</span>`;
-            if (disc > 0) {
-                discDisplay = (discType === "amount" || discType === "$")
-                    ? `<span style="color:#EF4444;font-weight:600;">${currency}${fmt(disc)}</span>`
-                    : `<span style="color:#EF4444;font-weight:600;">${fmt(disc)}%</span>`;
-            }
+            let discDisplay = `<span style="color:#9CA3AF; font-size:12px;">—</span>`;
+                if (disc > 0) {
+                    const isAmount = (discType === "amount" || discType === "$");
+                    const displayValue = isAmount ? `${currency}${fmt(disc)}` : `${fmt(disc)}%`;
+                    
+                    // Using 12px to match the Price column
+                    discDisplay = `<span style="color:#EF4444; font-size:12px; font-weight:500;">${displayValue}</span>`;
+                }
 
             const rowBg = i % 2 !== 0 ? '#FAFBFF' : '#FFFFFF';
 
@@ -119,7 +121,7 @@ const PrintInvoiceDialog = (() => {
                 <td style="padding:11px 10px;text-align:center;color:#6B7280;font-size:11px;border-bottom:1px solid #EEF0F5;">${formatDate(item.start_date)}</td>
                 <td style="padding:11px 10px;text-align:center;color:#6B7280;font-size:11px;border-bottom:1px solid #EEF0F5;">${formatDate(item.end_date)}</td>
                 <td style="padding:11px 14px;text-align:right;color:#374151;font-size:12px;border-bottom:1px solid #EEF0F5;">${currency}${fmt(price)}</td>
-                <td style="padding:11px 14px;text-align:right;border-bottom:1px solid #EEF0F5;">${discDisplay}</td>
+                <td style="padding:11px 14px; text-align:right; border-bottom:1px solid #EEF0F5;">${discDisplay}</td>
                 <td style="padding:11px 10px;text-align:center;font-size:11px;border-bottom:1px solid #EEF0F5;color:${taxRate > 0 ? '#2563EB' : '#9CA3AF'};">${taxRate > 0 ? `${taxRate}%` : "—"}</td>
                 <td style="padding:11px 14px;text-align:right;font-weight:700;color:#1A3D91;font-size:13px;border-bottom:1px solid #EEF0F5;">${currency}${fmt(total)}</td>
             </tr>`;
@@ -190,16 +192,16 @@ const PrintInvoiceDialog = (() => {
                                     onerror="this.parentElement.innerHTML='<span style=\'font-size:22px;font-weight:900;color:#fff;font-family:Playfair Display,serif;\'>M</span>'">
                             </div>
                             <div>
-                                <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:#FFFFFF;letter-spacing:0.5px;line-height:1.1;">META TOWER</div>
+                                <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:#FFFFFF;letter-spacing:0.5px;line-height:1.1;">META HOLDING</div>
                                 <div style="margin-top:6px;display:flex;flex-direction:column;gap:3px;">
                                     <div style="font-size:11px;color:rgba(255,255,255,0.65);display:flex;align-items:center;gap:5px;">
-                                        <i class="bi bi-envelope-fill" style="font-size:9px;"></i> info@metatower.com
+                                        <i class="bi bi-envelope-fill" style="font-size:9px;"></i> metaholding@gmail.com
                                     </div>
                                     <div style="font-size:11px;color:rgba(255,255,255,0.65);display:flex;align-items:center;gap:5px;">
                                         <i class="bi bi-telephone-fill" style="font-size:9px;"></i> +855 12 345 678
                                     </div>
                                     <div style="font-size:11px;color:rgba(255,255,255,0.65);display:flex;align-items:center;gap:5px;">
-                                        <i class="bi bi-geo-alt-fill" style="font-size:9px;"></i> Phnom Penh, Cambodia
+                                        <i class="bi bi-geo-alt-fill" style="font-size:9px;"></i> Samdech Monireth Blvd (217), Phnom Penh
                                     </div>
                                 </div>
                             </div>

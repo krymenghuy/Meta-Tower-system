@@ -124,6 +124,13 @@ class Invoice extends VSModel
                 $itemId = $item['item_id']  ?? null;
                 $qty    = (int)($item['qty'] ?? 1);
                 $price  = (float)($item['price'] ?? 0);
+
+                // \Log::info("Saving invoice", [
+                //     'itemType' => $itemType,
+                //     'itemId' => $itemId,
+                //     'qty' => $qty,
+                //     'price' => $price,
+                // ]);
                 $unitType = $item['unit_type'] ?? '-';
 
                 if ($itemType === 'rent' && $itemId) {
