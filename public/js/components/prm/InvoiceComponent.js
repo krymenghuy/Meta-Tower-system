@@ -598,10 +598,7 @@ var InvoiceComponent = (() => {
 
         const invType = parseInt(invoice_type);
         const params = { invoice_id: id, btn: menulink };
-
-        console.log(111111111111111111111,invType);
         
-
         if (invType === 1) {
             InvoiceTaxDialog.show(params);
         } else if (invType === 2) {

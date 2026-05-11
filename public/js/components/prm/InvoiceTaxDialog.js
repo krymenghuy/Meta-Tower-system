@@ -35,7 +35,7 @@ const InvoiceTaxDialog = (() => {
                             print-color-adjust: exact;
                         }
                         .pi-action-bar { display:none!important; }
-                        @page { size: A4 landscape; margin: 0; }
+                        @page { size: A4 landscape; margin: 1rem; }
                         @media print {
                             body { background: #fff !important; margin: 8mm; }
                             .pi-action-bar { display:none!important; }

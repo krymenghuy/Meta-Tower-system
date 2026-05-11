@@ -19,7 +19,7 @@ const InvoiceCommercialDialog = (() => {
         const biLink = Array.from(document.querySelectorAll('link[href*="bootstrap-icons"]')).map(l => l.outerHTML).join("\n");
         const fontLink = `
             <link rel="preconnect" href="https://fonts.googleapis.com"/>
-            <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>`;
+            <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>`;
         const fullDoc = `<!DOCTYPE html>
                     <html lang="en">
                     <head>
@@ -29,18 +29,19 @@ const InvoiceCommercialDialog = (() => {
                     <style>
                         *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
                         body {
-                            font-family: 'DM Sans', sans-serif;
+                            font-family: 'Inter', sans-serif;
                             background: #fff;
                             -webkit-print-color-adjust: exact;
                             print-color-adjust: exact;
                         }
                         .pi-action-bar { display:none!important; }
-                        @page { size: A4 landscape; margin: 0; }
+                        @page { size: A4 portrait; margin: 1rem; }
                         @media print {
-                            body { background: #fff !important; margin: 8mm; }
+                            body { background: #fff !important; }
                             .pi-action-bar { display:none!important; }
                             .pi-tbl-wrap { overflow: visible !important; }
                             .pi-table { min-width: unset !important; }
+                            .pi-footer-svg { display:block!important; }
                         }
                     </style>
                     </head>
@@ -63,18 +64,22 @@ const InvoiceCommercialDialog = (() => {
 
     const buildInvoiceHTML = (invoice) => {
         const validItems = (invoice.items || []).filter(
-            (item) => parseFloat(item.price || 0) > 0 || parseFloat(item.total || item.amount || 0) > 0
+            (item) => parseFloat(item.amount || 0) > 0
         );
 
         let grandTotal = 0;
         validItems.forEach((item) => {
-            const itemTotal = parseFloat(item.total || item.amount || 0);
-            grandTotal += itemTotal > 0 ? itemTotal : parseFloat(item.qty || 1) * parseFloat(item.price || 0);
+            const itemTotal = parseFloat(item.amount || 0);
+            grandTotal += itemTotal > 0 ? itemTotal : parseFloat(item.qty || 1);
         });
 
         const paid    = parseFloat(invoice.paid_amount || 0);
         const balance = Math.max(0, grandTotal - paid);
         const today   = new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
+
+        const statusLabel = balance <= 0 ? "PAID" : (paid > 0 ? "PARTIALLY PAID" : "UNPAID");
+        const statusColor = balance <= 0 ? "#166534" : (paid > 0 ? "#92400E" : "#991B1B");
+        const statusBg    = balance <= 0 ? "#DCFCE7" : (paid > 0 ? "#FEF3C7" : "#FEE2E2");
 
         const typeConfig = {
             rent:    { bg: "#EFF6FF", fg: "#1D4ED8", dot: "#3B82F6" },
@@ -84,254 +89,233 @@ const InvoiceCommercialDialog = (() => {
 
         const itemRows = validItems.map((item, i) => {
             const qty      = parseFloat(item.qty || 1);
-            const price    = parseFloat(item.price || 0);
-            const total    = parseFloat(item.total || item.amount || (qty * price));
+            const total    = parseFloat(item.amount || 0);
             const rawType  = (item.type || "service").toLowerCase();
             const disc     = parseFloat(item.discount || item.special_discount_value || 0);
             const discType = (item.discount_type || item.special_discount_type || "percent").toLowerCase();
-            const taxRate  = parseFloat(item.tax_rate || 0);
             const cfg      = typeConfig[rawType] || typeConfig.service;
 
-            let discDisplay = `<span style="color:#9CA3AF; font-size:12px;">—</span>`;
-                if (disc > 0) {
-                    const isAmount = (discType === "amount" || discType === "$");
-                    const displayValue = isAmount ? `${currency}${fmt(disc)}` : `${fmt(disc)}%`;
-                    
-                    // Using 12px to match the Price column
-                    discDisplay = `<span style="color:#EF4444; font-size:12px; font-weight:500;">${displayValue}</span>`;
-                }
+            let discDisplay = `<span style="color:#9CA3AF;font-size:12px;">—</span>`;
+            if (disc > 0) {
+                const isAmount = (discType === "amount" || discType === "$");
+                const displayValue = isAmount ? `${currency}${fmt(disc)}` : `${fmt(disc)}%`;
+                discDisplay = `<span style="color:#DC2626;font-size:12px;font-weight:600;">${displayValue}</span>`;
+            }
 
-            const rowBg = i % 2 !== 0 ? '#FAFBFF' : '#FFFFFF';
+            const rowBg = i % 2 !== 0 ? "#FAFAFA" : "#FFFFFF";
 
             return `
-            <tr style="background:${rowBg};transition:background 0.15s;">
-                <td style="padding:11px 14px;border-bottom:1px solid #EEF0F5;">
-                    <div style="font-weight:600;color:#111827;font-size:12.5px;font-family:'DM Sans',sans-serif;">
-                        ${item.description || item.remarks || item.item_name || "—"}
-                    </div>
+            <tr style="background:${rowBg};">
+                <td style="padding:10px 24px;border-bottom:1px solid #EEF0F5;font-size:12.5px;font-weight:500;color:#111;">
+                    ${item.description || item.remarks || item.item_name || "—"}
                 </td>
-                <td style="padding:11px 10px;text-align:center;border-bottom:1px solid #EEF0F5;">
-                    <span style="display:inline-flex;align-items:center;gap:5px;background:${cfg.bg};color:${cfg.fg};padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;">
+                <td style="padding:10px 12px;text-align:center;border-bottom:1px solid #EEF0F5;">
+                    <span style="display:inline-flex;align-items:center;gap:4px;background:${cfg.bg};color:${cfg.fg};padding:2px 9px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;">
                         <span style="width:5px;height:5px;border-radius:50%;background:${cfg.dot};flex-shrink:0;"></span>
                         ${rawType}
                     </span>
                 </td>
-                <td style="padding:11px 10px;text-align:center;color:#4B5563;font-size:12px;border-bottom:1px solid #EEF0F5;">${qty}</td>
-                <td style="padding:11px 10px;text-align:center;color:#6B7280;font-size:11px;border-bottom:1px solid #EEF0F5;">${item.unit_type ? item.unit_type.trim() : "—"}</td>
-                <td style="padding:11px 10px;text-align:center;color:#6B7280;font-size:11px;border-bottom:1px solid #EEF0F5;">${formatDate(item.start_date)}</td>
-                <td style="padding:11px 10px;text-align:center;color:#6B7280;font-size:11px;border-bottom:1px solid #EEF0F5;">${formatDate(item.end_date)}</td>
-                <td style="padding:11px 14px;text-align:right;color:#374151;font-size:12px;border-bottom:1px solid #EEF0F5;">${currency}${fmt(price)}</td>
-                <td style="padding:11px 14px; text-align:right; border-bottom:1px solid #EEF0F5;">${discDisplay}</td>
-                <td style="padding:11px 10px;text-align:center;font-size:11px;border-bottom:1px solid #EEF0F5;color:${taxRate > 0 ? '#2563EB' : '#9CA3AF'};">${taxRate > 0 ? `${taxRate}%` : "—"}</td>
-                <td style="padding:11px 14px;text-align:right;font-weight:700;color:#1A3D91;font-size:13px;border-bottom:1px solid #EEF0F5;">${currency}${fmt(total)}</td>
+                <td style="padding:10px 12px;text-align:center;border-bottom:1px solid #EEF0F5;font-size:12px;color:#555;">${qty}</td>
+                <td style="padding:10px 12px;text-align:center;border-bottom:1px solid #EEF0F5;font-size:12px;color:#555;">${item.unit_type ? item.unit_type.trim() : "—"}</td>
+                <td style="padding:10px 12px;text-align:center;border-bottom:1px solid #EEF0F5;font-size:11px;color:#777;">${formatDate(item.start_date)}</td>
+                <td style="padding:10px 12px;text-align:center;border-bottom:1px solid #EEF0F5;font-size:11px;color:#777;">${formatDate(item.end_date)}</td>
+                <td style="padding:10px 24px;text-align:right;border-bottom:1px solid #EEF0F5;">${discDisplay}</td>
+                <td style="padding:10px 24px;text-align:right;border-bottom:1px solid #EEF0F5;font-size:13px;font-weight:700;color:#111;">${currency}${fmt(total)}</td>
             </tr>`;
         }).join("");
 
-        const statusColor = balance <= 0 ? "#059669" : (paid > 0 ? "#D97706" : "#DC2626");
-        const statusLabel = balance <= 0 ? "PAID" : (paid > 0 ? "PARTIALLY PAID" : "UNPAID");
-        const statusBg    = balance <= 0 ? "#ECFDF5" : (paid > 0 ? "#FFFBEB" : "#FEF2F2");
-
         return `
-                <style>
-                    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap');
+            <style>
+                @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
-                    .pi-root {
-                        font-family: 'DM Sans', 'Segoe UI', sans-serif;
-                        color: #1f2937;
-                        background: #fff;
-                        max-width: 100%;
-                    }
-                    .pi-action-bar button {
-                        cursor: pointer;
-                        font-family: 'DM Sans', sans-serif;
-                        font-size: 13px;
-                        font-weight: 500;
-                        letter-spacing: 0.3px;
-                        transition: all 0.2s ease;
-                    }
-                    .pi-action-bar button:hover {
-                        transform: translateY(-1px);
-                        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-                    }
-                    .pi-tbl-wrap { overflow-x: auto; }
-                    .pi-table {
-                        width: 100%;
-                        border-collapse: collapse;
-                        min-width: 900px;
-                    }
-                    .pi-table thead th {
-                        padding: 11px 14px;
-                        font-size: 10px;
-                        font-weight: 700;
-                        letter-spacing: 1px;
-                        text-transform: uppercase;
-                        color: #6B7280;
-                        background: #F8FAFF;
-                        border-bottom: 2px solid #E5E9F5;
-                    }
-                    .pi-table tbody tr:hover { background: #F0F4FF !important; }
-                    .pi-totals-row td {
-                        padding: 13px 16px;
-                        font-size: 13px;
-                        border-top: 1px solid #E5E9F5;
-                    }
-                </style>
+                .pi-root {
+                    font-family: 'Inter', 'Segoe UI', sans-serif;
+                    background: #fff;
+                    color: #111;
+                    max-width: 100%;
+                }
+                .pi-action-bar button {
+                    cursor: pointer;
+                    font-family: 'Inter', sans-serif;
+                    font-size: 13px;
+                    font-weight: 500;
+                    transition: all 0.2s ease;
+                }
+                .pi-action-bar button:hover { opacity: 0.8; }
+                .pi-tbl-wrap { overflow-x: auto; }
+                .pi-table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    min-width: 820px;
+                }
+                .pi-table thead th {
+                    padding: 10px 24px;
+                    font-size: 10.5px;
+                    font-weight: 600;
+                    letter-spacing: 0.8px;
+                    text-transform: uppercase;
+                    color: #6B7280;
+                    background: #F8FAFF;
+                    border-bottom: 2px solid #E5E9F5;
+                    font-family: 'Inter', sans-serif;
+                }
+                .pi-table thead th:first-child { text-align: left; }
+                .pi-table thead th:nth-child(2),
+                .pi-table thead th:nth-child(3),
+                .pi-table thead th:nth-child(4),
+                .pi-table thead th:nth-child(5),
+                .pi-table thead th:nth-child(6) { text-align: center; }
+                .pi-table thead th:nth-child(7),
+                .pi-table thead th:nth-child(8),
+                .pi-table thead th:nth-child(9) { text-align: right; }
+                .pi-table tbody tr:hover { background: #F0F4FF !important; }
+                .pi-totals-row td {
+                    padding: 10px 16px;
+                    font-size: 13px;
+                    border-top: 1px solid #EBEBEB;
+                    font-family: 'Inter', sans-serif;
+                }
+                .pi-footer-svg {
+                    display: block;
+                    width: 100%;
+                    height: 90px;
+                    margin-top: 8px;
+                }
+            </style>
 
-                <div class="pi-root" id="pi-invoice-content">
+            <div class="pi-root" id="pi-invoice-content">
 
-                    <!-- ═══ HEADER BAND ═══ -->
-                    <div style="background:linear-gradient(135deg,#0F2060 0%,#1A3D91 55%,#2254C5 100%);padding:10px;display:flex;justify-content:space-between;align-items:flex-start;gap:20px;position:relative;overflow:hidden;">
-                        <!-- decorative circles -->
-                        <div style="position:absolute;right:-40px;top:-40px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,0.04);pointer-events:none;"></div>
-                        <div style="position:absolute;right:60px;top:20px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,0.05);pointer-events:none;"></div>
+                <!-- ═══ HEADER BAND ═══ -->
+                <div style="padding:0px 32px 16px 32px;border-bottom:2px solid #E5E9F5;display:flex;justify-content:space-between;align-items:center;">
 
-                        <div style="display:flex;gap:18px;align-items:flex-start;position:relative;">
-                            <div style="width:70px;height:76px;background:rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;">
-                                <img src="../assets/images/meta/Meta_logo1.png" alt="Logo"
-                                    style="width:60px;height:63px;object-fit:contain;"
-                                    onerror="this.parentElement.innerHTML='<span style=\'font-size:22px;font-weight:900;color:#fff;font-family:Playfair Display,serif;\'>M</span>'">
-                            </div>
-                            <div>
-                                <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:#FFFFFF;letter-spacing:0.5px;line-height:1.1;">META Comercercail </div>
-                                <div style="margin-top:6px;display:flex;flex-direction:column;gap:3px;">
-                                    <div style="font-size:11px;color:rgba(255,255,255,0.65);display:flex;align-items:center;gap:5px;">
-                                        <i class="bi bi-envelope-fill" style="font-size:9px;"></i> metaholding@gmail.com
-                                    </div>
-                                    <div style="font-size:11px;color:rgba(255,255,255,0.65);display:flex;align-items:center;gap:5px;">
-                                        <i class="bi bi-telephone-fill" style="font-size:9px;"></i> +855 12 345 678
-                                    </div>
-                                    <div style="font-size:11px;color:rgba(255,255,255,0.65);display:flex;align-items:center;gap:5px;">
-                                        <i class="bi bi-geo-alt-fill" style="font-size:9px;"></i> Samdech Monireth Blvd (217), Phnom Penh
-                                    </div>
-                                </div>
-                            </div>
+                    <!-- LEFT: Logo + Title + Company stacked -->
+                    <div style="display:flex;align-items:center;gap:14px;">
+                        <!-- Logo -->
+                        <div style="width:80px;height:80px;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;border-radius:10px;border:1.5px solid #E5E9F5;">
+                            <img src="../assets/images/meta/Meta_logo1.png" alt="Logo"
+                                style="width:64px;height:64px;object-fit:contain;"
+                                onerror="this.parentElement.innerHTML='<span style=&quot;font-size:24px;font-weight:900;color:#1A3D91;&quot;>M</span>'">
                         </div>
-
-                        <div style="text-align:right;position:relative;">
-                            <div style="font-family:'Playfair Display',serif;font-size:32px;font-weight:900;color:#FFFFFF;letter-spacing:-0.5px;line-height:1;">INVOICE</div>
-                            <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:6px;letter-spacing:0.5px;text-transform:uppercase;">Invoice Number</div>
-                            <div style="font-size:16px;font-weight:700;color:#FDE68A;margin-top:2px;letter-spacing:0.3px;">${invoice.code || "—"}</div>
-                            <div style="margin-top:10px;display:inline-block;padding:4px 12px;border-radius:20px;background:${statusBg};color:${statusColor};font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;">
-                                ${statusLabel}
+                        <!-- Title + company info -->
+                        <div style="display:flex;flex-direction:column;gap:2px;">
+                            <div style="font-size:30px;font-weight:800;letter-spacing:-1px;line-height:1;color:#1A3D91;font-family:'Inter',sans-serif;">Commercial Invoice</div>
+                            <div style="font-size:14px;font-weight:700;color:#1A3D91;letter-spacing:0.2px;font-family:'Inter',sans-serif;">
+                                ${invoice.company_name || "META HOLDING"}
+                            </div>
+                            <div style="font-size:11px;color:#6B7280;margin-top:2px;font-family:'Inter',sans-serif;">
+                                ${invoice.company_phone || "+855 12 345 678"}
                             </div>
                         </div>
                     </div>
 
-                    <!-- ═══ META BAR ═══ -->
-                    <div style="display:flex;justify-content:space-between;align-items:stretch;gap:0;border-bottom:2px solid #E5E9F5;flex-wrap:wrap;">
-
-                        <!-- Bill To -->
-                        <div style="padding:18px 24px;flex:1;min-width:200px;border-right:1px solid #EEF0F5;">
-                            <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#9CA3AF;margin-bottom:7px;">Bill To</div>
-                            <div style="font-size:17px;font-weight:700;color:#111827;line-height:1.2;">${invoice.tenant_name || "—"}</div>
-                            ${invoice.space_code ? `<div style="margin-top:5px;font-size:11px;color:#6B7280;display:flex;align-items:center;gap:4px;"><i class="bi bi-building" style="color:#1A3D91;font-size:10px;"></i> Space: <strong style="color:#374151;">${invoice.space_code}</strong></div>` : ""}
-                            ${invoice.tenant_email ? `<div style="margin-top:3px;font-size:11px;color:#6B7280;display:flex;align-items:center;gap:4px;"><i class="bi bi-envelope" style="color:#1A3D91;font-size:10px;"></i> ${invoice.tenant_email}</div>` : ""}
-                            ${invoice.tenant_phone ? `<div style="margin-top:3px;font-size:11px;color:#6B7280;display:flex;align-items:center;gap:4px;"><i class="bi bi-telephone" style="color:#1A3D91;font-size:10px;"></i> ${invoice.tenant_phone}</div>` : ""}
-                        </div>
-
-                        <!-- Dates -->
-                        <div style="padding:18px 24px;display:flex;flex-direction:column;justify-content:center;min-width:160px;border-right:1px solid #EEF0F5;">
-                            <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#9CA3AF;margin-bottom:3px;">Due Date</div>
-                            <div style="font-size:15px;font-weight:600;color:#111827;">${formatDate(invoice.due_date)}</div>
-                        </div>
-
-                        <!-- Amount Due -->
-                        <div style="padding:18px 24px;display:flex;flex-direction:column;justify-content:center;align-items:flex-end;min-width:180px;background:#F8FAFF;">
-                            <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#9CA3AF;margin-bottom:6px;">Amount Due</div>
-                            <div style="font-size:28px;font-weight:800; color:#0F2060;letter-spacing:-0.5px;line-height:1;">
-                                ${currency}${fmt(balance > 0 ? balance : grandTotal)}
-                            </div>
-                            <div style="margin-top:4px;font-size:11px;color:#6B7280;">
-                                ${paid > 0 ? `<span style="color:#059669;font-weight:600;">${currency}${fmt(paid)} paid</span>` : 'No payments yet'}
-                            </div>
+                    <!-- RIGHT: Invoice number + status -->
+                    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
+                        <div style="font-size:11px;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.8px;font-family:'Inter',sans-serif;">Invoice No.</div>
+                        <div style="font-size:18px;font-weight:800;color:#0F2060;font-family:'Inter',sans-serif;">${invoice.code || "—"}</div>
+                        <div style="display:inline-block;padding:4px 14px;border-radius:99px;background:${statusBg};color:${statusColor};font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;font-family:'Inter',sans-serif;">
+                            ${statusLabel}
                         </div>
                     </div>
 
-                    <!-- ═══ ITEMS TABLE ═══ -->
-                    <div class="pi-tbl-wrap">
-                        <table class="pi-table">
-                            <thead>
-                                <tr>
-                                    <th style="text-align:left;">Description</th>
+                </div>
+
+                <!-- ═══ BILLED TO / DATE LINE ═══ -->
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:14px 32px;border-bottom:1px solid #E8E8E8;background:#FAFBFF;">
+                    <!-- Left: Billed To -->
+                    <div>
+                        <div style="font-size:10px;font-weight:700;color:#9CA3AF;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.8px;font-family:'Inter',sans-serif;">Billed to</div>
+                        <div style="font-size:14px;font-weight:600;color:#111;margin-bottom:3px;font-family:'Inter',sans-serif;">${invoice.tenant_name || "—"}</div>
+                        ${invoice.space_code   ? `<div style="font-size:11px;color:#666;font-family:'Inter',sans-serif;">Space: ${invoice.space_code}</div>` : ""}
+                        ${invoice.tenant_email ? `<div style="font-size:11px;color:#666;font-family:'Inter',sans-serif;">${invoice.tenant_email}</div>` : ""}
+                        ${invoice.tenant_phone ? `<div style="font-size:11px;color:#666;font-family:'Inter',sans-serif;">${invoice.tenant_phone}</div>` : ""}
+                    </div>
+                    <!-- Right: Dates -->
+                    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
+                        <div style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.8px;font-family:'Inter',sans-serif;">Date</div>
+                        <div style="font-size:12px;color:#333;font-weight:500;font-family:'Inter',sans-serif;">${today}</div>
+                        ${invoice.due_date ? `
+                        <div style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.8px;margin-top:6px;font-family:'Inter',sans-serif;">Due Date</div>
+                        <div style="font-size:12px;color:#DC2626;font-weight:600;font-family:'Inter',sans-serif;">${formatDate(invoice.due_date)}</div>
+                        ` : ""}
+                    </div>
+                </div>
+
+                <!-- ═══ ITEMS TABLE ═══ -->
+                <div class="pi-tbl-wrap">
+                    <table class="pi-table">
+                        <thead>
+                            <tr>
+                                <th style="text-align:left;">Description</th>
                                     <th style="text-align:center;">Type</th>
                                     <th style="text-align:center;">Qty</th>
                                     <th style="text-align:center;">Unit</th>
                                     <th style="text-align:center;">Start</th>
                                     <th style="text-align:center;">End</th>
-                                    <th style="text-align:right;">Unit Price</th>
                                     <th style="text-align:right;">Discount</th>
-                                    <th style="text-align:center;">Tax</th>
                                     <th style="text-align:right;">Total</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${itemRows || `<tr><td colspan="10" style="text-align:center;padding:48px;color:#9CA3AF;font-size:13px;">No items found</td></tr>`}
-                            </tbody>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${itemRows || `<tr><td colspan="9" style="text-align:center;padding:48px;color:#999;font-size:13px;font-family:'Inter',sans-serif;">No items found</td></tr>`}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- ═══ TOTALS ═══ -->
+                <div style="display:flex;justify-content:flex-end;padding:16px 0px 8px;">
+                    <div style="min-width:260px;border:1px solid #E5E9F5;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(15,32,96,0.06);">
+                        <table style="width:100%;border-collapse:collapse;">
+                            <tr class="pi-totals-row">
+                                <td style="color:#666;font-family:'Inter',sans-serif;">Grand Total</td>
+                                <td style="text-align:right;font-weight:600;color:#111;font-family:'Inter',sans-serif;">${currency}${fmt(grandTotal)}</td>
+                            </tr>
+                            <tr class="pi-totals-row">
+                                <td style="color:#059669;font-family:'Inter',sans-serif;">Amount Paid</td>
+                                <td style="text-align:right;font-weight:600;color:#059669;font-family:'Inter',sans-serif;">− ${currency}${fmt(paid)}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" style="padding:0;border-top:2px solid #E5E9F5;"></td>
+                            </tr>
+                            <tr style="background:linear-gradient(135deg,#0F2060,#1A3D91);">
+                                <td style="padding:14px 16px;color:#fff;font-weight:700;font-size:13px;letter-spacing:0.3px;font-family:'Inter',sans-serif;">Balance Due</td>
+                                <td style="padding:14px 16px;text-align:right;font-weight:800;color:#FDE68A;font-size:15px;font-family:'Inter',sans-serif;">${currency}${fmt(balance)}</td>
+                            </tr>
                         </table>
                     </div>
+                </div>
 
-                    <!-- ═══ TOTALS ═══ -->
-                    <div style="display:flex;justify-content:flex-end;padding:16px 20px 8px;">
-                        <div style="min-width:260px;border:1px solid #E5E9F5;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(15,32,96,0.06);">
-                            <table style="width:100%;border-collapse:collapse;">
-                                <tr class="pi-totals-row">
-                                    <td style="color:#6B7280;">Grand Total</td>
-                                    <td style="text-align:right;font-weight:600;color:#111827;">${currency}${fmt(grandTotal)}</td>
-                                </tr>
-                                <tr class="pi-totals-row">
-                                    <td style="color:#059669;display:flex;align-items:center;gap:5px;">
-                                        <i class="bi bi-check-circle-fill" style="font-size:11px;"></i> Amount Paid
-                                    </td>
-                                    <td style="text-align:right;font-weight:600;color:#059669;">- ${currency}${fmt(paid)}</td>
-                                </tr>
-                                <tr>
-                                    <td colspan="2" style="padding:0;"></td>
-                                </tr>
-                                <tr style="background:linear-gradient(135deg,#0F2060,#1A3D91);">
-                                    <td style="padding:14px 16px;color:#fff;font-weight:700;font-size:13px;letter-spacing:0.3px;">Balance Due</td>
-                                    <td style="padding:14px 16px;text-align:right;font-weight:800;color:#FDE68A;font-size:15px;">${currency}${fmt(balance)}</td>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
-
-                    <!-- ═══ REMARKS ═══ -->
+                <!-- ═══ REMARKS / NOTES ═══ -->
+                <div style="padding:8px 32px 20px;display:flex;flex-direction:column;gap:6px;border-top:1px solid #F0F0F0;">
                     ${invoice.remarks ? `
-                    <div style="margin:8px 20px 16px;padding:12px 16px;background:#FFFBEB;border-left:3px solid #F59E0B;border-radius:0 8px 8px 0;">
-                        <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#92400E;margin-bottom:4px;">Remarks</div>
-                        <div style="font-size:12px;color:#78350F;line-height:1.5;">${invoice.remarks}</div>
-                    </div>` : ""}
-
-                    <!-- ═══ FOOTER ═══ -->
-                    <div style="display:flex;justify-content:space-between;align-items:flex-end;padding:14px 24px;background:#F8FAFF;border-top:1px solid #E5E9F5;flex-wrap:wrap;gap:12px;">
-                        <div>
-                            <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#1A3D91;margin-bottom:4px;">Terms &amp; Conditions</div>
-                            <div style="font-size:10px;color:#9CA3AF;line-height:1.6;">Payment is due by the date shown above.<br>Late payments may incur additional charges.</div>
-                        </div>
-                        <div style="text-align:right;">
-                            <div style="font-size:10px;color:#9CA3AF;">Generated by Property Manager</div>
-                            <div style="font-size:11px;font-weight:600;color:#4B5563;margin-top:2px;">${today}</div>
-                        </div>
+                    <div style="font-size:12px;color:#333;font-family:'Inter',sans-serif;">
+                        <strong style="font-weight:600;">Note:</strong> ${invoice.remarks}
+                    </div>` : `
+                    <div style="font-size:12px;color:#333;font-family:'Inter',sans-serif;">
+                        <strong style="font-weight:600;">Note:</strong> Payment is due by the date shown above. Late payments may incur additional charges.
+                    </div>`}
+                    <div style="margin-top:4px;font-size:10px;color:#9CA3AF;line-height:1.6;font-family:'Inter',sans-serif;">
+                        Location:${invoice.company_address || "Samdech Monireth Blvd (217), Phnom Penh"}
                     </div>
+                </div>
 
-                    <!-- ═══ ACTION BAR ═══ -->
-                    <div class="pi-action-bar" style="display:flex;justify-content:flex-end;gap:10px;padding:14px 20px;border-top:1px solid #E5E9F5;background:#fff;">
-                        <button id="pi-print-btn"
-                            style="padding:9px 20px;border-radius:8px;border:1.5px solid #1A3D91;background:#fff;color:#1A3D91;font-weight:600;display:inline-flex;align-items:center;gap:7px;">
-                            <i class="bi bi-printer-fill"></i> Print Invoice
-                        </button>
-                        <button id="pi-download-btn"
-                            style="padding:9px 20px;border-radius:8px;border:none;background:linear-gradient(135deg,#0F2060,#1A3D91);color:#fff;font-weight:600;display:inline-flex;align-items:center;gap:7px;box-shadow:0 2px 8px rgba(15,32,96,0.25);">
-                            <i class="bi bi-download"></i> Download PDF
-                        </button>
-                    </div>
+                <!-- ═══ ACTION BAR ═══ -->
+                <div class="pi-action-bar" style="display:flex;justify-content:flex-end;gap:10px;padding:14px 0px;border-top:1px solid #EBEBEB;background:#fff;">
+                    <button id="pi-print-btn"
+                        style="padding:9px 20px;border-radius:8px;border:1.5px solid #1A3D91;background:#fff;color:#1A3D91;font-weight:600;display:inline-flex;align-items:center;gap:7px;font-family:'Inter',sans-serif;">
+                        <i class="bi bi-printer-fill"></i> Print Invoice
+                    </button>
+                    <button id="pi-download-btn"
+                        style="padding:9px 20px;border-radius:8px;border:none;background:linear-gradient(135deg,#0F2060,#1A3D91);color:#fff;font-weight:600;display:inline-flex;align-items:center;gap:7px;font-family:'Inter',sans-serif;">
+                        <i class="bi bi-download"></i> Download PDF
+                    </button>
+                </div>
 
             </div>`;
-        };
+    };
 
     const wireButtons = (container) => {
-        const invoiceEl  = container.querySelector("#pi-invoice-content");
-        const printBtn   = container.querySelector("#pi-print-btn");
+        const invoiceEl   = container.querySelector("#pi-invoice-content");
+        const printBtn    = container.querySelector("#pi-print-btn");
         const downloadBtn = container.querySelector("#pi-download-btn");
         if (printBtn)    printBtn.addEventListener("click",    () => printViaIframe(invoiceEl));
         if (downloadBtn) downloadBtn.addEventListener("click", () => printViaIframe(invoiceEl));
@@ -349,8 +333,8 @@ const InvoiceCommercialDialog = (() => {
             keyboard: true,
             createContent: () => `
                 <div name="pi_container" style="min-height:280px;border-radius:8px;overflow:hidden;">
-                    <div style="display:flex;align-items:center;justify-content:center;padding:80px 0;gap:14px;color:#6B7280;font-size:13px;">
-                        <div style="width:28px;height:28px;border:3px solid #E5E9F5;border-top-color:#1A3D91;border-radius:50%;animation:pi-spin .7s linear infinite;"></div>
+                    <div style="display:flex;align-items:center;justify-content:center;padding:80px 0;gap:14px;color:#6B7280;font-size:13px;font-family:'Inter',sans-serif;">
+                        <div style="width:28px;height:28px;border:3px solid #E5E5E5;border-top-color:#1A3D91;border-radius:50%;animation:pi-spin .7s linear infinite;"></div>
                         Loading invoice…
                     </div>
                     <style>@keyframes pi-spin{to{transform:rotate(360deg)}}</style>

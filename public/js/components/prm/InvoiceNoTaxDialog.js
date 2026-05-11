@@ -19,7 +19,7 @@ const InvoiceNoTaxDialog = (() => {
         const biLink = Array.from(document.querySelectorAll('link[href*="bootstrap-icons"]')).map(l => l.outerHTML).join("\n");
         const fontLink = `
             <link rel="preconnect" href="https://fonts.googleapis.com"/>
-            <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>`;
+            <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>`;
         const fullDoc = `<!DOCTYPE html>
                     <html lang="en">
                     <head>
@@ -29,13 +29,13 @@ const InvoiceNoTaxDialog = (() => {
                     <style>
                         *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
                         body {
-                            font-family: 'Space Grotesk', sans-serif;
+                            font-family: 'Inter', sans-serif;
                             background: #fff;
                             -webkit-print-color-adjust: exact;
                             print-color-adjust: exact;
                         }
                         .pi-action-bar { display:none!important; }
-                        @page { size: A4 portrait; margin: 0; }
+                        @page { size: A4 portrait; margin: 1rem; }
                         @media print {
                             body { background: #fff !important; }
                             .pi-action-bar { display:none!important; }
@@ -128,17 +128,17 @@ const InvoiceNoTaxDialog = (() => {
 
         return `
             <style>
-                @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&display=swap');
+                @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
                 .pi-root {
-                    font-family: 'Space Grotesk', 'Segoe UI', sans-serif;
+                    font-family: 'Inter', 'Segoe UI', sans-serif;
                     background: #fff;
                     color: #111;
                     max-width: 100%;
                 }
                 .pi-action-bar button {
                     cursor: pointer;
-                    font-family: 'Space Grotesk', sans-serif;
+                    font-family: 'Inter', sans-serif;
                     font-size: 13px;
                     font-weight: 500;
                     transition: all 0.2s ease;
@@ -159,6 +159,7 @@ const InvoiceNoTaxDialog = (() => {
                     color: #6B7280;
                     background: #F8FAFF;
                     border-bottom: 2px solid #E5E9F5;
+                    font-family: 'Inter', sans-serif;
                 }
                 .pi-table thead th:first-child { text-align: left; }
                 .pi-table thead th:nth-child(2),
@@ -174,6 +175,7 @@ const InvoiceNoTaxDialog = (() => {
                     padding: 10px 16px;
                     font-size: 13px;
                     border-top: 1px solid #EBEBEB;
+                    font-family: 'Inter', sans-serif;
                 }
                 .pi-footer-svg {
                     display: block;
@@ -186,43 +188,57 @@ const InvoiceNoTaxDialog = (() => {
             <div class="pi-root" id="pi-invoice-content">
 
                 <!-- ═══ HEADER BAND ═══ -->
-                <div style="padding: 10px 32px;position:relative;overflow:hidden;">
-                    <!-- Centered content -->
-                    <div style="display:flex;flex-direction:column;align-items:center;gap:8px;position:relative;">
-                        <!-- INVOICE title -->
-                        <div style="font-size:52px;font-weight:800;letter-spacing:-1.5px;line-height:1;color:#1A3D91;">INVOICE</div>
-                        <!-- Company name -->
-                        <div style="font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:700;color:#1A3D91;letter-spacing:0.3px;">
-                            ${invoice.company_name || "META HOLDING"}
+                <div style="padding:0px 32px 16px 32px;border-bottom:2px solid #E5E9F5;display:flex;justify-content:space-between;align-items:center;">
+
+                    <!-- LEFT: Logo + Title + Company stacked -->
+                    <div style="display:flex;align-items:center;gap:14px;">
+                        <!-- Logo -->
+                        <div style="width:80px;height:80px;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;border-radius:10px;border:1.5px solid #E5E9F5;">
+                            <img src="../assets/images/meta/Meta_logo1.png" alt="Logo"
+                                style="width:64px;height:64px;object-fit:contain;"
+                                onerror="this.parentElement.innerHTML='<span style=&quot;font-size:24px;font-weight:900;color:#1A3D91;&quot;>M</span>'">
                         </div>
-                        <div style="font-size:11px;color:#1A3D91;">
-                            ${invoice.company_phone || "+855 12 345 678"} ,  ${invoice.company_address || "Samdech Monireth Blvd (217), Phnom Penh"}
+                        <!-- Title + company info -->
+                        <div style="display:flex;flex-direction:column;gap:2px;">
+                            <div style="font-size:30px;font-weight:800;letter-spacing:-1px;line-height:1;color:#1A3D91;font-family:'Inter',sans-serif;">INVOICE</div>
+                            <div style="font-size:14px;font-weight:700;color:#1A3D91;letter-spacing:0.2px;font-family:'Inter',sans-serif;">
+                                ${invoice.company_name || "META HOLDING"}
+                            </div>
+                            <div style="font-size:11px;color:#6B7280;margin-top:2px;font-family:'Inter',sans-serif;">
+                                ${invoice.company_phone || "+855 12 345 678"}
+                            </div>
                         </div>
                     </div>
+
+                    <!-- RIGHT: Invoice number + status -->
+                    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
+                        <div style="font-size:11px;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.8px;font-family:'Inter',sans-serif;">Invoice No.</div>
+                        <div style="font-size:18px;font-weight:800;color:#0F2060;font-family:'Inter',sans-serif;">${invoice.code || "—"}</div>
+                        <div style="display:inline-block;padding:4px 14px;border-radius:99px;background:${statusBg};color:${statusColor};font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;font-family:'Inter',sans-serif;">
+                            ${statusLabel}
+                        </div>
+                    </div>
+
                 </div>
 
                 <!-- ═══ BILLED TO / DATE LINE ═══ -->
-                <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:16px 32px;border-bottom:1px solid #E8E8E8;margin-top:12px;">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:14px 32px;border-bottom:1px solid #E8E8E8;background:#FAFBFF;">
                     <!-- Left: Billed To -->
                     <div>
-                        <div style="font-size:11px;font-weight:700;color:#111;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px;">Billed to:</div>
-                        <div style="font-size:14px;font-weight:600;color:#111;margin-bottom:3px;">${invoice.tenant_name || "—"}</div>
-                        ${invoice.space_code   ? `<div style="font-size:11px;color:#666;">Space: ${invoice.space_code}</div>` : ""}
-                        ${invoice.tenant_email ? `<div style="font-size:11px;color:#666;">${invoice.tenant_email}</div>` : ""}
-                        ${invoice.tenant_phone ? `<div style="font-size:11px;color:#666;">${invoice.tenant_phone}</div>` : ""}
+                        <div style="font-size:10px;font-weight:700;color:#9CA3AF;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.8px;font-family:'Inter',sans-serif;">Billed to</div>
+                        <div style="font-size:14px;font-weight:600;color:#111;margin-bottom:3px;font-family:'Inter',sans-serif;">${invoice.tenant_name || "—"}</div>
+                        ${invoice.space_code   ? `<div style="font-size:11px;color:#666;font-family:'Inter',sans-serif;">Space: ${invoice.space_code}</div>` : ""}
+                        ${invoice.tenant_email ? `<div style="font-size:11px;color:#666;font-family:'Inter',sans-serif;">${invoice.tenant_email}</div>` : ""}
+                        ${invoice.tenant_phone ? `<div style="font-size:11px;color:#666;font-family:'Inter',sans-serif;">${invoice.tenant_phone}</div>` : ""}
                     </div>
-                    <!-- Right: Invoice meta -->
-                    <div style="text-align:right;">
-                        <div style="font-size:15px;font-weight:700;color:#1A3D91;">
-                            Invoice #: <span style="color:#0F2060;">${invoice.code || "—"}</span>
-                        </div>
-                        <div style="margin-top:6px;font-size:12px;color:#555;">
-                            <strong style="font-weight:600;">Date:</strong> ${today}
-                            ${invoice.due_date ? `&nbsp;&nbsp;·&nbsp;&nbsp;<strong style="font-weight:600;">Due:</strong> ${formatDate(invoice.due_date)}` : ""}
-                        </div>
-                        <div style="margin-top:8px;display:inline-block;padding:4px 12px;border-radius:99px;background:${statusBg};color:${statusColor};font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;">
-                            ${statusLabel}
-                        </div>
+                    <!-- Right: Dates -->
+                    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
+                        <div style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.8px;font-family:'Inter',sans-serif;">Date</div>
+                        <div style="font-size:12px;color:#333;font-weight:500;font-family:'Inter',sans-serif;">${today}</div>
+                        ${invoice.due_date ? `
+                        <div style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.8px;margin-top:6px;font-family:'Inter',sans-serif;">Due Date</div>
+                        <div style="font-size:12px;color:#DC2626;font-weight:600;font-family:'Inter',sans-serif;">${formatDate(invoice.due_date)}</div>
+                        ` : ""}
                     </div>
                 </div>
 
@@ -231,72 +247,68 @@ const InvoiceNoTaxDialog = (() => {
                     <table class="pi-table">
                         <thead>
                             <tr>
-                                <th>Description</th>
-                                <th>Type</th>
-                                <th>Qty</th>
-                                <th>Unit</th>
-                                <th>Start</th>
-                                <th>End</th>
-                                <th>Unit Price</th>
-                                <th>Discount</th>
-                                <th>Total</th>
+                                <th style="text-align:left;">Description</th>
+                                    <th style="text-align:center;">Type</th>
+                                    <th style="text-align:center;">Qty</th>
+                                    <th style="text-align:center;">Unit</th>
+                                    <th style="text-align:center;">Start</th>
+                                    <th style="text-align:center;">End</th>
+                                    <th style="text-align:right;">Unit Price</th>
+                                    <th style="text-align:right;">Discount</th>
+                                    <th style="text-align:right;">Total</th>
                             </tr>
                         </thead>
                         <tbody>
-                            ${itemRows || `<tr><td colspan="9" style="text-align:center;padding:48px;color:#999;font-size:13px;">No items found</td></tr>`}
+                            ${itemRows || `<tr><td colspan="9" style="text-align:center;padding:48px;color:#999;font-size:13px;font-family:'Inter',sans-serif;">No items found</td></tr>`}
                         </tbody>
                     </table>
                 </div>
 
                 <!-- ═══ TOTALS ═══ -->
-                <div style="display:flex;justify-content:flex-end;padding:16px 32px 8px;">
-                    <div style="min-width:260px;">
+                <div style="display:flex;justify-content:flex-end;padding:16px 0px 8px;">
+                    <div style="min-width:260px;border:1px solid #E5E9F5;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(15,32,96,0.06);">
                         <table style="width:100%;border-collapse:collapse;">
                             <tr class="pi-totals-row">
-                                <td style="color:#666;">Grand Total</td>
-                                <td style="text-align:right;font-weight:600;color:#111;">${currency}${fmt(grandTotal)}</td>
+                                <td style="color:#666;font-family:'Inter',sans-serif;">Grand Total</td>
+                                <td style="text-align:right;font-weight:600;color:#111;font-family:'Inter',sans-serif;">${currency}${fmt(grandTotal)}</td>
                             </tr>
                             <tr class="pi-totals-row">
-                                <td style="color:#059669;">Amount Paid</td>
-                                <td style="text-align:right;font-weight:600;color:#059669;">− ${currency}${fmt(paid)}</td>
+                                <td style="color:#059669;font-family:'Inter',sans-serif;">Amount Paid</td>
+                                <td style="text-align:right;font-weight:600;color:#059669;font-family:'Inter',sans-serif;">− ${currency}${fmt(paid)}</td>
                             </tr>
                             <tr>
                                 <td colspan="2" style="padding:0;border-top:2px solid #E5E9F5;"></td>
                             </tr>
                             <tr style="background:linear-gradient(135deg,#0F2060,#1A3D91);">
-                                <td style="padding:14px 16px;color:#fff;font-weight:700;font-size:13px;letter-spacing:0.3px;">Balance Due</td>
-                                <td style="padding:14px 16px;text-align:right;font-weight:800;color:#FDE68A;font-size:15px;">${currency}${fmt(balance)}</td>
+                                <td style="padding:14px 16px;color:#fff;font-weight:700;font-size:13px;letter-spacing:0.3px;font-family:'Inter',sans-serif;">Balance Due</td>
+                                <td style="padding:14px 16px;text-align:right;font-weight:800;color:#FDE68A;font-size:15px;font-family:'Inter',sans-serif;">${currency}${fmt(balance)}</td>
                             </tr>
                         </table>
                     </div>
                 </div>
 
                 <!-- ═══ REMARKS / NOTES ═══ -->
-                <div style="padding:0 32px 16px;display:flex;flex-direction:column;gap:6px;">
-                    <div style="font-size:12px;color:#333;">
-                        <strong style="font-weight:600;">Payment method:</strong>
-                        ${invoice.payment_method || "Cash"}
-                    </div>
+                <div style="padding:8px 32px 20px;display:flex;flex-direction:column;gap:6px;border-top:1px solid #F0F0F0;">
                     ${invoice.remarks ? `
-                    <div style="font-size:12px;color:#333;">
+                    <div style="font-size:12px;color:#333;font-family:'Inter',sans-serif;">
                         <strong style="font-weight:600;">Note:</strong> ${invoice.remarks}
                     </div>` : `
-                    <div style="font-size:12px;color:#333;">
-                        <strong style="font-weight:600;">Note:</strong> Thank you for your business!
+                    <div style="font-size:12px;color:#333;font-family:'Inter',sans-serif;">
+                        <strong style="font-weight:600;">Note:</strong> Payment is due by the date shown above. Late payments may incur additional charges.
                     </div>`}
-                    <div style="margin-top:6px;font-size:10px;color:#999;line-height:1.6;">
-                        Payment is due by the date shown above. Late payments may incur additional charges.
+                    <div style="margin-top:4px;font-size:10px;color:#9CA3AF;line-height:1.6;font-family:'Inter',sans-serif;">
+                        Location:${invoice.company_address || "Samdech Monireth Blvd (217), Phnom Penh"}
                     </div>
                 </div>
 
                 <!-- ═══ ACTION BAR ═══ -->
-                <div class="pi-action-bar" style="display:flex;justify-content:flex-end;gap:10px;padding:14px 24px;border-top:1px solid #EBEBEB;background:#fff;">
+                <div class="pi-action-bar" style="display:flex;justify-content:flex-end;gap:10px;padding:14px 0px;border-top:1px solid #EBEBEB;background:#fff;">
                     <button id="pi-print-btn"
-                        style="padding:9px 20px;border-radius:8px;border:1.5px solid #1A3D91;background:#fff;color:#1A3D91;font-weight:600;display:inline-flex;align-items:center;gap:7px;">
+                        style="padding:9px 20px;border-radius:8px;border:1.5px solid #1A3D91;background:#fff;color:#1A3D91;font-weight:600;display:inline-flex;align-items:center;gap:7px;font-family:'Inter',sans-serif;">
                         <i class="bi bi-printer-fill"></i> Print Invoice
                     </button>
                     <button id="pi-download-btn"
-                        style="padding:9px 20px;border-radius:8px;border:none;background:linear-gradient(135deg,#0F2060,#1A3D91);color:#fff;font-weight:600;display:inline-flex;align-items:center;gap:7px;">
+                        style="padding:9px 20px;border-radius:8px;border:none;background:linear-gradient(135deg,#0F2060,#1A3D91);color:#fff;font-weight:600;display:inline-flex;align-items:center;gap:7px;font-family:'Inter',sans-serif;">
                         <i class="bi bi-download"></i> Download PDF
                     </button>
                 </div>
@@ -324,7 +336,7 @@ const InvoiceNoTaxDialog = (() => {
             keyboard: true,
             createContent: () => `
                 <div name="pi_container" style="min-height:280px;border-radius:8px;overflow:hidden;">
-                    <div style="display:flex;align-items:center;justify-content:center;padding:80px 0;gap:14px;color:#6B7280;font-size:13px;">
+                    <div style="display:flex;align-items:center;justify-content:center;padding:80px 0;gap:14px;color:#6B7280;font-size:13px;font-family:'Inter',sans-serif;">
                         <div style="width:28px;height:28px;border:3px solid #E5E5E5;border-top-color:#1A3D91;border-radius:50%;animation:pi-spin .7s linear infinite;"></div>
                         Loading invoice…
                     </div>
