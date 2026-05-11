@@ -272,7 +272,7 @@ var SpaceComponent = new (function () {
                 menu.set_maintenance.style.display = hasActiveMaintenance ? 'none' : 'block';
                 menu.delete_space.style.display = statusIdNum > 1 ? 'none' : 'block';
             },
-
+                                                                                               
             onClick: (menulink, id, name) => {
                 switch (name) {
                     case 'set_maintenance': {
@@ -799,6 +799,7 @@ const BuildingSpaceDialog = (() => {
                         name: "floor_id",
                         textField: "name",
                         valueField: "id",
+                        lazyLoading: true,
                         defaultValue: (me, op) => {
                             return op?.data?.floor_id ?? null;
                         },
@@ -806,13 +807,13 @@ const BuildingSpaceDialog = (() => {
                             name: "building_id",
                             api: {
                                 endpoint: `${main_view.base_url}/prm/settings/options-floors`,
-                                params: (me, op) => {
-                                    let building_id = me.controls.building_id.value;
-                                    return {
-                                        building_id: building_id,
+                                // params: (me, op) => {
+                                //     let building_id = me.controls.building_id.value;
+                                //     return {
+                                //         building_id: building_id,
 
-                                    };
-                                },
+                                //     };
+                                // },
                             },
                         },
 

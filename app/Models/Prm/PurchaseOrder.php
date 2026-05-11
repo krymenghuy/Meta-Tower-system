@@ -25,10 +25,127 @@ class PurchaseOrder extends VSModel
       $rows = DB::table('items as i')->selectRaw('id as value, name as label')->get();
         return $rows;
     }
-   public function savePurchaseOrder($arr = [], $id = null, $ss = null)
+//    public function savePurchaseOrder($arr = [], $id = null, $ss = null)
+//     {
+//         $id = $id ?? $this->id;
+//         $ss = $ss ?? $this->userInfo;
+
+//         $v_rule = [
+//             'vendor_id' => '1|number|exists=vendors.id|text=Please select valid Vendor',
+//             'po_number' => '0|string|0-25',
+//             'po_date' => '1|timestamp|text=PO date is required',
+//             'remarks' => '0|string|1-255',
+//             'items' => '1|array',
+//         ];
+//         $po_number = ['-', '_', '.', '#'];
+//         $res = DBX::validateObject($arr,$v_rule,1,['po_number' => $po_number],$ss->lang,false,null);
+//         if ($res->error) {
+//             return DV::error($res->error);
+//         }
+//         $inputs = $res->values;
+//         $items = $inputs['items'] ?? [];
+//         $totals = $arr['totals'] ?? [];
+//         $po_date = convertDate($inputs['po_date'] ?? null);
+//         $today = date('Y-m-d');
+//         if (!$po_date || !strtotime($po_date)) {
+//             $po_date = $today;
+//         }
+
+//         if($po_date < $today){
+//             return DV::error('PO date cannot be in the past');
+//         }
+//         if ($po_date > $today) {
+//             return DV::error('PO date cannot be later than today');
+//         }
+
+//         $inputs['po_date'] = $po_date;
+//         $inputs['sub_total'] = $totals['subtotal'] ?? 0;
+//         $inputs['discount_value'] = $totals['discount_value'] ?? 0;
+//         $inputs['discount_type'] = in_array(
+//         $totals['discount_type'] ?? 'percent',['percent', 'amount']) ? $totals['discount_type'] : 'percent';
+//         $inputs['tax_total'] = $totals['tax_total'] ?? 0;
+//         $inputs['total_amount'] = $totals['grand_total'] ?? 0;
+//         $inputs['currency_code'] = $totals['currency_code'] ?? 'USD';
+
+//         unset($inputs['items']);
+//         $create = empty($id);
+//         // \Log::info(json_encode($inputs));
+//         \Log::info(json_encode($items));
+//         DB::beginTransaction();
+//         try {
+
+//             $po_id = DBX::saveData($ss,'purchase_orders',['id' => $id],$inputs,[],1,false);
+//             if (!$po_id) {
+//                 DB::rollBack();
+//                 return DV::error('Cannot save purchase order');
+//             }
+//            self::setPONumber($ss->branch_id, $po_id, 'PO', $inputs['po_date'], 5, 'PO');
+//             $items = array_map(fn($i) => (object) $i, $items);
+//             $valid_items = array_values(array_filter($items, function ($item) {
+//                 return !empty($item->item_id);
+//             }));
+//             $success_count = 0;
+//             $incoming_ids = [];
+//              if (!$create) {
+//                 DB::table('purchase_order_items')
+//                     ->where('po_id', $po_id)
+//                     ->when(!empty($incoming_ids), function ($q) use ($incoming_ids) {
+//                         $q->whereNotIn('id', $incoming_ids);
+//                     })
+//                     ->delete();
+//             }
+//             foreach ($valid_items as $item) {
+//                 $trx_id = $item->trx_id ?? $item->id ?? null;
+//                 if (!$create && $trx_id) {
+//                     $exists = DB::table('purchase_order_items')
+//                         ->where('id', $trx_id)
+//                         ->where('po_id', $po_id)
+//                         ->exists();
+//                     if (!$exists) {
+//                         $trx_id = null;
+//                     }
+//                 }
+
+              
+//                 $input_item = [
+//                     'trx_id' => $trx_id,
+//                     'item_id' => $item->item_id,
+//                     'unit' => $item->unit ?? null,
+//                     'qty' => $item->qty,
+//                     'unit_price' => $item->unit_price,
+//                     'total_price' => $item->total_price,
+//                     'po_id' => $po_id
+//                 ];
+
+//                 $saved = self::savePoItem($ss, $input_item, $po_id);
+//                 if ($saved) {
+//                     $success_count++;
+//                     if ($trx_id) {
+//                         $incoming_ids[] = $trx_id;
+//                     }
+//                 }
+//             }
+           
+//             DB::commit();
+//             return DV::success([
+//                 'data' => [
+//                     'po_id' => $po_id,
+//                     'success_count' => $success_count,
+//                     'count' => count($valid_items)
+//                 ]
+//             ]);
+
+//         } catch (\Exception $e) {
+//             DB::rollBack();
+//             return DV::error($e->getMessage());
+//         }
+//     }
+
+    public function savePurchaseOrder($arr = [], $id = null, $ss = null)
     {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
+
 
         $v_rule = [
             'vendor_id' => '1|number|exists=vendors.id|text=Please select valid Vendor',
@@ -37,26 +154,26 @@ class PurchaseOrder extends VSModel
             'remarks' => '0|string|1-255',
             'items' => '1|array',
         ];
-        $po_number = ['-', '_', '.', '#'];
-        $res = DBX::validateObject($arr,$v_rule,1,['po_number' => $po_number],$ss->lang,false,null);
+
+        $res = DBX::validateObject($arr, $v_rule, 1, [], $ss->lang, false, null);
+
         if ($res->error) {
             return DV::error($res->error);
         }
+
         $inputs = $res->values;
         $items = $inputs['items'] ?? [];
         $totals = $arr['totals'] ?? [];
+
         $po_date = convertDate($inputs['po_date'] ?? null);
         $today = date('Y-m-d');
+
         if (!$po_date || !strtotime($po_date)) {
             $po_date = $today;
         }
 
-        if($po_date < $today){
-            return DV::error('PO date cannot be in the past');
-        }
-        if ($po_date > $today) {
-            return DV::error('PO date cannot be later than today');
-        }
+        if ($po_date < $today && !$id) return DV::error('PO date cannot be in the past');
+        if ($po_date > $today) return DV::error('PO date cannot be later than today');
 
         $inputs['po_date'] = $po_date;
         $inputs['sub_total'] = $totals['subtotal'] ?? 0;
@@ -68,53 +185,41 @@ class PurchaseOrder extends VSModel
         $inputs['currency_code'] = $totals['currency_code'] ?? 'USD';
 
         unset($inputs['items']);
+
         $create = empty($id);
+
         DB::beginTransaction();
+
         try {
 
-            $po_id = DBX::saveData($ss,'purchase_orders',['id' => $id],$inputs,[],1,false);
+            $po_id = DBX::saveData($ss, 'purchase_orders', ['id' => $id], $inputs, [], 1, false);
+
             if (!$po_id) {
                 DB::rollBack();
                 return DV::error('Cannot save purchase order');
             }
-           self::setPONumber($ss->branch_id, $po_id, 'PO', $inputs['po_date'], 5, 'PO');
-            $items = array_map(fn($i) => (object) $i, $items);
-            $valid_items = array_values(array_filter($items, function ($item) {
-                return !empty($item->item_id);
-            }));
-            $success_count = 0;
-            $incoming_ids = [];
-            foreach ($valid_items as $item) {
-                $trx_id = $item->trx_id ?? $item->id ?? null;
-                if (!$create && $trx_id) {
-                    $exists = DB::table('purchase_order_items')
-                        ->where('id', $trx_id)
-                        ->where('po_id', $po_id)
-                        ->exists();
-                    if (!$exists) {
-                        $trx_id = null;
-                    }
-                }
 
-                $qty = $item->qty ?? 0;
-                $unit_price = $item->unit_price ?? 0;
-                $input_item = [
-                    'trx_id' => $trx_id,
-                    'item_id' => $item->item_id,
-                    'unit' => $item->unit ?? null,
-                    'qty' => $qty,
-                    'unit_price' => $unit_price,
-                    'total_price' => $qty * $unit_price,
-                    'po_id' => $po_id
-                ];
-                $saved = self::savePoItem($ss, $input_item, $po_id);
-                if ($saved) {
-                    $success_count++;
-                    if ($trx_id) {
-                        $incoming_ids[] = $trx_id;
-                    }
+            self::setPONumber($ss->branch_id, $po_id, 'PO', $inputs['po_date'], 5, 'PO');
+
+            $items = array_map(fn($i) => (object) $i, $items);
+
+            $valid_items = array_values(array_filter($items, fn($i) => !empty($i->item_id)));
+
+            $itemIds = array_column($valid_items, 'item_id');
+
+            if (count($itemIds) !== count(array_unique($itemIds))) {
+                return DV::error('Duplicate items are not allowed in purchase order');
+            }
+            // 🔥 STEP 1: collect incoming IDs first
+            $incoming_ids = [];
+
+            foreach ($valid_items as $item) {
+                if (!empty($item->id)) {
+                    $incoming_ids[] = $item->id;
                 }
             }
+
+            // 🔥 STEP 2: delete safely
             if (!$create) {
                 DB::table('purchase_order_items')
                     ->where('po_id', $po_id)
@@ -123,16 +228,31 @@ class PurchaseOrder extends VSModel
                     })
                     ->delete();
             }
-            $db_sub = DB::table('purchase_order_items')
-                ->where('po_id', $po_id)
-                ->sum('total_price');
 
-            if (abs($db_sub - ($inputs['sub_total'] ?? 0)) > 0.01) {
-                DB::rollBack();
-                return DV::error('Subtotal mismatch with items');
+            $success_count = 0;
+
+            foreach ($valid_items as $item) {
+
+                $trx_id = $item->id ?? null;
+                $input_item = [
+                    'id' => $trx_id,
+                    'item_id' => $item->item_id,
+                    'unit' => $item->unit ?? null,
+                    'qty' => $item->qty,
+                    'unit_price' => $item->unit_price,
+                    'total_price' => $item->total_price,
+                    'po_id' => $po_id
+                ];
+
+                $saved = self::savePoItem($ss, $input_item, $po_id);
+
+                if ($saved) {
+                    $success_count++;
+                }
             }
 
             DB::commit();
+
             return DV::success([
                 'data' => [
                     'po_id' => $po_id,
@@ -151,14 +271,10 @@ class PurchaseOrder extends VSModel
     public static function savePoItem($ss, $item, $po_id)
     {
         $item = (object) $item;
-        $trx_id = $item->trx_id ?? null;
-        if (!is_numeric($trx_id) || (int) $trx_id <= 0) {
-            $trx_id = null;
-        }
-
+        $id = $item->trx_id ?? null;
         $inputs = [
             'po_id' => $po_id,
-            'item_id' => $item->item_id ?? $item->id ?? null,
+            'item_id' => $item->item_id ?? null,
             'qty' => $item->qty ?? 0,
             'unit_price' => $item->unit_price ?? 0,
             'total_price' => ($item->qty ?? 0) * ($item->unit_price ?? 0),
@@ -167,7 +283,7 @@ class PurchaseOrder extends VSModel
         $id = DBX::saveData(
             $ss,
             'purchase_order_items',
-            ['id' => $trx_id],
+            ['id' => $id],
             $inputs,
             [],
             1,
@@ -276,19 +392,48 @@ class PurchaseOrder extends VSModel
         $rows = DB::table('purchase_order_items as pi')
             ->join('items as i','i.id','=','pi.item_id')
             ->where('pi.po_id',$id)
-            ->selectRaw("pi.item_id,pi.qty,i.unit,pi.unit_price as price,pi.total_price")->get();
+            ->selectRaw("pi.item_id,pi.qty,i.unit,pi.unit_price,pi.total_price")->get();
 
 
         return $rows;
     }
+//     public function getItemsByPO($data, $ss)
+// {
+//     $id = $data['po_id'] ?? $data['id'] ?? null;
+
+//     $rows = DB::table('purchase_order_items as pi')
+//         ->join('items as i', 'i.id', '=', 'pi.item_id')
+//         ->where('pi.po_id', $id)
+//         ->selectRaw("
+//             pi.id,
+//             pi.item_id,
+//             i.name as item,
+//             pi.qty,
+//             pi.unit,
+//             pi.unit_price as price,
+//             pi.total_price,
+//             pi.tax_amount,
+//             pi.currency_code
+//         ")
+//         ->get();
+
+//     foreach ($rows as $r) {
+//         $r->qty = (float) $r->qty;
+//         $r->price = (float) $r->price;
+//         $r->total_price = (float) $r->total_price;
+//         $r->tax_amount = (float) $r->tax_amount;
+//     }
+
+//     return $rows;
+// }
     static function getItemsByPurchaseOrder($id = null, $ss = null)
     {
         $po_id = $id ?? null;
         $rows = DB::table('purchase_order_items as pi')
             ->join('items as i', 'i.id', '=', 'pi.item_id')
             ->where('pi.po_id', $po_id)
-            ->selectRaw("pi.id, pi.qty,pi.unit_price, pi.total_price,pi.remarks, pi.status_id, i.code,pi.item_id, i.name as item_name")
-            ->orderByRaw('i.name ASC')
+            ->selectRaw("pi.id, pi.qty,pi.unit_price, pi.total_price,pi.remarks, pi.status_id, i.code,pi.item_id, i.name as item_name,i.unit")
+            ->orderByRaw('pi.id DESC')
             ->get();
 
         return $rows;
