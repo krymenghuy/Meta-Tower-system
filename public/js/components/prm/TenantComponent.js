@@ -640,7 +640,6 @@ var TenantComponent = new (function () {
     mThis.getFilterData = () => {
         let p = {
             search_value: mThis.elSearch.value,
-            status_id: mThis.elStatus.value,
         };
 
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
@@ -1395,16 +1394,7 @@ var TenantComponent = new (function () {
             )
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(
-                    mThis.elStatus,
-                    d.statuses,
-                    "id",
-                    "name",
-                    '',
-                    "All Statuses",
-                    '',
-                );
-
+                VSUtil.setComboItems(mThis.elStatus,d.statuses,"id", "name", '',"All Statuses",'',);
                 if (typeof onFinish === "function") onFinish();
             });
     };
@@ -1451,23 +1441,23 @@ const CreateTenantDialog = (() => {
                                     <label>Full Name</label>
                                 </div>
                             </div>
-                            <div class="col-12 col-md-4">
-                                <select data-style="material" name="sex" class="data-input form-control" data-field="sex" placeholder="Tenant Type">
-                                    <option value="P">Premium</option>
-                                    <option value="S">Standard</option>
-                                </select>
-                            </div>
-                            <div class="col-12 col-md-4">
+                            <div class="col-12 col-md-6">
                                 <select data-style="material" name="sex" class="data-input form-control" data-field="sex" placeholder="Gender">
                                     <option value="M">Male</option>
                                     <option value="F">Female</option>
                                 </select>
                             </div>
-                            <div class="col-12 col-md-4">
+                            <div class="col-12 col-md-6">
                                 <div class="vs-material-field">
                                     <input type="text" data-type="date" name="date_of_birth" class="data-input form-control form_input" data-field="date_of_birth" placeholder=" " />
                                     <label>Date of Birth</label>
                                 </div>
+                            </div>
+                            <div class="col-12 col-md-4 d-none">
+                                <select data-style="material" name="tenant_type" class="data-input form-control" data-field="tenant_type" placeholder="Tenant Type">
+                                    <option value="1">Premium</option>
+                                    <option value="2">Standard</option>
+                                </select>
                             </div>
                         </div>
                         <div class="col-12 row g-3">

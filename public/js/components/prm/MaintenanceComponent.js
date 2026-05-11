@@ -504,14 +504,14 @@ const CreateMaintenanceDialog = (() => {
                         if (op.type_unit === 'space') {
                             op.amenity_id = null;
                             if (!op.space_id) {
-                                cv_interact.error("Space is required.");
+                                cv_interact.error("Space name is required.");
                                 return;
                             }
                         } else if (op.type_unit === 'amenity') {
                             op.space_id = null;
 
                             if (!op.amenity_id) {
-                                cv_interact.error("Amenity is required.");
+                                cv_interact.error("Amenity name is required.");
                                 return;
                             }
                         }
