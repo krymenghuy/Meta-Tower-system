@@ -36,6 +36,8 @@ class Invoice extends VSModel
             'payment_status_id' => '0|integer|exists:payment_statuses,id|default=2',
             'items'             => '1|array|min:1',
             'general_remark'    => '0|string|0-350|',
+            'invoice_type'      => '1|choice|1,2,3',
+
 
         ];
 
@@ -400,8 +402,8 @@ class Invoice extends VSModel
 
         return $query->value('id');
     }
-     
-    
+
+
 
     public function getListPaginate($arr, $ss)
     {
@@ -430,6 +432,7 @@ class Invoice extends VSModel
                 'i.space_id',
                 'i.amount',
                 'i.paid_amount',
+                'i.invoice_type',
                 'i.due_date',
                 'i.general_remark',
                 'i.invoice_date',
@@ -507,6 +510,7 @@ class Invoice extends VSModel
                 'i.amount',
                 'i.paid_amount',
                 'i.start_time',
+                'i.invoice_type',
                 'i.due_date',
                 DB::raw('(i.amount - COALESCE(i.paid_amount, 0)) as balance'),
                 'i.payment_status_id',

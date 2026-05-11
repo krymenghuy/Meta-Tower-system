@@ -1,4 +1,4 @@
-const PrintInvoiceDialog = (() => {
+const InvoiceCommercialDialog = (() => {
     const self = {};
 
     const currency = "$";
@@ -192,7 +192,7 @@ const PrintInvoiceDialog = (() => {
                                     onerror="this.parentElement.innerHTML='<span style=\'font-size:22px;font-weight:900;color:#fff;font-family:Playfair Display,serif;\'>M</span>'">
                             </div>
                             <div>
-                                <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:#FFFFFF;letter-spacing:0.5px;line-height:1.1;">META HOLDING</div>
+                                <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:#FFFFFF;letter-spacing:0.5px;line-height:1.1;">META Comercercail </div>
                                 <div style="margin-top:6px;display:flex;flex-direction:column;gap:3px;">
                                     <div style="font-size:11px;color:rgba(255,255,255,0.65);display:flex;align-items:center;gap:5px;">
                                         <i class="bi bi-envelope-fill" style="font-size:9px;"></i> metaholding@gmail.com

@@ -21,24 +21,31 @@ var InvoiceComponent = (() => {
         { transTitle: "", className: "align-middle text-capitalize" },
         {
             transTitle: "titles.Invoice No",
-            className: "align-middle  text-start text-nowrap",
-            data: data => {
+            className: "align-middle text-start text-nowrap",
+            data: function(data) {
                 const code = data.code
                     ? `<span class="text-prm-custom">${data.code}</span>`
                     : `<span class="text-muted fst-italic">N/A</span>`;
-                const date = data.invoice_date
-                    ? `<span class="text-danger-emphasis small">${data.invoice_date}</span>`
-                    : `<span class="text-muted fst-italic small">N/A</span>`;
+
+                let typeHtml = '';
+                const val = data.invoice_type;
+
+                if (val == 1) {
+                    typeHtml = `<span class="text-prm-custom"> Tax</span>`;
+                } else if (val == 2) {
+                    typeHtml = `<span class="text-prm-custom"> No Tax</span>`;
+                } else {
+                    typeHtml = `<span class="text-prm-custom"> Commercial</span>`;
+                }
                 return `
                     <div class="d-flex flex-column">
                         ${code}
                         <hr class="m-0 border border-secondary border-3 opacity-75">
-                        ${date}
+                        ${typeHtml}
                     </div>
                 `;
             }
         },
-
         {
             transTitle: "titles.Tenant",
             className: "align-middle text-nowrap",
@@ -565,12 +572,37 @@ var InvoiceComponent = (() => {
         });
     };
 
-    mThis.printInvoice = (id, menulink) => {
-        PrintInvoiceDialog.show({
-            invoice_id: id,
-            btn: menulink
-        });
+    mThis.printInvoice = (id, invoice_type, menulink) => {
+        if (!invoice_type || invoice_type === 'undefined') {
+        console.warn("Type missing for ID " + id + ". Fetching from server...");
+        
+        vsapi.call(`${main_view.base_url}/prm/invoice/details`, { id: id })
+            .then((res) => {
+                if (res.status_code === 200) {
+                    mThis.printInvoice(id, res.data.invoice_type, menulink);
+                } else {
+                    cv_interact.error("Could not determine invoice type.");
+                }
+            });
+        return;
+    }
+
+        const invType = parseInt(invoice_type);
+        const params = { invoice_id: id, btn: menulink };
+
+        console.log(111111111111111111111,invType);
+        
+
+        if (invType === 1) {
+            InvoiceTaxDialog.show(params);
+        } else if (invType === 2) {
+            InvoiceNoTaxDialog.show(params); 
+        } else if (invType === 3) {
+            InvoiceCommercialDialog.show(params);
+        }
     };
+
+    
 
     mThis.prepareFormOptions = onFinish => {
         vsapi
@@ -647,10 +679,22 @@ const InvoiceDialog = (() => {
                                                 </select>
                                         </div>
                                         <div class="field-row ">
+                                            <label class="field-label fw-semibold">Invoice Type</label>
+                                            <span class="field-sep">:</span>
+                                            <select  name="invoice_type" data-style="material" class="data-input form-control" data-field="invoice_type" required placeholder=" Invoice Type">
+                                                <option value="1">Tax</option>
+                                                <option value="2">No Tax</option>
+                                                <option value="3">Commercial</option>
+                                            </select>
+                                        </div>
+
+                                         <div class="field-row ">
                                             <label class="field-label fw-semibold">Due Date </label>
                                             <span class="field-sep">:</span>
                                             <input type="text" data-type="date" name="due_date" class="form-control data-input field-input" required placeholder=" ">
                                         </div>
+
+
                                         <div class="field-row w-100 justify-content-end">
                                             <div class="d-flex flex-wrap gap-2 justify-content-end ">
                                                 <button name="btnRent" class="custom-button">Rent</button>
@@ -1523,239 +1567,7 @@ const InvoiceDialog = (() => {
                     });
                 };
 
-                // ===================== Service =================
-                // me.controls.btnService.onclick = () => {
-                //     if (!me._selectedTenantId) {
-                //         return cv_interact.error("Please select Tenant first");
-                //     }
-                //     if (
-                //         !me.controls.space.value ||
-                //         me.controls.space.value === ""
-                //     ) {
-                //         return cv_interact.error("Please select Space");
-                //     }
 
-                //     const services = availableItem || [];
-                //     if (services.length === 0) {
-                //         return cv_interact.error("No services available");
-                //     }
-
-                //     const serviceOptions = services
-                //         .map(
-                //             s =>
-                //                 `<option value="${s.id}">${s.service ||
-                //                     s.name ||
-                //                     `Service #${s.id}`}</option>`
-                //         )
-                //         .join("");
-
-                //     let serviceDiv = null;
-                //     InputBox.show({
-                //         title: "Add Service",
-                //         instanceKey: "servicePopUp",
-                //         createContent() {
-                //             const div = document.createElement("div");
-                //             serviceDiv = div;
-                //             div.style.cssText =
-                //                 "display:flex; flex-direction:column;";
-
-                //             div.innerHTML = `
-                //                     <div>
-                //                         <div class="d-flex align-items-center  mb-3">
-                //                             <span style=" color:#0C447C; font-size:13px;">Service Selection</span>
-                //                             <div style="flex:1; height:1px; background:#e0e0e0;"></div>
-                //                         </div>
-                //                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                //                             <div class="material-input outlined" style="margin-bottom: 1rem;">
-                //                                 <select class="data-input form-control" data-style="material" data-field="service_id" name="service_id" placeholder="Select Service">
-                //                                     ${serviceOptions}
-                //                                 </select>
-                //                             </div>
-                //                             <div class="material-input outlined" style="margin-bottom: 1rem;">
-                //                                 <input class="data-input form-control bg-light" data-field="unit_type" name="unit_type" type="text" readonly placeholder=" ">
-                //                                 <label style="color:#777;">Unit Type</label>
-                //                             </div>
-                //                             <div class="material-input outlined" style="margin-bottom: 1rem;">
-                //                                 <input class="data-input form-control bg-light" data-field="price" name="price" type="text" readonly placeholder=" ">
-                //                                 <label style="color:#777;">Unit Price ($)</label>
-                //                             </div>
-                //                             <div class="material-input outlined" style="margin-bottom: 1rem;">
-                //                                 <select class="data-input form-control bg-light" data-style="material" data-field="duration_months" name="duration_months" type="text" readonly placeholder="Duration Months">
-                //                                     <option value="">Select Duration</option>
-                //                                     <option value="1">1 Month</option>
-                //                                     <option value="3">3 Months</option>
-                //                                     <option value="6">6 Months</option>
-                //                                     <option value="12">12 Months</option>
-                //                                 </select>
-                //                             </div>
-                //                         </div>
-                //                     </div>
-
-                //                     <div>
-                //                         <div class="d-flex align-items-center  mb-3">
-                //                             <span style=" color:#0C447C; font-size:13px;">Billing Period</span>
-                //                             <div style="flex:1; height:1px; background:#e0e0e0;"></div>
-                //                         </div>
-                //                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                //                             <div class="material-input outlined" style="margin-bottom: 1rem;">
-                //                                 <input class="data-input form-control" data-field="start_date" name="start_date" type="text" data-type="date" placeholder="d-m-y">
-                //                                 <label style="color:#777;">Start Date</label>
-                //                             </div>
-                //                             <div class="material-input outlined" style="margin-bottom: 1rem;">
-                //                                 <input class="data-input form-control" data-field="end_date" name="end_date" type="text" data-type="date" placeholder="d-m-y">
-                //                                 <label style="color:#777;">End Date</label>
-                //                             </div>
-                //                         </div>
-                //                     </div>
-
-                //                     <div>
-                //                         <div class="d-flex align-items-center  mb-3">
-                //                             <span style=" color:#0C447C; font-size:13px;">Financials</span>
-                //                             <div style="flex:1; height:1px; background:#e0e0e0;"></div>
-                //                         </div>
-                //                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                //                             <div class="material-input outlined" style="display:flex; gap:8px; align-items:flex-end;">
-                //                                 <div style="flex:1">
-                //                                     <input class="data-input form-control" data-field="discount" name="discount" type="text" inputmode="decimal" placeholder="0">
-                //                                     <label style="color:#777;">Discount</label>
-                //                                 </div>
-                //                                 <div style="width:80px;">
-                //                                     <select class="data-input form-control" data-field="discount_type" name="discount_type">
-                //                                         <option value="percent">%</option>
-                //                                         <option value="amount">$</option>
-                //                                     </select>
-                //                                 </div>
-                //                             </div>
-                //                             <div class="material-input outlined">
-                //                                 <input class="data-input form-control" data-field="tax_rate" name="tax_rate" type="number" placeholder="0">
-                //                                 <label style="color:#777;">Tax (%)</label>
-                //                             </div>
-                //                         </div>
-                //                     </div>
-
-                //                     <div class="material-input outlined">
-                //                         <textarea class="data-input form-control" data-field="remark" name="remark" rows="2" placeholder=" "></textarea>
-                //                         <label style="color:#777;">Remark </label>
-                //                     </div>
-                //                 `;
-                //             return div;
-                //         },
-                //         onOpen(ibMe) {
-                //             const elService = document.querySelector(
-                //                 '[data-field="service_id"]'
-                //             );
-                //             const elUnitType = document.querySelector(
-                //                 '[data-field="unit_type"]'
-                //             );
-                //             const elPrice = document.querySelector(
-                //                 '[data-field="price"]'
-                //             );
-                //             const elDurationMonths = document.querySelector(
-                //                 '[data-field="duration_months"]'
-                //             );
-                //             const elStartDate = document.querySelector(
-                //                 '[data-field="start_date"]'
-                //             );
-                //             const elEndDate = document.querySelector(
-                //                 '[data-field="end_date"]'
-                //             );
-
-                //             const fillFields = serviceId => {
-                //                 const selected = services.find(
-                //                     s => String(s.id) === String(serviceId)
-                //                 );
-                //                 if (selected) {
-                //                     if (elUnitType)
-                //                         elUnitType.value =
-                //                             selected.unit_type || "—";
-                //                     if (elPrice)
-                //                         elPrice.value = Number(
-                //                             selected.price || 0
-                //                         ).toFixed(2);
-                //                 }
-                //             };
-
-                //             const calMonth = elPrice.value * elDurationMonths;
-
-                //             if (elService) {
-                //                 if (elService.value) {
-                //                     fillFields(elService.value);
-                //                 }
-                //                 elService.addEventListener("change", e =>
-                //                     fillFields(e.target.value)
-                //                 );
-                //             }
-                //             [serviceDiv.querySelector('[data-field="discount"]'),
-                //             serviceDiv.querySelector('[data-field="tax_rate"]')].forEach(input => {
-                //                 if (!input) return;
-                //                 input.addEventListener('input', (e) => {
-                //                     let v = e.target.value.replace(/[^0-9.]/g, '');
-                //                     const parts = v.split('.');
-                //                     if (parts.length > 2) v = parts[0] + '.' + parts[1];
-                //                     if (parts[1] !== undefined) v = parts[0] + '.' + parts[1].slice(0, 2);
-                //                     e.target.value = v;
-                //                 });
-                //                 input.addEventListener('blur', (e) => {
-                //                     let v = parseFloat(e.target.value);
-                //                     if (isNaN(v) || v < 0) { e.target.value = ''; return; }
-                //                     e.target.value = v.toFixed(2);
-                //                 });
-                //             });
-
-                //             [elStartDate, elEndDate].forEach(el =>
-                //                 el?.addEventListener("change", recalc)
-                //             ),
-                //         },
-
-                //         onConfirm(data, btn, ibMe) {
-                //             if (!data.service_id) {
-                //                 return ibMe.setError("Please select a Service");
-                //             }
-                //             if (
-                //                 data.start_date &&
-                //                 data.end_date &&
-                //                 new Date(data.end_date) <
-                //                     new Date(data.start_date)
-                //             ) {
-                //                 return ibMe.setError(
-                //                     "End date cannot be before Start date"
-                //                 );
-                //             }
-
-                //             const selectedService = services.find(
-                //                 s => String(s.id) === String(data.service_id)
-                //             );
-                //             if (!selectedService) return;
-
-                //             const serviceDisplayName =
-                //                 selectedService.service ||
-                //                 selectedService.name ||
-                //                 `Service #${selectedService.id}`;
-
-                //             me.itemsView.addRow(
-                //                 {
-                //                     item_id: data.service_id,
-                //                     item_name: serviceDisplayName,
-                //                     type: "service",
-                //                     price: Number(selectedService.calMonth) || 0,
-                //                     qty: 1,
-                //                     remarks: data.remark || serviceDisplayName,
-                //                     unit_type: selectedService.unit_type || "—",
-                //                     discount: Number(data.discount) || 0,
-                //                     start_date: data.start_date || "",
-                //                     end_date: data.end_date || "",
-                //                     discount_type:
-                //                         data.discount_type || "percent",
-                //                     tax_rate: Number(data.tax_rate) || 0
-                //                 },
-                //                 0
-                //             );
-
-                //             cv_interact.success("Service item added");
-                //             ibMe.close();
-                //         }
-                //     });
-                // };
 
                 // ===================== Service =================
                 me.controls.btnService.onclick = () => {
@@ -1860,10 +1672,6 @@ const InvoiceDialog = (() => {
                                                 </select>
                                             </div>
                                         </div>
-                                        <div class="material-input outlined">
-                                            <input class="data-input form-control" data-field="tax_rate" name="tax_rate" type="number" placeholder="0">
-                                            <label style="color:#777;">Tax (%)</label>
-                                        </div>
                                     </div>
                                 </div>
 
@@ -1935,9 +1743,6 @@ const InvoiceDialog = (() => {
                             [
                                 serviceDiv.querySelector(
                                     '[data-field="discount"]'
-                                ),
-                                serviceDiv.querySelector(
-                                    '[data-field="tax_rate"]'
                                 )
                             ].forEach(input => {
                                 if (!input) return;
@@ -1995,7 +1800,6 @@ const InvoiceDialog = (() => {
                                     end_date: data.end_date || "",
                                     discount_type:
                                         data.discount_type || "percent",
-                                    tax_rate: Number(data.tax_rate) || 0
                                 },
                                 0
                             );
