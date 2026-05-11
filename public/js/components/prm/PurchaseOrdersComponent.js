@@ -459,11 +459,11 @@ var PurchaseOrdersComponent = (() => {
                         { name: "item_id", transTitle: "titles.Item", displayType: "select" },
                         { name: "qty", transTitle: "titles.Qty", dataType: "number", defaultValue: 1, isNumeric: true },
                         { name: "unit", transTitle: "titles.Unit", dataType: "string", displayType: "number", readOnly: true },
-                        { name: "unit_price", transTitle: "titles.Price", dataType: "decimal",displayType:"input",currencySymbol: "$" },
+                        { name: "price", transTitle: "titles.Price", dataType: "decimal",displayType:"input",currencySymbol: "$" },
                         { name: "total_price", transTitle: "titles.Total",dataType: "decimal",displayType:"input",currencySymbol: "$" },
 
                     ],
-                    calc: { mode: "auto", qtyField: "qty", priceField: "unit_price", totalField: "total_price", currencyPrecision: 2 },
+                    calc: { mode: "auto", qtyField: "qty", priceField: "price", totalField: "total_price", currencyPrecision: 2 },
 
                     totalSummary: { container: me.controls.div_purchase_summary, showTax: false, allowDiscount: true, discountBeforeTax: true, currency: "USD" },
                     validateColumns: { item_id: "positive", qty: "positive", unit_price: "positive" },
@@ -570,9 +570,9 @@ var PurchaseOrdersComponent = (() => {
                     target.value = v.toFixed(2);
                 }, true);
 
-                me.controls.purchaseItemList.addEventListener('input', (e) => {
-                    console.log('INPUT HIT:', e.target.outerHTML); // check this in console
-                });
+                // me.controls.purchaseItemList.addEventListener('input', (e) => {
+                //     console.log('INPUT HIT:', e.target.outerHTML); 
+                // });
             },
             buttons: [
                 { label: "Cancel", cssClass: "btn btn-secondary", click: (me) => me.hide(false) },
@@ -613,8 +613,7 @@ var PurchaseOrdersComponent = (() => {
 
                 if (me.dataOptions.id) {
                     const po = data.po_detail || {};
-
-                    // Fill vendor info
+                    console.log(14,po);
                     me.controls.vendor.value = po.name || po.vendor_name || '';
                     if (po.vendor_id) {
                         me._selectedVendorId = po.vendor_id;
@@ -628,32 +627,12 @@ var PurchaseOrdersComponent = (() => {
                             });
                     }
 
-                    // Fill PO date
                     if (po.po_date && me.controls.po_date) {
                         me.controls.po_date.value = po.po_date;
                     }
+                    me.purchaseItemsView.setData(po);
 
-                    // Clear items first, then inject rows one by one (same as Invoice)
-                    me.purchaseItemsView.setData(null);
-
-                    const items = po.items || [];
-                    items.forEach((item, index) => {
-                        console.log(`Injecting PO row ${index + 1}:`, item);
-                        me.purchaseItemsView.addRow({
-                            item_id:     item.item_id || item.id,
-                            qty:         parseFloat(item.qty || 1),
-                            unit:        item.unit || '',
-                            unit_price:  parseFloat(item.unit_price || 0),
-                            total_price: parseFloat(item.total_price || item.total || 0),
-                        }, 0);
-                    });
-
-                    // Restore discount/totals if your ItemsView summary supports it
-                    if (po.discount_type || po.discount_value) {
-                        // Set summary-level discount if your totalSummary widget exposes a setter
-                        // e.g. me.purchaseItemsView.setSummaryDiscount?.(po.discount_type, po.discount_value);
-                    }
-
+                   
                 } else {
                     me.clear();
                     if (me.searchVendor && typeof me.searchVendor.reset === 'function') {

@@ -276,7 +276,7 @@ class PurchaseOrder extends VSModel
         $rows = DB::table('purchase_order_items as pi')
             ->join('items as i','i.id','=','pi.item_id')
             ->where('pi.po_id',$id)
-            ->selectRaw("pi.item_id,pi.qty,i.unit,pi.unit_price")->get();
+            ->selectRaw("pi.item_id,pi.qty,i.unit,pi.unit_price as price,pi.total_price")->get();
 
 
         return $rows;
