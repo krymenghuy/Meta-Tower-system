@@ -162,6 +162,7 @@ class Tenant
 
     public function getListPaginate($arr, $ss = null)
     {
+        Contract::applyPendingRenewalUnitChanges();
         Contract::applyAutomaticContractRollups();
 
         $d = (object) $arr;
@@ -276,11 +277,20 @@ class Tenant
     }
     public static function getDetails($id, $ss = null)
     {
+        Contract::applyPendingRenewalUnitChanges();
+        Contract::applyAutomaticContractRollups();
+
         $start_date = DBX::formatDate("c.start_date", 'start_date');
         $end_date = DBX::formatDate("c.end_date", 'end_date');
         $date_of_birth = DBX::formatDate("t.date_of_birth", 'date_of_birth');
+        $lastContract = DB::table('contracts')
+            ->selectRaw('MAX(id) as id, tenant_id')
+            ->groupBy('tenant_id');
         $row = DB::table('tenants as t')
-            ->leftJoin('contracts as c', 'c.tenant_id', '=', 't.id')
+            ->leftJoinSub($lastContract, 'lc', function ($join) {
+                $join->on('lc.tenant_id', '=', 't.id');
+            })
+            ->leftJoin('contracts as c', 'c.id', '=', 'lc.id')
             ->leftJoin('building_spaces as bs', 'bs.id', '=', 'c.space_id')
             ->join('tenant_statuses as ts', 'ts.id', '=', 't.status_id')
             ->where('t.id', $id)
@@ -336,6 +346,8 @@ class Tenant
     {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
+        Contract::applyPendingRenewalUnitChanges();
+        Contract::applyAutomaticContractRollups();
 
         // 1) Contracts for this tenant (used as header + "current period" baseline)
         $contract_start = DBX::formatDate("c.start_date", 'contract_start_date');
@@ -358,6 +370,7 @@ class Tenant
                     . 'bs.code as space_code,'
                     . 'b.name as building_name,'
                     . 'c.sqm_size,c.price,c.price_type,'
+                    . 'bs.sqm_size as space_sqm_size,'
                     . 'c.deposit,c.deposit_remarks,'
                     . 'c.update_user,'
                     . $contract_updated_at
@@ -427,6 +440,7 @@ class Tenant
                     'unit_code' => $c->space_code ?? null,
                     'building_name' => $c->building_name ?? null,
                     'sqm_size' => $c->sqm_size ?? null,
+                    'space_sqm_size' => $c->space_sqm_size ?? null,
                     'price' => $c->price ?? null,
                     'price_type' => $c->price_type ?? 'sqm',
                     'deposit' => $c->deposit ?? null,
@@ -463,6 +477,7 @@ class Tenant
                     'unit_code' => $c->space_code ?? null,
                     'building_name' => $r->building_name ?? $c->building_name ?? null,
                     'sqm_size' => $c->sqm_size ?? null,
+                    'space_sqm_size' => $c->space_sqm_size ?? null,
                     'price' => $c->price ?? null,
                     'price_type' => $c->price_type ?? 'sqm',
                     'deposit' => $c->deposit ?? null,
