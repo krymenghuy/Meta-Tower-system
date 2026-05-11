@@ -272,7 +272,7 @@ var SpaceComponent = new (function () {
                 menu.set_maintenance.style.display = hasActiveMaintenance ? 'none' : 'block';
                 menu.delete_space.style.display = statusIdNum > 1 ? 'none' : 'block';
             },
-
+                                                                                               
             onClick: (menulink, id, name) => {
                 switch (name) {
                     case 'set_maintenance': {
