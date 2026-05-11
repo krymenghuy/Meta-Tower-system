@@ -547,7 +547,7 @@ const AmenityDialog = (() => {
                                     name="requires_booking"
                                     class="data-input form-control"
                                     data-field="requires_booking"
-                                    placeholder="Requires Booking">
+                                    placeholder="Bookable">
                                 <option value="0" >No</option>
                                 <option value="1">Yes</option>
                             </select>
@@ -561,7 +561,7 @@ const AmenityDialog = (() => {
                         <div class="col-12">
                             <div class="vs-material-field">
                                 <textarea name="description" class="data-input form-control" data-field="description" placeholder=" "></textarea>
-                                <label>Description</label>
+                                <label>Remark</label>
                             </div>
                         </div>
                     </div>`,
