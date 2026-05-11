@@ -275,7 +275,7 @@ var TenantComponent = new (function () {
                 // console.log(123456, status_id);
 
                 // menu.edit_student.style.display = enroll_finalized == 1 ? 'none' : 'block';
-                menu.create_contract.style.display = status_id == 1 || status_id == 3 ? "block" : "none";
+                menu.create_contract.style.display = Number(status_id) !== 2 ? "block" : "none";
                 menu.service_request.style.display = "none";
                 // menu.upload_document.style.display =status_id == 1 || status_id == 2  ? "block" : "none";
             },
@@ -427,14 +427,8 @@ var TenantComponent = new (function () {
         let html = `<div class="row g-3">`;
         if (Array.isArray(data) && data.length > 0) {
             data.forEach((d) => {
-                const prmNonEmpty = (v) =>
-                    v !== null && v !== undefined && String(v).trim() !== "";
-                /** Backend: status_id 2 = tenant with active contract; list also joins last contract (dates / space). */
-                const hasContractAlready =
-                    Number(d.status_id) === 2 ||
-                    prmNonEmpty(d.end_date) ||
-                    prmNonEmpty(d.start_date) ||
-                    prmNonEmpty(d.space_code);
+                /** Backend: status_id 2 means tenant has a currently active contract. */
+                const hasContractAlready = Number(d.status_id) === 2;
                 const status = (d.status || "Pending").toLowerCase();
                 let statusClass = "";
                 switch (status) {
@@ -1032,7 +1026,7 @@ var TenantComponent = new (function () {
                 </div>`;
 
             const priceNum = Number(first.price ?? 0);
-            const sqmNum = Number(first.sqm_size ?? 0);
+            const sqmNum = Number(first.space_sqm_size ?? first.sqm_size ?? 0);
             const isTotalPriceType =
                 String(first.price_type ?? "sqm").toLowerCase() === "total";
             const totalPriceNum = isTotalPriceType
