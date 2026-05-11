@@ -87,10 +87,10 @@ class Contract
             $isOverlapRenewal = $newStart <= $renewEnd && $newEnd >= $renewStart;
 
             if ($newStart > $renewStart) {
-                return DV::error('Start date cannot be later than previous renewal start date for this unit.');
+                return DV::error('Start date must be on or before the last renewal start.');
             }
             if ($isOverlapRenewal) {
-                return DV::error('Contract period overlaps previous renewal period for this unit.');
+                return DV::error('Dates overlap the last renewal for this unit.');
             }
         }
     }

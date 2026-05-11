@@ -466,7 +466,7 @@ const CreateServicePriceDialog = (() => {
 
                 onPrepareForm: (me, data) => {
                     console.log(123,data.service_details);
-                    
+
                     me.controls.unit_type.value = data.service_details.unit_type;
                     me.controls.type.value = data.service_details.type;
                 },
