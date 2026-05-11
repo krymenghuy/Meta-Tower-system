@@ -52,7 +52,6 @@ class BuildingSpace
             'sqm_size' => '1|number',
             'price' => '1|number',
             'price_type' => '1|string|text=Please enter a valid price type.',
-            'code' => '0|string|max=50',
         ];
 
         $code_char = ['@', '.', '-', '_'];
