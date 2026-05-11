@@ -200,7 +200,7 @@ class Bill
             ->whereRaw($str_moreWhere)
             ->selectRaw("   b.id, b.bill_number, b.ref_no, b.expense_type_id,
                             ex.name as expense_type_name, b.vendor_id,
-                            v.name as vendor_name, v.phone_number,
+                            v.name as vendor_name, v.phone_number,v.email,
                             b.bill_date, b.due_date,
                             b.total_amount, b.balance, b.paid_amount,
                             b.status_id,
@@ -237,7 +237,7 @@ class Bill
             ->leftJoin('vendors as v', 'v.id', 'b.vendor_id')
             ->leftJoin('expense_categories as ex', 'ex.id', 'b.expense_type_id')
             ->where('b.id', $id)
-            ->selectRaw('b.id, b.bill_number, b.ref_no, b.vendor_id, v.name as vendor_name,b.expense_type_id, ex.name as expense_type_name, v.phone_number, b.bill_date,b.due_date, b.file_image, b.total_amount, b.balance, b.paid_amount, b.status_id, b.remark')
+            ->selectRaw('b.id, b.bill_number, b.ref_no, b.vendor_id, v.name as vendor_name,b.expense_type_id, ex.name as expense_type_name, v.phone_number,v.email, b.bill_date,b.due_date, b.file_image, b.total_amount, b.balance, b.paid_amount, b.status_id, b.remark')
             ->first();
         if ($row) {
             $row->file_image_url = self::getBillImageUrl($row->file_image, $ss);
@@ -282,7 +282,7 @@ class Bill
 
         $vendor = DB::table('vendors')
             ->where('id', $id)
-            ->select('id', 'name', 'code', 'tax_number', 'address', 'phone_number')
+            ->select('id', 'name', 'code', 'tax_number', 'address', 'phone_number', 'email')
             ->first();
 
         return (object) ['vendor' => $vendor];

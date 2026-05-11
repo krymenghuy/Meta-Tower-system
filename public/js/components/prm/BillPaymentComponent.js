@@ -527,7 +527,7 @@ const BillPaymentDialog = (() => {
                             </div>
                             <div class="col-md-6">
                                 <div class="material-input outlined">
-                                    <input type="text" name="payer" class="data-input form-control" data-field="payer" placeholder=" " >
+                                    <input type="text" name="payer" class="data-input form-control" data-field="payer" placeholder=" " > 
                                     <label style="color:#777777;padding-left:6px;">Payer</label>
                                 </div>
                             </div>
@@ -535,9 +535,9 @@ const BillPaymentDialog = (() => {
 
                         <div>
                             <div class="d-flex align-items-center gap-2 mb-3">
-                                <span class="payment-badge" style="color:#27500A;">Cash</span>
+                                <span class="payment-badge" style="color:#65656e;">Cash</span>
                                 <div style="flex:1;height:1px;background:#dee2e6;"></div>
-                                <span style="font-size:11px;color:#27500A;">Entered: <strong id="c_e" style="color:#212529;">—</strong></span>
+                                <span style="font-size:11px;color:#65656e;">Entered: <strong id="c_e" style="color:#212529;">—</strong></span>
                             </div>
                             <div style="display:flex;flex-direction:row;gap:8px;flex-wrap:wrap;margin-bottom: 0.5rem;">
                                 <div style="flex:1;min-width:160px;" class="material-input outlined">
@@ -550,9 +550,9 @@ const BillPaymentDialog = (() => {
 
                         <div>
                             <div class="d-flex align-items-center gap-2 mb-3">
-                                <span class="payment-badge" style="color:#0C447C;">Bank Transfer</span>
+                                <span class="payment-badge" style="color:#65656e;">Bank Transfer</span>
                                 <div style="flex:1;height:1px;background:#dee2e6;"></div>
-                                <span style="font-size:11px;color:#0C447C;">Entered: <strong id="b_e" style="color:#212529;">—</strong></span>
+                                <span style="font-size:11px;color:#65656e;">Entered: <strong id="b_e" style="color:#212529;">—</strong></span>
                             </div>
                             <div style="display:flex;flex-direction:row;gap:8px;flex-wrap:wrap;margin-bottom: 0.5rem;">
                                 <div style="flex:1;min-width:140px;" class="material-input outlined">
@@ -573,9 +573,9 @@ const BillPaymentDialog = (() => {
 
                         <div>
                             <div class="d-flex align-items-center gap-2 mb-3">
-                                <span class="payment-badge" style="color:#633806;">Cheque</span>
+                                <span class="payment-badge" style="color:#65656e;">Cheque</span>
                                 <div style="flex:1;height:1px;background:#dee2e6;"></div>
-                                <span style="font-size:11px;color:#633806;">Entered: <strong id="ch_e" style="color:#212529;">—</strong></span>
+                                <span style="font-size:11px;color:#65656e;">Entered: <strong id="ch_e" style="color:#212529;">—</strong></span>
                             </div>
                             <div style="display:flex;flex-direction:row;gap:8px;flex-wrap:wrap;margin-bottom: 0.5rem;">
                                 <div style="flex:1;min-width:140px;" class="material-input outlined">
