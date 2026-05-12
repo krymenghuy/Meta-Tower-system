@@ -410,7 +410,7 @@ var BuildingComponent = ( () => {
                 vsapi.call(`${main_view.base_url}/prm/building/delete`, op, false, false, false).then(res => {
                     if (res.status_code == 200) {
                         mThis.BuildingListView.showPage();
-                        mThis.fetchSummaryData();
+                        cv_interact.success('Building has been deleted');
                     } else {
                         cv_interact.error(res.error_message || 'Delete failed');
                     }
