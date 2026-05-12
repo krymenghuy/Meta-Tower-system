@@ -331,6 +331,7 @@ class PurchaseOrder extends VSModel
             ->whereRaw($str_where)
             ->whereRaw($str_search)
             ->selectRaw($cols)
+            ->orderByRaw('po.status_id ASC')
             ->orderByRaw('po.id DESC');
 
         $count_query = clone $query;
@@ -492,42 +493,34 @@ class PurchaseOrder extends VSModel
         $ss = $ss ?? $this->userInfo;
         $id = $id ?? $this->id;
         $d = (object) $arr;
-        $po = DB::table('purchase_orders')
-            ->where('id', $id)
-            ->first();
+        $po = DB::table('purchase_orders')->where('id', $id)->first();
         if (!$po) {
             return DV::error('Purchase order not found.');
         }
         if ($po->status_id == 6) {
             return DV::error('Cannot receive a cancelled purchase order.');
         }
-        if ($po->status_id < 3) {
-            return DV::error('Purchase order must be in Ordered status.');
-        }
         $items = $d->items ?? [];
         if (empty($items)) {
             return DV::error('No items to receive.');
         }
+        \Log::info(json_encode($items));
+
 
         DB::beginTransaction();
 
         try {
 
             $allFullyReceived = true;
-
             foreach ($items as $item) {
-
                 $poItem = DB::table('purchase_order_items')
                     ->where('po_id', $id)
                     ->where('item_id', $item['item_id'])
                     ->first();
-
                 if (!$poItem) {
-                    DB::rollBack();
                     return DV::error('PO item not found: ' . $item['item_id']);
                 }
-
-                $receiveQty = (float) ($item['received_qty'] ?? 0);
+                $receiveQty = $item['received_qty'] ?? 0;
 
                 if ($receiveQty <= 0) {
                     continue;
@@ -536,7 +529,6 @@ class PurchaseOrder extends VSModel
                 $newReceivedQty = $poItem->received_qty + $receiveQty;
 
                 if ($newReceivedQty > $poItem->qty) {
-                    DB::rollBack();
                     return DV::error('Receive quantity exceeds ordered quantity.');
                 }
 

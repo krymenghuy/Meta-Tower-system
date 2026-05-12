@@ -375,12 +375,12 @@ var PurchaseOrdersComponent = (() => {
                         <div class="d-flex align-items-center mb-2">
                             <span class="fw-bold" style="min-width:90px;">Phone</span>
                             <span class="mx-2 fw-bold">:</span>
-                            <input type="text" name="phone_number" class="data-input form-control flex-grow-1" Readonly>
+                            <input type="text" name="phone_number" class="data-input form-control flex-grow-1" Readonly data-field="phone_number">
                         </div>
                         <div class="d-flex align-items-center mb-2">
                             <span class="fw-bold" style="min-width:90px;">Address</span>
                             <span class="mx-2 fw-bold">:</span>
-                            <input type="text" name="address" class="data-input form-control flex-grow-1" Readonly>
+                            <input type="text" name="address" class="data-input form-control flex-grow-1" Readonly data-field="address">
                         </div>
                     </div>
                     <div class="col-md-5"></div>
@@ -388,7 +388,7 @@ var PurchaseOrdersComponent = (() => {
                         <div class="d-flex align-items-center mb-2">
                             <span class="fw-bold" style="min-width:90px;">PO Date</span>
                             <span class="mx-2 fw-bold">:</span>
-                            <input data-type="date" name="po_date" class="data-input form-control flex-grow-1">
+                            <input data-type="date" name="po_date" class="data-input form-control flex-grow-1" data-field="po_date">
                         </div>
                     </div>
                     <div class="col-lg-12 mt-3 p-3" style="background-color:#ebebeb;">
@@ -400,7 +400,8 @@ var PurchaseOrdersComponent = (() => {
                 </div>`;
             },
             contentCreated: (me) => {
-
+                me.controls.po_date.value = 123;
+                
                 me.controls.div_purchase_summary = me.divModal.querySelector(
                     '[name="div_purchase_summary"]'
                 );
@@ -472,7 +473,10 @@ var PurchaseOrdersComponent = (() => {
                     showColumnHeaders: true,
                     showAddLineButton: true,
                     addLineButtonText: 'Add Item',
+                    // ensureEmptyRow: false,
                     onItemChange: async (row_id, item, col_name, td, tr) => {
+                        console.log(55555,col_name);
+
                         if (col_name !== 'item_id') return;
                         const itemId = item.item_id || item.id;
                         if (!itemId) return;
@@ -494,14 +498,13 @@ var PurchaseOrdersComponent = (() => {
                         me.setTotal(col_name, tr, item);
                     },
                 });
-                console.log(777,me.purchaseItemsView);
                 
 
                 me.saveData = (onFinish) => {
                     let p = me.getData();
                     let items = me.purchaseItemsView.getItems();
                     let totals = me.purchaseItemsView.getCurrentTotals?.() || {};
-                    console.log(5555,items);
+                    console.log(8888,p);
                     // let items = po_data.items || [];
                    if (!me.hasValidPOItems(items)) {
                         return cv_interact.error('Please select at least one item before saving the purchase order.');
@@ -574,10 +577,6 @@ var PurchaseOrdersComponent = (() => {
                     }
                     target.value = v.toFixed(2);
                 }, true);
-
-                // me.controls.purchaseItemList.addEventListener('input', (e) => {
-                //     console.log('INPUT HIT:', e.target.outerHTML); 
-                // });
             },
             buttons: [
                 { label: "Cancel", cssClass: "btn btn-secondary", click: (me) => me.hide(false) },
@@ -597,21 +596,6 @@ var PurchaseOrdersComponent = (() => {
                     }
                 },
             ],
-            // onPrepareForm: (me, data) => {
-            //     me.controls.vendor.value = data.po_detail?.name || '';
-            //     me.purchaseItemsView.setSelectOptions('item_id',data.item_options,null);
-            //     if (me.dataOptions.id) {
-            //         console.log(8888,data);
-            //          me.purchaseItemsView.setData(data.po_detail);
-            //     } else {
-            //         me.clear();
-            //         if (me.searchVendor && typeof me.searchVendor.reset === 'function') {
-            //             me.searchVendor.reset();
-            //         }
-            //     }
-            //     console.log(5555,me.controls.div_purchase_summary);
-
-            // },
             onPrepareForm: (me, data) => {
                 me.controls.vendor.value = data.po_detail?.name || '';
                 me.purchaseItemsView.setSelectOptions('item_id', data.item_options, null);
@@ -625,6 +609,8 @@ var PurchaseOrdersComponent = (() => {
                 const formattedDate = `${dd}-${mm}-${yyyy}`;
 
                 me.controls.po_date.value = formattedDate;
+                console.log(4,me.dataOptions.id);
+                
                 if (me.dataOptions.id) {
                     const po = data.po_detail || {};
                     console.log(14,po);
@@ -691,12 +677,12 @@ var PurchaseOrdersComponent = (() => {
                         <div class="d-flex align-items-center mb-2">
                             <span class="fw-bold" style="min-width:90px;">Phone</span>
                             <span class="mx-2 fw-bold">:</span>
-                            <input type="text" name="phone_number" class="data-input form-control flex-grow-1" Readonly>
+                            <input type="text" name="phone_number" class="data-input form-control flex-grow-1" Readonly data-field="phone_number">
                         </div>
                         <div class="d-flex align-items-center mb-2">
                             <span class="fw-bold" style="min-width:90px;">Address</span>
                             <span class="mx-2 fw-bold">:</span>
-                            <input type="text" name="address" class="data-input form-control flex-grow-1" Readonly>
+                            <input type="text" name="address" class="data-input form-control flex-grow-1" Readonly data-field="address">
                         </div>
                     </div>
                     <div class="col-md-5"></div>
@@ -704,7 +690,7 @@ var PurchaseOrdersComponent = (() => {
                         <div class="d-flex align-items-center mb-2">
                             <span class="fw-bold" style="min-width:90px;">PO Date</span>
                             <span class="mx-2 fw-bold">:</span>
-                            <input data-type="date" name="po_date" class="data-input form-control flex-grow-1">
+                            <input data-type="date" name="po_date" class="data-input form-control flex-grow-1" data-field="po_date">
                         </div>
                     </div>
                     <div class="col-lg-12 mt-3 p-3" style="background-color:#ebebeb;">
@@ -738,48 +724,28 @@ var PurchaseOrdersComponent = (() => {
                     showColumnHeaders: true,
                     showAddLineButton: false,
                     addLineButtonText: 'Add Item',
-                    itemRendered: (me,tr,data,isLoading) => {
-                        // const chk = tr.querySelector(".check_accept");
-                        // console.log(5555,chk);
-                        // if (chk && !chk.dataset.bound) {
-                        //     chk.dataset.bound = "1";
-                        //     chk.onchange = function(){
-                        //         me.purchaseItemsView.setRowMeta(tr,{checked: chk.checked});
-
-                        //     }
-
-                                
-                            
-                        // }
-                    },
-                    allItemsRendered:(table, container, summaryPanel)=>{
-                        console.log(123,table);
-                        console.log(12366,container);
-                        table.addEventListener()
-                        
-
-
-                    },
-                    onItemChange: async (row_id,item,col_name,td,tr) => {
+                    // itemRendered: (this,ctx) => {
+                    
+                    // },
+                    // allItemsRendered:(this,ctx)=>{
+        
+                    // },
+                    // onItemChange: async (this,ctx) => {
                         // if (col_name === "receive_qty") {
                         //     const chk = tr.querySelector(".check_accept");
                         //     chk.checked =Number(item.receive_qty || 0) > 0;
                         //     me.purchaseItemsView.setRowMeta(tr,{checked: chk.checked});
                         // }
-                    }
+                    // }
                 });
 
                 me.saveData = (onFinish) => {
                     let p = me.getData();
                     let items = me.purchaseItemsView.getItems();
                     // let totals = me.purchaseItemsView.getCurrentTotals?.() || {};
-               
                     p.items = items;
                     console.log(2222,p.items);
-                    
                     p.id = me.dataOptions.id;
-                    console.log(455,p);
-                    
                     vsapi.call(`${main_view.base_url}/prm/purchase/order/receive`, p, false)
                         .then(onFinish);
                 };
@@ -807,10 +773,12 @@ var PurchaseOrdersComponent = (() => {
                     cssClass: "btn btn-primary",
                     click: (me) => {
                         me.saveData(res => {
+                            console.log(6666,res);
+                            
                             if (res.status_code == 200) {
-                                cv_interact.success("New purchase order has been added successfully.");
+                                cv_interact.success("purchase order Received.");
                                 me.hide(true);
-                                mThis.PoListView.showPage(mThis.getFilterData());
+                                // mThis.PoListView.showPage(mThis.getFilterData());
                             } else {
                                 cv_interact.error(res.error_message);
                             }
