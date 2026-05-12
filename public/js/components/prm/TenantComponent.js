@@ -1433,7 +1433,7 @@ const CreateTenantDialog = (() => {
                         <div class="col-md-4 text-center d-flex flex-column justify-content-center">
                             <div class="data-input tenant-photo-wrapper border border-prm-custom rounded-3 d-flex align-items-center justify-content-center mx-auto"
                                 style="width: 210px; height: 130px; cursor: pointer; background-color: #f8f8f8;">
-                                <div name="div_tenant_photo" class="data-input w-100 h-100" data-field="photo_file_name">
+                                <div name="div_tenant_photo" class="data-input w-100 h-100">
                                 </div>
                             </div>
                            <!-- <small class="text-muted d-block mt-2">Profile Photo</small> -->
@@ -1511,9 +1511,9 @@ const CreateTenantDialog = (() => {
                         defaultPhotoName: "default-skill",
                         containerClass: "tenant-profile-container",
                         imgClass: "data-input",
-                        dataset: {
-                            field: "photo",
-                        } /** please set field: photo so that we can use for both Edit and Create easily */,
+                        // dataset: {
+                        //     field: "photo",
+                        // } /** please set field: photo so that we can use for both Edit and Create easily */,
                         //dataset: { field: "image_url" },
                         beforeDeleteImage: async () => {
                             if (me.dataOptions.id > 0) {
@@ -1621,13 +1621,13 @@ const CreateTenantDialog = (() => {
                         me.controls.email.value = me.dataOptions.email;
                     }
                 },
-
                 extendMethod: {
                     setData: (me, data) => {
-                        // console.log(data);
-
                         me.tenantImageBox.setImage(data.image_url);
                     },
+                    getData: (me,data)=>{
+                        return {photo:me.tenantImageBox.getImage()};
+                    }
                 },
                 buttons: [
                     {
