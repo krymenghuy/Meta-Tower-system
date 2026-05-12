@@ -66,7 +66,7 @@ class Tenant
             'tenant_type'     => '1|choice|1,2|default=2|text=Please select a valid type.',
             'date_of_birth'   => '1|date|text=Date of birth is required.',
             'legal_name'      => '1|string|0-100',
-            'nationality_id'  => '1|number',
+            'nationality_id'  => '1|number|text= Please select nationality.',
             'national_id'     => '0|string|0-50',
             'passport_number' => '0|string|0-50',
             'phone_number'    => '0|string',

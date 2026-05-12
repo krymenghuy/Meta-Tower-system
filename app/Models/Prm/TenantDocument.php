@@ -20,7 +20,8 @@ class TenantDocument
     protected static $allowed_image_extensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
     protected static $allowed_doc_extensions   = ['pdf'];
 
-    public function __construct($id = null, $userInfo = null) {
+    public function __construct($id = null, $userInfo = null)
+    {
         $this->id = $id;
         $this->userInfo = $userInfo;
     }
@@ -35,10 +36,12 @@ class TenantDocument
             'tenant_id' => '1|number|exists=tenants.id',
             'remarks' => '0|string|0-255',
             'document_type_id' => '1|number|exists=document_types.id',
-            'ext' => '0|string',
+            'ext' => '1|string',
             'file_name' => '0|string|0-150',
+            'original_file_name' => '0|string|0-255',
             'data' => '0|string',
         ];
+        // \Log::info('Array data: ' . json_encode($arr));
 
         $res = DBX::validateObject($arr, $v_rule, true, ['data' => GeneralSettings::$image_chars], $ss->lang, false, null);
         if ($res->error) {
@@ -48,13 +51,27 @@ class TenantDocument
         $inputs = $res->values;
         $d = (object) $inputs;
         $data = $d->data;
-        $ext = $d->ext;
+$ext = strtolower($d->ext);
+$inputs['file_name'] = $d->original_file_name ?? ($d->file_name ?? null);
 
-        $allAllowed = array_merge(self::$allowed_image_extensions, self::$allowed_doc_extensions);
-        if (!in_array(strtolower($ext), $allAllowed, true)) {
-            return DV::error('Invalid file type. Allowed: ' . implode(', ', $allAllowed));
-        }
+// 2. Merge the allowed arrays
+$allAllowed = array_merge(self::$allowed_image_extensions, self::$allowed_doc_extensions);
 
+// --- DEBUG LOGS ---
+error_log("FILE VALIDATION DEBUG:");
+error_log("Incoming Ext: '" . $ext . "'");
+error_log("Allowed List: " . implode(', ', $allAllowed));
+// ------------------
+
+// 3. Strict check against the merged list
+if (!$ext || !in_array($ext, $allAllowed, true)) {
+    // Log the failure specifically
+    error_log("Validation Result: FAILED (Ext '$ext' not in list)");
+    
+    return DV::error('Invalid file type. Allowed: ' . implode(', ', $allAllowed));
+}
+
+error_log("Validation Result: SUCCESS");
         $category = 'image';
         if (in_array($ext, self::$allowed_image_extensions)) {
             $category = 'image';
@@ -64,7 +81,7 @@ class TenantDocument
 
         $data = preg_replace('#^data:.*;base64,#', '', $data);
 
-        $res = XPublicStorage::savefile(['subs_id' => $ss->subs_id, 'dir' => self::$img_dir], $ext, $data, $category);
+        $res = XPublicStorage::savefile(['subs_id' => $ss->subs_id, 'dir' => self::$img_dir], $ext, $data, $category, $d->original_file_name);
         if ($res->status === "Error") {
             return DV::error($res->error_message);
         }
@@ -76,7 +93,8 @@ class TenantDocument
         return DV::depends($id, ['tenant_documents' => $inputs, 'id' => $id]);
     }
 
-    public function getListDocument($arr, $ss = null) {
+    public function getListDocument($arr, $ss = null)
+    {
         $d = (object) $arr;
         $tenant_id = $d->tenant_id ? $d->tenant_id : $ss->id;
 
@@ -90,14 +108,16 @@ class TenantDocument
         return $row;
     }
 
-    public static function getDetails($id) {
+    public static function getDetails($id)
+    {
         return DB::table('tenant_documents as td')
             ->where('td.id', $id)
             ->selectRaw('td.id, td.tenant_id, td.remarks,td.ext, td.document_type_id, td.file_name')
             ->first();
     }
 
-    public static function getFormOptions($id, $ss) {
+    public static function getFormOptions($id, $ss)
+    {
         $document_details = $id ? self::getDetails($id) : null;
         return (object) [
             'document_details' => $document_details,
@@ -105,7 +125,8 @@ class TenantDocument
         ];
     }
 
-    public function deleteTenantDocument($id = null) {
+    public function deleteTenantDocument($id = null)
+    {
         $id = $id ?? $this->id;
         $deleted = DB::table('tenant_documents')->where('id', $id)->delete();
         return $deleted ? DV::depends($deleted, ['action' => 'deleted']) : DV::error('Delete failed.');
