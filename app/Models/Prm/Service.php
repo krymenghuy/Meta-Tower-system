@@ -25,10 +25,10 @@ class Service
 
         $v_rule = [
             'name'            => '1|string|0-200',
-            'service_type_id' => '1|number|exists=service_types.id|text=Please select a valid service type',
-            'price'           => '1|number|min=0|text=Please enter a valid price',
+            'service_type_id' => '1|number|exists=service_types.id|text=Please select a valid category.',
+            'type'            => '1|choice|0,1|text=Please select a valid type.',
+            'price'           => '1|number|min=0|text=Please enter a valid price.',
             'unit_type'       => '0|string|0-50',
-            'type'            => '1|choice|0,1',
             'description'     => '0|string|0-350',
         ];
 

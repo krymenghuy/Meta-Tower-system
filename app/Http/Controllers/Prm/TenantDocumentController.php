@@ -32,12 +32,12 @@ class TenantDocumentController extends Controller{
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        return $this->tenant_documents->saveTenantDocument($req->all(), $ss);
+        return JDV::result($this->tenant_documents->saveTenantDocument($req->all(), $ss));
     }
     public function getListDocument(Request $req){
         $ss = XAuthService::verifyAuth($req, -1);
         if($ss->status_code !==200){
-            return JDV::row($ss);
+            return JDV::raw($ss);
 
         }
          return JDV::result($this->tenant_documents->getListDocument($req->all(),$ss));
