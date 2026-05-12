@@ -928,8 +928,6 @@ const ContractDialog = (() => {
                 applyNumberInput(me.controls.sqm_size);
                 applyNumberInput(me.controls.price);
 
-
-
             },
 
             configSelect: [
