@@ -9,7 +9,7 @@
                             style="right: 15px; top: 50%; transform: translateY(-50%);"></i> --}}
                     </div>
                 </div>
-                 <div class="col-12 col-md-6 col-lg-2">
+                <div class="col-12 col-md-6 col-lg-2">
                     <select id="_el_tenant_status" class="data-input filter-field form-control" data-field="status_id" placeholder="Status"></select>
                 </div>
                 <div class="col-12 col-md-6 col-lg-3">
@@ -65,9 +65,7 @@
 
         <div class="mt-3 mb-5" style="max-height: 600px;" id="sub_view_profile">
             <div id="profile_info_tenant">
-
             </div>
-
         </div>
 
 </div>

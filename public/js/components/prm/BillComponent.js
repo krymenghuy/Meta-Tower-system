@@ -509,7 +509,7 @@ const BillDialog = (() => {
                     return [
                         `<div class="row ">
                                 <input name="vendorid" class="d-none data-input form-control" data-field="vendor_id">
-                            <div class="col-6">
+                            <div class="col-12">
                                 <div class="material-input outlined">
                                     <input  name="vendor" class="data-input form-control" data-field="vendor_name" placeholder="Vendor Name "></input>
                                     <label style="color:#777777;padding-left:6px; display:none;">Vendor</label>
@@ -519,6 +519,12 @@ const BillDialog = (() => {
                                 <div class="material-input outlined">
                                     <input name="phone_number" class="data-input form-control" data-field="phone_number" placeholder=" " disabled />
                                     <label style="color:#777777; padding-left:6px;">Phone Number</label >
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="material-input outlined">
+                                    <input name="email" class="data-input form-control" data-field="email" placeholder=" " disabled />
+                                    <label style="color:#777777; padding-left:6px;">Email</label >
                                 </div>
                             </div>
                             <div class="col-6 col-md-6">
@@ -586,11 +592,13 @@ const BillDialog = (() => {
                 },
 
                 contentCreated: (me) => {
+                    console.log('me.controls:', me.controls);
                     const applyVendorInfo = (vendorId) => {
                         me._selectedVendorId = vendorId || '';
                         if (me.controls.vendor_id) me.controls.vendor_id.value = vendorId || '';
                         if (!vendorId) {
                             if (me.controls.phone_number) me.controls.phone_number.value = '';
+                            if (me.controls.email) me.controls.email.value = '';
                             return;
                         }
                         vsapi.post(`${main_view.base_url}/prm/vendor/options-vendor-info`, { vendor_id: vendorId }, {})
@@ -598,7 +606,9 @@ const BillDialog = (() => {
                                 const d = res.data || {};
                                 const v = d.vendor || {};
                                 if (me.controls.phone_number) me.controls.phone_number.value = v.phone_number || '';
+                                if (me.controls.email) me.controls.email.value = v.email || '';
                             })
+                                
                             .catch(() => {});
                     };
                     if (me.controls.vendor) {
@@ -614,9 +624,10 @@ const BillDialog = (() => {
                                 return (Array.isArray(vendors) ? vendors : []).map(v => ({ ...v,
                                     vendor: v.vendor || v.name || v.vendor_name || v.code || '',
                                     phone_number: v.phone_number || v.contact_phone || v.phone || '',
+                                    email: v.email || v.contact_email || v.email_address || '',
                                 }));
                             },
-                            columns: { vendor: 'VENDOR', phone_number: 'PHONE' },
+                            columns: { vendor: 'VENDOR', phone_number: 'PHONE', email: 'EMAIL' },
                             showColumnHeader: true,
                             placeholder: 'Search vendor',
                             onSelect: (vendor) => {
@@ -705,6 +716,7 @@ const BillDialog = (() => {
                         if (me.controls.vendor_id)    me.controls.vendor_id.value    = details.vendor_id;
                         if (me.controls.vendor)       me.controls.vendor.value       = details.vendor_name || '';
                         if (me.controls.phone_number) me.controls.phone_number.value = details.phone_number || '';
+                        if (me.controls.email)        me.controls.email.value        = details.email || '';
                     }
 
                     const prefill = me.dataOptions?.prefill || {};
@@ -713,6 +725,7 @@ const BillDialog = (() => {
                         if (prefill.vendor_id)    me.controls.vendorid.value         = prefill.vendor_id;
                         if (prefill.vendor_name)  me.controls.vendor.value           = prefill.vendor_name;
                         if (prefill.phone_number) me.controls.phone_number.value     = prefill.phone_number;
+                        if (prefill.email) me.controls.email.value     = prefill.email;
                         ['bill_date', 'ref_no', 'total_amount', 'remark'].forEach(field => {
                             if (prefill[field] && me.controls[field]) {
                                 me.controls[field].value = prefill[field];
