@@ -538,17 +538,17 @@ var TenantComponent = new (function () {
 
                                 </div>
                             </div>
-                                <div class="d-flex justify-content-between rounded-bottom-2 align-items-center px-2 py-1"
+                                <div class="d-flex justify-content-between rounded-bottom-2 align-items-center px-2 py-2"
                                     style="font-size: 1rem; background-color: #d4d4db; border-top: 1px solid #e2e8f0;">
 
-                                    <span style="color: #64748b; font-size: 0.80rem;">
+                                    <span style="color: #64748b; font-size: 0.85rem;">
                                         Last Updated :  ${d.update_user || "System"}
                                     </span>
 
                                     <a href="javascript:void(0)"
-                                    class="text-primary-custom see-tenant-detail  text-decoration-none" style="font-size: 0.80rem;"
+                                    class="text-primary-custom see-tenant-detail  text-decoration-none" style="font-size: 0.85rem;"
                                     data-id="${d.id}">
-                                        View Details <i class="fa-solid fa-arrow-right ms-1" style="font-size: 0.80rem;"></i>
+                                        View Details <i class="fa-solid fa-arrow-right ms-1" style="font-size: 0.85rem;"></i>
                                     </a>
                                 </div>
 

@@ -607,7 +607,7 @@ var SpaceComponent = new (function () {
                 vsapi.call(`${main_view.base_url}/prm/building-space/delete`, op, false, false, false).then(res => {
                     if (res.status_code == 200) {
 
-                        cv_interact.success('Space has been deleted')
+                        cv_interact.success('Unit has been deleted');
                         mThis.applyListFilters();
                     } else {
                         cv_interact.error(res.error_message);
@@ -799,7 +799,7 @@ const BuildingSpaceDialog = (() => {
                         name: "floor_id",
                         textField: "name",
                         valueField: "id",
-                        lazyLoading: true,
+                        lazyLoading: false,
                         defaultValue: (me, op) => {
                             return op?.data?.floor_id ?? null;
                         },
