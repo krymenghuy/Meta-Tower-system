@@ -17,16 +17,15 @@ class TenantDocument
     protected static $img_dir = 'tenant_documents';
     protected $table = 'tenant_documents';
 
-
     protected static $allowed_image_extensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-    protected static $allowed_doc_extensions   = ['pdf', 'doc', 'docx', 'xls', 'xlsx'];
+    protected static $allowed_doc_extensions   = ['pdf'];
 
     public function __construct($id = null, $userInfo = null) {
         $this->id = $id;
         $this->userInfo = $userInfo;
     }
 
-public function saveTenantDocument($arr = [], $ss = null)
+    public function saveTenantDocument($arr = [], $ss = null)
     {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
@@ -50,32 +49,33 @@ public function saveTenantDocument($arr = [], $ss = null)
         $d = (object) $inputs;
         $data = $d->data;
         $ext = $d->ext;
+
+        $allAllowed = array_merge(self::$allowed_image_extensions, self::$allowed_doc_extensions);
+        if (!in_array(strtolower($ext), $allAllowed, true)) {
+            return DV::error('Invalid file type. Allowed: ' . implode(', ', $allAllowed));
+        }
+
         $category = 'image';
         if (in_array($ext, self::$allowed_image_extensions)) {
             $category = 'image';
-        }
-         else if  (in_array($ext, self::$allowed_doc_extensions)){
+        } else if (in_array($ext, self::$allowed_doc_extensions)) {
             $category = 'document';
-         }
+        }
 
-        // $res = null;
-
-        // $res = XPublicStorage::savefile(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], $ext, $data, $category);
         $data = preg_replace('#^data:.*;base64,#', '', $data);
 
-        $res= XPublicStorage::savefile(['subs_id' => $ss->subs_id, 'dir' => self::$img_dir], $ext, $data, $category);
+        $res = XPublicStorage::savefile(['subs_id' => $ss->subs_id, 'dir' => self::$img_dir], $ext, $data, $category);
         if ($res->status === "Error") {
             return DV::error($res->error_message);
-
         }
+
         unset($inputs['data']);
         $inputs['file_name'] = $res->file_name;
 
-        // $data->description = $d->description;
         $id = DBX::saveData($ss, 'tenant_documents', ['id' => $id], $inputs, [], 1);
         return DV::depends($id, ['tenant_documents' => $inputs, 'id' => $id]);
-
     }
+
     public function getListDocument($arr, $ss = null) {
         $d = (object) $arr;
         $tenant_id = $d->tenant_id ? $d->tenant_id : $ss->id;
@@ -104,98 +104,52 @@ public function saveTenantDocument($arr = [], $ss = null)
             'document_types'   => GeneralSettings::options_document_type($ss),
         ];
     }
-    public function deleteTenantDocument($id = null){
+
+    public function deleteTenantDocument($id = null) {
         $id = $id ?? $this->id;
-        $deleted = DB::table('tenant_documents')->where('id',$id)->delete();
-        return $deleted ? DV::depends($deleted,['action'=>'deleted']) : DV::error('Delete failed.');
+        $deleted = DB::table('tenant_documents')->where('id', $id)->delete();
+        return $deleted ? DV::depends($deleted, ['action' => 'deleted']) : DV::error('Delete failed.');
     }
 
-//     public function downloadTenantDocument($id = null, $ss = null) {
-//     $id = $id ?? $this->id;
-//     $ss = $ss ?? $this->userInfo;
+    public function downloadTenantDocument($id = null, $ss = null)
+    {
+        $id = $id ?? $this->id;
+        $ss = $ss ?? $this->userInfo;
 
-//     $doc = self::getDetails($id);
-//     if (!$doc) return DV::error('Document not found.');
-//     $filePath = self::$img_dir . '/' . $doc->file_name;
-//     $file = XPublicStorage::getUrl(['subs_id' => $ss->subs_id, 'dir' => 'tenant_documents'], 'image') . $doc->file_name;
+        $doc = self::getDetails($id);
+        if (!$doc) {
+            return DV::error('Document not found.');
+        }
 
-//     Log::info('File URL: ' . $file);
+        $mimeTypes = [
+            'pdf'  => 'application/pdf',
+            'png'  => 'image/png',
+            'jpg'  => 'image/jpeg',
+            'jpeg' => 'image/jpeg',
+            'gif'  => 'image/gif',
+            'webp' => 'image/webp',
+        ];
 
-//     $filePath = str_replace('\\', '/', $filePath);
+        $ext = strtolower(ltrim($doc->ext ?? pathinfo($doc->file_name, PATHINFO_EXTENSION), '.'));
+        $storageCategory = in_array($ext, self::$allowed_image_extensions, true) ? 'image' : 'document';
+        $file = XPublicStorage::getUrl(['subs_id' => $ss->subs_id, 'dir' => 'tenant_documents'], $storageCategory) . $doc->file_name;
 
+        $relativePath = str_replace('\\', '/', $file);
 
-//     if (!$file) {
-//         return DV::error('File not found in storage.');
-//     }
+        Log::info('Attempting to fetch from storage path: ' . $relativePath);
 
-//     $fileContent = \Storage::disk('public')->get($filePath);
+        if (!$relativePath) {
+            Log::warning("File missing in storage: {$relativePath}");
+            return DV::error('File not found in storage.');
+        }
 
-//     $mimeTypes = [
-//         'pdf'  => 'application/pdf',
-//         'doc'  => 'application/msword',
-//         'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-//         'xls'  => 'application/vnd.ms-excel',
-//         'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-//         'png'  => 'image/png',
-//         'jpg'  => 'image/jpeg',
-//         'jpeg' => 'image/jpeg',
-//     ];
+        $mimeType = $mimeTypes[$ext] ?? 'application/octet-stream';
 
-//     $ext      = strtolower(ltrim($doc->ext, '.'));
-//     $mimeType = $mimeTypes[$ext] ?? 'application/octet-stream';
-//     $base64   = base64_encode($fileContent);
-//     $dataUrl  = "data:{$mimeType};base64,{$base64}";
-
-//     return DV::depends(1, [
-//         'data_url'  => $dataUrl,
-//         'file_name' => $doc->file_name,
-//         'ext'       => $ext,
-//         'mime_type' => $mimeType,
-//     ]);
-// }
-
-public function downloadTenantDocument($id = null, $ss = null)
-{
-    $id = $id ?? $this->id;
-    $ss = $ss ?? $this->userInfo;
-
-    $doc = self::getDetails($id);
-    if (!$doc) {
-        return DV::error('Document not found.');
+        return DV::depends(1, [
+            'data_url'  => $relativePath,
+            'file_name' => $doc->file_name,
+            'ext'       => $ext,
+            'mime_type' => $mimeType,
+        ]);
     }
-
-    $mimeTypes = [
-        'pdf'  => 'application/pdf',
-        'doc'  => 'application/msword',
-        'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        'xls'  => 'application/vnd.ms-excel',
-        'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        'png'  => 'image/png',
-        'jpg'  => 'image/jpeg',
-        'jpeg' => 'image/jpeg',
-    ];
-
-    $ext = strtolower(ltrim($doc->ext ?? pathinfo($doc->file_name, PATHINFO_EXTENSION), '.'));
-    // Must match XPublicStorage::savefile() categories: image → /images/, document → /documents/ (e.g. PDF).
-    $storageCategory = in_array($ext, self::$allowed_image_extensions, true) ? 'image' : 'document';
-    $file = XPublicStorage::getUrl(['subs_id' => $ss->subs_id, 'dir' => 'tenant_documents'], $storageCategory) . $doc->file_name;
-
-    $relativePath = str_replace('\\', '/', $file);
-
-    Log::info('Attempting to fetch from storage path: ' . $relativePath);
-
-    if (!$relativePath) {
-        Log::warning("File missing in storage: {$relativePath}");
-        return DV::error('File not found in storage.');
-    }
-
-    $mimeType = $mimeTypes[$ext] ?? 'application/octet-stream';
-
-    return DV::depends(1, [
-        'data_url'  => $relativePath,
-        'file_name' => $doc->file_name,
-        'ext'       => $ext,
-        'mime_type' => $mimeType,
-    ]);
-}
 }
