@@ -37,7 +37,6 @@ class TenantDocument
             'remarks' => '0|string|0-255',
             'document_type_id' => '1|number|exists=document_types.id',
             'ext' => '1|string',
-            'file_name' => '0|string|0-150',
             'original_file_name' => '0|string|0-255',
             'data' => '0|string',
         ];
@@ -51,27 +50,21 @@ class TenantDocument
         $inputs = $res->values;
         $d = (object) $inputs;
         $data = $d->data;
-$ext = strtolower($d->ext);
-$inputs['file_name'] = $d->original_file_name ?? ($d->file_name ?? null);
+        $ext = strtolower($d->ext);
 
-// 2. Merge the allowed arrays
-$allAllowed = array_merge(self::$allowed_image_extensions, self::$allowed_doc_extensions);
+        // 2. Merge the allowed arrays
+        // $allAllowed = array_merge(self::$allowed_image_extensions, self::$allowed_doc_extensions);
 
-// --- DEBUG LOGS ---
-error_log("FILE VALIDATION DEBUG:");
-error_log("Incoming Ext: '" . $ext . "'");
-error_log("Allowed List: " . implode(', ', $allAllowed));
-// ------------------
 
-// 3. Strict check against the merged list
-if (!$ext || !in_array($ext, $allAllowed, true)) {
-    // Log the failure specifically
-    error_log("Validation Result: FAILED (Ext '$ext' not in list)");
-    
-    return DV::error('Invalid file type. Allowed: ' . implode(', ', $allAllowed));
-}
+        // // 3. Strict check against the merged list
+        // if (!$ext || !in_array($ext, $allAllowed, true)) {
+        //     // Log the failure specifically
+        //     error_log("Validation Result: FAILED (Ext '$ext' not in list)");
 
-error_log("Validation Result: SUCCESS");
+        //     return DV::error('Invalid file type. Allowed: ' . implode(', ', $allAllowed));
+        // }
+
+        
         $category = 'image';
         if (in_array($ext, self::$allowed_image_extensions)) {
             $category = 'image';
@@ -85,11 +78,15 @@ error_log("Validation Result: SUCCESS");
         if ($res->status === "Error") {
             return DV::error($res->error_message);
         }
+        \Log::info(json_encode($res));
 
         unset($inputs['data']);
         $inputs['file_name'] = $res->file_name;
+        
 
         $id = DBX::saveData($ss, 'tenant_documents', ['id' => $id], $inputs, [], 1);
+
+        $inputs['file_name'] = $d->original_file_name;
         return DV::depends($id, ['tenant_documents' => $inputs, 'id' => $id]);
     }
 
@@ -102,7 +99,7 @@ error_log("Validation Result: SUCCESS");
         $row = DB::table('tenant_documents as td')
             ->join('document_types as dt', 'dt.id', '=', 'td.document_type_id')
             ->where('td.tenant_id', $tenant_id)
-            ->selectRaw("td.id, td.tenant_id,td.ext, td.remarks, td.document_type_id, dt.name as document_type, td.file_name, td.created_at, $updated_at, td.update_user, td.create_user")
+            ->selectRaw("td.id, td.tenant_id,td.ext, td.remarks, td.document_type_id, dt.name as document_type, td.original_file_name,td.file_name, td.created_at, $updated_at, td.update_user, td.create_user")
             ->orderBy('td.id', 'DESC')->get();
 
         return $row;
