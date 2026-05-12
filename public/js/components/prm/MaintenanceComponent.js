@@ -484,7 +484,7 @@ const CreateMaintenanceDialog = (() => {
                     const fromAmenity = !!me.dataOptions?.amenity_id;
                     const lockContext = fromSpace || fromAmenity;
                     me.setReadOnly(lockContext,['building_id','type_unit','space_id','amenity_id']);
-                    
+
                     // ✅ helper: convert 12h → 24h
                     const to24h = (time, ampm) => {
                         if (!time) return "00:00";

@@ -478,14 +478,14 @@ const CreateVendorDialog = (() => {
                             <div class="col-12 col-md-6">
                                 <div class="vs-material-field">
                                     <input type="text" name="contact_person" class="data-input form-control" data-field="contact_person" placeholder=" " />
-                                    <label>Contact Person</label>
+                                    <label>Contact Person Name</label>
                                 </div>
                             </div>
                             <div class="col-12 col-md-6">
 
                                 <div class="vs-material-field">
                                     <input type="text" name="contact_phone" class="data-input form-control" data-field="contact_phone" placeholder=" " />
-                                    <label>Contact Phone</label>
+                                    <label>Contact Person Phone</label>
                                 </div>
                             </div>
                             <div class="col-12">

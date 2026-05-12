@@ -167,8 +167,8 @@ class Maintenance extends VSModel
             'building_id' => '1|number|exists=buildings.id|text=Please select a building.',
             'space_id'    => '0|number|exists=building_spaces.id',
             'amenity_id'  => '0|number|exists=amenities.id',
-            'start_date'  => '1|TIMESTAMP|text=Start date is required',
-            'end_date'    => '1|TIMESTAMP|text=End date is required',
+            'start_date'  => '1|TIMESTAMP|text=Start date is required.',
+            'end_date'    => '1|TIMESTAMP|text=End date is required.',
             'remarks'     => '0|string|0-255',
         ];
 

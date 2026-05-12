@@ -17,7 +17,7 @@
             <div class="col-12 col-md-auto ms-md-auto text-md-end">
                 <button type="button" class="btnAddNewPrm w-100 w-md-auto" id="_btnVendor">
                     <i class="fa-solid fa-user-plus me-2"></i>
-                    <span vslang="buttons.Create Vendor"></span>
+                    <span vslang="buttons.Add New Vendor"></span>
                 </button>
             </div>
         </div>
