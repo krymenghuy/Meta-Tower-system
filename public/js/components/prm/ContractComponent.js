@@ -1086,6 +1086,14 @@ const ContractDialog = (() => {
                         // }
 
                         const op = me.getData();
+                        if (!me.tenant_id) {
+                            cv_interact.error("Please select a tenant.");
+                            return;
+                        }
+                        if (!op.business_type_id) {
+                            cv_interact.error("Please select a business type.");
+                            return;
+                        }
                         if (me._createContractSpaceTypeId !== undefined && me._createContractSpaceTypeId !== null) {
                             op.space_type_id = me._createContractSpaceTypeId;
                         }

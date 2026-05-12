@@ -28,9 +28,9 @@ class Contract
     $subs_id = $ss->subs_id ?? getCurrentSubsId(true);
 
     $v_rule = [
-        'tenant_id'        => '1|number|exists=tenants.id',
+        'tenant_id'        => '1|number|exists=tenants.id|text=Please select a tenant.',
         'legal_name'       => '0|string|0-100',
-        'business_type_id' => '1|number|exists=business_types.id',
+        'business_type_id' => '1|number|exists=business_types.id|text=Please select a business type.',
         'space_id'         => '1|number|exists=building_spaces.id|text=Please select a valid unit code',
         'deposit'          => '1|number|text=Deposit is required',
         'start_date'       => '1|date|text=Please enter a valid contract start date.',
