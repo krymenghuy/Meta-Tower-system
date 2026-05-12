@@ -225,8 +225,8 @@ var MaintenanceComponent = (() => {
                 const status_id = container.dataset.statusid;
                 menu.modify.style.display = 'none';
                 menu.finish_maintenance.style.display = status_id == 2 ? 'block' : 'none';
-                menu.delete.style.display = status_id == 4  ? 'block' : 'none';
-                menu.cancel_maintenance.style.display = status_id == 1 || status_id == 3 ? 'block' : 'none';
+                menu.delete.style.display = status_id == 3 || status_id == 4 ? 'block' : 'none';
+                menu.cancel_maintenance.style.display = status_id == 1 ? 'block' : 'none';
 
             },
             onClick: (menuLink, id, name) => {
@@ -267,7 +267,7 @@ var MaintenanceComponent = (() => {
                         if (e) {
                             vsapi.call(`${main_view.base_url}/prm/maintenance/delete`, { id: id }, false, false, false).then(res => {
                                 if (res.status_code === 200) {
-                                    cv_interact.success("Deleted");
+                                    cv_interact.success(res.message || "Maintenance has been deleted.");
                                     mThis.MaintenanceListView.showPage(mThis.getFilterData());
                                 } else {
                                     cv_interact.error(res.error_message || "Delete failed");
@@ -309,6 +309,38 @@ var MaintenanceComponent = (() => {
 const CreateMaintenanceDialog = (() => {
     const self = {};
     let dialog = null;
+
+    const refreshMaintenanceUnitOptions = (me) => {
+        const buildingId = me.controls?.building_id?.value || "";
+        const spaces = buildingId
+            ? (me._allBuildingSpaces || []).filter((row) => String(row.building_id) === String(buildingId))
+            : [];
+        const amenities = buildingId
+            ? (me._allAmenities || []).filter((row) => String(row.building_id) === String(buildingId))
+            : [];
+        const selectedSpaceId = me.controls?.space_id?.value || me.detail?.space_id || "";
+        const selectedAmenityId = me.controls?.amenity_id?.value || me.detail?.amenity_id || "";
+
+        if (me.controls?.space_id) {
+            VSUtil.setComboItems(me.controls.space_id, spaces, "id", "code", "", "Unit", selectedSpaceId);
+        }
+        if (me.controls?.amenity_id) {
+            VSUtil.setComboItems(me.controls.amenity_id, amenities, "id", "amenity_code", "", "Select amenity", selectedAmenityId);
+        }
+    };
+
+    const bindMaintenanceBuildingFilter = (me) => {
+        const buildingSelect = me.controls?.building_id;
+        if (!buildingSelect || buildingSelect.dataset.maintenanceUnitFilterBound === "1") {
+            return;
+        }
+        buildingSelect.dataset.maintenanceUnitFilterBound = "1";
+        buildingSelect.addEventListener("change", () => {
+            if (me.controls?.space_id) me.controls.space_id.value = "";
+            if (me.controls?.amenity_id) me.controls.amenity_id.value = "";
+            refreshMaintenanceUnitOptions(me);
+        });
+    };
 
     self.show = (op) => {
         dialog = dialog || new GeneralDialog({
@@ -390,6 +422,7 @@ const CreateMaintenanceDialog = (() => {
                     else if (unitPreset.amenity_id) typeUnit.value = "amenity";
                 }
                 toggleUnitFields();
+                bindMaintenanceBuildingFilter(me);
             },
             configSelect: [
                 { name: "building_id", data: "buildings", textField: "building", valueField: "id" },
@@ -412,6 +445,8 @@ const CreateMaintenanceDialog = (() => {
                 }
             },
             onPrepareForm: (me, data) => {
+                me._allBuildingSpaces = Array.isArray(data?.building_spaces) ? data.building_spaces : [];
+                me._allAmenities = Array.isArray(data?.amenities) ? data.amenities : [];
                 me.detail = data.maintenance_details || null;
                 if (me.dataOptions?.space_id) {
                     me.detail = me.detail || {};
@@ -432,10 +467,12 @@ const CreateMaintenanceDialog = (() => {
                     const spaceRow = me.divModal?.querySelector("#_maintenance_unit_space_row");
                     const amenityRow = me.divModal?.querySelector("#_maintenance_unit_amenity_row");
 
+                    if (me.detail?.building_id && me.controls?.building_id) me.controls.building_id.value = me.detail.building_id;
+                    refreshMaintenanceUnitOptions(me);
+
                     if (typeUnit && me.detail?.type_unit) typeUnit.value = me.detail.type_unit;
                     if (me.detail?.space_id && me.controls?.space_id) me.controls.space_id.value = me.detail.space_id;
                     if (me.detail?.amenity_id && me.controls?.amenity_id) me.controls.amenity_id.value = me.detail.amenity_id;
-                    if (me.detail?.building_id && me.controls?.building_id) me.controls.building_id.value = me.detail.building_id;
 
                     if (spaceRow && amenityRow) {
                         const val = typeUnit?.value || "";
@@ -447,7 +484,7 @@ const CreateMaintenanceDialog = (() => {
                     const fromAmenity = !!me.dataOptions?.amenity_id;
                     const lockContext = fromSpace || fromAmenity;
                     me.setReadOnly(lockContext,['building_id','type_unit','space_id','amenity_id']);
-                    
+
                     // ✅ helper: convert 12h → 24h
                     const to24h = (time, ampm) => {
                         if (!time) return "00:00";
@@ -495,21 +532,50 @@ const CreateMaintenanceDialog = (() => {
                     click: (me, btn) => {
                         const op = me.getData();
                         op.id = me.dataOptions?.id;
+                        const buildingId = op.building_id ? String(op.building_id).trim() : "";
+                        if (!buildingId) {
+                            cv_interact.error("Please select a building.");
+                            return;
+                        }
+                        if (!op.type_unit) {
+                            cv_interact.error("Type is required.");
+                            return;
+                        }
                         if (op.type_unit === 'space') {
                             op.amenity_id = null;
                             if (!op.space_id) {
-                                cv_interact.error("Space name is required.");
+                                cv_interact.error("Unit code is required.");
                                 return;
                             }
                         } else if (op.type_unit === 'amenity') {
                             op.space_id = null;
-
                             if (!op.amenity_id) {
-                                cv_interact.error("Amenity name is required.");
+                                cv_interact.error("Unit code is required.");
                                 return;
                             }
+                        } else {
+                            cv_interact.error("Type is required.");
+                            return;
                         }
                         delete op.type_unit;
+                        const startDate = op.start_date ? String(op.start_date).trim() : "";
+                        const endDate = op.end_date ? String(op.end_date).trim() : "";
+                        if (!startDate && !endDate) {
+                            cv_interact.error("Start date and end date are required.");
+                            return;
+                        }
+                        if (!startDate) {
+                            cv_interact.error("Start date is required.");
+                            return;
+                        }
+                        if (!endDate) {
+                            cv_interact.error("End date is required.");
+                            return;
+                        }
+                        if (!op.start_time || !String(op.start_time).trim()) {
+                            cv_interact.error("Please enter valid start time.");
+                            return;
+                        }
                         if (op.start_date && op.start_time) op.start_date = op.start_date + " " + op.start_time;
                         if (op.end_date && op.end_time) op.end_date = op.end_date + " " + op.end_time;
                         delete op.start_time;

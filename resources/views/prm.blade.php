@@ -99,7 +99,7 @@
     ScriptManager::render('priority-one', 1, 9);
     ScriptManager::render('primary', 1, 13);
     ScriptManager::render('primary-defer', 1, 37);
-    ScriptManager::render('prm-components', 1, 241);
+    ScriptManager::render('prm-components', 1, 242);
     //ScriptManager::render('pdfmake', 1);
     ?>
 </head>
