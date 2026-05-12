@@ -799,7 +799,7 @@ const BuildingSpaceDialog = (() => {
                         name: "floor_id",
                         textField: "name",
                         valueField: "id",
-                        lazyLoading: true,
+                        lazyLoading: false,
                         defaultValue: (me, op) => {
                             return op?.data?.floor_id ?? null;
                         },
