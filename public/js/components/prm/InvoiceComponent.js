@@ -27,7 +27,7 @@ var InvoiceComponent = (() => {
                     ? `<span class="text-prm-custom">${data.code}</span>`
                     : `<span class="text-muted fst-italic">N/A</span>`;
 
-                let typeHtml = '';
+                let typeHtml = "";
                 const val = data.invoice_type;
 
                 if (val == 1) {
@@ -76,7 +76,8 @@ var InvoiceComponent = (() => {
             data: data => {
                 return `
                     <div class="d-flex flex-column align-items-center">
-                        <span class="text-prm-custom text-nowrap">${data.invoice_date ?? ""}
+                        <span class="text-prm-custom text-nowrap">${data.invoice_date ??
+                            ""}
                     </div>
                 `;
             }
@@ -582,33 +583,34 @@ var InvoiceComponent = (() => {
     };
 
     mThis.printInvoice = (id, invoice_type, menulink) => {
-        if (!invoice_type || invoice_type === 'undefined') {
-        console.warn("Type missing for ID " + id + ". Fetching from server...");
-        
-        vsapi.call(`${main_view.base_url}/prm/invoice/details`, { id: id })
-            .then((res) => {
-                if (res.status_code === 200) {
-                    mThis.printInvoice(id, res.data.invoice_type, menulink);
-                } else {
-                    cv_interact.error("Could not determine invoice type.");
-                }
-            });
-        return;
-    }
+        if (!invoice_type || invoice_type === "undefined") {
+            console.warn(
+                "Type missing for ID " + id + ". Fetching from server..."
+            );
+
+            vsapi
+                .call(`${main_view.base_url}/prm/invoice/details`, { id: id })
+                .then(res => {
+                    if (res.status_code === 200) {
+                        mThis.printInvoice(id, res.data.invoice_type, menulink);
+                    } else {
+                        cv_interact.error("Could not determine invoice type.");
+                    }
+                });
+            return;
+        }
 
         const invType = parseInt(invoice_type);
         const params = { invoice_id: id, btn: menulink };
-        
+
         if (invType === 1) {
             InvoiceTaxDialog.show(params);
         } else if (invType === 2) {
-            InvoiceNoTaxDialog.show(params); 
+            InvoiceNoTaxDialog.show(params);
         } else if (invType === 3) {
             InvoiceCommercialDialog.show(params);
         }
     };
-
-    
 
     mThis.prepareFormOptions = onFinish => {
         vsapi
@@ -653,7 +655,7 @@ const InvoiceDialog = (() => {
             keyboard: true,
             createContent: () => `
                         <div class="container-fluid">
-                            <div id="_invoice_form_container" class="bg-white rounded-3 ">
+                            <div id="_invoice_form_container" class="bg-white rounded-3">
 
                                 <div class="d-flex justify-content-between align-items-start">
 
@@ -697,7 +699,7 @@ const InvoiceDialog = (() => {
                                          <div class="field-row ">
                                             <label class="field-label fw-semibold">Due Date </label>
                                             <span class="field-sep">:</span>
-                                            <input type="text" data-type="date" name="due_date" class="form-control data-input field-input" required placeholder=" ">
+                                            <input type="text" data-type="date" name="due_date" data-field="due_date" class="form-control data-input field-input" required placeholder=" ">
                                         </div>
 
 
@@ -1573,8 +1575,6 @@ const InvoiceDialog = (() => {
                     });
                 };
 
-
-
                 // ===================== Service =================
                 me.controls.btnService.onclick = () => {
                     if (!me._selectedTenantId) {
@@ -1805,7 +1805,7 @@ const InvoiceDialog = (() => {
                                     start_date: data.start_date || "",
                                     end_date: data.end_date || "",
                                     discount_type:
-                                        data.discount_type || "percent",
+                                        data.discount_type || "percent"
                                 },
                                 0
                             );
@@ -2120,12 +2120,12 @@ const InvoiceDialog = (() => {
                             readOnly: true,
                             width: "150px"
                         },
-                         {
+                        {
                             name: "qty",
                             transTitle: "titles.QTY",
                             dataType: "number",
                             readOnly: true,
-                            className: "text-start",
+                            className: "text-start"
                         },
                         {
                             name: "price",
@@ -2171,11 +2171,11 @@ const InvoiceDialog = (() => {
                         container: me.controls.div_invoice_summary,
                         showTax: true,
                         allowDiscount: true,
-                        discountBeforeTax: false,
+                        discountBeforeTax: true,
                         discountTypeDefault: "percent",
                         currency: "USD"
                     },
-
+                    // ensureEmptyRow:false,
                     showColumnHeaders: true,
                     showAddLineButton: false,
 
@@ -2184,16 +2184,8 @@ const InvoiceDialog = (() => {
                         qty: "positive",
                         price: "positive"
                     },
-                    itemRendered:(me,tr,data,isLoading)=>{
-                        tr.dataset.remarks = data.remarks;
-                        console.log(333,tr.dataset.remarks);
-
-                        me.setRowMeta(tr, {
-                            item_id:data.item_id,
-                            remarks:data.remarks,
-                            abc:123,
-                        })
-
+                    itemRendered: (me, ctx) => {
+                        console.log(2222222, ctx);
                     },
                     onItemChange: (rowId, item, fieldName, td, tr) => {
                         if (fieldName === "item_id") {
@@ -2299,9 +2291,11 @@ const InvoiceDialog = (() => {
                 me.saveData = () => {
                     const header = me.getData();
                     const items = me.itemsView.getItems({
-                        metaKeys:['item_id','abc','remark']
+                        metaKeys: ["item_id", "abc", "remark"]
                     }); // Retrieves all row data
-                    console.log(5555,items);
+
+                    console.log(33333, header);
+                    console.log(44444, items);
 
                     const totals = me.itemsView.getCurrentTotals?.() || {};
 
@@ -2311,8 +2305,6 @@ const InvoiceDialog = (() => {
                     if (me.dataOptions?.id) {
                         header.id = me.dataOptions.id;
                     }
-                    console.log("1234567890", items);
-                    console.log("1234567890total", totals);
 
                     const toMySQLDate = dateStr => {
                         if (!dateStr) return null;
@@ -2476,9 +2468,7 @@ const InvoiceDialog = (() => {
             },
 
             onPrepareForm: (me, data) => {
-                // availableItem = (data.services || []);
                 availableItem = (data.services || []).filter(s => s.type == 0);
-                // console.log("Available services for invoice:", availableItem);
                 me._selectedTenantId = null;
                 me._tenantData = null;
                 me._tenantSpaces = [];
@@ -2612,32 +2602,35 @@ const InvoiceDialog = (() => {
                                     });
                             }
 
-                            if (me.itemsView) {
-                                let finalItems = [];
+                            me.itemsView.setData(detail);
 
-                                // Map data from the API detail
-                                if (detail.items && detail.items.length > 0) {
-                                    finalItems = detail.items.map(item => ({
-                                        ...item,
-                                        item_id: item.item_id || item.id,
-                                        item_name: item.item_name || item.name,
-                                        qty: parseFloat(item.qty || 1),
-                                        price: parseFloat(item.price || 0),
-                                        total: parseFloat(item.total || 0),
-                                        unit_type: item.unit_type || "-",
-                                        remarks: item.remarks || ""
-                                    }));
-                                }
 
-                                // Add each real row manually from mapped data
-                                finalItems.forEach((itemData, index) => {
-                                    console.log(
-                                        `Injecting row ${index + 1}:`,
-                                        itemData.item_name
-                                    );
-                                    me.itemsView.addRow(itemData, 0);
-                                });
-                            }
+                            // if (me.itemsView) {
+                            //     let finalItems = [];
+
+                            //     // Map data from the API detail
+                            //     if (detail.items && detail.items.length > 0) {
+                            //         finalItems = detail.items.map(item => ({
+                            //             ...item,
+                            //             item_id: item.item_id || item.id,
+                            //             item_name: item.item_name || item.name,
+                            //             qty: parseFloat(item.qty || 1),
+                            //             price: parseFloat(item.price || 0),
+                            //             total: parseFloat(item.total || 0),
+                            //             unit_type: item.unit_type || "-",
+                            //             remarks: item.remarks || ""
+                            //         }));
+                            //     }
+
+                            //     // Add each real row manually from mapped data
+                            //     finalItems.forEach((itemData, index) => {
+                            //         console.log(
+                            //             `Injecting row ${index + 1}:`,
+                            //             itemData.item_name
+                            //         );
+                            //         me.itemsView.addRow(itemData, 0);
+                            //     });
+                            // }
                         });
                 }
                 // ── CREATE MODE — already cleared above ──
@@ -2680,7 +2673,6 @@ const InvoiceDialog = (() => {
                     label: '<span vslang="buttons.Cancel"></span>',
                     cssClass: "btn btn-secondary",
                     click: me => {
-                        me.itemsView.setData(null);
                         me.hide(false);
                     }
                 },
@@ -2695,6 +2687,10 @@ const InvoiceDialog = (() => {
                         if (!formData.items || formData.items.length === 0) {
                             return cv_interact.error("Add at least one item");
                         }
+
+
+                        console.log(111111111111111111111111111,formData);
+                        
                         vsapi
                             .call(
                                 `${main_view.base_url}/prm/invoice/save`,

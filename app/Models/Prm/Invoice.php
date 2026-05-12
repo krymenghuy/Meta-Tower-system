@@ -31,15 +31,21 @@ class Invoice extends VSModel
         $v_rule = [
             'tenant_id'         => '1|integer|exists:tenants,id',
             'space_id'          => '1|integer|exists:building_spaces,id ',
-            'due_date'          => '1|date',
+            'due_date'          => '1|date|text=Please enter valid due date',
             'invoice_date'      => '0|date',
             'payment_status_id' => '0|integer|exists:payment_statuses,id|default=2',
             'items'             => '1|array|min:1',
             'general_remark'    => '0|string|0-350|',
             'invoice_type'      => '1|choice|1,2,3',
+            'discount_type'     => '0|string', 
+            'discount_value'    => '0|numeric',
+            'contract_id'       => '0|integer'
 
 
         ];
+
+        \Log::info($arr);
+
 
         $allowed_chars = ['@', ',', '-', '.', '#', '!', '?', '(', ')', "\n"];
         $res = DBX::validateObject(
@@ -57,7 +63,12 @@ class Invoice extends VSModel
         }
 
         $inputs = $res->values;
+
         $isNew = !$id;
+
+        $inputs['discount_value'] = $totals['discount_value'] ?? 0;
+        $inputs['discount_type'] = in_array(
+        $totals['discount_type'] ?? 'percent',['percent', 'amount']) ;
 
         if ($isNew) {
             $inputs['invoice_date'] = $inputs['invoice_date'] ?? now()->toDateString();
@@ -96,9 +107,9 @@ class Invoice extends VSModel
             $created = !$id;
 
             $id = DBX::saveData($ss, 'invoices', ['id' => $id], $inputs, [], 1);
-            if (!$id) {
-                throw new \Exception("Failed to save invoice header.");
-            }
+            // if (!$id) {
+            //     throw new \Exception("Failed to save invoice header.");
+            // }
 
             $codeRes = null;
             if ($created && $id) {
@@ -436,6 +447,8 @@ class Invoice extends VSModel
                 'i.due_date',
                 'i.general_remark',
                 'i.invoice_date',
+                'i.discount_type',
+                'i.discount_value',
                 'i.start_time',
                 'i.created_at',
                 'i.updated_at',
@@ -512,6 +525,8 @@ class Invoice extends VSModel
                 'i.start_time',
                 'i.invoice_type',
                 'i.due_date',
+                'i.discount_type',
+                'i.discount_value',
                 DB::raw('(i.amount - COALESCE(i.paid_amount, 0)) as balance'),
                 'i.payment_status_id',
                 'i.contract_id',
@@ -546,7 +561,7 @@ class Invoice extends VSModel
                 'ii.qty',
                 'ii.unit_type',
                 'ii.remarks',
-                'ii.amount',
+                'ii.amount as total',
                 'ii.discount',
                 'ii.special_discount_value',
                 'ii.special_discount_type',
@@ -554,6 +569,7 @@ class Invoice extends VSModel
                 'ii.end_date',
                 'ii.tax_rate',
                 'ii.price',
+                
                 DB::raw("
                     COALESCE(
                         s.name,
