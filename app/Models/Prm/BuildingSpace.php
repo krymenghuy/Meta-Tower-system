@@ -46,9 +46,9 @@ class BuildingSpace
         $isCreate = empty($id);
 
         $v_rule = [
-            'building_id' => '1|number|exists=buildings.id|text= Please enter a valid building.',
-            'floor_id' => '1|number|exists=floors.id|text= Please select a valid floor.',
-            'space_type_id' => '1|number|exists=space_types.id|text=Please select a valid type.',
+            'building_id' => '1|number|exists=buildings.id|text=Please select a building',
+            'floor_id' => '1|number|exists=floors.id|text=Please select the floor',
+            'space_type_id' => '1|number|exists=space_types.id|text=Please select space type',
             'sqm_size' => '1|number',
             'price' => '1|number',
             'price_type' => '1|string|text=Please enter a valid price type.',
@@ -65,7 +65,7 @@ class BuildingSpace
                 ->where('code', $d->code)
                 ->when($id, fn($q) => $q->where('id', '<>', $id))
                 ->exists();
-            if ($exists) return DV::error('Space code already exists');
+            if ($exists) return DV::error('Unit code already exists.');
         }
         if ((float) $inputs['price'] <= 0 ){
             return DV::error('Price must be greater than zero.');
@@ -108,8 +108,7 @@ class BuildingSpace
         }
     }
 
-
-   function createBuildingSpaceCode($branch_id, $building_id, $floor_number, $space_id)
+   static function createBuildingSpaceCode($branch_id, $building_id, $floor_number, $space_id)
 {
     $buildingName = DB::table('buildings')
         ->where('id', $building_id)
@@ -200,7 +199,7 @@ class BuildingSpace
         if ($search_value) {
             $skip_rows = 0;
             $search_value = escape_like_str($search_value);
-            $str_search = "(bs.code LIKE '%" . $search_value . "%' OR b.name LIKE '%" . $search_value . "%' )";
+            $str_search = "(bs.code LIKE '%" . $search_value . "%')";
         }
         if ($building_id) {
             $str_moreWhere .= ' AND bs.building_id = ' . $building_id;
@@ -417,7 +416,6 @@ class BuildingSpace
 {
     $id = $id ?? $this->id;
     $ss = $ss ?? $this->userInfo;
-
     $v_rule = [
         'space_id' => '1|number|exists=building_spaces.id',
         'booker_name' => '1|string|1-50|text=Booker name is required.',
@@ -464,8 +462,10 @@ class BuildingSpace
     if (strtotime($d->expired_booking_date) < strtotime($minExpire)) {
         return DV::error('Expired booking date must be at least 14 days after booking date.');
     }
+    \Log::info(json_encode($ss));
+
     if (empty($inputs['remarks'])) {
-        $inputs['remarks'] = "Booking created by {$d->booker_name} on " . date('d-M-Y H:i:s');
+        $inputs['remarks'] = "Booking created by {$ss->full_name} on " . date('d-M-Y H:i:s');
     }
     DB::beginTransaction();
     try {

@@ -937,7 +937,7 @@ const CreateBookingDialog = (() => {
                             </div>
                             <div class="col-6">
                                 <div class="vs-material-field">
-                                    <input type="text" data-type="date" name="booking_date" class="data-input form-control" data-field="booking_date" placeholder=" " />
+                                    <input type="text" data-type="date" name="booking_date" class="data-input form-control" Readonly data-field="booking_date" placeholder=" " />
                                     <label>Booking Date</label>
                                 </div>
                             </div>
@@ -1193,6 +1193,13 @@ const ViewBookingDialog = (() => {
                                                 <p class="text-nowrap text-muted width-p">Booking Amount</p>
                                                 <p class="px-3">:</p>
                                                 <p class="text-nowrap text-capitalize data-get">${VSMoney.formatAmount(data.booking_fee, data.currency ?? 'USD') ?? 'N/A'}</p>
+                                            </div>
+                                        </div>
+                                        <div class="row cols-2 mb-0">
+                                            <div class="d-flex">
+                                                <p class="text-nowrap text-muted width-p">Remarks</p>
+                                                <p class="px-3">:</p>
+                                                <p class="text-nowrap text-capitalize data-get">${data.remarks ?? 'N/A'}</p>
                                             </div>
                                         </div>
                                     </div>
