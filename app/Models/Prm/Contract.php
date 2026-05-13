@@ -52,6 +52,19 @@ class Contract
     if ($end <= $start) {
         return DV::error('End date must be after start date.');
     }
+    $todayStr = date('Y-m-d');
+    $endInput = $inputs['end_date'] ?? '';
+    if ($endInput !== '' && $endInput < $todayStr) {
+        if ($id) {
+            $prevEnd = DB::table('contracts')->where('id', $id)->value('end_date');
+            $prevEndStr = $prevEnd ? date('Y-m-d', strtotime((string) $prevEnd)) : '';
+            if ($prevEndStr !== $endInput) {
+                return DV::error('End date cannot be in the past.');
+            }
+        } else {
+            return DV::error('End date cannot be in the past.');
+        }
+    }
     $minEnd = strtotime('-1 day', strtotime('+1 month', $start));
     $startDay = date('d', $start);
     $calcDay  = date('d', strtotime('+1 month', $start));
@@ -543,6 +556,8 @@ class Contract
 
         DB::beginTransaction();
         try {
+            DB::table('contract_renewals')->where('contract_id', $id)->delete();
+
             $deleted = DB::table('contracts')->where('id', $id)->delete();
             if (!$deleted) {
                 DB::rollBack();
