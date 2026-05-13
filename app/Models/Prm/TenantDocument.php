@@ -64,7 +64,7 @@ class TenantDocument
         //     return DV::error('Invalid file type. Allowed: ' . implode(', ', $allAllowed));
         // }
 
-        
+
         $category = 'image';
         if (in_array($ext, self::$allowed_image_extensions)) {
             $category = 'image';
@@ -82,7 +82,8 @@ class TenantDocument
 
         unset($inputs['data']);
         $inputs['file_name'] = $res->file_name;
-        
+        $inputs['category'] = $category;
+
 
         $id = DBX::saveData($ss, 'tenant_documents', ['id' => $id], $inputs, [], 1);
 
@@ -122,9 +123,26 @@ class TenantDocument
         ];
     }
 
-    public function deleteTenantDocument($id = null)
+    public function deleteTenantDocument($ss = null, $id = null)
     {
         $id = $id ?? $this->id;
+        $data =  DB::table('tenant_documents as td')
+            ->where('td.id', $id)
+            ->selectRaw('td.file_name, td.category')
+            ->first();
+
+        $category = $data->category;
+        $file_name = $data->file_name;
+        \Log::info(json_encode($data));
+        \Log::info(($category));
+        \Log::info(($file_name));
+        $res = XPublicStorage::delete(['subs_id' => $ss->subs_id, 'dir' => self::$img_dir], $category, $file_name);
+        \Log::info(json_encode($res));
+
+
+        if ($res === "File not found for deleting") {
+            return DV::error('File not found for deleting');
+        }
         $deleted = DB::table('tenant_documents')->where('id', $id)->delete();
         return $deleted ? DV::depends($deleted, ['action' => 'deleted']) : DV::error('Delete failed.');
     }

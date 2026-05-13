@@ -411,7 +411,7 @@ var TenantComponent = new (function () {
                         .then((res) => {
                             if (res.status_code == 200) {
                                 mThis.renderView();
-                                cv_interact.success("Tenant deleted");
+                                cv_interact.success("Tenant has been deleted.");
                             } else {
                                 cv_interact.error(res.error_message);
                             }
@@ -1234,7 +1234,7 @@ var TenantComponent = new (function () {
                     documents.forEach((doc) => {
                         rows += `
                     <tr class="border-bottom">
-                        <td class="ps-3 py-3">
+                        <td class="ps-3 py-3" style="width: 20%; height: 55px; vertical-align: middle;">
                             <div class="d-flex align-items-center">
                                 <div>
                                     <div class="text-dark">
@@ -1243,24 +1243,24 @@ var TenantComponent = new (function () {
                                 </div>
                             </div>
                         </td>
-                        <td>
+                        <td style="width: 20%; height: 55px; vertical-align: middle;">
                             <div class="text-dark">
                                 ${doc.original_file_name || "—"}
                             </div>
                         </td>
-                        <td>
+                        <td style="width: 12%; height: 55px; vertical-align: middle;">
                             <div class="text-dark">
                                 ${doc.ext ? doc.ext.toUpperCase() : "—"}
                             </div>
                         </td>
-                        <td>
+                        <td style="width: 30%; height: 55px; vertical-align: middle;">
                             <span class="text-dark">
                                 ${doc.remarks || ""}
                             </span>
                         </td>
-                       <td class="text-end py-3 px-3">
+                        <td class="text-end py-3 px-3" style="width: 8%; height: 55px; vertical-align: middle;">
                             <div class="d-flex justify-content-start gap-2">
-                                <a href="javascript:void(0)" class="view-doc"  data-id="${doc.id}">
+                                <a href="javascript:void(0)" class="view-doc" data-id="${doc.id}">
                                     <span class="tool-tip">
                                         <i class="fa-regular fa-eye text-success fs-6"></i>
                                         <span class="tool-tiptext fs-6">View</span>
@@ -1269,16 +1269,15 @@ var TenantComponent = new (function () {
                                 <a href="javascript:void(0)" class="download-doc" data-id="${doc.id}">
                                     <span class="tool-tip">
                                         <i class="fa-solid fa-cloud-arrow-down text-primary fs-6"></i>
-                                        <span class="tool-tiptext fs-6">Download </span>
+                                        <span class="tool-tiptext fs-6">Download</span>
                                     </span>
                                 </a>
-                                <a href="javascript:void(0)" class="delete-doc-btn"  data-id="${doc.id}">
+                                <a href="javascript:void(0)" class="delete-doc-btn" data-id="${doc.id}">
                                     <span class="tool-tip">
                                         <i class="fa-regular fa-trash-can text-danger fs-6"></i>
                                         <span class="tool-tiptext fs-6">Delete</span>
                                     </span>
                                 </a>
-
                             </div>
                         </td>
                     </tr>
@@ -1526,7 +1525,7 @@ const CreateTenantDialog = (() => {
                             </div>
                             <div class="col-12 col-md-4">
                                 <div class="vs-material-field">
-                                    <input type="number" name="national_id" class="data-input form-control" data-field="national_id" placeholder=" " />
+                                    <input type="text" name="national_id" class="data-input form-control" data-field="national_id" placeholder=" " />
                                     <label>National ID</label>
                                 </div>
                             </div>
@@ -1643,6 +1642,7 @@ const CreateTenantDialog = (() => {
                                 } else cv_interact.error(res.error_message);
                             });
                     };
+                    
                 },
                 configSelect: [
                     {
@@ -1766,7 +1766,7 @@ const TenantDocumentDialog = (() => {
                     </div>
                     <div class="col-12">
                         <div class="vs-material-field d-flex">
-                            <input type="text" name="documents" class="d-none form-control"  accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg" /disabled>
+                            <input type="text" name="documents" class="d-none form-control"  accept=".pdf,.png,.jpg,.jpeg" /disabled>
                         </div>
                     </div>
                      <div class="col-12">
@@ -1873,6 +1873,7 @@ const TenantDocumentDialog = (() => {
                                 }
                             });
                     };
+                    
                 },
 
                 configSelect: [
@@ -1926,7 +1927,10 @@ const TenantDocumentDialog = (() => {
                                 );
                                 return;
                             }
-                            const nameWithoutExt = me.fileData.fileName.replace(/\.[^/.]+$/, "");
+                            const nameWithoutExt = me.fileData.fileName.replace(
+                                /\.[^/.]+$/,
+                                "",
+                            );
                             const p = {
                                 tenant_id: me.dataOptions.tenant_id,
                                 ext: me.fileData.ext,
@@ -1935,23 +1939,11 @@ const TenantDocumentDialog = (() => {
                                 document_type_id:
                                     me.controls.document_type.value,
                                 original_file_name: nameWithoutExt,
-                                
-
                             };
-
-                            console.log(2222, p);
-
                             vsapi
                                 .call(
-                                    [
-                                        main_view.base_url,
-                                        "/prm/tenant/document/save",
-                                    ].join(""),
-                                    p,
-                                    btn,
-                                    null,
-                                )
-                                .then((res) => {
+                                    [main_view.base_url,"/prm/tenant/document/save",].join(""),p,btn,null,
+                                ).then((res) => {
                                     if (res.status_code === 200) {
                                         me.hide(true, p);
                                         cv_interact.success(

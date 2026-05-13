@@ -76,8 +76,7 @@ class Tenant
         $email_char = ['@', '.'];
         $address_char = ['@', '.', '#'];
         $name_char = ['@', '.', '#'];
-        $passport_char = ['-', '_', '.', '#'];
-        $res = DBX::validateObject($arr, $v_rule, 1, ['photo' => GeneralSettings::$image_chars, 'email' => $email_char, 'address' => $address_char, 'passport_number' => $passport_char, 'legal_name' => $name_char], $ss->lang, 0, null);
+        $res = DBX::validateObject($arr, $v_rule, 1, ['photo' => GeneralSettings::$image_chars, 'email' => $email_char, 'address' => $address_char,  'legal_name' => $name_char], $ss->lang, 0, null);
         if ($res->error) return DV::error($res->error);
         $inputs = $res->values;
         $d = (object) $inputs;
@@ -332,6 +331,12 @@ class Tenant
 
         if ($hasActiveContract) {
             return DV::error('Cannot delete tenant with active contracts. Please terminate all contracts first.');
+        }
+
+        $documents = DB::table('tenant_documents')->where('tenant_id', $id)->get();
+        foreach ($documents as $doc) {
+            $tenantDoc = new TenantDocument($doc->id, $ss);
+            $tenantDoc->deleteTenantDocument($ss,$doc->id);
         }
 
         $deleted = DB::table('tenants')->where('id', $id)->delete();
