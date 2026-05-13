@@ -902,7 +902,7 @@ var TenantComponent = new (function () {
                                             <td class="ps-3 py-3">
                                                 <div class="fw-bold text-dark">${data.document_type_id ?? ""}</div>
                                             </td>
-                                            <td><div class="fw-bold text-dark">${data.file_name ?? ""}</div></td>
+                                            <td><div class="fw-bold text-dark">${data.original_file_name ?? ""}</div></td>
                                             <td><div class="fw-semibold text-dark">${data.ext ?? ""}</div></td>
                                             <td><span class="text-muted small">${data.remarks ?? ""}</span></td>
                                             <td class="text-end pe-3">
@@ -1245,7 +1245,7 @@ var TenantComponent = new (function () {
                         </td>
                         <td>
                             <div class="text-dark">
-                                ${doc.file_name || "—"}
+                                ${doc.original_file_name || "—"}
                             </div>
                         </td>
                         <td>
@@ -1379,7 +1379,7 @@ var TenantComponent = new (function () {
                                         )
                                         .then((res) => {
                                             if (res.status_code === 200) {
-                                                cv_interact.info(
+                                                cv_interact.success(
                                                     "Document deleted.",
                                                 );
                                                 mThis.renderOverView(
@@ -1483,7 +1483,7 @@ const CreateTenantDialog = (() => {
                         <div class="col-md-4 text-center d-flex flex-column justify-content-center">
                             <div class="data-input tenant-photo-wrapper border border-prm-custom rounded-3 d-flex align-items-center justify-content-center mx-auto"
                                 style="width: 210px; height: 130px; cursor: pointer; background-color: #f8f8f8;">
-                                <div name="div_tenant_photo" class="data-input w-100 h-100">
+                                <div name="div_tenant_photo" class="data-input w-100 h-100" data-field="photo_file_name">
                                 </div>
                             </div>
                            <!-- <small class="text-muted d-block mt-2">Profile Photo</small> -->
@@ -1566,9 +1566,9 @@ const CreateTenantDialog = (() => {
                         defaultPhotoName: "default-skill",
                         containerClass: "tenant-profile-container",
                         imgClass: "data-input",
-                        // dataset: {
-                        //     field: "photo",
-                        // } /** please set field: photo so that we can use for both Edit and Create easily */,
+                        dataset: {
+                            field: "photo",
+                        } /** please set field: photo so that we can use for both Edit and Create easily */,
                         //dataset: { field: "image_url" },
                         beforeDeleteImage: async () => {
                             if (me.dataOptions.id > 0) {
@@ -1677,13 +1677,13 @@ const CreateTenantDialog = (() => {
                         me.controls.email.value = me.dataOptions.email;
                     }
                 },
+
                 extendMethod: {
                     setData: (me, data) => {
+                        // console.log(data);
+
                         me.tenantImageBox.setImage(data.image_url);
                     },
-                    getData: (me,data)=>{
-                        return {photo:me.tenantImageBox.getImage()};
-                    }
                 },
                 buttons: [
                     {
@@ -1907,6 +1907,26 @@ const TenantDocumentDialog = (() => {
                         label: '<span vslang="buttons.Save"></span>',
                         cssClass: "btn btn-primary",
                         click: (me, btn) => {
+                            if (!me.controls.document_type.value) {
+                                cv_interact.error(
+                                    "Please select a document type.",
+                                );
+                                return;
+                            }
+                            if (!me.fileData) {
+                                cv_interact.error("Please select a file.");
+                                return;
+                            }
+
+                            const allowExt = ["jpg", "jpeg", "png", "pdf"];
+
+                            if (allowExt.indexOf(me.fileData.ext) === -1) {
+                                cv_interact.error(
+                                    "Please select a valid file.",
+                                );
+                                return;
+                            }
+                            const nameWithoutExt = me.fileData.fileName.replace(/\.[^/.]+$/, "");
                             const p = {
                                 tenant_id: me.dataOptions.tenant_id,
                                 ext: me.fileData.ext,
@@ -1914,7 +1934,9 @@ const TenantDocumentDialog = (() => {
                                 remarks: me.controls.remarks.value,
                                 document_type_id:
                                     me.controls.document_type.value,
-                                original_file_name: me.fileData.fileName,
+                                original_file_name: nameWithoutExt,
+                                
+
                             };
 
                             console.log(2222, p);
