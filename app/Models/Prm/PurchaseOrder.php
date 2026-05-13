@@ -208,7 +208,7 @@ class PurchaseOrder extends VSModel
             $itemIds = array_column($valid_items, 'item_id');
 
             if (count($itemIds) !== count(array_unique($itemIds))) {
-                return DV::error('Duplicate items are not allowed in purchase order');
+                return DV::error('Duplicate items are not allowed in a single purchase order.');
             }
             // 🔥 STEP 1: collect incoming IDs first
             $incoming_ids = [];
@@ -393,7 +393,7 @@ class PurchaseOrder extends VSModel
         $rows = DB::table('purchase_order_items as pi')
             ->join('items as i','i.id','=','pi.item_id')
             ->where('pi.po_id',$id)
-            ->selectRaw("pi.item_id,pi.qty,i.unit,pi.unit_price,pi.total_price")->get();
+            ->selectRaw("pi.item_id,pi.qty,i.unit,pi.unit_price,pi.total_price,pi.received_qty")->get();
 
 
         return $rows;
@@ -544,7 +544,7 @@ class PurchaseOrder extends VSModel
                     'accepted_qty' => $newReceivedQty,
                     'accepted_date' => now(),
                     'accepted_uid' => $ss->user_id ?? null,
-                    'accepted_user' => $ss->user_name ?? null,
+                    'accepted_user' => $ss->login_name ?? null,
                     'status_id' => ($newReceivedQty == $poItem->qty) ? 5 : 4,
                 ]);
 
