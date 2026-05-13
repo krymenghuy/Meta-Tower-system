@@ -37,11 +37,11 @@ class Invoice extends VSModel
             'items'             => '1|array|min:1',
             'general_remark'    => '0|string|0-350|',
             'invoice_type'      => '1|choice|1,2,3',
-            'discount_type'     => '0|string', 
+            'discount_type'     => '0|string',
             'discount_value'    => '0|numeric',
-            'contract_id'       => '0|integer'
-
-
+            'contract_id'       => '0|integer',
+            'amount'            => '0|numeric',
+            'amount_payable'    => '0|numeric',
         ];
 
         \Log::info($arr);
@@ -66,9 +66,10 @@ class Invoice extends VSModel
 
         $isNew = !$id;
 
-        $inputs['discount_value'] = $totals['discount_value'] ?? 0;
-        $inputs['discount_type'] = in_array(
-        $totals['discount_type'] ?? 'percent',['percent', 'amount']) ;
+        $inputs['discount_value'] = (float)($inputs['discount_value'] ?? 0);
+        $inputs['discount_type']  = in_array($inputs['discount_type'] ?? 'percent', ['percent', 'amount'])
+            ? $inputs['discount_type']
+            : 'percent';
 
         if ($isNew) {
             $inputs['invoice_date'] = $inputs['invoice_date'] ?? now()->toDateString();
@@ -100,6 +101,9 @@ class Invoice extends VSModel
             return DV::error('Due date cannot be in the past.');
         }
 
+        \Log::info("Due date validation passed", $inputs);
+
+         $inputs['due_amount'] = $inputs['amount_payable'];
 
         DB::beginTransaction();
 
@@ -138,12 +142,6 @@ class Invoice extends VSModel
                 $qty    = (int)($item['qty'] ?? 1);
                 $price  = (float)($item['price'] ?? 0);
 
-                // \Log::info("Saving invoice", [
-                //     'itemType' => $itemType,
-                //     'itemId' => $itemId,
-                //     'qty' => $qty,
-                //     'price' => $price,
-                // ]);
                 $unitType = $item['unit_type'] ?? '-';
 
                 if ($itemType === 'rent' && $itemId) {
@@ -179,9 +177,7 @@ class Invoice extends VSModel
                     'unit_type'              => $unitType,
                     'remarks'                => $item['remarks'] ?? $item['description'] ?? '',
                     'discount'               => ($item['discount_value'] ?? 0),
-                    'discount_type'          => $item['discount_type'] ?? 0,
-                    'special_discount_value' => $item['special_discount_value'] ?? 0,
-                    'special_discount_type'  => $item['special_discount_type'] ?? 'percent',
+                    'discount_type'          => $item['discount_type'] ?? 'percent',
                     'tax_rate'               => ($item['tax_rate'] ?? 0),
                     'start_date'             => convertDate($item['start_date']),
                     'end_date'               => convertDate($item['end_date']),
@@ -193,14 +189,25 @@ class Invoice extends VSModel
             if (!empty($itemRows)) {
                 DB::table('invoice_items')->insert($itemRows);
             }
+            // Final Totals Calculation
+            // $totalAmount = array_sum(array_column($itemRows, 'amount'));
+            // $discount = (float)$inputs['discount_value'];
 
-            $totalAmount = array_sum(array_column($itemRows, 'amount'));
+            // // Calculate payable based on type
+            // if ($inputs['discount_type'] === 'percent') {
+            //     $payable = $totalAmount - ($totalAmount * ($discount / 100));
+            // } else {
+            //     $payable = $totalAmount - $discount;
+            // }
 
             DB::table('invoices')
                 ->where('id', $id)
                 ->update([
-                    'amount'         => $totalAmount,
-                    'amount_payable' => $totalAmount,
+                    'amount'         => $inputs['amount'], // Use provided amount or calculated total
+                    'discount_value' => $inputs['discount_value'],
+                    'discount_type'  => $inputs['discount_type'],
+                    'due_amount'    => $inputs['amount_payable'], 
+                    'amount_payable' =>  $inputs['amount_payable'], // This will now correctly save 209.7
                     'updated_at'     => now(),
                 ]);
 
@@ -393,7 +400,6 @@ class Invoice extends VSModel
                 'penal_amount'         => $penal_amount,
                 'is_fully_paid'   => (bool)$is_paid,
             ]);
-
         } catch (\Exception $e) {
             DB::rollBack();
             \Log::error("Receive payment failed: " . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
@@ -438,6 +444,8 @@ class Invoice extends VSModel
             ->leftJoin('invoice_items as ii', 'ii.invoice_id', '=', 'i.id')
             ->select([
                 'i.id',
+                'i.amount_payable',
+                'i.due_amount',
                 'i.code',
                 'i.tenant_id',
                 'i.space_id',
@@ -520,6 +528,8 @@ class Invoice extends VSModel
                 'i.space_id',
                 'i.general_remark',
                 'i.code',
+                'i.amount_payable',
+                'i.due_amount',
                 'i.amount',
                 'i.paid_amount',
                 'i.start_time',
@@ -563,13 +573,12 @@ class Invoice extends VSModel
                 'ii.remarks',
                 'ii.amount as total',
                 'ii.discount',
-                'ii.special_discount_value',
-                'ii.special_discount_type',
+                'ii.discount_type',
                 'ii.start_date',
                 'ii.end_date',
                 'ii.tax_rate',
                 'ii.price',
-                
+
                 DB::raw("
                     COALESCE(
                         s.name,
@@ -582,12 +591,12 @@ class Invoice extends VSModel
                 ")
             )
             ->get();
-            foreach($header->items as $i){
-                $i = setOfficialDates($i, ['end_date', 'start_date'], [], []);
-            }
-       if($header){
-                setOfficialDates($header, ['due_date', 'start_date'], [], []);
-            }
+        foreach ($header->items as $i) {
+            $i = setOfficialDates($i, ['end_date', 'start_date'], [], []);
+        }
+        if ($header) {
+            setOfficialDates($header, ['due_date', 'start_date'], [], []);
+        }
         return $header;
     }
 

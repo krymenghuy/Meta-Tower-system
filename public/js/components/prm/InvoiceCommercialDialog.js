@@ -41,7 +41,6 @@ const InvoiceCommercialDialog = (() => {
                             .pi-action-bar { display:none!important; }
                             .pi-tbl-wrap { overflow: visible !important; }
                             .pi-table { min-width: unset !important; }
-                            .pi-footer-svg { display:block!important; }
                         }
                     </style>
                     </head>
@@ -63,71 +62,57 @@ const InvoiceCommercialDialog = (() => {
     };
 
     const buildInvoiceHTML = (invoice) => {
-        const validItems = (invoice.items || []).filter(
-            (item) => parseFloat(item.amount || 0) > 0
-        );
+        // ✅ Mapped correctly to API fields
+        const subTotal      = parseFloat(invoice.amount         || 0);
+        const totalDiscount = parseFloat(invoice.discount_value || 0);
+        const netTotal      = parseFloat(invoice.amount_payable || 0);
+        const paid          = parseFloat(invoice.paid_amount    || 0);
+        const balance       = parseFloat(invoice.due_amount     || 0);
 
-        let grandTotal = 0;
-        validItems.forEach((item) => {
-            const itemTotal = parseFloat(item.amount || 0);
-            grandTotal += itemTotal > 0 ? itemTotal : parseFloat(item.qty || 1);
-        });
+        const discType = (invoice.discount_type || "percent").toLowerCase();
+        const isAmountDisc = (discType === "amount" || discType === "$");
+        let discDisplay = `<span style="color:#9CA3AF;font-size:12px;">—</span>`;
+        if (totalDiscount > 0) {
+            discDisplay = `<span style="color:#DC2626;font-size:12px;font-weight:600;">
+                ${isAmountDisc ? currency : ''}${fmt(totalDiscount)}${!isAmountDisc ? '%' : ''}
+            </span>`;
+        }
 
-        const paid    = parseFloat(invoice.paid_amount || 0);
-        const balance = Math.max(0, grandTotal - paid);
-        const today   = new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
+        const today = new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
 
+        // ✅ Status uses due_amount (balance still owed) and paid_amount
         const statusLabel = balance <= 0 ? "PAID" : (paid > 0 ? "PARTIALLY PAID" : "UNPAID");
         const statusColor = balance <= 0 ? "#166534" : (paid > 0 ? "#92400E" : "#991B1B");
         const statusBg    = balance <= 0 ? "#DCFCE7" : (paid > 0 ? "#FEF3C7" : "#FEE2E2");
 
-        const typeConfig = {
-            rent:    { bg: "#EFF6FF", fg: "#1D4ED8", dot: "#3B82F6" },
-            utility: { bg: "#FFF7ED", fg: "#C2410C", dot: "#F97316" },
-            service: { bg: "#F0FDF4", fg: "#166534", dot: "#22C55E" },
-        };
+        const validItems = (invoice.items || []).filter(
+            (item) => parseFloat(item.price || 0) > 0 || parseFloat(item.total || 0) > 0
+        );
 
         const itemRows = validItems.map((item, i) => {
-            const qty      = parseFloat(item.qty || 1);
-            const total    = parseFloat(item.amount || 0);
-            const rawType  = (item.type || "service").toLowerCase();
-            const disc     = parseFloat(item.discount || item.special_discount_value || 0);
-            const discType = (item.discount_type || item.special_discount_type || "percent").toLowerCase();
-            const cfg      = typeConfig[rawType] || typeConfig.service;
-
-            let discDisplay = `<span style="color:#9CA3AF;font-size:12px;">—</span>`;
-            if (disc > 0) {
-                const isAmount = (discType === "amount" || discType === "$");
-                const displayValue = isAmount ? `${currency}${fmt(disc)}` : `${fmt(disc)}%`;
-                discDisplay = `<span style="color:#DC2626;font-size:12px;font-weight:600;">${displayValue}</span>`;
-            }
-
-            const rowBg = i % 2 !== 0 ? "#FAFAFA" : "#FFFFFF";
+            const rowBg      = i % 2 !== 0 ? "#FAFAFA" : "#FFFFFF";
+            const itemTotal   = parseFloat(item.total    || 0);
 
             return `
             <tr style="background:${rowBg};">
-                <td style="padding:10px 24px;border-bottom:1px solid #EEF0F5;font-size:12.5px;font-weight:500;color:#111;">
-                    ${item.description || item.remarks || item.item_name || "—"}
+                <td style="padding:12px 24px;border-bottom:1px solid #EEF0F5;font-size:12.5px;font-weight:500;color:#111;">
+                    ${item.remarks || item.item_name || item.description || "—"}
                 </td>
-                <td style="padding:10px 12px;text-align:center;border-bottom:1px solid #EEF0F5;">
-                    <span style="display:inline-flex;align-items:center;gap:4px;background:${cfg.bg};color:${cfg.fg};padding:2px 9px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;">
-                        <span style="width:5px;height:5px;border-radius:50%;background:${cfg.dot};flex-shrink:0;"></span>
-                        ${rawType}
-                    </span>
+                <td style="padding:12px 12px;text-align:center;border-bottom:1px solid #EEF0F5;font-size:11px;color:#777;">
+                    ${formatDate(item.start_date)}
                 </td>
-                <td style="padding:10px 12px;text-align:center;border-bottom:1px solid #EEF0F5;font-size:12px;color:#555;">${qty}</td>
-                <td style="padding:10px 12px;text-align:center;border-bottom:1px solid #EEF0F5;font-size:12px;color:#555;">${item.unit_type ? item.unit_type.trim() : "—"}</td>
-                <td style="padding:10px 12px;text-align:center;border-bottom:1px solid #EEF0F5;font-size:11px;color:#777;">${formatDate(item.start_date)}</td>
-                <td style="padding:10px 12px;text-align:center;border-bottom:1px solid #EEF0F5;font-size:11px;color:#777;">${formatDate(item.end_date)}</td>
-                <td style="padding:10px 24px;text-align:right;border-bottom:1px solid #EEF0F5;">${discDisplay}</td>
-                <td style="padding:10px 24px;text-align:right;border-bottom:1px solid #EEF0F5;font-size:13px;font-weight:700;color:#111;">${currency}${fmt(total)}</td>
+                <td style="padding:12px 12px;text-align:center;border-bottom:1px solid #EEF0F5;font-size:11px;color:#777;">
+                    ${formatDate(item.end_date)}
+                </td>
+                <td style="padding:12px 24px;text-align:right;border-bottom:1px solid #EEF0F5;font-size:13px;font-weight:700;color:#111;">
+                    ${currency}${fmt(itemTotal)}
+                </td>
             </tr>`;
         }).join("");
 
         return `
             <style>
                 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-
                 .pi-root {
                     font-family: 'Inter', 'Segoe UI', sans-serif;
                     background: #fff;
@@ -146,7 +131,7 @@ const InvoiceCommercialDialog = (() => {
                 .pi-table {
                     width: 100%;
                     border-collapse: collapse;
-                    min-width: 820px;
+                    min-width: 700px;
                 }
                 .pi-table thead th {
                     padding: 10px 24px;
@@ -161,13 +146,10 @@ const InvoiceCommercialDialog = (() => {
                 }
                 .pi-table thead th:first-child { text-align: left; }
                 .pi-table thead th:nth-child(2),
-                .pi-table thead th:nth-child(3),
+                .pi-table thead th:nth-child(3) { text-align: center; }
                 .pi-table thead th:nth-child(4),
                 .pi-table thead th:nth-child(5),
-                .pi-table thead th:nth-child(6) { text-align: center; }
-                .pi-table thead th:nth-child(7),
-                .pi-table thead th:nth-child(8),
-                .pi-table thead th:nth-child(9) { text-align: right; }
+                .pi-table thead th:nth-child(6) { text-align: right; }
                 .pi-table tbody tr:hover { background: #F0F4FF !important; }
                 .pi-totals-row td {
                     padding: 10px 16px;
@@ -175,28 +157,18 @@ const InvoiceCommercialDialog = (() => {
                     border-top: 1px solid #EBEBEB;
                     font-family: 'Inter', sans-serif;
                 }
-                .pi-footer-svg {
-                    display: block;
-                    width: 100%;
-                    height: 90px;
-                    margin-top: 8px;
-                }
             </style>
 
             <div class="pi-root" id="pi-invoice-content">
 
-                <!-- ═══ HEADER BAND ═══ -->
+                <!-- ═══ HEADER ═══ -->
                 <div style="padding:0px 32px 16px 32px;border-bottom:2px solid #E5E9F5;display:flex;justify-content:space-between;align-items:center;">
-
-                    <!-- LEFT: Logo + Title + Company stacked -->
                     <div style="display:flex;align-items:center;gap:14px;">
-                        <!-- Logo -->
                         <div style="width:80px;height:80px;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;border-radius:10px;border:1.5px solid #E5E9F5;">
                             <img src="../assets/images/meta/Meta_logo1.png" alt="Logo"
                                 style="width:64px;height:64px;object-fit:contain;"
                                 onerror="this.parentElement.innerHTML='<span style=&quot;font-size:24px;font-weight:900;color:#1A3D91;&quot;>M</span>'">
                         </div>
-                        <!-- Title + company info -->
                         <div style="display:flex;flex-direction:column;gap:2px;">
                             <div style="font-size:30px;font-weight:800;letter-spacing:-1px;line-height:1;color:#1A3D91;font-family:'Inter',sans-serif;">Commercial Invoice</div>
                             <div style="font-size:14px;font-weight:700;color:#1A3D91;letter-spacing:0.2px;font-family:'Inter',sans-serif;">
@@ -207,8 +179,6 @@ const InvoiceCommercialDialog = (() => {
                             </div>
                         </div>
                     </div>
-
-                    <!-- RIGHT: Invoice number + status -->
                     <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
                         <div style="font-size:11px;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.8px;font-family:'Inter',sans-serif;">Invoice No.</div>
                         <div style="font-size:18px;font-weight:800;color:#0F2060;font-family:'Inter',sans-serif;">${invoice.code || "—"}</div>
@@ -216,12 +186,10 @@ const InvoiceCommercialDialog = (() => {
                             ${statusLabel}
                         </div>
                     </div>
-
                 </div>
 
-                <!-- ═══ BILLED TO / DATE LINE ═══ -->
+                <!-- ═══ BILLED TO / DATES ═══ -->
                 <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:14px 32px;border-bottom:1px solid #E8E8E8;background:#FAFBFF;">
-                    <!-- Left: Billed To -->
                     <div>
                         <div style="font-size:10px;font-weight:700;color:#9CA3AF;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.8px;font-family:'Inter',sans-serif;">Billed to</div>
                         <div style="font-size:14px;font-weight:600;color:#111;margin-bottom:3px;font-family:'Inter',sans-serif;">${invoice.tenant_name || "—"}</div>
@@ -229,7 +197,6 @@ const InvoiceCommercialDialog = (() => {
                         ${invoice.tenant_email ? `<div style="font-size:11px;color:#666;font-family:'Inter',sans-serif;">${invoice.tenant_email}</div>` : ""}
                         ${invoice.tenant_phone ? `<div style="font-size:11px;color:#666;font-family:'Inter',sans-serif;">${invoice.tenant_phone}</div>` : ""}
                     </div>
-                    <!-- Right: Dates -->
                     <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
                         <div style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.8px;font-family:'Inter',sans-serif;">Date</div>
                         <div style="font-size:12px;color:#333;font-weight:500;font-family:'Inter',sans-serif;">${today}</div>
@@ -246,55 +213,69 @@ const InvoiceCommercialDialog = (() => {
                         <thead>
                             <tr>
                                 <th style="text-align:left;">Description</th>
-                                    <th style="text-align:center;">Type</th>
-                                    <th style="text-align:center;">Qty</th>
-                                    <th style="text-align:center;">Unit</th>
-                                    <th style="text-align:center;">Start</th>
-                                    <th style="text-align:center;">End</th>
-                                    <th style="text-align:right;">Discount</th>
-                                    <th style="text-align:right;">Total</th>
+                                <th style="text-align:center;">Start</th>
+                                <th style="text-align:center;">End</th>
+                                <th style="text-align:right;">Total</th>
                             </tr>
                         </thead>
                         <tbody>
-                            ${itemRows || `<tr><td colspan="9" style="text-align:center;padding:48px;color:#999;font-size:13px;font-family:'Inter',sans-serif;">No items found</td></tr>`}
+                            ${itemRows || `<tr><td colspan="6" style="text-align:center;padding:48px;color:#9CA3AF;">No items found</td></tr>`}
                         </tbody>
                     </table>
                 </div>
 
                 <!-- ═══ TOTALS ═══ -->
-                <div style="display:flex;justify-content:flex-end;padding:16px 0px 8px;">
-                    <div style="min-width:260px;border:1px solid #E5E9F5;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(15,32,96,0.06);">
+                <div style="display:flex;justify-content:flex-end;padding:24px 0px;">
+                    <div style="min-width:300px;border:1px solid #E5E9F5;border-radius:12px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.03);">
                         <table style="width:100%;border-collapse:collapse;">
                             <tr class="pi-totals-row">
-                                <td style="color:#666;font-family:'Inter',sans-serif;">Grand Total</td>
-                                <td style="text-align:right;font-weight:600;color:#111;font-family:'Inter',sans-serif;">${currency}${fmt(grandTotal)}</td>
+                                <td style="padding:12px 16px;color:#666;">Gross Amount</td>
+                                <td style="padding:12px 16px;text-align:right;font-weight:600;">${currency}${fmt(subTotal)}</td>
                             </tr>
                             <tr class="pi-totals-row">
-                                <td style="color:#059669;font-family:'Inter',sans-serif;">Amount Paid</td>
-                                <td style="text-align:right;font-weight:600;color:#059669;font-family:'Inter',sans-serif;">− ${currency}${fmt(paid)}</td>
+                                <td style="padding:12px 16px;color:#DC2626;">
+                                    Discount ${totalDiscount > 0 ? `(${discDisplay})` : ''}
+                                </td>
+                                <td style="padding:12px 16px;text-align:right;font-weight:600;color:#DC2626;">
+                                     ${currency}${fmt(subTotal - netTotal)}
+                                </td>
                             </tr>
-                            <tr>
-                                <td colspan="2" style="padding:0;border-top:2px solid #E5E9F5;"></td>
-                            </tr>
-                            <tr style="background:linear-gradient(135deg,#0F2060,#1A3D91);">
-                                <td style="padding:14px 16px;color:#fff;font-weight:700;font-size:13px;letter-spacing:0.3px;font-family:'Inter',sans-serif;">Balance Due</td>
-                                <td style="padding:14px 16px;text-align:right;font-weight:800;color:#FDE68A;font-size:15px;font-family:'Inter',sans-serif;">${currency}${fmt(balance)}</td>
-                            </tr>
+
+                            ${invoice.payment_status_id === 2 ? `
+                                <tr style="background:linear-gradient(135deg,#0F2060,#1A3D91);">
+                                    <td style="padding:14px 16px;color:#fff;font-weight:700;">Total (Net)</td>
+                                    <td  style="padding:14px 16px;text-align:right;font-weight:800;color:#FDE68A;font-size:16px;">${currency}${fmt(netTotal)}</td>
+                                </tr>` : `
+                                 <tr class="pi-totals-row" style="background:#F8FAFF;border-top:2px solid #E5E9F5;">
+                                    <td style="padding:12px 16px;color:#111;font-weight:700;">Total (Net)</td>
+                                    <td style="padding:12px 16px;text-align:right;font-weight:700;color:#111;font-size:14px;">${currency}${fmt(netTotal)}</td>
+                                </tr>
+                                `}
+                                ${invoice.payment_status_id === 2 ? '' : `
+                                <tr class="pi-totals-row">
+                                    <td style="padding:12px 16px;color:#059669;">Amount Paid</td>
+                                    <td style="padding:12px 16px;text-align:right;font-weight:600;color:#059669;">${currency}${fmt(paid)}</td>
+                                </tr>
+                                <tr style="background:linear-gradient(135deg,#0F2060,#1A3D91);">
+                                    <td style="padding:14px 16px;color:#fff;font-weight:700;">Balance Due</td>
+                                    <td style="padding:14px 16px;text-align:right;font-weight:800;color:#FDE68A;font-size:16px;">${currency}${fmt(balance)}</td>
+                                </tr>`}
+                           
                         </table>
                     </div>
                 </div>
 
                 <!-- ═══ REMARKS / NOTES ═══ -->
                 <div style="padding:8px 32px 20px;display:flex;flex-direction:column;gap:6px;border-top:1px solid #F0F0F0;">
-                    ${invoice.remarks ? `
+                    ${invoice.general_remark ? `
                     <div style="font-size:12px;color:#333;font-family:'Inter',sans-serif;">
-                        <strong style="font-weight:600;">Note:</strong> ${invoice.remarks}
+                        <strong style="font-weight:600;">Note:</strong> ${invoice.general_remark}
                     </div>` : `
                     <div style="font-size:12px;color:#333;font-family:'Inter',sans-serif;">
                         <strong style="font-weight:600;">Note:</strong> Payment is due by the date shown above. Late payments may incur additional charges.
                     </div>`}
                     <div style="margin-top:4px;font-size:10px;color:#9CA3AF;line-height:1.6;font-family:'Inter',sans-serif;">
-                        Location:${invoice.company_address || "Samdech Monireth Blvd (217), Phnom Penh"}
+                        Location: ${invoice.company_address || "Samdech Monireth Blvd (217), Phnom Penh"}
                     </div>
                 </div>
 
@@ -343,6 +324,7 @@ const InvoiceCommercialDialog = (() => {
                 const container = me.divModal.querySelector('[name="pi_container"]');
                 vsapi.call(`${main_view.base_url}/prm/invoice/details`, { id: op.invoice_id })
                     .then((res) => {
+                        console.log("Invoice API Response:", res);
                         if (res.status_code !== 200) {
                             container.innerHTML = `<div class="alert alert-danger m-4">Error: ${res.error_message || "Unknown error"}</div>`;
                             return;

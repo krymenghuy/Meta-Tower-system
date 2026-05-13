@@ -99,8 +99,8 @@ var InvoiceComponent = (() => {
             transTitle: "titles.Amount",
             className: "align-middle text-nowrap text-primary",
             data: data => {
-                const amt = data.amount
-                    ? Number(data.amount).toLocaleString("en-US", {
+                const amt = data.amount_payable
+                    ? Number(data.amount_payable).toLocaleString("en-US", {
                           minimumFractionDigits: 2
                       })
                     : "0.00";
@@ -123,8 +123,8 @@ var InvoiceComponent = (() => {
             transTitle: "titles.Balance",
             className: "align-middle text-danger  text-nowrap",
             data: data => {
-                const amt = data.balance
-                    ? Number(data.balance).toLocaleString("en-US", {
+                const amt = data.due_amount
+                    ? Number(data.due_amount).toLocaleString("en-US", {
                           minimumFractionDigits: 2
                       })
                     : "0.00";
@@ -286,6 +286,8 @@ var InvoiceComponent = (() => {
                     return;
                 }
                 mThis.renderInvoiceDetail(container, res.data || {});
+
+                console.log(1112345678, res.data);
             })
             .catch(() => {
                 container.innerHTML = `<div class="alert alert-danger m-3">Network error loading invoice details</div>`;
@@ -312,16 +314,10 @@ var InvoiceComponent = (() => {
             });
         };
         const getDiscountDisplay = item => {
-            const value = parseFloat(
-                item.discount || item.special_discount_value || 0
-            );
-            const type = (
-                item.discount_type ||
-                item.special_discount_type ||
-                "percent"
-            )
-                .toLowerCase()
-                .trim();
+            const value = parseFloat(item.discount || 0);
+            const type = (item.discount_type || "percent").toLowerCase().trim();
+
+            const discType = type === "percent" ? "%" : "$";
 
             const currency = mThis.currency_symbol || "$";
 
@@ -335,26 +331,16 @@ var InvoiceComponent = (() => {
                 const percentStr =
                     value % 1 === 0 ? value.toFixed(0) : value.toFixed(2);
 
-                return `${percentStr}%`;
+                return `${percentStr}${discType}`;
             }
         };
-
         const itemsHtml = validItems
             .map(item => {
-                const rawType = (item.type || "service").toLowerCase().trim();
-
-                let badgeClass = "bg-light border text-dark";
-                if (rawType === "rent")
-                    badgeClass = "bg-primary text-white border-0";
-                if (rawType === "utility")
-                    badgeClass = "bg-warning text-dark border-0";
-
                 const qty = parseFloat(item.qty || 1);
                 const price = parseFloat(item.price || 0);
+                // const disType = item.discount_type;
 
-                const discount = parseFloat(
-                    item.discount || item.special_discount_value || 0
-                );
+                const discount = parseFloat(item.discount || 0);
                 const taxAmount = parseFloat(item.tax_rate) || 0;
                 const total = parseFloat(item.total || item.amount || 0);
 
@@ -364,11 +350,6 @@ var InvoiceComponent = (() => {
                         item.remarks ||
                         item.item_name ||
                         "—"}
-                    </td>
-                    <td class="text-center">
-                        <span class="badge ${badgeClass} px-3 py-1 text-capitalize">
-                            ${rawType}
-                        </span>
                     </td>
                     <td class="text-center text-muted small">${qty}</td>
                     <td class="text-center text-muted small">${
@@ -413,28 +394,61 @@ var InvoiceComponent = (() => {
                     <table class="table table-sm table-bordered mb-0">
                         <thead style="background:#e1e5f2;">
                             <tr style= background-color:#E1E5F2;" >
-                                <th class="text-center" style="min-width:150px;">Item Description </th>
-                                <th class="text-center" style="width:100px;">Type</th>
-                                <th class="text-center" style="width:0px;">Quantity</th>
-                                <th class="text-center" style="width:90px;">Unit</th>
-                                <th class="text-center" style="width:110px;">Start Date</th>
-                                <th class="text-center" style="width:110px;">End Date</th>
-                                <th class="text-end" style="width:100px;">Price</th>
-                                <th class="text-end" style="width:100px;">Discount</th>
-                                <th class="text-center" style="width:80px;">Tax %</th>
-                                <th class="text-end" style="width:120px;">Total</th>
+                                <th class="text-center" >Item Description </th>
+                                <th class="text-center" >Quantity</th>
+                                <th class="text-center" >Unit</th>
+                                <th class="text-center" >Start Date</th>
+                                <th class="text-center" >End Date</th>
+                                <th class="text-end" >Price</th>
+                                <th class="text-end" >Discount</th>
+                                <th class="text-center" >Tax %</th>
+                                <th class="text-end" >Total</th>
                             </tr>
                         </thead>
                         <tbody>
                             ${itemsHtml ||
-                                '<tr><td colspan="10" class="text-center py-4 text-muted">No items found</td></tr>'}
+                                '<tr><td colspan="9" class="text-center py-4 text-muted">No items found</td></tr>'}
                         </tbody>
                         <tfoot class="table-light fw-bold">
+                                <!-- Displaying Net Total -->
                             <tr>
-                                <td colspan="9" class="text-end text-uppercase text-primary">Summary</td>
-                                <td class="text-end text-success fs-5">${currency}${fmt(
-            foot.total
-        )}</td>
+                                <td colspan="8" class="text-end  ">Total Item</td>
+                                <td colspan="1" class="text-end  fs-6">
+                                    ${currency}${fmt(
+            parseFloat(invoice.amount || 0)
+        )}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="8" class="text-end text-danger">Total Discount</td>
+                                <td colspan="1" class="text-end text-danger fs-6">
+                                    ${(() => {
+                                        const discVal = parseFloat(
+                                            invoice.discount_value || 0
+                                        );
+                                        const discType = (
+                                            invoice.discount_type || ""
+                                        ).toLowerCase();
+
+                                        if (discVal <= 0)
+                                            return `<span class="text-muted">—</span>`;
+                                        if (discType === "percent") {
+                                            return `${fmt(discVal)}%`;
+                                        } else {
+                                            return `${currency}${fmt(discVal)}`;
+                                        }
+                                    })()}
+                                </td>
+                            </tr>
+
+                            <!-- Displaying Net Total -->
+                            <tr>
+                                <td colspan="8" class="text-end  text-primary">Total Amount Due</td>
+                                <td colspan="1" class="text-end text-success fs-6">
+                                    ${currency}${fmt(
+            parseFloat(invoice.amount_payable || 0)
+        )}
+                                </td>
                             </tr>
                         </tfoot>
                     </table>
@@ -2148,7 +2162,7 @@ const InvoiceDialog = (() => {
                             name: "tax_rate",
                             transTitle: "titles.Tax",
                             dataType: "number",
-                            readOnly: false
+                            readOnly: true
                         },
                         {
                             name: "total",
@@ -2169,12 +2183,13 @@ const InvoiceDialog = (() => {
 
                     totalSummary: {
                         container: me.controls.div_invoice_summary,
-                        showTax: true,
+                        showTax: false,
                         allowDiscount: true,
                         discountBeforeTax: true,
-                        discountTypeDefault: "percent",
+                        // discountTypeDefault: "percent",
                         currency: "USD"
                     },
+                    tableClass: "table",
                     // ensureEmptyRow:false,
                     showColumnHeaders: true,
                     showAddLineButton: false,
@@ -2183,9 +2198,6 @@ const InvoiceDialog = (() => {
                         item_id: "positive",
                         qty: "positive",
                         price: "positive"
-                    },
-                    itemRendered: (me, ctx) => {
-                        console.log(2222222, ctx);
                     },
                     onItemChange: (rowId, item, fieldName, td, tr) => {
                         if (fieldName === "item_id") {
@@ -2288,16 +2300,18 @@ const InvoiceDialog = (() => {
                 });
 
                 me.searchTenant.reset("");
+
                 me.saveData = () => {
-                    const header = me.getData();
+                    let header = me.getData();
                     const items = me.itemsView.getItems({
                         metaKeys: ["item_id", "abc", "remark"]
                     }); // Retrieves all row data
 
-                    console.log(33333, header);
-                    console.log(44444, items);
-
                     const totals = me.itemsView.getCurrentTotals?.() || {};
+
+                    console.log(2112121212, header);
+                    console.log(2112121212, totals);
+                    console.log(2112121212, items);
 
                     if (me._selectedTenantId) {
                         header.tenant_id = me._selectedTenantId;
@@ -2334,10 +2348,11 @@ const InvoiceDialog = (() => {
                                 end_date: item.end_date,
                                 discount: parseFloat(item.discount || 0),
                                 tax_rate: parseFloat(item.tax_rate || 0),
-
                                 amount: parseFloat(item.total || 0)
                             };
                         });
+
+                    console.log("1234567890098trdfghj", mappedItems);
 
                     const hasOverlap = (a, b) => {
                         const aStart = new Date(a.start_date);
@@ -2443,26 +2458,31 @@ const InvoiceDialog = (() => {
                         seenRequestIds.add(String(reqId));
                     }
 
-                    const serviceItems = mappedItems.filter(
-                        item => item.type === "service"
-                    );
-                    const seenServiceIds = new Set();
-                    for (const item of serviceItems) {
-                        if (seenServiceIds.has(String(item.item_id))) {
-                            cv_interact.error(
-                                `Service "${item.item_name}" has already been added. ` +
-                                    `Each service can only be added once per invoice.`
-                            );
-                            return null;
-                        }
-                        seenServiceIds.add(String(item.item_id));
-                    }
+                    // const serviceItems = mappedItems.filter(
+                    //     item => item.type === "service"
+                    // );
+
+                    // console.log('asdfghjkl',item);
+
+                    // const seenServiceIds = new Set();
+                    // for (const item of serviceItems) {
+                    //     if (seenServiceIds.has(String(item.item_id))) {
+                    //         cv_interact.error(
+                    //             `Service "${item.item_name}" has already been added. ` +
+                    //                 `Each service can only be added once per invoice.`
+                    //         );
+                    //         return null;
+                    //     }
+                    //     seenServiceIds.add(String(item.item_id));
+                    // }
 
                     return {
                         ...header,
                         items: mappedItems,
-                        amount: totals.grand_total || 0, // Total for the invoice header
-                        amount_payable: totals.grand_total || 0
+                        discount_value: totals.discount_value || 0,
+                        discount_type: totals.discount_type || "percent",
+                        amount: totals.subtotal, // Total for the invoice header
+                        amount_payable: totals.grand_total
                     };
                 };
             },
@@ -2604,36 +2624,12 @@ const InvoiceDialog = (() => {
 
                             me.itemsView.setData(detail);
 
-
-                            // if (me.itemsView) {
-                            //     let finalItems = [];
-
-                            //     // Map data from the API detail
-                            //     if (detail.items && detail.items.length > 0) {
-                            //         finalItems = detail.items.map(item => ({
-                            //             ...item,
-                            //             item_id: item.item_id || item.id,
-                            //             item_name: item.item_name || item.name,
-                            //             qty: parseFloat(item.qty || 1),
-                            //             price: parseFloat(item.price || 0),
-                            //             total: parseFloat(item.total || 0),
-                            //             unit_type: item.unit_type || "-",
-                            //             remarks: item.remarks || ""
-                            //         }));
-                            //     }
-
-                            //     // Add each real row manually from mapped data
-                            //     finalItems.forEach((itemData, index) => {
-                            //         console.log(
-                            //             `Injecting row ${index + 1}:`,
-                            //             itemData.item_name
-                            //         );
-                            //         me.itemsView.addRow(itemData, 0);
-                            //     });
-                            // }
+                            console.log(
+                                "Invoice items loaded into view:",
+                                detail.items
+                            );
                         });
                 }
-                // ── CREATE MODE — already cleared above ──
             },
 
             onShow: me => {
@@ -2688,9 +2684,6 @@ const InvoiceDialog = (() => {
                             return cv_interact.error("Add at least one item");
                         }
 
-
-                        console.log(111111111111111111111111111,formData);
-                        
                         vsapi
                             .call(
                                 `${main_view.base_url}/prm/invoice/save`,
