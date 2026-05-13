@@ -42,7 +42,7 @@ var ServiceRequestComponent = (function () {
             }
         },
         {
-            transTitle: "titles.Request Type",
+            transTitle: "titles.Request Category",
             className: "align-middle text-nowrap",
             data: (data) =>
                 `<span class="d-block text-prm-custom text-nowrap">${data.service_type ?? ""}</span>
@@ -442,7 +442,7 @@ const CreateServiceRequestDialog = (() => {
                     </div>
                     <div class="row g-3 mb-3">
                         <div class="col-md-6">
-                            <select data-style="material" class="data-input form-control" data-field="service_type_id" required placeholder="Service Type"></select>
+                            <select data-style="material" class="data-input form-control" data-field="service_type_id" required placeholder="Service Category"></select>
                         </div>
                         <div class="col-md-6">
                             <select data-style="material" class="data-input form-control" data-field="service_id" required placeholder="Service"></select>

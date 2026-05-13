@@ -2140,7 +2140,7 @@ tr.row-selected td {
 /* ── Header ── */
 .table--white thead th {
     color: #1a1647 !important;
-    background-color: #c4c4c7;
+    background-color:#DEDBD1;
     font-size: 14px !important;
     font-weight: 500;
     /* letter-spacing: 0.02em; */

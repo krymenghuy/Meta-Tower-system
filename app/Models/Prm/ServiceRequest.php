@@ -28,18 +28,15 @@ class ServiceRequest extends VSModel
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
         $v_rule = [
-            'tenant_id'         => '1|number|exists=tenants.id',
-
-            'space_id'          => '1|number|exists=building_spaces.id',
-            'service_type_id'   => '1|number|exists=service_types.id',
-            'service_id'        => '1|number|exists=services.id',
-
-
+            'tenant_id'         => '1|number|exists=tenants.id|text=Please select a tenant.',
+            'space_id'          => '1|number|exists=building_spaces.id|text=Please select a space.',
+            'service_type_id'   => '1|number|exists=service_types.id|text=Please select a service type.',
+            'service_id'        => '1|number|exists=services.id|text=Please select a service.',
             'unit_type'         => '0|choice|1,2',
             'duration_hours'    => '0|numeric|min:0.5|max:99.9|text=Duration hours is required when unit type is Hour.',
             'request_date'      => '0|date',
-            'scheduled_date'    => '1|date',
-            'start_time'        => '1|time',
+            'scheduled_date'    => '1|date|text=Scheduled date is required.',
+            'start_time'        => '1|time|text=Start time is required.',
             'complete_date'     => '0|date',
             'remarks'           => '0|string|0-255',
         ];
