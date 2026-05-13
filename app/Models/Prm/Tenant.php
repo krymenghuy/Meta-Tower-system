@@ -84,7 +84,7 @@ class Tenant
         $email = $d->email ?? null;
         if ($email !== null && $email !== '') {
                 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                    return DV::error('Invalid email format');
+                    return DV::error('Invalid email format.');
                 }
         }
         if ($dob) {

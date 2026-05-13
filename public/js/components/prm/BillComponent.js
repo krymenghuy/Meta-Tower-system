@@ -27,21 +27,22 @@ var BillComponent = (() => {
             transTitle: "titles.Ref No",
             className: "align-middle text-nowrap",
             data: (data) => {
-                return `<span class="d-block text-prm-custom">${data.ref_no ?? "N/A"}</span>`;
+                return `<span class="d-block text-prm-custom">${data.ref_no ?? "__"}</span>
+                        <span class="d-block text-prm-custom text-primary">${data.bill_date ?? "N/A"}</span>`;
             },
         },
-        {
-            transTitle: "titles.Issue Date",
-            className: "align-middle text-nowrap",
-            data: (data) => {
-                return `<span class="d-block text-prm-custom ">${data.bill_date ?? "N/A"}</span>`;
-            },
-        },
+        // {
+        //     transTitle: "titles.Issue Date",
+        //     className: "align-middle text-nowrap",
+        //     data: (data) => {
+        //         return `<span class="d-block text-prm-custom ">${data.bill_date ?? "N/A"}</span>`;
+        //     },
+        // },
         {
             transTitle: "titles.Due Date",
             className: "align-middle text-nowrap",
             data: (data) => {
-                return `<span class="d-block text-prm-custom ">${data.due_date ?? "N/A"}</span>`;
+                return `<span class="d-block text-prm-custom ">${data.due_date ?? "__"}</span>`;
             },
         },
         {
@@ -52,7 +53,6 @@ var BillComponent = (() => {
                 <span class="d-block text-primary ">${data.phone_number}</span>`;
             },
         },
-
         {
             transTitle: "titles.Category",
             className: "align-middle text-nowrap",
@@ -96,6 +96,17 @@ var BillComponent = (() => {
                     <span class="d-block fw-semibold" style="color:${color};">
                        ${VSMoney.formatAmount(data.balance, data.currency_code ?? 'USD')}
                     </span>`;
+            },
+        },
+        {
+            transTitle: "titles.Remark",
+            className: "align-middle text-nowrap",
+            data: (data) => {
+                return `
+                    <div class="text-primary-custom" style="width:200px;">
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.remark ?? " __"}</span>
+                    </div>
+                `;
             },
         },
         {
@@ -509,40 +520,34 @@ const BillDialog = (() => {
                     return [
                         `<div class="row ">
                                 <input name="vendorid" class="d-none data-input form-control" data-field="vendor_id">
-                            <div class="col-12">
-                                <div class="material-input outlined">
-                                    <input  name="vendor" class="data-input form-control" data-field="vendor_name" placeholder="Vendor Name "></input>
-                                    <label style="color:#777777;padding-left:6px; display:none;">Vendor</label>
+                            <div class="col-6">
+                                <div class="vs-material-field">
+                                    <input  name="vendor" class="data-input form-control" data-field="vendor_name" placeholder="Vendor"/>
+                                    <label>Vendor</label>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="material-input outlined">
                                     <input name="phone_number" class="data-input form-control" data-field="phone_number" placeholder=" " disabled />
-                                    <label style="color:#777777; padding-left:6px;">Phone Number</label >
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="material-input outlined">
-                                    <input name="email" class="data-input form-control" data-field="email" placeholder=" " disabled />
-                                    <label style="color:#777777; padding-left:6px;">Email</label >
+                                    <label>Phone Number</label >
                                 </div>
                             </div>
                             <div class="col-6 col-md-6">
                                 <div class=" material-input outlined">
                                     <input data-type="date" name="bill_date" required class="data-input form-control form_input" data-field="bill_date" />
-                                    <label style="color:#777777;padding-left:6px;">Issue Date</label>
+                                    <label>Issue Date</label>
                                 </div>
                             </div>
                             <div class="col-6 col-md-6">
                                 <div class=" material-input outlined">
                                     <input type="text" data-type="date" name="due_date" required class="data-input form-control form_input" data-field="due_date" />
-                                    <label style="color:#777777;padding-left:6px;">Due Date</label>
+                                    <label>Due Date</label>
                                 </div>
                             </div>
                             <div class="col-4">
                                 <div class="material-input outlined">
                                     <input name="ref_no" class="data-input form-control" data-field="ref_no" placeholder=" "></input>
-                                    <label style="color:#777777; padding-left:6px;">Reference No.</label>
+                                    <label>Reference No.</label>
                                 </div>
                             </div>
                             <div class="col-4">
@@ -554,7 +559,7 @@ const BillDialog = (() => {
                             <div class="col-4">
                                 <div class="material-input outlined">
                                     <input type="text" inputmode="decimal" name="total_amount" type="number" class="data-input form-control" data-field="total_amount" placeholder=" "></input>
-                                    <label style="color:#777777; padding-left:6px;">Total Amount $</label>
+                                    <label>Total Amount $</label>
                                 </div>
                             </div>
                             <div class="col-8">
@@ -572,19 +577,19 @@ const BillDialog = (() => {
                             <div class="col-12 ">
                                 <div class="material-input outlined">
                                     <textarea name="remark" class="data-input form-control" data-field="remark" placeholder=" "></textarea>
-                                    <label style="color:#777777;padding-left:6px;">Remark</label>
+                                    <label>Remark</label>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="material-input outlined d-none">
                                     <input name="bill_number" class="data-input form-control" data-field="bill_number" placeholder=" "></input>
-                                    <label style="color:#777777; padding-left:6px;">Bill Number</label>
+                                    <label>Bill Number</label>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="material-input outlined d-none">
                                     <input name="paid_amount" class="data-input form-control" data-field="paid_amount" placeholder=" "></input>
-                                    <label style="color:#777777; padding-left:6px;">Amount Paid</label>
+                                    <label>Amount Paid</label>
                                 </div>
                             </div>
                         </div>`,
@@ -627,7 +632,7 @@ const BillDialog = (() => {
                                     email: v.email || v.contact_email || v.email_address || '',
                                 }));
                             },
-                            columns: { vendor: 'VENDOR', phone_number: 'PHONE', email: 'EMAIL' },
+                            columns: { vendor: 'VENDOR', phone_number: 'PHONE'},
                             showColumnHeader: true,
                             placeholder: 'Search vendor',
                             onSelect: (vendor) => {
@@ -716,7 +721,6 @@ const BillDialog = (() => {
                         if (me.controls.vendor_id)    me.controls.vendor_id.value    = details.vendor_id;
                         if (me.controls.vendor)       me.controls.vendor.value       = details.vendor_name || '';
                         if (me.controls.phone_number) me.controls.phone_number.value = details.phone_number || '';
-                        if (me.controls.email)        me.controls.email.value        = details.email || '';
                     }
 
                     const prefill = me.dataOptions?.prefill || {};
@@ -725,7 +729,6 @@ const BillDialog = (() => {
                         if (prefill.vendor_id)    me.controls.vendorid.value         = prefill.vendor_id;
                         if (prefill.vendor_name)  me.controls.vendor.value           = prefill.vendor_name;
                         if (prefill.phone_number) me.controls.phone_number.value     = prefill.phone_number;
-                        if (prefill.email) me.controls.email.value     = prefill.email;
                         ['bill_date', 'ref_no', 'total_amount', 'remark'].forEach(field => {
                             if (prefill[field] && me.controls[field]) {
                                 me.controls[field].value = prefill[field];

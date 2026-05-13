@@ -64,7 +64,6 @@ class TenantDocument
         //     return DV::error('Invalid file type. Allowed: ' . implode(', ', $allAllowed));
         // }
 
-
         $category = 'image';
         if (in_array($ext, self::$allowed_image_extensions)) {
             $category = 'image';

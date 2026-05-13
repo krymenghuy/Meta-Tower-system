@@ -37,11 +37,11 @@ class Bill
         $ref_no_char = ['@', '.', '-', '_'];
 
         $v_rule = [
-            'vendor_id'       => '1|number|exists=vendors.id|text=Please enter a valid name for vendor.',
+            'vendor_id'       => '1|number|exists=vendors.id|text=Please select a vendor.',
             'bill_date'       => '1|date',
             'due_date'        => '1|date|text=Please enter valid Due Date.',
             'ref_no'          => '1|string|0-25|text=Please enter Reference No.',
-            'expense_type_id' => '1|number|exists=expense_categories.id|Please select valid category.',
+            'expense_type_id' => '1|number|exists=expense_categories.id|Please select a category.',
             'total_amount'    => '1|number|min=0',
             'remark'          => '0|string|0-255',
             'photo'           => '0|string',
@@ -59,7 +59,7 @@ class Bill
         $dueDate  = strtotime($inputs['due_date']);
 
         if ($dueDate < $billDate) {
-            return DV::error('Due date cannot be before invoice date.');
+            return DV::error('Due date must be after the issue date.');
         }
         unset($inputs['photo'], $inputs['ext']);
         $total = floatval($inputs['total_amount'] ?? 0);

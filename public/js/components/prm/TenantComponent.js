@@ -1253,12 +1253,12 @@ var TenantComponent = new (function () {
                                 ${doc.ext ? doc.ext.toUpperCase() : "—"}
                             </div>
                         </td>
-                        <td style="width: 30%; height: 55px; vertical-align: middle;">
+                        <td style="width: 30%; height: 65px; vertical-align: middle;">
                             <span class="text-dark">
                                 ${doc.remarks || ""}
                             </span>
                         </td>
-                        <td class="text-end py-3 px-3" style="width: 8%; height: 55px; vertical-align: middle;">
+                        <td class="text-end py-3 px-3" style="width: 10%; height: 55px; vertical-align: middle; ">
                             <div class="d-flex justify-content-start gap-2">
                                 <a href="javascript:void(0)" class="view-doc" data-id="${doc.id}">
                                     <span class="tool-tip">
@@ -1642,7 +1642,6 @@ const CreateTenantDialog = (() => {
                                 } else cv_interact.error(res.error_message);
                             });
                     };
-                    
                 },
                 configSelect: [
                     {
@@ -1810,8 +1809,6 @@ const TenantDocumentDialog = (() => {
                                 console.log("File Name:", d.fileName);
                                 console.log("File Extension:", extension);
                                 console.log("Full Data Object:", d);
-                                // ----------------------
-
                                 me.fileData = d;
                                 me.controls.documents.value = d.fileName;
                                 me.controls.documents.classList.remove(
@@ -1873,7 +1870,6 @@ const TenantDocumentDialog = (() => {
                                 }
                             });
                     };
-                    
                 },
 
                 configSelect: [
@@ -1897,6 +1893,24 @@ const TenantDocumentDialog = (() => {
                         params: (op) => ({ id: op.id }),
                     },
                 },
+                onPrepareForm: (me) => {
+                    me.fileData = null;
+                    me.fileBase64 = null;
+                    me.ext = null;
+
+                    if (me.controls?.documents) {
+                        me.controls.documents.value = "";
+                        me.controls.documents.classList.add("d-none");
+                    }
+
+                    if (me.controls?.remarks) {
+                        me.controls.remarks.value = "";
+                    }
+
+                    if (me.controls?.document_type) {
+                        me.controls.document_type.value = "";
+                    }
+                },
 
                 buttons: [
                     {
@@ -1916,6 +1930,14 @@ const TenantDocumentDialog = (() => {
                             }
                             if (!me.fileData) {
                                 cv_interact.error("Please select a file.");
+                                return;
+                            }
+                            const remarks = me.controls.remarks.value || "";
+
+                            if (remarks.length > 255) {
+                                cv_interact.error(
+                                    "Remarks must not exceed 255 characters.",
+                                );
                                 return;
                             }
 
@@ -1942,15 +1964,37 @@ const TenantDocumentDialog = (() => {
                             };
                             vsapi
                                 .call(
-                                    [main_view.base_url,"/prm/tenant/document/save",].join(""),p,btn,null,
-                                ).then((res) => {
+                                    [
+                                        main_view.base_url,
+                                        "/prm/tenant/document/save",
+                                    ].join(""),
+                                    p,
+                                    btn,
+                                    null,
+                                )
+                                .then((res) => {
                                     if (res.status_code === 200) {
+                                        // me.fileData = null;
+                                        // if (me.controls?.documents) {
+                                        //     me.controls.documents.value = "";
+                                        //     me.controls.documents.classList.add(
+                                        //         "d-none",
+                                        //     );
+                                        // }
                                         me.hide(true, p);
                                         cv_interact.success(
                                             "Document saved successfully.",
                                         );
                                     } else {
                                         cv_interact.error(res.error_message);
+                                        me.fileData = null;
+
+                                        if (me.controls?.documents) {
+                                            me.controls.documents.value = "";
+                                            me.controls.documents.classList.add(
+                                                "d-none",
+                                            );
+                                        }
                                     }
                                 });
                         },
