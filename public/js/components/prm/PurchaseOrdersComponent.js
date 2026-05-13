@@ -239,12 +239,12 @@ var PurchaseOrdersComponent = (() => {
             ],
             onShow: (me, container) => {
                 const menu = me.getActiveMenus(container);
-                const status_id = Number(container.dataset.statusid);
+                const status_id = container.dataset.statusid;
                 let allowed = [];
 
                 if (status_id == 1) allowed = ["modify_purchase_order", "delete_purchase_order", "authorized_purchase_order", "generate_bill"];
                 else if (status_id == 3 || status_id == 4) allowed = ["receive_purchase_order"];
-                else if (status_id == 5) allowed = ["generate_bill"];
+                else if (status_id == 5) allowed = ["delete_purchase_order"];
 
                 Object.keys(menu).forEach(key => {
                     if (menu[key]?.style) {
@@ -712,7 +712,7 @@ var PurchaseOrdersComponent = (() => {
                     columns: [
                         { name: "item_id", transTitle: "titles.Item", displayType: "select",readOnly: true},
                         { name: "qty", transTitle: "titles.Ordered Qty", dataType: "number", defaultValue: 1,readOnly: true, isNumeric: true },
-                        { name: 'receive_qty', transTitle: 'Received Qty', dataType: 'number', defaultValue: 0, isNumeric: true, readOnly: false },
+                        { name: 'received_qty', transTitle: 'Received Qty', dataType: 'number', defaultValue: 0, isNumeric: true, readOnly: false },
                         { name: "accept",transTitle: "titles.Accept",html: '<input type="checkbox" class="check_accept">'}
 
                     ],
@@ -774,11 +774,10 @@ var PurchaseOrdersComponent = (() => {
                     click: (me) => {
                         me.saveData(res => {
                             console.log(6666,res);
-                            
                             if (res.status_code == 200) {
                                 cv_interact.success("purchase order Received.");
                                 me.hide(true);
-                                // mThis.PoListView.showPage(mThis.getFilterData());
+                                mThis.PoListView.showPage(mThis.getFilterData());
                             } else {
                                 cv_interact.error(res.error_message);
                             }
