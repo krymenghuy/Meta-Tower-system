@@ -1093,6 +1093,25 @@ const ContractDialog = (() => {
                         op.id = me.dataOptions.id;
                         op.tenant_id = me.tenant_id;
 
+                        if (!op.id) {
+                            const endDt = parseDateInput(op.end_date);
+                            if (!endDt || Number.isNaN(endDt.getTime())) {
+                                cv_interact.error("Please enter a valid End Date.");
+                                return;
+                            }
+                            const endDay = new Date(
+                                endDt.getFullYear(),
+                                endDt.getMonth(),
+                                endDt.getDate(),
+                            );
+                            const today = new Date();
+                            today.setHours(0, 0, 0, 0);
+                            if (endDay < today) {
+                                cv_interact.error("End date cannot be in the past.");
+                                return;
+                            }
+                        }
+
                         console.log(123,op);
                         vsapi.call([main_view.base_url, "/prm/contract/save",].join(""), op, btn, null).then((res) => {
                             if (res.status_code === 200) {

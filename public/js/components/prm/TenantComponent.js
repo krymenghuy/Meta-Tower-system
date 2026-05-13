@@ -411,7 +411,7 @@ var TenantComponent = new (function () {
                         .then((res) => {
                             if (res.status_code == 200) {
                                 mThis.renderView();
-                                cv_interact.success("Tenant deleted");
+                                cv_interact.success("Tenant has been deleted.");
                             } else {
                                 cv_interact.error(res.error_message);
                             }
@@ -1234,7 +1234,7 @@ var TenantComponent = new (function () {
                     documents.forEach((doc) => {
                         rows += `
                     <tr class="border-bottom">
-                        <td class="ps-3 py-3">
+                        <td class="ps-3 py-3" style="width: 20%; height: 55px; vertical-align: middle;">
                             <div class="d-flex align-items-center">
                                 <div>
                                     <div class="text-dark">
@@ -1243,24 +1243,24 @@ var TenantComponent = new (function () {
                                 </div>
                             </div>
                         </td>
-                        <td>
+                        <td style="width: 20%; height: 55px; vertical-align: middle;">
                             <div class="text-dark">
                                 ${doc.original_file_name || "—"}
                             </div>
                         </td>
-                        <td>
+                        <td style="width: 12%; height: 55px; vertical-align: middle;">
                             <div class="text-dark">
                                 ${doc.ext ? doc.ext.toUpperCase() : "—"}
                             </div>
                         </td>
-                        <td>
+                        <td style="width: 30%; height: 65px; vertical-align: middle;">
                             <span class="text-dark">
                                 ${doc.remarks || ""}
                             </span>
                         </td>
-                       <td class="text-end py-3 px-3">
+                        <td class="text-end py-3 px-3" style="width: 10%; height: 55px; vertical-align: middle; ">
                             <div class="d-flex justify-content-start gap-2">
-                                <a href="javascript:void(0)" class="view-doc"  data-id="${doc.id}">
+                                <a href="javascript:void(0)" class="view-doc" data-id="${doc.id}">
                                     <span class="tool-tip">
                                         <i class="fa-regular fa-eye text-success fs-6"></i>
                                         <span class="tool-tiptext fs-6">View</span>
@@ -1269,16 +1269,15 @@ var TenantComponent = new (function () {
                                 <a href="javascript:void(0)" class="download-doc" data-id="${doc.id}">
                                     <span class="tool-tip">
                                         <i class="fa-solid fa-cloud-arrow-down text-primary fs-6"></i>
-                                        <span class="tool-tiptext fs-6">Download </span>
+                                        <span class="tool-tiptext fs-6">Download</span>
                                     </span>
                                 </a>
-                                <a href="javascript:void(0)" class="delete-doc-btn"  data-id="${doc.id}">
+                                <a href="javascript:void(0)" class="delete-doc-btn" data-id="${doc.id}">
                                     <span class="tool-tip">
                                         <i class="fa-regular fa-trash-can text-danger fs-6"></i>
                                         <span class="tool-tiptext fs-6">Delete</span>
                                     </span>
                                 </a>
-
                             </div>
                         </td>
                     </tr>
@@ -1526,7 +1525,7 @@ const CreateTenantDialog = (() => {
                             </div>
                             <div class="col-12 col-md-4">
                                 <div class="vs-material-field">
-                                    <input type="number" name="national_id" class="data-input form-control" data-field="national_id" placeholder=" " />
+                                    <input type="text" name="national_id" class="data-input form-control" data-field="national_id" placeholder=" " />
                                     <label>National ID</label>
                                 </div>
                             </div>
@@ -1766,7 +1765,7 @@ const TenantDocumentDialog = (() => {
                     </div>
                     <div class="col-12">
                         <div class="vs-material-field d-flex">
-                            <input type="text" name="documents" class="d-none form-control"  accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg" /disabled>
+                            <input type="text" name="documents" class="d-none form-control"  accept=".pdf,.png,.jpg,.jpeg" /disabled>
                         </div>
                     </div>
                      <div class="col-12">
@@ -1810,8 +1809,6 @@ const TenantDocumentDialog = (() => {
                                 console.log("File Name:", d.fileName);
                                 console.log("File Extension:", extension);
                                 console.log("Full Data Object:", d);
-                                // ----------------------
-
                                 me.fileData = d;
                                 me.controls.documents.value = d.fileName;
                                 me.controls.documents.classList.remove(
@@ -1896,6 +1893,24 @@ const TenantDocumentDialog = (() => {
                         params: (op) => ({ id: op.id }),
                     },
                 },
+                onPrepareForm: (me) => {
+                    me.fileData = null;
+                    me.fileBase64 = null;
+                    me.ext = null;
+
+                    if (me.controls?.documents) {
+                        me.controls.documents.value = "";
+                        me.controls.documents.classList.add("d-none");
+                    }
+
+                    if (me.controls?.remarks) {
+                        me.controls.remarks.value = "";
+                    }
+
+                    if (me.controls?.document_type) {
+                        me.controls.document_type.value = "";
+                    }
+                },
 
                 buttons: [
                     {
@@ -1917,6 +1932,14 @@ const TenantDocumentDialog = (() => {
                                 cv_interact.error("Please select a file.");
                                 return;
                             }
+                            const remarks = me.controls.remarks.value || "";
+
+                            if (remarks.length > 255) {
+                                cv_interact.error(
+                                    "Remarks must not exceed 255 characters.",
+                                );
+                                return;
+                            }
 
                             const allowExt = ["jpg", "jpeg", "png", "pdf"];
 
@@ -1926,7 +1949,10 @@ const TenantDocumentDialog = (() => {
                                 );
                                 return;
                             }
-                            const nameWithoutExt = me.fileData.fileName.replace(/\.[^/.]+$/, "");
+                            const nameWithoutExt = me.fileData.fileName.replace(
+                                /\.[^/.]+$/,
+                                "",
+                            );
                             const p = {
                                 tenant_id: me.dataOptions.tenant_id,
                                 ext: me.fileData.ext,
@@ -1935,12 +1961,7 @@ const TenantDocumentDialog = (() => {
                                 document_type_id:
                                     me.controls.document_type.value,
                                 original_file_name: nameWithoutExt,
-                                
-
                             };
-
-                            console.log(2222, p);
-
                             vsapi
                                 .call(
                                     [
@@ -1953,12 +1974,27 @@ const TenantDocumentDialog = (() => {
                                 )
                                 .then((res) => {
                                     if (res.status_code === 200) {
+                                        // me.fileData = null;
+                                        // if (me.controls?.documents) {
+                                        //     me.controls.documents.value = "";
+                                        //     me.controls.documents.classList.add(
+                                        //         "d-none",
+                                        //     );
+                                        // }
                                         me.hide(true, p);
                                         cv_interact.success(
                                             "Document saved successfully.",
                                         );
                                     } else {
                                         cv_interact.error(res.error_message);
+                                        me.fileData = null;
+
+                                        if (me.controls?.documents) {
+                                            me.controls.documents.value = "";
+                                            me.controls.documents.classList.add(
+                                                "d-none",
+                                            );
+                                        }
                                     }
                                 });
                         },

@@ -412,7 +412,7 @@ const CreateReservationDialog = (() => {
                                 <input name="tenant_id" class="d-none data-input form-control" data-field="tenant_id">
                             <div class="col-6">
                                 <div class="vs-material-field">
-                                    <input name="tenant" class="data-input form-control" data-field="tenant_name" placeholder="Tenant"></input>
+                                    <input name="tenant" class="data-input form-control" data-field="tenant_name"  placeholder="Tenant" />
                                     <label>Tenant</label>
                                 </div>
                             </div>
