@@ -66,12 +66,14 @@ var PurchaseOrdersComponent = (() => {
             className: "align-middle text-nowrap text-center",
             data: (data) => {
                 const status = (data.status ?? '').toLowerCase();
+                console.log(3333,status);
+                
                 let cls = 'badge text-dark bg-warning-subtle border border-warning';
                 if (status === 'pending') cls = 'badge text-warning bg-warning-subtle border border-warning';
                 else if (status === 'approved') cls = 'badge text-info bg-info-subtle border border-info';
                 else if (status === 'ordered') cls = 'badge text-primary bg-primary-subtle border border-primary';
                 else if (status === 'cancelled') cls = 'badge text-danger bg-danger-subtle border border-danger';
-                else if (status === 'partially') cls = 'badge text-dark bg-warning-subtle border border-warning';
+                else if (status === 'partially') cls = 'badge text-warning bg-warning-subtle border border-warning';
                 else if (status === 'received') cls = 'badge text-success bg-success-subtle border border-success';
                 return `<span class="${cls} text-capitalize d-inline-block text-center" style="min-width:70px">${data.status ?? ''}</span>`;
             }
@@ -239,12 +241,12 @@ var PurchaseOrdersComponent = (() => {
             ],
             onShow: (me, container) => {
                 const menu = me.getActiveMenus(container);
-                const status_id = Number(container.dataset.statusid);
+                const status_id = container.dataset.statusid;
                 let allowed = [];
 
                 if (status_id == 1) allowed = ["modify_purchase_order", "delete_purchase_order", "authorized_purchase_order", "generate_bill"];
                 else if (status_id == 3 || status_id == 4) allowed = ["receive_purchase_order"];
-                else if (status_id == 5) allowed = ["generate_bill"];
+                else if (status_id == 5) allowed = ["delete_purchase_order"];
 
                 Object.keys(menu).forEach(key => {
                     if (menu[key]?.style) {
@@ -462,7 +464,7 @@ var PurchaseOrdersComponent = (() => {
                         { name: "qty", transTitle: "titles.Qty", dataType: "number", defaultValue: 1, isNumeric: true },
                         // { name: "unit", transTitle: "titles.Unit", dataType: "string", displayType: "number", readOnly: true },
                         { name: "unit_price", transTitle: "titles.Unit Price", dataType: "decimal",displayType:"input",currencySymbol: "$" },
-                        { name: "total_price", transTitle: "titles.Total",dataType: "decimal",displayType:"input",currencySymbol: "$" },
+                        { name: "total_price", transTitle: "titles.Total",dataType: "decimal", readOnly: true,displayType:"input",currencySymbol: "$" },
 
                     ],
                     calc: { mode: "auto", qtyField: "qty", priceField: "unit_price", totalField: "total_price", currencyPrecision: 2 },
@@ -712,7 +714,7 @@ var PurchaseOrdersComponent = (() => {
                     columns: [
                         { name: "item_id", transTitle: "titles.Item", displayType: "select",readOnly: true},
                         { name: "qty", transTitle: "titles.Ordered Qty", dataType: "number", defaultValue: 1,readOnly: true, isNumeric: true },
-                        { name: 'receive_qty', transTitle: 'Received Qty', dataType: 'number', defaultValue: 0, isNumeric: true, readOnly: false },
+                        { name: 'received_qty', transTitle: 'Received Qty', dataType: 'number', defaultValue: 0, isNumeric: true, readOnly: false },
                         { name: "accept",transTitle: "titles.Accept",html: '<input type="checkbox" class="check_accept">'}
 
                     ],
@@ -724,9 +726,26 @@ var PurchaseOrdersComponent = (() => {
                     showColumnHeaders: true,
                     showAddLineButton: false,
                     addLineButtonText: 'Add Item',
-                    // itemRendered: (this,ctx) => {
-                    
-                    // },
+                    itemRendered: (iMe, ctx) => {
+                        const tr = ctx.tr;
+                        const data = ctx.data;
+                        const checkbox = tr.querySelector(".check_accept");
+
+                        const receivedQty = Number(data.received_qty || 0);
+                        const qty = Number(data.qty || 0);
+
+                        const isChecked = receivedQty > 0 && receivedQty === qty;
+
+                        if (checkbox) {
+                            checkbox.checked = isChecked;
+                        }
+
+                        iMe.setRowMeta(tr, {
+                            received_qty: receivedQty,
+                            checked: isChecked
+                        });
+                    },
+                 
                     // allItemsRendered:(this,ctx)=>{
         
                     // },
@@ -774,11 +793,10 @@ var PurchaseOrdersComponent = (() => {
                     click: (me) => {
                         me.saveData(res => {
                             console.log(6666,res);
-                            
                             if (res.status_code == 200) {
                                 cv_interact.success("purchase order Received.");
                                 me.hide(true);
-                                // mThis.PoListView.showPage(mThis.getFilterData());
+                                mThis.PoListView.showPage(mThis.getFilterData());
                             } else {
                                 cv_interact.error(res.error_message);
                             }
@@ -788,6 +806,8 @@ var PurchaseOrdersComponent = (() => {
             ],
    
             onPrepareForm: (me, data) => {
+                console.log(4444,data);
+                
                 const isReadOnly = me.dataOptions.id > 0;
                 me.setReadOnly(isReadOnly,['po_date']);
                 me.controls.vendor.disabled = isReadOnly;

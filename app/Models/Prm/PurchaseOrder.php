@@ -208,7 +208,7 @@ class PurchaseOrder extends VSModel
             $itemIds = array_column($valid_items, 'item_id');
 
             if (count($itemIds) !== count(array_unique($itemIds))) {
-                return DV::error('Duplicate items are not allowed in purchase order');
+                return DV::error('Duplicate items are not allowed in a single purchase order.');
             }
             // 🔥 STEP 1: collect incoming IDs first
             $incoming_ids = [];
@@ -393,7 +393,7 @@ class PurchaseOrder extends VSModel
         $rows = DB::table('purchase_order_items as pi')
             ->join('items as i','i.id','=','pi.item_id')
             ->where('pi.po_id',$id)
-            ->selectRaw("pi.item_id,pi.qty,i.unit,pi.unit_price,pi.total_price")->get();
+            ->selectRaw("pi.item_id,pi.qty,i.unit,pi.unit_price,pi.total_price,pi.received_qty")->get();
 
 
         return $rows;
@@ -489,87 +489,88 @@ class PurchaseOrder extends VSModel
         return DV::success();
     }
     public function receivePurchaseOrder($arr = [], $id = null, $ss = null)
-    {
-        $ss = $ss ?? $this->userInfo;
-        $id = $id ?? $this->id;
-        $d = (object) $arr;
-        $po = DB::table('purchase_orders')->where('id', $id)->first();
-        if (!$po) {
-            return DV::error('Purchase order not found.');
-        }
-        if ($po->status_id == 6) {
-            return DV::error('Cannot receive a cancelled purchase order.');
-        }
-        $items = $d->items ?? [];
-        if (empty($items)) {
-            return DV::error('No items to receive.');
-        }
-        \Log::info(json_encode($items));
+{
+    $ss = $ss ?? $this->userInfo;
+    $id = $id ?? $this->id;
 
+    $d = (object) $arr;
 
-        DB::beginTransaction();
+    $po = DB::table('purchase_orders')->where('id', $id)->first();
+    if (!$po) {
+        return DV::error('Purchase order not found.');
+    }
 
-        try {
+    if ($po->status_id == 6) {
+        return DV::error('Cannot receive a cancelled purchase order.');
+    }
 
-            $allFullyReceived = true;
-            foreach ($items as $item) {
-                $poItem = DB::table('purchase_order_items')
-                    ->where('po_id', $id)
-                    ->where('item_id', $item['item_id'])
-                    ->first();
-                if (!$poItem) {
-                    return DV::error('PO item not found: ' . $item['item_id']);
-                }
-                $receiveQty = $item['received_qty'] ?? 0;
+    $items = $d->items ?? [];
+    if (empty($items)) {
+        return DV::error('No items to receive.');
+    }
 
-                if ($receiveQty <= 0) {
-                    continue;
-                }
+    DB::beginTransaction();
 
-                $newReceivedQty = $poItem->received_qty + $receiveQty;
+    try {
+        $allFullyReceived = true;
 
-                if ($newReceivedQty > $poItem->qty) {
-                    return DV::error('Receive quantity exceeds ordered quantity.');
-                }
+        foreach ($items as $item) {
 
-                $acceptQty = $newReceivedQty;
+            $poItem = DB::table('purchase_order_items')
+                ->where('po_id', $id)
+                ->where('item_id', $item['item_id'])
+                ->first();
 
-                DB::table('purchase_order_items')
-                    ->where('id', $poItem->id)
-                    ->update([
-                        'received_qty' => $newReceivedQty,
-                        'accept_qty' => $acceptQty,
-                        'accept_date' => now(),
-                        'accept_uid' => $ss->user_id ?? null,
-                        'accept_user' => $ss->user_name ?? null,
-                        'status_id' => ($newReceivedQty == $poItem->qty) ? 5 : 4,
-                    ]);
-
-                if ($newReceivedQty < $poItem->qty) {
-                    $allFullyReceived = false;
-                }
+            if (!$poItem) {
+                return DV::error('PO item not found: ' . $item['item_id']);
             }
 
-            $newStatus = $allFullyReceived ? 5 : 4;
+            $receiveQty = $item['received_qty'] ?? 0;
 
-            DB::table('purchase_orders')
-                ->where('id', $id)
+            if ($receiveQty <= 0) {
+                continue;
+            }
+
+            $newReceivedQty = $poItem->received_qty + $receiveQty;
+
+            if ($newReceivedQty > $poItem->qty) {
+                return DV::error('Receive quantity exceeds ordered quantity.');
+            }
+
+            DB::table('purchase_order_items')
+                ->where('id', $poItem->id)
                 ->update([
-                    'status_id' => $newStatus,
-                    'update_uid' => $ss->user_id ?? null,
-                    'update_user' => $ss->user_name ?? null,
-                    'updated_at' => now(),
+                    'received_qty' => $newReceivedQty,
+                    'accepted_qty' => $newReceivedQty,
+                    'accepted_date' => now(),
+                    'accepted_uid' => $ss->user_id ?? null,
+                    'accepted_user' => $ss->login_name ?? null,
+                    'status_id' => ($newReceivedQty == $poItem->qty) ? 5 : 4,
                 ]);
 
-            DB::commit();
-
-            return DV::success('Purchase order received successfully.');
-
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return DV::error($e->getMessage());
+            if ($newReceivedQty < $poItem->qty) {
+                $allFullyReceived = false;
+            }
         }
+
+        DB::table('purchase_orders')
+            ->where('id', $id)
+            ->update([
+                'status_id' => $allFullyReceived ? 5 : 4,
+                'update_uid' => $ss->user_id ?? null,
+                'update_user' => $ss->user_name ?? null,
+                'updated_at' => now(),
+            ]);
+
+        DB::commit();
+
+        return DV::success(['message' => 'Purchase order received successfully.']);
+
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return DV::error($e->getMessage());
     }
+}
     // Receive selected lines; $arr mirrors Request::all() (po_item_ids, receive_qty, break_amount, …).
     public function receivePurchaseOrder1($arr = [], $id = null, $ss = null)
     {
