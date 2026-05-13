@@ -28,9 +28,9 @@ class Contract
     $subs_id = $ss->subs_id ?? getCurrentSubsId(true);
 
     $v_rule = [
-        'tenant_id'        => '1|number|exists=tenants.id',
+        'tenant_id'        => '1|number|exists=tenants.id|text=Please select a tenant.',
         'legal_name'       => '0|string|0-100',
-        'business_type_id' => '1|number|exists=business_types.id',
+        'business_type_id' => '1|number|exists=business_types.id|text=Please select a business type.',
         'space_id'         => '1|number|exists=building_spaces.id|text=Please select a valid unit code',
         'deposit'          => '1|number|text=Deposit is required',
         'start_date'       => '1|date|text=Please enter a valid contract start date.',
@@ -51,6 +51,19 @@ class Contract
     $end   = strtotime($inputs['end_date']);
     if ($end <= $start) {
         return DV::error('End date must be after start date.');
+    }
+    $todayStr = date('Y-m-d');
+    $endInput = $inputs['end_date'] ?? '';
+    if ($endInput !== '' && $endInput < $todayStr) {
+        if ($id) {
+            $prevEnd = DB::table('contracts')->where('id', $id)->value('end_date');
+            $prevEndStr = $prevEnd ? date('Y-m-d', strtotime((string) $prevEnd)) : '';
+            if ($prevEndStr !== $endInput) {
+                return DV::error('End date cannot be in the past.');
+            }
+        } else {
+            return DV::error('End date cannot be in the past.');
+        }
     }
     $minEnd = strtotime('-1 day', strtotime('+1 month', $start));
     $startDay = date('d', $start);
@@ -543,6 +556,8 @@ class Contract
 
         DB::beginTransaction();
         try {
+            DB::table('contract_renewals')->where('contract_id', $id)->delete();
+
             $deleted = DB::table('contracts')->where('id', $id)->delete();
             if (!$deleted) {
                 DB::rollBack();

@@ -834,25 +834,26 @@ const ContractDialog = (() => {
                         <div class="row g-3">
                             <div class="col-6">
                                 <div class="vs-material-field">
-                                    <input type="text" name="space_name" class="data-input form-control" data-field="space_name" placeholder=" " />
+                                    <input type="text" name="space_name" class="data-input form-control" data-field="space_name" disabled />
                                     <label>Type</label>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="vs-material-field">
-                                    <input type="number" name="sqm_size" class="data-input form-control" data-field="sqm_size" placeholder=" " />
+                                    <input type="number" name="sqm_size" class="data-input form-control" data-field="sqm_size" disabled />
                                     <label>Size (m²)</label>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="vs-material-field">
-                                    <input type="text" name="price_type" class="data-input form-control" data-field="price_type" placeholder=" " />
+                                    <input type="hidden" name="price_type" class="data-input" data-field="price_type" />
+                                    <input type="text" name="price_type_label" class="form-control" disabled />
                                     <label>Unit Price</label>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="vs-material-field">
-                                    <input type="number" name="price" class="data-input form-control" data-field="price" placeholder=" " />
+                                    <input type="number" name="price" class="data-input form-control" data-field="price" disabled />
                                     <label>Price</label>
                                 </div>
                             </div>
@@ -924,11 +925,7 @@ const ContractDialog = (() => {
                     e.target.value = v;
                 });
 
-                applyNumberInput(me.controls.deposit);
-                applyNumberInput(me.controls.sqm_size);
-                applyNumberInput(me.controls.price);
-
-
+              
 
             },
 
@@ -1013,13 +1010,7 @@ const ContractDialog = (() => {
                 }
                 const unitSelect = me.divModal.querySelector('[data-field="space_id"]');
                 const spaceRows = Array.isArray(data?.building_spaces) ? data.building_spaces : [];
-                const toggleUnitInputs = (isDisabled) => {
-                    ['space_name', 'sqm_size', 'price_type', 'price'].forEach((field) => {
-                        if (me.controls[field]) {
-                            me.controls[field].disabled = isDisabled;
-                        }
-                    });
-                };
+         
                 const spaceTypes = Array.isArray(data?.space_types) ? data.space_types : [];
                 const getSpaceTypeName = (spaceTypeId) => {
                     const row = spaceTypes.find((x) => String(x.id) === String(spaceTypeId));
@@ -1029,7 +1020,6 @@ const ContractDialog = (() => {
                     const selected = spaceRows.find((row) => String(row.id) === String(spaceId));
                     if (!selected) {
                         me._createContractSpaceTypeId = null;
-                        toggleUnitInputs(false);
                         return;
                     }
                     me._createContractSpaceTypeId = selected.space_type_id ?? null;
@@ -1037,9 +1027,11 @@ const ContractDialog = (() => {
                         me.controls.space_name.value = selected.space_type ?? getSpaceTypeName(selected.space_type_id) ?? '';
                     }
                     if (me.controls.sqm_size) me.controls.sqm_size.value = selected.sqm_size ?? '';
-                    if (me.controls.price_type) me.controls.price_type.value = selected.price_type ?? '';
+                    if (me.controls.price_type && me.controls.price_type_label) {
+                        me.controls.price_type.value = selected.price_type ?? '';
+                        me.controls.price_type_label.value = selected.price_type === 'sqm' ? 'Per m²' : selected.price_type === 'total' ? 'Whole Room' : '';
+                    }
                     if (me.controls.price) me.controls.price.value = selected.price ?? '';
-                    toggleUnitInputs(true);
                 };
 
                 if (unitSelect) {
@@ -1059,9 +1051,7 @@ const ContractDialog = (() => {
                         applyUnitData(defaultSpaceId);
                     } else if (unitSelect.value) {
                         applyUnitData(unitSelect.value);
-                    } else {
-                        toggleUnitInputs(false);
-                    }
+                    } 
                 }
 
 
@@ -1088,12 +1078,39 @@ const ContractDialog = (() => {
                         // }
 
                         const op = me.getData();
+                        if (!me.tenant_id) {
+                            cv_interact.error("Please select a tenant.");
+                            return;
+                        }
+                        if (!op.business_type_id) {
+                            cv_interact.error("Please select a business type.");
+                            return;
+                        }
                         if (me._createContractSpaceTypeId !== undefined && me._createContractSpaceTypeId !== null) {
                             op.space_type_id = me._createContractSpaceTypeId;
                         }
                         op.tenant_id = me.tenant_id;
                         op.id = me.dataOptions.id;
                         op.tenant_id = me.tenant_id;
+
+                        if (!op.id) {
+                            const endDt = parseDateInput(op.end_date);
+                            if (!endDt || Number.isNaN(endDt.getTime())) {
+                                cv_interact.error("Please enter a valid End Date.");
+                                return;
+                            }
+                            const endDay = new Date(
+                                endDt.getFullYear(),
+                                endDt.getMonth(),
+                                endDt.getDate(),
+                            );
+                            const today = new Date();
+                            today.setHours(0, 0, 0, 0);
+                            if (endDay < today) {
+                                cv_interact.error("End date cannot be in the past.");
+                                return;
+                            }
+                        }
 
                         console.log(123,op);
                         vsapi.call([main_view.base_url, "/prm/contract/save",].join(""), op, btn, null).then((res) => {

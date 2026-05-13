@@ -68,7 +68,7 @@
 /* ============================================================
    🔷 DROPDOWN
 ============================================================ */
-.choices__list--dropdown {
+ .choices__list--dropdown {
   border-radius: 12px;
   overflow: hidden;
 
@@ -79,9 +79,25 @@
   background: #fff;
 }
 
-/* SCROLL AREA */
+/* SEARCH INPUT (FIXED HEADER) */
+.choices__list--dropdown .choices__input {
+  flex: 0 0 38px;
+  height: 38px;
+  min-height: 38px;
+  margin-top: 3px;
+  line-height: 24px;
+  padding: 7px 10px;
+  box-sizing: border-box;
+
+  border: 0;
+  border-bottom: 1px solid #dcdcdc;
+}
+
+/* SCROLLABLE CHOICE LIST */
 .choices__list--dropdown .choices__list {
   flex: 1 1 auto;
+  padding-top: 10px;
+  min-height: 0;
   overflow-y: auto;
 }
 

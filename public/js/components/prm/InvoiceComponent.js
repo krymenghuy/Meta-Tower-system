@@ -290,7 +290,7 @@ var InvoiceComponent = (() => {
                 console.log(1112345678, res.data);
             })
             .catch(() => {
-                container.innerHTML = `<div class="alert alert-danger m-3">Network error loading invoice details</div>`;
+                container.innerHTML = `<div class="alert alert-danger m-3">Network error loading invoice detail.</div>`;
             });
     };
 
@@ -571,7 +571,7 @@ var InvoiceComponent = (() => {
                             cv_interact.success("Invoice deleted successfully");
                         } else {
                             cv_interact.error(
-                                res.error_message || "Failed to delete"
+                                res.error_message || "Failed to delete."
                             );
                         }
                     });
@@ -853,13 +853,13 @@ const InvoiceDialog = (() => {
                 // ================ Rent ====================
                 me.controls.btnRent.onclick = () => {
                     if (!me._selectedTenantId) {
-                        return cv_interact.error("Please select Tenant first");
+                        return cv_interact.error("Please select Tenant first.");
                     }
                     if (
                         !me.controls.space.value ||
                         me.controls.space.value === ""
                     ) {
-                        return cv_interact.error("Please select Space");
+                        return cv_interact.error("Please select Space.");
                     }
                     const spaces = me._tenantSpaces || [];
                     const months = me._tenantMonths || [];
@@ -874,7 +874,7 @@ const InvoiceDialog = (() => {
                         ) || spaces[0];
 
                     if (!matchedSpace) {
-                        return cv_interact.error("No space/contract found");
+                        return cv_interact.error("No space/contract found.");
                     }
                     const availableMonths = months.filter(
                         m =>
@@ -1064,7 +1064,7 @@ const InvoiceDialog = (() => {
 
                             if (!realContractId) {
                                 return ibMe.setError(
-                                    "Unit Code / Room is missing"
+                                    "Unit Code / Room is missing."
                                 );
                             }
 
@@ -1096,7 +1096,7 @@ const InvoiceDialog = (() => {
                                 0
                             );
 
-                            cv_interact.success("Rent item added");
+                            cv_interact.success("Rent item added.");
                             ibMe.close();
                         }
                     });
@@ -1105,13 +1105,13 @@ const InvoiceDialog = (() => {
                 // ================== Electric ================
                 me.controls.btnElectric.onclick = () => {
                     if (!me._selectedTenantId) {
-                        return cv_interact.error("Please select Tenant first");
+                        return cv_interact.error("Please select Tenant first.");
                     }
                     if (
                         !me.controls.space.value ||
                         me.controls.space.value === ""
                     ) {
-                        return cv_interact.error("Please select Space");
+                        return cv_interact.error("Please select Space.");
                     }
 
                     let electricDiv = null;
@@ -1292,12 +1292,12 @@ const InvoiceDialog = (() => {
 
                             if (newReading <= 0) {
                                 return ibMe.setError(
-                                    "New reading is required and must be greater than 0"
+                                    "New reading is required and must be greater than 0."
                                 );
                             }
                             if (newReading <= oldReading) {
                                 return ibMe.setError(
-                                    "New reading must be greater than old reading"
+                                    "New reading must be greater than old reading."
                                 );
                             }
                             if (ppu <= 0) {
@@ -1312,7 +1312,7 @@ const InvoiceDialog = (() => {
                                     new Date(data.start_date)
                             ) {
                                 return ibMe.setError(
-                                    "End date cannot be before Start date"
+                                    "End date cannot be before Start date."
                                 );
                             }
 
@@ -1338,7 +1338,7 @@ const InvoiceDialog = (() => {
                                 0
                             );
 
-                            cv_interact.success("Electric item added");
+                            cv_interact.success("Electric item added.");
                             ibMe.close();
                         }
                     });
@@ -1347,13 +1347,13 @@ const InvoiceDialog = (() => {
                 // ====================== Water ===================
                 me.controls.btnWater.onclick = () => {
                     if (!me._selectedTenantId) {
-                        return cv_interact.error("Please select Tenant first");
+                        return cv_interact.error("Please select Tenant first.");
                     }
                     if (
                         !me.controls.space.value ||
                         me.controls.space.value === ""
                     ) {
-                        return cv_interact.error("Please select Space");
+                        return cv_interact.error("Please select Space.");
                     }
 
                     InputBox.resetInstance("waterPopUp");
@@ -1539,22 +1539,22 @@ const InvoiceDialog = (() => {
                                     new Date(data.start_date)
                             ) {
                                 return ibMe.setError(
-                                    "End date cannot be before Start date"
+                                    "End date cannot be before Start date."
                                 );
                             }
                             if (newReading <= 0) {
                                 return ibMe.setError(
-                                    "New reading is required and must be greater than 0"
+                                    "New reading is required and must be greater than 0."
                                 );
                             }
                             if (newReading < oldReading) {
                                 return ibMe.setError(
-                                    "New reading cannot be less than old reading"
+                                    "New reading cannot be less than old reading."
                                 );
                             }
                             if (ppu <= 0) {
                                 return ibMe.setError(
-                                    "Price per m³ is required and must be positive"
+                                    "Price per m³ is required and must be positive."
                                 );
                             }
 
@@ -1592,18 +1592,18 @@ const InvoiceDialog = (() => {
                 // ===================== Service =================
                 me.controls.btnService.onclick = () => {
                     if (!me._selectedTenantId) {
-                        return cv_interact.error("Please select Tenant first");
+                        return cv_interact.error("Please select Tenant first.");
                     }
                     if (
                         !me.controls.space.value ||
                         me.controls.space.value === ""
                     ) {
-                        return cv_interact.error("Please select Space");
+                        return cv_interact.error("Please select Space.");
                     }
 
                     const services = availableItem || [];
                     if (services.length === 0) {
-                        return cv_interact.error("No services available");
+                        return cv_interact.error("No services available.");
                     }
 
                     const serviceOptions = services
@@ -1788,7 +1788,7 @@ const InvoiceDialog = (() => {
                         },
                         onConfirm(data, btn, ibMe) {
                             if (!data.service_id) {
-                                return ibMe.setError("Please select a Service");
+                                return ibMe.setError("Please select a Service.");
                             }
 
                             const selectedService = services.find(
@@ -1835,7 +1835,7 @@ const InvoiceDialog = (() => {
                 // ==================Service Request=========
                 me.controls.btnRequest.onclick = () => {
                     if (!me._selectedTenantId) {
-                        return cv_interact.error("Please select Tenant first");
+                        return cv_interact.error("Please select Tenant first.");
                     }
                     // if (
                     //     !me.controls.space.value ||
@@ -1846,7 +1846,7 @@ const InvoiceDialog = (() => {
                     const selectedSpaceId =
                         me.controls.space?.value || me.controls.space_id?.value;
                     if (!selectedSpaceId || selectedSpaceId === "") {
-                        return cv_interact.error("Please select Space");
+                        return cv_interact.error("Please select Space.");
                     }
 
                     const requests = me._requestedServices || [];
@@ -1856,7 +1856,7 @@ const InvoiceDialog = (() => {
 
                     if (filteredRequests.length === 0) {
                         return cv_interact.error(
-                            "No Requests relate to this space"
+                            "No Requests relate to this space."
                         );
                     }
 
@@ -2045,7 +2045,7 @@ const InvoiceDialog = (() => {
 
                             if (!selectedRequest) {
                                 return cv_interact.error(
-                                    "Please select a service request"
+                                    "Please select a service request."
                                 );
                             }
                             me.itemsView.addRow(
@@ -2525,7 +2525,7 @@ const InvoiceDialog = (() => {
                         .then(res => {
                             if (res.status_code !== 200) {
                                 cv_interact.error(
-                                    "Failed to load invoice details"
+                                    "Failed to load invoice details."
                                 );
                                 return;
                             }
@@ -2681,7 +2681,7 @@ const InvoiceDialog = (() => {
                         if (!formData) return;
 
                         if (!formData.items || formData.items.length === 0) {
-                            return cv_interact.error("Add at least one item");
+                            return cv_interact.error("Add at least one item.");
                         }
 
                         vsapi
@@ -2694,13 +2694,13 @@ const InvoiceDialog = (() => {
                                 if (res.status_code === 200) {
                                     cv_interact.success(
                                         formData.id
-                                            ? "Updated"
-                                            : "Created Invoice"
+                                            ? "Invoice has been updated."
+                                            : "Invoice has been successfully created."
                                     );
                                     me.hide(true);
                                 } else {
                                     cv_interact.error(
-                                        res.error_message || "Save failed"
+                                        res.error_message || "Save failed."
                                     );
                                 }
                             });
@@ -3086,18 +3086,18 @@ const ReceiveDialog = (() => {
                             .then(res => {
                                 if (res.status_code === 200) {
                                     cv_interact.success(
-                                        "Payment Received Successfully"
+                                        "Payment Received Successfully."
                                     );
                                     me.hide(true);
                                 } else {
                                     cv_interact.error(
-                                        res.error_message || "Save failed"
+                                        res.error_message || "Save failed."
                                     );
                                 }
                             })
                             .catch(err => {
                                 console.error(err);
-                                cv_interact.error("Network error occurred");
+                                cv_interact.error("Network error occurred.");
                             });
                     }
                 }

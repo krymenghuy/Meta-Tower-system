@@ -19,14 +19,9 @@ class Maintenance extends VSModel
     {
         $now = Carbon::now();
         $start = Carbon::parse($startDate);
-        $end = Carbon::parse($endDate);
 
         if ($now->lt($start)) {
             return 1; // Planned
-        }
-
-        if ($now->gt($end)) {
-            return 3; // Completed
         }
 
         return 2; // In Progress
@@ -169,11 +164,11 @@ class Maintenance extends VSModel
         $ss = $ss ?? $this->userInfo;
 
         $v_rule = [
-            'building_id' => '1|number|exists=buildings.id',
+            'building_id' => '1|number|exists=buildings.id|text=Please select a building.',
             'space_id'    => '0|number|exists=building_spaces.id',
             'amenity_id'  => '0|number|exists=amenities.id',
-            'start_date'  => '1|TIMESTAMP|text=Start date is required',
-            'end_date'    => '1|TIMESTAMP|text=End date is required',
+            'start_date'  => '1|TIMESTAMP|text=Start date is required.',
+            'end_date'    => '1|TIMESTAMP|text=End date is required.',
             'remarks'     => '0|string|0-255',
         ];
 
@@ -188,6 +183,33 @@ class Maintenance extends VSModel
         if ($res->error) return DV::error($res->error);
 
         $input = $res->values;
+
+        $spaceId = ($input['space_id'] ?? 0);
+        $amenityId =($input['amenity_id'] ?? 0);
+        if ($spaceId <= 0 && $amenityId <= 0) {
+            return DV::error('Unit code is required.');
+        }
+        if ($spaceId > 0 && $amenityId > 0) {
+            return DV::error('Select either a space or an amenity.');
+        }
+
+        $rawStartDate = trim(($arr['start_date'] ?? ''));
+        $rawEndDate = trim(($arr['end_date'] ?? ''));
+        if ($rawStartDate === '' && $rawEndDate === '') {
+            return DV::error('Start date and end date are required.');
+        }
+        if ($rawStartDate === '') {
+            return DV::error('Start date is required.');
+        }
+        if ($rawEndDate === '') {
+            return DV::error('End date is required.');
+        }
+
+        $hasStartTime = trim(($arr['start_time'] ?? '')) !== ''
+            || preg_match('/\d{1,2}:\d{2}/', (string) ($arr['start_date'] ?? ''));
+        if (!$hasStartTime) {
+            return DV::error('Please enter valid start time.');
+        }
 
         $start = strtotime($input['start_date']);
         $end   = strtotime($input['end_date']);
@@ -214,7 +236,7 @@ class Maintenance extends VSModel
         }
 
         if ($end < $now) {
-            return DV::error('End time cannot be in the past.');
+            return DV::error('End time cannot be in the past.'); 
         }
 
         if (!empty($input['amenity_id'])) {
@@ -450,7 +472,10 @@ class Maintenance extends VSModel
         if ($deleted && $space_id) {
             DB::table('building_spaces')->where('id', $space_id)->update(['maintenance_status_id' => 0]);
         }
-        return DV::depends($deleted, 'Failed to delete maintenance');
+        if (!$deleted) {
+            return DV::error('Failed to delete maintenance');
+        }
+        return DV::success(['message' => 'Maintenance has been deleted.']);
     }
 
     public function setStatus($arr, $ss = null)

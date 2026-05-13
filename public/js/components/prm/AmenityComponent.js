@@ -653,7 +653,7 @@ const AmenityDialog = (() => {
                         cssClass: "btn btn-primary",
                         click: (me, btn) => {
                             const op = me.getData();
-                            console.log(123456,op);
+                            // console.log(123456,op);
 
                             op.id = me.dataOptions.id;
                             vsapi.call([main_view.base_url,"/prm/amenity/save",].join(""),op,btn,).then((res) => {

@@ -25,7 +25,7 @@ class Tenant
         if (!$nid) return 'National ID cannot be empty';
         if ($id > 0) $str_id = "t.id <> $id";
         $x = DB::table('tenants as t')->where('t.national_id', $nid)->whereRaw($str_id)->select('id')->take(1)->exists();
-        if ($x) return 'National ID ?? has been used by another Tenant::' . $nid;
+        if ($x) return 'A tenant with National ID '.$nid.' already exists in the system.';
         return null;
     }
     function checkUniqueTenantByPassport($passport, $id = null)
@@ -37,13 +37,13 @@ class Tenant
             $str_id = "t.id <> $id";
         }
         $x = DB::table('tenants as t')->where('t.passport_number', $passport)->whereRaw($str_id)->select('id')->take(1)->exists();
-        if ($x) return 'Passport number ?? has been used by another Tenant::' . $passport;
+        if ($x) return 'A tenant with this Passport number ' . $passport. ' already exists in the system.';
         return null;
     }
     function checkUniqueTenantByPhone($phone_number, $id = null)
     {
         if (empty($phone_number)) {
-            return 'Phone number cannot be empty';
+            return 'Phone number cannot be empty.';
         }
         $query = DB::table('tenants')
             ->where('phone_number', $phone_number);
@@ -51,7 +51,7 @@ class Tenant
             $query->where('id', '<>', $id);
         }
         if ($query->exists()) {
-            return 'Phone number "' . $phone_number . '" has already been used by another tenant';
+            return 'This phone number ' . $phone_number . ' is already associated with another tenant.';
         }
         return null;
     }
@@ -61,16 +61,16 @@ class Tenant
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
         $v_rule = [
-            'name'            => '1|string|0-30|text=Tenant name is required',
-            'sex'             => '1|choice|F,M|text=Please select a valid gender',
-            'date_of_birth'   => '1|date|text=Date of birth is required',
-            'legal_name'      => '1|string|0-100',
-            'nationality_id'  => '1|number',
-            'national_id'     => '0|string|0-50',
-            'passport_number' => '0|string|0-50',
-            'phone_number'    => '0|string',
-            'email'           => '0|email',
-            'address'         => '0|string',
+            'name'            => '1|string|0-30',
+            'sex'             => '1|choice|F,M|text=Please select a valid gender.',
+            'date_of_birth'   => '1|date|text=Date of birth is required.',
+            'legal_name'      => '1|string|0-30',
+            'nationality_id'  => '1|number|text=Please select nationality.',
+            'national_id'     => '0|string|0-20',
+            'passport_number' => '0|string|0-20',
+            'phone_number'    => '0|string|1-20',
+            'email'           => '0|email|1-30',
+            'address'         => '1|string|0-255|text=Address is required',
             'photo'           => '0|image'
         ];
         $email_char = ['@', '.'];
@@ -200,7 +200,7 @@ class Tenant
             ->whereRaw($str_search)
             ->whereRaw($str_moreWhere)
             ->selectRaw("
-                t.id,t.name,t.sex,t.date_of_birth,t.nationality_id,
+                t.id,t.name,t.sex,t.tenant_type,t.date_of_birth,t.nationality_id,
                 t.legal_name,t.code,t.photo_file_name,t.national_id,
                 t.passport_number,t.phone_number,t.email,t.address,
                 t.status_id,ts.name as status,
@@ -294,7 +294,7 @@ class Tenant
             ->leftJoin('building_spaces as bs', 'bs.id', '=', 'c.space_id')
             ->join('tenant_statuses as ts', 'ts.id', '=', 't.status_id')
             ->where('t.id', $id)
-            ->selectRaw("t.id,t.name,t.code,t.national_id,passport_number,$date_of_birth,t.nationality_id,t.photo_file_name,t.sex,t.status_id,ts.name as status,t.legal_name,t.phone_number,t.email,t.address,c.price,c.price_type,c.sqm_size,$start_date,$end_date,bs.code as space_code ")
+            ->selectRaw("t.id,t.name,t.code,t.national_id,passport_number,$date_of_birth,t.nationality_id,t.photo_file_name,t.sex,t.tenant_type,t.status_id,ts.name as status,t.legal_name,t.phone_number,t.email,t.address,c.price,c.price_type,c.sqm_size,$start_date,$end_date,bs.code as space_code ")
             ->first();
         if ($row) {
             $img = self::profilePicture($id, $ss);
