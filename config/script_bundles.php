@@ -47,7 +47,7 @@ return [
                 'https://cdn.vectoraclouds.com/beta-frontcore/components/FilterPanel.js',
                 '/assets/js/sweetalert2.all.min.js',
                 '/assets/js/sweetalert2.toast.js',
-                'https://cdn.vectoraclouds.com/frontcore/components/ExpandableTableRowConfig.js',
+                'https://cdn.vectoraclouds.com/frontcore/components/ExpandableTableRow.v2.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/UMExpandItemView.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/VSDropdownMenu.js',
 
@@ -105,7 +105,7 @@ return [
                 'https://cdn.vectoraclouds.com/frontcore/components/ImageHelper.js',
                'https://cdn.vectoraclouds.com/frontcore/components/ImageBox.js',
                 //'/assets/js/ImageBox.js',
-                // 'https://cdn.vectoraclouds.com/frontcore/components/ExpandableTableRowConfig.js',
+                // 'https://cdn.vectoraclouds.com/frontcore/components/ExpandableTableRow.v2.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/FileChooser.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/listview/listview.v2.js',
  
