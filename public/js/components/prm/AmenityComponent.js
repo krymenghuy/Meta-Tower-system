@@ -707,20 +707,18 @@ const ActiveReservationDialog = (() => {
             tbody.innerHTML = `
                 <tr>
                     <td colspan="4" class="text-center text-muted py-4">
-                        
                         No data to display
                     </td>
                 </tr>`;
             return;
         }
         tbody.innerHTML = rows.map(r => `
-            <tr>
-               
-                <td class="align-middle">
+            <tr>              
+                <td class="align-middle text-center">
                     <span class="d-block text-prm-custom text-capitalize">${r.tenant_name ?? ''}</span>
-                    <span class="text-muted">${r.phone_number ?? ''}</span>
+                    <small class="text-muted">${r.phone_number ?? ''}</small>
                 </td>
-                <td class="align-middle">
+                <td class="align-middle text-center">
                     <span class="d-block text-prm-custom">${r.booking_date ?? ''}</span>
                     <small class="text-primary">${to12h(r.start_time)} – ${to12h(r.end_time)}</span>
                 </td>
@@ -739,8 +737,9 @@ const ActiveReservationDialog = (() => {
             title: 'Reservation Details',
             instanceKey: 'activeReservationView',
             context: 'info',
-            // confirmButtonText: null,
-            // showconfirmButtonText: false,
+            size: 'lg',
+            confirmButtonText: null,    
+            showconfirmButtonText: false,
             cancelButtonText: 'Close',
 
             createContent() {
@@ -758,14 +757,14 @@ const ActiveReservationDialog = (() => {
                         <span class="ms-2 text-muted small">Loading...</span>
                     </div>
 
-                    <div id="_arv_table_wrap" class="d-none">
+                    <div id="_arv_table_wrap" class="d-none align-item-center">
                         <table class="table table-sm table--white rounded-2 overflow-hidden">
-                            <thead class="header-uppercase">
+                            <thead class="header-uppercase" >
                                 <tr>
-                                    <th>Tenant</th>
-                                    <th>Schedule Date</th>
-                                    <th class="text-center">Status</th>
-                                    <th>Remark</th>
+                                    <th class="text-center" style="width:100px;">Tenant</th>
+                                    <th class="text-center" style="width: 150px;">Schedule Date</th>
+                                    <th class="text-center" style="width:80px;">Status</th>
+                                    <th class="text-center" style="width:260px;">Remark</th>
                                 </tr>
                             </thead>
                             <tbody id="_arv_tbody"></tbody>
@@ -776,10 +775,19 @@ const ActiveReservationDialog = (() => {
             },
 
             onOpen(ibMe) {
-
                 const divInputboxCard = InputBox._store.get('activeReservationView').container.closest('.inputbox-card');
                 const btnOk = divInputboxCard.querySelector('.inputbox-btn.ok');
                 btnOk.classList.add('d-none');
+
+                // restore btnOk on any close action so next dialog isn't affected
+                const restore = () => btnOk.classList.remove('d-none');
+                divInputboxCard.addEventListener('click', function handler(e) {
+                    const isClose = e.target.closest('.inputbox-btn.cancel, .inputbox-close, .btn-close, [data-dismiss]');
+                    if (isClose) {
+                        restore();
+                        divInputboxCard.removeEventListener('click', handler);
+                    }
+                });
 
                 const loader    = document.getElementById('_arv_loader');
                 const tableWrap = document.getElementById('_arv_table_wrap');
@@ -791,7 +799,6 @@ const ActiveReservationDialog = (() => {
                     null,
                     null,
                 ).then((res) => {
-                    // console.log('reservation res:', res); // remove after confirmed working
                     loader.classList.add('d-none');
                     tableWrap.classList.remove('d-none');
 

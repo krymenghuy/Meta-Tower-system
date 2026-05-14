@@ -422,10 +422,10 @@ const CreateServicePriceDialog = (() => {
                             <div class="col-6">
                                 <div class="vs-material-field">
                                     <select data-style="material" name="unit_type" class="data-input form-control" data-field="unit_type" placeholder="Unit Type">
-                                    <option value="per_unit">Per Unit</option>
-                                    <option value="one_time">One Time</option>
-                                    <option value="hour">Hour</option>
-                                    <option value="month">Per Month</option>
+                                    <option value="per_unit">Unit</option>
+                                    <option value="one_time">Once</option>
+                                    <option value="hour">Hourly</option>
+                                    <option value="month">Monthly</option>
                                     </select>
                                 </div>
                             </div>
@@ -495,7 +495,7 @@ const CreateServicePriceDialog = (() => {
                                         );
                                     } else {
                                         cv_interact.success(
-                                            "New service has been added successfully"
+                                            "New service has been added successfully."
                                         );
                                     }
                                 } else {

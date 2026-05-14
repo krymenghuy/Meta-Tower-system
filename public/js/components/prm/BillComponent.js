@@ -522,7 +522,7 @@ const BillDialog = (() => {
                                 <input name="vendorid" class="d-none data-input form-control" data-field="vendor_id">
                             <div class="col-6">
                                 <div class="vs-material-field">
-                                    <input  name="vendor" class="data-input form-control" data-field="vendor_name" placeholder="Vendor"/>
+                                    <input  name="vendor" class="data-input form-control" data-field="vendor_name" placeholder="Vendor" autocomplete="off">
                                     <label>Vendor</label>
                                 </div>
                             </div>
@@ -540,7 +540,7 @@ const BillDialog = (() => {
                             </div>
                             <div class="col-6 col-md-6">
                                 <div class=" material-input outlined">
-                                    <input type="text" data-type="date" name="due_date" required class="data-input form-control form_input" data-field="due_date" />
+                                    <input type="text" data-type="date" name="due_date" required class="data-input form-control form_input" data-field="due_date" placeholder=" "/>
                                     <label>Due Date</label>
                                 </div>
                             </div>
@@ -716,6 +716,9 @@ const BillDialog = (() => {
                         me.controls.documents.value = details.file_image;
                         me.controls.documents.classList.remove('d-none');
                     }
+                    // if (me.searchVendor && typeof me.searchVendor.reset === "function") {
+                    //     me.searchVendor.reset();
+                    // }
                     if (details?.vendor_id) {
                         me._selectedVendorId = details.vendor_id;
                         if (me.controls.vendor_id)    me.controls.vendor_id.value    = details.vendor_id;
@@ -735,6 +738,7 @@ const BillDialog = (() => {
                             }
                         });
                     }
+                    
                     setTimeout(() => {
                         const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
                         const toFormatted = (val) => {
@@ -769,6 +773,7 @@ const BillDialog = (() => {
                         cssClass: "btn btn-secondary",
                         click: (me, btn) => {
                             me.hide(false);
+                            me._selectedVendorId = null; 
                         },
                     },
                     {
@@ -800,6 +805,7 @@ const BillDialog = (() => {
                                 .then((res) => {
                                     if (res.status_code === 200) {
                                         me.hide(true, op);
+                                        me._selectedVendorId = null; 
                                         if (me.dataOptions.id > 0) {
                                             cv_interact.success("Bill has been updated successfully.");
                                         } else {
