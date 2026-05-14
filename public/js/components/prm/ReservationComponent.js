@@ -59,7 +59,7 @@ var ReservationComponent = (() => {
             className: "align-middle",
             data: (data, index, tr) => {
                 return `
-                    <div class="text-primary-custom" style="width:150px;">
+                    <div class="text-primary-custom" style="width:320px;">
                         <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ?? "__"}</span>
                     </div>
                 `;
@@ -260,6 +260,7 @@ var ReservationComponent = (() => {
 
                 if (status_id === 1) {
                     menu.cancel_reservation.style.display = 'block';
+                    menu.edit_reservation.style.display = 'block';
                 }
                 else if (status_id === 3 || status_id === 4) {
                     menu.delete_reservation.style.display = 'block';
@@ -409,10 +410,10 @@ const CreateReservationDialog = (() => {
                 createContent: () => {
                     return [
                         `<div class="row g-3 justify-content-center">
-                                <input name="tenant_id" class="d-none data-input form-control" data-field="tenant_id">
+                            <input type="hidden" class="data-input" data-field="tenant_id">
                             <div class="col-6">
                                 <div class="vs-material-field">
-                                    <input name="tenant" class="data-input form-control" data-field="tenant_name"  placeholder="Tenant" />
+                                    <input name="tenant" class="data-input form-control" data-field="tenant_name" placeholder="Tenant" autocomplete="off">
                                     <label>Tenant</label>
                                 </div>
                             </div>
@@ -524,7 +525,7 @@ const CreateReservationDialog = (() => {
                             "/prm/reservation/form-options",
                         ].join(""),
                         params: (op) => {
-                            return { id: op.id };
+                            return { id: op.id, tenant_id: op.tenant_id ?? null };
                         },
                     },
                 },
@@ -541,19 +542,26 @@ const CreateReservationDialog = (() => {
                     if (codeInput)
                         codeInput.value = selected?.amenity_code ?? "";
                     };
+                    if (me.searchTenant && typeof me.searchTenant.reset === "function") {
+                        me.searchTenant.reset();
+                    }
 
                     amenitySelect.onchange = (e) => applyAmenityData(e.target.value);
                     if (me.dataOptions.id > 0) {
+                         console.log(1221,data);
+                        me.controls.tenant_id.value = details.tenant_id;
                         setTimeout(() => {
                             if (details.amenity_id) {
                                 amenitySelect.value = details.amenity_id;
                                 applyAmenityData(details.amenity_id);
                             }
-                            $(amenitySelect).trigger("change");
+                            // $(amenitySelect).trigger("change");
                         }, 500);
                     }
 
                 },
+               
+                
 
                 buttons: [
                     {
@@ -561,6 +569,7 @@ const CreateReservationDialog = (() => {
                         cssClass: "btn btn-secondary",
                         click: (me, btn) => {
                             me.hide(false);
+                            me._selectedTenantId = null; 
                         },
                     },
                     {
@@ -569,11 +578,12 @@ const CreateReservationDialog = (() => {
                         click: (me, btn) => {
                             const op = me.getData();
                             op.id = me.dataOptions.id;
-                            // if (me._selectedTenantId != null && me._selectedTenantId !== undefined) {
-                            //     op.tenant_id = me._selectedTenantId;
-                            // }
+                            if (me._selectedTenantId != null && me._selectedTenantId !== undefined) {
+                                op.tenant_id = me._selectedTenantId;
+                            }
 
-                            op.tenant_id = me._selectedTenantId;
+                            // op.tenant_id = me._selectedTenantId;
+                            op.id = me.dataOptions.id;
                             console.log(123,op);
 
                             vsapi
@@ -589,6 +599,7 @@ const CreateReservationDialog = (() => {
                                 .then((res) => {
                                     if (res.status_code === 200) {
                                         me.hide(true, op);
+                                        me._selectedTenantId = null; 
                                         if (me.dataOptions.id > 0) {
                                             cv_interact.success(
                                                 "Reservation has been updated successfully.",
@@ -600,6 +611,7 @@ const CreateReservationDialog = (() => {
                                         }
                                     } else {
                                         cv_interact.error(res.error_message);
+                                        
                                     }
                                 });
                         },

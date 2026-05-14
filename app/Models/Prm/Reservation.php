@@ -20,13 +20,22 @@ class Reservation extends VSModel
         $this->id = $id;
         $this->userInfo = $userInfo;
     }
-
-
-public function upsert($arr = [], $id = null, $ss = null){
+    public function upsert($arr = [], $id = null, $ss = null){
         // 1. Force local timezone so 'now' matches your watch
         date_default_timezone_set('Asia/Phnom_Penh');
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
+
+        if ($id) {
+            $row = DB::table('reservations')->where('id', $id)->first();
+            if ($row) {
+                $bookingStart = strtotime($row->booking_date . ' ' . $row->start_time);
+                $now = time();
+                if (($bookingStart - $now) < (30 * 60)) {
+                    return DV::error('Reservations cannot be modified less than 30pur minutes before start time.');
+                }
+            }
+    }
 
         if (!empty($arr['start_time'])) {
             $arr['start_time'] = date('H:i:s', strtotime($arr['start_time']));
@@ -34,6 +43,7 @@ public function upsert($arr = [], $id = null, $ss = null){
         if (!empty($arr['end_time'])) {
             $arr['end_time'] = date('H:i:s', strtotime($arr['end_time']));
         }
+
 
 
         $v_rule = [
@@ -89,25 +99,24 @@ public function upsert($arr = [], $id = null, $ss = null){
             }
         }
         if ($d->amenity_id && $d->booking_date && $d->start_time && $d->end_time) {
+            $bufferedEndTime = date('H:i:s', strtotime($d->end_time . ' +15 minutes'));
 
+            $exists = self::where('amenity_id', $d->amenity_id)
+                ->where('booking_date', $d->booking_date)
+                ->where(function ($query) use ($d, $bufferedEndTime) {
+                    $query->where(DB::raw("DATE_ADD(end_time, INTERVAL 15 MINUTE)"), '>', $d->start_time)
+                        ->where('start_time', '<', $bufferedEndTime);
+                })
+                ->when($id, function ($query, $id) {
+                    return $query->where('id', '!=', $id);
+                })
+                ->exists();
 
-        $bufferedEndTime = date('H:i:s', strtotime($d->end_time . ' +15 minutes'));
-
-        $exists = self::where('amenity_id', $d->amenity_id)
-            ->where('booking_date', $d->booking_date)
-            ->where(function ($query) use ($d, $bufferedEndTime) {
-                $query->where(DB::raw("DATE_ADD(end_time, INTERVAL 15 MINUTE)"), '>', $d->start_time)
-                    ->where('start_time', '<', $bufferedEndTime);
-            })
-            ->when($id, function ($query, $id) {
-                return $query->where('id', '!=', $id);
-            })
-            ->exists();
-
-        if ($exists) {
-            return DV::error('Unavailable: A 15-minute cleaning buffer is required.');
+            if ($exists) {
+                return DV::error('Unavailable: A 15-minute cleaning buffer is required.');
+            }
+            
         }
-    }
 
         $id = DBX::saveData($ss, 'reservations', ['id'=>$id], $inputs, [], 1);
         // if($id){
@@ -285,16 +294,16 @@ public function upsert($arr = [], $id = null, $ss = null){
         if (!$row) {
             return DV::error('Reservation not found.');
         }
-        if ($row->status_id != 1) {
-            return DV::error('Only upcoming reservations can be cancelled.');
-        }
+        // if ($row->status_id != 1) {
+        //     return DV::error('Only upcoming reservations can be cancelled.');
+        // }
 
         date_default_timezone_set('Asia/Phnom_Penh');
         $bookingStart = strtotime($row->booking_date . ' ' . $row->start_time);
         $now = time();
 
-        if (($bookingStart - $now) < (15 * 60)) {
-            return DV::error('Reservations cannot be canceled less than 15 minutes before start time.');
+        if (($bookingStart - $now) < (30 * 60)) {
+            return DV::error('Reservations cannot be canceled less than 30 minutes before start time.');
         }
 
         $cancelled = DB::table('reservations')->where('id', $id)->update([

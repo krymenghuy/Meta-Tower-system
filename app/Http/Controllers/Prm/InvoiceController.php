@@ -40,7 +40,7 @@ class InvoiceController extends Controller
         return JDV::result($this->invoices->getListPaginate($req->all(), $ss));
     }
 
-    public function invoiceDetails(Request $req)
+  public function invoiceDetails(Request $req)
     {
         $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
@@ -61,7 +61,33 @@ class InvoiceController extends Controller
         }
 
         return JDV::result($detail);
-    }
+    }  
+
+//     public function invoiceDetails(Request $req)
+// {
+//     $ss = XAuthService::verifyAuth($req, -1);
+//     if ($ss->status_code !== 200) {
+//         return JDV::raw($ss);
+//     }
+
+//     $id = $req->id;
+
+//     if (empty($id)) {
+//         return JDV::error('Invoice ID is required');
+//     }
+
+//     $detail = $this->invoices->getInvoiceDetails($id);
+
+//     if (!$detail) {
+//         return JDV::error('Invoice not found');
+//     }
+
+//     $detail->total_amount = $detail->amount;
+//     $detail->total_discount = $detail->discount_value;
+//     $detail->net_total = $detail->amount - $detail->discount_value;
+
+//     return JDV::result($detail);
+// }
 
     public function getFormOptions(Request $req)
     {
