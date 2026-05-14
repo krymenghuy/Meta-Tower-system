@@ -443,13 +443,25 @@ const CreateVendorDialog = (() => {
                             </div>
                              <div class="col-12 col-md-6">
                                 <div class="vs-material-field">
+                                    <input type="number" name="phone_number" class="data-input form-control" data-field="phone_number" placeholder=" " />
+                                    <label>Phone Number</label>
+                                </div>
+                            </div>
+                             <div class="col-12 col-md-6">
+                                <div class="vs-material-field">
+                                    <input type="email" name="email" class="data-input form-control" data-field="email" placeholder=" " />
+                                    <label>Email (optional)</label>
+                                </div>
+                            </div>
+                             <div class="col-12 col-md-6">
+                                <div class="vs-material-field">
                                     <input type="text" name="tax_number" class="data-input form-control" data-field="tax_number" placeholder=" " />
                                     <label>Tax Number (optional)</label>
                                 </div>
                             </div>
                             <div class="col-12 col-md-6">
                                 <div class="vs-material-field">
-                                    <select data-style="material" name="vendor_type_id" class="data-input form-control" data-field="vendor_type_id" placeholder="Vendor Type">
+                                    <select data-style="material" name="vendor_type_id" class="data-input form-control" data-field="vendor_type_id" placeholder="Type">
                                     <!-- <option value="" selected hidden></option> -->
                                     </select>
                                 </div>
@@ -460,21 +472,7 @@ const CreateVendorDialog = (() => {
                                     </select>
                                 </div>
                             </div>
-
-                            <div class="col-12 col-md-6">
-                                <div class="vs-material-field">
-                                    <input type="number" name="phone_number" class="data-input form-control" data-field="phone_number" placeholder=" " />
-                                    <label>Phone Number</label>
-
-                                </div>
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <div class="vs-material-field">
-                                    <input type="email" name="email" class="data-input form-control" data-field="email" placeholder=" " />
-                                    <label>Email</label>
-                                </div>
-
-                            </div>
+                               
                             <div class="col-12 col-md-6">
                                 <div class="vs-material-field">
                                     <input type="text" name="contact_person" class="data-input form-control" data-field="contact_person" placeholder=" " />
@@ -482,9 +480,8 @@ const CreateVendorDialog = (() => {
                                 </div>
                             </div>
                             <div class="col-12 col-md-6">
-
                                 <div class="vs-material-field">
-                                    <input type="text" name="contact_phone" class="data-input form-control" data-field="contact_phone" placeholder=" " />
+                                    <input type="number" name="contact_phone" class="data-input form-control" data-field="contact_phone" placeholder=" " />
                                     <label>Contact Person Phone</label>
                                 </div>
                             </div>

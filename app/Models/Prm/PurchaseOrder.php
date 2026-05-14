@@ -316,7 +316,7 @@ class PurchaseOrder extends VSModel
         if ($search_value) {
             $skip_rows = 0;
             $search_value = escape_like_str($search_value);
-            $str_search = "(po.po_number Like '%" .$search_value ."%' OR v.name Like '%" . $search_value . "%')";
+            $str_search = "(po.po_number Like '%" .$search_value ."%')";
         }
         if ($vendor_id) {
             $str_where .= ' AND po.vendor_id = ' . $vendor_id;
@@ -435,9 +435,13 @@ class PurchaseOrder extends VSModel
         $rows = DB::table('purchase_order_items as pi')
             ->join('items as i', 'i.id', '=', 'pi.item_id')
             ->where('pi.po_id', $po_id)
-            ->selectRaw("pi.id, pi.qty,pi.unit_price, pi.total_price,pi.remarks, pi.status_id, i.code,pi.item_id, i.name as item_name,i.unit")
+            ->selectRaw("pi.id, pi.qty,pi.unit_price, pi.total_price,pi.received_qty,pi.received_user,pi.received_date,pi.remarks, pi.status_id, i.code,pi.item_id, i.name as item_name,i.unit")
             ->orderByRaw('pi.id DESC')
             ->get();
+
+        foreach($rows as $row){
+            setOfficialDates($row,['received_date'],[],[]);
+        }
 
         return $rows;
     }
@@ -533,7 +537,7 @@ class PurchaseOrder extends VSModel
                 continue;
             }
 
-            $newReceivedQty = $poItem->received_qty + $receiveQty;
+            $newReceivedQty = $receiveQty;
 
             if ($newReceivedQty > $poItem->qty) {
                 return DV::error('Receive quantity exceeds ordered quantity.');
@@ -544,9 +548,9 @@ class PurchaseOrder extends VSModel
                 ->update([
                     'received_qty' => $newReceivedQty,
                     'accepted_qty' => $newReceivedQty,
-                    'accepted_date' => now(),
-                    'accepted_uid' => $ss->user_id ?? null,
-                    'accepted_user' => $ss->login_name ?? null,
+                    'received_date' => now(),
+                    'received_uid' => $ss->user_id ?? null,
+                    'received_user' => $ss->login_name ?? null,
                     'status_id' => ($newReceivedQty == $poItem->qty) ? 5 : 4,
                 ]);
 

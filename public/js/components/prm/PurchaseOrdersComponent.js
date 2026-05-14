@@ -32,28 +32,28 @@ var PurchaseOrdersComponent = (() => {
             className: 'align-middle text-nowrap',
             data: (data) => `<span class="text-prm-custom text-nowrap">${data.po_date}</span>`,
         },
+        // {
+        //     transTitle: 'titles.Subtotal',
+        //     className: "align-middle text-nowrap text-end",
+        //     data: (data) => {
+        //         const sub_total = VSMoney.formatAmount(data.sub_total, data.currency_code ?? 'USD');
+        //         const cls_color = data.sub_total > 0 ? 'text-prm-custom' : 'text-danger';
+        //         return `<span class="d-block ${cls_color}">${sub_total}</span>`;
+        //     }
+        // },
+        // {
+        //     transTitle: 'titles.Discount',
+        //     className: "align-middle text-nowrap",
+        //     data: (data) => {
+        //         return `<div class="d-flex justify-content-center"><span class='text-nowrap text-center'>${
+        //             data.discount_type === "percent"
+        //                 ? data.discount_value ? parseFloat(data.discount_value) + " %" : ""
+        //                 : data.discount_value ? "$ " + parseFloat(data.discount_value).toFixed(2) : ""
+        //         }</span></div>`;
+        //     },
+        // },
         {
-            transTitle: 'titles.Subtotal',
-            className: "align-middle text-nowrap text-end",
-            data: (data) => {
-                const sub_total = VSMoney.formatAmount(data.sub_total, data.currency_code ?? 'USD');
-                const cls_color = data.sub_total > 0 ? 'text-prm-custom' : 'text-danger';
-                return `<span class="d-block ${cls_color}">${sub_total}</span>`;
-            }
-        },
-        {
-            transTitle: 'titles.Discount',
-            className: "align-middle text-nowrap",
-            data: (data) => {
-                return `<div class="d-flex justify-content-center"><span class='text-nowrap text-center'>${
-                    data.discount_type === "percent"
-                        ? data.discount_value ? parseFloat(data.discount_value) + " %" : ""
-                        : data.discount_value ? "$ " + parseFloat(data.discount_value).toFixed(2) : ""
-                }</span></div>`;
-            },
-        },
-        {
-            transTitle: 'titles.Grand Total',
+            transTitle: 'titles.Total',
             className: "align-middle text-nowrap text-end",
             data: (data) => {
                 const cls_color = data.total_amount > 0 ? 'text-prm-custom' : 'text-danger';
@@ -73,7 +73,7 @@ var PurchaseOrdersComponent = (() => {
                 else if (status === 'approved') cls = 'badge text-info bg-info-subtle border border-info';
                 else if (status === 'ordered') cls = 'badge text-primary bg-primary-subtle border border-primary';
                 else if (status === 'cancelled') cls = 'badge text-danger bg-danger-subtle border border-danger';
-                else if (status === 'partially') cls = 'badge text-warning bg-warning-subtle border border-warning';
+                else if (status === 'partially') cls = 'badge text-primary bg-primary-subtle border border-primary';
                 else if (status === 'received') cls = 'badge text-success bg-success-subtle border border-success';
                 return `<span class="${cls} text-capitalize d-inline-block text-center" style="min-width:70px">${data.status ?? ''}</span>`;
             }
@@ -83,7 +83,7 @@ var PurchaseOrdersComponent = (() => {
             className: "align-middle text-nowrap",
             data: (data) => {
                 const remarks = String(data.remarks || '').trim();
-                return `<span class="text-prm-custom d-block text-truncate" style="max-width:180px;" title="${remarks}">${remarks || '-'}</span>`;
+                return `<span class="text-prm-custom d-block text-truncate" style="max-width:180px;" title="${remarks}">${remarks || '__'}</span>`;
             }
         },
         {
@@ -109,20 +109,22 @@ var PurchaseOrdersComponent = (() => {
                 </div>`;
             }
         },
-        {
-            transTitle: 'titles.Received',
-            className: 'align-middle text-nowrap',
-            data: (data) => {
-                if (!data.receiver) return `<div class="text-muted small">Not yet</div>`;
-                return `<div class="d-flex flex-column">
-                    <span class="text-capitalize text-start">
-                        <i class="fa-solid fa-box-check text-success me-1"></i>
-                        ${data.receiver}
-                    </span>
-                    <span class="text-start small text-muted">${data.receive_date ?? ''}</span>
-                </div>`;
-            }
-        },
+        // {
+        //     transTitle: 'titles.Received',
+        //     className: 'align-middle text-nowrap',
+        //     data: (data) => {
+        //         console.log(888,data);
+                
+        //         if (!data.receiver) return `<div class="text-muted small">Not yet</div>`;
+        //         return `<div class="d-flex flex-column">
+        //             <span class="text-capitalize text-start">
+        //                 <i class="fa-solid fa-box-check text-success me-1"></i>
+        //                 ${data.receiver}
+        //             </span>
+        //             <span class="text-start small text-muted">${data.receive_date ?? ''}</span>
+        //         </div>`;
+        //     }
+        // },
         {
             transTitle: 'titles.Last Updated',
             className: 'align-middle text-nowrap',
@@ -260,51 +262,13 @@ var PurchaseOrdersComponent = (() => {
                     case 'delete_purchase_order': mThis.deletePurchaseOrder(id, menuLink); break;
                     case 'authorized_purchase_order': mThis.authorizedPurchaseOrder(id, menuLink); break;
                     case 'receive_purchase_order': mThis.receivePurchaseOrder(id, menuLink); break;
-                    case 'generate_bill': mThis.generateBill(id, menuLink); break;
                 }
             }
         };
         new VSDropdownMenu(menuOptions);
     };
 
-    mThis.generateBill = (po_id, menuLink) => {
-        vsapi.call(`${main_view.base_url}/prm/purchase/order/po-form-options`, { id: po_id }, false)
-            .then(res => {
-                if (res.status_code !== 200) {
-                    cv_interact.error(res.error_message || 'Failed to load Purchase Order data.');
-                    return;
-                }
-
-                const po = res.data?.po_detail || {};
-
-                const prefill = {
-                    vendor_id:    po.vendor_id || '',
-                    vendor_name:  po.name || po.vendor_name || '',
-                    phone_number: po.phone_number || '',
-                    bill_date:    po.po_date || '',
-                    ref_no:       po.po_number || '',
-                    total_amount: po.total_amount || 0,
-                    remark:       po.remarks || `Generated from Purchase Order #${po.po_number || po_id}`
-                };
-
-                const op = {
-                    id: null,
-                    btn: menuLink,
-                    prefill: prefill,
-                    onClose: () => mThis.PoListView.showPage(mThis.getFilterData())
-                };
-
-                if (!BillDialog) {
-                    cv_interact.error("Bill Dialog is not available.");
-                    return;
-                }
-
-                BillDialog.show(op);
-            })
-            .catch(() => {
-                cv_interact.error("Failed to generate bill from Purchase Order.");
-            });
-    };
+    
 
     mThis.receivePurchaseOrder = (id, menuLink) => {
         showReceivePurchaseOrderDialog({ id: id, btn: menuLink });
@@ -396,8 +360,12 @@ var PurchaseOrdersComponent = (() => {
                     <div class="col-lg-12 mt-3 p-3" style="background-color:#ebebeb;">
                         <div name="purchaseItemList" class="purchase-item-list"></div>
                     </div>
-                    <div class="col-lg-12 mt-3 d-flex justify-content-end">
+                    <div class="col-lg-12 my-3 d-flex justify-content-end">
                         <div name="div_purchase_summary"></div>
+                    </div>
+                    <div class="vs-material-field">
+                        <textarea class="data-input form-control" data-field="remarks" name="remarks" rows="1"></textarea>
+                        <label>Remark</label>
                     </div>
                 </div>`;
             },
@@ -459,9 +427,10 @@ var PurchaseOrdersComponent = (() => {
                 me.purchaseItemsView = new ItemsView(me.controls.purchaseItemList, {
 
                     currencyCode: "USD",
+                    ensureEmptyRow: false,
                     columns: [
                         { name: "item_id", transTitle: "titles.Item", displayType: "select" },
-                        { name: "qty", transTitle: "titles.Qty", dataType: "number", defaultValue: 1, isNumeric: true },
+                        { name: "qty", transTitle: "titles.Order Qty", dataType: "number", defaultValue: 1, isNumeric: true },
                         // { name: "unit", transTitle: "titles.Unit", dataType: "string", displayType: "number", readOnly: true },
                         { name: "unit_price", transTitle: "titles.Unit Price", dataType: "decimal",displayType:"input",currencySymbol: "$" },
                         { name: "total_price", transTitle: "titles.Total",dataType: "decimal", readOnly: true,displayType:"input",currencySymbol: "$" },
@@ -469,13 +438,13 @@ var PurchaseOrdersComponent = (() => {
                     ],
                     calc: { mode: "auto", qtyField: "qty", priceField: "unit_price", totalField: "total_price", currencyPrecision: 2 },
 
-                    totalSummary: { container: me.controls.div_purchase_summary, showTax: false, allowDiscount: true, discountBeforeTax: true, currency: "USD" },
+                    totalSummary: { container: me.controls.div_purchase_summary, showTax: false, allowDiscount: false, discountBeforeTax: true, currency: "USD" },
                     validateColumns: { item_id: "positive", qty: "positive", unit_price: "positive" },
                     tableClass: 'table',
                     showColumnHeaders: true,
                     showAddLineButton: true,
                     addLineButtonText: 'Add Item',
-                    // ensureEmptyRow: false,
+                    
                     onItemChange: async (row_id, item, col_name, td, tr) => {
                         console.log(55555,col_name);
 
@@ -514,8 +483,6 @@ var PurchaseOrdersComponent = (() => {
                         return cv_interact.error('Please select at least one item before saving the purchase order.');
                     }
                     p.items = items;
-                    // console.log(2222,p.items);
-                    
                     p.totals = totals;
                     p.id = me.dataOptions.id;
                     console.log(455,p);
@@ -717,7 +684,7 @@ var PurchaseOrdersComponent = (() => {
                     columns: [
                         { name: "item_id", transTitle: "titles.Item", displayType: "select",readOnly: true},
                         { name: "qty", transTitle: "titles.Ordered Qty", dataType: "number", defaultValue: 1,readOnly: true, isNumeric: true },
-                        { name: 'received_qty', transTitle: 'Received Qty', dataType: 'number', defaultValue: 0, isNumeric: true, readOnly: false },
+                        { name: 'received_qty', transTitle: 'Received Qty', dataType: 'number', defaultValue: 0,readOnly: false, isNumeric: true},
                         { name: "accept",transTitle: "titles.Accept",html: '<input type="checkbox" class="check_accept">'}
 
                     ],
@@ -729,36 +696,57 @@ var PurchaseOrdersComponent = (() => {
                     showColumnHeaders: true,
                     showAddLineButton: false,
                     addLineButtonText: 'Add Item',
-                    itemRendered: (iMe, ctx) => {
+                   itemRendered: (iMe, ctx) => {
+
                         const tr = ctx.tr;
                         const data = ctx.data;
+
                         const checkbox = tr.querySelector(".check_accept");
+                        const receivedQtyInput = tr.querySelector("[data-name='received_qty']");
+                        
 
                         const receivedQty = Number(data.received_qty || 0);
                         const qty = Number(data.qty || 0);
 
-                        const isChecked = receivedQty > 0 && receivedQty === qty;
+                        const isFullyReceived = receivedQty > 0 && receivedQty === qty;
 
                         if (checkbox) {
-                            checkbox.checked = isChecked;
+                            checkbox.checked = isFullyReceived;
+                            // checkbox.disabled = isFullyReceived;
+                        }
+
+                        if (receivedQtyInput) {
+                            receivedQtyInput.readOnly = isFullyReceived;
+                            receivedQtyInput.disabled = isFullyReceived;
                         }
 
                         iMe.setRowMeta(tr, {
                             received_qty: receivedQty,
-                            checked: isChecked
+                            checked: isFullyReceived
                         });
                     },
                  
                     // allItemsRendered:(this,ctx)=>{
         
                     // },
-                    // onItemChange: async (this,ctx) => {
-                        // if (col_name === "receive_qty") {
-                        //     const chk = tr.querySelector(".check_accept");
-                        //     chk.checked =Number(item.receive_qty || 0) > 0;
-                        //     me.purchaseItemsView.setRowMeta(tr,{checked: chk.checked});
-                        // }
-                    // }
+                    onItemChange: async (iMe,ctx) => {
+                        const fieldName = ctx.fieldName;
+                        const tr = ctx.tr;
+                        const item = ctx.item;
+
+                        if (fieldName === "received_qty") {
+                            const checkbox = tr.querySelector(".check_accept");
+                            
+                            const receivedQty = Number(item.received_qty || 0);
+                            const qty = Number(item.qty || 0);
+                            const isFullyReceived = receivedQty > 0 && receivedQty === qty;
+
+                            if (checkbox) {
+                                checkbox.checked = isFullyReceived;
+                                // checkbox.disabled = isFullyReceived;
+                            }
+                        }
+                    }
                 });
 
                 me.saveData = (onFinish) => {
@@ -885,23 +873,37 @@ var PurchaseOrdersComponent = (() => {
             .then((res) => {
                 let html = '';
                 const tHead = `<thead class="text-primary"><tr>
-                    <th class="text-nowrap">Code</th>
+                    <th class="text-nowrap">#</th>
                     <th class="text-nowrap">Name</th>
-                    <th class="text-nowrap">Price</th>
-                    <th class="text-nowrap">QTY</th>
+                    <th class="text-nowrap">Unit Price</th>
+                    <th class="text-nowrap">Order Qty</th>
+                    <th class="text-nowrap">Received Qty</th>
                     <th class="text-nowrap">Amount</th>
+                    <th class="text-nowrap">Receiver</th>
                 </tr></thead>`;
 
                 let tBody = '';
                 const items = res.data || [];
+                console.log(9090,items);
+                
                 if (items.length > 0) {
-                    items.forEach(item => {
+                    items.forEach((item,index) => {
+
                         tBody += `<tr>
-                            <td class="text-nowrap">${item.item_code || item.code || ''}</td>
+                            <td class="text-nowrap">${index+1}</td>
                             <td class="text-nowrap">${item.item_name}</td>
                             <td class="text-nowrap">${VSMoney.formatAmount(item.unit_price || 0, 'USD')}</td>
-                            <td class="text-nowrap">${item.qty} <small class="text-golden text-capitalize">(${item.unit ?? 'pcs'})</small></td>
+                            <td class="text-nowrap">${item.qty ?? "0"} <small class="text-golden text-capitalize">(${item.unit ?? 'pcs'})</small></td>
+                            <td class="text-nowrap">${item.received_qty ?? "0"} <small class="text-golden text-capitalize">(${item.unit ?? 'pcs'})</small></td>
                             <td class="text-nowrap">${VSMoney.formatAmount(item.total_price || 0, 'USD')}</td>
+                            <td class="text-nowrap">
+                                <div class="d-flex flex-column">
+                                    <span class="text-capitalize text-start">
+                                        ${item.received_user ?? '__'}
+                                    </span>
+                                    <span class="text-start small text-muted">${item.received_date ?? ''}</span>
+                                </div>
+                            </td>
                         </tr>`;
                     });
                 }

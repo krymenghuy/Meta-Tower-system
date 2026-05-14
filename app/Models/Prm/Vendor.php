@@ -31,15 +31,16 @@ class Vendor //extends Model
             'name' => '1|string|1-150',
             'phone_number' => '1|string|0-50',
             'email' => '0|string|0-100',
-            'address' => '1|string|0-255',
+            'tax_number' => '0|string|0-30',
+            'vendor_type_id' => '1|number|exists=vendor_types.id|text=Please select a type.',
+            'category_id' => '1|number|exists=vendor_categories.id|text=Plaese select a category.',
             'contact_person' => '1|string|0-100',
             'contact_phone' => '1|string|0-25',
-            'vendor_type_id' => '1|number|exists=vendor_types.id',
-            'category_id' => '1|number|exists=vendor_categories.id',
-            'tax_number' => '0|string|0-30',
+            'address' => '1|string|0-255',
+
         ];
 
-        $email_char = ['@', '.', '-', '_'];
+        $email_char = ['@', '.'];
         $tax_char = ['@', '.', '-', '_'];
         $address_char = ['@', ',', '.', '#'];
 
@@ -48,6 +49,14 @@ class Vendor //extends Model
             return DV::error($res->error);
 
         $inputs = $res->values;
+        $d = (object) $inputs;
+        $email = $d->email ?? null;
+        if ($email !== null && $email !== '') {
+                if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                    return DV::error('Invalid email format.');
+                }
+        }
+
         $exist = DB::table('vendors')
             ->whereRaw('LOWER(name)=?', [strtolower($inputs['name'])])
             ->when($id, function ($q) use ($id) {
