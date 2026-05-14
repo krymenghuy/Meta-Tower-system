@@ -62,7 +62,6 @@ const InvoiceCommercialDialog = (() => {
     };
 
     const buildInvoiceHTML = (invoice) => {
-        // ✅ Mapped correctly to API fields
         const subTotal      = parseFloat(invoice.amount         || 0);
         const totalDiscount = parseFloat(invoice.discount_value || 0);
         const netTotal      = parseFloat(invoice.amount_payable || 0);
@@ -80,7 +79,6 @@ const InvoiceCommercialDialog = (() => {
 
         const today = new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
 
-        // ✅ Status uses due_amount (balance still owed) and paid_amount
         const statusLabel = balance <= 0 ? "PAID" : (paid > 0 ? "PARTIALLY PAID" : "UNPAID");
         const statusColor = balance <= 0 ? "#166534" : (paid > 0 ? "#92400E" : "#991B1B");
         const statusBg    = balance <= 0 ? "#DCFCE7" : (paid > 0 ? "#FEF3C7" : "#FEE2E2");

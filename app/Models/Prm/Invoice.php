@@ -109,11 +109,7 @@ class Invoice extends VSModel
 
         try {
             $created = !$id;
-
             $id = DBX::saveData($ss, 'invoices', ['id' => $id], $inputs, [], 1);
-            // if (!$id) {
-            //     throw new \Exception("Failed to save invoice header.");
-            // }
 
             $codeRes = null;
             if ($created && $id) {
@@ -189,16 +185,6 @@ class Invoice extends VSModel
             if (!empty($itemRows)) {
                 DB::table('invoice_items')->insert($itemRows);
             }
-            // Final Totals Calculation
-            // $totalAmount = array_sum(array_column($itemRows, 'amount'));
-            // $discount = (float)$inputs['discount_value'];
-
-            // // Calculate payable based on type
-            // if ($inputs['discount_type'] === 'percent') {
-            //     $payable = $totalAmount - ($totalAmount * ($discount / 100));
-            // } else {
-            //     $payable = $totalAmount - $discount;
-            // }
 
             DB::table('invoices')
                 ->where('id', $id)
@@ -419,9 +405,6 @@ class Invoice extends VSModel
 
         return $query->value('id');
     }
-
-
-
     public function getListPaginate($arr, $ss)
     {
         $d = (object) $arr;
