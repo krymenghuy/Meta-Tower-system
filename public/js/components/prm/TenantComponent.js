@@ -1482,7 +1482,7 @@ const CreateTenantDialog = (() => {
                         <div class="col-md-4 text-center d-flex flex-column justify-content-center">
                             <div class="data-input tenant-photo-wrapper border border-prm-custom rounded-3 d-flex align-items-center justify-content-center mx-auto"
                                 style="width: 210px; height: 130px; cursor: pointer; background-color: #f8f8f8;">
-                                <div name="div_tenant_photo" class="data-input w-100 h-100" data-field="photo_file_name">
+                                <div name="div_tenant_photo" class="data-input w-100 h-100">
                                 </div>
                             </div>
                            <!-- <small class="text-muted d-block mt-2">Profile Photo</small> -->
