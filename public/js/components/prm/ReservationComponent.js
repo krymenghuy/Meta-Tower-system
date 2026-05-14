@@ -477,6 +477,7 @@ const CreateReservationDialog = (() => {
                                 phone_number: "LIKE",
                             },
                         },
+                        showColumnHeader: true,
                         columns: {
                             name: "Name",
                             phone_number: "Phone",
@@ -488,10 +489,6 @@ const CreateReservationDialog = (() => {
                             if (me.controls.phone_number) {
                                 me.controls.phone_number.value =
                                     tenant.phone_number || "";
-                            } else {
-                                console.error(
-                                    "DEBUG ERROR: phone_number control not found!",
-                                );
                             }
                         },
                     });

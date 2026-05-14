@@ -107,6 +107,14 @@ class PurchaseOrderController extends Controller
         $res = $this->purchaseOrders->authorized($req->all(),$ss);
         return JDV::raw($res);
     }
+    function rejectPurchaseOrder(Request $req)
+    {
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        return JDV::raw($this->purchaseOrders->rejectPurchaseOrder($req->all(), $ss));
+    }
 
     public function getPOFormOptions(Request $req)
 {

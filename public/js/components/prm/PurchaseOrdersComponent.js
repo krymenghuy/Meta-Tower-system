@@ -71,10 +71,12 @@ var PurchaseOrdersComponent = (() => {
                 let cls = 'badge text-dark bg-warning-subtle border border-warning';
                 if (status === 'pending') cls = 'badge text-warning bg-warning-subtle border border-warning';
                 else if (status === 'approved') cls = 'badge text-info bg-info-subtle border border-info';
-                else if (status === 'ordered') cls = 'badge text-primary bg-primary-subtle border border-primary';
-                else if (status === 'cancelled') cls = 'badge text-danger bg-danger-subtle border border-danger';
+                else if (status === 'ordered') cls = 'badge text-info bg-info-subtle border border-info';
+                else if (status === 'rejected') cls = 'badge text-danger bg-danger-subtle border border-danger';
                 else if (status === 'partially') cls = 'badge text-primary bg-primary-subtle border border-primary';
                 else if (status === 'received') cls = 'badge text-success bg-success-subtle border border-success';
+                else if (status === 'cancelled') cls = 'badge text-dark bg-secondary-subtle border border-secondary';
+
                 return `<span class="${cls} text-capitalize d-inline-block text-center" style="min-width:70px">${data.status ?? ''}</span>`;
             }
         },
@@ -223,8 +225,14 @@ var PurchaseOrdersComponent = (() => {
                   cssClass: "border-bottom pb-2",
                   name: "modify_purchase_order"
                 },
+                {
+                    html: '<span class="ps-2" vslang="title.Reject PO"></span>',
+                    icon: `<i class="fa-solid fa-rectangle-xmark fs-5 text-danger-emphasis"></i>`,
+                    name: "reject_purchase_order",
+                    cssClass: "border-bottom pb-2"
+                },
                 { html: '<span class="ps-2" vslang="titles.Delete PO"></span>',
-                  icon: `<i class="fa-solid fa-rectangle-xmark fs-5 text-danger"></i>`,
+                  icon: `<i class="fa-solid fa-trash fs-5 text-danger"></i>`,
                   cssClass: "border-bottom pb-2",
                   name: "delete_purchase_order"
                 },
@@ -240,14 +248,16 @@ var PurchaseOrdersComponent = (() => {
                 //   icon: `<i class="fa-solid fa-file-invoice-dollar fs-5 text-primary"></i>`,
                 //   name: "generate_bill"
                 // },
+               
             ],
             onShow: (me, container) => {
                 const menu = me.getActiveMenus(container);
                 const status_id = container.dataset.statusid;
                 let allowed = [];
 
-                if (status_id == 1) allowed = ["modify_purchase_order", "delete_purchase_order", "authorized_purchase_order", "generate_bill"];
+                if (status_id == 1) allowed = ["modify_purchase_order", "delete_purchase_order", "authorized_purchase_order", "reject_purchase_order"];
                 else if (status_id == 3 || status_id == 4) allowed = ["receive_purchase_order"];
+                else if (status_id == 6 || status_id == 7) allowed = ["delete_purchase_order"];
                 else if (status_id == 5) allowed = ["delete_purchase_order"];
 
                 Object.keys(menu).forEach(key => {
@@ -259,6 +269,7 @@ var PurchaseOrdersComponent = (() => {
             onClick: (menuLink, id, name) => {
                 switch (name) {
                     case 'modify_purchase_order': mThis.editPurchaseOrder(id, menuLink); break;
+                    case 'reject_purchase_order': mThis.rejectPurchaseOrder(id, menuLink); break;
                     case 'delete_purchase_order': mThis.deletePurchaseOrder(id, menuLink); break;
                     case 'authorized_purchase_order': mThis.authorizedPurchaseOrder(id, menuLink); break;
                     case 'receive_purchase_order': mThis.receivePurchaseOrder(id, menuLink); break;
@@ -268,7 +279,39 @@ var PurchaseOrdersComponent = (() => {
         new VSDropdownMenu(menuOptions);
     };
 
-    
+    mThis.rejectPurchaseOrder = (id, menuLink) => {
+        let op ={
+            po_id:id
+        }
+        Swal.fire({
+            input: "textarea",
+            inputLabel: " ",
+            inputPlaceholder: "Please, enter new remark why reject this PO",
+            reverseButtons: true,
+            showCancelButton: true,
+            inputValidator: (value) => {
+                if(!value)
+                    return "Remark required!";
+                else
+                {
+                    op.remarks = value;
+                    console.log(44,op);
+
+                    vsapi.call(`${main_view.base_url}/prm/purchase/order/reject`,op,null).then((res) => {
+                        if(res.status_code === 200)
+                        {
+                            cv_interact.success('Purchase Order has been Rejected.');
+                            mThis.PoListView.showPage(mThis.getFilterData());
+                        }
+                        else
+                        {
+                            cv_interact.error(res.error_message);
+                        }
+                    });
+                }
+            },
+        });
+    };
 
     mThis.receivePurchaseOrder = (id, menuLink) => {
         showReceivePurchaseOrderDialog({ id: id, btn: menuLink });
@@ -370,7 +413,17 @@ var PurchaseOrdersComponent = (() => {
                 </div>`;
             },
             contentCreated: (me) => {
-                me.controls.po_date.value = 123;
+                // const today = new Date();
+
+                // const dd = String(today.getDate()).padStart(2, '0');
+                // const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+                // const mm = months[today.getMonth()];
+                // const yyyy = today.getFullYear();
+
+                // const formattedDate = `${dd}-${mm}-${yyyy}`;
+
+                // me.controls.po_date.value = formattedDate;
+                // console.log(3335553,formattedDate);
                 
                 me.controls.div_purchase_summary = me.divModal.querySelector(
                     '[name="div_purchase_summary"]'
@@ -431,7 +484,7 @@ var PurchaseOrdersComponent = (() => {
                     columns: [
                         { name: "item_id", transTitle: "titles.Item", displayType: "select" },
                         { name: "qty", transTitle: "titles.Order Qty", dataType: "number", defaultValue: 1, isNumeric: true },
-                        // { name: "unit", transTitle: "titles.Unit", dataType: "string", displayType: "number", readOnly: true },
+                        { name: "unit", transTitle: "titles.Unit Type", dataType: "string", displayType: "number", readOnly: true },
                         { name: "unit_price", transTitle: "titles.Unit Price", dataType: "decimal",displayType:"input",currencySymbol: "$" },
                         { name: "total_price", transTitle: "titles.Total",dataType: "decimal", readOnly: true,displayType:"input",currencySymbol: "$" },
 
@@ -445,10 +498,10 @@ var PurchaseOrdersComponent = (() => {
                     showAddLineButton: true,
                     addLineButtonText: 'Add Item',
                     
-                    onItemChange: async (row_id, item, col_name, td, tr) => {
-                        console.log(55555,col_name);
-
-                        if (col_name !== 'item_id') return;
+                    onItemChange: async (iMe,ctx) => {
+                        console.log(23,ctx);
+                        const item = ctx.item;
+                        const tr = ctx.tr;
                         const itemId = item.item_id || item.id;
                         if (!itemId) return;
                         const res = await vsapi.call(
@@ -459,15 +512,11 @@ var PurchaseOrdersComponent = (() => {
 
                         const d = res.data ?? {};
                         console.log(123,d);
+                        me.purchaseItemsView.setCellValue(tr, 'unit', d.unit || '');
 
-                        tr.dataset.code = d.code || '';
-                        me.setTotal(col_name, tr, d);
+                        
                     },
-                    "keyup": (e, col_name, td) => {
-                        const tr = td.parentNode;
-                        const item = me.purchaseItemsView.getDataRow(tr, ['code']);
-                        me.setTotal(col_name, tr, item);
-                    },
+                  
                 });
                 
 
@@ -477,7 +526,7 @@ var PurchaseOrdersComponent = (() => {
                     let totals = me.purchaseItemsView.getCurrentTotals?.() || {};
                     console.log(8888,p);
                     // let items = po_data.items || [];
-                   if (!me.hasValidPOItems(items)) {
+                    if (!me.hasValidPOItems(items)) {
                         return cv_interact.error('Please select at least one item before saving the purchase order.');
                     }
                     p.items = items;
@@ -503,14 +552,7 @@ var PurchaseOrdersComponent = (() => {
                     }
                     me.purchaseItemsView.setData(null);
                 };
-                me.setTotal = (col_name, tr,item) => {
-                    if (!tr) return;
-                    console.log(1233322,item);
-
-                    const d = me.purchaseItemsView.getDataRow(tr);
-                    // me.purchaseItemsView.setCellValue(tr, 'unit', item.unit || '');
-
-                };
+                
                 me.hasValidPOItems = (items) => {
                     if (!Array.isArray(items) || items.length === 0) return false;
 
@@ -568,16 +610,16 @@ var PurchaseOrdersComponent = (() => {
             onPrepareForm: (me, data) => {
                 me.controls.vendor.value = data.po_detail?.name || '';
                 me.purchaseItemsView.setSelectOptions('item_id', data.item_options, null);
-                const today = new Date();
+                // const today = new Date();
 
-                const dd = String(today.getDate()).padStart(2, '0');
-                const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-                const mm = months[today.getMonth()];
-                const yyyy = today.getFullYear();
+                // const dd = String(today.getDate()).padStart(2, '0');
+                // const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+                // const mm = months[today.getMonth()];
+                // const yyyy = today.getFullYear();
 
-                const formattedDate = `${dd}-${mm}-${yyyy}`;
+                // const formattedDate = `${dd}-${mm}-${yyyy}`;
 
-                me.controls.po_date.value = formattedDate;
+                // me.controls.po_date.value = formattedDate;
                 console.log(4,me.dataOptions.id);
                 
                 if (me.dataOptions.id) {
@@ -596,9 +638,9 @@ var PurchaseOrdersComponent = (() => {
                             });
                     }
 
-                    if (po.po_date && me.controls.po_date) {
-                        me.controls.po_date.value = po.po_date;
-                    }
+                    // if (po.po_date && me.controls.po_date) {
+                    //     me.controls.po_date.value = po.po_date;
+                    // }
                     me.purchaseItemsView.setData(po);
 
                    

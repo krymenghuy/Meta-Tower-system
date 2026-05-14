@@ -370,22 +370,55 @@ class PurchaseOrder extends VSModel
             'po_statuses' => GeneralSettings::options_po_status($ss),
         ];
     }
-    public function deletePurchaseOrder($id = null, $ss = null)
+   public function deletePurchaseOrder($id = null, $ss = null)
     {
         $id = $id ?? $this->id;
-        $po = DB::table('purchase_orders')->select('id','status_id')->where('id', $id)->first();
+
+        $po = DB::table('purchase_orders')
+            ->select('id', 'status_id')
+            ->where('id', $id)
+            ->first();
+
         if (!$po) {
             return DV::error('Purchase order not found.');
         }
-        if (!empty($po->status_id) && $po->status_id > 1) {
-            return DV::error('This purchase order cannot be deleted because it is already processed.');
-        }
-        $deleted = DB::table('purchase_orders')->where('id', $id)->delete();
-        if ($deleted) {
-            DB::table('purchase_order_items')->where('po_id', $id)->delete();
 
+        if ($po->status_id == 3) {
+            return DV::error('This purchase order cannot be deleted because it has already been ordered.');
         }
-        return DV::success(['message' => 'Purchase order has been deleted.']);
+
+        if ($po->status_id == 4) {
+            return DV::error('This purchase order cannot be deleted because it has been partially received.');
+        }
+
+        if ($po->status_id == 5) {
+            return DV::error('This purchase order cannot be deleted because it has already been received.');
+        }
+
+        DB::beginTransaction();
+
+        try {
+
+            DB::table('purchase_order_items')
+                ->where('po_id', $id)
+                ->delete();
+
+            DB::table('purchase_orders')
+                ->where('id', $id)
+                ->delete();
+
+            DB::commit();
+
+            return DV::success([
+                'message' => 'Purchase order has been deleted.'
+            ]);
+
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return DV::error('Failed to delete purchase order.');
+        }
     }
     public function getItemsByPO($data,$ss){
 
@@ -443,6 +476,44 @@ class PurchaseOrder extends VSModel
 
         return $rows;
     }
+    function rejectPurchaseOrder($arr = [], $ss = null)
+    {
+        $ss = $ss ?? $this->ss;
+        $d = (object) $arr;
+
+        $po_id = $d->po_id ?? null;
+        $remarks = trim($d->remarks ?? '');
+
+        if (!$po_id) {
+            return DV::error('Invalid PO ID.');
+        }
+
+        $po = DB::table('purchase_orders')
+            ->where('id', $po_id)
+            ->first();
+
+        if (!$po) {
+            return DV::error('Purchase Order not found.');
+        }
+
+        if ($po->status_id == 7) {
+            return DV::error('Purchase Order is already rejected.');
+        }
+
+        if (in_array($po->status_id, [5, 6])) {
+            return DV::error('Completed or cancelled Purchase Orders cannot be rejected.');
+        }
+
+        $reject = DB::table('purchase_orders')
+            ->where('id', $po_id)
+            ->update([
+                'status_id' => 7,
+                'remarks' => $remarks,
+                'updated_at' => now(),
+            ]);
+
+        return DV::depends($reject, ['action' => 'reject']);
+    }
     public function authorized($arr = [], $ss = null)
     {
         $d = (object) $arr;
@@ -451,7 +522,13 @@ class PurchaseOrder extends VSModel
         if (!$po_id) {
             return DV::error('Invalid PO id');
         }
-
+        $po = DB::table('purchase_orders')->select('id', 'status_id')->where('id', $po_id)->first();
+        if (!$po) {
+            return DV::error('Purchase order not found.');
+        }
+        if ($po->status_id == 7) {
+            return DV::error('Rejected purchase orders cannot be authorized.');
+        }
         $exists = DB::table('purchase_order_authorizations')
             ->where('po_id', $po_id)
             ->where('auth_uid', $ss->user_id)

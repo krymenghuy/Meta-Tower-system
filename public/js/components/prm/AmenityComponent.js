@@ -55,6 +55,17 @@ var AmenityComponent = (() => {
                 </div>`
         },
         {
+            transTitle: "titles.Remark",
+            className: "align-middle",
+            data: (data, index, tr) => {
+                return `
+                    <div class="text-primary-custom" style="width:200px;">
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.description ?? "__"}</span>
+                    </div>
+                `;
+            },
+        },
+        {
             transTitle: "titles.Capacity",
             className: "align-middle text-nowrap text-center",
             data: (data) =>
@@ -161,7 +172,7 @@ var AmenityComponent = (() => {
         mThis.pr_tbl = mThis.AmenityListView.getListContainer();
         const sh_parent = mThis.pr_tbl.parentElement;
         sh_parent.style.maxHeight = `${window.innerHeight - 200}px`;
-        sh_parent.classList.add("overflow-y-auto", "overflow-x-hidden");
+        sh_parent.classList.add("overflow-y-auto");
 
         window.onresize = () => {
             sh_parent.style.maxHeight = `${window.innerHeight - 200}px`;
