@@ -438,6 +438,8 @@ var TenantComponent = new (function () {
             data.forEach((d) => {
                 /** Backend: status_id 2 means tenant has a currently active contract. */
                 const hasContractAlready = Number(d.status_id) === 2;
+                const currentUnitCode =
+                    hasContractAlready && d.space_code ? d.space_code : "Unit";
                 const status = (d.status || "Pending").toLowerCase();
                 let statusClass = "";
                 switch (status) {
@@ -484,7 +486,7 @@ var TenantComponent = new (function () {
                                 <div class="row g-4 py-2 border-bottom border-gray">
                                     <div class="col-4">
                                         <div class="card bg-prm-custom text-center shadow-sm">
-                                                <div class="fw-bold fs-5 text-gold-custom">${d.space_code ?? "Unit"}</div>
+                                                <div class="fw-bold fs-5 text-gold-custom">${currentUnitCode}</div>
                                         </div>
                                     </div>
                                     <div class="col-2"></div>
@@ -1482,7 +1484,7 @@ const CreateTenantDialog = (() => {
                         <div class="col-md-4 text-center d-flex flex-column justify-content-center">
                             <div class="data-input tenant-photo-wrapper border border-prm-custom rounded-3 d-flex align-items-center justify-content-center mx-auto"
                                 style="width: 210px; height: 130px; cursor: pointer; background-color: #f8f8f8;">
-                                <div name="div_tenant_photo" class="data-input w-100 h-100" data-field="photo_file_name">
+                                <div name="div_tenant_photo" class="data-input w-100 h-100">
                                 </div>
                             </div>
                            <!-- <small class="text-muted d-block mt-2">Profile Photo</small> -->

@@ -521,6 +521,8 @@ var PurchaseOrdersComponent = (() => {
                 
 
                 me.saveData = (onFinish) => {
+                    console.log(3333, me);
+                    
                     let p = me.getData();
                     let items = me.purchaseItemsView.getItems();
                     let totals = me.purchaseItemsView.getCurrentTotals?.() || {};
@@ -673,6 +675,7 @@ var PurchaseOrdersComponent = (() => {
 
         PurchaseOrderDialog.show(op);
     };
+
      const showReceivePurchaseOrderDialog = (op) => {
         ReceivePurchaseOrderDialog = ReceivePurchaseOrderDialog || new GeneralDialog({
             cssClass: "modal-xl vs-modal",

@@ -157,6 +157,8 @@ class PurchaseOrder extends VSModel
 
         $res = DBX::validateObject($arr, $v_rule, 1, [], $ss->lang, false, null);
 
+        \Log::info($arr);
+
         if ($res->error) {
             return DV::error($res->error);
         }
