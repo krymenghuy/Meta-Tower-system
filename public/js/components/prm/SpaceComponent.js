@@ -379,7 +379,6 @@ var SpaceComponent = new (function () {
                 const maintenanceStatusName = String(d.maintenance_status ?? d.maintenance_status_name ?? '').trim().toLowerCase();
                 const isPlannedMaintenance = maintenanceStatusId === 1 || maintenanceStatusName === 'planned' || maintenanceStatusName === 'upcoming';
                 const maintenanceLabel = isPlannedMaintenance ? ' <span class="text-warning small fw-semibold">(Upcoming Maintenance)</span>' : (maintenanceStatusId === 2 ? ' <span class="text-warning small fw-semibold">(Maintenance)</span>' : '');
-                const hideAction = isPlannedMaintenance ? 'd-none' : '';
                 html += `
                 <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
                     <div class="unit-card position-relative overflow-hidden h-100" style="background-image:url('${d.bg_image ?? '/assets/images/default/bg-card1.jpg'}');">
@@ -397,7 +396,7 @@ var SpaceComponent = new (function () {
                                     </p>
 
                                 </div>
-                                <span class="${hideAction}">
+                                <span>
                                     <a href="javascript:void(0)" class="btn_space_action" data-id="${d.id}" data-buildingid="${d.building_id}" data-floorid="${d.floor_id}" data-statusid="${d.status_id}" data-maintenanceStatusId="${d.maintenance_status_id}" aria-haspopup="true" aria-expanded="false">
                                         <i class="fa-solid fa-ellipsis-vertical text-primary-custom fs-5"></i>
                                     </a>
