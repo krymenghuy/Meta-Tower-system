@@ -18,6 +18,16 @@ class Tenant
         $this->id = $id;
         $this->userInfo = $userInfo;
     }
+
+    public static function liveContractSubquery()
+    {
+        return DB::table('contracts')
+            ->whereIn('status_id', [Contract::getActiveStatusId(), Contract::getPendingStatusId()])
+            ->whereDate('end_date', '>=', date('Y-m-d'))
+            ->selectRaw('MAX(id) as id, tenant_id')
+            ->groupBy('tenant_id');
+    }
+
     function checkUniqueTenantByNID($nid, $id = null)
     {
         if (!$nid) return null;
@@ -184,9 +194,7 @@ class Tenant
         if ($status_id) {
             $str_moreWhere .= ' AND t.status_id =' . $status_id;
         }
-        $lastContract = DB::table('contracts')
-            ->selectRaw('MAX(id) as id, tenant_id')
-            ->groupBy('tenant_id');
+        $lastContract = self::liveContractSubquery();
 
         $query = DB::table('tenants as t')
             ->join('tenant_statuses as ts', 'ts.id', '=', 't.status_id')
@@ -282,9 +290,7 @@ class Tenant
         $start_date = DBX::formatDate("c.start_date", 'start_date');
         $end_date = DBX::formatDate("c.end_date", 'end_date');
         $date_of_birth = DBX::formatDate("t.date_of_birth", 'date_of_birth');
-        $lastContract = DB::table('contracts')
-            ->selectRaw('MAX(id) as id, tenant_id')
-            ->groupBy('tenant_id');
+        $lastContract = self::liveContractSubquery();
         $row = DB::table('tenants as t')
             ->leftJoinSub($lastContract, 'lc', function ($join) {
                 $join->on('lc.tenant_id', '=', 't.id');

@@ -438,6 +438,8 @@ var TenantComponent = new (function () {
             data.forEach((d) => {
                 /** Backend: status_id 2 means tenant has a currently active contract. */
                 const hasContractAlready = Number(d.status_id) === 2;
+                const currentUnitCode =
+                    hasContractAlready && d.space_code ? d.space_code : "Unit";
                 const status = (d.status || "Pending").toLowerCase();
                 let statusClass = "";
                 switch (status) {
@@ -484,7 +486,7 @@ var TenantComponent = new (function () {
                                 <div class="row g-4 py-2 border-bottom border-gray">
                                     <div class="col-4">
                                         <div class="card bg-prm-custom text-center shadow-sm">
-                                                <div class="fw-bold fs-5 text-gold-custom">${d.space_code ?? "Unit"}</div>
+                                                <div class="fw-bold fs-5 text-gold-custom">${currentUnitCode}</div>
                                         </div>
                                     </div>
                                     <div class="col-2"></div>

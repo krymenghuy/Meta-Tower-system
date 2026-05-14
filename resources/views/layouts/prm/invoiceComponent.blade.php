@@ -25,7 +25,9 @@
     <div id="_invoices_list" class="table-r esponsive  mt-3 bg-white rounded-2 border"></div>
 </div>
 
-<script src="{{ asset('js/components/prm/PrintInvoiceDialog.js') }}"></script>
+<script src="{{ asset('js/components/prm/InvoiceTaxDialog.js') }}"></script>
+<script src="{{ asset('js/components/prm/InvoiceNoTaxDialog.js') }}"></script>
+<script src="{{ asset('js/components/prm/InvoiceCommercialDialog.js') }}"></script>
 <style>
 .status-overdue {
     color: #990000 !important;
