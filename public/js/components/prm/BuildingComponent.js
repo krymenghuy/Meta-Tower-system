@@ -31,6 +31,15 @@ var BuildingComponent = ( () => {
                 </div>
             `,
         },
+         {
+            transTitle: "titles.ShortCut",
+            className: "align-middle",
+            data: (data) =>{
+                return `<div class="d-flex flex-column">
+                    <span class="text-capitalize text-start text-prm-custom">${data.prefix ?? '__'}</span></span>
+                </div>`;
+            }
+        },
         {
             transTitle: "titles.Total Areas",
             className: "align-middle",
@@ -179,69 +188,91 @@ var BuildingComponent = ( () => {
         mThis.initAlready = true;
     };
     mThis.displayFloorNumber = (container, id, totalFloor = 0) => {
+    container.innerHTML = '';
+
+    vsapi.call(`${main_view.base_url}/prm/building/list-floor`, { id }, null).then(res => {
+        const data = res.status_code === 200 ? (res.data || []) : [];
+
+        const maxFloorNo = data.reduce((max, level) => {
+            const floorNo = parseInt(level.floor_no || '0', 10);
+            return floorNo > max ? floorNo : max;
+        }, 0);
+
+        const canAddFloor =
+            parseInt(totalFloor || '0', 10) > 0 &&
+            maxFloorNo < parseInt(totalFloor || '0', 10);
+
         let html = '';
-        container.innerHTML = '';
 
-        vsapi.call(`${main_view.base_url}/prm/building/list-floor`,{
-                id: id
-        },null).then(res => {
-            const data = res.status_code === 200 ? res.data : [];
-            const maxFloorNo = (data || []).reduce((max, level) => {
-                const floorNo = parseInt(level.floor_no || '0', 10);
-                return floorNo > max ? floorNo : max;
-            }, 0);
-            const canAddFloor = (parseInt(totalFloor || '0', 10) > 0) && (maxFloorNo < parseInt(totalFloor || '0', 10));
+        if (data.length > 0) {
+            html += `
+                ${canAddFloor ? `
+                <div class="rounded-3 p-2 l mb-2">
+                    <button data-buildingid="${id}" class="btn-add-floor btnAddNewPrm" type="button">
+                        <span>${LocaleManager.trans('New Floor','buttons')}</span>
+                    </button>
+                </div>` : ''}
 
-            html = `${canAddFloor ? `<div class="rounded-3 p-2 l mb-2 ">
-                <button data-buildingid="${id}" class="btn-add-floor btnAddNewPrm" type="button">
-                    <span class="">${LocaleManager.trans('New Floor','buttons')}</span>
-                </button>
-            </div>` : ''}
-            <table class="table table-sm table-hover align-middle tbl_list_floor table--dropdown">
-            <thead class="table-light text-nowrap">
-                <tr>
-                    <th>${LocaleManager.trans('Name')}</th>
-                    <th>${LocaleManager.trans('Floor Number')}</th>
-                    <th>${LocaleManager.trans('Total Space')}</th>
-                    <th>${LocaleManager.trans('Description')}</th>
-                    <th>${LocaleManager.trans('Last Updated')}</th>
-                    <th>${LocaleManager.trans('Action')}</th>
-                </tr>
-            </thead>
-            <tbody></tbody>`;
+                <table class="table table-sm table-hover align-middle tbl_list_floor table--dropdown">
+                    <thead class="table-light text-nowrap">
+                        <tr>
+                            <th>${LocaleManager.trans('Name')}</th>
+                            <th>${LocaleManager.trans('Floor Number')}</th>
+                            <th>${LocaleManager.trans('Total Space')}</th>
+                            <th>${LocaleManager.trans('Description')}</th>
+                            <th>${LocaleManager.trans('Last Updated')}</th>
+                            <th>${LocaleManager.trans('Action')}</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            `;
+        } else {
+            html += `
+                ${canAddFloor ? `
+                <div class="rounded-3 p-2 l mb-2">
+                    <button data-buildingid="${id}" class="btn-add-floor btnAddNewPrm" type="button">
+                        <span>${LocaleManager.trans('New Floor','buttons')}</span>
+                    </button>
+                </div>` : ''}
 
-            html = html+`</table>`;
-            container.innerHTML =  html;
+                <div class="text-center bg-light text-muted py-3">
+                    ${LocaleManager.trans('No data to display.')}
+                </div>
+            `;
+        }
 
-            const tbody = container.querySelector('table.tbl_list_floor > tbody');
-            const btnNewFloor = container.querySelector('.btn-add-floor');
+        container.innerHTML = html;
 
-            if (btnNewFloor) {
-                btnNewFloor.addEventListener('click',e => {
-                    e.preventDefault();
-                    let building_id = btnNewFloor.dataset.buildingid;
-                    let op = {
-                        id: null,
-                        building_id: building_id,
-                        onClose: (success) => {
-                            if (!success) return;
-                            mThis.displayFloorNumber(container, btnNewFloor.dataset.buildingid, totalFloor);
-                        }
-                    };
+        const tbody = container.querySelector('tbody');
+        const btnNewFloor = container.querySelector('.btn-add-floor');
 
-                    // if(!AuthManager.allowed(264)) return;
-                    CreateFloorDialog.show(op);
-                });
-            }
+        if (btnNewFloor) {
+            btnNewFloor.addEventListener('click', e => {
+                e.preventDefault();
 
+                let op = {
+                    id: null,
+                    building_id: btnNewFloor.dataset.buildingid,
+                    onClose: (success) => {
+                        if (!success) return;
+                        mThis.displayFloorNumber(container, id, totalFloor);
+                    }
+                };
+
+                CreateFloorDialog.show(op);
+            });
+        }
+
+        if (tbody) {
             mThis.renderFloorList(tbody, data, id);
 
             tbody.addEventListener('click', (e) => {
                 const btnEdit = e.target.closest('.btn-edit-floor');
                 const btnDelete = e.target.closest('.btn-delete-floor');
+
                 if (btnEdit) {
                     e.preventDefault();
-                    /* Use master floor id (floors.id) for form/API; bf.id stays on data-id only for parity with delete which needs building_floors.id */
                     mThis.editFloor({
                         id: btnEdit.dataset.floorid,
                         building_id: btnEdit.dataset.buildingid
@@ -250,6 +281,7 @@ var BuildingComponent = ( () => {
                     });
                     return;
                 }
+
                 if (btnDelete) {
                     e.preventDefault();
                     mThis.deleteFloor({
@@ -260,8 +292,9 @@ var BuildingComponent = ( () => {
                     });
                 }
             });
-        });
-    }
+        }
+    });
+};
     mThis.renderFloorList = (tbody, data, buildingId) => {
         let html = '';
         if(!data) data = [];
@@ -451,10 +484,16 @@ const BuildingDialog = (() => {
             createContent: () => {
                 return [
                     `<div class="row g-3 justify-content-center">
-                        <div class="col-12">
+                        <div class="col-6">
                             <div class="vs-material-field">
                                 <input type="text" name="name" class="data-input form-control" data-field="name" placeholder=" " />
-                                <label> Name</label>
+                                <label>Name</label>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="vs-material-field">
+                                <input type="text" name="prefix" class="data-input form-control" data-field="prefix" placeholder=" " />
+                                <label>Prefix (Recommended)</label>
                             </div>
                         </div>
                         <div class="col-6">

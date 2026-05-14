@@ -29,6 +29,7 @@ class Building //extends Model
 
         $v_rule = [
             'name' => '1|string|0-50|text=Name is required',
+            'prefix' => '0|string|0-20',
             'total_floor' => '1|number|text=Total floor is required',
             'total_area' => '1|number|min=0|text=Total area is required',
             'total_space' => '0|number',
@@ -68,6 +69,23 @@ class Building //extends Model
                     ? 'A building with this name already exists.'
                     : 'Another building already uses this name.'
             );
+        }
+        $prefixNorm = strtolower(trim((string) ($inputs['prefix'] ?? '')));
+
+        if (!empty($prefixNorm)) {
+
+            $dupPrefix = DB::table('buildings')
+                ->whereRaw('LOWER(TRIM(prefix)) = ?', [$prefixNorm])
+                ->when(!$isCreate, fn($q) => $q->where('id', '<>', $id))
+                ->exists();
+
+            if ($dupPrefix) {
+                return DV::error(
+                    $isCreate
+                        ? 'A building with this prefix already exists.'
+                        : 'Another building already uses this prefix.'
+                );
+            }
         }
 
         DB::beginTransaction();
@@ -136,7 +154,7 @@ class Building //extends Model
         $query = DB::table('buildings as b')
             // ->join('um_branches as um', 'um.id', '=', 'b.campus_id')
             ->whereRaw($str_search)
-            ->selectRaw('b.id, b.name,b.address, b.total_floor, b.total_area, b.total_space,b.updated_at, b.update_user')
+            ->selectRaw('b.id, b.name,b.prefix,b.address, b.total_floor, b.total_area, b.total_space,b.updated_at, b.update_user')
             ->orderByDesc('b.created_at')
             ->orderByDesc('b.id');
 
@@ -153,7 +171,7 @@ class Building //extends Model
     {
         $row = DB::table('buildings as b')
             ->where('b.id', $id)
-            ->selectRaw('b.id, b.name, b.total_floor, b.total_space, b.total_area,b.address')
+            ->selectRaw('b.id, b.name,b.prefix, b.total_floor, b.total_space, b.total_area,b.address')
             ->first();
 
         return $row;

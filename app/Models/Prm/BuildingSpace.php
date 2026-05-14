@@ -107,61 +107,120 @@ class BuildingSpace
             return DV::error('Transaction failed. Please try again.');
         }
     }
-
-   static function createBuildingSpaceCode($branch_id, $building_id, $floor_number, $space_id)
-{
-    $buildingName = DB::table('buildings')
-        ->where('id', $building_id)
-        ->value('name');
-
-    $prefixLetters = 'B';
-
-    if ($buildingName) {
-        $words = explode(' ', $buildingName);
-        $prefixLetters = '';
-
-        foreach ($words as $word) {
-            if (!empty($word)) {
-                $prefixLetters .= strtoupper(substr($word, 0, 1));
+    static function createBuildingSpaceCode($branch_id, $building_id, $floor_number, $space_id)
+    {
+        $building = DB::table('buildings')
+            ->select('name', 'prefix')
+            ->where('id', $building_id)
+            ->first();
+        $prefixLetters = trim($building->prefix ?? '');
+        if (empty($prefixLetters)) {
+            $buildingName = $building->name ?? 'B';
+            $words = explode(' ', $buildingName);
+            $prefixLetters = '';
+            foreach ($words as $word) {
+                if (!empty($word)) {
+                    $prefixLetters .= strtoupper(substr($word, 0, 1));
+                }
             }
         }
-    }
+        $space_count = DB::table('building_spaces as bs')
+            ->join('floors as f', 'bs.floor_id', '=', 'f.id')
+            ->where('bs.building_id', $building_id)
+            ->where('f.floor_number', $floor_number)
+            ->count();
 
-    $floorPrefix = 'F' . $floor_number;
-
-    // ✅ FIX: include building_id
-    $row = DB::table('space_code_control')
-        ->where('branch_id', $branch_id)
-        ->where('building_id', $building_id)
-        ->where('prefix', $floor_number)
-        ->first();
-
-    $next_num = $row ? $row->last_id + 1 : 1;
-
-    $roomNumber = ($floor_number * 100) + $next_num;
-
-    $fullCode = 'R-' . $roomNumber;
-
-    DB::table('building_spaces')
-        ->where('id', $space_id)
-        ->update(['code' => $fullCode]);
-
-    if ($row) {
-        DB::table('space_code_control')
-            ->where('id', $row->id)
-            ->update(['last_id' => $next_num]);
-    } else {
-        DB::table('space_code_control')
-            ->insert([
-                'branch_id'   => $branch_id,
-                'building_id' => $building_id,
-                'prefix'      => $floor_number,
-                'last_id'     => $next_num,
+        \Log::info($space_count);
+        $row = DB::table('space_code_control')
+            ->where('branch_id', $branch_id)
+            ->where('building_id', $building_id)
+            ->where('prefix', $floor_number)
+            ->first();
+        $next_num = $space_count;
+        $roomNumber = ($floor_number * 100) + $next_num;
+        $fullCode = strtoupper($prefixLetters) . '-S' . $roomNumber;
+        DB::table('building_spaces')
+            ->where('id', $space_id)
+            ->update([
+                'code' => $fullCode
             ]);
+
+        if ($row) {
+
+            DB::table('space_code_control')
+                ->where('id', $row->id)
+                ->update([
+                    'last_id' => $next_num
+                ]);
+
+        } else {
+
+            DB::table('space_code_control')
+                ->insert([
+                    'branch_id'   => $branch_id,
+                    'building_id' => $building_id,
+                    'prefix'      => $floor_number,
+                    'last_id'     => $next_num,
+                ]);
+        }
+
+        return $fullCode;
     }
 
-    return $fullCode;
-}
+//    static function createBuildingSpaceCode($branch_id, $building_id, $floor_number, $space_id)
+// {
+//     $buildingName = DB::table('buildings')
+//         ->where('id', $building_id)
+//         ->value('name');
+
+//     $prefixLetters = 'B';
+
+//     if ($buildingName) {
+//         $words = explode(' ', $buildingName);
+//         $prefixLetters = '';
+
+//         foreach ($words as $word) {
+//             if (!empty($word)) {
+//                 $prefixLetters .= strtoupper(substr($word, 0, 1));
+//             }
+//         }
+//     }
+
+//     $floorPrefix = 'F' . $floor_number;
+
+//     // ✅ FIX: include building_id
+//     $row = DB::table('space_code_control')
+//         ->where('branch_id', $branch_id)
+//         ->where('building_id', $building_id)
+//         ->where('prefix', $floor_number)
+//         ->first();
+
+//     $next_num = $row ? $row->last_id + 1 : 1;
+
+//     $roomNumber = ($floor_number * 100) + $next_num;
+
+//     $fullCode = 'R-' . $roomNumber;
+
+//     DB::table('building_spaces')
+//         ->where('id', $space_id)
+//         ->update(['code' => $fullCode]);
+
+//     if ($row) {
+//         DB::table('space_code_control')
+//             ->where('id', $row->id)
+//             ->update(['last_id' => $next_num]);
+//     } else {
+//         DB::table('space_code_control')
+//             ->insert([
+//                 'branch_id'   => $branch_id,
+//                 'building_id' => $building_id,
+//                 'prefix'      => $floor_number,
+//                 'last_id'     => $next_num,
+//             ]);
+//     }
+
+//     return $fullCode;
+// }
 
 
     static function checkDuplicateSpaceCode($building_id, $floor_id, $space_code, $space_id = null)
@@ -309,6 +368,97 @@ class BuildingSpace
             'statuses' => GeneralSettings::options_space_status($ss)
         ];
     }
+//    public function delete($id = null)
+// {
+//     $id = $id ?? $this->id;
+
+//     $space = DB::table('building_spaces')
+//         ->where('id', $id)
+//         ->first();
+
+//     if (!$space) {
+//         return DV::error('Building space not found.');
+//     }
+
+//     if ($space->status_id > 1) {
+//         return DV::error('This space cannot be deleted because it is not available.');
+//     }
+
+//     DB::beginTransaction();
+
+//     try {
+
+//         $building_id = $space->building_id;
+
+//         // 1. Delete main record
+//         DB::table('building_spaces')
+//             ->where('id', $id)
+//             ->delete();
+
+//         // 2. Delete related data
+//         DB::table('maintenances')
+//             ->where('space_id', $id)
+//             ->delete();
+
+//         // 3. Get remaining spaces
+//         $spaces = DB::table('building_spaces')
+//             ->where('building_id', $space->building_id)
+//             ->where('floor_id', $space->floor_id)
+//             ->orderBy('id', 'asc')
+//             ->get();
+
+//         // 4. Get building prefix
+//         $building = DB::table('buildings')
+//             ->select('name', 'prefix')
+//             ->where('id', $space->building_id)
+//             ->first();
+
+//         $prefix = trim($building->prefix ?? '');
+
+//         if (empty($prefix)) {
+//             $words = explode(' ', $building->name ?? 'B');
+//             $prefix = '';
+
+//             foreach ($words as $word) {
+//                 if (!empty($word)) {
+//                     $prefix .= strtoupper(substr($word, 0, 1));
+//                 }
+//             }
+//         }
+
+//         // 5. Rebuild codes
+//         $i = 1;
+
+//         foreach ($spaces as $s) {
+
+//             $roomNumber = ($space->floor_id * 100) + $i;
+
+//             $newCode = strtoupper($prefix) . '-S' . $roomNumber;
+
+//             DB::table('building_spaces')
+//                 ->where('id', $s->id)
+//                 ->update([
+//                     'code' => $newCode
+//                 ]);
+
+//             $i++;
+//         }
+
+//         self::updateTotalSpace($building_id);
+
+//         DB::commit();
+
+//         return DV::success([
+//             'action' => 'deleted'
+//         ]);
+
+//     } catch (\Exception $e) {
+
+//         DB::rollBack();
+
+//         return DV::error('Delete failed.');
+//     }
+// }
     public function delete($id = null)
     {
         $id = $id ?? $this->id;

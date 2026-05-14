@@ -674,7 +674,7 @@ static function options_maintenance_amenity($ss)
     }
      static function options_po_status($ss)
     {
-        return DB::table('purchase_order_statuses')->selectRaw('id,name')->whereIn('id', [1, 3, 4, 5])->get();
+        return DB::table('purchase_order_statuses')->selectRaw('id,name')->whereIn('id', [1, 3, 4, 5, 7])->get();
     }
     static function options_expense_categories($ss)
     {
