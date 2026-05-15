@@ -78,9 +78,9 @@ class Tenant
             'nationality_id'  => '1|number|text=Please select nationality.',
             'national_id'     => '0|string|0-20',
             'passport_number' => '0|string|0-20',
-            'phone_number'    => '0|string|1-20',
+            'phone_number'    => '1|string|1-20|text=Phone number is required',
             'email'           => '0|email|1-30',
-            'address'         => '1|string|0-255|text=Address is required',
+            'address'         => '0|string|0-255',
             'photo'           => '0|image'
         ];
         $email_char = ['@', '.'];
@@ -133,6 +133,10 @@ class Tenant
         $phone_check = $this->checkUniqueTenantByPhone($phone_number, $id);
         if ($phone_check) return DV::error($phone_check);
         $inputs['phone_number'] = $phone_number;
+        $address = $d->address ?? null;
+        if(!$address){
+            return DV::error('Address is required.');
+        }
         $photo = $d->photo ?? null;
         unset($inputs['photo']);
         $delete_prev_image = ($id > 0 && (!$photo || isImage($photo)));

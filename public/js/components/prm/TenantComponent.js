@@ -484,12 +484,12 @@ var TenantComponent = new (function () {
                             </div>
                             <div class="card-body text-center" style="background-color:#fbfcfd; padding: 1rem;">
                                 <div class="row g-4 py-2 border-bottom border-gray">
-                                    <div class="col-4">
+                                    <div class="col-5">
                                         <div class="card bg-prm-custom text-center shadow-sm">
-                                                <div class="fw-bold fs-5 text-gold-custom">${currentUnitCode}</div>
+                                                <div class="fs-6 py-1 text-gold-custom">${currentUnitCode}</div>
                                         </div>
                                     </div>
-                                    <div class="col-2"></div>
+                                    <div class="col-1"></div>
                                     <div class="col-6">
                                         ${
                                             hasContractAlready
@@ -1074,7 +1074,7 @@ var TenantComponent = new (function () {
                     : `<span class="text-muted">${mThis._escapeHtml(first.deposit_remarks)}</span>`;
             }
             const depositBadgeHtml = depositSmallHtml
-                ? `<span class="badge rounded-pill fw-semibold px-3 py-2" style="${depositBadgeStyle}">${depositSmallHtml}</span>`
+                ? `<span class="badge rounded-pill px-3 py-2" style="${depositBadgeStyle}">${depositSmallHtml}</span>`
                 : "";
 
             const renewalsTableRowsHtml = group
@@ -1134,7 +1134,7 @@ var TenantComponent = new (function () {
                                     ${detailPillsHtml}
                                 </div>
                                 <div class="text-end mt-2 mt-md-0">
-                                    <small class="text-muted d-block mb-1">Total Price</small>
+                                    <small class="text-muted d-block mb-1">Monthly</small>
                                     <p class="h5 mb-0" style="color:${priceColor};">${priceLine}</p>
                                     <div class="mt-2">${depositBadgeHtml}</div>
                                 </div>

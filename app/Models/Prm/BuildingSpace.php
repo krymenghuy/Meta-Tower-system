@@ -114,16 +114,16 @@ class BuildingSpace
             ->where('id', $building_id)
             ->first();
         $prefixLetters = trim($building->prefix ?? '');
-        if (empty($prefixLetters)) {
-            $buildingName = $building->name ?? 'B';
-            $words = explode(' ', $buildingName);
-            $prefixLetters = '';
-            foreach ($words as $word) {
-                if (!empty($word)) {
-                    $prefixLetters .= strtoupper(substr($word, 0, 1));
-                }
-            }
-        }
+        // if (empty($prefixLetters)) {
+        //     $buildingName = $building->name ?? 'B';
+        //     $words = explode(' ', $buildingName);
+        //     $prefixLetters = '';
+        //     foreach ($words as $word) {
+        //         if (!empty($word)) {
+        //             $prefixLetters .= strtoupper(substr($word, 0, 1));
+        //         }
+        //     }
+        // }
         $space_count = DB::table('building_spaces as bs')
             ->join('floors as f', 'bs.floor_id', '=', 'f.id')
             ->where('bs.building_id', $building_id)
@@ -138,7 +138,9 @@ class BuildingSpace
             ->first();
         $next_num = $space_count;
         $roomNumber = ($floor_number * 100) + $next_num;
-        $fullCode = strtoupper($prefixLetters) . '-S' . $roomNumber;
+        if (empty($prefixLetters)) {
+            $fullCode = 'S' . $roomNumber;
+        }else $fullCode = strtoupper($prefixLetters) . '-S' . $roomNumber;
         DB::table('building_spaces')
             ->where('id', $space_id)
             ->update([
@@ -368,117 +370,117 @@ class BuildingSpace
             'statuses' => GeneralSettings::options_space_status($ss)
         ];
     }
-//    public function delete($id = null)
-// {
-//     $id = $id ?? $this->id;
+   public function delete($id = null)
+{
+    $id = $id ?? $this->id;
 
-//     $space = DB::table('building_spaces')
-//         ->where('id', $id)
-//         ->first();
+    $space = DB::table('building_spaces')
+        ->where('id', $id)
+        ->first();
 
-//     if (!$space) {
-//         return DV::error('Building space not found.');
-//     }
-
-//     if ($space->status_id > 1) {
-//         return DV::error('This space cannot be deleted because it is not available.');
-//     }
-
-//     DB::beginTransaction();
-
-//     try {
-
-//         $building_id = $space->building_id;
-
-//         // 1. Delete main record
-//         DB::table('building_spaces')
-//             ->where('id', $id)
-//             ->delete();
-
-//         // 2. Delete related data
-//         DB::table('maintenances')
-//             ->where('space_id', $id)
-//             ->delete();
-
-//         // 3. Get remaining spaces
-//         $spaces = DB::table('building_spaces')
-//             ->where('building_id', $space->building_id)
-//             ->where('floor_id', $space->floor_id)
-//             ->orderBy('id', 'asc')
-//             ->get();
-
-//         // 4. Get building prefix
-//         $building = DB::table('buildings')
-//             ->select('name', 'prefix')
-//             ->where('id', $space->building_id)
-//             ->first();
-
-//         $prefix = trim($building->prefix ?? '');
-
-//         if (empty($prefix)) {
-//             $words = explode(' ', $building->name ?? 'B');
-//             $prefix = '';
-
-//             foreach ($words as $word) {
-//                 if (!empty($word)) {
-//                     $prefix .= strtoupper(substr($word, 0, 1));
-//                 }
-//             }
-//         }
-
-//         // 5. Rebuild codes
-//         $i = 1;
-
-//         foreach ($spaces as $s) {
-
-//             $roomNumber = ($space->floor_id * 100) + $i;
-
-//             $newCode = strtoupper($prefix) . '-S' . $roomNumber;
-
-//             DB::table('building_spaces')
-//                 ->where('id', $s->id)
-//                 ->update([
-//                     'code' => $newCode
-//                 ]);
-
-//             $i++;
-//         }
-
-//         self::updateTotalSpace($building_id);
-
-//         DB::commit();
-
-//         return DV::success([
-//             'action' => 'deleted'
-//         ]);
-
-//     } catch (\Exception $e) {
-
-//         DB::rollBack();
-
-//         return DV::error('Delete failed.');
-//     }
-// }
-    public function delete($id = null)
-    {
-        $id = $id ?? $this->id;
-
-        $space = DB::table('building_spaces')->where('id', $id)->first();
-        if (!$space) {
-            return DV::error('Building space not found.');
-        }
-        $building_id = $space->building_id;
-        if ($space->status_id > 1)
-            return DV::error('This space cannot be deleted because it is not available.');
-        $deleted = DB::table('building_spaces')->where('id', $id)->delete();
-        if ($deleted) {
-            self::updateTotalSpace($building_id);
-        }
-
-        return $deleted
-            ? DV::depends($deleted, ['action' => 'deleted'])
-            : DV::error('Delete failed.');
+    if (!$space) {
+        return DV::error('Building space not found.');
     }
+
+    if ($space->status_id > 1) {
+        return DV::error('This space cannot be deleted because it is not available.');
+    }
+
+    DB::beginTransaction();
+
+    try {
+
+        $building_id = $space->building_id;
+
+        // 1. Delete main record
+        DB::table('building_spaces')
+            ->where('id', $id)
+            ->delete();
+
+        // 2. Delete related data
+        DB::table('maintenances')
+            ->where('space_id', $id)
+            ->delete();
+
+        // 3. Get remaining spaces
+        $spaces = DB::table('building_spaces')
+            ->where('building_id', $space->building_id)
+            ->where('floor_id', $space->floor_id)
+            ->orderBy('id', 'asc')
+            ->get();
+
+        // 4. Get building prefix
+        $building = DB::table('buildings')
+            ->select('name', 'prefix')
+            ->where('id', $space->building_id)
+            ->first();
+
+        $prefix = trim($building->prefix ?? '');
+
+        if (empty($prefix)) {
+            $words = explode(' ', $building->name ?? 'B');
+            $prefix = '';
+
+            foreach ($words as $word) {
+                if (!empty($word)) {
+                    $prefix .= strtoupper(substr($word, 0, 1));
+                }
+            }
+        }
+
+        // 5. Rebuild codes
+        $i = 1;
+
+        foreach ($spaces as $s) {
+
+            $roomNumber = ($space->floor_id * 100) + $i;
+
+            $newCode = strtoupper($prefix) . '-S' . $roomNumber;
+
+            DB::table('building_spaces')
+                ->where('id', $s->id)
+                ->update([
+                    'code' => $newCode
+                ]);
+
+            $i++;
+        }
+
+        self::updateTotalSpace($building_id);
+
+        DB::commit();
+
+        return DV::success([
+            'action' => 'deleted'
+        ]);
+
+    } catch (\Exception $e) {
+
+        DB::rollBack();
+
+        return DV::error('Delete failed.');
+    }
+}
+    // public function delete($id = null)
+    // {
+    //     $id = $id ?? $this->id;
+
+    //     $space = DB::table('building_spaces')->where('id', $id)->first();
+    //     if (!$space) {
+    //         return DV::error('Building space not found.');
+    //     }
+    //     $building_id = $space->building_id;
+    //     if ($space->status_id > 1)
+    //         return DV::error('This space cannot be deleted because it is not available.');
+    //     $deleted = DB::table('building_spaces')->where('id', $id)->delete();
+    //     if ($deleted) {
+    //         self::updateTotalSpace($building_id);
+    //     }
+
+    //     return $deleted
+    //         ? DV::depends($deleted, ['action' => 'deleted'])
+    //         : DV::error('Delete failed.');
+    // }
 
 
     function updateBuildingSpaceStatus($status_id, $id = null, $ss = null)
