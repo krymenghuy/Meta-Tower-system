@@ -1729,7 +1729,7 @@ const InvoiceDialog = (() => {
                                         <span style="color:#0C447C; font-size:13px;">Financials</span>
                                         <div style="flex:1; height:1px; background:#e0e0e0;"></div>
                                     </div>
-                                    
+
                                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
                                         <!-- ADDED grid-column: span 2 here to make it full width -->
                                         <div class="material-input outlined" style="display:flex; gap:8px; align-items:flex-end; grid-column: span 2;">
@@ -1757,7 +1757,7 @@ const InvoiceDialog = (() => {
                         onOpen(ibMe) {
                             const elBillingCont = serviceDiv.querySelector("#billing_period_container");
                             const elPriceWrapper = serviceDiv.querySelector("#price_wrapper");
-                            
+
                             const elService = serviceDiv.querySelector(
                                 '[data-field="service_id"]'
                             );
@@ -1806,7 +1806,7 @@ const InvoiceDialog = (() => {
                                             elPriceWrapper.style.gridColumn = "span 1";
                                         } else {
                                             elDurationCont.style.display = "none";
-                                            elDuration.value = "1"; 
+                                            elDuration.value = "1";
                                             elBillingCont.style.display = "none";
                                             elPriceWrapper.style.gridColumn = "span 2";
 
@@ -2470,128 +2470,6 @@ const InvoiceDialog = (() => {
                                 amount: parseFloat(item.total || 0)
                             };
                         });
-
-                    // const hasOverlap = (a, b) => {
-                    //     const aStart = new Date(a.start_date);
-                    //     const aEnd = new Date(a.end_date);
-                    //     const bStart = new Date(b.start_date);
-                    //     const bEnd = new Date(b.end_date);
-                    //     if (
-                    //         isNaN(aStart) ||
-                    //         isNaN(aEnd) ||
-                    //         isNaN(bStart) ||
-                    //         isNaN(bEnd)
-                    //     )
-                    //         return false;
-                    //     return aStart <= bEnd && aEnd >= bStart;
-                    // };
-
-                    // const rentItems = mappedItems.filter(
-                    //     item => item.type === "rent"
-                    // );
-                    // for (let i = 0; i < rentItems.length; i++) {
-                    //     for (let j = i + 1; j < rentItems.length; j++) {
-                    //         const a = rentItems[i];
-                    //         const b = rentItems[j];
-                    //         if (String(a.contract_id) !== String(b.contract_id))
-                    //             continue;
-                    //         if (hasOverlap(a, b)) {
-                    //             cv_interact.error(
-                    //                 `Duplicate rent detected for "${a.item_name}". ` +
-                    //                     `Row ${i + 1} (${a.start_date} ~ ${
-                    //                         a.end_date
-                    //                     }) ` +
-                    //                     `and Row ${j + 1} (${b.start_date} ~ ${
-                    //                         b.end_date
-                    //                     }) ` +
-                    //                     `have overlapping dates. Please remove one before saving.`
-                    //             );
-                    //             return null;
-                    //         }
-                    //     }
-                    // }
-
-                    // const electricItems = mappedItems.filter(
-                    //     item => item.item_name === "Electric"
-                    // );
-                    // for (let i = 0; i < electricItems.length; i++) {
-                    //     for (let j = i + 1; j < electricItems.length; j++) {
-                    //         const a = electricItems[i];
-                    //         const b = electricItems[j];
-                    //         if (hasOverlap(a, b)) {
-                    //             cv_interact.error(
-                    //                 `Duplicate electricity record detected. ` +
-                    //                     `Row ${i + 1} (${a.start_date} ~ ${
-                    //                         a.end_date
-                    //                     }) ` +
-                    //                     `and Row ${j + 1} (${b.start_date} ~ ${
-                    //                         b.end_date
-                    //                     }) ` +
-                    //                     `have overlapping dates. Please remove one before saving.`
-                    //             );
-                    //             return null;
-                    //         }
-                    //     }
-                    // }
-
-                    // const waterItems = mappedItems.filter(
-                    //     item => item.item_name === "Water"
-                    // );
-                    // for (let i = 0; i < waterItems.length; i++) {
-                    //     for (let j = i + 1; j < waterItems.length; j++) {
-                    //         const a = waterItems[i];
-                    //         const b = waterItems[j];
-                    //         if (hasOverlap(a, b)) {
-                    //             cv_interact.error(
-                    //                 `Duplicate water record detected. ` +
-                    //                     `Row ${i + 1} (${a.start_date} ~ ${
-                    //                         a.end_date
-                    //                     }) ` +
-                    //                     `and Row ${j + 1} (${b.start_date} ~ ${
-                    //                         b.end_date
-                    //                     }) ` +
-                    //                     `have overlapping dates. Please remove one before saving.`
-                    //             );
-                    //             return null;
-                    //         }
-                    //     }
-                    // }
-                    // const requestItems = mappedItems.filter(
-                    //     item => item.type === "Service Request"
-                    // );
-                    // const seenRequestIds = new Set();
-                    // for (const item of requestItems) {
-                    //     const reqId = item.request_id || item.item_id;
-
-                    //     if (!reqId) continue; // Skip if no ID is found
-
-                    //     if (seenRequestIds.has(String(reqId))) {
-                    //         cv_interact.error(
-                    //             `Duplicate Service Request: "${item.item_name}" has been added more than once. ` +
-                    //                 `Each specific request record can only be invoiced once.`
-                    //         );
-                    //         return null;
-                    //     }
-                    //     seenRequestIds.add(String(reqId));
-                    // }
-
-                    // const serviceItems = mappedItems.filter(
-                    //     item => item.type === "service"
-                    // );
-
-                    // console.log('asdfghjkl',item);
-
-                    // const seenServiceIds = new Set();
-                    // for (const item of serviceItems) {
-                    //     if (seenServiceIds.has(String(item.item_id))) {
-                    //         cv_interact.error(
-                    //             `Service "${item.item_name}" has already been added. ` +
-                    //                 `Each service can only be added once per invoice.`
-                    //         );
-                    //         return null;
-                    //     }
-                    //     seenServiceIds.add(String(item.item_id));
-                    // }
 
                     return {
                         ...header,
