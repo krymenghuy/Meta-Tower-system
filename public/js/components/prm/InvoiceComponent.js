@@ -352,10 +352,6 @@ var InvoiceComponent = (() => {
                         "—"}
                     </td>
                     <td class="text-center text-muted small">${qty}</td>
-                    <td class="text-center text-muted small">${
-                        item.unit_type ? item.unit_type.trim() : "—"
-                    }
-                    </td>
                     <td class="text-center small">${formatDate(
                         item.start_date
                     )}</td>
@@ -395,8 +391,7 @@ var InvoiceComponent = (() => {
                         <thead style="background:#e1e5f2;">
                             <tr style= background-color:#E1E5F2;" >
                                 <th class="text-center" >Item Description </th>
-                                <th class="text-center" >Quantity</th>
-                                <th class="text-center" >Unit</th>
+                                <th class="text-center" >Qty</th>
                                 <th class="text-center" >Start Date</th>
                                 <th class="text-center" >End Date</th>
                                 <th class="text-end" >Price</th>
@@ -407,12 +402,12 @@ var InvoiceComponent = (() => {
                         </thead>
                         <tbody>
                             ${itemsHtml ||
-                                '<tr><td colspan="9" class="text-center py-4 text-muted">No items found</td></tr>'}
+                                '<tr><td colspan="8" class="text-center py-4 text-muted">No items found</td></tr>'}
                         </tbody>
                         <tfoot class="table-light fw-bold">
                                 <!-- Displaying Net Total -->
                             <tr>
-                                <td colspan="8" class="text-end  ">Total Item</td>
+                                <td colspan="7" class="text-end  ">Total Item</td>
                                 <td colspan="1" class="text-end  fs-6">
                                     ${currency}${fmt(
             parseFloat(invoice.amount || 0)
@@ -420,7 +415,7 @@ var InvoiceComponent = (() => {
                                 </td>
                             </tr>
                             <tr>
-                                <td colspan="8" class="text-end text-danger">Total Discount</td>
+                                <td colspan="7" class="text-end text-danger">Total Discount</td>
                                 <td colspan="1" class="text-end text-danger fs-6">
                                     ${(() => {
                                         const discVal = parseFloat(
@@ -443,7 +438,7 @@ var InvoiceComponent = (() => {
 
                             <!-- Displaying Net Total -->
                             <tr>
-                                <td colspan="8" class="text-end  text-primary">Total Amount Due</td>
+                                <td colspan="7" class="text-end  text-primary">Total Amount Due</td>
                                 <td colspan="1" class="text-end text-success fs-6">
                                     ${currency}${fmt(
             parseFloat(invoice.amount_payable || 0)
@@ -709,8 +704,7 @@ const InvoiceDialog = (() => {
                                                     <option value="3">Commercial</option>
                                                 </select>
                                         </div>
-
-                                         <div class="field-row ">
+                                        <div class="field-row ">
                                             <label class="field-label fw-semibold">Due Date </label>
                                             <span class="field-sep">:</span>
                                             <input type="text" data-type="date" name="due_date" data-field="due_date" class="form-control data-input field-input" required placeholder=" ">
@@ -1731,7 +1725,6 @@ const InvoiceDialog = (() => {
                                     </div>
 
                                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                                        <!-- ADDED grid-column: span 2 here to make it full width -->
                                         <div class="material-input outlined" style="display:flex; gap:8px; align-items:flex-end; grid-column: span 2;">
                                             <div style="flex:1;">
                                                 <input class="data-input form-control" data-field="discount" name="discount" type="text" inputmode="decimal" placeholder="0">
@@ -1818,20 +1811,6 @@ const InvoiceDialog = (() => {
                                 }
                             };
 
-                            // const recalcDates = () => {
-                            //     if (elStartDate.value && elDuration.value) {
-                            //         let start = new Date(elStartDate.value);
-                            //         if (isNaN(start.getTime())) return;
-
-                            //         let months =
-                            //             parseInt(elDuration.value) || 1;
-                            //         start.setMonth(start.getMonth() + months);
-                            //         elEndDate.value = start
-                            //             .toISOString()
-                            //             .split("T")[0];
-                            //     }
-                            // };
-
                             const recalcDates = () => {
                                 if (elStartDate.value && elDuration.value) {
                                     let start = new Date(elStartDate.value);
@@ -1916,6 +1895,39 @@ const InvoiceDialog = (() => {
                                     ? parseInt(data.duration_months) || 1
                                     : 1;
 
+                            const dataToAdd = {
+                                item_id: data.service_id,
+                                    item_name: serviceDisplayName,
+                                    type: "service",
+                                    price: Number(selectedService.price) || 0,
+                                    qty: qtyMonths,
+                                    remarks: data.remark || serviceDisplayName,
+                                    unit_type:
+                                        selectedService.unit_type || "Month",
+                                    discount: Number(data.discount) || 0,
+                                    start_date: data.start_date || "",
+                                    end_date: data.end_date || "",
+                                    discount_type:
+                                        data.discount_type || "percent"
+                            }
+
+                            const existingIds = me.itemsView.rows
+                                .map(row => row.meta?.item_id || row.data?.item_id)
+                                .filter(
+                                    id =>
+                                        id !== undefined &&
+                                        id !== "" &&
+                                        id !== null
+                                );
+                            const isDuplicate = existingIds.some(
+                                id => String(id) === String(dataToAdd.item_id)
+                            );
+                            if (isDuplicate) {
+                                return ibMe.setError(
+                                    `Service is already in the list.`
+                                );
+                            }
+
                             me.itemsView.addRow(
                                 {
                                     item_id: data.service_id,
@@ -1947,254 +1959,205 @@ const InvoiceDialog = (() => {
                     });
                 };
 
+                
+
                 // ==================Service Request=========
                 me.controls.btnRequest.onclick = () => {
                     if (!me._selectedTenantId) {
                         return cv_interact.error("Please select Tenant first.");
                     }
-                    // if (
-                    //     !me.controls.space.value ||
-                    //     me.controls.space.value === ""
-                    // ) {
-                    //     return cv_interact.error("Please select Space");
-                    // }
-                    const selectedSpaceId =
-                        me.controls.space?.value || me.controls.space_id?.value;
+
+                    const selectedSpaceId = me.controls.space?.value || me.controls.space_id?.value;
                     if (!selectedSpaceId || selectedSpaceId === "") {
                         return cv_interact.error("Please select Space.");
                     }
 
                     const requests = me._requestedServices || [];
+                    console.log("All Requests", requests);
+
                     const filteredRequests = requests.filter(
                         r => String(r.space_id) === String(selectedSpaceId)
                     );
 
                     if (filteredRequests.length === 0) {
-                        return cv_interact.error(
-                            "No Requests relate to this space."
-                        );
+                        return cv_interact.error("No Requests relate to this space.");
                     }
 
                     const serviceRequestOption = filteredRequests
-                        .map(
-                            sr =>
-                                `<option value="${sr.request_id}">${sr.code} (${sr.space_code})</option>`
-                        )
+                        .map(sr => `<option value="${sr.request_id}">${sr.code} (${sr.space_code})</option>`)
                         .join("");
 
+                    let requestDiv = null;
                     InputBox.resetInstance("requestPopUp");
 
-                    let requestDiv = null;
                     InputBox.show({
                         title: "Service Request",
                         instanceKey: "requestPopUp",
                         createContent() {
                             const div = document.createElement("div");
                             requestDiv = div;
-                            div.style.cssText =
-                                "display:flex; flex-direction:column; ";
+                            div.style.cssText = "display:flex; flex-direction:column;";
 
                             div.innerHTML = `
-                                    <div>
-                                        <div class="d-flex align-items-center mb-3">
-                                            <span style=" color:#0C447C; font-size:13px;">Request Info</span>
-                                            <div style="flex:1; height:1px; background:#e0e0e0;"></div>
+                                <div>
+                                    <div class="d-flex align-items-center mb-3">
+                                        <span style="color:#0C447C; font-size:13px;">Request Info</span>
+                                        <div style="flex:1; height:1px; background:#e0e0e0;"></div>
+                                    </div>
+                                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                                        <div class="material-input outlined" style="margin-bottom: 1rem;">
+                                            <select class="data-input form-control" data-field="request_id" name="request_id" data-style="material" placeholder="Request No">
+                                                ${serviceRequestOption}
+                                            </select>
                                         </div>
-                                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                                            <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                                <select class="data-input form-control" data-field="request_id" name="request_id" data-style="material"  placeholder="Request No">
-                                                    ${serviceRequestOption}
+                                        <div class="material-input outlined" style="margin-bottom: 1rem;">
+                                            <input class="data-input form-control bg-light cursor-blocked" data-field="service_name" name="service_name" type="text" readonly placeholder=" ">
+                                            <label style="color:#777;">Service Name</label>
+                                        </div>
+                                        <div class="material-input outlined" style="margin-bottom: 1rem;">
+                                            <input class="data-input form-control bg-light" data-field="unit_type" name="unit_type" type="text" readonly placeholder=" ">
+                                            <label style="color:#777;">Unit Type</label>
+                                        </div>
+                                        <div class="material-input outlined" data-wrapper="duration" style="margin-bottom: 1rem;">
+                                            <input class="data-input form-control bg-light cursor-blocked" data-field="duration_hours" name="duration_hours" type="text" readonly placeholder=" ">
+                                            <label style="color:#777;">Duration (Hours)</label>
+                                        </div>
+                                        <div id="price_wrapper_requested" class="material-input outlined" style="margin-bottom: 1rem;">
+                                            <input class="data-input form-control bg-light cursor-blocked" data-field="price" name="price" type="text" readonly placeholder=" ">
+                                            <label style="color:#777;">Original Price ($)</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <div class="d-flex align-items-center mb-3">
+                                        <span style="color:#0C447C; font-size:13px;">Financials</span>
+                                        <div style="flex:1; height:1px; background:#e0e0e0;"></div>
+                                    </div>
+                                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                                        <div class="material-input outlined" style="display:flex; gap:8px; align-items:flex-end; grid-column: span 2;">
+                                            <div style="flex:1;">
+                                                <input class="data-input form-control" data-field="discount" name="discount" type="text" inputmode="decimal" placeholder="0">
+                                                <label style="color:#777;">Discount</label>
+                                            </div>
+                                            <div style="width:80px;">
+                                                <select class="data-input form-control" data-field="discount_type" name="discount_type">
+                                                    <option value="percent" selected>%</option>
+                                                    <option value="amount">$</option>
                                                 </select>
                                             </div>
-                                            <div class="material-input outlined" style="margin-bottom: 1rem;" >
-                                                <input class="data-input form-control bg-light cursor-blocked" data-field="service_name" name="service_name" type="text" readonly placeholder=" ">
-                                                <label style="color:#777;">Service Name</label>
-                                            </div>
-                                            <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                                <input class="data-input form-control bg-light" data-field="unit_type" name="unit_type" type="text" readonly placeholder=" ">
-                                                <label style="color:#777;">Unit Type</label>
-                                            </div>
-                                            <div class="material-input outlined" data-wrapper="duration" style="margin-bottom: 1rem;">
-                                                <input class="data-input form-control bg-light cursor-blocked" data-field="duration_hours" name="duration_hours" type="text" readonly placeholder=" ">
-                                                <label style="color:#777;">Duration (Hours)</label>
-                                            </div>
-                                            <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                                <input class="data-input form-control bg-light cursor-blocked" data-field="price" name="price" type="text" readonly placeholder=" ">
-                                                <label style="color:#777;">Original Price ($)</label>
-                                            </div>
                                         </div>
                                     </div>
+                                </div>
 
-                                    <div>
-                                        <div class="d-flex align-items-center mb-3">
-                                            <span style=" color:#0C447C; font-size:13px;">Financials</span>
-                                            <div style="flex:1; height:1px; background:#e0e0e0;"></div>
-                                        </div>
-                                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                                            <div class="material-input outlined" style="display:flex; gap:8px; align-items:flex-end;">
-                                                <div style="flex:1">
-                                                    <input class="data-input form-control" data-field="discount" name="discount" type="text" inputmode="decimal" placeholder="0">
-                                                    <label style="color:#777;">Discount</label>
-                                                </div>
-                                                <div style="width:80px;">
-                                                    <select class="data-input form-control" data-field="discount_type" name="discount_type">
-                                                        <option value="percent">%</option>
-                                                        <option value="amount">$</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div class="material-input outlined">
-                                                <input class="data-input form-control" data-field="tax_rate" name="tax_rate" type="text" placeholder="0">
-                                                <label style="color:#777;">Tax (%)</label>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="material-input outlined">
-                                        <textarea class="data-input form-control" data-field="remark" name="remark" rows="2" placeholder=" "></textarea>
-                                        <label style="color:#777;"> Remark</label>
-                                    </div>
-                                `;
+                                <div class="material-input outlined">
+                                    <textarea class="data-input form-control" data-field="remark" name="remark" rows="2" placeholder=" "></textarea>
+                                    <label style="color:#777;">Remark</label>
+                                </div>
+                            `;
                             return div;
                         },
 
                         onOpen(ibMe) {
-                            const elRequest = document.querySelector(
-                                '[data-field="request_id"]'
-                            );
-                            const elDuration = document.querySelector(
-                                '[data-field="duration_hours"]'
-                            );
-                            const elPrice = document.querySelector(
-                                '[data-field="price"]'
-                            );
-                            const elServiceName = document.querySelector(
-                                '[data-field="service_name"]'
-                            );
-                            const elUnitType = document.querySelector(
-                                '[data-field="unit_type"]'
-                            );
-                            const elRemark = document.querySelector(
-                                '[data-field="remark"]'
-                            );
-                            const elDurationWrapper = document.querySelector(
-                                '[data-wrapper="duration"]'
-                            );
+                            const elPriceWrapperR   = requestDiv.querySelector("#price_wrapper_requested"); // ✅ Fixed: was serviceDiv
+                            const elRequest         = requestDiv.querySelector('[data-field="request_id"]');
+                            const elDuration        = requestDiv.querySelector('[data-field="duration_hours"]');
+                            const elPrice           = requestDiv.querySelector('[data-field="price"]');
+                            const elServiceName     = requestDiv.querySelector('[data-field="service_name"]');
+                            const elUnitType        = requestDiv.querySelector('[data-field="unit_type"]');
+                            const elRemark          = requestDiv.querySelector('[data-field="remark"]');
+                            const elDurationWrapper = requestDiv.querySelector('[data-wrapper="duration"]');
+                            const elDiscountType    = requestDiv.querySelector('[data-field="discount_type"]');
+
+                            if (elPriceWrapperR) elPriceWrapperR.style.gridColumn = "span 2";
 
                             const fillRequestData = selectedId => {
                                 const matched = filteredRequests.find(
-                                    r => r.request_id === Number(selectedId)
+                                    r => String(r.request_id) === String(selectedId)
                                 );
 
                                 if (matched) {
-                                    elDuration.value =
-                                        matched.duration_hours || "0";
-                                    elPrice.value = Number(
-                                        matched.price
-                                    ).toFixed(2);
-                                    elServiceName.value =
-                                        matched.service_name || "";
-                                    elRemark.value = matched.remarks || "";
-                                    elUnitType.value = matched.unit_type || "";
+                                    elServiceName.value = matched.service_name   || "";
+                                    elUnitType.value    = matched.unit_type      || "";
+                                    elDuration.value    = matched.duration_hours || "0";
+                                    elPrice.value       = Number(matched.price).toFixed(2);
+                                    elRemark.value      = matched.remarks        || "";
 
-                                    if (matched.unit_type === "Hour") {
-                                        elDurationWrapper.style.display =
-                                            "block";
-                                    } else {
-                                        elDurationWrapper.style.display =
-                                            "none";
-                                    }
+                                    elDurationWrapper.style.display  = matched.unit_type === "Hour" ? "block"  : "none";
+                                    elPriceWrapperR.style.gridColumn = matched.unit_type === "Hour" ? "span 2" : "span 1"; // ✅ Now works
                                 }
                             };
 
-                            if (filteredRequests.length > 0) {
-                                const firstId = filteredRequests[0].request_id;
-                                elRequest.value = firstId;
-                                fillRequestData(firstId);
-                            }
-                            elRequest.addEventListener("change", e => {
-                                fillRequestData(e.target.value);
-                            });
+                            if (elDiscountType) elDiscountType.value = "percent";
 
-                            [
-                                requestDiv.querySelector(
-                                    '[data-field="discount"]'
-                                ),
-                                requestDiv.querySelector(
-                                    '[data-field="tax_rate"]'
-                                )
-                            ].forEach(input => {
-                                if (!input) return;
-                                input.addEventListener("input", e => {
-                                    let v = e.target.value.replace(
-                                        /[^0-9.]/g,
-                                        ""
-                                    );
+                            if (elRequest) {
+                                fillRequestData(elRequest.value);
+                                elRequest.addEventListener("change", e => {
+                                    fillRequestData(e.target.value);
+                                });
+                            }
+
+                            const elDiscount = requestDiv.querySelector('[data-field="discount"]');
+                            if (elDiscount) {
+                                elDiscount.addEventListener("input", e => {
+                                    let v = e.target.value.replace(/[^0-9.]/g, "");
                                     const parts = v.split(".");
-                                    if (parts.length > 2)
-                                        v = parts[0] + "." + parts[1];
-                                    if (parts[1] !== undefined)
-                                        v =
-                                            parts[0] +
-                                            "." +
-                                            parts[1].slice(0, 2);
+                                    if (parts.length > 2) v = parts[0] + "." + parts[1];
+                                    if (parts[1] !== undefined) v = parts[0] + "." + parts[1].slice(0, 2);
                                     e.target.value = v;
                                 });
-                                input.addEventListener("blur", e => {
-                                    let v = parseFloat(e.target.value);
-                                    if (isNaN(v) || v < 0) {
-                                        e.target.value = "";
-                                        return;
-                                    }
-                                    e.target.value = v.toFixed(2);
+                                elDiscount.addEventListener("blur", e => {
+                                    const v = parseFloat(e.target.value);
+                                    e.target.value = (isNaN(v) || v < 0) ? "" : v.toFixed(2);
                                 });
-                            });
+                            }
                         },
+
                         onConfirm(data, btn, ibMe) {
                             const selectedRequest = filteredRequests.find(
-                                r => r.request_id === Number(data.request_id)
+                                r => String(r.request_id) === String(data.request_id)
                             );
-                            const requestDisplayName =
-                                selectedRequest.code ||
-                                `Request # ${selectedRequest.request_id}`;
 
                             if (!selectedRequest) {
-                                return cv_interact.error(
-                                    "Please select a service request."
-                                );
+                                return cv_interact.error("Please select a service request.");
                             }
-                            me.itemsView.addRow(
-                                {
-                                    item_id: selectedRequest.request_id,
-                                    item_name: `${selectedRequest.code}`,
-                                    type: "Service Request",
-                                    price: Number(selectedRequest.price),
-                                    qty:
-                                        selectedRequest.unit_type === "Hour"
-                                            ? selectedRequest.duration_hours ||
-                                              0
-                                            : 1,
-                                    unit_type: `${selectedRequest.unit_type ||
-                                        0}`,
-                                    remarks: data.remark || requestDisplayName,
-                                    space_id: selectedRequest.space_id,
-                                    space_code: selectedRequest.space_code,
-                                    discount: Number(data.discount) || 0,
-                                    discount_type:
-                                        data.discount_type || "amount",
-                                    tax_rate: Number(data.tax_rate) || 0,
-                                    request_id: selectedRequest.request_id
-                                },
-                                0
-                            );
 
-                            cv_interact.success(
-                                "Service request added to invoice"
+                            const requestDisplayName = selectedRequest.code || `Request # ${selectedRequest.request_id}`;
+
+                            const existingIds = me.itemsView.rows
+                                .map(row => row.meta?.item_id || row.data?.item_id)
+                                .filter(id => id !== undefined && id !== "" && id !== null);
+
+                            const isDuplicate = existingIds.some(
+                                id => String(id) === String(selectedRequest.request_id)
                             );
+                            if (isDuplicate) {
+                                return ibMe.setError("Service Request is already in the list.");
+                            }
+
+                            // ✅ Fixed: build once, reuse in addRow
+                            const dataToAdd = {
+                                item_id:       selectedRequest.request_id,
+                                item_name:     `${selectedRequest.code}`,
+                                type:          "Service Request",
+                                price:         Number(selectedRequest.price),
+                                qty:           selectedRequest.unit_type === "Hour" ? selectedRequest.duration_hours || 0 : 1,
+                                unit_type:     `${selectedRequest.unit_type || 0}`,
+                                remarks:       data.remark || requestDisplayName,
+                                space_id:      selectedRequest.space_id,
+                                space_code:    selectedRequest.space_code,
+                                discount:      Number(data.discount)      || 0,
+                                discount_type: data.discount_type         || "percent",
+                                request_id:    selectedRequest.request_id
+                            };
+
+                            me.itemsView.addRow(dataToAdd, 0);
+                            cv_interact.success("Service request added to invoice");
                             ibMe.close();
                         }
                     });
                 };
+
 
                 me.itemsView = new ItemsView(me.controls.divItemsView, {
                     currencyCode: "USD",
