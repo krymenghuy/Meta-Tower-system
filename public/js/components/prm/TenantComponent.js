@@ -484,12 +484,12 @@ var TenantComponent = new (function () {
                             </div>
                             <div class="card-body text-center" style="background-color:#fbfcfd; padding: 1rem;">
                                 <div class="row g-4 py-2 border-bottom border-gray">
-                                    <div class="col-4">
+                                    <div class="col-5">
                                         <div class="card bg-prm-custom text-center shadow-sm">
-                                                <div class="fw-bold fs-5 text-gold-custom">${currentUnitCode}</div>
+                                                <div class="fs-6 py-1 text-gold-custom">${currentUnitCode}</div>
                                         </div>
                                     </div>
-                                    <div class="col-2"></div>
+                                    <div class="col-1"></div>
                                     <div class="col-6">
                                         ${
                                             hasContractAlready

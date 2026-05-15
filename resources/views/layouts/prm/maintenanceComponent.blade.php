@@ -6,6 +6,9 @@
            </div>
            <div class="col-12 col-md-6 col-lg-2">
                <select id="_maintenance_building_id" class="data-input filter-field form-control" data-field="building_id"></select>
+           </div> 
+           <div class="col-12 col-md-6 col-lg-2">
+               <select id="_maintenance_type_id" class="data-input filter-field form-control" data-field="unit_type"></select>
            </div>
            <div class="col-12 col-md-6 col-lg-2">
                <select id="_maintenance_status_id" class="data-input filter-field form-control" data-field="status_id"></select>

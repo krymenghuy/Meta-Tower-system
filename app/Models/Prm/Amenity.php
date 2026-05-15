@@ -272,20 +272,6 @@ class Amenity extends VSModel
     }
 
    
-    public function deleteAmenity($id = null)
-    {
-        $id = $id ?? $this->id;
-
-        if (self::hasActiveReservation($id)) {
-            return DV::error('Cannot delete because it has reservation records.');
-        }
-        $deleted = DB::table('amenities')->where('id', $id)->delete();
-        if($deleted){
-            DB::table('maintenances')->where('amenity_id', $id)->delete();
-        }
-        return $deleted ? DV::depends($deleted, ['action' => 'deleted']) : DV::error('Delete failed.');
-    }
-
     // public function deleteAmenity($id = null)
     // {
     //     $id = $id ?? $this->id;
@@ -293,84 +279,98 @@ class Amenity extends VSModel
     //     if (self::hasActiveReservation($id)) {
     //         return DV::error('Cannot delete because it has reservation records.');
     //     }
-
-    //     $amenity = DB::table('amenities')
-    //         ->where('id', $id)
-    //         ->first();
-
-    //     if (!$amenity) {
-    //         return DV::error('Amenity not found.');
+    //     $deleted = DB::table('amenities')->where('id', $id)->delete();
+    //     if($deleted){
+    //         DB::table('maintenances')->where('amenity_id', $id)->delete();
     //     }
-
-    //     DB::beginTransaction();
-
-    //     try {
-
-    //         // 1. Delete main record
-    //         DB::table('amenities')
-    //             ->where('id', $id)
-    //             ->delete();
-
-    //         // 2. Delete related data
-    //         DB::table('maintenances')
-    //             ->where('amenity_id', $id)
-    //             ->delete();
-
-    //         // 3. Get remaining amenities (ordered)
-    //         $amenities = DB::table('amenities')
-    //             ->where('building_id', $amenity->building_id)
-    //             ->where('floor_id', $amenity->floor_id)
-    //             ->orderBy('id', 'asc')
-    //             ->get();
-
-    //         // 4. Get building prefix
-    //         $building = DB::table('buildings')
-    //             ->select('name', 'prefix')
-    //             ->where('id', $amenity->building_id)
-    //             ->first();
-
-    //         $prefix = trim($building->prefix ?? '');
-
-    //         if (empty($prefix)) {
-    //             $words = explode(' ', $building->name ?? 'B');
-    //             $prefix = '';
-
-    //             foreach ($words as $word) {
-    //                 if (!empty($word)) {
-    //                     $prefix .= strtoupper(substr($word, 0, 1));
-    //                 }
-    //             }
-    //         }
-
-    //         // 5. Rebuild codes in order
-    //         $i = 1;
-
-    //         foreach ($amenities as $a) {
-
-    //             $roomNumber = ($amenity->floor_number ?? 1) * 100 + $i;
-
-    //             $newCode = strtoupper($prefix) . '-A' . $roomNumber;
-
-    //             DB::table('amenities')
-    //                 ->where('id', $a->id)
-    //                 ->update([
-    //                     'code' => $newCode
-    //                 ]);
-
-    //             $i++;
-    //         }
-
-    //         DB::commit();
-
-    //         return DV::success(['action' => 'deleted']);
-
-    //     } catch (\Exception $e) {
-
-    //         DB::rollBack();
-
-    //         return DV::error('Delete failed.');
-    //     }
+    //     return $deleted ? DV::depends($deleted, ['action' => 'deleted']) : DV::error('Delete failed.');
     // }
+
+    public function deleteAmenity($id = null)
+    {
+        $id = $id ?? $this->id;
+
+        if (self::hasActiveReservation($id)) {
+            return DV::error('Cannot delete because it has reservation records.');
+        }
+
+        $amenity = DB::table('amenities')
+            ->where('id', $id)
+            ->first();
+
+        if (!$amenity) {
+            return DV::error('Amenity not found.');
+        }
+
+        DB::beginTransaction();
+
+        try {
+
+            // 1. Delete main record
+            DB::table('amenities')
+                ->where('id', $id)
+                ->delete();
+
+            // 2. Delete related data
+            DB::table('maintenances')
+                ->where('amenity_id', $id)
+                ->delete();
+
+            // 3. Get remaining amenities (ordered)
+            $amenities = DB::table('amenities')
+                ->where('building_id', $amenity->building_id)
+                ->where('floor_id', $amenity->floor_id)
+                ->orderBy('id', 'asc')
+                ->get();
+
+            // 4. Get building prefix
+            $building = DB::table('buildings')
+                ->select('name', 'prefix')
+                ->where('id', $amenity->building_id)
+                ->first();
+
+            $prefix = trim($building->prefix ?? '');
+
+            if (empty($prefix)) {
+                $words = explode(' ', $building->name ?? 'B');
+                $prefix = '';
+
+                foreach ($words as $word) {
+                    if (!empty($word)) {
+                        $prefix .= strtoupper(substr($word, 0, 1));
+                    }
+                }
+            }
+
+            // 5. Rebuild codes in order
+            $i = 1;
+
+            foreach ($amenities as $a) {
+
+                $roomNumber = ($amenity->floor_number ?? 1) * 100 + $i;
+
+                $newCode = strtoupper($prefix) . '-A' . $roomNumber;
+
+                DB::table('amenities')
+                    ->where('id', $a->id)
+                    ->update([
+                        'code' => $newCode
+                    ]);
+
+                $i++;
+            }
+
+            DB::commit();
+
+            return DV::success(['action' => 'deleted']);
+
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return DV::error('Delete failed.');
+        }
+    }
 
     function updateAmenityStatus($status_id, $id = null, $ss = null) {
         $ss = $ss ? $ss : $this->userInfo;
