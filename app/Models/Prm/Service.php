@@ -22,43 +22,23 @@ class Service
     {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
-
         $v_rule = [
-            'name'            => '1|string|0-200',
-            'service_type_id' => '1|number|exists=service_types.id|text=Please select a valid category.',
-            'type'            => '1|choice|0,1|text=Please select a valid type.',
+            'name'            => '1|string|0-100|text=Name is required.',
+            'category_id'     => '1|number|exists=service_categories.id|text=Please select a valid category.',
+            'type_id'         => '1|number|exists=service_types.id|text=Please select a valid type.',
             'price'           => '1|number|min=0|text=Please enter a valid price.',
-            'unit_type'       => '0|string|0-50',
-            'description'     => '0|string|0-350',
+            'charge_as'       => '1|string|0-50|text=Please select a valid charge as.',
+            'remarks'         => '0|string|0-350',
         ];
 
-        $res = DBX::validateObject(
-            $arr,
-            $v_rule,
-            1,
-            [
-                'name' => ['(', ')', '-', '.', '#'],
-                'unit_type' => ['@', '.', '-', '_'],
-                'description' => ['@', ',', '-', '.', '#']
-            ],
-            $ss->lang,
-            0,
-            null
-        );
-
+        $res = DBX::validateObject($arr,$v_rule,1,['name' => ['(', ')', '-', '.', '#'],'unit_type' => ['@', '.', '-', '_'],'description' => ['@', ',', '-', '.', '#']],$ss->lang,0,null);
         if ($res->error) {
             return DV::error($res->error);
         }
-
         $inputs = $res->values;
-        $baseName = trim($inputs['name']);
-        $baseName = preg_replace('/\s*\(.*?\)\s*/', '', $baseName);
-        $unitType = trim($inputs['unit_type'] ?? '');
-        $unitType = ucwords(str_replace('_', ' ', strtolower($unitType)));
-        $fullName = $unitType ? "{$baseName} ({$unitType})" : $baseName;
-        $inputs['name'] = $fullName;
         $exist = DB::table('services')
-            ->whereRaw('LOWER(name) = ?', [strtolower($fullName)])
+            ->whereRaw('LOWER(name) = ?', [strtolower($inputs['name'])])
+            ->where('charge_as', $inputs['charge_as'])
             ->when($id, fn($q) => $q->where('id', '<>', $id))
             ->exists();
 
@@ -82,9 +62,10 @@ class Service
         $d = (object) $arr;
         $branch_id = $ss->branch_id;
         $search_value = $d->search_value ?? null;
-        $service_type_id = $d->service_type_id ?? null;
+        $type_id = $d->type_id ?? null;
+        $category_id = $d->category_id ?? null;
         $status_id = $d->status_id ?? null;
-        $charge_as = $d->unit_type ?? null;
+        $charge_as = $d->charge_as ?? null;
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 10;
         if(!is_numeric($current_page)){
@@ -97,23 +78,29 @@ class Service
         if($search_value){
             $skip_rows = 0;
             $search_value = escape_like_str($search_value);
-            $str_search = "(s.name LIKE '%" . $search_value ."%' OR s.price LIKE '%" . $search_value . "%' OR s.description LIKE '%" . $search_value . "%')";
+            $str_search = "(s.name LIKE '%" . $search_value ."%')";
         }
-        if($service_type_id){
-            $str_moreWhere .= ' AND s.service_type_id =' . $service_type_id ;
+        if($type_id){
+            $str_moreWhere .= ' AND s.type_id =' . $type_id ;
+        }
+        if($category_id){
+            $str_moreWhere .= ' AND s.category_id =' . $category_id ;
         }
         if($status_id){
             $str_moreWhere .= ' AND s.status_id =' . $status_id ;
         }
         if($charge_as){
-            $str_moreWhere .= ' AND s.unit_type =' . $charge_as ;
+            $str_moreWhere .= ' AND s.charge_as =' . $charge_as ;
         }
         $query = DB::table('services as s')
-            ->join('service_types as st','st.id','=','s.service_type_id')
+            ->join('service_categories as sc','sc.id','=','s.category_id')
+            ->join('service_types as st','st.id','=','s.type_id')
             ->join('service_statuses as ss','ss.id','=','s.status_id')
             ->whereRaw($str_search)
             ->whereRaw($str_moreWhere)
-            ->selectRaw("s.id,s.name,s.service_type_id,st.name as service_type,s.unit_type,s.price,s.status_id,ss.name as status,s. description,s.updated_at,s.update_user,s.type")->orderBy('s.id','DESC');
+            ->selectRaw("s.id,s.name,s.category_id,sc.name as service_category,s.type_id,st.name as service_type,s.charge_as,s.price,s.status_id,ss.name as status,s.remarks,s.updated_at,s.update_user")
+            ->orderBy('s.category_id','DESC')
+            ->orderBy('s.id','DESC');
         $clone_query = clone $query;
         $count = $clone_query->count('s.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
@@ -129,7 +116,7 @@ class Service
     public static function serviceDetails($id,$ss = null){
         return DB::table('services as s')
             ->where('s.id',$id)
-            ->selectRaw('s.id,s.name,s.service_type_id,s.type,s.unit_type,s.price,s.status_id,s.description')
+            ->selectRaw('s.id,s.name,s.category_id,s.type_id,s.charge_as,s.price,s.status_id,s.remarks')
             ->first();
     }
 
@@ -138,6 +125,7 @@ class Service
         return (object) [
             'service_details' => $service_details,
             'statuses' => GeneralSettings::options_service_status($ss),
+            'service_categories' => GeneralSettings::options_service_categories($ss),
             'service_types' => GeneralSettings::options_service_types($ss)
         ];
     }
@@ -166,18 +154,18 @@ class Service
         $ss = $ss ?? $this->userInfo;
         $service = DB::table('services')
             ->where('id', $id)
-            ->select('id', 'name', 'service_type_id', 'unit_type', 'price', 'description')
+            ->select('id', 'name', 'category_id','type_id', 'charge_as', 'price', 'remarks')
             ->first();
-        $serviceType = null;
-        if ($service && $service->service_type_id) {
-            $serviceType = DB::table('service_types')
-                ->where('id', $service->service_type_id)
+        $category = null;
+        if ($service && $service->category_id) {
+            $category = DB::table('service_categories')
+                ->where('id', $service->category_id)
                 ->select('id', 'name')
                 ->first();
         }
         return (object) [
             'services'      => $service,
-            'service_types' => $serviceType
+            'service_categories' => $category
         ];
     }
     function updateServiceStatus($status_id, $id = null, $ss = null)

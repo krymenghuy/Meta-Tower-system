@@ -5,7 +5,10 @@
                 <input type="text" class="rounded-2 filter-field input-search" id="_search_service" placeholder="Search by name">
             </div>
             <div class="col-12 col-md-6 col-lg-3">
-                <select type="id" id="_service_type_id" class="data-input filter-field" data-field="service_type_id"></select>
+                <select type="id" id="_service_category_id" class="data-input filter-field" data-field="category_id"></select>
+            </div>
+            <div class="col-12 col-md-6 col-lg-2">
+                <select type="id" id="_service_type_id" class="data-input filter-field" data-field="type_id"></select>
             </div>
             <div class="col-12 col-md-6 col-lg-2 ">
                 <select type="id" id="_status_id" class="data-input filter-field" data-field="status_id"></select>

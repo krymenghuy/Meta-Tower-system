@@ -186,7 +186,7 @@ class ServiceRequest extends VSModel
             ->join('tenants as t', 't.id', '=', 'sr.tenant_id')
             ->join('building_spaces as bs', 'bs.id', '=', 'sr.space_id')
             ->join('services as s', 's.id', '=', 'sr.service_id')
-            ->join('service_types as st', 'st.id', '=', 's.service_type_id')
+            ->join('service_types as st', 'st.id', '=', 's.type_id')
             ->join('request_statuses as rs', 'rs.id', '=', 'sr.status_id')
             ->whereRaw($str_search)
             ->whereRaw($str_moreWhere)

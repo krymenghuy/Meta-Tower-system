@@ -6,6 +6,7 @@ var ServiceComponent = (() => {
     mThis.self = main_view.VSAppContent.querySelector("#_main_service_component");
     mThis.btnAdd = mThis.self.querySelector("#_btnService");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_service");
+    mThis.elFilter_category = mThis.self.querySelector('#_service_category_id');
     mThis.elFilter_type = mThis.self.querySelector('#_service_type_id');
     mThis.elFilter_status = mThis.self.querySelector('#_status_id');
     mThis.elSearch = mThis.self.querySelector("#_search_service");
@@ -28,24 +29,15 @@ var ServiceComponent = (() => {
             transTitle: "titles.Category",
             className: "align-middle",
             data: (data) => {
-                return `<span class="text-primary-custom">${data.service_type ?? ''}</span>`;
+                return `<span class="text-primary-custom">${data.service_category ?? ''}</span>`;
             }
         },
-        {
+       {
             transTitle: "titles.Type",
-            className: "align-middle text-nowrap text-start",
-            data: function (data) {
-                const val = data.type ?? "";
-                const isSubscription = val == 0;
-
-                return isSubscription
-                    ? `<span class="text-prm-custom">
-                        <i class="fa-solid fa-arrows-rotate text-success"></i> Subscription
-                    </span>`
-                    : `<span class="text-prm-custom">
-                        <i class="fa-solid fa-bolt text-warning"></i> Request
-                    </span>`;
-            },
+            className: "align-middle",
+            data: (data) => {
+                return `<span class="text-capitalize text-prm-custom">${data.service_type ?? ''}</span>`;
+            }
         },
         {
             transTitle: "titles.Charge As",
@@ -59,7 +51,7 @@ var ServiceComponent = (() => {
                     month: "Per Month",
                 };
 
-                const label = unitMap[data.unit_type] || "-";
+                const label = unitMap[data.charge_as] || "-";
 
                 return `<span class="badge text-info bg-info-subtle border border-info text-nowrap" style="min-width:90px;">${label}</span>`;
             }
@@ -78,7 +70,7 @@ var ServiceComponent = (() => {
                     month: "Month"
                 };
 
-                const unit = unitMap[data.unit_type] || '';
+                const unit = unitMap[data.charge_as] || '';
                 const formattedPrice = VSMoney.formatAmount(data.price, currency);
 
                 return `
@@ -209,7 +201,8 @@ var ServiceComponent = (() => {
 
     mThis.getFilterData = () => {
         let p = {
-            service_type_id: mThis.elFilter_type.value,
+            category_id: mThis.elFilter_category.value,
+            type_id: mThis.elFilter_category.value,
             status_id: mThis.elFilter_status.value,
             search_value: mThis.elSearch.value,
         };
@@ -361,7 +354,8 @@ var ServiceComponent = (() => {
         vsapi.call(`${main_view.base_url}/prm/service/form-options`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elFilter_type, d.service_types, 'id', 'service_type', '', 'All Categories ', '');
+                VSUtil.setComboItems(mThis.elFilter_category, d.service_categories, 'id', 'service_category', '', 'All Categories ', '');
+                VSUtil.setComboItems(mThis.elFilter_type, d.service_types, 'id', 'service_type', '', 'All Types ', '');
                 VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'status_name', '', 'All Statuses ', '');
                 if (typeof onFinish === 'function') onFinish();
             })
@@ -400,17 +394,11 @@ const CreateServicePriceDialog = (() => {
                                 </div>
                             </div>
                             <div class="col-6">
-                                <select data-style="material" name="service_types" class="data-input form-control" data-field="service_type_id" placeholder="Category">
+                                <select data-style="material" name="service_category" class="data-input form-control" data-field="category_id" placeholder="Category">
                                 </select>
                             </div>
                             <div class="col-6">
-                                <select data-style="material"
-                                        name="type"
-                                        class="data-input form-control"
-                                        data-field="type"
-                                        placeholder=" Type">
-                                    <option value="0" >Subscription</option>
-                                    <option value="1">Request</option>
+                                <select data-style="material" name="service_type" class="data-input form-control" data-field="type_id" placeholder=" Type">
                                 </select>
                             </div>
                             <div class="col-6">
@@ -421,7 +409,7 @@ const CreateServicePriceDialog = (() => {
                             </div>
                             <div class="col-6">
                                 <div class="vs-material-field">
-                                    <select data-style="material" name="unit_type" class="data-input form-control" data-field="unit_type" placeholder="Unit Type">
+                                    <select data-style="material" name="charge_as" class="data-input form-control" data-field="charge_as" placeholder="Charge As">
                                     <option value="per_unit">Unit</option>
                                     <option value="one_time">Once</option>
                                     <option value="hour">Hourly</option>
@@ -431,7 +419,7 @@ const CreateServicePriceDialog = (() => {
                             </div>
                             <div class="col-12">
                                 <div class="vs-material-field">
-                                    <textarea name="description" class="data-input form-control" data-field="description" placeholder=" "></textarea>
+                                    <textarea name="remark" class="data-input form-control" data-field="remarks" placeholder=" "></textarea>
                                     <label>Remark</label>
                                 </div>
                             </div>
@@ -445,11 +433,18 @@ const CreateServicePriceDialog = (() => {
                 },
                 configSelect: [
                     {
-                        name: "service_types",
+                        name: "service_category",
+                        data: "service_categories",
+                        textField: "service_category",
+                        valueField: "id",
+                    },
+                    {
+                        name: "service_type",
                         data: "service_types",
                         textField: "service_type",
                         valueField: "id",
                     },
+
 
                 ],
                 prepareFormOptions: {
@@ -467,8 +462,8 @@ const CreateServicePriceDialog = (() => {
                 onPrepareForm: (me, data) => {
                     console.log(123,data.service_details);
 
-                    me.controls.unit_type.value = data.service_details.unit_type;
-                    me.controls.type.value = data.service_details.type;
+                    me.controls.charge_as.value = data.service_details.charge_as;
+                    // me.controls.type.value = data.service_details.type;
                 },
 
 
