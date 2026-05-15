@@ -228,6 +228,44 @@ class Contract
 
         return $query->value('id');
     }
+
+    public static function datesOverlap($startA, $endA, $startB, $endB): bool
+    {
+        if (!$startA || !$endA || !$startB || !$endB) {
+            return false;
+        }
+        $startA = date('Y-m-d', strtotime($startA));
+        $endA = date('Y-m-d', strtotime($endA));
+        $startB = date('Y-m-d', strtotime( $startB));
+        $endB = date('Y-m-d', strtotime($endB));
+
+        return $startA <= $endB && $endA >= $startB;
+    }
+
+    /**
+     * Find a renewal on the same unit (from another contract) whose period overlaps the given range.
+     */
+    public static function findOverlappingRenewalOnUnit($spaceId, $startDate, $endDate, $excludeContractId)
+    {
+        $spaceId = $spaceId;
+        $excludeContractId = $excludeContractId;
+        if ($spaceId <= 0 || !$startDate || !$endDate) {
+            return null;
+        }
+
+        $startDate = date('Y-m-d', strtotime((string) $startDate));
+        $endDate = date('Y-m-d', strtotime((string) $endDate));
+
+        return DB::table('contract_renewals as cr')
+            ->join('building_spaces as bs', 'bs.id', '=', 'cr.space_id')
+            ->where('cr.space_id', $spaceId)
+            ->where('cr.contract_id', '<>', $excludeContractId)
+            ->whereRaw('DATE(cr.start_date) <= ?', [$endDate])
+            ->whereRaw('DATE(COALESCE(cr.end_date, cr.start_date)) >= ?', [$startDate])
+            ->select('bs.code as space_code', 'cr.start_date', 'cr.end_date', 'cr.contract_id')
+            ->first();
+    }
+
 //  Set building_spaces to Available when no Active/Pending contract remains on that space.
 
     public static function syncBuildingSpaceAvailabilityForSpaceIds($spaceIds): void
@@ -839,6 +877,28 @@ class Contract
             if ($dup_id) {
                 return DV::error('The selected unit already has a contract.');
             }
+        }
+        $overlapRenewal = self::findOverlappingRenewalOnUnit(
+            $new_space_id,
+            $inputs['start_date'],
+            $inputs['end_date'],
+            (int) $old->id
+        );
+        if ($overlapRenewal) {
+            $unitCode = trim(($overlapRenewal->space_code ?? ''));
+            $msg = 'Renewal dates overlap an existing contract period for unit '
+                . ($unitCode !== '' ? $unitCode : 'this unit')
+                . '.';
+            $conflictStart = $overlapRenewal->start_date
+                ? date('d-M-Y', strtotime( $overlapRenewal->start_date))
+                : '';
+            $conflictEnd = $overlapRenewal->end_date
+                ? date('d-M-Y', strtotime( $overlapRenewal->end_date))
+                : $conflictStart;
+            if ($conflictStart !== '' && $conflictEnd !== '') {
+                $msg .= ' (' . $conflictStart . ' – ' . $conflictEnd . ')';
+            }
+            return DV::error($msg);
         }
         $unitChanged = $new_space_id != $effectiveOldSpaceId;
         $updateContract = [
