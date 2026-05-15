@@ -122,50 +122,55 @@ class Amenity extends VSModel
     }
     function createAmenityCode($branch_id, $building_id, $floor_number, $amenity_id)
     {
-        $buildingName = DB::table('buildings')
+        $building = DB::table('buildings')
+            ->select('name', 'prefix')
             ->where('id', $building_id)
-            ->value('name');
+            ->first();
 
-        $prefixLetters = 'B';
-
-        if ($buildingName) {
+        $prefixLetters = trim($building->prefix ?? '');
+        if (empty($prefixLetters)) {
+            $buildingName = $building->name ?? 'B';
             $words = explode(' ', $buildingName);
             $prefixLetters = '';
-
             foreach ($words as $word) {
                 if (!empty($word)) {
                     $prefixLetters .= strtoupper(substr($word, 0, 1));
                 }
             }
         }
-
-        $floorPrefix = 'F' . $floor_number;
-
+        $amenity_count = DB::table('amenities as a')
+            ->join('floors as f', 'a.floor_id', '=', 'f.id')
+            ->where('a.building_id', $building_id)
+            ->where('f.floor_number', $floor_number)
+            ->count();
         $row = DB::table('amenity_code_control')
             ->where('branch_id', $branch_id)
             ->where('building_id', $building_id)
             ->where('prefix', $floor_number)
             ->first();
-
-        $next_num = $row ? $row->last_id + 1 : 1;
-
+        $next_num = $amenity_count;
         $roomNumber = ($floor_number * 100) + $next_num;
-
-        $fullCode = 'A-' . $roomNumber;
-
+        $fullCode = strtoupper($prefixLetters) . '-A' . $roomNumber;
         DB::table('amenities')
             ->where('id', $amenity_id)
-            ->update(['code' => $fullCode]);
+            ->update([
+                'code' => $fullCode
+            ]);
 
         if ($row) {
+
             DB::table('amenity_code_control')
                 ->where('id', $row->id)
-                ->update(['last_id' => $next_num]);
+                ->update([
+                    'last_id' => $next_num
+                ]);
+
         } else {
+
             DB::table('amenity_code_control')
                 ->insert([
                     'branch_id'   => $branch_id,
-                    'building_id' => $building_id, 
+                    'building_id' => $building_id,
                     'prefix'      => $floor_number,
                     'last_id'     => $next_num,
                 ]);
@@ -274,13 +279,98 @@ class Amenity extends VSModel
         if (self::hasActiveReservation($id)) {
             return DV::error('Cannot delete because it has reservation records.');
         }
-      
         $deleted = DB::table('amenities')->where('id', $id)->delete();
         if($deleted){
             DB::table('maintenances')->where('amenity_id', $id)->delete();
         }
         return $deleted ? DV::depends($deleted, ['action' => 'deleted']) : DV::error('Delete failed.');
     }
+
+    // public function deleteAmenity($id = null)
+    // {
+    //     $id = $id ?? $this->id;
+
+    //     if (self::hasActiveReservation($id)) {
+    //         return DV::error('Cannot delete because it has reservation records.');
+    //     }
+
+    //     $amenity = DB::table('amenities')
+    //         ->where('id', $id)
+    //         ->first();
+
+    //     if (!$amenity) {
+    //         return DV::error('Amenity not found.');
+    //     }
+
+    //     DB::beginTransaction();
+
+    //     try {
+
+    //         // 1. Delete main record
+    //         DB::table('amenities')
+    //             ->where('id', $id)
+    //             ->delete();
+
+    //         // 2. Delete related data
+    //         DB::table('maintenances')
+    //             ->where('amenity_id', $id)
+    //             ->delete();
+
+    //         // 3. Get remaining amenities (ordered)
+    //         $amenities = DB::table('amenities')
+    //             ->where('building_id', $amenity->building_id)
+    //             ->where('floor_id', $amenity->floor_id)
+    //             ->orderBy('id', 'asc')
+    //             ->get();
+
+    //         // 4. Get building prefix
+    //         $building = DB::table('buildings')
+    //             ->select('name', 'prefix')
+    //             ->where('id', $amenity->building_id)
+    //             ->first();
+
+    //         $prefix = trim($building->prefix ?? '');
+
+    //         if (empty($prefix)) {
+    //             $words = explode(' ', $building->name ?? 'B');
+    //             $prefix = '';
+
+    //             foreach ($words as $word) {
+    //                 if (!empty($word)) {
+    //                     $prefix .= strtoupper(substr($word, 0, 1));
+    //                 }
+    //             }
+    //         }
+
+    //         // 5. Rebuild codes in order
+    //         $i = 1;
+
+    //         foreach ($amenities as $a) {
+
+    //             $roomNumber = ($amenity->floor_number ?? 1) * 100 + $i;
+
+    //             $newCode = strtoupper($prefix) . '-A' . $roomNumber;
+
+    //             DB::table('amenities')
+    //                 ->where('id', $a->id)
+    //                 ->update([
+    //                     'code' => $newCode
+    //                 ]);
+
+    //             $i++;
+    //         }
+
+    //         DB::commit();
+
+    //         return DV::success(['action' => 'deleted']);
+
+    //     } catch (\Exception $e) {
+
+    //         DB::rollBack();
+
+    //         return DV::error('Delete failed.');
+    //     }
+    // }
 
     function updateAmenityStatus($status_id, $id = null, $ss = null) {
         $ss = $ss ? $ss : $this->userInfo;

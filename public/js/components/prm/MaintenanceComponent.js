@@ -344,50 +344,57 @@ const CreateMaintenanceDialog = (() => {
 
     self.show = (op) => {
         dialog = dialog || new GeneralDialog({
-            cssClass: "modal-lg vs-modal vs-modal--compact",
+            cssClass: "modal-md vs-modal vs-modal--compact",
             backdrop: "static",
             keyboard: true,
             createContent: () => `
-                <div class="maintenance-form-sections py-1">
-                    <section class="maintenance-form-section border rounded-2 p-3 mb-3 bg-white">
-                        <h6 class="text-uppercase text-muted fw-semibold small mb-3 d-flex align-items-center gap-1"><i class="fas fa-map-marker-alt"></i> Location & unit</h6>
+                <div class="maintenance-form-sections p-2">
+                    <section class="maintenance-form-section mb-3 bg-white">
                         <div class="row g-3">
-                            <div class="col-12 col-sm-6">
+                            <div class="col-12 col-sm-12">
                                 <select data-style="material" name="building_id" class="data-input form-control" data-field="building_id" placeholder="Building"></select>
                             </div>
-                            <div class="col-12 col-sm-3">
+
+                        </div>
+                    </section>
+                    <section class="maintenance-form-section mb-3 bg-white">
+                        <div class="row">
+                            <div  id="_maintenance_type_unit_row" class="col-6">
                                 <select data-style="material" name="type_unit" class="data-input form-control" data-field="type_unit" id="_maintenance_type_unit" placeholder="Type" required><option value="">Select type</option><option value="space">Space</option><option value="amenity">Amenity</option></select>
                             </div>
-                            <div id="_maintenance_unit_space_row" class="col-3" style="display:none;">
+                            <div id="_maintenance_unit_space_row" class="col-6" style="display:none;">
                                 <select data-style="material" name="space_id" class="data-input form-control" data-field="space_id" id="_maintenance_space_id" placeholder="Unit"></select>
                             </div>
-                            <div id="_maintenance_unit_amenity_row" class="col-3" style="display:none;">
+                            <div id="_maintenance_unit_amenity_row" class="col-6" style="display:none;">
                                 <select data-style="material" name="amenity_id" class="data-input form-control" data-field="amenity_id" placeholder="amenity"><option value="">Select amenity</option></select>
                             </div>
                         </div>
                     </section>
-                    <section class="maintenance-form-section border rounded-2 p-3 mb-3 bg-white">
-                        <h6 class="text-uppercase text-muted fw-semibold small mb-3 d-flex align-items-center gap-1"><i class="fas fa-calendar-alt"></i> Timestamp</h6>
-                        <div class="row g-3">
-                            <div class="col-6 col-md-3">
+                    <section class="maintenance-form-section  mb-3 bg-white">
+                        <div class="row">
+                            <div class="col-12 col-md-6">
                                 <div class="vs-material-field">
                                     <input type="text" data-type="date" name="start_date" class="data-input form-control" data-field="start_date" placeholder=" ">
                                     <label>Start date</label>
                                 </div>
                             </div>
-                            <div class="col-6 col-md-3">
+                            <div class="col-12 col-md-6">
                                 <div class="vs-material-field">
                                     <input type="time" name="start_time" class="data-input form-control" data-field="start_time"  placeholder=" ">
                                     <label>Start time</label>
                                 </div>
                             </div>
-                            <div class="col-6 col-md-3">
+                        </div>
+                    </section>
+                     <section class="maintenance-form-section  mb-3 bg-white">
+                        <div class="row">
+                            <div class="col-12 col-md-6">
                                 <div class="vs-material-field">
                                     <input type="text" data-type="date" name="end_date" class="data-input form-control" data-field="end_date" placeholder=" ">
                                     <label>End date</label>
                                 </div>
                             </div>
-                            <div class="col-6 col-md-3">
+                            <div class="col-12 col-md-6">
                                 <div class="vs-material-field">
                                     <input type="time" name="end_time" class="data-input form-control" data-field="end_time" placeholder=" ">
                                     <label>End time</label>
@@ -395,8 +402,7 @@ const CreateMaintenanceDialog = (() => {
                             </div>
                         </div>
                     </section>
-                    <section class="maintenance-form-section border rounded-2 p-3 mb-3 bg-white">
-                        <h6 class="text-uppercase text-muted fw-semibold small mb-3 d-flex align-items-center gap-1"><i class="fas fa-comment"></i>Remark</h6>
+                    <section class="maintenance-form-section mb-3 bg-white">
                         <div class="vs-material-field">
                             <textarea name="remarks" class="data-input form-control" data-field="remarks" rows="2" placeholder=" "></textarea>
                             <label>Additional notes</label>
@@ -406,10 +412,12 @@ const CreateMaintenanceDialog = (() => {
             `,
             contentCreated: (me) => {
                 const typeUnit = me.controls?.type_unit;
+                const typeUnitRow = me.divModal?.querySelector("#_maintenance_type_unit_row");
                 const spaceRow = me.divModal?.querySelector("#_maintenance_unit_space_row");
                 const amenityRow = me.divModal?.querySelector("#_maintenance_unit_amenity_row");
                 const toggleUnitFields = () => {
                     const val = typeUnit?.value || "";
+                    if (typeUnitRow) typeUnitRow.className = val !== "" ? "col-6" : "col-12";
                     if (spaceRow) spaceRow.style.display = val === "space" ? "" : "none";
                     if (amenityRow) amenityRow.style.display = val === "amenity" ? "" : "none";
                     if (val !== "space" && me.controls?.space_id) me.controls.space_id.value = "";
