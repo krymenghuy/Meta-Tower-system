@@ -9,8 +9,7 @@ var ServiceComponent = (() => {
     mThis.elFilter_category = mThis.self.querySelector('#_service_category_id');
     mThis.elFilter_type = mThis.self.querySelector('#_service_type_id');
     mThis.elFilter_status = mThis.self.querySelector('#_status_id');
-    mThis.elFilter_kind = mThis.self.querySelector('#_filter_service_type');
-    mThis.elFilter_charge_as = mThis.self.querySelector('#_filter_service_charge_as');
+    mThis.elFilter_charge_as = mThis.self.querySelector('#_charge_as');
     mThis.elSearch = mThis.self.querySelector("#_search_service");
 
 
@@ -216,8 +215,7 @@ var ServiceComponent = (() => {
             category_id: mThis.elFilter_category.value,
             type_id: mThis.elFilter_category.value,
             status_id: mThis.elFilter_status.value,
-            type: mThis.elFilter_kind ? mThis.elFilter_kind.value : '',
-            unit_type: mThis.elFilter_charge_as ? mThis.elFilter_charge_as.value : '',
+            charge_as: mThis.elFilter_charge_as.value,
             search_value: mThis.elSearch.value,
         };
 
@@ -392,34 +390,10 @@ var ServiceComponent = (() => {
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
                 VSUtil.setComboItems(mThis.elFilter_category, d.service_categories, 'id', 'service_category', '', 'All Categories ', '');
-                VSUtil.setComboItems(mThis.elFilter_type, d.service_types, 'id', 'service_type', '', 'All Types ', '');
-                VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'status_name', '', 'All Statuses ', '');
-                VSUtil.setComboItems(
-                    mThis.elFilter_kind,
-                    [
-                        { id: '0', type_label: 'Subscription' },
-                        { id: '1', type_label: 'Request' },
-                    ],
-                    'id',
-                    'type_label',
-                    '',
-                    'All Types ',
-                    '',
-                );
-                VSUtil.setComboItems(
-                    mThis.elFilter_charge_as,
-                    [
-                        { id: 'per_unit', charge_label: 'Per Unit' },
-                        { id: 'one_time', charge_label: 'One Time' },
-                        { id: 'hour', charge_label: 'Per Hour' },
-                        { id: 'month', charge_label: 'Per Month' },
-                    ],
-                    'id',
-                    'charge_label',
-                    '',
-                    'All Charge As ',
-                    '',
-                );
+                VSUtil.setComboItems(mThis.elFilter_type, d.service_types, 'id', 'service_type', '', 'All Types', '');
+                VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'status_name', '', 'All Statuses', '');
+                VSUtil.setComboItems(mThis.elFilter_charge_as, d.charge_as, 'id', 'name', '', 'All Charge', '');
+
                 if (typeof onFinish === 'function') onFinish();
             })
     }

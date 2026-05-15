@@ -11,9 +11,11 @@
                 <select type="id" id="_service_type_id" class="data-input filter-field" data-field="type_id"></select>
             </div>
             <div class="col-12 col-md-6 col-lg-2 ">
+                <select type="id" id="_charge_as" class="data-input filter-field" data-field="charge_as"></select>
+            </div>
+            <div class="col-12 col-md-6 col-lg-2  d-none">
                 <select type="id" id="_status_id" class="data-input filter-field" data-field="status_id"></select>
             </div>
-
             <div class="col-12 col-md-auto ms-md-auto text-md-end">
                 <button type="button" class="btnAddNewPrm w-100 w-md-auto" id="_btnService">
                     <i class="fa-solid fa-circle-plus me-2"></i>

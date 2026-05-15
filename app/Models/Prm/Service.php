@@ -90,14 +90,7 @@ class Service
             $str_moreWhere .= ' AND s.status_id =' . $status_id ;
         }
         if($charge_as){
-            $str_moreWhere .= ' AND s.charge_as =' . $charge_as ;
-        }
-        if ($type_id !== null && $type_id !== '' && in_array((string) $type_id, ['0', '1'], true)) {
-            $str_moreWhere .= ' AND s.type = ' . (int) $type_id;
-        }
-        $allowedUnitTypes = ['per_unit', 'one_time', 'hour', 'month'];
-        if ($charge_as !== null && $charge_as !== '' && in_array($charge_as, $allowedUnitTypes, true)) {
-            $str_moreWhere .= ' AND s.unit_type = ' . DB::connection()->getPdo()->quote($charge_as);
+            $str_moreWhere .= " AND s.charge_as = '$charge_as'";
         }
         $query = DB::table('services as s')
             ->join('service_categories as sc','sc.id','=','s.category_id')
@@ -133,7 +126,13 @@ class Service
             'service_details' => $service_details,
             'statuses' => GeneralSettings::options_service_status($ss),
             'service_categories' => GeneralSettings::options_service_categories($ss),
-            'service_types' => GeneralSettings::options_service_types($ss)
+            'service_types' => GeneralSettings::options_service_types($ss),
+            'charge_as' => [
+                            ['id' => 'per_unit', 'name' => 'Per Unit'],
+                            ['id' => 'one_time', 'name' => 'One Time'],
+                            ['id' => 'hour', 'name' => 'Per Hour'],
+                            ['id' => 'month', 'name' => 'Per Month'],
+                        ],
         ];
     }
 
