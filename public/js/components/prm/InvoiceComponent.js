@@ -352,10 +352,6 @@ var InvoiceComponent = (() => {
                         "—"}
                     </td>
                     <td class="text-center text-muted small">${qty}</td>
-                    <td class="text-center text-muted small">${
-                        item.unit_type ? item.unit_type.trim() : "—"
-                    }
-                    </td>
                     <td class="text-center small">${formatDate(
                         item.start_date
                     )}</td>
@@ -395,8 +391,7 @@ var InvoiceComponent = (() => {
                         <thead style="background:#e1e5f2;">
                             <tr style= background-color:#E1E5F2;" >
                                 <th class="text-center" >Item Description </th>
-                                <th class="text-center" >Quantity</th>
-                                <th class="text-center" >Unit</th>
+                                <th class="text-center" >Qty</th>
                                 <th class="text-center" >Start Date</th>
                                 <th class="text-center" >End Date</th>
                                 <th class="text-end" >Price</th>
@@ -407,12 +402,12 @@ var InvoiceComponent = (() => {
                         </thead>
                         <tbody>
                             ${itemsHtml ||
-                                '<tr><td colspan="9" class="text-center py-4 text-muted">No items found</td></tr>'}
+                                '<tr><td colspan="8" class="text-center py-4 text-muted">No items found</td></tr>'}
                         </tbody>
                         <tfoot class="table-light fw-bold">
                                 <!-- Displaying Net Total -->
                             <tr>
-                                <td colspan="8" class="text-end  ">Total Item</td>
+                                <td colspan="7" class="text-end  ">Total Item</td>
                                 <td colspan="1" class="text-end  fs-6">
                                     ${currency}${fmt(
             parseFloat(invoice.amount || 0)
@@ -420,7 +415,7 @@ var InvoiceComponent = (() => {
                                 </td>
                             </tr>
                             <tr>
-                                <td colspan="8" class="text-end text-danger">Total Discount</td>
+                                <td colspan="7" class="text-end text-danger">Total Discount</td>
                                 <td colspan="1" class="text-end text-danger fs-6">
                                     ${(() => {
                                         const discVal = parseFloat(
@@ -443,7 +438,7 @@ var InvoiceComponent = (() => {
 
                             <!-- Displaying Net Total -->
                             <tr>
-                                <td colspan="8" class="text-end  text-primary">Total Amount Due</td>
+                                <td colspan="7" class="text-end  text-primary">Total Amount Due</td>
                                 <td colspan="1" class="text-end text-success fs-6">
                                     ${currency}${fmt(
             parseFloat(invoice.amount_payable || 0)
@@ -709,8 +704,7 @@ const InvoiceDialog = (() => {
                                                     <option value="3">Commercial</option>
                                                 </select>
                                         </div>
-
-                                         <div class="field-row ">
+                                        <div class="field-row ">
                                             <label class="field-label fw-semibold">Due Date </label>
                                             <span class="field-sep">:</span>
                                             <input type="text" data-type="date" name="due_date" data-field="due_date" class="form-control data-input field-input" required placeholder=" ">
@@ -861,6 +855,14 @@ const InvoiceDialog = (() => {
                     ) {
                         return cv_interact.error("Please select Space.");
                     }
+
+                    if (
+                        !me.controls.invoice_type.value ||
+                        me.controls.invoice_type.value === ""
+                    ) {
+                        return cv_interact.error("Please select Invoice Type.");
+                    }
+                    const invoiceType = me.controls.invoice_type.value;
                     const spaces = me._tenantSpaces || [];
                     const months = me._tenantMonths || [];
                     const selectedSpaceId =
@@ -942,14 +944,19 @@ const InvoiceDialog = (() => {
                                         <div style="flex:1; height:1px; background:#e0e0e0;"></div>
                                     </div>
                                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                                        <div class="material-input outlined" style="margin-bottom: 1rem;">
+                                        <div class="material-input outlined" style="margin-bottom: 1rem; ${Number(invoiceType) === 2 ? 'grid-column: span 2;' : ''}">
                                             <input class="data-input form-control bg-light cursor-blocked" data-field="price" name="price" type="text" readonly style=" color:#0c447c;">
                                             <label style="color:#777;">Effective Price ($)</label>
                                         </div>
-                                        <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                            <input class="data-input form-control" data-field="tax_rate" name="tax_rate" type="text" inputmode="decimal" placeholder="0">
-                                            <label style="color:#777;">Tax %</label>
-                                        </div>
+                                        ${
+                                            Number(invoiceType) === 2
+                                                ? ""
+                                                : `                                        
+                                            <div class="material-input outlined" style="margin-bottom: 1rem;">
+                                                <input class="data-input form-control" data-field="tax_rate" name="tax_rate" type="text" inputmode="decimal" placeholder="0">
+                                                <label style="color:#777;">Tax %</label>
+                                            </div>`
+                                        }
                                         <div class="material-input outlined" style="display:flex; gap:8px; align-items:flex-end; grid-column: span 2;">
                                             <div style="flex:1">
                                                 <input class="data-input form-control" data-field="discount" name="discount" type="text" inputmode="decimal" placeholder="0">
@@ -1176,129 +1183,200 @@ const InvoiceDialog = (() => {
                                 "display:flex; flex-direction:column;";
 
                             div.innerHTML = `
-                                    <div>
-                                        <div class="d-flex align-items-center  mb-3">
-                                            <span style=" color:#0C447C; font-size:13px;">Readings</span>
-                                            <div style="flex:1; height:1px; background:#e0e0e0;"></div>
+                                <div class="d-flex mb-3" style="border-bottom:1px solid #eee; gap:16px;">
+                                    <div id="btn_tab_reading" style="cursor:pointer; padding:8px 12px; border-bottom:2px solid #0C447C; color:#0C447C; font-weight:600;">By Reading</div>
+                                    <div id="btn_tab_manual" style="cursor:pointer; padding:8px 12px; color:#777;">Manual Entry</div>
+                                </div>
+
+                                <div id="section_reading">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <span style="color:#0C447C; font-size:13px;">Readings</span>
+                                        <div style="flex:1; height:1px; background:#e0e0e0; margin-left:8px;"></div>
+                                    </div>
+                                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                                        <div class="material-input outlined" style="margin-bottom: 1rem;">
+                                            <input class="data-input form-control" data-field="old_electric" name="old_electric" type="text" inputmode="decimal" placeholder="0">
+                                            <label style="color:#777;">Old Reading (kWh)</label>
                                         </div>
-                                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                                            <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                                <input class="data-input form-control" data-field="old_electric" name="old_electric" type="text" inputmode="decimal" placeholder="0" min="0">
-                                                <label style="color:#777;">Old Reading (kWh)</label>
-                                            </div>
-                                            <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                                <input class="data-input form-control" data-field="new_electric" name="new_electric" type="text" inputmode="decimal" placeholder="0" min="0">
-                                                <label style="color:#777;">New Reading (kWh)</label>
-                                            </div>
+                                        <div class="material-input outlined" style="margin-bottom: 1rem;">
+                                            <input class="data-input form-control" data-field="new_electric" name="new_electric" type="text" inputmode="decimal" placeholder="0">
+                                            <label style="color:#777;">New Reading (kWh)</label>
                                         </div>
                                     </div>
 
-                                    <div>
-                                        <div class="d-flex align-items-center  mb-3">
-                                            <span style=" color:#0C447C; font-size:13px;">Billing Period</span>
-                                            <div style="flex:1; height:1px; background:#e0e0e0;"></div>
+                                    <div class="d-flex align-items-center mb-3">
+                                        <span style="color:#0C447C; font-size:13px;">Calculation</span>
+                                        <div style="flex:1; height:1px; background:#e0e0e0; margin-left:8px;"></div>
+                                    </div>
+                                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                                        <div class="material-input outlined" style="margin-bottom: 1rem;">
+                                            <input class="data-input form-control bg-light cursor-blocked" data-field="units_used" name="units_used" type="text" readonly placeholder="0.00">
+                                            <label style="color:#777;">Units Used (kWh)</label>
                                         </div>
-                                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                                            <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                                <input class="data-input form-control" data-field="start_date" name="start_date" type="text" data-type="date" placeholder="d-m-y">
-                                                <label style="color:#777;">Start Date</label>
-                                            </div>
-                                            <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                                <input class="data-input form-control" data-field="end_date" name="end_date" type="text" data-type="date" placeholder="d-m-y">
-                                                <label style="color:#777;">End Date</label>
-                                            </div>
+                                        <div class="material-input outlined" style="margin-bottom: 1rem;">
+                                            <input class="data-input form-control" data-field="price_per_unit" name="price_per_unit" type="text" inputmode="decimal" placeholder="0.00">
+                                            <label style="color:#777;">Price per kWh ($)</label>
                                         </div>
                                     </div>
+                                </div>
 
-                                    <div>
-                                        <div class="d-flex align-items-center mb-3">
-                                            <span style=" color:#0C447C; font-size:13px;">Calculation</span>
-                                            <div style="flex:1; height:1px; background:#e0e0e0;"></div>
+                                <div id="section_manual" style="display:none;">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <span style="color:#0C447C; font-size:13px;">Manual Entry</span>
+                                        <div style="flex:1; height:1px; background:#e0e0e0; margin-left:8px;"></div>
+                                    </div>
+                                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                                        <div class="material-input outlined" style="margin-bottom: 1rem;">
+                                            <input class="data-input form-control" data-field="start_date" name="start_date" type="text" data-type="date" placeholder="d-m-y">
+                                            <label style="color:#777;">Start Date</label>
                                         </div>
-                                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                                            <div class="material-input outlined" >
-                                                <input class="data-input form-control bg-light cursor-blocked" data-field="units_used" name="units_used" type="text" readonly style="">
-                                                <label style="color:#777;">Units Used (kWh)</label>
-                                            </div>
-                                            <div class="material-input outlined" >
-                                                <input class="data-input form-control" data-field="price_per_unit" name="price_per_unit" type="text" inputmode="decimal" placeholder="0.00" step="0.01">
-                                                <label style="color:#777;">Price per kWh ($)</label>
-                                            </div>
+                                        <div class="material-input outlined" style="margin-bottom: 1rem;">
+                                            <input class="data-input form-control" data-field="end_date" name="end_date" type="text" data-type="date" placeholder="d-m-y">
+                                            <label style="color:#777;">End Date</label>
                                         </div>
                                     </div>
+                                    <div class="material-input outlined" style="margin-bottom: 1rem;">
+                                        <input class="data-input form-control" data-field="manual_price" name="manual_price" type="text" inputmode="decimal" placeholder="0.00">
+                                        <label style="color:#777;">Price ($)</label>
+                                    </div>
+                                </div>
 
-                                    <div style="display:flex; flex-direction:column;">
-                                        <div class="material-input outlined" >
-                                            <input class="data-input form-control cursor-blocked" data-field="total_amount" name="total_amount" type="text" readonly
-                                                style="background-color: #f0f7ff; border-color: #0c447c; color: #0c447c; font-weight: bold; font-size: 1.1em;">
-                                            <label style="color:#0c447c; ">Total Amount ($)</label>
-                                        </div>
-                                        <div class="material-input outlined">
-                                            <textarea class="data-input form-control" data-field="remark" name="remark" rows="2" placeholder=" "></textarea>
-                                            <label style="color:#777;">Remark </label>
-                                        </div>
-                                    </div>
-                                `;
+                                <div class="material-input outlined" >
+                                    <input class="data-input form-control cursor-blocked" data-field="total_amount" name="total_amount" type="text" readonly
+                                        style="background-color: #f0f7ff; border-color: #0c447c; color: #0c447c; font-weight: bold; font-size: 1.1em;">
+                                    <label style="color:#0c447c; ">Total Amount ($)</label>
+                                </div>
+                                <div class="material-input outlined">
+                                    <textarea class="data-input form-control" data-field="remark" name="remark" rows="2" placeholder=" "></textarea>
+                                    <label style="color:#777;">Remark </label>
+                                </div>
+                                <input class="data-input" type="text" data-field="entry_mode" value="reading" style="display:none;">
+                            `;
                             return div;
                         },
 
                         onOpen(ibMe) {
-                            const elOld = document.querySelector(
+                            const elOld = electricDiv.querySelector(
                                 '[data-field="old_electric"]'
                             );
-                            const elNew = document.querySelector(
+                            const elNew = electricDiv.querySelector(
                                 '[data-field="new_electric"]'
                             );
-                            const elUnits = document.querySelector(
+                            const elUnits = electricDiv.querySelector(
                                 '[data-field="units_used"]'
                             );
-                            const elPPU = document.querySelector(
+                            const elPPU = electricDiv.querySelector(
                                 '[data-field="price_per_unit"]'
                             );
-                            const elTotal = document.querySelector(
+                            const elManualPrice = electricDiv.querySelector(
+                                '[data-field="manual_price"]'
+                            );
+                            const elTotal = electricDiv.querySelector(
                                 '[data-field="total_amount"]'
                             );
-                            const elRemark = document.querySelector(
+                            const elRemark = electricDiv.querySelector(
                                 '[data-field="remark"]'
                             );
-                            const elStartDate = document.querySelector(
+                            const elStartDate = electricDiv.querySelector(
                                 '[data-field="start_date"]'
                             );
-                            const elEndDate = document.querySelector(
+                            const elEndDate = electricDiv.querySelector(
                                 '[data-field="end_date"]'
                             );
+                            const elMode = electricDiv.querySelector(
+                                '[data-field="entry_mode"]'
+                            );
+
+                            const btnTabReading = electricDiv.querySelector(
+                                "#btn_tab_reading"
+                            );
+                            const btnTabManual = electricDiv.querySelector(
+                                "#btn_tab_manual"
+                            );
+                            const secReading = electricDiv.querySelector(
+                                "#section_reading"
+                            );
+                            const secManual = electricDiv.querySelector(
+                                "#section_manual"
+                            );
+
+                            const switchTab = mode => {
+                                elMode.value = mode;
+                                if (mode === "reading") {
+                                    secReading.style.display = "block";
+                                    secManual.style.display = "none";
+                                    btnTabReading.style.color = "#0C447C";
+                                    btnTabReading.style.fontWeight = "600";
+                                    btnTabReading.style.borderBottom =
+                                        "2px solid #0C447C";
+                                    btnTabManual.style.color = "#777";
+                                    btnTabManual.style.fontWeight = "400";
+                                    btnTabManual.style.borderBottom = "none";
+                                } else {
+                                    secReading.style.display = "none";
+                                    secManual.style.display = "block";
+                                    btnTabManual.style.color = "#0C447C";
+                                    btnTabManual.style.fontWeight = "600";
+                                    btnTabManual.style.borderBottom =
+                                        "2px solid #0C447C";
+                                    btnTabReading.style.color = "#777";
+                                    btnTabReading.style.fontWeight = "400";
+                                    btnTabReading.style.borderBottom = "none";
+                                }
+                                recalc();
+                            };
+
+                            btnTabReading.onclick = () => switchTab("reading");
+                            btnTabManual.onclick = () => switchTab("manual");
 
                             const recalc = () => {
-                                const oldVal = parseFloat(elOld?.value) || 0;
-                                const newVal = parseFloat(elNew?.value) || 0;
-                                const ppu = parseFloat(elPPU?.value) || 0;
+                                const mode = elMode.value;
+                                if (mode === "reading") {
+                                    const oldVal =
+                                        parseFloat(elOld?.value) || 0;
+                                    const newVal =
+                                        parseFloat(elNew?.value) || 0;
+                                    const ppu = parseFloat(elPPU?.value) || 0;
 
-                                const units = newVal - oldVal;
-                                if (elUnits) {
-                                    elUnits.value =
-                                        units > 0 ? units.toFixed(2) : "0.00";
-                                    elUnits.style.color =
-                                        units < 0 ? "red" : "#212529";
-                                }
+                                    const units = newVal - oldVal;
+                                    if (elUnits) {
+                                        elUnits.value =
+                                            units > 0
+                                                ? units.toFixed(2)
+                                                : "0.00";
+                                        elUnits.style.color =
+                                            units < 0 ? "red" : "#212529";
+                                    }
 
-                                const total = Math.max(0, units) * ppu;
-                                if (elTotal) elTotal.value = total.toFixed(2);
+                                    const total = Math.max(0, units) * ppu;
+                                    if (elTotal)
+                                        elTotal.value = total.toFixed(2);
 
-                                if (elRemark) {
+                                    if (elRemark) {
+                                        elRemark.value = `Electric — ${Math.max(
+                                            0,
+                                            units
+                                        ).toFixed(2)} kWh × $${ppu.toFixed(2)}`;
+                                    }
+                                } else {
+                                    const price =
+                                        parseFloat(elManualPrice?.value) || 0;
+                                    if (elTotal)
+                                        elTotal.value = price.toFixed(2);
+
                                     const start = elStartDate?.value || "";
                                     const end = elEndDate?.value || "";
-                                    const period =
-                                        start && end
-                                            ? ` (${start} - ${end})`
-                                            : "";
-                                    elRemark.value = `Electric${period} — ${Math.max(
-                                        0,
-                                        units
-                                    ).toFixed(2)} kWh × $${ppu.toFixed(2)}`;
+                                    if (elRemark) {
+                                        const period =
+                                            start && end
+                                                ? ` (${start} - ${end})`
+                                                : "";
+                                        elRemark.value = `Electric${period} — Manual Entry`;
+                                    }
                                 }
                             };
 
-                            [elOld, elNew, elPPU].forEach(el => {
+                            [elOld, elNew, elPPU, elManualPrice].forEach(el => {
                                 if (!el) return;
                                 el.addEventListener("input", recalc);
                                 el.addEventListener("input", e => {
@@ -1332,60 +1410,92 @@ const InvoiceDialog = (() => {
                         },
 
                         onConfirm(data, btn, ibMe) {
-                            const oldReading =
-                                parseFloat(data.old_electric) || 0;
-                            const newReading =
-                                parseFloat(data.new_electric) || 0;
-                            const ppu = parseFloat(data.price_per_unit) || 0;
-                            const units = Math.max(0, newReading - oldReading);
+                            const mode = data.entry_mode || "reading";
 
-                            if (newReading <= 0) {
-                                return ibMe.setError(
-                                    "New reading is required and must be greater than 0."
+                            if (mode === "reading") {
+                                const oldReading =
+                                    parseFloat(data.old_electric) || 0;
+                                const newReading =
+                                    parseFloat(data.new_electric) || 0;
+                                const ppu =
+                                    parseFloat(data.price_per_unit) || 0;
+                                const units = Math.max(
+                                    0,
+                                    newReading - oldReading
                                 );
-                            }
-                            if (newReading <= oldReading) {
-                                return ibMe.setError(
-                                    "New reading must be greater than old reading."
+
+                                if (newReading <= 0) {
+                                    return ibMe.setError(
+                                        "New reading is required."
+                                    );
+                                }
+                                if (newReading <= oldReading) {
+                                    return ibMe.setError(
+                                        "New reading must be greater than old reading."
+                                    );
+                                }
+                                if (ppu <= 0) {
+                                    return ibMe.setError(
+                                        "Price per kWh is required."
+                                    );
+                                }
+
+                                me.itemsView.addRow(
+                                    {
+                                        item_id: null,
+                                        item_name: "Electric",
+                                        type: "utility",
+                                        price: ppu,
+                                        qty: units,
+                                        remarks: data.remark || `Electric`,
+                                        unit_type: "kWh",
+                                        old_reading: oldReading,
+                                        new_reading: newReading,
+                                        units_used: units,
+                                        price_per_unit: ppu,
+                                        discount: 0,
+                                        discount_type: "percent"
+                                    },
+                                    0
                                 );
-                            }
-                            if (ppu <= 0) {
-                                return ibMe.setError(
-                                    "Price per kWh is required. Please enter a positive amount."
-                                );
-                            }
-                            if (
-                                data.start_date &&
-                                data.end_date &&
-                                new Date(data.end_date) <
+                            } else {
+                                const price =
+                                    parseFloat(data.manual_price) || 0;
+                                if (price <= 0) {
+                                    return ibMe.setError("Price is required.");
+                                }
+                                if (!data.start_date || !data.end_date) {
+                                    return ibMe.setError(
+                                        "Start and End dates are required."
+                                    );
+                                }
+                                if (
+                                    new Date(data.end_date) <
                                     new Date(data.start_date)
-                            ) {
-                                return ibMe.setError(
-                                    "End date cannot be before Start date."
+                                ) {
+                                    return ibMe.setError(
+                                        "End date cannot be before Start date."
+                                    );
+                                }
+
+                                me.itemsView.addRow(
+                                    {
+                                        item_id: null,
+                                        item_name: "Electric",
+                                        type: "utility",
+                                        price: price,
+                                        qty: 1,
+                                        remarks: data.remark || `Electric`,
+                                        unit_type: "Manual",
+                                        start_date: data.start_date,
+                                        end_date: data.end_date,
+                                        price_per_unit: price,
+                                        discount: 0,
+                                        discount_type: "percent"
+                                    },
+                                    0
                                 );
                             }
-
-                            me.itemsView.addRow(
-                                {
-                                    item_id: null,
-                                    item_name: "Electric",
-                                    type: "utility",
-                                    price: ppu,
-                                    qty: units,
-                                    remarks: data.remark || `Electric `,
-                                    unit_type: "kWh",
-                                    start_date: data.start_date || "",
-                                    end_date: data.end_date || "",
-                                    old_reading: oldReading,
-                                    new_reading: newReading,
-                                    units_used: units,
-                                    price_per_unit: ppu,
-                                    discount: 0,
-                                    discount_type: "percent",
-                                    tax_rate: 0
-                                },
-                                0
-                            );
 
                             cv_interact.success("Electric item added.");
                             ibMe.close();
@@ -1729,9 +1839,8 @@ const InvoiceDialog = (() => {
                                         <span style="color:#0C447C; font-size:13px;">Financials</span>
                                         <div style="flex:1; height:1px; background:#e0e0e0;"></div>
                                     </div>
-                                    
+
                                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                                        <!-- ADDED grid-column: span 2 here to make it full width -->
                                         <div class="material-input outlined" style="display:flex; gap:8px; align-items:flex-end; grid-column: span 2;">
                                             <div style="flex:1;">
                                                 <input class="data-input form-control" data-field="discount" name="discount" type="text" inputmode="decimal" placeholder="0">
@@ -1755,9 +1864,13 @@ const InvoiceDialog = (() => {
                             return div;
                         },
                         onOpen(ibMe) {
-                            const elBillingCont = serviceDiv.querySelector("#billing_period_container");
-                            const elPriceWrapper = serviceDiv.querySelector("#price_wrapper");
-                            
+                            const elBillingCont = serviceDiv.querySelector(
+                                "#billing_period_container"
+                            );
+                            const elPriceWrapper = serviceDiv.querySelector(
+                                "#price_wrapper"
+                            );
+
                             const elService = serviceDiv.querySelector(
                                 '[data-field="service_id"]'
                             );
@@ -1801,51 +1914,56 @@ const InvoiceDialog = (() => {
                                         ).toFixed(2);
 
                                     if (unit === "month") {
-                                            elDurationCont.style.display = "block";
-                                            elBillingCont.style.display = "block";
-                                            elPriceWrapper.style.gridColumn = "span 1";
-                                        } else {
-                                            elDurationCont.style.display = "none";
-                                            elDuration.value = "1"; 
-                                            elBillingCont.style.display = "none";
-                                            elPriceWrapper.style.gridColumn = "span 2";
+                                        elDurationCont.style.display = "block";
+                                        elBillingCont.style.display = "block";
+                                        elPriceWrapper.style.gridColumn =
+                                            "span 1";
+                                    } else {
+                                        elDurationCont.style.display = "none";
+                                        elDuration.value = "1";
+                                        elBillingCont.style.display = "none";
+                                        elPriceWrapper.style.gridColumn =
+                                            "span 2";
 
-                                            elStartDate.value = "";
-                                            elEndDate.value = "";
-                                        }
+                                        elStartDate.value = "";
+                                        elEndDate.value = "";
+                                    }
 
                                     recalcDates();
                                 }
                             };
-
-                            // const recalcDates = () => {
-                            //     if (elStartDate.value && elDuration.value) {
-                            //         let start = new Date(elStartDate.value);
-                            //         if (isNaN(start.getTime())) return;
-
-                            //         let months =
-                            //             parseInt(elDuration.value) || 1;
-                            //         start.setMonth(start.getMonth() + months);
-                            //         elEndDate.value = start
-                            //             .toISOString()
-                            //             .split("T")[0];
-                            //     }
-                            // };
 
                             const recalcDates = () => {
                                 if (elStartDate.value && elDuration.value) {
                                     let start = new Date(elStartDate.value);
                                     if (isNaN(start.getTime())) return;
 
-                                    let months = parseInt(elDuration.value) || 1;
+                                    let months =
+                                        parseInt(elDuration.value) || 1;
                                     let end = new Date(start);
                                     end.setMonth(end.getMonth() + months);
                                     end.setDate(end.getDate() - 1);
 
-                                    const formatDate = (date) => {
-                                        const monthsArr = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-                                        const day = String(date.getDate()).padStart(2, '0');
-                                        const month = monthsArr[date.getMonth()];
+                                    const formatDate = date => {
+                                        const monthsArr = [
+                                            "Jan",
+                                            "Feb",
+                                            "Mar",
+                                            "Apr",
+                                            "May",
+                                            "Jun",
+                                            "Jul",
+                                            "Aug",
+                                            "Sep",
+                                            "Oct",
+                                            "Nov",
+                                            "Dec"
+                                        ];
+                                        const day = String(
+                                            date.getDate()
+                                        ).padStart(2, "0");
+                                        const month =
+                                            monthsArr[date.getMonth()];
                                         const year = date.getFullYear();
                                         return `${day}-${month}-${year}`;
                                     };
@@ -1916,6 +2034,40 @@ const InvoiceDialog = (() => {
                                     ? parseInt(data.duration_months) || 1
                                     : 1;
 
+                            const dataToAdd = {
+                                item_id: data.service_id,
+                                item_name: serviceDisplayName,
+                                type: "service",
+                                price: Number(selectedService.price) || 0,
+                                qty: qtyMonths,
+                                remarks: data.remark || serviceDisplayName,
+                                unit_type: selectedService.unit_type || "Month",
+                                discount: Number(data.discount) || 0,
+                                start_date: data.start_date || "",
+                                end_date: data.end_date || "",
+                                discount_type: data.discount_type || "percent"
+                            };
+
+                            const existingIds = me.itemsView.rows
+                                .map(
+                                    row =>
+                                        row.meta?.item_id || row.data?.item_id
+                                )
+                                .filter(
+                                    id =>
+                                        id !== undefined &&
+                                        id !== "" &&
+                                        id !== null
+                                );
+                            const isDuplicate = existingIds.some(
+                                id => String(id) === String(dataToAdd.item_id)
+                            );
+                            if (isDuplicate) {
+                                return ibMe.setError(
+                                    `Service is already in the list.`
+                                );
+                            }
+
                             me.itemsView.addRow(
                                 {
                                     item_id: data.service_id,
@@ -1952,12 +2104,7 @@ const InvoiceDialog = (() => {
                     if (!me._selectedTenantId) {
                         return cv_interact.error("Please select Tenant first.");
                     }
-                    // if (
-                    //     !me.controls.space.value ||
-                    //     me.controls.space.value === ""
-                    // ) {
-                    //     return cv_interact.error("Please select Space");
-                    // }
+
                     const selectedSpaceId =
                         me.controls.space?.value || me.controls.space_id?.value;
                     if (!selectedSpaceId || selectedSpaceId === "") {
@@ -1965,6 +2112,8 @@ const InvoiceDialog = (() => {
                     }
 
                     const requests = me._requestedServices || [];
+                    console.log("All Requests", requests);
+
                     const filteredRequests = requests.filter(
                         r => String(r.space_id) === String(selectedSpaceId)
                     );
@@ -1982,9 +2131,9 @@ const InvoiceDialog = (() => {
                         )
                         .join("");
 
+                    let requestDiv = null;
                     InputBox.resetInstance("requestPopUp");
 
-                    let requestDiv = null;
                     InputBox.show({
                         title: "Service Request",
                         instanceKey: "requestPopUp",
@@ -1992,140 +2141,144 @@ const InvoiceDialog = (() => {
                             const div = document.createElement("div");
                             requestDiv = div;
                             div.style.cssText =
-                                "display:flex; flex-direction:column; ";
+                                "display:flex; flex-direction:column;";
 
                             div.innerHTML = `
-                                    <div>
-                                        <div class="d-flex align-items-center mb-3">
-                                            <span style=" color:#0C447C; font-size:13px;">Request Info</span>
-                                            <div style="flex:1; height:1px; background:#e0e0e0;"></div>
+                                <div>
+                                    <div class="d-flex align-items-center mb-3">
+                                        <span style="color:#0C447C; font-size:13px;">Request Info</span>
+                                        <div style="flex:1; height:1px; background:#e0e0e0;"></div>
+                                    </div>
+                                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                                        <div class="material-input outlined" style="margin-bottom: 1rem;">
+                                            <select class="data-input form-control" data-field="request_id" name="request_id" data-style="material" placeholder="Request No">
+                                                ${serviceRequestOption}
+                                            </select>
                                         </div>
-                                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                                            <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                                <select class="data-input form-control" data-field="request_id" name="request_id" data-style="material"  placeholder="Request No">
-                                                    ${serviceRequestOption}
+                                        <div class="material-input outlined" style="margin-bottom: 1rem;">
+                                            <input class="data-input form-control bg-light cursor-blocked" data-field="service_name" name="service_name" type="text" readonly placeholder=" ">
+                                            <label style="color:#777;">Service Name</label>
+                                        </div>
+                                        <div class="material-input outlined" style="margin-bottom: 1rem;">
+                                            <input class="data-input form-control bg-light" data-field="unit_type" name="unit_type" type="text" readonly placeholder=" ">
+                                            <label style="color:#777;">Unit Type</label>
+                                        </div>
+                                        <div class="material-input outlined" data-wrapper="duration" style="margin-bottom: 1rem;">
+                                            <input class="data-input form-control bg-light cursor-blocked" data-field="duration_hours" name="duration_hours" type="text" readonly placeholder=" ">
+                                            <label style="color:#777;">Duration (Hours)</label>
+                                        </div>
+                                        <div id="price_wrapper_requested" class="material-input outlined" style="margin-bottom: 1rem;">
+                                            <input class="data-input form-control bg-light cursor-blocked" data-field="price" name="price" type="text" readonly placeholder=" ">
+                                            <label style="color:#777;">Original Price ($)</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <div class="d-flex align-items-center mb-3">
+                                        <span style="color:#0C447C; font-size:13px;">Financials</span>
+                                        <div style="flex:1; height:1px; background:#e0e0e0;"></div>
+                                    </div>
+                                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                                        <div class="material-input outlined" style="display:flex; gap:8px; align-items:flex-end; grid-column: span 2;">
+                                            <div style="flex:1;">
+                                                <input class="data-input form-control" data-field="discount" name="discount" type="text" inputmode="decimal" placeholder="0">
+                                                <label style="color:#777;">Discount</label>
+                                            </div>
+                                            <div style="width:80px;">
+                                                <select class="data-input form-control" data-field="discount_type" name="discount_type">
+                                                    <option value="percent" selected>%</option>
+                                                    <option value="amount">$</option>
                                                 </select>
                                             </div>
-                                            <div class="material-input outlined" style="margin-bottom: 1rem;" >
-                                                <input class="data-input form-control bg-light cursor-blocked" data-field="service_name" name="service_name" type="text" readonly placeholder=" ">
-                                                <label style="color:#777;">Service Name</label>
-                                            </div>
-                                            <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                                <input class="data-input form-control bg-light" data-field="unit_type" name="unit_type" type="text" readonly placeholder=" ">
-                                                <label style="color:#777;">Unit Type</label>
-                                            </div>
-                                            <div class="material-input outlined" data-wrapper="duration" style="margin-bottom: 1rem;">
-                                                <input class="data-input form-control bg-light cursor-blocked" data-field="duration_hours" name="duration_hours" type="text" readonly placeholder=" ">
-                                                <label style="color:#777;">Duration (Hours)</label>
-                                            </div>
-                                            <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                                <input class="data-input form-control bg-light cursor-blocked" data-field="price" name="price" type="text" readonly placeholder=" ">
-                                                <label style="color:#777;">Original Price ($)</label>
-                                            </div>
                                         </div>
                                     </div>
 
-                                    <div>
-                                        <div class="d-flex align-items-center mb-3">
-                                            <span style=" color:#0C447C; font-size:13px;">Financials</span>
-                                            <div style="flex:1; height:1px; background:#e0e0e0;"></div>
-                                        </div>
-                                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                                            <div class="material-input outlined" style="display:flex; gap:8px; align-items:flex-end;">
-                                                <div style="flex:1">
-                                                    <input class="data-input form-control" data-field="discount" name="discount" type="text" inputmode="decimal" placeholder="0">
-                                                    <label style="color:#777;">Discount</label>
-                                                </div>
-                                                <div style="width:80px;">
-                                                    <select class="data-input form-control" data-field="discount_type" name="discount_type">
-                                                        <option value="percent">%</option>
-                                                        <option value="amount">$</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div class="material-input outlined">
-                                                <input class="data-input form-control" data-field="tax_rate" name="tax_rate" type="text" placeholder="0">
-                                                <label style="color:#777;">Tax (%)</label>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="material-input outlined">
-                                        <textarea class="data-input form-control" data-field="remark" name="remark" rows="2" placeholder=" "></textarea>
-                                        <label style="color:#777;"> Remark</label>
-                                    </div>
-                                `;
+                                </div>
+                                <div class="material-input outlined">
+                                    <textarea class="data-input form-control" data-field="remark" name="remark" rows="2" placeholder=" "></textarea>
+                                    <label style="color:#777;">Remark</label>
+                                </div>
+                            `;
                             return div;
                         },
 
                         onOpen(ibMe) {
-                            const elRequest = document.querySelector(
+                            const elPriceWrapperR = requestDiv.querySelector(
+                                "#price_wrapper_requested"
+                            ); // ✅ Fixed: was serviceDiv
+                            const elRequest = requestDiv.querySelector(
                                 '[data-field="request_id"]'
                             );
-                            const elDuration = document.querySelector(
+                            const elDuration = requestDiv.querySelector(
                                 '[data-field="duration_hours"]'
                             );
-                            const elPrice = document.querySelector(
+                            const elPrice = requestDiv.querySelector(
                                 '[data-field="price"]'
                             );
-                            const elServiceName = document.querySelector(
+                            const elServiceName = requestDiv.querySelector(
                                 '[data-field="service_name"]'
                             );
-                            const elUnitType = document.querySelector(
+                            const elUnitType = requestDiv.querySelector(
                                 '[data-field="unit_type"]'
                             );
-                            const elRemark = document.querySelector(
+                            const elRemark = requestDiv.querySelector(
                                 '[data-field="remark"]'
                             );
-                            const elDurationWrapper = document.querySelector(
+                            const elDurationWrapper = requestDiv.querySelector(
                                 '[data-wrapper="duration"]'
                             );
+                            const elDiscountType = requestDiv.querySelector(
+                                '[data-field="discount_type"]'
+                            );
+
+                            if (elPriceWrapperR)
+                                elPriceWrapperR.style.gridColumn = "span 2";
 
                             const fillRequestData = selectedId => {
                                 const matched = filteredRequests.find(
-                                    r => r.request_id === Number(selectedId)
+                                    r =>
+                                        String(r.request_id) ===
+                                        String(selectedId)
                                 );
 
                                 if (matched) {
+                                    elServiceName.value =
+                                        matched.service_name || "";
+                                    elUnitType.value = matched.unit_type || "";
                                     elDuration.value =
                                         matched.duration_hours || "0";
                                     elPrice.value = Number(
                                         matched.price
                                     ).toFixed(2);
-                                    elServiceName.value =
-                                        matched.service_name || "";
                                     elRemark.value = matched.remarks || "";
-                                    elUnitType.value = matched.unit_type || "";
 
-                                    if (matched.unit_type === "Hour") {
-                                        elDurationWrapper.style.display =
-                                            "block";
-                                    } else {
-                                        elDurationWrapper.style.display =
-                                            "none";
-                                    }
+                                    elDurationWrapper.style.display =
+                                        matched.unit_type === "Hour"
+                                            ? "block"
+                                            : "none";
+                                    elPriceWrapperR.style.gridColumn =
+                                        matched.unit_type === "Hour"
+                                            ? "span 2"
+                                            : "span 1"; // ✅ Now works
                                 }
                             };
 
-                            if (filteredRequests.length > 0) {
-                                const firstId = filteredRequests[0].request_id;
-                                elRequest.value = firstId;
-                                fillRequestData(firstId);
-                            }
-                            elRequest.addEventListener("change", e => {
-                                fillRequestData(e.target.value);
-                            });
+                            if (elDiscountType)
+                                elDiscountType.value = "percent";
 
-                            [
-                                requestDiv.querySelector(
-                                    '[data-field="discount"]'
-                                ),
-                                requestDiv.querySelector(
-                                    '[data-field="tax_rate"]'
-                                )
-                            ].forEach(input => {
-                                if (!input) return;
-                                input.addEventListener("input", e => {
+                            if (elRequest) {
+                                fillRequestData(elRequest.value);
+                                elRequest.addEventListener("change", e => {
+                                    fillRequestData(e.target.value);
+                                });
+                            }
+
+                            const elDiscount = requestDiv.querySelector(
+                                '[data-field="discount"]'
+                            );
+                            if (elDiscount) {
+                                elDiscount.addEventListener("input", e => {
                                     let v = e.target.value.replace(
                                         /[^0-9.]/g,
                                         ""
@@ -2140,54 +2293,74 @@ const InvoiceDialog = (() => {
                                             parts[1].slice(0, 2);
                                     e.target.value = v;
                                 });
-                                input.addEventListener("blur", e => {
-                                    let v = parseFloat(e.target.value);
-                                    if (isNaN(v) || v < 0) {
-                                        e.target.value = "";
-                                        return;
-                                    }
-                                    e.target.value = v.toFixed(2);
+                                elDiscount.addEventListener("blur", e => {
+                                    const v = parseFloat(e.target.value);
+                                    e.target.value =
+                                        isNaN(v) || v < 0 ? "" : v.toFixed(2);
                                 });
-                            });
+                            }
                         },
+
                         onConfirm(data, btn, ibMe) {
                             const selectedRequest = filteredRequests.find(
-                                r => r.request_id === Number(data.request_id)
+                                r =>
+                                    String(r.request_id) ===
+                                    String(data.request_id)
                             );
-                            const requestDisplayName =
-                                selectedRequest.code ||
-                                `Request # ${selectedRequest.request_id}`;
 
                             if (!selectedRequest) {
                                 return cv_interact.error(
                                     "Please select a service request."
                                 );
                             }
-                            me.itemsView.addRow(
-                                {
-                                    item_id: selectedRequest.request_id,
-                                    item_name: `${selectedRequest.code}`,
-                                    type: "Service Request",
-                                    price: Number(selectedRequest.price),
-                                    qty:
-                                        selectedRequest.unit_type === "Hour"
-                                            ? selectedRequest.duration_hours ||
-                                              0
-                                            : 1,
-                                    unit_type: `${selectedRequest.unit_type ||
-                                        0}`,
-                                    remarks: data.remark || requestDisplayName,
-                                    space_id: selectedRequest.space_id,
-                                    space_code: selectedRequest.space_code,
-                                    discount: Number(data.discount) || 0,
-                                    discount_type:
-                                        data.discount_type || "amount",
-                                    tax_rate: Number(data.tax_rate) || 0,
-                                    request_id: selectedRequest.request_id
-                                },
-                                0
-                            );
 
+                            const requestDisplayName =
+                                selectedRequest.code ||
+                                `Request # ${selectedRequest.request_id}`;
+
+                            const existingIds = me.itemsView.rows
+                                .map(
+                                    row =>
+                                        row.meta?.item_id || row.data?.item_id
+                                )
+                                .filter(
+                                    id =>
+                                        id !== undefined &&
+                                        id !== "" &&
+                                        id !== null
+                                );
+
+                            const isDuplicate = existingIds.some(
+                                id =>
+                                    String(id) ===
+                                    String(selectedRequest.request_id)
+                            );
+                            if (isDuplicate) {
+                                return ibMe.setError(
+                                    "Service Request is already in the list."
+                                );
+                            }
+
+                            // ✅ Fixed: build once, reuse in addRow
+                            const dataToAdd = {
+                                item_id: selectedRequest.request_id,
+                                item_name: `${selectedRequest.code}`,
+                                type: "Service Request",
+                                price: Number(selectedRequest.price),
+                                qty:
+                                    selectedRequest.unit_type === "Hour"
+                                        ? selectedRequest.duration_hours || 0
+                                        : 1,
+                                unit_type: `${selectedRequest.unit_type || 0}`,
+                                remarks: data.remark || requestDisplayName,
+                                space_id: selectedRequest.space_id,
+                                space_code: selectedRequest.space_code,
+                                discount: Number(data.discount) || 0,
+                                discount_type: data.discount_type || "percent",
+                                request_id: selectedRequest.request_id
+                            };
+
+                            me.itemsView.addRow(dataToAdd, 0);
                             cv_interact.success(
                                 "Service request added to invoice"
                             );
@@ -2318,8 +2491,8 @@ const InvoiceDialog = (() => {
                     itemRendered(item, ctx) {
                         const tr = ctx.tr;
                         const item_id = ctx.data.item_id;
-                        const item_row = item.rows;
-                        item.setRowMeta(tr, { item_id: item_id });
+                        const type = ctx.data.type;
+                        item.setRowMeta(tr, { item_id: item_id, type: type });
                     },
 
                     onItemChange: (rowId, item, fieldName, td, tr) => {
@@ -2427,8 +2600,10 @@ const InvoiceDialog = (() => {
                 me.saveData = () => {
                     let header = me.getData();
                     const items = me.itemsView.getItems({
-                        metaKeys: ["item_id", "abc", "remark"]
+                        metaKeys: ["item_id", "type", "remark"]
                     }); // Retrieves all row data
+
+                    console.log("Items", items);
 
                     const totals = me.itemsView.getCurrentTotals?.() || {};
 
@@ -2470,128 +2645,6 @@ const InvoiceDialog = (() => {
                                 amount: parseFloat(item.total || 0)
                             };
                         });
-
-                    // const hasOverlap = (a, b) => {
-                    //     const aStart = new Date(a.start_date);
-                    //     const aEnd = new Date(a.end_date);
-                    //     const bStart = new Date(b.start_date);
-                    //     const bEnd = new Date(b.end_date);
-                    //     if (
-                    //         isNaN(aStart) ||
-                    //         isNaN(aEnd) ||
-                    //         isNaN(bStart) ||
-                    //         isNaN(bEnd)
-                    //     )
-                    //         return false;
-                    //     return aStart <= bEnd && aEnd >= bStart;
-                    // };
-
-                    // const rentItems = mappedItems.filter(
-                    //     item => item.type === "rent"
-                    // );
-                    // for (let i = 0; i < rentItems.length; i++) {
-                    //     for (let j = i + 1; j < rentItems.length; j++) {
-                    //         const a = rentItems[i];
-                    //         const b = rentItems[j];
-                    //         if (String(a.contract_id) !== String(b.contract_id))
-                    //             continue;
-                    //         if (hasOverlap(a, b)) {
-                    //             cv_interact.error(
-                    //                 `Duplicate rent detected for "${a.item_name}". ` +
-                    //                     `Row ${i + 1} (${a.start_date} ~ ${
-                    //                         a.end_date
-                    //                     }) ` +
-                    //                     `and Row ${j + 1} (${b.start_date} ~ ${
-                    //                         b.end_date
-                    //                     }) ` +
-                    //                     `have overlapping dates. Please remove one before saving.`
-                    //             );
-                    //             return null;
-                    //         }
-                    //     }
-                    // }
-
-                    // const electricItems = mappedItems.filter(
-                    //     item => item.item_name === "Electric"
-                    // );
-                    // for (let i = 0; i < electricItems.length; i++) {
-                    //     for (let j = i + 1; j < electricItems.length; j++) {
-                    //         const a = electricItems[i];
-                    //         const b = electricItems[j];
-                    //         if (hasOverlap(a, b)) {
-                    //             cv_interact.error(
-                    //                 `Duplicate electricity record detected. ` +
-                    //                     `Row ${i + 1} (${a.start_date} ~ ${
-                    //                         a.end_date
-                    //                     }) ` +
-                    //                     `and Row ${j + 1} (${b.start_date} ~ ${
-                    //                         b.end_date
-                    //                     }) ` +
-                    //                     `have overlapping dates. Please remove one before saving.`
-                    //             );
-                    //             return null;
-                    //         }
-                    //     }
-                    // }
-
-                    // const waterItems = mappedItems.filter(
-                    //     item => item.item_name === "Water"
-                    // );
-                    // for (let i = 0; i < waterItems.length; i++) {
-                    //     for (let j = i + 1; j < waterItems.length; j++) {
-                    //         const a = waterItems[i];
-                    //         const b = waterItems[j];
-                    //         if (hasOverlap(a, b)) {
-                    //             cv_interact.error(
-                    //                 `Duplicate water record detected. ` +
-                    //                     `Row ${i + 1} (${a.start_date} ~ ${
-                    //                         a.end_date
-                    //                     }) ` +
-                    //                     `and Row ${j + 1} (${b.start_date} ~ ${
-                    //                         b.end_date
-                    //                     }) ` +
-                    //                     `have overlapping dates. Please remove one before saving.`
-                    //             );
-                    //             return null;
-                    //         }
-                    //     }
-                    // }
-                    // const requestItems = mappedItems.filter(
-                    //     item => item.type === "Service Request"
-                    // );
-                    // const seenRequestIds = new Set();
-                    // for (const item of requestItems) {
-                    //     const reqId = item.request_id || item.item_id;
-
-                    //     if (!reqId) continue; // Skip if no ID is found
-
-                    //     if (seenRequestIds.has(String(reqId))) {
-                    //         cv_interact.error(
-                    //             `Duplicate Service Request: "${item.item_name}" has been added more than once. ` +
-                    //                 `Each specific request record can only be invoiced once.`
-                    //         );
-                    //         return null;
-                    //     }
-                    //     seenRequestIds.add(String(reqId));
-                    // }
-
-                    // const serviceItems = mappedItems.filter(
-                    //     item => item.type === "service"
-                    // );
-
-                    // console.log('asdfghjkl',item);
-
-                    // const seenServiceIds = new Set();
-                    // for (const item of serviceItems) {
-                    //     if (seenServiceIds.has(String(item.item_id))) {
-                    //         cv_interact.error(
-                    //             `Service "${item.item_name}" has already been added. ` +
-                    //                 `Each service can only be added once per invoice.`
-                    //         );
-                    //         return null;
-                    //     }
-                    //     seenServiceIds.add(String(item.item_id));
-                    // }
 
                     return {
                         ...header,
