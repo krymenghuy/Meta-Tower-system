@@ -475,6 +475,10 @@ class Invoice extends VSModel
             $query->where('i.payment_status_id', $d->payment_status_id);
         }
 
+        if (!empty($d->invoice_type)) {
+            $query->where('i.invoice_type', $d->invoice_type);
+        }
+
         $query->groupBy('i.id', 't.name', 't.legal_name', 't.phone_number', 't.email', 'ps.name', 'bs.code', 'ct.price')
             ->orderByDesc('i.id');
 
