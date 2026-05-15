@@ -486,7 +486,7 @@ var TenantComponent = new (function () {
                                 <div class="row g-4 py-2 border-bottom border-gray">
                                     <div class="col-5">
                                         <div class="card bg-prm-custom text-center shadow-sm">
-                                                <div class="fs-5 py-1 text-gold-custom">${currentUnitCode}</div>
+                                                <div class="fs-6 py-1 text-gold-custom">${currentUnitCode}</div>
                                         </div>
                                     </div>
                                     <div class="col-1"></div>
