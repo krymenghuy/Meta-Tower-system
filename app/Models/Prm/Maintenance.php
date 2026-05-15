@@ -286,9 +286,10 @@ class Maintenance extends VSModel
     public function getMaintenanceList($arr, $ss = null)
     {
         $d = (object) $arr;
-        $search_value      = $d->search_value ?? null;
+        $search_value     = $d->search_value ?? null;
         $building_id      = $d->building_id ?? null;
         $space_id         = $d->space_id ?? null;
+        $unit_type        = $d->unit_type ?? null;
         $status_id        = $d->status_id ?? null;
         $current_page     = $d->current_page ?? 1;
         $per_page         = $d->per_page ?? 10;
@@ -307,11 +308,21 @@ class Maintenance extends VSModel
         if ($building_id) {
             $str_moreWhere .= ' AND m.building_id = ' . $building_id;
         }
+
         if ($space_id) {
             $str_moreWhere .= ' AND m.space_id = ' . $space_id;
         }
+
         if ($status_id) {
             $str_moreWhere .= ' AND m.status_id =' . $status_id;
+        }
+
+        if ($unit_type == 'space') {
+            $str_moreWhere .= ' AND m.space_id IS NOT NULL';
+        }
+
+        if ($unit_type == 'amenity') {
+            $str_moreWhere .= ' AND m.amenity_id IS NOT NULL';
         }
         $query = DB::table('maintenances as m')
             ->join('buildings as b', 'b.id', '=', 'm.building_id')
@@ -457,6 +468,10 @@ class Maintenance extends VSModel
             'building_spaces'     => $building_spaces,
             'amenities'           => $amenities,
             'maintenance_statuses' => GeneralSettings::options_maintenance_status($ss),
+            'types' => [
+                            ['id' => 'space', 'name' => 'Space'],
+                            ['id' => 'amenity', 'name' => 'Amenity'],
+                        ],
         ];
     }
 

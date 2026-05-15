@@ -8,6 +8,7 @@ var MaintenanceComponent = (() => {
     mThis.divFilter = mThis.self.querySelector("#_divFilter_maintenance");
     mThis.elFilter_building = mThis.self.querySelector('#_maintenance_building_id');
     mThis.elFilter_status = mThis.self.querySelector('#_maintenance_status_id');
+    mThis.elFilter_type = mThis.self.querySelector('#_maintenance_type_id');
     mThis.elSearch = mThis.self.querySelector("#_search_maintenance");
     mThis.autoRefreshMs = 60000;
     mThis.autoRefreshTimer = null;
@@ -21,7 +22,7 @@ var MaintenanceComponent = (() => {
             data: (data) => `<span class="text-nowrap text-prm-custom">${data.building_name ?? ""}</span>`
         },
         {
-            transTitle: "titles.unit",
+            transTitle: "titles.unit & Type",
             className: "align-middle",
             data: (data) => {
                 const space = data.space_id && data.space_code ? data.space_code : null;
@@ -180,12 +181,15 @@ var MaintenanceComponent = (() => {
             search_value: mThis.elSearch.value,
             building_id: mThis.elFilter_building.value,
             status_id: mThis.elFilter_status.value,
+            unit_type: mThis.elFilter_type.value,
 
         };
         mThis.divFilter.querySelectorAll(".filter-field").forEach(el => {
             const f = el.dataset.field;
             if (f) p[f] = el.value;
         });
+        console.log(444,p);
+        
         return p;
     };
 
@@ -287,6 +291,7 @@ var MaintenanceComponent = (() => {
                 if (res.status_code === 200) {
                     const d = res.data || {};
                     VSUtil.setComboItems(mThis.elFilter_building, d.buildings || [], "id", "building", '', "All Buildings", '');
+                    VSUtil.setComboItems(mThis.elFilter_type, d.types || [], "id", "name", '', "All Type", '');
                     VSUtil.setComboItems(mThis.elFilter_status, d.maintenance_statuses || [], "id", "maintenance_status", '', "All Statuses", '');
                 }
                 if (typeof onFinish === "function") onFinish();
