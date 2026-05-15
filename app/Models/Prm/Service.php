@@ -84,6 +84,7 @@ class Service
         $search_value = $d->search_value ?? null;
         $service_type_id = $d->service_type_id ?? null;
         $status_id = $d->status_id ?? null;
+        $type = $d->type ?? null;
         $charge_as = $d->unit_type ?? null;
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 10;
@@ -105,15 +106,19 @@ class Service
         if($status_id){
             $str_moreWhere .= ' AND s.status_id =' . $status_id ;
         }
-        if($charge_as){
-            $str_moreWhere .= ' AND s.unit_type =' . $charge_as ;
+        if ($type !== null && $type !== '' && in_array((string) $type, ['0', '1'], true)) {
+            $str_moreWhere .= ' AND s.type = ' . (int) $type;
+        }
+        $allowedUnitTypes = ['per_unit', 'one_time', 'hour', 'month'];
+        if ($charge_as !== null && $charge_as !== '' && in_array($charge_as, $allowedUnitTypes, true)) {
+            $str_moreWhere .= ' AND s.unit_type = ' . DB::connection()->getPdo()->quote($charge_as);
         }
         $query = DB::table('services as s')
             ->join('service_types as st','st.id','=','s.service_type_id')
             ->join('service_statuses as ss','ss.id','=','s.status_id')
             ->whereRaw($str_search)
             ->whereRaw($str_moreWhere)
-            ->selectRaw("s.id,s.name,s.service_type_id,st.name as service_type,s.unit_type,s.price,s.status_id,ss.name as status,s. description,s.updated_at,s.update_user,s.type")->orderBy('s.id','DESC');
+            ->selectRaw("s.id,s.name,s.service_type_id,st.name as service_type,s.unit_type,s.price,s.status_id,ss.name as status,s.description,s.updated_at,s.update_user,s.type")->orderBy('s.id','DESC');
         $clone_query = clone $query;
         $count = $clone_query->count('s.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
