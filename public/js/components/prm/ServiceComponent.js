@@ -9,6 +9,8 @@ var ServiceComponent = (() => {
     mThis.elFilter_category = mThis.self.querySelector('#_service_category_id');
     mThis.elFilter_type = mThis.self.querySelector('#_service_type_id');
     mThis.elFilter_status = mThis.self.querySelector('#_status_id');
+    mThis.elFilter_kind = mThis.self.querySelector('#_filter_service_type');
+    mThis.elFilter_charge_as = mThis.self.querySelector('#_filter_service_charge_as');
     mThis.elSearch = mThis.self.querySelector("#_search_service");
 
 
@@ -147,9 +149,9 @@ var ServiceComponent = (() => {
             tableClass: 'table table--white rounded-2 overflow-hidden header-uppercase',
             rowCreated: (data, index, tr) => {
                 tr.dataset.statusid = data.status_id;
-                tr.classList.add('service');
+                tr.classList.add('service', 'cursor-pointer');
                 tr.setAttribute('id', ['service_id', data.id].join(''));
-
+                tr.__serviceDescription = data.description ?? '';
             },
             listContainerClass: null
         });
@@ -179,6 +181,16 @@ var ServiceComponent = (() => {
 
         mThis.initDropdownMenus(mThis.tblService);
 
+        if (!mThis.tblService.id) {
+            mThis.tblService.id = '_service_list_table';
+        }
+        new ExpandableRowConfig(mThis.tblService.id, {
+            dontExpandByClickingOn: ['btn_service_action', 'btn--Options'],
+            onOpen: (container, detail_tr, parent_tr) => {
+                mThis.displayServiceDescription(container, parent_tr);
+            },
+        });
+
         mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
 
             el.onchange = (e) => {
@@ -204,6 +216,8 @@ var ServiceComponent = (() => {
             category_id: mThis.elFilter_category.value,
             type_id: mThis.elFilter_category.value,
             status_id: mThis.elFilter_status.value,
+            type: mThis.elFilter_kind ? mThis.elFilter_kind.value : '',
+            unit_type: mThis.elFilter_charge_as ? mThis.elFilter_charge_as.value : '',
             search_value: mThis.elSearch.value,
         };
 
@@ -213,6 +227,29 @@ var ServiceComponent = (() => {
         });
 
         return p;
+    };
+
+    mThis.displayServiceDescription = (container, parent_tr) => {
+        const raw = parent_tr && parent_tr.__serviceDescription != null
+            ? String(parent_tr.__serviceDescription)
+            : '';
+        const escapeHtml = (str) => {
+            if (!str) return '';
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        };
+        const body = raw.trim()
+            ? `<div class="text-primary-custom text-break" style="white-space:pre-wrap;">${escapeHtml(raw)}</div>`
+            : `<em class="text-muted">No remark</em>`;
+        container.innerHTML = [
+            '<div class="card shadow-sm border-0 rounded-0 mx-0 bg-body-tertiary">',
+            '  <div class="card-body py-3 px-4">',
+            '    <div class="text-uppercase small text-muted mb-2 fw-semibold">Description</div>',
+            body,
+            '  </div>',
+            '</div>',
+        ].join('');
     };
 
     mThis.initDropdownMenus = (table) => {
@@ -357,6 +394,32 @@ var ServiceComponent = (() => {
                 VSUtil.setComboItems(mThis.elFilter_category, d.service_categories, 'id', 'service_category', '', 'All Categories ', '');
                 VSUtil.setComboItems(mThis.elFilter_type, d.service_types, 'id', 'service_type', '', 'All Types ', '');
                 VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'status_name', '', 'All Statuses ', '');
+                VSUtil.setComboItems(
+                    mThis.elFilter_kind,
+                    [
+                        { id: '0', type_label: 'Subscription' },
+                        { id: '1', type_label: 'Request' },
+                    ],
+                    'id',
+                    'type_label',
+                    '',
+                    'All Types ',
+                    '',
+                );
+                VSUtil.setComboItems(
+                    mThis.elFilter_charge_as,
+                    [
+                        { id: 'per_unit', charge_label: 'Per Unit' },
+                        { id: 'one_time', charge_label: 'One Time' },
+                        { id: 'hour', charge_label: 'Per Hour' },
+                        { id: 'month', charge_label: 'Per Month' },
+                    ],
+                    'id',
+                    'charge_label',
+                    '',
+                    'All Charge As ',
+                    '',
+                );
                 if (typeof onFinish === 'function') onFinish();
             })
     }

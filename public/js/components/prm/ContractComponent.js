@@ -925,7 +925,7 @@ const ContractDialog = (() => {
                     e.target.value = v;
                 });
 
-              
+
 
             },
 
@@ -1010,7 +1010,7 @@ const ContractDialog = (() => {
                 }
                 const unitSelect = me.divModal.querySelector('[data-field="space_id"]');
                 const spaceRows = Array.isArray(data?.building_spaces) ? data.building_spaces : [];
-         
+
                 const spaceTypes = Array.isArray(data?.space_types) ? data.space_types : [];
                 const getSpaceTypeName = (spaceTypeId) => {
                     const row = spaceTypes.find((x) => String(x.id) === String(spaceTypeId));
@@ -1051,7 +1051,7 @@ const ContractDialog = (() => {
                         applyUnitData(defaultSpaceId);
                     } else if (unitSelect.value) {
                         applyUnitData(unitSelect.value);
-                    } 
+                    }
                 }
 
 

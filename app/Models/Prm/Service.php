@@ -92,6 +92,13 @@ class Service
         if($charge_as){
             $str_moreWhere .= ' AND s.charge_as =' . $charge_as ;
         }
+        if ($type_id !== null && $type_id !== '' && in_array((string) $type_id, ['0', '1'], true)) {
+            $str_moreWhere .= ' AND s.type = ' . (int) $type_id;
+        }
+        $allowedUnitTypes = ['per_unit', 'one_time', 'hour', 'month'];
+        if ($charge_as !== null && $charge_as !== '' && in_array($charge_as, $allowedUnitTypes, true)) {
+            $str_moreWhere .= ' AND s.unit_type = ' . DB::connection()->getPdo()->quote($charge_as);
+        }
         $query = DB::table('services as s')
             ->join('service_categories as sc','sc.id','=','s.category_id')
             ->join('service_types as st','st.id','=','s.type_id')
