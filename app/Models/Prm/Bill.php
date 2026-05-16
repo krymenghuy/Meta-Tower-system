@@ -34,26 +34,28 @@ class Bill
         $branch_id = $ss->branch_id;
 
         $remark_char = ['@', '.', '-', '_'];
-        $ref_no_char = ['@', '.', '-', '_'];
+        // $ref_no_char = ['@', '.', '-', '_'];
 
         $v_rule = [
             'vendor_id'       => '1|number|exists=vendors.id|text=Please select a vendor.',
             'bill_date'       => '1|date',
             'due_date'        => '1|date|text=Please enter valid Due Date.',
             'ref_no'          => '1|string|0-25|text=Please enter Reference No.',
-            'expense_type_id' => '1|number|exists=expense_categories.id|Please select a category.',
-            'total_amount'    => '1|number|min=0',
+            'expense_type_id' => '1|number|exists=expense_categories.id|text=Please select a category.',
+            'total_amount'    => '1|number|min=0|text=Please enter a valid amount.',
             'remark'          => '0|string|0-255',
             'photo'           => '0|string',
             'ext'             => '0|string|in=jpg,jpeg,png,pdf',
+            'file_name'       => '0|string|0-255',
         ];
 
-        $res = DBX::validateObject($arr, $v_rule, 1, ['photo'  => GeneralSettings::$image_chars, 'remark' => $remark_char, 'ref_no' => $ref_no_char], $ss->lang);
+        $res = DBX::validateObject($arr, $v_rule, 1, ['photo'  => GeneralSettings::$image_chars, 'remark' => $remark_char], $ss->lang);
         if ($res->error) return DV::error($res->error);
         $inputs = $res->values;
 
         $photo = $inputs['photo'] ?? null;
         $ext   = $inputs['ext'] ?? null;
+        $file_name = $inputs['file_name'] ?? null;
 
         $billDate = strtotime($inputs['bill_date']);
         $dueDate  = strtotime($inputs['due_date']);
@@ -61,7 +63,7 @@ class Bill
         if ($dueDate < $billDate) {
             return DV::error('Due date must be after the issue date.');
         }
-        unset($inputs['photo'], $inputs['ext']);
+        unset($inputs['photo'], $inputs['ext'], $inputs['file_name']);
         $total = floatval($inputs['total_amount'] ?? 0);
         if ($total < 0) {
             return  DV::error('Total amount cannot be negative.');
@@ -81,8 +83,7 @@ class Bill
             }
         }
 
-        if (!empty($inputs{
-        'ref_no'})) {
+        if (!empty($inputs{'ref_no'})) {
             $exists = DB::table('bills')
                 ->where('ref_no', $inputs['ref_no'])
                 ->when($id, fn($q) => $q->where('id', '<>', $id))
@@ -115,11 +116,21 @@ class Bill
                 }
                 $storageType = ($ext === 'pdf') ? 'document' : 'image';
 
+                $rawName = $file_name ?? null;
+                $customName   = null;
+                if ($rawName) {
+                   
+                    $baseName   = pathinfo($rawName, PATHINFO_FILENAME);
+                    $baseName   = preg_replace('/[^a-zA-Z0-9_\-]/', '_', $baseName);
+                    $customName = $baseName . '.' . $ext;
+                }
+
                 $file = XPublicStorage::savefile(
                     ['subs_id' => $ss->subs_id, 'dir' => self::$img_dir],
                     $ext,
                     $photo,
-                    $storageType
+                    $storageType,
+                    $customName  
                 );
 
                 if ($file->status === 'Error') {
@@ -130,7 +141,7 @@ class Bill
                 if (!empty($file->file_name)) {
                     DB::table('bills')
                         ->where('id', $id)
-                        ->update(['file_image' => $file->file_name]);
+                        ->update(['file_image' => $file->file_name,'original_file_name' => $customName ?? $file->file_name]);
 
                     $inputs['file_image'] = $file->file_name;
                 }
@@ -214,7 +225,7 @@ class Bill
                                 WHEN b.balance > 0 AND b.due_date < CURDATE() THEN 4
                                 ELSE b.status_id
                             END AS display_status_id,
-                            b.file_image, b.update_user, b.remark, b.updated_at
+                            b.file_image,b.original_file_name, b.update_user, b.remark, b.updated_at
                         ")
             ->orderBy('b.id', 'desc');
         $count = (clone $query)->count('b.id');
@@ -237,7 +248,7 @@ class Bill
             ->leftJoin('vendors as v', 'v.id', 'b.vendor_id')
             ->leftJoin('expense_categories as ex', 'ex.id', 'b.expense_type_id')
             ->where('b.id', $id)
-            ->selectRaw('b.id, b.bill_number, b.ref_no, b.vendor_id, v.name as vendor_name,b.expense_type_id, ex.name as expense_type_name, v.phone_number,v.email, b.bill_date,b.due_date, b.file_image, b.total_amount, b.balance, b.paid_amount, b.status_id, b.remark')
+            ->selectRaw('b.id, b.bill_number, b.ref_no, b.vendor_id, v.name as vendor_name,b.expense_type_id, ex.name as expense_type_name, v.phone_number,v.email, b.bill_date,b.due_date, b.file_image,b.original_file_name, b.total_amount, b.balance, b.paid_amount, b.status_id, b.remark')
             ->first();
         if ($row) {
             $row->file_image_url = self::getBillImageUrl($row->file_image, $ss);

@@ -240,7 +240,7 @@ var BillComponent = (() => {
             const f = el.dataset.field;
             p[f] = el.value;
         });
-        console.log(566,p);
+        // console.log(566,p);
 
         return p;
     };
@@ -348,7 +348,6 @@ var BillComponent = (() => {
     mThis.editBill = (id, menuLink) => {
         const tr = menuLink.closest("tr");
         let vendor_id = tr?.dataset.vendorId || null;
-        console.log(33333, vendor_id);
 
         const op = {
             id: parseInt(id, 10),
@@ -487,7 +486,6 @@ var BillComponent = (() => {
             .call(`${main_view.base_url}/prm/bill/form-options`, null, null, null)
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
-                console.log("form-options data:", d);
                 VSUtil.setComboItems(mThis.elFilter_vendor, d.vendors, "id", "vendor", "", "All Vendor", "");
                 VSUtil.setComboItems(mThis.elFilter_status, d.bill_statuses, "id", "bill_status", "", "All Statuses", "");
                 VSUtil.setComboItems(mThis.elFilter_category, d.expense_types, "id", "expense_category", "", "All Categories", "");
@@ -546,7 +544,7 @@ const BillDialog = (() => {
                             </div>
                             <div class="col-4">
                                 <div class="material-input outlined">
-                                    <input name="ref_no" class="data-input form-control" data-field="ref_no" placeholder=" "></input>
+                                    <input type="text" name="ref_no" class="data-input form-control" data-field="ref_no" placeholder=" "></input>
                                     <label>Reference No.</label>
                                 </div>
                             </div>
@@ -597,7 +595,6 @@ const BillDialog = (() => {
                 },
 
                 contentCreated: (me) => {
-                    console.log('me.controls:', me.controls);
                     const applyVendorInfo = (vendorId) => {
                         me._selectedVendorId = vendorId || '';
                         if (me.controls.vendor_id) me.controls.vendor_id.value = vendorId || '';
@@ -660,7 +657,6 @@ const BillDialog = (() => {
                     };
 
                     applyNumberInput(me.controls.total_amount);
-                    applyNumberInput(me.controls.ref_no);
                 },
 
                 configSelect: [
@@ -711,19 +707,38 @@ const BillDialog = (() => {
                 // },
 
                 onPrepareForm: (me, data) => {
+                    // me.fileData = null;
+                    me.controls.documents.value = '';
+                    // me.controls.documents.classList.add('d-none');
+
                     const details = data?.bill_details;
                     if (details?.file_image) {
                         me.controls.documents.value = details.file_image;
                         me.controls.documents.classList.remove('d-none');
                     }
-                    // if (me.searchVendor && typeof me.searchVendor.reset === "function") {
-                    //     me.searchVendor.reset();
-                    // }
+                    if (me.searchVendor && typeof me.searchVendor.reset === "function") {
+                        me.searchVendor.reset();
+                    }
                     if (details?.vendor_id) {
                         me._selectedVendorId = details.vendor_id;
                         if (me.controls.vendor_id)    me.controls.vendor_id.value    = details.vendor_id;
                         if (me.controls.vendor)       me.controls.vendor.value       = details.vendor_name || '';
                         if (me.controls.phone_number) me.controls.phone_number.value = details.phone_number || '';
+                    }
+
+                    if (!details?.vendor_id) {
+                        if (me.controls.vendor)       me.controls.vendor.value       = '';
+                        if (me.controls.phone_number) me.controls.phone_number.value = '';
+                        me._selectedVendorId = null;
+                    } else {
+                        me._selectedVendorId = details.vendor_id;
+                        if (me.controls.vendor_id)    me.controls.vendor_id.value    = details.vendor_id;
+                        if (me.controls.phone_number) me.controls.phone_number.value = details.phone_number || '';
+
+                        if (me.controls.vendor) {
+                            me.controls.vendor.value = details.vendor_name || '';
+                            me.controls.vendor.dispatchEvent(new Event('change', { bubbles: true }));
+                        }
                     }
 
                     const prefill = me.dataOptions?.prefill || {};
@@ -774,6 +789,7 @@ const BillDialog = (() => {
                         click: (me, btn) => {
                             me.hide(false);
                             me._selectedVendorId = null; 
+                            // me.fileData = null;
                         },
                     },
                     {
@@ -782,7 +798,7 @@ const BillDialog = (() => {
                         click: (me, btn) => {
                             const op = me.getData();
                             op.id = me.dataOptions.id;
-                            console.log(444, me.dataOptions);
+                            // console.log(444, me.dataOptions);
 
                             if (me._selectedVendorId != null && me._selectedVendorId !== undefined) {
                                 op.vendor_id = me._selectedVendorId;
@@ -799,6 +815,8 @@ const BillDialog = (() => {
                                     || me.fileData.fileType
                                     || me.fileData.extension
                                     || null;
+                                
+                                op.file_name = me.fileData.fileName || null;    
                             }
                             vsapi
                                 .call([main_view.base_url, "/prm/bill/save"].join(""), op, btn, null)
