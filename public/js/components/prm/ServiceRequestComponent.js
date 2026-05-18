@@ -437,24 +437,25 @@ const CreateServiceRequestDialog = (() => {
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <select data-style="material" class="data-input form-control" data-field="space_id" required placeholder="Space"></select>
+                            <select data-style="material" name="space_id"class="data-input form-control" data-field="space_id" required placeholder="Space"></select>
                         </div>
                     </div>
                     <div class="row g-3 mb-3">
                         <div class="col-md-6">
-                            <select data-style="material" class="data-input form-control" data-field="category_id" required placeholder="Service Category"></select>
+                            <select data-style="material" name="category_id" class="data-input form-control" data-field="category_id" required placeholder="Service Category"></select>
                         </div>
                         <div class="col-md-6">
-                            <select data-style="material" class="data-input form-control" data-field="service_id" required placeholder="Service"></select>
+                            <select data-style="material" name="service_id" class="data-input form-control" data-field="service_id" required placeholder="Service"></select>
                         </div>
 
                     </div>
                     <div class="row g-3 mb-3">
-                        <div class="col-md-3">
-                            <select data-style="material" class="data-input form-control" data-field="unit_type" disabled placeholder="Unit Type">
-                                <option value=""> Select Unit </option>
+                        <div class="col-md-3 unit-type-wrapper">
+                            <select data-style="material" name="unit_type" class="data-input form-control" data-field="unit_type" disabled placeholder="Unit Type">
+                                <option value=""> Select Unit</option>
                                 <option value="1">One Time</option>
                                 <option value="2">Hour</option>
+                                <option value="3">Unit</option>
                             </select>
                         </div>
                         <div class="col-md-3 select-type-time" style="display:none;">
@@ -471,13 +472,13 @@ const CreateServiceRequestDialog = (() => {
                         </div>
                         <div class="col-md-3">
                             <div class="vs-material-field">
-                                <input data-type="date" class="form-control data-input" data-field="scheduled_date" required />
+                                <input data-type="date" name="scheduled_date" class="form-control data-input" data-field="scheduled_date" required />
                                 <label>Scheduled Date</label>
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="vs-material-field">
-                                <input type="time" class="form-control data-input" data-field="start_time" placeholder=" " />
+                                <input type="time" name="start_time" class="form-control data-input" data-field="start_time" placeholder=" " />
                                 <label>Start Time</label>
                             </div>
                         </div>
@@ -513,25 +514,42 @@ const CreateServiceRequestDialog = (() => {
                 </div>
             `,
             contentCreated: (me) => {
-                const updatePricePreview = () => {
+               const updatePricePreview = () => {
                     const unit = me.controls.unit_type?.value || '';
                     const showDuration = unit === '2';
+
                     const durationRow = me.divModal.querySelector('.select-type-time');
                     const previewRow = me.divModal.querySelector('#price-preview-row');
+                    const unitWrapper = me.divModal.querySelector('.unit-type-wrapper');
 
-                    if (durationRow) durationRow.style.display = showDuration ? 'block' : 'none';
-                    if (!showDuration) { if (previewRow) previewRow.style.display = 'none'; return; }
+                    if (unitWrapper) {
+                        unitWrapper.classList.remove('col-md-3', 'col-md-6');
+                        unitWrapper.classList.add(showDuration ? 'col-md-3' : 'col-md-6');
+                    }
+                    if (durationRow) {
+                        durationRow.style.display = showDuration ? '' : 'none';
+                    }
+                    if (!showDuration) {
+                        me.controls.duration_hours.value = '';
+                        if (previewRow) {
+                            previewRow.style.display = 'none';
+                        }
 
+                        return;
+                    }
                     const hours = parseFloat(me.controls.duration_hours?.value || 0);
                     const price = parseFloat(me.servicePrice || 0);
-
                     if (hours > 0 && price > 0) {
                         const total = price * hours;
                         me.divModal.querySelector('#calc-total').textContent = `$${total.toFixed(2)}`;
                         me.divModal.querySelector('#calc-breakdown').textContent = `$${price.toFixed(2)} × ${hours}h`;
-                        if (previewRow) previewRow.style.display = 'block';
-                    } else if (previewRow) {
-                        previewRow.style.display = 'none';
+                        if (previewRow) {
+                            previewRow.style.display = '';
+                        }
+                    } else {
+                        if (previewRow) {
+                            previewRow.style.display = 'none';
+                        }
                     }
                 };
                 me.searchTenant = VSSearchInput.init(me.controls.tenant, {
@@ -562,14 +580,7 @@ const CreateServiceRequestDialog = (() => {
                         const d = res.data || {};
                         me._availableServices = d.service || [];
                         VSUtil.setComboItems(me.controls.space_id, d.spaces || [], 'space_id', 'space_code', '', 'Select Room');
-                        VSUtil.setComboItems(
-                            me.controls.category_id,
-                            d.service_categories || [],
-                            'id',
-                            'service_category',
-                            '',
-                            'Select Category'
-                        );
+                        VSUtil.setComboItems(me.controls.category_id,d.service_categories || [],'id','service_category','','Select Category');
 
                         if (restoreValues) {
                             // Restore mode: set saved values
@@ -584,7 +595,7 @@ const CreateServiceRequestDialog = (() => {
 
                             let filtered = me._availableServices;
                             if (resolvedCategoryId) filtered = filtered.filter(s => String(s.category_id) === String(resolvedCategoryId));
-                            VSUtil.setComboItems(me.controls.service_id, filtered, 'id', 'service_name', '', 'Select Service');
+                            VSUtil.setComboItems(me.controls.service_id, filtered, 'id', 'service_name', '', '');
                             if (restoreValues.service_id) me.controls.service_id.value = String(restoreValues.service_id);
 
                             // Restore service price
@@ -606,7 +617,7 @@ const CreateServiceRequestDialog = (() => {
                     const svc = me._availableServices?.find(s => String(s.id) === me.controls.service_id.value);
                     if (svc) {
                         me.servicePrice = parseFloat(svc.price) || 0;
-                        me.controls.unit_type.value = (svc.charge_as === 'hour') ? '2' : '1';
+                        me.controls.unit_type.value = svc.charge_as === 'hour' ? '2' :svc.charge_as === 'per_unit' ? '3' :'1';
                         updatePricePreview();
                     }
                 });
@@ -614,7 +625,7 @@ const CreateServiceRequestDialog = (() => {
                     const categoryId = me.controls.category_id.value;
                     let filtered = me._availableServices || [];
                     if (categoryId) filtered = filtered.filter(s => String(s.category_id) === categoryId);
-                    VSUtil.setComboItems(me.controls.service_id, filtered, 'id', 'service_name', '', 'Select Service');
+                    VSUtil.setComboItems(me.controls.service_id, filtered, 'id', 'service_name');
                     me.controls.service_id.value = '';
                     me.servicePrice = 0;
                     updatePricePreview();
@@ -622,6 +633,7 @@ const CreateServiceRequestDialog = (() => {
                 ['unit_type', 'duration_hours'].forEach(f => {
                     me.controls[f]?.addEventListener('change', updatePricePreview);
                 });
+
             },
             onPrepareForm: (me, data) => {
                 me.detail = data.request_details;
