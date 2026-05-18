@@ -151,12 +151,12 @@ class Invoice extends VSModel
                 } else if ($itemType === 'service' && $itemId) {
                     $serviceData = DB::table('services')
                         ->where('id', $itemId)
-                        ->select('price', 'unit_type')
+                        ->select('price', 'charge_as')
                         ->first();
 
                     if ($serviceData) {
                         $price    = (float)$serviceData->price;
-                        $unitType = $serviceData->unit_type ?? '-';
+                        $unitType = $serviceData->charge_as ?? '-';
                     }
                 }
 
@@ -473,6 +473,10 @@ class Invoice extends VSModel
 
         if (!empty($d->payment_status_id)) {
             $query->where('i.payment_status_id', $d->payment_status_id);
+        }
+
+        if (!empty($d->invoice_type)) {
+            $query->where('i.invoice_type', $d->invoice_type);
         }
 
         $query->groupBy('i.id', 't.name', 't.legal_name', 't.phone_number', 't.email', 'ps.name', 'bs.code', 'ct.price')

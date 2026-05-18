@@ -79,9 +79,9 @@ class GeneralSettingsController extends Controller
     {
           $ss = XAuthService::verifyAuth($req,-1);
         if ($ss->status_code != 200) return $ss; //user not authenticated
-        $service_type_id = $req->service_type_id ? $req->service_type_id : $req->id;
+        $category_id = $req->category_id ?? $req->service_type_id ?? $req->id ?? null;
 
-        return JDV::result(GeneralSettings::options_service_request_type($service_type_id));
+        return JDV::result(GeneralSettings::options_service_request_type($category_id));
     }
 
 }
