@@ -444,7 +444,7 @@ static function options_maintenance_amenity($ss)
     }
     static function options_building($ss)
     {
-        return DB::table('buildings')->selectRaw('id,name AS building')->get();
+        return DB::table('buildings')->selectRaw('id,name AS building,prefix')->get();
 
     }
     static function options_floor($ss)
