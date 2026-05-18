@@ -23,7 +23,11 @@ var ServiceComponent = (() => {
             transTitle: "titles.Name",
             className: "align-middle",
             data: (data) => {
-                return `<span class="text-primary-custom">${data.name ?? ''}</span>`;
+                return `<div class="d-flex flex-column">
+                    <span class="text-primary-custom">${data.name ?? ''}</span>
+                    <hr class="m-0 border border-secondary border-3 opacity-75">
+                    <span class="text-muted small">${data.service_level ?? ''}</span>
+                </div>`;
             }
         },
         {
@@ -33,7 +37,7 @@ var ServiceComponent = (() => {
                 return `<span class="text-primary-custom">${data.service_category ?? ''}</span>`;
             }
         },
-       {
+        {
             transTitle: "titles.Type",
             className: "align-middle",
             data: (data) => {
@@ -46,10 +50,10 @@ var ServiceComponent = (() => {
             data: (data) => {
 
                 const unitMap = {
-                    per_unit: "Per Unit",
-                    one_time: "One Time",
-                    hour: "Per Hour",
-                    month: "Per Month",
+                    per_unit: "Unit",
+                    one_time: "Once Time",
+                    hour: "Hourly",
+                    month: "Monthly",
                 };
 
                 const label = unitMap[data.charge_as] || "-";
@@ -66,9 +70,9 @@ var ServiceComponent = (() => {
 
                 const unitMap = {
                     per_unit: "Unit",
-                    one_time: "One Time",
-                    hour: "Hour",
-                    month: "Month"
+                    one_time: "Once Time",
+                    hour: "Hourly",
+                    month: "Monthly"
                 };
 
                 const unit = unitMap[data.charge_as] || '';
@@ -239,7 +243,7 @@ var ServiceComponent = (() => {
         };
         const body = raw.trim()
             ? `<div class="text-primary-custom text-break" style="white-space:pre-wrap;">${escapeHtml(raw)}</div>`
-            : `<em class="text-muted">No remark</em>`;
+            : `<em class="text-muted">No description</em>`;
         container.innerHTML = [
             '<div class="card shadow-sm border-0 rounded-0 mx-0 bg-body-tertiary">',
             '  <div class="card-body py-3 px-4">',
@@ -424,18 +428,32 @@ const CreateServicePriceDialog = (() => {
                 createContent: () => {
                     return [
                         `<div class="row g-3 justify-content-center">
-                            <div class="col-12">
+                            <div class="col-6">
                                 <div class="vs-material-field">
                                     <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder="" />
                                     <label>Name</label>
                                 </div>
                             </div>
                             <div class="col-6">
+                                <select data-style="material" name="service_type" class="data-input form-control" data-field="type_id" placeholder=" Type">
+                                </select>
+                            </div>
+                            <div class="col-6">
                                 <select data-style="material" name="service_category" class="data-input form-control" data-field="category_id" placeholder="Category">
                                 </select>
                             </div>
                             <div class="col-6">
-                                <select data-style="material" name="service_type" class="data-input form-control" data-field="type_id" placeholder=" Type">
+                                    <select data-style="material" name="charge_as" class="data-input form-control" data-field="charge_as" placeholder="Charge As">
+                                    <option value="per_unit">Unit</option>
+                                    <option value="one_time">Once</option>
+                                    <option value="hour">Hourly</option>
+                                    <option value="month">Monthly</option>
+                                    </select>
+                            </div>
+                            <div class="col-6">
+                                <select data-style="material" name="level" class="data-input form-control" data-field="level" placeholder="Level">
+                                    <option value="1">Standard</option>
+                                    <option value="2">Premium</option>
                                 </select>
                             </div>
                             <div class="col-6">
@@ -444,20 +462,10 @@ const CreateServicePriceDialog = (() => {
                                     <label>Price</label>
                                 </div>
                             </div>
-                            <div class="col-6">
-                                <div class="vs-material-field">
-                                    <select data-style="material" name="charge_as" class="data-input form-control" data-field="charge_as" placeholder="Charge As">
-                                    <option value="per_unit">Unit</option>
-                                    <option value="one_time">Once</option>
-                                    <option value="hour">Hourly</option>
-                                    <option value="month">Monthly</option>
-                                    </select>
-                                </div>
-                            </div>
                             <div class="col-12">
                                 <div class="vs-material-field">
-                                    <textarea name="remark" class="data-input form-control" data-field="remarks" placeholder=" "></textarea>
-                                    <label>Remark</label>
+                                    <textarea name="description" class="data-input form-control" data-field="description" placeholder=" "></textarea>
+                                    <label>Description</label>
                                 </div>
                             </div>
                         </div>`
@@ -465,8 +473,17 @@ const CreateServicePriceDialog = (() => {
                 },
 
 
-                contentCreated: (me) => {
-                    // applyNumberInput(me.controls.price);
+               contentCreated: (me) => {
+                    const updateChargeAs = () => {
+                        const isSubscription = me.controls.service_type.value == 2;
+
+                        me.controls.charge_as.value = isSubscription ? "month" : "";
+                        me.controls.charge_as.disabled = isSubscription;
+                    };
+
+                    me.controls.service_type?.addEventListener('change', updateChargeAs);
+
+                    updateChargeAs();
                 },
                 configSelect: [
                     {
@@ -482,7 +499,6 @@ const CreateServicePriceDialog = (() => {
                         valueField: "id",
                     },
 
-
                 ],
                 prepareFormOptions: {
                     createTitle: "Create Service Price",
@@ -497,9 +513,9 @@ const CreateServicePriceDialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
-                    console.log(123,data.service_details);
+                    // console.log(123,data.service_details);
 
-                    me.controls.charge_as.value = data.service_details.charge_as;
+                    // me.controls.charge_as.value = data.service_details.charge_as;
                     // me.controls.type.value = data.service_details.type;
                 },
 
