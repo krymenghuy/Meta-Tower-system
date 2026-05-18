@@ -577,9 +577,10 @@ class Tenant
         $services = GeneralSettings::options_service_request_type(null);
 
         return (object) [
-            'tenant'  => $tenant,
-            'spaces'  => $spaces,
-            'service' => $services,
+            'tenant'              => $tenant,
+            'spaces'              => $spaces,
+            'service'             => $services,
+            'service_categories'  => GeneralSettings::options_service_categories($ss),
         ];
     }
 

@@ -30,7 +30,6 @@ class ServiceRequest extends VSModel
         $v_rule = [
             'tenant_id'         => '1|number|exists=tenants.id|text=Please select a tenant.',
             'space_id'          => '1|number|exists=building_spaces.id|text=Please select a space.',
-            'service_type_id'   => '1|number|exists=service_types.id|text=Please select a service type.',
             'service_id'        => '1|number|exists=services.id|text=Please select a service.',
             'unit_type'         => '0|choice|1,2',
             'duration_hours'    => '0|numeric|min:0.5|max:99.9|text=Duration hours is required when unit type is Hour.',
@@ -153,8 +152,8 @@ class ServiceRequest extends VSModel
     {
         $d = (object) $arr;
         $search_value      = $d->search_value ?? null;
-        $service_type_id   = $d->service_type_id ?? null;
-        $service_id        = $d->service_id ?? null;
+        $category_id         = $d->category_id ?? null;
+        $service_id          = $d->service_id ?? null;
         $status_id         = $d->status_id ?? null;
         $current_page      = $d->current_page ?? 1;
         $per_page          = $d->per_page ?? 10;
@@ -170,8 +169,8 @@ class ServiceRequest extends VSModel
             $str_search = "(sr.code LIKE '%" .$search_value . "%' OR t.name LIKE '%" . $search_value . "%')";
         }
 
-        if ($service_type_id) {
-            $str_moreWhere .= ' AND s.service_type_id = ' . $service_type_id;
+        if ($category_id) {
+            $str_moreWhere .= ' AND s.category_id = ' . $category_id;
         }
 
        if ($status_id) {
@@ -186,7 +185,7 @@ class ServiceRequest extends VSModel
             ->join('tenants as t', 't.id', '=', 'sr.tenant_id')
             ->join('building_spaces as bs', 'bs.id', '=', 'sr.space_id')
             ->join('services as s', 's.id', '=', 'sr.service_id')
-            ->join('service_types as st', 'st.id', '=', 's.type_id')
+            ->join('service_categories as sc', 'sc.id', '=', 's.category_id')
             ->join('request_statuses as rs', 'rs.id', '=', 'sr.status_id')
             ->whereRaw($str_search)
             ->whereRaw($str_moreWhere)
@@ -202,7 +201,7 @@ class ServiceRequest extends VSModel
                 sr.scheduled_date,sr.request_date, sr.complete_date, sr.create_uid,
                 rs.id as status_id,
                 rs.name as status_name,
-                st.name as service_type
+                sc.name as service_category
             ")
             ->orderBy('sr.id', 'DESC');
 
@@ -224,14 +223,14 @@ class ServiceRequest extends VSModel
             ->join('services as s', 's.id', '=', 'sr.service_id')
             ->join('building_spaces as bs', 'bs.id', '=', 'sr.space_id')
             // ->leftJoin('request_statuses as rs', 'rs.id', '=', 'sr.status_id') // leftJoin for safety
-            ->join('service_types as st', 'st.id', '=', 's.service_type_id')
+            ->join('service_categories as sc', 'sc.id', '=', 's.category_id')
             ->where('sr.id', $id)
             ->selectRaw("sr.id, sr.code, sr.tenant_id, sr.space_id, sr.service_id,
                 sr.request_date, sr.remarks,
                 sr.start_time,
                 sr.scheduled_date, sr.complete_date, sr.create_uid,
                 sr.updated_at, sr.total_price, sr.duration_hours,
-                sr.unit_type, sr.status_id,t.name as tenant_name, bs.code as space_code,s.price as price, s.name as service_name, st.name as service_type
+                sr.unit_type, sr.status_id,t.name as tenant_name, bs.code as space_code,s.price as price, s.name as service_name, s.category_id, sc.name as service_category
             ")
             ->first();
                 if($row){
@@ -247,12 +246,12 @@ class ServiceRequest extends VSModel
         $d = (object)$arr;
         $id = $d->id ?? $this->id;
         $details = $id ? self::getServiceRequestDetails($id) : null;
-        $service_type_id = $d->service_type_id ?? null;
+        $category_id = $d->category_id ?? null;
         return (object) [
-            'request_details'   => $details,
-            'service_types'     => GeneralSettings::options_service_type_request($ss),
-            'tenants'           => GeneralSettings::options_tenant_with_active_contract($ss),
-            'services'          => GeneralSettings::options_service_request_type($service_type_id),
+            'request_details'     => $details,
+            'service_categories'  => GeneralSettings::options_service_categories($ss),
+            'tenants'             => GeneralSettings::options_tenant_with_active_contract($ss),
+            'services'            => GeneralSettings::options_service_request_type($category_id),
             'building_spaces'   => GeneralSettings::options_building_space($ss),
             'request_statuses'  => GeneralSettings::options_request_status($ss)
         ];
