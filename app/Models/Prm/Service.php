@@ -26,6 +26,7 @@ class Service
             'name'            => '1|string|0-100|text=Name is required.',
             'category_id'     => '1|number|exists=service_categories.id|text=Please select a valid category.',
             'type_id'         => '1|number|exists=service_types.id|text=Please select a valid type.',
+            'level_id'        => '1|number|exists=service_level.id|text=Please select a valid level.',
             'price'           => '1|number|min=0|text=Please enter a valid price.',
             'charge_as'       => '1|string|0-50|text=Please select a valid charge as.',
             'remarks'         => '0|string|0-350',
@@ -95,14 +96,15 @@ class Service
         $query = DB::table('services as s')
             ->join('service_categories as sc','sc.id','=','s.category_id')
             ->join('service_types as st','st.id','=','s.type_id')
+            ->join('service_level as sl','sl.id','=','s.level_id')
             ->join('service_statuses as ss','ss.id','=','s.status_id')
             ->whereRaw($str_search)
             ->whereRaw($str_moreWhere)
-            ->selectRaw("s.id,s.name,s.category_id,sc.name as service_category,s.type_id,st.name as service_type,s.charge_as,s.price,s.status_id,ss.name as status,s.remarks,s.updated_at,s.update_user")
+            ->selectRaw("s.id,s.name,s.category_id,sc.name as service_category,s.type_id, s.level_id, sl.name as service_level, st.name as service_type,s.charge_as,s.price,s.status_id,ss.name as status,s.remarks,s.updated_at,s.update_user")
             ->orderBy('s.category_id','DESC')
             ->orderBy('s.id','DESC');
         $clone_query = clone $query;
-        $count = $clone_query->count('s.id');
+        $count = $clone_query->count();
         $rows = $query->skip($skip_rows)->take($per_page)->get();
         foreach($rows as $row){
             // $row = setOfficialDates($row, [], ['updated_at'], []);
@@ -116,7 +118,7 @@ class Service
     public static function serviceDetails($id,$ss = null){
         return DB::table('services as s')
             ->where('s.id',$id)
-            ->selectRaw('s.id,s.name,s.category_id,s.type_id,s.charge_as,s.price,s.status_id,s.remarks')
+            ->selectRaw('s.id,s.name,s.category_id,s.type_id,s.level_id,s.charge_as,s.price,s.status_id,s.remarks')
             ->first();
     }
 
@@ -127,11 +129,12 @@ class Service
             'statuses' => GeneralSettings::options_service_status($ss),
             'service_categories' => GeneralSettings::options_service_categories($ss),
             'service_types' => GeneralSettings::options_service_types($ss),
+            'service_level' => GeneralSettings::options_service_levels($ss),
             'charge_as' => [
-                            ['id' => 'per_unit', 'name' => 'Per Unit'],
-                            ['id' => 'one_time', 'name' => 'One Time'],
-                            ['id' => 'hour', 'name' => 'Per Hour'],
-                            ['id' => 'month', 'name' => 'Per Month'],
+                            ['id' => 'per_unit', 'name' => 'Unit'],
+                            ['id' => 'one_time', 'name' => 'Once Time'],
+                            ['id' => 'hour', 'name' => 'Hourly'],
+                            ['id' => 'month', 'name' => 'Monthly'],
                         ],
         ];
     }

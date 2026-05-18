@@ -480,6 +480,12 @@ static function options_maintenance_amenity($ss)
         ->selectRaw('id,name as service_category')
         ->get();
     }
+     static function options_service_levels($ss)
+    {
+        return DB::table('service_level')
+        ->selectRaw('id,name as service_level')
+        ->get();
+    }
 
 
 

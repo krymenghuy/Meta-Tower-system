@@ -2532,8 +2532,11 @@ const InvoiceDialog = (() => {
                         showTax: false,
                         allowDiscount: true,
                         discountBeforeTax: true,
-                        // discountTypeDefault: "percent",
-                        currency: "USD"
+                        currencyConversion:{
+                            currency_code:"KHR",
+                            rate:4100
+                        }
+
                     },
                     // currencyConversion: {
                     //     currency_code: "KHR",
