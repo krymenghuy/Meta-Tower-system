@@ -239,7 +239,7 @@ var ServiceComponent = (() => {
         };
         const body = raw.trim()
             ? `<div class="text-primary-custom text-break" style="white-space:pre-wrap;">${escapeHtml(raw)}</div>`
-            : `<em class="text-muted">No remark</em>`;
+            : `<em class="text-muted">No description</em>`;
         container.innerHTML = [
             '<div class="card shadow-sm border-0 rounded-0 mx-0 bg-body-tertiary">',
             '  <div class="card-body py-3 px-4">',
@@ -454,8 +454,8 @@ const CreateServicePriceDialog = (() => {
                             </div>
                             <div class="col-12">
                                 <div class="vs-material-field">
-                                    <textarea name="remark" class="data-input form-control" data-field="remarks" placeholder=" "></textarea>
-                                    <label>Remark</label>
+                                    <textarea name="description" class="data-input form-control" data-field="description" placeholder=" "></textarea>
+                                    <label>Description</label>
                                 </div>
                             </div>
                         </div>`
