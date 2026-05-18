@@ -150,9 +150,9 @@
                                             <span class="screen-title mb-0 text-nowrap" vslang="titles.dashboard" style="text-transform:capitalize;" id="screen_title"></span>
                                         </div>
                                         <div class="d-flex align-item-center justify-content-end w-100">
-                                            <div class="d-flex align-item-center justify-content-end w-50" >
+                                            <!-- <div class="d-flex align-item-center justify-content-end w-50" >
                                                 <input type="text" class="form-control form-control-sm" id="_search_anything" placeholder="Search anything..." >
-                                            </div>
+                                            </div> -->
                                             <!-- <div class="rounded-circle">
                                                 <a href="javascript:void(0)" id="_db_filter_data" class="btn-filter-summery-db mt-1"> -->
                                                     <!-- <i class="fa-solid fa-filter fs-5 text-white"></i> -->
@@ -190,12 +190,12 @@
                                                 </div>
                                             </div>
                                     </div>
-                                    <div class="dropdown nav--question  btn-1">
+                                    <!-- <div class="dropdown nav--question  btn-1">
                                         <button id="_main_btn_question" class="btn-dropdown main-menu-button av--question"
                                             data-menu="question">
                                             <i class="fa-regular fa-circle-question fs-4" style="color:#6b6f82;"></i>
                                         </button>
-                                    </div>
+                                    </div> -->
                                     <div class="dropdown nav--notification  btn-1">
                                         <button id="_main_btn_notif" class="btn-dropdown main-menu-button av--notification"
                                             data-menu="notif">
