@@ -31,7 +31,7 @@ class ServiceRequest extends VSModel
             'tenant_id'         => '1|number|exists=tenants.id|text=Please select a tenant.',
             'space_id'          => '1|number|exists=building_spaces.id|text=Please select a space.',
             'service_id'        => '1|number|exists=services.id|text=Please select a service.',
-            'unit_type'         => '0|choice|1,2',
+            'unit_type'         => '0|choice|1,2,3',
             'duration_hours'    => '0|numeric|min:0.5|max:99.9|text=Duration hours is required when unit type is Hour.',
             'request_date'      => '0|date',
             'scheduled_date'    => '1|date|text=Scheduled date is required.',

@@ -513,7 +513,7 @@ const CreateServicePriceDialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
-                    console.log(123,data.service_details);
+                    // console.log(123,data.service_details);
 
                     // me.controls.charge_as.value = data.service_details.charge_as;
                     // me.controls.type.value = data.service_details.type;
