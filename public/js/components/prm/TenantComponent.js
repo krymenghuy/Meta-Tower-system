@@ -1802,7 +1802,7 @@ const TenantDocumentDialog = (() => {
                                 accept: ".pdf,.png,.jpg,.jpeg",
                             },
                             (d) => {
-                                // --- Log added here ---
+                               
                                 const extension = d.fileName
                                     .split(".")
                                     .pop()
