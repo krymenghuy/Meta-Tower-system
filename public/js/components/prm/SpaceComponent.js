@@ -784,7 +784,6 @@ const BuildingSpaceDialog = (() => {
                     applyNumberInput(me.controls.sqm_size);
                     applyNumberInput(me.controls.price);
 
-                    me.setCode();
                 },
                 configSelect: [
                     {
