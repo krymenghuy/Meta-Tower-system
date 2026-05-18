@@ -347,9 +347,8 @@ var InvoiceComponent = (() => {
 
                 return `
                 <tr>
-                    <td class="fw-medium">${item.description ||
+                    <td class="fw-medium">${
                         item.remarks ||
-                        item.item_name ||
                         "—"}
                     </td>
                     <td class="text-center text-muted small">${qty}</td>
@@ -735,7 +734,7 @@ const InvoiceDialog = (() => {
                                                 <button name="btnService" class="custom-button">Service</button>
                                                 <button name="btnRequest" class="custom-button">Request</button>
                                                 <button name="btnElectric" class="custom-button">Electric</button>
-                                                <button name="btnWater" class="custom-button">Water</button>
+                                                <button name="btnWater" class="custom-button">Water </button>
                                             </div>
                                         </div>
                                     </div>
@@ -990,7 +989,7 @@ const InvoiceDialog = (() => {
                                     </div>
                                 </div>
 
-                                <div class="material-input outlined" style="margin-bottom: 1rem; " style="display:none;">
+                                <div class="material-input outlined" style="margin-bottom: 1rem; display:none; ">
                                     <textarea class="data-input form-control" data-field="remark" name="remark" rows="2" placeholder=" "></textarea>
                                     <label style="color:#777;">Remark</label>
                                 </div>
@@ -1103,18 +1102,13 @@ const InvoiceDialog = (() => {
                                 data.price || matchedSpace.effective_price || 0
                             );
 
-                            // console.log(2222222, me.itemsView.rows);
 
                             const dataToAdd = {
                                 item_id: realContractId,
-                                item_name: `Rent: ${roomCode}`,
                                 type: "rent",
                                 price: finalPrice,
                                 qty: 1,
-                                remarks:
-                                    data.remark ||
-                                    `Rent - ${roomCode} (${data.monthly ||
-                                        "N/A"})`,
+                                remarks:`Rent - ${roomCode} (${data.monthly || "N/A"})`,
                                 contract_id: realContractId,
                                 start_date: data.start_date || "",
                                 end_date: data.end_date || "",
@@ -1150,14 +1144,10 @@ const InvoiceDialog = (() => {
                             me.itemsView.addRow(
                                 {
                                     item_id: realContractId,
-                                    item_name: `Rent Contract: ${roomCode} - (${data.monthly})`,
                                     type: "rent",
                                     price: finalPrice,
                                     qty: 1,
-                                    // remarks:
-                                    //     data.remark ||
-                                    //     `Rent - ${roomCode} (${data.monthly ||
-                                    //         "N/A"})`,
+                                    remarks:`Rent - ${roomCode} (${data.monthly || "N/A"})`,
                                     contract_id: realContractId,
                                     start_date: data.start_date || "",
                                     end_date: data.end_date || "",
@@ -1469,11 +1459,10 @@ const InvoiceDialog = (() => {
                                 me.itemsView.addRow(
                                     {
                                         item_id: null,
-                                        item_name: `Electric Utility`,
                                         type: "utility",
                                         price: ppu,
                                         qty: units,
-                                        // remarks: data.remark || `Electric`,
+                                        remarks:`Electric Utility - ${data.start_date} to ${data.end_date}`,
                                         unit_type: "kWh",
                                         old_reading: oldReading,
                                         new_reading: newReading,
@@ -1515,11 +1504,10 @@ const InvoiceDialog = (() => {
                                 me.itemsView.addRow(
                                     {
                                         item_id: null,
-                                        item_name: `Electric Utility `,
                                         type: "utility",
                                         price: ppu > 0 ? ppu : price,
                                         qty: units > 0 ? units : 1,
-                                        remarks: data.remark || `Electric`,
+                                        remarks:`Electric Utility - ${data.start_date} to ${data.end_date}`,
                                         unit_type: units > 0 ? "kWh" : "Manual",
                                         start_date: data.manual_start_date,
                                         end_date: data.manual_end_date,
@@ -2058,6 +2046,18 @@ const InvoiceDialog = (() => {
                                 selectedService.service ||
                                 selectedService.name ||
                                 `Service #${selectedService.id}`;
+
+                            const formatDt = (dStr) => {
+                                if (!dStr) return "";
+                                const date = new Date(dStr);
+                                if (isNaN(date.getTime())) return dStr;
+                                const monthsArr = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                                const day = String(date.getDate()).padStart(2, "0");
+                                const month = monthsArr[date.getMonth()];
+                                const year = date.getFullYear();
+                                return `${day}-${month}-${year}`;
+                            };
+
                             const unit = (
                                 selectedService.charge_as || ""
                             ).toLowerCase();
@@ -2077,13 +2077,17 @@ const InvoiceDialog = (() => {
                                     ? parseInt(data.duration_months) || 1
                                     : 1;
 
+                            let remarkStr = serviceDisplayName;
+                            if (unit === "month") {
+                                remarkStr += ` - ${qtyMonths} Month${qtyMonths > 1 ? 's' : ''} (${formatDt(data.start_date)} to ${formatDt(data.end_date)})`;
+                            }
+
                             const dataToAdd = {
                                 item_id: data.service_id,
-                                item_name: serviceDisplayName,
                                 type: "service",
                                 price: Number(selectedService.price) || 0,
                                 qty: qtyMonths,
-                                // remarks: data.remark || serviceDisplayName,
+                                remarks: remarkStr,
                                 unit_type: selectedService.charge_as || "Month",
                                 discount: Number(data.discount) || 0,
                                 start_date: data.start_date || "",
@@ -2114,11 +2118,10 @@ const InvoiceDialog = (() => {
                             me.itemsView.addRow(
                                 {
                                     item_id: data.service_id,
-                                    item_name: serviceDisplayName,
                                     type: "service",
                                     price: Number(selectedService.price) || 0,
                                     qty: qtyMonths,
-                                    // remarks: data.remark || serviceDisplayName,
+                                    remarks: remarkStr,
                                     unit_type:
                                         selectedService.charge_as || "Month",
                                     discount: Number(data.discount) || 0,
@@ -2238,7 +2241,7 @@ const InvoiceDialog = (() => {
                                     </div>
 
                                 </div>
-                                <div class="material-input outlined">
+                                <div class="display-none material-input outlined">
                                     <textarea class="data-input form-control" data-field="remark" name="remark" rows="2" placeholder=" "></textarea>
                                     <label style="color:#777;">Remark</label>
                                 </div>
@@ -2387,7 +2390,7 @@ const InvoiceDialog = (() => {
                             // ✅ Fixed: build once, reuse in addRow
                             const dataToAdd = {
                                 item_id: selectedRequest.request_id,
-                                item_name: `${selectedRequest.code}`,
+                                // item_name: `${selectedRequest.code}`,
                                 type: "Service Request",
                                 price: Number(selectedRequest.price),
                                 qty:
@@ -2421,16 +2424,16 @@ const InvoiceDialog = (() => {
                         //     readOnly: true,
                         //     width: "2px",
                         // },
-                        {
-                            name: "item_name",
-                            transTitle: "titles.Item",
-                            displayType: "text",
-                            dataType: "string",
-                            readOnly: true,
-                            className: "small col-item-name",
-                            width: "250px",
-                            // html: '<input type="checkbox" class="check_accept">',
-                        },
+                        // {
+                        //     name: "item_name",
+                        //     transTitle: "titles.Item",
+                        //     displayType: "text",
+                        //     dataType: "string",
+                        //     readOnly: true,
+                        //     className: "small col-item-name",
+                        //     width: "250px",
+                        //     // html: '<input type="checkbox" class="check_accept">',
+                        // },
                         // {
                         //     name: "type",
                         //     transTitle: "titles.Type",
@@ -2444,6 +2447,16 @@ const InvoiceDialog = (() => {
                         //     dataType: "string",
                         //     readOnly: true
                         // },
+                        {
+                            name: "remarks",
+                            transTitle: "titles.Item",
+                            displayType: "text",
+                            dataType: "string",
+                            readOnly: true,
+                            className: "small col-item-name",
+                            width: "250px",
+                            // html: '<input type="checkbox" class="check_accept">',
+                        },
 
                         // {
                         //     name: "unit_type",
@@ -2476,9 +2489,9 @@ const InvoiceDialog = (() => {
                         {
                             name: "price",
                             transTitle: "titles.Price",
-                            dataType: "number",
                             readOnly: true,
-                            isNumeric: true
+                            isNumeric: true,
+                            dataType: "money"
                         },
                         {
                             name: "discount",
@@ -2502,7 +2515,8 @@ const InvoiceDialog = (() => {
                             dataType: "number",
                             readOnly: true,
                             isNumeric: true
-                        }
+                        },
+                       
                     ],
                     calc: {
                         mode: "auto",
@@ -2518,9 +2532,17 @@ const InvoiceDialog = (() => {
                         showTax: false,
                         allowDiscount: true,
                         discountBeforeTax: true,
-                        // discountTypeDefault: "percent",
-                        currency: "USD"
+                        currencyConversion:{
+                            currency_code:"KHR",
+                            rate:4100
+                        }
+
                     },
+                    // currencyConversion: {
+                    //     currency_code: "KHR",
+                    //     rate: 4100,
+                    //     transTitle: "titles.Amount in KHR"
+                    // },
                     tableClass: "table",
                     ensureEmptyRow: false,
                     showAddLineButton: false,
