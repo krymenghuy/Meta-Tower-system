@@ -495,18 +495,19 @@ static function options_maintenance_amenity($ss)
         {
             return DB::table('banks')->selectRaw('id,name')->get();
         }
-    static function options_service_request_type($service_type_id){
-        //$branch_id = $ss->branch_id;
-        $service_type_id = $service_type_id ?? -1;
-        $str_where ="1=1";
-        if($service_type_id > 0){
-            $str_where = 's.type_id = ' . $service_type_id;
+    static function options_service_request_type($category_id = null){
+        $category_id = $category_id ?? -1;
+        $str_where = '1=1';
+        if ($category_id > 0) {
+            $str_where = 's.category_id = ' . $category_id;
         }
         $rows = DB::table('services as s')
-            ->join('service_types as st','st.id','=','s.type_id')
+            ->join('service_categories as sc', 'sc.id', '=', 's.category_id')
             ->whereRaw($str_where)
-            // ->where('s.type', 1)
-            ->selectRaw('s.id,s.name as service_name,s.type_id,s.price,s.charge_as,s.type_id,st.name as service_type')->get();
+            ->selectRaw('s.id, s.name as service_name, s.category_id, s.price, s.charge_as, sc.name as service_category')
+            ->orderBy('sc.name')
+            ->orderBy('s.name')
+            ->get();
         foreach ($rows as $row) {
             $charge_as = ucwords(str_replace('_', ' ', strtolower($row->charge_as ?? '')));
             $row->service_name = $row->service_name . ' (' . $charge_as . ')';
