@@ -253,8 +253,8 @@ class Contract
             return null;
         }
 
-        $startDate = date('Y-m-d', strtotime((string) $startDate));
-        $endDate = date('Y-m-d', strtotime((string) $endDate));
+        $startDate = date('Y-m-d', strtotime($startDate));
+        $endDate = date('Y-m-d', strtotime( $endDate));
 
         return DB::table('contract_renewals as cr')
             ->join('building_spaces as bs', 'bs.id', '=', 'cr.space_id')
@@ -871,7 +871,7 @@ class Contract
         if ($end < strtotime('-1 day', $minEnd)) {
             return DV::error('Contract must be at least 1 month');
         }
-        $new_space_id = !empty($inputs['space_id']) ? (int) $inputs['space_id'] : $effectiveOldSpaceId;
+        $new_space_id = !empty($inputs['space_id']) ? $inputs['space_id'] : $effectiveOldSpaceId;
         if ($new_space_id != $effectiveOldSpaceId) {
             $dup_id = self::checkDuplicateContract($new_space_id, $old->id);
             if ($dup_id) {
