@@ -239,7 +239,7 @@ var ServiceComponent = (() => {
         };
         const body = raw.trim()
             ? `<div class="text-primary-custom text-break" style="white-space:pre-wrap;">${escapeHtml(raw)}</div>`
-            : `<em class="text-muted">No remark</em>`;
+            : `<em class="text-muted">No description</em>`;
         container.innerHTML = [
             '<div class="card shadow-sm border-0 rounded-0 mx-0 bg-body-tertiary">',
             '  <div class="card-body py-3 px-4">',
@@ -431,12 +431,20 @@ const CreateServicePriceDialog = (() => {
                                 </div>
                             </div>
                             <div class="col-6">
+                                <select data-style="material" name="service_type" class="data-input form-control" data-field="type_id" placeholder=" Type">
+                                </select>
+                            </div>
+                            <div class="col-6">
                                 <select data-style="material" name="service_category" class="data-input form-control" data-field="category_id" placeholder="Category">
                                 </select>
                             </div>
                             <div class="col-6">
-                                <select data-style="material" name="service_type" class="data-input form-control" data-field="type_id" placeholder=" Type">
-                                </select>
+                                    <select data-style="material" name="charge_as" class="data-input form-control" data-field="charge_as" placeholder="Charge As">
+                                    <option value="per_unit">Unit</option>
+                                    <option value="one_time">Once</option>
+                                    <option value="hour">Hourly</option>
+                                    <option value="month">Monthly</option>
+                                    </select>
                             </div>
                             <div class="col-6">
                                 <div class="vs-material-field">
@@ -444,20 +452,10 @@ const CreateServicePriceDialog = (() => {
                                     <label>Price</label>
                                 </div>
                             </div>
-                            <div class="col-6">
-                                <div class="vs-material-field">
-                                    <select data-style="material" name="charge_as" class="data-input form-control" data-field="charge_as" placeholder="Charge As">
-                                    <option value="per_unit">Unit</option>
-                                    <option value="one_time">Once</option>
-                                    <option value="hour">Hourly</option>
-                                    <option value="month">Monthly</option>
-                                    </select>
-                                </div>
-                            </div>
                             <div class="col-12">
                                 <div class="vs-material-field">
-                                    <textarea name="remark" class="data-input form-control" data-field="remarks" placeholder=" "></textarea>
-                                    <label>Remark</label>
+                                    <textarea name="description" class="data-input form-control" data-field="description" placeholder=" "></textarea>
+                                    <label>Description</label>
                                 </div>
                             </div>
                         </div>`
@@ -465,8 +463,17 @@ const CreateServicePriceDialog = (() => {
                 },
 
 
-                contentCreated: (me) => {
-                    // applyNumberInput(me.controls.price);
+               contentCreated: (me) => {
+                    const updateChargeAs = () => {
+                        const isSubscription = me.controls.service_type.value == 2;
+
+                        me.controls.charge_as.value = isSubscription ? "month" : "";
+                        me.controls.charge_as.disabled = isSubscription;
+                    };
+
+                    me.controls.service_type?.addEventListener('change', updateChargeAs);
+
+                    updateChargeAs();
                 },
                 configSelect: [
                     {
@@ -499,7 +506,7 @@ const CreateServicePriceDialog = (() => {
                 onPrepareForm: (me, data) => {
                     console.log(123,data.service_details);
 
-                    me.controls.charge_as.value = data.service_details.charge_as;
+                    // me.controls.charge_as.value = data.service_details.charge_as;
                     // me.controls.type.value = data.service_details.type;
                 },
 

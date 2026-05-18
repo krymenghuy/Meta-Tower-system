@@ -24,11 +24,11 @@ class Service
         $ss = $ss ?? $this->userInfo;
         $v_rule = [
             'name'            => '1|string|0-100|text=Name is required.',
-            'category_id'     => '1|number|exists=service_categories.id|text=Please select a valid category.',
             'type_id'         => '1|number|exists=service_types.id|text=Please select a valid type.',
-            'price'           => '1|number|min=0|text=Please enter a valid price.',
+            'category_id'     => '1|number|exists=service_categories.id|text=Please select a valid category.',
             'charge_as'       => '1|string|0-50|text=Please select a valid charge as.',
-            'remarks'         => '0|string|0-350',
+            'price'           => '1|number|min=0|text=Please enter a valid price.',
+            'description'         => '0|string|0-350',
         ];
 
         $res = DBX::validateObject($arr,$v_rule,1,['name' => ['(', ')', '-', '.', '#'],'unit_type' => ['@', '.', '-', '_'],'description' => ['@', ',', '-', '.', '#']],$ss->lang,0,null);
@@ -98,7 +98,7 @@ class Service
             ->join('service_statuses as ss','ss.id','=','s.status_id')
             ->whereRaw($str_search)
             ->whereRaw($str_moreWhere)
-            ->selectRaw("s.id,s.name,s.category_id,sc.name as service_category,s.type_id,st.name as service_type,s.charge_as,s.price,s.status_id,ss.name as status,s.remarks,s.updated_at,s.update_user")
+            ->selectRaw("s.id,s.name,s.category_id,sc.name as service_category,s.type_id,st.name as service_type,s.charge_as,s.price,s.status_id,ss.name as status,s.description,s.updated_at,s.update_user")
             ->orderBy('s.category_id','DESC')
             ->orderBy('s.id','DESC');
         $clone_query = clone $query;
@@ -116,7 +116,7 @@ class Service
     public static function serviceDetails($id,$ss = null){
         return DB::table('services as s')
             ->where('s.id',$id)
-            ->selectRaw('s.id,s.name,s.category_id,s.type_id,s.charge_as,s.price,s.status_id,s.remarks')
+            ->selectRaw('s.id,s.name,s.category_id,s.type_id,s.charge_as,s.price,s.status_id,s.description')
             ->first();
     }
 
