@@ -16,6 +16,7 @@ class GeneralSettings //extends Model
     $remark_chars = [':', '-', '.', '?', '$', '\'', '@'],
     $time_chars = [':', '-'],
     $address_chars = ['.', '#'],
+    $mime_type_chars = ['.', '-'],
     $image_chars = ['+', ':', ',', ';', '=', '/', '\\', '?'],
     $address_map_chars = ['/', ':', ',', '!', '@', '?', '=', '&', '[', ']', '(', ')', '!', '.', '/', ':', '?', '=', '&', '#', '[', ']', '@', '!', '$', "'", '(', ')', '*', '+', ',', ';', '%', '-', '.', '_', '#'];
 
@@ -444,7 +445,7 @@ static function options_maintenance_amenity($ss)
     }
     static function options_building($ss)
     {
-        return DB::table('buildings')->selectRaw('id,name AS building')->get();
+        return DB::table('buildings')->selectRaw('id,name AS building,prefix')->get();
 
     }
     static function options_floor($ss)
@@ -504,6 +505,7 @@ static function options_maintenance_amenity($ss)
         $rows = DB::table('services as s')
             ->join('service_categories as sc', 'sc.id', '=', 's.category_id')
             ->whereRaw($str_where)
+            ->where('s.type_id',1)
             ->selectRaw('s.id, s.name as service_name, s.category_id, s.price, s.charge_as, sc.name as service_category')
             ->orderBy('sc.name')
             ->orderBy('s.name')

@@ -35,9 +35,9 @@ const InvoiceNoTaxDialog = (() => {
                             print-color-adjust: exact;
                         }
                         .pi-action-bar { display:none!important; }
-                        @page { size: A4 portrait; margin: 1rem; }
+                        @page { size: A4 landscape; margin: 10rem; }
                         @media print {
-                            body { background: #fff !important; }
+                            body { background: #fff !important; margin: 8mm; }
                             .pi-action-bar { display:none!important; }
                             .pi-tbl-wrap { overflow: visible !important; }
                             .pi-table { min-width: unset !important; }
@@ -201,12 +201,15 @@ const InvoiceNoTaxDialog = (() => {
                             <div style="font-size:11px;color:#6B7280;margin-top:2px;font-family:'Inter',sans-serif;">
                                 ${invoice.company_phone || "+855 12 345 678"}
                             </div>
+                            <div style="font-size:11px;color:#6B7280;margin-top:2px;font-family:'Inter',sans-serif;">
+                                ${invoice.company_address || "Samdech Monireth Blvd (217), Phnom Penh"}
+                            </div>
                         </div>
                     </div>
                     <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
                         <div style="font-size:11px;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.8px;font-family:'Inter',sans-serif;">Invoice No.</div>
                         <div style="font-size:18px;font-weight:800;color:#0F2060;font-family:'Inter',sans-serif;">${invoice.code || "—"}</div>
-                        <div style="display:inline-block;padding:4px 14px;border-radius:99px;background:${statusBg};color:${statusColor};font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;font-family:'Inter',sans-serif;">
+                        <div style="display:none;padding:4px 14px;border-radius:99px;background:${statusBg};color:${statusColor};font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;font-family:'Inter',sans-serif;">
                             ${statusLabel}
                         </div>
                     </div>
@@ -221,13 +224,9 @@ const InvoiceNoTaxDialog = (() => {
                         ${invoice.tenant_email ? `<div style="font-size:11px;color:#666;font-family:'Inter',sans-serif;">${invoice.tenant_email}</div>` : ""}
                         ${invoice.tenant_phone ? `<div style="font-size:11px;color:#666;font-family:'Inter',sans-serif;">${invoice.tenant_phone}</div>` : ""}
                     </div>
-                    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
-                        <div style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.8px;font-family:'Inter',sans-serif;">Date</div>
-                        <div style="font-size:12px;color:#333;font-weight:500;font-family:'Inter',sans-serif;">${today}</div>
-                        ${invoice.due_date ? `
-                        <div style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.8px;margin-top:6px;font-family:'Inter',sans-serif;">Due Date</div>
-                        <div style="font-size:12px;color:#DC2626;font-weight:600;font-family:'Inter',sans-serif;">${formatDate(invoice.due_date)}</div>
-                        ` : ""}
+                    <div style="padding:18px 0px;display:flex;flex-direction:column;align-items:flex-end;justify-content:center;min-width:160px;text-align:right;">
+                        <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#9CA3AF;margin-bottom:3px;">Due Date</div>
+                        <div style="font-size:15px;font-weight:600;color:#111827;">${formatDate(invoice.due_date)}</div>
                     </div>
                 </div>
 
@@ -258,7 +257,7 @@ const InvoiceNoTaxDialog = (() => {
                     <div style="min-width:300px;border:1px solid #E5E9F5;border-radius:12px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.03);">
                         <table style="width:100%;border-collapse:collapse;">
                             <tr class="pi-totals-row">
-                                <td style="padding:12px 16px;color:#666;">Gross Amount</td>
+                                <td style="padding:12px 16px;color:#666;">Sub Total</td>
                                 <td style="padding:12px 16px;text-align:right;font-weight:600;">${currency}${fmt(subTotal)}</td>
                             </tr>
                             <tr class="pi-totals-row">
@@ -291,20 +290,24 @@ const InvoiceNoTaxDialog = (() => {
                     </div>
                 </div>
 
-                <!-- ═══ REMARKS / NOTES ═══ -->
-                <div style="padding:8px 32px 20px;display:flex;flex-direction:column;gap:6px;border-top:1px solid #F0F0F0;">
-                    ${invoice.general_remark ? `
-                    <div style="font-size:12px;color:#333;font-family:'Inter',sans-serif;">
-                        <strong style="font-weight:600;">Note:</strong> ${invoice.general_remark}
-                    </div>` : `
-                    <div style="font-size:12px;color:#333;font-family:'Inter',sans-serif;">
-                        <strong style="font-weight:600;">Note:</strong> Payment is due by the date shown above. Late payments may incur additional charges.
-                    </div>`}
-                    <div style="margin-top:4px;font-size:10px;color:#9CA3AF;line-height:1.6;font-family:'Inter',sans-serif;">
-                        Location: ${invoice.company_address || "Samdech Monireth Blvd (217), Phnom Penh"}
+                <!-- ═══ REMARKS ═══ -->
+                ${invoice.general_remark ? `
+                <div style="margin:8px 0px 16px;padding:12px 16px;background:#FFFBEB;border-left:3px solid #F59E0B;border-radius:0 8px 8px 0;">
+                    <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#92400E;margin-bottom:4px;">Remarks</div>
+                    <div style="font-size:12px;color:#78350F;line-height:1.5;">${invoice.general_remark}</div>
+                </div>` : ""}
+
+                <!-- ═══ FOOTER ═══ -->
+                <div style="display:flex;justify-content:space-between;align-items:flex-end;padding:14px 24px;background:#F8FAFF;border-top:1px solid #E5E9F5;flex-wrap:wrap;gap:12px;">
+                    <div>
+                        <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#1A3D91;margin-bottom:4px;">Terms &amp; Conditions</div>
+                        <div style="font-size:10px;color:#9CA3AF;line-height:1.6;">Payment is due by the date shown above.<br>Late payments may incur additional charges.</div>
+                    </div>
+                    <div style="text-align:right;">
+                        <div style="font-size:10px;color:#9CA3AF;">Generated by Property Manager</div>
+                        <div style="font-size:11px;font-weight:600;color:#4B5563;margin-top:2px;">${today}</div>
                     </div>
                 </div>
-
                 <!-- ═══ ACTION BAR ═══ -->
                 <div class="pi-action-bar" style="display:flex;justify-content:flex-end;gap:10px;padding:14px 0px;border-top:1px solid #EBEBEB;background:#fff;">
                     <button id="pi-print-btn"

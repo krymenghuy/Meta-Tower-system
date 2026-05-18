@@ -216,17 +216,17 @@ const InvoiceTaxDialog = (() => {
                             <div style="font-family:'Playfair Display',serif;font-size:32px;font-weight:900;color:#FFFFFF;letter-spacing:-0.5px;line-height:1;">INVOICE</div>
                             <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:6px;letter-spacing:0.5px;text-transform:uppercase;">Invoice Number</div>
                             <div style="font-size:16px;font-weight:700;color:#FDE68A;margin-top:2px;letter-spacing:0.3px;">${invoice.code || "—"}</div>
-                            <div style="margin-top:10px;display:inline-block;padding:4px 12px;border-radius:20px;background:${statusBg};color:${statusColor};font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;">
+                            <div style="margin-top:10px;display: none;padding:4px 12px;border-radius:20px;background:${statusBg};color:${statusColor};font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;">
                                 ${statusLabel}
                             </div>
                         </div>
                     </div>
 
                     <!-- ═══ META BAR ═══ -->
-                    <div style="display:flex;justify-content:space-between;align-items:stretch;gap:0;border-bottom:2px solid #E5E9F5;flex-wrap:wrap;">
+                    <div style="display:flex;justify-content:space-between;align-items:stretch;gap:0;flex-wrap:wrap;">
 
                         <!-- Bill To -->
-                        <div style="padding:18px 24px;flex:1;min-width:200px;border-right:1px solid #EEF0F5;">
+                        <div style="padding:18px 24px;flex:1;min-width:200px;">
                             <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#9CA3AF;margin-bottom:7px;">Bill To</div>
                             <div style="font-size:17px;font-weight:700;color:#111827;line-height:1.2;">${invoice.tenant_name || "—"}</div>
                             ${invoice.space_code   ? `<div style="margin-top:5px;font-size:11px;color:#6B7280;display:flex;align-items:center;gap:4px;"><i class="bi bi-building" style="color:#1A3D91;font-size:10px;"></i> Space: <strong style="color:#374151;">${invoice.space_code}</strong></div>` : ""}
@@ -235,19 +235,9 @@ const InvoiceTaxDialog = (() => {
                         </div>
 
                         <!-- Due Date -->
-                        <div style="padding:18px 24px;display:flex;flex-direction:column;justify-content:center;min-width:160px;border-right:1px solid #EEF0F5;">
+                        <div style="padding:18px 24px;display:flex;flex-direction:column;align-items:flex-end;justify-content:center;min-width:160px;text-align:right;">
                             <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#9CA3AF;margin-bottom:3px;">Due Date</div>
-                            <div style="font-size:15px;font-weight:600;color:#111827;">${formatDate(invoice.due_date)}</div>
-                        </div>
-
-                        <div style="padding:18px 24px;display:flex;flex-direction:column;justify-content:center;align-items:flex-end;min-width:180px;background:#F8FAFF;">
-                            <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#9CA3AF;margin-bottom:6px;">Amount Due</div>
-                            <div style="font-size:28px;font-weight:800;color:#0F2060;letter-spacing:-0.5px;line-height:1;">
-                                ${currency}${fmt(netTotal)}
-                            </div>
-                            <div style="margin-top:4px;font-size:11px;color:#6B7280;">
-                                ${paid > 0 ? `<span style="color:#059669;font-weight:600;">${currency}${fmt(paid)} paid</span>` : 'No payments yet'}
-                            </div>
+                            <div style=" font-size:15px;font-weight:600;color:#111827;">${formatDate(invoice.due_date)}</div>
                         </div>
                     </div>
 
@@ -278,7 +268,7 @@ const InvoiceTaxDialog = (() => {
                         <div style="min-width:300px;border:1px solid #E5E9F5;border-radius:12px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.03);">
                             <table style="width:100%;border-collapse:collapse;">
                                 <tr class="pi-totals-row">
-                                    <td style="padding:12px 16px;color:#666;">Gross Amount</td>
+                                    <td style="padding:12px 16px;color:#666;">Sub Total</td>
                                     <td style="padding:12px 16px;text-align:right;font-weight:600;">${currency}${fmt(subTotal)}</td>
                                 </tr>
                                 <tr class="pi-totals-row">
@@ -315,7 +305,7 @@ const InvoiceTaxDialog = (() => {
 
                     <!-- ═══ REMARKS ═══ -->
                     ${invoice.general_remark ? `
-                    <div style="margin:8px 20px 16px;padding:12px 16px;background:#FFFBEB;border-left:3px solid #F59E0B;border-radius:0 8px 8px 0;">
+                    <div style="margin:8px 0px 16px;padding:12px 16px;background:#FFFBEB;border-left:3px solid #F59E0B;border-radius:0 8px 8px 0;">
                         <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#92400E;margin-bottom:4px;">Remarks</div>
                         <div style="font-size:12px;color:#78350F;line-height:1.5;">${invoice.general_remark}</div>
                     </div>` : ""}

@@ -52,6 +52,7 @@ class BuildingSpace
             'sqm_size' => '1|number',
             'price' => '1|number',
             'price_type' => '1|string|text=Please enter a valid price type.',
+            'code' => '0|string',
         ];
 
         $code_char = ['@', '.', '-', '_'];
@@ -565,99 +566,99 @@ class BuildingSpace
     // }
 
     public function createBooking($arr = [], $id = null, $ss = null)
-{
-    $id = $id ?? $this->id;
-    $ss = $ss ?? $this->userInfo;
-    $v_rule = [
-        'space_id' => '1|number|exists=building_spaces.id',
-        'booker_name' => '1|string|1-50|text=Booker name is required.',
-        'booker_phone' => '1|string|1-25|text=Booker phone is required.',
-        'booker_email' => '0|email',
-        'booking_date' => '1|date|text=Booking date is required.',
-        'expired_booking_date' => '1|date|text=Expired date is required.',
-        'booking_fee' => '1|number|min=0|text=Booking amount is required.',
-        'remarks' => '0|string|1-255',
-    ];
-    $email_char = ['@', '.', '_', '-', '+'];
-    $remarks_char = ['@', '.', '_', '-', '+'];
+    {
+        $id = $id ?? $this->id;
+        $ss = $ss ?? $this->userInfo;
+        $v_rule = [
+            'space_id' => '1|number|exists=building_spaces.id',
+            'booker_name' => '1|string|1-50|text=Booker name is required.',
+            'booker_phone' => '1|string|1-25|text=Booker phone is required.',
+            'booker_email' => '0|email',
+            'booking_date' => '1|date|text=Booking date is required.',
+            'expired_booking_date' => '1|date|text=Expired date is required.',
+            'booking_fee' => '1|number|min=0|text=Booking amount is required.',
+            'remarks' => '0|string|1-255',
+        ];
+        $email_char = ['@', '.', '_', '-', '+'];
+        $remarks_char = ['@', '.', '_', '-', '+'];
+        $res = DBX::validateObject($arr,$v_rule,1,['booker_email' => $email_char, 'remarks' => $remarks_char],$ss->lang,0,null);
 
-    $res = DBX::validateObject(
-        $arr,
-        $v_rule,
-        1,
-        ['booker_email' => $email_char, 'remarks' => $remarks_char],
-        $ss->lang,
-        0,
-        null
-    );
+        if ($res->error) return DV::error($res->error);
 
-    if ($res->error) return DV::error($res->error);
+        $inputs = $res->values;
+        $d = (object) $inputs;
+        $booker_email = $d->booker_email ?? null;
+        if ($booker_email !== null && $booker_email !== '') {
 
-    $inputs = $res->values;
-    $d = (object) $inputs;
-    $booker_email = $d->booker_email ?? null;
-    if ($booker_email !== null && $booker_email !== '') {
+            if (strpos($booker_email, '@') === false) {
+                return DV::error('Email must contain @');
+            }
 
-        if (strpos($booker_email, '@') === false) {
-            return DV::error('Email must contain @');
+            if (!filter_var($booker_email, FILTER_VALIDATE_EMAIL)) {
+                return DV::error('Invalid email format');
+            }
+        }
+        $today = date('Y-m-d');
+        $bookingDate = $d->booking_date;
+        $expiredDate = $d->expired_booking_date;
+        if ($bookingDate != $today) {
+            return DV::error('Booking date must be today.');
+        }
+        if (strtotime($expiredDate) < strtotime($today)) {
+            return DV::error('Expired booking date cannot be in the past.');
         }
 
-        if (!filter_var($booker_email, FILTER_VALIDATE_EMAIL)) {
-            return DV::error('Invalid email format');
+        $minExpire = date('Y-m-d', strtotime($bookingDate . ' +14 days'));
+        if (strtotime($expiredDate) < strtotime($minExpire)) {
+            return DV::error('Expired booking date must be at least 14 days after booking date.');
         }
-    }
-    $today = date('Y-m-d');
-    if ($d->booking_date != $today) {
-        return DV::error('Booking date must be today.');
-    }
-    $minExpire = date('Y-m-d', strtotime($d->booking_date . ' +14 days'));
-    if (strtotime($d->expired_booking_date) < strtotime($minExpire)) {
-        return DV::error('Expired booking date must be at least 14 days after booking date.');
-    }
-    \Log::info(json_encode($ss));
+        $maxExpire = date('Y-m-d', strtotime($bookingDate . ' +3 months'));
 
-    if (empty($inputs['remarks'])) {
-        $inputs['remarks'] = "Booking created by {$ss->full_name} on " . date('d-M-Y H:i:s');
-    }
-    DB::beginTransaction();
-    try {
-        $space = DB::table('building_spaces')
-            ->where('id', $d->space_id)
-            ->lockForUpdate()
-            ->first();
+        if (strtotime($expiredDate) > strtotime($maxExpire)) {
+            return DV::error('Booking duration cannot exceed 3 months.');
+        }
+        if (empty($inputs['remarks'])) {
+            $inputs['remarks'] = "Booking created by {$ss->full_name} on " . date('d-M-Y H:i:s');
+        }
+        DB::beginTransaction();
+        try {
+            $space = DB::table('building_spaces')
+                ->where('id', $d->space_id)
+                ->lockForUpdate()
+                ->first();
 
-        if (!$space) {
+            if (!$space) {
+                DB::rollBack();
+                return DV::error('Selected space does not exist.');
+            }
+            if ($space->status_id != 1) {
+                DB::rollBack();
+                return DV::error('This space is not available for booking.');
+            }
+
+            $booking_id = DBX::saveData($ss, 'space_bookings', ['id' => $id], $inputs, [], 1);
+
+            if (!$booking_id) {
+                DB::rollBack();
+                return DV::error('Unable to create booking.');
+            }
+
+            DB::table('building_spaces')
+                ->where('id', $d->space_id)
+                ->update(['status_id' => 2]);
+
+            DB::commit();
+
+            return DV::depends(1, [
+                'id' => $booking_id,
+                'space_bookings' => $inputs
+            ]);
+
+        } catch (\Exception $e) {
             DB::rollBack();
-            return DV::error('Selected space does not exist.');
+            return DV::error('Booking failed. Please try again.');
         }
-        if ($space->status_id != 1) {
-            DB::rollBack();
-            return DV::error('This space is not available for booking.');
-        }
-
-        $booking_id = DBX::saveData($ss, 'space_bookings', ['id' => $id], $inputs, [], 1);
-
-        if (!$booking_id) {
-            DB::rollBack();
-            return DV::error('Unable to create booking.');
-        }
-
-        DB::table('building_spaces')
-            ->where('id', $d->space_id)
-            ->update(['status_id' => 2]);
-
-        DB::commit();
-
-        return DV::depends(1, [
-            'id' => $booking_id,
-            'space_bookings' => $inputs
-        ]);
-
-    } catch (\Exception $e) {
-        DB::rollBack();
-        return DV::error('Booking failed. Please try again.');
     }
-}
 
 public function viewBookingDetails($id)
 {

@@ -847,7 +847,7 @@ const ContractDialog = (() => {
                             <div class="col-6">
                                 <div class="vs-material-field">
                                     <input type="hidden" name="price_type" class="data-input" data-field="price_type" />
-                                    <input type="text" name="price_type_label" class="form-control" disabled />
+                                    <input type="text" name="price_type_label" class="data-input form-control" disabled />
                                     <label>Unit Price</label>
                                 </div>
                             </div>
