@@ -112,10 +112,10 @@
 
     }
     .btn-check:checked+.btn{
-        background-color: #1a1647;
-    color: #fff;
+        background-color: #0c399e;
+        color: #fff;
 
-    }
+        }
 
 
 
