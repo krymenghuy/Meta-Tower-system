@@ -9,7 +9,9 @@ var BillComponent = (() => {
     mThis.divFilter = mThis.self.querySelector("#_divFilter_bill");
     mThis.elFilter_vendor = mThis.self.querySelector("#_bill_vendor_id");
     mThis.elFilter_status = mThis.self.querySelector("#_bill_status_id");
-    mThis.elFilter_category = mThis.self.querySelector("#_bill_expense_type_id");
+    mThis.elFilter_category = mThis.self.querySelector(
+        "#_bill_expense_type_id",
+    );
     mThis.elSearch = mThis.self.querySelector("#_search_bill");
 
     mThis.cols = [
@@ -61,12 +63,14 @@ var BillComponent = (() => {
             },
         },
 
-
         {
             transTitle: "titles.Due",
             className: "align-middle text-nowrap",
             data: (data) => {
-                const total = VSMoney.formatAmount(data.total_amount, data.currency_code ?? 'USD');
+                const total = VSMoney.formatAmount(
+                    data.total_amount,
+                    data.currency_code ?? "USD",
+                );
                 return `<span class="d-block fw-semibold text-primary">${total}</span>`;
             },
         },
@@ -74,7 +78,10 @@ var BillComponent = (() => {
             transTitle: "titles.Paid",
             className: "align-middle text-nowrap",
             data: (data) => {
-                const paid = VSMoney.formatAmount(data.paid_amount, data.currency_code ?? 'USD');
+                const paid = VSMoney.formatAmount(
+                    data.paid_amount,
+                    data.currency_code ?? "USD",
+                );
                 return `<span class="d-block fw-semibold text-success">${paid}</span>`;
             },
         },
@@ -94,7 +101,7 @@ var BillComponent = (() => {
 
                 return `
                     <span class="d-block fw-semibold" style="color:${color};">
-                       ${VSMoney.formatAmount(data.balance, data.currency_code ?? 'USD')}
+                       ${VSMoney.formatAmount(data.balance, data.currency_code ?? "USD")}
                     </span>`;
             },
         },
@@ -118,10 +125,9 @@ var BillComponent = (() => {
                 let icon = "bi bi-question-circle";
 
                 if (status_id == 4) {
-                    cls =
-                        "status-overdue";
+                    cls = "status-overdue";
                     icon = "fa-solid fa-triangle-exclamation";
-                }else if (status_id == 3) {
+                } else if (status_id == 3) {
                     cls =
                         "badge border border-warning text-warning bg-warning-subtle";
                 } else if (status_id == 2) {
@@ -159,7 +165,7 @@ var BillComponent = (() => {
                         data-id="${data.id}"
                         data-vendorId="${data.vendor_id}"
                         data-statusid="${data.status_id}"
-                        data-fileurl="${data.image_url ?? ''}"
+                        data-fileurl="${data.image_url ?? ""}"
                         aria-haspopup="true" aria-expanded="false">
                         <i class="fa-solid fa-ellipsis-vertical text-black fs-5"></i>
                     </a>
@@ -179,9 +185,10 @@ var BillComponent = (() => {
             rowCreated: (data, index, tr) => {
                 tr.dataset.id = data.id;
                 tr.dataset.statusid = data.status_id;
-                tr.dataset.displaystatusid = data.display_status_id ?? data.status_id;
+                tr.dataset.displaystatusid =
+                    data.display_status_id ?? data.status_id;
                 tr.dataset.vendorId = data.vendor_id;
-                tr.dataset.billid   = data.bill_id;
+                tr.dataset.billid = data.bill_id;
                 tr.dataset.fileurl = data.image_url ?? "";
                 tr.classList.add("bill");
                 tr.setAttribute("id", `bill_payment_id${data.id}`);
@@ -251,7 +258,6 @@ var BillComponent = (() => {
             actionButtonClass: "btn_dropdown_vendor_action",
             cssClass: "bg-white shadow",
             menus: [
-
                 {
                     html: '<span class="ps-2" vslang="titles.Modify"></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
@@ -281,46 +287,49 @@ var BillComponent = (() => {
                     icon: `<i class="fa-regular fa-rectangle-xmark" style="color: rgb(209, 23, 54);"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "delete_attachment",
-                }
+                },
             ],
-                // onShow: (me, container) => {
-                //     const menu = me.getActiveMenus(container);
-                //     const status_id = container.dataset.statusid;
-                //     const fileUrl = container.dataset.fileurl;
-                //     const locked = status_id > 1 || display_status_id == 4;
+            // onShow: (me, container) => {
+            //     const menu = me.getActiveMenus(container);
+            //     const status_id = container.dataset.statusid;
+            //     const fileUrl = container.dataset.fileurl;
+            //     const locked = status_id > 1 || display_status_id == 4;
 
-                //     menu.modify_bill.style.display = status_id > 1 ? 'none' : 'block'
-                //     menu.delete_bill.style.display = status_id > 1 ? 'none' : 'block'
-                //     menu.view_attachment.style.display  = fileUrl ? 'block' : 'none';
-                //     menu.delete_attachment.style.display = fileUrl ? 'block' : 'none';
+            //     menu.modify_bill.style.display = status_id > 1 ? 'none' : 'block'
+            //     menu.delete_bill.style.display = status_id > 1 ? 'none' : 'block'
+            //     menu.view_attachment.style.display  = fileUrl ? 'block' : 'none';
+            //     menu.delete_attachment.style.display = fileUrl ? 'block' : 'none';
 
-                //     if (menu.bill_payment) {
-                //         const isBlocked = status_id == 2;
-                //         menu.bill_payment.style.display = isBlocked ? 'none' : 'block';
-                //     }
-                // },
+            //     if (menu.bill_payment) {
+            //         const isBlocked = status_id == 2;
+            //         menu.bill_payment.style.display = isBlocked ? 'none' : 'block';
+            //     }
+            // },
             onShow: (me, container) => {
-                const menu      = me.getActiveMenus(container);
+                const menu = me.getActiveMenus(container);
                 const status_id = container.dataset.statusid;
-                const fileUrl   = container.dataset.fileurl;
+                const fileUrl = container.dataset.fileurl;
 
-                menu.modify_bill.style.display       = status_id > 1 ? 'none' : 'block';
-                menu.delete_bill.style.display       = status_id > 1 ? 'none' : 'block';
-                menu.bill_payment.style.display      = status_id == 2 ? 'none' : 'block';
+                menu.modify_bill.style.display =
+                    status_id > 1 ? "none" : "block";
+                menu.delete_bill.style.display =
+                    status_id > 1 ? "none" : "block";
+                menu.bill_payment.style.display =
+                    status_id == 2 ? "none" : "block";
 
                 if (!fileUrl) {
-                    menu.view_attachment.style.display   = 'none';
-                    menu.delete_attachment.style.display = 'none';
+                    menu.view_attachment.style.display = "none";
+                    menu.delete_attachment.style.display = "none";
                 }
             },
 
             onClick: (menuLink, id, name) => {
                 switch (name) {
-                    case "modify_bill":   {
+                    case "modify_bill": {
                         mThis.editBill(id, menuLink);
                         break;
                     }
-                    case "delete_bill":    {
+                    case "delete_bill": {
                         mThis.deleteBill(id, menuLink);
                         break;
                     }
@@ -336,7 +345,7 @@ var BillComponent = (() => {
                         mThis.deleteAttachment(id, menuLink);
                         break;
                     }
-                    default:  {
+                    default: {
                         break;
                     }
                 }
@@ -371,16 +380,25 @@ var BillComponent = (() => {
                 if (e) {
                     vsapi
                         .call(
-                            `${main_view.base_url}/prm/bill/delete`, { id: id }, false, false, false)
+                            `${main_view.base_url}/prm/bill/delete`,
+                            { id: id },
+                            false,
+                            false,
+                            false,
+                        )
                         .then((res) => {
                             if (res.status_code == 200) {
                                 cv_interact.success(
-                                    res.message || "Bill record has been deleted.",
+                                    res.message ||
+                                        "Bill record has been deleted.",
                                 );
-                                mThis.BillListView.showPage(mThis.getFilterData());
+                                mThis.BillListView.showPage(
+                                    mThis.getFilterData(),
+                                );
                             } else {
                                 cv_interact.error(
-                                    res.error_message || "Failed to delete bill record.",
+                                    res.error_message ||
+                                        "Failed to delete bill record.",
                                 );
                             }
                         });
@@ -394,58 +412,102 @@ var BillComponent = (() => {
         let op = {
             id: null,
             bill_id: id,
-            vendorId:vendor_id,
+            vendorId: vendor_id,
             btn: menuLink,
             onClose: () => {
                 mThis.BillListView.showPage(mThis.getFilterData());
 
                 const tr = document.querySelector(`#bill_payment_id${id}`);
-                const expandedContainer = tr?.nextElementSibling?.querySelector(".expandable-content");
-                if (expandedContainer) mThis.displayBillDetail(expandedContainer, id);
-            }
+                const expandedContainer = tr?.nextElementSibling?.querySelector(
+                    ".expandable-content",
+                );
+                if (expandedContainer)
+                    mThis.displayBillDetail(expandedContainer, id);
+            },
         };
         BillPaymentDialog.show(op);
     };
     mThis.viewAttachment = (id, menuLink) => {
-        vsapi.call(`${main_view.base_url}/prm/bill/view-attachment`, { id: id }, false, false, false)
+        vsapi
+            .call(
+                `${main_view.base_url}/prm/bill/view-attachment`,
+                { id: id },
+                false,
+                false,
+                false,
+            )
             .then((res) => {
                 if (res.status_code !== 200) {
-                    cv_interact.error(res.error_message || 'No attachment found.');
+                    cv_interact.error(
+                        res.error_message || "No attachment found.",
+                    );
                     return;
                 }
 
+                console.log(123123123, res.data);
+
                 const { data_url, ext, mime_type } = res.data;
 
-                const overlay = document.createElement('div');
+                const overlay = document.createElement("div");
                 overlay.style.cssText = `position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:9999; display:flex; justify-content:center; align-items:center; cursor:pointer;`;
 
-                const wrapper = document.createElement('div');
+                const wrapper = document.createElement("div");
                 wrapper.style.cssText = `position:relative; max-width:90vw; max-height:90vh;`;
 
-                const isImage = ['png', 'jpg', 'jpeg'].includes(ext);
-                const isPdf   = ext === 'pdf';
+                const isImage = ["png", "jpg", "jpeg"].includes(ext);
+                const isPdf = ext === "pdf";
+                const isDoc = ["doc", "docx"].includes(ext);
 
                 if (isImage) {
-                    const img = document.createElement('img');
+                    const img = document.createElement("img");
                     img.src = data_url;
-                    img.style.cssText = `max-width:100%; max-height:90vh; border-radius:8px; box-shadow:0 4px 32px #000;`;
+                    img.style.cssText = `
+        max-width:100%;
+        max-height:90vh;
+        border-radius:8px;
+        box-shadow:0 4px 32px #000;
+    `;
                     wrapper.appendChild(img);
                 } else if (isPdf) {
-                    const iframe = document.createElement('iframe');
+                    const iframe = document.createElement("iframe");
                     iframe.src = data_url;
-                    iframe.style.cssText = `width:80vw; height:85vh; border:none; border-radius:8px;`;
+                    iframe.style.cssText = `
+        width:80vw;
+        height:85vh;
+        border:none;
+        border-radius:8px;
+    `;
+                    wrapper.appendChild(iframe);
+                } else if (isDoc) {
+                    const iframe = document.createElement("iframe");
+
+                    iframe.src =
+                        "https://view.officeapps.live.com/op/embed.aspx?src=" +
+                        encodeURIComponent(data_url);
+
+                    iframe.style.cssText = `
+        width:80vw;
+        height:85vh;
+        border:none;
+        border-radius:8px;
+        background:#fff;
+    `;
+
                     wrapper.appendChild(iframe);
                 } else {
                     overlay.onclick = null;
                     document.body.removeChild(overlay);
-                    window.open(data_url, '_blank');
+                    window.open(data_url, "_blank");
                     return;
                 }
 
-                const btnClose = document.createElement('button');
+                const btnClose = document.createElement("button");
                 btnClose.style.cssText = `position:absolute; top:-16px; right:-16px; border:none; background:#fff; border-radius:50%; width:32px; height:32px; font-size:18px; cursor:pointer; line-height:1;`;
-                btnClose.innerHTML = '&times;';
-                btnClose.onclick = (e) => { e.stopPropagation(); document.body.removeChild(overlay); };
+                btnClose.innerHTML = "&times;";
+                btnClose.onclick = (e) => {
+                    e.stopPropagation();
+                    document.body.removeChild(overlay);
+                };
 
                 wrapper.appendChild(btnClose);
                 overlay.appendChild(wrapper);
@@ -458,37 +520,77 @@ var BillComponent = (() => {
             "Delete this attachment?",
             {
                 context: "delete",
-                confirmButtonText: "Delete"
+                confirmButtonText: "Delete",
             },
             function (confirmed) {
                 if (!confirmed) return;
 
-                vsapi.call(`${main_view.base_url}/prm/bill/delete-attachment`,
-                { id }, menuLink, false, false
-                ).then((res) => {
-                    if (res.status_code === 200) {
-                        cv_interact.success("Attachment deleted successfully.");
-                        mThis.BillListView.showPage(mThis.getFilterData());
-                    }else {
+                vsapi
+                    .call(
+                        `${main_view.base_url}/prm/bill/delete-attachment`,
+                        { id },
+                        menuLink,
+                        false,
+                        false,
+                    )
+                    .then((res) => {
+                        if (res.status_code === 200) {
+                            cv_interact.success(
+                                "Attachment deleted successfully.",
+                            );
+                            mThis.BillListView.showPage(mThis.getFilterData());
+                        } else {
+                            cv_interact.error(
+                                res.error_message ||
+                                    "Failed to delete attachment.",
+                            );
+                        }
+                    })
+                    .catch(() => {
                         cv_interact.error(
-                            res.error_message || "Failed to delete attachment."
+                            "Network error while deleting attachment.",
                         );
-                    }
-                })
-                .catch(() => {
-                    cv_interact.error("Network error while deleting attachment.");
-                });
-            }
+                    });
+            },
         );
-    }
+    };
     mThis.prepareFormOptions = (onFinish) => {
         vsapi
-            .call(`${main_view.base_url}/prm/bill/form-options`, null, null, null)
+            .call(
+                `${main_view.base_url}/prm/bill/form-options`,
+                null,
+                null,
+                null,
+            )
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elFilter_vendor, d.vendors, "id", "vendor", "", "All Vendor", "");
-                VSUtil.setComboItems(mThis.elFilter_status, d.bill_statuses, "id", "bill_status", "", "All Statuses", "");
-                VSUtil.setComboItems(mThis.elFilter_category, d.expense_types, "id", "expense_category", "", "All Categories", "");
+                VSUtil.setComboItems(
+                    mThis.elFilter_vendor,
+                    d.vendors,
+                    "id",
+                    "vendor",
+                    "",
+                    "All Vendor",
+                    "",
+                );
+                VSUtil.setComboItems(
+                    mThis.elFilter_status,
+                    d.bill_statuses,
+                    "id",
+                    "bill_status",
+                    "",
+                    "All Statuses",
+                    "",
+                );
+                VSUtil.setComboItems(
+                    mThis.elFilter_category,
+                    d.expense_types,
+                    "id",
+                    "expense_category",
+                    "",
+                    "All Categories",
+                    "",
+                );
                 if (typeof onFinish === "function") onFinish();
             });
     };
@@ -595,66 +697,129 @@ const BillDialog = (() => {
                 },
 
                 contentCreated: (me) => {
+                    me.uploadInput = me.divModal.querySelector(
+                        'input[name="documents"]',
+                    );
+                    me.fileBase64 = null;
                     const applyVendorInfo = (vendorId) => {
-                        me._selectedVendorId = vendorId || '';
-                        if (me.controls.vendor_id) me.controls.vendor_id.value = vendorId || '';
+                        me._selectedVendorId = vendorId || "";
+                        if (me.controls.vendor_id)
+                            me.controls.vendor_id.value = vendorId || "";
                         if (!vendorId) {
-                            if (me.controls.phone_number) me.controls.phone_number.value = '';
-                            if (me.controls.email) me.controls.email.value = '';
+                            if (me.controls.phone_number)
+                                me.controls.phone_number.value = "";
+                            if (me.controls.email) me.controls.email.value = "";
                             return;
                         }
-                        vsapi.post(`${main_view.base_url}/prm/vendor/options-vendor-info`, { vendor_id: vendorId }, {})
-                            .then(res => {
+                        vsapi
+                            .post(
+                                `${main_view.base_url}/prm/vendor/options-vendor-info`,
+                                { vendor_id: vendorId },
+                                {},
+                            )
+                            .then((res) => {
                                 const d = res.data || {};
                                 const v = d.vendor || {};
-                                if (me.controls.phone_number) me.controls.phone_number.value = v.phone_number || '';
-                                if (me.controls.email) me.controls.email.value = v.email || '';
+                                if (me.controls.phone_number)
+                                    me.controls.phone_number.value =
+                                        v.phone_number || "";
+                                if (me.controls.email)
+                                    me.controls.email.value = v.email || "";
                             })
-                                
+
                             .catch(() => {});
                     };
                     if (me.controls.vendor) {
-                        me.searchVendor = VSSearchInput.init(me.controls.vendor, {
-                            type: 'select',
-                            prefetch: true,
-                            minChars: 0,
-                            api: {
-                                endpoint: `${main_view.base_url}/prm/bill/form-options`,
+                        me.searchVendor = VSSearchInput.init(
+                            me.controls.vendor,
+                            {
+                                type: "select",
+                                prefetch: true,
+                                minChars: 0,
+                                api: {
+                                    endpoint: `${main_view.base_url}/prm/bill/form-options`,
+                                },
+                                processResponse: (res) => {
+                                    const vendors = res?.data?.vendors || [];
+                                    return (
+                                        Array.isArray(vendors) ? vendors : []
+                                    ).map((v) => ({
+                                        ...v,
+                                        vendor:
+                                            v.vendor ||
+                                            v.name ||
+                                            v.vendor_name ||
+                                            v.code ||
+                                            "",
+                                        phone_number:
+                                            v.phone_number ||
+                                            v.contact_phone ||
+                                            v.phone ||
+                                            "",
+                                        email:
+                                            v.email ||
+                                            v.contact_email ||
+                                            v.email_address ||
+                                            "",
+                                    }));
+                                },
+                                columns: {
+                                    vendor: "VENDOR",
+                                    phone_number: "PHONE",
+                                },
+                                showColumnHeader: true,
+                                placeholder: "Search vendor",
+                                onSelect: (vendor) => {
+                                    const id = vendor?.id || "";
+                                    me.controls.vendor.value =
+                                        vendor?.vendor || "";
+                                    applyVendorInfo(id);
+                                },
                             },
-                            processResponse: (res) => {
-                                const vendors = res?.data?.vendors || [];
-                                return (Array.isArray(vendors) ? vendors : []).map(v => ({ ...v,
-                                    vendor: v.vendor || v.name || v.vendor_name || v.code || '',
-                                    phone_number: v.phone_number || v.contact_phone || v.phone || '',
-                                    email: v.email || v.contact_email || v.email_address || '',
-                                }));
-                            },
-                            columns: { vendor: 'VENDOR', phone_number: 'PHONE'},
-                            showColumnHeader: true,
-                            placeholder: 'Search vendor',
-                            onSelect: (vendor) => {
-                                const id = vendor?.id || '';
-                                me.controls.vendor.value = vendor?.vendor || '';
-                                applyVendorInfo(id);
-                            }
-                        });
+                        );
 
                         if (me._selectedVendorId) {
                             applyVendorInfo(me._selectedVendorId);
                         }
                     }
+
                     me.controls.btn_chooseFile.onclick = () => {
                         FileChooser.chooseFile(
                             {
-                                accept: ".png,.jpg,.jpeg",
+                                accept: ".pdf,.png,.jpg,.jpeg",
                             },
                             (d) => {
+                                const extension = d.fileName
+                                    .split(".")
+                                    .pop()
+                                    .toLowerCase();
+                                console.log("File Name:", d.fileName);
+                                console.log("File Extension:", extension);
+                                console.log("Full Data Object:", d);
                                 me.fileData = d;
                                 me.controls.documents.value = d.fileName;
-                                me.controls.documents.classList.remove('d-none');
+                                me.controls.documents.classList.remove(
+                                    "d-none",
+                                );
                             },
                         );
                     };
+                    me.uploadInput.addEventListener("change", (e) => {
+                        const file = e.target.files[0];
+                        if (file) {
+                            const reader = new FileReader();
+                            reader.onload = (event) => {
+                                me.fileBase64 =
+                                    event.target.result.split(",")[1];
+
+                                me.ext = event.target.result
+                                    .split(";")[0]
+                                    .split(":")[1];
+                                me.ext = me.ext.split("/")[1];
+                            };
+                            reader.readAsDataURL(file);
+                        }
+                    });
 
                     applyNumberInput(me.controls.total_amount);
                 },
@@ -668,7 +833,7 @@ const BillDialog = (() => {
                     },
                 ],
                 onShow: (me) => {
-                const title = me.divModal.querySelector('.modal-title');
+                    const title = me.divModal.querySelector(".modal-title");
                     if (title) {
                         const isModify = !!me.dataOptions?.id;
                         title.innerHTML = isModify
@@ -681,86 +846,114 @@ const BillDialog = (() => {
                     modifyTitle: "Modify Bill",
                     targetProp: "bill_details",
                     api: {
-                        endpoint: [main_view.base_url, "/prm/bill/form-options"].join(""),
+                        endpoint: [
+                            main_view.base_url,
+                            "/prm/bill/form-options",
+                        ].join(""),
                         params: (op) => {
                             return { id: op.id };
                         },
                     },
                 },
 
-                // onPrepareForm: (me, data) => {
-                //     const header = me.divModal.querySelector(".modal-header");
-                //     const btnClose = header.querySelector("button[data-bs-dismiss]");
-                //     if (btnClose) btnClose.classList.add("d-none");
-
-                //     const details = data?.bill_details;
-                //     if (details?.file_image) {
-                //         me.controls.documents.value = details.file_image;
-                //         me.controls.documents.classList.remove('d-none');
-                //     }
-                //     if (details?.vendor_id) {
-                //         me._selectedVendorId = details.vendor_id;
-                //         if (me.controls.vendor_id) me.controls.vendor_id.value = details.vendor_id;
-                //         if (me.controls.vendor)    me.controls.vendor.value    = details.vendor_name || '';
-                //         if (me.controls.phone_number) me.controls.phone_number.value = details.phone_number || '';
-                //     }
-                // },
-
                 onPrepareForm: (me, data) => {
                     // me.fileData = null;
-                    me.controls.documents.value = '';
+                    me.controls.documents.value = "";
                     // me.controls.documents.classList.add('d-none');
 
                     const details = data?.bill_details;
                     if (details?.file_image) {
-                        me.controls.documents.value = details.file_image;
-                        me.controls.documents.classList.remove('d-none');
+                        const displayName = details.original_file_name
+                            ? `${details.original_file_name}.${details.file_image.split(".").pop()}`
+                            : details.file_image;
+
+                        me.controls.documents.value = displayName;
+                        me.controls.documents.classList.remove("d-none");
                     }
-                    if (me.searchVendor && typeof me.searchVendor.reset === "function") {
+                    if (
+                        me.searchVendor &&
+                        typeof me.searchVendor.reset === "function"
+                    ) {
                         me.searchVendor.reset();
                     }
                     if (details?.vendor_id) {
                         me._selectedVendorId = details.vendor_id;
-                        if (me.controls.vendor_id)    me.controls.vendor_id.value    = details.vendor_id;
-                        if (me.controls.vendor)       me.controls.vendor.value       = details.vendor_name || '';
-                        if (me.controls.phone_number) me.controls.phone_number.value = details.phone_number || '';
+                        if (me.controls.vendor_id)
+                            me.controls.vendor_id.value = details.vendor_id;
+                        if (me.controls.vendor)
+                            me.controls.vendor.value =
+                                details.vendor_name || "";
+                        if (me.controls.phone_number)
+                            me.controls.phone_number.value =
+                                details.phone_number || "";
                     }
 
                     if (!details?.vendor_id) {
-                        if (me.controls.vendor)       me.controls.vendor.value       = '';
-                        if (me.controls.phone_number) me.controls.phone_number.value = '';
+                        if (me.controls.vendor) me.controls.vendor.value = "";
+                        if (me.controls.phone_number)
+                            me.controls.phone_number.value = "";
                         me._selectedVendorId = null;
                     } else {
                         me._selectedVendorId = details.vendor_id;
-                        if (me.controls.vendor_id)    me.controls.vendor_id.value    = details.vendor_id;
-                        if (me.controls.phone_number) me.controls.phone_number.value = details.phone_number || '';
+                        if (me.controls.vendor_id)
+                            me.controls.vendor_id.value = details.vendor_id;
+                        if (me.controls.phone_number)
+                            me.controls.phone_number.value =
+                                details.phone_number || "";
 
                         if (me.controls.vendor) {
-                            me.controls.vendor.value = details.vendor_name || '';
-                            me.controls.vendor.dispatchEvent(new Event('change', { bubbles: true }));
+                            me.controls.vendor.value =
+                                details.vendor_name || "";
+                            me.controls.vendor.dispatchEvent(
+                                new Event("change", { bubbles: true }),
+                            );
                         }
                     }
 
                     const prefill = me.dataOptions?.prefill || {};
                     if (Object.keys(prefill).length) {
-                        if (prefill.vendor_id)    me._selectedVendorId               = prefill.vendor_id;
-                        if (prefill.vendor_id)    me.controls.vendorid.value         = prefill.vendor_id;
-                        if (prefill.vendor_name)  me.controls.vendor.value           = prefill.vendor_name;
-                        if (prefill.phone_number) me.controls.phone_number.value     = prefill.phone_number;
-                        ['bill_date', 'ref_no', 'total_amount', 'remark'].forEach(field => {
+                        if (prefill.vendor_id)
+                            me._selectedVendorId = prefill.vendor_id;
+                        if (prefill.vendor_id)
+                            me.controls.vendorid.value = prefill.vendor_id;
+                        if (prefill.vendor_name)
+                            me.controls.vendor.value = prefill.vendor_name;
+                        if (prefill.phone_number)
+                            me.controls.phone_number.value =
+                                prefill.phone_number;
+                        [
+                            "bill_date",
+                            "ref_no",
+                            "total_amount",
+                            "remark",
+                        ].forEach((field) => {
                             if (prefill[field] && me.controls[field]) {
                                 me.controls[field].value = prefill[field];
                             }
                         });
                     }
-                    
+
                     setTimeout(() => {
-                        const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+                        const months = [
+                            "Jan",
+                            "Feb",
+                            "Mar",
+                            "Apr",
+                            "May",
+                            "Jun",
+                            "Jul",
+                            "Aug",
+                            "Sep",
+                            "Oct",
+                            "Nov",
+                            "Dec",
+                        ];
                         const toFormatted = (val) => {
-                            if (/^\d{2}-[A-Za-z]{3}-\d{4}$/.test(val)) return val;
+                            if (/^\d{2}-[A-Za-z]{3}-\d{4}$/.test(val))
+                                return val;
                             const parsed = new Date(val);
                             if (isNaN(parsed)) return val;
-                            const d = String(parsed.getDate()).padStart(2, '0');
+                            const d = String(parsed.getDate()).padStart(2, "0");
                             const m = months[parsed.getMonth()];
                             const y = parsed.getFullYear();
                             return `${d}-${m}-${y}`;
@@ -768,16 +961,26 @@ const BillDialog = (() => {
                         if (me.controls.bill_date) {
                             if (!me.controls.bill_date.value) {
                                 const now = new Date();
-                                const d = String(now.getDate()).padStart(2, '0');
+                                const d = String(now.getDate()).padStart(
+                                    2,
+                                    "0",
+                                );
                                 const m = months[now.getMonth()];
                                 const y = now.getFullYear();
                                 me.controls.bill_date.value = `${d}-${m}-${y}`;
                             } else {
-                                me.controls.bill_date.value = toFormatted(me.controls.bill_date.value);
+                                me.controls.bill_date.value = toFormatted(
+                                    me.controls.bill_date.value,
+                                );
                             }
                         }
-                        if (me.controls.due_date && me.controls.due_date.value) {
-                            me.controls.due_date.value = toFormatted(me.controls.due_date.value);
+                        if (
+                            me.controls.due_date &&
+                            me.controls.due_date.value
+                        ) {
+                            me.controls.due_date.value = toFormatted(
+                                me.controls.due_date.value,
+                            );
                         }
                     }, 0);
                 },
@@ -788,7 +991,7 @@ const BillDialog = (() => {
                         cssClass: "btn btn-secondary",
                         click: (me, btn) => {
                             me.hide(false);
-                            me._selectedVendorId = null; 
+                            me._selectedVendorId = null;
                             // me.fileData = null;
                         },
                     },
@@ -798,40 +1001,97 @@ const BillDialog = (() => {
                         click: (me, btn) => {
                             const op = me.getData();
                             op.id = me.dataOptions.id;
-                            // console.log(444, me.dataOptions);
 
-                            if (me._selectedVendorId != null && me._selectedVendorId !== undefined) {
+                            if (me._selectedVendorId != null) {
                                 op.vendor_id = me._selectedVendorId;
                             }
 
-                            if (me.fileData) {
-                                op.photo = me.fileData.base64
-                                    || me.fileData.data
-                                    || me.fileData.fileData
-                                    || me.fileData.content
-                                    || null;
+                            // ✅ default payload
+                            let p = { ...op };
 
-                                op.ext = me.fileData.ext
-                                    || me.fileData.fileType
-                                    || me.fileData.extension
-                                    || null;
-                                
-                                op.file_name = me.fileData.fileName || null;    
+                            if (me.fileData) {
+                                const allowExt = [
+                                    "jpg",
+                                    "jpeg",
+                                    "png",
+                                    "pdf",
+                                    // "doc",
+                                    // "docx",
+                                ];
+
+                                const fileExt = me.fileData.fileName
+                                    .split(".")
+                                    .pop()
+                                    .toLowerCase();
+
+                                if (!allowExt.includes(fileExt)) {
+                                    cv_interact.error(
+                                        "Please select a valid file.",
+                                    );
+                                    return;
+                                }
+
+                                const nameWithoutExt = me.fileData.fileName
+                                    ? me.fileData.fileName.replace(
+                                          /\.[^/.]+$/,
+                                          "",
+                                      )
+                                    : null;
+
+                                // ✅ ensure base64 format
+                                let base64Data = me.fileData.dataUrl || "";
+                                if (
+                                    base64Data &&
+                                    !base64Data.includes("base64,")
+                                ) {
+                                    base64Data =
+                                        "data:application/octet-stream;base64," +
+                                        base64Data;
+                                }
+
+                                // ✅ merge into payload
+                                p = {
+                                    ...op,
+                                    ext: fileExt,
+                                    original_file_name: nameWithoutExt,
+                                    data: base64Data,
+                                    mime_type: me.fileData.ext,
+                                };
                             }
+
+                            console.log("FINAL PAYLOAD:", p);
+
                             vsapi
-                                .call([main_view.base_url, "/prm/bill/save"].join(""), op, btn, null)
+                                .call(
+                                    [main_view.base_url, "/prm/bill/save"].join(
+                                        "",
+                                    ),
+                                    p,
+                                    btn,
+                                    null,
+                                )
                                 .then((res) => {
                                     if (res.status_code === 200) {
                                         me.hide(true, op);
-                                        me._selectedVendorId = null; 
+                                        me._selectedVendorId = null;
+
                                         if (me.dataOptions.id > 0) {
-                                            cv_interact.success("Bill has been updated successfully.");
+                                            cv_interact.success(
+                                                "Bill has been updated successfully.",
+                                            );
                                         } else {
-                                            cv_interact.success("New bill has been added successfully.");
+                                            cv_interact.success(
+                                                "New bill has been added successfully.",
+                                            );
                                         }
                                     } else {
                                         cv_interact.error(res.error_message);
                                     }
+                                })
+                                .catch(() => {
+                                    cv_interact.error(
+                                        "Network error while saving bill.",
+                                    );
                                 });
                         },
                     },

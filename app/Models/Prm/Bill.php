@@ -7,7 +7,7 @@ use Vsd\Response\DV;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Vsd\Database\DBX;
-use Vsd\Storage\PublicStorage as XPublicStorage;
+use XPublicStorage;
 use Log;
 
 class Bill
@@ -15,6 +15,8 @@ class Bill
     protected $id = null;
     protected $userInfo = null;
     protected static $img_dir = 'bills';
+    protected static $allowed_image_extensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+    protected static $allowed_doc_extensions = ['pdf', 'doc', 'docx'];
     public function __construct($id = null, $userInfo = null)
     {
         $this->id = $id;
@@ -24,7 +26,14 @@ class Bill
     public static function getBillImageUrl($filename, $ss)
     {
         if (!$filename) return null;
-        return XPublicStorage::getUrl(['subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 'images') . $filename;
+
+        $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+        $category = in_array($ext, self::$allowed_image_extensions) ? 'image' : 'document';
+
+        return XPublicStorage::getUrl(
+            ['subs_id' => $ss->subs_id, 'dir' => self::$img_dir],
+            $category
+        ) . $filename;
     }
 
     public function saveBill($arr = [], $id = null, $ss = null)
@@ -44,18 +53,22 @@ class Bill
             'expense_type_id' => '1|number|exists=expense_categories.id|text=Please select a category.',
             'total_amount'    => '1|number|min=0|text=Please enter a valid amount.',
             'remark'          => '0|string|0-255',
-            'photo'           => '0|string',
-            'ext'             => '0|string|in=jpg,jpeg,png,pdf',
-            'file_name'       => '0|string|0-255',
+            'data'            => '0|string',
+            'ext'             => '0|string',
+            'mime_type'       => '0|string',
+            'original_file_name' => '0|string|0-255',
+
         ];
 
-        $res = DBX::validateObject($arr, $v_rule, 1, ['photo'  => GeneralSettings::$image_chars, 'remark' => $remark_char], $ss->lang);
+        $res = DBX::validateObject($arr, $v_rule, 1, ['data'  => GeneralSettings::$image_chars, 'mime_type' => GeneralSettings::$mime_type_chars, 'remark' => $remark_char], $ss->lang);
         if ($res->error) return DV::error($res->error);
         $inputs = $res->values;
+        // \Log::info(json_encode($inputs));
 
-        $photo = $inputs['photo'] ?? null;
+        $data = $inputs['data'] ?? null;
         $ext   = $inputs['ext'] ?? null;
-        $file_name = $inputs['file_name'] ?? null;
+        $mimeType = $inputs['mime_type'] ?? null;
+        // $file_name = $inputs['file_name'] ?? null;
 
         $billDate = strtotime($inputs['bill_date']);
         $dueDate  = strtotime($inputs['due_date']);
@@ -63,7 +76,8 @@ class Bill
         if ($dueDate < $billDate) {
             return DV::error('Due date must be after the issue date.');
         }
-        unset($inputs['photo'], $inputs['ext'], $inputs['file_name']);
+        $originalFileName = $inputs['original_file_name'] ?? null;
+        unset($inputs['data'], $inputs['ext'], $inputs['original_file_name']);
         $total = floatval($inputs['total_amount'] ?? 0);
         if ($total < 0) {
             return  DV::error('Total amount cannot be negative.');
@@ -83,7 +97,8 @@ class Bill
             }
         }
 
-        if (!empty($inputs{'ref_no'})) {
+        if (!empty($inputs{
+            'ref_no'})) {
             $exists = DB::table('bills')
                 ->where('ref_no', $inputs['ref_no'])
                 ->when($id, fn($q) => $q->where('id', '<>', $id))
@@ -106,32 +121,55 @@ class Bill
             if ($created) {
                 setOfficialBillNumber($branch_id, 'bill_code_control', 'bills', ['id' => $id], 'B-', 5);
             }
-            if ($photo && $ext) {
+
+            if ($data && $ext) {
+
+                $ext = strtolower($ext);
+
+                // Determine category
+                if (in_array($ext, self::$allowed_image_extensions)) {
+                    $category = 'image';
+                } elseif (in_array($ext, self::$allowed_doc_extensions)) {
+                    $category = 'document';
+                } else {
+                    DB::rollBack();
+                    return DV::error('Invalid file type.');
+                }
+
+                // if (!is_string($data)) {
+                //     DB::rollBack();
+                //     return DV::error('Invalid file content.');
+                // }
+
+                // if (strpos($data, 'base64,') !== false) {
+                //     $parts = explode('base64,', $data);
+                //     $data = $parts[1] ?? '';
+                // }
+
+                // if (base64_decode($data, true) === false) {
+                //     DB::rollBack();
+                //     return DV::error('Invalid base64 data.');
+                // }
+
                 $old_file = DB::table('bills')->where('id', $id)->value('file_image');
                 if ($old_file) {
                     XPublicStorage::delete([
                         'subs_id' => $ss->subs_id,
                         'dir'     => self::$img_dir
-                    ], 'images', $old_file);
+                    ], 'image', $old_file);
                 }
-                $storageType = ($ext === 'pdf') ? 'document' : 'image';
+                $data = preg_replace('#^data:.*;base64,#', '', $data);
 
-                $rawName = $file_name ?? null;
-                $customName   = null;
-                if ($rawName) {
-                   
-                    $baseName   = pathinfo($rawName, PATHINFO_FILENAME);
-                    $baseName   = preg_replace('/[^a-zA-Z0-9_\-]/', '_', $baseName);
-                    $customName = $baseName . '.' . $ext;
-                }
-
+                // \Log::info($data);
                 $file = XPublicStorage::savefile(
                     ['subs_id' => $ss->subs_id, 'dir' => self::$img_dir],
                     $ext,
-                    $photo,
-                    $storageType,
-                    $customName  
+                    $data,
+                    $category,
+                    $originalFileName
                 );
+                // \Log::info(json_encode($file));
+
 
                 if ($file->status === 'Error') {
                     DB::rollBack();
@@ -139,9 +177,12 @@ class Bill
                 }
 
                 if (!empty($file->file_name)) {
-                    DB::table('bills')
-                        ->where('id', $id)
-                        ->update(['file_image' => $file->file_name,'original_file_name' => $customName ?? $file->file_name]);
+                    DB::table('bills')->where('id', $id)->update([
+                        'file_image' => $file->file_name,
+                        'ext' => $ext,
+                        'original_file_name' => $originalFileName ?? $file->file_name
+
+                    ]);
 
                     $inputs['file_image'] = $file->file_name;
                 }
@@ -320,19 +361,21 @@ class Bill
 
         $bill = DB::table('bills')
             ->where('id', $id)
-            ->select('id', 'file_image')
+            ->select('id', 'file_image', 'ext')
             ->first();
 
         if (!$bill) return DV::error('Bill not found.');
         if (!$bill->file_image) return DV::error('No attachment found for this bill.');
 
         $ext = strtolower(pathinfo($bill->file_image, PATHINFO_EXTENSION));
-        $category = ($ext === 'pdf') ? 'document' : 'images';
+        $category = in_array($ext, self::$allowed_image_extensions) ? 'image' : 'document';
 
         $fileUrl = XPublicStorage::getUrl(
             ['subs_id' => $ss->subs_id, 'dir' => self::$img_dir],
             $category
         ) . $bill->file_image;
+
+        \Log::info($fileUrl);
 
         $mimeTypes = [
             'gif'  => 'image/gif',
@@ -340,7 +383,12 @@ class Bill
             'jpg'  => 'image/jpeg',
             'jpeg' => 'image/jpeg',
             'pdf'  => 'application/pdf',
+            'doc'  => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
         ];
+
+        // \Log::info($ext);
+
         $mimeType = $mimeTypes[$ext] ?? 'application/octet-stream';
 
         return DV::depends(1, [
@@ -365,7 +413,7 @@ class Bill
         if (!$bill->file_image) return DV::error('No attachment found for this bill.');
 
         $ext = strtolower(pathinfo($bill->file_image, PATHINFO_EXTENSION));
-        $category = ($ext === 'pdf') ? 'document' : 'images';
+        $category = in_array($ext, self::$allowed_image_extensions) ? 'image' : 'document';
 
         DB::beginTransaction();
         try {
