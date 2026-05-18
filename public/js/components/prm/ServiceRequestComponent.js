@@ -222,11 +222,6 @@ var ServiceRequestComponent = (function () {
         };
         mThis.tblServiceRequest = mThis.ServiceRequestListView.getTable();
 
-
-
-
-
-
         let timeOut = null;
         mThis.elSearch.onkeyup = function (e) {
             e.preventDefault();
@@ -699,14 +694,18 @@ const CreateServiceRequestDialog = (() => {
                     click: (me, btn) => {
                         const data = me.getData();
                         data.id = op?.id || null;
+                        const saveFailedMessage = 'Failed to save service request.';
                         vsapi.call([main_view.base_url, "/prm/service-request/save",].join(""), data, btn, null)
                             .then((res) => {
                                 if (res.status_code === 200) {
                                     me.hide(true, data);
                                     cv_interact.success(data.id ? "Updated!" : "Created!");
                                 } else {
-                                    cv_interact.error(res.error_message);
+                                    cv_interact.error(res.error_message || saveFailedMessage);
                                 }
+                            })
+                            .catch(() => {
+                                cv_interact.error(saveFailedMessage);
                             });
                     }
                 }
