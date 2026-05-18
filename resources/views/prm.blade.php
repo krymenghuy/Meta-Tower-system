@@ -143,31 +143,34 @@
                 <div id="kt_header" class="kt-header kt-grid__item kt-header--fixed">
                     <div class="animation-line line--loader" style="display:none" id="vs_loader"></div>
                     <div class="kt-header-menu-wrapper" id="kt_header_menu_wrapper">
-                        <div class="d-flex flex-row flex-wrap shadow justify-content-between" style="background-color:hsl(0, 0%, 91%);">
+                        <div class="d-flex flex-row flex-wrap shadow justify-content-between">
                            <div id="_main_top_right_menus" class="mainview-top-right">
-                                <div class="show--title mx-4 d-flex flex-grow-1">
+                                <div class="show--title d-flex flex-grow-1">
                                   <div class="screen-info" id="kt_header_menu_wrapper">
-                                            <span class="screen-title mb-0 text-nowrap" vslang="titles.dashboard" style="text-transform:uppercase;" id="screen_title"></span>
+                                            <span class="screen-title mb-0 text-nowrap" vslang="titles.dashboard" style="text-transform:capitalize;" id="screen_title"></span>
                                         </div>
                                         <div class="d-flex align-item-center justify-content-end w-100">
-                                            <div class="rounded-circle">
-                                                <a href="javascript:void(0)" id="_db_filter_data" class="btn-filter-summery-db mt-1">
+                                            <div class="d-flex align-item-center justify-content-end w-50" >
+                                                <input type="text" class="form-control form-control-sm" id="_search_anything" placeholder="Search anything..." >
+                                            </div>
+                                            <!-- <div class="rounded-circle">
+                                                <a href="javascript:void(0)" id="_db_filter_data" class="btn-filter-summery-db mt-1"> -->
                                                     <!-- <i class="fa-solid fa-filter fs-5 text-white"></i> -->
                                                      <!-- <img class="me-2 svg-white" style="height:20px;" src="{{ asset('assets/images/icons/filter-circle.svg') }}" /> -->
-                                                </a>
-                                            </div>
+                                                <!-- </a>
+                                            </div> -->
                                         </div>
                                 </div>
                                 <div id="_main_top_right_menus" class="d-flex flex-row gap-2 flex-wrap px-3 justify-content-end align-items-center">
                                     <div class="dropdown choose--language">
                                             <button id="_main_btn_lang" class="btn-dropdown main-menu-button align--language" data-menu="lang">
                                                 <img src="{{ asset('assets/images/icons/khmer.png') }}" style="border-radius: 50%;height:25px;" />
-                                                <span id="_main_lang_name" class="mx-2 ">
+                                                <span id="_main_lang_name" class="mx-2 " style="color:#6b6f82;">
                                                     <?php
                                                         echo Session::get('lang_name', 'Khmer');
                                                     ?>
                                                 </span>
-                                                <i class="fa-solid fa-caret-down  ps-2 fs-5" style="color:#1a1647;"></i>
+                                                <i class="fa-solid fa-caret-down  ps-2 fs-5" style="color:#6b6f82;"></i>
                                             </button>
                                             <div class="dropdown-menu dropdown-menu-right">
                                                 <span class="lang-menu-header"></span>
@@ -187,10 +190,16 @@
                                                 </div>
                                             </div>
                                     </div>
+                                    <div class="dropdown nav--question  btn-1">
+                                        <button id="_main_btn_question" class="btn-dropdown main-menu-button av--question"
+                                            data-menu="question">
+                                            <i class="fa-regular fa-circle-question fs-4" style="color:#6b6f82;"></i>
+                                        </button>
+                                    </div>
                                     <div class="dropdown nav--notification  btn-1">
                                         <button id="_main_btn_notif" class="btn-dropdown main-menu-button av--notification"
                                             data-menu="notif">
-                                            <i class="fa-solid fa-bell ms-2 fs-4" style="color:#1a1647;"></i>
+                                            <i class="fa-regular fa-bell fs-4" style="color:#6b6f82;"></i>
                                             <span class="number--notification notif-count"
                                                 id="_main_notif_count">3</span>
                                         </button>
@@ -241,7 +250,7 @@
                                     </div> --}}
                                     <div class="dropdown app--list">
                                         <button class="btn-dropdown main-menu-button" data-menu="app">
-                                            <i class="fa-brands fa-microsoft ms-2 fs-4" style="color:#1a1647;"></i>
+                                            <i class="fa-solid fa-indent fs-4" style="color:#6b6f82;"></i>
                                         </button>
                                         <?php
                                             $user = XAuthService::user();
@@ -347,12 +356,13 @@
                                         <button id="_main_btn_user" class="btn-dropdown main-menu-button"
                                             data-menu="user">
                                             <img src="<?php echo $user->image_url; ?>" style="border-radius:50%;height:25px" />
-                                                <span class="mx-2">
+                                                <span class="mx-2" style="color:#6b6f82;">
                                                     <?php
                                                         //$user = App\Services\Umt\XAuthService::user();
                                                         echo $user ? $user->full_name : '';
                                                     ?>
                                                 </span>
+                                                <i class="fa-solid fa-caret-down" style="color:#6b6f82;"></i>
                                         </button>
 
                                         <div class="dropdown-menu dropdown-menu-left bg-white rounded-2 shadow-lg"

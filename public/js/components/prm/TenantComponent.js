@@ -163,7 +163,7 @@ var TenantComponent = new (function () {
         });
         mThis.tenantListView = new ListView(mThis.listViewContainer, {
             fetchApi: `${main_view.base_url}/prm/tenant/list-paginate`,
-            perPage: 10,
+            perPage: 8,
             columns: mThis.cols,
             apiCluster: main_view.apiCluster,
             tableClass:
@@ -1741,7 +1741,6 @@ const CreateTenantDialog = (() => {
     };
     return self;
 })();
-
 const TenantDocumentDialog = (() => {
     const self = {};
     let dialog = null;

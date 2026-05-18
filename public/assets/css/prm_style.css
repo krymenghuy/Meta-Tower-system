@@ -24,7 +24,7 @@
     align-items: center;
     justify-content: center;
     gap: 7px;
-    background-color: #1a1647;
+    background-color: #0c399e;
     color: #ffffff;
     padding: 10px 20px;
     border-radius: 6px;
@@ -345,12 +345,12 @@ a.menu-selected .kt-menu__link-text {
     overflow: visible;
     padding: 8px 15px;
     border-radius: 6px;
-    border: 1px solid #9290aa;
+    /* border: 1px solid #9290aa; */
     color: #1a1647;
     cursor: pointer;
     transition: all 0.2s ease;
     z-index: 1;
-    background-color: #d4d4db;      /* French Gray — cool tone matches navy */
+    /* background-color: #d4d4db; */
     display: inline-flex;
     align-items: center;
     gap: 7px;
@@ -358,8 +358,8 @@ a.menu-selected .kt-menu__link-text {
     font-weight: 500;
 }
 .choose--language:hover {
-    background-color: #b9b9c9;
-    border-color: #1a1647;
+    /* background-color: #b9b9c9;
+    border-color: #1a1647; */
 }
 
 
@@ -369,7 +369,7 @@ a.menu-selected .kt-menu__link-text {
     position: relative;
     overflow: visible;
     border-radius: 6px;
-    border: 1px solid #9290aa;          /* same as language */
+    /* border: 1px solid #9290aa; */
     width: 45px;
     height: 40px;
     padding: 0;
@@ -379,13 +379,13 @@ a.menu-selected .kt-menu__link-text {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-left: 15px;
+    /* margin-left: 15px; */
     z-index: 1;
-    background-color: #d4d4db;          /* same as language */
+    /* background-color: #d4d4db; */
 }
 .nav--notification:hover {
-    background-color: #b9b9c9;
-    border-color: #1a1647;
+    /* background-color: #b9b9c9;
+    border-color: #1a1647; */
 }
 
 /* ── App list button — same system ── */
@@ -393,7 +393,7 @@ a.menu-selected .kt-menu__link-text {
     position: relative;
     overflow: visible;
     border-radius: 6px;
-    border: 1px solid #9290aa;          /* same as language */
+    /* border: 1px solid #9290aa; */
     width: 45px;
     height: 40px;
     padding: 0;
@@ -403,13 +403,13 @@ a.menu-selected .kt-menu__link-text {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-left: 15px;
+    /* margin-left: 15px; */
     z-index: 1;
-    background-color: #d4d4db;
+    /* background-color: #d4d4db; */
 }
 .app--list:hover {
-    background-color: #b9b9c9;
-    border-color: #1a1647;
+    /* background-color: #b9b9c9;
+    border-color: #1a1647; */
 }
 
 /* ── Notification badge — unchanged ── */
@@ -417,10 +417,10 @@ a.menu-selected .kt-menu__link-text {
     color: #fff;
     background-color: #e74c3c;
     position: absolute;
-    top: -6px;
-    right: -6px;
-    min-width: 18px;
-    height: 18px;
+    top: -2px;
+    right: 10px;
+    min-width: 14px;
+    height: 14px;
     border-radius: 50%;
     font-size: 10px;
     font-weight: 700;
@@ -511,11 +511,11 @@ a.menu-selected .kt-menu__link-text {
 /* ----------------------- */
 
 .user--info {
-    background-color: #1a1647;
+    /* background-color: #1a1647; */
     /* background: linear-gradient(135deg, #53c8ff 0%, #d491ff 100%); */
-    padding: 8px 10px;
+    /* padding: 8px 10px; */
     border-radius: 6px;
-    margin-left: 15px;
+    /* margin-left: 15px; */
 }
 
 
@@ -525,13 +525,13 @@ a.menu-selected .kt-menu__link-text {
     overflow: visible;
     padding: 8px 12px;
     border-radius: 6px;
-    border: 1px solid #9290aa;        /* same as language & notification */
+    /* border: 1px solid #9290aa; */
     color: #1a1647;
     cursor: pointer;
     transition: all 0.2s ease;
-    margin-left: 15px;
+    /* margin-left: 15px; */
     z-index: 1;
-    background-color: #d4d4db;        /* same as language & notification */
+    /* background-color: #d4d4db; */
     display: inline-flex;
     align-items: center;
     gap: 8px;
@@ -539,8 +539,8 @@ a.menu-selected .kt-menu__link-text {
     font-weight: 500;
 }
 .user--info:hover {
-    background-color: #b9b9c9;
-    border-color: #1a1647;
+    /* background-color: #b9b9c9;
+    border-color: #1a1647; */
 }
 
 
@@ -2140,7 +2140,7 @@ tr.row-selected td {
 /* ── Header ── */
 .table--white thead th {
     color: #1a1647 !important;
-    background-color:#DEDBD1;
+    background-color:#e8e9ea;
     font-size: 14px !important;
     font-weight: 500;
     /* letter-spacing: 0.02em; */
@@ -2155,7 +2155,7 @@ tr.row-selected td {
     transition: background 0.12s ease;
 }
 .table--white tbody tr:last-child {
-    border-bottom: none;
+    /* border-bottom: none; */
 }
 
 /* ── Cells ── */
