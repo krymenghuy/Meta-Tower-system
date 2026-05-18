@@ -151,12 +151,12 @@ class Invoice extends VSModel
                 } else if ($itemType === 'service' && $itemId) {
                     $serviceData = DB::table('services')
                         ->where('id', $itemId)
-                        ->select('price', 'unit_type')
+                        ->select('price', 'charge_as')
                         ->first();
 
                     if ($serviceData) {
                         $price    = (float)$serviceData->price;
-                        $unitType = $serviceData->unit_type ?? '-';
+                        $unitType = $serviceData->charge_as ?? '-';
                     }
                 }
 
