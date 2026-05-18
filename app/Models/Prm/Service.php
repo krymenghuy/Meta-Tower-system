@@ -24,10 +24,10 @@ class Service
         $ss = $ss ?? $this->userInfo;
         $v_rule = [
             'name'            => '1|string|0-100|text=Name is required.',
-            'category_id'     => '1|number|exists=service_categories.id|text=Please select a valid category.',
             'type_id'         => '1|number|exists=service_types.id|text=Please select a valid type.',
-            'price'           => '1|number|min=0|text=Please enter a valid price.',
+            'category_id'     => '1|number|exists=service_categories.id|text=Please select a valid category.',
             'charge_as'       => '1|string|0-50|text=Please select a valid charge as.',
+            'price'           => '1|number|min=0|text=Please enter a valid price.',
             'remarks'         => '0|string|0-350',
         ];
 

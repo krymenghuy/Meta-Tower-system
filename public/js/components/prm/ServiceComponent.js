@@ -431,27 +431,25 @@ const CreateServicePriceDialog = (() => {
                                 </div>
                             </div>
                             <div class="col-6">
-                                <select data-style="material" name="service_category" class="data-input form-control" data-field="category_id" placeholder="Category">
-                                </select>
-                            </div>
-                            <div class="col-6">
                                 <select data-style="material" name="service_type" class="data-input form-control" data-field="type_id" placeholder=" Type">
                                 </select>
                             </div>
                             <div class="col-6">
-                                <div class="vs-material-field">
-                                    <input data-type="money" name="price" class="data-input inputbox-input form-control" data-field="price" placeholder="" />
-                                    <label>Price</label>
-                                </div>
+                                <select data-style="material" name="service_category" class="data-input form-control" data-field="category_id" placeholder="Category">
+                                </select>
                             </div>
                             <div class="col-6">
-                                <div class="vs-material-field">
                                     <select data-style="material" name="charge_as" class="data-input form-control" data-field="charge_as" placeholder="Charge As">
                                     <option value="per_unit">Unit</option>
                                     <option value="one_time">Once</option>
                                     <option value="hour">Hourly</option>
                                     <option value="month">Monthly</option>
                                     </select>
+                            </div>
+                            <div class="col-6">
+                                <div class="vs-material-field">
+                                    <input data-type="money" name="price" class="data-input inputbox-input form-control" data-field="price" placeholder="" />
+                                    <label>Price</label>
                                 </div>
                             </div>
                             <div class="col-12">
@@ -465,8 +463,17 @@ const CreateServicePriceDialog = (() => {
                 },
 
 
-                contentCreated: (me) => {
-                    // applyNumberInput(me.controls.price);
+               contentCreated: (me) => {
+                    const updateChargeAs = () => {
+                        const isSubscription = me.controls.service_type.value == 2;
+
+                        me.controls.charge_as.value = isSubscription ? "month" : "";
+                        me.controls.charge_as.disabled = isSubscription;
+                    };
+
+                    me.controls.service_type?.addEventListener('change', updateChargeAs);
+
+                    updateChargeAs();
                 },
                 configSelect: [
                     {
@@ -499,7 +506,7 @@ const CreateServicePriceDialog = (() => {
                 onPrepareForm: (me, data) => {
                     console.log(123,data.service_details);
 
-                    me.controls.charge_as.value = data.service_details.charge_as;
+                    // me.controls.charge_as.value = data.service_details.charge_as;
                     // me.controls.type.value = data.service_details.type;
                 },
 
