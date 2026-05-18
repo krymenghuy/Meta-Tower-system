@@ -143,7 +143,7 @@ class ServiceRequest extends VSModel
                 'data'  => $input
             ]);
 
-            return DV::error('Error saving service request.');
+            return DV::error('Failed to save service request.');
         }
     }
 
