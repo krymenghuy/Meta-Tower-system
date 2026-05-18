@@ -224,14 +224,14 @@ class ServiceRequest extends VSModel
             ->join('services as s', 's.id', '=', 'sr.service_id')
             ->join('building_spaces as bs', 'bs.id', '=', 'sr.space_id')
             // ->leftJoin('request_statuses as rs', 'rs.id', '=', 'sr.status_id') // leftJoin for safety
-            ->join('service_types as st', 'st.id', '=', 's.service_type_id')
+            ->join('service_types as st', 'st.id', '=', 's.type_id')
             ->where('sr.id', $id)
             ->selectRaw("sr.id, sr.code, sr.tenant_id, sr.space_id, sr.service_id,
                 sr.request_date, sr.remarks,
                 sr.start_time,
                 sr.scheduled_date, sr.complete_date, sr.create_uid,
                 sr.updated_at, sr.total_price, sr.duration_hours,
-                sr.unit_type, sr.status_id,t.name as tenant_name, bs.code as space_code,s.price as price, s.name as service_name, st.name as service_type
+                sr.unit_type, sr.status_id,t.name as tenant_name, bs.code as space_code,s.price as price, s.name as service_name, s.type_id as service_type_id, st.name as service_type
             ")
             ->first();
                 if($row){
