@@ -868,317 +868,577 @@ const InvoiceDialog = (() => {
                 );
 
                 // ================ Rent ====================
+                // me.controls.btnRent.onclick = () => {
+                //     if (!me._selectedTenantId) {
+                //         return cv_interact.error("Please select Tenant first.");
+                //     }
+                //     if (
+                //         !me.controls.space.value ||
+                //         me.controls.space.value === ""
+                //     ) {
+                //         return cv_interact.error("Please select Space.");
+                //     }
+
+                //     if (
+                //         !me.controls.invoice_type.value ||
+                //         me.controls.invoice_type.value === ""
+                //     ) {
+                //         return cv_interact.error("Please select Invoice Type.");
+                //     }
+                //     const invoiceType = me.controls.invoice_type.value;
+                //     const spaces = me._tenantSpaces || [];
+                //     const months = me._tenantMonths || [];
+                //     const selectedSpaceId =
+                //         me.controls.space?.value ||
+                //         me.controls.space_id?.value ||
+                //         "";
+
+                //     console.log("spaces", spaces);
+                //     console.log("months", months);
+                //     console.log("selectedSpaceId", selectedSpaceId);
+
+
+                //     const matchedSpace =
+                //         spaces.find(
+                //             s => String(s.space_id) === String(selectedSpaceId)
+                //         ) || spaces[0];
+
+                //     if (!matchedSpace) {
+                //         return cv_interact.error("No space/contract found.");
+                //     }
+                //     const availableMonths = months.filter(
+                //         m =>
+                //             String(m.contract_id) ===
+                //             String(matchedSpace.contract_id)
+                //     );
+
+                //     if (!availableMonths || availableMonths.length === 0) {
+                //         return cv_interact.error(
+                //             "Rent has already reached the final month of the contract."
+                //         );
+                //     }
+
+                //     // 3. Popup Initialization
+                //     let rentDiv = null;
+                //     InputBox.resetInstance("rentPopUp");
+
+                //     InputBox.show({
+                //         title: "Rent Detail",
+                //         instanceKey: "rentPopUp",
+                //         createContent() {
+                //             const div = document.createElement("div");
+                //             rentDiv = div;
+                //             div.style.cssText =
+                //                 "display:flex; flex-direction:column;";
+
+                //             div.innerHTML = `
+                //                 <div>
+                //                     <div class="d-flex align-items-center mb-3">
+                //                         <span style=" color:#0C447C; font-size:13px;">Contract Details</span>
+                //                         <div style="flex:1; height:1px; background:#e0e0e0;"></div>
+                //                     </div>
+                //                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                //                         <div class="material-input outlined" style="margin-bottom: 1rem;">
+                //                             <input class="data-input form-control bg-light  cursor-blocked" data-field="contract_id" name="contract_id" type="text" readonly>
+                //                             <label style="color:#777;">Unit Code / Room</label>
+                //                         </div>
+                //                         <div class="material-input outlined" style="margin-bottom: 1rem;">
+                //                             <input class="data-input form-control bg-light cursor-blocked" data-field="monthly" name="monthly" type="text" readonly>
+                //                             <label style="color:#777;">Monthly</label>
+                //                         </div>
+                //                     </div>
+                //                 </div>
+
+                //                 <div >
+                //                     <div class="d-flex align-items-center mb-3">
+                //                         <span style=" color:#0C447C; font-size:13px;">Billing Period</span>
+                //                         <div style="flex:1; height:1px; background:#e0e0e0;"></div>
+                //                     </div>
+                //                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                //                         <div class="material-input outlined" style="margin-bottom: 1rem;">
+                //                             <input class="data-input form-control bg-light cursor-blocked" data-field="start_date" name="start_date" type="text" readonly placeholder=" ">
+                //                             <label style="color:#777;">Start Date</label>
+                //                         </div>
+                //                         <div class="material-input outlined" style="margin-bottom: 1rem;">
+                //                             <input class="data-input form-control bg-light cursor-blocked" data-field="end_date" name="end_date" type="text" readonly placeholder=" ">
+                //                             <label style="color:#777;">End Date</label>
+                //                         </div>
+                //                     </div>
+                //                 </div>
+
+                //                 <div>
+                //                     <div class="d-flex align-items-center mb-3">
+                //                         <span style=" color:#0C447C; font-size:13px;">Financials</span>
+                //                         <div style="flex:1; height:1px; background:#e0e0e0;"></div>
+                //                     </div>
+                //                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                //                         <div class="material-input outlined" style="margin-bottom: 1rem; ${
+                //                             Number(invoiceType) === 2
+                //                                 ? "grid-column: span 2;"
+                //                                 : ""
+                //                         }">
+                //                             <input class="data-input form-control bg-light cursor-blocked" data-field="price" name="price" type="text" readonly style=" color:#0c447c;">
+                //                             <label style="color:#777;">Effective Price ($)</label>
+                //                         </div>
+                //                         ${
+                //                             Number(invoiceType) === 2
+                //                                 ? ""
+                //                                 : `                                        
+                //                             <div class="material-input outlined" style="margin-bottom: 1rem;">
+                //                                 <input class="data-input form-control" data-field="tax_rate" name="tax_rate" type="text" inputmode="decimal" placeholder="0">
+                //                                 <label style="color:#777;">Tax %</label>
+                //                             </div>`
+                //                         }
+                //                         <div class="material-input outlined" style="display:flex; gap:8px; align-items:flex-end; grid-column: span 2;">
+                //                             <div style="flex:1">
+                //                                 <input class="data-input form-control" data-field="discount" name="discount" type="text" inputmode="decimal" placeholder="0">
+                //                                 <label style="color:#777;">Discount</label>
+                //                             </div>
+                //                             <div style="width:100px;">
+                //                                 <select class="data-input form-control" data-field="discount_type" name="discount_type">
+                //                                     <option value="percent" selected >%</option>
+                //                                     <option value="amount">$</option>
+                //                                 </select>
+                //                             </div>
+                //                         </div>
+                //                     </div>
+                //                 </div>
+
+                //                 <div class="material-input outlined" style="margin-bottom: 1rem; display:none; ">
+                //                     <textarea class="data-input form-control" data-field="remark" name="remark" rows="2" placeholder=" "></textarea>
+                //                     <label style="color:#777;">Remark</label>
+                //                 </div>
+
+                //             `;
+                //             return div;
+                //         },
+
+                //         onOpen(ibMe) {
+                //             const elContract = rentDiv.querySelector('[data-field="contract_id"]');
+                //             const elMonthly = rentDiv.querySelector('[data-field="monthly"]');
+                //             const elPrice = rentDiv.querySelector('[data-field="price"]');
+                //             const elStartDate = rentDiv.querySelector('[data-field="start_date"]');
+                //             const elEndDate = rentDiv.querySelector('[data-field="end_date"]');
+                //             const elDiscountType = rentDiv.querySelector('[data-field="discount_type"]');
+
+                //             if (!elContract || !elMonthly || !elPrice) return;
+
+                //             elContract.value = matchedSpace.space_code || "(No code)";
+                //             elContract.dataset.contractId = String(matchedSpace.contract_id);
+
+                //             // 3. Load and format Price
+                //             const effectivePrice = Number(matchedSpace.effective_price || 0);
+                //             elPrice.value = effectivePrice.toFixed(2);
+
+                //             // 4. Find and Set Month Data (Read-Only)
+                //             const matchedMonth = months.find(m =>
+                //                 String(m.contract_id) === String(matchedSpace.contract_id)
+                //             ) || {};
+
+                //             elMonthly.value = matchedMonth.month || "";
+                            
+                //             if (elDiscountType) {
+                //                 elDiscountType.value = "percent";
+                //             }
+                //             if (elStartDate) {
+                //                 elStartDate.value = matchedMonth.start_date || "";
+                //             }
+                //             if (elEndDate) {
+                //                 elEndDate.value = matchedMonth.end_date || "";
+                //             }
+
+                //             // 5. Safely handle array generation by filtering out null elements
+                //             const numericInputs = [
+                //                 rentDiv.querySelector('[data-field="discount"]'),
+                //                 rentDiv.querySelector('[data-field="tax_rate"]')
+                //             ].filter(input => input !== null);
+
+                //             // 6. Attach input validation listeners
+                //             numericInputs.forEach(input => {
+                //                 input.addEventListener("input", e => {
+                //                     let v = e.target.value.replace(/[^0-9.]/g, "");
+                //                     const parts = v.split(".");
+                //                     if (parts.length > 2) {
+                //                         v = parts[0] + "." + parts[1];
+                //                     }
+                //                     if (parts[1] !== undefined) {
+                //                         v = parts[0] + "." + parts[1].slice(0, 2);
+                //                     }
+                //                     e.target.value = v;
+                //                 });
+
+                //                 input.addEventListener("blur", e => {
+                //                     let v = parseFloat(e.target.value);
+                //                     if (isNaN(v) || v < 0) {
+                //                         e.target.value = "";
+                //                         return;
+                //                     }
+                //                     e.target.value = v.toFixed(2);
+                //                 });
+                //             });
+                //         },
+
+                //         onConfirm(data, btn, ibMe) {
+                //             const elContract = document.querySelector(
+                //                 '[data-field="contract_id"]'
+                //             );
+                //             const realContractId =
+                //                 elContract?.dataset.contractId ||
+                //                 data.contract_id;
+
+                //             if (!realContractId) {
+                //                 return ibMe.setError(
+                //                     "Unit Code / Room is missing."
+                //                 );
+                //             }
+
+                //             const roomCode = matchedSpace.space_code || "—";
+                //             const finalPrice = Number(
+                //                 data.price || matchedSpace.effective_price || 0
+                //             );
+
+                //             const dataToAdd = {
+                //                 item_id: realContractId,
+                //                 type: "rent",
+                //                 price: finalPrice,
+                //                 qty: 1,
+                //                 remarks: `Rent - ${roomCode} (${data.monthly ||
+                //                     "N/A"})`,
+                //                 contract_id: realContractId,
+                //                 start_date: data.start_date || "",
+                //                 end_date: data.end_date || "",
+                //                 space_code: roomCode,
+                //                 discount: Number(data.discount) || 0,
+                //                 discount_type: data.discount_type || "percent",
+                //                 tax_rate: Number(data.tax_rate) || 0
+                //             };
+
+                //             // 2. Extract existing IDs from the current table
+                //             const existingIds = me.itemsView.rows
+                //                 .map(
+                //                     row =>
+                //                         row.meta?.item_id || row.data?.item_id
+                //                 ) // Check both meta and data
+                //                 .filter(
+                //                     id =>
+                //                         id !== undefined &&
+                //                         id !== "" &&
+                //                         id !== null
+                //                 );
+
+                //             // 3. Compare the new dataToAdd.item_id against existing ones
+                //             const isDuplicate = existingIds.some(
+                //                 id => String(id) === String(dataToAdd.item_id)
+                //             );
+                //             if (isDuplicate) {
+                //                 return ibMe.setError(
+                //                     `Rent is already in the list.`
+                //                 );
+                //             }
+
+                //             me.itemsView.addRow(
+                //                 {
+                //                     item_id: realContractId,
+                //                     type: "rent",
+                //                     price: finalPrice,
+                //                     qty: 1,
+                //                     remarks: `Rent - ${roomCode} (${data.monthly ||
+                //                         "N/A"})`,
+                //                     contract_id: realContractId,
+                //                     start_date: data.start_date || "",
+                //                     end_date: data.end_date || "",
+                //                     unit_type: "month",
+                //                     space_code: roomCode,
+                //                     discount: Number(data.discount) || 0,
+                //                     discount_type:
+                //                         data.discount_type || "amount",
+                //                     tax_rate: Number(data.tax_rate) || 0
+                //                 },
+                //                 0
+                //             );
+
+                //             cv_interact.success(
+                //                 `Rent for ${roomCode} added successfully.`
+                //             );
+                //             ibMe.close();
+                //         }
+                //     });
+                // };
+
                 me.controls.btnRent.onclick = () => {
-                    if (!me._selectedTenantId) {
-                        return cv_interact.error("Please select Tenant first.");
-                    }
-                    if (
-                        !me.controls.space.value ||
-                        me.controls.space.value === ""
-                    ) {
-                        return cv_interact.error("Please select Space.");
-                    }
+    if (!me._selectedTenantId) {
+        return cv_interact.error("Please select Tenant first.");
+    }
+    if (
+        !me.controls.space.value ||
+        me.controls.space.value === ""
+    ) {
+        return cv_interact.error("Please select Space.");
+    }
 
-                    if (
-                        !me.controls.invoice_type.value ||
-                        me.controls.invoice_type.value === ""
-                    ) {
-                        return cv_interact.error("Please select Invoice Type.");
-                    }
-                    const invoiceType = me.controls.invoice_type.value;
-                    const spaces = me._tenantSpaces || [];
-                    const months = me._tenantMonths || [];
-                    const selectedSpaceId =
-                        me.controls.space?.value ||
-                        me.controls.space_id?.value ||
-                        "";
+    if (
+        !me.controls.invoice_type.value ||
+        me.controls.invoice_type.value === ""
+    ) {
+        return cv_interact.error("Please select Invoice Type.");
+    }
+    const invoiceType = me.controls.invoice_type.value;
+    const spaces = me._tenantSpaces || [];
+    const months = me._tenantMonths || [];
+    const selectedSpaceId =
+        me.controls.space?.value ||
+        me.controls.space_id?.value ||
+        "";
 
-                    const matchedSpace =
-                        spaces.find(
-                            s => String(s.space_id) === String(selectedSpaceId)
-                        ) || spaces[0];
+    const matchedSpace =
+        spaces.find(
+            s => String(s.space_id) === String(selectedSpaceId)
+        ) || spaces[0];
 
-                    if (!matchedSpace) {
-                        return cv_interact.error("No space/contract found.");
-                    }
-                    const availableMonths = months.filter(
-                        m =>
-                            String(m.contract_id) ===
-                            String(matchedSpace.contract_id)
-                    );
+    if (!matchedSpace) {
+        return cv_interact.error("No space/contract found.");
+    }
+    const availableMonths = months.filter(
+        m =>
+            String(m.contract_id) ===
+            String(matchedSpace.contract_id)
+    );
 
-                    if (!availableMonths || availableMonths.length === 0) {
-                        return cv_interact.error(
-                            "Rent has already reached the final month of the contract."
-                        );
-                    }
+    if (!availableMonths || availableMonths.length === 0) {
+        return cv_interact.error(
+            "Rent has already reached the final month of the contract."
+        );
+    }
 
-                    // 3. Popup Initialization
-                    let rentDiv = null;
-                    InputBox.resetInstance("rentPopUp");
+    // Popup Initialization
+    let rentDiv = null;
+    InputBox.resetInstance("rentPopUp");
 
-                    InputBox.show({
-                        title: "Rent Detail",
-                        instanceKey: "rentPopUp",
-                        createContent() {
-                            const div = document.createElement("div");
-                            rentDiv = div;
-                            div.style.cssText =
-                                "display:flex; flex-direction:column;";
+    InputBox.show({
+        title: "Rent Detail",
+        instanceKey: "rentPopUp",
+        createContent() {
+            const div = document.createElement("div");
+            rentDiv = div;
+            div.style.cssText =
+                "display:flex; flex-direction:column;";
 
-                            div.innerHTML = `
-                                <div>
-                                    <div class="d-flex align-items-center mb-3">
-                                        <span style=" color:#0C447C; font-size:13px;">Contract Details</span>
-                                        <div style="flex:1; height:1px; background:#e0e0e0;"></div>
-                                    </div>
-                                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                                        <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                            <input class="data-input form-control bg-light  cursor-blocked" data-field="contract_id" name="contract_id" type="text" readonly>
-                                            <label style="color:#777;">Unit Code / Room</label>
-                                        </div>
-                                        <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                            <input class="data-input form-control bg-light cursor-blocked" data-field="monthly" name="monthly" type="text" readonly>
-                                            <label style="color:#777;">Monthly</label>
-                                        </div>
-                                    </div>
-                                </div>
+            div.innerHTML = `
+                <div>
+                    <div class="d-flex align-items-center mb-3">
+                        <span style=" color:#0C447C; font-size:13px;">Contract Details</span>
+                        <div style="flex:1; height:1px; background:#e0e0e0;"></div>
+                    </div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                        <div class="material-input outlined" style="margin-bottom: 1rem;">
+                            <input class="data-input form-control bg-light cursor-blocked" data-field="contract_id" name="contract_id" type="text" readonly>
+                            <label style="color:#777;">Unit Code / Room</label>
+                        </div>
+                        <div class="material-input outlined" style="margin-bottom: 1rem;">
+                            <input class="data-input form-control bg-light cursor-blocked" data-field="monthly" name="monthly" type="text" readonly>
+                            <label style="color:#777;">Monthly</label>
+                        </div>
+                    </div>
+                </div>
 
-                                <div >
-                                    <div class="d-flex align-items-center mb-3">
-                                        <span style=" color:#0C447C; font-size:13px;">Billing Period</span>
-                                        <div style="flex:1; height:1px; background:#e0e0e0;"></div>
-                                    </div>
-                                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                                        <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                            <input class="data-input form-control bg-light cursor-blocked" data-field="start_date" name="start_date" type="text" readonly placeholder="d-m-y">
-                                            <label style="color:#777;">Start Date</label>
-                                        </div>
-                                        <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                            <input class="data-input form-control bg-light cursor-blocked" data-field="end_date" name="end_date" type="text" readonly placeholder="d-m-y">
-                                            <label style="color:#777;">End Date</label>
-                                        </div>
-                                    </div>
-                                </div>
+                <div>
+                    <div class="d-flex align-items-center mb-3">
+                        <span style=" color:#0C447C; font-size:13px;">Billing Period</span>
+                        <div style="flex:1; height:1px; background:#e0e0e0;"></div>
+                    </div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                        <div class="material-input outlined" style="margin-bottom: 1rem;">
+                            <input class="data-input form-control bg-light cursor-blocked" data-field="start_date" name="start_date" type="text" readonly placeholder="d-m-y">
+                            <label style="color:#777;">Start Date</label>
+                        </div>
+                        <div class="material-input outlined" style="margin-bottom: 1rem;">
+                            <input class="data-input form-control bg-light cursor-blocked" data-field="end_date" name="end_date" type="text" readonly placeholder="d-m-y">
+                            <label style="color:#777;">End Date</label>
+                        </div>
+                    </div>
+                </div>
 
-                                <div>
-                                    <div class="d-flex align-items-center mb-3">
-                                        <span style=" color:#0C447C; font-size:13px;">Financials</span>
-                                        <div style="flex:1; height:1px; background:#e0e0e0;"></div>
-                                    </div>
-                                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                                        <div class="material-input outlined" style="margin-bottom: 1rem; ${
-                                            Number(invoiceType) === 2
-                                                ? "grid-column: span 2;"
-                                                : ""
-                                        }">
-                                            <input class="data-input form-control bg-light cursor-blocked" data-field="price" name="price" type="text" readonly style=" color:#0c447c;">
-                                            <label style="color:#777;">Effective Price ($)</label>
-                                        </div>
-                                        ${
-                                            Number(invoiceType) === 2
-                                                ? ""
-                                                : `                                        
-                                            <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                                <input class="data-input form-control" data-field="tax_rate" name="tax_rate" type="text" inputmode="decimal" placeholder="0">
-                                                <label style="color:#777;">Tax %</label>
-                                            </div>`
-                                        }
-                                        <div class="material-input outlined" style="display:flex; gap:8px; align-items:flex-end; grid-column: span 2;">
-                                            <div style="flex:1">
-                                                <input class="data-input form-control" data-field="discount" name="discount" type="text" inputmode="decimal" placeholder="0">
-                                                <label style="color:#777;">Discount</label>
-                                            </div>
-                                            <div style="width:100px;">
-                                                <select class="data-input form-control" data-field="discount_type" name="discount_type">
-                                                    <option value="percent" selected >%</option>
-                                                    <option value="amount">$</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="material-input outlined" style="margin-bottom: 1rem; display:none; ">
-                                    <textarea class="data-input form-control" data-field="remark" name="remark" rows="2" placeholder=" "></textarea>
-                                    <label style="color:#777;">Remark</label>
-                                </div>
-
-                            `;
-                            return div;
-                        },
-
-                        onOpen(ibMe) {
-                            const elContract = document.querySelector(
-                                '[data-field="contract_id"]'
-                            );
-                            const elMonthly = document.querySelector(
-                                '[data-field="monthly"]'
-                            );
-                            const elPrice = document.querySelector(
-                                '[data-field="price"]'
-                            );
-                            const elStartDate = document.querySelector(
-                                '[data-field="start_date"]'
-                            );
-                            const elEndDate = document.querySelector(
-                                '[data-field="end_date"]'
-                            );
-                            const elDiscountType = document.querySelector(
-                                '[data-field="discount_type"]'
-                            );
-                            if (!elContract || !elMonthly || !elPrice) return;
-
-                            // Load Contract Info
-                            elContract.value =
-                                matchedSpace.space_code || "(No code)";
-                            elContract.dataset.contractId = String(
-                                matchedSpace.contract_id
-                            );
-
-                            // Load Price
-                            const effectivePrice = Number(
-                                matchedSpace.effective_price || 0
-                            );
-                            elPrice.value = effectivePrice.toFixed(2);
-
-                            // Auto-Find and Set Month Data (Read-Only)
-                            const matchedMonth =
-                                months.find(
-                                    m =>
-                                        String(m.contract_id) ===
-                                        String(matchedSpace.contract_id)
-                                ) || {};
-
-                            elMonthly.value = matchedMonth.month || "";
-                            if (elDiscountType) {
-                                elDiscountType.value = "percent";
-                            }
-                            if (elStartDate)
-                                elStartDate.value =
-                                    matchedMonth.start_date || "";
-                            if (elEndDate)
-                                elEndDate.value = matchedMonth.end_date || "";
-
-                            [
-                                rentDiv.querySelector(
-                                    '[data-field="discount"]'
-                                ),
-                                rentDiv.querySelector('[data-field="tax_rate"]')
-                            ].forEach(input => {
-                                if (!input) return;
-                                input.addEventListener("input", e => {
-                                    let v = e.target.value.replace(
-                                        /[^0-9.]/g,
-                                        ""
-                                    );
-                                    const parts = v.split(".");
-                                    if (parts.length > 2)
-                                        v = parts[0] + "." + parts[1];
-                                    if (parts[1] !== undefined)
-                                        v =
-                                            parts[0] +
-                                            "." +
-                                            parts[1].slice(0, 2);
-                                    e.target.value = v;
-                                });
-                                input.addEventListener("blur", e => {
-                                    let v = parseFloat(e.target.value);
-                                    if (isNaN(v) || v < 0) {
-                                        e.target.value = "";
-                                        return;
-                                    }
-                                    e.target.value = v.toFixed(2);
-                                });
-                            });
-                        },
-
-                        onConfirm(data, btn, ibMe) {
-                            const elContract = document.querySelector(
-                                '[data-field="contract_id"]'
-                            );
-                            const realContractId =
-                                elContract?.dataset.contractId ||
-                                data.contract_id;
-
-                            if (!realContractId) {
-                                return ibMe.setError(
-                                    "Unit Code / Room is missing."
-                                );
-                            }
-
-                            const roomCode = matchedSpace.space_code || "—";
-                            const finalPrice = Number(
-                                data.price || matchedSpace.effective_price || 0
-                            );
-
-                            const dataToAdd = {
-                                item_id: realContractId,
-                                type: "rent",
-                                price: finalPrice,
-                                qty: 1,
-                                remarks: `Rent - ${roomCode} (${data.monthly ||
-                                    "N/A"})`,
-                                contract_id: realContractId,
-                                start_date: data.start_date || "",
-                                end_date: data.end_date || "",
-                                space_code: roomCode,
-                                discount: Number(data.discount) || 0,
-                                discount_type: data.discount_type || "percent",
-                                tax_rate: Number(data.tax_rate) || 0
-                            };
-
-                            // 2. Extract existing IDs from the current table
-                            const existingIds = me.itemsView.rows
-                                .map(
-                                    row =>
-                                        row.meta?.item_id || row.data?.item_id
-                                ) // Check both meta and data
-                                .filter(
-                                    id =>
-                                        id !== undefined &&
-                                        id !== "" &&
-                                        id !== null
-                                );
-
-                            // 3. Compare the new dataToAdd.item_id against existing ones
-                            const isDuplicate = existingIds.some(
-                                id => String(id) === String(dataToAdd.item_id)
-                            );
-                            if (isDuplicate) {
-                                return ibMe.setError(
-                                    `Rent is already in the list.`
-                                );
-                            }
-
-                            me.itemsView.addRow(
-                                {
-                                    item_id: realContractId,
-                                    type: "rent",
-                                    price: finalPrice,
-                                    qty: 1,
-                                    remarks: `Rent - ${roomCode} (${data.monthly ||
-                                        "N/A"})`,
-                                    contract_id: realContractId,
-                                    start_date: data.start_date || "",
-                                    end_date: data.end_date || "",
-                                    unit_type: "month",
-                                    space_code: roomCode,
-                                    discount: Number(data.discount) || 0,
-                                    discount_type:
-                                        data.discount_type || "amount",
-                                    tax_rate: Number(data.tax_rate) || 0
-                                },
-                                0
-                            );
-
-                            cv_interact.success(
-                                `Rent for ${roomCode} added successfully.`
-                            );
-                            ibMe.close();
+                <div>
+                    <div class="d-flex align-items-center mb-3">
+                        <span style=" color:#0C447C; font-size:13px;">Financials</span>
+                        <div style="flex:1; height:1px; background:#e0e0e0;"></div>
+                    </div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                        <div class="material-input outlined" style="margin-bottom: 1rem; ${
+                            Number(invoiceType) === 2
+                                ? "grid-column: span 2;"
+                                : ""
+                        }">
+                            <input class="data-input form-control bg-light cursor-blocked" data-field="price" name="price" type="text" readonly style=" color:#0c447c;">
+                            <label style="color:#777;">Effective Price ($)</label>
+                        </div>
+                        ${
+                            Number(invoiceType) === 2
+                                ? ""
+                                : `                                        
+                            <div class="material-input outlined" style="margin-bottom: 1rem;">
+                                <input class="data-input form-control" data-field="tax_rate" name="tax_rate" type="text" inputmode="decimal" placeholder="0" required>
+                                <label style="color:#777;">Tax % </label>
+                            </div>`
                         }
-                    });
-                };
+                        <div class="material-input outlined" style="display:flex; gap:8px; align-items:flex-end; grid-column: span 2;">
+                            <div style="flex:1">
+                                <input class="data-input form-control" data-field="discount" name="discount" type="text" inputmode="decimal" placeholder="0">
+                                <label style="color:#777;">Discount</label>
+                            </div>
+                            <div style="width:100px;">
+                                <select class="data-input form-control" data-field="discount_type" name="discount_type">
+                                    <option value="percent" selected>%</option>
+                                    <option value="amount">$</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="material-input outlined" style="margin-bottom: 1rem; display:none;">
+                    <textarea class="data-input form-control" data-field="remark" name="remark" rows="2" placeholder=" "></textarea>
+                    <label style="color:#777;">Remark</label>
+                </div>
+            `;
+            return div;
+        },
+
+        onOpen(ibMe) {
+            const elContract = rentDiv.querySelector('[data-field="contract_id"]');
+            const elMonthly = rentDiv.querySelector('[data-field="monthly"]');
+            const elPrice = rentDiv.querySelector('[data-field="price"]');
+            const elStartDate = rentDiv.querySelector('[data-field="start_date"]');
+            const elEndDate = rentDiv.querySelector('[data-field="end_date"]');
+            const elDiscountType = rentDiv.querySelector('[data-field="discount_type"]');
+
+            if (!elContract || !elMonthly || !elPrice) return;
+
+            elContract.value = matchedSpace.space_code || "(No code)";
+            elContract.dataset.contractId = String(matchedSpace.contract_id);
+
+            const effectivePrice = Number(matchedSpace.effective_price || 0);
+            elPrice.value = effectivePrice.toFixed(2);
+
+            const matchedMonth = months.find(m =>
+                String(m.contract_id) === String(matchedSpace.contract_id)
+            ) || {};
+
+            elMonthly.value = matchedMonth.month || "";
+            
+            if (elDiscountType) {
+                elDiscountType.value = "percent";
+            }
+            if (elStartDate) {
+                elStartDate.value = matchedMonth.start_date || "";
+            }
+            if (elEndDate) {
+                elEndDate.value = matchedMonth.end_date || "";
+            }
+
+            const numericInputs = [
+                rentDiv.querySelector('[data-field="discount"]'),
+                rentDiv.querySelector('[data-field="tax_rate"]')
+            ].filter(input => input !== null);
+
+            numericInputs.forEach(input => {
+                input.addEventListener("input", e => {
+                    let v = e.target.value.replace(/[^0-9.]/g, "");
+                    const parts = v.split(".");
+                    if (parts.length > 2) {
+                        v = parts[0] + "." + parts[1];
+                    }
+                    if (parts[1] !== undefined) {
+                        v = parts[0] + "." + parts[1].slice(0, 2);
+                    }
+                    e.target.value = v;
+                });
+
+                input.addEventListener("blur", e => {
+                    let v = parseFloat(e.target.value);
+                    if (isNaN(v) || v < 0) {
+                        e.target.value = "";
+                        return;
+                    }
+                    e.target.value = v.toFixed(2);
+                });
+            });
+        },
+
+        onConfirm(data, btn, ibMe) {
+            // 1. Check if Tax field exists in the DOM layout tree (Invoice Type !== 2)
+            const elTaxRate = document.querySelector('[data-field="tax_rate"]');
+            
+            if (elTaxRate) {
+                // If tax field is blank, empty strings, or evaluates to an invalid number
+                if (data.tax_rate === undefined || data.tax_rate === null || String(data.tax_rate).trim() === "") {
+                    return ibMe.setError("Tax % is required for this invoice type.");
+                }
+                
+                const taxValue = Number(data.tax_rate);
+                if (isNaN(taxValue) || taxValue < 0) {
+                    return ibMe.setError("Please enter a valid Tax % value.");
+                }
+            }
+
+            const elContract = document.querySelector('[data-field="contract_id"]');
+            const realContractId = elContract?.dataset.contractId || data.contract_id;
+
+            if (!realContractId) {
+                return ibMe.setError("Unit Code / Room is missing.");
+            }
+
+            const roomCode = matchedSpace.space_code || "—";
+            const finalPrice = Number(data.price || matchedSpace.effective_price || 0);
+
+            const dataToAdd = {
+                item_id: realContractId,
+                type: "rent",
+                price: finalPrice,
+                qty: 1,
+                remarks: `Rent - ${roomCode} (${data.monthly || "N/A"})`,
+                contract_id: realContractId,
+                start_date: data.start_date || "",
+                end_date: data.end_date || "",
+                space_code: roomCode,
+                discount: Number(data.discount) || 0,
+                discount_type: data.discount_type || "percent",
+                tax_rate: Number(data.tax_rate) || 0
+            };
+
+            const existingIds = me.itemsView.rows
+                .map(row => row.meta?.item_id || row.data?.item_id)
+                .filter(id => id !== undefined && id !== "" && id !== null);
+
+            const isDuplicate = existingIds.some(id => String(id) === String(dataToAdd.item_id));
+            if (isDuplicate) {
+                return ibMe.setError(`Rent is already in the list.`);
+            }
+
+            me.itemsView.addRow(
+                {
+                    item_id: realContractId,
+                    type: "rent",
+                    price: finalPrice,
+                    qty: 1,
+                    remarks: `Rent - ${roomCode} (${data.monthly || "N/A"})`,
+                    contract_id: realContractId,
+                    start_date: data.start_date || "",
+                    end_date: data.end_date || "",
+                    unit_type: "month",
+                    space_code: roomCode,
+                    discount: Number(data.discount) || 0,
+                    discount_type: data.discount_type || "amount",
+                    tax_rate: Number(data.tax_rate) || 0
+                },
+                0
+            );
+
+            cv_interact.success(`Rent for ${roomCode} added successfully.`);
+            ibMe.close();
+        }
+    });
+};
 
                 me.controls.btnElectric.onclick = () => {
                     if (!me._selectedTenantId) {
@@ -1274,11 +1534,11 @@ const InvoiceDialog = (() => {
                                 </div>
                                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
                                     <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                        <input class="data-input form-control" data-field="start_date" name="start_date" type="text" data-type="date" placeholder="d-m-y">
+                                        <input class="data-input form-control" data-field="start_date" name="start_date" type="text" data-type="date" placeholder=" ">
                                         <label style="color:#777;">Start Date</label>
                                     </div>
                                     <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                        <input class="data-input form-control" data-field="end_date" name="end_date" type="text" data-type="date" placeholder="d-m-y">
+                                        <input class="data-input form-control" data-field="end_date" name="end_date" type="text" data-type="date" placeholder=" ">
                                         <label style="color:#777;">End Date</label>
                                     </div>
                                 </div>
@@ -1680,11 +1940,11 @@ const InvoiceDialog = (() => {
                 //                         </div>
                 //                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
                 //                             <div class="material-input outlined" style="margin-bottom: 1rem;">
-                //                                 <input class="data-input form-control" data-field="start_date" name="start_date" type="text" data-type="date" placeholder="d-m-y">
+                //                                 <input class="data-input form-control" data-field="start_date" name="start_date" type="text" data-type="date" placeholder=" ">
                 //                                 <label style="color:#777;">Start Date</label>
                 //                             </div>
                 //                             <div class="material-input outlined" style="margin-bottom: 1rem;">
-                //                                 <input class="data-input form-control" data-field="end_date" name="end_date" type="text" data-type="date" placeholder="d-m-y">
+                //                                 <input class="data-input form-control" data-field="end_date" name="end_date" type="text" data-type="date" placeholder=" ">
                 //                                 <label style="color:#777;">End Date</label>
                 //                             </div>
                 //                         </div>
@@ -1953,11 +2213,11 @@ const InvoiceDialog = (() => {
                                     </div>
                                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
                                         <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                            <input class="data-input form-control" data-field="start_date" name="start_date" type="text" data-type="date" placeholder="d-m-y">
+                                            <input class="data-input form-control" data-field="start_date" name="start_date" type="text" data-type="date" placeholder=" ">
                                             <label style="color:#777;">Start Date</label>
                                         </div>
                                         <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                            <input class="data-input form-control" data-field="end_date" name="end_date" type="text" data-type="date" placeholder="d-m-y">
+                                            <input class="data-input form-control" data-field="end_date" name="end_date" type="text" data-type="date" placeholder=" ">
                                             <label style="color:#777;">End Date</label>
                                         </div>
                                     </div>
@@ -2773,6 +3033,8 @@ const InvoiceDialog = (() => {
                             )
                             .then(res => {
                                 const d = res.data || {};
+                                console.log(111111111111111111111111111111111111111111111, d);
+                                
                                 me.controls.phone_number.value =
                                     d.tenant?.phone_number || "";
                                 me.controls.email.value = d.tenant?.email || "";
