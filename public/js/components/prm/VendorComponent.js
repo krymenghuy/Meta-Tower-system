@@ -52,9 +52,9 @@ var VendorComponent = (() => {
                     <span class="text-prm-custom d-block text-capitalize">
                         ${name}
                     </span>
-                    <span class="d-block text-muted small">
+                    <small class="d-block text-primary">
                         ${data.type ?? ""}
-                    </span>
+                    </small>
                 </div>
             </div>
         `;
@@ -91,7 +91,7 @@ var VendorComponent = (() => {
             className: "align-middle",
             data: (data) =>
                 `<span class="d-block text-prm-custom text-nowrap"><i class="fa-solid text-success px-1 fa-phone" style="font-size:12px;"></i> ${data.phone_number ?? ""}</span>
-                 <span class="d-block text-primary text-nowrap"><i class="fa-solid text-primary px-1 fa-envelope" style="font-size:12px;"></i> ${data.email ?? ""}</span>`,
+                 <small class="d-block text-primary text-nowrap"><i class="fa-solid text-primary px-1 fa-envelope" ></i> ${data.email ?? ""}</small>`,
         },
 
         {
@@ -99,7 +99,7 @@ var VendorComponent = (() => {
             className: "align-middle text-nowrap",
             data: (data) => {
                 return `<span class="d-block text-prm-custom text-capitalize"> ${data.contact_person ?? ""}</span>
-                         <span class="d-block text-primary"> ${data.contact_phone ?? ""}</span>`;
+                         <small class="d-block text-primary"> ${data.contact_phone ?? ""}</small>`;
             }
         },
         {
@@ -108,6 +108,7 @@ var VendorComponent = (() => {
             data: (data, index, tr) => {
                 return `
                     <div class="text-primary-custom" style="width:250px;">
+                        <i class="fa-solid fa-location-dot" style="color: rgb(72 71 83);"></i> 
                         <span class="text-wrap text-break" style ="word-break:break-word;">${data.address ?? '...'}</span>
                     </div>
                 `;

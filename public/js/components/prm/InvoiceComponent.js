@@ -26,17 +26,17 @@ var InvoiceComponent = (() => {
             data: function(data) {
                 const code = data.code
                     ? `<span class="text-prm-custom">${data.code}</span>`
-                    : `<span class="text-muted fst-italic">N/A</span>`;
+                    : `<span class="text-muted fst-italic">_</span>`;
 
                 let typeHtml = "";
                 const val = data.invoice_type;
 
                 if (val == 1) {
-                    typeHtml = `<span class="text-prm-custom"> Tax</span>`;
+                    typeHtml = `<span class="d-block text-primary"style="font-size:12px;""> Tax</span>`;
                 } else if (val == 2) {
-                    typeHtml = `<span class="text-prm-custom"> No Tax</span>`;
+                    typeHtml = `<span class="d-block text-primary"style="font-size:12px;""> No Tax</span>`;
                 } else {
-                    typeHtml = `<span class="text-prm-custom"> Commercial</span>`;
+                    typeHtml = `<span class="d-block text-primary"style="font-size:12px;""> Commercial</span>`;
                 }
                 return `
                     <div class="d-flex flex-column">
@@ -54,7 +54,7 @@ var InvoiceComponent = (() => {
                 return `
                         <div class="d-flex flex-column">
                             <span>${data.tenant_name ?? ""}</span>
-                            <span>${data.tenant_phone ?? ""}</span>
+                            <span class="d-block text-primary"style="font-size:12px;">${data.tenant_phone ?? ""}</span>
                         </div>`;
             }
         },
@@ -77,7 +77,7 @@ var InvoiceComponent = (() => {
             data: data => {
                 return `
                     <div class="d-flex flex-column align-items-center">
-                        <span class="text-prm-custom text-nowrap">${data.invoice_date ??
+                        <span class="text-prm-custom text-nowrap">${data.issue_date ??
                             ""}
                     </div>
                 `;
@@ -344,14 +344,13 @@ var InvoiceComponent = (() => {
                 const discount = parseFloat(item.discount || 0);
                 const taxAmount = parseFloat(item.tax_rate) || 0;
                 const total = parseFloat(item.total || item.amount || 0);
+                const unit_type = item.unit_type;
 
                 return `
                 <tr>
-                    <td class="fw-medium">${
-                        item.remarks ||
-                        "—"}
+                    <td class="fw-medium">${item.remarks || "—"}
                     </td>
-                    <td class="text-center text-muted small">${qty}</td>
+                    <td class="text-center text-muted small">${qty} ${unit_type}</td>
                     <td class="text-center small">${formatDate(
                         item.start_date
                     )}</td>
@@ -509,10 +508,10 @@ var InvoiceComponent = (() => {
                 const menu = me.getActiveMenus(menuContainer);
                 const statusId = Number(menuContainer.dataset.statusid);
 
-                menu.print_invoice.style.display =
-                    statusId === 1 || statusId === 3 || statusId === 2
-                        ? "block"
-                        : "none";
+                // menu.print_invoice.style.display =
+                //     statusId === 1 || statusId === 3 || statusId === 2
+                //         ? "block"
+                //         : "none";
                 menu.receive_invoice.style.display =
                     statusId === 2 || statusId === 3 || statusId === 4
                         ? "block"
@@ -702,16 +701,17 @@ const InvoiceDialog = (() => {
                                             <span class="field-sep">:</span>
                                             <input name="email" class="data-input form-control field-input cursor-blocked" placeholder=" ">
                                         </div>
-                                    </div>
-
-                                    <!-- RIGHT: Space / Button -->
-                                    <div>
                                         <div class="field-row ">
                                             <label class="field-label fw-semibold">Space / Room</label>
                                             <span class="field-sep">:</span>
                                                 <select name="space"  data-style="material" class="data-input form-control" data-field="space_id" required placeholder=" ">
                                                 </select>
                                         </div>
+                                    </div>
+
+                                    <!-- RIGHT: Space / Button -->
+                                    <div>
+               
                                         <div class="field-row ">
                                             <label class="field-label fw-semibold">Invoice Type</label>
                                             <span class="field-sep">:</span>
@@ -720,6 +720,11 @@ const InvoiceDialog = (() => {
                                                     <option value="2">No Tax</option>
                                                     <option value="3">Commercial</option>
                                                 </select>
+                                        </div>
+                                        <div class="field-row ">
+                                            <label class="field-label fw-semibold">Issue Date </label>
+                                            <span class="field-sep">:</span>
+                                            <input type="text" data-type="date" name="issue_date" data-field="issue_date" class="form-control data-input field-input" required placeholder=" ">
                                         </div>
                                         <div class="field-row ">
                                             <label class="field-label fw-semibold">Due Date </label>
@@ -857,318 +862,584 @@ const InvoiceDialog = (() => {
                 me.controls.divItemsView = me.divModal.querySelector(
                     '[name="divItemsView"]'
                 );
+
                 me.controls.div_invoice_summary = me.divModal.querySelector(
                     '[name="div_invoice_summary"]'
                 );
 
                 // ================ Rent ====================
+                // me.controls.btnRent.onclick = () => {
+                //     if (!me._selectedTenantId) {
+                //         return cv_interact.error("Please select Tenant first.");
+                //     }
+                //     if (
+                //         !me.controls.space.value ||
+                //         me.controls.space.value === ""
+                //     ) {
+                //         return cv_interact.error("Please select Space.");
+                //     }
+
+                //     if (
+                //         !me.controls.invoice_type.value ||
+                //         me.controls.invoice_type.value === ""
+                //     ) {
+                //         return cv_interact.error("Please select Invoice Type.");
+                //     }
+                //     const invoiceType = me.controls.invoice_type.value;
+                //     const spaces = me._tenantSpaces || [];
+                //     const months = me._tenantMonths || [];
+                //     const selectedSpaceId =
+                //         me.controls.space?.value ||
+                //         me.controls.space_id?.value ||
+                //         "";
+
+                //     console.log("spaces", spaces);
+                //     console.log("months", months);
+                //     console.log("selectedSpaceId", selectedSpaceId);
+
+
+                //     const matchedSpace =
+                //         spaces.find(
+                //             s => String(s.space_id) === String(selectedSpaceId)
+                //         ) || spaces[0];
+
+                //     if (!matchedSpace) {
+                //         return cv_interact.error("No space/contract found.");
+                //     }
+                //     const availableMonths = months.filter(
+                //         m =>
+                //             String(m.contract_id) ===
+                //             String(matchedSpace.contract_id)
+                //     );
+
+                //     if (!availableMonths || availableMonths.length === 0) {
+                //         return cv_interact.error(
+                //             "Rent has already reached the final month of the contract."
+                //         );
+                //     }
+
+                //     // 3. Popup Initialization
+                //     let rentDiv = null;
+                //     InputBox.resetInstance("rentPopUp");
+
+                //     InputBox.show({
+                //         title: "Rent Detail",
+                //         instanceKey: "rentPopUp",
+                //         createContent() {
+                //             const div = document.createElement("div");
+                //             rentDiv = div;
+                //             div.style.cssText =
+                //                 "display:flex; flex-direction:column;";
+
+                //             div.innerHTML = `
+                //                 <div>
+                //                     <div class="d-flex align-items-center mb-3">
+                //                         <span style=" color:#0C447C; font-size:13px;">Contract Details</span>
+                //                         <div style="flex:1; height:1px; background:#e0e0e0;"></div>
+                //                     </div>
+                //                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                //                         <div class="material-input outlined" style="margin-bottom: 1rem;">
+                //                             <input class="data-input form-control bg-light  cursor-blocked" data-field="contract_id" name="contract_id" type="text" readonly>
+                //                             <label style="color:#777;">Unit Code / Room</label>
+                //                         </div>
+                //                         <div class="material-input outlined" style="margin-bottom: 1rem;">
+                //                             <input class="data-input form-control bg-light cursor-blocked" data-field="monthly" name="monthly" type="text" readonly>
+                //                             <label style="color:#777;">Monthly</label>
+                //                         </div>
+                //                     </div>
+                //                 </div>
+
+                //                 <div >
+                //                     <div class="d-flex align-items-center mb-3">
+                //                         <span style=" color:#0C447C; font-size:13px;">Billing Period</span>
+                //                         <div style="flex:1; height:1px; background:#e0e0e0;"></div>
+                //                     </div>
+                //                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                //                         <div class="material-input outlined" style="margin-bottom: 1rem;">
+                //                             <input class="data-input form-control bg-light cursor-blocked" data-field="start_date" name="start_date" type="text" readonly placeholder=" ">
+                //                             <label style="color:#777;">Start Date</label>
+                //                         </div>
+                //                         <div class="material-input outlined" style="margin-bottom: 1rem;">
+                //                             <input class="data-input form-control bg-light cursor-blocked" data-field="end_date" name="end_date" type="text" readonly placeholder=" ">
+                //                             <label style="color:#777;">End Date</label>
+                //                         </div>
+                //                     </div>
+                //                 </div>
+
+                //                 <div>
+                //                     <div class="d-flex align-items-center mb-3">
+                //                         <span style=" color:#0C447C; font-size:13px;">Financials</span>
+                //                         <div style="flex:1; height:1px; background:#e0e0e0;"></div>
+                //                     </div>
+                //                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                //                         <div class="material-input outlined" style="margin-bottom: 1rem; ${
+                //                             Number(invoiceType) === 2
+                //                                 ? "grid-column: span 2;"
+                //                                 : ""
+                //                         }">
+                //                             <input class="data-input form-control bg-light cursor-blocked" data-field="price" name="price" type="text" readonly style=" color:#0c447c;">
+                //                             <label style="color:#777;">Effective Price ($)</label>
+                //                         </div>
+                //                         ${
+                //                             Number(invoiceType) === 2
+                //                                 ? ""
+                //                                 : `                                        
+                //                             <div class="material-input outlined" style="margin-bottom: 1rem;">
+                //                                 <input class="data-input form-control" data-field="tax_rate" name="tax_rate" type="text" inputmode="decimal" placeholder="0">
+                //                                 <label style="color:#777;">Tax %</label>
+                //                             </div>`
+                //                         }
+                //                         <div class="material-input outlined" style="display:flex; gap:8px; align-items:flex-end; grid-column: span 2;">
+                //                             <div style="flex:1">
+                //                                 <input class="data-input form-control" data-field="discount" name="discount" type="text" inputmode="decimal" placeholder="0">
+                //                                 <label style="color:#777;">Discount</label>
+                //                             </div>
+                //                             <div style="width:100px;">
+                //                                 <select class="data-input form-control" data-field="discount_type" name="discount_type">
+                //                                     <option value="percent" selected >%</option>
+                //                                     <option value="amount">$</option>
+                //                                 </select>
+                //                             </div>
+                //                         </div>
+                //                     </div>
+                //                 </div>
+
+                //                 <div class="material-input outlined" style="margin-bottom: 1rem; display:none; ">
+                //                     <textarea class="data-input form-control" data-field="remark" name="remark" rows="2" placeholder=" "></textarea>
+                //                     <label style="color:#777;">Remark</label>
+                //                 </div>
+
+                //             `;
+                //             return div;
+                //         },
+
+                //         onOpen(ibMe) {
+                //             const elContract = rentDiv.querySelector('[data-field="contract_id"]');
+                //             const elMonthly = rentDiv.querySelector('[data-field="monthly"]');
+                //             const elPrice = rentDiv.querySelector('[data-field="price"]');
+                //             const elStartDate = rentDiv.querySelector('[data-field="start_date"]');
+                //             const elEndDate = rentDiv.querySelector('[data-field="end_date"]');
+                //             const elDiscountType = rentDiv.querySelector('[data-field="discount_type"]');
+
+                //             if (!elContract || !elMonthly || !elPrice) return;
+
+                //             elContract.value = matchedSpace.space_code || "(No code)";
+                //             elContract.dataset.contractId = String(matchedSpace.contract_id);
+
+                //             // 3. Load and format Price
+                //             const effectivePrice = Number(matchedSpace.effective_price || 0);
+                //             elPrice.value = effectivePrice.toFixed(2);
+
+                //             // 4. Find and Set Month Data (Read-Only)
+                //             const matchedMonth = months.find(m =>
+                //                 String(m.contract_id) === String(matchedSpace.contract_id)
+                //             ) || {};
+
+                //             elMonthly.value = matchedMonth.month || "";
+                            
+                //             if (elDiscountType) {
+                //                 elDiscountType.value = "percent";
+                //             }
+                //             if (elStartDate) {
+                //                 elStartDate.value = matchedMonth.start_date || "";
+                //             }
+                //             if (elEndDate) {
+                //                 elEndDate.value = matchedMonth.end_date || "";
+                //             }
+
+                //             // 5. Safely handle array generation by filtering out null elements
+                //             const numericInputs = [
+                //                 rentDiv.querySelector('[data-field="discount"]'),
+                //                 rentDiv.querySelector('[data-field="tax_rate"]')
+                //             ].filter(input => input !== null);
+
+                //             // 6. Attach input validation listeners
+                //             numericInputs.forEach(input => {
+                //                 input.addEventListener("input", e => {
+                //                     let v = e.target.value.replace(/[^0-9.]/g, "");
+                //                     const parts = v.split(".");
+                //                     if (parts.length > 2) {
+                //                         v = parts[0] + "." + parts[1];
+                //                     }
+                //                     if (parts[1] !== undefined) {
+                //                         v = parts[0] + "." + parts[1].slice(0, 2);
+                //                     }
+                //                     e.target.value = v;
+                //                 });
+
+                //                 input.addEventListener("blur", e => {
+                //                     let v = parseFloat(e.target.value);
+                //                     if (isNaN(v) || v < 0) {
+                //                         e.target.value = "";
+                //                         return;
+                //                     }
+                //                     e.target.value = v.toFixed(2);
+                //                 });
+                //             });
+                //         },
+
+                //         onConfirm(data, btn, ibMe) {
+                //             const elContract = document.querySelector(
+                //                 '[data-field="contract_id"]'
+                //             );
+                //             const realContractId =
+                //                 elContract?.dataset.contractId ||
+                //                 data.contract_id;
+
+                //             if (!realContractId) {
+                //                 return ibMe.setError(
+                //                     "Unit Code / Room is missing."
+                //                 );
+                //             }
+
+                //             const roomCode = matchedSpace.space_code || "—";
+                //             const finalPrice = Number(
+                //                 data.price || matchedSpace.effective_price || 0
+                //             );
+
+                //             const dataToAdd = {
+                //                 item_id: realContractId,
+                //                 type: "rent",
+                //                 price: finalPrice,
+                //                 qty: 1,
+                //                 remarks: `Rent - ${roomCode} (${data.monthly ||
+                //                     "N/A"})`,
+                //                 contract_id: realContractId,
+                //                 start_date: data.start_date || "",
+                //                 end_date: data.end_date || "",
+                //                 space_code: roomCode,
+                //                 discount: Number(data.discount) || 0,
+                //                 discount_type: data.discount_type || "percent",
+                //                 tax_rate: Number(data.tax_rate) || 0
+                //             };
+
+                //             // 2. Extract existing IDs from the current table
+                //             const existingIds = me.itemsView.rows
+                //                 .map(
+                //                     row =>
+                //                         row.meta?.item_id || row.data?.item_id
+                //                 ) // Check both meta and data
+                //                 .filter(
+                //                     id =>
+                //                         id !== undefined &&
+                //                         id !== "" &&
+                //                         id !== null
+                //                 );
+
+                //             // 3. Compare the new dataToAdd.item_id against existing ones
+                //             const isDuplicate = existingIds.some(
+                //                 id => String(id) === String(dataToAdd.item_id)
+                //             );
+                //             if (isDuplicate) {
+                //                 return ibMe.setError(
+                //                     `Rent is already in the list.`
+                //                 );
+                //             }
+
+                //             me.itemsView.addRow(
+                //                 {
+                //                     item_id: realContractId,
+                //                     type: "rent",
+                //                     price: finalPrice,
+                //                     qty: 1,
+                //                     remarks: `Rent - ${roomCode} (${data.monthly ||
+                //                         "N/A"})`,
+                //                     contract_id: realContractId,
+                //                     start_date: data.start_date || "",
+                //                     end_date: data.end_date || "",
+                //                     unit_type: "month",
+                //                     space_code: roomCode,
+                //                     discount: Number(data.discount) || 0,
+                //                     discount_type:
+                //                         data.discount_type || "amount",
+                //                     tax_rate: Number(data.tax_rate) || 0
+                //                 },
+                //                 0
+                //             );
+
+                //             cv_interact.success(
+                //                 `Rent for ${roomCode} added successfully.`
+                //             );
+                //             ibMe.close();
+                //         }
+                //     });
+                // };
+
                 me.controls.btnRent.onclick = () => {
-                    if (!me._selectedTenantId) {
-                        return cv_interact.error("Please select Tenant first.");
-                    }
-                    if (
-                        !me.controls.space.value ||
-                        me.controls.space.value === ""
-                    ) {
-                        return cv_interact.error("Please select Space.");
-                    }
+    if (!me._selectedTenantId) {
+        return cv_interact.error("Please select Tenant first.");
+    }
+    if (
+        !me.controls.space.value ||
+        me.controls.space.value === ""
+    ) {
+        return cv_interact.error("Please select Space.");
+    }
 
-                    if (
-                        !me.controls.invoice_type.value ||
-                        me.controls.invoice_type.value === ""
-                    ) {
-                        return cv_interact.error("Please select Invoice Type.");
-                    }
-                    const invoiceType = me.controls.invoice_type.value;
-                    const spaces = me._tenantSpaces || [];
-                    const months = me._tenantMonths || [];
-                    const selectedSpaceId =
-                        me.controls.space?.value ||
-                        me.controls.space_id?.value ||
-                        "";
+    if (
+        !me.controls.invoice_type.value ||
+        me.controls.invoice_type.value === ""
+    ) {
+        return cv_interact.error("Please select Invoice Type.");
+    }
+    const invoiceType = me.controls.invoice_type.value;
+    const spaces = me._tenantSpaces || [];
+    const months = me._tenantMonths || [];
+    const selectedSpaceId =
+        me.controls.space?.value ||
+        me.controls.space_id?.value ||
+        "";
 
-                    const matchedSpace =
-                        spaces.find(
-                            s => String(s.space_id) === String(selectedSpaceId)
-                        ) || spaces[0];
+    const matchedSpace =
+        spaces.find(
+            s => String(s.space_id) === String(selectedSpaceId)
+        ) || spaces[0];
 
-                    if (!matchedSpace) {
-                        return cv_interact.error("No space/contract found.");
-                    }
-                    const availableMonths = months.filter(
-                        m =>
-                            String(m.contract_id) ===
-                            String(matchedSpace.contract_id)
-                    );
+    if (!matchedSpace) {
+        return cv_interact.error("No space/contract found.");
+    }
+    const availableMonths = months.filter(
+        m =>
+            String(m.contract_id) ===
+            String(matchedSpace.contract_id)
+    );
 
-                    if (!availableMonths || availableMonths.length === 0) {
-                        return cv_interact.error(
-                            "Rent has already reached the final month of the contract."
-                        );
-                    }
+    if (!availableMonths || availableMonths.length === 0) {
+        return cv_interact.error(
+            "Rent has already reached the final month of the contract."
+        );
+    }
 
-                    // 3. Popup Initialization
-                    let rentDiv = null;
-                    InputBox.resetInstance("rentPopUp");
+    // Popup Initialization
+    let rentDiv = null;
+    InputBox.resetInstance("rentPopUp");
 
-                    InputBox.show({
-                        title: "Rent Detail",
-                        instanceKey: "rentPopUp",
-                        createContent() {
-                            const div = document.createElement("div");
-                            rentDiv = div;
-                            div.style.cssText =
-                                "display:flex; flex-direction:column;";
+    InputBox.show({
+        title: "Rent Detail",
+        instanceKey: "rentPopUp",
+        createContent() {
+            const div = document.createElement("div");
+            rentDiv = div;
+            div.style.cssText =
+                "display:flex; flex-direction:column;";
 
-                            div.innerHTML = `
-                                <div>
-                                    <div class="d-flex align-items-center mb-3">
-                                        <span style=" color:#0C447C; font-size:13px;">Contract Details</span>
-                                        <div style="flex:1; height:1px; background:#e0e0e0;"></div>
-                                    </div>
-                                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                                        <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                            <input class="data-input form-control bg-light  cursor-blocked" data-field="contract_id" name="contract_id" type="text" readonly>
-                                            <label style="color:#777;">Unit Code / Room</label>
-                                        </div>
-                                        <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                            <input class="data-input form-control bg-light cursor-blocked" data-field="monthly" name="monthly" type="text" readonly>
-                                            <label style="color:#777;">Monthly</label>
-                                        </div>
-                                    </div>
-                                </div>
+            div.innerHTML = `
+                <div>
+                    <div class="d-flex align-items-center mb-3">
+                        <span style=" color:#0C447C; font-size:13px;">Contract Details</span>
+                        <div style="flex:1; height:1px; background:#e0e0e0;"></div>
+                    </div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                        <div class="material-input outlined" style="margin-bottom: 1rem;">
+                            <input class="data-input form-control bg-light cursor-blocked" data-field="contract_id" name="contract_id" type="text" readonly>
+                            <label style="color:#777;">Unit Code / Room</label>
+                        </div>
+                        <div class="material-input outlined" style="margin-bottom: 1rem;">
+                            <input class="data-input form-control bg-light cursor-blocked" data-field="monthly" name="monthly" type="text" readonly>
+                            <label style="color:#777;">Monthly</label>
+                        </div>
+                    </div>
+                </div>
 
-                                <div >
-                                    <div class="d-flex align-items-center mb-3">
-                                        <span style=" color:#0C447C; font-size:13px;">Billing Period</span>
-                                        <div style="flex:1; height:1px; background:#e0e0e0;"></div>
-                                    </div>
-                                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                                        <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                            <input class="data-input form-control bg-light cursor-blocked" data-field="start_date" name="start_date" type="text" readonly placeholder="d-m-y">
-                                            <label style="color:#777;">Start Date</label>
-                                        </div>
-                                        <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                            <input class="data-input form-control bg-light cursor-blocked" data-field="end_date" name="end_date" type="text" readonly placeholder="d-m-y">
-                                            <label style="color:#777;">End Date</label>
-                                        </div>
-                                    </div>
-                                </div>
+                <div>
+                    <div class="d-flex align-items-center mb-3">
+                        <span style=" color:#0C447C; font-size:13px;">Billing Period</span>
+                        <div style="flex:1; height:1px; background:#e0e0e0;"></div>
+                    </div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                        <div class="material-input outlined" style="margin-bottom: 1rem;">
+                            <input class="data-input form-control bg-light cursor-blocked" data-field="start_date" name="start_date" type="text" readonly placeholder="d-m-y">
+                            <label style="color:#777;">Start Date</label>
+                        </div>
+                        <div class="material-input outlined" style="margin-bottom: 1rem;">
+                            <input class="data-input form-control bg-light cursor-blocked" data-field="end_date" name="end_date" type="text" readonly placeholder="d-m-y">
+                            <label style="color:#777;">End Date</label>
+                        </div>
+                    </div>
+                </div>
 
-                                <div>
-                                    <div class="d-flex align-items-center mb-3">
-                                        <span style=" color:#0C447C; font-size:13px;">Financials</span>
-                                        <div style="flex:1; height:1px; background:#e0e0e0;"></div>
-                                    </div>
-                                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                                        <div class="material-input outlined" style="margin-bottom: 1rem; ${Number(invoiceType) === 2 ? 'grid-column: span 2;' : ''}">
-                                            <input class="data-input form-control bg-light cursor-blocked" data-field="price" name="price" type="text" readonly style=" color:#0c447c;">
-                                            <label style="color:#777;">Effective Price ($)</label>
-                                        </div>
-                                        ${
-                                            Number(invoiceType) === 2
-                                                ? ""
-                                                : `                                        
-                                            <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                                <input class="data-input form-control" data-field="tax_rate" name="tax_rate" type="text" inputmode="decimal" placeholder="0">
-                                                <label style="color:#777;">Tax %</label>
-                                            </div>`
-                                        }
-                                        <div class="material-input outlined" style="display:flex; gap:8px; align-items:flex-end; grid-column: span 2;">
-                                            <div style="flex:1">
-                                                <input class="data-input form-control" data-field="discount" name="discount" type="text" inputmode="decimal" placeholder="0">
-                                                <label style="color:#777;">Discount</label>
-                                            </div>
-                                            <div style="width:100px;">
-                                                <select class="data-input form-control" data-field="discount_type" name="discount_type">
-                                                    <option value="percent" selected >%</option>
-                                                    <option value="amount">$</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="material-input outlined" style="margin-bottom: 1rem; display:none; ">
-                                    <textarea class="data-input form-control" data-field="remark" name="remark" rows="2" placeholder=" "></textarea>
-                                    <label style="color:#777;">Remark</label>
-                                </div>
-
-                            `;
-                            return div;
-                        },
-
-                        onOpen(ibMe) {
-                            const elContract = document.querySelector(
-                                '[data-field="contract_id"]'
-                            );
-                            const elMonthly = document.querySelector(
-                                '[data-field="monthly"]'
-                            );
-                            const elPrice = document.querySelector(
-                                '[data-field="price"]'
-                            );
-                            const elStartDate = document.querySelector(
-                                '[data-field="start_date"]'
-                            );
-                            const elEndDate = document.querySelector(
-                                '[data-field="end_date"]'
-                            );
-                            const elDiscountType = document.querySelector(
-                                '[data-field="discount_type"]'
-                            );
-                            if (!elContract || !elMonthly || !elPrice) return;
-
-                            // Load Contract Info
-                            elContract.value =
-                                matchedSpace.space_code || "(No code)";
-                            elContract.dataset.contractId = String(
-                                matchedSpace.contract_id
-                            );
-
-                            // Load Price
-                            const effectivePrice = Number(
-                                matchedSpace.effective_price || 0
-                            );
-                            elPrice.value = effectivePrice.toFixed(2);
-
-                            // Auto-Find and Set Month Data (Read-Only)
-                            const matchedMonth =
-                                months.find(
-                                    m =>
-                                        String(m.contract_id) ===
-                                        String(matchedSpace.contract_id)
-                                ) || {};
-
-                            elMonthly.value = matchedMonth.month || "";
-                            if (elDiscountType) {
-                                elDiscountType.value = "percent";
-                            }
-                            if (elStartDate)
-                                elStartDate.value =
-                                    matchedMonth.start_date || "";
-                            if (elEndDate)
-                                elEndDate.value = matchedMonth.end_date || "";
-
-                            [
-                                rentDiv.querySelector(
-                                    '[data-field="discount"]'
-                                ),
-                                rentDiv.querySelector('[data-field="tax_rate"]')
-                            ].forEach(input => {
-                                if (!input) return;
-                                input.addEventListener("input", e => {
-                                    let v = e.target.value.replace(
-                                        /[^0-9.]/g,
-                                        ""
-                                    );
-                                    const parts = v.split(".");
-                                    if (parts.length > 2)
-                                        v = parts[0] + "." + parts[1];
-                                    if (parts[1] !== undefined)
-                                        v =
-                                            parts[0] +
-                                            "." +
-                                            parts[1].slice(0, 2);
-                                    e.target.value = v;
-                                });
-                                input.addEventListener("blur", e => {
-                                    let v = parseFloat(e.target.value);
-                                    if (isNaN(v) || v < 0) {
-                                        e.target.value = "";
-                                        return;
-                                    }
-                                    e.target.value = v.toFixed(2);
-                                });
-                            });
-                        },
-
-                        onConfirm(data, btn, ibMe) {
-                            const elContract = document.querySelector(
-                                '[data-field="contract_id"]'
-                            );
-                            const realContractId =
-                                elContract?.dataset.contractId ||
-                                data.contract_id;
-
-                            if (!realContractId) {
-                                return ibMe.setError(
-                                    "Unit Code / Room is missing."
-                                );
-                            }
-
-                            const roomCode = matchedSpace.space_code || "—";
-                            const finalPrice = Number(
-                                data.price || matchedSpace.effective_price || 0
-                            );
-
-
-                            const dataToAdd = {
-                                item_id: realContractId,
-                                type: "rent",
-                                price: finalPrice,
-                                qty: 1,
-                                remarks:`Rent - ${roomCode} (${data.monthly || "N/A"})`,
-                                contract_id: realContractId,
-                                start_date: data.start_date || "",
-                                end_date: data.end_date || "",
-                                space_code: roomCode,
-                                discount: Number(data.discount) || 0,
-                                discount_type: data.discount_type || "percent",
-                                tax_rate: Number(data.tax_rate) || 0
-                            };
-
-                            // 2. Extract existing IDs from the current table
-                            const existingIds = me.itemsView.rows
-                                .map(
-                                    row =>
-                                        row.meta?.item_id || row.data?.item_id
-                                ) // Check both meta and data
-                                .filter(
-                                    id =>
-                                        id !== undefined &&
-                                        id !== "" &&
-                                        id !== null
-                                );
-
-                            // 3. Compare the new dataToAdd.item_id against existing ones
-                            const isDuplicate = existingIds.some(
-                                id => String(id) === String(dataToAdd.item_id)
-                            );
-                            if (isDuplicate) {
-                                return ibMe.setError(
-                                    `Rent is already in the list.`
-                                );
-                            }
-
-                            me.itemsView.addRow(
-                                {
-                                    item_id: realContractId,
-                                    type: "rent",
-                                    price: finalPrice,
-                                    qty: 1,
-                                    remarks:`Rent - ${roomCode} (${data.monthly || "N/A"})`,
-                                    contract_id: realContractId,
-                                    start_date: data.start_date || "",
-                                    end_date: data.end_date || "",
-                                    space_code: roomCode,
-                                    discount: Number(data.discount) || 0,
-                                    discount_type:
-                                        data.discount_type || "amount",
-                                    tax_rate: Number(data.tax_rate) || 0
-                                },
-                                0
-                            );
-
-                            cv_interact.success(
-                                `Rent for ${roomCode} added successfully.`
-                            );
-                            ibMe.close();
+                <div>
+                    <div class="d-flex align-items-center mb-3">
+                        <span style=" color:#0C447C; font-size:13px;">Financials</span>
+                        <div style="flex:1; height:1px; background:#e0e0e0;"></div>
+                    </div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                        <div class="material-input outlined" style="margin-bottom: 1rem; ${
+                            Number(invoiceType) === 2
+                                ? "grid-column: span 2;"
+                                : ""
+                        }">
+                            <input class="data-input form-control bg-light cursor-blocked" data-field="price" name="price" type="text" readonly style=" color:#0c447c;">
+                            <label style="color:#777;">Effective Price ($)</label>
+                        </div>
+                        ${
+                            Number(invoiceType) === 2
+                                ? ""
+                                : `                                        
+                            <div class="material-input outlined" style="margin-bottom: 1rem;">
+                                <input class="data-input form-control" data-field="tax_rate" name="tax_rate" type="text" inputmode="decimal" placeholder="0" required>
+                                <label style="color:#777;">Tax % </label>
+                            </div>`
                         }
-                    });
-                };
+                        <div class="material-input outlined" style="display:flex; gap:8px; align-items:flex-end; grid-column: span 2;">
+                            <div style="flex:1">
+                                <input class="data-input form-control" data-field="discount" name="discount" type="text" inputmode="decimal" placeholder="0">
+                                <label style="color:#777;">Discount</label>
+                            </div>
+                            <div style="width:100px;">
+                                <select class="data-input form-control" data-field="discount_type" name="discount_type">
+                                    <option value="percent" selected>%</option>
+                                    <option value="amount">$</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                // ================== Electric ================
+                <div class="material-input outlined" style="margin-bottom: 1rem; display:none;">
+                    <textarea class="data-input form-control" data-field="remark" name="remark" rows="2" placeholder=" "></textarea>
+                    <label style="color:#777;">Remark</label>
+                </div>
+            `;
+            return div;
+        },
+
+        onOpen(ibMe) {
+            const elContract = rentDiv.querySelector('[data-field="contract_id"]');
+            const elMonthly = rentDiv.querySelector('[data-field="monthly"]');
+            const elPrice = rentDiv.querySelector('[data-field="price"]');
+            const elStartDate = rentDiv.querySelector('[data-field="start_date"]');
+            const elEndDate = rentDiv.querySelector('[data-field="end_date"]');
+            const elDiscountType = rentDiv.querySelector('[data-field="discount_type"]');
+
+            if (!elContract || !elMonthly || !elPrice) return;
+
+            elContract.value = matchedSpace.space_code || "(No code)";
+            elContract.dataset.contractId = String(matchedSpace.contract_id);
+
+            const effectivePrice = Number(matchedSpace.effective_price || 0);
+            elPrice.value = effectivePrice.toFixed(2);
+
+            const matchedMonth = months.find(m =>
+                String(m.contract_id) === String(matchedSpace.contract_id)
+            ) || {};
+
+            elMonthly.value = matchedMonth.month || "";
+            
+            if (elDiscountType) {
+                elDiscountType.value = "percent";
+            }
+            if (elStartDate) {
+                elStartDate.value = matchedMonth.start_date || "";
+            }
+            if (elEndDate) {
+                elEndDate.value = matchedMonth.end_date || "";
+            }
+
+            const numericInputs = [
+                rentDiv.querySelector('[data-field="discount"]'),
+                rentDiv.querySelector('[data-field="tax_rate"]')
+            ].filter(input => input !== null);
+
+            numericInputs.forEach(input => {
+                input.addEventListener("input", e => {
+                    let v = e.target.value.replace(/[^0-9.]/g, "");
+                    const parts = v.split(".");
+                    if (parts.length > 2) {
+                        v = parts[0] + "." + parts[1];
+                    }
+                    if (parts[1] !== undefined) {
+                        v = parts[0] + "." + parts[1].slice(0, 2);
+                    }
+                    e.target.value = v;
+                });
+
+                input.addEventListener("blur", e => {
+                    let v = parseFloat(e.target.value);
+                    if (isNaN(v) || v < 0) {
+                        e.target.value = "";
+                        return;
+                    }
+                    e.target.value = v.toFixed(2);
+                });
+            });
+        },
+
+        onConfirm(data, btn, ibMe) {
+            // 1. Check if Tax field exists in the DOM layout tree (Invoice Type !== 2)
+            const elTaxRate = document.querySelector('[data-field="tax_rate"]');
+            
+            if (elTaxRate) {
+                // If tax field is blank, empty strings, or evaluates to an invalid number
+                if (data.tax_rate === undefined || data.tax_rate === null || String(data.tax_rate).trim() === "") {
+                    return ibMe.setError("Tax % is required for this invoice type.");
+                }
+                
+                const taxValue = Number(data.tax_rate);
+                if (isNaN(taxValue) || taxValue < 0) {
+                    return ibMe.setError("Please enter a valid Tax % value.");
+                }
+            }
+
+            const elContract = document.querySelector('[data-field="contract_id"]');
+            const realContractId = elContract?.dataset.contractId || data.contract_id;
+
+            if (!realContractId) {
+                return ibMe.setError("Unit Code / Room is missing.");
+            }
+
+            const roomCode = matchedSpace.space_code || "—";
+            const finalPrice = Number(data.price || matchedSpace.effective_price || 0);
+
+            const dataToAdd = {
+                item_id: realContractId,
+                type: "rent",
+                price: finalPrice,
+                qty: 1,
+                remarks: `Rent - ${roomCode} (${data.monthly || "N/A"})`,
+                contract_id: realContractId,
+                start_date: data.start_date || "",
+                end_date: data.end_date || "",
+                space_code: roomCode,
+                discount: Number(data.discount) || 0,
+                discount_type: data.discount_type || "percent",
+                tax_rate: Number(data.tax_rate) || 0
+            };
+
+            const existingIds = me.itemsView.rows
+                .map(row => row.meta?.item_id || row.data?.item_id)
+                .filter(id => id !== undefined && id !== "" && id !== null);
+
+            const isDuplicate = existingIds.some(id => String(id) === String(dataToAdd.item_id));
+            if (isDuplicate) {
+                return ibMe.setError(`Rent is already in the list.`);
+            }
+
+            me.itemsView.addRow(
+                {
+                    item_id: realContractId,
+                    type: "rent",
+                    price: finalPrice,
+                    qty: 1,
+                    remarks: `Rent - ${roomCode} (${data.monthly || "N/A"})`,
+                    contract_id: realContractId,
+                    start_date: data.start_date || "",
+                    end_date: data.end_date || "",
+                    unit_type: "month",
+                    space_code: roomCode,
+                    discount: Number(data.discount) || 0,
+                    discount_type: data.discount_type || "amount",
+                    tax_rate: Number(data.tax_rate) || 0
+                },
+                0
+            );
+
+            cv_interact.success(`Rent for ${roomCode} added successfully.`);
+            ibMe.close();
+        }
+    });
+};
+
                 me.controls.btnElectric.onclick = () => {
                     if (!me._selectedTenantId) {
                         return cv_interact.error("Please select Tenant first.");
@@ -1193,92 +1464,95 @@ const InvoiceDialog = (() => {
                                 "display:flex; flex-direction:column;";
 
                             div.innerHTML = `
+                                <!-- Tabs Container -->
                                 <div class="d-flex mb-3" style="border-bottom:1px solid #eee; gap:16px;">
                                     <div id="btn_tab_reading" style="cursor:pointer; padding:8px 12px; border-bottom:2px solid #0C447C; color:#0C447C; font-weight:600;">By Reading</div>
                                     <div id="btn_tab_manual" style="cursor:pointer; padding:8px 12px; color:#777;">Manual Entry</div>
                                 </div>
 
-                                <div id="section_reading">
-                                    <div class="d-flex align-items-center mb-3">
-                                        <span style="color:#0C447C; font-size:13px;">Readings</span>
-                                        <div style="flex:1; height:1px; background:#e0e0e0; margin-left:8px;"></div>
-                                    </div>
-                                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                                        <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                            <input class="data-input form-control" data-field="old_electric" name="old_electric" type="text" inputmode="decimal" placeholder="0">
-                                            <label style="color:#777;">Old Reading (kWh)</label>
-                                        </div>
-                                        <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                            <input class="data-input form-control" data-field="new_electric" name="new_electric" type="text" inputmode="decimal" placeholder="0">
-                                            <label style="color:#777;">New Reading (kWh)</label>
-                                        </div>
-                                    </div>
-
-                                    <div class="d-flex align-items-center mb-3">
-                                        <span style="color:#0C447C; font-size:13px;">Calculation & Period</span>
-                                        <div style="flex:1; height:1px; background:#e0e0e0; margin-left:8px;"></div>
-                                    </div>
-                                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                                        <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                            <input class="data-input form-control bg-light cursor-blocked" data-field="units_used" name="units_used" type="text" readonly placeholder="0.00">
-                                            <label style="color:#777;">Units Used (kWh)</label>
-                                        </div>
-                                        <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                            <input class="data-input form-control" data-field="price_per_unit" name="price_per_unit" type="text" inputmode="decimal" placeholder="0.00">
-                                            <label style="color:#777;">Price per kWh ($)</label>
-                                        </div>
-                                    </div>
-                                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                                        <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                            <input class="data-input form-control" data-field="start_date" name="start_date" type="text" data-type="date" placeholder="d-m-y">
-                                            <label style="color:#777;">Start Date</label>
-                                        </div>
-                                        <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                            <input class="data-input form-control" data-field="end_date" name="end_date" type="text" data-type="date" placeholder="d-m-y">
-                                            <label style="color:#777;">End Date</label>
-                                        </div>
-                                    </div>
+                                <!-- Section: Core Consumption Inputs -->
+                                <div class="d-flex align-items-center mb-3">
+                                    <span id="consumption_header" style="color:#0C447C; font-size:13px;">Readings</span>
+                                    <div style="flex:1; height:1px; background:#e0e0e0; margin-left:8px;"></div>
                                 </div>
 
-                                <div id="section_manual" style="display:none;">
-                                    <div class="d-flex align-items-center mb-3">
-                                        <span style="color:#0C447C; font-size:13px;">Manual Entry</span>
-                                        <div style="flex:1; height:1px; background:#e0e0e0; margin-left:8px;"></div>
-                                    </div>
-                                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                                        <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                            <input class="data-input form-control" data-field="manual_units" name="manual_units" type="text" inputmode="decimal" placeholder="0.00">
-                                            <label style="color:#777;">Units Used (kWh)</label>
-                                        </div>
-                                        <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                            <input class="data-input form-control" data-field="manual_ppu" name="manual_ppu" type="text" inputmode="decimal" placeholder="0.00">
-                                            <label style="color:#777;">Price per Unit ($)</label>
-                                        </div>
+                                <!-- Conditional Dynamic Fields (Reading vs Manual) -->
+                                <div id="row_reading_fields" style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                                    <div class="material-input outlined" style="margin-bottom: 1rem;">
+                                        <input class="data-input form-control" data-field="old_electric" name="old_electric" type="text" inputmode="decimal" placeholder="0">
+                                        <label style="color:#777;">Old Reading (kWh)</label>
                                     </div>
                                     <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                        <input class="data-input form-control" data-field="manual_price" name="manual_price" type="text" inputmode="decimal" placeholder="0.00">
-                                        <label style="color:#777;">Total Price ($)</label>
-                                    </div>
-                                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                                        <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                            <input class="data-input form-control" data-field="manual_start_date" name="manual_start_date" type="text" data-type="date" placeholder="d-m-y">
-                                            <label style="color:#777;">Start Date</label>
-                                        </div>
-                                        <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                            <input class="data-input form-control" data-field="manual_end_date" name="manual_end_date" type="text" data-type="date" placeholder="d-m-y">
-                                            <label style="color:#777;">End Date</label>
-                                        </div>
+                                        <input class="data-input form-control" data-field="new_electric" name="new_electric" type="text" inputmode="decimal" placeholder="0">
+                                        <label style="color:#777;">New Reading (kWh)</label>
                                     </div>
                                 </div>
 
-                                <div class="material-input outlined" >
+                                <!-- Shared Units Field (ReadOnly on Reading tab, Editable on Manual tab) -->
+                                <div id="row_manual_fields" class="material-input outlined" style="margin-bottom: 1rem; display:none;">
+                                    <input class="data-input form-control" data-field="units_used" name="units_used" type="text" inputmode="decimal" placeholder="0.00">
+                                    <label style="color:#777;">Units Used (kWh)</label>
+                                </div>
+
+                               <!-- Section: Unified Calculations -->
+                                <div class="d-flex align-items-center mb-3">
+                                    <span style="color:#0C447C; font-size:13px;">Calculation</span>
+                                    <div style="flex:1; height:1px; background:#e0e0e0; margin-left:8px;"></div>
+                                </div>
+
+                                <!-- Dynamic Row Container: Swaps between 2 columns (Reading mode) and 3 columns (Manual mode) -->
+                                <div id="row_calculation_fields" style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                                    
+                                    <!-- Only visible in Reading Tab -->
+                                    <div id="wrapper_units_readonly" class="material-input outlined" style="margin-bottom: 1rem;">
+                                        <input id="units_used_readonly" class="form-control bg-light cursor-blocked" type="text" readonly placeholder="0.00">
+                                        <label style="color:#777;">Calculated Units (kWh)</label>
+                                    </div>
+                                    
+                                    <!-- Shared Field: Changes grid position dynamically -->
+                                    <div id="wrapper_exchange_rate" class="material-input outlined" style="margin-bottom: 1rem;">
+                                        <input class="data-input form-control" data-field="exchange_rate" name="exchange_rate" type="text" inputmode="decimal" placeholder="0.00" value="4025">
+                                        <label style="color:#777;">Exchange Rate (KHR)</label>
+                                    </div>
+
+                                    <!-- Hidden on Reading Init, part of the 3-column row in Manual -->
+                                    <div id="wrapper_price_khr" class="material-input outlined" style="margin-bottom: 1rem;">
+                                        <input class="data-input form-control" data-field="price_khr" name="price_khr" type="text" inputmode="decimal" placeholder="0.00">
+                                        <label style="color:#777;">Price per kWh (KHR)</label>
+                                    </div>
+
+                                    <div id="wrapper_price_usd" class="material-input outlined" style="margin-bottom: 1rem;">
+                                        <input class="data-input form-control" data-field="price_usd" name="price_usd" type="text" inputmode="decimal" placeholder="0.00">
+                                        <label style="color:#777;">Price per kWh (USD)</label>
+                                    </div>
+                                </div>
+
+                                <!-- Section: Unified Period -->
+                                <div class="d-flex align-items-center mb-3">
+                                    <span style="color:#0C447C; font-size:13px;">Period</span>
+                                    <div style="flex:1; height:1px; background:#e0e0e0; margin-left:8px;"></div>
+                                </div>
+                                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                                    <div class="material-input outlined" style="margin-bottom: 1rem;">
+                                        <input class="data-input form-control" data-field="start_date" name="start_date" type="text" data-type="date" placeholder=" ">
+                                        <label style="color:#777;">Start Date</label>
+                                    </div>
+                                    <div class="material-input outlined" style="margin-bottom: 1rem;">
+                                        <input class="data-input form-control" data-field="end_date" name="end_date" type="text" data-type="date" placeholder=" ">
+                                        <label style="color:#777;">End Date</label>
+                                    </div>
+                                </div>
+
+                                <!-- Unified Total Amount Footer Display -->
+                                <div class="material-input outlined">
                                     <input class="data-input form-control cursor-blocked" data-field="total_amount" name="total_amount" type="text" readonly
                                         style="background-color: #f0f7ff; border-color: #0c447c; color: #0c447c; font-weight: bold; font-size: 1.1em;">
-                                    <label style="color:#0c447c; ">Total Amount ($)</label>
+                                    <label style="color:#0c447c;">Total Amount ($)</label>
                                 </div>
+                                
                                 <div class="material-input outlined" style="display:none;">
                                     <textarea class="data-input form-control" data-field="remark" name="remark" rows="2" placeholder=" "></textarea>
-                                    <label style="color:#777;">Remark </label>
+                                    <label style="color:#777;">Remark</label>
                                 </div>
                                 <input class="data-input" type="text" data-field="entry_mode" value="reading" style="display:none;">
                             `;
@@ -1286,58 +1560,152 @@ const InvoiceDialog = (() => {
                         },
 
                         onOpen(ibMe) {
-                            const elOld = electricDiv.querySelector('[data-field="old_electric"]');
-                            const elNew = electricDiv.querySelector('[data-field="new_electric"]');
-                            const elUnits = electricDiv.querySelector('[data-field="units_used"]');
-                            const elPPU = electricDiv.querySelector('[data-field="price_per_unit"]');
-                            const elStartDate = electricDiv.querySelector('[data-field="start_date"]');
-                            const elEndDate = electricDiv.querySelector('[data-field="end_date"]');
+                            // Target elements using structural selectors
+                            const elOld = electricDiv.querySelector(
+                                '[data-field="old_electric"]'
+                            );
+                            const elNew = electricDiv.querySelector(
+                                '[data-field="new_electric"]'
+                            );
+                            const elUnits = electricDiv.querySelector(
+                                '[data-field="units_used"]'
+                            );
+                            const elUnitsReadonly = electricDiv.querySelector(
+                                "#units_used_readonly"
+                            );
 
-                            const elManualUnits = electricDiv.querySelector('[data-field="manual_units"]');
-                            const elManualPPU = electricDiv.querySelector('[data-field="manual_ppu"]');
-                            const elManualPrice = electricDiv.querySelector('[data-field="manual_price"]');
-                            const elManualStart = electricDiv.querySelector('[data-field="manual_start_date"]');
-                            const elManualEnd = electricDiv.querySelector('[data-field="manual_end_date"]');
+                            const elExchangeRate = electricDiv.querySelector(
+                                '[data-field="exchange_rate"]'
+                            );
+                            const elPriceKHR = electricDiv.querySelector(
+                                '[data-field="price_khr"]'
+                            );
+                            const elPriceUSD = electricDiv.querySelector(
+                                '[data-field="price_usd"]'
+                            );
 
-                            const elTotal = electricDiv.querySelector('[data-field="total_amount"]');
-                            const elRemark = electricDiv.querySelector('[data-field="remark"]');
-                            const elMode = electricDiv.querySelector('[data-field="entry_mode"]');
+                            const elStartDate = electricDiv.querySelector(
+                                '[data-field="start_date"]'
+                            );
+                            const elEndDate = electricDiv.querySelector(
+                                '[data-field="end_date"]'
+                            );
+                            const elTotal = electricDiv.querySelector(
+                                '[data-field="total_amount"]'
+                            );
+                            const elRemark = electricDiv.querySelector(
+                                '[data-field="remark"]'
+                            );
+                            const elMode = electricDiv.querySelector(
+                                '[data-field="entry_mode"]'
+                            );
 
+                            // Structural layout layout control nodes
                             const btnTabReading = electricDiv.querySelector(
                                 "#btn_tab_reading"
                             );
                             const btnTabManual = electricDiv.querySelector(
                                 "#btn_tab_manual"
                             );
-                            const secReading = electricDiv.querySelector(
-                                "#section_reading"
+                            const txtConsumptionHeader = electricDiv.querySelector(
+                                "#consumption_header"
                             );
-                            const secManual = electricDiv.querySelector(
-                                "#section_manual"
+                            const rowReadingFields = electricDiv.querySelector(
+                                "#row_reading_fields"
+                            );
+                            const rowManualFields = electricDiv.querySelector(
+                                "#row_manual_fields"
+                            );
+                            const wrapperUnitsReadonly = electricDiv.querySelector(
+                                "#wrapper_units_readonly"
                             );
 
+                            // Currency conversion handlers
+                            elPriceKHR.addEventListener("input", e => {
+                                const rate =
+                                    parseFloat(elExchangeRate.value) || 4000;
+                                const khrVal = parseFloat(e.target.value) || 0;
+                                elPriceUSD.value =
+                                    khrVal > 0
+                                        ? (khrVal / rate).toFixed(2)
+                                        : "";
+                                recalc();
+                            });
+
+                            elPriceUSD.addEventListener("input", e => {
+                                const rate =
+                                    parseFloat(elExchangeRate.value) || 4000;
+                                const usdVal = parseFloat(e.target.value) || 0;
+                                elPriceKHR.value =
+                                    usdVal > 0 ? Math.round(usdVal * rate) : "";
+                                recalc();
+                            });
+
+                            elExchangeRate.addEventListener("input", () => {
+                                const rate =
+                                    parseFloat(elExchangeRate.value) || 4000;
+                                const usdVal =
+                                    parseFloat(elPriceUSD.value) || 0;
+                                if (usdVal > 0) {
+                                    elPriceKHR.value = Math.round(
+                                        usdVal * rate
+                                    );
+                                } else {
+                                    const khrVal =
+                                        parseFloat(elPriceKHR.value) || 0;
+                                    if (khrVal > 0)
+                                        elPriceUSD.value = (
+                                            khrVal / rate
+                                        ).toFixed(2);
+                                }
+                                recalc();
+                            });
+
+                            // UI Tab switcher
+
+                            // New structural nodes for 3-in-1 row switching
+                            const rowCalculationFields = electricDiv.querySelector(
+                                "#row_calculation_fields"
+                            );
+
+                            // UI Tab switcher
                             const switchTab = mode => {
                                 elMode.value = mode;
                                 if (mode === "reading") {
-                                    secReading.style.display = "block";
-                                    secManual.style.display = "none";
-                                    btnTabReading.style.color = "#0C447C";
-                                    btnTabReading.style.fontWeight = "600";
-                                    btnTabReading.style.borderBottom =
-                                        "2px solid #0C447C";
-                                    btnTabManual.style.color = "#777";
-                                    btnTabManual.style.fontWeight = "400";
-                                    btnTabManual.style.borderBottom = "none";
+                                    // Form structure configuration
+                                    rowReadingFields.style.display = "grid";
+                                    rowManualFields.style.display = "none";
+                                    txtConsumptionHeader.textContent =
+                                        "Readings";
+
+                                    // Calculation Row: Standard 2x2 layout look
+                                    rowCalculationFields.style.gridTemplateColumns =
+                                        "1fr 1fr";
+                                    wrapperUnitsReadonly.style.display =
+                                        "block";
+
+                                    // Tab Styles
+                                    btnTabReading.style.cssText =
+                                        "cursor:pointer; padding:8px 12px; border-bottom:2px solid #0C447C; color:#0C447C; font-weight:600;";
+                                    btnTabManual.style.cssText =
+                                        "cursor:pointer; padding:8px 12px; color:#777; font-weight:400; border-bottom:none;";
                                 } else {
-                                    secReading.style.display = "none";
-                                    secManual.style.display = "block";
-                                    btnTabManual.style.color = "#0C447C";
-                                    btnTabManual.style.fontWeight = "600";
-                                    btnTabManual.style.borderBottom =
-                                        "2px solid #0C447C";
-                                    btnTabReading.style.color = "#777";
-                                    btnTabReading.style.fontWeight = "400";
-                                    btnTabReading.style.borderBottom = "none";
+                                    // Form structure configuration
+                                    rowReadingFields.style.display = "none";
+                                    rowManualFields.style.display = "block";
+                                    txtConsumptionHeader.textContent =
+                                        "Manual Entry";
+
+                                    // Calculation Row: Shrinks into 1 clean row with 3 columns
+                                    rowCalculationFields.style.gridTemplateColumns =
+                                        "1fr 1fr 1fr";
+                                    wrapperUnitsReadonly.style.display = "none";
+
+                                    // Tab Styles
+                                    btnTabManual.style.cssText =
+                                        "cursor:pointer; padding:8px 12px; border-bottom:2px solid #0C447C; color:#0C447C; font-weight:600;";
+                                    btnTabReading.style.cssText =
+                                        "cursor:pointer; padding:8px 12px; color:#777; font-weight:400; border-bottom:none;";
                                 }
                                 recalc();
                             };
@@ -1345,57 +1713,73 @@ const InvoiceDialog = (() => {
                             btnTabReading.onclick = () => switchTab("reading");
                             btnTabManual.onclick = () => switchTab("manual");
 
+                            // Centralized recalculation logic
                             const recalc = () => {
                                 const mode = elMode.value;
+                                let units = 0;
+
                                 if (mode === "reading") {
-                                    const oldVal = parseFloat(elOld?.value) || 0;
-                                    const newVal = parseFloat(elNew?.value) || 0;
-                                    const ppu = parseFloat(elPPU?.value) || 0;
-                                    const start = elStartDate?.value || "";
-                                    const end = elEndDate?.value || "";
+                                    const oldVal = parseFloat(elOld.value) || 0;
+                                    const newVal = parseFloat(elNew.value) || 0;
+                                    units = newVal - oldVal;
 
-                                    const units = newVal - oldVal;
-                                    if (elUnits) {
-                                        elUnits.value = units > 0 ? units.toFixed(2) : "0.00";
-                                        elUnits.style.color = units < 0 ? "red" : "#212529";
-                                    }
-
-                                    const total = Math.max(0, units) * ppu;
-                                    if (elTotal) elTotal.value = total.toFixed(2);
-
-                                    if (elRemark) {
-                                        const period = start && end ? ` (${start} - ${end})` : "";
-                                        elRemark.value = `Electric${period} — ${Math.max(0, units).toFixed(2)} kWh × $${ppu.toFixed(2)}`;
+                                    if (units < 0) {
+                                        elUnitsReadonly.value = "0.00";
+                                        elUnitsReadonly.style.color = "red";
+                                    } else {
+                                        elUnitsReadonly.value = units.toFixed(
+                                            2
+                                        );
+                                        elUnitsReadonly.style.color = "#212529";
                                     }
                                 } else {
-                                    const units = parseFloat(elManualUnits?.value) || 0;
-                                    const ppu = parseFloat(elManualPPU?.value) || 0;
-                                    let price = parseFloat(elManualPrice?.value) || 0;
+                                    units = parseFloat(elUnits.value) || 0;
+                                }
 
-                                    if (units > 0 && ppu > 0) {
-                                        price = units * ppu;
-                                        if (elManualPrice) elManualPrice.value = price.toFixed(2);
-                                    }
+                                const ppu = parseFloat(elPriceUSD.value) || 0;
+                                const total = Math.max(0, units) * ppu;
 
-                                    if (elTotal) elTotal.value = price.toFixed(2);
+                                if (elTotal) elTotal.value = total.toFixed(2);
 
-                                    const start = elManualStart?.value || "";
-                                    const end = elManualEnd?.value || "";
-                                    if (elRemark) {
-                                        const period = start && end ? ` (${start} - ${end})` : "";
-                                        const calcStr = (units > 0 && ppu > 0) ? ` — ${units.toFixed(2)} kWh × $${ppu.toFixed(2)}` : " — Manual Entry";
-                                        elRemark.value = `Electric${period}${calcStr}`;
-                                    }
+                                if (elRemark) {
+                                    const start = elStartDate.value || "";
+                                    const end = elEndDate.value || "";
+                                    const period =
+                                        start && end
+                                            ? ` (${start} - ${end})`
+                                            : "";
+                                    const calcStr =
+                                        units > 0 && ppu > 0
+                                            ? ` — ${units.toFixed(
+                                                  2
+                                              )} kWh × $${ppu.toFixed(2)}`
+                                            : mode === "reading"
+                                            ? " — Reading Setup"
+                                            : " — Manual Entry";
+
+                                    elRemark.value = `Electric${period}${calcStr}`;
                                 }
                             };
 
-                            [elOld, elNew, elPPU, elManualUnits, elManualPPU, elManualPrice, elStartDate, elEndDate, elManualStart, elManualEnd].forEach(el => {
+                            // Input format validation helpers and recalculation binding
+                            [
+                                elOld,
+                                elNew,
+                                elUnits,
+                                elPriceUSD,
+                                elExchangeRate,
+                                elStartDate,
+                                elEndDate
+                            ].forEach(el => {
                                 if (!el) return;
                                 el.addEventListener("input", recalc);
                                 if (el.dataset.type === "date") {
                                     el.addEventListener("change", recalc);
                                 }
+
+                                // Block non-numeric characters while tying
                                 el.addEventListener("input", e => {
+                                    if (el.dataset.type === "date") return;
                                     let v = e.target.value.replace(
                                         /[^0-9.]/g,
                                         ""
@@ -1410,7 +1794,10 @@ const InvoiceDialog = (() => {
                                             parts[1].slice(0, 2);
                                     e.target.value = v;
                                 });
+
+                                // Enforce proper floats on losing input focus
                                 el.addEventListener("blur", e => {
+                                    if (el.dataset.type === "date") return;
                                     let v = parseFloat(e.target.value);
                                     if (isNaN(v) || v < 0) {
                                         e.target.value = "";
@@ -1419,105 +1806,85 @@ const InvoiceDialog = (() => {
                                     e.target.value = v.toFixed(2);
                                 });
                             });
-
-                            [elStartDate, elEndDate].forEach(el =>
-                                el?.addEventListener("change", recalc)
-                            );
                         },
 
                         onConfirm(data, btn, ibMe) {
                             const mode = data.entry_mode || "reading";
+                            const ppu = parseFloat(data.price_usd) || 0;
+                            let units = 0;
+                            let remarks = "";
 
+                            // Validation rules per view mode
                             if (mode === "reading") {
                                 const oldReading =
                                     parseFloat(data.old_electric) || 0;
                                 const newReading =
                                     parseFloat(data.new_electric) || 0;
-                                const ppu =
-                                    parseFloat(data.price_per_unit) || 0;
-                                const units = Math.max(
-                                    0,
-                                    newReading - oldReading
-                                );
+                                units = newReading - oldReading;
 
-                                if (newReading <= 0) {
+                                if (newReading <= 0)
                                     return ibMe.setError(
                                         "New reading is required."
                                     );
-                                }
-                                if (newReading <= oldReading) {
+                                if (newReading <= oldReading)
                                     return ibMe.setError(
                                         "New reading must be greater than old reading."
                                     );
-                                }
-                                if (ppu <= 0) {
-                                    return ibMe.setError(
-                                        "Price per kWh is required."
-                                    );
-                                }
-
-                                me.itemsView.addRow(
-                                    {
-                                        item_id: null,
-                                        type: "utility",
-                                        price: ppu,
-                                        qty: units,
-                                        remarks:`Electric Utility - ${data.start_date} to ${data.end_date}`,
-                                        unit_type: "kWh",
-                                        old_reading: oldReading,
-                                        new_reading: newReading,
-                                        units_used: units,
-                                        price_per_unit: ppu,
-                                        start_date: data.start_date,
-                                        end_date: data.end_date,
-                                        discount: 0,
-                                        discount_type: "percent"
-                                    },
-                                    0
-                                );
+                                remarks = `Electricity ${oldReading}kWh - ${newReading}kWh`;
                             } else {
-                                const units = parseFloat(data.manual_units) || 0;
-                                const ppu = parseFloat(data.manual_ppu) || 0;
-                                let price = parseFloat(data.manual_price) || 0;
-
-                                if (units > 0 && ppu > 0) {
-                                    price = units * ppu;
-                                }
-
-                                if (price <= 0) {
-                                    return ibMe.setError("Price is required.");
-                                }
-                                if (!data.manual_start_date || !data.manual_end_date) {
+                                units = parseFloat(data.units_used) || 0;
+                                if (units <= 0)
                                     return ibMe.setError(
-                                        "Start and End dates are required."
+                                        "Units Used field is required and must be greater than 0."
                                     );
-                                }
-                                if (
-                                    new Date(data.manual_end_date) <
-                                    new Date(data.manual_start_date)
-                                ) {
-                                    return ibMe.setError(
-                                        "End date cannot be before Start date."
-                                    );
-                                }
+                                remarks = `Electric Utility - ${data.start_date ||
+                                    ""} to ${data.end_date || ""}`;
+                            }
 
-                                me.itemsView.addRow(
-                                    {
-                                        item_id: null,
-                                        type: "utility",
-                                        price: ppu > 0 ? ppu : price,
-                                        qty: units > 0 ? units : 1,
-                                        remarks:`Electric Utility - ${data.start_date} to ${data.end_date}`,
-                                        unit_type: units > 0 ? "kWh" : "Manual",
-                                        start_date: data.manual_start_date,
-                                        end_date: data.manual_end_date,
-                                        price_per_unit: ppu > 0 ? ppu : price,
-                                        discount: 0,
-                                        discount_type: "percent"
-                                    },
-                                    0
+                            if (ppu <= 0)
+                                return ibMe.setError(
+                                    "Price per kWh (USD) is required."
+                                );
+                            if (!data.start_date || !data.end_date)
+                                return ibMe.setError(
+                                    "Start and End dates are required."
+                                );
+                            if (
+                                new Date(data.end_date) <
+                                new Date(data.start_date)
+                            ) {
+                                return ibMe.setError(
+                                    "End date cannot be before Start date."
                                 );
                             }
+
+                            // Push payload to items view structure
+                            me.itemsView.addRow(
+                                {
+                                    item_id: null,
+                                    type: "utility",
+                                    price: ppu,
+                                    qty: units,
+                                    // remarks: remarks,
+                                    remarks:  mode === "reading"?  `Electricity ${data.old_reading || 0}kWh - ${data.new_reading || 0}kWh` : `Electricity ${units}kWh`,
+                                    unit_type: "kWh",
+                                    old_reading:
+                                        mode === "reading"
+                                            ? parseFloat(data.old_electric) || 0
+                                            : 0,
+                                    new_reading:
+                                        mode === "reading"
+                                            ? parseFloat(data.new_electric) || 0
+                                            : 0,
+                                    units_used: units,
+                                    price_per_unit: ppu,
+                                    start_date: data.start_date,
+                                    end_date: data.end_date,
+                                    discount: 0,
+                                    discount_type: "percent"
+                                },
+                                0
+                            );
 
                             cv_interact.success("Electric item added.");
                             ibMe.close();
@@ -1573,11 +1940,11 @@ const InvoiceDialog = (() => {
                 //                         </div>
                 //                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
                 //                             <div class="material-input outlined" style="margin-bottom: 1rem;">
-                //                                 <input class="data-input form-control" data-field="start_date" name="start_date" type="text" data-type="date" placeholder="d-m-y">
+                //                                 <input class="data-input form-control" data-field="start_date" name="start_date" type="text" data-type="date" placeholder=" ">
                 //                                 <label style="color:#777;">Start Date</label>
                 //                             </div>
                 //                             <div class="material-input outlined" style="margin-bottom: 1rem;">
-                //                                 <input class="data-input form-control" data-field="end_date" name="end_date" type="text" data-type="date" placeholder="d-m-y">
+                //                                 <input class="data-input form-control" data-field="end_date" name="end_date" type="text" data-type="date" placeholder=" ">
                 //                                 <label style="color:#777;">End Date</label>
                 //                             </div>
                 //                         </div>
@@ -1846,11 +2213,11 @@ const InvoiceDialog = (() => {
                                     </div>
                                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
                                         <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                            <input class="data-input form-control" data-field="start_date" name="start_date" type="text" data-type="date" placeholder="d-m-y">
+                                            <input class="data-input form-control" data-field="start_date" name="start_date" type="text" data-type="date" placeholder=" ">
                                             <label style="color:#777;">Start Date</label>
                                         </div>
                                         <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                            <input class="data-input form-control" data-field="end_date" name="end_date" type="text" data-type="date" placeholder="d-m-y">
+                                            <input class="data-input form-control" data-field="end_date" name="end_date" type="text" data-type="date" placeholder=" ">
                                             <label style="color:#777;">End Date</label>
                                         </div>
                                     </div>
@@ -2047,12 +2414,28 @@ const InvoiceDialog = (() => {
                                 selectedService.name ||
                                 `Service #${selectedService.id}`;
 
-                            const formatDt = (dStr) => {
+                            const formatDt = dStr => {
                                 if (!dStr) return "";
                                 const date = new Date(dStr);
                                 if (isNaN(date.getTime())) return dStr;
-                                const monthsArr = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-                                const day = String(date.getDate()).padStart(2, "0");
+                                const monthsArr = [
+                                    "Jan",
+                                    "Feb",
+                                    "Mar",
+                                    "Apr",
+                                    "May",
+                                    "Jun",
+                                    "Jul",
+                                    "Aug",
+                                    "Sep",
+                                    "Oct",
+                                    "Nov",
+                                    "Dec"
+                                ];
+                                const day = String(date.getDate()).padStart(
+                                    2,
+                                    "0"
+                                );
                                 const month = monthsArr[date.getMonth()];
                                 const year = date.getFullYear();
                                 return `${day}-${month}-${year}`;
@@ -2065,10 +2448,14 @@ const InvoiceDialog = (() => {
                             // Validation for monthly services
                             if (unit === "month") {
                                 if (!data.duration_months) {
-                                    return ibMe.setError("Please input Duration.");
+                                    return ibMe.setError(
+                                        "Please input Duration."
+                                    );
                                 }
                                 if (!data.start_date || !data.end_date) {
-                                    return ibMe.setError("Please input Start and End Date.");
+                                    return ibMe.setError(
+                                        "Please input Start and End Date."
+                                    );
                                 }
                             }
 
@@ -2079,7 +2466,9 @@ const InvoiceDialog = (() => {
 
                             let remarkStr = serviceDisplayName;
                             if (unit === "month") {
-                                remarkStr += ` - ${qtyMonths} Month${qtyMonths > 1 ? 's' : ''} (${formatDt(data.start_date)} to ${formatDt(data.end_date)})`;
+                                remarkStr += ` - ${qtyMonths} Month${
+                                    qtyMonths > 1 ? "s" : ""
+                                } `;
                             }
 
                             const dataToAdd = {
@@ -2241,7 +2630,7 @@ const InvoiceDialog = (() => {
                                     </div>
 
                                 </div>
-                                <div class="display-none material-input outlined">
+                                <div class=" material-input outlined" style="display:none;">
                                     <textarea class="data-input form-control" data-field="remark" name="remark" rows="2" placeholder=" "></textarea>
                                     <label style="color:#777;">Remark</label>
                                 </div>
@@ -2390,7 +2779,6 @@ const InvoiceDialog = (() => {
                             // ✅ Fixed: build once, reuse in addRow
                             const dataToAdd = {
                                 item_id: selectedRequest.request_id,
-                                // item_name: `${selectedRequest.code}`,
                                 type: "Service Request",
                                 price: Number(selectedRequest.price),
                                 qty:
@@ -2398,7 +2786,7 @@ const InvoiceDialog = (() => {
                                         ? selectedRequest.duration_hours || 0
                                         : 1,
                                 unit_type: `${selectedRequest.unit_type || 0}`,
-                                remarks: data.remark || requestDisplayName,
+                                remarks: `Service Request:  ${requestDisplayName}`,
                                 space_id: selectedRequest.space_id,
                                 space_code: selectedRequest.space_code,
                                 discount: Number(data.discount) || 0,
@@ -2454,7 +2842,7 @@ const InvoiceDialog = (() => {
                             dataType: "string",
                             readOnly: true,
                             className: "small col-item-name",
-                            width: "250px",
+                            width: "250px"
                             // html: '<input type="checkbox" class="check_accept">',
                         },
 
@@ -2515,8 +2903,7 @@ const InvoiceDialog = (() => {
                             dataType: "number",
                             readOnly: true,
                             isNumeric: true
-                        },
-                       
+                        }
                     ],
                     calc: {
                         mode: "auto",
@@ -2532,11 +2919,10 @@ const InvoiceDialog = (() => {
                         showTax: false,
                         allowDiscount: true,
                         discountBeforeTax: true,
-                        currencyConversion:{
-                            currency_code:"KHR",
-                            rate:4100
+                        currencyConversion: {
+                            currency_code: "KHR",
+                            rate: 4100
                         }
-
                     },
                     // currencyConversion: {
                     //     currency_code: "KHR",
@@ -2558,7 +2944,13 @@ const InvoiceDialog = (() => {
                         const tr = ctx.tr;
                         const item_id = ctx.data.item_id;
                         const type = ctx.data.type;
-                        item.setRowMeta(tr, { item_id: item_id, type: type });
+                        const unit_type = ctx.data.unit_type;
+                        console.log(ctx.data);
+                        item.setRowMeta(tr, {
+                            item_id: item_id,
+                            type: type,
+                            unit_type: unit_type
+                        });
                     },
 
                     onItemChange: (rowId, item, fieldName, td, tr) => {
@@ -2638,6 +3030,8 @@ const InvoiceDialog = (() => {
                             )
                             .then(res => {
                                 const d = res.data || {};
+                                console.log(111111111111111111111111111111111111111111111, d);
+                                
                                 me.controls.phone_number.value =
                                     d.tenant?.phone_number || "";
                                 me.controls.email.value = d.tenant?.email || "";
@@ -2666,7 +3060,7 @@ const InvoiceDialog = (() => {
                 me.saveData = () => {
                     let header = me.getData();
                     const items = me.itemsView.getItems({
-                        metaKeys: ["item_id", "type", "remark"]
+                        metaKeys: ["item_id", "type", "remark", "unit_type"]
                     }); // Retrieves all row data
 
                     console.log("Items", items);
@@ -2724,7 +3118,9 @@ const InvoiceDialog = (() => {
             },
 
             onPrepareForm: (me, data) => {
-                availableItem = (data.services || []).filter(s => s.type_id == 2);
+                availableItem = (data.services || []).filter(
+                    s => s.type_id == 2
+                );
 
                 me._selectedTenantId = null;
                 me._tenantData = null;
@@ -2770,6 +3166,7 @@ const InvoiceDialog = (() => {
                             console.log("invoice detail:", detail);
 
                             me.controls.due_date.value = detail.due_date;
+                            me.controls.issue_date.value = detail.issue_date;
                             me.controls.invoice_type.value =
                                 detail.invoice_type || "";
                             if (me.controls.general_remark) {

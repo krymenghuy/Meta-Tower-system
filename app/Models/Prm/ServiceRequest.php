@@ -198,7 +198,7 @@ class ServiceRequest extends VSModel
                 sr.start_time,
                 sr.updated_at, sr.update_user,
                 sr.scheduled_date,sr.request_date, sr.complete_date, sr.create_uid,
-                rs.id as status_id,
+                sr.status_id,
                 rs.name as status_name,
                 sc.name as service_category
             ")
@@ -208,8 +208,12 @@ class ServiceRequest extends VSModel
         $count = $clone_query->count('sr.id');
         $rows  = $query->skip($skip_rows)->take($per_page)->get();
         foreach($rows as $row){
-
-            $row->unit_type = $row->unit_type == '1' ? 'One Time' : ($row->unit_type == '2' ? 'Hour' : '');
+            $scheduledDateTime = strtotime($row->scheduled_date . ' ' . $row->start_time);
+            if ($row->status_id == 1 && !empty($row->scheduled_date) && !empty($row->start_time) && $scheduledDateTime < time()) {
+                $row->status_name = 'Expired';
+                $row->status_id = 4;
+            }
+            $row->unit_type = $row->unit_type == '1' ? 'One Time' : ($row->unit_type == '2' ? 'Hour' : ($row->unit_type == '3' ? 'Unit' : ''));
             $row = setOfficialDates($row,['complete_date','request_date','scheduled_date'],['updated_at','created_at as created_at'],[]);
         }
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);

@@ -32,7 +32,7 @@ class Invoice extends VSModel
             'tenant_id'         => '1|integer|exists:tenants,id',
             'space_id'          => '1|integer|exists:building_spaces,id ',
             'due_date'          => '1|date|text=Please enter valid due date',
-            'invoice_date'      => '0|date',
+            'issue_date'        => '1|date|text=Please enter valid issue date',
             'payment_status_id' => '0|integer|exists:payment_statuses,id|default=2',
             'items'             => '1|array|min:1',
             'general_remark'    => '0|string|0-350|',
@@ -71,11 +71,11 @@ class Invoice extends VSModel
             ? $inputs['discount_type']
             : 'percent';
 
-        if ($isNew) {
-            $inputs['invoice_date'] = $inputs['invoice_date'] ?? now()->toDateString();
-        } else {
-            unset($inputs['invoice_date']);
-        }
+        // if ($isNew) {
+        //     $inputs['issue_date'] = $inputs['issue_date'] ?? now()->toDateString();
+        // } else {
+        //     unset($inputs['issue_date']);
+        // }
         $items  = $arr['items'] ?? [];
         unset($inputs['items']);
 
@@ -96,9 +96,20 @@ class Invoice extends VSModel
         if (!$dueDT) {
             return DV::error('Invalid due date.');
         }
+        $issueDate = $inputs['issue_date'];
+           $issueDT   = strtotime($issueDate);
+        if (!$issueDT) {
+            return DV::error('Invalid issue date.');
+        }
 
-        if ($dueDT < $todayDT) {
-            return DV::error('Due date cannot be in the past.');
+        // if ($dueDT < $todayDT) {
+        //     return DV::error('Due date cannot be in the past.');
+        // }
+
+        \Log::info("Due date", ["dueDT" => $dueDT, "issueDate" => $inputs['issue_date']]);
+         
+        if($dueDT < $issueDT){
+            return DV::error('Due date cannot be before the issue date.');
         }
 
         \Log::info("Due date validation passed", $inputs);
@@ -133,32 +144,34 @@ class Invoice extends VSModel
 
             $itemRows = [];
             foreach ($items as $item) {
-                $itemType = strtolower($item['type'] ?? $item['item_type'] ?? 'service');
+                // $itemType = strtolower($item['type'] ?? $item['item_type'] ?? 'service');
+                $itemType = $item['type'] ?? 'service';
+
                 $itemId = $item['item_id']  ?? null;
                 $qty    = (int)($item['qty'] ?? 1);
                 $price  = (float)($item['price'] ?? 0);
 
                 $unitType = $item['unit_type'] ?? '-';
 
-                if ($itemType === 'rent' && $itemId) {
-                    $contractPrice = DB::table('contracts')
-                        ->where('id', $itemId)
-                        ->value('price');
+                // if ($itemType === 'rent' && $itemId) {
+                //     $contractPrice = DB::table('contracts')
+                //         ->where('id', $itemId)
+                //         ->value('price');
 
-                    if ($contractPrice !== null) {
-                        $price = (float)$contractPrice;
-                    }
-                } else if ($itemType === 'service' && $itemId) {
-                    $serviceData = DB::table('services')
-                        ->where('id', $itemId)
-                        ->select('price', 'charge_as')
-                        ->first();
+                //     if ($contractPrice !== null) {
+                //         $price = (float)$contractPrice;
+                //     }
+                // } else if ($itemType === 'service' && $itemId) {
+                //     $serviceData = DB::table('services')
+                //         ->where('id', $itemId)
+                //         ->select('price', 'charge_as')
+                //         ->first();
 
-                    if ($serviceData) {
-                        $price    = (float)$serviceData->price;
-                        $unitType = $serviceData->charge_as ?? '-';
-                    }
-                }
+                //     if ($serviceData) {
+                //         $price    = (float)$serviceData->price;
+                //         $unitType = $serviceData->charge_as ?? '-';
+                //     }
+                // }
 
                 $price = (float)($item['price'] ?? 0);
                 $qty   = (float)($item['qty'] ?? 1);
@@ -437,7 +450,7 @@ class Invoice extends VSModel
                 'i.invoice_type',
                 'i.due_date',
                 'i.general_remark',
-                'i.invoice_date',
+                'i.issue_date',
                 'i.discount_type',
                 'i.discount_value',
                 'i.start_time',
@@ -495,7 +508,7 @@ class Invoice extends VSModel
                 $row->payment_status_id = 4;
                 $row->payment_status_name = 'Overdue';
             }
-            $row = setOfficialDates($row, ['due_date', 'invoice_date'], ['updated_at', 'created_at'], []);
+            $row = setOfficialDates($row, ['due_date', 'issue_date'], ['updated_at', 'created_at'], []);
         }
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
@@ -521,6 +534,7 @@ class Invoice extends VSModel
                 'i.paid_amount',
                 'i.start_time',
                 'i.invoice_type',
+                'i.issue_date',
                 'i.due_date',
                 'i.discount_type',
                 'i.discount_value',
@@ -582,7 +596,7 @@ class Invoice extends VSModel
             $i = setOfficialDates($i, ['end_date', 'start_date'], [], []);
         }
         if ($header) {
-            setOfficialDates($header, ['due_date', 'start_date'], [], []);
+            setOfficialDates($header, ['due_date', 'issue_date' ,'start_date'], [], []);
         }
         return $header;
     }

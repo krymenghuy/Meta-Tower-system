@@ -28,7 +28,7 @@ var AmenityComponent = (() => {
             transTitle: "titles.Name",
             className: "align-middle text-nowrap",
             data: (data) =>
-                `<div class="text-prm-custom text-capitalize" style="width:120px; ">
+                `<div class="text-prm-custom text-capitalize" style="width:170px; ">
                     <span class="text-wrap text-break" style ="word-break:break-word;">${data.name ?? ""}</span>
                 </div>`,
         },
@@ -60,7 +60,7 @@ var AmenityComponent = (() => {
             data: (data, index, tr) => {
                 return `
                     <div class="text-primary-custom" style="width:200px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.description ?? "__"}</span>
+                        <small class="text-wrap text-break" style ="word-break:break-word;">${data.description ?? "__"}</small>
                     </div>
                 `;
             },
@@ -565,7 +565,7 @@ const AmenityDialog = (() => {
                         </div>
                         <div class="col-6">
                             <div class="vs-material-field">
-                                <input type="number" name="capacity" required class="data-input form-control" data-field="max_capacity" min="0" value="0 " placeholder=" " />
+                                <input type="text" name="capacity" required class="data-input form-control" data-field="max_capacity" min="0" value="0 " placeholder=" " />
                                 <label>Capacity</label>
                             </div>
                         </div>
@@ -579,7 +579,24 @@ const AmenityDialog = (() => {
                     ].join("");
                 },
 
-                contentCreated: (me) => {},
+                contentCreated: (me) => {
+                    const capacity = me.divModal.querySelector('[name="capacity"]');
+                    if (capacity) {
+                        capacity.addEventListener('input', function () {
+                            let start = this.selectionStart;
+                            let v = this.value.replace(/[^0-9]/g, '');
+                            v = v.replace(/^0+/, '');
+                            if (v === '') {
+                                v = '';
+                            }
+                            if (v.length > 3) {
+                                v = v.slice(0, 3);
+                            }
+                            this.value = v;
+                            this.setSelectionRange(start, start);
+                        });
+                    }
+                },
                 configSelect: [
                     {
                         name: "amenity_categories",

@@ -719,28 +719,13 @@ public function updateBooking($arr = [], $ss = null)
         'remarks' => '0|string|1-255',
     ];
     $email_char = ['@', '.', '_', '-', '+'];
-
     $remarks_char = ['@', '.', '_', '-', ':'];
-
-    $res = DBX::validateObject(
-        $arr,
-        $v_rule,
-        1,
-        ['booker_email' => $email_char, 'remarks' => $remarks_char],
-        $ss->lang,
-        0,
-        null
-    );
-
+    $res = DBX::validateObject($arr,$v_rule,1,['booker_email' => $email_char, 'remarks' => $remarks_char],$ss->lang,0,null);
     if ($res->error) return DV::error($res->error);
-
     $inputs = $res->values;
     $d = (object) $inputs;
     $booker_email = $d->booker_email ?? null;
     if ($booker_email !== null && $booker_email !== '') {
-
-
-
         if (!filter_var($booker_email, FILTER_VALIDATE_EMAIL)) {
             return DV::error('Invalid email format');
         }
