@@ -489,7 +489,6 @@ const CreateServicePriceDialog = (() => {
                     ].join("");
                 },
 
-
                contentCreated: (me) => {
                     const updateChargeAs = () => {
                         const isSubscription = me.controls.service_type.value == 2;

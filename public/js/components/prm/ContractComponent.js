@@ -114,44 +114,24 @@ var ContractComponent = new (function () {
             transTitle: "titles.Status",
             className: "align-middle",
             data: (data) => {
-
-                const status = (data.status ?? '').toLowerCase();
-
-                let cls  = 'badge border border-warning text-warning bg-warning-subtle';
-                let icon = 'bi-check-circle-fill';
-                let dot  = 'bg-warning';
-
-                if (status === 'active') {
-                    cls  = 'badge border border-success text-success bg-success-subtle';
-                    icon = 'fa-regular fa-circle-check';
-                    dot  = 'bg-success';
-                }
-                else if (status === 'pending') {
-                    cls  = 'badge border border-warning text-warning bg-warning-subtle';
-                    icon = 'fa-regular fa-hourglass-half';
-                    dot  = 'bg-warning';
-                }
-                else if (status === 'expired') {
-                    cls  = 'badge border border-danger text-danger bg-danger-subtle';
-                    icon = 'fa-regular fa-clock';
-                    dot  = 'bg-danger';
-                }
-                else if (status === 'terminated') {
-                    cls  = 'badge border border-danger text-danger bg-danger-subtle';
-                    icon = 'fa-regular fa-circle-xmark';
-                    dot  = 'bg-danger';
-                }
-
-                const statusLabel = (status === 'terminated') ? 'Terminated' : (data.status ?? '');
-                return `
-                    <span class="badge ${cls}"
-                        style="min-width:110px"
-                        data-status_id="${data.status_id}">
-                        <i class="${icon}" style="font-size:13px;"></i>
-
-                        <span class="text-capitalize">${statusLabel}</span>
-                    </span>
-                `;
+                const statusId = parseInt(data.status_id, 10);
+                const statusKey = (data.status ?? '').toLowerCase();
+                const map = {
+                    1: { text: 'Pending', cls: 'bg-warning-subtle text-warning border border-warning' },
+                    2: { text: 'Active', cls: 'bg-success-subtle text-success border border-success' },
+                    3: { text: 'Expired', cls: 'bg-danger-subtle text-danger border border-danger' },
+                    4: { text: 'Terminated', cls: 'bg-danger-subtle text-danger border border-danger' },
+                };
+                const byName = {
+                    pending: 'bg-warning-subtle text-warning border border-warning',
+                    active: 'bg-success-subtle text-success border border-success',
+                    expired: 'bg-danger-subtle text-danger border border-danger',
+                    terminated: 'bg-danger-subtle text-danger border border-danger',
+                };
+                const m = map[statusId] || null;
+                const label = m?.text || (statusKey === 'terminated' ? 'Terminated' : (data.status ?? '—'));
+                const cls = m?.cls || byName[statusKey] || 'bg-light text-muted';
+                return `<span class="badge ${cls}" style="min-width: 100px;" data-status_id="${data.status_id}">${label}</span>`;
             },
         },
         {
@@ -341,8 +321,8 @@ var ContractComponent = new (function () {
     mThis.renderContractDetail = (container, d, contractId, renewals) => {
         // const cur = (d.cur_symbol != null) ? d.cur_symbol : '$';
         // const priceLabel = (d.price_type === 'total') ? 'Whole Room' : 'Per sqm';
-        // const priceVal = d.price != null ? Number(d.price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '—';
-        // const depositVal = (d.deposit != null && d.deposit !== '') ? Number(d.deposit).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '—';
+        // const priceVal = d.price != null ? Number(d.price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : 'â€”';
+        // const depositVal = (d.deposit != null && d.deposit !== '') ? Number(d.deposit).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : 'â€”';
 
         const renewalsList = Array.isArray(renewals) ? renewals : [];
         const currentSpaceCode = (d.space_code ?? '').trim();
@@ -356,19 +336,19 @@ var ContractComponent = new (function () {
         if (renewalsList.length > 0) {
             const unitPillClass = 'px-2 py-1 bg-prm-custom text-white rounded font-medium ';
             const rows = renewalsList.map((r) => {
-                const spaceCode = (r.space_code ?? '').trim() || '—';
-                const unitChanged = currentSpaceCode && spaceCode !== '—' && spaceCode !== currentSpaceCode;
+                const spaceCode = (r.space_code ?? '').trim() || 'â€”';
+                const unitChanged = currentSpaceCode && spaceCode !== 'â€”' && spaceCode !== currentSpaceCode;
                 const unitCell = unitChanged
                     ? `<span class="d-inline-flex align-items-center gap-1"><span class="${unitPillClass}">${escapeHtml(spaceCode)}</span><span class="badge bg-info text-white" style="font-size:0.7rem;">New unit</span></span>`
                     : `<span class="${unitPillClass}">${escapeHtml(spaceCode)}</span>`;
                 return `
                 <tr>
-                    <td class="align-middle">${(r.renewal_date ?? '').trim() || '—'}</td>
-                    <td class="align-middle">${(r.start_date ?? '').trim() || '—'}</td>
-                    <td class="align-middle">${(r.end_date ?? '').trim() || '—'}</td>
+                    <td class="align-middle">${(r.renewal_date ?? '').trim() || 'â€”'}</td>
+                    <td class="align-middle">${(r.start_date ?? '').trim() || 'â€”'}</td>
+                    <td class="align-middle">${(r.end_date ?? '').trim() || 'â€”'}</td>
                     <td class="align-middle">${unitCell}</td>
-                    <td class="text-break align-middle">${(r.remarks ?? '').trim() || '—'}</td>
-                    <td class="align-middle"><div class="d-flex flex-column"><span class="text-capitalize fw-semibold">${escapeHtml((r.update_user ?? '').trim()) || '—'}</span><small class="text-muted">${(r.updated_at ?? '').trim() || ''}</small></div></td>
+                    <td class="text-break align-middle">${(r.remarks ?? '').trim() || 'â€”'}</td>
+                    <td class="align-middle"><div class="d-flex flex-column"><span class="text-capitalize fw-semibold">${escapeHtml((r.update_user ?? '').trim()) || 'â€”'}</span><small class="text-muted">${(r.updated_at ?? '').trim() || ''}</small></div></td>
                 </tr>`;
             }).join('');
             renewalTableHtml = `
@@ -435,12 +415,6 @@ var ContractComponent = new (function () {
                     name: "terminate_contract"
                 },
                 {
-                    html: '<span class="ps-2 " vslang="titles.Print Contract"></span>',
-                    icon: `<i class="fa-solid fa-print fs-5 text-info"></i>`,
-                    cssClass: "border-bottom pb-2",
-                    name: "print_contract"
-                },
-                {
                     html: '<span class="ps-2 " vslang="titles.Delete Contract"></span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
@@ -462,7 +436,6 @@ var ContractComponent = new (function () {
                 const canModify = !isActive && !isExpired && !isTerminated;
 
                 menu.edit_contract.style.display = canModify ? 'block' : 'none';
-                menu.print_contract.style.display ='none';
                 menu.renew_contract.style.display = showRenew ? 'block' : 'none';
                 if (menu.terminate_contract) {
                     // show terminate only when status is active
@@ -486,10 +459,6 @@ var ContractComponent = new (function () {
                     }
                     case 'terminate_contract': {
                         mThis.terminateContract(id, menuLink);
-                        break;
-                    }
-                    case 'print_contract': {
-                        mThis.printContract(id, menuLink);
                         break;
                     }
                     case 'delete_contract': {
@@ -600,105 +569,6 @@ var ContractComponent = new (function () {
         );
     };
 
-    mThis.printContract = (id, menulink) => {
-        if (!id) return;
-
-        const printWindow = window.open('', '_blank');
-        if (!printWindow) {
-            cv_interact.error('Unable to open print window. Please allow popups and try again.');
-            return;
-        }
-
-        const escapeHtml = (value) => {
-            const str = String(value ?? '');
-            return str
-                .replaceAll('&', '&amp;')
-                .replaceAll('<', '&lt;')
-                .replaceAll('>', '&gt;')
-                .replaceAll('"', '&quot;')
-                .replaceAll("'", '&#39;');
-        };
-
-        const formatMoney = (amount) => {
-            const n = Number(amount || 0);
-            return Number.isNaN(n) ? '0.00' : n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-        };
-
-        vsapi.call(`${main_view.base_url}/prm/contract/details`, { id }, null, null)
-            .then((res) => {
-                if (res.status_code !== 200 || !res.data) {
-                    printWindow.close();
-                    cv_interact.error(res.error_message || 'Unable to load contract data for print.');
-                    return;
-                }
-
-                const d = res.data;
-                const unitPriceLabel = (d.price_type === 'total') ? 'Whole Room' : 'Per Square Meter';
-                const html = `<!doctype html>
-<html>
-<head>
-    <meta charset="utf-8" />
-    <title>Contract #${escapeHtml(d.id)}</title>
-    <style>
-        body { font-family: Arial, sans-serif; color: #222; margin: 24px; }
-        .header { margin-bottom: 20px; border-bottom: 1px solid #ddd; padding-bottom: 12px; }
-        .title { font-size: 22px; font-weight: 700; margin: 0; }
-        .sub { color: #555; margin-top: 4px; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 24px; margin-top: 16px; }
-        .row b { display: inline-block; min-width: 120px; }
-        .section { margin-top: 20px; }
-        .box { border: 1px solid #ddd; border-radius: 8px; padding: 12px; }
-        .remarks { min-height: 90px; white-space: pre-wrap; }
-        .sign { margin-top: 44px; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-        .line { margin-top: 48px; border-top: 1px solid #666; padding-top: 8px; color: #444; text-align: center; }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <p class="title">Contract Agreement</p>
-        <div class="sub">Contract ID: #${escapeHtml(d.id)}</div>
-    </div>
-
-    <div class="grid">
-        <div class="row"><b>Tenant</b> ${escapeHtml(d.tenant_name)}</div>
-        <div class="row"><b>Legal Name</b> ${escapeHtml(d.legal_name)}</div>
-        <div class="row"><b>Unit Code</b> ${escapeHtml(d.space_code)}</div>
-        <div class="row"><b>Business Type</b> ${escapeHtml(d.business_name)}</div>
-        <div class="row"><b>Unit Type</b> ${escapeHtml(d.space_name)}</div>
-        <div class="row"><b>Size (m2)</b> ${escapeHtml(d.sqm_size)}</div>
-        <div class="row"><b>Start Date</b> ${escapeHtml(d.start_date)}</div>
-        <div class="row"><b>End Date</b> ${escapeHtml(d.end_date)}</div>
-        <div class="row"><b>Unit Price</b> ${escapeHtml(unitPriceLabel)}</div>
-        <div class="row"><b>Price</b> $${formatMoney(d.price)}</div>
-    </div>
-
-    <div class="section">
-        <div class="box">
-            <b>Remarks</b>
-            <div class="remarks">${escapeHtml(d.remarks || '-')}</div>
-        </div>
-    </div>
-
-    <div class="sign">
-        <div class="line">Landlord Signature</div>
-        <div class="line">Tenant Signature</div>
-    </div>
-</body>
-</html>`;
-
-                printWindow.document.open();
-                printWindow.document.write(html);
-                printWindow.document.close();
-                printWindow.focus();
-                setTimeout(() => {
-                    printWindow.print();
-                }, 300);
-            })
-            .catch(() => {
-                printWindow.close();
-                cv_interact.error('Failed to prepare contract print.');
-            });
-    }
 
     mThis.prepareFormOptions = (onFinish) => {
         vsapi.call(`${main_view.base_url}/prm/contract/form-options`, null, null, null)
@@ -838,7 +708,7 @@ const ContractDialog = (() => {
                             <div class="col-6">
                                 <div class="vs-material-field">
                                     <input type="number" name="sqm_size" class="data-input form-control" data-field="sqm_size" disabled />
-                                    <label>Size (m²)</label>
+                                    <label>Size (mÂ²)</label>
                                 </div>
                             </div>
                             <div class="col-6">
@@ -1026,7 +896,7 @@ const ContractDialog = (() => {
                     if (me.controls.sqm_size) me.controls.sqm_size.value = selected.sqm_size ?? '';
                     if (me.controls.price_type && me.controls.price_type_label) {
                         me.controls.price_type.value = selected.price_type ?? '';
-                        me.controls.price_type_label.value = selected.price_type === 'sqm' ? 'Per m²' : selected.price_type === 'total' ? 'Whole Room' : '';
+                        me.controls.price_type_label.value = selected.price_type === 'sqm' ? 'Per mÂ²' : selected.price_type === 'total' ? 'Whole Room' : '';
                     }
                     if (me.controls.price) me.controls.price.value = selected.price ?? '';
                 };
@@ -1274,7 +1144,7 @@ const RenewDialog = (() => {
                             <div class="col-6">
                                 <div class="vs-material-field">
                                     <input type="number" name="sqm_size" class="data-input form-control" data-field="sqm_size" placeholder=" " readonly disabled />
-                                    <label>Size (m²)</label>
+                                    <label>Size (mÂ²)</label>
                                 </div>
                             </div>
                             <div class="col-6">
