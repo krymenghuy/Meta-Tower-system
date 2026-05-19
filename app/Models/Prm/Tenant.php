@@ -284,7 +284,7 @@ class Tenant
 
     static function defaultPhoto($subs_id)
     {
-        return url('') . '/assets/images/default/default-staff1.png';
+        return url('') . '/assets/images/default/placeholder.svg';
     }
     public static function getDetails($id, $ss = null)
     {

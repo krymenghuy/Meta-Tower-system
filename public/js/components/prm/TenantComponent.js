@@ -39,7 +39,7 @@ var TenantComponent = new (function () {
             transTitle: "titles.Photo",
             className: "align-middle",
             data: (data) =>
-                `<img class="btn-view-tenant-photo" data-id="${data.id}" src="${data.image_url || `${main_view.base_url}/assets/images/default/default-staff1.png`}" alt="" style="width: 50px; height: 50px; border-radius: 6px; margin-right: 10px;"/>`,
+                `<img class="btn-view-tenant-photo" data-id="${data.id}" src="${data.image_url || `${main_view.base_url}/assets/images/default/placeholder.svg`}" alt="" style="width: 50px; height: 50px; border-radius: 6px; margin-right: 10px;"/>`,
         },
         {
             transTitle: "titles.Code",
@@ -467,7 +467,7 @@ var TenantComponent = new (function () {
                                     <div class="d-flex gap-3 align-items-start">
                                         <div class="flex-shrink-0 rounded-3 shadow-sm overflow-hidden d-flex align-items-center justify-content-center"
                                             style="width:80px;height:80px;">
-                                            <img src="${d.image_url || main_view.asset_url + "/images/default/default-staff1.png"}" alt="Profile" class="img-fluid w-100 h-100 object-fit-cover">
+                                            <img src="${d.image_url || main_view.asset_url + "/images/default/placeholder.svg"}" alt="Profile" class="img-fluid w-100 h-100 object-fit-cover">
                                         </div>
                                         <div class="flex items-start justify-between mb-6">
                                             <span class="fw-semibold text-start mb-1 text-dark text-capitalize">${d.name}</span>
@@ -795,7 +795,7 @@ var TenantComponent = new (function () {
                 <div class="card shadow-sm mb-3 h-100">
                     <div class="card-body text-center d-flex flex-column">
                         <div class="position-relative d-inline-block mb-3">
-                            <img src="${data.image_url || `${main_view.base_url}/assets/images/default/default-staff1.png`}"
+                            <img src="${data.image_url || `${main_view.base_url}/assets/images/default/placeholder.svg`}"
                                 class="rounded-circle border shadow-sm"
                                 width="140" height="140"
                                 style="object-fit: cover; object-position: center;">
