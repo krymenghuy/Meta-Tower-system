@@ -97,9 +97,9 @@ class Invoice extends VSModel
             return DV::error('Invalid due date.');
         }
 
-        if ($dueDT < $todayDT) {
-            return DV::error('Due date cannot be in the past.');
-        }
+        // if ($dueDT < $todayDT) {
+        //     return DV::error('Due date cannot be in the past.');
+        // }
 
         \Log::info("Due date validation passed", $inputs);
 

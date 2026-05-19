@@ -509,10 +509,10 @@ var InvoiceComponent = (() => {
                 const menu = me.getActiveMenus(menuContainer);
                 const statusId = Number(menuContainer.dataset.statusid);
 
-                menu.print_invoice.style.display =
-                    statusId === 1 || statusId === 3 || statusId === 2
-                        ? "block"
-                        : "none";
+                // menu.print_invoice.style.display =
+                //     statusId === 1 || statusId === 3 || statusId === 2 
+                //         ? "block"
+                //         : "none";
                 menu.receive_invoice.style.display =
                     statusId === 2 || statusId === 3 || statusId === 4
                         ? "block"
