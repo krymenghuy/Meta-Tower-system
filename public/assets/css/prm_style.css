@@ -2140,7 +2140,7 @@ tr.row-selected td {
 /* ── Header ── */
 .table--white thead th {
     color: #1a1647 !important;
-    background-color:#ffffff;
+    background-color:#eaeff2;
     font-size: 14px !important;
     font-weight: 500;
     /* letter-spacing: 0.02em; */
@@ -2167,7 +2167,7 @@ thead th {
 
 /* ── Hover ONLY on outer table--white ── */
 .table--white > tbody > tr:hover > td {
-    /* background-color: #f1f2f5 !important; */
+    background-color: #f2f7fb !important;
     /* font-weight: normal !important; */
 }
 

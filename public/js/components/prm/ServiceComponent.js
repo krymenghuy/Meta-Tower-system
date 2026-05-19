@@ -232,27 +232,44 @@ var ServiceComponent = (() => {
     };
 
     mThis.displayServiceDescription = (container, parent_tr) => {
-        const raw = parent_tr && parent_tr.__serviceDescription != null
-            ? String(parent_tr.__serviceDescription)
-            : '';
+        const raw = parent_tr?.__serviceDescription;
+
+        const hasData =
+            raw !== null &&
+            raw !== undefined &&
+            String(raw).trim() !== '' &&
+            String(raw).toLowerCase() !== 'null' &&
+            String(raw).toLowerCase() !== 'undefined';
+
+        if (!hasData) {
+            container.innerHTML = `
+                <div class="text-muted text-center py-2">
+                    
+                </div>
+            `;
+            return;
+        }
+
         const escapeHtml = (str) => {
-            if (!str) return '';
             const div = document.createElement('div');
             div.textContent = str;
             return div.innerHTML;
         };
-        const body = raw.trim()
-            ? `<div class="text-primary-custom text-break" style="white-space:pre-wrap;">${escapeHtml(raw)}</div>`
-            : `<em class="text-muted">No description</em>`;
-        container.innerHTML = [
-            '<div class="card shadow-sm border-0 rounded-0 mx-0 bg-body-tertiary">',
-            '  <div class="card-body py-3 px-4">',
-            '    <div class="text-uppercase small text-muted mb-2 fw-semibold">Description</div>',
-            body,
-            '  </div>',
-            '</div>',
-        ].join('');
+
+        container.innerHTML = `
+            <div class="card shadow-sm border-0 rounded-0 mx-0 bg-body-tertiary">
+                <div class="card-body py-3 px-4">
+                    <div class="text-uppercase small text-muted mb-2 fw-semibold">
+                        Description
+                    </div>
+                    <div class="text-primary-custom text-break" style="white-space:pre-wrap;">
+                        ${escapeHtml(String(raw))}
+                    </div>
+                </div>
+            </div>
+        `;
     };
+    
 
     mThis.initDropdownMenus = (table) => {
 

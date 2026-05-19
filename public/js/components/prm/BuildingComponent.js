@@ -493,7 +493,7 @@ const BuildingDialog = (() => {
                         <div class="col-6">
                             <div class="vs-material-field">
                                 <input type="text" name="prefix" class="data-input form-control" data-field="prefix" placeholder=" " />
-                                <label>Prefix (Recommended)</label>
+                                <label>ShortCut (Recommended)</label>
                             </div>
                         </div>
                         <div class="col-6">
