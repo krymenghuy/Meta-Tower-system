@@ -2140,7 +2140,7 @@ tr.row-selected td {
 /* ── Header ── */
 .table--white thead th {
     color: #1a1647 !important;
-    background-color:#e8e9ea;
+    background-color:#ffffff;
     font-size: 14px !important;
     font-weight: 500;
     /* letter-spacing: 0.02em; */
@@ -2167,8 +2167,8 @@ thead th {
 
 /* ── Hover ONLY on outer table--white ── */
 .table--white > tbody > tr:hover > td {
-    background-color: #f1f2f5 !important;
-    font-weight: normal !important;
+    /* background-color: #f1f2f5 !important; */
+    /* font-weight: normal !important; */
 }
 
 /* ── Explicitly block hover inside nested dropdown ── */
@@ -2178,7 +2178,7 @@ thead th {
 }
 
 /* .table--white tbody td { border-right: 1px solid #f0f0f2; } */
-.table--white thead tr { border-bottom: 2px solid #9898a8; }
+/* .table--white thead tr { border-bottom: 2px solid #9898a8; } */
 
 
 /* ════════════════════════════════════════════
