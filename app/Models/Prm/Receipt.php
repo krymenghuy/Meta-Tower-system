@@ -75,7 +75,7 @@ class Receipt extends Model
                 't.phone_number as tenant_phone',
                 'i.code as invoice_code',
                 'i.amount as invoice_total',
-                'i.invoice_date as invoice_date',
+                'i.issue_date as issue_date',
                 'bs.code as space_code',
                 'rs.name as receipt_status_name',
                 DB::raw('ANY_VALUE(rb.method) as method'),
@@ -111,7 +111,7 @@ class Receipt extends Model
         $rows = $query->skip($skip_rows)->take($per_page)->get();
 
         foreach ($rows as $row) {
-            $row = setOfficialDates($row, ['receipt_date', 'invoice_date'], ['updated_at'], []);
+            $row = setOfficialDates($row, ['receipt_date', 'issue_date'], ['updated_at'], []);
         }
 
         return new LengthAwarePaginator($rows, $total, $per_page, $current_page);
