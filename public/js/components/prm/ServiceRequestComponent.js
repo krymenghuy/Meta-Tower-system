@@ -52,7 +52,7 @@ var ServiceRequestComponent = (function () {
             transTitle: "titles.Charge As",
             className: "align-middle text-nowrap",
             data: (data) => {
-                return `<span class="badge text-success bg-success-subtle border border-success text-nowrap" style="min-width:70px;">${data.unit_type}</span>`;
+                return `<span class="badge text-primary bg-primary-subtle border border-primary text-nowrap" style="min-width:70px;">${data.unit_type}</span>`;
             }
         },
         {
@@ -134,8 +134,9 @@ var ServiceRequestComponent = (function () {
                 const statusId = Number(data.status_id) || 0;
                 const statusClasses = {
                     pending: 'badge text-warning bg-warning-subtle border border-warning',
-                    accepted: 'badge text-primary bg-primary-subtle border border-primary',
-                    rejected: 'badge text-danger bg-danger-subtle border border-danger'
+                    accepted: 'badge text-success bg-success-subtle border border-success',
+                    expired: 'badge text-dark bg-dark-subtle border border-dark',
+                    rejected: 'badge text-danger bg-danger-subtle border border-danger',
                 };
                 const cls = statusClasses[status] ?? 'badge text-dark bg-light border';
                 const isEditable = status === 'pending';
