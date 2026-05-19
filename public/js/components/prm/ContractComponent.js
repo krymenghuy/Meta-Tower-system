@@ -96,7 +96,10 @@ var ContractComponent = new (function () {
             className: "align-middle",
             data: (data) => {
                const deposit = VSMoney.formatAmount(data.deposit, data.currency_code ?? 'USD');
-                return `<span class="text-prm-custom">${deposit}</span>`;
+                return `<div class="text-primary-prm text-capitalize" style="width:90px;">
+                        <span class="text-prm-custom" >${deposit}</span>
+                    </div>`;
+                
             }
         },
         {
@@ -105,7 +108,7 @@ var ContractComponent = new (function () {
             data: (data, index, tr) => {
                 return `
                     <div class="text-primary-prm text-capitalize" style="width:200px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ?? '__'}</span>
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ?? '_'}</span>
                     </div>
                 `;
             }
@@ -708,7 +711,7 @@ const ContractDialog = (() => {
                             <div class="col-6">
                                 <div class="vs-material-field">
                                     <input type="number" name="sqm_size" class="data-input form-control" data-field="sqm_size" disabled />
-                                    <label>Size (mÂ²)</label>
+                                    <label>Size (m²)</label>
                                 </div>
                             </div>
                             <div class="col-6">
@@ -1144,7 +1147,7 @@ const RenewDialog = (() => {
                             <div class="col-6">
                                 <div class="vs-material-field">
                                     <input type="number" name="sqm_size" class="data-input form-control" data-field="sqm_size" placeholder=" " readonly disabled />
-                                    <label>Size (mÂ²)</label>
+                                    <label>Size </label>
                                 </div>
                             </div>
                             <div class="col-6">

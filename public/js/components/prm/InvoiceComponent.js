@@ -41,7 +41,7 @@ var InvoiceComponent = (() => {
                 return `
                     <div class="d-flex flex-column">
                         ${code}
-                        <hr class="m-0 border border-secondary border-3 opacity-75">
+                     <!--   <hr class="m-0 border border-secondary border-3 opacity-75"> -->
                         ${typeHtml}
                     </div>
                 `;
@@ -174,7 +174,7 @@ var InvoiceComponent = (() => {
                 return `
                     <div class="text-primary-custom" style="width:200px;">
                         <span class="text-wrap text-break" style ="word-break:break-word;">${data.general_remark ??
-                            "__"}</span>
+                            "_"}</span>
                     </div>
                 `;
             }

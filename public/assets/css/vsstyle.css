@@ -6,7 +6,7 @@
     -webkit-user-drag: none;
     /* font-family: "Source Sans 3", sans-serif; */
     font-size: 2rem;
-    font-family: 'Inter',  sans-serif;
+    font-family: Inherit;
 }
 /* @import url('https://fonts.googleapis.com/css2?family=Battambang&display=swap'); */
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
@@ -354,7 +354,7 @@ div.dms-content-body {
 }
 
 .unicode-text {
-  font-family: 'Khmer OS Battambang', 'Khmer OS Content', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
+  font-family: 'Khmer OS Battambang', 'Khmer OS Content', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)','inherit';
 }
 
 /* .select2,
@@ -430,6 +430,7 @@ table.header-uppercase>thead>tr>th {
   /* text-transform: uppercase !important; */
 
 /* font-family: 'Inter', 'Noto Sans Khmer', sans-serif !important; */
+  font-family: inherit;
 }
 
 

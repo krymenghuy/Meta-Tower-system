@@ -3,7 +3,8 @@
     margin: 0;
     box-sizing: border-box;
     -webkit-user-drag: none;
-    font-family: 'Inter', 'Battambang', sans-serif;
+    /* font-family: 'Inter', 'Battambang', sans-serif; */
+    font-family: 'poppins';
     /* Improved default settings */
     font-size: 1rem;
     /* line-height: 1.5; */
@@ -32,6 +33,7 @@
     cursor: pointer;
     font-size: 13px;
     font-weight: 500;
+    font-family: 'poppins';
     transition: background 0.2s ease, transform 0.2s ease;
 }
 .btnAddNewPrm:hover {
@@ -950,7 +952,8 @@ a.menu-selected .kt-menu__link-text {
     .select2-selection__rendered {
     color: #595d6e;
     font-size: 1rem;
-    font-family: Poppins;
+    font-family: 'Poppins';
+    /* font-family: inherit; */
     height: 100% !important;
     line-height: 28px;
     vertical-align: middle;
@@ -1278,7 +1281,8 @@ a.menu-selected .kt-menu__link-text {
 }
 
 .container-table .table-title {
-    font-family: Poppins;
+    font-family: 'Poppins';
+    /* font-family: inherit; */
     padding: 1rem;
     font-size: calc(1rem + 0.3vw);
     --bs-text-opacity: 1;
@@ -1286,7 +1290,8 @@ a.menu-selected .kt-menu__link-text {
 }
 
 .container-table .table thead > tr > th {
-    font-family: Poppins;
+    font-family: 'Poppins';
+    /* font-family: inherit; */
     font-size: 1rem;
     color: #008dcd;
     text-transform: uppercase;
@@ -1312,7 +1317,8 @@ a.menu-selected .kt-menu__link-text {
     margin: 0;
     padding: 0;
     list-style-type: none;
-    font-family: Poppins;
+    font-family: 'Poppins';
+    /* font-family: inherit; */
     max-height: 300px;
     overflow: hidden;
 }
@@ -2058,7 +2064,9 @@ ul.list-filter-um li:not(li:last-child) {
 }
 
 .set-font-to-kh {
-    font-family: "Khmer OS Battambang";
+    /* font-family: "Khmer OS Battambang"; */
+    font-family: 'poppins';
+
 }
 
 .limited-text-display {
@@ -2271,7 +2279,9 @@ thead th {
     .material-input {
       position: relative;
       margin-bottom: 2rem;
-      font-family: Arial, sans-serif;
+      /* font-family: Arial, sans-serif; */
+      font-family: 'poppins';
+
     }
 
     /* Filled style */
