@@ -147,7 +147,6 @@ class ServiceRequest extends VSModel
         }
     }
 
-
     public function getServiceRequestList($arr = [], $ss = null)
     {
         $d = (object) $arr;
