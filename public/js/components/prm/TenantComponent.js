@@ -1001,32 +1001,36 @@ var TenantComponent = new (function () {
             if (!group.length) return;
             const first = group[0];
 
-            const contractStatusName = String(
-                first.contract_status ?? "",
-            ).trim();
+            const contractStatusName = String(first.contract_status ?? "",).trim();
             const contractStatusLower = contractStatusName.toLowerCase();
-            const hasCurrent = group.some((r) => !!r.is_current);
+            
+            // const hasCurrent = group.some((r) => !!r.is_current);
 
             let accent = "#adb5bd";
             let circleBg = "#6c757d";
             let headerBadgeHtml = "";
             let priceColor = "#212529";
-            let depositBadgeStyle =
-                "color:#4a4a4a;background-color:#f6f4ee;border:1px solid #e5dfd1;";
-            if (hasCurrent || contractStatusLower === "active") {
+            let depositBadgeStyle ="color:#3f51d8;background-color:#e7efff;border:1px solid #cfdbff;";
+            
+            if (contractStatusLower === "active") {
                 accent = "#0f49bd";
                 circleBg = "#0f49bd";
                 priceColor = "#3f51d8";
-                depositBadgeStyle =
-                    "color:#3f51d8;background-color:#e7efff;border:1px solid #cfdbff;";
+                
                 headerBadgeHtml = `<span class="badge text-uppercase rounded-4 text-white ms-1" style="background-color:#0f49bd;">CURRENT</span>`;
             } else if (contractStatusLower === "pending") {
                 accent = "#fd7e14";
                 circleBg = "#fd7e14";
                 priceColor = "#fd7e14";
-                depositBadgeStyle =
-                    "color:#9a5a19;background-color:#fff1e6;border:1px solid #ffd9bf;";
+                
                 headerBadgeHtml = `<span class="badge text-uppercase rounded-4 text-white ms-1" style="background-color:#fd7e14;">PENDING</span>`;
+            } else if (contractStatusLower === "terminated") {
+                accent = "#dc3545";
+                circleBg = "#dc3545";
+                priceColor = "#dc3545";
+                
+                headerBadgeHtml = `<span class="badge text-uppercase rounded-4 text-white ms-1" style="background-color:#dc3545;">TERMINATED</span>`;
+
             } else {
                 headerBadgeHtml = `<span class="badge text-uppercase rounded-4 ms-1" style="color:#4a4a4a;background-color:#f6f4ee;border:1px solid #e5dfd1;">${mThis._escapeHtml(contractStatusName || "—")}</span>`;
             }
@@ -1074,7 +1078,7 @@ var TenantComponent = new (function () {
                     : `<span class="text-muted">${mThis._escapeHtml(first.deposit_remarks)}</span>`;
             }
             const depositBadgeHtml = depositSmallHtml
-                ? `<span class="badge rounded-pill px-3 py-2" style="${depositBadgeStyle}">${depositSmallHtml}</span>`
+                ? `<span class="badge rounded-2 px-3 py-2" style="${depositBadgeStyle}">${depositSmallHtml}</span>`
                 : "";
 
             const renewalsTableRowsHtml = group

@@ -122,7 +122,7 @@ class Tenant
             $passport = $d->passport_number ?? null;
             $national_id = $d->national_id ?? null;
             if (empty($passport)) {
-                return DV::error('Passport is required for foreign nationality.');
+                return DV::error('Passport number is required for foreign nationality.');
             }
             $nid_check = $this->checkUniqueTenantByNID($national_id, $id);
             if ($nid_check) return DV::error($nid_check);
