@@ -26,17 +26,17 @@ var InvoiceComponent = (() => {
             data: function(data) {
                 const code = data.code
                     ? `<span class="text-prm-custom">${data.code}</span>`
-                    : `<span class="text-muted fst-italic">N/A</span>`;
+                    : `<span class="text-muted fst-italic">_</span>`;
 
                 let typeHtml = "";
                 const val = data.invoice_type;
 
                 if (val == 1) {
-                    typeHtml = `<span class="text-prm-custom"> Tax</span>`;
+                    typeHtml = `<span class="d-block text-primary"style="font-size:12px;""> Tax</span>`;
                 } else if (val == 2) {
-                    typeHtml = `<span class="text-prm-custom"> No Tax</span>`;
+                    typeHtml = `<span class="d-block text-primary"style="font-size:12px;""> No Tax</span>`;
                 } else {
-                    typeHtml = `<span class="text-prm-custom"> Commercial</span>`;
+                    typeHtml = `<span class="d-block text-primary"style="font-size:12px;""> Commercial</span>`;
                 }
                 return `
                     <div class="d-flex flex-column">
@@ -54,7 +54,7 @@ var InvoiceComponent = (() => {
                 return `
                         <div class="d-flex flex-column">
                             <span>${data.tenant_name ?? ""}</span>
-                            <span>${data.tenant_phone ?? ""}</span>
+                            <span class="d-block text-primary"style="font-size:12px;">${data.tenant_phone ?? ""}</span>
                         </div>`;
             }
         },

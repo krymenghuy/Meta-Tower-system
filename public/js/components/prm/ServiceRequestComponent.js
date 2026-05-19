@@ -31,12 +31,12 @@ var ServiceRequestComponent = (function () {
             data: (data) => {
                 return ` <div class="d-flex text-nowrap align-items-center gap-2">
                 <div>
-                    <span class="text-prm-custom d-block">
+                    <span class="text-prm-custom d-block text-capitalize">
                         ${data.tenant_name ?? ''}
                     </span>
-                    <span class="d-block text-primary">
+                    <small class="d-block text-primary">
                         ${data.space_code ?? ""}
-                    </span>
+                    </small>
                 </div>
             </div>`;
             }
@@ -46,7 +46,7 @@ var ServiceRequestComponent = (function () {
             className: "align-middle text-nowrap",
             data: (data) =>
                 `<span class="d-block text-prm-custom text-nowrap">${data.service_category ?? ""}</span>
-                 <span class="d-block text-prm-custom text-nowrap">${data.service_name ?? ""}</span>`,
+                 <small class="d-block text-primary text-nowrap">${data.service_name ?? ""}</small>`,
         },
         {
             transTitle: "titles.Charge As",
@@ -107,9 +107,9 @@ var ServiceRequestComponent = (function () {
                 return `
                     <div class="d-flex flex-column align-items-start">
                         <span class="text-prm-custom text-nowrap">${data.scheduled_date ?? ''}</span>
-                        <span class="text-primary text-nowrap">
+                        <small class="text-primary text-nowrap">
                             Start Time: ${formatTime(data.start_time)}
-                        </span>
+                        </small>
                     </div>
                 `;
             }
@@ -711,7 +711,7 @@ const CreateServiceRequestDialog = (() => {
                             .then((res) => {
                                 if (res.status_code === 200) {
                                     me.hide(true, data);
-                                    cv_interact.success(data.id ? "Updated!" : "Created!");
+                                    cv_interact.success(data.id ? "Updated!" : "Service Request has been created.");
                                 } else {
                                     cv_interact.error(res.error_message || saveFailedMessage);
                                 }

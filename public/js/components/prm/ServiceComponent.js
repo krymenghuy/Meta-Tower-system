@@ -26,7 +26,7 @@ var ServiceComponent = (() => {
                 return `<div class="d-flex flex-column">
                     <span class="text-primary-custom">${data.name ?? ''}</span>
                     <hr class="m-0 border border-secondary border-3 opacity-75">
-                    <span class="text-muted small">${data.service_level ?? ''}</span>
+                    <small class=" text-info">${data.service_level ?? ''}</small>
                 </div>`;
             }
         },
@@ -51,7 +51,7 @@ var ServiceComponent = (() => {
 
                 const unitMap = {
                     per_unit: "Unit",
-                    one_time: "Once Time",
+                    one_time: "Once",
                     hour: "Hourly",
                     month: "Monthly",
                 };
@@ -70,7 +70,7 @@ var ServiceComponent = (() => {
 
                 const unitMap = {
                     per_unit: "Unit",
-                    one_time: "Once Time",
+                    one_time: "Once",
                     hour: "Hourly",
                     month: "Monthly"
                 };
@@ -79,7 +79,7 @@ var ServiceComponent = (() => {
                 const formattedPrice = VSMoney.formatAmount(data.price, currency);
 
                 return `
-                    <span class="text-nowrap text-info">
+                    <span class="text-nowrap" style="color: #0C447C">
                         ${formattedPrice}
                         ${unit ? `<small class="text-muted"> / ${unit}</small>` : ''}
                     </span>

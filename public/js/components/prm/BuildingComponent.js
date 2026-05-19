@@ -21,7 +21,7 @@ var BuildingComponent = ( () => {
                     <!-- <img class="btn-view-member-photo" data-id="${data.id}" src="${data.image_url || `${main_view.base_url}/assets/images/meta/building-default.jfif`}" alt="" style="width: 50px; height: 50px; border-radius: 6px; margin-right: 10px; object-fit: cover;"/> -->
 
                   <div class="d-flex flex-column">
-                    <span class="text-prm-custom fs-bold d-inline-block" style="min-width:150px; ">
+                    <span class="text-prm-custom fs-bold d-inline-block text-capitalize" style="min-width:150px; ">
                         ${data.name ?? ''}
                     </span>
                     <small class="text-golden text-break" style="max-width:250px;">
@@ -36,7 +36,7 @@ var BuildingComponent = ( () => {
             className: "align-middle",
             data: (data) =>{
                 return `<div class="d-flex flex-column">
-                    <span class="text-capitalize text-start text-prm-custom">${data.prefix ?? '__'}</span></span>
+                    <span class="text-start text-prm-custom">${data.prefix ?? '__'}</span></span>
                 </div>`;
             }
         },

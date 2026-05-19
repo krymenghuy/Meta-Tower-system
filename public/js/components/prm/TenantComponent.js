@@ -61,7 +61,7 @@ var TenantComponent = new (function () {
                 return `
                     <div class="text-prm-custom" style="width:120px;">
                         <span class="text-wrap text-break text-capitalize" style ="word-break:break-word;">${data.name ?? ""}</span>
-                        <small class="d-block text-muted">${sexLabel}</small>
+                        <span class="d-block text-primary" style="font-size:12px;">${sexLabel}</span>
                     </div>
                 `;
             },
@@ -70,29 +70,29 @@ var TenantComponent = new (function () {
             transTitle: "titles.Date of Birth",
             className: "align-middle ",
             data: (data) => {
-                return `<span class="text-prm-custom text-nowrap">${data.date_of_birth ?? ""}</span>`;
+                return `<span class="text-prm-custom text-nowrap">${data.date_of_birth ?? "_"}</span>`;
             },
         },
         {
             transTitle: "titles.National ID",
             className: "align-middle",
             data: (data) => {
-                return `<span class="text-prm-custom text-nowrap">${data.national_id ?? "N/A"}</span>`;
+                return `<span class="text-prm-custom text-nowrap">${data.national_id ?? "_"}</span>`;
             },
         },
         {
             transTitle: "titles.Passport",
             className: "align-middle",
             data: (data) => {
-                return `<span class="text-prm-custom text-nowrap">${data.passport_number ?? "N/A"}</span>`;
+                return `<span class="text-prm-custom text-nowrap">${data.passport_number ?? "_"}</span>`;
             },
         },
         {
             transTitle: "titles.Contact Info",
             className: "align-middle",
             data: (data) =>
-                `<span class="d-block text-prm-custom"><i class="fa-solid text-success px-1 fa-phone" style="font-size:12px;"></i> ${data.phone_number ?? "N/A"}</span>
-                 <span class="d-block text-primary"><i class="fa-solid text-primary px-1 fa-envelope" style="font-size:12px;"></i> ${data.email ?? "N/A"}</span>`,
+                `<span class="d-block text-prm-custom"><i class="fa-solid text-success px-1 fa-phone" style="font-size:12px;"></i> ${data.phone_number ?? "_"}</span>
+                 <span class="d-block text-primary"><i class="fa-solid text-primary px-1 fa-envelope" style="font-size:12px;"></i> ${data.email ?? "_"}</span>`,
         },
         {
             transTitle: "titles.Status",
@@ -522,11 +522,11 @@ var TenantComponent = new (function () {
                                 <div class="card_container" style="max-width: 250px;">
                                     <p class="ps-3 mb-2 text-prm-custom">
                                         <i class="fa-solid fa-hashtag me-2 text-muted"></i>
-                                        <span>${d.code ?? "N/A"}</span>
+                                        <span>${d.code ?? "_"}</span>
                                     </p>
                                     <p class="ps-3 mb-2 text-prm-custom">
                                         <i class="fa-regular fa-calendar me-2 text-muted"></i>
-                                        <span>${d.date_of_birth ?? "N/A"}</span>
+                                        <span>${d.date_of_birth ?? "_"}</span>
                                     </p>
                                     <p class="ps-3 mb-2 text-prm-custom">
                                         <i class="fa-solid fa-phone me-2 text-muted"></i>
@@ -534,7 +534,7 @@ var TenantComponent = new (function () {
                                     </p>
                                     <p class="ps-3 mb-2 text-prm-custom">
                                         <i class="fa-solid fa-at me-2 text-muted"></i>
-                                        ${d.email || "N/A"}
+                                        ${d.email || "_"}
                                     </p>
 
 
@@ -811,13 +811,13 @@ var TenantComponent = new (function () {
                                 <div class="col-6">
                                     <div class="p-3 bg-light rounded">
                                         <div class="text-muted small">ID</div>
-                                        <div class="">${data.code ?? "N/A"}</div>
+                                        <div class="">${data.code ?? "_"}</div>
                                     </div>
                                 </div>
                                 <div class="col-6">
                                     <div class="p-3 bg-light rounded">
                                         <div class="text-muted small">Unit</div>
-                                        <div class="">${data.space_code ?? "N/A"}</div>
+                                        <div class="">${data.space_code ?? "_"}</div>
                                     </div>
                                 </div>
                                 <div class="col-12 mb-2">
@@ -826,11 +826,11 @@ var TenantComponent = new (function () {
                                         <div class="row text-center">
                                             <div class="col-6 border-end border-info">
                                                 <div class="text-muted mb-1 small">Start Date</div>
-                                                <div class="small">${data.start_date ?? "N/A"}</div>
+                                                <div class="small">${data.start_date ?? "_"}</div>
                                             </div>
                                             <div class="col-6">
                                                 <div class="text-muted mb-1 small">End Date</div>
-                                                <div class="small">${data.end_date ?? "N/A"}</div>
+                                                <div class="small">${data.end_date ?? "_"}</div>
                                             </div>
                                         </div>
                                     </div>
@@ -866,12 +866,12 @@ var TenantComponent = new (function () {
                                 <div class="col-md-4"><small class="text-muted">Gender</small><div class="">${data.sex == "M" ? "Male" : data.sex == "F" ? "Female" : ""}</div></div>
                                 <div class="col-md-4"><small class="text-muted">Date of Birth</small><div class="">${data.date_of_birth ?? ""}</div></div>
                                 <div class="col-md-4"><small class="text-muted">Legal Name</small><div class="">${data.legal_name ?? ""}</div></div>
-                                <div class="col-md-4"><small class="text-muted">National ID</small><div class="">${data.national_id ?? "N/A"}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Passport Number</small><div class="">${data.passport_number ?? "N/A"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">National ID</small><div class="">${data.national_id ?? "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Passport Number</small><div class="">${data.passport_number ?? "_"}</div></div>
                                 <div class="col-md-4"><small class="text-muted">Phone</small><div class=" text-primary">${data.phone_number ?? ""}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Email</small><div class=" text-primary">${data.email ?? "N/A"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Email</small><div class=" text-primary">${data.email ?? "_"}</div></div>
                                 <div class="col-md-4"><small class="text-muted">Relationship</small><div class="">Partner</div></div>
-                                <div class="col-12"><small class="text-muted">Address</small><div class="text-prm-custom text-capitalize">${data.address ?? "N/A"}</div></div>
+                                <div class="col-12"><small class="text-muted">Address</small><div class="text-prm-custom text-capitalize">${data.address ?? "_"}</div></div>
                             </div>
                         </div>
 
@@ -892,7 +892,7 @@ var TenantComponent = new (function () {
                                 <table class="table align-middle">
                                     <thead class="bg-light">
                                         <tr class="text-uppercase">
-                                            <th class="border-0 ps-3" style="letter-spacing: 0.05em;">Document Type</th>
+                                            <th class="border-0 ps-3" style="letter-spacing: 0.05em;">Type</th>
                                             <th class="border-0">File Name</th>
                                             <th class="border-0">File Type</th>
                                             <th class="border-0">Remark</th>
@@ -1172,9 +1172,9 @@ var TenantComponent = new (function () {
                                 <div class="col-md-4"><small class="text-muted">National ID</small><div class="">${data.national_id ?? ""}</div></div>
                                 <div class="col-md-4"><small class="text-muted">Passport Number</small><div class="">${data.passport_number ?? ""}</div></div>
                                 <div class="col-md-4"><small class="text-muted">Phone</small><div class="">${data.phone_number ?? ""}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Email</small><div class=" text-primary">${data.email ?? "N/A"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Email</small><div class=" text-primary">${data.email ?? "_"}</div></div>
                                 <div class="col-md-4"><small class="text-muted">Relationship</small><div class="">Partner</div></div>
-                                <div class="col-12"><small class="text-muted">Address</small><div class="text-prm-custom text-capitalize">${data.address ?? "N/A"}</div></div>
+                                <div class="col-12"><small class="text-muted">Address</small><div class="text-prm-custom text-capitalize">${data.address ?? "_"}</div></div>
                             </div>
                         </div>`;
                     div.innerHTML = html;
@@ -1310,8 +1310,8 @@ var TenantComponent = new (function () {
                         <table class="table align-middle mb-3">
                             <thead class="bg-light">
                                 <tr class="text-uppercase small">
-                                    <th class="border-0 ps-3" style="letter-spacing: 0.05em;">Document Type</th>
-                                    <th class="border-0">File</th>
+                                    <th class="border-0 ps-3" style="letter-spacing: 0.05em;">Type</th>
+                                    <th class="border-0">File Name</th>
                                     <th class="border-0">File Type</th>
                                     <th class="border-0">Remark</th>
                                     <th class="border-0 text-start">Actions</th>
