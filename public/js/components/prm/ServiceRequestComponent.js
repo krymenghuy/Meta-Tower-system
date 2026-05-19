@@ -31,12 +31,12 @@ var ServiceRequestComponent = (function () {
             data: (data) => {
                 return ` <div class="d-flex text-nowrap align-items-center gap-2">
                 <div>
-                    <span class="text-prm-custom d-block">
+                    <span class="text-prm-custom d-block text-capitalize">
                         ${data.tenant_name ?? ''}
                     </span>
-                    <span class="d-block text-primary">
+                    <small class="d-block text-primary">
                         ${data.space_code ?? ""}
-                    </span>
+                    </small>
                 </div>
             </div>`;
             }
@@ -46,13 +46,13 @@ var ServiceRequestComponent = (function () {
             className: "align-middle text-nowrap",
             data: (data) =>
                 `<span class="d-block text-prm-custom text-nowrap">${data.service_category ?? ""}</span>
-                 <span class="d-block text-prm-custom text-nowrap">${data.service_name ?? ""}</span>`,
+                 <small class="d-block text-primary text-nowrap">${data.service_name ?? ""}</small>`,
         },
         {
             transTitle: "titles.Charge As",
             className: "align-middle text-nowrap",
             data: (data) => {
-                return `<span class="badge text-success bg-success-subtle border border-success text-nowrap" style="min-width:70px;">${data.unit_type}</span>`;
+                return `<span class="badge text-primary bg-primary-subtle border border-primary text-nowrap" style="min-width:70px;">${data.unit_type}</span>`;
             }
         },
         {
@@ -107,9 +107,9 @@ var ServiceRequestComponent = (function () {
                 return `
                     <div class="d-flex flex-column align-items-start">
                         <span class="text-prm-custom text-nowrap">${data.scheduled_date ?? ''}</span>
-                        <span class="text-primary text-nowrap">
+                        <small class="text-primary text-nowrap">
                             Start Time: ${formatTime(data.start_time)}
-                        </span>
+                        </small>
                     </div>
                 `;
             }
@@ -134,8 +134,9 @@ var ServiceRequestComponent = (function () {
                 const statusId = Number(data.status_id) || 0;
                 const statusClasses = {
                     pending: 'badge text-warning bg-warning-subtle border border-warning',
-                    accepted: 'badge text-primary bg-primary-subtle border border-primary',
-                    rejected: 'badge text-danger bg-danger-subtle border border-danger'
+                    accepted: 'badge text-success bg-success-subtle border border-success',
+                    expired: 'badge text-dark bg-dark-subtle border border-dark',
+                    rejected: 'badge text-danger bg-danger-subtle border border-danger',
                 };
                 const cls = statusClasses[status] ?? 'badge text-dark bg-light border';
                 const isEditable = status === 'pending';
@@ -711,7 +712,7 @@ const CreateServiceRequestDialog = (() => {
                             .then((res) => {
                                 if (res.status_code === 200) {
                                     me.hide(true, data);
-                                    cv_interact.success(data.id ? "Updated!" : "Created!");
+                                    cv_interact.success(data.id ? "Updated!" : "Service Request has been created.");
                                 } else {
                                     cv_interact.error(res.error_message || saveFailedMessage);
                                 }

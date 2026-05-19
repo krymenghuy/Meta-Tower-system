@@ -27,7 +27,7 @@ var MaintenanceComponent = (() => {
             data: (data) => {
                 const space = data.space_id && data.space_code ? data.space_code : null;
                 const amenityCode = data.amenity_id ? (data.amenity_code || data.amenity_name || "") : null;
-                if (space) return `<div class="d-flex flex-column align-items-start"><span class="text-nowrap">${space}</span><span class="text-muted small">Space</span></div>`;
+                if (space) return `<div class="d-flex flex-column align-items-start"><span class="text-nowrap">${space}</span><small class="text-primary">Space</small></div>`;
                 if (amenityCode) return `<div class="d-flex flex-column align-items-start"><span class="text-nowrap">${amenityCode}</span><span class="text-muted small">Amenity</span></div>`;
                 return `<span class="text-nowrap">—</span>`;
             }
@@ -64,7 +64,7 @@ var MaintenanceComponent = (() => {
                         ${same ? s.d : `${s.d} <i class="fa fa-arrow-right mx-1"></i> ${e.d}`}
                     </div>
                     ${same && (s.t || e.t) ? `
-                    <div class="text-primary mt-1">
+                    <div class="d-block text-primary mt-1" style="font-size:12px;">
                         ${s.t || "—"} <i class="fa fa-arrow-right mx-1"></i> ${e.t || "—"}
                     </div>` : ""}
                 </div>`;

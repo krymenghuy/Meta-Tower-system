@@ -1,7 +1,7 @@
 "use strict";
 var ItemsComponent = (() => {
     const mThis = {};
-    mThis.title_prop = "Items";
+    mThis.title_prop = "Purchase Items";
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_item_component");
     mThis.btnAdd = mThis.self.querySelector("#_btnItem");

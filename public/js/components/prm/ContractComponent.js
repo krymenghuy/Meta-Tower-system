@@ -27,8 +27,7 @@ var ContractComponent = new (function () {
                 return `
                         <div class="d-flex flex-column">
                             ${data.tenant_name ?? ''}
-                            <hr class="m-0 border border-secondary border-3 opacity-75">
-                           ${data.phone_number ?? ''}
+                            <span class="d-block text-primary" style="font-size:12px;">${data.phone_number ?? ''}</span>
                         </div>`;
                 }
         },
@@ -79,7 +78,7 @@ var ContractComponent = new (function () {
                 if (data.price_type === 'total') {
                     return `
                         <span class="text-nowrap w-semibold">${price} <small class="text-nowrap text-muted">/mon</small></span>
-                        <div class="text-nowrap text-muted small">Whole Room</div>
+                        <span class="d-block text-primary" style="font-size:12px;">Whole Room</span>
                     `;
                 }
 
@@ -88,9 +87,7 @@ var ContractComponent = new (function () {
                             ${price}
                         <small class="text-nowrap text-muted">/sqm</small>
                     </span>
-                    <div class="text-nowrap text-muted small">
-                        ${data.sqm_size ?? '-'} sqm
-                    </div>
+                    <span class="d-block text-primary" style="font-size:12px;">${data.sqm_size ?? '-'} sqm</span>
                 `;
             }
         },

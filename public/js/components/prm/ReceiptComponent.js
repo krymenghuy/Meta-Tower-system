@@ -63,8 +63,7 @@ var ReceiptComponent = new (function() {
                 return `
                         <div class="d-flex flex-column">
                             ${data.tenant_name ?? ""}
-                            <hr class="m-0 border border-secondary border-3 opacity-75">
-                            ${data.tenant_phone ?? ""}
+                            <span class="d-block text-primary"style="font-size:12px;">${data.tenant_phone ?? ""}</span>
                         </div>`;
 
             }
@@ -90,7 +89,7 @@ var ReceiptComponent = new (function() {
             data: data => {
                 return `
                     <div class="text-primary-custom" style="width:200px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.payment_methods}</span>
+                        <small class="text-wrap text-break" style ="word-break:break-word;">${data.payment_methods}</small>
                     </div>`;
             }
         },
@@ -144,8 +143,8 @@ var ReceiptComponent = new (function() {
             data: data => {
                 return `
                     <div class="text-primary-custom" style="width:200px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ??
-                            "..."}</span>
+                        <small class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ??
+                            "..."}</small>
                     </div>
                 `;
             }
