@@ -2468,9 +2468,7 @@ const InvoiceDialog = (() => {
                             if (unit === "month") {
                                 remarkStr += ` - ${qtyMonths} Month${
                                     qtyMonths > 1 ? "s" : ""
-                                } (${formatDt(data.start_date)} to ${formatDt(
-                                    data.end_date
-                                )})`;
+                                } `;
                             }
 
                             const dataToAdd = {
@@ -2632,7 +2630,7 @@ const InvoiceDialog = (() => {
                                     </div>
 
                                 </div>
-                                <div class="display-none material-input outlined">
+                                <div class=" material-input outlined" style="display:none;">
                                     <textarea class="data-input form-control" data-field="remark" name="remark" rows="2" placeholder=" "></textarea>
                                     <label style="color:#777;">Remark</label>
                                 </div>
@@ -2781,7 +2779,6 @@ const InvoiceDialog = (() => {
                             // ✅ Fixed: build once, reuse in addRow
                             const dataToAdd = {
                                 item_id: selectedRequest.request_id,
-                                // item_name: `${selectedRequest.code}`,
                                 type: "Service Request",
                                 price: Number(selectedRequest.price),
                                 qty:
@@ -2789,7 +2786,7 @@ const InvoiceDialog = (() => {
                                         ? selectedRequest.duration_hours || 0
                                         : 1,
                                 unit_type: `${selectedRequest.unit_type || 0}`,
-                                remarks: data.remark || requestDisplayName,
+                                remarks: `Service Request:  ${requestDisplayName}`,
                                 space_id: selectedRequest.space_id,
                                 space_code: selectedRequest.space_code,
                                 discount: Number(data.discount) || 0,
