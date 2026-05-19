@@ -96,10 +96,21 @@ class Invoice extends VSModel
         if (!$dueDT) {
             return DV::error('Invalid due date.');
         }
+        $issueDate = $inputs['issue_date'];
+           $issueDT   = strtotime($issueDate);
+        if (!$issueDT) {
+            return DV::error('Invalid issue date.');
+        }
 
         // if ($dueDT < $todayDT) {
         //     return DV::error('Due date cannot be in the past.');
         // }
+
+        \Log::info("Due date", ["dueDT" => $dueDT, "issueDate" => $inputs['issue_date']]);
+         
+        if($dueDT < $issueDT){
+            return DV::error('Due date cannot be before the issue date.');
+        }
 
         \Log::info("Due date validation passed", $inputs);
 
@@ -585,7 +596,7 @@ class Invoice extends VSModel
             $i = setOfficialDates($i, ['end_date', 'start_date'], [], []);
         }
         if ($header) {
-            setOfficialDates($header, ['due_date', 'start_date'], [], []);
+            setOfficialDates($header, ['due_date', 'issue_date' ,'start_date'], [], []);
         }
         return $header;
     }
