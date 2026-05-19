@@ -30,7 +30,7 @@ var BillComponent = (() => {
             className: "align-middle text-nowrap",
             data: (data) => {
                 return `<span class="d-block text-prm-custom">${data.ref_no ?? "__"}</span>
-                        <span class="d-block text-prm-custom text-primary">${data.bill_date ?? "N/A"}</span>`;
+                        <small class="d-block text-prm-custom text-primary">${data.bill_date ?? "N/A"}</small>`;
             },
         },
         // {
@@ -52,7 +52,7 @@ var BillComponent = (() => {
             className: "align-middle text-nowrap",
             data: (data) => {
                 return `<span class="d-block text-prm-custom text-capitalize">${data.vendor_name}</span>
-                <span class="d-block text-primary ">${data.phone_number}</span>`;
+                <small class="d-block text-primary ">${data.phone_number}</small>`;
             },
         },
         {
@@ -111,7 +111,7 @@ var BillComponent = (() => {
             data: (data) => {
                 return `
                     <div class="text-primary-custom" style="width:200px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.remark ?? " __"}</span>
+                        <small class="text-wrap text-break" style ="word-break:break-word;">${data.remark ?? " __"}</small>
                     </div>
                 `;
             },

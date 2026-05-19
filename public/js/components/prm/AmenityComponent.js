@@ -28,7 +28,7 @@ var AmenityComponent = (() => {
             transTitle: "titles.Name",
             className: "align-middle text-nowrap",
             data: (data) =>
-                `<div class="text-prm-custom text-capitalize" style="width:120px; ">
+                `<div class="text-prm-custom text-capitalize" style="width:170px; ">
                     <span class="text-wrap text-break" style ="word-break:break-word;">${data.name ?? ""}</span>
                 </div>`,
         },
@@ -60,7 +60,7 @@ var AmenityComponent = (() => {
             data: (data, index, tr) => {
                 return `
                     <div class="text-primary-custom" style="width:200px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.description ?? "__"}</span>
+                        <small class="text-wrap text-break" style ="word-break:break-word;">${data.description ?? "__"}</small>
                     </div>
                 `;
             },
