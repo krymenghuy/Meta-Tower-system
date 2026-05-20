@@ -754,7 +754,7 @@ const ActiveReservationDialog = (() => {
                 </td>
                 <td class="align-middle">${statusBadge(r.status_id, r.status)}</td>
                 <td class="align-middle">
-                    <small class="text-muted">${r.remarks ?? '—'}</small>
+                    <span class="text-muted">${r.remarks ?? '—'}</span>
                 </td>
             </tr>
         `).join('');

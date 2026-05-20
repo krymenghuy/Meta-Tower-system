@@ -119,30 +119,32 @@ var BillComponent = (() => {
             transTitle: "titles.Status",
             className: "align-middle text-nowrap text-center",
             data: (data) => {
-                const status_id = data.display_status_id ?? data.status_id;
-                let cls = "bg-secondary";
-                let icon = "bi bi-question-circle";
-
-                if (status_id == 4) {
-                    cls = "status-overdue";
-                    icon = "fa-solid fa-triangle-exclamation";
-                } else if (status_id == 3) {
-                    cls =
-                        "badge border border-warning text-warning bg-warning-subtle";
-                } else if (status_id == 2) {
-                    cls =
-                        "badge border border-success text-success bg-success-subtle";
-                } else if (status_id == 1) {
-                    cls =
-                        "badge border border-danger text-danger bg-danger-subtle";
-                }
-
+                const statusId = Number(
+                    data.display_status_id ?? data.status_id ?? 0,
+                );
+                const statusConfig = {
+                    1: {
+                        cls: "border border-danger text-danger bg-danger-subtle",
+                    },
+                    2: {
+                        cls: "border border-success text-success bg-success-subtle",
+                    },
+                    3: {
+                        cls: "border border-warning text-warning bg-warning-subtle",
+                    },
+                    4: {
+                        cls: " status-overdue",
+                    },
+                };
+                const currentStatus = statusConfig[statusId] ?? {
+                    cls: "bg-secondary text-white",
+                    icon: "fa-regular fa-circle-question",
+                };
                 return `
-                    <span class="${cls} text-capitalize d-inline-block text-center" style="min-width:90px">
-                        <i class="${icon}" style="font-size:10px;"></i>
-                        ${data.status ?? ""}
-                    </span>
-                `;
+        <span class="badge ${currentStatus.cls} text-capitalize d-inline-flex align-items-center justify-content-center px-3 py-2 gap-2" style="min-width:110px">
+            <i class="${currentStatus.icon}" style="font-size:12px;"></i>
+            ${data.status ?? "—"}
+        </span>`;
             },
         },
         {

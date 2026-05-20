@@ -2,7 +2,7 @@
     <div id="_divFilter_service" class="rounded-2 p-3 bg-white shadow-sm">
         <div class="row g-3 align-items-center">
             <div class="col-12 col-md-6 col-lg-3">
-                <input type="text" class="form-control rounded-2 pe-5 filter-field input-search" id="_search_service" placeholder="Search by name">
+                <input type="text" class="rounded-2 filter-field input-search" id="_search_service" placeholder="Search by name">
             </div>
             <div class="col-12 col-md-6 col-lg-3">
                 <select type="id" id="_service_category_id" class="data-input filter-field" data-field="category_id"></select>
@@ -23,6 +23,7 @@
                 </button>
             </div>
         </div>
+        
     </div>
     <div id="_service_list" class="mt-3 rounded-2"></div>
 </div>
