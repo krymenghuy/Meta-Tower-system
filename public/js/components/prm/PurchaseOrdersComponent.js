@@ -7,6 +7,7 @@ var PurchaseOrdersComponent = (() => {
     mThis.self = main_view.VSAppContent.querySelector("#_main_purchases_component");
     mThis.btnAdd = mThis.self.querySelector("#_btnPurchases");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_purchases");
+    mThis.elFilter_building = mThis.self.querySelector('#_po_building_id');
     mThis.elFilter_vendor = mThis.self.querySelector('#_po_vendor_id');
     mThis.elFilter_status = mThis.self.querySelector('#_po_status_id');
     mThis.elSearch = mThis.self.querySelector("#_po_search");
@@ -127,11 +128,13 @@ var PurchaseOrdersComponent = (() => {
         //         </div>`;
         //     }
         // },
-        {
+       {
             transTitle: 'titles.Last Updated',
             className: 'align-middle text-nowrap',
             data: (data) => `<div class="d-flex flex-column">
-                <span class="text-capitalize text-start text-prm-custom">${data.update_user ?? ''}</span>
+                <span class="text-capitalize text-start text-prm-custom">
+                    ${data.update_user ?? '_'} : ${data.building_name ?? '_'}
+                </span>
                 <span class="small text-muted">${data.updated_at ?? ''}</span>
             </div>`,
         },
@@ -209,6 +212,7 @@ var PurchaseOrdersComponent = (() => {
     };
 
     mThis.getFilterData = () => ({
+        building_id: mThis.elFilter_building.value,
         vendor_id: mThis.elFilter_vendor.value,
         status_id: mThis.elFilter_status.value,
         search_value: mThis.elSearch.value,
@@ -393,7 +397,14 @@ var PurchaseOrdersComponent = (() => {
                         </div>
                     </div>
                     <div class="col-md-5"></div>
+                    
                     <div class="col-md-3 mt-3 mt-md-0">
+                        <div class="d-flex align-items-center mb-2">
+                            <span class="fw-bold" style="min-width:90px;">Building</span>
+                            <span class="mx-2 fw-bold">:</span>
+                            <div class="w-100"><select  name="building_id" data-style="material" class="data-input form-control" data-field="building_id" placeholder=" " >
+                            </select></div>
+                        </div>
                         <div class="d-flex align-items-center mb-2">
                             <span class="fw-bold" style="min-width:90px;">PO Date</span>
                             <span class="mx-2 fw-bold">:</span>
@@ -406,9 +417,11 @@ var PurchaseOrdersComponent = (() => {
                     <div class="col-lg-12 my-3 d-flex justify-content-end">
                         <div name="div_purchase_summary"></div>
                     </div>
-                    <div class="vs-material-field">
-                        <textarea class="data-input form-control" data-field="remarks" name="remarks" rows="1"></textarea>
-                        <label>Remark</label>
+                    <div class="col-12">
+                        <div class="vs-material-field">
+                            <textarea class="data-input form-control" data-field="remarks" name="remarks" placeholder="" rows="1"></textarea>
+                            <label>Remarks</label>
+                        </div>
                     </div>
                 </div>`;
             },
@@ -662,6 +675,16 @@ var PurchaseOrdersComponent = (() => {
                         : '<h2 class="text-prm-custom text-start fw-bold">Purchase Order</h2>';
                 }
             },
+            configSelect: [
+                    
+                    {
+                        name: "building_id",
+                        data: "buildings",
+                        textField: "building",
+                        valueField: "id",
+                    },
+
+                ],
             prepareFormOptions: {
                 modifyTitle: "Modify Purchase Order",
                 createTitle: "Purchase Order",
@@ -701,6 +724,12 @@ var PurchaseOrdersComponent = (() => {
                     </div>
                     <div class="col-md-5"></div>
                     <div class="col-md-3 mt-3 mt-md-0">
+                        <div class="d-flex align-items-center mb-2">
+                            <span class="fw-bold" style="min-width:90px;">Building</span>
+                            <span class="mx-2 fw-bold">:</span>
+                            <div class="w-100"><select  name="building_id" data-style="material" class="data-input form-control" data-field="building_id" placeholder=" " >
+                            </select></div>
+                        </div>
                         <div class="d-flex align-items-center mb-2">
                             <span class="fw-bold" style="min-width:90px;">PO Date</span>
                             <span class="mx-2 fw-bold">:</span>
@@ -750,11 +779,11 @@ var PurchaseOrdersComponent = (() => {
                         const receivedQty = Number(data.received_qty || 0);
                         const qty = Number(data.qty || 0);
 
-                        const isFullyReceived = receivedQty > 0 && receivedQty === qty;
+                        const isFullyReceived = receivedQty > 0;
 
                         if (checkbox) {
                             checkbox.checked = isFullyReceived;
-                            // checkbox.disabled = isFullyReceived;
+                            checkbox.disabled = isFullyReceived;
                         }
 
                         if (receivedQtyInput) {
@@ -767,10 +796,6 @@ var PurchaseOrdersComponent = (() => {
                             checked: isFullyReceived
                         });
                     },
-                 
-                    // allItemsRendered:(this,ctx)=>{
-        
-                    // },
                     onItemChange: async (iMe,ctx) => {
                         const fieldName = ctx.fieldName;
                         const tr = ctx.tr;
@@ -781,11 +806,11 @@ var PurchaseOrdersComponent = (() => {
                             
                             const receivedQty = Number(item.received_qty || 0);
                             const qty = Number(item.qty || 0);
-                            const isFullyReceived = receivedQty > 0 && receivedQty === qty;
+                            const isFullyReceived = receivedQty > 0;
 
                             if (checkbox) {
                                 checkbox.checked = isFullyReceived;
-                                // checkbox.disabled = isFullyReceived;
+                                checkbox.disabled = isFullyReceived;
                             }
                         }
                     }
@@ -842,9 +867,10 @@ var PurchaseOrdersComponent = (() => {
                 console.log(4444,data);
                 
                 const isReadOnly = me.dataOptions.id > 0;
-                me.setReadOnly(isReadOnly,['po_date']);
+                me.setReadOnly(isReadOnly,['po_date','building_id']);
                 me.controls.vendor.disabled = isReadOnly;
                 me.controls.vendor.value = data.po_detail?.name || '';
+                me.controls.building_id.value = data.po_detail?.building_id || '';
                 me.purchaseItemsView.setSelectOptions('item_id', data.item_options, null);
                 const today = new Date();
 
@@ -861,6 +887,7 @@ var PurchaseOrdersComponent = (() => {
 
                     console.log(14,po);
                     me.controls.vendor.value = po.name || po.vendor_name || '';
+                    
                     if (po.vendor_id) {
                         me._selectedVendorId = po.vendor_id;
                         if (me.controls.vendor_id) me.controls.vendor_id.value = po.vendor_id;
@@ -876,6 +903,7 @@ var PurchaseOrdersComponent = (() => {
                     if (po.po_date && me.controls.po_date) {
                         me.controls.po_date.value = po.po_date;
                     }
+                    me.controls.building_id.value = po.building_id || '';
                     me.purchaseItemsView.setData(po);
 
                    
@@ -895,6 +923,15 @@ var PurchaseOrdersComponent = (() => {
                         : '<h2 class="text-prm-custom text-start fw-bold">Purchase Order</h2>';
                 }
             },
+            configSelect: [
+                {
+                    name: "building_id",
+                    data: "buildings",
+                    textField: "building",
+                    valueField: "id",
+                },
+
+            ],
             prepareFormOptions: {
                 modifyTitle: "Receive Purchase Order",
                 createTitle: "Purchase Order",
@@ -920,7 +957,6 @@ var PurchaseOrdersComponent = (() => {
                     <th class="text-nowrap">Unit Price</th>
                     <th class="text-nowrap">Order Qty</th>
                     <th class="text-nowrap">Received Qty</th>
-                    <th class="text-nowrap">Amount</th>
                     <th class="text-nowrap">Receiver</th>
                 </tr></thead>`;
 
@@ -937,7 +973,6 @@ var PurchaseOrdersComponent = (() => {
                             <td class="text-nowrap">${VSMoney.formatAmount(item.unit_price || 0, 'USD')}</td>
                             <td class="text-nowrap">${item.qty ?? "0"} <small class="text-golden text-capitalize">(${item.unit ?? 'pcs'})</small></td>
                             <td class="text-nowrap">${item.received_qty ?? "0"} <small class="text-golden text-capitalize">(${item.unit ?? 'pcs'})</small></td>
-                            <td class="text-nowrap">${VSMoney.formatAmount(item.total_price || 0, 'USD')}</td>
                             <td class="text-nowrap">
                                 <div class="d-flex flex-column">
                                     <span class="text-capitalize text-start">
@@ -960,6 +995,7 @@ var PurchaseOrdersComponent = (() => {
         vsapi.call(`${main_view.base_url}/prm/purchase/order/form-options`)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
+                VSUtil.setComboItems(mThis.elFilter_building, d.buildings, 'id', 'building', '', 'All Buildings', '');
                 VSUtil.setComboItems(mThis.elFilter_vendor, d.vendors, 'id', 'vendor', '', 'All Vendors', '');
                 VSUtil.setComboItems(mThis.elFilter_status, d.po_statuses, 'id', 'name', '', 'All Statuses', '');
                 if (typeof onFinish === 'function') onFinish();

@@ -5,6 +5,9 @@
                 <input type="text" class="rounded-2 filter-field input-search" id="_po_search" placeholder="Search by po number">
             </div>
             <div class="col-12 col-md-6 col-lg-2">
+                <select type="id" id="_po_building_id" class="data-input filter-field form-control" data-field="building_id"></select>
+            </div>
+            <div class="col-12 col-md-6 col-lg-2">
                 <select type="id" id="_po_vendor_id" class="data-input filter-field form-control" data-field="vendor_id"></select>
             </div>
              <div class="col-12 col-md-6 col-lg-2">
