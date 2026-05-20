@@ -19,7 +19,7 @@ var AmenityComponent = (() => {
             className: "align-middle text-nowrap text-capitalize",
         },
         {
-            transTitle: "titles.Code",
+            transTitle: "titles.Unit",
             className: "align-middle text-nowrap",
             data: (data) =>
             `<span class="text-prm-custom">${data.code ?? "_"}</span>`,
@@ -65,11 +65,13 @@ var AmenityComponent = (() => {
                 `;
             },
         },
-        {
+       {
             transTitle: "titles.Capacity",
-            className: "align-middle text-nowrap text-center",
+            className: "align-middle text-nowrap",
             data: (data) =>
-                `<span class="text-prm-custom">${data.max_capacity ?? "_"}</span> <small class="text-muted">PAX/Room</small>`,
+                data.max_capacity != null
+                    ? `<span class="text-prm-custom">${data.max_capacity}</span> <small class="text-muted">PAX/Room</small>`
+                    : `<span class="text-prm-custom">_</span>`,
         },
         {
             transTitle: "titles.Bookable",
@@ -742,15 +744,15 @@ const ActiveReservationDialog = (() => {
         }
         tbody.innerHTML = rows.map(r => `
             <tr>              
-                <td class="align-middle text-center">
+                <td class="align-middle">
                     <span class="d-block text-prm-custom text-capitalize">${r.tenant_name ?? ''}</span>
                     <small class="text-muted">${r.phone_number ?? ''}</small>
                 </td>
-                <td class="align-middle text-center">
+                <td class="align-middle">
                     <span class="d-block text-prm-custom">${r.booking_date ?? ''}</span>
                     <small class="text-primary">${to12h(r.start_time)} – ${to12h(r.end_time)}</span>
                 </td>
-                <td class="align-middle text-center">${statusBadge(r.status_id, r.status)}</td>
+                <td class="align-middle">${statusBadge(r.status_id, r.status)}</td>
                 <td class="align-middle">
                     <small class="text-muted">${r.remarks ?? '—'}</small>
                 </td>
@@ -789,10 +791,10 @@ const ActiveReservationDialog = (() => {
                         <table class="table table-sm table--white rounded-2 overflow-hidden">
                             <thead class="header-uppercase" >
                                 <tr>
-                                    <th class="text-center" style="width:100px;">Tenant</th>
-                                    <th class="text-center" style="width: 150px;">Schedule Date</th>
-                                    <th class="text-center" style="width:80px;">Status</th>
-                                    <th class="text-center" style="width:260px;">Remark</th>
+                                    <th class="text-start" style="width:100px;">Tenant</th>
+                                    <th class="text-start" style="width: 150px;">Schedule Date</th>
+                                    <th class="text-start" style="width:80px;">Status</th>
+                                    <th class="text-start" style="width:260px;">Remark</th>
                                 </tr>
                             </thead>
                             <tbody id="_arv_tbody"></tbody>

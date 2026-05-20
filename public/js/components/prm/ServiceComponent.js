@@ -25,8 +25,8 @@ var ServiceComponent = (() => {
             data: (data) => {
                 return `<div class="d-flex flex-column">
                     <span class="text-primary-custom">${data.name ?? ''}</span>
-                    <hr class="m-0 border border-secondary border-3 opacity-75">
-                    <small class=" text-info">${data.service_level ?? ''}</small>
+                    
+                    <small class=" text-muted">${data.service_level ?? ''}</small>
                 </div>`;
             }
         },
