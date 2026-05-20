@@ -45,7 +45,7 @@ var TenantComponent = new (function () {
             transTitle: "titles.Code",
             className: "align-middle",
             data: (data) => {
-                return `<span class="text-prm-custom text-nowrap">${data.code ?? ""}</span>`;
+                return `<span class="text-prm-custom text-nowrap">${data.code ?? "_"}</span>`;
             },
         },
         {
@@ -57,10 +57,10 @@ var TenantComponent = new (function () {
                         ? "Male"
                         : data.sex === "F"
                           ? "Female"
-                          : "Other";
+                          : "_";
                 return `
                     <div class="text-prm-custom" style="width:120px;">
-                        <span class="text-wrap text-break text-capitalize" style ="word-break:break-word;">${data.name ?? ""}</span>
+                        <span class="text-wrap text-break text-capitalize" style ="word-break:break-word;">${data.name ?? "_"}</span>
                         <span class="d-block text-primary" style="font-size:12px;">${sexLabel}</span>
                     </div>
                 `;
@@ -862,13 +862,13 @@ var TenantComponent = new (function () {
                                 <i class="fa fa-user me-2 text-primary"></i> Personal Information
                             </h5>
                             <div class="row g-4 mb-5">
-                                <div class="col-md-4"><small class="text-muted">Name</small><div class="text-capitalize">${data.name ?? ""}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Gender</small><div class="">${data.sex == "M" ? "Male" : data.sex == "F" ? "Female" : ""}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Date of Birth</small><div class="">${data.date_of_birth ?? ""}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Legal Name</small><div class="">${data.legal_name ?? ""}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Name</small><div class="text-capitalize">${data.name ?? "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Gender</small><div class="">${data.sex == "M" ? "Male" : data.sex == "F" ? "Female" : "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Date of Birth</small><div class="">${data.date_of_birth ?? "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Legal Name</small><div class="">${data.legal_name ?? "_"}</div></div>
                                 <div class="col-md-4"><small class="text-muted">National ID</small><div class="">${data.national_id ?? "_"}</div></div>
                                 <div class="col-md-4"><small class="text-muted">Passport Number</small><div class="">${data.passport_number ?? "_"}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Phone</small><div class=" text-primary">${data.phone_number ?? ""}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Phone</small><div class=" text-primary">${data.phone_number ?? "_"}</div></div>
                                 <div class="col-md-4"><small class="text-muted">Email</small><div class=" text-primary">${data.email ?? "_"}</div></div>
                                 <div class="col-md-4"><small class="text-muted">Relationship</small><div class="">Partner</div></div>
                                 <div class="col-12"><small class="text-muted">Address</small><div class="text-prm-custom text-capitalize">${data.address ?? "_"}</div></div>
@@ -1169,13 +1169,13 @@ var TenantComponent = new (function () {
                     html += `<div class="tab-pane py-2 active" id="overview_tenant_detail">
                             <h5 class="fw-bold mb-2"><i class="fa fa-user me-1 text-primary"></i> Personal Information</h5>
                             <div class="row g-4 mb-5">
-                                <div class="col-md-4"><small class="text-muted">Name</small><div class="">${data.name ?? ""}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Sex</small><div class="">${data.sex == "M" ? "Male" : data.sex == "F" ? "Female" : ""}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Date of Birth</small><div class="">${data.date_of_birth ?? ""}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Name</small><div class="">${data.name ?? "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Sex</small><div class="">${data.sex == "M" ? "Male" : data.sex == "F" ? "Female" : "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Date of Birth</small><div class="">${data.date_of_birth ?? "_"}</div></div>
                                 <div class="col-md-4"><small class="text-muted">Legal Name</small><div class="">${data.legal_name ?? ""}</div></div>
-                                <div class="col-md-4"><small class="text-muted">National ID</small><div class="">${data.national_id ?? ""}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Passport Number</small><div class="">${data.passport_number ?? ""}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Phone</small><div class="">${data.phone_number ?? ""}</div></div>
+                                <div class="col-md-4"><small class="text-muted">National ID</small><div class="">${data.national_id ?? "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Passport Number</small><div class="">${data.passport_number ?? "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Phone</small><div class="">${data.phone_number ?? "_"}</div></div>
                                 <div class="col-md-4"><small class="text-muted">Email</small><div class=" text-primary">${data.email ?? "_"}</div></div>
                                 <div class="col-md-4"><small class="text-muted">Relationship</small><div class="">Partner</div></div>
                                 <div class="col-12"><small class="text-muted">Address</small><div class="text-prm-custom text-capitalize">${data.address ?? "_"}</div></div>
@@ -1261,7 +1261,7 @@ var TenantComponent = new (function () {
                         </td>
                         <td style="width: 30%; height: 65px; vertical-align: middle;">
                             <span class="text-dark">
-                                ${doc.remarks || ""}
+                                ${doc.remarks || "_"}
                             </span>
                         </td>
                         <td class="text-end py-3 px-3" style="width: 10%; height: 55px; vertical-align: middle; ">
