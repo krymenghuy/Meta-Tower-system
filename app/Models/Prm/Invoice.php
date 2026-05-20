@@ -97,7 +97,7 @@ class Invoice extends VSModel
             return DV::error('Invalid due date.');
         }
         $issueDate = $inputs['issue_date'];
-           $issueDT   = strtotime($issueDate);
+        $issueDT   = strtotime($issueDate);
         if (!$issueDT) {
             return DV::error('Invalid issue date.');
         }
@@ -107,14 +107,14 @@ class Invoice extends VSModel
         // }
 
         \Log::info("Due date", ["dueDT" => $dueDT, "issueDate" => $inputs['issue_date']]);
-         
-        if($dueDT < $issueDT){
+
+        if ($dueDT < $issueDT) {
             return DV::error('Due date cannot be before the issue date.');
         }
 
         \Log::info("Due date validation passed", $inputs);
 
-         $inputs['due_amount'] = $inputs['amount_payable'];
+        $inputs['due_amount'] = $inputs['amount_payable'];
 
         DB::beginTransaction();
 
@@ -205,7 +205,7 @@ class Invoice extends VSModel
                     'amount'         => $inputs['amount'], // Use provided amount or calculated total
                     'discount_value' => $inputs['discount_value'],
                     'discount_type'  => $inputs['discount_type'],
-                    'due_amount'    => $inputs['amount_payable'], 
+                    'due_amount'    => $inputs['amount_payable'],
                     'amount_payable' =>  $inputs['amount_payable'], // This will now correctly save 209.7
                     'updated_at'     => now(),
                 ]);
@@ -418,26 +418,138 @@ class Invoice extends VSModel
 
         return $query->value('id');
     }
+    // public function getListPaginate($arr, $ss)
+    // {
+    //     $d = (object) $arr;
+    //     $search_value = $d->search_value ?? null;
+
+    //     $current_page = $d->current_page ?? 1;
+    //     $per_page = $d->per_page ?? 10;
+
+    //     if (!is_numeric($current_page) || !is_numeric($per_page)) {
+    //         return null;
+    //     }
+
+    //     $skip_rows = ($current_page - 1) * $per_page;
+
+    //     $query = DB::table('invoices as i')
+    //         ->leftJoin('tenants as t', 't.id', '=', 'i.tenant_id')
+    //         ->leftJoin('payment_statuses as ps', 'ps.id', '=', 'i.payment_status_id')
+    //         ->leftJoin('contracts as ct', 'ct.id', '=', 'i.contract_id')
+    //         ->leftJoin('building_spaces as bs', 'bs.id', '=', 'i.space_id')
+    //         ->leftJoin('invoice_items as ii', 'ii.invoice_id', '=', 'i.id')
+    //         ->select([
+    //             'i.id',
+    //             'i.amount_payable',
+    //             'i.due_amount',
+    //             'i.code',
+    //             'i.tenant_id',
+    //             'i.space_id',
+    //             'i.amount',
+    //             'i.paid_amount',
+    //             'i.invoice_type',
+    //             'i.due_date',
+    //             'i.general_remark',
+    //             'i.issue_date',
+    //             'i.discount_type',
+    //             'i.discount_value',
+    //             'i.start_time',
+    //             'i.created_at',
+    //             'i.updated_at',
+    //             'i.update_user',
+    //             'i.payment_status_id',
+    //             'i.contract_id',
+    //             't.name as tenant_name',
+    //             't.legal_name as tenant_legal_name',
+    //             't.phone_number as tenant_phone',
+    //             't.email as tenant_email',
+    //             'ps.name as payment_status_name',
+    //             'bs.code as space_code',
+    //             'ct.price as contract_price',
+    //             DB::raw("GROUP_CONCAT(DISTINCT ii.remarks SEPARATOR '; ') as remarks"),
+    //             DB::raw('(i.amount - COALESCE(i.paid_amount, 0)) as balance')
+    //         ]);
+
+    //     if ($search_value) {
+    //         $skip_rows = 0;
+    //         $search = '%' . $search_value . '%';
+    //         $query->where(function ($q) use ($search) {
+    //             $q->where('i.code', 'like', $search)
+    //                 ->orWhere('t.name', 'like', $search)
+    //                 ->orWhere('bs.code', 'like', $search);
+    //         });
+    //     }
+
+    //     if (!empty($d->tenant_id)) {
+    //         $query->where('i.tenant_id', $d->tenant_id);
+    //     }
+
+    //     if (!empty($d->payment_status_id)) {
+    //         $query->where('i.payment_status_id', $d->payment_status_id);
+    //     }
+
+    //     if (!empty($d->invoice_type)) {
+    //         $query->where('i.invoice_type', $d->invoice_type);
+    //     }
+
+    //     $query->groupBy('i.id', 't.name', 't.legal_name', 't.phone_number', 't.email', 'ps.name', 'bs.code', 'ct.price')
+    //         ->orderByDesc('i.id');
+
+    //     $clone_query = clone $query;
+    //     $count = $clone_query->get()->count();
+
+    //     $rows = $query->skip($skip_rows)->take($per_page)->get();
+
+    //     $now = \Carbon\Carbon::now('Asia/Phnom_Penh')->startOfDay();
+
+    //     foreach ($rows as $row) {
+    //         $dueDate = \Carbon\Carbon::parse($row->due_date, 'Asia/Phnom_Penh')->startOfDay();
+    //         if (in_array((int)$row->payment_status_id, [2, 3]) && $dueDate->lessThan($now)) {
+    //             $row->payment_status_id = 4;
+    //             $row->payment_status_name = 'Overdue';
+    //         }
+    //         $row = setOfficialDates($row, ['due_date', 'issue_date'], ['updated_at', 'created_at'], []);
+    //     }
+
+    //     return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+    // }
     public function getListPaginate($arr, $ss)
     {
         $d = (object) $arr;
+
         $search_value = $d->search_value ?? null;
+        $current_page = (int) ($d->current_page ?? 1);
+        $per_page = (int) ($d->per_page ?? 10);
 
-        $current_page = $d->current_page ?? 1;
-        $per_page = $d->per_page ?? 10;
-
-        if (!is_numeric($current_page) || !is_numeric($per_page)) {
+        if ($current_page < 1 || $per_page < 1) {
             return null;
         }
 
         $skip_rows = ($current_page - 1) * $per_page;
+
+
+        $driver = DB::connection()->getDriverName();
+
+        $remarksAgg = $driver === 'pgsql'
+            ? "STRING_AGG(DISTINCT remarks, '; ') as remarks"
+            : "GROUP_CONCAT(DISTINCT remarks SEPARATOR '; ') as remarks";
+
+        $invoiceItemsSub = DB::table('invoice_items')
+            ->select([
+                'invoice_id',
+                DB::raw($remarksAgg) // Aggregates remarks safely
+            ])
+            ->groupBy('invoice_id');
+
 
         $query = DB::table('invoices as i')
             ->leftJoin('tenants as t', 't.id', '=', 'i.tenant_id')
             ->leftJoin('payment_statuses as ps', 'ps.id', '=', 'i.payment_status_id')
             ->leftJoin('contracts as ct', 'ct.id', '=', 'i.contract_id')
             ->leftJoin('building_spaces as bs', 'bs.id', '=', 'i.space_id')
-            ->leftJoin('invoice_items as ii', 'ii.invoice_id', '=', 'i.id')
+            ->leftJoinSub($invoiceItemsSub, 'ii', function ($join) {
+                $join->on('ii.invoice_id', '=', 'i.id');
+            })
             ->select([
                 'i.id',
                 'i.amount_payable',
@@ -459,25 +571,30 @@ class Invoice extends VSModel
                 'i.update_user',
                 'i.payment_status_id',
                 'i.contract_id',
+
                 't.name as tenant_name',
                 't.legal_name as tenant_legal_name',
                 't.phone_number as tenant_phone',
                 't.email as tenant_email',
+
                 'ps.name as payment_status_name',
+
                 'bs.code as space_code',
+
                 'ct.price as contract_price',
-                DB::raw("GROUP_CONCAT(DISTINCT ii.remarks SEPARATOR '; ') as remarks"),
+
+                'ii.remarks',
+
                 DB::raw('(i.amount - COALESCE(i.paid_amount, 0)) as balance')
             ]);
 
-        if ($search_value) {
-            $skip_rows = 0;
-            $search = '%' . $search_value . '%';
-            $query->where(function ($q) use ($search) {
-                $q->where('i.code', 'like', $search)
-                    ->orWhere('t.name', 'like', $search)
-                    ->orWhere('bs.code', 'like', $search);
-            });
+        /*
+    |--------------------------------------------------------------------------
+    | Filters
+    |--------------------------------------------------------------------------
+    */
+        if (!empty($d->invoice_type)) {
+            $query->where('i.invoice_type', $d->invoice_type);
         }
 
         if (!empty($d->tenant_id)) {
@@ -488,31 +605,79 @@ class Invoice extends VSModel
             $query->where('i.payment_status_id', $d->payment_status_id);
         }
 
-        if (!empty($d->invoice_type)) {
-            $query->where('i.invoice_type', $d->invoice_type);
+        /*
+    |--------------------------------------------------------------------------
+    | Search
+    |--------------------------------------------------------------------------
+    */
+        if (!empty($search_value)) {
+            $skip_rows = 0;
+            $search = '%' . trim($search_value) . '%';
+
+            $query->where(function ($q) use ($search) {
+                $q->where('i.code', 'like', $search)
+                    ->orWhere('t.name', 'like', $search)
+                    ->orWhere('bs.code', 'like', $search);
+            });
         }
 
-        $query->groupBy('i.id', 't.name', 't.legal_name', 't.phone_number', 't.email', 'ps.name', 'bs.code', 'ct.price')
-            ->orderByDesc('i.id');
+        /*
+    |--------------------------------------------------------------------------
+    | Count
+    |--------------------------------------------------------------------------
+    */
+        $count = (clone $query)->distinct('i.id')->count('i.id');
+        /*
+    |--------------------------------------------------------------------------
+    | Fetch rows
+    |--------------------------------------------------------------------------
+    */
+        $rows = $query
+            ->orderByDesc('i.id')
+            ->skip($skip_rows)
+            ->take($per_page)
+            ->get();
 
-        $clone_query = clone $query;
-        $count = $clone_query->get()->count();
-
-        $rows = $query->skip($skip_rows)->take($per_page)->get();
-
+        /*
+    |--------------------------------------------------------------------------
+    | Post processing
+    |--------------------------------------------------------------------------
+    */
         $now = \Carbon\Carbon::now('Asia/Phnom_Penh')->startOfDay();
 
         foreach ($rows as $row) {
-            $dueDate = \Carbon\Carbon::parse($row->due_date, 'Asia/Phnom_Penh')->startOfDay();
-            if (in_array((int)$row->payment_status_id, [2, 3]) && $dueDate->lessThan($now)) {
-                $row->payment_status_id = 4;
-                $row->payment_status_name = 'Overdue';
+            if (!empty($row->due_date)) {
+                $dueDate = \Carbon\Carbon::parse(
+                    $row->due_date,
+                    'Asia/Phnom_Penh'
+                )->startOfDay();
+
+                if (
+                    in_array((int) $row->payment_status_id, [2, 3]) &&
+                    $dueDate->lessThan($now)
+                ) {
+                    $row->payment_status_id = 4;
+                    $row->payment_status_name = 'Overdue';
+                }
             }
-            $row = setOfficialDates($row, ['due_date', 'issue_date'], ['updated_at', 'created_at'], []);
+
+            setOfficialDates(
+                $row,
+                ['due_date', 'invoice_date'],
+                ['updated_at', 'created_at'],
+                []
+            );
         }
 
-        return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+        return new LengthAwarePaginator(
+            $rows,
+            $count,
+            $per_page,
+            $current_page
+        );
     }
+
+
 
     public static function getInvoiceDetails($id)
     {
@@ -596,7 +761,7 @@ class Invoice extends VSModel
             $i = setOfficialDates($i, ['end_date', 'start_date'], [], []);
         }
         if ($header) {
-            setOfficialDates($header, ['due_date', 'issue_date' ,'start_date'], [], []);
+            setOfficialDates($header, ['due_date', 'issue_date', 'start_date'], [], []);
         }
         return $header;
     }

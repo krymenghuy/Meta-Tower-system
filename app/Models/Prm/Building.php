@@ -29,7 +29,7 @@ class Building //extends Model
 
         $v_rule = [
             'name' => '1|string|0-50|text=Name is required',
-            'prefix' => '1|string|0-20|text=Prefix is required',
+            'prefix' => '1|string|0-20|text=Shortcut is required',
             'total_floor' => '1|number|text=Total floor is required',
             'total_area' => '1|number|min=0|text=Total area is required',
             'total_space' => '0|number',

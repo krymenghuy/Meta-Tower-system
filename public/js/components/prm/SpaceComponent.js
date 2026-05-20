@@ -851,7 +851,7 @@ const BuildingSpaceDialog = (() => {
 
                     };
                     const isReadOnly = me.dataOptions.id > 0;
-                    me.setReadOnly(isReadOnly, ["building_id", "code", "floor_id"]);
+                    me.setReadOnly(isReadOnly, ["building_id","floor_id"]);
                 },
 
                 buttons: [

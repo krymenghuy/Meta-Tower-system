@@ -22,28 +22,28 @@ var AmenityComponent = (() => {
             transTitle: "titles.Code",
             className: "align-middle text-nowrap",
             data: (data) =>
-            `<span class="text-prm-custom">${data.code ?? ""}</span>`,
+            `<span class="text-prm-custom">${data.code ?? "_"}</span>`,
         },
         {
             transTitle: "titles.Name",
             className: "align-middle text-nowrap",
             data: (data) =>
                 `<div class="text-prm-custom text-capitalize" style="width:170px; ">
-                    <span class="text-wrap text-break" style ="word-break:break-word;">${data.name ?? ""}</span>
+                    <span class="text-wrap text-break" style ="word-break:break-word;">${data.name ?? "_"}</span>
                 </div>`,
         },
         {
             transTitle: "titles.Category",
             className: "align-middle text-nowrap",
             data: (data) =>
-                `<span class="text-nowrap" style="min-width:100px">${data.category ?? ""}</span>`,
+                `<span class="text-nowrap" style="min-width:100px">${data.category ?? "_"}</span>`,
         },
         {
             transTitle: "titles.Building",
             className: "align-middle text-nowrap",
             data: (data) =>
                 `<div class="text-prm-custom">
-                    <span>${data.building_name ?? ""}</span>
+                    <span>${data.building_name ?? "_"}</span>
                 </div>`
         },
         {
@@ -51,7 +51,7 @@ var AmenityComponent = (() => {
             className: "align-middle text-nowrap",
             data: (data) =>
                 `<div class="text-prm-custom">
-                    <span>${data.floor_number ?? ""}</span>
+                    <span>${data.floor_number ?? "_"}</span>
                 </div>`
         },
         {
@@ -60,7 +60,7 @@ var AmenityComponent = (() => {
             data: (data, index, tr) => {
                 return `
                     <div class="text-primary-custom" style="width:200px;">
-                        <small class="text-wrap text-break" style ="word-break:break-word;">${data.description ?? "__"}</small>
+                        <small class="text-wrap text-break" style ="word-break:break-word;">${data.description ?? "_"}</small>
                     </div>
                 `;
             },
@@ -69,7 +69,7 @@ var AmenityComponent = (() => {
             transTitle: "titles.Capacity",
             className: "align-middle text-nowrap text-center",
             data: (data) =>
-                `<span class="text-prm-custom">${data.max_capacity ?? "-"}</span> <small class="text-muted">PAX/Room</small>`,
+                `<span class="text-prm-custom">${data.max_capacity ?? "_"}</span> <small class="text-muted">PAX/Room</small>`,
         },
         {
             transTitle: "titles.Bookable",
@@ -664,7 +664,7 @@ const AmenityDialog = (() => {
                 onPrepareForm: (me, data) => {
 
                     const isReadOnly = me.dataOptions.id > 0;
-                    me.setReadOnly(isReadOnly, ["building_id","code","floor_id"]);
+                    me.setReadOnly(isReadOnly, ["building_id","floor_id"]);
                     me.controls.requires_booking.value = data.amenity_details.requires_booking;
                 },
 
