@@ -791,9 +791,6 @@ const ContractDialog = (() => {
                     }
                     e.target.value = v;
                 });
-
-
-
             },
 
             configSelect: [
@@ -920,8 +917,6 @@ const ContractDialog = (() => {
                         applyUnitData(unitSelect.value);
                     }
                 }
-
-
             },
 
             buttons: [
@@ -1011,18 +1006,7 @@ function normalizeContractDateToIso(raw) {
     const m = s.match(/^(\d{1,2})-([A-Za-z]{3})-(\d{4})$/);
     if (m) {
         const months = {
-            jan: 0,
-            feb: 1,
-            mar: 2,
-            apr: 3,
-            may: 4,
-            jun: 5,
-            jul: 6,
-            aug: 7,
-            sep: 8,
-            oct: 9,
-            nov: 10,
-            dec: 11,
+            jan: 0,feb: 1,mar: 2,apr: 3,may: 4, jun: 5,jul: 6,aug: 7,sep: 8,oct: 9, nov: 10,dec: 11,
         };
         const mon = months[m[2].toLowerCase()];
         if (mon == null) return "";
@@ -1166,8 +1150,6 @@ const RenewDialog = (() => {
                     </div>
                 `;
             },
-
-
             contentCreated: (me) => {
                 DateTimePicker.initAll(me.divModal);
             },
@@ -1193,8 +1175,8 @@ const RenewDialog = (() => {
             onPrepareForm: (me, data) => {
                 LocaleManager.translateZone(me.divModal);
                 const det = data.contract_details || {};
-                const oldStartIso = normalizeContractDateToIso(det.start_date);
-                const oldEndIso = normalizeContractDateToIso(det.end_date);
+                // const oldStartIso = normalizeContractDateToIso(det.start_date);
+                // const oldEndIso = normalizeContractDateToIso(det.end_date);
                 if (me.controls.old_contract_start) {
                     me.controls.old_contract_start.value = det.start_date || "";
                 }
