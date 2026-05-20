@@ -86,7 +86,7 @@ var PurchaseOrdersComponent = (() => {
             className: "align-middle text-nowrap",
             data: (data) => {
                 const remarks = String(data.remarks || '').trim();
-                return `<span class="text-prm-custom d-block text-truncate" style="max-width:180px;" title="${remarks}">${remarks || '__'}</span>`;
+                return `<span class="text-prm-custom d-block text-truncate" style="max-width:180px;" title="${remarks}">${remarks || '_'}</span>`;
             }
         },
         {
@@ -976,7 +976,7 @@ var PurchaseOrdersComponent = (() => {
                             <td class="text-nowrap">
                                 <div class="d-flex flex-column">
                                     <span class="text-capitalize text-start">
-                                        ${item.received_user ?? '__'}
+                                        ${item.received_user ?? '_'}
                                     </span>
                                     <span class="text-start small text-muted">${item.received_date ?? ''}</span>
                                 </div>

@@ -24,15 +24,15 @@ var ReservationComponent = (() => {
             transTitle: "titles.Tenant",
             className: "align-middle",
             data: (data) => {
-                return `<span class="text-primary-custom text-capitalize">${data.tenant_name ?? ""}</span>
-                        <span class="d-block text-primary"style="font-size:12px;">${data.phone_number ?? ""}</span>`;
+                return `<span class="text-primary-custom text-capitalize">${data.tenant_name ?? "_"}</span>
+                        <span class="d-block text-primary"style="font-size:12px;">${data.phone_number ?? "_"}</span>`;
             },
         },
         {
             transTitle: "titles.Amenity",
             className: "align-middle",
             data: (data) => {
-                return `<span class="text-primary-custom">${data.amenity_name ?? ""}</span>`;
+                return `<span class="text-primary-custom">${data.amenity_name ?? "_"}</span>`;
             },
         },
         {
@@ -60,7 +60,7 @@ var ReservationComponent = (() => {
             data: (data, index, tr) => {
                 return `
                     <div class="text-primary-custom" style="width:320px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ?? "__"}</span>
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ?? "_"}</span>
                     </div>
                 `;
             },
