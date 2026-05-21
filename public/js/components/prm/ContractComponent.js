@@ -99,7 +99,7 @@ var ContractComponent = new (function () {
                 return `<div class="text-primary-prm text-capitalize" style="width:90px;">
                         <span class="text-prm-custom" >${deposit}</span>
                     </div>`;
-                
+
             }
         },
         {
@@ -1197,8 +1197,13 @@ const RenewDialog = (() => {
                     me.controls.start_date.value = renewStartIso;
                 }
                 if (me.controls.end_date) me.controls.end_date.value = "";
-                if (me.controls.price) me.controls.price.value = "";
-                if (me.controls.price_type) me.controls.price_type.value = "";
+                if (me.controls.price) {
+                    me.controls.price.value =
+                        det.price != null && det.price !== "" ? det.price : "";
+                }
+                if (me.controls.price_type) {
+                    me.controls.price_type.value = det.price_type ?? "";
+                }
                 if (me.controls.remarks) me.controls.remarks.value = "";
                 // DateTimePicker may attach after first paint; force final values.
                 setTimeout(() => {
@@ -1217,14 +1222,22 @@ const RenewDialog = (() => {
                     const row = spaceTypes.find((x) => String(x.id) === String(spaceTypeId));
                     return row?.space_type ?? '';
                 };
+                const applyContractPriceFields = () => {
+                    if (me.controls.price_type) {
+                        me.controls.price_type.value = det.price_type ?? "";
+                    }
+                    if (me.controls.price) {
+                        me.controls.price.value =
+                            det.price != null && det.price !== "" ? det.price : "";
+                    }
+                };
                 const setUnitFields = (unitData) => {
                     if (!unitData) return;
                     if (me.controls.space_name) {
                         me.controls.space_name.value = unitData.space_type ?? getSpaceTypeName(unitData.space_type_id);
                     }
                     if (me.controls.sqm_size) me.controls.sqm_size.value = unitData.sqm_size ?? '';
-                    if (me.controls.price_type) me.controls.price_type.value = unitData.price_type ?? '';
-                    if (me.controls.price) me.controls.price.value = unitData.price ?? '';
+                    applyContractPriceFields();
                 };
                 const applyUnitData = (spaceId) => {
                     if (!spaceId) return;
@@ -1254,9 +1267,7 @@ const RenewDialog = (() => {
                         applyUnitData(defaultSpaceId);
                     }
                 }
-                // me.controls.price.value = data.contract_details.price;
-                // me.controls.price_type.value = data.contract_details.price_type;
-                // me.controls.remarks.value = data.contract_details.remarks;
+                applyContractPriceFields();
                 me.detail = data.contract_details;
             },
 
@@ -1284,6 +1295,8 @@ const RenewDialog = (() => {
                         delete op.old_contract_start;
                         delete op.old_contract_end;
                         delete op.old_contract_price;
+                        delete op.price;
+                        delete op.price_type;
                         op.id = me.dataOptions.id;
                         vsapi.call([main_view.base_url, "/prm/contract/renew"].join(""), op, btn, null)
                             .then((res) => {

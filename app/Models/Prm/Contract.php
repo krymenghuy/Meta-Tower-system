@@ -901,10 +901,13 @@ class Contract
             return DV::error($msg);
         }
         $unitChanged = $new_space_id != $effectiveOldSpaceId;
+        // Always honor negotiated contract price on renewal (not building-space list price).
+        $renewPrice = $old->price;
+        $renewPriceType = $old->price_type;
         $updateContract = [
             'end_date'   => $inputs['end_date'],
-            'price'      => $inputs['price'] ?? $old->price,
-            'price_type' => $inputs['price_type'] ?? $old->price_type,
+            'price'      => $renewPrice,
+            'price_type' => $renewPriceType,
             'remarks'    => $inputs['remarks'] ?? $old->remarks,
         ];
         if (!$unitChanged) {
