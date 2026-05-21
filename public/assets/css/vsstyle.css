@@ -556,6 +556,7 @@ Search input class, to be applied to input
     border: 1px solid #d9dbe3;
     background: #fff;
     font-size: 14px;
+    font-family: 'inter';
     outline: none;
 
     /* modern search icon */
