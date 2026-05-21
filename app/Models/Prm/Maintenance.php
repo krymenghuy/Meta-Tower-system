@@ -356,8 +356,6 @@ class Maintenance extends VSModel
             ])
             ->first();
 
-
-
         if ($row) {
             self::applyScheduleDerivedStatus($row);
             setOfficialDates($row, [''], ['updated_at'], []);

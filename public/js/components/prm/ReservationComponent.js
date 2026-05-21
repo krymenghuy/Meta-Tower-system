@@ -527,8 +527,6 @@ const CreateReservationDialog = (() => {
                     },
                 },
 
-
-
                 onPrepareForm: (me, data) => {
                     const details = data?.reservation_details || {};
                     const amenitySelect = me.divModal.querySelector('[data-field="amenity_id"]');
@@ -557,8 +555,6 @@ const CreateReservationDialog = (() => {
                     }
 
                 },
-               
-                
 
                 buttons: [
                     {
@@ -566,7 +562,7 @@ const CreateReservationDialog = (() => {
                         cssClass: "btn btn-secondary",
                         click: (me, btn) => {
                             me.hide(false);
-                            me._selectedTenantId = null; 
+                            me._selectedTenantId = null;
                         },
                     },
                     {
@@ -596,7 +592,7 @@ const CreateReservationDialog = (() => {
                                 .then((res) => {
                                     if (res.status_code === 200) {
                                         me.hide(true, op);
-                                        me._selectedTenantId = null; 
+                                        me._selectedTenantId = null;
                                         if (me.dataOptions.id > 0) {
                                             cv_interact.success(
                                                 "Reservation has been updated successfully.",
@@ -608,7 +604,7 @@ const CreateReservationDialog = (() => {
                                         }
                                     } else {
                                         cv_interact.error(res.error_message);
-                                        
+
                                     }
                                 });
                         },

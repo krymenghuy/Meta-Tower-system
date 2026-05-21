@@ -3,7 +3,7 @@
         <div class="row g-3 align-items-center">
             <div class="col-12 col-md-6 col-lg-3">
                 <div class=" position-relative w-100">
-                    <input type="text" class="rounded-2 filter-field input-search" id="_search_contract" placeholder="Search by name, phone or unit">
+                    <input type="text" class="rounded-2 filter-field input-search" id="_search_contract" placeholder="Search by Tenant, phone or unit">
                 </div>
             </div>
             <div class="col-12 col-md-6 col-lg-3">
@@ -19,7 +19,7 @@
             </button>
             </div>
         </div>
-    </div> 
+    </div>
     <div id="_contract_list" class="table-responsive rounded-2 mt-3"></div>
 </div>
 
