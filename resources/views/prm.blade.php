@@ -422,6 +422,7 @@
                             @include('layouts.prm.reservationComponent')
                             @include('layouts.prm.amenityComponent')
                             @include('layouts.prm.itemsComponent')
+                            @include('layouts.prm.invoiceSettingComponent')
 
 
                         </div>
