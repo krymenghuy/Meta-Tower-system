@@ -19,40 +19,39 @@ var BillComponent = (() => {
             title: "",
             className: "align-middle",
         },
-        // {
-        //     title: "Bill No",
-        //     className: "align-middle text-nowrap",
-        //     data: (data) =>
-        //         `<span class="d-block text-nowrap">${data.bill_number ?? ""}</span>`,
-        // },
+        {
+            title: "Building",
+            className: "align-middle text-nowrap",
+            data: (data) =>
+                `<span class="d-block text-nowrap">${data.building_name ?? "_"}</span>`,
+        },
         {
             transTitle: "titles.Ref No",
             className: "align-middle text-nowrap",
             data: (data) => {
-                return `<span class="d-block text-prm-custom">${data.ref_no ?? "__"}</span>
-                        <small class="d-block text-prm-custom text-primary">${data.bill_date ?? "N/A"}</small>`;
+                return `<span class="d-block text-prm-custom">${data.ref_no ?? "_"}</span>`;
             },
         },
-        // {
-        //     transTitle: "titles.Issue Date",
-        //     className: "align-middle text-nowrap",
-        //     data: (data) => {
-        //         return `<span class="d-block text-prm-custom ">${data.bill_date ?? "N/A"}</span>`;
-        //     },
-        // },
+        {
+            transTitle: "titles.Issue Date",
+            className: "align-middle text-nowrap",
+            data: (data) => {
+                return `<span class="d-block text-prm-custom ">${data.bill_date ?? "_"}</span>`;
+            },
+        },
         {
             transTitle: "titles.Due Date",
             className: "align-middle text-nowrap",
             data: (data) => {
-                return `<span class="d-block text-prm-custom ">${data.due_date ?? "__"}</span>`;
+                return `<span class="d-block text-prm-custom ">${data.due_date ?? "_"}</span>`;
             },
         },
         {
             transTitle: "titles.Vendor",
             className: "align-middle text-nowrap",
             data: (data) => {
-                return `<span class="d-block text-prm-custom text-capitalize">${data.vendor_name}</span>
-                <small class="d-block text-primary ">${data.phone_number}</small>`;
+                return `<span class="d-block text-prm-custom text-capitalize">${data.vendor_name ?? "_"}</span>
+                <span class="d-block text-primary ">${data.phone_number ?? "_"}</span>`;
             },
         },
         {
@@ -111,7 +110,7 @@ var BillComponent = (() => {
             data: (data) => {
                 return `
                     <div class="text-primary-custom" style="width:200px;">
-                        <small class="text-wrap text-break" style ="word-break:break-word;">${data.remark ?? " __"}</small>
+                        <small class="text-wrap text-break" style ="word-break:break-word;">${data.remark ?? "_"}</small>
                     </div>
                 `;
             },
@@ -120,30 +119,32 @@ var BillComponent = (() => {
             transTitle: "titles.Status",
             className: "align-middle text-nowrap text-center",
             data: (data) => {
-                const status_id = data.display_status_id ?? data.status_id;
-                let cls = "bg-secondary";
-                let icon = "bi bi-question-circle";
-
-                if (status_id == 4) {
-                    cls = "status-overdue";
-                    icon = "fa-solid fa-triangle-exclamation";
-                } else if (status_id == 3) {
-                    cls =
-                        "badge border border-warning text-warning bg-warning-subtle";
-                } else if (status_id == 2) {
-                    cls =
-                        "badge border border-success text-success bg-success-subtle";
-                } else if (status_id == 1) {
-                    cls =
-                        "badge border border-danger text-danger bg-danger-subtle";
-                }
-
+                const statusId = Number(
+                    data.display_status_id ?? data.status_id ?? 0,
+                );
+                const statusConfig = {
+                    1: {
+                        cls: "border border-danger text-danger bg-danger-subtle",
+                    },
+                    2: {
+                        cls: "border border-success text-success bg-success-subtle",
+                    },
+                    3: {
+                        cls: "border border-warning text-warning bg-warning-subtle",
+                    },
+                    4: {
+                        cls: " status-overdue",
+                    },
+                };
+                const currentStatus = statusConfig[statusId] ?? {
+                    cls: "bg-secondary text-white",
+                    icon: "fa-regular fa-circle-question",
+                };
                 return `
-                    <span class="${cls} text-capitalize d-inline-block text-center" style="min-width:90px">
-                        <i class="${icon}" style="font-size:10px;"></i>
-                        ${data.status ?? ""}
-                    </span>
-                `;
+        <span class="badge ${currentStatus.cls} text-capitalize d-inline-flex align-items-center justify-content-center px-3 py-2 gap-2" style="min-width:110px">
+            <i class="${currentStatus.icon}" style="font-size:12px;"></i>
+            ${data.status ?? "—"}
+        </span>`;
             },
         },
         {
@@ -151,8 +152,8 @@ var BillComponent = (() => {
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
                 return `<div class="d-flex flex-column">
-                    <span class="text-capitalize text-start text-prm-custom"><span>${data.update_user ?? ""}</span></span>
-                    <span class="text-muted small">${data.updated_at ?? ""}</span>
+                    <span class="text-capitalize text-start text-prm-custom"><span>${data.update_user ?? "_"}</span></span>
+                    <span class="text-muted small">${data.updated_at ?? "_"}</span>
                 </div>`;
             },
         },
@@ -618,8 +619,8 @@ const BillDialog = (() => {
                 keyboard: true,
                 createContent: () => {
                     return [
-                        `<div class="row ">
-                                <input name="vendorid" class="d-none data-input form-control" data-field="vendor_id">
+                        `<div class="row g-3">
+                            <input name="vendorid" class="d-none data-input form-control" data-field="vendor_id">
                             <div class="col-6">
                                 <div class="vs-material-field">
                                     <input  name="vendor" class="data-input form-control" data-field="vendor_name" placeholder="Vendor" autocomplete="off">
@@ -627,67 +628,73 @@ const BillDialog = (() => {
                                 </div>
                             </div>
                             <div class="col-6">
-                                <div class="material-input outlined">
+                                <div class="vs-material-field">
                                     <input name="phone_number" class="data-input form-control" data-field="phone_number" placeholder=" " disabled />
                                     <label>Phone Number</label >
                                 </div>
                             </div>
-                            <div class="col-6 col-md-6">
-                                <div class=" material-input outlined">
-                                    <input data-type="date" name="bill_date" required class="data-input form-control form_input" data-field="bill_date" />
-                                    <label>Issue Date</label>
+                            <div class="col-3">
+                                <div class="vs-material-field">
+                                    <select name="building_id" data-style="material" class="data-input form-control" data-field="building_id" placeholder="Building">
+                                    </select>
                                 </div>
                             </div>
-                            <div class="col-6 col-md-6">
-                                <div class=" material-input outlined">
-                                    <input type="text" data-type="date" name="due_date" required class="data-input form-control form_input" data-field="due_date" placeholder=" "/>
-                                    <label>Due Date</label>
-                                </div>
-                            </div>
-                            <div class="col-4">
-                                <div class="material-input outlined">
-                                    <input type="text" name="ref_no" class="data-input form-control" data-field="ref_no" placeholder=" "></input>
-                                    <label>Reference No.</label>
-                                </div>
-                            </div>
-                            <div class="col-4">
-                                <div class="material-input outlined">
+                            <div class="col-3">
+                                <div class="vs-material-field">
                                     <select name="expense_type_id" data-style="material" class="data-input form-control" data-field="expense_type_id" placeholder="Category">
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-4">
-                                <div class="material-input outlined">
+                             <div class="col-3">
+                                <div class="vs-material-field">
+                                    <input type="text" name="ref_no" class="data-input form-control" data-field="ref_no" placeholder=" "></input>
+                                    <label>Reference No.</label>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="vs-material-field">
                                     <input type="text" inputmode="decimal" name="total_amount" type="number" class="data-input form-control" data-field="total_amount" placeholder=" "></input>
-                                    <label>Total Amount $</label>
+                                    <label>Total Amount</label>
                                 </div>
                             </div>
-                            <div class="col-8">
-                                <div class="material-input outlined d-flex ">
-                                    <input type="text" name="documents" class=" form-control " accept=".png,.jpg,.jpeg" /disabled>
-                                    <label style="display:none;color:#777777;padding-left:6px;">File</label >
+                            <div class="col-3">
+                                <div class="vs-material-field">
+                                    <input data-type="date" name="bill_date" class="data-input form-control form_input" data-field="bill_date" placeholder=" "/>
+                                    <label>Issue Date</label>
                                 </div>
                             </div>
+                            <div class="col-3">
+                                <div class="vs-material-field">
+                                    <input data-type="date" name="due_date" class="data-input form-control form_input" data-field="due_date" placeholder=" "/>
+                                    <label>Due Date</label>
+                                </div>
+                            </div>
+                         
                             <div class="col-4">
-                                <div class="material-input outlined d-flex ">
+                                <div class="vs-material-field">
+                                    <input type="text" name="documents" class=" form-control " accept=".png,.jpg,.jpeg" /disabled>
+                                    <label>File</label >
+                                </div>
+                            </div>
+                            <div class="col-2">
+                                <div class="vs-material-field d-flex">
                                     <button name ="btn_chooseFile"  class="btn btn-block" style="background-color: #e1e5f2; padding: 0.5rem 0.75rem !important;">Choose File </button>
-                                    <label style="display:none;color:#777777;padding-left:6px;">File</label>
                                 </div>
                             </div>
                             <div class="col-12 ">
-                                <div class="material-input outlined">
+                                <div class="vs-material-field">
                                     <textarea name="remark" class="data-input form-control" data-field="remark" placeholder=" "></textarea>
                                     <label>Remark</label>
                                 </div>
                             </div>
                             <div class="col-6">
-                                <div class="material-input outlined d-none">
+                                <div class="vs-material-field d-none">
                                     <input name="bill_number" class="data-input form-control" data-field="bill_number" placeholder=" "></input>
                                     <label>Bill Number</label>
                                 </div>
                             </div>
                             <div class="col-6">
-                                <div class="material-input outlined d-none">
+                                <div class="vs-material-field d-none">
                                     <input name="paid_amount" class="data-input form-control" data-field="paid_amount" placeholder=" "></input>
                                     <label>Amount Paid</label>
                                 </div>
@@ -831,6 +838,12 @@ const BillDialog = (() => {
                         textField: "expense_category",
                         valueField: "id",
                     },
+                    {
+                        name: "building_id",
+                        data: "buildings",
+                        textField: "building",
+                        valueField: "id",
+                    },
                 ],
                 onShow: (me) => {
                     const title = me.divModal.querySelector(".modal-title");
@@ -838,11 +851,11 @@ const BillDialog = (() => {
                         const isModify = !!me.dataOptions?.id;
                         title.innerHTML = isModify
                             ? '<h4 class="text-prm-custom text-start fw-bold">Modify Bill</h4>'
-                            : '<h4 class="text-prm-custom text-start fw-bold">Generate Bill</h4>';
+                            : '<h4 class="text-prm-custom text-start fw-bold">Generate New Bill</h4>';
                     }
                 },
                 prepareFormOptions: {
-                    createTitle: "Generate Bill",
+                    createTitle: "Generate New Bill",
                     modifyTitle: "Modify Bill",
                     targetProp: "bill_details",
                     api: {
@@ -862,6 +875,7 @@ const BillDialog = (() => {
                     // me.controls.documents.classList.add('d-none');
 
                     const details = data?.bill_details;
+                    me.controls.building_id.value = details?.building_id || "";
                     if (details?.file_image) {
                         const displayName = details.original_file_name
                             ? `${details.original_file_name}.${details.file_image.split(".").pop()}`
@@ -933,56 +947,56 @@ const BillDialog = (() => {
                         });
                     }
 
-                    setTimeout(() => {
-                        const months = [
-                            "Jan",
-                            "Feb",
-                            "Mar",
-                            "Apr",
-                            "May",
-                            "Jun",
-                            "Jul",
-                            "Aug",
-                            "Sep",
-                            "Oct",
-                            "Nov",
-                            "Dec",
-                        ];
-                        const toFormatted = (val) => {
-                            if (/^\d{2}-[A-Za-z]{3}-\d{4}$/.test(val))
-                                return val;
-                            const parsed = new Date(val);
-                            if (isNaN(parsed)) return val;
-                            const d = String(parsed.getDate()).padStart(2, "0");
-                            const m = months[parsed.getMonth()];
-                            const y = parsed.getFullYear();
-                            return `${d}-${m}-${y}`;
-                        };
-                        if (me.controls.bill_date) {
-                            if (!me.controls.bill_date.value) {
-                                const now = new Date();
-                                const d = String(now.getDate()).padStart(
-                                    2,
-                                    "0",
-                                );
-                                const m = months[now.getMonth()];
-                                const y = now.getFullYear();
-                                me.controls.bill_date.value = `${d}-${m}-${y}`;
-                            } else {
-                                me.controls.bill_date.value = toFormatted(
-                                    me.controls.bill_date.value,
-                                );
-                            }
-                        }
-                        if (
-                            me.controls.due_date &&
-                            me.controls.due_date.value
-                        ) {
-                            me.controls.due_date.value = toFormatted(
-                                me.controls.due_date.value,
-                            );
-                        }
-                    }, 0);
+                    // setTimeout(() => {
+                    //     const months = [
+                    //         "Jan",
+                    //         "Feb",
+                    //         "Mar",
+                    //         "Apr",
+                    //         "May",
+                    //         "Jun",
+                    //         "Jul",
+                    //         "Aug",
+                    //         "Sep",
+                    //         "Oct",
+                    //         "Nov",
+                    //         "Dec",
+                    //     ];
+                    //     const toFormatted = (val) => {
+                    //         if (/^\d{2}-[A-Za-z]{3}-\d{4}$/.test(val))
+                    //             return val;
+                    //         const parsed = new Date(val);
+                    //         if (isNaN(parsed)) return val;
+                    //         const d = String(parsed.getDate()).padStart(2, "0");
+                    //         const m = months[parsed.getMonth()];
+                    //         const y = parsed.getFullYear();
+                    //         return `${d}-${m}-${y}`;
+                    //     };
+                    //     if (me.controls.bill_date) {
+                    //         if (!me.controls.bill_date.value) {
+                    //             const now = new Date();
+                    //             const d = String(now.getDate()).padStart(
+                    //                 2,
+                    //                 "0",
+                    //             );
+                    //             const m = months[now.getMonth()];
+                    //             const y = now.getFullYear();
+                    //             me.controls.bill_date.value = `${d}-${m}-${y}`;
+                    //         } else {
+                    //             me.controls.bill_date.value = toFormatted(
+                    //                 me.controls.bill_date.value,
+                    //             );
+                    //         }
+                    //     }
+                    //     if (
+                    //         me.controls.due_date &&
+                    //         me.controls.due_date.value
+                    //     ) {
+                    //         me.controls.due_date.value = toFormatted(
+                    //             me.controls.due_date.value,
+                    //         );
+                    //     }
+                    // }, 0);
                 },
 
                 buttons: [

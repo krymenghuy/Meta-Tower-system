@@ -19,31 +19,31 @@ var AmenityComponent = (() => {
             className: "align-middle text-nowrap text-capitalize",
         },
         {
-            transTitle: "titles.Code",
+            transTitle: "titles.Unit",
             className: "align-middle text-nowrap",
             data: (data) =>
-            `<span class="text-prm-custom">${data.code ?? ""}</span>`,
+            `<span class="text-prm-custom">${data.code ?? "_"}</span>`,
         },
         {
             transTitle: "titles.Name",
             className: "align-middle text-nowrap",
             data: (data) =>
                 `<div class="text-prm-custom text-capitalize" style="width:170px; ">
-                    <span class="text-wrap text-break" style ="word-break:break-word;">${data.name ?? ""}</span>
+                    <span class="text-wrap text-break" style ="word-break:break-word;">${data.name ?? "_"}</span>
                 </div>`,
         },
         {
             transTitle: "titles.Category",
             className: "align-middle text-nowrap",
             data: (data) =>
-                `<span class="text-nowrap" style="min-width:100px">${data.category ?? ""}</span>`,
+                `<span class="text-nowrap" style="min-width:100px">${data.category ?? "_"}</span>`,
         },
         {
             transTitle: "titles.Building",
             className: "align-middle text-nowrap",
             data: (data) =>
                 `<div class="text-prm-custom">
-                    <span>${data.building_name ?? ""}</span>
+                    <span>${data.building_name ?? "_"}</span>
                 </div>`
         },
         {
@@ -51,7 +51,7 @@ var AmenityComponent = (() => {
             className: "align-middle text-nowrap",
             data: (data) =>
                 `<div class="text-prm-custom">
-                    <span>${data.floor_number ?? ""}</span>
+                    <span>${data.floor_number ?? "_"}</span>
                 </div>`
         },
         {
@@ -60,16 +60,18 @@ var AmenityComponent = (() => {
             data: (data, index, tr) => {
                 return `
                     <div class="text-primary-custom" style="width:200px;">
-                        <small class="text-wrap text-break" style ="word-break:break-word;">${data.description ?? "__"}</small>
+                        <small class="text-wrap text-break" style ="word-break:break-word;">${data.description ?? "_"}</small>
                     </div>
                 `;
             },
         },
-        {
+       {
             transTitle: "titles.Capacity",
-            className: "align-middle text-nowrap text-center",
+            className: "align-middle text-nowrap",
             data: (data) =>
-                `<span class="text-prm-custom">${data.max_capacity ?? "-"}</span> <small class="text-muted">PAX/Room</small>`,
+                data.max_capacity != null
+                    ? `<span class="text-prm-custom">${data.max_capacity}</span> <small class="text-muted">PAX/Room</small>`
+                    : `<span class="text-prm-custom">_</span>`,
         },
         {
             transTitle: "titles.Bookable",
@@ -664,7 +666,7 @@ const AmenityDialog = (() => {
                 onPrepareForm: (me, data) => {
 
                     const isReadOnly = me.dataOptions.id > 0;
-                    me.setReadOnly(isReadOnly, ["building_id","code","floor_id"]);
+                    me.setReadOnly(isReadOnly, ["building_id","floor_id"]);
                     me.controls.requires_booking.value = data.amenity_details.requires_booking;
                 },
 
@@ -742,17 +744,17 @@ const ActiveReservationDialog = (() => {
         }
         tbody.innerHTML = rows.map(r => `
             <tr>              
-                <td class="align-middle text-center">
+                <td class="align-middle">
                     <span class="d-block text-prm-custom text-capitalize">${r.tenant_name ?? ''}</span>
                     <small class="text-muted">${r.phone_number ?? ''}</small>
                 </td>
-                <td class="align-middle text-center">
+                <td class="align-middle">
                     <span class="d-block text-prm-custom">${r.booking_date ?? ''}</span>
                     <small class="text-primary">${to12h(r.start_time)} – ${to12h(r.end_time)}</span>
                 </td>
-                <td class="align-middle text-center">${statusBadge(r.status_id, r.status)}</td>
+                <td class="align-middle">${statusBadge(r.status_id, r.status)}</td>
                 <td class="align-middle">
-                    <small class="text-muted">${r.remarks ?? '—'}</small>
+                    <span class="text-muted">${r.remarks ?? '—'}</span>
                 </td>
             </tr>
         `).join('');
@@ -789,10 +791,10 @@ const ActiveReservationDialog = (() => {
                         <table class="table table-sm table--white rounded-2 overflow-hidden">
                             <thead class="header-uppercase" >
                                 <tr>
-                                    <th class="text-center" style="width:100px;">Tenant</th>
-                                    <th class="text-center" style="width: 150px;">Schedule Date</th>
-                                    <th class="text-center" style="width:80px;">Status</th>
-                                    <th class="text-center" style="width:260px;">Remark</th>
+                                    <th class="text-start" style="width:100px;">Tenant</th>
+                                    <th class="text-start" style="width: 150px;">Schedule Date</th>
+                                    <th class="text-start" style="width:80px;">Status</th>
+                                    <th class="text-start" style="width:260px;">Remark</th>
                                 </tr>
                             </thead>
                             <tbody id="_arv_tbody"></tbody>

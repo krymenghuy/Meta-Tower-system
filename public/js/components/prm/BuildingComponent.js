@@ -300,21 +300,21 @@ var BuildingComponent = ( () => {
         if(!data) data = [];
 
         (data || []).map(level => {
-            let shortcut = level.floor_name ? `(${level.floor_name ?? ''})` : '';
+            let shortcut = level.floor_name ? `(${level.floor_name ?? '_'})` : '_';
             html = [html,`<tr>
                 <td>
-                    <span class="d-block">${level.floor_name ?? ''}</span>
+                    <span class="d-block">${level.floor_name ?? '_'}</span>
                     <span class="d-block text-muted">
-                        <small>${shortcut ?? ''}</small>
+                        <small>${shortcut ?? '_'}</small>
                     </span>
                 </td>
-                <td>${level.floor_no ?? ''}</td>
-                <td>${level.total_space ?? ''}</td>
-                <td>${level.description ?? ''}</td>
+                <td>${level.floor_no ?? '_'}</td>
+                <td>${level.total_space ?? '_'}</td>
+                <td>${level.description ?? '_'}</td>
                 <td>
-                    <span class="d-block">${level.update_user ?? ''}</span>
+                    <span class="d-block">${level.update_user ?? '_'}</span>
                     <span>
-                        <small>${level.updated_at ?? ''}</small>
+                        <small>${level.updated_at ?? '_'}</small>
                     </span>
                 </td>
                 <td class="text-nowrap">
@@ -493,7 +493,7 @@ const BuildingDialog = (() => {
                         <div class="col-6">
                             <div class="vs-material-field">
                                 <input type="text" name="prefix" class="data-input form-control" data-field="prefix" placeholder=" " />
-                                <label>ShortCut (Recommended)</label>
+                                <label>ShortCut</label>
                             </div>
                         </div>
                         <div class="col-6">

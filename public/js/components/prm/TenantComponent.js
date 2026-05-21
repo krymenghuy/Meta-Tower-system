@@ -45,7 +45,7 @@ var TenantComponent = new (function () {
             transTitle: "titles.Code",
             className: "align-middle",
             data: (data) => {
-                return `<span class="text-prm-custom text-nowrap">${data.code ?? ""}</span>`;
+                return `<span class="text-prm-custom text-nowrap">${data.code ?? "_"}</span>`;
             },
         },
         {
@@ -57,10 +57,10 @@ var TenantComponent = new (function () {
                         ? "Male"
                         : data.sex === "F"
                           ? "Female"
-                          : "Other";
+                          : "_";
                 return `
                     <div class="text-prm-custom" style="width:120px;">
-                        <span class="text-wrap text-break text-capitalize" style ="word-break:break-word;">${data.name ?? ""}</span>
+                        <span class="text-wrap text-break text-capitalize" style ="word-break:break-word;">${data.name ?? "_"}</span>
                         <span class="d-block text-primary" style="font-size:12px;">${sexLabel}</span>
                     </div>
                 `;
@@ -862,13 +862,13 @@ var TenantComponent = new (function () {
                                 <i class="fa fa-user me-2 text-primary"></i> Personal Information
                             </h5>
                             <div class="row g-4 mb-5">
-                                <div class="col-md-4"><small class="text-muted">Name</small><div class="text-capitalize">${data.name ?? ""}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Gender</small><div class="">${data.sex == "M" ? "Male" : data.sex == "F" ? "Female" : ""}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Date of Birth</small><div class="">${data.date_of_birth ?? ""}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Legal Name</small><div class="">${data.legal_name ?? ""}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Name</small><div class="text-capitalize">${data.name ?? "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Gender</small><div class="">${data.sex == "M" ? "Male" : data.sex == "F" ? "Female" : "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Date of Birth</small><div class="">${data.date_of_birth ?? "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Legal Name</small><div class="">${data.legal_name ?? "_"}</div></div>
                                 <div class="col-md-4"><small class="text-muted">National ID</small><div class="">${data.national_id ?? "_"}</div></div>
                                 <div class="col-md-4"><small class="text-muted">Passport Number</small><div class="">${data.passport_number ?? "_"}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Phone</small><div class=" text-primary">${data.phone_number ?? ""}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Phone</small><div class=" text-primary">${data.phone_number ?? "_"}</div></div>
                                 <div class="col-md-4"><small class="text-muted">Email</small><div class=" text-primary">${data.email ?? "_"}</div></div>
                                 <div class="col-md-4"><small class="text-muted">Relationship</small><div class="">Partner</div></div>
                                 <div class="col-12"><small class="text-muted">Address</small><div class="text-prm-custom text-capitalize">${data.address ?? "_"}</div></div>
@@ -1001,32 +1001,36 @@ var TenantComponent = new (function () {
             if (!group.length) return;
             const first = group[0];
 
-            const contractStatusName = String(
-                first.contract_status ?? "",
-            ).trim();
+            const contractStatusName = String(first.contract_status ?? "",).trim();
             const contractStatusLower = contractStatusName.toLowerCase();
-            const hasCurrent = group.some((r) => !!r.is_current);
+            
+            // const hasCurrent = group.some((r) => !!r.is_current);
 
             let accent = "#adb5bd";
             let circleBg = "#6c757d";
             let headerBadgeHtml = "";
             let priceColor = "#212529";
-            let depositBadgeStyle =
-                "color:#4a4a4a;background-color:#f6f4ee;border:1px solid #e5dfd1;";
-            if (hasCurrent || contractStatusLower === "active") {
+            let depositBadgeStyle ="color:#3f51d8;background-color:#e7efff;border:1px solid #cfdbff;";
+            
+            if (contractStatusLower === "active") {
                 accent = "#0f49bd";
                 circleBg = "#0f49bd";
                 priceColor = "#3f51d8";
-                depositBadgeStyle =
-                    "color:#3f51d8;background-color:#e7efff;border:1px solid #cfdbff;";
+                
                 headerBadgeHtml = `<span class="badge text-uppercase rounded-4 text-white ms-1" style="background-color:#0f49bd;">CURRENT</span>`;
             } else if (contractStatusLower === "pending") {
                 accent = "#fd7e14";
                 circleBg = "#fd7e14";
                 priceColor = "#fd7e14";
-                depositBadgeStyle =
-                    "color:#9a5a19;background-color:#fff1e6;border:1px solid #ffd9bf;";
+                
                 headerBadgeHtml = `<span class="badge text-uppercase rounded-4 text-white ms-1" style="background-color:#fd7e14;">PENDING</span>`;
+            } else if (contractStatusLower === "terminated") {
+                accent = "#dc3545";
+                circleBg = "#dc3545";
+                priceColor = "#dc3545";
+                
+                headerBadgeHtml = `<span class="badge text-uppercase rounded-4 text-white ms-1" style="background-color:#dc3545;">TERMINATED</span>`;
+
             } else {
                 headerBadgeHtml = `<span class="badge text-uppercase rounded-4 ms-1" style="color:#4a4a4a;background-color:#f6f4ee;border:1px solid #e5dfd1;">${mThis._escapeHtml(contractStatusName || "—")}</span>`;
             }
@@ -1074,7 +1078,7 @@ var TenantComponent = new (function () {
                     : `<span class="text-muted">${mThis._escapeHtml(first.deposit_remarks)}</span>`;
             }
             const depositBadgeHtml = depositSmallHtml
-                ? `<span class="badge rounded-pill px-3 py-2" style="${depositBadgeStyle}">${depositSmallHtml}</span>`
+                ? `<span class="badge rounded-2 px-3 py-2" style="${depositBadgeStyle}">${depositSmallHtml}</span>`
                 : "";
 
             const renewalsTableRowsHtml = group
@@ -1165,13 +1169,13 @@ var TenantComponent = new (function () {
                     html += `<div class="tab-pane py-2 active" id="overview_tenant_detail">
                             <h5 class="fw-bold mb-2"><i class="fa fa-user me-1 text-primary"></i> Personal Information</h5>
                             <div class="row g-4 mb-5">
-                                <div class="col-md-4"><small class="text-muted">Name</small><div class="">${data.name ?? ""}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Sex</small><div class="">${data.sex == "M" ? "Male" : data.sex == "F" ? "Female" : ""}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Date of Birth</small><div class="">${data.date_of_birth ?? ""}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Name</small><div class="">${data.name ?? "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Sex</small><div class="">${data.sex == "M" ? "Male" : data.sex == "F" ? "Female" : "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Date of Birth</small><div class="">${data.date_of_birth ?? "_"}</div></div>
                                 <div class="col-md-4"><small class="text-muted">Legal Name</small><div class="">${data.legal_name ?? ""}</div></div>
-                                <div class="col-md-4"><small class="text-muted">National ID</small><div class="">${data.national_id ?? ""}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Passport Number</small><div class="">${data.passport_number ?? ""}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Phone</small><div class="">${data.phone_number ?? ""}</div></div>
+                                <div class="col-md-4"><small class="text-muted">National ID</small><div class="">${data.national_id ?? "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Passport Number</small><div class="">${data.passport_number ?? "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Phone</small><div class="">${data.phone_number ?? "_"}</div></div>
                                 <div class="col-md-4"><small class="text-muted">Email</small><div class=" text-primary">${data.email ?? "_"}</div></div>
                                 <div class="col-md-4"><small class="text-muted">Relationship</small><div class="">Partner</div></div>
                                 <div class="col-12"><small class="text-muted">Address</small><div class="text-prm-custom text-capitalize">${data.address ?? "_"}</div></div>
@@ -1257,7 +1261,7 @@ var TenantComponent = new (function () {
                         </td>
                         <td style="width: 30%; height: 65px; vertical-align: middle;">
                             <span class="text-dark">
-                                ${doc.remarks || ""}
+                                ${doc.remarks || "_"}
                             </span>
                         </td>
                         <td class="text-end py-3 px-3" style="width: 10%; height: 55px; vertical-align: middle; ">

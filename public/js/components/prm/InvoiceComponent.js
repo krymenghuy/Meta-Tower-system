@@ -41,7 +41,7 @@ var InvoiceComponent = (() => {
                 return `
                     <div class="d-flex flex-column">
                         ${code}
-                        <hr class="m-0 border border-secondary border-3 opacity-75">
+                     <!--   <hr class="m-0 border border-secondary border-3 opacity-75"> -->
                         ${typeHtml}
                     </div>
                 `;
@@ -145,24 +145,19 @@ var InvoiceComponent = (() => {
                     // Paid
                     cls =
                         "text-success bg-success-subtle border border-success";
-                    icon = "fa-regular fa-circle-check";
                 } else if (statusId === 2) {
                     // Unpaid
                     cls = "text-danger bg-danger-subtle border border-danger";
-                    icon = "fa-regular fa-clock";
                 } else if (statusId === 3) {
                     // Partially Paid
                     cls =
                         "text-warning bg-warning-subtle border border-warning ";
-                    icon = "fa-regular fa-hourglass-half";
                 } else if (statusId === 4) {
                     // Overdue
                     cls = "status-overdue";
-                    icon = "fa-solid fa-triangle-exclamation";
                 }
                 return `
-                    <span class="badge ${cls} text-capitalize d-inline-flex align-items-center justify-content-center px-3 py-2 gap-2" style="min-width:110px">
-                        <i class="${icon}" style="font-size:12px;"></i>
+                    <span class="badge ${cls} text-capitalize d-inline-flex align-items-center justify-content-center px-3 py-2 gap-1" style="min-width:110px">
                         ${data.payment_status_name || "—"}
                     </span>`;
             }
@@ -174,7 +169,7 @@ var InvoiceComponent = (() => {
                 return `
                     <div class="text-primary-custom" style="width:200px;">
                         <span class="text-wrap text-break" style ="word-break:break-word;">${data.general_remark ??
-                            "__"}</span>
+                            "_"}</span>
                     </div>
                 `;
             }

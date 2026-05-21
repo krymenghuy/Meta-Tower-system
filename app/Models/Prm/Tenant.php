@@ -122,7 +122,7 @@ class Tenant
             $passport = $d->passport_number ?? null;
             $national_id = $d->national_id ?? null;
             if (empty($passport)) {
-                return DV::error('Passport is required for foreign nationality.');
+                return DV::error('Passport number is required for foreign nationality.');
             }
             $nid_check = $this->checkUniqueTenantByNID($national_id, $id);
             if ($nid_check) return DV::error($nid_check);
@@ -340,7 +340,7 @@ class Tenant
             ->exists();
 
         if ($hasActiveContract) {
-            return DV::error('Cannot delete tenant with active contracts. Please terminate all contracts first.');
+            return DV::error('Cannot delete tenant with active contracts.');
         }
 
         $documents = DB::table('tenant_documents')->where('tenant_id', $id)->get();

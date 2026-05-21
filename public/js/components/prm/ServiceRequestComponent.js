@@ -291,8 +291,6 @@ var ServiceRequestComponent = (function () {
                menu.accept_request.style.display = (status_id >= 2) ? 'none' : 'block';
                menu.reject_request.style.display = (status_id >= 2) ? 'none' : 'block';
 
-
-
             },
             onClick: (menuLink, id, name) => {
                 if (name === 'accept_request') mThis.acceptRequest(id, menuLink);

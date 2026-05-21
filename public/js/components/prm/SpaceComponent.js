@@ -690,7 +690,7 @@ var SpaceComponent = new (function () {
                 VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'space_status', '', 'All Statuses', '');
                 VSUtil.setComboItems(mThis.elBuilding, d.buildings, 'id', 'building', '', 'All buildings', '');
                 VSUtil.setComboItems(mThis.elFloor, d.floors, 'id', 'name', '', 'All Floors', '');
-                VSUtil.setComboItems(mThis.elSpaceType, d.space_types, 'id', 'space_type', '', 'All Type', '');
+                VSUtil.setComboItems(mThis.elSpaceType, d.space_types, 'id', 'space_type', '', 'All Types', '');
 
                 // mThis.elBuilding.onchange = function (e) {
                 //     e.preventDefault();
@@ -851,7 +851,7 @@ const BuildingSpaceDialog = (() => {
 
                     };
                     const isReadOnly = me.dataOptions.id > 0;
-                    me.setReadOnly(isReadOnly, ["building_id", "code", "floor_id"]);
+                    me.setReadOnly(isReadOnly, ["building_id","floor_id"]);
                 },
 
                 buttons: [
@@ -1151,7 +1151,7 @@ const ViewBookingDialog = (() => {
 
                             <div class="booker_profile overflow-y-auto overflow-x-hidden">
                                 <div class="info_title p-2 text-primary-custom">
-                                        <h5>Unit ${data.space_code ?? 'N/A'}</h5>
+                                        <h5>Unit ${data.space_code ?? '_'}</h5>
                                 </div>
 
                                 <div class="booker_info">
@@ -1160,43 +1160,43 @@ const ViewBookingDialog = (() => {
                                             <div class="d-flex">
                                                 <p class="text-nowrap text-muted width-p">Booking Name</p>
                                                 <p class="px-3">:</p>
-                                                <p class="text-nowrap text-capitalize data-get">${data.booker_name ?? 'N/A'}</p>
+                                                <p class="text-nowrap text-capitalize data-get">${data.booker_name ?? '_'}</p>
                                             </div>
                                             <div class="d-flex">
                                                 <p class="text-nowrap text-muted width-p">Booking Date</p>
                                                 <p class="px-3">:</p>
-                                                <p class="text-nowrap text-capitalize data-get">${data.booking_date ?? 'N/A'}</p>
+                                                <p class="text-nowrap text-capitalize data-get">${data.booking_date ?? '_'}</p>
                                             </div>
                                         </div>
                                         <div class="col-4 p_profile_center">
                                             <div class="d-flex">
                                                 <p class="text-nowrap text-muted width-p">Booking Phone</p>
                                                 <p class="px-3">:</p>
-                                                <p class="text-nowrap text-capitalize data-get">${data.booker_phone ?? 'N/A'}</p>
+                                                <p class="text-nowrap text-capitalize data-get">${data.booker_phone ?? '_'}</p>
                                             </div>
                                             <div class="d-flex">
                                                 <p class="text-nowrap text-muted width-p">Expired Date</p>
                                                 <p class="px-3">:</p>
-                                                <p class="text-nowrap text-capitalize data-get">${data.expired_booking_date ?? 'N/A'}</p>
+                                                <p class="text-nowrap text-capitalize data-get">${data.expired_booking_date ?? '_'}</p>
                                             </div>
                                         </div>
                                         <div class="col-4 p_profile_right">
                                             <div class="d-flex">
                                                 <p class="text-nowrap text-muted width-p">Booking Email</p>
                                                 <p class="px-3">:</p>
-                                                <p class="text-nowrap data-get">${data.booker_email ?? 'N/A'}</p>
+                                                <p class="text-nowrap data-get">${data.booker_email ?? '_'}</p>
                                             </div>
                                             <div class="d-flex">
                                                 <p class="text-nowrap text-muted width-p">Booking Amount</p>
                                                 <p class="px-3">:</p>
-                                                <p class="text-nowrap text-capitalize data-get">${VSMoney.formatAmount(data.booking_fee, data.currency ?? 'USD') ?? 'N/A'}</p>
+                                                <p class="text-nowrap text-capitalize data-get">${VSMoney.formatAmount(data.booking_fee, data.currency ?? 'USD') ?? '_'}</p>
                                             </div>
                                         </div>
                                         <div class="row cols-2 mb-0">
                                             <div class="d-flex">
-                                                <p class="text-nowrap text-muted width-p">Remarks</p>
+                                                <p class="text-nowrap text-muted width-p">Remark</p>
                                                 <p class="px-3">:</p>
-                                                <p class="text-nowrap text-capitalize data-get">${data.remarks ?? 'N/A'}</p>
+                                                <p class="text-nowrap text-capitalize data-get">${data.remarks ?? '_'}</p>
                                             </div>
                                         </div>
                                     </div>

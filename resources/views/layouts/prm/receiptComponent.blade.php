@@ -3,19 +3,18 @@
         <div class="row g-3 align-items-center">
             <div class="col-12 col-md-6 col-lg-3">
                 <div class="position-relative w-100">
-                <input type="text" class="form-control rounded-2 pe-5 filter-field " id="_search_receipt" placeholder="Search By Invoice or Receipt No">
-                <i class="fa fa-search fs-6 text-muted position-absolute" style="right: 15px; top: 50%; transform: translateY(-50%);"></i>
+                <input type="text" class="rounded-2 filter-field input-search" id="_search_receipt" placeholder="Search By Invoice or Receipt No">
             </div>
          </div>
         <div class="col-12 col-md-6 col-lg-5">
             <div id="_dateFilter_receipt" class="d-flex gap-3 align-items-center">
                 <div class="material-input outlined flex-fill" style="margin-bottom: 0;">
-                    <input data-select="datepicker" class="form-control filter-field" placeholder="d-m-y" data-field="date_from" />
+                    <input data-select="datepicker" class="form-control filter-field range-filter" placeholder=" " data-field="date_from" />
                     <label class="form-label">From Date</label>
                 </div>
 
                 <div class="material-input outlined flex-fill" style="margin-bottom: 0;">
-                    <input data-select="datepicker" class="form-control filter-field" placeholder="d-m-y" data-field="date_to" />
+                    <input data-select="datepicker" class="form-control filter-field range-filter" placeholder=" " data-field="date_to" />
                     <label class="form-label">To Date </label>
                 </div>
             </div>
