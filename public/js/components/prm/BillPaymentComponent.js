@@ -492,7 +492,6 @@ const BillPaymentDialog = (() => {
 
                 createContent: () => `
                 <div class="container-fluid px-0">
-
                     <div class="row g-0" style="border-radius:8px;overflow:hidden;margin-bottom:1.5rem;">
                         <div class="col-4" style="padding:0.75rem 1.25rem;border-right:1px solid white; background:#e1e5f2;">
                             <div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#1a1647;margin-bottom:4px;">Balance Due</div>
@@ -508,93 +507,65 @@ const BillPaymentDialog = (() => {
                         </div>
                     </div>
 
-                    <div style="display:flex;flex-direction:column;">
-
-                        <!-- Payee Info -->
-                        <div class="mb-3">
-                            <div class="material-input outlined">
-                                <input name="vendor" class="data-input form-control" data-field="vendor_name" placeholder="Payee (Vendor)" readonly>
-                                <label style="color:#777777;padding-left:6px;">Pay To</label>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="vs-material-field">
+                                <input name="vendor" class="data-input form-control" data-field="vendor_name" placeholder=" " readonly>
+                                <label>Pay To</label>
                             </div>
                         </div>
-
-                        <div class="row g-3 mb-3">
-                            <div class="col-md-6">
-                                <div class="material-input outlined">
-                                    <input type="text" data-type="date" name="payment_date" class="data-input form-control" data-field="payment_date" />
-                                    <label style="color:#777777;padding-left:6px;">Payment Date</label>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="material-input outlined">
-                                    <input type="text" name="payer" class="data-input form-control" data-field="payer" placeholder=" " > 
-                                    <label style="color:#777777;padding-left:6px;">Payer</label>
-                                </div>
+                        <div class="col-md-3">
+                            <div class="vs-material-field">
+                                <input type="text" data-type="date" name="payment_date" class="data-input form-control" data-field="payment_date" />
+                                <label>Payment Date</label>
                             </div>
                         </div>
-
-                        <div>
-                            <div class="d-flex align-items-center gap-2 mb-3">
-                                <span class="payment-badge" style="color:#65656e;">Cash</span>
-                                <div style="flex:1;height:1px;background:#dee2e6;"></div>
-                                <span style="font-size:11px;color:#65656e;">Entered: <strong id="c_e" style="color:#212529;">—</strong></span>
-                            </div>
-                            <div style="display:flex;flex-direction:row;gap:8px;flex-wrap:wrap;margin-bottom: 0.5rem;">
-                                <div style="flex:1;min-width:160px;" class="material-input outlined">
-                                    <input name="cash" type="text" class="form-control data-input" data-field="cash"
-                                        min="0" step="0.01" placeholder=" "/>
-                                    <label style="padding-left:6px;color:#777777;">Amount ($)</label>
-                                </div>
+                        <div class="col-md-3">
+                            <div class="vs-material-field">
+                                <input type="text" name="payer" class="data-input form-control" data-field="payer" placeholder=" " > 
+                                <label>Payer</label>
                             </div>
                         </div>
-
-                        <div>
-                            <div class="d-flex align-items-center gap-2 mb-3">
-                                <span class="payment-badge" style="color:#65656e;">Bank Transfer</span>
-                                <div style="flex:1;height:1px;background:#dee2e6;"></div>
-                                <span style="font-size:11px;color:#65656e;">Entered: <strong id="b_e" style="color:#212529;">—</strong></span>
-                            </div>
-                            <div style="display:flex;flex-direction:row;gap:8px;flex-wrap:wrap;margin-bottom: 0.5rem;">
-                                <div style="flex:1;min-width:140px;" class="material-input outlined">
-                                    <select name="bank" class="form-select data-input" data-field="bank" data-style="material" placeholder="Bank"></select>
-                                </div>
-                                <div style="flex:1;min-width:140px;" class="material-input outlined">
-                                    <input name="bank_amount" type="text" class="form-control data-input"
-                                        data-field="bank_amount" min="0" step="0.01" placeholder=" "/>
-                                    <label style="padding-left:6px;color:#777777;">Amount ($)</label>
-                                </div>
-                                <div style="flex:1;min-width:140px;" class="material-input outlined">
-                                    <input name="bank_ref_number" type="text" class="form-control data-input"
-                                        data-field="bank_ref_number" placeholder=" "/>
-                                    <label style="padding-left:6px;color:#777777;">Ref Number</label>
-                                </div>
+                        <div class="col-md-12">
+                            <div class="vs-material-field">
+                                <input name="cash" type="text" class="form-control data-input" data-field="cash" min="0" step="0.01" placeholder=" "/>
+                                <label>Cash</label>
                             </div>
                         </div>
-
-                        <div>
-                            <div class="d-flex align-items-center gap-2 mb-3">
-                                <span class="payment-badge" style="color:#65656e;">Cheque</span>
-                                <div style="flex:1;height:1px;background:#dee2e6;"></div>
-                                <span style="font-size:11px;color:#65656e;">Entered: <strong id="ch_e" style="color:#212529;">—</strong></span>
-                            </div>
-                            <div style="display:flex;flex-direction:row;gap:8px;flex-wrap:wrap;margin-bottom: 0.5rem;">
-                                <div style="flex:1;min-width:140px;" class="material-input outlined">
-                                    <select name="cheque_bank_id" class="form-select data-input"
-                                            data-field="cheque_bank_id" data-style="material" placeholder="Cheque Bank"></select>
-                                </div>
-                                <div style="flex:1;min-width:140px;" class="material-input outlined">
-                                    <input name="cheque_amount" type="text" class="form-control data-input"
-                                        data-field="cheque_amount" min="0" step="0.01" placeholder=" "/>
-                                    <label style="padding-left:6px;color:#777777;">Amount ($)</label>
-                                </div>
-                                <div style="flex:1;min-width:140px;" class="material-input outlined">
-                                    <input name="cheque_number" type="text" class="form-control data-input"
-                                        data-field="cheque_number" placeholder=" "/>
-                                    <label style="padding-left:6px;color:#777777;">Cheque Number</label>
-                                </div>
+                        <div class="col-4">
+                            <div class="vs-material-field">
+                                <select name="bank" class="form-select data-input" data-field="bank" data-style="material" placeholder="Bank"></select>
                             </div>
                         </div>
-
+                        <div class="col-4">
+                            <div class="vs-material-field">
+                                <input name="bank_amount" type="text" class="form-control data-input" data-field="bank_amount" min="0" step="0.01" placeholder=" "/>
+                                <label>Amount</label>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="vs-material-field">
+                                <input name="bank_ref_number" type="text" class="form-control data-input" data-field="bank_ref_number" placeholder=" "/>
+                                <label>Ref Number</label>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="vs-material-field">
+                                <select name="cheque_bank_id" class="form-select data-input" data-field="cheque_bank_id" data-style="material" placeholder="Cheque"></select>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="vs-material-field">
+                                <input name="cheque_amount" type="text" class="form-control data-input" data-field="cheque_amount" min="0" step="0.01" placeholder=" "/>
+                                <label>Amount</label>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="vs-material-field">
+                                <input name="cheque_number" type="text" class="form-control data-input" data-field="cheque_number" placeholder=" "/>
+                                <label>Cheque Number</label>
+                            </div>
+                        </div>
                         <input name="vendorid" class="d-none data-input" data-field="vendor_id">
                         <input name="payment_method" type="hidden" class="data-input" data-field="payment_method">
 
@@ -614,16 +585,14 @@ const BillPaymentDialog = (() => {
                             </div>
                         </div>
 
-                        <!-- Remark -->
-                        <div>
-                            <div class="material-input outlined" style="margin:0;">
-                                <textarea name="remark" class="form-control data-input" data-field="remarks"
-                                        rows="2" style="height:55px;" placeholder=""></textarea>
-                                <label style="padding-left:6px;color:#777777;">Remark</label>
+                        <div class="col-12">
+                            <div class="vs-material-field">
+                                <textarea name="remark" class="form-control data-input" data-field="remarks" rows="2" style="height:55px;" placeholder=" "></textarea>
+                                <label>Remark</label>
                             </div>
                         </div>
-
                     </div>
+
                 </div>`,
 
                 contentCreated: (me) => {
@@ -646,47 +615,29 @@ const BillPaymentDialog = (() => {
                         let due = 0;
                         const dueEl = me.divModal.querySelector("#f_due");
                         if (dueEl) {
-                            due =
-                                parseFloat(
-                                    dueEl.textContent.replace(/[^0-9.-]+/g, ""),
-                                ) || 0;
+                            due = parseFloat(dueEl.textContent.replace(/[^0-9.-]+/g, ""),) || 0;
                         }
-
                         const remaining = due - totalPaid;
-
-                        me.divModal.querySelector("#f_tot").textContent =
-                            fmt(totalPaid);
-
+                        me.divModal.querySelector("#f_tot").textContent = fmt(totalPaid);
                         const balEl = me.divModal.querySelector("#f_bal");
                         if (balEl) {
                             if (totalPaid > due + 0.001) {
                                 balEl.style.color = "#dc3545";
-                                balEl.textContent =
-                                    "Overpaid: " + fmt(Math.abs(remaining));
+                                balEl.textContent ="Overpaid: " + fmt(Math.abs(remaining));
                             } else {
-                                balEl.style.color =
-                                    remaining <= 0.001 ? "#3B6D11" : "#FAB31C";
+                                balEl.style.color = remaining <= 0.001 ? "#3B6D11" : "#FAB31C";
                                 balEl.textContent = fmt(Math.max(0, remaining));
                             }
                         }
 
-                        me.divModal.querySelector("#c_e").textContent =
-                            cash > 0 ? fmt(cash) : "—";
-                        me.divModal.querySelector("#b_e").textContent =
-                            bank > 0 ? fmt(bank) : "—";
-                        me.divModal.querySelector("#ch_e").textContent =
-                            cheque > 0 ? fmt(cheque) : "—";
+                        me.divModal.querySelector("#c_e").textContent = cash > 0 ? fmt(cash) : "—";
+                        me.divModal.querySelector("#b_e").textContent = bank > 0 ? fmt(bank) : "—";
+                        me.divModal.querySelector("#ch_e").textContent = cheque > 0 ? fmt(cheque) : "—";
                     };
 
-                    const amountFields = [
-                        "cash",
-                        "bank_amount",
-                        "cheque_amount",
-                    ];
+                    const amountFields = ["cash","bank_amount","cheque_amount"];
                     amountFields.forEach((name) => {
-                        const input = me.divModal.querySelector(
-                            `[name="${name}"]`,
-                        );
+                        const input = me.divModal.querySelector(`[name="${name}"]`,);
                         if (input) {
                             input.addEventListener("input", updateTotals);
                             input.addEventListener("change", updateTotals);
@@ -694,8 +645,7 @@ const BillPaymentDialog = (() => {
                     });
 
                     // Original amount formatting
-                    const amountInput =
-                        me.divModal.querySelector('[name="amount"]');
+                    const amountInput = me.divModal.querySelector('[name="amount"]');
                     if (amountInput) {
                         amountInput.addEventListener("input", (e) => {
                             let v = e.target.value.replace(/[^0-9.]/g, "");
@@ -708,10 +658,7 @@ const BillPaymentDialog = (() => {
                     }
 
                     me.convertPayment = (data) => {
-
                         console.log(3333333, data);
-                        
-
                         const parseAmt = (v) =>
                             isNaN(parseFloat(v)) ? 0 : parseFloat(v);
                         const breakdowns = [];
@@ -782,39 +729,6 @@ const BillPaymentDialog = (() => {
                     menu.upload_document.style.display =
                         status_id == 1 || status_id == 2 ? "block" : "none";
                 },
-
-                // onPrepareForm: (me, data) => {
-                //     const bill = data?.bill || data?.bill_details;
-
-                //     const dueAmount = Number(bill?.total_amount || bill?.balance || 0);
-                //     const dueEl = me.divModal.querySelector("#f_due");
-                //     if (dueEl) dueEl.textContent = "$" + dueAmount.toFixed(2);
-
-                //     if (me.controls.total_amount) me.controls.total_amount.value = Number(bill.total_amount || 0).toFixed(2);
-                //     if (me.controls.paid_amount)  me.controls.paid_amount.value  = Number(bill.paid_amount  || 0).toFixed(2);
-                //     if (me.controls.balance)      me.controls.balance.value      = Number(bill.balance      || 0).toFixed(2);
-
-                //     if (me.controls.vendor) {
-                //         me.controls.vendor.value = bill.vendor_name || '';
-                //         me.controls.vendor.readOnly = true;
-                //     }
-
-                //     if (me.controls.payment_date && !me.controls.payment_date.value) {
-                //         const now = new Date();
-                //         const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-                //         const day = String(now.getDate()).padStart(2, '0');
-                //         const month = months[now.getMonth()];
-                //         const year = now.getFullYear();
-                //         me.controls.payment_date.value = `${day}-${month}-${year}`;
-                //     }
-
-                //     const banks = data?.banks ?? [];
-                //     const bankEl  = me.divModal.querySelector('[name="bank"]');
-                //     const chequeEl = me.divModal.querySelector('[name="cheque_bank_id"]');
-                //     if (bankEl)   VSUtil.setComboItems(bankEl,   banks, 'id', 'name', '', 'Select Bank', '');
-                //     if (chequeEl) VSUtil.setComboItems(chequeEl, banks, 'id', 'name', '', 'Select Bank', '');
-                // },
-
                 onPrepareForm: (me, data) => {
                     const bill = data?.bill || data?.bill_details;
 
@@ -829,27 +743,18 @@ const BillPaymentDialog = (() => {
                     }
 
                     if (me.controls.total_amount)
-                        me.controls.total_amount.value = Number(
-                            bill.total_amount || 0,
-                        ).toFixed(2);
+                        me.controls.total_amount.value = Number(bill.total_amount || 0).toFixed(2);
                     if (me.controls.paid_amount)
-                        me.controls.paid_amount.value = Number(
-                            bill.paid_amount || 0,
-                        ).toFixed(2);
+                        me.controls.paid_amount.value = Number(bill.paid_amount || 0,).toFixed(2);
                     if (me.controls.balance)
-                        me.controls.balance.value = Number(
-                            bill.balance || 0,
-                        ).toFixed(2);
+                        me.controls.balance.value = Number(bill.balance || 0,).toFixed(2);
 
                     if (me.controls.vendor) {
                         me.controls.vendor.value = bill.vendor_name || "";
                         me.controls.vendor.readOnly = true;
                     }
 
-                    if (
-                        me.controls.payment_date &&
-                        !me.controls.payment_date.value
-                    ) {
+                    if (me.controls.payment_date &&!me.controls.payment_date.value) {
                         const now = new Date();
                         const months = [
                             "Jan",
@@ -877,25 +782,9 @@ const BillPaymentDialog = (() => {
                         '[name="cheque_bank_id"]',
                     );
                     if (bankEl)
-                        VSUtil.setComboItems(
-                            bankEl,
-                            banks,
-                            "id",
-                            "name",
-                            "",
-                            "Select Bank",
-                            "",
-                        );
+                        VSUtil.setComboItems(bankEl,banks,"id","name","","Select Bank","",);
                     if (chequeEl)
-                        VSUtil.setComboItems(
-                            chequeEl,
-                            banks,
-                            "id",
-                            "name",
-                            "",
-                            "Select Bank",
-                            "",
-                        );
+                        VSUtil.setComboItems(chequeEl,banks,"id","name","","Select Bank","",);
                 },
                 buttons: [
                     {
@@ -907,29 +796,6 @@ const BillPaymentDialog = (() => {
                         label: '<span vslang="buttons.Confirm Payment"></span>',
                         cssClass: "btn btn-primary",
                         click: (me, btn) => {
-                            // const op = me.getData();
-                            // op.bill_id = me.dataOptions.bill_id;
-                            // op.vendor_id = me.dataOptions.vendorId;
-                            //     console.log(11,op);
-                            //     const cash      = parseFloat(op.cash)         || 0;
-                            //     const bankAmt   = parseFloat(op.bank_amount)  || 0;
-                            //     const chequeAmt = parseFloat(op.cheque_amount)|| 0;
-                            //     op.amount = op.cash + op.bank_amount + op.cheque_amount
-                            //     console.log(12,op);
-
-                            //     vsapi.call(`${main_view.base_url}/prm/bill-payment/save`, op, btn, null)
-                            //         .then((res) => {
-                            //             if (res.status_code === 200) {
-                            //                 me.hide(true, op);
-                            //                 cv_interact.success("Payment recorded successfully.");
-                            //             } else {
-                            //                 cv_interact.error(res.error_message || "Failed to record payment.");
-                            //             }
-                            //         })
-                            //         .catch(() => {
-                            //             cv_interact.error("Network error while saving payment.");
-                            //         });
-
                             const rawData = me.getData();
                             const payload = me.convertPayment(rawData);
                             console.log(11111111, payload);
@@ -948,12 +814,7 @@ const BillPaymentDialog = (() => {
                                       ),
                                   ) || 0
                                 : 0;
-
-                            // if (totalInput <= 0) {
-                            //     return cv_interact.error(
-                            //         "Please enter a payment amount.",
-                            //     );
-                            // }
+                            
                             vsapi
                                 .call(
                                     `${main_view.base_url}/prm/bill-payment/save`,
