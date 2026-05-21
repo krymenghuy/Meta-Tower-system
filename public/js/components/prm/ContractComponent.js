@@ -328,7 +328,6 @@ var ContractComponent = new (function () {
         // const depositVal = (d.deposit != null && d.deposit !== '') ? Number(d.deposit).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : 'â€”';
 
         const renewalsList = Array.isArray(renewals) ? renewals : [];
-        const currentSpaceCode = (d.space_code ?? '').trim();
         const escapeHtml = (str) => {
             if (!str) return '';
             const div = document.createElement('div');
@@ -339,18 +338,15 @@ var ContractComponent = new (function () {
         if (renewalsList.length > 0) {
             const unitPillClass = 'px-2 py-1 bg-prm-custom text-white rounded font-medium ';
             const rows = renewalsList.map((r) => {
-                const spaceCode = (r.space_code ?? '').trim() || 'â€”';
-                const unitChanged = currentSpaceCode && spaceCode !== 'â€”' && spaceCode !== currentSpaceCode;
-                const unitCell = unitChanged
-                    ? `<span class="d-inline-flex align-items-center gap-1"><span class="${unitPillClass}">${escapeHtml(spaceCode)}</span><span class="badge bg-info text-white" style="font-size:0.7rem;">New unit</span></span>`
-                    : `<span class="${unitPillClass}">${escapeHtml(spaceCode)}</span>`;
+                const spaceCode = (r.space_code ?? '').trim();
+                const unitCell = `<span class="${unitPillClass}">${escapeHtml(spaceCode)}</span>`;
                 return `
                 <tr>
-                    <td class="align-middle">${(r.renewal_date ?? '').trim() || 'â€”'}</td>
-                    <td class="align-middle">${(r.start_date ?? '').trim() || 'â€”'}</td>
-                    <td class="align-middle">${(r.end_date ?? '').trim() || 'â€”'}</td>
+                    <td class="align-middle">${(r.renewal_date ?? '').trim() }</td>
+                    <td class="align-middle">${(r.start_date ?? '').trim() }</td>
+                    <td class="align-middle">${(r.end_date ?? '').trim() }</td>
                     <td class="align-middle">${unitCell}</td>
-                    <td class="text-break align-middle">${(r.remarks ?? '').trim() || 'â€”'}</td>
+                    <td class="text-break align-middle">${escapeHtml((r.remarks ?? '').trim())}</td>
                     <td class="align-middle"><div class="d-flex flex-column"><span class="text-capitalize fw-semibold">${escapeHtml((r.update_user ?? '').trim()) || 'â€”'}</span><small class="text-muted">${(r.updated_at ?? '').trim() || ''}</small></div></td>
                 </tr>`;
             }).join('');
@@ -436,7 +432,7 @@ var ContractComponent = new (function () {
                 const isTerminated = statusText === 'terminated';
                               // show renew only when status is active and end date is within next 3 months (not for pending)
                               const showRenew = isActive && endDate && mThis.isWithinNextThreeMonths(endDate);
-                const canModify = !isActive && !isExpired && !isTerminated;
+                const canModify = !isExpired && !isTerminated;
 
                 menu.edit_contract.style.display = canModify ? 'block' : 'none';
                 menu.renew_contract.style.display = showRenew ? 'block' : 'none';
@@ -619,34 +615,34 @@ var ContractComponent = new (function () {
 const ContractDialog = (() => {
     const self = {};
     let dialog = null;
-    const parseDateInput = (value) => {
-        if (!value) return null;
-        const raw = String(value).trim();
-        if (!raw) return null;
-        if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) {
-            const [year, month, day] = raw.split('-').map(Number);
-            return new Date(year, month - 1, day);
-        }
+    // const parseDateInput = (value) => {
+    //     if (!value) return null;
+    //     const raw = String(value).trim();
+    //     if (!raw) return null;
+    //     if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) {
+    //         const [year, month, day] = raw.split('-').map(Number);
+    //         return new Date(year, month - 1, day);
+    //     }
 
-        if (/^\d{2}-[A-Za-z]{3}-\d{4}$/.test(raw)) {
-            const [dayStr, monthStr, yearStr] = raw.split('-');
-            const monthMap = {
-                Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5,
-                Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11
-            };
-            const month = monthMap[monthStr];
-            if (month === undefined) return null;
-            return new Date(Number(yearStr), month, Number(dayStr));
-        }
+    //     if (/^\d{2}-[A-Za-z]{3}-\d{4}$/.test(raw)) {
+    //         const [dayStr, monthStr, yearStr] = raw.split('-');
+    //         const monthMap = {
+    //             Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5,
+    //             Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11
+    //         };
+    //         const month = monthMap[monthStr];
+    //         if (month === undefined) return null;
+    //         return new Date(Number(yearStr), month, Number(dayStr));
+    //     }
 
-        if (/^\d{2}\/\d{2}\/\d{4}$/.test(raw)) {
-            const [day, month, year] = raw.split('/').map(Number);
-            return new Date(year, month - 1, day);
-        }
+    //     if (/^\d{2}\/\d{2}\/\d{4}$/.test(raw)) {
+    //         const [day, month, year] = raw.split('/').map(Number);
+    //         return new Date(year, month - 1, day);
+    //     }
 
-        const parsed = new Date(raw);
-        return Number.isNaN(parsed.getTime()) ? null : parsed;
-    };
+    //     const parsed = new Date(raw);
+    //     return Number.isNaN(parsed.getTime()) ? null : parsed;
+    // };
 
     self.show = (op) => {
         dialog = dialog || new GeneralDialog({
@@ -833,7 +829,41 @@ const ContractDialog = (() => {
             },
 
             onPrepareForm: (me, data) => {
-                console.log(123,data);
+                const isModify = Number(me.dataOptions?.id || 0) > 0;
+
+                if (isModify) {
+                    me.setReadOnly(true, [
+                        'tenant',
+                        'legal_name',
+                        'code',
+                        'start_date',
+                        'end_date',
+                        'space_name',
+                        'sqm_size',
+                        'price_type_label',
+                        'price',
+                    ]);
+                    if (me.controls.tenant) {
+                        me.controls.tenant.disabled = true;
+                    }
+                    const unitSelect = me.divModal.querySelector('[data-field="space_id"]');
+                    if (unitSelect) {
+                        unitSelect.disabled = true;
+                    }
+                    if (me.controls.business_type_id) {
+                        me.controls.business_type_id.disabled = false;
+                    }
+                    if (me.controls.deposit) {
+                        me.controls.deposit.disabled = false;
+                        me.controls.deposit.readOnly = false;
+                    }
+                    if (me.controls.remarks) {
+                        me.controls.remarks.disabled = false;
+                        me.controls.remarks.readOnly = false;
+                    }
+                    me.tenant_id = data?.contract_details?.tenant_id ?? me.tenant_id ?? null;
+                    return;
+                }
 
                 const isReadOnly = me.dataOptions.tenant_id > 0 || data.prefill_tenant_id;
                 me.controls.tenant.disabled = isReadOnly;
@@ -934,50 +964,41 @@ const ContractDialog = (() => {
                     label: '<span vslang="buttons.Save"></span>',
                     cssClass: 'btn btn-primary',
                     click: (me, btn) => {
-                        // const depositCtrl = me.controls?.deposit;
-                        // const depositVal = depositCtrl ? String(depositCtrl.value || "").trim() : "";
-                        // if (!depositVal) {
-                        //     cv_interact.error("Deposit is required.");
-                        //     if (depositCtrl) depositCtrl.focus();
+                        const op = me.getData();
+                        // if (!me.tenant_id) {
+                        //     cv_interact.error("Please select a tenant.");
                         //     return;
                         // }
-
-                        const op = me.getData();
-                        if (!me.tenant_id) {
-                            cv_interact.error("Please select a tenant.");
-                            return;
-                        }
-                        if (!op.business_type_id) {
-                            cv_interact.error("Please select a business type.");
-                            return;
-                        }
+                        // if (!op.business_type_id) {
+                        //     cv_interact.error("Please select a business type.");
+                        //     return;
+                        // }
                         if (me._createContractSpaceTypeId !== undefined && me._createContractSpaceTypeId !== null) {
                             op.space_type_id = me._createContractSpaceTypeId;
                         }
                         op.tenant_id = me.tenant_id;
                         op.id = me.dataOptions.id;
-                        op.tenant_id = me.tenant_id;
+                        // op.tenant_id = me.tenant_id;
 
-                        if (!op.id) {
-                            const endDt = parseDateInput(op.end_date);
-                            if (!endDt || Number.isNaN(endDt.getTime())) {
-                                cv_interact.error("Please enter a valid End Date.");
-                                return;
-                            }
-                            const endDay = new Date(
-                                endDt.getFullYear(),
-                                endDt.getMonth(),
-                                endDt.getDate(),
-                            );
-                            const today = new Date();
-                            today.setHours(0, 0, 0, 0);
-                            if (endDay < today) {
-                                cv_interact.error("End date cannot be in the past.");
-                                return;
-                            }
-                        }
+                        // if (!op.id) {
+                        //     const endDt = parseDateInput(op.end_date);
+                        //     if (!endDt || Number.isNaN(endDt.getTime())) {
+                        //         cv_interact.error("Please enter a valid End Date.");
+                        //         return;
+                        //     }
+                        //     const endDay = new Date(
+                        //         endDt.getFullYear(),
+                        //         endDt.getMonth(),
+                        //         endDt.getDate(),
+                        //     );
+                        //     const today = new Date();
+                        //     today.setHours(0, 0, 0, 0);
+                        //     if (endDay < today) {
+                        //         cv_interact.error("End date cannot be in the past.");
+                        //         return;
+                        //     }
+                        // }
 
-                        console.log(123,op);
                         vsapi.call([main_view.base_url, "/prm/contract/save",].join(""), op, btn, null).then((res) => {
                             if (res.status_code === 200) {
                                 me.hide(true, op);

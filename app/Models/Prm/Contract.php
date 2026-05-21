@@ -21,11 +21,115 @@ class Contract
         $this->id = $id;
         $this->userInfo = $userInfo;
     }
+    /**
+     * Required-field checks in form order (tenant → business → unit → deposit → start → end).
+     */
+    public static function validateSaveContractFieldOrder($arr)
+    {
+        $tenantId = $arr['tenant_id'] ?? null;
+        if ($tenantId === null || $tenantId === '' || !is_numeric($tenantId)) {
+            return DV::error('Please select a tenant.');
+        }
+
+        $businessTypeId = $arr['business_type_id'] ?? null;
+        if ($businessTypeId === null || $businessTypeId === '' || !is_numeric($businessTypeId)) {
+            return DV::error('Please select a business type.');
+        }
+
+        $spaceId = $arr['space_id'] ?? null;
+        if ($spaceId === null || $spaceId === '' || !is_numeric($spaceId)) {
+            return DV::error('Please select a valid unit code');
+        }
+
+        $deposit = $arr['deposit'] ?? null;
+        if ($deposit === null || $deposit === '') {
+            return DV::error('Deposit is required');
+        }
+        if (!is_numeric($deposit)) {
+            return DV::error('Deposit is required');
+        }
+
+        $startDate = trim(($arr['start_date'] ?? ''));
+        if ($startDate === '') {
+            return DV::error('Please enter a valid contract start date.');
+        }
+
+        $endDate = trim(($arr['end_date'] ?? ''));
+        if ($endDate === '') {
+            return DV::error('Please enter a valid contract end date.');
+        }
+
+        return null;
+    }
+
+    /**
+     * Modify contract: only business type, deposit, and remarks may change.
+     */
+    public function updateContractAllowedFields($arr = [], $id = null, $ss = null)
+    {
+        $id = $id ?? $this->id;
+        $ss = $ss ?? $this->userInfo;
+
+        if (!$id) {
+            return DV::error('Contract not found.');
+        }
+
+        $existing = DB::table('contracts')->where('id', $id)->first();
+        if (!$existing) {
+            return DV::error('Contract not found.');
+        }
+
+        $businessTypeId = $arr['business_type_id'] ?? null;
+        if ($businessTypeId === null || $businessTypeId === '' || !is_numeric($businessTypeId)) {
+            return DV::error('Please select a business type.');
+        }
+
+        $deposit = $arr['deposit'] ?? null;
+        if ($deposit === null || $deposit === '') {
+            return DV::error('Deposit is required');
+        }
+        if (!is_numeric($deposit)) {
+            return DV::error('Deposit is required');
+        }
+
+        $v_rule = [
+            'business_type_id' => '1|number|exists=business_types.id|text=Please select a business type.',
+            'deposit'          => '1|number|text=Deposit is required',
+            'remarks'          => '0|string|0-255',
+        ];
+        $res = DBX::validateObject($arr, $v_rule, 1, [], $ss->lang, 0, null);
+        if ($res->error) {
+            return DV::error($res->error);
+        }
+
+        $update = [
+            'business_type_id' => $res->values['business_type_id'],
+            'deposit'          => $res->values['deposit'],
+            'remarks'          => $res->values['remarks'] ?? $existing->remarks,
+        ];
+
+        $saved = DBX::saveData($ss, 'contracts', ['id' => $id], $update, [], 1);
+        if (!$saved) {
+            return DV::error('Update failed.');
+        }
+
+        return DV::depends(1, ['contracts' => $update, 'id' => $id]);
+    }
+
     public function saveContract($arr = [], $id = null, $ss = null)
 {
     $id = $id ?? $this->id;
     $ss = $ss ?? $this->userInfo;
     $subs_id = $ss->subs_id ?? getCurrentSubsId(true);
+
+    if ($id) {
+        return $this->updateContractAllowedFields($arr, $id, $ss);
+    }
+
+    $orderError = self::validateSaveContractFieldOrder($arr);
+    if ($orderError !== null) {
+        return $orderError;
+    }
 
     $v_rule = [
         'tenant_id'        => '1|number|exists=tenants.id|text=Please select a tenant.',
@@ -47,8 +151,16 @@ class Contract
     $res = DBX::validateObject($arr, $v_rule, 1, ['legal_name' => $legal_name_char], $ss->lang, 0, null);
     if ($res->error) return DV::error($res->error);
     $inputs = $res->values;
-    $start = strtotime($inputs['start_date']);
-    $end   = strtotime($inputs['end_date']);
+
+    // Date rules only after required fields (tenant, business, unit, deposit, start, end) pass validation.
+    $start = !empty($inputs['start_date']) ? strtotime($inputs['start_date']) : false;
+    $end   = !empty($inputs['end_date']) ? strtotime($inputs['end_date']) : false;
+    if ($start === false) {
+        return DV::error('Please enter a valid contract start date.');
+    }
+    if ($end === false) {
+        return DV::error('Please enter a valid contract end date.');
+    }
     if ($end <= $start) {
         return DV::error('End date must be after start date.');
     }
@@ -900,7 +1012,6 @@ class Contract
             }
             return DV::error($msg);
         }
-        $unitChanged = $new_space_id != $effectiveOldSpaceId;
         // Always honor negotiated contract price on renewal (not building-space list price).
         $renewPrice = $old->price;
         $renewPriceType = $old->price_type;
@@ -910,8 +1021,12 @@ class Contract
             'price_type' => $renewPriceType,
             'remarks'    => $inputs['remarks'] ?? $old->remarks,
         ];
-        if (!$unitChanged) {
-            $updateContract['space_id'] = $new_space_id;
+        $contractSpaceId = $old->space_id;
+        $renewalSpaceId = $new_space_id;
+        // Only sync contracts.space_id when renewal unit is already the live contract unit.
+        // If renewal unit differs (pending move from a prior renewal), defer until start_date.
+        if ($renewalSpaceId === $contractSpaceId && $renewalSpaceId > 0) {
+            $updateContract['space_id'] = $renewalSpaceId;
         }
         DB::beginTransaction();
         $updated = DBX::saveData($ss, 'contracts', ['id' => $old->id], $updateContract, [], 1);
@@ -919,11 +1034,11 @@ class Contract
             DB::rollBack();
             return DV::error('Renew failed');
         }
-        if (!$unitChanged && $new_space_id) {
+        if ($renewalSpaceId === $contractSpaceId && $renewalSpaceId > 0) {
             $occupiedId = self::getSpaceOccupiedStatusId();
             if ($occupiedId) {
                 DB::table('building_spaces')
-                    ->where('id', $new_space_id)
+                    ->where('id', $renewalSpaceId)
                     ->update(['status_id' => $occupiedId]);
             }
         }
@@ -935,7 +1050,7 @@ class Contract
             'start_date'    => $inputs['start_date'],
             'end_date'      => $inputs['end_date'],
             'status'        => 'active',
-            'remarks'       => trim((string)($inputs['remarks'] ?? '')),
+            'remarks'       => trim(($inputs['remarks'] ?? '')),
             'created_at'    => $now,
             'updated_at'    => $now,
             'create_uid'    => $ss->user_id ?? null,
