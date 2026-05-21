@@ -69,7 +69,7 @@ var ReceiptComponent = new (function() {
             }
         },
         {
-            transTitle: "titles.Space",
+            transTitle: "titles.Unit",
             className: "align-middle text-nowrap",
             data: data => {
                 return ` <div class="d-flex text-warning align-items-center gap-2">

@@ -3,8 +3,8 @@
     margin: 0;
     box-sizing: border-box;
     -webkit-user-drag: none;
+    font-family: 'Inter','Battambang', sans-serif;
     font-family: 'Inter', sans-serif;
-    /* font-family: 'poppins'; */
     /* Improved default settings */
     font-size: 0.95rem;
     /* line-height: 1.5; */
@@ -951,8 +951,8 @@ a.menu-selected .kt-menu__link-text {
     .select2-selection__rendered {
     color: #595d6e;
     font-size: 1rem;
-    font-family: 'Poppins';
-    /* font-family: inherit; */
+    font-family: 'inter', sans-serif;
+    font-family: inherit;
     height: 100% !important;
     line-height: 28px;
     vertical-align: middle;
@@ -1280,7 +1280,7 @@ a.menu-selected .kt-menu__link-text {
 }
 
 .container-table .table-title {
-    font-family: 'Poppins';
+    font-family: 'inter', sans-serif;
     /* font-family: inherit; */
     padding: 1rem;
     font-size: calc(1rem + 0.3vw);
@@ -1289,7 +1289,8 @@ a.menu-selected .kt-menu__link-text {
 }
 
 .container-table .table thead > tr > th {
-    font-family: 'Poppins';
+    font-family: 'inter', sans-serif;
+    /* font-family: 'Poppins'; */
     /* font-family: inherit; */
     font-size: 1rem;
     color: #008dcd;
@@ -1316,7 +1317,7 @@ a.menu-selected .kt-menu__link-text {
     margin: 0;
     padding: 0;
     list-style-type: none;
-    font-family: 'Poppins';
+    font-family: 'inter', sans-serif;
     /* font-family: inherit; */
     max-height: 300px;
     overflow: hidden;
@@ -2279,7 +2280,7 @@ thead th {
       position: relative;
       margin-bottom: 2rem;
       /* font-family: Arial, sans-serif; */
-      font-family: 'poppins';
+      font-family: 'inter', sans-serif;
 
     }
 

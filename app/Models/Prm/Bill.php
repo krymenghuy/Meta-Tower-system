@@ -49,7 +49,7 @@ class Bill
             'vendor_id'       => '1|number|exists=vendors.id|text=Please select a valid vendor.',
             'building_id'     => '1|number|exists=buildings.id|text=Please select a valid building.',
             'expense_type_id' => '1|number|exists=expense_categories.id|text=Please select a valid category.',
-            'ref_no'          => '1|string|0-25|text=Reference number is required.',
+            'ref_no'          => '1|string|0-25|text=Reference no is required.',
             'total_amount'    => '1|number|min=0|text=Total amount is required.',
             'bill_date'       => '1|date|text=Issue date is required.',
             'due_date'        => '1|date|text=Due date is required.',

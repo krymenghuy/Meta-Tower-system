@@ -371,10 +371,19 @@ var SpaceComponent = new (function () {
                     : price * size;
 
                 const priceLabel = d.price_type === 'total'
-                    ? `${symbol} ${price.toLocaleString()} /month`
-                    : `${symbol} ${price.toLocaleString()}`;
+                    ? `${symbol} ${price.toLocaleString(undefined,{
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    })} /month`
+                    : `${symbol} ${price.toLocaleString(undefined,{
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    })}`;
 
-                const priceLabelPerMonth = `${symbol} ${pricePerMonth.toLocaleString()}`;
+                const priceLabelPerMonth = `${symbol} ${pricePerMonth.toLocaleString(undefined,{
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                })}`;
                 const maintenanceStatusId = Number(d.maintenance_status_id || 0);
                 const maintenanceStatusName = String(d.maintenance_status ?? d.maintenance_status_name ?? '').trim().toLowerCase();
                 const isPlannedMaintenance = maintenanceStatusId === 1 || maintenanceStatusName === 'planned' || maintenanceStatusName === 'upcoming';
@@ -768,10 +777,10 @@ const BuildingSpaceDialog = (() => {
                                 </div>
                             </div>
                             <div class="col-6">
-                                <select data-style="material" name="price_type" placeholder="Price Type" class="data-input form-control" data-field="price_type">
-                                    <option value="">Select Price Type</option>
-                                    <option value="sqm">Per m²</option>
-                                    <option value="total">Whole Room</option>
+                                <select data-style="material" name="price_type" placeholder="Charge As" class="data-input form-control" data-field="price_type">
+                                    <option value="">Select Charge As</option>
+                                    <option value="sqm">m²</option>
+                                    <option value="total">Unit</option>
                                 </select>
                             </div>
 
@@ -1193,10 +1202,12 @@ const ViewBookingDialog = (() => {
                                             </div>
                                         </div>
                                         <div class="row cols-2 mb-0">
-                                            <div class="d-flex">
-                                                <p class="text-nowrap text-muted width-p">Remark</p>
-                                                <p class="px-3">:</p>
-                                                <p class="text-nowrap text-capitalize data-get">${data.remarks ?? '_'}</p>
+                                            <div class="d-flex align-items-start">
+                                                <p class="text-muted mb-0">Remark</p>
+                                                <p class="px-3 mb-0">:</p>
+                                                <p class="data-get mb-0 text-capitalize" style="word-break: break-word; overflow-wrap: anywhere;">
+                                                    ${data.remarks ?? '_'}
+                                                </p>
                                             </div>
                                         </div>
                                     </div>

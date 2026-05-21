@@ -4,7 +4,7 @@
     margin: 0;
     box-sizing: border-box;
     -webkit-user-drag: none;
-    /* font-family: "Source Sans 3", sans-serif; */
+    font-family: "inter", sans-serif;
     font-size: 2rem;
     font-family: Inherit;
 }
@@ -429,7 +429,7 @@ table.header-uppercase>thead>tr>th {
   white-space: nowrap;
   /* text-transform: uppercase !important; */
 
-/* font-family: 'Inter', 'Noto Sans Khmer', sans-serif !important; */
+  font-family: 'Inter', 'Noto Sans Khmer', sans-serif !important;
   font-family: inherit;
 }
 
@@ -556,7 +556,7 @@ Search input class, to be applied to input
     border: 1px solid #d9dbe3;
     background: #fff;
     font-size: 14px;
-    font-family: 'inter';
+    font-family: 'inter', sans-serif;
     outline: none;
 
     /* modern search icon */
