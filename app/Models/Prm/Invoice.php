@@ -663,7 +663,7 @@ class Invoice extends VSModel
 
             setOfficialDates(
                 $row,
-                ['due_date', 'invoice_date'],
+                ['due_date', 'issue_date'],
                 ['updated_at', 'created_at'],
                 []
             );
