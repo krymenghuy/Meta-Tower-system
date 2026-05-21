@@ -54,7 +54,8 @@ var InvoiceComponent = (() => {
                 return `
                         <div class="d-flex flex-column">
                             <span>${data.tenant_name ?? ""}</span>
-                            <span class="d-block text-primary"style="font-size:12px;">${data.tenant_phone ?? ""}</span>
+                            <span class="d-block text-primary"style="font-size:12px;">${data.tenant_phone ??
+                                ""}</span>
                         </div>`;
             }
         },
@@ -334,7 +335,6 @@ var InvoiceComponent = (() => {
             .map(item => {
                 const qty = parseFloat(item.qty || 1);
                 const price = parseFloat(item.price || 0);
-                // const disType = item.discount_type;
 
                 const discount = parseFloat(item.discount || 0);
                 const taxAmount = parseFloat(item.tax_rate) || 0;
@@ -352,14 +352,20 @@ var InvoiceComponent = (() => {
                     <td class="text-center small">${formatDate(
                         item.end_date
                     )}</td>
-                    <td class="text-end">${currency}${price}</td>
+                    <td class="text-end">${currency}${price.toLocaleString(
+                    "en-US",
+                    {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    }
+                )}</td>
                     <td class="text-end text-danger">${getDiscountDisplay(
                         item
                     )}</td>
                     <td class="text-center text-info">${taxAmount}%</td>
                     <td class="text-end fw-bold">${currency}${total.toLocaleString(
                     "en-US",
-                    { minimumFractionDigits: 2 }
+                    { minimumFractionDigits: 2, maximumFractionDigits: 2 }
                 )}</td>
 
                 </tr>`;
@@ -892,7 +898,6 @@ const InvoiceDialog = (() => {
                 //     console.log("months", months);
                 //     console.log("selectedSpaceId", selectedSpaceId);
 
-
                 //     const matchedSpace =
                 //         spaces.find(
                 //             s => String(s.space_id) === String(selectedSpaceId)
@@ -978,7 +983,7 @@ const InvoiceDialog = (() => {
                 //                         ${
                 //                             Number(invoiceType) === 2
                 //                                 ? ""
-                //                                 : `                                        
+                //                                 : `
                 //                             <div class="material-input outlined" style="margin-bottom: 1rem;">
                 //                                 <input class="data-input form-control" data-field="tax_rate" name="tax_rate" type="text" inputmode="decimal" placeholder="0">
                 //                                 <label style="color:#777;">Tax %</label>
@@ -1031,7 +1036,7 @@ const InvoiceDialog = (() => {
                 //             ) || {};
 
                 //             elMonthly.value = matchedMonth.month || "";
-                            
+
                 //             if (elDiscountType) {
                 //                 elDiscountType.value = "percent";
                 //             }
@@ -1161,64 +1166,64 @@ const InvoiceDialog = (() => {
                 // };
 
                 me.controls.btnRent.onclick = () => {
-    if (!me._selectedTenantId) {
-        return cv_interact.error("Please select Tenant first.");
-    }
-    if (
-        !me.controls.space.value ||
-        me.controls.space.value === ""
-    ) {
-        return cv_interact.error("Please select Space.");
-    }
+                    if (!me._selectedTenantId) {
+                        return cv_interact.error("Please select Tenant first.");
+                    }
+                    if (
+                        !me.controls.space.value ||
+                        me.controls.space.value === ""
+                    ) {
+                        return cv_interact.error("Please select Space.");
+                    }
 
-    if (
-        !me.controls.invoice_type.value ||
-        me.controls.invoice_type.value === ""
-    ) {
-        return cv_interact.error("Please select Invoice Type.");
-    }
-    const invoiceType = me.controls.invoice_type.value;
-    const spaces = me._tenantSpaces || [];
-    const months = me._tenantMonths || [];
-    const selectedSpaceId =
-        me.controls.space?.value ||
-        me.controls.space_id?.value ||
-        "";
+                    if (
+                        !me.controls.invoice_type.value ||
+                        me.controls.invoice_type.value === ""
+                    ) {
+                        return cv_interact.error("Please select Invoice Type.");
+                    }
+                    const invoiceType = me.controls.invoice_type.value;
+                    const spaces = me._tenantSpaces || [];
+                    const months = me._tenantMonths || [];
+                    const selectedSpaceId =
+                        me.controls.space?.value ||
+                        me.controls.space_id?.value ||
+                        "";
 
-    const matchedSpace =
-        spaces.find(
-            s => String(s.space_id) === String(selectedSpaceId)
-        ) || spaces[0];
+                    const matchedSpace =
+                        spaces.find(
+                            s => String(s.space_id) === String(selectedSpaceId)
+                        ) || spaces[0];
 
-    if (!matchedSpace) {
-        return cv_interact.error("No space/contract found.");
-    }
-    const availableMonths = months.filter(
-        m =>
-            String(m.contract_id) ===
-            String(matchedSpace.contract_id)
-    );
+                    if (!matchedSpace) {
+                        return cv_interact.error("No space/contract found.");
+                    }
+                    const availableMonths = months.filter(
+                        m =>
+                            String(m.contract_id) ===
+                            String(matchedSpace.contract_id)
+                    );
 
-    if (!availableMonths || availableMonths.length === 0) {
-        return cv_interact.error(
-            "Rent has already reached the final month of the contract."
-        );
-    }
+                    if (!availableMonths || availableMonths.length === 0) {
+                        return cv_interact.error(
+                            "Rent has already reached the final month of the contract."
+                        );
+                    }
 
-    // Popup Initialization
-    let rentDiv = null;
-    InputBox.resetInstance("rentPopUp");
+                    // Popup Initialization
+                    let rentDiv = null;
+                    InputBox.resetInstance("rentPopUp");
 
-    InputBox.show({
-        title: "Rent Detail",
-        instanceKey: "rentPopUp",
-        createContent() {
-            const div = document.createElement("div");
-            rentDiv = div;
-            div.style.cssText =
-                "display:flex; flex-direction:column;";
+                    InputBox.show({
+                        title: "Rent Detail",
+                        instanceKey: "rentPopUp",
+                        createContent() {
+                            const div = document.createElement("div");
+                            rentDiv = div;
+                            div.style.cssText =
+                                "display:flex; flex-direction:column;";
 
-            div.innerHTML = `
+                            div.innerHTML = `
                 <div>
                     <div class="d-flex align-items-center mb-3">
                         <span style=" color:#0C447C; font-size:13px;">Contract Details</span>
@@ -1296,144 +1301,208 @@ const InvoiceDialog = (() => {
                     <label style="color:#777;">Remark</label>
                 </div>
             `;
-            return div;
-        },
+                            return div;
+                        },
 
-        onOpen(ibMe) {
-            const elContract = rentDiv.querySelector('[data-field="contract_id"]');
-            const elMonthly = rentDiv.querySelector('[data-field="monthly"]');
-            const elPrice = rentDiv.querySelector('[data-field="price"]');
-            const elStartDate = rentDiv.querySelector('[data-field="start_date"]');
-            const elEndDate = rentDiv.querySelector('[data-field="end_date"]');
-            const elDiscountType = rentDiv.querySelector('[data-field="discount_type"]');
+                        onOpen(ibMe) {
+                            const elContract = rentDiv.querySelector(
+                                '[data-field="contract_id"]'
+                            );
+                            const elMonthly = rentDiv.querySelector(
+                                '[data-field="monthly"]'
+                            );
+                            const elPrice = rentDiv.querySelector(
+                                '[data-field="price"]'
+                            );
+                            const elStartDate = rentDiv.querySelector(
+                                '[data-field="start_date"]'
+                            );
+                            const elEndDate = rentDiv.querySelector(
+                                '[data-field="end_date"]'
+                            );
+                            const elDiscountType = rentDiv.querySelector(
+                                '[data-field="discount_type"]'
+                            );
 
-            if (!elContract || !elMonthly || !elPrice) return;
+                            if (!elContract || !elMonthly || !elPrice) return;
 
-            elContract.value = matchedSpace.space_code || "(No code)";
-            elContract.dataset.contractId = String(matchedSpace.contract_id);
+                            elContract.value =
+                                matchedSpace.space_code || "(No code)";
+                            elContract.dataset.contractId = String(
+                                matchedSpace.contract_id
+                            );
 
-            const effectivePrice = Number(matchedSpace.effective_price || 0);
-            elPrice.value = effectivePrice.toFixed(2);
+                            const effectivePrice = Number(
+                                matchedSpace.effective_price || 0
+                            );
+                            elPrice.value = effectivePrice.toFixed(2);
 
-            const matchedMonth = months.find(m =>
-                String(m.contract_id) === String(matchedSpace.contract_id)
-            ) || {};
+                            const matchedMonth =
+                                months.find(
+                                    m =>
+                                        String(m.contract_id) ===
+                                        String(matchedSpace.contract_id)
+                                ) || {};
 
-            elMonthly.value = matchedMonth.month || "";
-            
-            if (elDiscountType) {
-                elDiscountType.value = "percent";
-            }
-            if (elStartDate) {
-                elStartDate.value = matchedMonth.start_date || "";
-            }
-            if (elEndDate) {
-                elEndDate.value = matchedMonth.end_date || "";
-            }
+                            elMonthly.value = matchedMonth.month || "";
 
-            const numericInputs = [
-                rentDiv.querySelector('[data-field="discount"]'),
-                rentDiv.querySelector('[data-field="tax_rate"]')
-            ].filter(input => input !== null);
+                            if (elDiscountType) {
+                                elDiscountType.value = "percent";
+                            }
+                            if (elStartDate) {
+                                elStartDate.value =
+                                    matchedMonth.start_date || "";
+                            }
+                            if (elEndDate) {
+                                elEndDate.value = matchedMonth.end_date || "";
+                            }
 
-            numericInputs.forEach(input => {
-                input.addEventListener("input", e => {
-                    let v = e.target.value.replace(/[^0-9.]/g, "");
-                    const parts = v.split(".");
-                    if (parts.length > 2) {
-                        v = parts[0] + "." + parts[1];
-                    }
-                    if (parts[1] !== undefined) {
-                        v = parts[0] + "." + parts[1].slice(0, 2);
-                    }
-                    e.target.value = v;
-                });
+                            const numericInputs = [
+                                rentDiv.querySelector(
+                                    '[data-field="discount"]'
+                                ),
+                                rentDiv.querySelector('[data-field="tax_rate"]')
+                            ].filter(input => input !== null);
 
-                input.addEventListener("blur", e => {
-                    let v = parseFloat(e.target.value);
-                    if (isNaN(v) || v < 0) {
-                        e.target.value = "";
-                        return;
-                    }
-                    e.target.value = v.toFixed(2);
-                });
-            });
-        },
+                            numericInputs.forEach(input => {
+                                input.addEventListener("input", e => {
+                                    let v = e.target.value.replace(
+                                        /[^0-9.]/g,
+                                        ""
+                                    );
+                                    const parts = v.split(".");
+                                    if (parts.length > 2) {
+                                        v = parts[0] + "." + parts[1];
+                                    }
+                                    if (parts[1] !== undefined) {
+                                        v =
+                                            parts[0] +
+                                            "." +
+                                            parts[1].slice(0, 2);
+                                    }
+                                    e.target.value = v;
+                                });
 
-        onConfirm(data, btn, ibMe) {
-            // 1. Check if Tax field exists in the DOM layout tree (Invoice Type !== 2)
-            const elTaxRate = document.querySelector('[data-field="tax_rate"]');
-            
-            if (elTaxRate) {
-                // If tax field is blank, empty strings, or evaluates to an invalid number
-                if (data.tax_rate === undefined || data.tax_rate === null || String(data.tax_rate).trim() === "") {
-                    return ibMe.setError("Tax % is required for this invoice type.");
-                }
-                
-                const taxValue = Number(data.tax_rate);
-                if (isNaN(taxValue) || taxValue < 0) {
-                    return ibMe.setError("Please enter a valid Tax % value.");
-                }
-            }
+                                input.addEventListener("blur", e => {
+                                    let v = parseFloat(e.target.value);
+                                    if (isNaN(v) || v < 0) {
+                                        e.target.value = "";
+                                        return;
+                                    }
+                                    e.target.value = v.toFixed(2);
+                                });
+                            });
+                        },
 
-            const elContract = document.querySelector('[data-field="contract_id"]');
-            const realContractId = elContract?.dataset.contractId || data.contract_id;
+                        onConfirm(data, btn, ibMe) {
+                            // 1. Check if Tax field exists in the DOM layout tree (Invoice Type !== 2)
+                            const elTaxRate = document.querySelector(
+                                '[data-field="tax_rate"]'
+                            );
 
-            if (!realContractId) {
-                return ibMe.setError("Unit Code / Room is missing.");
-            }
+                            if (elTaxRate) {
+                                // If tax field is blank, empty strings, or evaluates to an invalid number
+                                if (
+                                    data.tax_rate === undefined ||
+                                    data.tax_rate === null ||
+                                    String(data.tax_rate).trim() === ""
+                                ) {
+                                    return ibMe.setError(
+                                        "Tax % is required for this invoice type."
+                                    );
+                                }
 
-            const roomCode = matchedSpace.space_code || "—";
-            const finalPrice = Number(data.price || matchedSpace.effective_price || 0);
+                                const taxValue = Number(data.tax_rate);
+                                if (isNaN(taxValue) || taxValue < 0) {
+                                    return ibMe.setError(
+                                        "Please enter a valid Tax % value."
+                                    );
+                                }
+                            }
 
-            const dataToAdd = {
-                item_id: realContractId,
-                type: "rent",
-                price: finalPrice,
-                qty: 1,
-                remarks: `Rent - ${roomCode} (${data.monthly || "N/A"})`,
-                contract_id: realContractId,
-                start_date: data.start_date || "",
-                end_date: data.end_date || "",
-                space_code: roomCode,
-                discount: Number(data.discount) || 0,
-                discount_type: data.discount_type || "percent",
-                tax_rate: Number(data.tax_rate) || 0
-            };
+                            const elContract = document.querySelector(
+                                '[data-field="contract_id"]'
+                            );
+                            const realContractId =
+                                elContract?.dataset.contractId ||
+                                data.contract_id;
 
-            const existingIds = me.itemsView.rows
-                .map(row => row.meta?.item_id || row.data?.item_id)
-                .filter(id => id !== undefined && id !== "" && id !== null);
+                            if (!realContractId) {
+                                return ibMe.setError(
+                                    "Unit Code / Room is missing."
+                                );
+                            }
 
-            const isDuplicate = existingIds.some(id => String(id) === String(dataToAdd.item_id));
-            if (isDuplicate) {
-                return ibMe.setError(`Rent is already in the list.`);
-            }
+                            const roomCode = matchedSpace.space_code || "—";
+                            const finalPrice = Number(
+                                data.price || matchedSpace.effective_price || 0
+                            );
 
-            me.itemsView.addRow(
-                {
-                    item_id: realContractId,
-                    type: "rent",
-                    price: finalPrice,
-                    qty: 1,
-                    remarks: `Rent - ${roomCode} (${data.monthly || "N/A"})`,
-                    contract_id: realContractId,
-                    start_date: data.start_date || "",
-                    end_date: data.end_date || "",
-                    unit_type: "month",
-                    space_code: roomCode,
-                    discount: Number(data.discount) || 0,
-                    discount_type: data.discount_type || "amount",
-                    tax_rate: Number(data.tax_rate) || 0
-                },
-                0
-            );
+                            const dataToAdd = {
+                                item_id: realContractId,
+                                type: "rent",
+                                price: finalPrice,
+                                qty: 1,
+                                remarks: `Rent - ${roomCode} (${data.monthly ||
+                                    "N/A"})`,
+                                contract_id: realContractId,
+                                start_date: data.start_date || "",
+                                end_date: data.end_date || "",
+                                space_code: roomCode,
+                                discount: Number(data.discount) || 0,
+                                discount_type: data.discount_type || "percent",
+                                tax_rate: Number(data.tax_rate) || 0
+                            };
 
-            cv_interact.success(`Rent for ${roomCode} added successfully.`);
-            ibMe.close();
-        }
-    });
-};
+                            const existingIds = me.itemsView.rows
+                                .map(
+                                    row =>
+                                        row.meta?.item_id || row.data?.item_id
+                                )
+                                .filter(
+                                    id =>
+                                        id !== undefined &&
+                                        id !== "" &&
+                                        id !== null
+                                );
+
+                            const isDuplicate = existingIds.some(
+                                id => String(id) === String(dataToAdd.item_id)
+                            );
+                            if (isDuplicate) {
+                                return ibMe.setError(
+                                    `Rent is already in the list.`
+                                );
+                            }
+
+                            me.itemsView.addRow(
+                                {
+                                    item_id: realContractId,
+                                    type: "rent",
+                                    price: finalPrice,
+                                    qty: 1,
+                                    remarks: `Rent - ${roomCode} (${data.monthly ||
+                                        "N/A"})`,
+                                    contract_id: realContractId,
+                                    start_date: data.start_date || "",
+                                    end_date: data.end_date || "",
+                                    unit_type: "month",
+                                    space_code: roomCode,
+                                    discount: Number(data.discount) || 0,
+                                    discount_type:
+                                        data.discount_type || "amount",
+                                    tax_rate: Number(data.tax_rate) || 0
+                                },
+                                0
+                            );
+
+                            cv_interact.success(
+                                `Rent for ${roomCode} added successfully.`
+                            );
+                            ibMe.close();
+                        }
+                    });
+                };
 
                 me.controls.btnElectric.onclick = () => {
                     if (!me._selectedTenantId) {
@@ -1861,7 +1930,12 @@ const InvoiceDialog = (() => {
                                     price: ppu,
                                     qty: units,
                                     // remarks: remarks,
-                                    remarks:  mode === "reading"?  `Electricity ${data.old_electric || 0}kWh - ${data.new_electric || 0}kWh` : `Electricity ${units}kWh`,
+                                    remarks:
+                                        mode === "reading"
+                                            ? `Electricity ${data.old_electric ||
+                                                  0}kWh - ${data.new_electric ||
+                                                  0}kWh`
+                                            : `Electricity ${units}kWh`,
                                     unit_type: "kWh",
                                     old_reading:
                                         mode === "reading"
@@ -2889,7 +2963,7 @@ const InvoiceDialog = (() => {
                         {
                             name: "tax_rate",
                             transTitle: "titles.Tax",
-                            dataType: "number",
+                            dataType: "percent",
                             readOnly: true
                         },
                         {
@@ -3025,8 +3099,7 @@ const InvoiceDialog = (() => {
                             )
                             .then(res => {
                                 const d = res.data || {};
-                                console.log(111111111111111111111111111111111111111111111, d);
-                                
+
                                 me.controls.phone_number.value =
                                     d.tenant?.phone_number || "";
                                 me.controls.email.value = d.tenant?.email || "";
