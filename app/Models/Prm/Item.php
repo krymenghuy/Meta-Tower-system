@@ -31,7 +31,7 @@ class Item //extends Model
         $v_rule = [
             'name' => '1|string|1-150|text=Name is required.',
             'category_id' => '1|number|exists=item_categories.id|text=Please select a valid category.',
-            'unit' => '1|string|0-30|text=Unit is required.'
+            'unit' => '1|string|0-30|text=Please Select a valid unit.'
         ];
         $name_char = ['&', '.', '/','-'];
         $res = DBX::validateObject($arr, $v_rule, 1, ['name' => $name_char], $ss->lang, 0, null);

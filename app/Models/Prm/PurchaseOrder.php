@@ -148,17 +148,14 @@ class PurchaseOrder extends VSModel
 
 
         $v_rule = [
-            'vendor_id' => '1|number|exists=vendors.id|text=Please select valid Vendor',
+            'vendor_id' => '1|number|exists=vendors.id|text=Please select a valid vendor',
+            'building_id' => '1|number|exists=buildings.id|text=Please select a valid building',
             'po_number' => '0|string|0-25',
             'po_date' => '1|timestamp|text=PO date is required',
             'remarks' => '0|string|1-255',
             'items' => '1|array',
         ];
-
         $res = DBX::validateObject($arr, $v_rule, 1, [], $ss->lang, false, null);
-
-        \Log::info($arr);
-
         if ($res->error) {
             return DV::error($res->error);
         }
@@ -174,14 +171,14 @@ class PurchaseOrder extends VSModel
             $po_date = $today;
         }
 
-        if ($po_date < $today && !$id) return DV::error('PO date cannot be in the past');
-        if ($po_date > $today) return DV::error('PO date cannot be later than today');
+        // if ($po_date < $today && !$id) return DV::error('PO date cannot be in the past');
+        // if ($po_date > $today) return DV::error('PO date cannot be later than today');
 
         $inputs['po_date'] = $po_date;
+        $inputs['building_id'] = $inputs['building_id'] ?? null;
         $inputs['sub_total'] = $totals['subtotal'] ?? 0;
         $inputs['discount_value'] = $totals['discount_value'] ?? 0;
-        $inputs['discount_type'] = in_array(
-        $totals['discount_type'] ?? 'percent',['percent', 'amount']) ? $totals['discount_type'] : 'percent';
+        $inputs['discount_type'] = in_array($totals['discount_type'] ?? 'percent',['percent', 'amount']) ? $totals['discount_type'] : 'percent';
         $inputs['tax_total'] = $totals['tax_total'] ?? 0;
         $inputs['total_amount'] = $totals['grand_total'] ?? 0;
         $inputs['currency_code'] = $totals['currency_code'] ?? 'USD';
@@ -305,6 +302,7 @@ class PurchaseOrder extends VSModel
         $d = (object) $filter;
         $search_value = $d->search_value ?? null;
         $vendor_id = $d->vendor_id ?? null;
+        $building_id = $d->building_id ?? null;
         $status_id = $d->status_id ?? null;
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 10;
@@ -321,14 +319,18 @@ class PurchaseOrder extends VSModel
         if ($vendor_id) {
             $str_where .= ' AND po.vendor_id = ' . $vendor_id;
         }
+        if ($building_id) {
+            $str_where .= ' AND po.building_id = ' . $building_id;
+        }
         if ($status_id) {
             $str_where .= ' AND po.status_id = ' . $status_id;
         }
 
-        $cols = 'po.id,po.po_number,po.vendor_id,po.po_date,po.authorized,po.status_id,ps.name as status,po.total_authorizers,po.auth_count,po.remarks,po.discount_value,po.discount_type,po.sub_total,po.total_amount,po.updated_at,po.update_user,v.name as vendor_name,v.phone_number';
+        $cols = 'po.id,po.po_number,po.vendor_id,po.building_id,po.po_date,po.authorized,po.status_id,ps.name as status,po.total_authorizers,po.auth_count,po.remarks,po.discount_value,po.discount_type,po.sub_total,po.total_amount,po.updated_at,po.update_user,v.name as vendor_name,v.phone_number,b.name as building_name';
         $query = DB::table('purchase_orders as po')
             // ->join('purchase_order_authorizations as au','au.po_id','=','po.id')
             ->join('vendors as v', 'v.id', '=', 'po.vendor_id')
+            ->join('buildings as b', 'b.id', '=', 'po.building_id')
             ->join('purchase_order_statuses as ps', 'ps.id', '=', 'po.status_id')
             ->whereRaw($str_where)
             ->whereRaw($str_search)
@@ -354,8 +356,9 @@ class PurchaseOrder extends VSModel
         $row = DB::table('purchase_orders as po')
             ->join('vendors as v', 'v.id', '=', 'po.vendor_id')
             ->join('purchase_order_items as pi', 'pi.po_id', '=', 'po.id')
+            ->join('buildings as b', 'b.id', '=', 'po.building_id')
             ->where('po.id', $id)
-            ->selectRaw('po.id,po.po_number,po.vendor_id,v.name,v.phone_number,v.address,po.po_date,po.status_id,po.remarks,po.discount_value,po.discount_type,po.sub_total,po.tax_total,po.total_amount,pi.item_id,pi.qty,pi.unit_price,pi.total_price')->first();
+            ->selectRaw('po.id,po.po_number,po.vendor_id,po.building_id,v.name,v.phone_number,v.address,po.po_date,po.status_id,po.remarks,po.discount_value,po.discount_type,po.sub_total,po.tax_total,po.total_amount,pi.item_id,pi.qty,pi.unit_price,pi.total_price,b.name as building')->first();
 
             if($row){
                 setOfficialDates($row, ['po_date'], [], []);
@@ -368,6 +371,7 @@ class PurchaseOrder extends VSModel
         return (object) [
             'po_details' => $po_details,
             'vendors' => GeneralSettings::options_vendor($ss),
+            'buildings' => GeneralSettings::options_building($ss),
             'item' =>DB::table('items')->selectRaw('id as value, name as label')->get(),
             'po_statuses' => GeneralSettings::options_po_status($ss),
         ];
@@ -469,7 +473,7 @@ class PurchaseOrder extends VSModel
             ->join('items as i', 'i.id', '=', 'pi.item_id')
             ->where('pi.po_id', $po_id)
             ->selectRaw("pi.id, pi.qty,pi.unit_price, pi.total_price,pi.received_qty,pi.received_user,pi.received_date,pi.remarks, pi.status_id, i.code,pi.item_id, i.name as item_name,i.unit")
-            ->orderByRaw('pi.id DESC')
+            ->orderByRaw('pi.id ASC')
             ->get();
 
         foreach($rows as $row){
@@ -579,18 +583,12 @@ class PurchaseOrder extends VSModel
     $d = (object) $arr;
 
     $po = DB::table('purchase_orders')->where('id', $id)->first();
-    if (!$po) {
-        return DV::error('Purchase order not found.');
-    }
 
-    if ($po->status_id == 6) {
-        return DV::error('Cannot receive a cancelled purchase order.');
-    }
+    if (!$po) return DV::error('Purchase order not found.');
+    if ($po->status_id == 6) return DV::error('Cannot receive a cancelled purchase order.');
 
     $items = $d->items ?? [];
-    if (empty($items)) {
-        return DV::error('No items to receive.');
-    }
+    if (empty($items)) return DV::error('No items to receive.');
 
     DB::beginTransaction();
 
@@ -605,33 +603,29 @@ class PurchaseOrder extends VSModel
                 ->first();
 
             if (!$poItem) {
-                return DV::error('PO item not found: ' . $item['item_id']);
+                return DV::error('PO item not found');
             }
 
             $receiveQty = $item['received_qty'] ?? 0;
 
-            if ($receiveQty <= 0) {
-                continue;
-            }
-
-            $newReceivedQty = $receiveQty;
-
-            if ($newReceivedQty > $poItem->qty) {
+            if ($receiveQty > $poItem->qty) {
                 return DV::error('Receive quantity exceeds ordered quantity.');
             }
+
+            $statusId = $receiveQty > 0 ? 5 : 4;
 
             DB::table('purchase_order_items')
                 ->where('id', $poItem->id)
                 ->update([
-                    'received_qty' => $newReceivedQty,
-                    'accepted_qty' => $newReceivedQty,
-                    'received_date' => now(),
+                    'received_qty' => $receiveQty,
+                    'accepted_qty' => $receiveQty,
+                    'received_date' => $receiveQty > 0 ? now() : null,
                     'received_uid' => $ss->user_id ?? null,
                     'received_user' => $ss->login_name ?? null,
-                    'status_id' => ($newReceivedQty == $poItem->qty) ? 5 : 4,
+                    'status_id' => $statusId,
                 ]);
 
-            if ($newReceivedQty < $poItem->qty) {
+            if ($receiveQty <= 0) {
                 $allFullyReceived = false;
             }
         }
@@ -641,7 +635,7 @@ class PurchaseOrder extends VSModel
             ->update([
                 'status_id' => $allFullyReceived ? 5 : 4,
                 'update_uid' => $ss->user_id ?? null,
-                'update_user' => $ss->user_name ?? null,
+                'update_user' => $ss->login_name ?? null,
                 'updated_at' => now(),
             ]);
 

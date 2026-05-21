@@ -43,15 +43,16 @@ class Bill
         $branch_id = $ss->branch_id;
 
         $remark_char = ['@', '.', '-', '_'];
-        // $ref_no_char = ['@', '.', '-', '_'];
+        $ref_no_char = ['@', '.', '-', '_'];
 
         $v_rule = [
-            'vendor_id'       => '1|number|exists=vendors.id|text=Please select a vendor.',
-            'bill_date'       => '1|date',
-            'due_date'        => '1|date|text=Please enter valid Due Date.',
-            'ref_no'          => '1|string|0-25|text=Please enter Reference No.',
-            'expense_type_id' => '1|number|exists=expense_categories.id|text=Please select a category.',
-            'total_amount'    => '1|number|min=0|text=Please enter a valid amount.',
+            'vendor_id'       => '1|number|exists=vendors.id|text=Please select a valid vendor.',
+            'building_id'     => '1|number|exists=buildings.id|text=Please select a valid building.',
+            'expense_type_id' => '1|number|exists=expense_categories.id|text=Please select a valid category.',
+            'ref_no'          => '1|string|0-25|text=Reference number is required.',
+            'total_amount'    => '1|number|min=0|text=Total amount is required.',
+            'bill_date'       => '1|date|text=Issue date is required.',
+            'due_date'        => '1|date|text=Due date is required.',
             'remark'          => '0|string|0-255',
             'data'            => '0|string',
             'ext'             => '0|string',
@@ -60,7 +61,7 @@ class Bill
 
         ];
 
-        $res = DBX::validateObject($arr, $v_rule, 1, ['data'  => GeneralSettings::$image_chars, 'mime_type' => GeneralSettings::$mime_type_chars, 'remark' => $remark_char], $ss->lang);
+        $res = DBX::validateObject($arr, $v_rule, 1, ['data'  => GeneralSettings::$image_chars, 'mime_type' => GeneralSettings::$mime_type_chars, 'remark' => $remark_char, 'ref_no' => $ref_no_char], $ss->lang);
         if ($res->error) return DV::error($res->error);
         $inputs = $res->values;
         // \Log::info(json_encode($inputs));
@@ -97,8 +98,7 @@ class Bill
             }
         }
 
-        if (!empty($inputs{
-            'ref_no'})) {
+        if (!empty($inputs['ref_no'])) {
             $exists = DB::table('bills')
                 ->where('ref_no', $inputs['ref_no'])
                 ->when($id, fn($q) => $q->where('id', '<>', $id))
@@ -202,6 +202,7 @@ class Bill
     {
         $d  = (object) $arr;
         $search_value = $d->search_value ?? null;
+        $building_id  = $d->building_id  ?? null;
         $vendor_id    = $d->vendor_id    ?? null;
         $status_id    = $d->status_id    ?? null;
         $expense_type_id    = $d->expense_type_id    ?? null;
@@ -236,6 +237,10 @@ class Bill
                 $str_moreWhere .= ' AND b.vendor_id = ' . $vendor_id;
             }
 
+            if ($building_id) {
+                $str_moreWhere .= ' AND b.building_id = ' . $building_id;
+            }
+
             if ($status_id) {
                 $str_moreWhere .= ' AND b.status_id = ' . $status_id;
             }
@@ -246,6 +251,7 @@ class Bill
 
         $query = DB::table('bills as b')
             ->leftJoin('vendors as v', 'v.id', 'b.vendor_id')
+            ->leftJoin('buildings as bl', 'bl.id', 'b.building_id')
             ->leftJoin('bill_statuses as s', 's.id', 'b.status_id')
             ->leftJoin('expense_categories as ex', 'ex.id', 'b.expense_type_id')
             ->whereRaw($str_search)
@@ -253,6 +259,7 @@ class Bill
             ->selectRaw("   b.id, b.bill_number, b.ref_no, b.expense_type_id,
                             ex.name as expense_type_name, b.vendor_id,
                             v.name as vendor_name, v.phone_number,v.email,
+                            bl.name as building_name,
                             b.bill_date, b.due_date,
                             b.total_amount, b.balance, b.paid_amount,
                             b.status_id,
@@ -287,9 +294,10 @@ class Bill
         $row = DB::table('bills as b')
             // ->leftJoin('purchase_orders as po', 'po.id', 'b.po_number')
             ->leftJoin('vendors as v', 'v.id', 'b.vendor_id')
+            ->leftJoin('buildings as bl', 'bl.id', 'b.building_id')
             ->leftJoin('expense_categories as ex', 'ex.id', 'b.expense_type_id')
             ->where('b.id', $id)
-            ->selectRaw('b.id, b.bill_number, b.ref_no, b.vendor_id, v.name as vendor_name,b.expense_type_id, ex.name as expense_type_name, v.phone_number,v.email, b.bill_date,b.due_date, b.file_image,b.original_file_name, b.total_amount, b.balance, b.paid_amount, b.status_id, b.remark')
+            ->selectRaw('b.id, b.bill_number, b.ref_no, b.vendor_id, v.name as vendor_name,b.expense_type_id, ex.name as expense_type_name, v.phone_number,v.email, b.building_id,bl.name as building_name, b.bill_date,b.due_date, b.file_image,b.original_file_name, b.total_amount, b.balance, b.paid_amount, b.status_id, b.remark')
             ->first();
         if ($row) {
             $row->file_image_url = self::getBillImageUrl($row->file_image, $ss);
@@ -306,6 +314,7 @@ class Bill
         return (object) [
             'bill_details' => $bill_details,
             'vendors'      => GeneralSettings::options_vendor($ss),
+            'buildings'    => GeneralSettings::options_building($ss),
             'bill_statuses'  => GeneralSettings::options_bill_statuses($ss),
             'expense_types' => GeneralSettings::options_expense_categories($ss),
         ];

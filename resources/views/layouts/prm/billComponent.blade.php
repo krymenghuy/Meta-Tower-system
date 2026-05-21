@@ -27,8 +27,8 @@
                     </div>
                     <div class="col-12 col-md-auto ms-md-auto text-md-end">
                         <button type="button" class="btnAddNewPrm w-100 w-md-auto" id="_btnBill">
-                            <i class="fa-solid fa-bars-staggered me-2"></i>
-                            <span vslang="buttons.Generate Bill"></span>
+                            <!-- <i class="fa-solid fa-bars-staggered me-2"></i> -->
+                            <span vslang="buttons.Generate New Bill"></span>
                         </button>
                     </div>
                 </div>

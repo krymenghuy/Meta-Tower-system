@@ -1,16 +1,101 @@
+// "use strict";
+
+// var InvoiceSettingComponent = (() => {
+//     const mThis = {};
+//     mThis.title_prop = "Invoice Settings";
+//     mThis.base_url = typeof main_view !== "undefined" ? main_view.base_url : "";
+
+//     mThis.init = () => {
+//         if (mThis.initAlready) return;
+
+//         mThis.self = document.querySelector("#_main_invoiceSetting_component");
+//         if (!mThis.self) {
+//             console.error("InvoiceSettingComponent container not found.");
+//             return;
+//         }
+
+//         mThis.elExchangeRate = mThis.self.querySelector("#exchange_rate_khr");
+//         mThis.btnSave = mThis.self.querySelector("#_btnSaveSettings");
+
+//         if (mThis.btnSave) {
+//             mThis.btnSave.onclick = (e) => {
+//                 e.preventDefault();
+//                 mThis.saveSettings();
+//             };
+//         }
+
+//         mThis.initAlready = true;
+//     };
+
+//     mThis.loadSettings = () => {
+//         if (!mThis.elExchangeRate) return;
+
+//         // Disable input while loading
+//         mThis.elExchangeRate.disabled = true;
+
+//         vsapi.call(`${mThis.base_url}/prm/invoice-setting/get`)
+//             .then(res => {
+//                 mThis.elExchangeRate.disabled = false;
+//                 if (res.status_code === 200 && res.data) {
+//                     mThis.elExchangeRate.value = res.data.exchange_rate_khr || "";
+//                 }
+//             })
+//             .catch(err => {
+//                 mThis.elExchangeRate.disabled = false;
+//                 // Silently handle if endpoint doesn't exist yet, we will prompt user to create it
+//             });
+//     };
+
+//     mThis.saveSettings = () => {
+//         if (!mThis.elExchangeRate) return;
+
+//         const rate = parseFloat(mThis.elExchangeRate.value);
+//         if (isNaN(rate) || rate <= 0) {
+//             return cv_interact.error("Please enter a valid exchange rate.");
+//         }
+
+//         const params = {
+//             exchange_rate_khr: rate
+//         };
+
+//         vsapi.call(`${mThis.base_url}/prm/invoice-setting/save`, params, mThis.btnSave)
+//             .then(res => {
+//                 if (res.status_code === 200) {
+//                     cv_interact.success("Invoice settings saved successfully.");
+//                 } else {
+//                     cv_interact.error(res.error_message || "Failed to save settings.");
+//                 }
+//             })
+//             .catch(err => {
+//                 cv_interact.error("Network error while saving settings.");
+//             });
+//     };
+
+//     mThis.show = (options) => {
+//         mThis.init();
+//         if (typeof main_view !== "undefined" && mThis.self) {
+//             main_view.setContentView(mThis.self, mThis.title_prop);
+//         }
+//         mThis.loadSettings();
+//     };
+
+//     return mThis;
+// })();
+
+
 "use strict";
 
-var AmenityComponent = (() => {
+var InvoiceSettingComponent = (() => {
     const mThis = {};
-    mThis.title_prop = "Amenity Management";
+    mThis.title_prop = "Invoice Setting Management";
     mThis.base_url = main_view.base_url;
-    mThis.self = main_view.VSAppContent.querySelector("#_main_amenity_component");
-    mThis.btnAdd = mThis.self.querySelector("#_btnAmenity");
-    mThis.divFilter = mThis.self.querySelector("#_divFilter_amenity");
+    mThis.self = main_view.VSAppContent.querySelector("#_main_invoiceSetting_component");
+    mThis.btnAdd = mThis.self.querySelector("#_btnInvoice");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter_invoice");
     mThis.elBuilding = mThis.self.querySelector('#building_id');
     mThis.elFloor = mThis.self.querySelector('#floor_id');
-    mThis.elFilter_category = mThis.self.querySelector("#amenity_category_id");
-    mThis.elFilter_status = mThis.self.querySelector("#_amenity_status");
+    mThis.elFilter_category = mThis.self.querySelector("#invoice_category_id");
+    mThis.elFilter_status = mThis.self.querySelector("#_invoice_status");
     mThis.elSearch = mThis.self.querySelector("#_search_amenity");
 
     mThis.cols = [
@@ -19,31 +104,31 @@ var AmenityComponent = (() => {
             className: "align-middle text-nowrap text-capitalize",
         },
         {
-            transTitle: "titles.Unit",
+            transTitle: "titles.Code",
             className: "align-middle text-nowrap",
             data: (data) =>
-            `<span class="text-prm-custom">${data.code ?? "_"}</span>`,
+            `<span class="text-prm-custom">${data.code ?? ""}</span>`,
         },
         {
             transTitle: "titles.Name",
             className: "align-middle text-nowrap",
             data: (data) =>
                 `<div class="text-prm-custom text-capitalize" style="width:170px; ">
-                    <span class="text-wrap text-break" style ="word-break:break-word;">${data.name ?? "_"}</span>
+                    <span class="text-wrap text-break" style ="word-break:break-word;">${data.name ?? ""}</span>
                 </div>`,
         },
         {
             transTitle: "titles.Category",
             className: "align-middle text-nowrap",
             data: (data) =>
-                `<span class="text-nowrap" style="min-width:100px">${data.category ?? "_"}</span>`,
+                `<span class="text-nowrap" style="min-width:100px">${data.category ?? ""}</span>`,
         },
         {
             transTitle: "titles.Building",
             className: "align-middle text-nowrap",
             data: (data) =>
                 `<div class="text-prm-custom">
-                    <span>${data.building_name ?? "_"}</span>
+                    <span>${data.building_name ?? ""}</span>
                 </div>`
         },
         {
@@ -51,7 +136,7 @@ var AmenityComponent = (() => {
             className: "align-middle text-nowrap",
             data: (data) =>
                 `<div class="text-prm-custom">
-                    <span>${data.floor_number ?? "_"}</span>
+                    <span>${data.floor_number ?? ""}</span>
                 </div>`
         },
         {
@@ -60,18 +145,16 @@ var AmenityComponent = (() => {
             data: (data, index, tr) => {
                 return `
                     <div class="text-primary-custom" style="width:200px;">
-                        <small class="text-wrap text-break" style ="word-break:break-word;">${data.description ?? "_"}</small>
+                        <small class="text-wrap text-break" style ="word-break:break-word;">${data.description ?? "__"}</small>
                     </div>
                 `;
             },
         },
-       {
+        {
             transTitle: "titles.Capacity",
-            className: "align-middle text-nowrap",
+            className: "align-middle text-nowrap text-center",
             data: (data) =>
-                data.max_capacity != null
-                    ? `<span class="text-prm-custom">${data.max_capacity}</span> <small class="text-muted">PAX/Room</small>`
-                    : `<span class="text-prm-custom">_</span>`,
+                `<span class="text-prm-custom">${data.max_capacity ?? "-"}</span> <small class="text-muted">PAX/Room</small>`,
         },
         {
             transTitle: "titles.Bookable",
@@ -666,7 +749,7 @@ const AmenityDialog = (() => {
                 onPrepareForm: (me, data) => {
 
                     const isReadOnly = me.dataOptions.id > 0;
-                    me.setReadOnly(isReadOnly, ["building_id","floor_id"]);
+                    me.setReadOnly(isReadOnly, ["building_id","code","floor_id"]);
                     me.controls.requires_booking.value = data.amenity_details.requires_booking;
                 },
 
@@ -744,17 +827,17 @@ const ActiveReservationDialog = (() => {
         }
         tbody.innerHTML = rows.map(r => `
             <tr>              
-                <td class="align-middle">
+                <td class="align-middle text-center">
                     <span class="d-block text-prm-custom text-capitalize">${r.tenant_name ?? ''}</span>
                     <small class="text-muted">${r.phone_number ?? ''}</small>
                 </td>
-                <td class="align-middle">
+                <td class="align-middle text-center">
                     <span class="d-block text-prm-custom">${r.booking_date ?? ''}</span>
                     <small class="text-primary">${to12h(r.start_time)} – ${to12h(r.end_time)}</span>
                 </td>
-                <td class="align-middle">${statusBadge(r.status_id, r.status)}</td>
+                <td class="align-middle text-center">${statusBadge(r.status_id, r.status)}</td>
                 <td class="align-middle">
-                    <span class="text-muted">${r.remarks ?? '—'}</span>
+                    <small class="text-muted">${r.remarks ?? '—'}</small>
                 </td>
             </tr>
         `).join('');
@@ -791,10 +874,10 @@ const ActiveReservationDialog = (() => {
                         <table class="table table-sm table--white rounded-2 overflow-hidden">
                             <thead class="header-uppercase" >
                                 <tr>
-                                    <th class="text-start" style="width:100px;">Tenant</th>
-                                    <th class="text-start" style="width: 150px;">Schedule Date</th>
-                                    <th class="text-start" style="width:80px;">Status</th>
-                                    <th class="text-start" style="width:260px;">Remark</th>
+                                    <th class="text-center" style="width:100px;">Tenant</th>
+                                    <th class="text-center" style="width: 150px;">Schedule Date</th>
+                                    <th class="text-center" style="width:80px;">Status</th>
+                                    <th class="text-center" style="width:260px;">Remark</th>
                                 </tr>
                             </thead>
                             <tbody id="_arv_tbody"></tbody>
@@ -854,3 +937,4 @@ const ActiveReservationDialog = (() => {
 
     return self;
 })();
+
