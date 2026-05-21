@@ -210,6 +210,7 @@ class Building //extends Model
                 $floor_details = (object) [
                     'floor_number' => $next_floor_no,
                     'name' => "Floor {$next_floor_no}",
+                    'building_id' => $building_id,
                 ];
             }
         }

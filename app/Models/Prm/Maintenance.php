@@ -236,7 +236,7 @@ class Maintenance extends VSModel
         }
 
         if ($end < $now) {
-            return DV::error('End time cannot be in the past.'); 
+            return DV::error('End time cannot be in the past.');
         }
 
         if (!empty($input['amenity_id'])) {
@@ -378,8 +378,6 @@ class Maintenance extends VSModel
                 'ms.name as status_name'
             ])
             ->first();
-
-
 
         if ($row) {
             self::applyScheduleDerivedStatus($row);
