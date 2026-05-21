@@ -340,7 +340,7 @@ class Tenant
             ->exists();
 
         if ($hasActiveContract) {
-            return DV::error('Cannot delete tenant with active contracts. Please terminate all contracts first.');
+            return DV::error('Cannot delete tenant with active contracts.');
         }
 
         $documents = DB::table('tenant_documents')->where('tenant_id', $id)->get();
