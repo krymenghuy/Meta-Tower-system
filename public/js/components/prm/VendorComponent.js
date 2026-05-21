@@ -388,6 +388,7 @@ var VendorComponent = (() => {
             if (e) {
                 vsapi.call(`${main_view.base_url}/prm/vendor/delete`, op, false, false, false).then(res => {
                     if (res.status_code == 200) {
+                        cv_interact.success("Vendor has been deleted");
                         mThis.VendorListView.showPage();
                     } else {
                         cv_interact.error(res.error_message);

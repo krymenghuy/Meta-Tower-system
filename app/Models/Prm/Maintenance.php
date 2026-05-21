@@ -164,7 +164,7 @@ class Maintenance extends VSModel
         $ss = $ss ?? $this->userInfo;
 
         $v_rule = [
-            'building_id' => '1|number|exists=buildings.id|text=Please select a building.',
+            'building_id' => '1|number|exists=buildings.id|text=Please select a valid building.',
             'space_id'    => '0|number|exists=building_spaces.id',
             'amenity_id'  => '0|number|exists=amenities.id',
             'start_date'  => '1|TIMESTAMP|text=Start date is required.',
@@ -172,49 +172,30 @@ class Maintenance extends VSModel
             'remarks'     => '0|string|0-255',
         ];
 
-        $res = DBX::validateObject(
-            $arr,
-            $v_rule,
-            1,
-            ['remarks' => ['@', ',', '-', '.', '#', '!', '?', '(', ')', "\n"]],
-            $ss->lang ?? 'en'
-        );
+        $res = DBX::validateObject($arr,$v_rule,1,['remarks' => ['@', ',', '-', '.', '#', '!', '?', '(', ')', "\n"]],$ss->lang ?? 'en');
 
         if ($res->error) return DV::error($res->error);
 
         $input = $res->values;
+        $hasStartTime =
+            trim($arr['start_time'] ?? '') !== '' ||
+            preg_match('/\d{1,2}:\d{2}/', (string)$arr['start_date']);
 
-        $spaceId = ($input['space_id'] ?? 0);
-        $amenityId =($input['amenity_id'] ?? 0);
-        if ($spaceId <= 0 && $amenityId <= 0) {
-            return DV::error('Unit code is required.');
-        }
-        if ($spaceId > 0 && $amenityId > 0) {
-            return DV::error('Select either a space or an amenity.');
-        }
-
-        $rawStartDate = trim(($arr['start_date'] ?? ''));
-        $rawEndDate = trim(($arr['end_date'] ?? ''));
-        if ($rawStartDate === '' && $rawEndDate === '') {
-            return DV::error('Start date and end date are required.');
-        }
-        if ($rawStartDate === '') {
-            return DV::error('Start date is required.');
-        }
-        if ($rawEndDate === '') {
-            return DV::error('End date is required.');
-        }
-
-        $hasStartTime = trim(($arr['start_time'] ?? '')) !== ''
-            || preg_match('/\d{1,2}:\d{2}/', (string) ($arr['start_date'] ?? ''));
         if (!$hasStartTime) {
-            return DV::error('Please enter valid start time.');
+            return DV::error('Start time is required.');
+        }
+
+        $hasEndTime =
+            trim($arr['end_time'] ?? '') !== '' ||
+            preg_match('/\d{1,2}:\d{2}/', (string)$arr['end_date']);
+
+        if (!$hasEndTime) {
+            return DV::error('End time is required.');
         }
 
         $start = strtotime($input['start_date']);
-        $end   = strtotime($input['end_date']);
-        $now   = time();
-
+        $end = strtotime($input['end_date']);
+        $now = time();
         if ($start < strtotime(date('Y-m-d'))) {
             return DV::error('Start date cannot be in the past.');
         }
@@ -223,12 +204,8 @@ class Maintenance extends VSModel
             return DV::error('End date cannot be in the past.');
         }
 
-        if ($start > $end) {
-            return DV::error('Start must be before end.');
-        }
-
-        if (date('Y-m-d', $start) === date('Y-m-d', $end) && $start >= $end) {
-            return DV::error('Start time must be before end time.');
+        if ($start >= $end) {
+            return DV::error('End date/time must be after start date/time.');
         }
 
         if ($start < $now) {
@@ -236,7 +213,7 @@ class Maintenance extends VSModel
         }
 
         if ($end < $now) {
-            return DV::error('End time cannot be in the past.'); 
+            return DV::error('End time cannot be in the past.');
         }
 
         if (!empty($input['amenity_id'])) {

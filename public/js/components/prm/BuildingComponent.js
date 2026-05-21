@@ -310,7 +310,9 @@ var BuildingComponent = ( () => {
                 </td>
                 <td>${level.floor_no ?? '_'}</td>
                 <td>${level.total_space ?? '_'}</td>
-                <td>${level.description ?? '_'}</td>
+                <td style="width:350px; max-width:350px; white-space:normal; word-break:break-word;">
+                    ${level.description ?? '_'}
+                </td>
                 <td>
                     <span class="d-block">${level.update_user ?? '_'}</span>
                     <span>
@@ -493,7 +495,7 @@ const BuildingDialog = (() => {
                         <div class="col-6">
                             <div class="vs-material-field">
                                 <input type="text" name="prefix" class="data-input form-control" data-field="prefix" placeholder=" " />
-                                <label>ShortCut</label>
+                                <label>Shortcut</label>
                             </div>
                         </div>
                         <div class="col-6">
@@ -505,7 +507,7 @@ const BuildingDialog = (() => {
                         <div class="col-6">
                             <div class="vs-material-field">
                                 <input type="text" name="total_area" class="data-input form-control" data-field="total_area" placeholder=" " />
-                                <label>Total Area (sqm)</label>
+                                <label>Total Area (m²)</label>
                             </div>
                         </div>
 

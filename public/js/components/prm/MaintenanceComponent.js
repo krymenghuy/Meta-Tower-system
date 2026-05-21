@@ -410,7 +410,7 @@ const CreateMaintenanceDialog = (() => {
                     <section class="maintenance-form-section mb-3 bg-white">
                         <div class="vs-material-field">
                             <textarea name="remarks" class="data-input form-control" data-field="remarks" rows="2" placeholder=" "></textarea>
-                            <label>Additional notes</label>
+                            <label>Remark</label>
                         </div>
                     </section>
                 </div>
@@ -547,48 +547,48 @@ const CreateMaintenanceDialog = (() => {
                         op.id = me.dataOptions?.id;
                         const buildingId = op.building_id ? String(op.building_id).trim() : "";
                         if (!buildingId) {
-                            cv_interact.error("Please select a building.");
+                            cv_interact.error("Please select a valid building.");
                             return;
                         }
-                        if (!op.type_unit) {
-                            cv_interact.error("Type is required.");
-                            return;
-                        }
+                        // if (!op.type_unit) {
+                        //     cv_interact.error("Please select a valid unit type.");
+                        //     return;
+                        // }
                         if (op.type_unit === 'space') {
                             op.amenity_id = null;
                             if (!op.space_id) {
-                                cv_interact.error("Unit code is required.");
+                                cv_interact.error("Please select unit.");
                                 return;
                             }
                         } else if (op.type_unit === 'amenity') {
                             op.space_id = null;
                             if (!op.amenity_id) {
-                                cv_interact.error("Unit code is required.");
+                                cv_interact.error("Please select unit.");
                                 return;
                             }
                         } else {
-                            cv_interact.error("Type is required.");
+                            cv_interact.error("Please select type.");
                             return;
                         }
                         delete op.type_unit;
-                        const startDate = op.start_date ? String(op.start_date).trim() : "";
-                        const endDate = op.end_date ? String(op.end_date).trim() : "";
-                        if (!startDate && !endDate) {
-                            cv_interact.error("Start date and end date are required.");
-                            return;
-                        }
-                        if (!startDate) {
-                            cv_interact.error("Start date is required.");
-                            return;
-                        }
-                        if (!endDate) {
-                            cv_interact.error("End date is required.");
-                            return;
-                        }
-                        if (!op.start_time || !String(op.start_time).trim()) {
-                            cv_interact.error("Please enter valid start time.");
-                            return;
-                        }
+                        // const startDate = op.start_date ? String(op.start_date).trim() : "";
+                        // const endDate = op.end_date ? String(op.end_date).trim() : "";
+                        // if (!startDate && !endDate) {
+                        //     cv_interact.error("Start date and end date are required.");
+                        //     return;
+                        // }
+                        // if (!startDate) {
+                        //     cv_interact.error("Start date is required.");
+                        //     return;
+                        // }
+                        // if (!endDate) {
+                        //     cv_interact.error("End date is required.");
+                        //     return;
+                        // }
+                        // if (!op.start_time || !String(op.start_time).trim()) {
+                        //     cv_interact.error("Please enter valid start time.");
+                        //     return;
+                        // }
                         if (op.start_date && op.start_time) op.start_date = op.start_date + " " + op.start_time;
                         if (op.end_date && op.end_time) op.end_date = op.end_date + " " + op.end_time;
                         delete op.start_time;
