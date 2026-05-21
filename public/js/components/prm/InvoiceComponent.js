@@ -1861,7 +1861,7 @@ const InvoiceDialog = (() => {
                                     price: ppu,
                                     qty: units,
                                     // remarks: remarks,
-                                    remarks:  mode === "reading"?  `Electricity ${data.old_reading || 0}kWh - ${data.new_reading || 0}kWh` : `Electricity ${units}kWh`,
+                                    remarks:  mode === "reading"?  `Electricity ${data.old_electric || 0}kWh - ${data.new_electric || 0}kWh` : `Electricity ${units}kWh`,
                                     unit_type: "kWh",
                                     old_reading:
                                         mode === "reading"
