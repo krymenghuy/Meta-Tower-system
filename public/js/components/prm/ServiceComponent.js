@@ -25,18 +25,7 @@ var ServiceComponent = (() => {
             data: (data) => {
                 return `<div class="d-flex flex-column">
                     <span class="text-primary-custom">${data.name ?? ''}</span>
-<<<<<<< HEAD
-<<<<<<< HEAD
-                <!-- <hr class="m-0 border border-secondary border-3 opacity-75"> -->
-                    <small class=" text-info">${data.service_level ?? ''}</small>
-=======
-                    
                     <small class=" text-muted">${data.service_level ?? ''}</small>
->>>>>>> 10907b5cb5535d3eacbe2163b9760b86db5fd896
-=======
-                    
-                    <small class=" text-muted">${data.service_level ?? ''}</small>
->>>>>>> 969ac850d152c30cfd4d9eba94e0692f3caee125
                 </div>`;
             }
         },

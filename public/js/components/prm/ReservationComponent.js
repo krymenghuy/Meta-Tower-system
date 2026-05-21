@@ -67,7 +67,7 @@ var ReservationComponent = (() => {
         },
         {
             transTitle: "titles.Status",
-            className: "align-middle",
+            className: "align-middle text-center",
             data: (data) => {
                 const status = (data.status ?? "").toLowerCase();
                 let cls = "badge border border-secondary text-secondary bg-secondary-subtle";
@@ -86,7 +86,7 @@ var ReservationComponent = (() => {
                     label = "Cancelled";
                 }
                 return `
-                    <span class="${cls} px-3 py-2 d-inline-flex align-items-center gap-2" style="min-width:90px">
+                    <span class="${cls} px-3 d-inline-flex align-items-center" style="min-width:90px">
                         ${label}
                     </span>
                 `;

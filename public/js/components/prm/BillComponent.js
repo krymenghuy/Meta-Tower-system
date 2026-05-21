@@ -110,7 +110,7 @@ var BillComponent = (() => {
             data: (data) => {
                 return `
                     <div class="text-primary-custom" style="width:200px;">
-                        <small class="text-wrap text-break" style ="word-break:break-word;">${data.remark ?? "_"}</small>
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.remark ?? "_"}</span>
                     </div>
                 `;
             },

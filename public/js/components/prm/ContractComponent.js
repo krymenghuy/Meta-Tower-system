@@ -1127,7 +1127,7 @@ const RenewDialog = (() => {
                                      <div class="col-12">
                                         <div class="vs-material-field">
                                             <textarea name="remarks" class="data-input form-control" data-field="remarks"></textarea>
-                                            <label>Remarks</label>
+                                            <label>Remark</label>
                                         </div>
                                     </div>
                                 </div>

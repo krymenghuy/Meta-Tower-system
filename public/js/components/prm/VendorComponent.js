@@ -91,7 +91,7 @@ var VendorComponent = (() => {
             className: "align-middle",
             data: (data) =>
                 `<span class="d-block text-prm-custom text-nowrap"><i class="fa-solid text-success px-1 fa-phone" style="font-size:12px;"></i> ${data.phone_number ?? ""}</span>
-                 <small class="d-block text-primary text-nowrap"><i class="fa-solid text-primary px-1 fa-envelope" ></i> ${data.email ?? ""}</small>`,
+                 <span class="d-block text-primary text-nowrap"><i class="fa-solid text-primary px-1 fa-envelope" ></i> ${data.email ?? ""}</span>`,
         },
 
         {
@@ -99,7 +99,7 @@ var VendorComponent = (() => {
             className: "align-middle text-nowrap",
             data: (data) => {
                 return `<span class="d-block text-prm-custom text-capitalize"> ${data.contact_person ?? ""}</span>
-                         <small class="d-block text-primary"> ${data.contact_phone ?? ""}</small>`;
+                         <span class="d-block text-primary"> ${data.contact_phone ?? ""}</span>`;
             }
         },
         {
