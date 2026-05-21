@@ -6149,7 +6149,7 @@ a.close.disabled {
   z-index: 1070;
   display: block;
   margin: 0;
-  /* font-family: "Poppins"; */
+  font-family: "inter", sans-serif;
   font-family: inherit;
   font-style: normal;
   font-weight: 400;
@@ -6275,7 +6275,7 @@ a.close.disabled {
   z-index: 1060;
   display: block;
   max-width: 276px;
-  /* font-family: "Poppins"; */
+  font-family: "inter", sans-serif;
   font-family: inherit;
   font-style: normal;
   font-weight: 400;
