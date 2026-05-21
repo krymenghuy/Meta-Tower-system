@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Prm;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Prm\PurchaseOrder;
+use App\Models\Prm\GeneralSettings;
 use JDV;
 use XAuthService;
 class PurchaseOrderController extends Controller
@@ -170,6 +171,7 @@ class PurchaseOrderController extends Controller
         'po_detail' => $po_detail,
         'items' => $items,
         'totals' => $totals,
+        'buildings' => GeneralSettings::options_building($ss),
         'item_options' => PurchaseOrder::getOptionItems(),
     ];
 
