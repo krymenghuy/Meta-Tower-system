@@ -211,7 +211,7 @@ class ServiceRequest extends VSModel
         foreach($rows as $row){
             $scheduledDateTime = strtotime($row->scheduled_date . ' ' . $row->start_time);
             if ($row->status_id == 1 && !empty($row->scheduled_date) && !empty($row->start_time) && $scheduledDateTime < time()) {
-                $row->status_name = 'Expired';
+                // $row->status_name = 'Expired';
                 DB::table('service_requests')
                     ->where('id', $row->id)
                     ->update([
