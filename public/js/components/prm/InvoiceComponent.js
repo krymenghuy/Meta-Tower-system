@@ -1155,7 +1155,7 @@ const InvoiceDialog = (() => {
                                 discount: Number(data.discount) || 0,
                                 discount_type: data.discount_type || "percent",
                                 tax_rate: Number(data.tax_rate) || 0,
-                                qty_unit: `1 month`
+                                unit_type: `monthly`
                             };
 
                             const existingIds = me.itemsView.rows
@@ -1618,10 +1618,10 @@ const InvoiceDialog = (() => {
                                     remarks:
                                         mode === "reading"
                                             ? `Electricity ${data.old_electric ||
-                                                  0}kWh - ${data.new_electric ||
-                                                  0}kWh`
-                                            : `Electricity ${units}kWh`,
-                                    unit_type: "kWh",
+                                                  0}KWh - ${data.new_electric ||
+                                                  0}KWh`
+                                            : `Electricity ${units}KWh`,
+                                    unit_type: "KWh",
                                     old_reading:
                                         mode === "reading"
                                             ? parseFloat(data.old_electric) || 0
@@ -1663,7 +1663,6 @@ const InvoiceDialog = (() => {
                         return cv_interact.error("No services available.");
                     }
 
-                     console.log(5555555555555555555,services);
                      
                     const serviceOptions = services
                         .map(
@@ -2048,19 +2047,13 @@ const InvoiceDialog = (() => {
                                     price: Number(selectedService.price) || 0,
                                     qty: qtyMonths,
                                     remarks: remarkStr,
-                                    unit_type:
-                                        selectedService.charge_as || "Month",
+                                    unit_type:(selectedService.charge_as || "Month") +(qtyMonths > 1 ? "s" : ""),
                                     discount: Number(data.discount) || 0,
                                     start_date: data.start_date || "",
                                     end_date: data.end_date || "",
                                     discount_type:
                                         data.discount_type || "percent",
                                     total_amount: calculatedTotal,
-                                    qty_unit:
-                                        qtyMonths +
-                                        " " +
-                                        (selectedService.charge_as || "Month") +
-                                        (qtyMonths > 1 ? "s" : "")
                                 },
                                 0
                             );
@@ -2441,44 +2434,51 @@ const InvoiceDialog = (() => {
                             dataType: "string",
                             readOnly: true,
                             className: "small col-item-name",
-                            width: "250px"
+                            width: "230px"
                             // html: '<input type="checkbox" class="check_accept">',
                         },
 
-                        // {
-                        //     name: "unit_type",
-                        //     transTitle: "titles.Charge As",
-                        //     dataType: "text",
-                        //     readOnly: true,
-                        //     defaultValue: "-"
-                        // },
+                       
                         {
                             name: "start_date",
                             transTitle: "titles.Start Date",
                             dataType: "text",
                             readOnly: true,
-                            width: "150px"
+                            defaultValue: "-",
+                            width: "130px"
                         },
                         {
                             name: "end_date",
                             transTitle: "titles.End Date",
                             dataType: "text",
                             readOnly: true,
-                            width: "150px"
+                            defaultValue: "-",
+                            width: "130px"
                         },
                         {
-                            name: "qty_unit",
+                            name: "qty",
                             transTitle: "titles.QTY",
+                            dataType: "number",
+                            readOnly: true,
+                            className: "text-start",
+                            width: "70px"
+                        },
+
+                         {
+                            name: "unit_type",
+                            transTitle: "titles.Charge As",
                             dataType: "text",
                             readOnly: true,
-                            className: "text-start"
+                            defaultValue: "-",
+                            width: "100px"
                         },
                         {
                             name: "price",
                             transTitle: "titles.Price",
                             readOnly: true,
                             isNumeric: true,
-                            dataType: "money"
+                            dataType: "money",
+                            width: "150px"
                         },
                         {
                             name: "discount",
@@ -2488,7 +2488,7 @@ const InvoiceDialog = (() => {
                             defaultDiscountType: "percent",
                             discountBeforeTax: true,
                             readOnly: true,
-                            width: "200px"
+                            width: "100px"
                         },
                         {
                             name: "tax_rate",
@@ -2501,7 +2501,8 @@ const InvoiceDialog = (() => {
                             transTitle: "titles.Total",
                             dataType: "money",
                             readOnly: true,
-                            isNumeric: true
+                            isNumeric: true,
+                            width: "150px"
                         }
                     ],
                     calc: {
