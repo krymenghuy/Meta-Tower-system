@@ -17,9 +17,13 @@ const InvoiceNoTaxDialog = (() => {
     const printViaIframe = (invoiceEl) => {
         const styleHTML = Array.from(document.querySelectorAll("style")).map(s => s.outerHTML).join("\n");
         const biLink = Array.from(document.querySelectorAll('link[href*="bootstrap-icons"]')).map(l => l.outerHTML).join("\n");
+        
+        // Ensure all required weights (400 to 800) are requested
         const fontLink = `
             <link rel="preconnect" href="https://fonts.googleapis.com"/>
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
             <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>`;
+        
         const fullDoc = `<!DOCTYPE html>
                     <html lang="en">
                     <head>
@@ -31,16 +35,31 @@ const InvoiceNoTaxDialog = (() => {
                         body {
                             font-family: 'Inter', sans-serif;
                             background: #fff;
+                            color: #111;
                             -webkit-print-color-adjust: exact;
                             print-color-adjust: exact;
                         }
                         .pi-action-bar { display:none!important; }
                         @page { size: A4 landscape; margin: 1rem; }
+                        
+                        /* Strict Print Styles to enforce font weights */
                         @media print {
-                            body { background: #fff !important; margin: 8mm; }
+                            body { 
+                                background: #fff !important; 
+                                margin: 8mm; 
+                                font-family: 'Inter', sans-serif !important;
+                                -webkit-font-smoothing: antialiased;
+                                -moz-osx-font-smoothing: grayscale;
+                            }
                             .pi-action-bar { display:none!important; }
                             .pi-tbl-wrap { overflow: visible !important; }
                             .pi-table { min-width: unset !important; }
+                            
+                            /* Enforce crisp rendering for bold elements on paper */
+                            strong, b, [style*="font-weight:600"], [style*="font-weight:700"], [style*="font-weight:800"] {
+                                -webkit-print-color-adjust: exact !important;
+                                print-color-adjust: exact !important;
+                            }
                         }
                     </style>
                     </head>
@@ -52,14 +71,28 @@ const InvoiceNoTaxDialog = (() => {
         document.body.appendChild(iframe);
         const iDoc = iframe.contentWindow.document;
         iDoc.open(); iDoc.write(fullDoc); iDoc.close();
+        
         iframe.onload = () => {
-            setTimeout(() => {
-                iframe.contentWindow.focus();
-                iframe.contentWindow.print();
-                setTimeout(() => document.body.removeChild(iframe), 2000);
-            }, 400);
+            // Use an explicit check for the font loading API to avoid premature printing
+            if (iframe.contentWindow.document.fonts) {
+                iframe.contentWindow.document.fonts.ready.then(() => {
+                    setTimeout(() => {
+                        iframe.contentWindow.focus();
+                        iframe.contentWindow.print();
+                        setTimeout(() => document.body.removeChild(iframe), 2000);
+                    }, 400);
+                });
+            } else {
+                // Fallback if document.fonts isn't supported by the client browser
+                setTimeout(() => {
+                    iframe.contentWindow.focus();
+                    iframe.contentWindow.print();
+                    setTimeout(() => document.body.removeChild(iframe), 2000);
+                }, 800);
+            }
         };
     };
+
 
     const buildInvoiceHTML = (invoice) => {
         const subTotal      = parseFloat(invoice.amount         || 0);
@@ -119,8 +152,8 @@ const InvoiceNoTaxDialog = (() => {
 
             return `
             <tr style="background:${rowBg};">
-                <td style="padding:10px 24px;border-bottom:1px solid #EEF0F5;font-size:12.5px;font-weight:500;color:#111;">
-                    ${item.remarks || item.item_name || item.description || "—"}
+                <td style="padding:10px 24px;text-align:start;border-bottom:1px solid #EEF0F5;font-size:12px;color:#555;">
+                    ${item.remarks || item.item_name  || "—"}
                 </td>
                 <td style="padding:10px 12px;text-align:center;border-bottom:1px solid #EEF0F5;font-size:12px;color:#555;">${qty} ${item.unit_type ? item.unit_type.trim() : " "}</td>
                 <td style="padding:10px 12px;text-align:center;border-bottom:1px solid #EEF0F5;font-size:11px;color:#777;">${formatDate(item.start_date)}</td>
@@ -201,7 +234,7 @@ const InvoiceNoTaxDialog = (() => {
                                 ${invoice.company_phone || "+855 12 345 678"}
                             </div>
                             <div style="font-size:11px;color:#6B7280;margin-top:2px;font-family:'Inter',sans-serif;">
-                                ${invoice.company_address || "Samdech Monireth Blvd (217), Phnom Penh"}
+                                ${invoice.company_address || "#S8-0 2, Financial Street, Phum 7, Sangkat Veal Vong, Khan 7 Makara, Phnom Penh"}
                             </div>
                         </div>
                     </div>

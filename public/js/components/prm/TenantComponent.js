@@ -1055,7 +1055,7 @@ var TenantComponent = new (function () {
             const unitPart = mThis._escapeHtml(mThis._getUnitCode(first, "—"));
             const sqmPart =
                 first.sqm_size != null && first.sqm_size !== ""
-                    ? `${mThis._fmtMoney(first.sqm_size)} sqm`
+                    ? `${mThis._fmtMoney(first.sqm_size)} m²`
                     : "—";
             const bldg = first.building_name
                 ? mThis._escapeHtml(first.building_name)

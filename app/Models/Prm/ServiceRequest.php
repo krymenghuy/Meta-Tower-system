@@ -30,6 +30,7 @@ class ServiceRequest extends VSModel
         $v_rule = [
             'tenant_id'         => '1|number|exists=tenants.id|text=Please select a tenant.',
             'space_id'          => '1|number|exists=building_spaces.id|text=Please select a space.',
+            'category_id'       => '1|number|exists=service_categories.id|text=Please select a category.',
             'service_id'        => '1|number|exists=services.id|text=Please select a service.',
             'unit_type'         => '0|choice|1,2,3',
             'duration_hours'    => '0|numeric|min:0.5|max:99.9|text=Duration hours is required when unit type is Hour.',
@@ -79,7 +80,7 @@ class ServiceRequest extends VSModel
             ->exists();
 
         if ($overlap) {
-            return DV::error('Time slot overlaps with an existing pending request.');
+            return DV::error('This time slot overlaps with an existing pending request. Each request must have a [duration] gap between them.');
         }
 
         if ($input['unit_type'] == 2) {
@@ -169,7 +170,7 @@ class ServiceRequest extends VSModel
         }
 
         if ($category_id) {
-            $str_moreWhere .= ' AND s.category_id = ' . $category_id;
+            $str_moreWhere .= ' AND sr.category_id = ' . $category_id;
         }
 
        if ($status_id) {

@@ -2507,7 +2507,7 @@ thead th {
 
 .range-filter {
     font-size:14px;
-    font-family: 'Inter', sans-serif;   
+    font-family:'Inter';
 }
 
 .range-filter::placeholder {

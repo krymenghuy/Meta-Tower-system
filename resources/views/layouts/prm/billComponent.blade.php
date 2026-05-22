@@ -4,26 +4,16 @@
             <div class="col-12">
                 <div class="row g-3 align-items-center">
                     <div class="col-12 col-md-6 col-lg-2  ">
+                        <select type="id" id="_bill_building_id" class="data-input filter-field form-control" data-field="building_id"></select>
+                    </div>
+                    <div class="col-12 col-md-6 col-lg-2  ">
                         <select type="id" id="_bill_vendor_id" class="data-input filter-field form-control" data-field="vendor_id"></select>
+                    </div>
+                    <div class="    col-12 col-md-6 col-lg-3">
+                        <select type="id" id="_bill_expense_type_id" class="data-input filter-field form-control" data-field="expanse_type_id"></select>
                     </div>
                     <div class="col-12 col-md-6 col-lg-2">
                         <select type="id" id="_bill_status_id" class="data-input filter-field form-control" data-field="status_id"></select>
-                    </div>
-                    <div class="    col-12 col-md-6 col-lg-2">
-                        <select type="id" id="_bill_expense_type_id" class="data-input filter-field form-control" data-field="expanse_type_id"></select>
-                    </div>
-                    <div class="col-12 col-md-6 col-lg-4">
-                        <div id="_dateFilter_receipt" class="d-flex gap-3 align-items-center">
-                            <div class="material-input outlined flex-fill" style="margin-bottom: 0;">
-                                <input data-select="datepicker" class="form-control filter-field range-filter" placeholder=" " data-field="bill_date_start" />
-                                <label class="form-label">From Issue Date</label>
-                            </div>
-
-                            <div class="material-input outlined flex-fill" style="margin-bottom: 0;">
-                                <input data-select="datepicker" class="form-control filter-field range-filter" placeholder=" " data-field="bill_date_end" />
-                                <label class="form-label">To Issue Date </label>
-                            </div>
-                        </div>
                     </div>
                     <div class="col-12 col-md-auto ms-md-auto text-md-end">
                         <button type="button" class="btnAddNewPrm w-100 w-md-auto" id="_btnBill">
@@ -35,6 +25,19 @@
             </div>
             <div class="col-12 col-md-6 col-lg-4">
                 <input type="text" class="rounded-2 filter-field input-search" id="_search_bill" placeholder="Search by Reference No">
+            </div>
+            <div class="col-12 col-md-6 col-lg-3">
+                <div id="_dateFilter_receipt" class="d-flex gap-3 align-items-center">
+                    <div class="material-input outlined flex-fill" style="margin-bottom: 0;">
+                        <input data-select="datepicker" class="form-control filter-field range-filter" placeholder=" " data-field="bill_date_start" />
+                        <label class="form-label">From Issue Date</label>
+                    </div>
+
+                    <div class="material-input outlined flex-fill" style="margin-bottom: 0;">
+                        <input data-select="datepicker" class="form-control filter-field range-filter" placeholder=" " data-field="bill_date_end" />
+                        <label class="form-label">To Issue Date </label>
+                    </div>
+                </div>
             </div>
 
         </div>

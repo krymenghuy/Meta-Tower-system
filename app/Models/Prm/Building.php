@@ -34,7 +34,7 @@ class Building //extends Model
             'total_area' => '1|number|min=0|text=Total area is required',
             'total_space' => '0|number',
             'occupancy' => '0|number',
-            'address' => '0|string|0-250',
+            'address' => '1|string|0-255|text=Address is required',
         ];
 
         $allowSign = ['$', '#', '@', '!', '.', '-', ',', '_', '=', '?'];
@@ -210,6 +210,7 @@ class Building //extends Model
                 $floor_details = (object) [
                     'floor_number' => $next_floor_no,
                     'name' => "Floor {$next_floor_no}",
+                    'building_id' => $building_id,
                 ];
             }
         }

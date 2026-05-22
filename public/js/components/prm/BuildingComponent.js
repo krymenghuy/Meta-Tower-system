@@ -252,8 +252,8 @@ var BuildingComponent = ( () => {
                 e.preventDefault();
 
                 let op = {
-                    id: null,
-                    building_id: btnNewFloor.dataset.buildingid,
+                    id: 0,
+                    building_id: parseInt(btnNewFloor.dataset.buildingid, 10),
                     onClose: (success) => {
                         if (!success) return;
                         mThis.displayFloorNumber(container, id, totalFloor);
@@ -310,7 +310,9 @@ var BuildingComponent = ( () => {
                 </td>
                 <td>${level.floor_no ?? '_'}</td>
                 <td>${level.total_space ?? '_'}</td>
-                <td>${level.description ?? '_'}</td>
+                <td style="width:350px; max-width:350px; white-space:normal; word-break:break-word;">
+                    ${level.description ?? '_'}
+                </td>
                 <td>
                     <span class="d-block">${level.update_user ?? '_'}</span>
                     <span>
@@ -493,7 +495,7 @@ const BuildingDialog = (() => {
                         <div class="col-6">
                             <div class="vs-material-field">
                                 <input type="text" name="prefix" class="data-input form-control" data-field="prefix" placeholder=" " />
-                                <label>ShortCut</label>
+                                <label>Shortcut</label>
                             </div>
                         </div>
                         <div class="col-6">
@@ -505,7 +507,7 @@ const BuildingDialog = (() => {
                         <div class="col-6">
                             <div class="vs-material-field">
                                 <input type="text" name="total_area" class="data-input form-control" data-field="total_area" placeholder=" " />
-                                <label>Total Area (sqm)</label>
+                                <label>Total Area (m²)</label>
                             </div>
                         </div>
 
@@ -597,7 +599,7 @@ const BuildingDialog = (() => {
             onPrepareForm: (me, data) => {
                const isReadOnly = me.dataOptions.id > 0;
                console.log(4444,data,me.dataOptions);
-               
+
                me.setReadOnly(isReadOnly, ["total_floor"]);
                const hasUnit = data.building_details.total_space > 0;
                me.controls.prefix.disabled = hasUnit;
@@ -689,9 +691,17 @@ const CreateFloorDialog = (() => {
                         : '<h4 class="text-prm-custom text-start fw-bold">New Floor</h4>';
                 }
             },
-           onPrepareForm: (me) => {
+           onPrepareForm: (me, data) => {
+                const details = data?.floor_details || {};
                 const floorNumber = me.divModal.querySelector('[data-field="floor_number"]');
                 const floorName = me.divModal.querySelector('[data-field="name"]');
+
+                if (floorNumber && details.floor_number != null && details.floor_number !== '') {
+                    floorNumber.value = details.floor_number;
+                }
+                if (floorName && details.name) {
+                    floorName.value = details.name;
+                }
 
                 /* Floor identity is fixed once defined; only description should be editable in New and Modify flows */
                 if (floorNumber && floorName) {
