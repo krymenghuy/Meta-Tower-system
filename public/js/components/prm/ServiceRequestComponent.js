@@ -62,7 +62,7 @@ var ServiceRequestComponent = (function () {
                 const hours = parseFloat(data.duration_hours);
 
                 if (!data.duration_hours || isNaN(hours)) {
-                    return `<span class="text-nowrap">___</span>`;
+                    return `<span class="text-nowrap">_</span>`;
                 }
 
                 const display = `${hours % 1 === 0 ? hours.toFixed(0) : hours} H`;
@@ -121,7 +121,7 @@ var ServiceRequestComponent = (function () {
             data: (data, index, tr) => {
                 return `
                     <div class="text-primary-custom text-capitalize" style="width:200px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ?? '__'}</span>
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ?? '_'}</span>
                     </div>
                 `;
             }
@@ -633,16 +633,16 @@ const CreateServiceRequestDialog = (() => {
                 me.detail = data.request_details;
                 if (!me.detail) return;
                 const detail = me.detail;
-                const raw = (detail.scheduled_date || '').trim();
-                if (raw) {
-                    const d = new Date(raw);
-                    if (!isNaN(d.getTime())) {
-                        const y = d.getFullYear();
-                        const m = String(d.getMonth() + 1).padStart(2, '0');
-                        const day = String(d.getDate()).padStart(2, '0');
-                        me.controls.scheduled_date.value = `${y}-${m}-${day}`;
-                    }
-                }
+                // const raw = (detail.scheduled_date || '').trim();
+                // if (raw) {
+                //     const d = new Date(raw);
+                //     if (!isNaN(d.getTime())) {
+                //         const y = d.getFullYear();
+                //         const m = String(d.getMonth() + 1).padStart(2, '0');
+                //         const day = String(d.getDate()).padStart(2, '0');
+                //         me.controls.scheduled_date.value = `${y}-${m}-${day}`;
+                //     }
+                // }
 
                 if (detail.start_time && me.controls.start_time) {
                     me.controls.start_time.value = detail.start_time.substring(0, 5);
