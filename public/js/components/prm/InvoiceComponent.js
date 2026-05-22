@@ -712,7 +712,6 @@ const InvoiceDialog = (() => {
 
                                     <!-- RIGHT: Space / Button -->
                                     <div>
-               
                                         <div class="field-row ">
                                             <label class="field-label fw-semibold">Invoice Type</label>
                                             <span class="field-sep">:</span>
@@ -866,6 +865,36 @@ const InvoiceDialog = (() => {
                 me.controls.div_invoice_summary = me.divModal.querySelector(
                     '[name="div_invoice_summary"]'
                 );
+                me.controls.invoice_type.addEventListener("change", function() {
+                    updateButtonVisibility();
+                });
+
+                function updateButtonVisibility() {
+                    const invoiceType = me.controls.invoice_type.value;
+
+                    const btnRent = me.controls.btnRent;
+                    const btnElectric = me.controls.btnElectric;
+                    const btnService = me.controls.btnService;
+                    const btnRequest = me.controls.btnRequest;
+
+                    if (!btnRent || !btnElectric || !btnService || !btnRequest) return;
+
+                    if (invoiceType === "1") { 
+                        // === TAX ===
+                        btnRent.style.display = "inline-block";
+                        
+                        btnElectric.style.display = "none";
+                        btnService.style.display = "none";
+                        btnRequest.style.display = "none";
+                    } 
+                    else { 
+                        // === NO TAX (2) or COMMERCIAL (3) ===
+                        btnRent.style.display = "inline-block";
+                        btnElectric.style.display = "inline-block";
+                        btnService.style.display = "inline-block";
+                        btnRequest.style.display = "inline-block";
+                    }
+                }
 
                 me.controls.btnRent.onclick = () => {
                     if (!me._selectedTenantId) {
@@ -2404,29 +2433,7 @@ const InvoiceDialog = (() => {
                         //     readOnly: true,
                         //     width: "2px",
                         // },
-                        // {
-                        //     name: "item_name",
-                        //     transTitle: "titles.Item",
-                        //     displayType: "text",
-                        //     dataType: "string",
-                        //     readOnly: true,
-                        //     className: "small col-item-name",
-                        //     width: "250px",
-                        //     // html: '<input type="checkbox" class="check_accept">',
-                        // },
-                        // {
-                        //     name: "type",
-                        //     transTitle: "titles.Type",
-                        //     dataType: "text",
-                        //     readOnly: true,
-                        //     displayType: "hidden"
-                        // },
-                        // {
-                        //     name: "remarks",
-                        //     transTitle: "titles.Remarks",
-                        //     dataType: "string",
-                        //     readOnly: true
-                        // },
+                        
                         {
                             name: "remarks",
                             transTitle: "titles.Item",
@@ -2470,7 +2477,7 @@ const InvoiceDialog = (() => {
                             dataType: "text",
                             readOnly: true,
                             defaultValue: "-",
-                            width: "100px"
+                            width: "110px"
                         },
                         {
                             name: "price",

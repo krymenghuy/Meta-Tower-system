@@ -88,14 +88,16 @@ const InvoiceCommercialDialog = (() => {
         );
 
         const itemRows = validItems.map((item, i) => {
-            const rowBg      = i % 2 !== 0 ? "#FAFAFA" : "#FFFFFF";
-            const itemTotal   = parseFloat(item.total    || 0);
+            const rowBg         = i % 2 !== 0 ? "#FAFAFA" : "#FFFFFF";
+            const itemTotal     = parseFloat(item.total    || 0);
+            const qty           = parseFloat(item.qty || 0);
 
             return `
             <tr style="background:${rowBg};">
                 <td style="padding:10px 24px;text-align:start;border-bottom:1px solid #EEF0F5;font-size:12px;color:#555;">
                     ${item.remarks || item.item_name || "—"}
                 </td>
+                <td style="padding:10px 12px;text-align:center;border-bottom:1px solid #EEF0F5;font-size:12px;color:#555;">${qty} ${item.unit_type ? item.unit_type.trim() : " "}</td>
                 <td style="padding:12px 12px;text-align:center;border-bottom:1px solid #EEF0F5;font-size:11px;color:#777;">
                     ${formatDate(item.start_date)}
                 </td>
@@ -210,6 +212,7 @@ const InvoiceCommercialDialog = (() => {
                         <thead>
                             <tr>
                                 <th style="text-align:left;">Description</th>
+                                <th style="text-align:center;">Qty</th>
                                 <th style="text-align:center;">Start Date</th>
                                 <th style="text-align:center;">End Date</th>
                                 <th style="text-align:right;">Total</th>
