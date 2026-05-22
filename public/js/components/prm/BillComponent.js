@@ -7,6 +7,7 @@ var BillComponent = (() => {
     mThis.self = main_view.VSAppContent.querySelector("#_main_bill_component");
     mThis.btnAdd = mThis.self.querySelector("#_btnBill");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_bill");
+    mThis.elFilter_building = mThis.self.querySelector("#_bill_building_id");
     mThis.elFilter_vendor = mThis.self.querySelector("#_bill_vendor_id");
     mThis.elFilter_status = mThis.self.querySelector("#_bill_status_id");
     mThis.elFilter_category = mThis.self.querySelector(
@@ -238,6 +239,7 @@ var BillComponent = (() => {
     };
     mThis.getFilterData = () => {
         let p = {
+            building_id: mThis.elFilter_building.value,
             vendor_id: mThis.elFilter_vendor.value,
             status_id: mThis.elFilter_status.value,
             expense_type_id: mThis.elFilter_category.value,
@@ -565,6 +567,15 @@ var BillComponent = (() => {
             )
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
+                VSUtil.setComboItems(
+                    mThis.elFilter_building,
+                    d.buildings,
+                    "id",
+                    "building",
+                    "",
+                    "All Buildings",
+                    "",
+                );
                 VSUtil.setComboItems(
                     mThis.elFilter_vendor,
                     d.vendors,
