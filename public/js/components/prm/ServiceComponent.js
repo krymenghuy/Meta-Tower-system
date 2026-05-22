@@ -250,7 +250,17 @@ var ServiceComponent = (() => {
         String(raw).toLowerCase() !== 'null' &&
         String(raw).toLowerCase() !== 'undefined';
     if (!hasData) {
-        container.innerHTML = '';
+        container.innerHTML = `
+        <div class="card shadow-sm border-0 rounded-0 mx-0 bg-body-tertiary">
+            <div class="card-body py-3 px-4">
+
+                <div class="text-uppercase small text-muted mb-2 fw-semibold">
+                    Description
+                </div>
+                <div class="text-primary-custom text-break;">_</div>
+            </div>
+        </div>
+    `;
         return;
     }
     const escapeHtml = (str) => {
@@ -266,7 +276,7 @@ var ServiceComponent = (() => {
                     Description
                 </div>
 
-                <div class="text-primary-custom text-break">
+                <div class="text-primary-custom text-break;">
                     ${escapeHtml(raw)}
                 </div>
 
