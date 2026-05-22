@@ -93,8 +93,8 @@ const InvoiceCommercialDialog = (() => {
 
             return `
             <tr style="background:${rowBg};">
-                <td style="padding:12px 24px;border-bottom:1px solid #EEF0F5;font-size:12.5px;font-weight:500;color:#111;">
-                    ${item.remarks || item.item_name || item.description || "—"}
+                <td style="padding:10px 24px;text-align:start;border-bottom:1px solid #EEF0F5;font-size:12px;color:#555;">
+                    ${item.remarks || item.item_name || "—"}
                 </td>
                 <td style="padding:12px 12px;text-align:center;border-bottom:1px solid #EEF0F5;font-size:11px;color:#777;">
                     ${formatDate(item.start_date)}
@@ -176,7 +176,7 @@ const InvoiceCommercialDialog = (() => {
                                 ${invoice.company_phone || "+855 12 345 678"}
                             </div>
                             <div style="font-size:11px;color:#6B7280;margin-top:2px;font-family:'Inter',sans-serif;">
-                                ${invoice.company_address || "Samdech Monireth Blvd (217), Phnom Penh"}
+                                ${invoice.company_address || " #S8-0 2, Financial Street, Phum 7, Sangkat Veal Vong, Khan 7 Makara, Phnom Penh"}
                             </div>
                         </div>
                     </div>

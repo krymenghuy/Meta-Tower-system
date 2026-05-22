@@ -129,7 +129,7 @@ class Service
             'service_types' => GeneralSettings::options_service_types($ss),
             'charge_as' => [
                             ['id' => 'per_unit', 'name' => 'Unit'],
-                            ['id' => 'one_time', 'name' => 'Once'],
+                            ['id' => 'one_time', 'name' => 'Once Time'],
                             ['id' => 'hour', 'name' => 'Hourly'],
                             ['id' => 'month', 'name' => 'Monthly'],
                         ],
