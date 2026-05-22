@@ -80,7 +80,7 @@ class ServiceRequest extends VSModel
             ->exists();
 
         if ($overlap) {
-            return DV::error('This time slot overlaps with an existing pending request. Each request must have a [duration] gap between them.');
+            return DV::error('This time slot overlaps with an existing pending request.');
         }
 
         if ($input['unit_type'] == 2) {
@@ -212,10 +212,15 @@ class ServiceRequest extends VSModel
             $scheduledDateTime = strtotime($row->scheduled_date . ' ' . $row->start_time);
             if ($row->status_id == 1 && !empty($row->scheduled_date) && !empty($row->start_time) && $scheduledDateTime < time()) {
                 $row->status_name = 'Expired';
-                $row->status_id = 4;
+                DB::table('service_requests')
+                    ->where('id', $row->id)
+                    ->update([
+                        'status_id' => 5,
+                        'updated_at' => date('Y-m-d H:i:s')
+                    ]);
             }
             $row->unit_type = $row->unit_type == '1' ? 'One Time' : ($row->unit_type == '2' ? 'Hour' : ($row->unit_type == '3' ? 'Unit' : ''));
-            $row = setOfficialDates($row,['complete_date','request_date','scheduled_date'],['updated_at','created_at as created_at'],[]);
+            $row = setOfficialDates($row,['complete_date','request_date','scheduled_date'],['updated_at','created_at'],[]);
         }
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
@@ -265,42 +270,71 @@ class ServiceRequest extends VSModel
     {
         $id = $id ?? $this->id;
         $req = DB::table('service_requests')->where('id', $id)->select('status_id')->first();
-        if($req->status_id == 2){
-            return DV::error('This request has already been accepted, so it cannot be deleted.');
+        if($req->status_id == 4){
+            return DV::error('This request has already been completed and cannot be deleted.');
         }
-        if($req->status_id == 3){
-            return DV::error('This request has already been rejected, so it cannot be deleted.');
-        }
+        // if($req->status_id == 3){
+        //     return DV::error('This request has already been rejected, so it cannot be deleted.');
+        // }
 
         $deleted = self::deleteBy(['id' => $id]);
         return DV::depends($deleted, 'Failed to delete service request');
     }
 
-    public function acceptRequest($arr = [], $ss = null)
+   public function acceptRequest($arr = [], $ss = null)
     {
         $ss = $ss ?? $this->userInfo;
         $d  = (object) $arr;
 
         $id = $d->id ?? null;
+
         if (!$id) {
             return DV::error('Invalid request id');
         }
-        $req = DB::table('service_requests')->select('id', 'status_id')->where('id', $id)->first();
+
+        $req = DB::table('service_requests')
+            ->select(
+                'id',
+                'status_id',
+                'scheduled_date',
+                'start_time',
+                'service_id'
+            )
+            ->where('id', $id)
+            ->first();
+
         if (!$req) {
             return DV::error('Service request not found');
         }
+
         if ($req->status_id == 2) {
             return DV::error('You already accepted this request.');
         }
-        if (in_array($req->status_id, [3, 4])) {
+
+        if (in_array($req->status_id, [3,4,5])) {
             return DV::error('Request already processed.');
+        }
+
+        // Check if another request already uses same slot
+        $exists = DB::table('service_requests')
+            ->where('id', '!=', $id)
+            ->where('service_id', $req->service_id)
+            ->where('scheduled_date', $req->scheduled_date)
+            ->where('start_time', $req->start_time)
+            ->where('status_id', 2) // Accepted only
+            ->exists();
+
+        if ($exists) {
+            return DV::error(
+                'Another request has already been accepted for this date and time.'
+            );
         }
 
         $updated = DB::table('service_requests')
             ->where('id', $id)
             ->update([
                 'status_id'   => 2,
-                'update_user' => $ss->full_name ?? 'System',
+                'update_user' => $ss->full_name ?? '',
                 'update_uid'  => $ss->id ?? null,
                 'updated_at'  => getNowTime(),
             ]);
@@ -315,12 +349,12 @@ class ServiceRequest extends VSModel
     }
     function rejectRequest($arr = [], $ss = null)
     {
-        $ss = $ss ?? $this->ss;
+        $ss = $ss ?? $this->userInfo;
 
-        $arr = (array) $arr;
+        $d = (object) $arr;
 
-        $id = $arr['id'] ?? $arr['discount_id'] ?? null;
-        $remarks = $arr['remarks'] ?? $arr['remark'] ?? null;
+        $id = $d->id ?? $d->discount_id ?? null;
+        $remarks = $d->remarks ?? $d->remark ?? null;
 
         if (empty($id)) {
             return DV::error('ID is required.');
@@ -334,5 +368,25 @@ class ServiceRequest extends VSModel
             ]);
 
         return DV::depends($reject, ['action' => 'reject']);
+    }
+    function completeRequest($arr = [], $ss = null){
+            $ss = $ss ?? $this->userInfo;
+
+            $d = (object) $arr;
+
+            $id = $d->id ?? null;
+
+            if (empty($id)) {
+                return DV::error('ID is required.');
+            }
+
+            $complete = DB::table('service_requests')
+                ->where('id', $id)
+                ->update([
+                    'status_id' => 4,
+                    'complete_date' => date('Y-m-d'),
+                ]);
+
+            return DV::depends($complete, ['action' => 'complete']);
     }
 }

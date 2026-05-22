@@ -48,13 +48,13 @@ var ServiceRequestComponent = (function () {
                 `<span class="d-block text-prm-custom text-nowrap">${data.service_category ?? ""}</span>
                  <small class="d-block text-primary text-nowrap">${data.service_name ?? ""}</small>`,
         },
-        {
-            transTitle: "titles.Charge As",
-            className: "align-middle text-nowrap",
-            data: (data) => {
-                return `<span class="badge text-primary bg-primary-subtle border border-primary text-nowrap" style="min-width:70px;">${data.unit_type}</span>`;
-            }
-        },
+        // {
+        //     transTitle: "titles.Charge As",
+        //     className: "align-middle text-nowrap ",
+        //     data: (data) => {
+        //         return `<span class="badge text-primary bg-primary-subtle border border-primary text-nowrap" style="min-width:70px;">${data.unit_type}</span>`;
+        //     }
+        // },
         {
             transTitle: "titles.Duration",
             className: "align-middle",
@@ -132,11 +132,18 @@ var ServiceRequestComponent = (function () {
             data: (data) => {
                 const status = (data.status_name ?? '').toLowerCase();
                 const statusId = Number(data.status_id) || 0;
+                console.log
+                (22, statusId, status);
                 const statusClasses = {
                     pending: 'badge text-warning bg-warning-subtle border border-warning',
-                    accepted: 'badge text-success bg-success-subtle border border-success',
-                    expired: 'badge text-dark bg-dark-subtle border border-dark',
+
+                    accepted: 'badge text-primary bg-primary-subtle border border-primary',
+
+                    completed: 'badge text-success bg-success-subtle border border-success',
+
                     rejected: 'badge text-danger bg-danger-subtle border border-danger',
+
+                    expired: 'badge text-dark bg-secondary-subtle border border-secondary',
                 };
                 const cls = statusClasses[status] ?? 'badge text-dark bg-light border';
                 const isEditable = status === 'pending';
@@ -246,6 +253,7 @@ var ServiceRequestComponent = (function () {
             category_id: mThis.elService_category?.value,
             search_value: mThis.elSearch.value,
         };
+        console.log(22, p);
         mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
             const f = el.dataset.field;
             p[f] = el.value;
@@ -258,42 +266,50 @@ var ServiceRequestComponent = (function () {
             actionButtonClass: "btn_service_request_action",
             cssClass: "bg-white shadow",
             menus: [
-                {
-                    html: '<span class="ps-2 " vslang="title.Accept"></span>',
-                    icon: `<i class="fa-regular fa-square-check fs-5 text-primary"></i>`,
-                    name: "accept_request",
-                    cssClass: "border-bottom pb-2"
-                },
-                {
-                    html: '<span class="ps-2" vslang="title.Reject"></span>',
-                    icon: `<i class="fa-regular fa-rectangle-xmark fs-5 text-danger-emphasis"></i>`,
-                    name: "reject_request",
-                    cssClass: "border-bottom pb-2"
-                },
-                {
-                    html: '<span class="ps-2 " vslang="title.Modify"></span>',
-                    icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
-                    name: "edit_request",
-                    cssClass: "border-bottom pb-2"
-                },
-                {
-                    html: '<span class="ps-2" vslang="title.Delete"></span>',
-                    icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
-                    name: "delete_request",
-                    cssClass: "border-bottom pb-2"
-                }
-            ],
+                    {
+                        html: '<span class="ps-2" vslang="title.Accept"></span>',
+                        icon: `<i class="fa-regular fa-square-check fs-5 text-primary"></i>`,
+                        name: "accept_request",
+                        cssClass: "border-bottom pb-2"
+                    },
+                    {
+                        html: '<span class="ps-2" vslang="title.Complete"></span>',
+                        icon: `<i class="fa-solid fa-circle-check fs-5 text-success"></i>`,
+                        name: "complete_request",
+                        cssClass: "border-bottom pb-2"
+                    },
+                    {
+                        html: '<span class="ps-2" vslang="title.Reject"></span>',
+                        icon: `<i class="fa-regular fa-rectangle-xmark fs-5 text-danger-emphasis"></i>`,
+                        name: "reject_request",
+                        cssClass: "border-bottom pb-2"
+                    },
+                    {
+                        html: '<span class="ps-2" vslang="title.Modify"></span>',
+                        icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
+                        name: "edit_request",
+                        cssClass: "border-bottom pb-2"
+                    },
+                    {
+                        html: '<span class="ps-2" vslang="title.Delete"></span>',
+                        icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
+                        name: "delete_request",
+                        cssClass: "border-bottom pb-2"
+                    }
+                ],
              onShow: (me, container) => {
                 const menu = me.getActiveMenus(container);
                 const status_id = container.dataset.statusid;
                menu.edit_request.style.display = (status_id >= 2) ? 'none' : 'block';
             //    menu.delete_request.style.display = (status_id >= 2) ? 'none' : 'block';
                menu.accept_request.style.display = (status_id >= 2) ? 'none' : 'block';
+               menu.complete_request.style.display = (status_id == 2) ? 'block' : 'none';
                menu.reject_request.style.display = (status_id >= 2) ? 'none' : 'block';
 
             },
             onClick: (menuLink, id, name) => {
                 if (name === 'accept_request') mThis.acceptRequest(id, menuLink);
+                if (name === 'complete_request') mThis.completeRequest(id, menuLink);
                 if (name === 'reject_request') mThis.rejectRequest(id, menuLink);
                 if (name === 'edit_request') mThis.editServiceRequest(id, menuLink);
                 if (name === 'delete_request') mThis.deleteRequest(id, menuLink);
@@ -332,6 +348,7 @@ var ServiceRequestComponent = (function () {
             },
         });
     };
+    
     mThis.acceptRequest = (id, menuLink) => {
         cv_interact.confirm(
             'Are you sure you want to accept this service request?',
@@ -352,6 +369,36 @@ var ServiceRequestComponent = (function () {
                     if (res.status_code === 200) {
                         mThis.ServiceRequestListView.showPage(mThis.getFilterData());
                         cv_interact.success('Service Request has been accepted!');
+                    } else {
+                        cv_interact.error(res.error_message || 'Something went wrong');
+                    }
+                })
+                .catch(() => {
+                    cv_interact.error('Network error');
+                });
+            }
+        );
+    };
+     mThis.completeRequest = (id, menuLink) => {
+        cv_interact.confirm(
+            'Are you sure you want to complete this service request?',
+            {
+                title: 'Complete Service Request',
+                context: 'update',
+                confirmButtonText: 'Complete'
+            },
+            (e) => {
+                if (!e) return;
+
+                vsapi.call(
+                    `${main_view.base_url}/prm/service-request/complete`,
+                    { id },
+                    false
+                )
+                .then(res => {
+                    if (res.status_code === 200) {
+                        mThis.ServiceRequestListView.showPage(mThis.getFilterData());
+                        cv_interact.success('Service Request has been completed!');
                     } else {
                         cv_interact.error(res.error_message || 'Something went wrong');
                     }
@@ -431,7 +478,7 @@ const CreateServiceRequestDialog = (() => {
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <select data-style="material" name="space_id"class="data-input form-control" data-field="space_id" required placeholder="Space"></select>
+                            <select data-style="material" name="space_id"class="data-input form-control" data-field="space_id" required placeholder="Unit"></select>
                         </div>
                     </div>
                     <div class="row g-3 mb-3">
@@ -445,8 +492,8 @@ const CreateServiceRequestDialog = (() => {
                     </div>
                     <div class="row g-3 mb-3">
                         <div class="col-md-3 unit-type-wrapper">
-                            <select data-style="material" name="unit_type" class="data-input form-control" data-field="unit_type" disabled placeholder="Unit Type">
-                                <option value=""> Select Unit</option>
+                            <select data-style="material" name="unit_type" class="data-input form-control" data-field="unit_type" disabled placeholder="Charge As">
+                                <option value="">Charge As</option>
                                 <option value="1">One Time</option>
                                 <option value="2">Hour</option>
                                 <option value="3">Unit</option>
@@ -573,7 +620,7 @@ const CreateServiceRequestDialog = (() => {
                     }).then(res => {
                         const d = res.data || {};
                         me._availableServices = d.service || [];
-                        VSUtil.setComboItems(me.controls.space_id, d.spaces || [], 'space_id', 'space_code', '', 'Select Room');
+                        VSUtil.setComboItems(me.controls.space_id, d.spaces || [], 'space_id', 'space_code', '', 'Select Unit');
                         VSUtil.setComboItems(me.controls.category_id,d.service_categories || [],'id','service_category','','Select Category');
 
                         if (restoreValues) {
@@ -710,7 +757,7 @@ const CreateServiceRequestDialog = (() => {
                             .then((res) => {
                                 if (res.status_code === 200) {
                                     me.hide(true, data);
-                                    cv_interact.success(data.id ? "Updated!" : "Service Request has been created.");
+                                    cv_interact.success(data.id ? "Service Request has been updated!" : "Service Request has been created.");
                                 } else {
                                     cv_interact.error(res.error_message || saveFailedMessage);
                                 }
