@@ -126,10 +126,8 @@ const InvoiceTaxDialog = (() => {
 
             return `
             <tr style="background:${rowBg};transition:background 0.15s;">
-                <td style="padding:11px 14px;border-bottom:1px solid #EEF0F5;">
-                    <div style="font-weight:600;color:#111827;font-size:12.5px;font-family:'DM Sans',sans-serif;">
+                <td style="padding:10px 24px;text-align:start;border-bottom:1px solid #EEF0F5;font-size:12px;color:#555;">
                         ${item.remarks || item.item_name || item.description || "—"}
-                    </div>
                 </td>
                 <td style="padding:11px 10px;text-align:center;color:#4B5563;font-size:12px;border-bottom:1px solid #EEF0F5;">${qty} ${item.unit_type ? item.unit_type.trim() : ''}</td>
                 <td style="padding:11px 10px;text-align:center;color:#6B7280;font-size:11px;border-bottom:1px solid #EEF0F5;">${formatDate(item.start_date)}</td>
@@ -209,7 +207,7 @@ const InvoiceTaxDialog = (() => {
                                         <i class="bi bi-telephone-fill" style="font-size:9px;"></i> +855 12 345 678
                                     </div>
                                     <div style="font-size:11px;color:rgba(255,255,255,0.65);display:flex;align-items:center;gap:5px;">
-                                        <i class="bi bi-geo-alt-fill" style="font-size:9px;"></i> Samdech Monireth Blvd (217), Phnom Penh
+                                        <i class="bi bi-geo-alt-fill" style="font-size:9px;"></i>  #S8-0 2, Financial Street, Phum 7, Sangkat Veal Vong, Khan 7 Makara, Phnom Penh
                                     </div>
                                 </div>
                             </div>
