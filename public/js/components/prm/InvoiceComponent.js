@@ -407,7 +407,7 @@ var InvoiceComponent = (() => {
                         <tfoot class="table-light fw-bold">
                                 <!-- Displaying Net Total -->
                             <tr>
-                                <td colspan="7" class="text-end  ">Total</td>
+                                <td colspan="7" class="text-end  ">Sub Total</td>
                                 <td colspan="1" class="text-end  fs-6">
                                     ${currency}${fmt(
             parseFloat(invoice.amount || 0)
@@ -426,7 +426,7 @@ var InvoiceComponent = (() => {
                                         ).toLowerCase();
 
                                         if (discVal <= 0)
-                                            return `<span class="text-muted">—</span>`;
+                                            return `<span class="text-muted">0%</span>`;
                                         if (discType === "percent") {
                                             return `${fmt(discVal)}%`;
                                         } else {
@@ -438,7 +438,7 @@ var InvoiceComponent = (() => {
 
                             <!-- Displaying Net Total -->
                             <tr>
-                                <td colspan="7" class="text-end  text-primary">Total Amount Due</td>
+                                <td colspan="7" class="text-end  text-primary">Grand (Net)</td>
                                 <td colspan="1" class="text-end text-success fs-6">
                                     ${currency}${fmt(
             parseFloat(invoice.amount_payable || 0)
