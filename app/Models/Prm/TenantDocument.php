@@ -38,7 +38,7 @@ class TenantDocument
             'document_type_id' => '1|number|exists=document_types.id',
             'ext' => '1|string',
             'original_file_name' => '0|string|0-255',
-            'data' => '0|string',
+            'data' => '1|string',
         ];
         // \Log::info('Array data: ' . json_encode($arr));
 

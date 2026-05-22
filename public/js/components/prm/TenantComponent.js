@@ -265,6 +265,12 @@ var TenantComponent = new (function () {
                     name: "upload_document",
                 },
                 {
+                    html: '<span class="ps-2">Modify document</span>',
+                    icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "modify_document",
+                },
+                {
                     html: '<span class="ps-2">Create Contract</span>',
                     icon: `<i class="fa-solid fa-file-contract fs-5 text-success"></i>`,
                     cssClass: "border-bottom pb-2",
@@ -307,6 +313,10 @@ var TenantComponent = new (function () {
                         mThis.uploadDocument(id, menuLink);
                         break;
                     }
+                    // case "modify_document": {
+                    //     mThis.modifyDocument(id, menuLink);
+                    //     break;
+                    // }
                     case "modify_tenant": {
                         mThis.editTenant(id, menuLink);
                         break;
@@ -367,7 +377,7 @@ var TenantComponent = new (function () {
                 mThis.renderView();
             },
         };
-        console.log(111, op);
+        // console.log(111, op);
 
         TenantDocumentDialog.show(op);
     };
@@ -380,7 +390,7 @@ var TenantComponent = new (function () {
             },
         };
         // renewDialog.show(op);
-        alert("coming soon!");
+        // alert("coming soon!");
     };
     mThis.deleteTenant = (id, menuLink) => {
         let op = {
@@ -431,7 +441,7 @@ var TenantComponent = new (function () {
         });
     };
     mThis.renderCard = (container, data) => {
-        console.log(8888, data);
+        // console.log(8888, data);
         container.innerHTML = "";
         let html = `<div class="row g-3">`;
         if (Array.isArray(data) && data.length > 0) {
@@ -682,6 +692,7 @@ var TenantComponent = new (function () {
             document.body.removeChild(a);
             return;
         }
+
         const extFromName = (file_name || "").split(".").pop();
         const ext = String(
             (res.data && res.data.ext) || extFromName || "",
@@ -768,7 +779,7 @@ var TenantComponent = new (function () {
         targetPage.style.display = "block";
     };
     mThis.renderProfile = (data) => {
-        console.log(123, data);
+        // console.log(123, data);
 
         let cls_class = "";
         if (data && data.status) {
@@ -1001,36 +1012,38 @@ var TenantComponent = new (function () {
             if (!group.length) return;
             const first = group[0];
 
-            const contractStatusName = String(first.contract_status ?? "",).trim();
+            const contractStatusName = String(
+                first.contract_status ?? "",
+            ).trim();
             const contractStatusLower = contractStatusName.toLowerCase();
-            
+
             // const hasCurrent = group.some((r) => !!r.is_current);
 
             let accent = "#adb5bd";
             let circleBg = "#6c757d";
             let headerBadgeHtml = "";
             let priceColor = "#212529";
-            let depositBadgeStyle ="color:#3f51d8;background-color:#e7efff;border:1px solid #cfdbff;";
-            
+            let depositBadgeStyle =
+                "color:#3f51d8;background-color:#e7efff;border:1px solid #cfdbff;";
+
             if (contractStatusLower === "active") {
                 accent = "#0f49bd";
                 circleBg = "#0f49bd";
                 priceColor = "#3f51d8";
-                
+
                 headerBadgeHtml = `<span class="badge text-uppercase rounded-4 text-white ms-1" style="background-color:#0f49bd;">CURRENT</span>`;
             } else if (contractStatusLower === "pending") {
                 accent = "#fd7e14";
                 circleBg = "#fd7e14";
                 priceColor = "#fd7e14";
-                
+
                 headerBadgeHtml = `<span class="badge text-uppercase rounded-4 text-white ms-1" style="background-color:#fd7e14;">PENDING</span>`;
             } else if (contractStatusLower === "terminated") {
                 accent = "#dc3545";
                 circleBg = "#dc3545";
                 priceColor = "#dc3545";
-                
-                headerBadgeHtml = `<span class="badge text-uppercase rounded-4 text-white ms-1" style="background-color:#dc3545;">TERMINATED</span>`;
 
+                headerBadgeHtml = `<span class="badge text-uppercase rounded-4 text-white ms-1" style="background-color:#dc3545;">TERMINATED</span>`;
             } else {
                 headerBadgeHtml = `<span class="badge text-uppercase rounded-4 ms-1" style="color:#4a4a4a;background-color:#f6f4ee;border:1px solid #e5dfd1;">${mThis._escapeHtml(contractStatusName || "—")}</span>`;
             }
@@ -1272,6 +1285,12 @@ var TenantComponent = new (function () {
                                         <span class="tool-tiptext fs-6">View</span>
                                     </span>
                                 </a>
+                                <a href="javascript:void(0)" class="modify-doc" data-id="${doc.id}">
+                                    <span class="tool-tip">
+                                        <i class="fa-regular fa-edit fs-6 text-warning"></i>
+                                        <span class="tool-tiptext fs-6">Modify</span>
+                                    </span>
+                                </a>
                                 <a href="javascript:void(0)" class="download-doc" data-id="${doc.id}">
                                     <span class="tool-tip">
                                         <i class="fa-solid fa-cloud-arrow-down text-primary fs-6"></i>
@@ -1356,7 +1375,25 @@ var TenantComponent = new (function () {
                         });
                     });
 
+                    document.querySelectorAll(".modify-doc").forEach((btn) => {
+                        btn.addEventListener("click", async function (e) {
+                            e.preventDefault();
+                            const op = {
+                                id: this.dataset.id,
+                                btn: e.target,
+                                onClose: () => {
+                                    mThis.renderView();
+                                    mThis.tenantListView.showPage(
+                                        mThis.getFilterData(),
+                                    );
+                                },
+                            };
+                            TenantDocumentDialog.show(op);
+                        });
+                    });
+
                     document
+
                         .querySelectorAll(".delete-doc-btn")
                         .forEach((btn) => {
                             btn.addEventListener("click", async function (e) {
@@ -1402,6 +1439,7 @@ var TenantComponent = new (function () {
                             });
                         });
                 })
+
                 .catch((err) => {
                     div.innerHTML = `<div class="alert alert-danger m-3">Failed to load documents: ${err.message}</div>`;
                 });
@@ -1409,7 +1447,7 @@ var TenantComponent = new (function () {
     };
 
     mThis.setActionsProfileInfo = (divProfile) => {
-        console.log(33, divProfile);
+        // console.log(33, divProfile);
 
         divProfile.addEventListener("click", (e) => {
             // let btn = VSUtil.closestLimited(e.target, ".edit_tenant_profile_info ");
@@ -1673,7 +1711,7 @@ const CreateTenantDialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
-                    console.log(1122, me.dataOptions);
+                    // console.log(1122, me.dataOptions);
 
                     if (me.dataOptions.phone_number) {
                         me.controls.name.value = me.dataOptions.name;
@@ -1707,7 +1745,7 @@ const CreateTenantDialog = (() => {
                             op.photo = me.tenantImageBox
                                 ? me.tenantImageBox.getImage()
                                 : "";
-                            console.log(4444, op);
+                            // console.log(4444, op);
 
                             vsapi
                                 .call(
@@ -1770,7 +1808,9 @@ const TenantDocumentDialog = (() => {
                     </div>
                     <div class="col-12">
                         <div class="vs-material-field d-flex">
-                            <input type="text" name="documents" class="d-none form-control"  accept=".pdf,.png,.jpg,.jpeg" /disabled>
+                            <input type="text" name="documents" class="form-control" accept=".pdf,.png,.jpg,.jpeg" disabled>
+                            <input type="hidden" name="original_file_name" data-field="original_file_name">
+                            <input type="hidden" name="file_ext" data-field="ext">
                         </div>
                     </div>
                      <div class="col-12">
@@ -1806,14 +1846,10 @@ const TenantDocumentDialog = (() => {
                                 accept: ".pdf,.png,.jpg,.jpeg",
                             },
                             (d) => {
-                               
                                 const extension = d.fileName
                                     .split(".")
                                     .pop()
                                     .toLowerCase();
-                                console.log("File Name:", d.fileName);
-                                console.log("File Extension:", extension);
-                                console.log("Full Data Object:", d);
                                 me.fileData = d;
                                 me.controls.documents.value = d.fileName;
                                 me.controls.documents.classList.remove(
@@ -1899,6 +1935,17 @@ const TenantDocumentDialog = (() => {
                     },
                 },
                 onPrepareForm: (me) => {
+                    if (me.dataOptions?.id > 0) {
+                        const fileName = me.controls?.original_file_name?.value;
+                        const ext = me.controls?.file_ext?.value;
+
+                        if (fileName && me.controls?.documents) {
+                            me.controls.documents.value = ext ? `${fileName}.${ext}` : fileName;
+                            me.controls.documents.classList.remove("d-none");
+                        }
+                        return;
+                    }
+                        
                     me.fileData = null;
                     me.fileBase64 = null;
                     me.ext = null;
@@ -1933,12 +1980,11 @@ const TenantDocumentDialog = (() => {
                                 );
                                 return;
                             }
-                            if (!me.fileData) {
+                            if (!me.fileData && !(me.dataOptions?.id > 0)) {
                                 cv_interact.error("Please select a file.");
                                 return;
                             }
                             const remarks = me.controls.remarks.value || "";
-
                             if (remarks.length > 255) {
                                 cv_interact.error(
                                     "Remarks must not exceed 255 characters.",
@@ -1947,24 +1993,26 @@ const TenantDocumentDialog = (() => {
                             }
 
                             const allowExt = ["jpg", "jpeg", "png", "pdf"];
-
-                            if (allowExt.indexOf(me.fileData.ext) === -1) {
+                            if (me.fileData && allowExt.indexOf(me.fileData.ext) === -1) {
                                 cv_interact.error(
                                     "Please select a valid file.",
                                 );
                                 return;
                             }
-                            const nameWithoutExt = me.fileData.fileName.replace(
-                                /\.[^/.]+$/,
-                                "",
-                            );
+                            // const nameWithoutExt = me.fileData.fileName.replace(
+                            //     /\.[^/.]+$/,
+                            //     "",
+                            // );
+
+                            const nameWithoutExt = me.fileData
+                                ? me.fileData.fileName.replace(/\.[^/.]+$/, "")
+                                : me.controls?.original_file_name?.value || "";
                             const p = {
                                 tenant_id: me.dataOptions.tenant_id,
-                                ext: me.fileData.ext,
-                                data: me.fileData.dataUrl,
+                                ext: me.fileData ? me.fileData.ext : me.controls?.file_ext?.value,
+                                data: me.fileData ? me.fileData.dataUrl : null,
                                 remarks: me.controls.remarks.value,
-                                document_type_id:
-                                    me.controls.document_type.value,
+                                document_type_id: me.controls.document_type.value,
                                 original_file_name: nameWithoutExt,
                             };
                             vsapi
@@ -1979,20 +2027,21 @@ const TenantDocumentDialog = (() => {
                                 )
                                 .then((res) => {
                                     if (res.status_code === 200) {
-                                        // me.fileData = null;
-                                        // if (me.controls?.documents) {
-                                        //     me.controls.documents.value = "";
-                                        //     me.controls.documents.classList.add(
-                                        //         "d-none",
-                                        //     );
-                                        // }
-                                        me.hide(true, p);
-                                        cv_interact.success(
-                                            "Document saved successfully.",
-                                        );
+                                        const newDocumentId =
+                                            res.data?.id || null;
+                                        me.hide(true, p, newDocumentId);
+                                        if (me.dataOptions.id > 0) {
+                                            cv_interact.success(
+                                                "Document has been updated successfully.",
+                                            );
+                                        } else {
+                                            cv_interact.success(
+                                                "Document saved successfully.",
+                                            );
+                                        }
                                     } else {
                                         cv_interact.error(res.error_message);
-                                        me.fileData = null;
+                                        // me.fileData = null;
 
                                         if (me.controls?.documents) {
                                             me.controls.documents.value = "";
