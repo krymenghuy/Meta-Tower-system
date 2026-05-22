@@ -307,7 +307,7 @@ var ServiceRequestComponent = (function () {
         Swal.fire({
             input: "textarea",
             inputLabel: " ",
-            inputPlaceholder: "Please, enter new remark why reject this request",
+            inputPlaceholder: "Please enter reason why reject this request",
             reverseButtons: true,
             showCancelButton: true,
             inputValidator: (value) => {

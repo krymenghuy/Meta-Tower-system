@@ -85,9 +85,9 @@ var ContractComponent = new (function () {
                 return `
                     <span class="text-nowrap text-primary-custom">
                             ${price}
-                        <small class="text-nowrap text-muted">/sqm</small>
+                        <small class="text-nowrap text-muted"> /m²</small>
                     </span>
-                    <span class="d-block text-primary" style="font-size:12px;">${data.sqm_size ?? '-'} sqm</span>
+                    <span class="d-block text-primary" style="font-size:12px;">${data.sqm_size ?? '-'} m²</span>
                 `;
             }
         },
@@ -714,7 +714,7 @@ const ContractDialog = (() => {
                                 <div class="vs-material-field">
                                     <input type="hidden" name="price_type" class="data-input" data-field="price_type" />
                                     <input type="text" name="price_type_label" class="data-input form-control" disabled />
-                                    <label>Unit Price</label>
+                                    <label>Charge As</label>
                                 </div>
                             </div>
                             <div class="col-6">
@@ -926,7 +926,7 @@ const ContractDialog = (() => {
                     if (me.controls.sqm_size) me.controls.sqm_size.value = selected.sqm_size ?? '';
                     if (me.controls.price_type && me.controls.price_type_label) {
                         me.controls.price_type.value = selected.price_type ?? '';
-                        me.controls.price_type_label.value = selected.price_type === 'sqm' ? 'Per mÂ²' : selected.price_type === 'total' ? 'Whole Room' : '';
+                        me.controls.price_type_label.value = selected.price_type === 'sqm' ? 'm²' : selected.price_type === 'total' ? 'Unit' : '';
                     }
                     if (me.controls.price) me.controls.price.value = selected.price ?? '';
                 };
@@ -1141,24 +1141,24 @@ const RenewDialog = (() => {
 
                         <div class="col-12">
                             <div class="p-3 bg-white border rounded shadow-lg">
-                                <h6 class="mb-3 text-golden">Create Contract</h6>
+                                <h6 class="mb-3 text-golden">Unit Details</h6>
                                 <div class="row g-3">
                                     <div class="col-6">
                                 <div class="vs-material-field">
                                     <input type="text" name="space_name" class="data-input form-control" data-field="space_name" placeholder=" " readonly disabled />
-                                    <label>Unit Type</label>
+                                    <label>Type</label>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="vs-material-field">
                                     <input type="number" name="sqm_size" class="data-input form-control" data-field="sqm_size" placeholder=" " readonly disabled />
-                                    <label>Size </label>
+                                    <label>Size</label>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="vs-material-field">
                                     <input type="text" name="price_type" class="data-input form-control" data-field="price_type" placeholder=" " readonly disabled />
-                                    <label>Unit Price</label>
+                                    <label>Charge As</label>
                                 </div>
                             </div>
                             <div class="col-6">
@@ -1258,6 +1258,12 @@ const RenewDialog = (() => {
                         me.controls.space_name.value = unitData.space_type ?? getSpaceTypeName(unitData.space_type_id);
                     }
                     if (me.controls.sqm_size) me.controls.sqm_size.value = unitData.sqm_size ?? '';
+                    // if (me.controls.price_type) me.controls.price_type.value = unitData.price_type ?? '';
+                    if (me.controls.price_type) {
+                        me.controls.price_type.value = unitData.price_type ?? '';
+                        me.controls.price_type.value = unitData.price_type === 'sqm' ? 'm²' : unitData.price_type === 'total' ? 'Unit' : '';
+                    }
+                    if (me.controls.price) me.controls.price.value = unitData.price ?? '';
                     applyContractPriceFields();
                 };
                 const applyUnitData = (spaceId) => {

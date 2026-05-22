@@ -93,7 +93,7 @@ var ReservationComponent = (() => {
             },
         },
         {
-            transTitle: "titles.Updated By",
+            transTitle: "titles.Last Updated",
             className: "align-middle",
             data: (data, index, tr) => {
                 return `<div class="d-flex flex-column">
