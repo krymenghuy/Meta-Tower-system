@@ -1730,7 +1730,7 @@ const CreateTenantDialog = (() => {
                                             );
                                         } else {
                                             cv_interact.success(
-                                                "New tenant has been added successfully.",
+                                                "New tenant has been created successfully.",
                                             );
                                         }
                                     } else {

@@ -599,7 +599,7 @@ const CreateMaintenanceDialog = (() => {
                             .then(res => {
                                 if (res.status_code === 200) {
                                     me.hide(true, op);
-                                    cv_interact.success(op.id ? "Updated!" : "Maintenance created!");
+                                    cv_interact.success(op.id ? "Maintenance has been updated successfully." : "Maintenance has been created successfully.");
                                     if (op && typeof op.onClose === "function") op.onClose();
                                 } else {
                                     cv_interact.error(res.error_message || "Save failed");
