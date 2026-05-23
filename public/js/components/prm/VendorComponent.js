@@ -53,7 +53,7 @@ var VendorComponent = (() => {
                         ${name}
                     </span>
                     <small class="d-block text-primary">
-                        ${data.type ?? ""}
+                        ${data.type ?? "_"}
                     </small>
                 </div>
             </div>
@@ -90,16 +90,16 @@ var VendorComponent = (() => {
             transTitle: "titles.Contact Info",
             className: "align-middle",
             data: (data) =>
-                `<span class="d-block text-prm-custom text-nowrap"><i class="fa-solid text-success px-1 fa-phone" style="font-size:12px;"></i> ${data.phone_number ?? ""}</span>
-                 <span class="d-block text-primary text-nowrap"><i class="fa-solid text-primary px-1 fa-envelope" ></i> ${data.email ?? ""}</span>`,
+                `<span class="d-block text-prm-custom text-nowrap"><i class="fa-solid text-success px-1 fa-phone" style="font-size:12px;"></i> ${data.phone_number ?? "_"}</span>
+                 <span class="d-block text-primary text-nowrap"><i class="fa-solid text-primary px-1 fa-envelope" ></i> ${data.email ?? "_"}</span>`,
         },
 
         {
             transTitle: "titles.Contact Person",
             className: "align-middle text-nowrap",
             data: (data) => {
-                return `<span class="d-block text-prm-custom text-capitalize"> ${data.contact_person ?? ""}</span>
-                         <span class="d-block text-primary"> ${data.contact_phone ?? ""}</span>`;
+                return `<span class="d-block text-prm-custom text-capitalize"> ${data.contact_person ?? "_"}</span>
+                         <span class="d-block text-primary"> ${data.contact_phone ?? "_"}</span>`;
             }
         },
         {
@@ -109,7 +109,7 @@ var VendorComponent = (() => {
                 return `
                     <div class="text-primary-custom" style="width:250px;">
                         <i class="fa-solid fa-location-dot" style="color: rgb(72 71 83);"></i> 
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.address ?? '...'}</span>
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.address ?? "_"}</span>
                     </div>
                 `;
             }
@@ -139,8 +139,8 @@ var VendorComponent = (() => {
             className: 'align-middle text-nowrap',
             data: (data, index, tr) => {
                 return `<div class="d-flex flex-column">
-                    <span class="text-capitalize text-start text-prm-custom"><span>${data.update_user ?? ''}</span></span>
-                    <span class="text-muted small">${data.updated_at ?? ''}</span>
+                    <span class="text-capitalize text-start text-prm-custom"><span>${data.update_user ?? '_'}</span></span>
+                    <span class="text-muted small">${data.updated_at ?? '_'}</span>
                 </div>`;
             }
         },
