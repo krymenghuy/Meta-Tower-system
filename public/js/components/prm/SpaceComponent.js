@@ -267,7 +267,7 @@ var SpaceComponent = new (function () {
                 menu.cancel_booking.style.display = booked ? 'block' : 'none';
                 menu.create_booking.style.display = booked || occupiedOrNotBookable ? 'none' : 'block';
                 menu.create_contract.style.display = statusIdNum >= 3 ? 'none' : 'block';
-                menu.modify_space.style.display = status_id == 3 ? 'none' : 'block';
+                // menu.modify_space.style.display = status_id == 3 ? 'none' : 'block';
                 menu.finish_maintenance.style.display = isMaintenance ? 'block' : 'none';
                 menu.set_maintenance.style.display = hasActiveMaintenance ? 'none' : 'block';
                 menu.delete_space.style.display = statusIdNum > 1 ? 'none' : 'block';

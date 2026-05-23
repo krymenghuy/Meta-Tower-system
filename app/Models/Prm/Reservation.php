@@ -20,116 +20,135 @@ class Reservation extends VSModel
         $this->id = $id;
         $this->userInfo = $userInfo;
     }
-    public function upsert($arr = [], $id = null, $ss = null){
-        // 1. Force local timezone so 'now' matches your watch
-        date_default_timezone_set('Asia/Phnom_Penh');
-        $id = $id ?? $this->id;
-        $ss = $ss ?? $this->userInfo;
+    public function upsert($arr = [], $id = null, $ss = null)
+{
+    date_default_timezone_set('Asia/Phnom_Penh');
 
-        if ($id) {
-            $row = DB::table('reservations')->where('id', $id)->first();
-            if ($row) {
-                $bookingStart = strtotime($row->booking_date . ' ' . $row->start_time);
-                $now = time();
-                if (($bookingStart - $now) < (30 * 60)) {
-                    return DV::error('Reservations cannot be modified less than 30pur minutes before start time.');
-                }
+    $id = $id ?? $this->id;
+    $ss = $ss ?? $this->userInfo;
+
+    if ($id) {
+        $row = DB::table('reservations')->where('id', $id)->first();
+
+        if ($row) {
+            $bookingStart = strtotime($row->booking_date . ' ' . $row->start_time);
+            $now = time();
+
+            if (($bookingStart - $now) < (30 * 60)) {
+                return DV::error('Reservations cannot be modified less than 30 minutes before start time.');
             }
+        }
     }
 
-        if (!empty($arr['start_time'])) {
-            $arr['start_time'] = date('H:i:s', strtotime($arr['start_time']));
-        }
-        if (!empty($arr['end_time'])) {
-            $arr['end_time'] = date('H:i:s', strtotime($arr['end_time']));
-        }
-
-
-
-        $v_rule = [
-            'tenant_id'          => '1|number|exists=tenants.id|text=Please select a valid tenant.',
-            'amenity_id'         => '1|number|exists=amenities.id|text=Please select a valid amenity.',
-            'booking_date'       => '1|date|text=Please enter a valid booking date.',
-            'start_time'         => '1|time|text=Please enter a valid check-in time.',
-            'end_time'           => '1|time|text=Please enter a valid check-out time.',
-            'remarks'            => '0|string|0-350',
-            'status_id'          => '0|number|default=1',
-            'reference_code'     => '0|string|0-50',
-        ];
-
-        $remarks_char = ['@', ',', '-', '.', '#', '&', '(', ')', ':', '_'];
-        $res = DBX::validateObject( $arr, $v_rule, 1, ['remarks'=> $remarks_char], $ss->lang, 0, null );
-        if($res->error) return DV::error($res->error);
-        $inputs = $res->values;
-        $d = (object) $inputs;
-        $booking_date = date('Y-m-d', strtotime($inputs['booking_date']));
-        $today   = date('Y-m-d');
-        if ($booking_date < $today) {
-            return DV::error('Booking date cannot be in the past.');
-        }
-        $booking_date = date('Y-m-d', strtotime($d->booking_date));
-        $start_time = date('H:i:s', strtotime($d->start_time));
-
-        $dateTimestamp = strtotime("$booking_date $start_time");
-        $currentTime = time();
-        if ($dateTimestamp < ($currentTime - 60)) {
-            return DV::error('Start time cannot be in the past. Current time is ' . date('h:i A'));
-        }
-        if (strtotime($d->start_time) >= strtotime($d->end_time)) {
-            return DV::error('End time must be greater than start time.');
-        }
-        if ((strtotime($d->end_time) - strtotime($d->start_time)) < 1800) {
-            return DV::error('Reservation must be at least 30 minutes.');
-        }
-     
-        if ($d->amenity_id && $d->booking_date && $d->start_time && $d->end_time) {
-            $exists = self::where('amenity_id', $d->amenity_id)
-                ->where('booking_date', $d->booking_date)
-                ->where(function ($query) use ($d) {
-                    $query->where('start_time', '<', $d->end_time)
-                        ->where('end_time', '>', $d->start_time);
-                })
-                ->when($id, function ($query, $id) {
-                    return $query->where('id', '!=', $id);
-                })
-                ->exists();
-
-            if ($exists){
-                return DV::error('This amenity is already booked for this time slot.');
-            }
-        }
-        if ($d->amenity_id && $d->booking_date && $d->start_time && $d->end_time) {
-            $bufferedEndTime = date('H:i:s', strtotime($d->end_time . ' +15 minutes'));
-
-            $exists = self::where('amenity_id', $d->amenity_id)
-                ->where('booking_date', $d->booking_date)
-                ->where(function ($query) use ($d, $bufferedEndTime) {
-                    $query->where(DB::raw("DATE_ADD(end_time, INTERVAL 15 MINUTE)"), '>', $d->start_time)
-                        ->where('start_time', '<', $bufferedEndTime);
-                })
-                ->when($id, function ($query, $id) {
-                    return $query->where('id', '!=', $id);
-                })
-                ->exists();
-
-            if ($exists) {
-                return DV::error('Unavailable: A 15-minute cleaning buffer is required.');
-            }
-            
-        }
-
-        $id = DBX::saveData($ss, 'reservations', ['id'=>$id], $inputs, [], 1);
-        // if($id){
-        //     DB::table('amenities')
-        //     ->where('id', $d->amenity_id)
-        //     ->update(['is_reserved' => 1]);
-        // }
-        if($id > 0){
-            return DV::depends(1, ['reservations'=>$inputs, 'id'=>$id]);
-        }
-
-        return DV::error('Error saving reservation!');
+    if (!empty($arr['start_time'])) {
+        $arr['start_time'] = date('H:i:s', strtotime($arr['start_time']));
     }
+
+    if (!empty($arr['end_time'])) {
+        $arr['end_time'] = date('H:i:s', strtotime($arr['end_time']));
+    }
+
+    $v_rule = [
+        'tenant_id'      => '1|number|exists=tenants.id|text=Please select a valid tenant.',
+        'amenity_id'     => '1|number|exists=amenities.id|text=Please select a valid amenity.',
+        'booking_date'   => '1|date|text=Please enter a valid booking date.',
+        'start_time'     => '1|time|text=Please enter a valid check-in time.',
+        'end_time'       => '1|time|text=Please enter a valid check-out time.',
+        'remarks'        => '0|string|0-350',
+        'status_id'      => '0|number|default=1',
+        'reference_code' => '0|string|0-50',
+    ];
+
+    $remarks_char = ['@', ',', '-', '.', '#', '&', '(', ')', ':', '_'];
+
+    $res = DBX::validateObject($arr, $v_rule, 1, ['remarks' => $remarks_char], $ss->lang, 0, null);
+
+    if ($res->error) return DV::error($res->error);
+
+    $inputs = $res->values;
+    $d = (object) $inputs;
+
+    $booking_date = date('Y-m-d', strtotime($inputs['booking_date']));
+    $today = date('Y-m-d');
+
+    if ($booking_date < $today) {
+        return DV::error('Booking date cannot be in the past.');
+    }
+
+    $startTime = date('H:i:s', strtotime($d->start_time));
+    $endTime   = date('H:i:s', strtotime($d->end_time));
+
+    $startDateTime = strtotime("$booking_date $startTime");
+
+    if ($startDateTime < time()) {
+        return DV::error('Start time cannot be in the past. Current time is ' . date('h:i A'));
+    }
+
+    if (strtotime($startTime) >= strtotime($endTime)) {
+        return DV::error('End time must be greater than start time.');
+    }
+
+    if ((strtotime($endTime) - strtotime($startTime)) < 1800) {
+        return DV::error('Reservation must be at least 30 minutes.');
+    }
+
+    // =========================
+    // MAIN AVAILABILITY CHECK
+    // =========================
+    if ($d->amenity_id && $booking_date && $startTime && $endTime) {
+
+        $exists = self::where('amenity_id', $d->amenity_id)
+            ->where('booking_date', $booking_date)
+            ->whereIn('status_id', [1, 2, 3]) // ✅ ONLY active bookings
+            ->where(function ($query) use ($startTime, $endTime) {
+                $query->where('start_time', '<', $endTime)
+                      ->where('end_time', '>', $startTime);
+            })
+            ->when($id, function ($query, $id) {
+                return $query->where('id', '!=', $id);
+            })
+            ->exists();
+
+        if ($exists) {
+            return DV::error('This amenity is already booked for this time slot.');
+        }
+    }
+
+    // =========================
+    // BUFFER CHECK (15 min)
+    // =========================
+    if ($d->amenity_id && $booking_date && $startTime && $endTime) {
+
+        $bufferedEndTime = date('H:i:s', strtotime($endTime . ' +15 minutes'));
+
+        $exists = self::where('amenity_id', $d->amenity_id)
+            ->where('booking_date', $booking_date)
+            ->whereIn('status_id', [1, 2, 3]) // ✅ ONLY active bookings
+            ->where(function ($query) use ($startTime, $bufferedEndTime) {
+                $query->where(DB::raw("DATE_ADD(end_time, INTERVAL 15 MINUTE)"), '>', $startTime)
+                      ->where('start_time', '<', $bufferedEndTime);
+            })
+            ->when($id, function ($query, $id) {
+                return $query->where('id', '!=', $id);
+            })
+            ->exists();
+
+        if ($exists) {
+            return DV::error('Unavailable: A 15-minute cleaning buffer is required.');
+        }
+    }
+
+    $id = DBX::saveData($ss, 'reservations', ['id' => $id], $inputs, [], 1);
+
+    if ($id > 0) {
+        return DV::depends(1, [
+            'reservations' => $inputs,
+            'id' => $id
+        ]);
+    }
+
+    return DV::error('Error saving reservation!');
+}
 
     static function checkDuplicateReservation($amenity_id, $booking_date, $id = null)
     {
