@@ -7,7 +7,14 @@ var BuildingComponent = ( () => {
     mThis.btnAddBuilding = mThis.self.querySelector("#_btnAddBuilding");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_building");
     mThis.elSearch = mThis.self.querySelector("#_search_building");
-
+    function formatArea(value) {
+        return value
+            ? parseFloat(value).toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            })
+            : '';
+    }
     mThis.cols = [
         {
             title: "",
@@ -44,7 +51,7 @@ var BuildingComponent = ( () => {
             transTitle: "titles.Total Areas",
             className: "align-middle",
             data: (data) => {
-                let area = data.total_area ? parseFloat(data.total_area).toLocaleString() : '';
+                let area = formatArea(data.total_area);
                 return `<div class="d-flex flex-column">
                     <span class="text-start  text-prm-custom"><span>${area}${area ? ' m²' : ''}</span></span>
 
@@ -172,6 +179,7 @@ var BuildingComponent = ( () => {
             onOpen: (container, detail_tr, parent_tr) => {
                 const id = parent_tr.dataset.id;
                 const totalFloor = parseInt(parent_tr.dataset.totalfloor || '0', 10);
+                console.log(123456,id);
                 if (id > 0) {
                     mThis.displayFloorNumber(container, id, totalFloor);
                 }

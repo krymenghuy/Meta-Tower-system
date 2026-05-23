@@ -107,7 +107,7 @@ var ContractComponent = new (function () {
             className: "align-middle",
             data: (data, index, tr) => {
                 return `
-                    <div class="text-primary-prm text-capitalize" style="width:200px;">
+                    <div class="text-primary-prm text-capitalize" style="width:300px;">
                         <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ?? '_'}</span>
                     </div>
                 `;
@@ -342,12 +342,12 @@ var ContractComponent = new (function () {
                 const unitCell = `<span class="${unitPillClass}">${escapeHtml(spaceCode)}</span>`;
                 return `
                 <tr>
-                    <td class="align-middle">${(r.renewal_date ?? '').trim() }</td>
-                    <td class="align-middle">${(r.start_date ?? '').trim() }</td>
-                    <td class="align-middle">${(r.end_date ?? '').trim() }</td>
-                    <td class="align-middle">${unitCell}</td>
-                    <td class="text-break align-middle">${escapeHtml((r.remarks ?? '').trim())}</td>
-                    <td class="align-middle"><div class="d-flex flex-column"><span class="text-capitalize fw-semibold">${escapeHtml((r.update_user ?? '').trim()) || 'â€”'}</span><small class="text-muted">${(r.updated_at ?? '').trim() || ''}</small></div></td>
+                    <td class="align-middle text-nowrap">${(r.renewal_date ?? '').trim() }</td>
+                    <td class="align-middle text-nowrap">${(r.start_date ?? '').trim() }</td>
+                    <td class="align-middle text-nowrap">${(r.end_date ?? '').trim() }</td>
+                    <td class="align-middle text-nowrap">${unitCell}</td>
+                    <td class="text-break align-middle" style="width: 300px;">${escapeHtml((r.remarks ?? '_').trim())}</td>
+                    <td class="align-middle text-nowrap"><div class="d-flex flex-column"><span class="text-capitalize">${escapeHtml((r.update_user ?? '').trim()) || '_'}</span><small class="text-muted">${(r.updated_at ?? '').trim() || ''}</small></div></td>
                 </tr>`;
             }).join('');
             renewalTableHtml = `
@@ -361,8 +361,8 @@ var ContractComponent = new (function () {
                                             <th class="text-nowrap  py-2 px-3">Start date</th>
                                             <th class="text-nowrap  py-2 px-3">End date</th>
                                             <th class="text-nowrap  py-2 px-3">Unit</th>
-                                            <th class="text-nowrap  py-2 px-3">Remarks</th>
-                                            <th class="text-nowrap  py-2 px-3">Updated by</th>
+                                            <th class="text-nowrap  py-2 px-3">Remark</th>
+                                            <th class="text-nowrap  py-2 px-3">Last Updated</th>
                                         </tr>
                                     </thead>
                                     <tbody class="border-top">${rows}</tbody>
@@ -675,7 +675,7 @@ const ContractDialog = (() => {
                         </div>
                         <div class="col-3">
                             <div class="vs-material-field">
-                                <input type="text" inputmode="decimal" name="deposit" class="data-input form-control" data-field="deposit" placeholder=" " />
+                                <input type="text" name="deposit" class="data-input form-control" data-field="deposit" placeholder=" " />
                                 <label>Deposit</label>
                             </div>
                         </div>
@@ -766,30 +766,31 @@ const ContractDialog = (() => {
                         me.controls.legal_name.value = item?.legal_name || "";
                     }
                 });
+                applyNumberInput(me.controls.deposit);
 
-                me.controls.deposit.addEventListener('input', (e) => {
-                    let v = e.target.value;
-                    v = v.replace(/[^0-9.]/g, '');
+                // me.controls.deposit.addEventListener('input', (e) => {
+                //     let v = e.target.value;
+                //     v = v.replace(/[^0-9.]/g, '');
 
-                    const parts = v.split('.');
-                    if (parts.length > 2) {
-                        v = parts[0] + '.' + parts[1];
-                    }
-                    if (parts[1] !== undefined) {
-                        v = parts[0] + '.' + parts[1].slice(0, 2);
-                    }
+                //     const parts = v.split('.');
+                //     if (parts.length > 2) {
+                //         v = parts[0] + '.' + parts[1];
+                //     }
+                //     if (parts[1] !== undefined) {
+                //         v = parts[0] + '.' + parts[1].slice(0, 2);
+                //     }
 
-                    e.target.value = v;
-                });
-                me.controls.deposit.addEventListener('blur', (e) => {
-                    let v = parseFloat(e.target.value);
+                //     e.target.value = v;
+                // });
+                // me.controls.deposit.addEventListener('blur', (e) => {
+                //     let v = parseFloat(e.target.value);
 
-                    if (isNaN(v) || v <= 0) {
-                        e.target.value = '';
-                        return;
-                    }
-                    e.target.value = v;
-                });
+                //     if (isNaN(v) || v <= 0) {
+                //         e.target.value = '';
+                //         return;
+                //     }
+                //     e.target.value = v;
+                // });
             },
 
             configSelect: [
@@ -829,44 +830,10 @@ const ContractDialog = (() => {
             },
 
             onPrepareForm: (me, data) => {
-                const isModify = Number(me.dataOptions?.id || 0) > 0;
-
-                if (isModify) {
-                    me.setReadOnly(true, [
-                        'tenant',
-                        'legal_name',
-                        'code',
-                        'start_date',
-                        'end_date',
-                        'space_name',
-                        'sqm_size',
-                        'price_type_label',
-                        'price',
-                    ]);
-                    if (me.controls.tenant) {
-                        me.controls.tenant.disabled = true;
-                    }
-                    const unitSelect = me.divModal.querySelector('[data-field="space_id"]');
-                    if (unitSelect) {
-                        unitSelect.disabled = true;
-                    }
-                    if (me.controls.business_type_id) {
-                        me.controls.business_type_id.disabled = false;
-                    }
-                    if (me.controls.deposit) {
-                        me.controls.deposit.disabled = false;
-                        me.controls.deposit.readOnly = false;
-                    }
-                    if (me.controls.remarks) {
-                        me.controls.remarks.disabled = false;
-                        me.controls.remarks.readOnly = false;
-                    }
-                    me.tenant_id = data?.contract_details?.tenant_id ?? me.tenant_id ?? null;
-                    return;
-                }
-
-                const isReadOnly = me.dataOptions.tenant_id > 0 || data.prefill_tenant_id;
+                const isReadOnly = me.dataOptions.id > 0 || data.prefill_tenant_id;
+                console.log(123,isReadOnly);
                 me.controls.tenant.disabled = isReadOnly;
+                me.setReadOnly(true, ['code','start_date','end_date']);
 
                 if (me.searchTenant && typeof me.searchTenant.reset === "function") {
                     me.searchTenant.reset();
@@ -926,6 +893,7 @@ const ContractDialog = (() => {
                     if (me.controls.sqm_size) me.controls.sqm_size.value = selected.sqm_size ?? '';
                     if (me.controls.price_type && me.controls.price_type_label) {
                         me.controls.price_type.value = selected.price_type ?? '';
+                        
                         me.controls.price_type_label.value = selected.price_type === 'sqm' ? 'm²' : selected.price_type === 'total' ? 'Unit' : '';
                     }
                     if (me.controls.price) me.controls.price.value = selected.price ?? '';
@@ -1005,7 +973,7 @@ const ContractDialog = (() => {
                                 if (me.dataOptions.id > 0) {
                                     cv_interact.success("Contract has been updated successfully.");
                                 } else {
-                                    cv_interact.success("New contract has been added successfully.");
+                                    cv_interact.success("New contract has been created successfully.");
                                 }
                             } else {
                                 cv_interact.error(res.error_message);

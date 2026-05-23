@@ -16,7 +16,14 @@ var SpaceComponent = new (function () {
     mThis.paginationContainer = mThis.self.querySelector("#space_container_pagination");
 
     mThis.divSummary = mThis.self.querySelector('#_space_div_summary');
-
+    function formatArea(value) {
+        return value
+            ? parseFloat(value).toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            })
+            : '';
+    }
     mThis.init = () => {
         if (mThis.initAlready) return;
 
@@ -361,29 +368,18 @@ var SpaceComponent = new (function () {
                         break;
                 }
                 const symbol = d.cur_symbol || '$';
+                const currency = d.currency_code ?? 'USD';
                 const size = Number(d.sqm_size || 0);
                 const price = Number(d.price || 0);
 
-                const sizeLabel = size ? `${size} m²` : '';
+                const sizeLabel = formatArea(size) + (size ? ' m²' : '');
 
-                const pricePerMonth = d.price_type === 'total'
-                    ? price
-                    : price * size;
-
-                const priceLabel = d.price_type === 'total'
-                    ? `${symbol} ${price.toLocaleString(undefined,{
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2
-                    })} /month`
-                    : `${symbol} ${price.toLocaleString(undefined,{
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2
-                    })}`;
-
-                const priceLabelPerMonth = `${symbol} ${pricePerMonth.toLocaleString(undefined,{
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
-                })}`;
+                const pricePerMonth = d.price_type === 'total' ? price : price * size;
+                const priceLabelPerMonth = VSMoney.formatAmount(pricePerMonth, currency);
+                // const priceLabelPerMonth = `${symbol} ${pricePerMonth.toLocaleString(undefined,{
+                //     minimumFractionDigits: 2,
+                //     maximumFractionDigits: 2
+                // })}`;
                 const maintenanceStatusId = Number(d.maintenance_status_id || 0);
                 const maintenanceStatusName = String(d.maintenance_status ?? d.maintenance_status_name ?? '').trim().toLowerCase();
                 const isPlannedMaintenance = maintenanceStatusId === 1 || maintenanceStatusName === 'planned' || maintenanceStatusName === 'upcoming';
@@ -395,13 +391,13 @@ var SpaceComponent = new (function () {
                             <div class="d-flex justify-content-between align-items-start">
                                 <div>
                                     <h5 class="unit-name mb-1 text-prm-custom" style="font-weight: 700;">
-                                        Unit ${d.code ?? ''}
+                                        ${d.code ?? ''}
                                     </h5>
                                     <p class="unit-floor text-muted small mb-0">
                                         ${d.floor_number ?? '-'} • ${d.building_name ?? ''}${maintenanceLabel}
                                     </p>
-                                   <p class="unit-floor text-muted small mb-0">
-                                        Charge as ( ${d.price_type === 'total' ? `${symbol} ${price.toLocaleString()} / month` : `${symbol} ${price.toLocaleString()} / m²`} )
+                                    <p class="unit-floor text-muted small mb-0">
+                                        Charge as (${d.price_type === 'total' ? `${VSMoney.formatAmount(price, currency)} / month` : `${VSMoney.formatAmount(price, currency)} / m²`})
                                     </p>
 
                                 </div>
@@ -576,7 +572,7 @@ var SpaceComponent = new (function () {
             if (e) {
                 vsapi.call(`${main_view.base_url}/prm/maintenance/finish-by-space`, { space_id: id }, menulink, null).then(res => {
                     if (res.status_code === 200) {
-                        cv_interact.success("Maintenance finished.");
+                        cv_interact.success("Maintenance has been completed.");
                         mThis.applyListFilters();
                     } else {
                         cv_interact.error(res.error_message || "Failed");
@@ -958,7 +954,7 @@ const CreateBookingDialog = (() => {
 
                             <div class="col-6">
                                 <div class="vs-material-field">
-                                    <input type="text" inputmode="decimal"
+                                    <input type="text" 
                                         name="booking_fee"
                                         class="data-input form-control"
                                         data-field="booking_fee"
@@ -978,29 +974,7 @@ const CreateBookingDialog = (() => {
                     ].join("");
                 },
                 contentCreated: (me) => {
-                    me.controls.booking_fee.addEventListener('input', (e) => {
-                        let v = e.target.value;
-                        v = v.replace(/[^0-9.]/g, '');
-
-                        const parts = v.split('.');
-                        if (parts.length > 2) {
-                            v = parts[0] + '.' + parts[1];
-                        }
-                        if (parts[1] !== undefined) {
-                            v = parts[0] + '.' + parts[1].slice(0, 2);
-                        }
-
-                        e.target.value = v;
-                    });
-                    me.controls.booking_fee.addEventListener('blur', (e) => {
-                        let v = parseFloat(e.target.value);
-
-                        if (isNaN(v) || v <= 0) {
-                            e.target.value = '';
-                            return;
-                        }
-                        e.target.value = v;
-                    });
+                   applyNumberInput(me.controls.booking_fee);
 
 
 
