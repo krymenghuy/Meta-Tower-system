@@ -230,6 +230,9 @@ class BuildingSpace
 
     public function getListPaginate($arr, $ss = null)
     {
+        Contract::applyPendingRenewalUnitChanges();
+        Contract::applyAutomaticContractRollups();
+
         $d = (object) $arr;
         $branch_id = $ss->branch_id;
         $search_value = $d->search_value ?? null;
@@ -335,6 +338,9 @@ class BuildingSpace
 
     public static function getDetails($id)
     {
+        Contract::applyPendingRenewalUnitChanges();
+        Contract::applyAutomaticContractRollups();
+
         return DB::table('building_spaces as bs')
             ->where('bs.id', $id)
             ->selectRaw('bs.id,bs.code,bs.building_id,bs.floor_id,bs.status_id,bs.space_type_id,bs.price_type,bs.price,bs.sqm_size')
