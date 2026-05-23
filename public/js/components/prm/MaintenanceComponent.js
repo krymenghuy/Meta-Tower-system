@@ -28,7 +28,7 @@ var MaintenanceComponent = (() => {
                 const space = data.space_id && data.space_code ? data.space_code : null;
                 const amenityCode = data.amenity_id ? (data.amenity_code || data.amenity_name || "") : null;
                 if (space) return `<div class="d-flex flex-column align-items-start"><span class="text-nowrap">${space}</span><small class="text-primary">Space</small></div>`;
-                if (amenityCode) return `<div class="d-flex flex-column align-items-start"><span class="text-nowrap">${amenityCode}</span><span class="text-muted small">Amenity</span></div>`;
+                if (amenityCode) return `<div class="d-flex flex-column align-items-start"><span class="text-nowrap">${amenityCode}</span><small class="text-primary">Amenity</small></div>`;
                 return `<span class="text-nowrap">—</span>`;
             }
         },
