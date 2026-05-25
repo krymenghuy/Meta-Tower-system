@@ -1,21 +1,21 @@
-<div id="_main_invoice_component" class="mobile-padding p-3" style="display:none;">
-     <div id="_divFilter_invoice" class="rounded-2 p-3 bg-white shadow-sm" >
-        <div class="row g-3 align-items-center">
+<div id="_main_invoice_component" class="p-3 mobile-padding" style="display:none;">
+     <div id="_divFilter_invoice" class="bg-white shadow-sm p-3 rounded-2" >
+        <div class="align-items-center row g-3">
             <div class="col-12 col-md-6 col-lg-4" >
                 <div class="position-relative w-100">
-                <input type="text" class="rounded-2 filter-field input-search" id="_search_invoice" placeholder="Search by tenant or invoice no" >
+                <input type="text" class="filter-field rounded-2 input-search" id="_search_invoice" placeholder="Search by tenant or invoice no" >
             </div>
          </div>
 
            <div class="col-12 col-md-6 col-lg-2">
-                <select id="payment_status" class="data-input filter-field form-control" data-field="status_id"></select>
+                <select id="payment_status" class="filter-field data-input form-control" data-field="status_id"></select>
             </div>
              <div class="col-12 col-md-6 col-lg-2">
-                <select id="invoice_type" class="data-input filter-field form-control" data-field="invoice_type"></select>
+                <select id="invoice_type" class="filter-field data-input form-control" data-field="invoice_type"></select>
             </div>
-            <div class="col-12 col-md-auto ms-md-auto text-md-end">
-                <button type="button" class="btnAddNewPrm w-100 w-md-auto" id="_btnInvoice">
-                        <i class="fa-solid fa-file-invoice-dollar mr-2"></i>
+            <div class="ms-md-auto text-md-end col-12 col-md-auto">
+                <button type="button" class="w-100 w-md-auto btnAddNewPrm" id="_btnInvoice">
+                        <i class="mr-2 fa-solid fa-file-invoice-dollar"></i>
                     <span vslang="buttons.Generate Invoice"></span>
                 </button>
             </div>
@@ -24,7 +24,7 @@
 
     </div>
 
-    <div id="_invoices_list" class="table-r esponsive  mt-3 bg-white rounded-2 border"></div>
+    <div id="_invoices_list" class="table-responsive bg-white mt-3 border rounded-2"></div>
 </div>
 
 <script src="{{ asset('js/components/prm/InvoiceTaxDialog.js') }}"></script>
