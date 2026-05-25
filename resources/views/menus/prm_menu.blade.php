@@ -182,15 +182,18 @@ function v_display($mod_id, $module_ids = null)
                         <span class="kt-menu__link-text font-color " vslang="menus.Payments"></span>
                     </a>
                 </li>
-                
-                <!-- <li class="kt-menu__item" aria-haspopup="true" <?php v_display(207); ?>>
-                        <a href="ReportComponent" modid="270" class="menu-item kt-menu__link">
-                            <span class="kt-menu__link-icon">
-                                <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/company.svg') }}" />
-                            </span>
-                            <span class="kt-menu__link-text font-color " vslang="menus.Report & Export"></span>
-                        </a>
-                    </li> -->
+                <li class="kt-menu__section mb-2">
+                    <h4 class="kt-menu__section-text " vslang="menus.Reporting"></h4>
+                    <i class="kt-menu__section-icon flaticon-more-v2"></i>
+                </li>
+                <li class="kt-menu__item" aria-haspopup="true" <?php v_display(207); ?>>
+                    <a href="ReportComponent" modid="270" class="menu-item kt-menu__link">
+                        <span class="kt-menu__link-icon">
+                            <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/company.svg') }}" />
+                        </span>
+                        <span class="kt-menu__link-text font-color " vslang="menus.Reports"></span>
+                    </a>
+                </li>
                 <li class="kt-menu__section mb-2">
                     <h4 class="kt-menu__section-text " vslang="menus.System Settings"></h4>
                     <i class="kt-menu__section-icon flaticon-more-v2"></i>

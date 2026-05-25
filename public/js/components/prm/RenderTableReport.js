@@ -1100,118 +1100,116 @@ function jsonToTable(div, d) {
 }
 
 
-function referralFeeTable(div, d) {
-    d = d ?? {};
-    let header = null,
-        body = null,
-        tr = null;
-    const thead = d.header ?? [],
-        tbody = d.list ?? [],
-        company_info = d.company_profile ?? {};
 
-    const html = [
-        `<div class="d-block position-relative">
-        <div class="d-flex flex-column gap-2 justify-content-center align-items-center set-min-size-container-title">
-            <h4 class="text-center text-uppercase">${d.title ?? ""}</h4>
-            <p class="text-center w-100 fs-5-1 get-subtitle fs-5">${
-                d.sub_title ?? ""
-            }</p>
+function tenantList(div, data) {
+    let html = `
+        <div class="d-flex position-relative w-100">
+            <div class="d-block mt-3 w-100">
+                <h4 class="text-center text-uppercase">
+                    ${data?.title ?? ''}
+                </h4>
+                <p class="text-center w-100 fs-5-1 get-subtitle fs-5">${data?.sub_title ?? ""}</p>
+            </div>
         </div>
-    </div>
-    <div class="table-responsive mt-3 pt-3 pb-3 bg-white">
-        <table class="table table-bordered">
+    `;
+
+    const d = data?.list ?? [];
+
+    html += `
+    <div class="table-responsive mt-3 pt-3 pb-3 bg-white overflow-x-hover-auto">
+        <table class="table table-bordered text-nowrap">
             <thead>
                 <tr>
-                    <th rowspan="2" style="background-color:#cff4fc" class="bg-info-subtle text-nowrap text-center align-middle count-th">No.</th>
-                    <th colspan="4" style="background-color:#198754;color:#ffffff" class="bg-success text-nowarp text-center align-middle text-white">Recommemder</th>
-                    <th colspan="11" style="background-color:#0d6efd;color:#ffffff" class="bg-primary text-nowrap text-center align-middle text-white">Are Recommended</th>
-                    <th colspan="3" style="background-color:#198754;color:#ffffff" class="bg-success text-nowrap text-center align-middle text-white">Recommemder</th>
-                    <th rowspan="2" style="background-color:#cff4fc" class="bg-info-subtle text-nowrap text-center align-middle count-th">Remark</th>
-                </tr>
-                <tr>
-                    ${
-                        ((header = null),
-                        thead &&
-                            thead.map((th) => {
-                                header = [
-                                    header,
-                                    `<th style="background-color:#cff4fc" class="text-nowrap bg-info-subtle count-th">${
-                                        th.name ?? ""
-                                    }</th>`,
-                                ].join("");
-                            }),
-                        header ?? "")
-                    }
+                    <th class="text-center">No</th>
+                    <th class="text-center">Photo</th>
+                    <th class="text-center">Code</th>
+                    <th class="text-center">Name</th>
+                    <th class="text-center">Legal Name</th>
+                    <th class="text-center">National ID</th>
+                    <th class="text-center">Passport</th>
+                    <th class="text-center">DOB</th>
+                    <th class="text-center">Gender</th>
+                    <th class="text-center">Phone</th>
+                    <th class="text-center">Email</th>
+                    <th class="text-center">Status</th>
+                    <th class="text-center">Address</th>
                 </tr>
             </thead>
             <tbody>
-                ${
-                    ((body = null),
-                    tbody.map((d, i) => {
-                        body = [
-                            body,
-                            `<tr class="text">
+    `;
+
+    if (d.length) {
+        d.forEach((st, index) => {
+            html += `
+                <tr>
+                    <td class="text-center align-middle">
+                        ${index + 1}
+                    </td>
+
+                    <td class="text-center align-middle">
+                        <img class="btn-view-tenant-photo"  src="${st.image_url || `${main_view.base_url}/assets/images/default/placeholder.svg`}" alt="" style="width: 50px; height: 50px; border-radius: 6px; margin-right: 10px;"/>
+                    </td>
+                    <td class="text-center align-middle">
+                        ${st.code ?? 'N/A'}
+                    </td>
+                    <td class="align-middle">
+                        ${st.name ?? 'N/A'}
+                    </td>
+                    <td class="align-middle">
+                        ${st.legal_name ?? 'N/A'}
+                    </td>
+                    <td class="text-center align-middle">
+                        ${st.national_id ?? 'N/A'}
+                    </td>
+                    <td class="text-center align-middle">
+                        ${st.passport_number ?? 'N/A'}
+                    </td>
+                    <td class="text-center align-middle">
+                        ${st.date_of_birth ?? 'N/A'}
+                    </td>
+                    <td class="text-center align-middle">
                         ${
-                            ((tr = null),
-                            thead.map((k) => {
-                                tr = [
-                                    tr,
-                                    `<td class="text-capitalize align-middle ${
-                                        k.key == "ref_parent"
-                                            ? "text-break"
-                                            : "text-nowrap"
-                                    }" style=" ${
-                                        k.key == "ref_parent"
-                                            ? "min-width: 250px"
-                                            : ""
-                                    }">${d[k.key] ?? ""}</td>`,
-                                ].join("");
-                            }),
-                            tr
-                                ? `<td class="text-nowrap align-middle">${
-                                      i + 1
-                                  }</td>` +
-                                  tr +
-                                  `<td class="text-capitalize align-middle " style="min-width:300px">${
-                                      d.remarks || ""
-                                  }</td>`
-                                : "")
-                        }</tr>`,
-                        ].join("");
-                    }),
-                    body ?? "")
-                }
+                            st.sex === 'M'
+                                ? 'Male'
+                                : st.sex === 'F'
+                                ? 'Female'
+                                : 'Other'
+                        }
+                    </td>
+                    <td class="text-center align-middle">
+                        ${st.phone_number ?? 'N/A'}
+                    </td>
+                    <td class="align-middle">
+                        ${st.email ?? 'N/A'}
+                    </td>
+                    <td class="text-center align-middle">
+                        ${st.status ?? 'N/A'}
+                    </td>
+                    <td class="align-middle">
+                        ${st.address ?? 'N/A'}
+                    </td>
+                </tr>
+            `;
+        });
+    } else {
+        html += `
+            <tr>
+                <td colspan="13" class="text-center">
+                    No data found
+                </td>
+            </tr>
+        `;
+    }
+
+    html += `
             </tbody>
         </table>
     </div>
-    <div class="d-flex justify-content-between">
-        <div class="d-block">
-            <p>Prepared By</p>
-            <hr class="bg-dark pb-0 mb-1 mt-5"/>
-            <p class="pb-0 mb-1">Finance Officer</p>
-            <p>Date: ${(".".repeat(15) + "/").repeat(3).slice(0, -1)}</p>
-        </div>
-        <div class="d-block">
-            <p>Verified By</p>
-            <hr class="bg-dark pb-0 mb-1 mt-5"/>
-            <p class="pb-0 mb-1">Finance Manager</p>
-            <p>Date: ${(".".repeat(15) + "/").repeat(3).slice(0, -1)}</p>
-        </div>
-        <div class="d-block">
-            <p>Checked By</p>
-            <hr class="bg-dark mt-5"/>
-            <p>Date: ${(".".repeat(15) + "/").repeat(3).slice(0, -1)}</p>
-        </div>
-        <div class="d-block">
-            <p>Approved By</p>
-            <hr class="bg-dark mt-5"/>
-            <p>Date: ${(".".repeat(15) + "/").repeat(3).slice(0, -1)}</p>
-        </div>
-    </div>`,
-    ].join("");
+    `;
 
-    div.html(html);
-    togglePanelTable(div);
+    div.innerHTML = html;
+    // togglePanelTable(div);
+
     HtmlString = html;
 }
 function employeeListByBranchTable(div, d) {
@@ -3406,8 +3404,10 @@ function togglePanelTable(div) {
 /**
  * These function for print report table
  */
-function windowPrint(html, style) {
-    if (html) {
+function windowPrint(html=null, style) {
+    console.log(9090, html);
+    HtmlString = html ? html : HtmlString;
+    if (HtmlString) {
         let myWindow = window.open("", "PRINT");
         myWindow.document.write(`<!DOCTYPE html>
         <html>
