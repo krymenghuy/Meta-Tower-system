@@ -541,25 +541,54 @@ window.addEventListener("DOMContentLoaded", async () => {
 //         return false;
 // }
 
+// const applyNumberInput = (inputEl) => {
+//     inputEl.addEventListener("input", (e) => {
+//         let v = e.target.value;
+//         v = v.replace(/[^0-9.]/g, "");
+//         const parts = v.split(".");
+//         if (parts.length > 2) {
+//             v = parts[0] + "." + parts[1];
+//         }
+//         if (parts[1] !== undefined) {
+//             v = parts[0] + "." + parts[1].slice(0, 2);
+//         }
+//         e.target.value = v;
+//     });
+//     inputEl.addEventListener("blur", (e) => {
+//         let v = parseFloat(e.target.value);
+//         if (isNaN(v) || v <= 0) {
+//             e.target.value = "";
+//             return;
+//         }
+//         e.target.value = v;
+//     });
+// };
 const applyNumberInput = (inputEl) => {
     inputEl.addEventListener("input", (e) => {
         let v = e.target.value;
+
         v = v.replace(/[^0-9.]/g, "");
+
         const parts = v.split(".");
         if (parts.length > 2) {
             v = parts[0] + "." + parts[1];
         }
+
         if (parts[1] !== undefined) {
             v = parts[0] + "." + parts[1].slice(0, 2);
         }
+
         e.target.value = v;
     });
+
     inputEl.addEventListener("blur", (e) => {
         let v = parseFloat(e.target.value);
+
         if (isNaN(v) || v <= 0) {
             e.target.value = "";
             return;
         }
-        e.target.value = v;
+
+        e.target.value = v.toFixed(2);
     });
 };

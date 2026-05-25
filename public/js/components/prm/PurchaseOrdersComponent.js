@@ -84,9 +84,12 @@ var PurchaseOrdersComponent = (() => {
         {
             transTitle: 'titles.Remark',
             className: "align-middle text-nowrap",
-            data: (data) => {
-                const remarks = String(data.remarks || '').trim();
-                return `<span class="text-prm-custom d-block text-truncate" style="max-width:180px;" title="${remarks}">${remarks || '_'}</span>`;
+           data: (data, index, tr) => {
+                return `
+                    <div class="text-primary-prm text-capitalize" style="width:200px;">
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ?? '_'}</span>
+                    </div>
+                `;
             }
         },
         {

@@ -151,6 +151,7 @@ var ServiceComponent = (() => {
             rowCreated: (data, index, tr) => {
                 tr.dataset.statusid = data.status_id;
                 tr.classList.add('service', 'cursor-pointer');
+                
                 tr.setAttribute('id', ['service_id', data.id].join(''));
                 tr.__serviceDescription = data.description ?? '';
             },
@@ -187,8 +188,17 @@ var ServiceComponent = (() => {
         }
         new ExpandableRowConfig(mThis.tblService.id, {
             dontExpandByClickingOn: ['btn_service_action', 'btn--Options'],
+            // showExpandSignal: false,
             onOpen: (container, detail_tr, parent_tr) => {
-                mThis.displayServiceDescription(container, parent_tr);
+                const qtr = parent_tr;
+                console.log(2222,qtr.dataset);
+
+                let op = {
+                    service_id: qtr.dataset.id,
+                    description: qtr.__serviceDescription
+                };
+                if (op.service_id > 0)
+                    mThis.displayServiceDescription(container, op);
             },
         });
 
@@ -229,44 +239,50 @@ var ServiceComponent = (() => {
         return p;
     };
 
-    mThis.displayServiceDescription = (container, parent_tr) => {
-        const raw = parent_tr?.__serviceDescription;
+   mThis.displayServiceDescription = (container, op) => {
+    const raw = op?.description ?? '';
 
-        const hasData =
-            raw !== null &&
-            raw !== undefined &&
-            String(raw).trim() !== '' &&
-            String(raw).toLowerCase() !== 'null' &&
-            String(raw).toLowerCase() !== 'undefined';
-
-        if (!hasData) {
-            container.innerHTML = `
-                <div class="text-muted text-center py-2">
-                    
-                </div>
-            `;
-            return;
-        }
-
-        const escapeHtml = (str) => {
-            const div = document.createElement('div');
-            div.textContent = str;
-            return div.innerHTML;
-        };
-
+    const hasData =
+        raw !== null &&
+        raw !== undefined &&
+        String(raw).trim() !== '' &&
+        String(raw).toLowerCase() !== 'null' &&
+        String(raw).toLowerCase() !== 'undefined';
+    if (!hasData) {
         container.innerHTML = `
-            <div class="card shadow-sm border-0 rounded-0 mx-0 bg-body-tertiary">
-                <div class="card-body py-3 px-4">
-                    <div class="text-uppercase small text-muted mb-2 fw-semibold">
-                        Description
-                    </div>
-                    <div class="text-primary-custom text-break" style="white-space:pre-wrap;">
-                        ${escapeHtml(String(raw))}
-                    </div>
+        <div class="card shadow-sm border-0 rounded-0 mx-0 bg-body-tertiary">
+            <div class="card-body py-3 px-4">
+
+                <div class="text-uppercase small text-muted mb-2 fw-semibold">
+                    Description
                 </div>
+                <div class="text-primary-custom text-break;">_</div>
             </div>
-        `;
+        </div>
+    `;
+        return;
+    }
+    const escapeHtml = (str) => {
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
     };
+    container.innerHTML = `
+        <div class="card shadow-sm border-0 rounded-0 mx-0 bg-body-tertiary">
+            <div class="card-body py-3 px-4">
+
+                <div class="text-uppercase small text-muted mb-2 fw-semibold">
+                    Description
+                </div>
+
+                <div class="text-primary-custom text-break;">
+                    ${escapeHtml(raw)}
+                </div>
+
+            </div>
+        </div>
+    `;
+};
     
 
     mThis.initDropdownMenus = (table) => {
@@ -472,7 +488,7 @@ const CreateServicePriceDialog = (() => {
                             </div>
                             <div class="col-6">
                                 <select data-style="material" name="level" class="data-input form-control" data-field="level" placeholder="Level">
-                                    <option value="1">Standard</option>
+                                    <option value="1" selected >Standard</option>
                                     <option value="2">Premium</option>
                                 </select>
                             </div>
@@ -493,6 +509,10 @@ const CreateServicePriceDialog = (() => {
                 },
 
                contentCreated: (me) => {
+                console.log(123, me.controls.level);
+
+
+
                     const updateChargeAs = () => {
                         const isSubscription = me.controls.service_type.value == 2;
 
@@ -553,6 +573,8 @@ const CreateServicePriceDialog = (() => {
                         click: (me, btn) => {
                             const op = me.getData();
                             op.id = me.dataOptions.id;
+                            console.log(666,op);
+                            
                             vsapi.call([main_view.base_url, "/prm/service/save",].join(""), op, btn, null).then((res) => {
                                 if (res.status_code === 200) {
                                     me.hide(true, op);

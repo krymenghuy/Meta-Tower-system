@@ -357,7 +357,7 @@ class Maintenance extends VSModel
             ->first();
 
         if ($row) {
-            self::applyScheduleDerivedStatus($row);
+            // self::applyScheduleDerivedStatus($row);
             setOfficialDates($row, [''], ['updated_at'], []);
             $row->start_date = Carbon::parse($row->start_date)
                 ->format('d-M-Y h:i A');
