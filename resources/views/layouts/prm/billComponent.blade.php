@@ -1,48 +1,70 @@
-<div id="_main_bill_component" class="mobile-padding p-3" style="display:none;">
-    <div id="_divFilter_bill" class="rounded-2 p-3 bg-white shadow-sm">
-        <div class="row g-3 align-items-center">
+<div id="_main_bill_component" class="p-3 mobile-padding" style="display:none;">
+    <div id="_divFilter_bill" class="bg-white shadow-sm p-3 rounded-2">
+        <div class="align-items-center row g-3">
             <div class="col-12">
-                <div class="row g-3 align-items-center">
-                    <div class="col-12 col-md-6 col-lg-2  ">
-                        <select type="id" id="_bill_building_id" class="data-input filter-field form-control" data-field="building_id"></select>
-                    </div>
-                    <div class="col-12 col-md-6 col-lg-2  ">
-                        <select type="id" id="_bill_vendor_id" class="data-input filter-field form-control" data-field="vendor_id"></select>
-                    </div>
-                    <div class="    col-12 col-md-6 col-lg-3">
-                        <select type="id" id="_bill_expense_type_id" class="data-input filter-field form-control" data-field="expanse_type_id"></select>
+                <div class="align-items-center row g-3">
+                    <div class="col-12 col-md-6 col-lg-2">
+                        <select type="id" id="_bill_building_id" class="filter-field data-input form-control"
+                            data-field="building_id"></select>
                     </div>
                     <div class="col-12 col-md-6 col-lg-2">
-                        <select type="id" id="_bill_status_id" class="data-input filter-field form-control" data-field="status_id"></select>
+                        <select type="id" id="_bill_vendor_id" class="filter-field data-input form-control"
+                            data-field="vendor_id"></select>
                     </div>
-                    <div class="col-12 col-md-auto ms-md-auto text-md-end">
-                        <button type="button" class="btnAddNewPrm w-100 w-md-auto" id="_btnBill">
-                            <!-- <i class="fa-solid fa-bars-staggered me-2"></i> -->
+                    <div class="col-12 col-md-6 col-lg-3">
+                        <select type="id" id="_bill_expense_type_id" class="filter-field data-input form-control"
+                            data-field="expanse_type_id"></select>
+                    </div>
+                    <div class="col-12 col-md-6 col-lg-3">
+                        <select type="id" id="_bill_status_id" class="filter-field data-input form-control"
+                            data-field="status_id"></select>
+                    </div>
+                    <div class="ms-md-auto text-md-end col-12 col-md-auto">
+                        <button type="button" class="w-100 w-md-auto btnAddNewPrm" id="_btnBill">
+                            <!-- <i class="me-2 fa-solid fa-bars-staggered"></i> -->
                             <span vslang="buttons.Generate New Bill"></span>
                         </button>
                     </div>
                 </div>
             </div>
             <div class="col-12 col-md-6 col-lg-4">
-                <input type="text" class="rounded-2 filter-field input-search" id="_search_bill" placeholder="Search by Reference No">
+                <input type="text" class="filter-field rounded-2 input-search" id="_search_bill"
+                    placeholder="Search by Reference No">
             </div>
             <div class="col-12 col-md-6 col-lg-3">
-                <div id="_dateFilter_receipt" class="d-flex gap-3 align-items-center">
-                    <div class="material-input outlined flex-fill" style="margin-bottom: 0;">
-                        <input data-select="datepicker" class="form-control filter-field range-filter" placeholder=" " data-field="bill_date_start" />
+                <div id="_dateFilter_receipt" class="d-flex align-items-center gap-3">
+                    <div class="flex-fill material-input outlined" style="margin-bottom: 0;">
+                        <input data-select="datepicker" class="filter-field form-control range-filter" placeholder=" "
+                            data-field="bill_date_start" />
                         <label class="form-label">From Issue Date</label>
                     </div>
 
-                    <div class="material-input outlined flex-fill" style="margin-bottom: 0;">
-                        <input data-select="datepicker" class="form-control filter-field range-filter" placeholder=" " data-field="bill_date_end" />
+                    <div class="flex-fill material-input outlined" style="margin-bottom: 0;">
+                        <input data-select="datepicker" class="filter-field form-control range-filter" placeholder=" "
+                            data-field="bill_date_end" />
                         <label class="form-label">To Issue Date </label>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-6 col-lg-3">
+                <div id="_dateFilter_receipt" class="d-flex align-items-center gap-3">
+                    <div class="flex-fill material-input outlined" style="margin-bottom: 0;">
+                        <input data-select="datepicker" class="filter-field form-control range-filter" placeholder=" "
+                            data-field="due_date" />
+                        <label class="form-label">From Due Date</label>
+                    </div>
+
+                    <div class="flex-fill material-input outlined" style="margin-bottom: 0;">
+                        <input data-select="datepicker" class="filter-field form-control range-filter" placeholder=" "
+                            data-field="due_date_end" />
+                        <label class="form-label">To Due Date </label>
                     </div>
                 </div>
             </div>
 
         </div>
     </div>
-    <div id="_bill_list" class="table-responsive mt-3  rounded-2"></div>
+    <div id="_bill_list" class="table-responsive mt-3 rounded-2"></div>
 </div>
 
 <style>
@@ -158,4 +180,5 @@
         border-color: #86b7fe;
         box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
     }
+
 </style>

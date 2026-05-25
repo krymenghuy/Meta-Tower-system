@@ -205,9 +205,11 @@ class Bill
         $building_id  = $d->building_id  ?? null;
         $vendor_id    = $d->vendor_id    ?? null;
         $status_id    = $d->status_id    ?? null;
-        $expense_type_id    = $d->expense_type_id    ?? null;
+        $expense_type_id    = $d->expense_type_id ?? null;
         $start_date = $d->bill_date_start ?? null;
         $end_date   = $d->bill_date_end ?? null;
+        $due_date = $d->due_date ?? null;
+        $due_end_date   = $d->due_end_date ?? null;
         $current_page = $d->current_page ?? 1;
         $per_page     = $d->per_page     ?? 10;
 
@@ -232,6 +234,15 @@ class Bill
             if ($end_date) {
                 $end_date = date('Y-m-d', strtotime($end_date));
                 $str_moreWhere .= " AND b.bill_date <= '$end_date'";
+            }
+             if ($due_date) {
+                $due_date = date('Y-m-d', strtotime($due_date));
+                $str_moreWhere .= " AND b.due_date >= '$due_date'";
+            }
+
+            if ($due_end_date) {
+                $due_end_date = date('Y-m-d', strtotime($due_end_date));
+                $str_moreWhere .= " AND b.due_date <= '$due_end_date'";
             }
             if ($vendor_id) {
                 $str_moreWhere .= ' AND b.vendor_id = ' . $vendor_id;

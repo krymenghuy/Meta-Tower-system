@@ -139,13 +139,11 @@ var BillComponent = (() => {
                 };
                 const currentStatus = statusConfig[statusId] ?? {
                     cls: "bg-secondary text-white",
-                    icon: "fa-regular fa-circle-question",
                 };
                 return `
-        <span class="badge ${currentStatus.cls} text-capitalize d-inline-flex align-items-center justify-content-center px-3 py-2 gap-2" style="min-width:110px">
-            <i class="${currentStatus.icon}" style="font-size:12px;"></i>
-            ${data.status ?? "—"}
-        </span>`;
+                    <span class="badge ${currentStatus.cls} text-capitalize d-inline-flex align-items-center justify-content-center px-3 py-2 gap-2" style="min-width:100px; font-size:12px;">
+                        ${data.status ?? "—"}
+                    </span>`;
             },
         },
         {

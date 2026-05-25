@@ -810,7 +810,7 @@ const ActiveReservationDialog = (() => {
                     <span class="d-block text-prm-custom">${r.booking_date ?? ""}</span>
                     <small class="text-primary">${to12h(r.start_time)} – ${to12h(r.end_time)}</span>
                 </td>
-                <td class="align-middle">${statusBadge(r.status_id, r.status)}</td>
+                <td class="align-middle" style="min-width:70px">${statusBadge(r.status_id, r.status)}</td>
                 <td class="align-middle">
                     <span class="text-muted">${r.remarks ?? "—"}</span>
                 </td>
@@ -827,7 +827,7 @@ const ActiveReservationDialog = (() => {
             title: "Reservation Details",
             instanceKey: "activeReservationView",
             context: "info",
-            size: "lg",
+            size: "md",
             confirmButtonText: null,
             showconfirmButtonText: false,
             cancelButtonText: "Close",
@@ -853,7 +853,7 @@ const ActiveReservationDialog = (() => {
                                 <tr>
                                     <th class="text-start" style="width:100px;">Tenant</th>
                                     <th class="text-start" style="width: 150px;">Schedule Date</th>
-                                    <th class="text-start" style="width:80px;">Status</th>
+                                    <th class="text-center" style="width:80px;">Status</th>
                                     <th class="text-start" style="width:260px;">Remark</th>
                                 </tr>
                             </thead>

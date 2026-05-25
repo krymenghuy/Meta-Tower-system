@@ -56,8 +56,8 @@ var TenantComponent = new (function () {
                     data.sex === "M"
                         ? "Male"
                         : data.sex === "F"
-                          ? "Female"
-                          : "_";
+                        ? "Female"
+                        : "_";
                 return `
                     <div class="text-prm-custom" style="width:120px;">
                         <span class="text-wrap text-break text-capitalize" style ="word-break:break-word;">${data.name ?? "_"}</span>
@@ -382,12 +382,11 @@ var TenantComponent = new (function () {
         TenantDocumentDialog.show(op);
     };
     mThis.modifyDocument = (id, menuLink) => {
-
-        onClose: () => {
-                mThis.renderView();
-            },
-        // mThis.showPage("profile_view", { tenant_id: id });
-        TenantDocumentDialog.show(op);
+        onClose: (() => {
+            mThis.renderView();
+        },
+            // mThis.showPage("profile_view", { tenant_id: id });
+            TenantDocumentDialog.show(op));
     };
     mThis.renewContract = (id, menuLink) => {
         let op = {
@@ -1077,20 +1076,21 @@ var TenantComponent = new (function () {
 
             const priceNum = Number(first.price ?? 0);
             const sqmNum = Number(first.space_sqm_size ?? first.sqm_size ?? 0);
-            const isTotalPriceType = String(first.price_type ?? "sqm").toLowerCase() === "total";
+            const isTotalPriceType =
+                String(first.price_type ?? "sqm").toLowerCase() === "total";
             const totalPriceNum = isTotalPriceType
                 ? priceNum
                 : sqmNum > 0
                   ? priceNum * sqmNum
                   : null;
-           const priceLine =
-            totalPriceNum != null && !Number.isNaN(totalPriceNum)
-                ? `${VSMoney.formatAmount(totalPriceNum, 'USD')}`
-                : "—";
+            const priceLine =
+                totalPriceNum != null && !Number.isNaN(totalPriceNum)
+                    ? `${VSMoney.formatAmount(totalPriceNum, "USD")}`
+                    : "—";
             const depositSmallHtml =
-            first.deposit != null && first.deposit !== ""
-                ? `Deposit ${VSMoney.formatAmount(first.deposit, 'USD')}`
-                : "";
+                first.deposit != null && first.deposit !== ""
+                    ? `Deposit ${VSMoney.formatAmount(first.deposit, "USD")}`
+                    : "";
             if (first.deposit_remarks) {
                 depositSmallHtml = dep
                     ? `${depositSmallHtml} <span class="text-muted">• ${mThis._escapeHtml(first.deposit_remarks)}</span>`
@@ -1858,7 +1858,9 @@ const TenantDocumentDialog = (() => {
                                     .toLowerCase();
                                 me.fileData = d;
                                 me.controls.documents.value = d.fileName;
-                                me.controls.documents.classList.remove("d-none",);
+                                me.controls.documents.classList.remove(
+                                    "d-none",
+                                );
                             },
                         );
                     };
@@ -1929,9 +1931,8 @@ const TenantDocumentDialog = (() => {
                     // if (!isModify){
                     //     me.controlss.documents.value = Null;
                     // }
-                    
+
                     if (title) {
-                        
                         title.innerHTML = isModify
                             ? '<h4 class="text-prm-custom text-start fw-bold">Modify Document</h4>'
                             : '<h4 class="text-prm-custom text-start fw-bold">Upload Document</h4>';
@@ -1955,7 +1956,7 @@ const TenantDocumentDialog = (() => {
                     me.fileBase64 = null;
                     me.ext = null;
                     me.controls.documents.value = "";
-                    // me.controls.documents.classList.remove("d-none"); 
+                    // me.controls.documents.classList.remove("d-none");
 
                     const details = data?.document_details;
 
@@ -2046,9 +2047,8 @@ const TenantDocumentDialog = (() => {
                                     btn,
                                     null,
                                 )
-                            
+
                                 .then((res) => {
-                                    
                                     if (res.status_code === 200) {
                                         const newDocumentId =
                                             res.dataOptions?.id || null;
@@ -2068,11 +2068,12 @@ const TenantDocumentDialog = (() => {
 
                                         if (me.controls?.documents) {
                                             me.controls.documents.value = "";
-                                            me.controls.documents.classList.add("d-none",);
+                                            me.controls.documents.classList.add(
+                                                "d-none",
+                                            );
                                         }
                                     }
                                 });
-                                
                         },
                     },
                 ],
