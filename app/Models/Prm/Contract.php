@@ -228,11 +228,9 @@ class Contract
     }
     $id = DBX::saveData($ss, 'contracts', ['id' => $id], $inputs, [], 1);
     if ($id) {
-        $occupiedStatusId = self::getSpaceOccupiedStatusId();
-        if ($space_id && $occupiedStatusId) {
-            DB::table('building_spaces')
-                ->where('id', $space_id)
-                ->update(['status_id' => $occupiedStatusId]);
+        // Only Active contracts occupy the unit; Pending (future start) leaves space Available.
+        if ($space_id && (int) ($inputs['status_id'] ?? 0) === (int) self::getActiveStatusId()) {
+            self::syncBuildingSpaceOccupiedForSpaceIds([$space_id]);
         }
         self::syncTenantStatusForTenantIds([$tenant_id]);
     }
@@ -403,6 +401,37 @@ class Contract
         }
     }
 
+    /** Set building_spaces to Occupied when a live Active contract exists on that space (not Pending). */
+    public static function syncBuildingSpaceOccupiedForSpaceIds($spaceIds): void
+    {
+        $occupiedId = self::getSpaceOccupiedStatusId();
+        if (!$occupiedId) {
+            return;
+        }
+
+        $activeStatusId = self::getActiveStatusId();
+        $today = date('Y-m-d');
+        $seen = [];
+        foreach ($spaceIds as $sid) {
+            $sid = (int) $sid;
+            if ($sid <= 0 || isset($seen[$sid])) {
+                continue;
+            }
+            $seen[$sid] = true;
+
+            $hasLiveActive = DB::table('contracts')
+                ->where('space_id', $sid)
+                ->where('status_id', $activeStatusId)
+                ->whereDate('start_date', '<=', $today)
+                ->whereDate('end_date', '>=', $today)
+                ->exists();
+
+            if ($hasLiveActive) {
+                DB::table('building_spaces')->where('id', $sid)->update(['status_id' => $occupiedId]);
+            }
+        }
+    }
+
     /** Recalculate tenants.status_id: Active (2) vs Inactive (3); mirrors deleteContract / terminate semantics. */
     public static function syncTenantStatusForTenantIds($tenantIds): void
     {
@@ -444,11 +473,19 @@ class Contract
             ->whereDate('end_date', '>=', $today)
             ->pluck('tenant_id');
 
+        $activatingSpaceIds = DB::table('contracts')
+            ->where('status_id', $pendingStatusId)
+            ->whereDate('start_date', '<=', $today)
+            ->whereDate('end_date', '>=', $today)
+            ->pluck('space_id');
+
         DB::table('contracts')
             ->where('status_id', $pendingStatusId)
             ->whereDate('start_date', '<=', $today)
             ->whereDate('end_date', '>=', $today)
             ->update(['status_id' => $activeStatusId]);
+
+        self::syncBuildingSpaceOccupiedForSpaceIds($activatingSpaceIds);
 
         $expiringSpaceIds = DB::table('contracts')
             ->whereIn('status_id', [$activeStatusId, $pendingStatusId])
@@ -909,10 +946,7 @@ class Contract
 
             $space_id = $contract->space_id ?? null;
             if ($space_id) {
-                $availableId = self::getSpaceAvailableStatusId();
-                if ($availableId) {
-                    DB::table('building_spaces')->where('id', $space_id)->update(['status_id' => $availableId]);
-                }
+                self::syncBuildingSpaceAvailabilityForSpaceIds([$space_id]);
             }
 
             $tenant_id = $contract->tenant_id ?? null;
