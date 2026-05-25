@@ -220,22 +220,22 @@ const InvoiceNoTaxDialog = (() => {
                 <!-- ═══ HEADER BAND ═══ -->
                 <div style="padding:0px 32px 16px 32px;border-bottom:2px solid #E5E9F5;display:flex;justify-content:space-between;align-items:center;">
                     <div style="display:flex;align-items:center;gap:14px;">
-                        <div style="width:80px;height:80px;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;border-radius:10px;border:1.5px solid #E5E9F5;">
+                       <!-- <div style="width:80px;height:80px;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;border-radius:10px;border:1.5px solid #E5E9F5;">
                             <img src="../assets/images/meta/Meta_logo1.png" alt="Logo"
                                 style="width:64px;height:64px;object-fit:contain;"
                                 onerror="this.parentElement.innerHTML='<span style=&quot;font-size:24px;font-weight:900;color:#1A3D91;&quot;>M</span>'">
-                        </div>
+                        </div> -->
                         <div style="display:flex;flex-direction:column;gap:2px;">
                             <div style="font-size:30px;font-weight:800;letter-spacing:-1px;line-height:1;color:#1A3D91;font-family:'Inter',sans-serif;">INVOICE</div>
                             <div style="font-size:14px;font-weight:700;color:#1A3D91;letter-spacing:0.2px;font-family:'Inter',sans-serif;">
-                                ${invoice.company_name || "META HOLDING"}
+                                ${invoice.company_name || "Chan Dava"}
                             </div>
-                            <div style="font-size:11px;color:#6B7280;margin-top:2px;font-family:'Inter',sans-serif;">
+                            <!--<div style="font-size:11px;color:#6B7280;margin-top:2px;font-family:'Inter',sans-serif;">
                                 ${invoice.company_phone || "+855 12 345 678"}
-                            </div>
-                            <div style="font-size:11px;color:#6B7280;margin-top:2px;font-family:'Inter',sans-serif;">
+                            </div> -->
+                            <!--<div style="font-size:11px;color:#6B7280;margin-top:2px;font-family:'Inter',sans-serif;">
                                 ${invoice.company_address || "#S8-0 2, Financial Street, Phum 7, Sangkat Veal Vong, Khan 7 Makara, Phnom Penh"}
-                            </div>
+                            </div> -->
                         </div>
                     </div>
                     <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">

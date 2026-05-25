@@ -2980,7 +2980,6 @@ const ReceiveDialog = (() => {
 
             createContent: () => `
                 <div class="container-fluid px-0">
-
                     <div class="row g-0" style="border-radius:8px;overflow:hidden;margin-bottom:1.5rem;">
                         <div class="col-4" style="padding:0.75rem 1.25rem;border-right:1px solid white; background:#e1e5f2;">
                             <div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#1a1647;margin-bottom:4px;">Balance Due</div>
@@ -2998,6 +2997,7 @@ const ReceiveDialog = (() => {
 
                     <div style="display:flex;flex-direction:column;">
 
+                        <!-- Cash -->
                         <div>
                             <div class="d-flex align-items-center gap-2 mb-3">
                                 <span class="payment-badge" style="color:#0C447C;">Cash</span>
@@ -3006,13 +3006,13 @@ const ReceiveDialog = (() => {
                             </div>
                             <div style="display:flex;flex-direction:row;gap:8px;flex-wrap:wrap;margin-bottom: 0.5rem;">
                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
-                                    <input name="cash" type="text" class="form-control data-input" data-field="cash"
-                                        min="0" step="0.01" placeholder=" "/>
+                                    <input name="cash" type="text" class="form-control data-input" data-field="cash" min="0" step="0.01" placeholder=" "/>
                                     <label style="padding-left:6px;color:#777777;">Amount ($)</label>
                                 </div>
                             </div>
                         </div>
 
+                        <!-- Bank Transfer -->
                         <div>
                             <div class="d-flex align-items-center gap-2 mb-3">
                                 <span class="payment-badge" style="color:#0C447C;">Bank Transfer</span>
@@ -3021,22 +3021,21 @@ const ReceiveDialog = (() => {
                             </div>
                             <div style="display:flex;flex-direction:row;gap:8px;flex-wrap:wrap;margin-bottom: 0.5rem;">
                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
-                                    <select name="bank_transfer_bank_id" class="form-select data-input" data-field="bank_transfer_bank_id" data-style="material" placeholder="Bank"></select>
+                                    <select name="bank_transfer_bank_id" class="form-select data-input" data-field="bank_transfer_bank_id" data-style="material"></select>
                                 </div>
                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
-                                    <input name="transfer_amount" type="text" class="form-control data-input"
-                                        data-field="transfer_amount" min="0" step="0.01" placeholder=" "/>
+                                    <input name="transfer_amount" type="text" class="form-control data-input" data-field="transfer_amount" min="0" step="0.01" placeholder=" "/>
                                     <label style="padding-left:6px;color:#777777;">Amount ($)</label>
                                 </div>
                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
-                                    <input name="bank_ref_number" type="text" class="form-control data-input"
-                                        data-field="bank_ref_number" placeholder=" "/>
+                                    <input name="bank_ref_number" type="text" class="form-control data-input" data-field="bank_ref_number" placeholder=" "/>
                                     <label style="padding-left:6px;color:#777777;">Ref Number</label>
                                 </div>
                             </div>
                         </div>
 
-                        <div style="display: none;" >
+                        <!-- Card -->
+                        <div>
                             <div class="d-flex align-items-center gap-2 mb-3">
                                 <span class="payment-badge" style="color:#0C447C;">Card</span>
                                 <div style="flex:1;height:1px;background:#dee2e6;"></div>
@@ -3044,26 +3043,24 @@ const ReceiveDialog = (() => {
                             </div>
                             <div style="display:flex;flex-direction:row;gap:8px;flex-wrap:wrap;margin-bottom: 0.5rem;">
                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
-                                    <select name="card_type" class="form-select data-input" data-field="card_type"
-                                            data-style="material">
+                                    <select name="card_type" class="form-select data-input" data-field="card_type" data-style="material">
                                         <option value="">None</option>
                                         <option value="credit">Credit</option>
                                         <option value="debit">Debit</option>
                                     </select>
                                 </div>
                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
-                                    <input name="card_amount" type="text" class="form-control data-input"
-                                        data-field="card_amount" min="0" step="0.01" placeholder=" "/>
+                                    <input name="card_amount" type="text" class="form-control data-input" data-field="card_amount" min="0" step="0.01" placeholder=" "/>
                                     <label style="padding-left:6px;color:#777777;">Amount ($)</label>
                                 </div>
                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
-                                    <input name="card_number" type="text" class="form-control data-input"
-                                        data-field="card_number" placeholder=""/>
+                                    <input name="card_number" type="text" class="form-control data-input" data-field="card_number" placeholder=" "/>
                                     <label style="padding-left:6px;color:#777777;">Card Number</label>
                                 </div>
                             </div>
                         </div>
 
+                        <!-- Cheque -->
                         <div>
                             <div class="d-flex align-items-center gap-2 mb-3">
                                 <span class="payment-badge" style="color:#0C447C;">Cheque</span>
@@ -3072,26 +3069,23 @@ const ReceiveDialog = (() => {
                             </div>
                             <div style="display:flex;flex-direction:row;gap:8px;flex-wrap:wrap;margin-bottom: 0.5rem;">
                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
-                                    <select name="cheque_bank_id" class="form-select data-input"
-                                            data-field="cheque_bank_id" data-style="material" placeholder="Cheque Bank"></select>
+                                    <select name="cheque_bank_id" class="form-select data-input" data-field="cheque_bank_id" data-style="material"></select>
                                 </div>
                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
-                                    <input name="cheque_amount" type="text" class="form-control data-input"
-                                        data-field="cheque_amount" min="0" step="0.01" placeholder=" "/>
+                                    <input name="cheque_amount" type="text" class="form-control data-input" data-field="cheque_amount" min="0" step="0.01" placeholder=" "/>
                                     <label style="padding-left:6px;color:#777777;">Amount ($)</label>
                                 </div>
                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
-                                    <input name="cheque_number" type="text" class="form-control data-input"
-                                        data-field="cheque_number" placeholder=" "/>
+                                    <input name="cheque_number" type="text" class="form-control data-input" data-field="cheque_number" placeholder=" "/>
                                     <label style="padding-left:6px;color:#777777;">Cheque Number</label>
                                 </div>
                             </div>
                         </div>
 
+                        <!-- Remarks -->
                         <div>
                             <div class="material-input outlined" style="margin:0;">
-                                <textarea name="remarks" class="form-control data-input" data-field="remarks"
-                                        rows="2" style="height:55px;" placeholder=" "></textarea>
+                                <textarea name="remarks" class="form-control data-input" data-field="remarks" rows="2" style="height:55px;" placeholder=" "></textarea>
                                 <label style="padding-left:6px;color:#777777;">Remarks</label>
                             </div>
                         </div>
