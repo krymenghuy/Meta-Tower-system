@@ -63,10 +63,7 @@ const InvoiceTaxDialog = (() => {
 
     const buildInvoiceHTML = (invoice) => {
 
-
-        console.log(111111111111111111111111,invoice);
-        
-
+    
         const subTotal      = parseFloat(invoice.amount         || 0);
         const totalDiscount = parseFloat(invoice.discount_value || 0);
         const netTotal      = parseFloat(invoice.amount_payable || 0);
