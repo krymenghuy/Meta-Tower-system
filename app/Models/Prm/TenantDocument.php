@@ -83,12 +83,13 @@ class TenantDocument
             $inputs['category']  = $category;
         } 
         else {
-            unset($inputs['data'], $inputs['ext'], $inputs['file_name'], $inputs['category']);
+            unset($inputs['data'], $inputs['ext'], $inputs['file_name'], $inputs['category'], $inputs['original_file_name']);
         }
         \Log::info(($inputs));
 
         $id = DBX::saveData($ss, 'tenant_documents', ['id' => $id], $inputs, [], 1);
-    \Log::info(($id));
+        \Log::info(($id));
+        // $file_name = DB::table('tenant_documents')->where ('id', $id)->select('original_file_name');
         $inputs['file_name'] = $d->original_file_name ?? null;
 
         return DV::depends($id, ['tenant_documents' => $inputs, 'id' => $id]);
