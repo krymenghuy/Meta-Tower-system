@@ -74,13 +74,12 @@ var ServiceComponent = (() => {
                     month: "Monthly"
                 };
 
-                const unit = unitMap[data.charge_as] || '';
+                // const unit = unitMap[data.charge_as] || '';
                 const formattedPrice = VSMoney.formatAmount(data.price, currency);
 
                 return `
                     <span class="text-nowrap" style="color: #0C447C">
                         ${formattedPrice}
-                        ${unit ? `<small class="text-muted"> / ${unit}</small>` : ''}
                     </span>
                 `;
             }
@@ -410,9 +409,14 @@ var ServiceComponent = (() => {
             if (e) {
                 vsapi.call(`${main_view.base_url}/prm/service/delete`, op, false, false, false).then(res => {
                     if (res.status_code == 200) {
-                        mThis.ServiceListView.showPage();
+                        cv_interact.success(
+                            "Service deleted successfully",
+                        );
+                        mThis.ServiceListView.showPage(
+                            mThis.getFilterData(),
+                        );
                     } else {
-                        cv_interact.error(res.error_message);
+                        cv_interact.error(res.error_message || "Failed to delete service",);
                     }
                 })
             }
@@ -428,7 +432,7 @@ var ServiceComponent = (() => {
                 VSUtil.setComboItems(mThis.elFilter_category, d.service_categories, 'id', 'service_category', '', 'All Categories ', '');
                 VSUtil.setComboItems(mThis.elFilter_type, d.service_types, 'id', 'service_type', '', 'All Types', '');
                 VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'status_name', '', 'All Statuses', '');
-                VSUtil.setComboItems(mThis.elFilter_charge_as, d.charge_as, 'id', 'name', '', 'All Charge', '');
+                VSUtil.setComboItems(mThis.elFilter_charge_as, d.charge_as, 'id', 'name', '', 'All Charges', '');
 
                 if (typeof onFinish === 'function') onFinish();
             })

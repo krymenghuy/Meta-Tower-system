@@ -15,7 +15,7 @@ class Service
     protected static $img_dir = 'services';
     public function __construct($id = null, $userInfo = null){
         $this->id = $id;
-        $this->userInfo = $userInfo;
+        $this->userInfo = $userInfo;   
     }
 
   public function saveService($arr = [], $id = null, $ss = null)
@@ -23,11 +23,11 @@ class Service
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $v_rule = [
-            'name'            => '1|string|0-100|text=Name is required.',
-            'category_id'     => '1|number|exists=service_categories.id|text=Please select a valid category.',
+            'name'            => '1|string|0-50',
             'type_id'         => '1|number|exists=service_types.id|text=Please select a valid type.',
-            'level'           => '1|choice|1,2|text=Please select a valid level.',
+            'category_id'     => '1|number|exists=service_categories.id|text=Please select a valid category.',
             'charge_as'       => '1|string|0-50|text=Please select a valid charge as.',
+            'level'           => '1|choice|1,2|text=Please select a valid level.',
             'price'           => '1|number|min=0|text=Please enter a valid price.',
             'description'     => '0|string|0-350',
         ];
@@ -36,7 +36,7 @@ class Service
         if ($res->error) {
             return DV::error($res->error);
         }
-        $inputs = $res->values;
+        $inputs = $res->values; 
         $exist = DB::table('services')
             ->whereRaw('LOWER(name) = ?', [strtolower($inputs['name'])])
             ->where('charge_as', $inputs['charge_as'])

@@ -516,7 +516,7 @@ const BillPaymentDialog = (() => {
                         </div>
                         <div class="col-md-3">
                             <div class="vs-material-field">
-                                <input type="text" data-type="date" name="payment_date" class="data-input form-control" data-field="payment_date" />
+                                <input type="text" data-type="date" name="payment_date" class="data-input form-control" data-field="payment_date" /disabled>
                                 <label>Payment Date</label>
                             </div>
                         </div>
