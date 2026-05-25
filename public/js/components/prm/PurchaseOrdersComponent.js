@@ -613,13 +613,17 @@ var PurchaseOrdersComponent = (() => {
                     label: "<span>Save</span>",
                     cssClass: "btn btn-primary",
                     click: (me) => {
-                        me.saveData(res => {
-                            if (res.status_code == 200) {
-                                cv_interact.success("New purchase order has been added successfully.");
+                        const isUpdate = me.dataOptions?.id || 0 > 0;
+
+                        me.saveData((res) => {
+                            if (res?.status_code === 200) {
+                                cv_interact.success(isUpdate ? "Updated successfully."  : "Saved successfully.");
                                 me.hide(true);
                                 mThis.PoListView.showPage(mThis.getFilterData());
                             } else {
-                                cv_interact.error(res.error_message);
+                                cv_interact.error(
+                                    res?.error_message || "Failed to save data."
+                                );
                             }
                         });
                     }
