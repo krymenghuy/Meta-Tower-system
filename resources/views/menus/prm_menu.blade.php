@@ -283,8 +283,7 @@ function v_display($mod_id, $module_ids = null)
                                     </a>
                                 </li> -->
 
-                         </ul>
-                    </div>
+            
                 </li>
                 <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true"
                     data-ktmenu-submenu-toggle="hover">
