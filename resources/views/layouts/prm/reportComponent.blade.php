@@ -1,1 +1,1 @@
-<div id="_main_report_component" class="main-container"></div>
+<div id="_main_reportCenterComponent" class="main-container"></div>
