@@ -865,36 +865,36 @@ const InvoiceDialog = (() => {
                 me.controls.div_invoice_summary = me.divModal.querySelector(
                     '[name="div_invoice_summary"]'
                 );
-                me.controls.invoice_type.addEventListener("change", function() {
-                    updateButtonVisibility();
-                });
+                // me.controls.invoice_type.addEventListener("change", function() {
+                //     updateButtonVisibility();
+                // });
 
-                function updateButtonVisibility() {
-                    const invoiceType = me.controls.invoice_type.value;
+                // function updateButtonVisibility() {
+                //     const invoiceType = me.controls.invoice_type.value;
 
-                    const btnRent = me.controls.btnRent;
-                    const btnElectric = me.controls.btnElectric;
-                    const btnService = me.controls.btnService;
-                    const btnRequest = me.controls.btnRequest;
+                //     const btnRent = me.controls.btnRent;
+                //     const btnElectric = me.controls.btnElectric;
+                //     const btnService = me.controls.btnService;
+                //     const btnRequest = me.controls.btnRequest;
 
-                    if (!btnRent || !btnElectric || !btnService || !btnRequest) return;
+                //     if (!btnRent || !btnElectric || !btnService || !btnRequest) return;
 
-                    if (invoiceType === "1") { 
-                        // === TAX ===
-                        btnRent.style.display = "inline-block";
+                //     if (invoiceType === "1") { 
+                //         // === TAX ===
+                //         btnRent.style.display = "inline-block";
                         
-                        btnElectric.style.display = "none";
-                        btnService.style.display = "none";
-                        btnRequest.style.display = "none";
-                    } 
-                    else { 
-                        // === NO TAX (2) or COMMERCIAL (3) ===
-                        btnRent.style.display = "inline-block";
-                        btnElectric.style.display = "inline-block";
-                        btnService.style.display = "inline-block";
-                        btnRequest.style.display = "inline-block";
-                    }
-                }
+                //         btnElectric.style.display = "none";
+                //         btnService.style.display = "none";
+                //         btnRequest.style.display = "none";
+                //     } 
+                //     else { 
+                //         // === NO TAX (2) or COMMERCIAL (3) ===
+                //         btnRent.style.display = "inline-block";
+                //         btnElectric.style.display = "inline-block";
+                //         btnService.style.display = "inline-block";
+                //         btnRequest.style.display = "inline-block";
+                //     }
+                // }
 
                 me.controls.btnRent.onclick = () => {
                     if (!me._selectedTenantId) {
