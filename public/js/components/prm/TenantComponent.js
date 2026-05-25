@@ -1056,21 +1056,19 @@ var TenantComponent = new (function () {
 
             const priceNum = Number(first.price ?? 0);
             const sqmNum = Number(first.space_sqm_size ?? first.sqm_size ?? 0);
-            const isTotalPriceType =
-                String(first.price_type ?? "sqm").toLowerCase() === "total";
+            const isTotalPriceType = String(first.price_type ?? "sqm").toLowerCase() === "total";
             const totalPriceNum = isTotalPriceType
                 ? priceNum
                 : sqmNum > 0
                   ? priceNum * sqmNum
                   : null;
-            const priceLine =
-                totalPriceNum != null && !Number.isNaN(totalPriceNum)
-                    ? `$ ${mThis._fmtMoney(totalPriceNum)}`
-                    : "—";
-
-            const dep = first.deposit != null && first.deposit !== "";
-            let depositSmallHtml = dep
-                ? `Deposit $${mThis._fmtMoney(first.deposit)}`
+           const priceLine =
+            totalPriceNum != null && !Number.isNaN(totalPriceNum)
+                ? `${VSMoney.formatAmount(totalPriceNum, 'USD')}`
+                : "—";
+            const depositSmallHtml =
+            first.deposit != null && first.deposit !== ""
+                ? `Deposit ${VSMoney.formatAmount(first.deposit, 'USD')}`
                 : "";
             if (first.deposit_remarks) {
                 depositSmallHtml = dep
@@ -1730,7 +1728,7 @@ const CreateTenantDialog = (() => {
                                             );
                                         } else {
                                             cv_interact.success(
-                                                "New tenant has been added successfully.",
+                                                "New tenant has been created successfully.",
                                             );
                                         }
                                     } else {

@@ -28,7 +28,7 @@ var MaintenanceComponent = (() => {
                 const space = data.space_id && data.space_code ? data.space_code : null;
                 const amenityCode = data.amenity_id ? (data.amenity_code || data.amenity_name || "") : null;
                 if (space) return `<div class="d-flex flex-column align-items-start"><span class="text-nowrap">${space}</span><small class="text-primary">Space</small></div>`;
-                if (amenityCode) return `<div class="d-flex flex-column align-items-start"><span class="text-nowrap">${amenityCode}</span><span class="text-muted small">Amenity</span></div>`;
+                if (amenityCode) return `<div class="d-flex flex-column align-items-start"><span class="text-nowrap">${amenityCode}</span><small class="text-primary">Amenity</small></div>`;
                 return `<span class="text-nowrap">—</span>`;
             }
         },
@@ -599,7 +599,7 @@ const CreateMaintenanceDialog = (() => {
                             .then(res => {
                                 if (res.status_code === 200) {
                                     me.hide(true, op);
-                                    cv_interact.success(op.id ? "Updated!" : "Maintenance created!");
+                                    cv_interact.success(op.id ? "Maintenance has been updated successfully." : "Maintenance has been created successfully.");
                                     if (op && typeof op.onClose === "function") op.onClose();
                                 } else {
                                     cv_interact.error(res.error_message || "Save failed");

@@ -159,6 +159,8 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('service-reque
     Route::post('/form-options',[ServiceRequestController::class,'getFormOptions']);
     Route::post('/accept',[ServiceRequestController::class,'acceptRequest']);
     Route::post('/reject',[ServiceRequestController::class,'rejectRequest']);
+    Route::post('/complete',[ServiceRequestController::class,'completeRequest']);
+
 
 });
 
