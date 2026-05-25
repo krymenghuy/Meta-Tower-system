@@ -879,15 +879,15 @@ const InvoiceDialog = (() => {
 
                 //     if (!btnRent || !btnElectric || !btnService || !btnRequest) return;
 
-                //     if (invoiceType === "1") { 
+                //     if (invoiceType === "1") {
                 //         // === TAX ===
                 //         btnRent.style.display = "inline-block";
-                        
+
                 //         btnElectric.style.display = "none";
                 //         btnService.style.display = "none";
                 //         btnRequest.style.display = "none";
-                //     } 
-                //     else { 
+                //     }
+                //     else {
                 //         // === NO TAX (2) or COMMERCIAL (3) ===
                 //         btnRent.style.display = "inline-block";
                 //         btnElectric.style.display = "inline-block";
@@ -1692,7 +1692,6 @@ const InvoiceDialog = (() => {
                         return cv_interact.error("No services available.");
                     }
 
-                     
                     const serviceOptions = services
                         .map(
                             s =>
@@ -2076,13 +2075,15 @@ const InvoiceDialog = (() => {
                                     price: Number(selectedService.price) || 0,
                                     qty: qtyMonths,
                                     remarks: remarkStr,
-                                    unit_type:(selectedService.charge_as || "Month") +(qtyMonths > 1 ? "s" : ""),
+                                    unit_type:
+                                        (selectedService.charge_as || "Month") +
+                                        (qtyMonths > 1 ? "s" : ""),
                                     discount: Number(data.discount) || 0,
                                     start_date: data.start_date || "",
                                     end_date: data.end_date || "",
                                     discount_type:
                                         data.discount_type || "percent",
-                                    total_amount: calculatedTotal,
+                                    total_amount: calculatedTotal
                                 },
                                 0
                             );
@@ -2433,7 +2434,7 @@ const InvoiceDialog = (() => {
                         //     readOnly: true,
                         //     width: "2px",
                         // },
-                        
+
                         {
                             name: "remarks",
                             transTitle: "titles.Item",
@@ -2445,7 +2446,6 @@ const InvoiceDialog = (() => {
                             // html: '<input type="checkbox" class="check_accept">',
                         },
 
-                       
                         {
                             name: "start_date",
                             transTitle: "titles.Start Date",
@@ -2471,7 +2471,7 @@ const InvoiceDialog = (() => {
                             width: "70px"
                         },
 
-                         {
+                        {
                             name: "unit_type",
                             transTitle: "titles.Charge As",
                             dataType: "text",
@@ -2552,15 +2552,27 @@ const InvoiceDialog = (() => {
                         const item_id = ctx.data.item_id;
                         const type = ctx.data.type;
                         const unit_type = ctx.data.unit_type;
-                        console.log(ctx.data);
+
+
                         item.setRowMeta(tr, {
                             item_id: item_id,
                             type: type,
                             unit_type: unit_type
                         });
+                 
+                        if (item.rows.length >= 2) {
+                            me.controls.tenant.disabled = true;
+                            me.setReadOnly(true, [
+                                            "tenant_id",
+                                            "space_id",
+                                            "invoice_type"
+                                        ]);
+                        }
+                        
                     },
 
                     onItemChange: (rowId, item, fieldName, td, tr) => {
+                   
                         if (fieldName === "item_id") {
                             const selectedService = availableItem.find(
                                 s => String(s.id) === String(item.item_id)
@@ -2736,7 +2748,7 @@ const InvoiceDialog = (() => {
                     "invoice_type"
                 ]);
 
-                me.set;
+                // me.set;
 
                 me._selectedTenantId = null;
                 me._tenantData = null;
