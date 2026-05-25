@@ -4,11 +4,13 @@ var AmenityComponent = (() => {
     const mThis = {};
     mThis.title_prop = "Amenity Management";
     mThis.base_url = main_view.base_url;
-    mThis.self = main_view.VSAppContent.querySelector("#_main_amenity_component");
+    mThis.self = main_view.VSAppContent.querySelector(
+        "#_main_amenity_component",
+    );
     mThis.btnAdd = mThis.self.querySelector("#_btnAmenity");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_amenity");
-    mThis.elBuilding = mThis.self.querySelector('#building_id');
-    mThis.elFloor = mThis.self.querySelector('#floor_id');
+    mThis.elBuilding = mThis.self.querySelector("#building_id");
+    mThis.elFloor = mThis.self.querySelector("#floor_id");
     mThis.elFilter_category = mThis.self.querySelector("#amenity_category_id");
     mThis.elFilter_status = mThis.self.querySelector("#_amenity_status");
     mThis.elSearch = mThis.self.querySelector("#_search_amenity");
@@ -19,10 +21,10 @@ var AmenityComponent = (() => {
             className: "align-middle text-nowrap text-capitalize",
         },
         {
-            transTitle: "titles.Unit",
+            transTitle: "titles.Code",
             className: "align-middle text-nowrap",
             data: (data) =>
-            `<span class="text-prm-custom">${data.code ?? "_"}</span>`,
+                `<span class="text-prm-custom">${data.code ?? "_"}</span>`,
         },
         {
             transTitle: "titles.Name",
@@ -44,7 +46,7 @@ var AmenityComponent = (() => {
             data: (data) =>
                 `<div class="text-prm-custom">
                     <span>${data.building_name ?? "_"}</span>
-                </div>`
+                </div>`,
         },
         {
             transTitle: "titles.Floor",
@@ -52,7 +54,7 @@ var AmenityComponent = (() => {
             data: (data) =>
                 `<div class="text-prm-custom">
                     <span>${data.floor_number ?? "_"}</span>
-                </div>`
+                </div>`,
         },
         {
             transTitle: "titles.Remark",
@@ -65,7 +67,7 @@ var AmenityComponent = (() => {
                 `;
             },
         },
-       {
+        {
             transTitle: "titles.Capacity",
             className: "align-middle text-nowrap",
             data: (data) =>
@@ -103,8 +105,10 @@ var AmenityComponent = (() => {
                         "badge text-warning bg-warning-subtle border border-warning";
                 }
 
-                return `<span class="${cls} text-capitalize d-inline-block text-center" style="min-width:70px" data-status_id="${data.status_id}"><small>${data.status ?? ""}</small></span>`;
-            }
+                return `<span class="${cls} text-capitalize d-inline-block text-center" style="min-width:70px">
+                        ${data.status ?? ""}
+                    </span> `;
+            },
         },
         {
             transTitle: "titles.Last Updated",
@@ -119,14 +123,12 @@ var AmenityComponent = (() => {
             transTitle: "titles.Action",
             className: "col_action align-middle text-nowrap",
             data: (data) => {
-
                 return `<div class="d-flex justify-content-center align-items-end">
                     <a href="javascript:void(0)" class="btn--Options btn_amenity_action" data-id="${data.id}" data-statusid="${data.status_id}" data-isreserved="${data.is_reserved}" aria-haspopup="true" aria-expanded="false">
                        <i class="fa-solid fa-ellipsis-vertical text-black fs-5"></i>
                     </a>
                 </div>`;
             },
-
         },
     ];
 
@@ -208,7 +210,6 @@ var AmenityComponent = (() => {
             floor_id: mThis.elFloor.value,
         };
 
-
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             const f = el.dataset.field;
             p[f] = el.value;
@@ -223,7 +224,6 @@ var AmenityComponent = (() => {
             actionButtonClass: "btn_amenity_action",
             cssClass: "bg-white shadow",
             menus: [
-
                 {
                     html: '<span class="ps-2" vslang="titles.Modify">Modify</span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
@@ -268,10 +268,13 @@ var AmenityComponent = (() => {
                 // menu.create_booking.style.display = (!isMaintenance && status_id === 1) ? 'block' : 'none';
                 // menu.create_contract.style.display = (!isMaintenance && (status_id === 1 || status_id === 2)) ? 'block' : 'none';
                 // menu.edit_space.style.display = (!isMaintenance && status_id === 1) ? 'block' : 'none';
-                menu.finish_maintenance.style.display = status_id == 3 ? 'block' : 'none';
-                menu.set_maintenance.style.display = status_id != 3 ? 'block' : 'none';
-                menu.change_status.style.display = status_id != 3 ? 'block' : 'none';
-                menu.view_reservation.style.display = 'block';
+                menu.finish_maintenance.style.display =
+                    status_id == 3 ? "block" : "none";
+                menu.set_maintenance.style.display =
+                    status_id != 3 ? "block" : "none";
+                menu.change_status.style.display =
+                    status_id != 3 ? "block" : "none";
+                menu.view_reservation.style.display = "block";
                 // menu.set_maintenance.style.display = (!isMaintenance && status_id === 3) ? 'block' : 'none';
             },
 
@@ -399,7 +402,11 @@ var AmenityComponent = (() => {
                 if (confirmed) {
                     vsapi
                         .call(
-                            `${main_view.base_url}/prm/amenity/delete`,op,false,false,false,
+                            `${main_view.base_url}/prm/amenity/delete`,
+                            op,
+                            false,
+                            false,
+                            false,
                         )
                         .then((res) => {
                             if (res.status_code === 200) {
@@ -471,7 +478,7 @@ var AmenityComponent = (() => {
             `${main_view.base_url}/prm/amenity/check-amenity-reservation`,
             { amenity_id },
             null,
-            null
+            null,
         );
         if (res.status_code == 200) {
             return true;
@@ -484,22 +491,58 @@ var AmenityComponent = (() => {
         const tr = menuLink?.closest("tr");
         ActiveReservationDialog.show({
             amenity_id: id,
-            amenity_name: tr?.querySelector('.text-prm-custom')?.innerText || '',
+            amenity_name:
+                tr?.querySelector(".text-prm-custom")?.innerText || "",
             btn: menuLink,
         });
     };
 
-
     mThis.prepareFormOptions = (onFinish) => {
         vsapi
             .call(
-                `${main_view.base_url}/prm/amenity/form-options`,null,null,null,)
+                `${main_view.base_url}/prm/amenity/form-options`,
+                null,
+                null,
+                null,
+            )
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elFilter_status,d.amenity_statuses,"id","amenity_status","","All Statuses",'');
-                VSUtil.setComboItems(mThis.elBuilding, d.buildings, 'id', 'building', '', 'All Buildings', '');
-                VSUtil.setComboItems(mThis.elFloor, d.floors, 'id', 'name', '', 'All Floor', '');
-                VSUtil.setComboItems(mThis.elFilter_category, d.amenity_categories, 'id', 'amenity_category', '', 'All Categories', '');
+                VSUtil.setComboItems(
+                    mThis.elFilter_status,
+                    d.amenity_statuses,
+                    "id",
+                    "amenity_status",
+                    "",
+                    "All Statuses",
+                    "",
+                );
+                VSUtil.setComboItems(
+                    mThis.elBuilding,
+                    d.buildings,
+                    "id",
+                    "building",
+                    "",
+                    "All Buildings",
+                    "",
+                );
+                VSUtil.setComboItems(
+                    mThis.elFloor,
+                    d.floors,
+                    "id",
+                    "name",
+                    "",
+                    "All Floor",
+                    "",
+                );
+                VSUtil.setComboItems(
+                    mThis.elFilter_category,
+                    d.amenity_categories,
+                    "id",
+                    "amenity_category",
+                    "",
+                    "All Categories",
+                    "",
+                );
                 // VSUtil.setComboItems(mThis.elFilter_type, d.service_types, 'id', 'service_type', true, 'All Services type', null);
                 if (typeof onFinish === "function") onFinish();
             });
@@ -530,7 +573,8 @@ const AmenityDialog = (() => {
                 keyboard: true,
 
                 createContent: () => {
-                    return [`<div class="row g-3">
+                    return [
+                        `<div class="row g-3">
                         <div class="col-12">
                             <div class="vs-material-field">
                                 <input type="text" name="amenity" required class="data-input form-control" data-field="name" placeholder=" " />
@@ -582,14 +626,15 @@ const AmenityDialog = (() => {
                 },
 
                 contentCreated: (me) => {
-                    const capacity = me.divModal.querySelector('[name="capacity"]');
+                    const capacity =
+                        me.divModal.querySelector('[name="capacity"]');
                     if (capacity) {
-                        capacity.addEventListener('input', function () {
+                        capacity.addEventListener("input", function () {
                             let start = this.selectionStart;
-                            let v = this.value.replace(/[^0-9]/g, '');
-                            v = v.replace(/^0+/, '');
-                            if (v === '') {
-                                v = '';
+                            let v = this.value.replace(/[^0-9]/g, "");
+                            v = v.replace(/^0+/, "");
+                            if (v === "") {
+                                v = "";
                             }
                             if (v.length > 3) {
                                 v = v.slice(0, 3);
@@ -630,15 +675,14 @@ const AmenityDialog = (() => {
                             api: {
                                 endpoint: `${main_view.base_url}/prm/settings/options-floors`,
                                 params: (me, op) => {
-                                    let building_id = me.controls.building_id.value;
+                                    let building_id =
+                                        me.controls.building_id.value;
                                     return {
                                         building_id: building_id,
-
                                     };
                                 },
                             },
                         },
-
                     },
                     {
                         name: "category_id",
@@ -664,17 +708,17 @@ const AmenityDialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
-
                     const isReadOnly = me.dataOptions.id > 0;
-                    me.setReadOnly(isReadOnly, ["building_id","floor_id"]);
-                    me.controls.requires_booking.value = data.amenity_details.requires_booking;
+                    me.setReadOnly(isReadOnly, ["building_id", "floor_id"]);
+                    me.controls.requires_booking.value =
+                        data.amenity_details.requires_booking;
                 },
 
                 buttons: [
                     {
                         label: '<span vslang="buttons.Cancel"></span>',
                         cssClass: "btn btn-secondary",
-                        click: (me,btn) => {
+                        click: (me, btn) => {
                             me.hide(false);
                         },
                     },
@@ -686,19 +730,31 @@ const AmenityDialog = (() => {
                             // console.log(123456,op);
 
                             op.id = me.dataOptions.id;
-                            vsapi.call([main_view.base_url,"/prm/amenity/save",].join(""),op,btn,).then((res) => {
+                            vsapi
+                                .call(
+                                    [
+                                        main_view.base_url,
+                                        "/prm/amenity/save",
+                                    ].join(""),
+                                    op,
+                                    btn,
+                                )
+                                .then((res) => {
                                     if (res.status_code === 200) {
                                         me.hide(true, op);
-                                         if (me.dataOptions.id > 0) {
-                                            cv_interact.success("Amenity has been updated successfully.");
+                                        if (me.dataOptions.id > 0) {
+                                            cv_interact.success(
+                                                "Amenity has been updated successfully.",
+                                            );
                                         } else {
-                                            cv_interact.success("New Amenity has been added successfully.");
+                                            cv_interact.success(
+                                                "New Amenity has been added successfully.",
+                                            );
                                         }
                                     } else {
                                         cv_interact.error(res.error_message);
                                     }
                                 });
-
                         },
                     },
                 ],
@@ -708,28 +764,28 @@ const AmenityDialog = (() => {
     };
 
     return self;
-
 })();
-
 
 const ActiveReservationDialog = (() => {
     const self = {};
 
     const statusBadge = (status_id, status) => {
         const map = {
-            1: 'border-info text-info bg-info-subtle',
-            2: 'border-warning text-warning bg-warning-subtle',
+            1: "border-info text-info bg-info-subtle",
+            2: "border-warning text-warning bg-warning-subtle",
         };
-        const cls = map[status_id] || 'border-secondary text-secondary bg-secondary-subtle';
-        return `<span class="badge border ${cls} px-2 py-1 text-capitalize">${status ?? ''}</span>`;
+        const cls =
+            map[status_id] ||
+            "border-secondary text-secondary bg-secondary-subtle";
+        return `<span class="badge border ${cls} px-2 py-1 text-capitalize">${status ?? ""}</span>`;
     };
 
     const to12h = (hhmm) => {
-        if (!hhmm) return '';
-        const [h, m] = String(hhmm).trim().split(':').map(Number);
-        const ampm = h < 12 ? 'AM' : 'PM';
+        if (!hhmm) return "";
+        const [h, m] = String(hhmm).trim().split(":").map(Number);
+        const ampm = h < 12 ? "AM" : "PM";
         const h12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
-        return `${h12}:${String(m).padStart(2, '0')} ${ampm}`;
+        return `${h12}:${String(m).padStart(2, "0")} ${ampm}`;
     };
 
     const renderRows = (tbody, rows) => {
@@ -742,38 +798,42 @@ const ActiveReservationDialog = (() => {
                 </tr>`;
             return;
         }
-        tbody.innerHTML = rows.map(r => `
+        tbody.innerHTML = rows
+            .map(
+                (r) => `
             <tr>              
                 <td class="align-middle">
-                    <span class="d-block text-prm-custom text-capitalize">${r.tenant_name ?? ''}</span>
-                    <small class="text-muted">${r.phone_number ?? ''}</small>
+                    <span class="d-block text-prm-custom text-capitalize">${r.tenant_name ?? ""}</span>
+                    <small class="text-muted">${r.phone_number ?? ""}</small>
                 </td>
                 <td class="align-middle">
-                    <span class="d-block text-prm-custom">${r.booking_date ?? ''}</span>
+                    <span class="d-block text-prm-custom">${r.booking_date ?? ""}</span>
                     <small class="text-primary">${to12h(r.start_time)} – ${to12h(r.end_time)}</span>
                 </td>
                 <td class="align-middle">${statusBadge(r.status_id, r.status)}</td>
                 <td class="align-middle">
-                    <span class="text-muted">${r.remarks ?? '—'}</span>
+                    <span class="text-muted">${r.remarks ?? "—"}</span>
                 </td>
             </tr>
-        `).join('');
+        `,
+            )
+            .join("");
     };
 
     self.show = ({ amenity_id, amenity_name, btn }) => {
-        InputBox.resetInstance('activeReservationView');
+        InputBox.resetInstance("activeReservationView");
 
         InputBox.show({
-            title: 'Reservation Details',
-            instanceKey: 'activeReservationView',
-            context: 'info',
-            size: 'lg',
-            confirmButtonText: null,    
+            title: "Reservation Details",
+            instanceKey: "activeReservationView",
+            context: "info",
+            size: "lg",
+            confirmButtonText: null,
             showconfirmButtonText: false,
-            cancelButtonText: 'Close',
+            cancelButtonText: "Close",
 
             createContent() {
-                const div = document.createElement('div');
+                const div = document.createElement("div");
                 div.innerHTML = `
                     <div class="d-flex align-items-center mb-3">
                         <span class="badge text-primary border border-primary bg-primary-subtle px-3 py-1 fs-6">
@@ -805,49 +865,58 @@ const ActiveReservationDialog = (() => {
             },
 
             onOpen(ibMe) {
-                const divInputboxCard = InputBox._store.get('activeReservationView').container.closest('.inputbox-card');
-                const btnOk = divInputboxCard.querySelector('.inputbox-btn.ok');
-                btnOk.classList.add('d-none');
+                const divInputboxCard = InputBox._store
+                    .get("activeReservationView")
+                    .container.closest(".inputbox-card");
+                const btnOk = divInputboxCard.querySelector(".inputbox-btn.ok");
+                btnOk.classList.add("d-none");
 
                 // restore btnOk on any close action so next dialog isn't affected
-                const restore = () => btnOk.classList.remove('d-none');
-                divInputboxCard.addEventListener('click', function handler(e) {
-                    const isClose = e.target.closest('.inputbox-btn.cancel, .inputbox-close, .btn-close, [data-dismiss]');
+                const restore = () => btnOk.classList.remove("d-none");
+                divInputboxCard.addEventListener("click", function handler(e) {
+                    const isClose = e.target.closest(
+                        ".inputbox-btn.cancel, .inputbox-close, .btn-close, [data-dismiss]",
+                    );
                     if (isClose) {
                         restore();
-                        divInputboxCard.removeEventListener('click', handler);
+                        divInputboxCard.removeEventListener("click", handler);
                     }
                 });
 
-                const loader    = document.getElementById('_arv_loader');
-                const tableWrap = document.getElementById('_arv_table_wrap');
-                const tbody     = document.getElementById('_arv_tbody');
+                const loader = document.getElementById("_arv_loader");
+                const tableWrap = document.getElementById("_arv_table_wrap");
+                const tbody = document.getElementById("_arv_tbody");
 
-                vsapi.call(
-                    `${main_view.base_url}/prm/reservation/list-paginate`,
-                    { amenity_id, per_page: 50 },
-                    null,
-                    null,
-                ).then((res) => {
-                    loader.classList.add('d-none');
-                    tableWrap.classList.remove('d-none');
+                vsapi
+                    .call(
+                        `${main_view.base_url}/prm/reservation/list-paginate`,
+                        { amenity_id, per_page: 50 },
+                        null,
+                        null,
+                    )
+                    .then((res) => {
+                        loader.classList.add("d-none");
+                        tableWrap.classList.remove("d-none");
 
-                    const allRows = Array.isArray(res.data)
-                        ? res.data
-                        : (res.data?.data ?? []);
+                        const allRows = Array.isArray(res.data)
+                            ? res.data
+                            : (res.data?.data ?? []);
 
-                    const rows = allRows.filter(r => r.status_id == 1 || r.status_id == 2);
-                    renderRows(tbody, rows);
-                }).catch(() => {
-                    loader.classList.add('d-none');
-                    tableWrap.classList.remove('d-none');
-                    tbody.innerHTML = `
+                        const rows = allRows.filter(
+                            (r) => r.status_id == 1 || r.status_id == 2,
+                        );
+                        renderRows(tbody, rows);
+                    })
+                    .catch(() => {
+                        loader.classList.add("d-none");
+                        tableWrap.classList.remove("d-none");
+                        tbody.innerHTML = `
                         <tr>
                             <td colspan="4" class="text-center text-danger py-3">
                                 Failed to load reservations.
                             </td>
                         </tr>`;
-                });
+                    });
             },
         });
     };

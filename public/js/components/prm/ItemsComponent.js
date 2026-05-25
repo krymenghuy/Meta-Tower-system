@@ -214,7 +214,10 @@ var ItemsComponent = (() => {
             if (e) {
                 vsapi.call(`${main_view.base_url}/prm/item/delete`, op, false, false, false).then(res => {
                     if (res.status_code == 200) {
-                        mThis.ItemListView.showPage();
+                        cv_interact.success(
+                            "Item deleted successfully",
+                        );
+                        mThis.ItemListView.showPage(mThis.getFilterData(),);
                     }
                 })
             }
