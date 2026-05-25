@@ -313,10 +313,10 @@ var TenantComponent = new (function () {
                         mThis.uploadDocument(id, menuLink);
                         break;
                     }
-                    // case "modify_document": {
-                    //     mThis.modifyDocument(id, menuLink);
-                    //     break;
-                    // }
+                    case "modify_document": {
+                        mThis.modifyDocument(id, menuLink);
+                        break;
+                    }
                     case "modify_tenant": {
                         mThis.editTenant(id, menuLink);
                         break;
@@ -379,6 +379,14 @@ var TenantComponent = new (function () {
         };
         // console.log(111, op);
 
+        TenantDocumentDialog.show(op);
+    };
+    mThis.modifyDocument = (id, menuLink) => {
+
+        onClose: () => {
+                mThis.renderView();
+            },
+        // mThis.showPage("profile_view", { tenant_id: id });
         TenantDocumentDialog.show(op);
     };
     mThis.renewContract = (id, menuLink) => {
@@ -1379,10 +1387,11 @@ var TenantComponent = new (function () {
                         btn.addEventListener("click", async function (e) {
                             e.preventDefault();
                             const op = {
-                                id: this.dataset.id,
+                                id: parseInt(this.dataset.id),
+                                tenant_id: data.id,
                                 btn: e.target,
                                 onClose: () => {
-                                    mThis.renderView();
+                                    mThis.renderOverView(div, target, data);
                                     mThis.tenantListView.showPage(
                                         mThis.getFilterData(),
                                     );
@@ -1393,7 +1402,6 @@ var TenantComponent = new (function () {
                     });
 
                     document
-
                         .querySelectorAll(".delete-doc-btn")
                         .forEach((btn) => {
                             btn.addEventListener("click", async function (e) {
@@ -1808,7 +1816,7 @@ const TenantDocumentDialog = (() => {
                     </div>
                     <div class="col-12">
                         <div class="vs-material-field d-flex">
-                            <input type="text" name="documents" class="form-control" accept=".pdf,.png,.jpg,.jpeg" disabled>
+                            <input type="text" name="documents" class="form-control d-none" data-field="original_file_name" accept=".pdf,.png,.jpg,.jpeg" /disabled>
                             <input type="hidden" name="original_file_name" data-field="original_file_name">
                             <input type="hidden" name="file_ext" data-field="ext">
                         </div>
@@ -1852,9 +1860,7 @@ const TenantDocumentDialog = (() => {
                                     .toLowerCase();
                                 me.fileData = d;
                                 me.controls.documents.value = d.fileName;
-                                me.controls.documents.classList.remove(
-                                    "d-none",
-                                );
+                                me.controls.documents.classList.remove("d-none",);
                             },
                         );
                     };
@@ -1899,8 +1905,6 @@ const TenantDocumentDialog = (() => {
                             .then((res) => {
                                 if (res.status_code === 200) {
                                     cv_interact.info("Document deleted.");
-
-                                    // Use the callback we passed in
                                     if (
                                         typeof me.loadTenantDocuments ===
                                         "function"
@@ -1921,6 +1925,20 @@ const TenantDocumentDialog = (() => {
                         valueField: "id",
                     },
                 ],
+                onShow: (me) => {
+                    const isModify = !!me.dataOptions?.id;
+                    const title = me.divModal.querySelector(".modal-title");
+                    // if (!isModify){
+                    //     me.controlss.documents.value = Null;
+                    // }
+                    
+                    if (title) {
+                        
+                        title.innerHTML = isModify
+                            ? '<h4 class="text-prm-custom text-start fw-bold">Modify Document</h4>'
+                            : '<h4 class="text-prm-custom text-start fw-bold">Upload Document</h4>';
+                    }
+                },
 
                 prepareFormOptions: {
                     createTitle: "Upload Document",
@@ -1934,33 +1952,31 @@ const TenantDocumentDialog = (() => {
                         params: (op) => ({ id: op.id }),
                     },
                 },
-                onPrepareForm: (me) => {
-                    if (me.dataOptions?.id > 0) {
-                        const fileName = me.controls?.original_file_name?.value;
-                        const ext = me.controls?.file_ext?.value;
-
-                        if (fileName && me.controls?.documents) {
-                            me.controls.documents.value = ext ? `${fileName}.${ext}` : fileName;
-                            me.controls.documents.classList.remove("d-none");
-                        }
-                        return;
-                    }
-                        
+                onPrepareForm: (me, data) => {
                     me.fileData = null;
                     me.fileBase64 = null;
                     me.ext = null;
+                    me.controls.documents.value = "";
+                    // me.controls.documents.classList.remove("d-none"); 
 
-                    if (me.controls?.documents) {
-                        me.controls.documents.value = "";
-                        me.controls.documents.classList.add("d-none");
+                    const details = data?.document_details;
+
+                    if (details?.original_file_name) {
+                        const displayName = details.ext
+                            ? `${details.original_file_name}.${details.ext}`
+                            : details.original_file_name;
+
+                        me.controls.documents.value = displayName;
+                        me.controls.documents.classList.remove("d-none");
                     }
 
                     if (me.controls?.remarks) {
-                        me.controls.remarks.value = "";
+                        me.controls.remarks.value = details?.remarks || "";
                     }
 
                     if (me.controls?.document_type) {
-                        me.controls.document_type.value = "";
+                        me.controls.document_type.value =
+                            details?.document_type_id || "";
                     }
                 },
 
@@ -1993,7 +2009,10 @@ const TenantDocumentDialog = (() => {
                             }
 
                             const allowExt = ["jpg", "jpeg", "png", "pdf"];
-                            if (me.fileData && allowExt.indexOf(me.fileData.ext) === -1) {
+                            if (
+                                me.fileData &&
+                                allowExt.indexOf(me.fileData.ext) === -1
+                            ) {
                                 cv_interact.error(
                                     "Please select a valid file.",
                                 );
@@ -2008,11 +2027,15 @@ const TenantDocumentDialog = (() => {
                                 ? me.fileData.fileName.replace(/\.[^/.]+$/, "")
                                 : me.controls?.original_file_name?.value || "";
                             const p = {
+                                id: me.dataOptions.id || null,
                                 tenant_id: me.dataOptions.tenant_id,
-                                ext: me.fileData ? me.fileData.ext : me.controls?.file_ext?.value,
+                                ext: me.fileData
+                                    ? me.fileData.ext
+                                    : me.controls?.file_ext?.value,
                                 data: me.fileData ? me.fileData.dataUrl : null,
                                 remarks: me.controls.remarks.value,
-                                document_type_id: me.controls.document_type.value,
+                                document_type_id:
+                                    me.controls.document_type.value,
                                 original_file_name: nameWithoutExt,
                             };
                             vsapi
@@ -2025,10 +2048,12 @@ const TenantDocumentDialog = (() => {
                                     btn,
                                     null,
                                 )
+                            
                                 .then((res) => {
+                                    
                                     if (res.status_code === 200) {
                                         const newDocumentId =
-                                            res.data?.id || null;
+                                            res.dataOptions?.id || null;
                                         me.hide(true, p, newDocumentId);
                                         if (me.dataOptions.id > 0) {
                                             cv_interact.success(
@@ -2045,12 +2070,11 @@ const TenantDocumentDialog = (() => {
 
                                         if (me.controls?.documents) {
                                             me.controls.documents.value = "";
-                                            me.controls.documents.classList.add(
-                                                "d-none",
-                                            );
+                                            me.controls.documents.classList.add("d-none",);
                                         }
                                     }
                                 });
+                                
                         },
                     },
                 ],

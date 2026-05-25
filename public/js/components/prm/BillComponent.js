@@ -684,7 +684,7 @@ const BillDialog = (() => {
                             <div class="col-4">
                                 <div class="vs-material-field">
                                     <input type="text" name="documents" class=" form-control " accept=".png,.jpg,.jpeg" /disabled>
-                                    <label>File</label >
+                                    <label>File</label>
                                 </div>
                             </div>
                             <div class="col-2">
@@ -881,7 +881,7 @@ const BillDialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
-                    // me.fileData = null;
+                    me.fileData = null;
                     me.controls.documents.value = "";
                     // me.controls.documents.classList.add('d-none');
 
@@ -1031,7 +1031,6 @@ const BillDialog = (() => {
                                 op.vendor_id = me._selectedVendorId;
                             }
 
-                            // ✅ default payload
                             let p = { ...op };
 
                             if (me.fileData) {
@@ -1063,7 +1062,6 @@ const BillDialog = (() => {
                                       )
                                     : null;
 
-                                // ✅ ensure base64 format
                                 let base64Data = me.fileData.dataUrl || "";
                                 if (
                                     base64Data &&
@@ -1074,7 +1072,6 @@ const BillDialog = (() => {
                                         base64Data;
                                 }
 
-                                // ✅ merge into payload
                                 p = {
                                     ...op,
                                     ext: fileExt,
@@ -1083,8 +1080,6 @@ const BillDialog = (() => {
                                     mime_type: me.fileData.ext,
                                 };
                             }
-
-                            console.log("FINAL PAYLOAD:", p);
 
                             vsapi
                                 .call(

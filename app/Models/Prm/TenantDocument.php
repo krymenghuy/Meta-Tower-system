@@ -26,21 +26,20 @@ class TenantDocument
         $this->userInfo = $userInfo;
     }
 
-    public function saveTenantDocument($arr = [], $ss = null)
+   public function saveTenantDocument($arr = [], $ss = null)
     {
-        $id = $id ?? $this->id;
+        $id = $arr['id'] ?? $this->id ?? null;
         $ss = $ss ?? $this->userInfo;
-        $branch_id = $ss->branch_id;
 
         $v_rule = [
-            'tenant_id' => '1|number|exists=tenants.id',
-            'remarks' => '0|string|0-255',
-            'document_type_id' => '1|number|exists=document_types.id',
-            'ext' => '1|string',
+            'id'                 => '0|number',
+            'tenant_id'          => '1|number|exists=tenants.id',
+            'remarks'            => '0|string|0-255',
+            'document_type_id'   => '1|number|exists=document_types.id',
+            'ext'                => '0|string',
             'original_file_name' => '0|string|0-255',
-            'data' => '1|string',
+            'data'               => '0|string',
         ];
-        // \Log::info('Array data: ' . json_encode($arr));
 
         $res = DBX::validateObject($arr, $v_rule, true, ['data' => GeneralSettings::$image_chars], $ss->lang, false, null);
         if ($res->error) {
@@ -48,45 +47,50 @@ class TenantDocument
         }
 
         $inputs = $res->values;
-        $d = (object) $inputs;
-        $data = $d->data;
-        $ext = strtolower($d->ext);
-
-        // 2. Merge the allowed arrays
-        // $allAllowed = array_merge(self::$allowed_image_extensions, self::$allowed_doc_extensions);
-
-
-        // // 3. Strict check against the merged list
-        // if (!$ext || !in_array($ext, $allAllowed, true)) {
-        //     // Log the failure specifically
-        //     error_log("Validation Result: FAILED (Ext '$ext' not in list)");
-
-        //     return DV::error('Invalid file type. Allowed: ' . implode(', ', $allAllowed));
-        // }
-
-        $category = 'image';
-        if (in_array($ext, self::$allowed_image_extensions)) {
-            $category = 'image';
-        } else if (in_array($ext, self::$allowed_doc_extensions)) {
-            $category = 'document';
-        }
-
-        $data = preg_replace('#^data:.*;base64,#', '', $data);
-
-        $res = XPublicStorage::savefile(['subs_id' => $ss->subs_id, 'dir' => self::$img_dir], $ext, $data, $category, $d->original_file_name);
-        if ($res->status === "Error") {
-            return DV::error($res->error_message);
-        }
+        $d      = (object) $inputs;
+        $data   = $d->data ?? null;
+        $ext    = strtolower($d->ext ?? '');
         \Log::info(json_encode($res));
 
-        unset($inputs['data']);
-        $inputs['file_name'] = $res->file_name;
-        $inputs['category'] = $category;
 
+        if ($data && $ext) {
+            $allAllowed = array_merge(self::$allowed_image_extensions, self::$allowed_doc_extensions);
+
+            if (!in_array($ext, $allAllowed, true)) {
+                return DV::error('Invalid file type. Allowed: ' . implode(', ', $allAllowed));
+            }
+
+            $category = in_array($ext, self::$allowed_image_extensions) ? 'image' : 'document';
+
+            $data = preg_replace('#^data:.*;base64,#', '', $data);
+
+            $res = XPublicStorage::savefile(
+                ['subs_id' => $ss->subs_id, 'dir' => self::$img_dir],
+                $ext,
+                $data,
+                $category,
+                $d->original_file_name
+            );
+
+            if ($res->status === 'Error') {
+                return DV::error($res->error_message);
+            }
+
+            \Log::info(json_encode($res));
+
+            unset($inputs['data']);
+            $inputs['file_name'] = $res->file_name;
+            $inputs['category']  = $category;
+        } 
+        else {
+            unset($inputs['data'], $inputs['ext'], $inputs['file_name'], $inputs['category']);
+        }
+        \Log::info(($inputs));
 
         $id = DBX::saveData($ss, 'tenant_documents', ['id' => $id], $inputs, [], 1);
+    \Log::info(($id));
+        $inputs['file_name'] = $d->original_file_name ?? null;
 
-        $inputs['file_name'] = $d->original_file_name;
         return DV::depends($id, ['tenant_documents' => $inputs, 'id' => $id]);
     }
 
@@ -109,7 +113,7 @@ class TenantDocument
     {
         return DB::table('tenant_documents as td')
             ->where('td.id', $id)
-            ->selectRaw('td.id, td.tenant_id, td.remarks,td.ext, td.document_type_id, td.file_name')
+            ->selectRaw('td.id, td.tenant_id, td.remarks,td.ext, td.document_type_id, td.file_name, td.original_file_name')
             ->first();
     }
 
