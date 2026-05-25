@@ -230,7 +230,7 @@ const InvoiceNoTaxDialog = (() => {
                             <div style="font-size:14px;font-weight:700;color:#1A3D91;letter-spacing:0.2px;font-family:'Inter',sans-serif;">
                                 ${invoice.company_name || "Chan Dava"}
                             </div>
-                            <!--<div style="font-size:11px;color:#6B7280;margin-top:2px;font-family:'Inter',sans-serif;">
+                            <!-- <div style="font-size:11px;color:#6B7280;margin-top:2px;font-family:'Inter',sans-serif;">
                                 ${invoice.company_phone || "+855 12 345 678"}
                             </div> -->
                             <!--<div style="font-size:11px;color:#6B7280;margin-top:2px;font-family:'Inter',sans-serif;">
@@ -369,6 +369,7 @@ const InvoiceNoTaxDialog = (() => {
         }
 
         const dlg = new GeneralDialog({
+            title: "No Tax  Invoice",
             cssClass: "modal-xl vs-modal",
             backdrop: "static",
             keyboard: true,

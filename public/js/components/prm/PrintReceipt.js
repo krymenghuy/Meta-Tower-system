@@ -174,8 +174,6 @@ const printViaIframe = (receiptEl) => {
         const items = data.items || [];
         const breakdowns = data.breakdowns || [];
 
-        console.log("🔍 Items Count:", items.length);
-        console.log("🔍 Breakdowns Count:", breakdowns.length);
 
         // Totals
         const subTotal      = parseFloat(data.amount || 0);
@@ -198,7 +196,6 @@ const printViaIframe = (receiptEl) => {
             const total = parseFloat(item.total || item.amount || (qty * price));
             const disc  = parseFloat(item.discount || 0);
 
-            console.log("🔍 Item discount:1111", disc);
             const tax   = parseFloat(item.tax_rate || 0);
             return `
             <tr style="background:${i % 2 !== 0 ? '#F9FAFB' : '#FFFFFF'};">
@@ -424,6 +421,7 @@ const printViaIframe = (receiptEl) => {
         }
 
         const dlg = new GeneralDialog({
+            title: "Print Recipt",
             cssClass: "modal-xl vs-modal",
             backdrop: "static",
             keyboard: true,
