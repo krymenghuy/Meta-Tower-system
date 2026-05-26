@@ -349,6 +349,7 @@ const InvoiceTaxDialog = (() => {
         }
 
         const dlg = new GeneralDialog({
+            title: "Tax Invoice",
             cssClass: "modal-xl vs-modal",
             backdrop: "static",
             keyboard: true,
