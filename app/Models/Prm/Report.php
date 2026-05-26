@@ -161,99 +161,135 @@ class Report //extends Model
         return $convertedString;
 
     }
-  function getTenantReportList($arr, $ss)
+    function getTenantReportList($arr, $ss){
+        $d = (object) $arr;
+        $status_id = $d->status_id ?? null;
+        $start_date = !empty($d->start_date) ? convertDate($d->start_date) : date('Y-m-01');
+        $end_date = !empty($d->end_date) ? convertDate($d->end_date) : date('Y-m-t');
+        $date_of_birth = DBX::formatDate('t.date_of_birth','date_of_birth');
+        $str_search = '1=1';
+        $str_between_date =  '1=1';
+        if($start_date && $end_date){
+            $str_between_date = "DATE(t.created_at) BETWEEN '$start_date' AND '$end_date'";
+        }
+        if($status_id){
+            $str_search .= " AND t.status_id = $status_id";
+        }
+
+        $rows = DB::table('tenants as t')
+            ->join('tenant_statuses as ts','ts.id','=','t.status_id')
+            ->whereRaw($str_search)
+            ->whereRaw($str_between_date)
+            ->selectRaw("t.id,t.name,t.code,t.national_id,t.passport_number,{$date_of_birth},t.nationality_id,t.photo_file_name,t.sex,t.tenant_type,t.status_id,ts.name AS status,t.legal_name,t.phone_number,t.email,t.address")->get();
+        foreach ($rows as $row) {
+            $row->image_url = '';
+            if (!empty($row->photo_file_name)) {
+                $row->image_url = Tenant::profilePicture($row->id,$ss);
+            }
+            unset($row->photo_file_name);
+        }
+        $statusLabels = [
+            1 => '(Not yet get contract)',
+            2 => '(Already got contract)',
+            3 => '(Already moved out)',
+        ];
+        $title = 'Tenant List ' . ($statusLabels[$status_id] ?? '(All Statuses)');
+        $sub_title = $start_date && $end_date ? date('d-M-Y', strtotime($start_date)) .' to '. date('d-M-Y', strtotime($end_date)) : 'All Statuses';
+        $date_rank = (object)[];
+        if($start_date && $end_date ){
+            $date_rank->start_date = date('d-M-Y', strtotime($start_date)) ;
+            $date_rank->end_date = date('d-M-Y', strtotime($end_date)) ;
+        }
+        return (object) [
+            'list' => $rows,
+            'title' => trim($title),
+            'sub_title' => $sub_title,
+            'date_rank' => $date_rank,
+            'form' => 'tenant_list',
+            'company_profile' => self::getCompanyInfo($ss),
+        ];
+    }
+    function getTotalPaymentHistory($arr, $ss)
 {
     $d = (object) $arr;
 
-    $status_id = $d->status_id ?? null;
-    $start_date = !empty($d->start_date)
-        ? convertDate($d->start_date)
-        : date('Y-m-01');
-
-    $end_date = !empty($d->end_date)
-        ? convertDate($d->end_date)
-        : date('Y-m-t');
-
-    $date_of_birth = DBX::formatDate(
-        't.date_of_birth',
-        'date_of_birth'
-    );
-
-    $query = DB::table('tenants as t')
-        ->join(
-            'tenant_statuses as ts',
-            'ts.id',
-            '=',
-            't.status_id'
-        );
-
-    if (!empty($status_id)) {
-        $query->where('t.status_id', $status_id);
-    }
-
-    if (!empty($start_date) && !empty($end_date)) {
-        $query->whereBetween(
-            DB::raw('DATE(t.created_at)'),
-            [$start_date, $end_date]
-        );
-    }
-
-    $rows = $query->selectRaw("
-        t.id,
-        t.name,
-        t.code,
-        t.national_id,
-        t.passport_number,
-        {$date_of_birth},
-        t.nationality_id,
-        t.photo_file_name,
-        t.sex,
-        t.tenant_type,
-        t.status_id,
-        ts.name AS status,
-        t.legal_name,
-        t.phone_number,
-        t.email,
-        t.address
-    ")->get();
-
-    foreach ($rows as $row) {
-        $row->image_url = '';
-
-        if (!empty($row->photo_file_name)) {
-            $row->image_url = Tenant::profilePicture(
-                $row->id,
-                $ss
-            );
+       $start_date = !empty($d->start_date) ? convertDate($d->start_date) : date('Y-m-01');
+        $end_date = !empty($d->end_date) ? convertDate($d->end_date) : date('Y-m-t');
+        $payment_date = DBX::formatDate('bp.payment_date','payment_date');
+        $str_search = '1=1';
+        $str_between_date =  '1=1';
+        if($start_date && $end_date){
+            $str_between_date = "DATE(bp.payment_date) BETWEEN '$start_date' AND '$end_date'";
         }
 
-        unset($row->photo_file_name);
+    $rows = DB::table('bill_payments as bp')
+        ->leftJoin('bills as b', 'b.id', '=', 'bp.bill_id')
+        ->leftJoin('vendors as v', 'v.id', '=', 'b.vendor_id')
+        ->leftJoin('expense_categories as ex', 'ex.id', '=', 'b.expense_type_id')
+        ->leftJoin('bill_payment_statuses as ps', 'ps.id', '=', 'bp.status_id')
+        ->leftJoin('bill_payment_breakdowns as bpb', 'bpb.bill_payment_id', '=', 'bp.id')
+        ->where('bp.status_id', 1)
+        ->whereRaw($str_between_date)
+        ->selectRaw("
+            bp.id,
+            bp.bill_id,
+            b.bill_number,
+            v.name as vendor_name,
+            b.expense_type_id,
+            ex.name as expense_type_name,
+            $payment_date,
+            bp.total_amount as amount,
+            bp.payer,
+            b.ref_no,
+            bp.currency_code,
+            bp.note as remark,
+            b.total_amount,
+            b.paid_amount,
+            b.balance,
+            b.due_date,
+            bp.status_id,
+            ps.name as payment_status,
+            bp.create_user,
+            bp.update_user,
+            bp.created_at,
+            bp.updated_at,
+            GROUP_CONCAT(
+                CONCAT(bpb.method,' ',bpb.amount,'$')
+                ORDER BY bpb.amount
+                SEPARATOR ', '
+            ) as payment_method
+        ")
+        ->groupBy('bp.id')
+        ->get();
+    foreach($rows as $row){
+        $row->amount = '$' . number_format($row->amount, 2);
+        $row->total_amount = '$' . number_format($row->total_amount, 2);
+        $row->paid_amount = '$' . number_format($row->paid_amount, 2);
+        $row->balance = '$' . number_format($row->balance, 2);
     }
 
-    $statusLabels = [
-        1 => '(Not yet get contract)',
-        2 => '(Already got contract)',
-        3 => '(Already moved out)',
-    ];
+    $title = 'Payment History Report';
 
-    $title = 'Tenant List ' . ($statusLabels[$status_id] ?? '(All Statuses)');
+    $sub_title = ($start_date && $end_date)
+        ? date('d-M-Y', strtotime($start_date)) . ' to ' . date('d-M-Y', strtotime($end_date))
+        : 'All Dates';
 
-    $sub_title = $start_date && $end_date ? date('d-M-Y', strtotime($start_date)) .' to '. date('d-M-Y', strtotime($end_date)) : 'All Referal Fee';
     $date_rank = (object)[];
 
-    if($start_date && $end_date ){
-        $date_rank->start_date = date('d-M-Y', strtotime($start_date)) ;
-        $date_rank->end_date = date('d-M-Y', strtotime($end_date)) ;
+    if ($start_date && $end_date) {
+        $date_rank->start_date = date('d-M-Y', strtotime($start_date));
+        $date_rank->end_date = date('d-M-Y', strtotime($end_date));
     }
 
-    return (object) [
+    return (object)[
         'list' => $rows,
-        'title' => trim($title),
+        'title' => $title,
         'sub_title' => $sub_title,
         'date_rank' => $date_rank,
-        'form' => 'tenant_list',
+        'form' => 'total_payment_history',
         'company_profile' => self::getCompanyInfo($ss),
     ];
 }
+   
     
 }
