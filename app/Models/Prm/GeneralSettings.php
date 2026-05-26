@@ -287,7 +287,9 @@ class GeneralSettings //extends Model
     static function select_options($arr, $ss)
     {
         $res = [
-            'status' => self::options_tenant_status($ss),
+            'statuses' => self::options_tenant_status($ss),
+            'buildings' => self::options_building($ss),
+            'vendors' => self::options_vendor($ss),
            
 
         ];

@@ -326,6 +326,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('reports')->gr
     Route::post('/list', [ReportController::class, 'getReportList']);
     Route::post('/tenant_list', [ReportController::class, 'getTenantReportList']);
     Route::post('total_payment_history',[ReportController::class,'getTotalPaymentHistory']);
+    Route::post('payments',[ReportController::class,'getPaymentReport']);
 
 
 
