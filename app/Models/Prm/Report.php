@@ -164,6 +164,7 @@ class Report //extends Model
     function getTenantReportList($arr, $ss){
         $d = (object) $arr;
         $status_id = $d->status_id ?? null;
+        $building_id = $d->building_id ?? null;
         $start_date = !empty($d->start_date) ? convertDate($d->start_date) : date('Y-m-01');
         $end_date = !empty($d->end_date) ? convertDate($d->end_date) : date('Y-m-t');
         $date_of_birth = DBX::formatDate('t.date_of_birth','date_of_birth');
@@ -175,10 +176,24 @@ class Report //extends Model
         if($status_id){
             $str_search .= " AND t.status_id = $status_id";
         }
+        if($building_id){
+            $str_search .= " AND bs.building_id = $building_id";
+        }
 
         $rows = DB::table('tenants as t')
-            ->join('tenant_statuses as ts','ts.id','=','t.status_id')
-            ->whereRaw($str_search)
+            ->leftJoin('tenant_statuses as ts','ts.id','=','t.status_id')
+            ->leftJoin('contracts as c','c.tenant_id','=','t.id')
+            ->leftJoin('building_spaces as bs','bs.id','=','c.space_id')
+            ->leftJoin('buildings as b','b.id','=','bs.building_id')
+            ->when($status_id, function ($q) use ($status_id) {
+                $q->where('t.status_id', $status_id);
+            })
+            ->when($building_id, function ($q) use ($building_id) {
+                $q->where(function ($q) use ($building_id) {
+                    $q->where('bs.building_id', $building_id)
+                    ->orWhereNull('bs.building_id'); // include no contract tenants
+                });
+            })
             ->whereRaw($str_between_date)
             ->selectRaw("t.id,t.name,t.code,t.national_id,t.passport_number,{$date_of_birth},t.nationality_id,t.photo_file_name,t.sex,t.tenant_type,t.status_id,ts.name AS status,t.legal_name,t.phone_number,t.email,t.address")->get();
         foreach ($rows as $row) {
@@ -290,6 +305,36 @@ class Report //extends Model
         'company_profile' => self::getCompanyInfo($ss),
     ];
 }
+
+function getPaymentReport($arr, $ss)
+    {
+        $d = (object) $arr;
+        $vendor_id = isset($d->vendor_id) ? $d->vendor_id : null;
+        // if (!$vendor_id)
+        //     return DV::error('Vendor must be selected');
+        $payment_date = DBX::formatDate('bp.payment_date','payment_date');
+        $vendor = DB::table('vendors')->where('id',$vendor_id)->selectRaw('id,address,name,phone_number,contact_person,contact_phone')->get()->first();
+        $rows = DB::table('bills as b')
+            ->where('b.vendor_id',$vendor_id)
+            ->join('bill_payments as bp', 'bp.bill_id', '=', 'b.id')
+            ->selectRaw("b.id,$payment_date,b.ref_no, b.total_amount,b.paid_amount,b.balance")->get();
+        foreach($rows as $row){
+            $row->total_amount = '$' . number_format($row->total_amount, 2);
+            $row->paid_amount = '$' . number_format($row->paid_amount, 2);
+            $row->balance = '$' . number_format($row->balance, 2);
+        }
+
+        $res = (object) [
+            'form' => 'payments',
+            'vendor_info' => $vendor,
+            'list' => $rows,
+            'title' => 'Vendor Payment Report',
+            'sub_title' => '',
+            
+            'company_profile' => self::getCompanyInfo($ss)
+        ];
+        return DV::success(['data' => $res]);
+    }
    
     
 }
