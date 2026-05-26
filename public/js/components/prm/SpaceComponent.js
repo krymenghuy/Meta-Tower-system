@@ -694,7 +694,7 @@ var SpaceComponent = new (function () {
                         )
                         .then((res) => {
                             if (res.status_code == 200) {
-                                cv_interact.success("Unit has been deleted");
+                                cv_interact.success("Unit has been deleted.");
                                 mThis.applyListFilters();
                             } else {
                                 cv_interact.error(res.error_message);
