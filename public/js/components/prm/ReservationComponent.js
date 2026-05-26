@@ -3,7 +3,9 @@ var ReservationComponent = (() => {
     const mThis = {};
     mThis.title_prop = "Reservation";
     mThis.base_url = main_view.base_url;
-    mThis.self = main_view.VSAppContent.querySelector("#_main_reservation_component");
+    mThis.self = main_view.VSAppContent.querySelector(
+        "#_main_reservation_component",
+    );
     mThis.btnAdd = mThis.self.querySelector("#_btnReservation");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_reservation");
     mThis.elFilter_status = mThis.self.querySelector("#_reservation_status");
@@ -70,19 +72,23 @@ var ReservationComponent = (() => {
             className: "align-middle text-center",
             data: (data) => {
                 const status = (data.status ?? "").toLowerCase();
-                let cls = "badge border border-secondary text-secondary bg-secondary-subtle";
+                let cls =
+                    "badge border border-secondary text-secondary bg-secondary-subtle";
                 let label = "Upcoming";
                 if (status === "upcoming") {
-                    cls ="badge border border-info text-info bg-info-subtle";
+                    cls = "badge border border-info text-info bg-info-subtle";
                     label = "Upcoming";
                 } else if (status === "in-progress") {
-                    cls ="badge border border-warning text-warning bg-warning-subtle";
+                    cls =
+                        "badge border border-warning text-warning bg-warning-subtle";
                     label = "In-Progress";
                 } else if (status === "completed") {
-                    cls ="badge border border-success text-success bg-success-subtle";
+                    cls =
+                        "badge border border-success text-success bg-success-subtle";
                     label = "Completed";
                 } else if (status === "cancelled") {
-                    cls = "badge border border-danger text-danger bg-danger-subtle";
+                    cls =
+                        "badge border border-danger text-danger bg-danger-subtle";
                     label = "Cancelled";
                 }
                 return `
@@ -106,17 +112,15 @@ var ReservationComponent = (() => {
             transTitle: "titles.Action",
             className: "col_action align-middle",
             data: (data) => {
-                console.log(444,data.status_id);
+                console.log(444, data.status_id);
 
-                if (data.status_id == 2) return '';
+                if (data.status_id == 2) return "";
                 return `<div class="d-flex justify-content-center align-items-end">
                     <a href="javascript:void(0)" class="btn--Options btn_reservation_action" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
                        <i class="fa-solid fa-ellipsis-vertical text-black fs-5"></i>
                     </a>
                 </div>`;
             },
-
-
         },
     ];
 
@@ -124,7 +128,7 @@ var ReservationComponent = (() => {
         if (mThis.initAlready) return;
 
         if (mThis.elBookingDateTo && !mThis.elBookingDateTo.value) {
-            const today = new Date().toISOString().split('T')[0];
+            const today = new Date().toISOString().split("T")[0];
             mThis.elBookingDateTo.value = today;
         }
 
@@ -184,7 +188,6 @@ var ReservationComponent = (() => {
             }, 250);
         });
 
-
         mThis.initAlready = true;
     };
 
@@ -204,7 +207,8 @@ var ReservationComponent = (() => {
         return p;
     };
 
-    mThis.isActiveView = () => !!(mThis.self && mThis.self.offsetParent !== null);
+    mThis.isActiveView = () =>
+        !!(mThis.self && mThis.self.offsetParent !== null);
     mThis.refreshListIfActive = () => {
         if (!mThis.initAlready || !mThis.isActiveView()) return;
         mThis.ReservationListView.showPage(mThis.getFilterData());
@@ -224,12 +228,11 @@ var ReservationComponent = (() => {
     };
 
     mThis.initDropdownMenus = (table) => {
-        const menuOptopns = {
+        const menuOptions = {
             containerElement: table,
             actionButtonClass: "btn_reservation_action",
             cssClass: "bg-white shadow",
             menus: [
-
                 {
                     html: '<span class="ps-2" vslang="titles.Modify"></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
@@ -254,16 +257,15 @@ var ReservationComponent = (() => {
                 const menu = me.getActiveMenus(container);
                 const status_id = parseInt(container.dataset.statusid);
 
-                menu.edit_reservation.style.display = 'none';
-                menu.cancel_reservation.style.display = 'none';
-                menu.delete_reservation.style.display = 'none';
+                menu.edit_reservation.style.display = "none";
+                menu.cancel_reservation.style.display = "none";
+                menu.delete_reservation.style.display = "none";
 
                 if (status_id === 1) {
-                    menu.cancel_reservation.style.display = 'block';
-                    menu.edit_reservation.style.display = 'block';
-                }
-                else if (status_id === 3 || status_id === 4) {
-                    menu.delete_reservation.style.display = 'block';
+                    menu.cancel_reservation.style.display = "block";
+                    menu.edit_reservation.style.display = "block";
+                } else if (status_id === 3 || status_id === 4) {
+                    menu.delete_reservation.style.display = "block";
                 }
             },
 
@@ -288,7 +290,7 @@ var ReservationComponent = (() => {
                 }
             },
         };
-        new VSDropdownMenu(menuOptopns);
+        new VSDropdownMenu(menuOptions);
     };
 
     mThis.editReservation = (id, menulink) => {
@@ -308,24 +310,32 @@ var ReservationComponent = (() => {
             "Cancel this reservation ?",
             {
                 transTitle: "Cancel Reservation",
-                context:"delete",
+                context: "delete",
                 confirmButtonText: "Cancel",
             },
             (confirmed) => {
-                if(!confirmed) return;
-                vsapi.call(
-                    `${main_view.base_url}/prm/reservation/cancel`,
-                    { id: id },
-                    false, false, false,
-                ).then((res) => {
-                    if (res.status_code === 200){
-                        cv_interact.success("Reservation cancelled.");
-                        mThis.ReservationListView.showPage(mThis.getFilterData());
-                    } else {
-                        cv_interact.error(res.error_message || "Cancel failed");
-                    }
-                });
-            }
+                if (!confirmed) return;
+                vsapi
+                    .call(
+                        `${main_view.base_url}/prm/reservation/cancel`,
+                        { id: id },
+                        false,
+                        false,
+                        false,
+                    )
+                    .then((res) => {
+                        if (res.status_code === 200) {
+                            cv_interact.success("Reservation cancelled.");
+                            mThis.ReservationListView.showPage(
+                                mThis.getFilterData(),
+                            );
+                        } else {
+                            cv_interact.error(
+                                res.error_message || "Cancel failed",
+                            );
+                        }
+                    });
+            },
         );
     };
 
@@ -364,7 +374,6 @@ var ReservationComponent = (() => {
         );
     };
 
-
     mThis.prepareFormOptions = (onFinish) => {
         vsapi
             .call(
@@ -377,7 +386,12 @@ var ReservationComponent = (() => {
                 const d = res.status_code == 200 ? res.data : {};
                 VSUtil.setComboItems(
                     mThis.elFilter_status,
-                    d.reservation_statuses, "id", "reservation_status", "", "All Statuses", "",
+                    d.reservation_statuses,
+                    "id",
+                    "reservation_status",
+                    "",
+                    "All Statuses",
+                    "",
                 );
                 if (typeof onFinish === "function") onFinish();
             });
@@ -390,7 +404,6 @@ var ReservationComponent = (() => {
             main_view.setContentView(mThis.self, mThis.title_prop);
             mThis.ReservationListView.showPage(mThis.getFilterData());
             mThis.startAutoRefresh();
-
         });
     };
     return mThis;
@@ -470,9 +483,9 @@ const CreateReservationDialog = (() => {
                         query: {
                             from: "tenants",
                             select: ["id", "name", "phone_number"],
-                            where: [['status_id','=',2]],
-                            orderBy: [['id','DESC']],
-                            limit:50,
+                            where: [["status_id", "=", 2]],
+                            orderBy: [["id", "DESC"]],
+                            limit: 50,
                             searchFields: {
                                 name: "LIKE",
                                 phone_number: "LIKE",
@@ -522,28 +535,43 @@ const CreateReservationDialog = (() => {
                             "/prm/reservation/form-options",
                         ].join(""),
                         params: (op) => {
-                            return { id: op.id, tenant_id: op.tenant_id ?? null };
+                            return {
+                                id: op.id,
+                                tenant_id: op.tenant_id ?? null,
+                            };
                         },
                     },
                 },
 
                 onPrepareForm: (me, data) => {
                     const details = data?.reservation_details || {};
-                    const amenitySelect = me.divModal.querySelector('[data-field="amenity_id"]');
+                    const amenitySelect = me.divModal.querySelector(
+                        '[data-field="amenity_id"]',
+                    );
                     const applyAmenityData = (amenityId) => {
-                    const amenities = Array.isArray(data?.amenities) ? data.amenities: [];
-                    const selected = amenities.find((item) => String(item.id) === String(amenityId));
-                    const codeInput = me.divModal.querySelector('[data-field="amenity_code"]');
-                    if (codeInput)
-                        codeInput.value = selected?.amenity_code ?? "";
+                        const amenities = Array.isArray(data?.amenities)
+                            ? data.amenities
+                            : [];
+                        const selected = amenities.find(
+                            (item) => String(item.id) === String(amenityId),
+                        );
+                        const codeInput = me.divModal.querySelector(
+                            '[data-field="amenity_code"]',
+                        );
+                        if (codeInput)
+                            codeInput.value = selected?.amenity_code ?? "";
                     };
-                    if (me.searchTenant && typeof me.searchTenant.reset === "function") {
+                    if (
+                        me.searchTenant &&
+                        typeof me.searchTenant.reset === "function"
+                    ) {
                         me.searchTenant.reset();
                     }
 
-                    amenitySelect.onchange = (e) => applyAmenityData(e.target.value);
+                    amenitySelect.onchange = (e) =>
+                        applyAmenityData(e.target.value);
                     if (me.dataOptions.id > 0) {
-                         console.log(1221,data);
+                        console.log(1221, data);
                         me.controls.tenant_id.value = details.tenant_id;
                         setTimeout(() => {
                             if (details.amenity_id) {
@@ -553,7 +581,6 @@ const CreateReservationDialog = (() => {
                             // $(amenitySelect).trigger("change");
                         }, 500);
                     }
-
                 },
 
                 buttons: [
@@ -571,13 +598,16 @@ const CreateReservationDialog = (() => {
                         click: (me, btn) => {
                             const op = me.getData();
                             op.id = me.dataOptions.id;
-                            if (me._selectedTenantId != null && me._selectedTenantId !== undefined) {
+                            if (
+                                me._selectedTenantId != null &&
+                                me._selectedTenantId !== undefined
+                            ) {
                                 op.tenant_id = me._selectedTenantId;
                             }
 
                             // op.tenant_id = me._selectedTenantId;
                             op.id = me.dataOptions.id;
-                            console.log(123,op);
+                            console.log(123, op);
 
                             vsapi
                                 .call(
@@ -604,7 +634,6 @@ const CreateReservationDialog = (() => {
                                         }
                                     } else {
                                         cv_interact.error(res.error_message);
-
                                     }
                                 });
                         },

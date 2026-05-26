@@ -1,13 +1,11 @@
 <div id="_main_tenant_component" class="p-3 mobile-padding" style="display:none;">
-    <div id="_tenant_list_container" style ="display:none">
+    <div id="_tenant_list_container" style="display:none">
         <div id="_divFilter_tenant" class="bg-white shadow-sm p-3 rounded-2">
             <div class="align-items-center row g-3">
                 <div class="col-12 col-md-6 col-lg-3">
                     <div class="position-relative w-100">
                         <input type="text" class="filter-field rounded-2 input-search" id="_search_tenant_"
                             placeholder="Search by name, code or phone">
-                        {{-- <i class="position-absolute text-muted fa fa-search fs-6"
-                            style="right: 15px; top: 50%; transform: translateY(-50%);"></i> --}}
                     </div>
                 </div>
                 <div class="col-12 col-md-6 col-lg-2">
@@ -43,7 +41,7 @@
     </div>
 </div>
 
-<div id="_ten_profile_view" class="px-3" style ="display:none">
+<div id="_ten_profile_view" class="px-3" style="display:none">
     <div class="d-flex align-items-center justify-content-between bg-white shadow-sm mt-2 p-3 rounded-3"
         id="view_buttons">
         <div class="d-flex flex-wrap align-items-center gap-3">
@@ -63,17 +61,13 @@
                     </li>
                 </ol>
             </nav>
-
         </div>
     </div>
 
     <div class="mt-3 mb-5" style="max-height: 600px;" id="sub_view_profile">
-        <div id="profile_info_tenant">
-        </div>
+        <div id="profile_info_tenant"></div>
     </div>
-
 </div>
-
 
 <style>
     .card {
@@ -88,37 +82,109 @@
         padding: 18px 16px;
         border: none;
         align-items: center;
-        /* background-color: #fff; */
-        background:
-            /* linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)), */
-            url('../assets/images/default/bg_card7.jpg');
+        background: url('../assets/images/default/bg_card7.jpg');
         background-size: cover;
         background-repeat: no-repeat;
     }
-
-    .card-body {
-        /* background:
-        /* linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)), */
-        url('../assets/images/default/bg-card1.jpg');
-        */
-        /* background-size: cover; */
-        /* background-repeat: no-repeat; */
-    }
-
 
     .card_container {
         display: flex;
         flex-direction: column;
         align-items: flex-start;
-        /* background-color: #e9eaea; */
         padding: 10px;
         border-radius: 10px;
-
     }
 
     .btn-check:checked+.btn {
         background-color: #0c399e;
         color: #fff;
+    }
 
+    .tenant-image-card {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        border: 1px solid #ced4da;
+        border-radius: 12px;
+        background-color: #ffffff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .tenant-profile-container{
+        width:150px;
+        height: 140px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+    }
+
+    .upload-trigger-area {
+        width: 100%;
+        height: 100%;
+        background: transparent;
+        border: 1px solid #000;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 12px;
+    }
+
+    .upload-trigger-area:hover {
+        background-color: #f8f9fa;
+    }
+
+    .placeholder-icon {
+        width: 48px;
+        height: 48px;
+        color: #6c757d;
+    }
+
+    .preview-crop-box {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        border-radius: 11px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .preview-crop-box img {
+        width: auto;
+        height: 100%;
+        object-fit: contain;
+    }
+
+    .close-badge-btn {
+        position: absolute;
+        top: -10px;
+        right: -10px;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background-color: #dc3545;
+        border: 2px solid #ffffff;
+        color: #ffffff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        z-index: 10;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+        padding: 0;
+    }
+
+    .close-badge-btn:hover {
+        background-color: #bd2130;
+    }
+
+    .close-icon {
+        font-size: 18px;
+        font-weight: bold;
+        line-height: 1;
+        margin-top: -2px;
     }
 </style>
