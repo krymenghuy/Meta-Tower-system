@@ -498,7 +498,7 @@ const CreateMaintenanceDialog = (() => {
                     const lockContext = fromSpace || fromAmenity;
                     me.setReadOnly(lockContext,['building_id','type_unit','space_id','amenity_id']);
 
-                    // ✅ helper: convert 12h → 24h
+                    //  helper: convert 12h → 24h
                     const to24h = (time, ampm) => {
                         if (!time) return "00:00";
                         let [h, m] = time.split(':').map(Number);
@@ -509,7 +509,7 @@ const CreateMaintenanceDialog = (() => {
                         return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
                     };
 
-                    // ✅ START DATE
+                    //  START DATE
                     if (me.detail?.start_date && me.controls?.start_date) {
                         const s = String(me.detail.start_date).trim().split(/\s+/);
 
@@ -522,7 +522,7 @@ const CreateMaintenanceDialog = (() => {
                         }
                     }
 
-                    // ✅ END DATE
+                    //  END DATE
                     if (me.detail?.end_date && me.controls?.end_date) {
                         const e = String(me.detail.end_date).trim().split(/\s+/);
 
