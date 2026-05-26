@@ -139,13 +139,11 @@ var BillComponent = (() => {
                 };
                 const currentStatus = statusConfig[statusId] ?? {
                     cls: "bg-secondary text-white",
-                    icon: "fa-regular fa-circle-question",
                 };
                 return `
-        <span class="badge ${currentStatus.cls} text-capitalize d-inline-flex align-items-center justify-content-center px-3 py-2 gap-2" style="min-width:110px">
-            <i class="${currentStatus.icon}" style="font-size:12px;"></i>
-            ${data.status ?? "—"}
-        </span>`;
+                    <span class="badge ${currentStatus.cls} text-capitalize d-inline-flex align-items-center justify-content-center px-3 py-2 gap-2" style="min-width:100px; font-size:12px;">
+                        ${data.status ?? "—"}
+                    </span>`;
             },
         },
         {
@@ -684,7 +682,7 @@ const BillDialog = (() => {
                             <div class="col-4">
                                 <div class="vs-material-field">
                                     <input type="text" name="documents" class=" form-control " accept=".png,.jpg,.jpeg" /disabled>
-                                    <label>File</label >
+                                    <label>File</label>
                                 </div>
                             </div>
                             <div class="col-2">
@@ -881,7 +879,7 @@ const BillDialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
-                    // me.fileData = null;
+                    me.fileData = null;
                     me.controls.documents.value = "";
                     // me.controls.documents.classList.add('d-none');
 
@@ -1031,7 +1029,6 @@ const BillDialog = (() => {
                                 op.vendor_id = me._selectedVendorId;
                             }
 
-                            // ✅ default payload
                             let p = { ...op };
 
                             if (me.fileData) {
@@ -1063,7 +1060,6 @@ const BillDialog = (() => {
                                       )
                                     : null;
 
-                                // ✅ ensure base64 format
                                 let base64Data = me.fileData.dataUrl || "";
                                 if (
                                     base64Data &&
@@ -1074,7 +1070,6 @@ const BillDialog = (() => {
                                         base64Data;
                                 }
 
-                                // ✅ merge into payload
                                 p = {
                                     ...op,
                                     ext: fileExt,
@@ -1083,8 +1078,6 @@ const BillDialog = (() => {
                                     mime_type: me.fileData.ext,
                                 };
                             }
-
-                            console.log("FINAL PAYLOAD:", p);
 
                             vsapi
                                 .call(

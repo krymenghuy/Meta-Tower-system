@@ -407,7 +407,7 @@ var InvoiceComponent = (() => {
                         <tfoot class="table-light fw-bold">
                                 <!-- Displaying Net Total -->
                             <tr>
-                                <td colspan="7" class="text-end  ">Total</td>
+                                <td colspan="7" class="text-end  ">Sub Total</td>
                                 <td colspan="1" class="text-end  fs-6">
                                     ${currency}${fmt(
             parseFloat(invoice.amount || 0)
@@ -426,7 +426,7 @@ var InvoiceComponent = (() => {
                                         ).toLowerCase();
 
                                         if (discVal <= 0)
-                                            return `<span class="text-muted">—</span>`;
+                                            return `<span class="text-muted">0%</span>`;
                                         if (discType === "percent") {
                                             return `${fmt(discVal)}%`;
                                         } else {
@@ -438,7 +438,7 @@ var InvoiceComponent = (() => {
 
                             <!-- Displaying Net Total -->
                             <tr>
-                                <td colspan="7" class="text-end  text-primary">Total Amount Due</td>
+                                <td colspan="7" class="text-end  text-primary">Grand (Net)</td>
                                 <td colspan="1" class="text-end text-success fs-6">
                                     ${currency}${fmt(
             parseFloat(invoice.amount_payable || 0)
@@ -712,7 +712,6 @@ const InvoiceDialog = (() => {
 
                                     <!-- RIGHT: Space / Button -->
                                     <div>
-               
                                         <div class="field-row ">
                                             <label class="field-label fw-semibold">Invoice Type</label>
                                             <span class="field-sep">:</span>
@@ -866,6 +865,36 @@ const InvoiceDialog = (() => {
                 me.controls.div_invoice_summary = me.divModal.querySelector(
                     '[name="div_invoice_summary"]'
                 );
+                // me.controls.invoice_type.addEventListener("change", function() {
+                //     updateButtonVisibility();
+                // });
+
+                // function updateButtonVisibility() {
+                //     const invoiceType = me.controls.invoice_type.value;
+
+                //     const btnRent = me.controls.btnRent;
+                //     const btnElectric = me.controls.btnElectric;
+                //     const btnService = me.controls.btnService;
+                //     const btnRequest = me.controls.btnRequest;
+
+                //     if (!btnRent || !btnElectric || !btnService || !btnRequest) return;
+
+                //     if (invoiceType === "1") {
+                //         // === TAX ===
+                //         btnRent.style.display = "inline-block";
+
+                //         btnElectric.style.display = "none";
+                //         btnService.style.display = "none";
+                //         btnRequest.style.display = "none";
+                //     }
+                //     else {
+                //         // === NO TAX (2) or COMMERCIAL (3) ===
+                //         btnRent.style.display = "inline-block";
+                //         btnElectric.style.display = "inline-block";
+                //         btnService.style.display = "inline-block";
+                //         btnRequest.style.display = "inline-block";
+                //     }
+                // }
 
                 me.controls.btnRent.onclick = () => {
                     if (!me._selectedTenantId) {
@@ -1663,7 +1692,6 @@ const InvoiceDialog = (() => {
                         return cv_interact.error("No services available.");
                     }
 
-                     
                     const serviceOptions = services
                         .map(
                             s =>
@@ -2047,13 +2075,15 @@ const InvoiceDialog = (() => {
                                     price: Number(selectedService.price) || 0,
                                     qty: qtyMonths,
                                     remarks: remarkStr,
-                                    unit_type:(selectedService.charge_as || "Month") +(qtyMonths > 1 ? "s" : ""),
+                                    unit_type:
+                                        (selectedService.charge_as || "Month") +
+                                        (qtyMonths > 1 ? "s" : ""),
                                     discount: Number(data.discount) || 0,
                                     start_date: data.start_date || "",
                                     end_date: data.end_date || "",
                                     discount_type:
                                         data.discount_type || "percent",
-                                    total_amount: calculatedTotal,
+                                    total_amount: calculatedTotal
                                 },
                                 0
                             );
@@ -2404,29 +2434,7 @@ const InvoiceDialog = (() => {
                         //     readOnly: true,
                         //     width: "2px",
                         // },
-                        // {
-                        //     name: "item_name",
-                        //     transTitle: "titles.Item",
-                        //     displayType: "text",
-                        //     dataType: "string",
-                        //     readOnly: true,
-                        //     className: "small col-item-name",
-                        //     width: "250px",
-                        //     // html: '<input type="checkbox" class="check_accept">',
-                        // },
-                        // {
-                        //     name: "type",
-                        //     transTitle: "titles.Type",
-                        //     dataType: "text",
-                        //     readOnly: true,
-                        //     displayType: "hidden"
-                        // },
-                        // {
-                        //     name: "remarks",
-                        //     transTitle: "titles.Remarks",
-                        //     dataType: "string",
-                        //     readOnly: true
-                        // },
+
                         {
                             name: "remarks",
                             transTitle: "titles.Item",
@@ -2438,7 +2446,6 @@ const InvoiceDialog = (() => {
                             // html: '<input type="checkbox" class="check_accept">',
                         },
 
-                       
                         {
                             name: "start_date",
                             transTitle: "titles.Start Date",
@@ -2464,13 +2471,13 @@ const InvoiceDialog = (() => {
                             width: "70px"
                         },
 
-                         {
+                        {
                             name: "unit_type",
                             transTitle: "titles.Charge As",
                             dataType: "text",
                             readOnly: true,
                             defaultValue: "-",
-                            width: "100px"
+                            width: "110px"
                         },
                         {
                             name: "price",
@@ -2545,15 +2552,27 @@ const InvoiceDialog = (() => {
                         const item_id = ctx.data.item_id;
                         const type = ctx.data.type;
                         const unit_type = ctx.data.unit_type;
-                        console.log(ctx.data);
+
+
                         item.setRowMeta(tr, {
                             item_id: item_id,
                             type: type,
                             unit_type: unit_type
                         });
+                 
+                        if (item.rows.length >= 2) {
+                            me.controls.tenant.disabled = true;
+                            me.setReadOnly(true, [
+                                            "tenant_id",
+                                            "space_id",
+                                            "invoice_type"
+                                        ]);
+                        }
+                        
                     },
 
                     onItemChange: (rowId, item, fieldName, td, tr) => {
+                   
                         if (fieldName === "item_id") {
                             const selectedService = availableItem.find(
                                 s => String(s.id) === String(item.item_id)
@@ -2729,7 +2748,7 @@ const InvoiceDialog = (() => {
                     "invoice_type"
                 ]);
 
-                me.set;
+                // me.set;
 
                 me._selectedTenantId = null;
                 me._tenantData = null;
@@ -2973,7 +2992,6 @@ const ReceiveDialog = (() => {
 
             createContent: () => `
                 <div class="container-fluid px-0">
-
                     <div class="row g-0" style="border-radius:8px;overflow:hidden;margin-bottom:1.5rem;">
                         <div class="col-4" style="padding:0.75rem 1.25rem;border-right:1px solid white; background:#e1e5f2;">
                             <div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#1a1647;margin-bottom:4px;">Balance Due</div>
@@ -2991,6 +3009,7 @@ const ReceiveDialog = (() => {
 
                     <div style="display:flex;flex-direction:column;">
 
+                        <!-- Cash -->
                         <div>
                             <div class="d-flex align-items-center gap-2 mb-3">
                                 <span class="payment-badge" style="color:#0C447C;">Cash</span>
@@ -2999,13 +3018,13 @@ const ReceiveDialog = (() => {
                             </div>
                             <div style="display:flex;flex-direction:row;gap:8px;flex-wrap:wrap;margin-bottom: 0.5rem;">
                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
-                                    <input name="cash" type="text" class="form-control data-input" data-field="cash"
-                                        min="0" step="0.01" placeholder=" "/>
+                                    <input name="cash" type="text" class="form-control data-input" data-field="cash" min="0" step="0.01" placeholder=" "/>
                                     <label style="padding-left:6px;color:#777777;">Amount ($)</label>
                                 </div>
                             </div>
                         </div>
 
+                        <!-- Bank Transfer -->
                         <div>
                             <div class="d-flex align-items-center gap-2 mb-3">
                                 <span class="payment-badge" style="color:#0C447C;">Bank Transfer</span>
@@ -3014,22 +3033,21 @@ const ReceiveDialog = (() => {
                             </div>
                             <div style="display:flex;flex-direction:row;gap:8px;flex-wrap:wrap;margin-bottom: 0.5rem;">
                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
-                                    <select name="bank_transfer_bank_id" class="form-select data-input" data-field="bank_transfer_bank_id" data-style="material" placeholder="Bank"></select>
+                                    <select name="bank_transfer_bank_id" class="form-select data-input" data-field="bank_transfer_bank_id" data-style="material"></select>
                                 </div>
                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
-                                    <input name="transfer_amount" type="text" class="form-control data-input"
-                                        data-field="transfer_amount" min="0" step="0.01" placeholder=" "/>
+                                    <input name="transfer_amount" type="text" class="form-control data-input" data-field="transfer_amount" min="0" step="0.01" placeholder=" "/>
                                     <label style="padding-left:6px;color:#777777;">Amount ($)</label>
                                 </div>
                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
-                                    <input name="bank_ref_number" type="text" class="form-control data-input"
-                                        data-field="bank_ref_number" placeholder=" "/>
+                                    <input name="bank_ref_number" type="text" class="form-control data-input" data-field="bank_ref_number" placeholder=" "/>
                                     <label style="padding-left:6px;color:#777777;">Ref Number</label>
                                 </div>
                             </div>
                         </div>
 
-                        <div style="display: none;" >
+                        <!-- Card -->
+                        <div>
                             <div class="d-flex align-items-center gap-2 mb-3">
                                 <span class="payment-badge" style="color:#0C447C;">Card</span>
                                 <div style="flex:1;height:1px;background:#dee2e6;"></div>
@@ -3037,26 +3055,24 @@ const ReceiveDialog = (() => {
                             </div>
                             <div style="display:flex;flex-direction:row;gap:8px;flex-wrap:wrap;margin-bottom: 0.5rem;">
                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
-                                    <select name="card_type" class="form-select data-input" data-field="card_type"
-                                            data-style="material">
+                                    <select name="card_type" class="form-select data-input" data-field="card_type" data-style="material">
                                         <option value="">None</option>
                                         <option value="credit">Credit</option>
                                         <option value="debit">Debit</option>
                                     </select>
                                 </div>
                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
-                                    <input name="card_amount" type="text" class="form-control data-input"
-                                        data-field="card_amount" min="0" step="0.01" placeholder=" "/>
+                                    <input name="card_amount" type="text" class="form-control data-input" data-field="card_amount" min="0" step="0.01" placeholder=" "/>
                                     <label style="padding-left:6px;color:#777777;">Amount ($)</label>
                                 </div>
                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
-                                    <input name="card_number" type="text" class="form-control data-input"
-                                        data-field="card_number" placeholder=""/>
+                                    <input name="card_number" type="text" class="form-control data-input" data-field="card_number" placeholder=" "/>
                                     <label style="padding-left:6px;color:#777777;">Card Number</label>
                                 </div>
                             </div>
                         </div>
 
+                        <!-- Cheque -->
                         <div>
                             <div class="d-flex align-items-center gap-2 mb-3">
                                 <span class="payment-badge" style="color:#0C447C;">Cheque</span>
@@ -3065,26 +3081,23 @@ const ReceiveDialog = (() => {
                             </div>
                             <div style="display:flex;flex-direction:row;gap:8px;flex-wrap:wrap;margin-bottom: 0.5rem;">
                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
-                                    <select name="cheque_bank_id" class="form-select data-input"
-                                            data-field="cheque_bank_id" data-style="material" placeholder="Cheque Bank"></select>
+                                    <select name="cheque_bank_id" class="form-select data-input" data-field="cheque_bank_id" data-style="material"></select>
                                 </div>
                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
-                                    <input name="cheque_amount" type="text" class="form-control data-input"
-                                        data-field="cheque_amount" min="0" step="0.01" placeholder=" "/>
+                                    <input name="cheque_amount" type="text" class="form-control data-input" data-field="cheque_amount" min="0" step="0.01" placeholder=" "/>
                                     <label style="padding-left:6px;color:#777777;">Amount ($)</label>
                                 </div>
                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
-                                    <input name="cheque_number" type="text" class="form-control data-input"
-                                        data-field="cheque_number" placeholder=" "/>
+                                    <input name="cheque_number" type="text" class="form-control data-input" data-field="cheque_number" placeholder=" "/>
                                     <label style="padding-left:6px;color:#777777;">Cheque Number</label>
                                 </div>
                             </div>
                         </div>
 
+                        <!-- Remarks -->
                         <div>
                             <div class="material-input outlined" style="margin:0;">
-                                <textarea name="remarks" class="form-control data-input" data-field="remarks"
-                                        rows="2" style="height:55px;" placeholder=" "></textarea>
+                                <textarea name="remarks" class="form-control data-input" data-field="remarks" rows="2" style="height:55px;" placeholder=" "></textarea>
                                 <label style="padding-left:6px;color:#777777;">Remarks</label>
                             </div>
                         </div>

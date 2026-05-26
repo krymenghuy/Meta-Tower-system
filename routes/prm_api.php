@@ -27,6 +27,7 @@ use App\Http\Controllers\Prm\MaintenanceController;
 use App\Http\Controllers\Prm\BillController;
 use App\Http\Controllers\Prm\BillPaymentController;
 use App\Http\Controllers\Prm\ReceiptController;
+use App\Http\Controllers\Prm\ReportController;
 
 use App\Http\Controllers\tenant\AccountStaffController;
 use App\Http\Controllers\tenant\ZoneController;
@@ -321,5 +322,13 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('receipts')->g
     Route::post('/cancel',[ReceiptController::class,'cancelReceipt']);
     Route::post('/form-options',[ReceiptController::class,'getFormOptions']);
 });
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('reports')->group(function () {
+    Route::post('/list', [ReportController::class, 'getReportList']);
+    Route::post('/tenant_list', [ReportController::class, 'getTenantReportList']);
+
+
+
+});
+
 
 
