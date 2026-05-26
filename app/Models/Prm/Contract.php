@@ -1053,7 +1053,7 @@ class Contract
             'end_date'   => $inputs['end_date'],
             'price'      => $renewPrice,
             'price_type' => $renewPriceType,
-            'remarks'    => $inputs['remarks'] ?? $old->remarks,
+            // 'remarks'    => $inputs['remarks'] ?? $old->remarks,
         ];
         $contractSpaceId = $old->space_id;
         $renewalSpaceId = $new_space_id;

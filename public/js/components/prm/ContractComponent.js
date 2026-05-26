@@ -829,11 +829,14 @@ const ContractDialog = (() => {
             },
 
             onPrepareForm: (me, data) => {
+                console.log(123,data.prefill_tenant_id);
+
                 const isReadOnly = me.dataOptions.id > 0 || data.prefill_tenant_id;
+
                 console.log(123,me.dataOptions.id);
                 me.controls.tenant.disabled = isReadOnly;
                 if(me.dataOptions.id){
-                    me.setReadOnly(true, ['code','start_date','end_date']);
+                    me.setReadOnly(isReadOnly, ['code','start_date','end_date']);
                 }
 
                 // me.setReadOnly(true, ['code','start_date','end_date']);
