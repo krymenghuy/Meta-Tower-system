@@ -1530,9 +1530,9 @@ const CreateTenantDialog = (() => {
 
                     <!-- Profile Section -->
                         <div class="col-md-4 text-center d-flex flex-column justify-content-center">
-                            <div class="data-input tenant-photo-wrapper border border-prm-custom rounded-3 d-flex align-items-center justify-content-center mx-auto"
+                            <div class="tenant-photo-wrapper border border-prm-custom rounded-3 d-flex align-items-center justify-content-center mx-auto"
                                 style="width: 210px; height: 130px; cursor: pointer; background-color: #f8f8f8;">
-                                <div name="div_tenant_photo" class="data-input w-100 h-100">
+                                <div name="div_tenant_photo" class="w-100 h-100">
                                 </div>
                             </div>
                            <!-- <small class="text-muted d-block mt-2">Profile Photo</small> -->
@@ -1613,12 +1613,10 @@ const CreateTenantDialog = (() => {
                     const div_tenant_photo = me.controls.div_tenant_photo;
                     me.tenantImageBox = new ImageBox(div_tenant_photo, {
                         defaultPhotoName: "default-skill",
-                        containerClass: "tenant-profile-container",
-                        imgClass: "data-input",
-                        dataset: {
-                            field: "photo",
-                        } /** please set field: photo so that we can use for both Edit and Create easily */,
-                        //dataset: { field: "image_url" },
+                        containerClass: 'w-100',
+                        showPhotoView:false,
+                        imgClass: ["w-100", "h-100", "object-fit-cover", "rounded-3"],
+                        dataset: { "field": "photo" },
                         beforeDeleteImage: async () => {
                             if (me.dataOptions.id > 0) {
                                 const yes = await cv_interact.confirm(
@@ -1626,8 +1624,7 @@ const CreateTenantDialog = (() => {
                                     {
                                         title: "Delete Photo",
                                         context: "delete",
-                                    },
-                                );
+                                    });
                                 if (yes) {
                                     //delete member's photo from backend
                                     me.deleteProfilePhoto(me.dataOptions.id);
