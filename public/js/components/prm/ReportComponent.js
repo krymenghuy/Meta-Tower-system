@@ -403,8 +403,8 @@ var ReportComponent = (() => {
                     case 'total_payment':
                         totalPaymentByYear(containerTable,d);
                         break;
-                    case 'total_student_payment_history':
-                        totalStudentPaymentHistory(containerTable,d);
+                    case 'total_payment_history':
+                        totalPaymentHistory(containerTable,d);
                         break;
                     case 'leave_student':
                         leaveStudent(containerTable,d);

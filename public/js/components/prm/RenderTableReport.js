@@ -1212,6 +1212,83 @@ function tenantList(div, data) {
 
     HtmlString = html;
 }
+function totalPaymentHistory(div, data) {
+    let html = `
+        <div class="d-flex position-relative w-100">
+            <div class="d-block mt-3 w-100">
+                <h4 class="text-center text-uppercase">
+                    ${data?.title ?? ''}
+                </h4>
+                <p class="text-center w-100 fs-5-1 get-subtitle fs-5">${data?.sub_title ?? ""}</p>
+            </div>
+        </div>
+    `;
+
+    const d = data?.list ?? [];
+
+    html += `
+    <div class="table-responsive mt-3 pt-3 pb-3 bg-white overflow-x-hover-auto">
+        <table class="table table-bordered text-nowrap">
+            <thead>
+                <tr>
+                    <th class="text-center">No</th>
+                    <th class="text-center">Payment Date</th>
+                    <th class="text-center">Reference No</th>
+                    <th class="text-center">Vendor</th>
+                    <th class="text-center">Amount</th>
+                    <th class="text-center">Payment Method</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+  if (d.length) {
+        d.forEach((st, index) => {
+            html += `
+                <tr>
+                    <td class="text-center align-middle">
+                        ${index + 1}
+                    </td>
+                    <td class="text-center align-middle">
+                        ${st.payment_date ?? 'N/A'}
+                    </td>
+                    <td class="align-middle">
+                        ${st.ref_no ?? 'N/A'}
+                    </td>
+                    <td class="align-middle">
+                        ${st.vendor_name ?? 'N/A'}
+                    </td>
+                    <td class="text-center align-middle">
+                        ${st.amount ?? 'N/A'}
+                    </td>
+                    <td class="text-center align-middle">
+                        ${st.payment_method ?? 'N/A'}
+                    </td>
+                    
+                </tr>
+            `;
+        });
+    } else {
+        html += `
+            <tr>
+                <td colspan="13" class="text-center">
+                    No data found
+                </td>
+            </tr>
+        `;
+    }
+    
+
+    html += `
+            </tbody>
+        </table>
+    </div>
+    `;
+
+    div.innerHTML = html;
+    // togglePanelTable(div);
+
+    HtmlString = html;
+}
 function employeeListByBranchTable(div, d) {
     d = d ?? {};
     let header = null,
@@ -1762,7 +1839,7 @@ function totalPaymentByYear(div, d) {
     HtmlString = html;
 }
 
-function totalStudentPaymentHistory(div, d) {
+function totalPaymentHistory1(div, d) {
     let header = null,
         body = null,
         tr = null,
@@ -1925,8 +2002,8 @@ function totalStudentPaymentHistory(div, d) {
     </div>`,
     ].join("");
 
-    div.html(html);
-    togglePanelTable(div);
+    div.innerHTML = html;
+    // togglePanelTable(div);
     HtmlString = html;
 }
 
