@@ -174,13 +174,16 @@ const printViaIframe = (receiptEl) => {
         const items = data.items || [];
         const breakdowns = data.breakdowns || [];
 
+        console.log(111222211111111111111111,invoice);
+        
+
 
         // Totals
         const subTotal      = parseFloat(data.amount || 0);
         const totalDiscount = parseFloat(data.discount_value || 0);
         const netTotal      = parseFloat(data.amount_payable || 0);
         const paymentAmount = parseFloat(receipt.total_received || 0);
-        const paid          = parseFloat(data.paid_amount || 0);
+        const totalPaid     = parseFloat(data.total_paid || 0);
         const balance       = parseFloat(data.due_amount || 0);
         const discValue     = subTotal - netTotal;
         const discType      = (data.discount_type || "percent").toLowerCase();
@@ -242,6 +245,8 @@ const printViaIframe = (receiptEl) => {
 </style>
 
 <div class="pi-root" id="pi-receipt-content">
+
+    
 
     <!-- ═══ HEADER (kept as-is) ═══ -->
     <div style="background:linear-gradient(135deg,#0F2060 0%,#1A3D91 55%,#2254C5 100%);padding:10px;display:flex;justify-content:space-between;align-items:flex-start;gap:20px;position:relative;overflow:hidden;">
@@ -311,7 +316,7 @@ const printViaIframe = (receiptEl) => {
         </div>
 
         <!-- LEFT: Method of Payment -->
-        <div style="flex:1;padding:14px 20px;border-right:1px solid #D1D5DB;position:relative;z-index:1;min-width:220px;">
+        <div style="flex:1;padding:14px 20px; position:relative;z-index:1;min-width:220px;">
             <div style="font-size:11px;font-weight:700;color:#374151;margin-bottom:10px;text-decoration:underline;text-underline-offset:3px;">* Method of Payment</div>
             <table style="border-collapse:collapse;">
                 <tbody>${paymentRows}</tbody>
@@ -319,7 +324,7 @@ const printViaIframe = (receiptEl) => {
         </div>
 
         <!-- RIGHT: Card summary + Khmer formal table -->
-        <div style="min-width:340px;position:relative;z-index:1;">
+        <div style="min-width:336px;position:relative;z-index:1; border:1px solid #D1D5DB;">
 
             <!-- Card-style summary rows -->
             <div style="border:1px solid #E5E9F5;border-radius:0;overflow:hidden;border-left:none;border-right:none;">
@@ -346,7 +351,7 @@ const printViaIframe = (receiptEl) => {
 
                 <div style="display:flex;justify-content:space-between;padding:10px 16px;border-bottom:1px solid #EEF0F5;">
                     <span style="font-size:12px;color:#3B6D11;">Total Paid</span>
-                    <span style="font-size:12px;font-weight:600;color:#3B6D11;">${currency}${fmt(paid)}</span>
+                    <span style="font-size:12px;font-weight:600;color:#3B6D11;">${currency}${fmt(totalPaid)}</span>
                 </div>
 
                 <div style="display:flex;justify-content:space-between;align-items:center;padding:13px 16px;background:#0F2060;">
@@ -366,14 +371,14 @@ const printViaIframe = (receiptEl) => {
             <span style="font-weight:700;">Amount In Words:</span>
             <span style="margin-left:8px;">${numberToWords(paymentAmount)}</span>
         </div>
-        <div style="font-size:12px;color:#374151;margin-top:10px;display:flex;align-items:baseline;gap:6px;">
+        <div style="font-size:12px;color:#374151;margin-top:10px;display:flex;align-items:baseline;gap:6px; ">
             <span style="font-weight:700;white-space:nowrap;">*Remarks:</span>
-            <span style="flex:1;border-bottom:1px solid #9CA3AF;padding-bottom:2px;">&nbsp;${data.remarks || ''}</span>
+            <span style="flex:1;padding-bottom:2px;">&nbsp;${data.remarks || ''}</span>
         </div>
     </div>
 
     <!-- ═══ SIGNATURE LINES ═══ -->
-    <div style="display:flex;justify-content:space-between;padding:24px 60px 16px;gap:60px;">
+    <div style="display:flex;justify-content:space-between;margin-top:10px; padding:24px 60px 16px;gap:60px; border:1px solid #9CA3AF">
         <div style="flex:1;text-align:center;">
             <div style="font-size:12px;color:#374151;margin-bottom:2px;">ហត្ថលេខា និងឈ្មោះអតិថិជន</div>
             <div style="font-size:11px;color:#6B7280;margin-bottom:36px;">Customer's Signature &amp; Name</div>
