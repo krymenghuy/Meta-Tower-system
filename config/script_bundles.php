@@ -115,7 +115,7 @@ return [
                 '/js/components/common/pusher_client.js',
                 '/js/components/prm/DashboardComponent.js',
                 // '/js/components/prm/HomeComponent.js',
-                // '/js/components/prm/RenderTableReportComponent.js',
+                '/js/components/prm/RenderTableReport.js',
                 // '/js/components/prm/ReportCenterComponent.js',
                 // 'js/components/common/LocationComponent.js',
                 'js/components/common/CompanyComponent.js',

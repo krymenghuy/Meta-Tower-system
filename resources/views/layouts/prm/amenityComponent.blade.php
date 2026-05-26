@@ -1,28 +1,28 @@
-<div id="_main_amenity_component" class="mobile-padding p-3" style="display:none;">
-     <div id="_divFilter_amenity" class="rounded-2 p-3 bg-white shadow-sm">
-        <div class="row g-3 align-items-center">
+<div id="_main_amenity_component" class="p-3 mobile-padding" style="display:none;">
+     <div id="_divFilter_amenity" class="bg-white shadow-sm p-3 rounded-2">
+        <div class="align-items-center row g-3">
             <div class="col-12 col-md-6 col-lg-3">
-                <input type="text" class="rounded-2 filter-field input-search" id="_search_amenity" placeholder="Search by unit or name">
+                <input type="text" class="filter-field rounded-2 input-search" id="_search_amenity" placeholder="Search by unit or name">
             </div>
             <div class="col-12 col-md-6 col-lg-2">
-                <select id="building_id" class="data-input filter-field form-control" data-field="building_id"></select>
+                <select id="building_id" class="filter-field data-input form-control" data-field="building_id"></select>
             </div>
             <div class="col-12 d-none col-md-6 col-lg-2">
-                <select id="floor_id" class="data-input filter-field form-control" data-field="floor_id"></select>
+                <select id="floor_id" class="filter-field data-input form-control" data-field="floor_id"></select>
             </div>
             <div class="col-12 col-md-6 col-lg-2">
-                <select id="amenity_category_id" class="data-input filter-field form-control" data-field="category_id"></select>
+                <select id="amenity_category_id" class="filter-field data-input form-control" data-field="category_id"></select>
             </div>
-             <div class="col-12 col-md-6 col-lg-2 ">
-                <select type="id" id="_amenity_status" class="data-input filter-field form-control" data-field="status_id"></select>
+            <div class="col-12 col-md-6 col-lg-2">
+                <select type="id" id="_amenity_status" class="filter-field data-input form-control" data-field="status_id"></select>
             </div>
-            <div class="col-12 col-md-3 col-lg-auto ms-md-auto text-md-end" style="overflow:visible;">
-                <button type="button" class="btnAddNewPrm w-100 w-md-auto" id="_btnAmenity">
-                    <i class="fa-brands fa-buffer me-2"></i>
+            <div class="ms-md-auto text-md-end col-12 col-md-3 col-lg-auto" style="overflow:visible;">
+                <button type="button" class="w-100 w-md-auto btnAddNewPrm" id="_btnAmenity">
+                    <i class="me-2 fa-brands fa-buffer"></i>
                     <span vslang="buttons.Create Amenity"></span>
                 </button>
             </div>
         </div>
     </div>
-    <div id="_amenity_list" class="table-responsive mt-3  rounded-2"></div>
+    <div id="_amenity_list" class="table-responsive mt-3 rounded-2"></div>
 </div>

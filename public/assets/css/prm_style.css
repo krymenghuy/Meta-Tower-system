@@ -1230,7 +1230,8 @@ a.menu-selected .kt-menu__link-text {
 }
 
 .btn-add,
-.btn-pdf {
+.btn-pdf,
+.btn-excel {
     background-color: #eccf67;
     color: #fff;
     padding: 0.65rem 1rem;
