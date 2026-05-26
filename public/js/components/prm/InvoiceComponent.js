@@ -2567,8 +2567,7 @@ const InvoiceDialog = (() => {
                                             "space_id",
                                             "invoice_type"
                                         ]);
-                        }
-                        
+                        }    
                     },
 
                     onItemChange: (rowId, item, fieldName, td, tr) => {

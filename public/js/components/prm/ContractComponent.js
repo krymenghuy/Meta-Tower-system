@@ -14,7 +14,6 @@ var ContractComponent = new (function () {
     mThis.elSearch = mThis.self.querySelector("#_search_contract");
 
 
-
     mThis.cols = [
         {
             title: "",
@@ -830,10 +829,17 @@ const ContractDialog = (() => {
             },
 
             onPrepareForm: (me, data) => {
+                console.log(123,data.prefill_tenant_id);
+
                 const isReadOnly = me.dataOptions.id > 0 || data.prefill_tenant_id;
-                console.log(123,isReadOnly);
+
+                console.log(123,me.dataOptions.id);
                 me.controls.tenant.disabled = isReadOnly;
-                me.setReadOnly(true, ['code','start_date','end_date']);
+                if(me.dataOptions.id){
+                    me.setReadOnly(isReadOnly, ['code','start_date','end_date']);
+                }
+
+                // me.setReadOnly(true, ['code','start_date','end_date']);
 
                 if (me.searchTenant && typeof me.searchTenant.reset === "function") {
                     me.searchTenant.reset();
@@ -893,7 +899,7 @@ const ContractDialog = (() => {
                     if (me.controls.sqm_size) me.controls.sqm_size.value = selected.sqm_size ?? '';
                     if (me.controls.price_type && me.controls.price_type_label) {
                         me.controls.price_type.value = selected.price_type ?? '';
-                        
+
                         me.controls.price_type_label.value = selected.price_type === 'sqm' ? 'm²' : selected.price_type === 'total' ? 'Unit' : '';
                     }
                     if (me.controls.price) me.controls.price.value = selected.price ?? '';

@@ -123,11 +123,21 @@ const InvoiceNoTaxDialog = (() => {
             service: { bg: "#F0FDF4", fg: "#166534", dot: "#22C55E" },
         };
 
+         //*** DO NOT show Invoice Discount if it is zero */
+            const invoiceDiscount_html = totalDiscount > 0 ? ` <tr class="pi-totals-row">
+                                <td style="padding:12px 16px;color:#DC2626;">
+                                    Discount ${totalDiscount > 0 ? `(${discDisplay})` : ''}
+                                </td>
+                                <td style="padding:12px 16px;text-align:right;font-weight:600;color:#DC2626;">
+                                    ${currency}${fmt(subTotal - netTotal)}
+                                </td>
+                            </tr>` : '';
+              
         // ✅ Fixed: `validItems` was never declared
         const validItems = (invoice.items || []).filter(
             (item) => parseFloat(item.price || 0) > 0 || parseFloat(item.total || 0) > 0
         );
-
+        
         const itemRows = validItems.map((item, i) => {
             const qty   = parseFloat(item.qty   || 1);
             const price = parseFloat(item.price || 0);
@@ -150,6 +160,7 @@ const InvoiceNoTaxDialog = (() => {
 
             const rowBg = i % 2 !== 0 ? "#FAFAFA" : "#FFFFFF";
 
+           
             return `
             <tr style="background:${rowBg};">
                 <td style="padding:10px 24px;text-align:start;border-bottom:1px solid #EEF0F5;font-size:12px;color:#555;">
@@ -228,14 +239,14 @@ const InvoiceNoTaxDialog = (() => {
                         <div style="display:flex;flex-direction:column;gap:2px;">
                             <div style="font-size:30px;font-weight:800;letter-spacing:-1px;line-height:1;color:#1A3D91;font-family:'Inter',sans-serif;">INVOICE</div>
                             <div style="font-size:14px;font-weight:700;color:#1A3D91;letter-spacing:0.2px;font-family:'Inter',sans-serif;">
-                                ${invoice.company_name || "Chan Dava"}
+                                ${invoice.company_name || "META HOLDING"}
                             </div>
-                            <!--<div style="font-size:11px;color:#6B7280;margin-top:2px;font-family:'Inter',sans-serif;">
+                            <div style="font-size:11px;color:#6B7280;margin-top:2px;font-family:'Inter',sans-serif;">
                                 ${invoice.company_phone || "+855 12 345 678"}
-                            </div> -->
-                            <!--<div style="font-size:11px;color:#6B7280;margin-top:2px;font-family:'Inter',sans-serif;">
-                                ${invoice.company_address || "#S8-0 2, Financial Street, Phum 7, Sangkat Veal Vong, Khan 7 Makara, Phnom Penh"}
-                            </div> -->
+                            </div>
+                            <div style="font-size:11px;color:#6B7280;margin-top:2px;font-family:'Inter',sans-serif;">
+                                ${invoice.company_address || "Samdech Monireth Blvd (217), Phnom Penh"}
+                            </div>
                         </div>
                     </div>
                     <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
@@ -250,7 +261,7 @@ const InvoiceNoTaxDialog = (() => {
                 <!-- ═══ BILLED TO / DATE LINE ═══ -->
                 <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:14px 32px;border-bottom:1px solid #E8E8E8;background:#FAFBFF;">
                     <div>
-                        <div style="font-size:10px;font-weight:700;color:#9CA3AF;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.8px;font-family:'Inter',sans-serif;">Billed to</div>
+                        <div style="font-size:10px;font-weight:700;color:#9CA3AF;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.8px;font-family:'Inter',sans-serif;">Customer</div>
                         <div style="font-size:14px;font-weight:600;color:#111;margin-bottom:3px;font-family:'Inter',sans-serif;">${invoice.tenant_name || "—"}</div>
                         ${invoice.space_code   ? `<div style="font-size:11px;color:#666;font-family:'Inter',sans-serif;">Space: ${invoice.space_code}</div>` : ""}
                         ${invoice.tenant_email ? `<div style="font-size:11px;color:#666;font-family:'Inter',sans-serif;">${invoice.tenant_email}</div>` : ""}
@@ -291,15 +302,7 @@ const InvoiceNoTaxDialog = (() => {
                                 <td style="padding:12px 16px;color:#666;">Sub Total</td>
                                 <td style="padding:12px 16px;text-align:right;font-weight:600;">${currency}${fmt(subTotal)}</td>
                             </tr>
-                            <tr class="pi-totals-row">
-                                <td style="padding:12px 16px;color:#DC2626;">
-                                    Discount ${totalDiscount > 0 ? `(${discDisplay})` : ''}
-                                </td>
-                                <td style="padding:12px 16px;text-align:right;font-weight:600;color:#DC2626;">
-                                    ${currency}${fmt(subTotal - netTotal)}
-                                </td>
-                            </tr>
-
+                            ${invoiceDiscount_html}
                             ${invoice.payment_status_id === 2 ? `
                                 <tr style="background:linear-gradient(135deg,#0F2060,#1A3D91);">
                                     <td style="padding:14px 16px;color:#fff;font-weight:700;">Total (Net)</td>
@@ -335,7 +338,7 @@ const InvoiceNoTaxDialog = (() => {
                         <div style="font-size:10px;color:#9CA3AF;line-height:1.6;">Payment is due by the date shown above.<br>Late payments may incur additional charges.</div>
                     </div>
                     <div style="text-align:right;">
-                        <div style="font-size:10px;color:#9CA3AF;">Generated by Property Manager</div>
+                        <div style="font-size:10px;color:#9CA3AF;">Generated by Landlord</div>
                         <div style="font-size:11px;font-weight:600;color:#4B5563;margin-top:2px;">${formatDate(invoice.issue_date)}</div>
                     </div>
                 </div>
@@ -369,6 +372,7 @@ const InvoiceNoTaxDialog = (() => {
         }
 
         const dlg = new GeneralDialog({
+            title: "No Tax  Invoice",
             cssClass: "modal-xl vs-modal",
             backdrop: "static",
             keyboard: true,
