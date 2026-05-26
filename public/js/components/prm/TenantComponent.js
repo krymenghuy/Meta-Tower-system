@@ -234,7 +234,7 @@ var TenantComponent = new (function () {
     };
 
     mThis.initDropdownMenus = (listContainer) => {
-        const menuOptopns = {
+        const menuOptions = {
             containerElement: listContainer,
             actionButtonClass: "btn-tenant-dropdown-action",
             cssClass: "bg-white shadow",
@@ -335,7 +335,7 @@ var TenantComponent = new (function () {
                 }
             },
         };
-        new VSDropdownMenu(menuOptopns);
+        new VSDropdownMenu(menuOptions);
     };
     mThis.editTenant = (id, menuLink) => {
         let op = {
@@ -1816,7 +1816,7 @@ const TenantDocumentDialog = (() => {
                             <input type="hidden" name="file_ext" data-field="ext">
                         </div>
                     </div>
-                     <div class="col-12">
+                    <div class="col-12">
                         <div class="vs-material-field">
                             <textarea type="text" name="remarks" class="data-input form-control" data-field="remarks" placeholder=" " /></textarea>
                             <label>Remark</label>
