@@ -44,7 +44,6 @@ class Invoice extends VSModel
             'amount_payable'    => '0|numeric',
         ];
 
-        \Log::info($arr);
 
 
         $allowed_chars = ['@', ',', '-', '.', '#', '!', '?', '(', ')', "\n"];
@@ -83,12 +82,12 @@ class Invoice extends VSModel
             return DV::error('Please add at least one item.');
         }
 
-        \Log::info("Saving invoice", [
-            'id' => $id,
-            'inputs' => $inputs,
-            'items' => $items,
-            'user' => $ss->name ?? 'Admin'
-        ]);
+        // \Log::info("Saving invoice", [
+        //     'id' => $id,
+        //     'inputs' => $inputs,
+        //     'items' => $items,
+        //     'user' => $ss->name ?? 'Admin'
+        // ]);
 
         $dueDate = $inputs['due_date'];
         $dueDT   = strtotime($dueDate);
@@ -106,13 +105,13 @@ class Invoice extends VSModel
         //     return DV::error('Due date cannot be in the past.');
         // }
 
-        \Log::info("Due date", ["dueDT" => $dueDT, "issueDate" => $inputs['issue_date']]);
+        // \Log::info("Due date", ["dueDT" => $dueDT, "issueDate" => $inputs['issue_date']]);
 
         if ($dueDT < $issueDT) {
             return DV::error('Due date cannot be before the issue date.');
         }
 
-        \Log::info("Due date validation passed", $inputs);
+        // \Log::info("Due date validation passed", $inputs);
 
         $inputs['due_amount'] = $inputs['amount_payable'];
 
@@ -215,9 +214,9 @@ class Invoice extends VSModel
             return DV::depends(1, ['invoices' => $inputs, 'id' => $id]);
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::error("Invoice save failed: " . $e->getMessage(), [
-                'trace' => $e->getTraceAsString()
-            ]);
+            // \Log::error("Invoice save failed: " . $e->getMessage(), [
+            //     'trace' => $e->getTraceAsString()
+            // ]);
             return DV::error('Failed to save invoice: ' . $e->getMessage());
         }
     }
@@ -232,7 +231,7 @@ class Invoice extends VSModel
         $penal_rate    = (float)($data['penal_rate'] ?? 0); // penal_amount per day from frontend
         $pmt_breakdowns = $data['pmt_breakdowns'] ?? $data['payment_breakdown'] ?? [];
 
-        \Log::info($data);
+        // \Log::info($data);
         if ($invoice_id <= 0) {
             return DV::error('Invalid invoice ID.');
         }
@@ -264,19 +263,21 @@ class Invoice extends VSModel
                 $penal_amount   = $over_due_day * $penal_rate;
             }
 
-            \Log::info("Penalty calculation", [
-                'invoice_id'  => $invoice_id,
-                'due_date'    => $due_date->toDateString(),
-                'today'       => $today->toDateString(),
-                'over_due_day'   => $over_due_day,
-                'penal_rate' => $penal_rate,
-                'penal_amount'     => $penal_amount,
-            ]);
+            // \Log::info("Penalty calculation", [
+            //     'invoice_id'  => $invoice_id,
+            //     'due_date'    => $due_date->toDateString(),
+            //     'today'       => $today->toDateString(),
+            //     'over_due_day'   => $over_due_day,
+            //     'penal_rate' => $penal_rate,
+            //     'penal_amount'     => $penal_amount,
+            // ]);
 
             $invoice_amount      = (float)$invoice->amount;
             $already_paid        = (float)$invoice->paid_amount;
             $total_received      = array_sum(array_column($pmt_breakdowns, 'amount'));
             $current_balance_due = ($invoice_amount - $already_paid) + $penal_amount;
+            
+            $total_paid = $already_paid + $total_received;
 
             if ($total_received > $current_balance_due) {
                 DB::rollBack();
@@ -290,9 +291,10 @@ class Invoice extends VSModel
                 'tenant_id'      => $invoice->tenant_id,
                 'branch_id'      => $ss->branch_id ?? $invoice->branch_id ?? 1,
                 'total_received' => $total_received,
-                'penal_amount'        => $penal_amount,
-                'over_due_day'      => $over_due_day,
-                'penal_rate'    => $penal_rate,
+                'total_paid'     => $total_paid,
+                'penal_amount'   => $penal_amount,
+                'over_due_day'   => $over_due_day,
+                'penal_rate'     => $penal_rate,
                 'remarks'        => $remarks,
                 'create_user'    => $ss->name ?? 'Admin',
                 'create_uid'     => $ss->uid ?? 1,
@@ -401,7 +403,7 @@ class Invoice extends VSModel
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::error("Receive payment failed: " . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            // \Log::error("Receive payment failed: " . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
             return DV::error('Failed to receive payment: ' . $e->getMessage());
         }
     }
@@ -817,7 +819,7 @@ class Invoice extends VSModel
             throw new \Exception('Invoice record not found.');
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::error("Delete invoice failed: " . $e->getMessage());
+            // \Log::error("Delete invoice failed: " . $e->getMessage());
             return DV::error('Failed to delete: ' . $e->getMessage());
         }
     }

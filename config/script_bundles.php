@@ -162,11 +162,10 @@ return [
                 'https://cdn.vectoraclouds.com/beta-frontcore/components/SearchInput/VSSearchInput.js',
                 'https://cdn.vectoraclouds.com/beta-frontcore/components/SearchInput/VSSearchInputHelper.js',
 
-                'https://cdn.vectoraclouds.com/frontcore/components/InputBox.v2.js',
+                'https://cdn.vectoraclouds.com/beta-frontcore/components/InputBox.v2.js',
                 'https://cdn.jsdelivr.net/gh/tomik23/circular-progress-bar@latest/docs/circularProgressBar.min.js',
                 'https://cdn.vectoraclouds.com/frontcore/vsroute/vsroute.js',
                 '/js/layout/prm/main.js',
-                '/assets/js/SearchWidget.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/ImageHelper.js',
                 //'/assets/js/ImageHelper.js',
                'https://cdn.vectoraclouds.com/frontcore/components/ImageBox.js',
