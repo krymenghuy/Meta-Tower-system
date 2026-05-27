@@ -445,7 +445,7 @@ var BillComponent = (() => {
                     return;
                 }
 
-                console.log(123123123, res.data);
+                // console.log(123123123, res.data);
 
                 const { data_url, ext, mime_type } = res.data;
 
@@ -809,9 +809,7 @@ const BillDialog = (() => {
                                     .split(".")
                                     .pop()
                                     .toLowerCase();
-                                console.log("File Name:", d.fileName);
-                                console.log("File Extension:", extension);
-                                console.log("Full Data Object:", d);
+                                
                                 me.fileData = d;
                                 me.controls.documents.value = d.fileName;
                                 me.controls.documents.classList.remove(

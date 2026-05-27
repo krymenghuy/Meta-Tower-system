@@ -188,7 +188,7 @@ var BillPaymentComponent = (() => {
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             p[el.dataset.field] = el.value;
         });
-        console.log("Filter data:", p);
+        // console.log("Filter data:", p);
         return p;
     };
 
@@ -674,7 +674,7 @@ const BillPaymentDialog = (() => {
                     }
 
                     me.convertPayment = (data) => {
-                        console.log(3333333, data);
+                        // console.log(3333333, data);
                         const parseAmt = (v) =>
                             isNaN(parseFloat(v)) ? 0 : parseFloat(v);
                         const breakdowns = [];
@@ -837,7 +837,7 @@ const BillPaymentDialog = (() => {
                         click: (me, btn) => {
                             const rawData = me.getData();
                             const payload = me.convertPayment(rawData);
-                            console.log(11111111, payload);
+                            // console.log(11111111, payload);
 
                             const totalInput = payload.pmt_breakdowns.reduce(
                                 (sum, item) => sum + item.amount,
