@@ -52,18 +52,18 @@ class StyleProvider
                 'assets/css/bootstrap.min.css'
             ]
         ],
-        'landing-styles' => [
-            'output_file' => '/dist/css/landing-styles.css',
-            'files' => [
-                '/assets/css/landing-style.css',
-                '/assets/css/font-awesome/6.2.0/css/all.min.css',
-                'assets/css/bootstrap.min.css',
-            ]
-        ],
+        // 'landing-style' => [
+        //     'output_file' => '/dist/css/landing-styles.css',
+        //     'files' => [
+        //         '/assets/css/landing-style.css',
+        //         '/assets/css/font-awesome/6.2.0/css/all.min.css',
+        //         'assets/css/bootstrap.min.css',
+        //     ]
+        // ],
         'prm-landing-styles' => [
             'output_file' => '/dist/css/landing-styles.css',
             'files' => [
-                '/assets/css/prm-landing-style.css',
+                '/assets/css/landing-style.css',
                 // '/assets/css/ksm-landing-style.css',
                 '/assets/css/font-awesome/6.2.0/css/all.min.css',
                 //'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css',
