@@ -1,103 +1,185 @@
 'use strict';
-let main_view = new function(){
-    let mThis = this;
-    this.apiCluster = 'menus';
-    this.onLayoutLoad = null;
-    this.elScreenTitle = document.querySelector('#screen_title');
-    this.elScreenTitle_mobile =  document.querySelector('#mobile_screen_title');
-    //this.auth_script_version =4; /** Used to automcatically clear cached AuthManager.js script on client browser */
+var main_view = (()=>{
+    const mThis = {};
+    mThis.apiCluster = 'menus';
+    mThis.onLayoutLoad = null;
+    mThis.elScreenTitle = document.querySelector('#screen_title');
+    mThis.elScreenTitle_mobile =  document.querySelector('#mobile_screen_title');
+
+    mThis.base_url = document.querySelector('meta[name="base_url"]').getAttribute('content');
+    //mThis.mainRoute = document.querySelector('meta[name="main_route"]').getAttribute('content');
+    mThis.asset_url =document.querySelector('meta[name="asset_url"]').getAttribute('content');
+    mThis.branch_id = document.querySelector('meta[name="sess_branch_id"]').getAttribute('content');
+    mThis.user_id = document.querySelector('meta[name="sess_user_id"]').getAttribute('content');
+    mThis.subs_id = document.querySelector('meta[name="subs_id"]').getAttribute('content');
+    mThis.app_id = document.querySelector('meta[name="app_id"]').getAttribute('content');
+
+    mThis.VSAppContent = document.querySelector('#_app_content');
+    //mThis.appContent = $(mThis.VSAppContent); //should no longer use it !!!
     mThis.auth_script_url = 'https://cdn.vectoraclouds.com/frontcore/utils/AuthManager.v2.js';
+    mThis.secure_endpoint =  [mThis.base_url,'/api/1a2b3c4d5e6f7g8h9i0j1k2l3m/en'].join('');
 
-    this.base_url = document.querySelector('meta[name="base_url"]').getAttribute('content'); //$('#__base_url').val();
-    this.mainRoute = document.querySelector('meta[name="main_route"]').getAttribute('content');
-    this.asset_url =document.querySelector('meta[name="asset_url"]').getAttribute('content'); 
-    this.branch_id = document.querySelector('meta[name="sess_branch_id"]').getAttribute('content');
-    this.user_id = document.querySelector('meta[name="sess_user_id"]').getAttribute('content'); 
+    mThis.top_right_menus = document.querySelector('#_main_top_right_menus');
+    mThis.btnTasks = mThis.top_right_menus.querySelector('#_main_btn_tasks');
+    mThis.btnLang = mThis.top_right_menus.querySelector('#_main_btn_lang');
+    mThis.btnUser = mThis.top_right_menus.querySelector('#_main_btn_user');
+    mThis.btnNotif = mThis.top_right_menus.querySelector('#_main_btn_notif');
 
-    this.appContent = $(document.querySelector('#_app_content'));
-    //this.dialogs = this.appContent.find('#_main_dialogs');
- 
-    this.top_right_menus = $(document.querySelector('#_main_top_right_menus'));
-    this.btnTasks = this.top_right_menus.find('#_main_btn_tasks');
-    this.btnLang = this.top_right_menus.find('#_main_btn_lang');
-    this.btnUser = this.top_right_menus.find('#_main_btn_user');
-    this.btnNotif = this.top_right_menus.find('#_main_btn_notif');
-     
-    this.current_view_name = '';
-    this.pusher_channel = {};
-    
-    this.MULTI_WAREHOUSE_OP =0;
-    this.DEF_TO_WAREHOUSE_ID =1;
-    this.DEF_WAREHOUSE_ID =1;
-   
-    this.mnuLogout1 = this.top_right_menus.find('#_main_mnu_logout')[0];
-    this.mnuAbout1 = this.top_right_menus.find('#_main_mnu_about')[0];
-    
-    if (!this.branch_id || !this.user_id){
+    mThis.current_view_name = '';
+    mThis.pusher_channel = {};
+
+    mThis.MULTI_WAREHOUSE_OP =1;
+    mThis.DEF_TO_WAREHOUSE_ID =1;
+    mThis.DEF_WAREHOUSE_ID =1;
+
+    mThis.mnuLogout = mThis.top_right_menus.querySelector('#_main_mnu_logout');
+    mThis.mnuAbout1 = mThis.top_right_menus.querySelector('#_main_mnu_about');
+
+    if (!mThis.branch_id || !mThis.user_id){
         console.error('branch_id (company_id) and user_id are not found! => so Notifications will not work!');
     }
     /** Toto: load "mThis.backend_channel_name" and other environment's vairables from backend's env directly */
-    this.backend_channel_name = ['dms.backend.',this.branch_id].join('');
-  
-    this.getEncryptData = (qstring,onFinish)=>{
-        let p = {'data':qstring};
-        vsapi.call([mThis.base_url,'/dms/encryptData'].join(''),p).then((res)=>{
-            onFinish(res.data?res.data:res);
-        }); 
+    mThis.backend_channel_name = ['vsedvance_backend_',(mThis.subs_id || '').toLowerCase()].join('');
+    mThis.getEncryptData = (qstring,onFinish)=>{
+        const p = {'data':qstring};
+        vsapi.call([mThis.base_url,'/api/vs-encrypt031181'].join(''),p).then((res)=>{
+            onFinish(res.data || res);
+        });
     }
-   
-    this.init = ()=>{
+
+    // function channelPrefix(){
+    //     return 'vsksmkidsworld';
+    // }
+
+    // mThis.createChannelName = () => {
+    //     const subs_id = mThis.subs_id;
+    //     const user_id = mThis.user_id;
+    //     const branch_id = mThis.branch_id;
+    //     const user_class = mThis.user_class;
+
+    //     if (user_id && user_id > 0) {
+    //         return channelPrefix() + "_backend_" + subs_id + "_" + user_id;
+    //     } else {
+    //         if (branch_id && branch_id > 0 && user_class) {
+    //             return channelPrefix() + "_backend_" + subs_id + "_" + branch_id + "_" + user_class;
+    //         } else if (branch_id && branch_id > 0) {
+    //             return channelPrefix() + "_backend_" + subs_id + "_" + branch_id;
+    //         } else if (user_class) {
+    //             return channelPrefix() + "_backend_" + subs_id + "_" + user_class;
+    //         } else {
+    //             return channelPrefix() + "_backend_" + subs_id;
+    //         }
+    //     }
+    // };
+
+mThis.init_vsapi = async () => {
+  await vsapi.init({
+    authType: vsapi.authTypes.BEARER,
+    //fetchTokenUrl:'/api/vsx-sec/token',
+    tokenResolver: async () => {
+      const res = await fetch('/api/vsx-sec/token', {
+         credentials: 'include',
+         headers: {
+         'X-Requested-With': 'XMLHttpRequest'
+        }
+     });
+      const json = await res.json();
+      if(json.status_code == 200){
+         return json.data.token;
+      }else{
+        alert('[vsapi] tokenResolver() got error: ' + json.error_message);
+        return null;
+      }
+    },
+    defaultLoaderSelector: '#vs_loader',
+    useStreamingProgress: true,
+    //useCache: true,
+    //cacheTTL: 3000,
+
+    // online: () => {
+    //   console.log('🟢 Back online');
+    // },
+
+    // offline: () => {
+    //   console.warn('🔴 Connection lost');
+    // }
+    // You can later add: resolveAuthHeaders, or switch authType to 'custom' etc.
+  });
+};
+    mThis.init = async()=>{
+      //window.Sanitizer  = window.Sanitizer || StringSanitizer || null;
      //BEGIN:: process side menus click using VSRoute
-       this.side_menus = document.querySelector('#kt_aside_menu_wrapper');
-       this.mnuLogout = this.side_menus.querySelector('#_main_lnkLogout');
-       VSRoute.init(this.side_menus.querySelectorAll('a.menu-item'),"DashboardComponent");
+       mThis.side_menus = document.querySelector('#_dms_aside_menus');
+
+      //Sanitizer.setDebugMode(false);
+      VSRoute.init(mThis.side_menus.querySelectorAll('a.menu-item'),"RoleManagementComponent",mThis.side_menus,true);
+
      //END:: process side menus click using VSRoute
 
-        this.displayUserMenus();
-        this.displayNotifications();
-        this.displayTasks();
+        mThis.displayUserMenus();
+        mThis.displayNotifications();
+        mThis.displayTasks();
 
-        this.top_right_menus.on('click','.lnk-lang',function(e){
-            let lang = $(this).data('lang');
+        mThis.top_right_menus.onclick = e =>{
+           let btn = VSUtil.closestLimited(e.target,'.btn-dropdown');
+           if(btn){
+                let div =  e.target.closest('div.dropdown').querySelector('.dropdown-menu');
+                if(mThis.prev_shown_dropdown_menus && mThis.prev_shown_dropdown_menus !== div) mThis.prev_shown_dropdown_menus.classList.remove('show');
+                if(div){
+                    div.classList.toggle('show');
+                    if (div.classList.contains('show')) mThis.prev_shown_dropdown_menus = div;
+                }
+                return;
+           }
+
+           btn = VSUtil.closestLimited(e.target,'.lnk-lang');
+           if(btn){
+            let lang = btn.dataset.lang;
             LocaleManager.translateAll(lang);
             mThis.setLangMenu(lang);
-            $(this).closest('.dropdown-menu').removeClass('show');
-            LocaleManager.saveLang(lang);   
-        });
-        this.top_right_menus.on('click','.lnk-lang',function(e){
-            let lang = $(this).data('lang');
-            LocaleManager.translateAll(lang);
-            mThis.setLangMenu(lang);
-            $(this).closest('.dropdown-menu').removeClass('show');
-            LocaleManager.saveLang(lang);   
-        });
+            btn.closest('.dropdown-menu').classList.remove('show');
+            LocaleManager.saveLang(lang);
+            return;
+           }
+        }
 
-        this.top_right_menus.on('click','.btn-dropdown',function(e){
-            e.preventDefault();
-            if(mThis.prev_shown_dropdown_menus) mThis.prev_shown_dropdown_menus.removeClass('show');
-            let div =  $(this).parent().find('.dropdown-menu');
-            div.addClass('show');
-            mThis.prev_shown_dropdown_menus = div;
-        });
+        // $(document).on('click', function(e){
+        //     let x = $(this).find('body div.dropdown-menu');
+        //     let container = x.parent();
+        //     if(container){
+        //         if(!container.is(e.target) && container.has(e.target).length === 0){
+        //             x.removeClass('show');
+        //         }
+        //     }
+        //     e.stopPropagation();
+        // });
 
-        $(document).on('click', function(e){
-            let x = $(this).find('body div.dropdown-menu');
-            let container = x.parent();
-            if(container){
-                if(!container.is(e.target) && container.has(e.target).length === 0){
-                    x.removeClass('show');
+        document.addEventListener('click', e => {
+            let dropdownMenu =  mThis.prev_shown_dropdown_menus ; // //document.querySelector('.dropdown-menu');
+            // Get the container element
+            let container = dropdownMenu ? dropdownMenu.closest('.dropdown') : null;
+
+            if (container) {
+                // Check if the click target is outside the container
+                if (!container.contains(e.target)) {
+                    dropdownMenu.classList.remove('show');
                 }
             }
-            e.stopPropagation();
+
+            if (e.target.matches('.dropdown-item')) {
+                // Get the parent element and remove the 'show' class
+                e.target.parentElement.classList.remove('show');
+            }
         });
 
-        $(document).on('click', '.dropdown-item', function (e) {
-            $(this).parent().removeClass('show');
-        });
-         
-        this.mnuLogout1.onclick = e =>{
+        // $(document).on('click', '.dropdown-item', function (e) {
+        //     $(this).parent().removeClass('show');
+        // });
+
+        mThis.lnkLogout = mThis.side_menus.querySelector('#_main_lnkLogout');
+        mThis.lnkLogout.onclick = e =>{
             cv_interact.confirm("Do you want to log out?",{
-                title: "MOE Campaign Data Management",
+                title: "Sign Out",
                 confirmButtonText: "Log Out",
                 cancelButtonText: "No, I stay in",
                 context: "delete",
@@ -109,10 +191,10 @@ let main_view = new function(){
             });
         };
 
-        
-        this.mnuLogout.addEventListener('click',e => {
+
+        mThis.mnuLogout.addEventListener('click',e => {
             cv_interact.confirm("Do you want to log out?",{
-                title: "MOE Campaign Data Management",
+                title: "Sign Out",
                 confirmButtonText: "Log Out",
                 cancelButtonText: "No, I stay in",
                 context: "delete",
@@ -124,32 +206,39 @@ let main_view = new function(){
             });
         });
 
-       
+
         if (typeof mThis.onLayoutLoad ==='function') mThis.onLayoutLoad();
     }
     //end::main_view.init()
 
-    this.logOut = ()=>{
+    mThis.logOut = ()=>{
         mThis.deleteAllCookies();
         window.location.replace([mThis.base_url,'/logout'].join(''));
     }
-    
-    this.setLangMenu = (lang)=>{
-        let lnkName = mThis.top_right_menus.find('#_main_lang_name');
+
+    mThis.setLangMenu = (lang)=>{
+        let lnkName = mThis.top_right_menus.querySelector('#_main_lang_name');
         let lang_name = LocaleManager.langs[lang].name;
         let icon_image = LocaleManager.langs[lang].icon_image;
 
         let icon_url = [document.querySelector('meta[name="asset_url"]').getAttribute('content'),'/images/icons/',icon_image].join('');
-        lnkName.text(lang_name);
+        lnkName.textContent =  lang_name;
 
-        mThis.btnLang.find('img').attr('src',icon_url);
-        mThis.btnLang.data('lang',lang);
+        mThis.btnLang.querySelector('img').setAttribute('src',icon_url);
+        mThis.btnLang.dataset.lang = lang;
         LocaleManager.lang = lang;
+        const body = document.body;
+        body.classList.remove('font-kh', 'font-en');
+        if (lang === 'km') {
+            body.classList.add('font-kh');
+        } else {
+            body.classList.add('font-en');
+        }
     }
 
-    this.addNotificationItem = (notif, update_count = true) => {
+    mThis.addNotificationItem = (notif, update_count = true) => {
         if(!notif || !notif.message) return;
-        let div = mThis.top_right_menus.find('.main-notif-panel')[0];
+        let div = mThis.top_right_menus.querySelector('.main-notif-panel');
         let emptyItems = div.querySelectorAll('.empty-item');
         emptyItems.forEach(item => item.remove());
         let newDiv = document.createElement('div');
@@ -158,47 +247,47 @@ let main_view = new function(){
         if(['na','n/a'].indexOf(title.toLowerCase()) >=0 ) title = 'General';
         newDiv.innerHTML = `<span class="notif-title">${(title)}</span><span class="notif-text">${notif.message}</span>`;
         div.insertBefore(newDiv, div.firstChild);
-    
+
         if (update_count) {
             mThis.incrementNotificationCount();
         }
     };
-          
-    this.changeRequestStatus = (d) => {
+
+    mThis.changeRequestStatus = (d) => {
         d.request_id =d.request_id?d.request_id:d.id;
         d.request_completed =d.request_completed?d.request_completed:d.completed;
         d.request_status = d.request_status? d.request_status:d.status;
 
-        let div = mThis.top_right_menus.find('div.main-task-panel');
+        let div = mThis.top_right_menus.querySelector('div.main-task-panel');
         let el =null;
-        div.find('.main-task-item').each(function(){
-            el = $(this);
-            if(el.data('id') == d.request_id) return false; 
+        div.querySelectorAll('.main-task-item').forEach(el =>{
+            if(el.dataset.id == d.request_id) return false;
         });
-             
+
         if(el) {
-            let v = el.find('div.task-buttons');
+            let v = el.querySelector('div.task-buttons');
             let buttons = null;
 
             if(d.request_completed == 1) {
                 if((d.request_status+'').toLowerCase() =='approved')
                     buttons = `<span class="task-btn-approved"><i class="fa fa-check" style="color:green"></i> Approved</span>`;
                 else
-                    buttons = `<span class="task-btn-rejected"><i class="fa fa-times" style="color:red"></i> Rejected</span>`;     
+                    buttons = `<span class="task-btn-rejected"><i class="fa fa-times" style="color:red"></i> Rejected</span>`;
             }
-            v.empty().append(buttons);
+            v.innerHTML = buttons;
         }
     }
 
-    this.setTitle = (title_prop=null)=>{
+    mThis.setTitle = (title_prop=null)=>{
         const title = LocaleManager.trans(title_prop,'titles');
         mThis.elScreenTitle.textContent = title;
         mThis.elScreenTitle_mobile.textContent = title;
-        mThis.elScreenTitle.setAttribute('vslang',`titles.${title_prop}`);
-        mThis.elScreenTitle_mobile.setAttribute('vslang',`titles.${title_prop}`);
+          mThis.elScreenTitle.setAttribute('vslang', `titles.${title_prop}`);
+        // mThis.elScreenTitle.dataset.vslang = `titles.${title_prop}`;
+        mThis.elScreenTitle_mobile.setAttribute('vslang', `titles.${title_prop}`);
     }
 
-    this.deleteAllCookies = () => {
+    mThis.deleteAllCookies = () => {
         const cookies = document.cookie.split(';');
         for (const cookie of cookies) {
             const [name] = cookie.trim().split('=');
@@ -206,7 +295,7 @@ let main_view = new function(){
         }
     };
 
-    this.addTaskItem = (c={},update_count=true)=>{
+    mThis.addTaskItem = (c={},update_count=true)=>{
         let buttons = null;
         c.request_id =c.request_id?c.request_id:c.id;
         c.request_status =c.request_status?c.request_status:c.status;
@@ -216,7 +305,7 @@ let main_view = new function(){
             if((c.status+'').toLowerCase() =='approved')
                 buttons = `<div class="task-buttons"><span class="task-btn-approved"><i class="fa fa-check" style="color:green"></i> Approved</span></div>`;
             else
-                buttons = `<div class="task-buttons"><span class="task-btn-rejected"><i class="fa fa-times" style="color:red"></i> Rejected</span></div>`;     
+                buttons = `<div class="task-buttons"><span class="task-btn-rejected"><i class="fa fa-times" style="color:red"></i> Rejected</span></div>`;
         }
         else{
             buttons = `<div class="task-buttons form-inline">
@@ -224,30 +313,30 @@ let main_view = new function(){
             <button data-id="${c.request_id}" class="btn btn-sm btn-success btn-approve-request">Approve</button>
             </div>`;
         }
-                     
+
         let item =`<div class="main-task-item" data-id="${c.request_id}" data-completed="${c.request_completed}" data-status="${c.request_status}">
         <span class="task-title">${c.title}</span>
         <span class="task-text">${c.description}</span>
                 ${buttons}
         </div>`;
-               
+
         mThis.top_right_menus.find('div.main-task-panel').prepend(item);
-        if(update_count) mThis.incrementTaskCount();    
+        if(update_count) mThis.incrementTaskCount();
     }
 
-    this.displayUserMenus = ()=>{
+    mThis.displayUserMenus = ()=>{
         return;
     }
 
-    this.displayNotifications = ()=> {
-        vsapi.call(`${mThis.base_url}/dms/notifications`,null).then((res)=>{
+    mThis.displayNotifications = ()=> {
+        vsapi.call(`${mThis.base_url}/api/user/notifications`,null,{useCache:false,cacheTTL:3000}).then((res)=>{
             let i=0;
             if(res.status_code ===200){
                 let d = res.data;
                 if(d) {
                     let items = d.items;
-                    const notifCount = mThis.btnNotif.find('span.number--notification');
-                    notifCount.text(d.unread_count);
+                    const notifCount = mThis.btnNotif.querySelector('span.number--notification');
+                    notifCount.textContent =  d.unread_count;
                     if(items){
                         let c;
                         do{
@@ -257,27 +346,30 @@ let main_view = new function(){
                             i++;
                         }while(c);
                     }
-                } 
+                }
             }
-            
+
             if(i==0){
                 let empty_item =`<div class="main-notif-item empty-item"><span class="p-1 text-muted text-center">No Notifications</span></div>`;
-                mThis.top_right_menus.find('div.main-notif-panel').html(empty_item);
+                mThis.top_right_menus.querySelector('div.main-notif-panel').innerHTML =  empty_item;
             }
         });
     };
 
-    this.setTaskCount = (c)=>{
-        mThis.btnTasks.data('count',c).text(c);
+    mThis.setTaskCount = (c)=>{
+        if(!mThis.btnTasks) return;
+        mThis.btnTasks.dataset,count = c;
+        mThis.btnTasks.textContent = c;
     }
 
-    this.setNotificationCount = (c)=>{
-        mThis.btnNotif.data('count',c).find('.number--notification').text(c);
+    mThis.setNotificationCount = (c)=>{
+        mThis.btnNotif.dataset.count = c;
+        mThis.btnNotif.querySelector('.number--notification').textContent = c;
     }
 
-    this.displayTasks =()=> {
-        let items =null;
-        vsapi.call(`${mThis.base_url}/dms/pending-requests`,null).then((res)=>{
+    mThis.displayTasks =()=> {
+        //let items =null;
+        vsapi.call(`${mThis.base_url}/api/user/pending-requests`,null,{useCache:false, cacheTTL:3000}).then((res)=>{
             if(res.status_code===200){
                 let d = res.data;
                 let i=0;
@@ -288,18 +380,22 @@ let main_view = new function(){
                         mThis.addTaskItem(c,false);
                     i++;
                 }while(c);
-                    
+
                 if(i==0) {
                     let item =`<div class="main-task-item">
-                            <span class="task-text">No pending requests</span>     
+                            <span class="task-text">No pending requests</span>
                         </div>`;
                         let html = `<div class="dropdown-menu dropdown-menu-right">
-                            <span class="task-header">Requests</span> 
+                            <span class="task-header">Requests</span>
                             <div class="main-task-panel">
                                 ${item}
                             </div>
                         </div>`;
-                    mThis.btnTasks.parent().append(html);
+                        if(mThis.btnTasks){
+                            const p = mThis.btnTasks.parentElement;
+                            if(p) p.insertAdjacentHTML("beforeend",html);
+                        }
+
                 }
                 mThis.setTaskCount(i);
             }
@@ -307,50 +403,87 @@ let main_view = new function(){
     };
 
     mThis.updateNotificationCount = ()=>{
-        vsapi.call(`${mThis.base_url}/dms/unread-count`,null,false).then((res)=>{
+        vsapi.call(`${mThis.base_url}/api/user/unread-count`,null,{useCache:false,cacheTTL:3000}).then((res)=>{
             if(res.status_code ===200){
                 let d = res.data;
-                const span = mThis.btnNotif.find('.number--notification');
-                if(d > 0) span.text(d); else span.text(0); 
-                if(d > 0) mThis.btnNotif.data('count',d); else mThis.btnNotif.data('count',0); 
+                const span = mThis.btnNotif.querySelector('.number--notification');
+                if(d > 0) span.textContent =  d; else span.textContent = 0;
+                if(d > 0) mThis.btnNotif.dataset.count = d ; else mThis.btnNotif.dataset.count = 0;
             }
         });
     }
-    
+
     mThis.incrementNotificationCount = ()=>{
-        const notifCount_span = mThis.btnNotif.find('span.number--notification');
-        let d = mThis.btnNotif.data('count');
+        const notifCount_span = mThis.btnNotif.querySelector('span.number--notification');
+        let d = mThis.btnNotif.dataset.count;
         d = d>=0?d:0;
         d++;
-        notifCount_span.text(d);
-        mThis.btnNotif.data('count',d);         
+        notifCount_span.textContent = d;
+        mThis.btnNotif.dataset.count = d;
     }
 
     mThis.incrementTaskCount = ()=>{
-        let d = mThis.btnTasks.data('count');
+        let d = mThis.btnTasks.dataset.count;
         d = d>=0?d:0;
         d++;
-        mThis.btnNotif.text(d).data('count',d);
-    }  
-};
+        mThis.btnNotif.textContent = d;
+        mThis.btnNotif.dataset.count = d;
+    }
 
+    mThis.setContentView = (viewInstance, title_prop = null) => {
+        const siblings = Array.from(viewInstance.parentElement.children);
 
+        // Hide all siblings smoothly
+        siblings.forEach((div) => {
+            if (div !== viewInstance && div.style.display !== 'none') {
+                div.style.display = 'none';
+            }
+        });
 
-window.addEventListener('DOMContentLoaded',function(){
+        // // Prepare the target view for fade-in
+        // if (viewInstance.style.display !== 'block') {
+        //     viewInstance.style.display = 'block';
+        //     viewInstance.style.opacity = 0;
+        // }
+
+        // // Ensure transition is applied only after display change
+        // requestAnimationFrame(() => {
+        //     viewInstance.style.transition = 'opacity 200ms';
+        //     viewInstance.style.opacity = 1;
+        // });
+        viewInstance.style.display = 'block';
+        // Set the title if provided
+        if (title_prop) mThis.setTitle(title_prop);
+    };
+
+    return mThis;
+})();
+//end::main_view module
+
+window.addEventListener('DOMContentLoaded',async()=>{
+    await main_view.init_vsapi();
+    await VSMoney.init();
     main_view.init();
-    LocaleManager.translateZone(main_view.appContent);
+    LocaleManager.translateZone(main_view.VSAppContent);
     main_view.setLangMenu(LocaleManager.currentLanguage.code);
-});
 
-const inputs = main_view.VSAppContent.querySelectorAll('input[type="text"], input[type="number"]');
-inputs.forEach(el => {
-    el.onselect = function(e) {
-        e.preventDefault();
-    };
+    const inputs = main_view.VSAppContent.querySelectorAll("input");
 
-    el.onfocus = function(e) {
-        e.preventDefault();
-    };
+    // DateTimePicker.destroyAll();
+    inputs.forEach(el =>{
+        const type = el.getAttribute('type') ?? el.dataset.select ?? '';
+        if(['date','daterange','datepicker'].indexOf(type.toLowerCase()) >= 0){
+            new DateTimePicker(el,{range: type === 'daterange' || el.dataset.range == "true"});
+        }
+        el.onselect = function(e){
+            e.preventDefault();
+        }
+
+        el.onfocus = function(e){
+            e.preventDefault();
+        }
+    });
+
 });
 
 // window.oncontextmenu = function(){
@@ -358,6 +491,6 @@ inputs.forEach(el => {
 // }
 
 // document.onkeydown = function(e){
-//     if(window.event.keyCode == 123 ||  e.button == 2)    
+//     if(window.event.keyCode == 123 ||  e.button == 2)
 //         return false;
 // }

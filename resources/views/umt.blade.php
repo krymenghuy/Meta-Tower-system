@@ -1,5 +1,5 @@
-<?php 
-    if(!XAuthService::user()) return view('login.index'); 
+<?php
+    if(!XAuthService::user()) return view('login.index');
 ?>
 
 <!DOCTYPE html>
@@ -25,8 +25,8 @@
         <link href="https://fonts.googleapis.com/css2?family=Moul&display=swap" rel="stylesheet">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        
-        <?php StyleManager::render('umt-style',1,8); ?>
+
+        <?php StyleManager::render('umt-style',1,22); ?>
         <style>
             /* Custom animations for the modal like Materialize css effect */
             .modal.fade .modal-dialog {
@@ -61,13 +61,13 @@
             ScriptManager::render('priority-one',1);
             ScriptManager::render('primary',1);
             ScriptManager::render('primary-async',1,2);
-            ScriptManager::render('primary-defer', 1, 37);
-            ScriptManager::render('umt-components',1,19);
+            ScriptManager::render('umt-primary-defer',1,7);
+            ScriptManager::render('umt-components',1,39);
         ?>
     </head>
     <body style="display:none" class="kt-quick-panel--right kt-demo-panel--right kt-offcanvas-panel--right kt-header--fixed kt-header-mobile--fixed kt-subheader--enabled kt-subheader--fixed kt-subheader--solid kt-aside--enabled kt-aside--fixed kt-page--loading">
         <div id="vs_loading" class="vs-loader-bar"></div>
-        <?php ScriptManager::render('primary-loader',1);?> 
+        <?php ScriptManager::render('primary-loader',1);?>
         <div id="_main_hidden_fields">
             <input type="hidden" id="__base_url" value="{{ url('/') }}">
             <input type="hidden" id="__xsp_name" value="_csrf_115578" />
@@ -100,11 +100,11 @@
                     <div id="kt_header" class="kt-header kt-grid__item kt-header--fixed">
                         <div class="kt-header-menu-wrapper" id="kt_header_menu_wrapper" style="padding:10px">
                             <div class="d-flex">
-                               
+
                             <div class="mainview-top-right">
-                                    <div class="show--title d-flex flex-grow-1 mb-1 mt-1">
+                                    <div class="vs-page-title d-flex flex-grow-1 mb-1 mt-1">
                                         <div class="screen-info">
-                                            <span class="screen-title text-white mb-0" vslang="titles.dashboard" style="text-transform:uppercase" id="screen_title">Dashboard</span>
+                                            <span class="screen-title mb-0" vslang="titles.dashboard" style="text-transform:uppercase" id="screen_title">Dashboard</span>
                                         </div>
                                     </div>
                                     <div id="_main_top_right_menus" class="d-flex flex-row gap-2 flex-wrap justify-content-center align-items-center">
@@ -288,10 +288,11 @@
                         <div id="_p1" class="h-100">
                             <div class="pb-2" id="_app_content">
                                 @include('layouts.umt.roleManagementComponent')
-                                @include('layouts.umt.userManagementComponent') 
+                                @include('layouts.umt.userManagementComponent')
+                                @include('layouts.umt.campusManagementComponent')
                             </div>
                         </div>
-                    </div> 
+                    </div>
                 </div>
             </div>
         </div>
@@ -299,6 +300,6 @@
             <i class="fa fa-arrow-up"></i>
         </div>
 
-        
+
     </body>
 </html>
