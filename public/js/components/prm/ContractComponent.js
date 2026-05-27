@@ -150,7 +150,7 @@ var ContractComponent = new (function () {
             className: 'col_action align-middle',
             data: (data) => `
                 <div class="d-flex justify-content-center align-items-end">
-                    <a href="javascript:void(0)" class="btn_contract_action" data-id="${data.id}" data-statusid="${data.status_id}" data-status="${data.status ?? ''}" data-end-date="${data.end_date ?? ''}" aria-haspopup="true" aria-expanded="false">
+                    <a href="javascript:void(0)" class="btn_contract_action" data-id="${data.id}" data-statusid="${data.status_id}" data-status="${data.status ?? ''}" data-end-date="${data.end_date ?? ''}" data-can-manage-pending-renewal="${data.can_manage_pending_renewal ?? 0}" data-latest-renewal-start-date="${data.latest_renewal_start_date ?? ''}" aria-haspopup="true" aria-expanded="false">
                        <button class="btn btn-sm  rounded-2 text-nowrap">
                             <span>
                                 <i class="fa-solid fa-ellipsis-vertical text-black fs-5"></i>
@@ -401,6 +401,12 @@ var ContractComponent = new (function () {
                     name: "edit_contract"
                 },
                 {
+                    html: '<span class="ps-2 " vslang="buttons.Cancel"></span>',
+                    icon: `<i class="fa-regular fa-circle-xmark fs-5 text-danger"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "cancel_renewal"
+                },
+                {
                     html: '<span class="ps-2 " vslang="titles.Renew Contract"></span>',
                     icon: `<i class="fa-solid fa-arrow-up-right-from-square fs-5 text-prm-custom"></i>`,
                     cssClass: "border-bottom pb-2",
@@ -429,11 +435,15 @@ var ContractComponent = new (function () {
                 const isPending = statusText === 'pending';
                 const isExpired = statusText === 'expired';
                 const isTerminated = statusText === 'terminated';
+                const canManagePendingRenewal = Number(container.dataset.canManagePendingRenewal ?? 0) === 1;
                               // show renew only when status is active and end date is within next 3 months (not for pending)
                               const showRenew = isActive && endDate && mThis.isWithinNextThreeMonths(endDate);
-                const canModify = !isExpired && !isTerminated;
+                const canModify = !isTerminated && (canManagePendingRenewal || !isExpired);
 
                 menu.edit_contract.style.display = canModify ? 'block' : 'none';
+                if (menu.cancel_renewal) {
+                    menu.cancel_renewal.style.display = (!isTerminated && canManagePendingRenewal) ? 'block' : 'none';
+                }
                 menu.renew_contract.style.display = showRenew ? 'block' : 'none';
                 if (menu.terminate_contract) {
                     // show terminate only when status is active
@@ -448,7 +458,16 @@ var ContractComponent = new (function () {
                 switch (name) {
 
                     case 'edit_contract': {
-                        mThis.editContract(id, menuLink);
+                        const canManagePendingRenewal = Number(menuLink?.dataset?.canManagePendingRenewal ?? 0) === 1;
+                        if (canManagePendingRenewal) {
+                            mThis.editPendingRenewal(id, menuLink);
+                        } else {
+                            mThis.editContract(id, menuLink);
+                        }
+                        break;
+                    }
+                    case 'cancel_renewal': {
+                        mThis.cancelPendingRenewal(id, menuLink);
                         break;
                     }
                     case 'renew_contract': {
@@ -482,6 +501,56 @@ var ContractComponent = new (function () {
         };
         ContractDialog.show(op);
     }
+
+    mThis.cancelPendingRenewal = (id, menuLink) => {
+        if (!id) return;
+
+        const canManagePendingRenewal = Number(menuLink?.dataset?.canManagePendingRenewal ?? 0) === 1;
+        if (!canManagePendingRenewal) {
+            cv_interact.error("Renewal cannot be cancelled because the start date has been reached.");
+            return;
+        }
+
+        cv_interact.confirm(
+            "Cancel this renewal?",
+            {
+                title: "Cancel Renewal",
+                context: "delete",
+                confirmButtonText: "Cancel Renewal",
+            },
+            (yes) => {
+                if (!yes) return;
+                vsapi.call(
+                    [main_view.base_url, "/prm/contract/cancel-renewal"].join(""),
+                    { id },
+                    menuLink,
+                    null,
+                ).then((res) => {
+                    if (res.status_code === 200) {
+                        cv_interact.success("Renewal has been cancelled.");
+                        if (mThis.ContractListView) {
+                            mThis.ContractListView.showPage(mThis.getFilterData());
+                        }
+                    } else {
+                        cv_interact.error(res.error_message || "Failed to cancel renewal.");
+                    }
+                });
+            },
+        );
+    };
+
+    mThis.editPendingRenewal = (id, menuLink) => {
+        if (!id) return;
+        PendingRenewalDialog.show({
+            id,
+            btn: menuLink,
+            onClose: () => {
+                if (mThis.ContractListView) {
+                    mThis.ContractListView.showPage(mThis.getFilterData());
+                }
+            }
+        });
+    };
     mThis.renewContract = (id, menulink) => {
         if (!id) return;
 
@@ -829,14 +898,11 @@ const ContractDialog = (() => {
             },
 
             onPrepareForm: (me, data) => {
-                console.log(123,data.prefill_tenant_id);
-
                 const isReadOnly = me.dataOptions.id > 0 || data.prefill_tenant_id;
-
                 console.log(123,me.dataOptions.id);
                 me.controls.tenant.disabled = isReadOnly;
                 if(me.dataOptions.id){
-                    me.setReadOnly(isReadOnly, ['code','start_date','end_date']);
+                    me.setReadOnly(true, ['code','start_date','end_date']);
                 }
 
                 // me.setReadOnly(true, ['code','start_date','end_date']);
@@ -1106,7 +1172,7 @@ const RenewDialog = (() => {
                                      <div class="col-12">
                                         <div class="vs-material-field">
                                             <textarea name="remarks" class="data-input form-control" data-field="remarks"></textarea>
-                                            <label>Remark</label>
+                                            <label>Renewal Remark</label>
                                         </div>
                                     </div>
                                 </div>
@@ -1314,6 +1380,209 @@ const RenewDialog = (() => {
         });
 
         dialog.show(op);
+    };
+
+    return self;
+})();
+
+const PendingRenewalDialog = (() => {
+    const self = {};
+    let dialog = null;
+
+    self.show = (op) => {
+        dialog = dialog || new GeneralDialog({
+            cssClass: "modal-lg vs-modal",
+            backdrop: "static",
+            keyboard: true,
+            createContent: () => {
+                return `
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <div class="p-3 bg-white border rounded shadow-sm">
+                                <h6 class="mb-3 text-golden">Pending Renewal</h6>
+                                <div class="row g-3">
+                                    <div class="col-4">
+                                        <div class="vs-material-field">
+                                            <input data-style="material" type="date" name="start_date" class="data-input form-control" data-field="start_date" placeholder=" " disabled />
+                                            <label>Start Date</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="vs-material-field">
+                                            <input data-style="material" type="date" name="end_date" class="data-input form-control" data-field="end_date" placeholder=" " disabled />
+                                            <label>End Date</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="vs-material-field">
+                                            <select placeholder="unit code" data-style="material" name="code" class="data-input form-control" data-field="space_id"></select>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="vs-material-field">
+                                            <textarea name="remarks" class="data-input form-control" data-field="remarks"></textarea>
+                                            <label>Remark</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="p-3 bg-white border rounded shadow-lg">
+                                <h6 class="mb-3 text-golden">Unit Details</h6>
+                                <div class="row g-3">
+                                    <div class="col-6">
+                                        <div class="vs-material-field">
+                                            <input type="text" name="space_name" class="data-input form-control" data-field="space_name" placeholder=" " readonly disabled />
+                                            <label>Type</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="vs-material-field">
+                                            <input type="number" name="sqm_size" class="data-input form-control" data-field="sqm_size" placeholder=" " readonly disabled />
+                                            <label>Size</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="vs-material-field">
+                                            <input type="text" name="price_type" class="data-input form-control" data-field="price_type" placeholder=" " readonly disabled />
+                                            <label>Charge As</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="vs-material-field">
+                                            <input type="number" name="price" class="data-input form-control" data-field="price" placeholder=" " readonly disabled />
+                                            <label>Price</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            },
+            contentCreated: (me) => {
+                DateTimePicker.initAll(me.divModal);
+            },
+            buttons: [
+                {
+                    label: '<span vslang="buttons.Cancel"></span>',
+                    cssClass: 'btn btn-secondary',
+                    click: (me) => me.hide(false),
+                },
+                {
+                    label: '<span>Save</span>',
+                    cssClass: 'btn btn-primary',
+                    click: (me, btn) => {
+                        const data = me.getData();
+                        const payload = {
+                            id: me.dataOptions.id,
+                            space_id: data.space_id ?? null,
+                            remarks: data.remarks ?? '',
+                        };
+                        vsapi.call([main_view.base_url, "/prm/contract/update-renewal"].join(""), payload, btn, null)
+                            .then((res) => {
+                                if (res.status_code === 200) {
+                                    me.hide(true, payload);
+                                    cv_interact.success("Renewal has been updated.");
+                                } else {
+                                    cv_interact.error(res.error_message || "Failed to update renewal.");
+                                }
+                            });
+                    },
+                },
+            ],
+            onPrepareForm: (me, data) => {
+                LocaleManager.translateZone(me.divModal);
+                const renewal = data?.renewal || {};
+                const contractDetails = data?.contract_details || {};
+                if (me.controls.start_date) me.controls.start_date.value = renewal.start_date || "";
+                if (me.controls.end_date) me.controls.end_date.value = renewal.end_date || "";
+                if (me.controls.remarks) me.controls.remarks.value = renewal.remarks ?? "";
+
+                const unitSelect = me.divModal.querySelector('[data-field="space_id"]');
+                const spaceRows = Array.isArray(data?.building_spaces) ? data.building_spaces : [];
+                const spaceTypes = Array.isArray(data?.space_types) ? data.space_types : [];
+                const getSpaceTypeName = (spaceTypeId) => {
+                    const row = spaceTypes.find((x) => String(x.id) === String(spaceTypeId));
+                    return row?.space_type ?? '';
+                };
+                const setUnitFields = (unitData) => {
+                    if (!unitData) return;
+                    if (me.controls.space_name) {
+                        me.controls.space_name.value = unitData.space_type ?? getSpaceTypeName(unitData.space_type_id);
+                    }
+                    if (me.controls.sqm_size) me.controls.sqm_size.value = unitData.sqm_size ?? '';
+                    if (me.controls.price_type) {
+                        const raw = unitData.price_type ?? '';
+                        me.controls.price_type.value = raw === 'sqm' ? 'm²' : raw === 'total' ? 'Unit' : raw;
+                    }
+                    if (me.controls.price) me.controls.price.value = unitData.price ?? '';
+                };
+                const applyUnitData = (spaceId) => {
+                    if (!spaceId) return;
+                    const selected = spaceRows.find((row) => String(row.id) === String(spaceId));
+                    if (selected) setUnitFields(selected);
+                    vsapi.call(`${main_view.base_url}/prm/building-space/details`, { id: spaceId }, null, null)
+                        .then((res) => {
+                            if (res.status_code !== 200 || !res.data) return;
+                            const merged = selected ? { ...selected, ...res.data } : res.data;
+                            setUnitFields(merged);
+                        })
+                        .catch(() => {});
+                };
+
+                if (unitSelect) {
+                    unitSelect.onchange = (e) => applyUnitData(e.target.value);
+                    const defaultSpaceId = renewal.space_id ?? contractDetails.space_id ?? '';
+                    if (defaultSpaceId) {
+                        unitSelect.value = defaultSpaceId;
+                        applyUnitData(defaultSpaceId);
+                    }
+                }
+            },
+            prepareFormOptions: {
+                createTitle: "Modify Renewal",
+                modifyTitle: "Modify Renewal",
+                targetProp: "contract_details",
+                api: {
+                    endpoint: [main_view.base_url, "/prm/contract/form-options"].join(""),
+                    params: (op) => ({ id: op.id }),
+                },
+            },
+            configSelect: [
+                {
+                    name: "code",
+                    data: "building_spaces",
+                    textField: "code",
+                    valueField: "id",
+                },
+            ],
+        });
+
+        Promise.all([
+            vsapi.call([main_view.base_url, "/prm/contract/form-options"].join(""), { id: op.id }, op.btn, null),
+            vsapi.call([main_view.base_url, "/prm/contract/list-renewals"].join(""), { contract_id: op.id, per_page: 1, current_page: 1 }, null, null),
+        ]).then(([formRes, renewalRes]) => {
+            if (formRes.status_code !== 200) {
+                cv_interact.error(formRes.error_message || "Failed to load renewal form.");
+                return;
+            }
+            const renewalRow = (renewalRes.status_code === 200 && renewalRes.data?.data?.[0]) ? renewalRes.data.data[0] : null;
+            if (!renewalRow) {
+                cv_interact.error("No renewal found for this contract.");
+                return;
+            }
+            dialog.show({
+                ...op,
+                contract_details: formRes.data?.contract_details ?? {},
+                building_spaces: formRes.data?.building_spaces ?? [],
+                space_types: formRes.data?.space_types ?? [],
+                renewal: renewalRow,
+            });
+        }).catch(() => {
+            cv_interact.error("Network error loading renewal.");
+        });
     };
 
     return self;
