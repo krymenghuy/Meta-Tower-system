@@ -125,7 +125,7 @@ return [
                 'js/components/umt/CreateBranchDialog.js',
                 'js/components/umt/CreateLoginDialog.js',
                 'js/components/umt/FindUserDialog.js',
-                //'js/components/umt/BranchManagementComponent.js',
+                // 'js/components/umt/BranchManagementComponent.js',
                 'js/components/umt/RoleManagementTool.js',
                 'js/components/prm/TenantComponent.js',
                 'js/components/prm/BuildingComponent.js',
