@@ -46,137 +46,133 @@ const PrintReceiptDialog = (() => {
         return { label: 'Partially Paid', color: '#D97706' };
     };
 
-const printViaIframe = (receiptEl) => {
-    const styleHTML = Array.from(document.querySelectorAll("style"))
-        .map(s => s.outerHTML).join("\n");
-    
-    const biLink = Array.from(document.querySelectorAll('link[href*="bootstrap-icons"]'))
-        .map(l => l.outerHTML).join("\n");
-
-    const fontLink = `
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">`;
-
-    const fullDoc = `<!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        ${fontLink}
-        ${biLink}
-        ${styleHTML}
+    const printViaIframe = (receiptEl) => {
+        const styleHTML = Array.from(document.querySelectorAll("style"))
+            .map(s => s.outerHTML).join("\n");
         
-        <style>
-            *, *::before, *::after {
-                box-sizing: border-box;
-                margin: 0;
-                padding: 0;
-            }
+        const biLink = Array.from(document.querySelectorAll('link[href*="bootstrap-icons"]'))
+            .map(l => l.outerHTML).join("\n");
 
-            body {
-                font-family: 'Inter', 'DM Sans', sans-serif;
-                background: #fff;
-                color: #111;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-                padding: 0;
-                margin: 0;
-            }
+        const fontLink = `
+            <link rel="preconnect" href="https://fonts.googleapis.com">
+            <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">`;
 
-            .pi-root {
-                max-width: 100%;
-                margin: 0 auto;
-            }
-
-            .pi-action-bar { 
-                display: none !important; 
-            }
-
-            /* Better Print Settings */
-            @page {
-                size: A4 portrait;           /* Changed to portrait - better for receipts */
-                margin: 8mm;
-            }
-
-            @media print {
-                body {
-                    background: #fff !important;
+        const fullDoc = `<!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            ${fontLink}
+            ${biLink}
+            ${styleHTML}
+            
+            <style>
+                *, *::before, *::after {
+                    box-sizing: border-box;
                     margin: 0;
                     padding: 0;
                 }
 
-                .pi-action-bar,
-                .pi-action-bar * {
-                    display: none !important;
+                body {
+                    font-family: 'Inter', 'DM Sans', sans-serif;
+                    background: #fff;
+                    color: #111;
+                    -webkit-print-color-adjust: exact;
+                    print-color-adjust: exact;
+                    padding: 0;
+                    margin: 0;
                 }
 
                 .pi-root {
-                    box-shadow: none !important;
+                    max-width: 100%;
+                    margin: 0 auto;
                 }
 
-                /* Improve font rendering on paper */
-                strong, b, .font-bold, [style*="font-weight:600"], 
-                [style*="font-weight:700"], [style*="font-weight:800"] {
-                    -webkit-print-color-adjust: exact !important;
-                    print-color-adjust: exact !important;
-                    font-weight: 700 !important;
+                .pi-action-bar { 
+                    display: none !important; 
                 }
 
-                table {
-                    break-inside: auto;
+                @page {
+                    size: A4 portrait;
+                    margin: 8mm;
                 }
 
-                tr {
-                    break-inside: avoid;
+                @media print {
+                    body {
+                        background: #fff !important;
+                        margin: 0;
+                        padding: 0;
+                    }
+
+                    .pi-action-bar,
+                    .pi-action-bar * {
+                        display: none !important;
+                    }
+
+                    .pi-root {
+                        box-shadow: none !important;
+                    }
+
+                    strong, b, .font-bold, [style*="font-weight:600"], 
+                    [style*="font-weight:700"], [style*="font-weight:800"] {
+                        -webkit-print-color-adjust: exact !important;
+                        print-color-adjust: exact !important;
+                        font-weight: 700 !important;
+                    }
+
+                    table {
+                        break-inside: auto;
+                    }
+
+                    tr {
+                        break-inside: avoid;
+                    }
                 }
-            }
-        </style>
-    </head>
-    <body>
-        ${receiptEl.outerHTML}
-    </body>
-    </html>`;
+            </style>
+        </head>
+        <body>
+            ${receiptEl.outerHTML}
+        </body>
+        </html>`;
 
-    // Create hidden iframe
-    const iframe = document.createElement("iframe");
-    iframe.style.cssText = `
-        position: fixed; 
-        top: 0; left: 0; 
-        width: 0; height: 0; 
-        border: none; 
-        opacity: 0; 
-        pointer-events: none; 
-        z-index: -9999;
-    `;
+        const iframe = document.createElement("iframe");
+        iframe.style.cssText = `
+            position: fixed; 
+            top: 0; left: 0; 
+            width: 0; height: 0; 
+            border: none; 
+            opacity: 0; 
+            pointer-events: none; 
+            z-index: -9999;
+        `;
 
-    document.body.appendChild(iframe);
+        document.body.appendChild(iframe);
 
-    const iDoc = iframe.contentWindow.document;
-    iDoc.open();
-    iDoc.write(fullDoc);
-    iDoc.close();
+        const iDoc = iframe.contentWindow.document;
+        iDoc.open();
+        iDoc.write(fullDoc);
+        iDoc.close();
 
-    iframe.onload = () => {
-        setTimeout(() => {
-            iframe.contentWindow.focus();
-            iframe.contentWindow.print();
-            
-            // Cleanup after printing
+        iframe.onload = () => {
             setTimeout(() => {
-                document.body.removeChild(iframe);
-            }, 1500);
-        }, 500);
+                iframe.contentWindow.focus();
+                iframe.contentWindow.print();
+                
+                setTimeout(() => {
+                    document.body.removeChild(iframe);
+                }, 1500);
+            }, 500);
+        };
     };
-};
 
     const buildReceiptHTML = (receipt, invoice = null) => {
+        // Safe structural merge of objects
         const data = { ...receipt, ...(invoice || {}) };
         const items = data.items || [];
         const breakdowns = data.breakdowns || [];
 
-        console.log(111222211111111111111111,invoice);
-        
-
+        // Safe evaluation of invoice type
+        const typeOfInvoice = parseInt(data.invoice_type || 1, 10);
 
         // Totals
         const subTotal      = parseFloat(data.amount || 0);
@@ -198,18 +194,18 @@ const printViaIframe = (receiptEl) => {
             const price = parseFloat(item.price || 0);
             const total = parseFloat(item.total || item.amount || (qty * price));
             const disc  = parseFloat(item.discount || 0);
-
             const tax   = parseFloat(item.tax_rate || 0);
+            
             return `
             <tr style="background:${i % 2 !== 0 ? '#F9FAFB' : '#FFFFFF'};">
                 <td style="padding:9px 12px;border:1px solid #D1D5DB;font-size:12px;color:#111;">${item.remarks || item.item_name || "—"}</td>
                 <td style="padding:9px 8px;border:1px solid #D1D5DB;text-align:center;font-size:12px;color:#111;">${qty}${item.unit_type ? ' ' + item.unit_type.trim() : ''}</td>
                 <td style="padding:9px 8px;border:1px solid #D1D5DB;text-align:center;font-size:11px;color:#374151;">${formatDate(item.start_date)}</td>
                 <td style="padding:9px 8px;border:1px solid #D1D5DB;text-align:center;font-size:11px;color:#374151;">${formatDate(item.end_date)}</td>
-                <td style="padding:9px 10px;border:1px solid #D1D5DB;border-left:none;text-align:right;font-size:12px;color:#111;">${fmt(price)}$</td>
-                <td style="padding:9px 10px;border:1px solid #D1D5DB;text-align:right;font-size:12px;color:#DC2626;">${disc > 0 ? `${(disc)}${(item.discount_type || '').toLowerCase() === 'percent' ? '%' : ''}` : '—'}</td>
-                <td style="padding:9px 10px;border:1px solid #D1D5DB;text-align:right;font-size:12px;color:#374151;">${tax > 0 ? `${(tax)}%` : "—"}</td>
-                <td style="padding:9px 10px;border:1px solid #D1D5DB;border-left:none;text-align:right;font-size:12px;font-weight:700;color:#1A3D91;">${fmt(total)}$</td>
+                <td style="padding:9px 10px;border:1px solid #D1D5DB;text-align:right;font-size:12px;color:#111;">${fmt(price)}$</td>
+                <td style="padding:9px 10px;border:1px solid #D1D5DB;text-align:right;font-size:12px;color:#DC2626;">${disc > 0 ? `${disc}${(item.discount_type || '').toLowerCase() === 'percent' ? '%' : ''}` : '—'}</td>
+                ${typeOfInvoice === 1 ? `<td style="padding:9px 10px;border:1px solid #D1D5DB;text-align:right;font-size:12px;color:#374151;">${tax > 0 ? `${tax}%` : "—"}</td>` : ''}
+                <td style="padding:9px 10px;border:1px solid #D1D5DB;text-align:right;font-size:12px;font-weight:700;color:#1A3D91;">${fmt(total)}$</td>
             </tr>`;
         }).join("");
 
@@ -219,7 +215,7 @@ const printViaIframe = (receiptEl) => {
                 let method = b.method || 'Cash';
                 let detail = '';
                 if (b.registered_bank_name || b.manual_bank_name) detail += `Bank (${b.registered_bank_name || b.manual_bank_name})`;
-                if (b.account_number || b.card_number) detail += ` By ( ${b.account_number || b.card_number} )`;
+                if (b.account_number || b.card_number) detail += ` By (${b.account_number || b.card_number})`;
                 if (b.card_type) detail += ` ${b.card_type}`;
                 return `
                 <tr>
@@ -232,6 +228,70 @@ const printViaIframe = (receiptEl) => {
             }).join('')
             : `<tr><td colspan="3" style="padding:6px 10px;font-size:12px;color:#6B7280;">Cash</td></tr>`;
 
+        // Generate customized header based on invoice type condition
+        let dynamicHeaderHTML = '';
+        if (typeOfInvoice === 1) {
+            // Type 1: Tax Invoice Layout
+            dynamicHeaderHTML = `
+            <div style="background:linear-gradient(135deg,#0F2060 0%,#1A3D91 55%,#2254C5 100%);padding:10px;display:flex;justify-content:space-between;align-items:flex-start;gap:20px;position:relative;overflow:hidden;">
+                <div style="position:absolute;right:-40px;top:-40px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,0.04);"></div>
+                <div style="position:absolute;right:60px;top:20px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,0.05);"></div>
+                <div style="display:flex;gap:18px;align-items:flex-start;position:relative;">
+                    <div style="width:70px;height:76px;background:rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;">
+                        <img src="../assets/images/meta/Meta_logo1.png" alt="Logo"
+                            style="width:60px;height:63px;object-fit:contain;"
+                            onerror="this.parentElement.innerHTML='<span style=&quot;font-size:22px;font-weight:900;color:#fff;font-family:Playfair Display,serif;&quot;>M</span>'">
+                    </div>
+                    <div>
+                        <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:#FFFFFF;letter-spacing:0.5px;line-height:1.1;">META HOLDING</div>
+                        <div style="margin-top:6px;display:flex;flex-direction:column;gap:3px;">
+                            <div style="font-size:11px;color:rgba(255,255,255,0.65);display:flex;align-items:center;gap:5px;"><i class="bi bi-envelope-fill" style="font-size:9px;"></i> metaholding@gmail.com</div>
+                            <div style="font-size:11px;color:rgba(255,255,255,0.65);display:flex;align-items:center;gap:5px;"><i class="bi bi-telephone-fill" style="font-size:9px;"></i> +855 12 345 678</div>
+                            <div style="font-size:11px;color:rgba(255,255,255,0.65);display:flex;align-items:center;gap:5px;"><i class="bi bi-geo-alt-fill" style="font-size:9px;"></i> #S8-0 2, Financial Street, Phum 7, Sangkat Veal Vong, Khan 7 Makara, Phnom Penh</div>
+                        </div>
+                    </div>
+                </div>
+                <div style="text-align:right;">
+                    <div style="font-family:'Playfair Display',serif;font-size:32px;font-weight:900;color:#FFFFFF;">RECEIPT</div>
+                    <div style="font-size:16px;font-weight:700;color:#FDE68A;">${receipt.code || "—"}</div>
+                </div>
+            </div>`;
+        } else if (typeOfInvoice === 2) {
+            // Type 2: No Tax Layout
+            dynamicHeaderHTML = `
+            <div style="padding:16px 20px;border-bottom:2px solid #E5E9F5;display:flex;justify-content:space-between;align-items:center;background:#fff;">
+                <div>
+                    <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:#1A3D91;letter-spacing:0.5px;line-height:1.1;">META HOLDING</div>
+                    <div style="margin-top:6px;display:flex;flex-direction:column;gap:3px;">
+                        <div style="font-size:11px;color:#4B5563;display:flex;align-items:center;gap:5px;"><i class="bi bi-envelope-fill" style="font-size:9px;"></i> metaholding@gmail.com</div>
+                        <div style="font-size:11px;color:#4B5563;display:flex;align-items:center;gap:5px;"><i class="bi bi-telephone-fill" style="font-size:9px;"></i> +855 12 345 678</div>
+                        <div style="font-size:11px;color:#4B5563;display:flex;align-items:center;gap:5px;"><i class="bi bi-geo-alt-fill" style="font-size:9px;"></i> #S8-0 2, Financial Street, Phum 7, Sangkat Veal Vong, Khan 7 Makara, Phnom Penh</div>
+                    </div>
+                </div>
+                <div style="text-align:right;">
+                    <div style="font-family:'Playfair Display',serif;font-size:32px;font-weight:900;color:#1A3D91;">RECEIPT</div>
+                    <div style="font-size:16px;font-weight:700;color:#111827;">${receipt.code || "—"}</div>
+                </div>
+            </div>`;
+        } else {
+            // Type 3: Commercial Invoice Layout
+            dynamicHeaderHTML = `
+            <div style="padding:16px 20px;border-bottom:2px solid #E5E9F5;display:flex;justify-content:space-between;align-items:center;background:#fff;">
+                <div>
+                    <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:#1A3D91;letter-spacing:0.5px;line-height:1.1;">META HOLDING</div>
+                    <div style="margin-top:6px;display:flex;flex-direction:column;gap:3px;">
+                        <div style="font-size:11px;color:#4B5563;display:flex;align-items:center;gap:5px;"><i class="bi bi-envelope-fill" style="font-size:9px;"></i> metaholding@gmail.com</div>
+                        <div style="font-size:11px;color:#4B5563;display:flex;align-items:center;gap:5px;"><i class="bi bi-telephone-fill" style="font-size:9px;"></i> +855 12 345 678</div>
+                        <div style="font-size:11px;color:#4B5563;display:flex;align-items:center;gap:5px;"><i class="bi bi-geo-alt-fill" style="font-size:9px;"></i> #S8-0 2, Financial Street, Phum 7, Sangkat Veal Vong, Khan 7 Makara, Phnom Penh</div>
+                    </div>
+                </div>
+                <div style="text-align:right;">
+                    <div style="font-family:'Playfair Display',serif;font-size:32px;font-weight:900;color:#1A3D91;">RECEIPT</div>
+                    <div style="font-size:16px;font-weight:700;color:#111827;">${receipt.code || "—"}</div>
+                </div>
+            </div>`;
+        }
+
         return `
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap');
@@ -241,39 +301,12 @@ const printViaIframe = (receiptEl) => {
         padding: 9px 10px; font-size: 10px; font-weight: 700; letter-spacing: 0.5px;
         text-transform: uppercase; background:#F3F4F6; border:1px solid #D1D5DB; color:#374151;
     }
-    @keyframes pi-spin { to { transform:rotate(360deg) } }
 </style>
 
 <div class="pi-root" id="pi-receipt-content">
 
-    
+    ${dynamicHeaderHTML}
 
-    <!-- ═══ HEADER (kept as-is) ═══ -->
-    <div style="background:linear-gradient(135deg,#0F2060 0%,#1A3D91 55%,#2254C5 100%);padding:10px;display:flex;justify-content:space-between;align-items:flex-start;gap:20px;position:relative;overflow:hidden;">
-        <div style="position:absolute;right:-40px;top:-40px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,0.04);"></div>
-        <div style="position:absolute;right:60px;top:20px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,0.05);"></div>
-        <div style="display:flex;gap:18px;align-items:flex-start;position:relative;">
-            <div style="width:70px;height:76px;background:rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;">
-                <img src="../assets/images/meta/Meta_logo1.png" alt="Logo"
-                    style="width:60px;height:63px;object-fit:contain;"
-                    onerror="this.parentElement.innerHTML='<span style=&quot;font-size:22px;font-weight:900;color:#fff;font-family:Playfair Display,serif;&quot;>M</span>'">
-            </div>
-            <div>
-                <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:#FFFFFF;letter-spacing:0.5px;line-height:1.1;">META HOLDING</div>
-                <div style="margin-top:6px;display:flex;flex-direction:column;gap:3px;">
-                    <div style="font-size:11px;color:rgba(255,255,255,0.65);display:flex;align-items:center;gap:5px;"><i class="bi bi-envelope-fill" style="font-size:9px;"></i> metaholding@gmail.com</div>
-                    <div style="font-size:11px;color:rgba(255,255,255,0.65);display:flex;align-items:center;gap:5px;"><i class="bi bi-telephone-fill" style="font-size:9px;"></i> +855 12 345 678</div>
-                    <div style="font-size:11px;color:rgba(255,255,255,0.65);display:flex;align-items:center;gap:5px;"><i class="bi bi-geo-alt-fill" style="font-size:9px;"></i> #S8-0 2, Financial Street, Phum 7, Sangkat Veal Vong, Khan 7 Makara, Phnom Penh</div>
-                </div>
-            </div>
-        </div>
-        <div style="text-align:right;">
-            <div style="font-family:'Playfair Display',serif;font-size:32px;font-weight:900;color:#FFFFFF;">RECEIPT</div>
-            <div style="font-size:16px;font-weight:700;color:#FDE68A;">${data.code || "—"}</div>
-        </div>
-    </div>
-
-    <!-- ═══ META BAR (kept as-is) ═══ -->
     <div style="display:flex;justify-content:space-between;align-items:stretch;gap:0;flex-wrap:wrap;border-bottom:2px solid #E5E7EB;">
         <div style="padding:14px 20px;flex:1;min-width:200px;">
             <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#9CA3AF;margin-bottom:5px;">Received From</div>
@@ -286,7 +319,6 @@ const printViaIframe = (receiptEl) => {
         </div>
     </div>
 
-    <!-- ═══ ITEMS TABLE (formal bordered) ═══ -->
     <div style="overflow-x:auto;">
         <table class="pi-doc-table">
             <thead>
@@ -297,25 +329,22 @@ const printViaIframe = (receiptEl) => {
                     <th style="text-align:center;width:100px;">End Date</th>
                     <th style="text-align:center;width:100px;">Price</th>
                     <th style="text-align:right;width:40px;">Discount</th>
-                    <th style="text-align:right;width:40px;">Tax</th>
+                    ${typeOfInvoice === 1 ? `<th style="text-align:right;width:40px;">Tax</th>` : ''}
                     <th style="text-align:right;width:90px;">Total</th>
                 </tr>
             </thead>
             <tbody>
-                ${itemRows || `<tr><td colspan="10" style="padding:50px;text-align:center;color:#9CA3AF;font-size:13px;border:1px solid #D1D5DB;">No items found</td></tr>`}
+                ${itemRows || `<tr><td colspan="${typeOfInvoice === 1 ? 8 : 7}" style="padding:50px;text-align:center;color:#9CA3AF;font-size:13px;border:1px solid #D1D5DB;">No items found</td></tr>`}
             </tbody>
         </table>
     </div>
 
-    <!-- ═══ PAYMENT + SUMMARY (side by side, reference style) ═══ -->
     <div style="display:flex;align-items:flex-start;border-top:1px solid #D1D5DB;position:relative;min-height:120px;">
 
-        <!-- Diagonal watermark stamp -->
         <div style="position:absolute;left:35%;top:50%;transform:translate(-50%,-50%) rotate(-25deg);font-size:26px;font-weight:900;color:${status.color};opacity:0.15;letter-spacing:2px;white-space:nowrap;pointer-events:none;text-transform:uppercase;font-family:'Playfair Display',serif;z-index:0;text-align:center;line-height:1.3;">
             ${status.label}<br><span style="font-size:15px;">${today}</span>
         </div>
 
-        <!-- LEFT: Method of Payment -->
         <div style="flex:1;padding:14px 20px; position:relative;z-index:1;min-width:220px;">
             <div style="font-size:11px;font-weight:700;color:#374151;margin-bottom:10px;text-decoration:underline;text-underline-offset:3px;">* Method of Payment</div>
             <table style="border-collapse:collapse;">
@@ -323,12 +352,8 @@ const printViaIframe = (receiptEl) => {
             </table>
         </div>
 
-        <!-- RIGHT: Card summary + Khmer formal table -->
-        <div style="min-width:336px;position:relative;z-index:1; border:1px solid #D1D5DB;">
-
-            <!-- Card-style summary rows -->
-            <div style="border:1px solid #E5E9F5;border-radius:0;overflow:hidden;border-left:none;border-right:none;">
-
+        <div style="min-width:336px;position:relative;z-index:1; border:1px solid #D1D5DB;border-top:none;border-bottom:none;">
+            <div style="overflow:hidden;">
                 <div style="display:flex;justify-content:space-between;padding:10px 16px;border-bottom:1px solid #EEF0F5;">
                     <span style="font-size:12px;color:#6B7280;">Sub Total</span>
                     <span style="font-size:12px;font-weight:600;color:#111827;">${currency}${fmt(subTotal)}</span>
@@ -358,26 +383,21 @@ const printViaIframe = (receiptEl) => {
                     <span style="font-size:12px;font-weight:500;color:rgba(255,255,255,0.8);">Balance</span>
                     <span style="font-size:16px;font-weight:700;color:#FDE68A;">${currency}${fmt(balance)}</span>
                 </div>
-
             </div>
-
-            
         </div>
     </div>
 
-    <!-- ═══ AMOUNT IN WORDS + REMARKS ═══ -->
     <div style="padding:12px 20px;border-top:1px solid #E5E7EB;background:#FAFAFA;">
         <div style="font-size:12px;color:#374151;">
             <span style="font-weight:700;">Amount In Words:</span>
             <span style="margin-left:8px;">${numberToWords(paymentAmount)}</span>
         </div>
-        <div style="font-size:12px;color:#374151;margin-top:10px;display:flex;align-items:baseline;gap:6px; ">
+        <div style="font-size:12px;color:#374151;margin-top:10px;display:flex;align-items:baseline;gap:6px;">
             <span style="font-weight:700;white-space:nowrap;">*Remarks:</span>
             <span style="flex:1;padding-bottom:2px;">&nbsp;${data.remarks || ''}</span>
         </div>
     </div>
 
-    <!-- ═══ SIGNATURE LINES ═══ -->
     <div style="display:flex;justify-content:space-between;margin-top:10px; padding:24px 60px 16px;gap:60px; border:1px solid #9CA3AF">
         <div style="flex:1;text-align:center;">
             <div style="font-size:12px;color:#374151;margin-bottom:2px;">ហត្ថលេខា និងឈ្មោះអតិថិជន</div>
@@ -391,7 +411,6 @@ const printViaIframe = (receiptEl) => {
         </div>
     </div>
 
-    <!-- ═══ FOOTER (kept as-is) ═══ -->
     <div style="display:flex;justify-content:space-between;align-items:flex-end;padding:12px 20px;background:#F8FAFF;border-top:1px solid #E5E9F5;flex-wrap:wrap;gap:12px;">
         <div>
             <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#1A3D91;">Thank You</div>
@@ -403,7 +422,6 @@ const printViaIframe = (receiptEl) => {
         </div>
     </div>
 
-    <!-- ACTION BAR -->
     <div class="pi-action-bar" style="display:flex;justify-content:flex-end;gap:10px;padding:14px 20px;border-top:1px solid #E5E9F5;background:#fff;">
         <button id="pi-print-btn" style="padding:9px 22px;border-radius:8px;border:1.5px solid #1A3D91;background:#fff;color:#1A3D91;font-weight:600;cursor:pointer;">
             <i class="bi bi-printer-fill"></i> Print Receipt
@@ -421,12 +439,16 @@ const printViaIframe = (receiptEl) => {
 
     self.show = (op) => {
         if (!op || !op.receipt_id) {
-            cv_interact?.error("Receipt ID is missing");
+            if (typeof cv_interact !== 'undefined' && cv_interact.error) {
+                cv_interact.error("Receipt ID is missing");
+            } else {
+                console.error("Receipt ID is missing");
+            }
             return;
         }
 
         const dlg = new GeneralDialog({
-            title: "Print Recipt",
+            title: "Print Receipt",
             cssClass: "modal-xl vs-modal",
             backdrop: "static",
             keyboard: true,
@@ -448,7 +470,6 @@ const printViaIframe = (receiptEl) => {
                             return;
                         }
                         const receiptData = res.data || {};
-                        console.log("receiptData", receiptData);
                         const invoiceId = receiptData.invoice_id || op.invoice_id;
 
                         if (invoiceId) {
