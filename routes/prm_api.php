@@ -32,6 +32,8 @@ use App\Http\Controllers\Prm\ReportController;
 use App\Http\Controllers\tenant\AccountStaffController;
 use App\Http\Controllers\tenant\ZoneController;
 use App\Http\Controllers\tenant\ContractsController;
+use App\Http\Controllers\tenant\ReservationsController;
+use App\Http\Controllers\tenant\TenantProfileController;
 
 
 
@@ -229,7 +231,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('expense')->gr
 });
 
 
-Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('contracts')->group(function () {
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant/contracts')->group(function () {
     Route::post('/save', [ContractsController::class, 'saveContracts']);
     Route::post('/list-paginate', [ContractsController::class, 'getListContracts']);
     Route::post('/details', [ContractsController::class, 'contractsDetails']);

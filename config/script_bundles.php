@@ -165,7 +165,7 @@ return [
                 'https://cdn.vectoraclouds.com/frontcore/components/InputBox.v2.js',
                 'https://cdn.jsdelivr.net/gh/tomik23/circular-progress-bar@latest/docs/circularProgressBar.min.js',
                 'https://cdn.vectoraclouds.com/frontcore/vsroute/vsroute.js',
-                '/js/layout/prm/main.js',
+                '/js/layout/tenant/main.js',
                 '/assets/js/SearchWidget.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/ImageHelper.js',
                 //'/assets/js/ImageHelper.js',
@@ -180,11 +180,13 @@ return [
                 '/js/components/common/FindPersonDialog.js',
                 '/js/components/common/pusher_client.js',
                 '/js/components/tenant/DashboardComponent.js',
-                '/js/components/tenant/AccountStaffComponent.js',
+                '/js/components/tenant/TenantProfileComponent.js',
                 '/js/components/tenant/ContractsComponent.js',
                 '/js/components/tenant/InvoicesComponent.js',
                 '/js/components/tenant/BuildingServiceComponent.js',
                 '/js/components/tenant/AnnouncementComponent.js',
+                '/js/components/tenant/ReservationComponent.js',
+                '/js/components/tenant/TenantProfileComponent.js',
 
 
             ]

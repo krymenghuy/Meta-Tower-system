@@ -149,10 +149,12 @@ class StyleProvider
                 'assets/css/font-awesome/6.2.0/css/all.min.css',
                 'assets/css/demo1/style.bundle.css',
                 // 'assets/dist/css/adminlte.min.css',
-                
                 'assets/css/choices.min.css',
-                //'assets/css/choices_style.css',
-                
+            
+                 'assets/css/vs_select.base.css', 
+                 'assets/css/vs_select.material.css', 
+                   'assets/css/vs_input.material.css', 
+
                 'assets/css/dialog_style.css',
                 //'assets/css/vsa_dropdown_button.css',
                 //'assets/css/vs-dropdown-menu.css',
@@ -164,7 +166,13 @@ class StyleProvider
                 'https://cdn.vectoraclouds.com/frontcore/components/listview/vs_listview_table.css',
                 'assets/css/sweetalert2.min.css',
                 'assets/plugins/chart.js/Chart.css',
-                'assets/css/tenant_style.css', /** Must be placed below all.min.css **/
+                'assets/css/prm_style.css', /** Must be placed below all.min.css **/
+                'assets/css/vs_search_input.css',
+                'https://cdn.vectoraclouds.com/frontcore/components/SearchInput/vs_search_input_example.css',
+                'assets/css/expandable-row.theme.css',
+
+                'https://cdn.vectoraclouds.com/frontcore/components/items_view/v2/style/items_view.css',
+                'assets/css/items_view.theme.css',
             ]
             ],
         
