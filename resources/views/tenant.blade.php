@@ -7,7 +7,7 @@
     <base href="../">
     <meta charset="utf-8" />
     <title>Meta Client</title>
-    <link type="images/png" rel="icon" href="{{ asset('assets/images/yavpheng/CYPA_logo.png') }}" />
+    <link type="images/png" rel="icon" href="{{ asset('assets/images/meta/Meta_logo1.png') }}" />
     <meta name="description" content="Updates and statistics">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="csrf-token" content="{{ csrf_token() }}" />
@@ -107,7 +107,7 @@
 </head>
 
 <body style="display:none"
-    class="kt-quick-panel--right kt-demo-panel--right kt-offcanvas-panel--right kt-header--fixed kt-header-mobile--fixed kt-subheader--enabled kt-subheader--fixed kt-subheader--solid kt-aside--enabled kt-aside--fixed">
+    class="kt-demo-panel--right kt-offcanvas-panel--right kt-quick-panel--right kt-aside--fixed kt-header--fixed kt-header-mobile--fixed kt-subheader--fixed kt-subheader--enabled kt-subheader--solid kt-aside--enabled">
     <div id="vs_loading" class="vs-loader-bar"></div>
     <?php
     ScriptManager::render('primary-loader', 1);
@@ -117,61 +117,61 @@
         <input type="hidden" id="__xsp_name" value="_csrf_115578" />
         <input type="hidden" id="__xsp_value" value="<?php echo Str::random(30); ?>" />
     </div>
-    <div id="kt_header_mobile" class="kt-header-mobile kt-header-mobile--fixed">
+    <div id="kt_header_mobile" class="kt-header-mobile--fixed kt-header-mobile">
         <div class="kt-header-mobile__logo">
             <a href="javascript:void(0)">
                 <img alt="Logo" src="{{ asset('assets/images/meta/Meta_logo.png') }}" />
             </a>
         </div>
         <div class="kt-header-mobile__toolbar" style="margin-bottom:10px">
-            <button class="kt-header-mobile__toggler kt-header-mobile__toggler--left" id="kt_aside_mobile_toggler">
+            <button class="kt-header-mobile__toggler--left kt-header-mobile__toggler" id="kt_aside_mobile_toggler">
                 <span class="text-primary"></span>
             </button>
             <button class="kt-header-mobile__topbar-toggler" id="kt_header_mobile_topbar_toggler">
                 <i class="flaticon-more"></i>
             </button>
-            <div class="d-flex flex-row justify-content-center w-100 shadow rounded-5 mb-2 mt-1">
-                <h4 id="mobile_screen_title" class=" mobile-screen-title p-1"></h4>
+            <div class="d-flex flex-row justify-content-center shadow mt-1 mb-2 rounded-5 w-100">
+                <h4 id="mobile_screen_title" class="p-1 mobile-screen-title"></h4>
             </div>
         </div>
     </div>
     <div class="kt-grid kt-grid--hor kt-grid--root">
-        <div class="kt-grid__item kt-grid__item--fluid kt-grid kt-grid--ver kt-page">
-            <div class="kt-aside kt-aside--fixed kt-grid__item kt-grid kt-grid--desktop kt-grid--hor-desktop"
+        <div class="kt-grid kt-grid--ver kt-grid__item kt-grid__item--fluid kt-page">
+            <div class="kt-aside--fixed kt-grid kt-grid--desktop kt-grid--hor-desktop kt-aside kt-grid__item"
                 id="kt_aside">
                 @include('menus.tenant_menu')
             </div>
-            <div class="kt-grid__item kt-grid__item--fluid kt-grid kt-grid--hor kt-wrapper" id="kt_wrapper">
-                <div id="kt_header" class="kt-header kt-grid__item kt-header--fixed">
+            <div class="kt-grid kt-grid--hor kt-grid__item kt-grid__item--fluid kt-wrapper" id="kt_wrapper">
+                <div id="kt_header" class="kt-header--fixed kt-header kt-grid__item">
                     <div class="animation-line line--loader" style="display:none" id="vs_loader"></div>
                     <div class="kt-header-menu-wrapper" id="kt_header_menu_wrapper">
-                        <div class="d-flex flex-row flex-wrap shadow justify-content-between" style="background-color:#e7e7e7;">
+                        <div class="d-flex flex-row flex-wrap justify-content-between shadow" style="background-color:#e7e7e7;">
                            <div id="_main_top_right_menus" class="mainview-top-right">
-                                <div class="show--title mx-4 d-flex flex-grow-1">
+                                <div class="d-flex flex-grow-1 mx-4 show--title">
                                   <div class="screen-info" id="kt_header_menu_wrapper">
-                                            <span class="screen-title mb-0 text-nowrap" vslang="titles.dashboard" style="text-transform:uppercase;" id="screen_title"></span>
+                                            <span class="mb-0 text-nowrap screen-title" vslang="titles.dashboard" style="text-transform:uppercase;" id="screen_title"></span>
                                         </div>
-                                        <div class="d-flex align-item-center justify-content-end w-100">
+                                        <div class="d-flex justify-content-end w-100 align-item-center">
                                             <div class="rounded-circle">
                                                 <a href="javascript:void(0)" id="_db_filter_data" class="btn-filter-summery-db mt-1">
-                                                    <!-- <i class="fa-solid fa-filter fs-5 text-white"></i> -->
+                                                    <!-- <i class="text-white fa-solid fa-filter fs-5"></i> -->
                                                      <!-- <img class="me-2 svg-white" style="height:20px;" src="{{ asset('assets/images/icons/filter-circle.svg') }}" /> -->
                                                 </a>
                                             </div>
                                         </div>
                                 </div>
-                                <div id="_main_top_right_menus" class="d-flex flex-row gap-2 w-50 flex-wrap px-3 justify-content-end align-items-center">
+                                <div id="_main_top_right_menus" class="d-flex flex-row flex-wrap align-items-center justify-content-end gap-2 px-3 w-50">
                                     <div class="dropdown choose--language">
                                             <button id="_main_btn_lang" class="btn-dropdown main-menu-button align--language" data-menu="lang">
                                                 <img src="{{ asset('assets/images/icons/khmer.png') }}" style="border-radius: 50%;height:25px;" />
-                                                <span id="_main_lang_name" class="mx-2                        ">
+                                                <span id="_main_lang_name" class="mx-2">
                                                     <?php
                                                         echo Session::get('lang_name', 'Khmer');
                                                     ?>
                                                 </span>
-                                                <i class="fa-solid fa-caret-down ps-2 fs-5"></i>
+                                                <i class="ps-2 fa-caret-down fa-solid fs-5"></i>
                                             </button>
-                                            <div class="dropdown-menu dropdown-menu-right">
+                                            <div class="dropdown-menu-right dropdown-menu">
                                                 <span class="lang-menu-header"></span>
                                                 <div class="main-lang-menus">
                                                     <span class="lang-menu-item">
@@ -192,12 +192,12 @@
                                     <div class="dropdown nav--notification">
                                         <button id="_main_btn_notif" class="btn-dropdown main-menu-button"
                                             data-menu="notif">
-                                            <i class="fa-solid fa-bell ms-2 fs-4" style="color:#080809;"></i>
+                                            <i class="ms-2 fa-solid fa-bell fs-4" style="color:#080809;"></i>
                                             <span class="number--notification notif-count"
                                                 id="_main_notif_count">0</span>
                                         </button>
                                         <div
-                                            class="dropdown-menu dropdown-menu-right rounded-2 shadow-lg notification-dropdown">
+                                            class="dropdown-menu-right shadow-lg rounded-2 dropdown-menu notification-dropdown">
                                             <div class="con--header">
                                                 <span class="notif-header">Notification</span>
                                             </div>
@@ -206,7 +206,7 @@
                                     </div>
 
                                     <div class="dropdown app--list">
-                                        <button class="btn-dropdown main-menu-button " data-menu="app"> <i class="fa-brands fa-microsoft ms-2 fs-4" style="color:#080809;"></i> </button>
+                                        <button class="btn-dropdown main-menu-button" data-menu="app"> <i class="ms-2 fa-brands fa-microsoft fs-4" style="color:#080809;"></i> </button>
 
                                         <?php
                                             $user = XAuthService::user();
@@ -214,16 +214,16 @@
                                             $apps = collect($user->apps)->filter(fn($a) => !$a->is_mobile_app);
                                         ?>
 
-                                        <div class="dropdown-menu dropdown-menu-end bg-white shadow-lg p-3 rounded-2"
+                                        <div class="bg-white shadow-lg p-3 rounded-2 dropdown-menu dropdown-menu-end"
                                             style="min-width:320px; max-width:380px;left:-150px;top:60px;">
-                                            <div class="row row-cols-3 g-3 text-center">
+                                            <div class="text-center row row-cols-3 g-3">
                                                 <?php foreach ($apps as $app): ?>
                                                     <?php
                                                         $icon = empty($app->icon_file_name)
-                                                            ? '<div class="d-flex align-items-center justify-content-center bg-light rounded-circle mx-auto" style="width:56px; height:56px;">
-                                                                <i class="fa-solid fa-layer-group fs-3 text-primary-custom"></i>
+                                                            ? '<div class="d-flex align-items-center justify-content-center bg-light mx-auto rounded-circle" style="width:56px; height:56px;">
+                                                                <i class="fa-layer-group text-primary-custom fa-solid fs-3"></i>
                                                             </div>'
-                                                            : '<div class="d-flex align-items-center justify-content-center bg-light rounded-circle mx-auto overflow-hidden" style="width:56px; height:56px;">
+                                                            : '<div class="d-flex align-items-center justify-content-center bg-light mx-auto rounded-circle overflow-hidden" style="width:56px; height:56px;">
                                                                 <img src="'.$app->icon_file_name.'"  alt="'.($app->name ?? $app->app_name).'" style="width:100%; height:100%; object-fit:cover;">
                                                             </div>';
                                                         $name  = $app->name ?? $app->app_name;
@@ -231,7 +231,7 @@
                                                     ?>
                                                     <div class="col">
                                                         <a href="<?= $route ?>"
-                                                        class="app-link d-block text-decoration-none text-dark small"
+                                                        class="d-block text-dark text-decoration-none app-link small"
                                                         data-app-key="<?= htmlspecialchars($name) ?>">
                                                             <?= $icon ?>
                                                             <div class="mt-2 text-truncate"><?= $name ?></div>
@@ -279,14 +279,14 @@
                                                 </span>
                                         </button>
 
-                                        <div class="dropdown-menu dropdown-menu-left bg-white rounded-2 shadow-lg"
+                                        <div class="dropdown-menu-left bg-white shadow-lg rounded-2 dropdown-menu"
                                             style="width:250px;position:absolute;left:-150px;top:60px;">
                                             <span class="user-menu-header"></span>
                                             <div class="main-user-menus">
                                                 <span class="user-menu-item">
                                                     <a id="_main_mnu_about" class="dropdown-item"
                                                         href="javascript:void(0)">
-                                                        <i class="fas fa-cog m-2"></i>
+                                                        <i class="m-2 fas fa-cog"></i>
                                                         About Meta Client
                                                     </a>
                                                 </span>
@@ -294,7 +294,7 @@
                                                 <span class="user-menu-item">
                                                     <a id="_main_mnu_logout" class="dropdown-item"
                                                         href="javascript:void(0)">
-                                                        <i class="fas fa-sign-out-alt m-2"></i>
+                                                        <i class="m-2 fas fa-sign-out-alt"></i>
                                                         Log out
                                                     </a>
                                                 </span>
@@ -310,11 +310,13 @@
                     <div id="" class="h-100">
                         <div class="pb-2" id="_app_content">
                             @include('layouts.tenant.dashboardComponent')
-                            @include('layouts.tenant.accountStaffComponent')
+                            {{-- @include('layouts.tenant.accountStaffComponent') --}}
                             @include('layouts.tenant.contractsComponent')
                             @include('layouts.tenant.invoicesComponent')
                             @include('layouts.tenant.buildingServiceComponent')
                             @include('layouts.tenant.announcementComponent')
+                            @include('layouts.tenant.reservationComponent')
+                            @include('layouts.tenant.tenantProfileComponent')
 
 
 

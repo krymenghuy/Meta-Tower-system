@@ -67,7 +67,6 @@ var PurchaseOrdersComponent = (() => {
             className: "align-middle text-nowrap text-center",
             data: (data) => {
                 const status = (data.status ?? '').toLowerCase();
-                console.log(3333,status);
                 
                 let cls = 'badge text-dark bg-warning-subtle border border-warning';
                 if (status === 'pending') cls = 'badge text-warning bg-warning-subtle border border-warning';
@@ -302,7 +301,6 @@ var PurchaseOrdersComponent = (() => {
                 else
                 {
                     op.remarks = value;
-                    console.log(44,op);
 
                     vsapi.call(`${main_view.base_url}/prm/purchase/order/reject`,op,null).then((res) => {
                         if(res.status_code === 200)
@@ -515,7 +513,6 @@ var PurchaseOrdersComponent = (() => {
                     addLineButtonText: 'Add Item',
                     
                     onItemChange: async (iMe,ctx) => {
-                        console.log(23,ctx);
                         const item = ctx.item;
                         const tr = ctx.tr;
                         const itemId = item.item_id || item.id;
@@ -527,7 +524,6 @@ var PurchaseOrdersComponent = (() => {
                         );
 
                         const d = res.data ?? {};
-                        console.log(123,d);
                         me.purchaseItemsView.setCellValue(tr, 'unit', d.unit || '');
 
                         
@@ -537,12 +533,10 @@ var PurchaseOrdersComponent = (() => {
                 
 
                 me.saveData = (onFinish) => {
-                    console.log(3333, me);
                     
                     let p = me.getData();
                     let items = me.purchaseItemsView.getItems();
                     let totals = me.purchaseItemsView.getCurrentTotals?.() || {};
-                    console.log(8888,p);
                     // let items = po_data.items || [];
                     if (!me.hasValidPOItems(items)) {
                         return cv_interact.error('Please select at least one item before saving the purchase order.');
@@ -550,7 +544,6 @@ var PurchaseOrdersComponent = (() => {
                     p.items = items;
                     p.totals = totals;
                     p.id = me.dataOptions.id;
-                    console.log(455,p);
                     
                     vsapi.call(`${main_view.base_url}/prm/purchase/order/save`, p, false)
                         .then(onFinish);
@@ -642,11 +635,9 @@ var PurchaseOrdersComponent = (() => {
                 // const formattedDate = `${dd}-${mm}-${yyyy}`;
 
                 // me.controls.po_date.value = formattedDate;
-                console.log(4,me.dataOptions.id);
                 
                 if (me.dataOptions.id) {
                     const po = data.po_detail || {};
-                    console.log(14,po);
                     me.controls.vendor.value = po.name || po.vendor_name || '';
                     if (po.vendor_id) {
                         me._selectedVendorId = po.vendor_id;
@@ -828,7 +819,6 @@ var PurchaseOrdersComponent = (() => {
                     let items = me.purchaseItemsView.getItems();
                     // let totals = me.purchaseItemsView.getCurrentTotals?.() || {};
                     p.items = items;
-                    console.log(2222,p.items);
                     p.id = me.dataOptions.id;
                     vsapi.call(`${main_view.base_url}/prm/purchase/order/receive`, p, false)
                         .then(onFinish);
@@ -857,7 +847,6 @@ var PurchaseOrdersComponent = (() => {
                     cssClass: "btn btn-primary",
                     click: (me) => {
                         me.saveData(res => {
-                            console.log(6666,res);
                             if (res.status_code == 200) {
                                 cv_interact.success("purchase order Received.");
                                 me.hide(true);
@@ -871,7 +860,6 @@ var PurchaseOrdersComponent = (() => {
             ],
    
             onPrepareForm: (me, data) => {
-                console.log(4444,data);
                 
                 const isReadOnly = me.dataOptions.id > 0;
                 me.setReadOnly(isReadOnly,['po_date','building_id']);
@@ -892,7 +880,6 @@ var PurchaseOrdersComponent = (() => {
                 if (me.dataOptions.id) {
                     const po = data.po_detail || {};
 
-                    console.log(14,po);
                     me.controls.vendor.value = po.name || po.vendor_name || '';
                     
                     if (po.vendor_id) {
@@ -969,7 +956,6 @@ var PurchaseOrdersComponent = (() => {
 
                 let tBody = '';
                 const items = res.data || [];
-                console.log(9090,items);
                 
                 if (items.length > 0) {
                     items.forEach((item,index) => {
