@@ -275,6 +275,17 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('reservation')
     Route::post('/cancel', [ReservationController::class, 'cancelReservation']);
 });
 
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant/reservations')->group(function () {
+    Route::post('/save', [ReservationsController::class, 'saveReservation']);
+    Route::post('/list-paginate', [ReservationsController::class, 'getListPaginate']);
+    Route::post('/details', [ReservationsController::class, 'reservationDetails']);
+    Route::post('/form-options', [ReservationsController::class, 'getFormOptions']);
+    Route::post('/delete', [ReservationsController::class, 'deleteReservation']);
+    Route::post('/update-status', [ReservationsController::class, 'updateReservationStatus']);
+    Route::post('/get-amenity-info', [ReservationsController::class, 'getAmenityInfo']);
+    Route::post('/cancel', [ReservationsController::class, 'cancelReservation']);
+});
+
 Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('purchase/order')->group(function(){
     Route::post('/save', [PurchaseOrderController::class, 'savePurchaseOrder']);
     Route::post('/authorized',[PurchaseOrderController::class,'authorized']);

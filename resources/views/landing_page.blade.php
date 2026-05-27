@@ -22,7 +22,7 @@
         href="{{ asset('assets/images/meta/Meta_logo.png') }}"
     />
 
-    <?php StyleManager::render('prm-landing-styles', 1); ?>
+    <?php StyleManager::render('prm-landing-styles', 1,2); ?>
 </head>
 
 <body class="landing-body">
@@ -127,7 +127,7 @@
 
     </main>
 
-    <?php ScriptManager::render('landing-script', 1); ?>
+    <?php ScriptManager::render('landing-script', 1,2); ?>
 
     <script>
         (() => {

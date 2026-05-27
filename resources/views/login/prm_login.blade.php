@@ -22,7 +22,7 @@
         href="{{ asset('assets/images/meta/Meta_logo1.png') }}"
     />
 
-    <?php StyleManager::render('login-styles', 1); ?>
+    <?php StyleManager::render('login-styles', 1,2); ?>
 
     <link
         rel="stylesheet"
@@ -170,7 +170,7 @@
 
     </main>
 
-    <?php ScriptManager::render('login-script', 1); ?>
+    <?php ScriptManager::render('login-script', 1,2); ?>
 
     <script>
         (() => {

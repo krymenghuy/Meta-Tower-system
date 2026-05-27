@@ -3,7 +3,7 @@
 var TenantProfileComponent = new (function () {
     const mThis = this;
     mThis.title_prop = "Tenant Management";
-    this.defaultPage = "tenant_list";
+    this.defaultPage = "profile_view";
     mThis.self = main_view.VSAppContent.querySelector(
         "#_main_tenant_component",
     );
@@ -761,11 +761,28 @@ var TenantProfileComponent = new (function () {
                     false,
                     null,
                 );
+                // const data = res.data || {};
+                // mThis.renderProfile(data);
+                // break;
+            }
+            case "profile_view": {
+                mThis.currentPage = "profile_view";
+                const tenant_id = op.tenant_id || op.id || op;
+                const p = { id: tenant_id };
+                const res = await vsapi.call(
+                    [main_view.base_url, "/prm/tenant/details"].join(""),
+                    p,
+                    false,
+                    null,
+                );
                 const data = res.data || {};
                 mThis.renderProfile(data);
                 break;
             }
+
+
             default: {
+                
                 return;
             }
         }
