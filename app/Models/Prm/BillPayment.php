@@ -382,7 +382,7 @@ class BillPayment
                 SEPARATOR ', '
             ) AS payment_method
         ")
-        ->groupBy('bp.id')
+        ->groupBy('bp.bill_id')
         ->orderBy('bp.id', 'desc');
 
 
