@@ -22,7 +22,7 @@ class Receipt extends Model
     }
 
 
- public function getListPaginate($arr = [], $ss = null, $id = null)
+public function getListPaginate($arr = [], $ss = null, $id = null)
 {
     $d = (object)$arr;
 
