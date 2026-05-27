@@ -89,7 +89,7 @@ body {
     height: 48px;
     border: 0;
     border-bottom: 2px solid #cfcfd6;
-    padding: 14px 10px 7px 38px;
+    padding: 14px 10px 7px 48px;
     box-sizing: border-box;
     font-size: 15px;
     background: rgba(255,255,255,0.68);
@@ -120,12 +120,12 @@ body {
         color 0.18s ease;
 }
 
-.form-group input:focus ~ label,
+/* .form-group input:focus ~ label,
 .form-group input:not(:placeholder-shown) ~ label {
     transform: translateY(-20px) scale(0.86);
     opacity: 0.75;
     color: #1a1647;
-}
+} */
 
 .error_text {
     display: block;
