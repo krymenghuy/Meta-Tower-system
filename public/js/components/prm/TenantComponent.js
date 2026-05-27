@@ -56,8 +56,8 @@ var TenantComponent = new (function () {
                     data.sex === "M"
                         ? "Male"
                         : data.sex === "F"
-                        ? "Female"
-                        : "_";
+                          ? "Female"
+                          : "_";
                 return `
                     <div class="text-prm-custom" style="width:120px;">
                         <span class="text-wrap text-break text-capitalize" style ="word-break:break-word;">${data.name ?? "_"}</span>
@@ -234,7 +234,7 @@ var TenantComponent = new (function () {
     };
 
     mThis.initDropdownMenus = (listContainer) => {
-        const menuOptopns = {
+        const menuOptions = {
             containerElement: listContainer,
             actionButtonClass: "btn-tenant-dropdown-action",
             cssClass: "bg-white shadow",
@@ -263,12 +263,6 @@ var TenantComponent = new (function () {
                     icon: `<i class="fa-solid fa-file-upload fs-5 text-muted"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "upload_document",
-                },
-                {
-                    html: '<span class="ps-2">Modify document</span>',
-                    icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
-                    cssClass: "border-bottom pb-2",
-                    name: "modify_document",
                 },
                 {
                     html: '<span class="ps-2">Create Contract</span>',
@@ -335,7 +329,7 @@ var TenantComponent = new (function () {
                 }
             },
         };
-        new VSDropdownMenu(menuOptopns);
+        new VSDropdownMenu(menuOptions);
     };
     mThis.editTenant = (id, menuLink) => {
         let op = {
@@ -1527,17 +1521,32 @@ const CreateTenantDialog = (() => {
                 createContent: () => {
                     return `
                 <div class="tenant-form row">
-
-                    <!-- Profile Section -->
-                        <div class="col-md-4 text-center d-flex flex-column justify-content-center">
-                            <div class="data-input tenant-photo-wrapper border border-prm-custom rounded-3 d-flex align-items-center justify-content-center mx-auto"
-                                style="width: 210px; height: 130px; cursor: pointer; background-color: #f8f8f8;">
-                                <div name="div_tenant_photo" class="data-input w-100 h-100">
-                                </div>
+                    <div class="col-12 col-md-3 d-flex justify-content-center">
+                        <div id="tenant-profile-container" class="tenant-profile-container d-flex align-items-center justify-content-center" >
+                            <div id="tenant-upload-zone" class="tenant-image-card">
+                                <input type="file" name="documents" class="data-input form-control" data-field="documents" accept=".png,.jpg,.jpeg" style="display: none;" />
+                                <button type="button" id="btn_chooseFile" class="upload-trigger-area">
+                                    <svg class="placeholder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                        <polyline points="21 15 16 10 5 21"></polyline>
+                                    </svg>
+                                </button>
                             </div>
-                           <!-- <small class="text-muted d-block mt-2">Profile Photo</small> -->
+
+                            <div id="tenant-preview-zone" class="tenant-image-card d-none">
+                                <button type="button" id="btn_removeFile" class="close-badge-btn" aria-label="Remove image">
+                                    <span class="close-icon">&times;</span>
+                                </button>
+                                <div class="preview-crop-box">
+                                    <img id="tenant-preview-img" src="" alt="Tenant Profile" />
+                                </div>
+                                <input type="text" name="documents_display" id="documents_display" class="d-none" readonly />
+                            </div>
                         </div>
-                        <div class="col-md-8 row g-1">
+                    </div>
+
+                    <div class="col-md-9 row align-content-between flex-wrap" > 
                             <div class="col-12 ">
                                 <div class="vs-material-field">
                                     <input type="text" name="name" class="data-input form-control" data-field="name" placeholder="" />
@@ -1556,97 +1565,160 @@ const CreateTenantDialog = (() => {
                                     <label>Date of Birth</label>
                                 </div>
                             </div>
-                            <div class="col-12 col-md-4 d-none">
+                            <div class="col-12 col-md-6 d-none">
                                 <select data-style="material" name="tenant_type" class="data-input form-control" data-field="tenant_type" placeholder="Tenant Type">
                                     <option value="1">Premium</option>
                                     <option value="2">Standard</option>
                                 </select>
                             </div>
-                        </div>
-                        <div class="col-12 row g-3">
-                            <div class="col-12 col-md-4">
+                            <div class="col-12 col-md-6">
                                 <div class="vs-material-field">
                                     <input type="text" name="legal_name" class="data-input form-control" data-field="legal_name" placeholder=" " />
                                     <label>Legal Name</label>
                                 </div>
                             </div>
-                            <div class="col-12 col-md-4">
+                            <div class="col-12 col-md-6" >
                                 <select data-style="material" name="nationality_id" class="data-input form-control" data-field="nationality_id" placeholder="Nationality"></select>
                             </div>
-                            <div class="col-12 col-md-4">
-                                <div class="vs-material-field">
-                                    <input type="text" name="national_id" class="data-input form-control" data-field="national_id" placeholder=" " />
-                                    <label>National ID</label>
-                                </div>
-                            </div>
-                            <div class="col-12 col-md-4">
-                                <div class="vs-material-field">
-                                    <input type="text" name="passport_number" class="data-input form-control" data-field="passport_number" placeholder=" " />
-                                    <label>Passport Number</label>
-                                </div>
-                            </div>
-                            <div class="col-12 col-md-4">
-                                <div class="vs-material-field">
-                                    <input type="number" name="phone_number" class="data-input form-control" data-field="phone_number" placeholder=" " />
-                                    <label>Phone Number</label>
-                                </div>
-                            </div>
-                            <div class="col-12 col-md-4">
-                                <div class="vs-material-field">
-                                    <input type="email" name="email" class="data-input form-control" data-field="email" placeholder=" " />
-                                    <label>Email</label>
-                                </div>
-                            </div>
-                        <div class="col-12">
+                    </div>
+                    <div class="col-12 row g-2">
+                        <div class="col-12 col-md-6">
                             <div class="vs-material-field">
-                                <textarea name="address" class="data-input form-control" data-field="address" rows="3" placeholder=" "></textarea>
-                                <label>Address</label>
+                                <input type="text" name="national_id" class="data-input form-control" data-field="national_id" placeholder=" " />
+                                <label>National ID</label>
                             </div>
                         </div>
-
+                        <div class="col-12 col-md-6">
+                            <div class="vs-material-field">
+                                <input type="text" name="passport_number" class="data-input form-control" data-field="passport_number" placeholder=" " />
+                                <label>Passport Number</label>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6 pt-2">
+                            <div class="vs-material-field">
+                                <input type="number" name="phone_number" class="data-input form-control" data-field="phone_number" placeholder=" " />
+                                <label>Phone Number</label>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6 pt-2">
+                            <div class="vs-material-field">
+                                <input type="email" name="email" class="data-input form-control" data-field="email" placeholder=" " />
+                                <label>Email</label>
+                            </div>
+                        </div>
+                    <div class="col-12 pt-2">
+                        <div class="vs-material-field">
+                            <textarea name="address" class="data-input form-control" data-field="address" rows="3" placeholder=" "></textarea>
+                            <label>Address</label>
+                        </div>
+                    </div>
 
                 </div>
                 `;
                 },
 
                 contentCreated: (me) => {
-                    const div_tenant_photo = me.controls.div_tenant_photo;
-                    me.tenantImageBox = new ImageBox(div_tenant_photo, {
-                        defaultPhotoName: "default-skill",
-                        containerClass: "tenant-profile-container",
-                        imgClass: "data-input",
-                        dataset: {
-                            field: "photo",
-                        } /** please set field: photo so that we can use for both Edit and Create easily */,
-                        //dataset: { field: "image_url" },
-                        beforeDeleteImage: async () => {
-                            if (me.dataOptions.id > 0) {
-                                const yes = await cv_interact.confirm(
-                                    "Are you sure to delete this profile photo?",
-                                    {
-                                        title: "Delete Photo",
-                                        context: "delete",
-                                    },
+                    me.uploadInput = me.divModal.querySelector(
+                        'input[name="documents"]',
+                    );
+                    me.uploadZone = me.divModal.querySelector(
+                        "#tenant-upload-zone",
+                    );
+                    me.previewZone = me.divModal.querySelector(
+                        "#tenant-preview-zone",
+                    );
+                    me.previewImg = me.divModal.querySelector(
+                        "#tenant-preview-img",
+                    );
+                    me.displayInput =
+                        me.divModal.querySelector("#documents_display");
+
+                    me.controls.btn_chooseFile =
+                        me.divModal.querySelector("#btn_chooseFile");
+                    me.controls.btn_removeFile =
+                        me.divModal.querySelector("#btn_removeFile");
+
+                    me.fileBase64 = null;
+                    me.ext = null;
+
+                    me.renderTenantImage = () => {
+                        if (me.fileBase64) {
+                            me.uploadZone.classList.add("d-none");
+                            me.previewZone.classList.remove("d-none");
+                        } else {
+                            me.uploadZone.classList.remove("d-none");
+                            me.previewZone.classList.add("d-none");
+                            me.uploadInput.value = "";
+                            if (me.displayInput) me.displayInput.value = "";
+                            if (me.previewImg) me.previewImg.src = "";
+                        }
+                    };
+
+                    me.controls.btn_chooseFile.onclick = () => {
+                        me.uploadInput.click();
+                    };
+                    me.previewImg.style.cursor = "pointer";
+                    me.previewImg.title = "Click to change photo";
+                    me.previewImg.onclick = () => {
+                        me.uploadInput.click();
+                    };
+
+                    me.uploadInput.addEventListener("change", (e) => {
+                        const file = e.target.files[0];
+                        if (file) {
+                            const extension = file.name
+                                .split(".")
+                                .pop()
+                                .toLowerCase();
+
+                            if (!["jpg", "jpeg", "png"].includes(extension)) {
+                                cv_interact.error(
+                                    "Please select a valid image file (.jpg, .jpeg, .png)",
                                 );
-                                if (yes) {
-                                    //delete member's photo from backend
-                                    me.deleteProfilePhoto(me.dataOptions.id);
-                                    return true;
-                                } else return false;
-                            } else {
-                                //Case of Create new member, just clear photo
-                                me.tenantImageBox.setImage(null);
+                                return;
                             }
-                            return true;
-                        },
-                        //When user browse new photo and loads it in the IMG element
-                        onOpenImage: (img) => {
-                            if (me.dataOptions.id > 0) {
-                                //This is case of Editing Existing member information
-                                me.saveProfilePhoto(img, me.dataOptions.id);
-                            }
-                        },
+
+                            const reader = new FileReader();
+                            reader.onload = (event) => {
+                                const fullResult = event.target.result;
+
+                                me.fileBase64 = fullResult.split(",")[1];
+                                let detectedExt = fullResult
+                                    .split(";")[0]
+                                    .split(":")[1];
+                                me.ext = detectedExt.split("/")[1];
+
+                                me.previewImg.src = fullResult;
+                                me.displayInput.value = file.name;
+
+                                me.renderTenantImage();
+
+                                if (me.dataOptions.id > 0) {
+                                    me.saveProfilePhoto(
+                                        fullResult,
+                                        me.dataOptions.id,
+                                    );
+                                }
+                            };
+                            reader.readAsDataURL(file);
+                        }
                     });
+
+                    me.controls.btn_removeFile.onclick = async () => {
+                        if (me.dataOptions.id > 0) {
+                            const yes = await cv_interact.confirm(
+                                "Are you sure to delete this profile photo?",
+                                { title: "Delete Photo", context: "delete" },
+                            );
+                            if (yes) {
+                                me.deleteProfilePhoto(me.dataOptions.id);
+                            }
+                        } else {
+                            me.fileBase64 = null;
+                            me.ext = null;
+                            me.renderTenantImage();
+                        }
+                    };
 
                     me.deleteProfilePhoto = (id) => {
                         const p = { id: id };
@@ -1662,8 +1734,10 @@ const CreateTenantDialog = (() => {
                             )
                             .then((res) => {
                                 if (res.status_code == 200) {
-                                    me.tenantImageBox.setImage(null);
-                                    cv_interact.info(
+                                    me.fileBase64 = null;
+                                    me.ext = null;
+                                    me.renderTenantImage();
+                                    cv_interact.success(
                                         "Profile photo was deleted!",
                                     );
                                 } else cv_interact.error(res.error_message);
@@ -1683,9 +1757,6 @@ const CreateTenantDialog = (() => {
                             )
                             .then((res) => {
                                 if (res.status_code == 200) {
-                                    me.tenantImageBox.setImage(
-                                        res.data.image_url,
-                                    );
                                     cv_interact.success(
                                         "Profile photo was saved!",
                                     );
@@ -1698,7 +1769,7 @@ const CreateTenantDialog = (() => {
                         name: "nationality_id",
                         data: "nationalities",
                         textField: "nationality",
-                        valueField: "id", // "id" is the country_id
+                        valueField: "id",
                     },
                 ],
                 prepareFormOptions: {
@@ -1717,8 +1788,6 @@ const CreateTenantDialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
-                    // console.log(1122, me.dataOptions);
-
                     if (me.dataOptions.phone_number) {
                         me.controls.name.value = me.dataOptions.name;
                         me.controls.phone_number.value =
@@ -1729,9 +1798,11 @@ const CreateTenantDialog = (() => {
 
                 extendMethod: {
                     setData: (me, data) => {
-                        // console.log(data);
-
-                        me.tenantImageBox.setImage(data.image_url);
+                        if (data && data.image_url) {
+                            me.previewImg.src = data.image_url;
+                            me.fileBase64 = data.image_url;
+                            me.renderTenantImage();
+                        }
                     },
                 },
                 buttons: [
@@ -1748,10 +1819,7 @@ const CreateTenantDialog = (() => {
                         click: (me, btn) => {
                             const op = me.getData();
                             op.id = me.dataOptions.id;
-                            op.photo = me.tenantImageBox
-                                ? me.tenantImageBox.getImage()
-                                : "";
-                            // console.log(4444, op);
+                            op.photo = me.fileBase64 ? me.previewImg.src : "";
 
                             vsapi
                                 .call(
@@ -1819,7 +1887,7 @@ const TenantDocumentDialog = (() => {
                             <input type="hidden" name="file_ext" data-field="ext">
                         </div>
                     </div>
-                     <div class="col-12">
+                    <div class="col-12">
                         <div class="vs-material-field">
                             <textarea type="text" name="remarks" class="data-input form-control" data-field="remarks" placeholder=" " /></textarea>
                             <label>Remark</label>
