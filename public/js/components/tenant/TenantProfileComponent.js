@@ -649,7 +649,7 @@ var TenantProfileComponent = new (function () {
         } else {
             mThis.cardViewContainer.classList.add("d-none");
             mThis.listViewContainer.classList.remove("d-none");
-            // mThis.paginationContainer.style.display = "none";
+            mThis.paginationContainer.style.display = "none";
             mThis.tenantListView.showPage(params);
         }
     };
@@ -857,7 +857,7 @@ var TenantProfileComponent = new (function () {
                 <div class="card shadow-sm h-100"> <div class="card-header bg-white">
                         <ul class="nav nav-tabs card-header-tabs" id="tenantTabs">
                             <li class="nav-item">
-                                <a class="nav-link active fw-semibold" href="#overview_tenant_detail">Overview</a>  
+                                <a class="nav-link active fw-semibold" href="#overview_tenant_detail">Overview</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link fw-semibold" href="#lease_tenant_history">Contract</a>
