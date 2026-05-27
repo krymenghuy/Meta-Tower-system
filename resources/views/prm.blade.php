@@ -118,7 +118,7 @@
     <div id="kt_header_mobile" class="kt-header-mobile kt-header-mobile--fixed">
         <div class="kt-header-mobile__logo">
             <a href="javascript:void(0)">
-                <img alt="Logo" src="{{ asset('assets/images/meta/Meta_logo.png') }}" />
+                <img loading="lazy" decoding="async" alt="Logo" src="{{ asset('assets/images/meta/Meta_logo.png') }}" />
             </a>
         </div>
         <div class="kt-header-mobile__toolbar" style="margin-bottom:10px">

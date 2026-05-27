@@ -1049,11 +1049,11 @@ class Contract
         // Always honor negotiated contract price on renewal (not building-space list price).
         $renewPrice = $old->price;
         $renewPriceType = $old->price_type;
+        // Renewal remark is stored on contract_renewals only; do not overwrite contracts.remarks.
         $updateContract = [
             'end_date'   => $inputs['end_date'],
             'price'      => $renewPrice,
             'price_type' => $renewPriceType,
-            // 'remarks'    => $inputs['remarks'] ?? $old->remarks,
         ];
         $contractSpaceId = $old->space_id;
         $renewalSpaceId = $new_space_id;

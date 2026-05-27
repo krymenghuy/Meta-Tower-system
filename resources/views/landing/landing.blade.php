@@ -1,80 +1,199 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="icon" type="image/png" href="background-image.png" />
-  <title>LANDING PAGE</title>
-  <script>
-    function checkDevice() {
-      if (/Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) && !window.MSStream && !navigator.userAgent.match(/iPad/i)) {
-        //alert("Sorry, this system is not available on mobile devices.");
-        document.body.innerHTML = `<h2 style="display:block;text-align:center;padding:15px;">Sorry, this system is not available on mobile devices</h2>`;
-        if (typeof window.stop === 'function') {
-          window.stop();
-        } else if (typeof document.execCommand === 'function') {
-          document.execCommand('Stop', false);
-        }
-      }
-      //return true;
-    }
-  </script>
-  <?php StyleManager::render('landing-styles', 1); ?>
+    <meta charset="UTF-8" />
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1"
+    />
 
+    <meta
+        http-equiv="X-UA-Compatible"
+        content="IE=edge"
+    />
 
+    <title>Meta Tower Portal</title>
 
+    <link
+        rel="icon"
+        type="image/png"
+        href="{{ asset('assets/images/logo/logo.png') }}"
+    />
+
+    <?php StyleManager::render('landing-styles', 1); ?>
 </head>
 
-<body id="body" onload="checkDevice()">
-  <div class="box-center  d-flex justify-content-center align-items-center">
-      <div class="container rounded-5 ">
-        <div class="logo_ ">
-          <img src="assets/images/logo/houexpress1.png">
-        </div>
+<body id="body">
 
-        <div class="row m-3">
-            <div class="col-sm-12 mt-3">
-                <div class="card p-3 border shadow rounded-4">
-                  <div class="d-flex flex-row ">
-                    <img src="{{asset('assets/images/logo/logo.png')}}" width="70" />
-                    <div class="d-flex  flex-column ml-2">
-                      <h4 class="text-primary link-view-app">Delivery Management</h4>
-                      <span class="ratings"><i class="fa fa-star"></i><i class="fa fa-star"></i><i
-                          class="fa fa-star"></i></span>
-                    </div>
-                  </div>
-                    <div class="d-flex justify-content-between install mt-3">
-                      <span class="text-primary link-view-app">View&nbsp;<i class="fa fa-angle-right"></i></span>
-                      <h6 style="font-size:15px;" class="text-primary text-capitalize">Last login : <span class="text-muted" >01-03-2024</span></h6>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-12 mt-3">
-                <div class="card p-3 border shadow rounded-4">
-                  <div class="d-flex flex-row ">
-                    <img src="{{asset('assets/images/logo/logo.png')}}" width="70" />
-                    <div class="d-flex  flex-column ml-2">
-                      <h4 class="text-primary link-view-app">Airway Bill Management</h4>
-                      <span class="ratings"><i class="fa fa-star"></i><i class="fa fa-star"></i><i
-                          class="fa fa-star"></i></span>
-                    </div>
-                  </div>
-                    <div class="d-flex justify-content-between install mt-3">
-                      <span class="text-primary link-view-app">View&nbsp;<i class="fa fa-angle-right"></i></span>
-                      <h6 style="font-size:15px;" class="text-primary text-capitalize">Last login : <span class="text-muted" >01-03-2024</span></h6>
-                      
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="vs-d-flex-copyright">
-            <p>Vectorasoft Co.,LTD.</p>
-            <p>Copyright &copy 2023. All rights reserved</p>
-        </div>
+    {{-- Animated background canvas --}}
+    <canvas id="landing-bg"></canvas>
 
-      </div>
-  </div>
+    <main class="landing-shell">
+
+        <section class="landing-panel">
+
+            {{-- Brand --}}
+            <div class="landing-brand">
+                <img
+                    src="{{ asset('assets/images/logo/houexpress1.png') }}"
+                    alt="Meta Tower"
+                />
+            </div>
+
+            {{-- App launcher --}}
+            <div class="landing-app-list">
+
+                <a
+                    href="#"
+                    class="landing-app-card"
+                >
+                    <div class="landing-app-icon">
+                        <img
+                            src="{{ asset('assets/images/logo/logo.png') }}"
+                            alt="Meta Estate"
+                        />
+                    </div>
+
+                    <div class="landing-app-content">
+                        <h3>Meta Estate</h3>
+
+                        <div class="landing-stars">
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                        </div>
+                    </div>
+
+                    <div class="landing-app-meta">
+                        Version 1.5.1
+                    </div>
+                </a>
+
+                <a
+                    href="#"
+                    class="landing-app-card"
+                >
+                    <div class="landing-app-icon">
+                        <img
+                            src="{{ asset('assets/images/logo/logo.png') }}"
+                            alt="Authorization Manager"
+                        />
+                    </div>
+
+                    <div class="landing-app-content">
+                        <h3>Authorization Manager</h3>
+
+                        <div class="landing-stars">
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                        </div>
+                    </div>
+
+                    <div class="landing-app-meta">
+                        Version 1.5.1
+                    </div>
+                </a>
+
+                <a
+                    href="#"
+                    class="landing-app-card"
+                >
+                    <div class="landing-app-icon">
+                        <img
+                            src="{{ asset('assets/images/logo/logo.png') }}"
+                            alt="Meta Client"
+                        />
+                    </div>
+
+                    <div class="landing-app-content">
+                        <h3>Meta Client</h3>
+
+                        <div class="landing-stars">
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                        </div>
+                    </div>
+
+                    <div class="landing-app-meta">
+                        Version 1.5.1
+                    </div>
+                </a>
+
+            </div>
+
+            {{-- Footer --}}
+            <footer class="landing-footer">
+                <div>Advanced Business Solutions</div>
+                <div>Powered by Vectorasoft Co., LTD.</div>
+            </footer>
+
+        </section>
+
+    </main>
+
+    <?php ScriptManager::render('landing-script', 1); ?>
+
+    <script>
+        (function () {
+
+            function isMobileDevice() {
+                return /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+                    && !window.MSStream
+                    && !navigator.userAgent.match(/iPad/i);
+            }
+
+            function showMobileBlockedMessage() {
+                document.body.innerHTML = `
+                    <div class="landing-mobile-block">
+                        Sorry, this system is not available on mobile devices.
+                    </div>
+                `;
+            }
+
+            function bootLandingTheme() {
+                const canvas = document.getElementById('landing-bg');
+
+                if (!canvas) return;
+
+                if (
+                    window.LandingTheme &&
+                    typeof window.LandingTheme.init === 'function'
+                ) {
+                    window.LandingTheme.init(canvas);
+                }
+            }
+
+            function destroyLandingTheme() {
+                if (
+                    window.LandingTheme &&
+                    typeof window.LandingTheme.destroy === 'function'
+                ) {
+                    window.LandingTheme.destroy();
+                }
+            }
+
+            document.addEventListener('DOMContentLoaded', function () {
+                if (isMobileDevice()) {
+                    showMobileBlockedMessage();
+                    return;
+                }
+
+                bootLandingTheme();
+            });
+
+            window.addEventListener('beforeunload', destroyLandingTheme);
+
+        })();
+    </script>
 
 </body>
 

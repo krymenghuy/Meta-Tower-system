@@ -162,7 +162,7 @@ return [
                 'https://cdn.vectoraclouds.com/beta-frontcore/components/SearchInput/VSSearchInput.js',
                 'https://cdn.vectoraclouds.com/beta-frontcore/components/SearchInput/VSSearchInputHelper.js',
 
-                'https://cdn.vectoraclouds.com/frontcore/components/InputBox.v2.js',
+                'https://cdn.vectoraclouds.com/beta-frontcore/components/InputBox.v2.js',
                 'https://cdn.jsdelivr.net/gh/tomik23/circular-progress-bar@latest/docs/circularProgressBar.min.js',
                 'https://cdn.vectoraclouds.com/frontcore/vsroute/vsroute.js',
                 '/js/layout/tenant/main.js',
@@ -236,6 +236,14 @@ return [
                 '/assets/js/ckeditor.js',
             ]
         ],
+        'landing-script'=>[
+            'attr'=>'defer',
+            'single_file'=>1,
+            'output_file'=>'/dist/js/landing_script.js',
+              'files'=>[
+                  '/assets/js/bga/skyline.js',
+              ]
+        ],
         'umt-components'=>[
             'attr'=>'defer',
             'single_file'=>1,
@@ -246,14 +254,13 @@ return [
                 'https://cdn.vectoraclouds.com/frontcore/vsroute/vsroute.js',
                 '/js/layout/umt/main.js',
                 // '/js/components/abm/PDFReport.js',
-                '/js/components/tutor/RenderTableReport.js',
-                '/assets/js/ImageBox.js',
-             
+               // '/js/components/tutor/RenderTableReport.js',
+              
                  'https://cdn.vectoraclouds.com/frontcore/components/SearchInput/VSSearchInputHelper.js',
                  'https://cdn.vectoraclouds.com/beta-frontcore/components/SearchInput/VSSearchInput.js',
 
                 'https://cdn.vectoraclouds.com/frontcore/components/ImageHelper.js',
-                // 'https://cdn.vectoraclouds.com/frontcore/components/ImageBox.js',
+                'https://cdn.vectoraclouds.com/frontcore/components/ImageBox.js',
               
                 'https://cdn.vectoraclouds.com/frontcore/components/VSMoney.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/FileChooser.js',
@@ -283,6 +290,16 @@ return [
             'files' => [
                 //'/assets/material-js/jquery.min.js',
                 '/assets/material-js/bootstrap.min.js'
+            ]
+        ],
+
+         'login-script' => [
+            'attr' => 'defer',
+            'single_file' => 1,
+            'output_file' => '/dist/js/login_script.js',
+            'files' => [
+                //'/assets/material-js/jquery.min.js',
+                '/assets/js/bga/login_glass_world.js'
             ]
         ],
 
