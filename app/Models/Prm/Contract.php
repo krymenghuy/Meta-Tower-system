@@ -1256,3 +1256,4 @@ class Contract
         return $months;
     }
 }
+ 

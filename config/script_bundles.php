@@ -65,7 +65,7 @@ return [
 
                 'assets/js/choices.11.2.js',
                 'https://cdn.vectoraclouds.com/beta-frontcore/components/vs_choices.js',
-             
+
                 'https://cdn.vectoraclouds.com/frontcore/utils/validator.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/cv_interact.js',
                 //'/assets/js/date.js',
@@ -108,7 +108,7 @@ return [
                 // 'https://cdn.vectoraclouds.com/frontcore/components/ExpandableTableRow.v2.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/FileChooser.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/listview/listview.v2.js',
- 
+
                 //'/assets/js/xlsx/xlsx.full.min.js',
                 'assets/js/pusher/pusher.min.js',
                 '/js/components/common/FindPersonDialog.js',
@@ -255,13 +255,13 @@ return [
                 '/js/layout/umt/main.js',
                 // '/js/components/abm/PDFReport.js',
                // '/js/components/tutor/RenderTableReport.js',
-              
+
                  'https://cdn.vectoraclouds.com/frontcore/components/SearchInput/VSSearchInputHelper.js',
                  'https://cdn.vectoraclouds.com/beta-frontcore/components/SearchInput/VSSearchInput.js',
 
                 'https://cdn.vectoraclouds.com/frontcore/components/ImageHelper.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/ImageBox.js',
-              
+
                 'https://cdn.vectoraclouds.com/frontcore/components/VSMoney.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/FileChooser.js',
               'https://cdn.vectoraclouds.com/frontcore/components/listview/listview.v2.js',

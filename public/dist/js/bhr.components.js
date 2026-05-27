@@ -1,142 +1,2965 @@
-'use strict';function _0x540f(){const _0x48ed88=['W7fcWRDfzeyo','WO7cNCohWPO5WPvHW7u','W4JdRd9efW','eSoUWP8+DSkzW6tcRmkXWP/dSmkNWPW','WQpdRx/cI1FcOW','w3RcNCoOEq','F8kIv8omvrG0lxldU18','CSkujqJdKchcIM9tW4y','xmorW75aDSon','WRRdVgFcJq','WRT6W73dUeq','cSoekq','WOVcP2/cQmoWW6ZdSXNdQCogW40','DwddHSk9WRm','mX0qvJm','W6viWPf1vG','WQddQcFcHGa','kgatWR/dKSoHWOGfzg4','g8oCWQ8VFSkDW6lcLSkDWOa','r8ksh8k9zW','lNxcNCkcWQ8','W7faDmkTlv7cQdlcV0q','wgVcK8oUv8oREW','w8kpmXldHYtcKKvgW5ZdQ3m','jxlcVSkiASkTWQxcKsldVSkzW7SrWQBcV3uHAdqvxJtcKCohW6OOiWlcVmoBWPBdPgmEeNddKcxcO8koiebamrCL','W67cHJjZ','WOu3W59VW4FdVSkNtmkWW6WWWR8OWQ0','umoJWPxdGmkEuaFdULW','vSkid27cQsiGW5rjlmo7mtFcRSk7','WO8lW7nPbq','WQddNMDn','o2LRW7JcSW','dmoBWOOACa','WOCLW69dhWXYW7VcOCoeEq/cPxKGAW','WRygWP90WRNdTq','bYOzDa','DSkyjq7dNJ7cG1vcW57dSxuih8ontvhcKG','au57W6NcU2NcUa','cmkKw1CmiehdISkTWRC','W4xdMGZdO3y','bgnwW5GL','W4BcTapdSW','WPOpWPjIWQ7dKxpcSCoUW4q0W7RdNSoBW6W','hSkNnvi5zmkuWQhcUCo3B3KZWOm/W5jnW57dKG','hCoipSo7DIRcPmokW51pWRZdTG','cSoriIS','mKhdNXbVxa','WPpdQcBcLWxdOWBcHZPC','m8k+xuaai1/dGW','thddGCk8WR0','emouWPahW4e','W5zLW4/cHwdcGXFcTSklWQldM3qKwdz6jmkMWPyQ','smkZgYJdUG','W4ugACowFW','v8oDW6vA','W7GpauhdQG','WOlcVMlcJ8o0W6e','F8kuuNJcOG','zSo9WQFdM8kK','W5/dNqfxpG','W78qc3FdVZq','W4eDzSoUwffHWRZdNCkPrL/dV8kq','W4xdNrxdOxb6wCk0ySkt','WPqLW7fhaHfoW7dcICotDqS','WQecWODWWQNdPgy','zdCsWOBcPvG2dL0mWRy','e3OvWQJdNSoIWPym','mmosWOa0ymkoW7xcH8kzWOldPq','F8oxW6NdH1KwdregWRq','BmoMWOddLSkaBq','oLBdNGD/w8kxva','WO/dICoXzSo7','FSkpemkIt2qjWQGkdMf6','qdHiW6JcISk+W5mUFhXXdfu','fx7cR8kVWOy','j8oQWRWmW5m','cSovoILU','W4fCq8k5duVcTG','W5GYn30r','WP3cK8onWPWOWQrhW50OWQnK','WRxcU2FcMmoLW4NdVGJdNSo6W4aB','WOC4W7LmdHf+W70','dmoygtbG','W7zwWOjaCW','WPupWOzOWQm','EK3dTmkyWQm','fu5/W7JcV2NcJ3zCi3lcICo5','WOBcSMJcJmoLW6C','gSotjIr/W5BcISoeW7NcSmo3hCox','aSoMi09nuCkgW6BcTuiheq','CCkGq8omst4o','WPpdUL/cIfW','tCowW6vdsSofoYqOh8kVcSohdq','j8oXWPixW7a','kMfe','W7xcNZjUAa','W6zpFW','gwRcLGJcK28wrbVcVZG','r8kjtwJcVaeR','FmkFfmkIvq','xMZcN8ovvG','W5aFAG','WPvVuSk9AG','lehdNXn+rG','d8oFe8oavG','W77cMZP3rSoUsSkakamRWP5E','ex0uWRVdJSoKWO4m','naKLuYtcH8o4','rCkRbdxdKW','fNBdLd9D','At3dHw3dNW','eWhcOcqSW4O','tGJdHLVdLq','rmoMWPddH8kf','W4epeLhdTW','ghGoWQS','WPn1W7NdUvu','zCknjGtdNcZcPw5oW5pdPW','eSoIivvlBCkuW4m','WOxcTwZcJSoYW7S','vf3cSCohEG','umkjr2VcQs0MW7nez8oUjtNcTG','uColW6ldK0WVcWStWOL1jXOWW5RcQ8o6WQ3cGa','jghcKCkeWRCbW5RdPa','emosaJD5W5lcTG','B8osW6u','WRBdISoDB8oj','j3RcM8kxWQWbW5VdVG','kHRcQJW6','WOJdIWNcMsS','WQ9+AmkDqG','Cc7dH0/dKMOBsq/cVYFdPq','zISdWPdcUhiuc1e','WOa4W71AgWbV','DMBcO8kn','DCkimXpdIXJcH3rgW5i','WP7cRNBcJG','W53dQJPnaSkxWQu3','WQddIWpcJqi','smoEW6XVlSkiC8kP','aLnwW7BcVgNcUfLypxi','BCoSW6NdUuO','WOS3W4PTW7RdHmkHw8k8W68UWRy','WOqVW71yca1jW7dcL8oB','CCo5WOhdLSoIxue','W5uDBmoOwvbIWPy','d8oDl8oSEYBcOColW5fpWRW','u8oAWR3dKCoy','rxpdPSkHWOm','r8o4W6FdGNK','WRpdO2hcU1pcS0C','W6XoySotW44EpW','W64mDSoRsvb4WQRdNCkHq0/dOq','rCocW7bRk8kjz8kIvWhdMa','b8oECSoMzsFcJa','fCk6pviiCW','W5yob103','WR7cMmo1WPuO','WQ3dUsW','WOCRW45WW43dUSkNwmkS','cSoFmmo5Cs3cLCon','W7JdMHJdVW','g8opWQKOySkhW7pcH8kzWPldQmk3','e2KoWRNdICoOWPu','W4fcr8k7kN7cTtNcQKtdQtxcJtNdJG','xComW69vBCofhZOUgSkdb8oC','W4zDWPLYzW','WQi6WRjHWOa','igbz','qCoQWOFdNmkbAam','WQJdUYRcKWJdUHtcUW','kSohmCo7DW','WPJcSNxcHmo9W7NdVG','zCkiiGNdRs7cH29lW5RdP0KnlCoww0lcKe4','W5ism1qN','W7ZcJtTtrmoUyCkyaqC9WOrpsmkiDq','W4JcIqhdJmku','nga+WRNdOW','mCompmo9FdtcH8oXW51s','uCooW75h','WQXBrmksC8kJvq','rSo/W6v3DW','yCoxW6rsDCojpt4/j8khemoedd7dS8kwkHy','CxpdMmk5WQi','WRBdVNBcN0BcTwPXxH/dKqlcRq','ihrnW5eVeWiqrXPK','zmkZvSo4DG','yCorW7PrDW','nSk8qLWDbehdISkTWQ/cJCoRW5P5','rSk2tMNcPa','WQyrWPzWWQ7dPfFcPmoNW4yWW7ddOq','W4Hfx8ohW5S','dSotiJv7W5BcVq','WQlcSudcQSo2','hmoxWRuUW78','sZxdKuZdI2CwrWhcUcO','W7VcGdP6vG','W4/cQZvDwG','wxlcM8oXqmoWu8kSwG','oqBcRaOOW5SdAa','ASkZvCooxGG','yCkGmSkuwq','qSodW7q','WO9HW53dMhBcJWK','kuHZW7tcRN4','W7XbWQ8','WPyUW7HVhqbZW6hcQCoFzqVcPhGYDW','hw7cKWNcKtzBqI3cRcRdH3S','bCo7WRmwW4W','W5SaoG','tmofWQBdT8op','W41bWQHtB3WutNVcLq7cVea','o8ounCoHBW','j2TpW7eGfcK','W75KWPTYDa','k8otWOu1z8kEW7m','WRDkv8kV','rhJdMmk0W6q/b8oBWOHnwCkAtYRdJqddH8o5WQu','WODirSkVz8kIrmoZgqbkWPC','jrBcPIC','W6uip18jv0xdImkZs8oSW7r/q8of','nmopWQKTCSkfW7pcGmkDWPFdOCkNWOtdQW','q8oEW5r3l8kvyq','rSkstMNcQte','BcqnWO0','W61Ax8kKoW','W7XbWRzt','WQhcPmoaWPq1','F8kjr27cUs8MW7raySoNnq','WPhdNMLCCmorW4FdGHhcJW','twZcM8oYq8oBqa','W7jSumoMW6K','WPm4W7nAdWPQW7S','WOhcMCokWPuOWQK','zCoGW6ZdLCof','xmksgCkaFW','BSkgemkJx0aMWRiB','DCo+W5nYma','W6OfgKddMJZdN8oNFCoIAa','WOtdGmomrCom','e8oPWQC0W7e','W7VdHqZdQMfevCkGF8klWRu','gvjjW7ZcP2NcQw4','g8ojWQu2CSkz','ESoJW4ddGmoJ','imk+u0aukvO','WRPPBmkZuW','qmoQWOddSSkzAHtdVLVcISkWWQW','W77cHt5LqCohzSkFoq','sCkvuwNcRs0XW5js','WQKPWPXCWRG','CdddG0/dK0akFG3cTa7dTa','m2fqW5S3eG','W7voAmoyW40FnbtcU8o9W7xdNCoIetJcVXFcOmka','WPRdUelcI1W','wSoFWQ5Sl8kgDSkKyexdI8k2WPKszCk9WR0','dCobpSo6zGZcG8ooW50','WOTNW4xdHgm','W4lcNtz7v8o5','W5pcNcxdMCkg','W6/cTdxdGSko','DmoGWPVdPCoVx1ddTmoLWQeE','W4ema0FdRqpdG8o2FSoPAd3dR8k3WQ0','sCoQW4VdGSoNW5xdTGldT1O','F8k2q8oStrKzmvFdVKHSzSoAWRKu','gvjCW7ZcV2/cOLLwi2FcI8oOhgS','W65iDmoz','sCouW6LYoq','w8oAWQtdPCoR','wx4jW7xdNSo/WO4sAhvvlW','W4fhuSkTm10','ibdcPY49W5a','W4lcGtzXwSoNzSkljrO','W7LCt8kScKVcQIZcOeddQtpcPHFdLSoqW5RcQSoH','rmo7WRddH8kF','WRVcR8o3WPC9WRnwW5eoWRP6ztW','d8kMCuuiymklWRlcVCk7EhKCWOa','W5RdTZfy','sN/cImoJxSon','zCknpYldLc8','WOJdUCouuSoQ','W77dNa/dTNr3sq','g8orWQ0Oy8kGW6lcVCkpWP7dSSk2','WQG+W7vhdHC','kvv0W7/cP2xcRxjnhNBcNSoHb2/dH8o3qXG','D8oHW7xdVNe','b3eDWO7dUq','WQJdOdBcKWddTbRcMdbjWRi','oqOKrq','CCkIu8oA','WQNdS1P/sq','hCkNm0yjBSkoWR8','WP52W4JdI24','WQnfW6/dU2pcIWNcOCkgWPNcMgC+qH87jmkMWPOSW4xdLGBcNSo8gxFdJrecfwa9W57cTGpdUSoOc8oCWPFdP8knDGHn','hSoWWOyWDG','z8omW7ZdGfq','W4dcQHNdPCkEoWNcJcS','qJNdLLtdIgi','W6ddPxBcNvZcO18','W5VdRZldMSkMWRNcQXFdQSo6W7ajfq','caKRuZxcPmoTW41jgeNdNCk4WO3dVa','W4xcOrNdP8kygW','WPhdL2npCColW4VdTXZcIG','WOTmt8kfsG','pKLkW7JcGW','xCkJl1ravmkHW7FdUb5pu8oZo8oigW','sCo2W4VdImoQW4S','WRyxWOP9WR8','WORdPwFcM1/cOW','gmofjWb9W5BcOCoCW5dcTmoHb8ogfSoRma','WPqobSoOFG7dP3ZdRb3cSJlcJa7cHa','W6LlDSkzwmk6DG','jwLsW78j','oxSpWO/dKG','eSoVlu5lsSk0','f0XQW7ZcPwJcIxjqiNm','FSkpbq','WRVdOsdcKqK','jConWRW3BSk5W6lcT8knWP3dTa','omo0W5hcImo8W5ZdVHFdVeBdO2z7W4GPW5KZW6u','WP/dKZxcQtO','WO5lsmkEvG','W4LaCmotW7m','lqxcUsWNW5WOzs47zq','mKVdKbn+rG','kvb7W6RcV0RcR25AjLBcKW','q8oCW6zXdSkvA8k3BaFdI8kQ','mvBdPH9+rSkf','FKBdSxb7WOPAxsGHD8onWP8','r8oGWOq','ymkporhdLIFcKwG','hM1jW5eSba','WRDkrSkYvSk8x8oahaXvWPW','D8oYW5ldGmoHW53dNa3dTKlcQG','W60ug1JdVa','mCo6WOCkxW','wSoSWPVdNq','W7nluSkGmuO','W6uip18jtfldLmkIqCoQW7m','W7hcPHbxzq','h8otlcG','zCkhgGVdVa','BmkFbCk4C2OUWQGdb2fwW4G3CSopeSoqEG','WRlcNCohWOy1WRDqW6SIWQu','xSo6WP3dLmkF','WQlcHwpcO8ox','W43dVs1jjCkxWRWTWOjzWQG','wISdWPdcV2Wha1ifWQBcQmoZCmoQ','FmohW7/dMKWWctisWRXMjYy+W4lcO8oEWQNcNq','sZmTWRlcMW','W7nEWQHAEgCFtNRcMbq','fv1BW7FcJW','W6ZdMtLFdW','g8kse1GP','AmkHcSoAxH0fjNpcULj7BmoA','WOS1W4zKW5FdMa','WRZdON3cM0dcMhTqDW','xmo/WPhdNCkPBaNdP13cKmkZWQC','WRncW57dH1y','yCoXWOddGCoRsa','md7dMSkIe8kEeSoHh8oGr8oLyvFcTcZcU8kgWPhcHc7dLt5wixlcNCocW4tdUIZdMdXlWQpdUCkKWQ8tBmoctdNdJNeYWQ7cVmokW5fhB8k2W4GXWRnXWRTYW4CTW4TpW5ZdSmk0W57cKwVcRCoKWQzGyCkuvb3cILKioCohWRjIhwpcSCo7W6xdOu3cK8olW4FdG8kwW7NdGmkYWRvBACobkmkNW5FdQL0lWQSFj2ZdMCoTgSkzWRO1W6zWuWCyWOdcHSkBWOpcGmkAWROKdxOFtSodFGzEWRLNfCkFjSkoW5yzW53cQCk8lmknW6/cQYRdVtldVJxcOfDjtxOBW4RdTqj8FKVdGsBdMSkeW6BcVGddGLn7WQaDW5z/W6hcH1hcOmozWOWKbNXsWOhcRNxcJCoYCCoHx296W6Kow8oTWQNdQtRcOmouW5TnWPhdGSkuW6ldUGFdISoiDSoQttm+WQWBWOdcMwFcM8oHW7JdT8oVW6ddHCo8wmkvfx3dM1BcMCoRW4JdHSo5qJFcJ8o+WPxcJ3RcNYdcG8oBl8ktAYXcq8oYW7FdOvXqlCoXeNP+W4JdSqhdNu7cS8k2WP7dVLSFWPbgdbdcIZGIW6zkW4HKumoodHr4jmkoW5FcTqf1W5zmW41WW7DOWO3dG2JcTbD5W5JcKMBdN8kjzfNcRSo/W5hcNSkgoSkQWQVdJCkvbSkUWQVcL8k7lttcHmkLneVdOW','g20uWR/dJSoL','lwtcI8ku','WPaIW5D3W73dMCkGx8k9W64T','gCoFpSo5zsFcKa','lCofmaLH','W71csCk7oW','CSoRW5hdLCoJW5JdPIJdSeRcQW','WQ5Bt8kPDW','WP/dJmoCqmo9','obu+uW','t2NdMmkM','sSoLBeyv','lxRcTmkcWRO','W7ddGrFdI3q','cSoeiJDOW5VcICobW7NcSCo2aa','WQ/dPsRcKaK','rCkjuhlcVG','W5xdVtTAeSkq','BSkGqSoFxHidax7dSvPTB8oa','iCotWQGREmkcW6NcSa','jmkPrG','W77cNG/dK8kG','WPFdIx82eSkRl8omBvi9WOznbSkoA8k4WOBdSsWFW7XakCoQt8kEdCoFWRxcTmoaWPWdW7PxW717mmkwWQ59WOvOWO/cUv7dISk7cSkqqmoBwMTnW5BcKaakB8kXyx7cMmozWRlcSNZcTqJdOCkjCxZcVmo5wSo4vZS8BuCusunnW6a4W5CJW4qSWPZdQeNcUKzWyCk+uLZcLIlcRhtcIcSrECkMzSkjWQmTW6dcRmoCW6VcVMiOeXvrW4TKCSkjWRXQW4tcOCoKWPC4WQBdJSkFWOpcVSojj8kAA8kafSoXkJvyW6HWW7hdG2VdTaDChdWJWPNdPfvEv8kqhxSlW4FdQgJcG8oftCoEBCocp8oAlLJcQxG6FSofW5vPhCk1ACoEF8ouj3nYWP0pW7RcLMVcNgldTSk0n1FdGKRcJNf0tLddNujfW4BdPNFcMb1KqxpdO0pdGCkBWP3dKSowW5PDymk5x8kKW6SFW6HNq1ddP8oaWQSOW5BcU8kTW401hmoKW6FdL8oYrCoyuSkRAchcKadcGCk7WQDRtITPWQawhmoJWO7cO8oRWOCadmooW6pcTuxdGNtcLsXMWPmLW4rbxmo9q8o+WRdcTmkubCoHWQOwW6RdNe0KWQOEwmoGb8kAaJTbW6hcK8oDn8k1WO0VW4rywCo4pvGXcCo+W7KfW488p3hdVc8xW4lcQ8kBDxZcHueyg3TeWOX8DCkQuSk0vWzPW4btvSoeW6LNDmkkW5iDy8ohWPOjBL/dIh7cLfLlteagW7aCz8kZpNG3WRnthHLvW4r9W4C0WOVcI8ouptCUWP1DumkXe8kOW57dUmoiW7fmW5HQlmkTW7DuW77dT8ooW7HqWPFcHmo1tmkx','gIBcMIWOW4Oizq45CCoUWQW','qCkPpSkttG','WR/dRctcKq/dVsxcVdPbWRmg','iMvjW5CP','xCoFW6LCFmo0dHO','m8o3dx5Q','W65fDCosW5mHbqJcGG','W5FdJX9seG','W7NdMHddS3v4qW','WOVcQ2eeu8omWOiYWO5eWOG+','uSkdh8k2qguOWQKBmMrWW4K9ymoyomoszG','W58oBSo9','x8oiW7JdMuS','td3dGvtdGLi7rG','WQJcHKtcVYOKaCkdzCkrWRFdSmkJ','lKVdGH5VxCkpva','W5xdSbHnbq','zSoKWOVdISoR','chFdOHj6rSkduSktW6CNW73dOG','Bmo7WP3dNSkiBa','zwZcN8oXrSosrSkcxSkJd8k8','ua8hWQhcKG','WPmrW61SW40','s1lcN8oUzW','WQhdNwbnESot','d8oRWP3dHConFqRdTKRcJmo5W6SAWR3dOmoSW6TnWOmSo8o4WQVcVmkuDmo0DmkWW4TKWQ4BomkBg8olrCkDW63dNqG0tse','WQxdRwhcN1/cOW','vmoTW6XCja','W6JcQbldQmkO','ESohW7tdGwmPaHCcWRDG','WRzeW43dJ3W','iCovkCoMva','qSoMW5r8bq','qdRdHe/dGNi','WQFdJeTAA8ogW5S','WRhdVNZcJLBcV1HZ','h1j0W7ZcUutcNLD1','vhVcM8oWvSonrG','W61lsSkTpvO','vCoBW7m','CSkocrldMXC','WPhdQmomva','AcGxWPdcRLGAevO','aSoMi09nuCkuW6RcOKm','lSoIiuLht8kLW53cTv8','DSoSW6RdSNO','W4RcQbldOCkE','ECkgh8kdzW','BmoMWPRdLCkbDWhdV03cR8kLWRaaWQhcRmo7W4vjWOG','r8ojW7O','W60Yjh/dNG','zCotW6NdS8oG','WPyUW7Taiq','xCosW6ThASoUoZSU','wN/cHmkelG','jbtcUG','s2VcN8oWsG','WQJdQdhcGH/dSbC','A3tcJSoUwa','W5idBmoRwa','h8k8ovOj','WO7cVNxcM8o9W67dOJhdKSo2W6q','WQ5jdSkVD8kVqSotee5gWObeW6j8WOm+WPVcTCofB8oTqCo2W5fkjWNdLgC','eXRcUsWN','WRSOW59MW5ddV8kGwmkSW6e3WRSL','eSoVlu5l','Amk2wKRcVa','dMHPW54e','aCoDk8o6','WQWDeSoXAXRcLZFcPvldIrm','W4iBCCoXu1G','mMXsW4mcgc0nqXHiFLhcHbnC','eL52W7RcP2xcQxe','WRnJwSkmsG','cmoyjCoZBbhcH8ocW4PaWRa','oSkJr0mbkeFdMSkR','wSkWDmorsW','cmk4w10bpG','WPSVW7PE','uSkdbCk1qx8','rJ/dJvi','aCkFyvufpKVdHCkmWQ3cLmo5W4y','WONcU2FcMmoIW4hdUHhdMa','W59aEConW7i','F8oHW43dIW','WRSRW45WW4RdVCkRuSkVW68RWRW','WR0bWOnzWRG','WPZcPe/cHCo1W6RdOW','ehf2W63cOW','WRbAW7JdNw8','xmoKW6fjiG','WOJdIW3cSty','s8kmu27cTq','dmo1cafF','zCo/WOhdJ8o6vvFdV8o1WOC9W6bXoMtcGG','W5PmDCkWlG','W4v4DCkBo0/cTt/cPgJdSYBcKaZdP8kfW57cQSo7WQuEyr9Nfmo9WQvwcLRdQ8oWW63cJrVcGmknohvWWQ0lpmk8W6mT','ASoqW6pdHuqPgW0','r8oGWQFdH8kFDWJdSa','W4jfB8osW5m','W7CddvO','WOBcUgFcJ8o0W70','jxzsW4qLgdyw','lXNcQdO6W7qcFJm','W5mhnuKB','aSoAW7aYlmkoAmkZBrRcKCkNWPCmyCk5WQyvf0a','W7VcHI1tu8oOzW','wc7dG0ZdL2mD','F23dHCk4WQWI','eeVdIaDV','WOCOW4jUW5FdGSkDtSk0W6u6WQW','rCojW6NdICo6','jhhcI8keWQS','hCoJbdDK','WRSOW59MW5a','DCoUW4pdLSo8W7FdVGJdUG','W48uoK0jyN7dJSk6qmooW75KA8otWQ1domkhW6q','yIiwWQhcPeKBaL0oWRxcImo3wmo7WOtcT8obWQzOta','bKPwW6RcUq','sSoZWOFdLCo6u1xdG8ouWPS2W7vN','W41pWRTcAemFB2RcHq','W4dcQGFdTCky','WPmJW6O','W7rhCSouW4q','WPpdOcVcHqddVatcVsT9WRymW4uVW6qOW64SpW','WOddKshcHqu','nCk5w1Wagwe','dSkNpuyDzmkl','W4NdRszv','W4DFWQ1ZCW','W7xdGdfBdW','ugVdICkZWQWKe8oD','hmkDuf80','mCkAqeuG','e8oJWQybW4FdTHtcLSoeW4rX','F0BcNSk0gq','WPfWW5pdHG','W7BcRb7dP8kehZtcPG9d','WQ7cNCoiWRWT','jmk4s1Wb','WQRdLNW','dCk0o3GmBmkC','jw1oW4qTfJG1qrjL','WQxdPZBcLW3dUWdcScW','kuxdGXK','mNVcJmkoWRCbW5RdPfSdh8o0aSkLW4HK','lwfBW4a','DCk6mmk2sq','W7TaWQTcyfSzwhW','WRSqW5L8ca','r8k1DGKAumk5W4hcPu0u','WOqVW6G','WPNcNCodWRW9WQXq','BSkghSkJsx87','WQJdQdhcGKhdUHtcUZPFW7OfW4GUW6aGWOGGiG','W7TDWPLeC1qd','FSoqW6NdG0uOgcCcWR91kXOR','WQypWPXIWR8','aCodgCoSyshcISoGW5DoWQJdQqCiua','WRWRW7nNdq','WRJcJSo3WPOv','W68vb0BdOa','i8oafsng','ixKrWPRdVG','WRTwtmkVD8k9ra','WPRdSColv8oJDwS','zxlcM8oXr8oUu8k4u8kVbSk9wutcQG','WPqMW7Llgq','wSomW6veFCopltG','WOy/W7LyeJv8W6FcHmoB','W6RdGa/dRG','xSoQWOddM8kcEG','WQ3dSw9KCW','x8ojW696kCkt','gSk5m0ui','WPG6W7LelXDYW6xcGCozyre','W4DiymkMga','W6GbdKhdVa','qmoAWQBdPCo8','oLZdQWfP','WOZdVColsmoJyNC','W7hcHJ5Yv8o5','WPOmWOn0WRtdIhZcU8o2W4O7W73dSa','WRNdL29AFa','W4/dSszubmkrWR4WWPno','WOqVW6HRhXfVW7ZcH8odyHO','W5SulKKty3tdHCk8qSo8','W71EWQXf','gYtcMa4f','W4ejfLhdTca','dIW6qrK','WQ3dNflcMfC','hSoFoSo/CcZcLSoNW51fWRNdSa4i','rCo8W5NdGmkiFXtdTfhdKSkNWQWaWQldRCo3W6TnWPuQiq','WRRdL29g','W64sb1ldVcFdKSo7','ymoIWQpdLSkM','W5alzW','aSo3mfraxSkPW6NcQq','WPVcOMpcMCoO','jSotjJz+W5/cU8oRW73cVSo6fG','WQlcMN7cVmoH','W6ZcNdPKs8oBBSkElam','WPNcO3/cH8o0','wmoBW75xCq','ESoRW4/dJmo7','WOFcK8oYWPu3','zxhcISoNxq','W7xdHqJdTq','W6q7ECoFCa','lNrjW4C','ymoGWPBdH8o6wxhdSSoEWPSeW7LMphhcHrxcQCkmDq','EmozWQuTn8kiW6VcPCklWOlcVCoWWP7dRmkjWP/cMxBcNCoEpeGPWP/dHY5FW5e1W4T1W7hdVCo+iSooW5jdWP8QWOtcKCogW6JcOCoLl8kNW5Cl','t8oaW6jSoCkPzCkQBq','W7Ksc1ddJtBdNmoJDmoTAdVdHmkzWRudkSknAG','lvddIbT+','zSobWRNdSmoH','WOZcJmonWRe6WQy','qCkiuxtcQY0','WRddONFcJL3cUufP','uuZdISk/WOm','pmkPsW','gKBdOG9R','WRGfW49+pG','z8omW6/dMvuIcra','rNBdNSkqWQGZga','hmovc8o5xW','t8klvM4','WPq1W4P1W5VdMmk6B8k9W6y4WQ0SWQ0','WOHMW4/dGa','A8oIW4bupG','cSkWpuqoACkTWRtcP8o7','zCoNW4pdL8oSW5hdIWddRum','bfLPW7ZcVW','kaFcPJKTW5CCyW','WQ/dJ3PeymoVW4VdTXZcKSoAW50yW4m','w8oBW6BdNvO','jgPjW4yOeJi','hx3cI8kcWQ4B','q8oCW7DS','smofW7bRi8kjz8kZ','WQhdJ35B','W7VdKrG','F8kOvSo5yW','WORdOhlcJuBcGe5KvX3dLqJcKJDa','WOq+W6vgdG','lSoQlfTcumkNW6FcPh4cg8o5jSkavJFdP3y','umo9WPhdKSkzEYpdU1ZcKSkHWQCy','W7fpWRTEzgeUCq','WOZdUCowq8oGEq','W6ullKKttLNdNSkHt8o2W7rY','p8kYn2mk','WOxcP3lcMa','z8o3W4FdL8o2W6NdVHFdVKm','W5qbz8oOuLz7WOW','qcKBWRVcQq','W4yiz8o8tG','BNldMSkTWPa','WOu3W59VW4FdPmkRwmkTW6WT','bK5/W6/cRMlcVL5CkhBcKSoHha','WOlcKSoIWPCOWQjDW7OOWRL6Fc3dRCkD','WP19W5JdMgNcGXxcTG','fqWbwaG','gmorkGzTW5q','xmo/WOddGa','b3OvWRVdN8o+WPiWAwLslNy8Eq','ESoCW5LmAq','uSoSWOddMSkBEW','xaakWPtcOG','WRRdUMJcKaNdTbhcTJCaWRqqW4uS','CdpdKLNdIq','W64sb0ldVd3dHCoxFCoQFsVdQ8kc','kCoyWRGZEmkp','W5WczbzD','eWCzwde','WODvu8k5FmkhxSoddajmWPfo','ySoLW6DVbW','kmoyWQi8y8kd','WOaUW5XZW5ldL8k3zSk3W6q8','jeSRWOhdQG','imopWQmRC8keW7dcQG','W5alz8oDs1P7WOZdTmkMvf7dTSkkumkU','cCotlczUW4dcVmo6W7NcRSoIhmonc8oR','W6JdKbhdQw5ZCCkNFSkvWQJdHmkry8o9','W5u2W7PgW7tdGSki','qmodW6q','u8k1ALxcGa','iWxcVtO','WQFdN8oqumoM','WPOmWOn0WRq','WPy6W7vPdqi','xmoLWQvjW5NdVsFcKCoBW41N','z8omW6ldKfiooc4R','gmoTlfHCCCkuW4lcNa','ySkeoSk1vq','b3DoW4dcVW','W7bSWPT1Eq','F3hdHCkYWQe8gCosWOvl','lSoQnLHdsG','WRRdKezhBSocW5ddKXxcJCow','WOJdSColtSoTEhC','WRrYs8krEa','ESoTW4u','WPJdRfLnEmovW4hdUd3cKmodW48e','W7jlsmkVkKy','omk8rKm','AJCwWPa','cKPAW5ys','p8kMcLie','W4KhlemrA37dG8kHqCooW75YDq','W7mffLZdTJC','kvrZW77cO2dcO31roG','WOZdStbEcmklWQi','pGSKrtpcVmoyW7LP','r3ZdMa','tJKiWO7dRCouWPmN','BCooW63dHLmidq4c','a2BcJCkiWRq9W4u','fCoXlu1kvSk3W6e','sSorW4zBBSofkbuQbmkd','arqHyGu','s3ZdLq','W7fbWRvBAeePwgpcKqpcQW','v8kjq23cVcyG','caKRuZxcV8oPW41sgfRdNq','W5/cTZ7dRSkifIu','WOBdP2xcU2u','WPTYW5ddHa','qCk7u8omvG8','paaZ','WRZdPJBcIHJdVaZcUXTFWRGfW40VW7iI','W4OXW5WUW47dMCk+rmkUW6uR','rmkjtw3cQcWLW5K','w8krnXldHGpcG39qW5ddSxi','WPFdTSowqSo9xeBcGuy','zCo2W5VdICoQ','WPRcJSofWOiSWQrh','WRmiW5bqla','lCoWWQmxW53dVtRcRmoiW4zXW53cKW','WPxdTmo+zSob','WPhdQSoVt8oQzNC','qSk3vL/cTq','WO7cPwNcM8o1W6ddRbi','k8oBWQO','tg/cVCkwma','uSkfaCk1qG','WPxdMXxcJHy','WQTFqSkUCCkMDSozhq9gWOe','o3tdLZj3','WR0ZWRj3WR8','nmkzlMeh','W5amD8oXs1O','meVdTcf5','WQGMW71zhZvVW7dcG8otyHZcQvCJ','W4lcHt5LrSonASkylGypWOq','v8oLW6tdGKK','q8kutgNcRsO8W4q','WP7cPw/cHG','WQ0FW55WaG','ECo1WPZdGCo6va','d8osBJzUW5lcVColW7tdSmo7b8ogfq','W63dGtJdSMO','WOyRW4bGW5u','WRicWOf/','W71cr8k7lwlcRI/cUa','smkyCxa+WOldU8oMW6/cSSouemox','xhJdGmk4eW','WQaot8kMlvRcOJ3cQa8','WRyxWPXHWORdS33cUmoJW4W0W6RdVmorW7S','g8orWQ0Oy8k7W7xcOCkEWPtdTmkXWOddNSoq','eNOiWRFdIa','zdClWQdcRvS','WQldPxFcILO','rSk8yvNcUa','BmoNWP3dLmkfCG/dSfhcIW','ASo2W6HYjG','fmoaoW1UW5RcQmoaW6G','WRNdMg5mAG','WPTLW7ldN2O','W6ToDCoqW5ub','W5uukL8','c8kWl1KbD8kCWOlcSmo3Ax8yWRS7W4jsW5u','WOTcW7FdVMK','WQaQW7TcW4y','WONcU2FcMmoIW4pdSG/dIq','b8odlmo9DcZcGCogW7fh','WQ7dOcVcHYNdOWBcUYTE','WO0KW4bT','zmoNW4/dISo5W5ZdNHhdQ1ZcP2HHW50O','cmk+v0e3kvK','nSo5dtjy','sYNdGfBdLW','W6ncAmohW40ikaJcOCo8W6i','iCopWR40zq','W7KsduhdQrhdIa','iSk8vLeqkwhdJSkQWQ3cSSoLW4fKiSoMlmo+W7Lt','lqxcOaOVW58','WOlcJSoZWPO5WRnq','ugVdG8k2WQWJa8oNWOHmbmkfqdFdJq','tCkZoWtdMW','fCoBaqTX','CdddG0/dK1yoCWlcSY7dPhRdItq','dSoKWOOktq','bvL7W6VcQgtcJhnCiNpcLa','W6yAsSkYyCk6vCorhe0','ws/cJ0/dGMCDAqBdSsBdRKhdMtK','W48cf1BdNa','WQddRcVcHbJdVq','WPe3W4TIW4RdK8khsmk3W64pWReZWRdcH3a4z8o8CW','W5ZcPY7dPCkE','buHJW7xcRG','z8ojW7xdQSo9','WQ3dK2vBFa','WRurWPzNWR/dR2BcJmoNW400W6VdUCok','W5JdQdX+amkF','wSkmA0JcVG','WRZdMMrmFmov','WRbEW6JdRKa','Fx/cOq','WOVcS2i','yCosW6ThBCoRpY88gmkudq','pSk/h18ukuy','WRbEW7hdM0G','WOuJW4TgW4JdK8kGx8kuW6KQWQWLWRFcGgS','hCoJWRmkW63dOdJcJSojW4DIW5y','W4ZdVr9pcG','WPZcSmobWP4i','khVcLSkjWRa','xCozW6zTmW','BN7cSSkmlW','W6qoBSoFvG','WOT7W5pdN0RcHrRcPSkhWR7cKq','W5RdTZHqd8kmWOe8WOTsWR8p','qSk9u3JcNq','stpdKhNdHMuh','W7Hbvmknp03cRW','u3dcICo2uSoquCkKymkPaW','W60fdLhdUIC','W6ZcOXZdRmki','W5BdQcfo','yCokW6nzFmos','hxZcLSkaWQSeW5ZdRxCf','mNxcJCkgWQ4B','W69gsCoMW7u','e8oxWQC3W6W','WQ/dJ2m','DaRdSw/dGMCDAqBcLshdSetdMbaaW7ufWOPShuVdImkovCocxmoVgXK+rZzOyHPhW63dL8oFlCogWPVdGeZdHSkrjWC+WRblW5ToFcddLZe','u8kEtNJcRZC','W7JcHZTMxCoIyCky','WObkW4VdGfy','W5GbCmo9t0TxWP3dNSkGvu8','qJldPvxdGG','AgpcSSkmm8knWRtcHcVdUmoqWRytWOBcT30','qZ3dGfNdI00kCW','WQpdUsdcJsJdPWZcPtTcWQaB','wSoFW4PXlSkcFa','mw3cKmk9WQi','WQxdJSoRDmoQDwdcR2ldRsDVa8o2CSk5WOhcNurDWPtcK8oTWOJdNGOzlrRcLgr1xSoZoCkzrfHrWONdIh4tW6pcRqBdUW/dJSoMtt7cNaLOW5lcL04','CCoIWP3dLSoQu0/dVW','yYiwWOdcOW','fSkNofmFq8ka','DJmBWO/cRG','BmkqbdddPG','WPNcK8oXWOiSWQrhW7OMWQDV','WQypWPjIWQNdJxVcU8o2','W5iAa8o8mSoUemkqwf8nWPzcW6qM','W5ebj18','hSo/gmoBta','W4xdHXNdT0TZqq','W5VdJXbAja','W4/dHY/dRLe','WOeLW7D1W5O','bmk/W4BcG8oDlvtdM0NcMCkxWOqH','W4OfleKtC3NdGSkXsW','w8ksjGtdNa','WQRdMMHhBmojW4hdTq','eZJdI0RcH2udAX3cR3lcOKFdN2btW4qfWOPOeblcHmkewmodwmoKeK8GzIX6CLnlW6/dMConASkuW4tdKvhcJSkb','WOJcJSowWP0U','ewCiWP3dM8oUWOK','W5WHnNddKW','lLVcSmkMWPq','W64aC8o9uW','pCoLWQOpuq','FSkEcmk8sq','WQxdJSoRDmoQDwdcR2ldRsDVa8o2CSk5WOxcJLLmWPJcG8kOWONcKHSvoHpcHta4qSoZBCoxsuLrW5tcGwycW7RcSfZdTwFdImooyH7cMrPGW5pdMqBcUG','WPOpWPjIWQ7dINFcSCo1W4qNW7O','WP8RW68','e8o3WR4lW40','oK3dGGD3vCkz','cCk0lLCaCG','jSoomYbL','W5ybmeSjBW','W6vhWRXcAq','h8oioYbV','uhJdNSk0WQqJ','wCkopCkjxW','W4uat8o3sLPNWRVdMCk8qG','umoJWPVdGmki','A8ojW4HrBG','W5ncBmkccW','WRBdOhlcJuhcNK5WxG','vSkiA3pcQcyQ','ys4rWPpcP10mk1SeWRC','WPqMW71zgcL0W6BcKq','W4FcQWa','iqW5sspcNCoGW51rdG','w1JcTmkeba','vmoQWOa','hSoclmoGysVcJConW7XrWRFdTqytqSkQ','E8oLW4FdPgG','W7xdMZxdQgHJra','hCozjSoLCa','W6H4rCkWcW','mwvpW5uSba','uSkKlGZdUq','s8oFWRxdLCki','bfLPW7BcP3RcRW','qmobWRZdU8kH','qriKWOJcUq','W67cJcS','jHaVuJJcPmoTW4zegG','WRFdO2FcIL3cVq','F8oSW4ZdGmo9W7hdIYJdKW','WPBdUsvusCkaWQmSWOjfWQu','WQ/dSSoms8oK','c8oemcPNW4xcQSo7W7NcVmoGemoll8oMj8oGcW','W5VcOqtdQCkwfG','g8ovWQu8F8khW67cO8kqWOu','fSorjIS','fgO1WQNdOa','zdCl','WO/dJxHhBSoJW43dPXO','w1FcG8k6aa','huiRWOldUW','WO7cVNa','hxVcJ8kcWQ0HW5VdUwSqhSoNaW','zSoKWPpdLmo6t2/dUmofWP0','bfL3W7BcVwK','y8kdhCkPsW','WOmLW5bfhabVW5BcHmofCW','rCoFWQhdSG','W5HFCSoAW4qB','ENRcTSknoCksWRJcMZO'];_0x540f=function(){return _0x48ed88;};return _0x540f();}(function(_0x4e91a6,_0x298917){const _0x5b90e4=_0x5f03,_0x314530=_0x4e91a6();while(!![]){try{const _0x54de20=-parseInt(_0x5b90e4(0x1e8,'mabu'))/0x1*(-parseInt(_0x5b90e4(0x239,'##vI'))/0x2)+-parseInt(_0x5b90e4(0x94,'YWyK'))/0x3+-parseInt(_0x5b90e4(0x3ba,'wlT8'))/0x4*(parseInt(_0x5b90e4(0x415,'hP#2'))/0x5)+parseInt(_0x5b90e4(0x162,'6gc6'))/0x6*(-parseInt(_0x5b90e4(0x207,'4dSZ'))/0x7)+parseInt(_0x5b90e4(0x2a4,'jDr]'))/0x8+parseInt(_0x5b90e4(0xd5,'[IhG'))/0x9+parseInt(_0x5b90e4(0x416,'6v8j'))/0xa;if(_0x54de20===_0x298917)break;else _0x314530['push'](_0x314530['shift']());}catch(_0x49522c){_0x314530['push'](_0x314530['shift']());}}}(_0x540f,0x87cf1));function _0x5f03(_0x1bd5df,_0x3d43a9){const _0x540f8b=_0x540f();return _0x5f03=function(_0x5f0334,_0x55569d){_0x5f0334=_0x5f0334-0x82;let _0x17a496=_0x540f8b[_0x5f0334];if(_0x5f03['eBslrq']===undefined){var _0x91ed9c=function(_0x3da85c){const _0x128b38='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+/=';let _0x395ee4='',_0x133cd='';for(let _0x148f22=0x0,_0x393975,_0x188139,_0x3a496b=0x0;_0x188139=_0x3da85c['charAt'](_0x3a496b++);~_0x188139&&(_0x393975=_0x148f22%0x4?_0x393975*0x40+_0x188139:_0x188139,_0x148f22++%0x4)?_0x395ee4+=String['fromCharCode'](0xff&_0x393975>>(-0x2*_0x148f22&0x6)):0x0){_0x188139=_0x128b38['indexOf'](_0x188139);}for(let _0xaf4d32=0x0,_0x2a90f4=_0x395ee4['length'];_0xaf4d32<_0x2a90f4;_0xaf4d32++){_0x133cd+='%'+('00'+_0x395ee4['charCodeAt'](_0xaf4d32)['toString'](0x10))['slice'](-0x2);}return decodeURIComponent(_0x133cd);};const _0x518389=function(_0x2422c9,_0x2fbc18){let _0x163881=[],_0x1a1303=0x0,_0xef3e1f,_0x4b02ff='';_0x2422c9=_0x91ed9c(_0x2422c9);let _0x335222;for(_0x335222=0x0;_0x335222<0x100;_0x335222++){_0x163881[_0x335222]=_0x335222;}for(_0x335222=0x0;_0x335222<0x100;_0x335222++){_0x1a1303=(_0x1a1303+_0x163881[_0x335222]+_0x2fbc18['charCodeAt'](_0x335222%_0x2fbc18['length']))%0x100,_0xef3e1f=_0x163881[_0x335222],_0x163881[_0x335222]=_0x163881[_0x1a1303],_0x163881[_0x1a1303]=_0xef3e1f;}_0x335222=0x0,_0x1a1303=0x0;for(let _0x457e03=0x0;_0x457e03<_0x2422c9['length'];_0x457e03++){_0x335222=(_0x335222+0x1)%0x100,_0x1a1303=(_0x1a1303+_0x163881[_0x335222])%0x100,_0xef3e1f=_0x163881[_0x335222],_0x163881[_0x335222]=_0x163881[_0x1a1303],_0x163881[_0x1a1303]=_0xef3e1f,_0x4b02ff+=String['fromCharCode'](_0x2422c9['charCodeAt'](_0x457e03)^_0x163881[(_0x163881[_0x335222]+_0x163881[_0x1a1303])%0x100]);}return _0x4b02ff;};_0x5f03['HJHeVg']=_0x518389,_0x1bd5df=arguments,_0x5f03['eBslrq']=!![];}const _0x8e5d79=_0x540f8b[0x0],_0x165d21=_0x5f0334+_0x8e5d79,_0x256c8d=_0x1bd5df[_0x165d21];return!_0x256c8d?(_0x5f03['XgjQfb']===undefined&&(_0x5f03['XgjQfb']=!![]),_0x17a496=_0x5f03['HJHeVg'](_0x17a496,_0x55569d),_0x1bd5df[_0x165d21]=_0x17a496):_0x17a496=_0x256c8d,_0x17a496;},_0x5f03(_0x1bd5df,_0x3d43a9);}!(function(){const _0xda248b=_0x5f03,_0x1279b3={'ickef':_0xda248b(0x2b0,')LOe'),'HReHF':function(_0x182c32,_0x201dec){return _0x182c32!==_0x201dec;},'bGFch':function(_0x32b6ef,_0x10337d){return _0x32b6ef instanceof _0x10337d;},'adgjJ':function(_0x2a7e29,_0x572138){return _0x2a7e29!==_0x572138;},'xAoCn':'input','SKKlu':function(_0x24a6bf,_0x469219){return _0x24a6bf!=_0x469219;},'DbSxp':function(_0x1cd94b,_0xdf9472){return _0x1cd94b===_0xdf9472;},'lJoMb':_0xda248b(0x1c7,'D)LQ'),'HfFAg':function(_0x19ea6f,_0x143fa7){return _0x19ea6f==_0x143fa7;},'dubjp':_0xda248b(0x112,'uq^$'),'UrShI':_0xda248b(0x362,'6v8j'),'DLdPl':_0xda248b(0x30e,')V!i'),'adhod':_0xda248b(0xa0,'##vI'),'dxZvr':_0xda248b(0x179,'9GE4'),'DBLzG':_0xda248b(0x277,'&RA7'),'lOOAW':function(_0x267c10,_0x8fa66c){return _0x267c10===_0x8fa66c;},'UbDsY':_0xda248b(0xad,'D)LQ'),'MUqax':function(_0x4753db,_0x597b55){return _0x4753db+_0x597b55;},'TpsIU':_0xda248b(0xf4,'ID6I'),'pvLsr':_0xda248b(0x2b9,'##vI'),'KuHAl':function(_0x55d81b,_0x1c003c){return _0x55d81b+_0x1c003c;},'xPAfe':function(_0x339a9d,_0x383d95){return _0x339a9d+_0x383d95;},'cNeLj':function(_0x16c052,_0x41a6b3){return _0x16c052===_0x41a6b3;},'WQQGL':function(_0x14a4e0,_0x51d275){return _0x14a4e0%_0x51d275;},'joVgk':function(_0x2f3ea0,_0x1c07c8){return _0x2f3ea0+_0x1c07c8;},'vVcxU':function(_0x82e5eb,_0x231a4c){return _0x82e5eb===_0x231a4c;},'lJCDu':function(_0x55ade1,_0x2f29e4){return _0x55ade1-_0x2f29e4;},'tijNB':'OjChL','OnDpz':_0xda248b(0x18a,')V!i'),'HMxWp':_0xda248b(0x1f8,')LOe'),'bLtBy':_0xda248b(0x1ea,'K01F'),'BiKxI':_0xda248b(0x2fa,'mnx^'),'Noypt':function(_0x6141f,_0x14a0d8){return _0x6141f(_0x14a0d8);},'pHbVh':function(_0x2cbfdd,_0x43d8a6){return _0x2cbfdd+_0x43d8a6;},'NkkdR':_0xda248b(0x385,'2%z#'),'hvmxZ':_0xda248b(0x3c4,'fzsv'),'LXdfi':_0xda248b(0x2a8,'wlT8'),'VqkBD':_0xda248b(0x158,'a(CH'),'caAnD':_0xda248b(0x18d,'jDr]'),'YUTQA':_0xda248b(0x40d,'a(CH'),'NkvxY':function(_0x47eec1,_0x198c09){return _0x47eec1>_0x198c09;},'UHeBY':'mwnCH','SZpJV':_0xda248b(0x26b,'K01F'),'owuyI':_0xda248b(0x3ea,'9GE4'),'eXskk':_0xda248b(0x261,'wlT8'),'pDUkU':_0xda248b(0x223,'[)wf'),'JMtZH':_0xda248b(0x318,'##vI'),'NIdpM':_0xda248b(0xcb,'yq56'),'wgdds':_0xda248b(0x40b,')V!i'),'Egkld':_0xda248b(0x117,'&AKx'),'zXtbC':'scroll','ZTXMj':_0xda248b(0x2da,'WXLu'),'XkbzS':_0xda248b(0x3e1,'Vdy)'),'arLIC':_0xda248b(0x3f8,'4dSZ'),'zaqQM':'focus','HIDui':_0xda248b(0x114,'Z6HD'),'CiSzd':_0xda248b(0x382,'$QPs'),'tnAFL':_0xda248b(0x33a,'Ghs['),'uGKQH':function(_0x3912f4,_0x3f1f54){return _0x3912f4===_0x3f1f54;},'jJQZA':function(_0x12168c,_0x2c6078){return _0x12168c<_0x2c6078;},'fGCDt':function(_0x89c13f,_0x52fdac,_0xdd2269){return _0x89c13f(_0x52fdac,_0xdd2269);},'UwBew':_0xda248b(0xec,'9GE4'),'Uyjhz':function(_0xa341de,_0x13dfd7){return _0xa341de==_0x13dfd7;},'Qjtlk':_0xda248b(0x355,'4dSZ'),'kwqsy':function(_0xd9d09b,_0x8c85c1){return _0xd9d09b===_0x8c85c1;},'dBGro':function(_0x4c090f,_0x1f9071){return _0x4c090f!=_0x1f9071;},'UAlbi':_0xda248b(0x256,'uKK0'),'ZnbYC':_0xda248b(0x298,'D)LQ'),'uyZuk':_0xda248b(0x199,'q6*6'),'SkvEW':'distinct','wDKAP':_0xda248b(0x8b,'q6*6'),'QxhPS':'woUnG','mnGie':function(_0x40c20d,_0x3ce474){return _0x40c20d!==_0x3ce474;},'YGhwi':function(_0x180d07,_0x162013,_0x47a996){return _0x180d07(_0x162013,_0x47a996);},'WCALS':function(_0x2a49ff,_0x54556a){return _0x2a49ff(_0x54556a);},'qLelT':'<div\x20class=\x22vs-search-loading\x22>Failed\x20to\x20load</div>','dreWe':function(_0x43d4a6,_0x445a91){return _0x43d4a6(_0x445a91);},'VYxmK':function(_0x46e124,_0x4a0d5e){return _0x46e124===_0x4a0d5e;},'ucYer':'GHBhI','FJOwV':_0xda248b(0x35f,'ZZqd'),'DmTAx':_0xda248b(0x1a0,'[)wf'),'azqPX':function(_0x5b0376,_0x5f0b42){return _0x5b0376===_0x5f0b42;},'yXfTF':function(_0x570b46,_0x2fc1ee){return _0x570b46||_0x2fc1ee;},'HMMsN':function(_0x3b8f34,_0x2f0bdc){return _0x3b8f34===_0x2f0bdc;},'xbpHb':'dJBau','WjPHE':_0xda248b(0x388,'Ghs['),'ZqatR':function(_0x17c6b9,_0xd8b17d){return _0x17c6b9-_0xd8b17d;},'hmRQT':'vs-search-row','BATDJ':function(_0xf8da63,_0x484c37){return _0xf8da63!==_0x484c37;},'LydJA':_0xda248b(0xdc,'[IhG'),'bFqeQ':_0xda248b(0x200,'D)LQ'),'bWEgB':_0xda248b(0x3ff,'D)LQ'),'lzBNz':function(_0x41e30b,_0x24bc3b){return _0x41e30b!==_0x24bc3b;},'bBCCx':function(_0x1e052c,_0x3ddc61){return _0x1e052c(_0x3ddc61);},'CiAPB':_0xda248b(0x23a,'G[Ny'),'eRKJI':function(_0x418c4c,_0x17dca9,_0x37c15b){return _0x418c4c(_0x17dca9,_0x37c15b);},'kzquZ':_0xda248b(0x326,'[IhG'),'wtDtr':function(_0x1ae71f,_0xb48e2b){return _0x1ae71f==_0xb48e2b;},'EnyXb':_0xda248b(0x234,'##vI'),'kYyPX':_0xda248b(0xe5,'jDr]'),'TQWWC':function(_0x26bd6a,_0x235078){return _0x26bd6a>_0x235078;},'nDcJV':_0xda248b(0xb9,'##vI'),'nCKEI':_0xda248b(0x16e,'##vI'),'dmoKH':_0xda248b(0x3d8,'9GE4'),'ebXvd':'vs-search-row\x20vs-search-header','KQboP':_0xda248b(0x236,'mabu'),'sQKVo':_0xda248b(0x2dc,'##vI'),'qKWOr':'sRFKG','SCQYP':_0xda248b(0x2df,'a(CH'),'INmei':function(_0x5b5d31,_0x3f73a6){return _0x5b5d31%_0x3f73a6;},'syoZa':function(_0x399939,_0x2421bf){return _0x399939===_0x2421bf;},'nilyg':function(_0x48827f,_0x507883){return _0x48827f-_0x507883;},'Djnrb':function(_0x25df01,_0x31ed15){return _0x25df01===_0x31ed15;},'GNCKt':'Escape','rgqvp':'[data-vs-index]','ljYqJ':function(_0x412ccc,_0x2fb948){return _0x412ccc<_0x2fb948;},'QbubE':_0xda248b(0x1d7,'jDr]'),'DBHRZ':_0xda248b(0xf1,'G[Ny'),'jtkMl':function(_0x84905c,_0x30634b){return _0x84905c!==_0x30634b;},'aDqSE':_0xda248b(0x1ef,'2bmX'),'EfbxL':_0xda248b(0x31e,'ZZqd'),'exjms':function(_0x4fca1b,_0x4fbc0a){return _0x4fca1b(_0x4fbc0a);},'HuPaH':function(_0x43b734,_0x3e619e){return _0x43b734===_0x3e619e;},'aMvLx':function(_0x45d99d,_0x41cede){return _0x45d99d===_0x41cede;},'AlehD':'search','AVRTa':_0xda248b(0xc0,'D)LQ'),'JxnmK':_0xda248b(0x3df,'q6*6')},_0x1af2ea=window[_0xda248b(0xaf,'mabu')]+_0xda248b(0x2d7,'[IhG'),_0x4245fd={'method':_0x1279b3['DLdPl'],'endpoint':'','queryParam':_0x1279b3['AlehD'],'searchTerm':_0x1279b3[_0xda248b(0xe8,'WXLu')],'params':null,'api':null,'loader':!0x1,'apiCacheTTL':0x7d0,'columns':null,'showColumnHeader':!0x0,'maxDropdownHeight':_0x1279b3[_0xda248b(0x357,'ID6I')],'labelKey':_0x1279b3[_0xda248b(0x2fe,'4&(N')],'displayMode':null,'showSearchIcon':!0x0,'prefetch':!0x1,'minChars':0x2,'debounce':0x1f4,'processResponse':null,'onFetchComplete':null,'onSelect':null,'onError':null},_0x36eafe={'instances':new WeakMap(),'_openInstance':null,'init'(_0x748acd,_0x17f239={}){const _0x3084ac=_0xda248b;if(!_0x748acd)return console[_0x3084ac(0x237,'io]4')](_0x3084ac(0x410,'ZZqd')),null;if(!(_0x748acd instanceof HTMLElement))return console[_0x3084ac(0xc5,'K01F')](_0x1279b3['ickef'],_0x748acd),null;if(_0x1279b3[_0x3084ac(0x369,')LOe')](_0x3084ac(0x412,'WCrW'),_0x748acd[_0x3084ac(0x164,'Ghs[')][_0x3084ac(0x20b,'S@&%')]()))return console[_0x3084ac(0x23e,'4dSZ')](_0x3084ac(0x28a,'wlT8')+_0x748acd[_0x3084ac(0x39f,'Vdy)')][_0x3084ac(0x1f7,'a(CH')]()+_0x3084ac(0x23b,'NI8I'),_0x748acd),null;if(this[_0x3084ac(0x3e4,'K01F')]['has'](_0x748acd))return this[_0x3084ac(0x15b,')ISN')][_0x3084ac(0x206,'fzsv')](_0x748acd);const _0x2f0289=new _0xe96f47(_0x748acd,_0x17f239);return this[_0x3084ac(0x160,'mnx^')][_0x3084ac(0x2d3,'yq56')](_0x748acd,_0x2f0289),_0x2f0289;}};class _0xe96f47{constructor(_0x3efa8c,_0x4bd114){const _0x502dfe=_0xda248b,_0x52609f={'pRGRY':_0x1279b3[_0x502dfe(0x2b3,'2bmX')],'TdLYs':_0x1279b3[_0x502dfe(0x33e,'mnx^')],'FZkml':_0x1279b3[_0x502dfe(0x21d,'5]HE')],'BNczN':_0x502dfe(0x31c,'fzsv'),'BtOCD':_0x502dfe(0x1bc,'9GE4'),'ZUBZi':function(_0xbe839a,_0x45389e){const _0xb66425=_0x502dfe;return _0x1279b3[_0xb66425(0x1aa,'T%(%')](_0xbe839a,_0x45389e);}};if(_0x1279b3[_0x502dfe(0x9f,'yq56')](_0x502dfe(0x156,'Ghs['),_0x1279b3[_0x502dfe(0x348,'2bmX')])){if(!_0x4b02ff)return _0x335222[_0x502dfe(0x15c,'T%(%')](_0x502dfe(0x12c,'NI8I')),null;if(!_0x1279b3[_0x502dfe(0x31d,'2bmX')](_0x457e03,_0x4838fb))return _0xd756ed[_0x502dfe(0x255,'[)wf')](_0x1279b3[_0x502dfe(0x134,'hYGN')],_0x4edfc0),null;if(_0x1279b3[_0x502dfe(0x2f0,'G[Ny')](_0x1279b3[_0x502dfe(0x308,'5]HE')],_0x53f0b7[_0x502dfe(0x159,'D)LQ')][_0x502dfe(0x32e,'[)wf')]()))return _0x157466[_0x502dfe(0x2a9,'Ghs[')](_0x502dfe(0x295,')LOe')+_0x43e6ee['tagName'][_0x502dfe(0x2e7,'5]HE')]()+_0x502dfe(0x260,'Vdy)'),_0x4a0d35),null;if(this[_0x502dfe(0x160,'mnx^')][_0x502dfe(0x2b2,'5]HE')](_0x33b3dc))return this['instances']['get'](_0x5ec492);const _0x44f0db=new _0x44f2cb(_0x59193f,_0x154f01);return this['instances']['set'](_0x5bff05,_0x44f0db),_0x44f0db;}else this['el']=_0x3efa8c,this[_0x502dfe(0x145,'WXLu')]=_0x3efa8c,this['opts']={..._0x4245fd,..._0x4bd114},this['opts'][_0x502dfe(0x3ae,'wlT8')]=this['opts'][_0x502dfe(0x109,'6v8j')]??this['opts'][_0x502dfe(0x373,'6v8j')]??_0x1279b3[_0x502dfe(0x3a0,'S@&%')],this[_0x502dfe(0x2de,'N443')]=vsapi||null,this[_0x502dfe(0x1a5,'Ghs[')]=function(_0x34e39e){const _0x1cfca0=_0x502dfe,_0x560d5f={'pygVC':function(_0x18cda4,_0x490a99){const _0x466a11=_0x5f03;return _0x1279b3[_0x466a11(0x13b,'q6*6')](_0x18cda4,_0x490a99);}};if(_0x1279b3[_0x1cfca0(0x118,'uKU8')](_0x1279b3[_0x1cfca0(0x3e5,'io]4')],_0x1279b3['lJoMb'])){const _0x38fd9b=_0x34e39e[_0x1cfca0(0x289,'a(CH')];let _0x14a77a={};return _0x1279b3[_0x1cfca0(0x30b,'[)wf')](_0x1279b3['dubjp'],typeof _0x38fd9b)?_0x14a77a['endpoint']=_0x38fd9b:_0x38fd9b&&_0x1279b3['UrShI']==typeof _0x38fd9b&&(_0x14a77a={..._0x38fd9b}),_0x14a77a['endpoint']=_0x14a77a[_0x1cfca0(0xc8,'[)wf')]||_0x34e39e[_0x1cfca0(0x36a,'&RA7')]||_0x1af2ea,_0x14a77a['method']=(_0x14a77a[_0x1cfca0(0x202,'uKK0')]||_0x34e39e[_0x1cfca0(0x414,'wlT8')]||_0x1279b3['DLdPl'])['toUpperCase'](),_0x14a77a[_0x1cfca0(0x32f,'WCrW')]=_0x14a77a[_0x1cfca0(0x2d4,')V!i')]||_0x14a77a[_0x1cfca0(0x1b4,'q6*6')]||_0x34e39e[_0x1cfca0(0x196,'yq56')]||_0x34e39e[_0x1cfca0(0xf7,'6gc6')]||'q',_0x14a77a['searchTerm']=_0x14a77a[_0x1cfca0(0x372,'ID6I')],_0x14a77a[_0x1cfca0(0x2cd,'p^G5')]=_0x34e39e[_0x1cfca0(0x104,'G[Ny')]||_0x14a77a['params']||_0x34e39e[_0x1cfca0(0x401,'G[Ny')]||null,_0x14a77a[_0x1cfca0(0x181,'yq56')]=_0x14a77a['loader']??_0x34e39e['loader'],_0x14a77a[_0x1cfca0(0xd0,'S@&%')]=_0x14a77a[_0x1cfca0(0x2ec,'Ghs[')]??_0x34e39e[_0x1cfca0(0x2f7,'6v8j')],_0x14a77a;}else{const _0x29f4b7=this['opts'][_0x1cfca0(0x278,'9GE4')]||{},_0x3f09df={};[_0x52609f[_0x1cfca0(0x29f,'2%z#')],_0x52609f[_0x1cfca0(0x2bb,'4&(N')],_0x52609f[_0x1cfca0(0x243,'9GE4')],_0x1cfca0(0x34d,'K01F'),_0x1cfca0(0x345,'uKU8'),_0x52609f[_0x1cfca0(0x2c6,'EK4Q')],'offset',_0x52609f[_0x1cfca0(0xd1,'6gc6')]][_0x1cfca0(0x381,'hP#2')](_0x59f011=>{const _0x2159b9=_0x1cfca0;_0x560d5f[_0x2159b9(0x409,'4dSZ')](null,_0x29f4b7[_0x59f011])&&(_0x3f09df[_0x59f011]=_0x29f4b7[_0x59f011]);});let _0x3bc575=[];if(_0x24933d[_0x1cfca0(0xee,'a(CH')](_0x29f4b7[_0x1cfca0(0x3bb,'2bmX')])&&_0x3bc575[_0x1cfca0(0x1b1,'ZZqd')](..._0x29f4b7[_0x1cfca0(0x183,'a(CH')]),_0x3bc575['length']&&(_0x3f09df[_0x1cfca0(0x89,')ISN')]=_0x3bc575),_0xe1e73c&&_0x52609f[_0x1cfca0(0x232,'5]HE')](!0x0,this[_0x1cfca0(0x39e,'S@&%')][_0x1cfca0(0x14f,'fzsv')]))return _0x3f09df;const _0x1c6c84=this[_0x1cfca0(0x30f,'ID6I')](_0x3355fe);return _0x1c6c84?.['orWhere']?.[_0x1cfca0(0x319,'T%(%')]&&(_0x3f09df[_0x1cfca0(0x259,'Ghs[')]=_0x1c6c84['orWhere']),_0x3f09df;}}(this['opts']),this[_0x502dfe(0x280,'G[Ny')]=this[_0x502dfe(0x19e,'p^G5')][_0x502dfe(0x24d,'2%z#')]||this[_0x502dfe(0x1bd,'a(CH')]['instance_id']||_0x1279b3[_0x502dfe(0x351,'Vdy)')](_0x1279b3['TpsIU'],Math[_0x502dfe(0x1c5,')LOe')]()[_0x502dfe(0x12e,'jDr]')](0x24)[_0x502dfe(0x147,'$QPs')](0x2)),this[_0x502dfe(0x1ba,'&RA7')]=[],this['_highlight']=-0x1,this[_0x502dfe(0x2a6,'ID6I')]=!0x1,this[_0x502dfe(0x2e9,'$QPs')]=null,this['_reqSeq']=0x0,this[_0x502dfe(0x2fd,'[)wf')]=0x0,this[_0x502dfe(0x417,')V!i')]='',this[_0x502dfe(0x1c2,'6gc6')]='',this[_0x502dfe(0x91,'Z6HD')]=0x0,this[_0x502dfe(0x23d,'[)wf')]=0x0,this[_0x502dfe(0x3c5,'Vdy)')]=new Map(),this[_0x502dfe(0x219,'ID6I')]='',this[_0x502dfe(0x383,'uq^$')]=_0x502dfe(0x366,'&RA7')==typeof this[_0x502dfe(0x248,'hYGN')][_0x502dfe(0x16a,'2%z#')],this[_0x502dfe(0x301,'G[Ny')](),this[_0x502dfe(0x24e,')ISN')](),_0x1279b3[_0x502dfe(0x12b,'NI8I')](_0x502dfe(0x30d,'io]4'),this[_0x502dfe(0x19c,'NU5I')][_0x502dfe(0x40a,')ISN')])&&this[_0x502dfe(0x39e,'S@&%')]['prefetch']&&this['fetch']('',!0x0);}['positionDropdown'](){const _0x185672=_0xda248b,_0x453cf0=this[_0x185672(0xb8,'2%z#')][_0x185672(0x141,'N443')]();this['dropdown'][_0x185672(0x41e,'io]4')][_0x185672(0xdb,'T%(%')]=_0x1279b3[_0x185672(0x142,'Z6HD')],this[_0x185672(0x32d,'4dSZ')][_0x185672(0x2af,'4&(N')][_0x185672(0x11a,'5]HE')]=_0x1279b3[_0x185672(0x30a,'Z6HD')](_0x453cf0[_0x185672(0x15e,'p^G5')],'px'),this[_0x185672(0x1b6,'YWyK')]['style']['top']=_0x1279b3['KuHAl'](_0x1279b3[_0x185672(0x15f,'4&(N')](_0x453cf0[_0x185672(0x2d5,'hP#2')],0x2),'px'),this[_0x185672(0x20a,'6gc6')]['style'][_0x185672(0x35c,'jDr]')]=_0x1279b3[_0x185672(0x2cf,'jDr]')](_0x453cf0[_0x185672(0x240,'hP#2')],'px');}[_0xda248b(0x264,'mabu')](){const _0x489b0a=_0xda248b,_0x5eb1e0={'Pluyy':function(_0x45e433,_0x5d2e32){const _0x21b49b=_0x5f03;return _0x1279b3[_0x21b49b(0x178,'a(CH')](_0x45e433,_0x5d2e32);},'SvlYX':'ArrowDown','aTdgr':function(_0x59f306,_0x168c18){const _0x4b277e=_0x5f03;return _0x1279b3[_0x4b277e(0x188,'YWyK')](_0x59f306,_0x168c18);},'FagQx':function(_0x5a26c6,_0x211709){return _0x1279b3['joVgk'](_0x5a26c6,_0x211709);},'sbNpJ':function(_0x3acab1,_0x4231d8){return _0x1279b3['vVcxU'](_0x3acab1,_0x4231d8);},'fPIJS':_0x489b0a(0x209,'&RA7'),'lBFnn':function(_0x2ced33,_0x5a82aa){const _0x37bb7a=_0x489b0a;return _0x1279b3[_0x37bb7a(0x3b4,'4&(N')](_0x2ced33,_0x5a82aa);}};if(_0x1279b3[_0x489b0a(0x320,'uq^$')]===_0x1279b3[_0x489b0a(0x3aa,'$QPs')]){if(this[_0x489b0a(0x1da,'wlT8')]&&this[_0x489b0a(0x41f,'hP#2')][_0x489b0a(0xb5,'4dSZ')]){if(_0x5eb1e0[_0x489b0a(0x33f,'io]4')](_0x5eb1e0[_0x489b0a(0x41a,'Vdy)')],_0x4d29a7[_0x489b0a(0x349,'p^G5')])&&(_0x385956[_0x489b0a(0x1cf,'Z6HD')](),this[_0x489b0a(0x329,'NU5I')]=_0x5eb1e0[_0x489b0a(0x35b,'wlT8')](_0x5eb1e0[_0x489b0a(0x359,'wlT8')](this[_0x489b0a(0x203,'Z6HD')],0x1),this[_0x489b0a(0x330,'jDr]')]['length'])),_0x5eb1e0[_0x489b0a(0x3d5,'q6*6')](_0x5eb1e0[_0x489b0a(0x153,'EK4Q')],_0xef7429[_0x489b0a(0x1a9,'&AKx')])&&(_0x3ec06e[_0x489b0a(0x1db,'uKK0')](),this[_0x489b0a(0x242,'jDr]')]=_0x5eb1e0[_0x489b0a(0xbd,')LOe')](_0x5eb1e0['FagQx'](_0x5eb1e0[_0x489b0a(0x375,')ISN')](this[_0x489b0a(0x1f5,'fzsv')],0x1),this[_0x489b0a(0x3f9,'NI8I')][_0x489b0a(0x342,'6v8j')]),this[_0x489b0a(0x214,'uKU8')][_0x489b0a(0x263,')ISN')])),'Enter'===_0x34a7d1[_0x489b0a(0x349,'p^G5')]){_0x16d100[_0x489b0a(0x3c8,'[)wf')]();const _0x53b365=this[_0x489b0a(0x189,'uKK0')][this[_0x489b0a(0x3f2,'q6*6')]];_0x53b365&&this[_0x489b0a(0x32a,'5]HE')](_0x53b365);}'Escape'===_0x4b0356['key']&&this[_0x489b0a(0x10d,'6gc6')](),this['applyHighlight']();}}else this[_0x489b0a(0x120,'q6*6')]&&(_0x1279b3[_0x489b0a(0x358,'T%(%')](_0x1279b3['dxZvr'],this[_0x489b0a(0x1c8,'6v8j')]['displayMode'])?this['icon'][_0x489b0a(0x3ec,'ZZqd')][_0x489b0a(0x2f2,'ID6I')]=this['el'][_0x489b0a(0x17d,'uKK0')]?'hidden':_0x1279b3[_0x489b0a(0x10e,'K01F')]:this['icon'][_0x489b0a(0xdd,'4mFK')][_0x489b0a(0x2c5,')V!i')]=_0x1279b3['HMxWp']);}[_0xda248b(0x14a,'&AKx')](){const _0x57a3be=_0xda248b,_0x168683={'VkyLG':function(_0x1236a4,_0x43b960){return _0x1279b3['Noypt'](_0x1236a4,_0x43b960);},'KNgbS':function(_0x48688c,_0x546703){const _0x4036ff=_0x5f03;return _0x1279b3[_0x4036ff(0x126,'9GE4')](_0x48688c,_0x546703);},'yCyKQ':_0x1279b3[_0x57a3be(0x8e,'$QPs')],'xvWHn':function(_0x42c4c8,_0x441796){const _0x278f8d=_0x57a3be;return _0x1279b3[_0x278f8d(0x2cc,'NI8I')](_0x42c4c8,_0x441796);},'fMlth':_0x1279b3['dxZvr'],'NWqgz':'open','TsADf':function(_0x487d0d,_0x422e54){return _0x1279b3['cNeLj'](_0x487d0d,_0x422e54);},'NtOQP':_0x1279b3[_0x57a3be(0x34a,'yq56')],'OxvoA':_0x1279b3[_0x57a3be(0x3ce,'Ghs[')],'ZMJka':_0x1279b3[_0x57a3be(0x8d,'Vdy)')],'qUfjJ':_0x1279b3['caAnD'],'cvNwl':function(_0x20deaa,_0x423cbc){return _0x20deaa==_0x423cbc;},'LCOCb':_0x1279b3['UrShI'],'fVruD':function(_0xace2c5,_0x1f09a6){return _0xace2c5!==_0x1f09a6;},'UamGk':function(_0x1166f9,_0x184d8b){const _0x2f9837=_0x57a3be;return _0x1279b3[_0x2f9837(0x1d6,'S@&%')](_0x1166f9,_0x184d8b);},'LNMIH':_0x1279b3[_0x57a3be(0x3bd,'4mFK')],'YKNce':function(_0xfc6e3b,_0x4aa894){const _0x1a01b0=_0x57a3be;return _0x1279b3[_0x1a01b0(0x1cd,'fzsv')](_0xfc6e3b,_0x4aa894);},'qQIAt':function(_0x7ff60b,_0x145b86){const _0x35adc8=_0x57a3be;return _0x1279b3[_0x35adc8(0x3c1,'mnx^')](_0x7ff60b,_0x145b86);}};if(_0x1279b3[_0x57a3be(0xe1,'N443')]===_0x1279b3[_0x57a3be(0x8c,')ISN')])this['_timer']&&(_0x168683['VkyLG'](_0x4d8d96,this[_0x57a3be(0x35a,'YWyK')]),this[_0x57a3be(0xdf,'jDr]')]=null),this['_activeReq']=_0x168683[_0x57a3be(0x1ff,'p^G5')](this[_0x57a3be(0x251,'&AKx')],0x1),this[_0x57a3be(0x12d,'WCrW')][_0x57a3be(0x9a,'uKK0')][_0x57a3be(0x171,')LOe')]=_0x57a3be(0x3cd,'mnx^'),this[_0x57a3be(0x137,'wlT8')][_0x57a3be(0x38a,'mabu')]['remove'](_0x168683[_0x57a3be(0x408,'WCrW')]),this[_0x57a3be(0x324,'K01F')]=!0x1,this[_0x57a3be(0x242,'jDr]')]=-0x1,_0x168683['xvWHn'](_0x168683[_0x57a3be(0x3a8,'K01F')],this['opts']['displayMode'])&&this['icon']&&this[_0x57a3be(0x130,'uKK0')][_0x57a3be(0x238,'NI8I')][_0x57a3be(0x2e5,'Z6HD')](_0x168683[_0x57a3be(0xea,'ZZqd')]),_0x190422['VSSearchInput']&&_0x168683[_0x57a3be(0x391,'mnx^')](_0x5d6ff9[_0x57a3be(0xde,'T%(%')][_0x57a3be(0x3be,'mnx^')],this)&&(_0x2053cd[_0x57a3be(0x3fe,'Ghs[')]['_openInstance']=null),this['dropdown'][_0x57a3be(0x1e7,'NU5I')](_0x168683[_0x57a3be(0xa9,'N443')]);else{this['wrapper']=document[_0x57a3be(0x3a3,'hP#2')](_0x1279b3['VqkBD']),this['wrapper'][_0x57a3be(0x1a1,'9GE4')]=_0x1279b3['owuyI'],this['el'][_0x57a3be(0x2a5,'hYGN')][_0x57a3be(0x28e,'uq^$')](this['wrapper'],this['el']),this[_0x57a3be(0x3e0,'&AKx')][_0x57a3be(0x360,'ID6I')](this['el']),this['el'][_0x57a3be(0x38a,'mabu')][_0x57a3be(0x1be,'NU5I')](_0x1279b3['eXskk']),this['el']['autocomplete']=_0x1279b3['pDUkU'],this[_0x57a3be(0x187,'mnx^')][_0x57a3be(0x347,'S@&%')]&&(this[_0x57a3be(0x9c,'jDr]')]=document[_0x57a3be(0x1c3,'jDr]')](_0x1279b3['JMtZH']),this[_0x57a3be(0x11c,'wlT8')][_0x57a3be(0x3eb,'2%z#')]=_0x57a3be(0xae,'uKU8'),_0x1279b3[_0x57a3be(0x2ac,'&RA7')](_0x1279b3['dxZvr'],this[_0x57a3be(0x2f4,'hP#2')][_0x57a3be(0xbb,'q6*6')])?this['icon'][_0x57a3be(0x205,')V!i')]=_0x57a3be(0xb4,'G[Ny'):this['icon'][_0x57a3be(0x2d6,'q6*6')]=_0x1279b3[_0x57a3be(0x1e0,'9GE4')],this[_0x57a3be(0x20f,'K01F')][_0x57a3be(0x186,'hYGN')](this[_0x57a3be(0x3f5,'$QPs')])),this[_0x57a3be(0x37c,'uq^$')]=document['createElement'](_0x57a3be(0x146,'5]HE')),this[_0x57a3be(0x331,'T%(%')][_0x57a3be(0x306,'jDr]')]=_0x57a3be(0x10a,'Vdy)'),this[_0x57a3be(0x1e4,'[)wf')][_0x57a3be(0x197,'6v8j')][_0x57a3be(0x244,'##vI')]=this[_0x57a3be(0x40c,'uKU8')]['maxDropdownHeight'],this['dropdown'][_0x57a3be(0x266,'Z6HD')][_0x57a3be(0x404,'NU5I')]=_0x1279b3[_0x57a3be(0x1cc,'uq^$')],document[_0x57a3be(0x38c,'NU5I')][_0x57a3be(0x99,'q6*6')](this['dropdown']),this[_0x57a3be(0x140,'hYGN')]();const _0x218a89=_0x560526=>{const _0x203041=_0x57a3be,_0x5d6f71={'rxTpJ':_0x168683[_0x203041(0x411,'[)wf')],'MLrWj':_0x168683[_0x203041(0x1a8,'fzsv')],'DUFkr':function(_0x1276fb,_0x1a90a2){const _0x1a8554=_0x203041;return _0x168683[_0x1a8554(0x246,'ZZqd')](_0x1276fb,_0x1a90a2);},'klFAN':_0x168683[_0x203041(0xcd,'4&(N')]};if(_0x168683[_0x203041(0x151,'&AKx')](_0x203041(0x346,'hP#2'),'YrdfB')){if(_0x168683[_0x203041(0x27a,'uq^$')](_0x168683[_0x203041(0x124,'Z6HD')],this[_0x203041(0x110,'2%z#')][_0x203041(0x2c2,'N443')])){if(_0x560526[_0x203041(0x18c,'2%z#')](),this[_0x203041(0x312,'NU5I')])this[_0x203041(0x2bd,'jDr]')]();else{if(_0x168683['LNMIH']===_0x168683[_0x203041(0x31f,'ID6I')]){this['openDropdown']();const _0x1522b5=Date[_0x203041(0x3b8,'mnx^')]();_0x168683['YKNce'](_0x168683[_0x203041(0x332,')LOe')](_0x1522b5,this[_0x203041(0xa7,'N443')]),0x7d0)&&(this[_0x203041(0x3f1,'uKK0')]=_0x1522b5,this[_0x203041(0x198,'S@&%')]('',!0x0));}else this[_0x203041(0x296,'4mFK')][_0x203041(0xf0,'Z6HD')]=_0x168683[_0x203041(0xeb,'2%z#')],this[_0x203041(0x17b,'5]HE')]();}this['el'][_0x203041(0x322,'uKK0')]();}}else{const _0x4b6d89=_0x3a9694['createElement'](_0x5d6f71[_0x203041(0x1ae,'2%z#')]);_0x4b6d89['className']=_0x5d6f71[_0x203041(0x22a,'D)LQ')];const _0x4eaf9f=_0x509174[_0x4297a4];_0x4b6d89[_0x203041(0xe9,'WCrW')]=_0x5d6f71[_0x203041(0x2d2,'N443')](_0x5d6f71[_0x203041(0x21f,')LOe')],typeof _0x4eaf9f)?_0x4eaf9f[_0x203041(0x2fb,')ISN')]:_0x4eaf9f,_0x54f64a[_0x203041(0x8f,'YWyK')](_0x4b6d89);}};this['el']['addEventListener'](_0x1279b3[_0x57a3be(0x282,'WXLu')],_0x218a89),this['icon']?.['addEventListener'](_0x57a3be(0xf6,'N443'),_0x218a89),window[_0x57a3be(0x3b9,'5]HE')](_0x1279b3[_0x57a3be(0x3da,')LOe')],()=>{const _0x53bbc0=_0x57a3be,_0x59f9d6={'xNfGZ':function(_0x10cae2,_0x41e243){return _0x10cae2+_0x41e243;}};_0x53bbc0(0x2d1,'jDr]')!==_0x1279b3[_0x53bbc0(0x221,'K01F')]?(this[_0x53bbc0(0x41d,'q6*6')]&&(_0x99a216(this[_0x53bbc0(0x3de,'[)wf')]),this['_timer']=null),this[_0x53bbc0(0x144,'mnx^')]=_0x59f9d6[_0x53bbc0(0xf9,'WCrW')](this['_reqSeq'],0x1),this['_highlight']=-0x1,this['_lastPayloadKey']='',this[_0x53bbc0(0xd6,'4&(N')]='',this[_0x53bbc0(0x3e6,'wlT8')]=0x0,this[_0x53bbc0(0x3c7,'hYGN')]=0x0,this[_0x53bbc0(0x194,'##vI')]?.['clear'](),this[_0x53bbc0(0x121,'mabu')]='',_0x34d54f&&(this['el'][_0x53bbc0(0xbc,'Vdy)')]=''),this[_0x53bbc0(0xba,'NI8I')](),this['updateIconVisibility']()):this[_0x53bbc0(0x225,'4&(N')]&&this[_0x53bbc0(0x2c8,'2%z#')]();},!0x0),window[_0x57a3be(0x3f3,'uKU8')](_0x1279b3[_0x57a3be(0x340,'fzsv')],()=>{const _0x22946d=_0x57a3be;_0x1279b3[_0x22946d(0x1d2,')V!i')]!==_0x1279b3['BiKxI']?this[_0x22946d(0x10b,'YWyK')]&&this[_0x22946d(0x216,')ISN')]():this[_0x22946d(0x2b6,'##vI')]&&this[_0x22946d(0x15d,'&RA7')]();});}}['bindEvents'](){const _0x418791=_0xda248b,_0x5b1dfe={'nWJot':_0x1279b3[_0x418791(0x353,'2%z#')]};this['el'][_0x418791(0x39a,'yq56')](_0x1279b3[_0x418791(0x3a5,'uKU8')],()=>setTimeout(()=>this['el'][_0x418791(0x281,'uKK0')](),0x0)),this['el'][_0x418791(0x273,'mabu')](_0x1279b3[_0x418791(0x125,'ZZqd')],()=>setTimeout(()=>this['el'][_0x418791(0x28b,'K01F')](),0x0)),this['el']['addEventListener'](_0x1279b3[_0x418791(0xe7,'9GE4')],()=>this[_0x418791(0x3c2,'[)wf')]()),this['el']['addEventListener'](_0x1279b3[_0x418791(0x102,'EK4Q')],_0x5d701b=>this[_0x418791(0x1f2,'4&(N')](_0x5d701b)),document[_0x418791(0x1e5,'uq^$')](_0x1279b3['tnAFL'],_0x48a99e=>{const _0xb7859e=_0x418791;if(!this['_open'])return;const _0xa35c2b=_0x48a99e[_0xb7859e(0x3b3,'uKU8')];this['wrapper']['contains'](_0xa35c2b)||this['dropdown'][_0xb7859e(0x230,'K01F')](_0xa35c2b)||_0xa35c2b[_0xb7859e(0x2eb,'mnx^')](_0x5b1dfe[_0xb7859e(0xd3,'[IhG')])||this['close']();},!0x0),this['dropdown'][_0x418791(0x420,'##vI')](_0x1279b3[_0x418791(0x313,'p^G5')],_0x42a0f4=>{const _0x41101b=_0x418791;if(_0x1279b3[_0x41101b(0x100,'5]HE')](_0x1279b3['XkbzS'],_0x1279b3[_0x41101b(0x11f,'$QPs')]))this['_open']&&this['positionDropdown']();else{_0x42a0f4[_0x41101b(0x23c,'io]4')]();const _0x9b3e73=_0x42a0f4[_0x41101b(0xb3,'4mFK')]['closest']('[data-vs-index]');if(!_0x9b3e73)return;_0x42a0f4[_0x41101b(0x364,'K01F')]();const _0x4edcb7=_0x1279b3['Noypt'](Number,_0x9b3e73[_0x41101b(0x105,')ISN')][_0x41101b(0x211,'WXLu')]),_0x30e548=this['_items'][_0x4edcb7];_0x30e548&&this[_0x41101b(0x13a,'mabu')](_0x30e548);}});}[_0xda248b(0x2ca,'NU5I')](){const _0x17f814=_0xda248b,_0x897ab2=(this['el']['value']||'')[_0x17f814(0x231,'6v8j')]();if(_0x1279b3[_0x17f814(0x3d2,'$QPs')](0x0,_0x897ab2[_0x17f814(0x2b7,'hYGN')]))return this[_0x17f814(0x38d,'[)wf')][_0x17f814(0xfa,'WXLu')](),this[_0x17f814(0x270,'S@&%')]='',void(this[_0x17f814(0x1af,'K01F')][_0x17f814(0x18f,'uKK0')]?this['fetch']('',!0x1):this[_0x17f814(0x169,'io]4')]());_0x1279b3['jJQZA'](_0x897ab2[_0x17f814(0x3d4,'Ghs[')],this[_0x17f814(0x1eb,'YWyK')]['minChars'])?this['close']():(this[_0x17f814(0x2ad,'uq^$')]||this['openDropdown'](),_0x1279b3['Noypt'](clearTimeout,this[_0x17f814(0x138,'fzsv')]),this[_0x17f814(0x3b7,'Z6HD')]=_0x1279b3[_0x17f814(0x241,'K01F')](setTimeout,()=>this[_0x17f814(0x40f,'ZZqd')](_0x897ab2,!0x1),this[_0x17f814(0x314,'WXLu')][_0x17f814(0x2a7,'a(CH')]));}[_0xda248b(0x249,'D)LQ')](_0x1dd7c5){const _0x42a5c0=_0xda248b;if(_0x1279b3['adgjJ'](_0x1279b3[_0x42a5c0(0x2be,'S@&%')],_0x42a5c0(0x26d,'ZZqd'))){const _0x2f2432=this[_0x42a5c0(0xbe,')V!i')][_0x42a5c0(0x193,'6v8j')];if(!_0x2f2432?.['searchFields'])return null;const _0x57a573=_0x1dd7c5??this['el']['value'];if(!_0x57a573)return null;const _0x9c4d51=_0x1279b3[_0x42a5c0(0x1b8,'WCrW')](_0x1279b3[_0x42a5c0(0x2d8,')LOe')],typeof _0x2f2432[_0x42a5c0(0xc3,'##vI')])?_0x2f2432[_0x42a5c0(0x333,'4&(N')](this['el'],this):_0x2f2432[_0x42a5c0(0x317,'2%z#')];if(!_0x9c4d51)return null;const _0x24d842=[];return Object[_0x42a5c0(0x1b9,'p^G5')](_0x9c4d51)[_0x42a5c0(0x2aa,'4dSZ')](([_0x32339,_0x30396d])=>{_0x24d842['push']([_0x32339,_0x30396d,_0x57a573]);}),_0x24d842[_0x42a5c0(0x1e1,'[)wf')]?{'orWhere':_0x24d842}:null;}else{_0x573024[_0x42a5c0(0x328,'uq^$')]();const _0x11b039=this['_items'][this[_0x42a5c0(0x311,'&AKx')]];_0x11b039&&this[_0x42a5c0(0x27c,'[IhG')](_0x11b039);}}[_0xda248b(0x3e8,'$QPs')](_0x15b2ae,_0x21227e=!0x1){const _0x29eb17=_0xda248b,_0x51c8ab={'lHhMj':function(_0x49a551,_0x3530e5){const _0x467088=_0x5f03;return _0x1279b3[_0x467088(0x128,'K01F')](_0x49a551,_0x3530e5);},'xYwhP':_0x29eb17(0x2bf,'NI8I'),'NJVCe':function(_0x61f734,_0x43f8a2){const _0x115ac6=_0x29eb17;return _0x1279b3[_0x115ac6(0x13d,'##vI')](_0x61f734,_0x43f8a2);}},_0x59b6b0=this[_0x29eb17(0x1fd,'&AKx')][_0x29eb17(0x16d,'uKK0')]||{},_0x2e59df={};['from',_0x1279b3[_0x29eb17(0x17f,'T%(%')],_0x1279b3[_0x29eb17(0x36c,')ISN')],_0x1279b3[_0x29eb17(0xac,'[IhG')],_0x1279b3['ZnbYC'],_0x1279b3[_0x29eb17(0x33d,'##vI')],_0x29eb17(0xed,'wlT8'),_0x1279b3[_0x29eb17(0x212,'hP#2')]][_0x29eb17(0x136,'yq56')](_0x51d5ba=>{const _0x212e59=_0x29eb17;if(_0x51c8ab[_0x212e59(0x1f9,'Vdy)')](_0x51c8ab[_0x212e59(0x28d,'ZZqd')],_0x51c8ab['xYwhP']))_0x51c8ab[_0x212e59(0x3f7,'4mFK')](null,_0x59b6b0[_0x51d5ba])&&(_0x2e59df[_0x51d5ba]=_0x59b6b0[_0x51d5ba]);else{if(this[_0x212e59(0x143,'4mFK')])return this[_0x212e59(0x174,'S@&%')][_0x212e59(0x2d6,'q6*6')]='',this[_0x212e59(0x2f4,'hP#2')][_0x212e59(0x1d0,'Ghs[')](_0x31815e,this[_0x212e59(0x395,')ISN')],this),void this[_0x212e59(0x292,')ISN')]();this['render'](_0x3e37c9);}});let _0x8839ab=[];if(Array[_0x29eb17(0x367,'##vI')](_0x59b6b0[_0x29eb17(0x279,'EK4Q')])&&_0x8839ab['push'](..._0x59b6b0['where']),_0x8839ab[_0x29eb17(0xc6,'[IhG')]&&(_0x2e59df['where']=_0x8839ab),_0x21227e&&_0x1279b3['vVcxU'](!0x0,this[_0x29eb17(0xb6,'&RA7')][_0x29eb17(0x33c,'5]HE')]))return _0x2e59df;const _0x3a380a=this[_0x29eb17(0x2d9,'##vI')](_0x15b2ae);return _0x3a380a?.[_0x29eb17(0x3c9,'9GE4')]?.[_0x29eb17(0x247,'$QPs')]&&(_0x2e59df[_0x29eb17(0x220,')LOe')]=_0x3a380a[_0x29eb17(0x93,'T%(%')]),_0x2e59df;}[_0xda248b(0x27b,'ZZqd')](){const _0x4f2689=_0xda248b;this[_0x4f2689(0x31b,'&AKx')]['innerHTML']=_0x1279b3[_0x4f2689(0x14e,'[IhG')],this[_0x4f2689(0x98,'Vdy)')]();}['clearLoading'](){const _0x4a6bdb=_0xda248b,_0x1f67a5=this[_0x4a6bdb(0x3d3,'5]HE')]['querySelector'](_0x1279b3[_0x4a6bdb(0x36d,'Vdy)')]);_0x1f67a5&&_0x1f67a5['remove']();}[_0xda248b(0x297,'N443')](_0x264e8e='',_0x232d34=!0x1){const _0x1645d0=_0xda248b,_0x160de1={'OlTjE':function(_0x2abcf8,_0x2a6804){const _0x50ae29=_0x5f03;return _0x1279b3[_0x50ae29(0x224,'EK4Q')](_0x2abcf8,_0x2a6804);},'OOSTU':_0x1279b3[_0x1645d0(0x253,'wlT8')],'ePfEl':_0x1279b3[_0x1645d0(0x2a2,'NU5I')],'UTzGM':function(_0xdc328b,_0x5d3f89){return _0xdc328b===_0x5d3f89;},'tlnSK':function(_0x5e83c0,_0x256bac){const _0x23be8c=_0x1645d0;return _0x1279b3[_0x23be8c(0x34f,'G[Ny')](_0x5e83c0,_0x256bac);},'ueJrl':_0x1279b3[_0x1645d0(0x276,'Ghs[')],'NsuWh':function(_0x536dd3,_0x560368){const _0x14a2a2=_0x1645d0;return _0x1279b3[_0x14a2a2(0x2ce,'ID6I')](_0x536dd3,_0x560368);},'Chsiq':_0x1279b3[_0x1645d0(0x265,'WXLu')],'noEVb':_0x1279b3[_0x1645d0(0x37e,'4mFK')],'uRlhz':_0x1279b3[_0x1645d0(0x24b,'mabu')],'muigr':_0x1279b3['dxZvr'],'ChDaY':_0x1645d0(0x323,'6v8j'),'vWsXH':_0x1279b3[_0x1645d0(0x195,'6v8j')]};if(_0x1279b3[_0x1645d0(0x1bf,'uKU8')](_0x1645d0(0x17e,'4mFK'),'UJTCr')){if(!this[_0x1645d0(0x389,')ISN')]?.['call'])return;const _0x36f254=++this[_0x1645d0(0x338,'NI8I')];this[_0x1645d0(0xf8,'6gc6')]=_0x36f254;const _0x5ebb03=_0x1279b3[_0x1645d0(0x2ae,'[)wf')](_0x264e8e,'')[_0x1645d0(0x377,'Z6HD')]();let _0x2a072d=this[_0x1645d0(0xa8,'WCrW')](_0x264e8e,_0x232d34),_0x4330d4=null;_0x4330d4=_0x2a072d&&_0x1279b3[_0x1645d0(0x28f,'wlT8')](0x0,Object[_0x1645d0(0x29e,'hYGN')](_0x2a072d)[_0x1645d0(0x3fa,'YWyK')])?{'instance_id':this[_0x1645d0(0x384,'9GE4')],..._0x2a072d}:{[this['apiCfg']['queryParam']]:_0x264e8e};const _0xc68c04=_0x1279b3[_0x1645d0(0x2f8,'fzsv')](_0x1279b3[_0x1645d0(0x106,'G[Ny')],typeof this[_0x1645d0(0x1d3,'##vI')]['params'])?this[_0x1645d0(0x1ee,'5]HE')][_0x1645d0(0x2b5,'D)LQ')](this):this[_0x1645d0(0x26a,'[IhG')][_0x1645d0(0x401,'G[Ny')];_0xc68c04&&_0x1279b3[_0x1645d0(0x336,'2bmX')](_0x1279b3[_0x1645d0(0x16c,'Ghs[')],typeof _0xc68c04)&&Object[_0x1645d0(0x1a6,'K01F')](_0x4330d4,_0xc68c04);const _0x16e255=JSON[_0x1645d0(0x192,'6gc6')](_0x4330d4);if(_0x1279b3[_0x1645d0(0x272,'ZZqd')](_0x16e255,this[_0x1645d0(0x25d,'wlT8')])&&this[_0x1645d0(0x194,'##vI')][_0x1645d0(0x103,'YWyK')](_0x5ebb03)){const _0x125974=this[_0x1645d0(0x3cf,'K01F')][_0x1645d0(0x2c7,'jDr]')](_0x5ebb03);return this[_0x1645d0(0x19b,'G[Ny')]||this[_0x1645d0(0x379,'mabu')](),this[_0x1645d0(0x1ce,'mabu')](_0x125974),Promise[_0x1645d0(0x180,')LOe')]();}if(_0x1279b3[_0x1645d0(0x9b,'[)wf')](_0x16e255,this[_0x1645d0(0x365,'WCrW')]))return Promise[_0x1645d0(0x397,'6v8j')]();if(!_0x232d34&&this['_lastKeyword']&&this[_0x1645d0(0x9e,'hYGN')][_0x1645d0(0x2e4,'4mFK')](_0x5ebb03)&&this[_0x1645d0(0xe0,'G[Ny')]['has'](this['_lastKeyword'])){if(_0x1279b3['HReHF'](_0x1279b3[_0x1645d0(0x122,'io]4')],_0x1279b3[_0x1645d0(0x335,'&RA7')])){const _0x32ede1=this[_0x1645d0(0x36e,'wlT8')]['get'](this[_0x1645d0(0x210,')V!i')])[_0x1645d0(0x3ca,'K01F')](_0x32d22d=>Object[_0x1645d0(0x2ef,'hP#2')](_0x32d22d)[_0x1645d0(0x304,'yq56')](_0xc09a10=>String(_0xc09a10)[_0x1645d0(0x2bc,'uq^$')]()[_0x1645d0(0x1ac,'WCrW')](_0x5ebb03)));return this[_0x1645d0(0x8a,'[)wf')](_0x32ede1),this['_lastKeyword']=_0x5ebb03,this[_0x1645d0(0x302,'ID6I')][_0x1645d0(0xc9,'&AKx')](_0x5ebb03,_0x32ede1),Promise[_0x1645d0(0x2d0,'Z6HD')]();}else{const _0x288e83=_0x17bc79[_0x1645d0(0x350,'uq^$')];let _0xf9e2bf={};return _0x160de1[_0x1645d0(0x10f,'p^G5')](_0x160de1[_0x1645d0(0x1ab,'5]HE')],typeof _0x288e83)?_0xf9e2bf[_0x1645d0(0x28c,'yq56')]=_0x288e83:_0x288e83&&_0x160de1['OlTjE'](_0x160de1[_0x1645d0(0x228,'T%(%')],typeof _0x288e83)&&(_0xf9e2bf={..._0x288e83}),_0xf9e2bf['endpoint']=_0xf9e2bf[_0x1645d0(0x1d1,'ZZqd')]||_0x100ea6[_0x1645d0(0x1ca,'uq^$')]||_0x4d61b0,_0xf9e2bf[_0x1645d0(0x1dc,'[)wf')]=(_0xf9e2bf['method']||_0x3d2df4[_0x1645d0(0x9d,'NI8I')]||_0x1645d0(0x2e8,'4mFK'))[_0x1645d0(0x29b,'Ghs[')](),_0xf9e2bf[_0x1645d0(0x175,'5]HE')]=_0xf9e2bf[_0x1645d0(0x32f,'WCrW')]||_0xf9e2bf['searchTerm']||_0x126699[_0x1645d0(0x372,'ID6I')]||_0x3ad5b2[_0x1645d0(0x37a,'5]HE')]||'q',_0xf9e2bf[_0x1645d0(0x1b3,'D)LQ')]=_0xf9e2bf[_0x1645d0(0x1c9,'q6*6')],_0xf9e2bf[_0x1645d0(0x2ba,'fzsv')]=_0x2dee92[_0x1645d0(0x34e,'4&(N')]||_0xf9e2bf[_0x1645d0(0x286,'&RA7')]||_0xb62c44[_0x1645d0(0xe6,'hP#2')]||null,_0xf9e2bf[_0x1645d0(0x90,'T%(%')]=_0xf9e2bf[_0x1645d0(0x386,'D)LQ')]??_0x39dba0[_0x1645d0(0x131,'6v8j')],_0xf9e2bf[_0x1645d0(0x361,'6gc6')]=_0xf9e2bf[_0x1645d0(0xd9,'wlT8')]??_0x20bc38[_0x1645d0(0x3f0,'4mFK')],_0xf9e2bf;}}const _0x4e8dca=Date[_0x1645d0(0x3b5,'9GE4')]();if(_0x1279b3[_0x1645d0(0x2e1,'4dSZ')](_0x1279b3['ZqatR'](_0x4e8dca,this['_lastFetchAt']),0x78))return Promise[_0x1645d0(0x394,'jDr]')]();this[_0x1645d0(0x33b,'6v8j')]=_0x4e8dca,this[_0x1645d0(0x148,')ISN')]=_0x16e255,this['dropdown'][_0x1645d0(0x205,')V!i')]=_0x1279b3[_0x1645d0(0x149,')ISN')],this[_0x1645d0(0x13e,'mabu')]||this[_0x1645d0(0x274,'2bmX')]();const _0x3cce79=_0x1279b3[_0x1645d0(0x1d8,'N443')](setTimeout,()=>{const _0x43750e=_0x1645d0;_0x160de1[_0x43750e(0x85,'4dSZ')](_0x160de1['Chsiq'],_0x160de1[_0x43750e(0x22c,'T%(%')])?(this[_0x43750e(0x1c2,'6gc6')]='',_0x160de1[_0x43750e(0x19d,'uq^$')](_0x530d2c,this[_0x43750e(0x31a,')ISN')])&&(_0x160de1[_0x43750e(0xfb,'4&(N')](_0x587636,_0x58f05f),this[_0x43750e(0x132,'p^G5')][_0x43750e(0x21a,')LOe')]=_0x160de1[_0x43750e(0x275,'[IhG')],this[_0x43750e(0x371,'EK4Q')]['onError']?.(_0x52041a,this))):_0x36f254===this[_0x43750e(0xa3,'Ghs[')]&&(this[_0x43750e(0x38b,'2%z#')][_0x43750e(0xb0,'hP#2')]=_0x160de1['uRlhz']);},0x1f40);return _0x4330d4[_0x1645d0(0x116,'2%z#')]=!0x0,this[_0x1645d0(0x368,'WCrW')][_0x1645d0(0x213,'ZZqd')](this[_0x1645d0(0x1ee,'5]HE')][_0x1645d0(0x1a7,'hP#2')],_0x4330d4,{'loader':!!this['apiCfg']['loader'],'cacheTTL':this['apiCfg'][_0x1645d0(0x1c4,'mnx^')],'useCache':this[_0x1645d0(0x402,'ID6I')][_0x1645d0(0x3b2,'YWyK')],'method':this['apiCfg'][_0x1645d0(0x177,'jDr]')]})[_0x1645d0(0x18e,'a(CH')](_0xd43b3b=>{const _0x216ad5=_0x1645d0,_0x4bab91={'FpBBb':function(_0x5058f7,_0xa00151){return _0x1279b3['NkvxY'](_0x5058f7,_0xa00151);},'JYFQZ':function(_0x5c129b,_0x2d343f){return _0x5c129b-_0x2d343f;}};if(_0x1279b3[_0x216ad5(0x1de,')V!i')](_0x1279b3[_0x216ad5(0x3d6,'4&(N')],_0x1279b3['QxhPS'])){if(this[_0x216ad5(0xfc,'jDr]')]='',this[_0x216ad5(0x172,'G[Ny')]=_0x16e255,_0x1279b3['mnGie'](_0x36f254,this['_activeReq']))return;_0x1279b3['Noypt'](clearTimeout,_0x3cce79);const _0x76b526=_0xd43b3b[_0x216ad5(0xa2,'4&(N')];if(_0x76b526)return void(this[_0x216ad5(0x376,'9GE4')][_0x216ad5(0x1f0,'WCrW')]='<div\x20style=\x22padding:6px;color:red\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20'+_0x76b526+_0x216ad5(0x29d,'Vdy)'));const _0x2af26e=this[_0x216ad5(0x258,'YWyK')][_0x216ad5(0x300,'NI8I')];_0x1279b3['Uyjhz'](_0x1279b3[_0x216ad5(0x3a2,'fzsv')],typeof _0x2af26e)&&(console[_0x216ad5(0x1e9,'9GE4')](_0x216ad5(0x1dd,'hYGN'),this['apiCfg']),_0x1279b3[_0x216ad5(0x22f,'WCrW')](_0x2af26e,_0xd43b3b,this));const _0x29bfab=this[_0x216ad5(0x1d4,'jDr]')][_0x216ad5(0x1e6,'##vI')]||this[_0x216ad5(0x258,'YWyK')][_0x216ad5(0x25a,'fzsv')],_0x40ee80=(_0x5c786e=_0x29bfab?_0x1279b3[_0x216ad5(0x1ec,')LOe')](_0x29bfab,_0xd43b3b,this):_0xd43b3b?.['data'],Array[_0x216ad5(0x167,'mnx^')](_0x5c786e)?_0x5c786e:[]);var _0x5c786e;this['_resultCache'][_0x216ad5(0x163,'5]HE')](_0x5ebb03,_0x40ee80),this[_0x216ad5(0x405,'[)wf')]=_0x5ebb03,this['applyResult'](_0x40ee80,_0xd43b3b);}else{if(_0x171a18[_0x216ad5(0x1b0,'mabu')](),this[_0x216ad5(0x2b6,'##vI')])this[_0x216ad5(0x268,'a(CH')]();else{this['openDropdown']();const _0x5b131e=_0x5c01d5[_0x216ad5(0x2c4,'WXLu')]();_0x4bab91[_0x216ad5(0x3ef,'WXLu')](_0x4bab91[_0x216ad5(0x25e,'[)wf')](_0x5b131e,this[_0x216ad5(0x22d,'5]HE')]),0x7d0)&&(this['_lastPrefetchAt']=_0x5b131e,this[_0x216ad5(0x13c,'&RA7')]('',!0x0));}this['el'][_0x216ad5(0x36b,'YWyK')]();}})[_0x1645d0(0xcf,'p^G5')](_0x739a4a=>{const _0x80ae0=_0x1645d0;this[_0x80ae0(0x407,'Z6HD')]='',_0x36f254===this[_0x80ae0(0x3d0,'a(CH')]&&(_0x1279b3['WCALS'](clearTimeout,_0x3cce79),this['dropdown']['innerHTML']=_0x1279b3[_0x80ae0(0xe3,'G[Ny')],this[_0x80ae0(0xf5,')LOe')]['onError']?.(_0x739a4a,this));});}else this[_0x1645d0(0x321,'S@&%')]&&(_0x160de1[_0x1645d0(0xa4,'jDr]')]!==this[_0x1645d0(0x35e,'4dSZ')][_0x1645d0(0x15a,'p^G5')]?this[_0x1645d0(0x3cb,'N443')]['style'][_0x1645d0(0x184,'[IhG')]=this['el']['value']?_0x160de1[_0x1645d0(0x39c,'4dSZ')]:_0x160de1['vWsXH']:this['icon'][_0x1645d0(0x337,'##vI')]['visibility']=_0x160de1['vWsXH']);}[_0xda248b(0x3dc,'NU5I')](_0x4af5bc,_0x2359d6){const _0xa9970e=_0xda248b;if(_0x1279b3[_0xa9970e(0x2e0,'EK4Q')](_0x1279b3['LydJA'],_0x1279b3['LydJA'])){const _0x3ed267={'hrHfg':_0x1279b3['VqkBD'],'gYApZ':function(_0x5cffcd,_0x21fb78){const _0x9874e3=_0xa9970e;return _0x1279b3[_0x9874e3(0x3ac,'6v8j')](_0x5cffcd,_0x21fb78);},'SmWeK':_0xa9970e(0xe4,'a(CH')},_0x3360c7=_0x5098ba['createElement'](_0xa9970e(0x2f6,'2%z#'));_0x3360c7[_0xa9970e(0x208,'WCrW')]=_0x1279b3[_0xa9970e(0x29a,'ID6I')],_0x3360c7[_0xa9970e(0x38e,'4dSZ')][_0xa9970e(0x293,'9GE4')]=_0x3a5388,_0x3360c7[_0xa9970e(0x41e,'io]4')][_0xa9970e(0x1a2,'uKK0')]=_0x30e089,_0x4385e9[_0xa9970e(0x3c0,'p^G5')](_0x565941=>{const _0xd1d2cf=_0xa9970e,_0x4ff020=_0xfcdd10['createElement'](_0x3ed267['hrHfg']);_0x4ff020[_0xd1d2cf(0x101,'S@&%')]=_0xd1d2cf(0x1d9,')ISN');const _0x4d9b53=_0x355a0b[_0x565941];let _0x355b3f=_0x565941;_0x3ed267[_0xd1d2cf(0x392,'io]4')](_0x3ed267[_0xd1d2cf(0x190,'jDr]')],typeof _0x4d9b53)&&(_0x355b3f=_0x4d9b53[_0xd1d2cf(0x3af,'yq56')]||_0x565941),_0x4ff020['textContent']=_0x3b9d8b[_0x355b3f]??'',_0x3360c7[_0xd1d2cf(0x3a4,'p^G5')](_0x4ff020);}),_0x232c09[_0xa9970e(0x87,'Z6HD')](_0x3360c7);}else{if(this[_0xa9970e(0x21e,'2bmX')])return this['dropdown'][_0xa9970e(0x1f1,'6gc6')]='',this[_0xa9970e(0x314,'WXLu')][_0xa9970e(0x3f4,'Z6HD')](_0x2359d6,this['dropdown'],this),void this['openDropdown']();this[_0xa9970e(0x352,'T%(%')](_0x4af5bc);}}[_0xda248b(0x26c,'a(CH')](_0x3c8d84){const _0x1d762d=_0xda248b,_0x42cd78={'LZEVc':_0x1279b3['pvLsr'],'azLjN':function(_0xd72da4,_0x4a1d14){return _0xd72da4+_0x4a1d14;},'ejJtJ':function(_0x145493,_0x5f1038){const _0x432ce0=_0x5f03;return _0x1279b3[_0x432ce0(0x229,'io]4')](_0x145493,_0x5f1038);},'WZxSL':function(_0x592735,_0x4e2f2b){const _0x34246f=_0x5f03;return _0x1279b3[_0x34246f(0x235,'NU5I')](_0x592735,_0x4e2f2b);},'cOLDw':_0x1279b3[_0x1d762d(0xd8,'WCrW')],'YfFnF':_0x1279b3['VqkBD'],'qKTYt':_0x1279b3[_0x1d762d(0x1cb,'N443')]};if(this['_items']=_0x3c8d84,this['dropdown']['innerHTML']='',!_0x3c8d84[_0x1d762d(0x418,'WXLu')])return this[_0x1d762d(0x37c,'uq^$')][_0x1d762d(0x413,'WXLu')]=_0x1279b3[_0x1d762d(0x115,'Vdy)')],void this[_0x1d762d(0x92,'9GE4')]();const _0x214d44=this[_0x1d762d(0x1bd,'a(CH')][_0x1d762d(0xd4,'NU5I')],_0x29e930=_0x214d44&&_0x1279b3[_0x1d762d(0x3fd,'jDr]')](_0x1279b3[_0x1d762d(0x325,'jDr]')],typeof _0x214d44)?Object['keys'](_0x214d44):[];if(_0x1279b3['TQWWC'](_0x29e930['length'],0x0)){if(_0x1279b3[_0x1d762d(0x2c9,'WCrW')](_0x1279b3[_0x1d762d(0x3ad,'2bmX')],_0x1279b3[_0x1d762d(0x363,'G[Ny')])){const _0x3ffd75=this['wrapper']['getBoundingClientRect']();this[_0x1d762d(0xef,'hP#2')][_0x1d762d(0x2cb,'2%z#')]['position']=_0x42cd78[_0x1d762d(0x161,'5]HE')],this[_0x1d762d(0x37c,'uq^$')]['style']['left']=_0x42cd78[_0x1d762d(0xa1,'ID6I')](_0x3ffd75['left'],'px'),this['dropdown'][_0x1d762d(0x1c1,'5]HE')][_0x1d762d(0x95,'jDr]')]=_0x3ffd75[_0x1d762d(0x2f3,'S@&%')]+0x2+'px',this[_0x1d762d(0x374,'[IhG')][_0x1d762d(0x299,'N443')][_0x1d762d(0x240,'hP#2')]=_0x42cd78[_0x1d762d(0x37f,'fzsv')](_0x3ffd75[_0x1d762d(0x2b8,'mnx^')],'px');}else{const _0x1503cd=document[_0x1d762d(0x390,'S@&%')](_0x1d762d(0x26e,'EK4Q'));_0x1503cd[_0x1d762d(0x36f,'N443')]=_0x1d762d(0x307,'K01F');const _0x14ad40='repeat('+_0x29e930[_0x1d762d(0x1fc,'NI8I')]+_0x1d762d(0x41c,'6gc6');if(this[_0x1d762d(0x314,'WXLu')][_0x1d762d(0x113,'p^G5')]){if(_0x1279b3[_0x1d762d(0x84,'p^G5')]!==_0x1d762d(0x226,')ISN'))_0x1938ef[_0x1d762d(0x14c,'[IhG')]([_0x236e86,_0x1ca2de,_0xdc3624]);else{const _0x4855fe=document[_0x1d762d(0x354,'yq56')](_0x1d762d(0x2e2,'6v8j'));_0x4855fe[_0x1d762d(0x13f,'q6*6')]=_0x1279b3[_0x1d762d(0x2a3,'mabu')],_0x4855fe['style'][_0x1d762d(0x316,'D)LQ')]=_0x14ad40,_0x29e930[_0x1d762d(0x27e,'wlT8')](_0x5721c6=>{const _0x46b408=_0x1d762d;if(_0x1279b3[_0x46b408(0x378,'WCrW')](_0x1279b3['bFqeQ'],_0x1279b3[_0x46b408(0x27d,'K01F')])){const _0x532791=document[_0x46b408(0x343,'##vI')](_0x1279b3[_0x46b408(0x20c,')V!i')]);_0x532791[_0x46b408(0x2c0,'hP#2')]=_0x1279b3[_0x46b408(0xab,'Z6HD')];const _0x38a68b=_0x214d44[_0x5721c6];_0x532791[_0x46b408(0xb7,'mabu')]=_0x1279b3[_0x46b408(0x3bf,'2%z#')]('object',typeof _0x38a68b)?_0x38a68b[_0x46b408(0x2ff,'&RA7')]:_0x38a68b,_0x4855fe[_0x46b408(0x152,'2bmX')](_0x532791);}else{const _0x751947=this['opts']['query'];if(!_0x751947?.[_0x46b408(0x227,'Vdy)')])return null;const _0x1d2567=_0x498a50??this['el'][_0x46b408(0x403,')LOe')];if(!_0x1d2567)return null;const _0x53e569=_0x42cd78[_0x46b408(0xca,'WXLu')](_0x42cd78['cOLDw'],typeof _0x751947[_0x46b408(0x344,'6gc6')])?_0x751947[_0x46b408(0xce,')ISN')](this['el'],this):_0x751947[_0x46b408(0x25f,'Z6HD')];if(!_0x53e569)return null;const _0x1eb5b4=[];return _0x34922f['entries'](_0x53e569)['forEach'](([_0x32d47d,_0x44db21])=>{const _0x3193b2=_0x46b408;_0x1eb5b4[_0x3193b2(0x176,'NU5I')]([_0x32d47d,_0x44db21,_0x1d2567]);}),_0x1eb5b4[_0x46b408(0x233,'4mFK')]?{'orWhere':_0x1eb5b4}:null;}}),_0x1503cd[_0x1d762d(0x37d,'2%z#')](_0x4855fe);}}_0x3c8d84[_0x1d762d(0x1ad,'fzsv')]((_0x1fd702,_0x2980dc)=>{const _0x31743d=_0x1d762d,_0x54ab5f={'wVBos':_0x1279b3['VqkBD'],'OtQun':_0x1279b3[_0x31743d(0x2a1,'[IhG')],'zXRYj':function(_0x5b41e2,_0x53c5f0){const _0xcae3ac=_0x31743d;return _0x1279b3[_0xcae3ac(0x25c,'##vI')](_0x5b41e2,_0x53c5f0);},'bViQl':function(_0x35f154,_0x110536){const _0x31b0ee=_0x31743d;return _0x1279b3[_0x31b0ee(0x1f4,'mnx^')](_0x35f154,_0x110536);},'Jcsto':_0x1279b3[_0x31743d(0x106,'G[Ny')],'cbOqZ':_0x1279b3[_0x31743d(0x2f5,'ZZqd')],'RBjKh':function(_0x5bab25,_0x560302,_0x2a1f8a){return _0x5bab25(_0x560302,_0x2a1f8a);},'KaoMf':function(_0x1b9589,_0xdef4c7,_0x18faee){return _0x1279b3['eRKJI'](_0x1b9589,_0xdef4c7,_0x18faee);}};if(_0x1279b3[_0x31743d(0x3db,'2bmX')](_0x1279b3['kzquZ'],_0x1279b3['kzquZ'])){const _0x173829=document[_0x31743d(0x341,'Z6HD')](_0x1279b3[_0x31743d(0x16f,'4dSZ')]);_0x173829[_0x31743d(0x11e,'6v8j')]=_0x1279b3[_0x31743d(0x287,'$QPs')],_0x173829['dataset'][_0x31743d(0x2c1,'K01F')]=_0x2980dc,_0x173829[_0x31743d(0x1a3,'T%(%')][_0x31743d(0x3fc,'NI8I')]=_0x14ad40,_0x29e930['forEach'](_0x5d469d=>{const _0x4d75ec=_0x31743d,_0x24f9f5=document['createElement'](_0x54ab5f[_0x4d75ec(0xe2,'mabu')]);_0x24f9f5['className']=_0x54ab5f[_0x4d75ec(0x3e9,'hP#2')];const _0x507d18=_0x214d44[_0x5d469d];let _0x101f70=_0x5d469d;'object'==typeof _0x507d18&&(_0x101f70=_0x507d18[_0x4d75ec(0x108,'D)LQ')]||_0x5d469d),_0x24f9f5[_0x4d75ec(0x3d9,'uKK0')]=_0x1fd702[_0x101f70]??'',_0x173829[_0x4d75ec(0x32c,'N443')](_0x24f9f5);}),_0x1503cd[_0x31743d(0x2f1,'uKU8')](_0x173829);}else{if(this['_inflightPayloadKey']='',this[_0x31743d(0x1c0,'hP#2')]=_0x220ce2,_0x54ab5f[_0x31743d(0x3ee,'WXLu')](_0x3c420d,this[_0x31743d(0x39d,'2%z#')]))return;_0x54ab5f[_0x31743d(0x339,'hYGN')](_0x2961e9,_0x4cb12d);const _0x34a929=_0x1c7af4[_0x31743d(0x398,'ID6I')];if(_0x34a929)return void(this[_0x31743d(0x395,')ISN')][_0x31743d(0xd2,'$QPs')]=_0x31743d(0x303,'EK4Q')+_0x34a929+_0x31743d(0x82,'NI8I'));const _0x42e437=this[_0x31743d(0x23f,'N443')]['onResponse'];_0x54ab5f['Jcsto']==typeof _0x42e437&&(_0x52833c[_0x31743d(0x1fa,'q6*6')](_0x54ab5f[_0x31743d(0x2dd,'4dSZ')],this[_0x31743d(0x327,'uKK0')]),_0x54ab5f[_0x31743d(0x3b0,'yq56')](_0x42e437,_0x489189,this));const _0x34a852=this[_0x31743d(0x1fe,'N443')][_0x31743d(0x1d5,'4dSZ')]||this[_0x31743d(0x26a,'[IhG')]['processResponse'],_0x2ffc73=(_0x5f2e80=_0x34a852?_0x54ab5f[_0x31743d(0x16b,'5]HE')](_0x34a852,_0x1c4353,this):_0x38742f?.['data'],_0x5a96af[_0x31743d(0xee,'a(CH')](_0x5f2e80)?_0x5f2e80:[]);var _0x5f2e80;this['_resultCache'][_0x31743d(0x88,'4&(N')](_0x2d688b,_0x2ffc73),this[_0x31743d(0x9e,'hYGN')]=_0xe836f0,this[_0x31743d(0xaa,'mnx^')](_0x2ffc73,_0xb07043);}}),this[_0x1d762d(0x40e,'D)LQ')][_0x1d762d(0x186,'hYGN')](_0x1503cd);}}else _0x3c8d84['forEach']((_0x544a29,_0x3166da)=>{const _0x43ead3=_0x1d762d,_0x37caf7=document[_0x43ead3(0x3a9,'io]4')](_0x42cd78[_0x43ead3(0x17c,'NI8I')]);_0x37caf7[_0x43ead3(0x3b1,'G[Ny')]=_0x42cd78[_0x43ead3(0x1f3,'Z6HD')],_0x37caf7[_0x43ead3(0x32b,'io]4')][_0x43ead3(0x123,'6v8j')]=_0x3166da,_0x37caf7[_0x43ead3(0xa6,'[IhG')]=_0x544a29[this[_0x43ead3(0xbf,'fzsv')]['labelKey']]??_0x544a29[_0x43ead3(0x309,'a(CH')]??_0x544a29[_0x43ead3(0x400,'[IhG')]??'',this[_0x43ead3(0x296,'4mFK')][_0x43ead3(0x360,'ID6I')](_0x37caf7);});this[_0x1d762d(0x419,'a(CH')]=0x0,this['openDropdown'](),this[_0x1d762d(0x305,'mabu')]();}[_0xda248b(0xc1,'&RA7')](_0x469936){const _0x2db75f=_0xda248b,_0x440c84={'OXNwS':function(_0x3f2c81,_0x178b79){const _0x6cf8d9=_0x5f03;return _0x1279b3[_0x6cf8d9(0x2ab,'uKK0')](_0x3f2c81,_0x178b79);},'qtjyq':_0x1279b3[_0x2db75f(0x150,'&AKx')],'uTKDT':_0x1279b3['NkkdR'],'ExMiR':function(_0x56cdc9,_0x32ef25){return _0x56cdc9===_0x32ef25;},'UquEr':_0x1279b3[_0x2db75f(0xff,'q6*6')],'IZkwY':_0x2db75f(0x135,'9GE4')};if(_0x1279b3[_0x2db75f(0xa5,'6v8j')](_0x2db75f(0xfe,'uKK0'),_0x1279b3[_0x2db75f(0x267,'q6*6')])){const _0x39dced=_0x5832cd[_0x2db75f(0x1df,'Vdy)')];_0x39dced&&_0x440c84[_0x2db75f(0x252,'##vI')](_0x39dced,this)&&_0x39dced[_0x2db75f(0x17a,'D)LQ')](),_0x1e96c6[_0x2db75f(0x1c6,'hYGN')]=this,this[_0x2db75f(0x12a,'4mFK')]?.(),this['dropdown'][_0x2db75f(0x21b,'q6*6')]['display']=_0x440c84[_0x2db75f(0x2ed,'[IhG')],this[_0x2db75f(0x310,'Z6HD')][_0x2db75f(0x133,'YWyK')][_0x2db75f(0x34b,'$QPs')](_0x440c84[_0x2db75f(0x129,'##vI')]),this['_open']=!0x0,_0x440c84['ExMiR'](_0x2db75f(0xf2,'NI8I'),this[_0x2db75f(0x40c,'uKU8')][_0x2db75f(0x254,'$QPs')])&&this[_0x2db75f(0x3c6,'YWyK')]&&this[_0x2db75f(0x3f5,'$QPs')][_0x2db75f(0x3d7,'4&(N')][_0x2db75f(0x3bc,'hYGN')](_0x440c84[_0x2db75f(0x14d,'mnx^')]);const _0x1d2883=this[_0x2db75f(0x3d1,'G[Ny')][_0x2db75f(0x170,'Vdy)')](_0x2db75f(0x217,'mabu'))||this[_0x2db75f(0x3b6,'ZZqd')][_0x2db75f(0x86,'6gc6')](_0x440c84[_0x2db75f(0x380,'WCrW')]);this['dropdown'][_0x2db75f(0x185,'5]HE')](_0x2db75f(0x166,')ISN'),_0x1d2883?.['id']||'');}else{if(this[_0x2db75f(0x3a6,'S@&%')]&&this[_0x2db75f(0x330,'jDr]')]['length']){if(_0x1279b3[_0x2db75f(0x1e3,'4dSZ')]===_0x469936[_0x2db75f(0xfd,'9GE4')]&&(_0x469936[_0x2db75f(0x168,'WCrW')](),this[_0x2db75f(0x3fb,'yq56')]=_0x1279b3[_0x2db75f(0x25b,'ID6I')](this[_0x2db75f(0x155,'WXLu')]+0x1,this[_0x2db75f(0x11b,'4&(N')][_0x2db75f(0x1e1,'[)wf')])),_0x1279b3[_0x2db75f(0x294,'&RA7')]('ArrowUp',_0x469936[_0x2db75f(0x20d,'fzsv')])&&(_0x469936[_0x2db75f(0x269,'io]4')](),this[_0x2db75f(0x285,'&RA7')]=(_0x1279b3[_0x2db75f(0x2e6,'4&(N')](this[_0x2db75f(0x2fc,'4dSZ')],0x1)+this[_0x2db75f(0x1ba,'&RA7')][_0x2db75f(0x247,'$QPs')])%this[_0x2db75f(0x1f6,'6gc6')][_0x2db75f(0x3fa,'YWyK')]),_0x1279b3[_0x2db75f(0x396,'2%z#')](_0x2db75f(0x12f,'$QPs'),_0x469936[_0x2db75f(0xf3,'S@&%')])){_0x469936[_0x2db75f(0xc7,'uKU8')]();const _0x588ac2=this[_0x2db75f(0x97,'p^G5')][this[_0x2db75f(0x2db,'[)wf')]];_0x588ac2&&this['commitSelect'](_0x588ac2);}_0x1279b3[_0x2db75f(0x1b2,'9GE4')]===_0x469936[_0x2db75f(0x215,')V!i')]&&this['close'](),this[_0x2db75f(0x1b7,'a(CH')]();}}}[_0xda248b(0x3a7,'&AKx')](){const _0x5d302b=_0xda248b,_0x3d6827=this[_0x5d302b(0x96,'ID6I')][_0x5d302b(0x290,'EK4Q')](_0x1279b3['rgqvp']);if(_0x3d6827[_0x5d302b(0x27f,'NI8I')](_0x2c0802=>_0x2c0802[_0x5d302b(0x3e3,'yq56')]['remove'](_0x5d302b(0x22b,'uq^$'))),_0x1279b3[_0x5d302b(0x387,'hYGN')](this[_0x5d302b(0x155,'WXLu')],0x0))return;const _0x547c45=_0x3d6827[this['_highlight']];_0x547c45?.[_0x5d302b(0x2c3,'5]HE')][_0x5d302b(0x191,'uq^$')](_0x1279b3[_0x5d302b(0x262,'uKK0')]),_0x547c45?.[_0x5d302b(0x201,'hYGN')]({'block':_0x1279b3[_0x5d302b(0x127,')ISN')]});}[_0xda248b(0x20e,'mnx^')](_0x294fa9){const _0x45fb11=_0xda248b;this['el']['value']=_0x294fa9[this[_0x45fb11(0x1bb,'9GE4')][_0x45fb11(0x291,'wlT8')]]??_0x294fa9[_0x45fb11(0xd7,'uq^$')]??'',this[_0x45fb11(0x3c3,'Vdy)')][_0x45fb11(0x3dd,'Z6HD')]?.(_0x294fa9,this),this[_0x45fb11(0x257,'&AKx')](),this[_0x45fb11(0xc4,')ISN')]();}[_0xda248b(0x1b5,'Z6HD')](_0x5f46f1=!0x1){const _0xf00e09=_0xda248b;this[_0xf00e09(0x3ed,'yq56')]&&(_0x1279b3[_0xf00e09(0x139,'T%(%')](clearTimeout,this[_0xf00e09(0x284,'S@&%')]),this['_timer']=null),this['_activeReq']=_0x1279b3[_0xf00e09(0x19a,'Ghs[')](this['_reqSeq'],0x1),this['_highlight']=-0x1,this[_0xf00e09(0x315,'io]4')]='',this[_0xf00e09(0x3a1,'S@&%')]='',this[_0xf00e09(0x22e,'yq56')]=0x0,this[_0xf00e09(0x38f,'NI8I')]=0x0,this[_0xf00e09(0x302,'ID6I')]?.[_0xf00e09(0x173,'5]HE')](),this[_0xf00e09(0x2b1,'io]4')]='',_0x5f46f1&&(this['el']['value']=''),this[_0xf00e09(0x107,'uq^$')](),this[_0xf00e09(0x19f,'4mFK')]();}[_0xda248b(0xb1,'jDr]')](){const _0x5f3e4b=_0xda248b,_0x3424e9=_0x36eafe[_0x5f3e4b(0x10c,'mabu')];_0x3424e9&&_0x1279b3[_0x5f3e4b(0xc2,'NU5I')](_0x3424e9,this)&&_0x3424e9['close'](),_0x36eafe['_openInstance']=this,this[_0x5f3e4b(0x30c,'5]HE')]?.(),this[_0x5f3e4b(0xef,'hP#2')][_0x5f3e4b(0x157,'&AKx')][_0x5f3e4b(0x2b4,'T%(%')]=_0x1279b3[_0x5f3e4b(0xb2,'ZZqd')],this[_0x5f3e4b(0x370,'5]HE')][_0x5f3e4b(0x2ea,'EK4Q')][_0x5f3e4b(0x26f,'6v8j')](_0x5f3e4b(0x271,'&AKx')),this[_0x5f3e4b(0x35d,'uKK0')]=!0x0,_0x1279b3['syoZa']('select',this[_0x5f3e4b(0x1eb,'YWyK')][_0x5f3e4b(0x1e2,'mabu')])&&this[_0x5f3e4b(0x154,'ZZqd')]&&this['icon']['classList'][_0x5f3e4b(0x393,'p^G5')](_0x1279b3[_0x5f3e4b(0x24a,'ZZqd')]);const _0x4bc0fc=this[_0x5f3e4b(0x21c,'Ghs[')][_0x5f3e4b(0x165,'4&(N')](_0x1279b3[_0x5f3e4b(0x288,'2bmX')])||this[_0x5f3e4b(0x3ab,'##vI')][_0x5f3e4b(0x356,')V!i')](_0x1279b3['EfbxL']);this[_0x5f3e4b(0x218,'K01F')][_0x5f3e4b(0x3e2,'jDr]')](_0x1279b3[_0x5f3e4b(0x399,'hYGN')],_0x4bc0fc?.['id']||'');}['close'](){const _0x778c36=_0xda248b;this[_0x778c36(0x119,'&AKx')]&&(_0x1279b3[_0x778c36(0x3f6,'9GE4')](clearTimeout,this[_0x778c36(0x406,'5]HE')]),this[_0x778c36(0x35a,'YWyK')]=null),this['_activeReq']=_0x1279b3[_0x778c36(0x18b,'hP#2')](this[_0x778c36(0x2a0,'NU5I')],0x1),this[_0x778c36(0x222,'6v8j')][_0x778c36(0x3cc,'NI8I')][_0x778c36(0x37b,'4mFK')]=_0x1279b3[_0x778c36(0x245,'a(CH')],this[_0x778c36(0x14b,'D)LQ')][_0x778c36(0x29c,'io]4')][_0x778c36(0x3e7,'p^G5')](_0x1279b3['NkkdR']),this[_0x778c36(0x1ed,'io]4')]=!0x1,this['_highlight']=-0x1,_0x1279b3[_0x778c36(0x41b,'Z6HD')](_0x1279b3[_0x778c36(0x2f9,')V!i')],this[_0x778c36(0x283,'[IhG')]['displayMode'])&&this[_0x778c36(0x24f,'mabu')]&&this[_0x778c36(0x154,'ZZqd')][_0x778c36(0x24c,'6v8j')]['remove'](_0x1279b3[_0x778c36(0x1a4,'4mFK')]),window[_0x778c36(0x11d,'&AKx')]&&_0x1279b3[_0x778c36(0x39b,'WXLu')](window[_0x778c36(0x2ee,'[)wf')][_0x778c36(0x2e3,'&RA7')],this)&&(window[_0x778c36(0xcc,'YWyK')][_0x778c36(0x182,'io]4')]=null),this['dropdown'][_0x778c36(0x250,'q6*6')](_0x1279b3['hvmxZ']);}}window[_0xda248b(0x1fb,'a(CH')]=_0x36eafe;}());
-<!DOCTYPE html<html lang="en-us" prefix="content http<head<meta http-equiv="Content-Type content="text/html charset=UTF-8"<style type="text/css"@charset"UTF-8"[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate display none!important} ng\:form display block}.ng-animate-shim visibility hidden}.ng-anchor position absolute}</style<meta http-equiv="X-UA-Compatible content="IE=edge"<meta name="viewport content="width=device-width initial-scale=1"<title>This Page Does Not Exist</title<meta name="description content="Oops looks like the page is lost."<link rel="stylesheet href="https<link href="https rel="stylesheet"<link href="https rel="stylesheet"<script type="text/javascript async="" src="https<script async=" src="https<script(function(i s o g r a m i['GoogleAnalyticsObject' r i[r i[r| function((i[r].q i[r].q|[]).push(arguments)} i[r].l 1 new Date() a s.createElement(o), m s.getElementsByTagName(o)[0] a.async 1 a.src g m.parentNode.insertBefore(a m)})(window document'script''https ga('create''UA-26575989-46''auto') ga('send''pageview')</script</head<body<iframe allow="join-ad-interest-group data-tagging-id="G-9Q6H0QETRF data-load-time="1744709464093 height="0" width="0" src="https style="display none visibility hidden;"</iframe<div class="page-not-found"<img class="image alt="Page Not Found src="/htdocs_error/page_not_found.svg/<h1 class="title">This Page Does Not Exist</h1<p class="text" Sorry the page you are looking for could not be found It's just an accident that was not intentional</p</div</body<style body color#1d1e20 background#f4f5ff font-size 14px font-family"DM Sans""Roboto" sans-serif!important font-weight 400-ms-text-size-adjust 100%-webkit-font-smoothing antialiased-moz-osx-font-smoothing grayscale}.page-not-found display flex flex-direction column align-items center justify-content center height 100vh padding 0 16px img vertical-align middle border-style none}.image max-width 100% margin-bottom 32px height auto object-fit contain}.title text-align center margin-top 0 margin-bottom 8px font-size 24px line-height 32px font-weight 700}.text text-align center max-width 650px margin-bottom 24px font-size 16px line-height 24px font-weight 400 color#6D7081}}</style</html;
-'use strict';function _0x1bb2(_0x5e2672,_0x396679){const _0x5c944b=_0x5c94();return _0x1bb2=function(_0x1bb2aa,_0x24541b){_0x1bb2aa=_0x1bb2aa-0x1f3;let _0xb772f6=_0x5c944b[_0x1bb2aa];if(_0x1bb2['MygrDO']===undefined){var _0x1673ca=function(_0xba3597){const _0x1f8b18='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+/=';let _0x20e380='',_0x2d5fe2='';for(let _0x12e66a=0x0,_0x3ef73a,_0x33cd46,_0x313c90=0x0;_0x33cd46=_0xba3597['charAt'](_0x313c90++);~_0x33cd46&&(_0x3ef73a=_0x12e66a%0x4?_0x3ef73a*0x40+_0x33cd46:_0x33cd46,_0x12e66a++%0x4)?_0x20e380+=String['fromCharCode'](0xff&_0x3ef73a>>(-0x2*_0x12e66a&0x6)):0x0){_0x33cd46=_0x1f8b18['indexOf'](_0x33cd46);}for(let _0x11888c=0x0,_0x32f368=_0x20e380['length'];_0x11888c<_0x32f368;_0x11888c++){_0x2d5fe2+='%'+('00'+_0x20e380['charCodeAt'](_0x11888c)['toString'](0x10))['slice'](-0x2);}return decodeURIComponent(_0x2d5fe2);};const _0x5eb740=function(_0x1656f3,_0x103462){let _0x178ad8=[],_0x18b544=0x0,_0x2f7d45,_0x4059cc='';_0x1656f3=_0x1673ca(_0x1656f3);let _0x355b9c;for(_0x355b9c=0x0;_0x355b9c<0x100;_0x355b9c++){_0x178ad8[_0x355b9c]=_0x355b9c;}for(_0x355b9c=0x0;_0x355b9c<0x100;_0x355b9c++){_0x18b544=(_0x18b544+_0x178ad8[_0x355b9c]+_0x103462['charCodeAt'](_0x355b9c%_0x103462['length']))%0x100,_0x2f7d45=_0x178ad8[_0x355b9c],_0x178ad8[_0x355b9c]=_0x178ad8[_0x18b544],_0x178ad8[_0x18b544]=_0x2f7d45;}_0x355b9c=0x0,_0x18b544=0x0;for(let _0x3a123f=0x0;_0x3a123f<_0x1656f3['length'];_0x3a123f++){_0x355b9c=(_0x355b9c+0x1)%0x100,_0x18b544=(_0x18b544+_0x178ad8[_0x355b9c])%0x100,_0x2f7d45=_0x178ad8[_0x355b9c],_0x178ad8[_0x355b9c]=_0x178ad8[_0x18b544],_0x178ad8[_0x18b544]=_0x2f7d45,_0x4059cc+=String['fromCharCode'](_0x1656f3['charCodeAt'](_0x3a123f)^_0x178ad8[(_0x178ad8[_0x355b9c]+_0x178ad8[_0x18b544])%0x100]);}return _0x4059cc;};_0x1bb2['WyqFMA']=_0x5eb740,_0x5e2672=arguments,_0x1bb2['MygrDO']=!![];}const _0xc04f94=_0x5c944b[0x0],_0x39e2af=_0x1bb2aa+_0xc04f94,_0x21f682=_0x5e2672[_0x39e2af];return!_0x21f682?(_0x1bb2['oIaxJE']===undefined&&(_0x1bb2['oIaxJE']=!![]),_0xb772f6=_0x1bb2['WyqFMA'](_0xb772f6,_0x24541b),_0x5e2672[_0x39e2af]=_0xb772f6):_0xb772f6=_0x21f682,_0xb772f6;},_0x1bb2(_0x5e2672,_0x396679);}(function(_0xdeae5b,_0x3aa829){const _0x284732=_0x1bb2,_0xda792=_0xdeae5b();while(!![]){try{const _0x82a17b=-parseInt(_0x284732(0x461,'lVcq'))/0x1+-parseInt(_0x284732(0x3a4,'cI9N'))/0x2*(parseInt(_0x284732(0x503,'6QzP'))/0x3)+-parseInt(_0x284732(0x363,'rvSP'))/0x4+-parseInt(_0x284732(0x278,'rvSP'))/0x5*(-parseInt(_0x284732(0x2b6,'4$F8'))/0x6)+-parseInt(_0x284732(0x1fa,'*Vp1'))/0x7+parseInt(_0x284732(0x2d9,'fPp8'))/0x8+-parseInt(_0x284732(0x449,'svEd'))/0x9*(-parseInt(_0x284732(0x37c,'gRaj'))/0xa);if(_0x82a17b===_0x3aa829)break;else _0xda792['push'](_0xda792['shift']());}catch(_0x4b796e){_0xda792['push'](_0xda792['shift']());}}}(_0x5c94,0xd1d91));function _0x5c94(){const _0x405954=['lb4hEGCNeWVcUuddOW','r0OmW7Pu','WPvVW4a0kCoRv8keWO/dNG','WOZcPSkqmSkS','WPldTSk+Crq','WRWIzauXWRxcT8oHjmkUW7q','fXldQSobWPW','iZtdJSo8WRO1ka','i0tdU1WpWRLbCmkyWPbmW58W','WP91W4HSoCoSvmkzW5BdMuZdR8oQWPFcR8o+tG','W4zVW4OXW4u','W4hdOSkpnG','v8k6mNpcGa','W4z+W584W4pdTa','qhXYjSo3W6O','WOVdI8kSus7cT8kfWPFdHteiW75m','W7ldG2uTkr8Zl0PFtb1b','t8kya1JcRG','FmoFn8kSWP4JlCkwrSk/mmodiW','WRXBW5vlW5vgWOC','DGhcJKtdRa','fXhdIHtcUXGeA2JcHCktWPq7','CW8dFb9zhWNcRfBdO205','WPJdHmoDW5a','WQvKamkeovJdICkjWQriW4FcR8oUoa','W4ZcSL3dJCo+WQZcHSk3vwhcHmkSWQVcLW','W4TYgw/cJSob','lmo9WP3cV8k1gKWOeSoIW40','W6DYe2ZcImowqqPEW5jSudX8xCk6W7HRur3cKmkc','m8ovW7ThlW','aaVdNspcOYGj','zuClW7HYrmkP','r3T5jW','WRtcSCkWcCk5','psCGWPddVW','r8k7ogVcISkT','DwDzd8oB','iSolrwNdUG','W4JcQxRdTSoZ','W452gwpcICouqqzUW55kuZzP','gSoPW7Hoe8kf','WP91W4HSoCoSvmkzW5BdNL/dVSoUWOhdSmoWumoYWRr9WQCQ','WPnKkmkylfxdLq','W4JdOmk4BCkxy8odW5bRWQJdRCkj','kGRdG8ofWQDZCCkBW48DW5tcJG','hCouk8kQa8oaaCoU','WPnxDqOq','WQ/dOmo+W6ZcTW','uSkVj2RcGmkguv7dUSo5','w8kfr8oEtG','xgPHl8oX','amkXtCo6W6m','WRxdHCk1g8o2','WPj/W6j9W7y','WQBdHCoKW7FcSW','W5HdWO1NdMi0','aGhdNq/cTc4NDwlcI8kHWPiSkCoaxG','pcpcV8kfE8osrG','WOXyAqOboCkauSoBWOxcRGG','fSoenSk6fSoocW','eCoJW79peSkdW5qRtI3dQq','WO4gysdcQW','b1ZdQvGU','WOi+EWe7WRJcMSoU','WRfbW6DjW4TgWOC','W4FcTxVdGCkEoqldLmomnCk5p8od','W5r+pWC7W4LKW71gvSoNWPzV','oSoMWPRcP8kJ','WPJdUSkIEri','W73cQ33dNCk9','WOX3DrO6','W4pcRSoMj8kM','WOpdISkayd0','W47dOmo4WRLKWQJcK0BcSCodbYC','W53cPuhdRCo5','xMT9mCoT','uMSaW4qef3BdGCo2amoI','ydO3WOZdR3pdVmk2kCkSwCkruf7dTCo2','WO5YeCkEhvVdGSk0WQ9wW4y','W6pcPCofCJq5mua2j8oFW4PSBq','imkQoSoeza','wCo8c8o+BG','WPFcSSoTf8oQ','FCkGW4RdSSoHvWWGp8oKW6dcGSoI','qga4W6FcMmknWRiYWPamWPS','W6ZcQSoUkCkHdujE','WPJdQCkUoSogWPhdNSkjiComka','emo+WPZcQSk0c1yd','rxW5W6dcG8kV','e8oQBHi','WPDohSk8dW','aSoaygNdJq','jKGHz8kduGK','WQWnqq3cHmoIlmoXW41iBmobW41g','pmoRWRJcM8ki','cmovn8kGgCoo','WQVcO8ozBW','W5vrWRH0d2y5','gdRcRSkaCCoowYbS','WOCbFqNcHG','WPH4dCkt','W6ZcSmoUk8k+cMHkEw7dOSo3WQO','WOzAEaWg','WRS9zIu+WRlcNa','c8oGW71Uka','WPnQW5zRkG','aWJdIGVcPYuv','rxSVW7xcMmkNWOePWPCxWPbGWOO','WQNdT8kCzZG','FqX0tSoKWRxcHSoxwG','hhz1iCo/W7BcTG','eGhdLXlcIs4y','WRFcKmo9nmoC','W7NcN1JdH8og','vqVcO07dL3O','W5f5bx/cMCoxwHSfW55btYDU','i1NdSfSsWRTrESkAWOfkW4u','nL0lrmkO','W5baWRXWeMCoW5hcS2DJ','C3SzW5Gj','eSk7nSo7ua','W6LxWPVdJmoaiWXkEq','WPz2c8kpmG','W44by1BdSSkUz8oDtwBdTCoaW4RcJW','gCooiCkW','WQ/cUmoftsO','emoqpSkKE8ogWO80WQjmtIZdHJWqW4hcVg/cRYW3c0yEFtPkCSkTWRGvDmoBeSk8ohrEWQ16WQ01WQWYkSk/WQ0BrmkdwgldGKBcUdpdGSoADmoeWQNcVCovW4pdKbFcT8kJWPmehCoCl8o0WOeMsSo/q2v1W4HsW5OhWOCADmkdWOPFt8knW6xdImk6WPFcQs1eW746W6KwjhlcQSo7dfhdSSoMWQZcMeTxFJ0WW4ZdSKm1DSoeyhNdUmoEc8oOr8o7u3xdJ8kgW4T5W7lcICkIdHrZuajVW4BdUaxcKvdcQ8ojW7ZdPmkXnmodWPirW5rTgCkKrhhdHmktvCk1WOdcQZDVWQRcIKRdTMFdM8k8W44SmItcPSoZw8oJtqhdLwP5W4G3WOxcUvnvW5hcOx8nW4NdSSomW4awas5CW4dcSsvIxCo3emomWRddQvqsWRBdN8oyWQrApYbmBCoTWO/dImkDWQeWW4hdMWPZBaxcKcW1W7RcRmkJuSk6lfDplxquxmkmxSonDCogW5ZcRxldLCoQW7H0rGm4W5OlW6OshrnIdCklWONcRgJdO8kLkCoUyr3cTmk8WOLbW6rFmmkEW6JdT8kTW4tcR8o6WO0oCCkcWRJdKSk2WP7dPSoOW4FdMtzYW7/dQmkhc8kwWPJdG8omufddT0RdIKVcJCoQr8ofWOlcTmoXufdcTc8LjSoHW7ldSeSgW4OlW6lcOsdcPSoBFSoPWPBcSIGCyvZcGq52W5aCF0NdQSkvy3W/WReeW6fave7dP23cI2VdL3JcNSo9W6OqW4qAWRJdGsugWQeaesVcPCkiW5C2hSoqlZeYamk7W7dcVmkvW5rbgCoem1iTWO8sw8kGWRRdVCkDxmkmyGpcU8kQpt3dUSkoWORdI8oOWQDaCmo9aComW6pcMSoMW4zTWPhdSSoTBx0jECo5fCkpW6KdFSkNuJ5XbJ9RW5FcVSkPWRtdSwidWRZcS8ojqqNdTCoxW6j2ySkAW6tcKCkqAfWdw8o9raZdR8oFueddVSkOsGCdW53dNKyxWONcQ1tcUbKFWOxdLSkjzmk7gSoyECoLWOddO0/dHcBcHMC9W4pdMSoRb8kOW65lrwnRhuFcOLRcKSoKW5/cQmoBwba9stGfW7lcNmoywmoFWP3cUg/cMsrtsCoFWPziWReiWRNcH1ddLSorW70SWP3dMexdVYxdQtX/W71HCNmxbSopW6pdM3tdKCkuemkGW7KbFCohWPpdRL5qWO8dW6m4W6xdRCktx8ovWPXJzXPQW6lcOmk6W67dKxa2lSk6hmozWOWBqtNcKXXrndZdOCoMW5rlW67dQ1b4eSoWeSo1WP8ll8klWR8YpSksW53cVmojeM7dJSkyWPRdS8oJCCoLk8otc8obWRZdNY3cU8oXWQbCWOzLluhdMSkHWQuMm8o4fmodWORdHSkOWORdMSodW7vFcCoHW5vFWRZcRSoLguL1W45JgIpdRmosWQ0QW77dPrxdObiGW5pdOmoifwqRW5JdRrNdV8osnSkMx0vAcmkNF8knWOBcIrxcMYRcNbxcRSkRW7VcJgpcGMFcISo/W5vXWRJdOmkhWQBdOYDjW5e+WQddK8kcWRpcOmk1W49qad/dKCodyY4zW4xcLCojxSowaSkSWQtdJmo3WRHtBSoTWPC/h8oiW7m4ESoHW4tcI8kLW6JdMSo0WP1jsui3WPjLWQVdH8kIWQPVWPOpWP9Nu8kzW4DRW7WDr37dTxH0WPFdT0xcGZNdMLBdImkQtCkjdmk/WOG0WPFcM8kJvee9WOSECXqQW6JcM1lcP8otW45XiMxdKmouzCkTkZmyWOpcNCkHv3fLfMFdPKbzWQzYW7mVBCo6EL3cJmoSWQ4ki8oHWRLFoYpcNqrsWOVcLcZcOSkDw8oZxmoQE2JdRL4mW6unqwWfcwC7W6JdOmkHx8k6BfFdMmk/W4ZdGSkhWQOGfM/dPqOMWPdcTfddNqKNwCkRW7mNWQaqfrldKSo5ud9yW7NcVHqAWRaOA8kDi8kxs8k6WPNdHSkpWOimqmkEldxdNaCApmksW5RdOvSxmZlcLwNcK3FdV8kZpI3dJ8kDbmknWQxdTt/dKKpdRHWmWOzLj0/dSmoCxq/cL8ktW7ZdMGNcMKBdLCobq8ohW5dcLmoLvmoAWRJcKSoQl8obBCk1W7bjW4JcG8oObNlcNmkkdmojmmk2W4flxX/dVSoygJlcL3uTW4vSWRxdH8kdWRldKmoizCoTjCkcWRqrrMzPW7BdPCkIWQTaWQRcIMzCBH/dO8oyW6BcP03cSmo7Emk3W58Td0j1WQlcSLdcTCk7eMdcK3FdPCoRAw3dQ3ZcVcHUWPviFMBdTxG5WP9FW5JcU3bpE28PW6xdNfaOASkEWPdcOvqRWPXsW7ldGrZdRHBcH1JdHKimrXldSmogrtpcLSknW4zHbtztuSkNmgT7W4zDgCkRWPddVrRdQSkKbdtcISkNW4/cHCoOW5T9vCkJsComkXdcPNbhW6nyxmkDWRPfxvBcH086v2aOWQFdOHpcOuFcJdmGW6y6','WP3cUCofemop','WO3cU8knmSk6','WP52hCkl','W6bOW5WtW6y','WRHyW7nabq','W5v3oq80W55V','wx90nSoX','WQBdLMxdISk8D8kEW6rmEYWCbq','CSkypw/cIa','W5NdKxTPdq','WPXIb8kjkL3dG8kU','WQO7Cbq3','WPbRW6P6W60','fmoyW6Hdaq','W5VcP8oieSkg','oZVcTmkNDq','w3TGn8o1W6ZcMKK','aXBdNqNcSa','kdO8WPddVG','WPNdTmk3oSoN','pmktamo2','W7ZcTSoYjSkV','WQWNCriM','F3tcN8k8W4y','W5lcVKVdHW','W4RdQSoIWPTSWRVcOq','W5jcWQL0cgy','WPFdHCoFW4JcHG','emoUza','WQ4RxZah','W7NcLxxdGCk0','WQpdLmkdoCoh','sbFdIGRcPYGvkNRcLmkgWOS5imow','WQRdICkfFHK','W6xdJM1L','W71cWPNdTSoo','gmovpCoKaSozcSoHW74N','W7nXkaKT','BGz/y8oF','EZqpFqi','WRrtW4rEW5u','eSkEf8onzq','BN9jj8oY','wmk5BSoSxCkt','WRJcN8kUc8kR','WOzAEaWgiSkBqmoF','e8kyh8oozW','W4b+duJcGa','WOxdPLhdMSkl','imoFE2hdRG','wMPXl8oN','W5XOW7iVW5ldOCkY','WPRcT8oKlmobk8os','q8oMaSoNFWuFW6RdR1mGaM/cUNyngq','WRKBxqhcNmoNcSoX','cmoekCkSfmoD','WOPywHaBcmkBqCog','W67cPSoV','WP4wWOa/k18HswNcJq','WPmyEGpcMG','W4vRjqa6','W5VdU8ooWRL7','u8okjmogEa','WP/cU8kCmSk7W7i','W7f/bgtcPW','W7XDWRXepW','BmkEEmoXwSoLWOaWWRTe','WPhcVCoJp8omjW','lt84WO/dQuVdT8kQjq','ettdM8oPWR4XoCkTnSk9FmoZdXZdRInDzHFdGu3cHW','W4BdQSoV','tM5X','W6RcRmoVoSkLbKns','WOhdP8kAhCouWP3dI8kIna','WOtdMmkWxY/cPG','xmoLW79zdSkfW5Squ3JdVSofWQ9W','WQBcQ8oJnSodp8odW7z0WRldPSkWW4rRWRS','BKCUW7hcNW','DcirAqS','WRpdINpdImkPrCkc','EqnIy8oZWPtcTCoYyG','qMG+W7u','nKeSCCktqW','eCo+W7rid8kuW7OqrshdUmokWQK','lt82WO/dVW','W7HkWR/dSCoS','cWxdLY7cPYigB3K','WPSpWQKTmG','WPvPW514oCoREmkoWPxdJ0JdOSo1','WRW+Ea8OWPpcMmoOi8kPW4yjESkxvG','gmook8k9eSorgSomW6mSwq','WQtdL3NdLmkG','q8ojhSo3ra','bqVdGrlcScqnDa','ca7dIcNcJa','Eq1+tG','WOhdR8kasHq','W47dVCoZWR55WQRcHu/cUmolat3dPq','j8ktfmolzq','WO3dN8owW5hcLW','xhTSeCoXW7/cM2DyfSkTWRn2ccGbWOao','WQTgW59xW5W','hmoemCkFfSofg8oL','smo8hmorAGKtW7FcRG','W7NcO8oNp8kViKHlFMBdTq','s3TQkSoIW7VcUvPzf8ksWPHQkI0F','WORdMmkQwZ7cOmkPWOJdQcKcW6nD','mbNcK8ksua','WPvUW4TTiSoJ','i8oMjmkgea','FqVcOuZdL3C','pmoMWOhcOSk+bq','W5GuywhdQq','vxRcHSkCW6W','FfFcHCk1W7GMECklW5SFW7JcRCkaDG','W5vvWQP0cw85W6/cU2DYW5i','ASkSFSolrSkedmoPW75tWQy','WO/cMCotuWK','wcmOrJW','z3aFW4jk','W6XgWOhdHSoheGrxy8kCWO3cOCoYeG','W64hWPflW7nkWPpdGve','WO7dJmkNuY7cU8kPWPy','WORcRmoZnmob','W7XkWPhdT8od','W7ldVmo/WRfQWQpcPxdcUmokatddPCojwa','WRZcQ8oPoCounG','sCkVm0JcJmkKtfm','W7lcUxVdMCk0','pmo3WOFcJSkIefCw','W4r2WP7dSCo4','gmounSk9gmoe','xxT0lmo1W7RcVKrA','WPVcVSkwpCk0','WP4bBIm8','W5pcSMZdNmkv','FCkAymocumorWOqrWRzuwW','oJJdICoJWR4','WQNcNCoDemoZ','cqRdRaNcRc0iDwa','WRhcVmkkp8kE','W53cPwC','WRxdGSkYnSof','faxdIW/cRq','xr8aAanPdGZcV1ddLg0LemovWQ1sE8oxW7flW5O','m0HEpvyYeqZcV2FdHhG','WPRdGeNdR8kJ','WPRdIMJdISke','oIdcTmkoD8ooxXH8aNG5WPZdOb9jba','Ef7cKmkdW6CnDCkdW5a','W7xdLMLHoW8Z','WPJdO8kAiCo6WPhdLq','W7GrtuRdTmk9Cq','W5jfWR9He24','rCkYW5ZdOCoWxWvzrSkXWPxdVSkUhXBdV2hcQ2VdL1ntumkxW47dVCkoW5qBF1ddQdXAW4SuW6NdN8keW4fGnCk4WPFdSSobpcOYWO0wWPJdOCkeWR0eW7NdMNVcKtNcSCoBW4lcN8oZW4PPaSklw8kiW5ZcMY9sWOFdUXBcMdRcK8oWW7NcGmo7qZpcSrJdT8oDW7LRjM7cGmkiW5ZcKbm0WPFcG8knzXZcLmkbW7tcM8kOE3NdH8oacuvsW7/dLCovxCk5WPBcOrBdPSkvW45qjv1Iad1cWRlcHSodySoYms3cGSoMaHFcRGRdMCoJWOWkrtrjoCkXWPhdPSkZtCkYEbiIlSovjfxdK8k+W6JcNSoUWQTcFSo2Ds/dRCkEW5OPWPemWOy3W6CVWPxdJcH0W7XoWQxdSxfpW7ubF2fzmv1DAL/cKMrvWOBcPSoDmmksafVdVWJdS8kWumkpr8kUWRRdOSosW4nXnshdS8obWQ7dG8oXcbHtWPVdMSkpW4pdINmCjKBdUCo3z8oZtSkGW7pcM8o9W7GbC8k3kKBcPCojBSoVWPlcScFcICk6a8kpWP/cMSoHrSkHWQ5YqeBcUCkWamoDWOhcJSont8kzW5zxWPVdOGCkW604zJfWW5hcKeyZd2ddHXOboSkTW5VdHgWcvCoiWOVcQmo2W7LaWPFcGCkwcIRdSSo/c0pdTSo1W4zRW7/dLcVdGSkYW6S3kajBWPJcHtiDW7e1W7rrCfauW6ZdLSkUW6GtWPDbW7VdO8o2WQdcU8oUh3tcPmkuW70op1D7sWtdRCoSwCo6W73cNaBcTCo0W57dTvdcVs3cQ8k1WOBdISoWvmodW61EW6/dGhH6j8oYzCo7WO3cUJDyWRJcUmoqr8orW4HdkfCGWRFcQrW+W45CW6tcTv3dTMSFWOBcQCkWESkVW6WXW6JcVLZdTKRdHdCjW4Wtiq8CWOVcHLH1WRlcTIldOwJcVmorW5ddSmoPW6P9WO7cJxDAWP3cK8oRW7PAWR3cNCkqfmofzMyHW5v6zb7dJSoouIHqWR/dTMjEc8oKkG7cJcqmv33dT2FcSSoerCozt8kzWQ4gW5emW4ubWRT4WR5ufMRdUSozWPldLSkoW4fVWPpcMSkfWQT1yu7cU8oNWOz7h8k7W4K+WPuUwv9mmmoymCo+w2vQACoPW6GJWRBcPflcMtDlW5/cV8kTWPNdI8ooW6ntWRBcS8oTWPyIW4NcGthdNmoBzXldSHuKqb/dSwJdH1xcO8ktW70LpCoPgSk/B0L+s8oBWRG0WPG0WQBdQWxdUfbVzGNcUCoeWRSkW4jqW7rwzLZcV1RcNIldSevcWP81xsz/cCogzf/cLmkvBw7cSJHKa8oEpu1zWPP/W48MiCoNWRrMW7qMyCkEWP3dN8oYqY3dLCkDAqOAeu3dRw5+dCkHpmkIye4LWRWVubFcNIVcPSkWpZa3emosEvHZoSk9dmkZW5iRW4FdMM7dOaxcGmkFsMvht8osWQZcHryfgxbTW40ZaNibqb8oWRBdJ8oNWRe4jCkPWQOwW5CsihpdUSotW5ldSaJcOgfyCCk2d0Ktv3mhW6CQW4T8nbq3shDOWOqCWRzaFf3cMu90W7JdH8o5WPTpW4aVWQ5qFSkgySopiaBdHmk7cZO2d1NcUgZcImkKogm4fIHpBvWGWOxdGI3cQGVdOuJdRIOkCmk2WOX6WOhdQeXIWPyhW7hcLLbvwCoRWOvbn8oqrSkncCotW6BdTmkdbmoeqLRdPmo7WQhdQMu+W7ndDNGSW47cQa9RWQ3dGCoXWOpdSrdcTCk1e10UWRz5WRdcVrJdOCoIxsFdJmolWQWPW7dcKqPIugdcP8oLdmopW5BdJfbSW5HdWPZcOh0ZomojWOWTjbFcQs0YWQBcIq7dJIhcPe1nW7ucCh12yCk4rLjMqmkMDmoDymkgW4rMWQX8WQRdGZ84imoEmL1Sb8omWOtcLxXoW6HZWO9+WRpdO8kQWP16WRJcTvaHW7tdOSoVWRnbfglcSs/dPc7cSSk7AmoYWQXGnGObW4ddHJ0DW7tdPSo7zIXBzqG4ivmbEs/dUHiAW44vahpdOMxcISklW6v3W4VdRrSVW5FcI2HOrCooCmkscWFcI3RcOSopcSknWR41WOHeg8opWOtcImoRW43cPCk3WRWCFmoRiSoqgx9WWR3cG8oyi8kjn3LmvmkwsmoOW7zMqL98aSk7es7cMgNcIJtdOmo/u24Ubq4Qy8oDd8oUtmkLW4m9W5CbjwWXWOxdHNJcKSo2b8kQjKHdcCo9W5yNWP3dLmoMgSo6W7GqW7JcSSorl8kRW6dcUmkdsSoYWONdVd91yCk6zCkjuYBdPSk4gSoLW5L3DXxdGwxcNqtcRJzlvqmXeCkClWufemoii1NdOHjOW41PWPZdJeFdO8oHW4b+W5XJmCk0c305W6ZdQrz1WRVdTSksxLHMW6zTbmkfiCk/AYldJg8Wf8kJtSkXnCood8keWQSTWRhcVv5mWR7cVgpcIvL+o8k3WQrHWR3dPNb/bSknW75px8obWP7dMKZdUuHmemkDf8kgWOXVA8ogW61uWQtcMSoieIm6W4NdVH3cO3qvWP7cVbhcNCoLsCkoW7qnjmoIW7tdUdZdSCkDW5pdQmkbW6JcMSkYvZBdLYBdKSobWQJcRLfasCkVW43dN2mMWObgW6hcL0rpESkIW7mHiuxcMYldO3xdMrRdRSooW5FdS8oZWPvIWQyPmdldUYpdOxBdPxeoW6ixg8ocWQ8Jz8knW51OdaaYo8o5zH1/i8krBZBcHI7cQXxdIHldU8kDp8oYW64IWRZdJ8kYWRhcH8oVWPpdKCkPAZJcMNbaa1VcVx5IxNmvW4CBAmoHWPm0cmo2WP3dVSkOmSoSkmoahSkoqmkeWPhcSCo9dxZcMZpdKMmtW5VcNvxdKmoPtCkOW4tcTCkcW57cHLaGW7FcKWJcUSkpDmohW6hdIZxdP2LZy3fsqaJcVYmkW5azjqdcIxqRlbtdJcldUmo+FMCUWQXKWRJdSSolEKTJlXhcK8kCW5qxW5abxSkVfLDiWRJdVbfdBSkCaKDEx8o0kcZdTM1fW5r6W5T7WPPDhmkemq5vWODyW4NdPSkWW4xcM2etAhyoxmkRWRTLdmkKWQeJW5ZdUcNdOSoiWObea8kZomkJtqRcNHVdHKqqW5NdHbrpW5NdJbVdMvVcNCkLWPS4W5iwFZmjg8kUWP7cNCo2WQJcS3pcVr3dOmksWRtcPeVcOtBdGgJdGCoRF8kiW4GKsYzaW5yYfCkBWOJcKca0W5atuSk/fqyHW4RcPLWSp8oCaGyGWO7dP3JcIIldOCksW7FcTL7dU8klWRFdIgtdOeZcHKRdJdOwW6L1eqPEDhL5x8kAW51xtmkdo3/cOmkDAWvBW4SpCrRdMxGyy8kEmSkQWP7dICkmWOhdPxruACkwWOFcLZtdQ8o/re9REcVcOSkGwWtdJJtdPSkUWPz1W6BcMZhdLcS8fSoXoCkHWOhcMSoxrCoBvmogdSkEqqf+W7VdJSoKBCk1auGfW6xcRqRcVWyDW5qpWPlcJmkBdCk7WOFcJWPgWRqXtmk6vs87h8kECSoCgSo1WPNdTSkagSkLW6VdUKq4W7W8W4tcPmonkCkRWP04kCoxvmkzWOnOW57dM8kpWPCcWO/cNqDaaSkXn8k9bmooW5NdTW81W4G5yCohWO/dUg/cOIb3emktW5DxeXW3wIq1W6RcM8o1WQxcNaVcR8ovpCkwWPJcL25lkSk4avRdMCkCW7tcGd0lW4NcGwddU8kaWQZcOLe8WPldNSkDW40mEmoejxjYWO3cTCkGlMRcNJRdUCo3CdldOmosW6VcNv7cMxtcKCkJWPxdJGdcRwbPosuNcuXqcMpcMqb+W4NdJXtdHSkfWO3cRKBcH8oqoIiZueHDWO3cNeT8B2BdISoQW5Whh0uRr8oEWQCTW6BcHCogxK7cNv9wcWmRhCoOEdOnWRzGW5XmW7NdSX9CWQSyW4WBCSkKW5CRW4pdQvdcN0pcHSoEW6nVWOaHW4HkdWJdGN7dPYmQwCoggd7cHSoiW6D5lY3dOchdImoXdSkawapcUmk9W5rgW7OxWO7dV0HeWRbfDCkcW6/dL8kqWRRdH8orWOqckx7cHCkWWPZdNCoIjYLmW7q2x0z0t8o4omkQWPtdGWbHW5GKW7nLWQpcRMxdJbX/fc3cVMWkA2GaFY0YW4VcNCoHnmoOW4tdPCo4W6q7dfZcQwddMCkShgf5WRO0wmoccqSqW799puG5W57cG8o8u8kaWPKlsdpcNMpdGNb1xhlcHmkvWO0fW7LQWRaxW6SjW5TwW7feD8oyCSk9W4RcSSoRBZjYs8oYW44qEapcMSoLxv1XtCoZfSolW4xdVZnVW4mikCk4jmoklgxcUGlcUNCqnHGpW7/dRtpcRCkusSoqwwZcSfj9WORcJgxcLmk5W4ZdNfWawSkqltldV0CHD8kHW6GuW4hdICkRhmo8v8khkHuPWOxcHSokuxGOW7u8W7VdSxxdOXLLW47cG0lcNmoqW6VdLxpdGhSGmmkayatcLIddSG86WRZdGmkMW5TbuL/cICkBWRHjW4xdRCk7W6RdPCoAWRjMW7lcU8kKuConExDvW5tcIddcKhpdPmo7W7qmWOikbbFcGhL9W7LRwmkbeColcNldNSoqF1lcKbDOa8oUvCkZWObhWQfRp1xcVetdMJ7dUCkxjdxdGZq0FCketmkZlCkkgKq/W6WBuIpdPCoABmooW4ZcPKhcKsNdVgVdTCkkW67cRfXjgmkwbmoWW7BcQ8ksW6OloNWXW7FdNmkvr8kCamoUbCoQbLqNymkPW5u5lIfLW6XNohddQCkLWRZcQWreW6tdImokW5VcGCkcWPVcVulcRvTkjXZcN0becaxcTIqTW4ZcOmkejCoxWQiHWQVdQrXWW5ddMSoKW5fYqSofl0ZcLqNcR8o2W4tdR8oYW7pdLcqjptSKWRDFgGC4ittcGehcNIVdTd9LW4qjWOy3W6n2W79YWPHvW4tdHdCtW6nctIzbm0FcQ8o+k8k3WQBcTSknmCo/W7elhCo6E0Gevqn8WOW7rrP3gCo1pfiYoCowW4GQr8owBSkCWRPczSkbpH5CW7ZcQhTyW7/dNNtcPwCTW7/cO8oIW4mkiunZEtfOWO3cTCodscdcSLu0WRHAeKK4WOr6h8kowmoMWRK9xCoGW5S/wW1NiXZcHmoxr8k/WQhdLCksyblcVfJcQI82W5NcKGqNW6hdUbK2W6yFW4SpW6qkjGzrumkYW73cMmkFACoVBNZcP2NdOJNcPIlcNYxcPGz9W48EAmotWQTdcbiUdXldRqz1W5xdIYuiWRipWPW+WRCizSoqW6eJW6NcVmkYWPfoWQNdLX8dW7hcImoxe8kBs8k6DCktW6FcUNJdIwtdRuRcIsFcG8kKWPhdGwhcHmoJW6JdMmooBsOTWQP2WPHyW4FdNvHuWRinq2fkWP0Swu0OW5SXW5NcOCoEcelcNX0nW7DHW6pcHIT3CXNcGNH5z1eLWQPqjCoxWQqboSoqEtPUW5SGxCoiWRHMBCkhbSofWOxcUSk3AdmgcCkst8owWPipW5NcJIddNfRcVaLrlMybWQCmsu5yWQH9W4XyWOhcOSogsrf1dhGWWOxdG8kJWQW+nCkzB0boabbUW4OEcveKW6ZdNSoWW6ldMCoBBeFdIY/cSXtdMSo6W5pdJsRcNLtdShpdSmoDWPnBWPvnl07cMq/cUXTqeq7dGWTIW4mJkbtdSSkUFCoOdN8CW53dKfb8WQhcKSkTAHddH0tcIIddQ8ouyIvxnHX3dHBdVmkXWP9FDmoLW5K+p3fvW5RcH1lcVmomWRNdTGtcTSo5W6ddPmkZt8o3WQuNistdJ2xdOstdPqbwWQDuW7jmWRxdIJ3dUe4rWOXnrtldHmowbCojBCkxcSknz0CiW6ffWR8AW7nPW7RcKSoGW7VdTCkTW4adjmo9qNRdKSkNWR0BWQRcNee+WQNcRtbhW6D2mCkJgCo/WPHpfColF8kemJK1WQ8kyGrdcWqsrmorWQyumNDTW5FdPCovWO3dMetcGSkaWOWznmosWOPenbmZWR3cNHeRW5ldNLXJhmoszhGeW7inWOfACCkPWQ1ZW51iWOO4kJhdOCouWOhdICk4W7azW6/dU1ivW605WQbVWQ5vwdm2bv5cwCkunCkdWPtcKCk+WO/cUx4kDuyvWPWqtCohbSk/WPjPlWzfECkSrmkdW6ryW4ToDrldGJ7dLmocy8ovArjqyY8nW6pdOZKOW4dcGxjYWRldLYRcJmo+W7f4W67cQCkRqSk0W7BcI8kUgSoDgSonW7ZdTthcQmkihN3cP8kaW4dcJSkwW6uKj2ddINGIWPKdu8o/ySoSWQ7dI03dH8k8ECkgD8oQW5PAW7pdP1pdLZJdVwSAbKKKrCo+WODIyCoZWPKeWRNcKw8PW5GlW6ZdLmo1WPrAfYzhWOzTj8kxj1r/W4HNhCkkAwToWPCbWO/dQMRdPgWbWRtdPSkWaMlcOZ7cKuKKdCkhBt9wFCoOohaDnCk8x8oeW7f1zCkRW6ZdQSkXW4tcGr9qmCoDkmohybhcTYJcQSkibCkFAsDQWQpcHdLDwchdTmkpWPpcRSoGsJ/dKmk7rmk4W4hcVshdGhFcRCo2WQddLqJdSJddU8okoSkgmdOxB23cR3/dOwnjpmoRyX7cMSkRzmopBSknDhjNWRzak8kIW4eWWP7cSeaPWQVdPmktaCoJW5bYW6ZdLXpdIHZcUcBcPCotW5ebarJcKhTrjvZcNCojW7VcMKldP8kpoSo7c3tcPXSjW4RdOt4/p1xcIupdNv/dOCkGW6SUqIX0WQddQZrDBZWgWQRdMCo+qL7cSMddUKFdTCkAWRtdTY/cNSkHawxcQwiFD3FcVSk+WOpdTe1xCYZdQmkbA3XTWOtdS0yFW7ldG1G1bfOnWPD6WQBdNeGLWQZdIZlcIrWlW5bRmSkHevRcT8kjW6pdIGH5lCkAWPpdMrK7emk6WRtdLCoXD8k5WOScvSoNbJJcUa','WPL1W7DPkmoG','pmknECoSW6T1CCkvs8kyka','oqhdIqdcPYGvBNVcG8kKWPqNi8onsSoJW5CNW4Kkiq','aqhdMYlcOZ8a','WQpcPSomtq8','WRWcuHhcM8ocdmoSW40','W7VcO1FdPmkb','WRbxW4DF','WPLJeCohoLhdGmkLWR5D','WQFdRmkIqGK','FSkEymoL','W5VcTepdH8oMWQu','c8kRnSo2wG','W7ZcUM3dNSkf','WQBcV8oIuIy','WOnzAXi','W7uhyf3dSSk5','FmoEbmoIzG','WOjPW5f0','WORcT8kvo8k8W7u','tgX9iSoGW7VcUKrtf8kXWP97','W6BcRmo7p8k+','W6pcLtBcGmoZzCkdW4TaCaS','d8onyfRdSG','q3S4W7VcNG','W4DrWQb8ggi5W5ZcNgjIW5T7iq','W4xcJ8opdmkf','AeBcImkCW7e','f8kECSoXW4zQASkvtmkzjmoAA8klW5Kdp8odma','ACkOFSoSwSktfq','WQ3dP8o4W67cHq','oJxdLmo1WPO','W7pcPLJdQ8kV','Amk7EmoIwW','g8oAW5Htnq','W6jnW5aBW6W','W7NdIM7dImkWumkzW6Drnt0bbCkIba','D2u6W5Cb','WQpdICk1bSoW','W5DFWR54','rCk+o3RcI8kKE1pdV8oXsa','iXFcOmkjDa','WOlcPSoeAW4','WQXlW5zE','hCoiimkLeW','W4TJdgBcIa','WOqyWO0YhfS5suZcKmkJA8ogkq','p8kuf8oUEq','W5HEWRXGcfC0W4NcVW','W5RdPSoYWQTL','rwewW5yUh0VdKmo/c8o1ia','kCo7WPBcP8k0eq','tmoHf8o+BXq','zYSuBdy','bIRcVmkoE8oFrJn/e085WPZdKHnwi8kJWONdH8ouW6m','WODrW4LvW41vWPhdPKxdS8klymofga','sgG/W7lcIW','W5TFWQv7','adZdT8oSWPC','gCohWOlcPSkk','WPanWO8ue24Ovh4','W4hcGCoae8kc','zWGuyrq','k8kbamonEa','nc7cOSkGE8ovvtj9','lvpdRu4AWRTN','W4vAWRHnpW','iCkmu8oVW5a','W5NdJCooWPzH','WOVdLSkNrcJcVCkQWOS','DCoxg8oMBGO','DJFcHNNdHW','W5WaBWG','WPRcTmoLk8obnW','CaTPsSo0WPhcT8o+','W5VcR3RdLG','WR/dHMNdN8kTua','eGhdLXi','y2amW5u1','WRtdRxFdOSka','gConkSkQha','WQ/dJw/dKmkT','W7dcPgtdK8oX','WP0DwJlcJG','WPRcP8kkkSkWW6W','lahdICohWQb7jmkfW70fW4ZcG8kB','eSodAa','aaVdNqS','FW/cOK4','xG/cOKhdLG','WO/dQCkmiCodWPVdGmk5','nfCzFCk+','FvVcLmkCW7aW','of7dIvur','W59rWQfW','WPRcT8oKpSonnmo1W4b9WRVdOmkN','W5rRW4m4W47dPmkiu8kDWR3dRG','W7dcL2pcVfS','vCosnCkGgCohc8oY','Ev0rW7H+','rxSlW4qOfq','W4XYdx4','D1pcK8kvW7GiCCkx','W4tcPxpdNmkrdW','W49AawBcRa','ErrXz8oW','wmkCESoDEW','EwVcLmkdW7K','WPRcSmoVo8opnSoc','e8oelmkUh8oD','WRRdGNJdR8kSqmkpW6a','WPv0W5z/jmoPAmkeWPFdNK7dUa','WQpcO8ofzW','kuxdN08jWR17','lspdMmoUWQ83dSkRlSkSwSoYfq','W5RcVuRdJ8o3WQ7cUW','WPv0W5zTkmo2tW','W4BcUMJcMNW','W7nnWPBdHCor','W5rZmW80','k8keymoRW5S','m0uSyCkv','WRX5W5zyia','ACkCFmoHuSocWQiWWQ4','W6mhFu3dR8kUBCovC1hdO8osW4/cKq4','W5z0W50PW4hdQCkLxSkg','v2GpW7yl','g8oUEuVdPSkoWP/cV8olWP0qW6C5W5zabW','WRjIW51ZhG','xCkIj1JcTG','zqVcT1/dOhaBDSoUWQ/cRa','vx0ZW7JcIq','FuFcN8ktW6aQE8ka','EuasW7e','WQv7bSkloL3dGSkN','cSkNjw/cKmk0wLtdRSkWt27cISkmWQZdMYRcPCkTfNL9','lSo6EfVdLq','fCklhCouuW','WOenWPG3hq','gqddMmoDWO4','jZ/dK8oQWQKAgCkjda','k8oZWOFcQSkJb0W','WRyMEaVcUa','gmodWPBcMCkf','WPRcPSkbC8kUW7tcOZ8CW4ZcUhS','zmoabCo+CW','W47dHhrUlWyIdKTDubnHW6K','W5v2dulcImoCuGTC','wtHQz8od','WR4+CqeTWPtcHSo7iSkW','WPFcUmkEeCkr','W7SNDgldQW','WP7dP8o7WR1MWQFcIq','qN9Gfmo9W7RcI0a','EqVcPKZdI2S','WOXQW516cG','WRLcW5zEW5DdWR3dOL/dJCkk','nfpdPKK2WRLVFCktWPy','WP5+W5f+jCo6','WRtcTSk/emk2','iZiHWRq','oIpcU8kBBCoYuZDS','W7NcGf7cLMu','kthdHbtcKq','lCokWRNcRSk+','pSoOimkRia','h2NdT0KEWRe','c8oQyW','WRBdK3ddNCkRqmk4W6baDdW','W61gWOhdOmodnHLB','cSoTW55AeW','aCo8W7HhfCkuW4S','W5FcI1FcVLziAXW','W5z6W50+W4xdRmkjtSkaWQxdPxBdNCofWP/cIq','WOyCEHVcUW','DGHYwmoY','d8oMC1ZdQW','W53cU0FdKCo2','WOGtxdmR','WQ9cW4fJfW','ACklBCoOwG','k8khB8oSW5P1C8ks','W5BcV0hdH8oGWOJcM8kuBq','W5ZcO0RdG8oMWQxcISk1rgpcT8kRWRO','W57dQSo6WRPUWRVcPuFcKSowedRdVSoIrW','EmklESolva','BL/dSe0oWQHGCmkoW4LDW5GWeKG','W6iwDvtdOW','WRmbuGBcGCoGaG','WOtdI2NdNSkXd8k+W6zDFsO','WPXYhCkjnNxdNmkP','iu0ZzmkCvGm','W57cG1ZcL1fnArddSq','rNbOnSoGW7ZcKfaBh8kMWOnGngqnWOSuW6HEg8oq','W5H+mqK','esldLmoHWRW+kmkxjCk0wSo/ft/dQW','bmoHhmoIFHnDW6xcSfaXaw/dPq','ltW3WPRdS3xdS8knnmo5xG','WR/cJSoOBqK','WPVdTSkMf8os','WRWbxrBcJCo2eq','lt7dK8oPWRi1hSkHlmk9xmoO','WPyqWPiRffS0','W6XAcLhdNmk3uSotW611E8oGW5W','DW10x8oZWOxcPG','W43cTf7dL8o7WRlcQSk9','W4X+gg/cGSoaqq','l0ZdQL8T','F1pcHCkrW6CMya','W4lcPwBdH8kQdWRdMSomja','WOpdNmkWvdxcPCkO','WPZcOmklmCkT','sKTkkmoD','WPRcVCkxkSk6W7NcSGabW4VcSG','WPBdKCkfnmog','lvFdPMOsWRH2DW','W4HCWQbslW','WRddIgldJCkj','WR4NzXqWWRW','E8odgSohAG','W5JcSCouyCkhW43cNSk9kmo2iCkNbG','WPnxDqOqhq','WR95hCkpla','WO7cU8kDkSk3','WR4GCqeRWRtcT8oMi8k2W7ugyG','jf/dRu0xWR17','W4H/gMtcIa','r8oTaCoHAGav','W5TJdsFcMSourW1bW5Li','WQ43ycuTWQpcM8o7','WOVdLCkOqYK','ms7cQq','W4xdQSo/WRHLWRS','W4zoWOxdKSoO','BKGCW7fPrSkSW6zE','o8o6ueVdRa','W4xcTgFdN8kc','WRBcSSoLmCoR','EmklESolvmo3WOWTWQm','oJyHWOJdMwJdSmkTnmoVxG','CaTPw8o6WPZcQW','W47dHhrUlWyIfebbqarqW4aD','watcILpdKW','WO/dNSokW4/cI8o9lGu9WOddTmkIWRa','B1SAW7TP','aWNcT8khAa','h8oTW6LHhSkyW54xxW','W6FdNmoFWQDJ','WO/dQSknjSou','W5z2gg8','W5ijxx7dVG','C0ueW5ni','yrSiBqnM','WOqNxrlcNCo6j8oWW4f6gSooW4fuWRhdPu8fWPNcVNhcUvecEcmZhf/cIhtcIdBcJJ9EDf3dTmkAWPZdSmkSsxBdM192pCoNW7hcKgxcICkfW4nrWPy8WQFcJSohqmk2Ax7dKCkgW5DlBCknW5pcT8k5ltfYxc9JeSk0vSkBWQFcU8k8WRC/WQK','oIOPWPK','mue4ymkZwbq/k30O','W7xdKNTHpqyZeurbuai','W5dcV0ZdJSo7WQpcPa','W5ZcPfZdLSo9WQ0','zXzJr8oZ','W73cQLpcS0W','W4FcH1ZcQ3DlyaZdObOF','WOaCWO00gv4mqgy','DqFcVfVdJ34m','WObyFq8Ab8kCrW','AvFcNmkFW6iM','A2miW6ee','vwW+W4BcICkJWQyjWPCpWOXmWOCvW7xcOL7dTW','W5FcRCofiCkK','tx0XW6aG','W4reWQv5dW','WPBcVmkAmSk2W6lcRq','W5ZcVuddKCo3','WQL4W5D3oCo8vmknWOJdQuJdRCoLWOO','DXDPx8o5WPa','gwpdLhOz','WPtcUCoYd8onn8osW40','WPFcS8kuoW','wgW5W7zv','WPevWOaOc3yKx34','eCo+W7rid8kuW7WttJJdUmokWQK','WQTxW4PEW5PtWPVdRNNdKCkAAmood8o1','W4JdOCoYWQ9IWQBcRLC','WP3dH8ooW47cGCoGkGq9','WPSxWPeUdfGIvcFcISkJA8ohoCoBWOKFrYpdLNFcGCkDrZ/dNG','WPZdN8kiAda','eCoHz13dTW','W4j6jbGCW5rLW7LGvmo8','idddKmoQ','kuuICCkC','aCo4W6HfhG','WOTxDbO','WP/dPCkkmmoCWPxdP8kVoq','WPVdJCkWxd8','BKaBW6r3rSk7','zKWgW7nVtW','W5xcQhVdKmkmcaJdGa','dCoQjmkApq','WPDtDbadcW','W6FcR3xdGmkS','W57dQSoIWPP/WR3cR1e','W7ixF0ZdQCkX','W794WRT5ba','c8o7BKtdPG','psxdHmoJWR4','AuygW7jYqmkrW6rxvSkNW5S','BHuhAG9Khq','WQdcLSkPpCkR','BLtdQLnwWQHNz8kc','WQj4DYKa','oSknCmoTW4fOESkf','lIBcVSkCDG','W70dDvFdS8kO','W592bq','WOVcVCoNn8osnG','vSoMEvJdTSkwWR/cPCohW4qDW70dWP1xga','WPVcPSkxhCk+W6/cPsKe','jYldVmo9WQKZna','uSkVj2RcGmknxvBdTmo4xG','AmknumoLua','y1OPW6zPrSk7','brhdNblcRsy','WR/cQCogBtCO','W5pcTehdHCoMWQG','EHD3tSoKWPtcSq','WORdR8khoCovWOC','WPL7cmkzlxJdHCkZWR4','aahdMWxcQGOrBG','m0ldP1eE','ECoymmkOW51YrSkPsmky','WO7cN8orqsi','BmkEEmoXwG','WOddMmk6','kJVcO8keEW','vCk7lM3cNmktxvFdS8o+wg7cLSk5WQxdJW','WPRcTmoRk8ox','WP/dH8odW5lcHCoSjWG2WOJdLSkSWQ7cU8kz','AXqwEXi','WQK3Bbq','F1pcHCkr','D8kEBmomwSokWO49WQm','FSkEymoLtmogWP0','WOVdI8kSus7cT8kdWPtdJIGiW75m','WQ9FW6H6oq','W61kWPddR8opba','W45XpYOL','WOrsFtOdc8kCr8oNWPZcUa7cKYdcR8oD','WONdNCkTDsZcT8kOWOZdPYWEW6rDCsxdNq','W5z3W5y8W5ldHCk5sCkBWQm','tSoHaCoIzWyj','W4f+lGi','W6HwWOBdT8oegG','s39SiSoNW7VcIW','fSook8kSdG','W7ulF0JdQSk9Cq','cbhdGGtcPZK','yHRcTKFdHG','WPdcVmkjk8kRW5xcVZWn','EaRcNvZdMW','WPz+g3RcMmobvWXqWPPgusjVqa','afiJD8kK','Fmk8B8o/umkLbmobW7PeWRnOW5u','W53cIepcKhO','a8ktn8oiDW','WRmNEqi6WQm','eCoGW75AhG','bIZcTCkgASooxtz6jgK3WPBdJq','nJJdHConWRy','WP/cT8o4nq','nSkzamoqDa','WO7dOXFcKCkIW7JcPmkWv1ZcGCk/','W6XUW6qtW4q','W4dcH0JcULDqibZdPaakWP/cN8oPW7ielW','W4VdOmoaz8oUWRtdSGGSW43cN1tcUG','AXqiAXrclIJcHq','WPb+vHya','DLqlW4af','CLddNmkDW7a','W5y4xLldGq','vwSuW5uKda','WQ9BW4jpW5e','WRe3EGCRWRK','WRFdNmkVvJ/cSCkYWPhdNsaUW79wEsNdIdZdLCozdCkgWQi','W4rUW5yVW5K','tx4yW6z3','W5j2lXWZW5PY','tmkRiNJcJCk0','k8kAzmo5W5X/xmkoqmkcoCoRjW','gbBcSmkgsG','WR4cxW3cN8omcCo+W5DmBmojW4reWRG','hIOJWRxdVW','WOVdPXNcMSkKWOhcT8kAsgBcGq','WRhdUCooW5hcHa','W6jnWPVdPSozpZ1/qq','W73dISobWPDA','eCo5W6jDfmkC','WRtdJ2hdI8k2AmksW7TD','FsfduCob','WPv3W5LQpSocuSksWO8','mSkEgConC8o0W4yFcG','WRpcN8k9gmkq','nLa5Emkv','DqBcH2JdUq','eetdSv4EWRLM','W5xcTL3cTu4','pmkrCCo9','W5nYW5yXW4tdSW','WRBcRCobkCoh','WORcPSkamSk6','rxWDW5eZhvVdMSo9gSoZoLq','WPldJSobW5RcHSog','nCkxhSoFDCouW5S6h8ouW47cUG','WPFdHCoFW4JcHSomjbf1WOhdOCk+WQFdO8kFWPZcHq','FmkwCCoOw8oq','cCoek8kTeSoBkmoPW68Uwd4','WRFcMSkBpmk3','kJJdJSo/WRCZna','yWT+x8o+','WPFdHCobW5JcGmoMhYqu','W5hcU0hcRfK','qSkHkgRcLG','WOJdKgNdLSkIsmkEW5TmDd0qa8kigG','W57dU8oVWRnO','astdTSo+WRG','WRi8DWW2WRlcNW','W7VdQSo9WRPQ','WO8Ktt3dMCknbqHGW5LzAaa','WRddH2FdJSkO','WORcVCoMpCohj8oXW5DWWQ7dS8k2W4i','jCkjECoqW41ZEmkjwG','qN9Gc8oXW7FcMebc','WRfCW4HEW4TVWQRdH3O','W5z3W5WUW4u','W6dcRmoijCkKcuruCq','g8oIW6fCd8ktW5yhbIBdUmoiWRH3nq','WOdcTmoMh8o3','ymkOCSoftmkFbSofW6S','WQzdxHWA','WQtdHNtdQSkGrCkFW4DhDce','W6pdH8oHWRn1','W4VdOmoKWPPSWQZcQa','W7NcJKFcNLy','WRBdICoyW7xcPW','ECkqESoIvSorWOqbWRjytG','WPZdK8oUW57cGG','vxObW5WI','dSoUE13dPSkr','tCkGo2RcKCkIv0pcU8o0qNhcKCkmW6NdHZ/dVmkGuN52WPqkEW','yN1rfmoY','W5dcJuRcQ1fCEG','umoCeCoWEa','oIdcTmkCE8oerHzGggK','WRNdJg7dNq','WPVcRmoKg8oipmovW4a','WPL1W7T4i8oTxSkn','eIdcJmkrsq','s8kGchdcI8kMuuNdUW','hCoon8kK','vCoik8k5aSoDdmoVW7jVusJdSCkwWQ5DmW','WQCauctcKG','W7pdRNHZjq','odi1WONdV0ZdU8kG','WOZdKmk6qdBcS8k/','WRBdGmkpoSoh','pd3cQmkhBa','WPtdLKFdM8kQ','WQDxo0JdJmkXzCo6wq','vXDDsmo5','W4FcM1tcUG','W5TIbN7cGSoy','W4LKWOzxkW','WROavXlcH8oNc8oR','lmoZWP/cPW','oJtdHCo7WPG9i8kWjCk2sW','W4ZcQgtdSSok','W4ZcUehdHCo+WQu','WR7dK2VdGCk/','W5JcR3ddLG','Cb7cV07dJxS2ASoIWQ3cVa','kSoGWOhcPmkI','W78nyL0','vCkUumoiCa','WOeCWPujhvSPy2tcLCk/','W7VcRedcUKC','W5LNbw/cG8orDGTbW5Tl','WRK3DWKYWRdcMa','ncRcQCkBF8oBvW','o8o3WOVcV8ktdvyqhSoIW5W','rwyMW6hcGCkSWRe','W7ldMhnMiq0uiKLirHm','W554b2C','W5lcTfZdKCoZWQFcQG','uSkVj2RcGa','kd7dNSo6WQG','omoIW7Pcnq','BLnpfSoG','W55+egBcICog','W5DzWQL5gha','WO0GwWCZ','vx4BW6dcVW','WRtcOmohrri','WPa/DY7cPW','W5vrWRHW','zvnCbCoB','W4tdRCk7WRnQ','iZyQWO/dU2ddUW','dWRdNXpcTG','W6hdHxH2lqqZa0blrbjiW7e','W4CRWOKPomoMySkPWP3dLq','fCoakmkS','W5xdJNHQgW','zHmvFGPRaW','jmkalCorvG','DmkLzSokEG','WPXADtGM','WP/dO8kwemodWOBdG8k4','W53cH0xcRvfxEG','WQShrW7cJq','W6NcQ8oUjSkUha','WRRdKmkcCYK','W4xdQSo3WRS','WOfFAG8zd8kl','W5xcSmkuiG','bSooW4LGfW','W4tcShZdVmkL','W556nqS3W48','DGGpyW','g8oIW6fCd8ktW5yh','eSkbvSo6W48','WPzcybmq','WPNdJSoBW7VcNCoCjI05WPFdOq','tM5OjSo6W7RcVebFfSkW','WRZdTmkTmSoD','WRtdJg7dJmkGxmkp','WOVcT8kkmCkZW7FcOW','WP/cSCoVnmoaia','WOpcJ8oToCot','caxdGGm','yqGdBXjVpWNcRfJdSMW/','WPjYW4TPiCoVqG','nIJdQG7cLq','WRyDCHdcMSoVha','W5lcQw3dG8klcX4','WRJcUmocBJi','W5ZcUuRdGCo5WQxcQW','W5bPW4eYW5i'];_0x5c94=function(){return _0x405954;};return _0x5c94();}const InputBox=((()=>{const _0x32a78a=_0x1bb2,_0x1ecc7c={'uXLEH':function(_0x388450,_0x5d53dd){return _0x388450===_0x5d53dd;},'HbwHU':_0x32a78a(0x3d8,'[G51'),'YrIyS':function(_0x31e129,_0x13a3db){return _0x31e129===_0x13a3db;},'OngAK':function(_0x562cba,_0x1ce5ff){return _0x562cba||_0x1ce5ff;},'McIWf':function(_0xdc54b,_0x4ce527){return _0xdc54b||_0x4ce527;},'njgON':'label','gyTQb':function(_0x1ce86d,_0x4d415e){return _0x1ce86d==_0x4d415e;},'NHwlx':_0x32a78a(0x44a,'m02P'),'zTcbs':function(_0x3a6be1,_0x3da88e){return _0x3a6be1 in _0x3da88e;},'tBXIl':function(_0x318d78,_0x1a07d4){return _0x318d78===_0x1a07d4;},'uvAXZ':_0x32a78a(0x45f,'7X$a'),'tdizA':_0x32a78a(0x387,'9y&s'),'vHWOT':'.data-input','zPIZq':'smooth','AYjnT':_0x32a78a(0x333,'ZA7G'),'JMDFO':function(_0x11da20,_0x3891b0){return _0x11da20!==_0x3891b0;},'OOWSA':'oYnhp','Vekeg':function(_0x8ebe67,_0x4b1890){return _0x8ebe67??_0x4b1890;},'NCKYH':_0x32a78a(0x4bb,'mfct'),'yllGS':_0x32a78a(0x4db,'b!xJ'),'syKPX':function(_0x3b000a,_0x4d9322){return _0x3b000a(_0x4d9322);},'eDZhy':_0x32a78a(0x37a,'7&x*'),'OQDLO':function(_0x413f40,_0x45e28c){return _0x413f40>_0x45e28c;},'HNdes':function(_0xcfede4,_0x3d684a){return _0xcfede4!=_0x3d684a;},'wiePg':function(_0x1009a8,_0x5a1066){return _0x1009a8===_0x5a1066;},'goAoO':_0x32a78a(0x4d4,'ZBzq'),'eqnrg':_0x32a78a(0x4d3,'fPp8'),'zsxsx':function(_0x43c404){return _0x43c404();},'CuGco':_0x32a78a(0x3f3,'97Bq'),'XoNkn':function(_0x4ebf10,_0x5d6acc){return _0x4ebf10==_0x5d6acc;},'OUkrS':function(_0x1f47c2,_0x3039c4,_0x63024a){return _0x1f47c2(_0x3039c4,_0x63024a);},'bjhsd':function(_0x122d1,_0x599773){return _0x122d1(_0x599773);},'ZFmov':'Required','wBwrq':_0x32a78a(0x336,'m02P'),'MmpQC':function(_0xc5b753,_0x107de6){return _0xc5b753==_0x107de6;},'VuosV':_0x32a78a(0x29e,'7)$i'),'ZYNHZ':function(_0x1109de,_0x41a8f0){return _0x1109de(_0x41a8f0);},'ZDRAy':function(_0xeee1e7,_0x59044d){return _0xeee1e7===_0x59044d;},'PLEhW':_0x32a78a(0x4b4,'gRaj'),'vXwgm':function(_0x5d9349){return _0x5d9349();},'UsoNF':function(_0x3d7dda,_0x28937d){return _0x3d7dda(_0x28937d);},'PrOgl':function(_0x410528,_0x259a94){return _0x410528!==_0x259a94;},'fTyjz':'ioApi','qsYiN':_0x32a78a(0x329,'7X$a'),'yNisd':_0x32a78a(0x407,'mfct'),'DyejS':function(_0x128d90,_0x52f5e4){return _0x128d90==_0x52f5e4;},'ksIPg':_0x32a78a(0x3b0,'mfct'),'BsiPf':_0x32a78a(0x4d0,'fPp8'),'JhXJE':_0x32a78a(0x405,'Wz$9'),'bYesm':_0x32a78a(0x27c,'HZIx'),'WVcFL':_0x32a78a(0x46a,'cI9N'),'YDPct':function(_0x127c76,_0x4ae423){return _0x127c76===_0x4ae423;},'JlcAb':_0x32a78a(0x506,'7&x*'),'YCWNG':'inputbox-default-theme','ngoWf':_0x32a78a(0x3cf,'JqPG'),'rBCoH':_0x32a78a(0x50f,'cI9N'),'gkbuL':_0x32a78a(0x50d,'ZA7G'),'mtgVr':_0x32a78a(0x221,'QiW^'),'EIebW':function(_0x21c374,_0x13023a){return _0x21c374===_0x13023a;},'xncFz':_0x32a78a(0x4b9,'A$Dm'),'JoNso':_0x32a78a(0x44e,'gRaj'),'NHbbh':_0x32a78a(0x305,'M*v)'),'WQeRU':'div','zdeHI':_0x32a78a(0x33e,'EQwJ'),'HnsaA':'\x0a\x20\x20\x20\x20\x20\x20<div\x20class=\x22inputbox-card\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22inputbox-header\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22inputbox-title-wrap\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22inputbox-title\x22></div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22inputbox-context-line\x22\x20style=\x22display:none\x22></div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20class=\x22inputbox-close\x22>×</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22inputbox-body\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22inputbox-message\x22></div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<label\x20class=\x22inputbox-label\x22\x20style=\x22display:none\x22></label>\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22input-wrapper\x22\x20style=\x22display:none\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<input\x20class=\x22inputbox-input\x22\x20type=\x22text\x22/>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22select-wrapper\x22\x20style=\x22display:none\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<select\x20class=\x22inputbox-select\x22></select>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22inputbox-custom\x22\x20style=\x22display:none\x22></div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22inputbox-error\x22></div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22inputbox-footer\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20class=\x22inputbox-btn\x20cancel\x22>Cancel</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20class=\x22inputbox-btn\x20ok\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20class=\x22btn-text\x22>OK</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20class=\x22spinner\x22\x20style=\x22display:none\x22></span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20','OuKqc':function(_0x2982ed,_0x42ac92){return _0x2982ed(_0x42ac92);},'GZRjG':_0x32a78a(0x2f9,'mfct'),'CkQFx':'.inputbox-label','AMWUt':function(_0x260a4a,_0x4f6359){return _0x260a4a(_0x4f6359);},'eNhlK':_0x32a78a(0x4f2,'[G51'),'pjhsv':_0x32a78a(0x1f3,'Wz$9'),'idRwx':function(_0x21d5e0,_0x45571c){return _0x21d5e0(_0x45571c);},'SLWSw':function(_0x34c59b,_0x539a14){return _0x34c59b(_0x539a14);},'WaliO':'.inputbox-custom','IhqnJ':_0x32a78a(0x296,'fPp8'),'KoVyW':_0x32a78a(0x39e,'Spcd'),'jExZm':_0x32a78a(0x48f,'QUV*'),'iVIzN':function(_0x4c3de2,_0xbcabc4){return _0x4c3de2(_0xbcabc4);},'urUoV':function(_0x272f9b,_0x435932){return _0x272f9b(_0x435932);},'zXzaj':_0x32a78a(0x4cd,'mfct'),'dhHCZ':'.inputbox-close','QziIV':_0x32a78a(0x201,'m02P'),'arUEe':_0x32a78a(0x29b,'mfBD'),'naufg':function(_0x1994fa,_0x327480){return _0x1994fa(_0x327480);},'LvIar':function(_0x54852e,_0x5b43a6){return _0x54852e!==_0x5b43a6;},'iCYzW':_0x32a78a(0x3ab,'M^@g'),'zOwAN':_0x32a78a(0x3a0,'b!xJ'),'VajzG':function(_0x24eb38,_0x580746){return _0x24eb38||_0x580746;},'hIqhV':function(_0x281531,_0x388ab7){return _0x281531||_0x388ab7;},'dFnLR':_0x32a78a(0x35c,'vDV!'),'JSIxn':_0x32a78a(0x3a6,'0YjU'),'VktGz':function(_0x5649b2,_0x2a6509){return _0x5649b2===_0x2a6509;},'IvmYo':_0x32a78a(0x203,'o&iM'),'HqeFm':_0x32a78a(0x25a,'TsH]'),'vtXfv':function(_0x218e6c){return _0x218e6c();},'ORalv':'ib-sm','cNwZE':'ib-md','BcnYD':'Cancel','tVuxn':function(_0x36352e,_0x1367f2){return _0x36352e(_0x1367f2);},'tjtXC':function(_0x55df20,_0x320fcd){return _0x55df20==_0x320fcd;},'QKrrE':function(_0x378b91,_0xebb6d){return _0x378b91(_0xebb6d);},'gdgvm':_0x32a78a(0x30a,'4$F8'),'tHRrR':function(_0x4621b5,_0x32302e){return _0x4621b5(_0x32302e);},'EfFXH':function(_0x11e22f,_0xf16637){return _0x11e22f||_0xf16637;},'VUqmZ':_0x32a78a(0x456,'mfBD'),'VhiRE':_0x32a78a(0x487,'rvSP'),'QkBgF':function(_0xff7d92,_0x20ad3e){return _0xff7d92&&_0x20ad3e;},'MZpLU':_0x32a78a(0x22c,'*Vp1'),'JnkkN':_0x32a78a(0x2a6,'Wm#u'),'PyzIe':_0x32a78a(0x382,'JqPG'),'Bpqvq':function(_0x2c08d2,_0x1713bb){return _0x2c08d2(_0x1713bb);},'wpDBc':function(_0x58ed25,_0x3ae505){return _0x58ed25===_0x3ae505;},'ZSCJx':'grid','nhrpU':_0x32a78a(0x3c4,'fPp8'),'YYyzZ':function(_0x56e330,_0x4bb242){return _0x56e330 instanceof _0x4bb242;},'BpLNC':'myAzL','iHKiP':function(_0x50161e,_0x224867){return _0x50161e===_0x224867;},'eQrbP':'KMzwB','ivHvJ':_0x32a78a(0x2a2,'1ew4'),'kVMXS':_0x32a78a(0x2ee,'[G51'),'gWhbS':_0x32a78a(0x267,'o33y'),'KkcnZ':_0x32a78a(0x327,'6QzP'),'EZQsu':function(_0x4cf7b6,_0x3f352b){return _0x4cf7b6(_0x3f352b);},'daOHk':function(_0x10671e,_0x46cf21){return _0x10671e||_0x46cf21;},'pCkIH':function(_0x150672,_0xb3a77e){return _0x150672||_0xb3a77e;},'JbnAm':function(_0x12f408,_0x3b27bb){return _0x12f408!==_0x3b27bb;},'OjoiO':'yIdSK','BUxQH':'96vw','kqnZR':function(_0xbc3c7a,_0x39adb2){return _0xbc3c7a||_0x39adb2;},'Oamju':_0x32a78a(0x3c9,'qMY6'),'lRqJg':_0x32a78a(0x1fd,'fPp8'),'Llmml':_0x32a78a(0x3c3,'QiW^'),'iAleO':_0x32a78a(0x528,'QUV*'),'gYIRd':_0x32a78a(0x3f4,'mfct'),'PZspB':_0x32a78a(0x3fb,'W&6R'),'tfAXj':_0x32a78a(0x361,'!iLs'),'QKhUa':_0x32a78a(0x213,'fPp8'),'NmJcL':_0x32a78a(0x2c2,'axXG'),'HffiE':_0x32a78a(0x4fb,'vDV!'),'GNnVu':_0x32a78a(0x473,'M^@g'),'xaOsh':_0x32a78a(0x273,'ZBzq'),'ZiWbg':_0x32a78a(0x314,'mfBD'),'bKBFD':_0x32a78a(0x3e0,'o&iM'),'rpbOB':_0x32a78a(0x325,'M*v)'),'UuahN':_0x32a78a(0x219,'(67x')},_0x5738f7={'delete':{'class':_0x32a78a(0x353,'7&x*'),'confirmText':_0x1ecc7c[_0x32a78a(0x398,'0YjU')],'shortcut':_0x1ecc7c[_0x32a78a(0x397,'Wm#u')]},'update':{'class':_0x1ecc7c[_0x32a78a(0x4b2,'QiW^')],'confirmText':_0x1ecc7c[_0x32a78a(0x2a7,'A$Dm')],'shortcut':_0x32a78a(0x3f5,'8YLK')},'authorize':{'class':_0x1ecc7c[_0x32a78a(0x24c,'m02P')],'confirmText':_0x32a78a(0x3b3,'HZIx'),'shortcut':_0x1ecc7c[_0x32a78a(0x42c,'Wz$9')]},'warning':{'class':_0x1ecc7c[_0x32a78a(0x20a,'Wz$9')],'confirmText':_0x1ecc7c[_0x32a78a(0x4a5,'7)$i')],'shortcut':_0x1ecc7c[_0x32a78a(0x4e1,'97Bq')]},'question':{'class':_0x1ecc7c[_0x32a78a(0x3d9,'!iLs')],'confirmText':'Confirm','shortcut':_0x1ecc7c[_0x32a78a(0x288,'8YLK')]},'success':{'class':_0x1ecc7c['tfAXj'],'confirmText':'OK','shortcut':_0x1ecc7c['xncFz']},'error':{'class':_0x1ecc7c[_0x32a78a(0x264,'Wm#u')],'confirmText':_0x32a78a(0x3f9,'qMY6'),'shortcut':_0x32a78a(0x20d,'M^@g')},'primary':{'class':_0x1ecc7c['gYIRd'],'confirmText':'OK','shortcut':_0x1ecc7c[_0x32a78a(0x4e1,'97Bq')]}},_0x5dc484=new Set([_0x1ecc7c['BsiPf'],_0x32a78a(0x292,'7X$a'),_0x1ecc7c[_0x32a78a(0x515,'EQwJ')],_0x1ecc7c[_0x32a78a(0x33f,'rvSP')],_0x32a78a(0x290,'mfct'),_0x1ecc7c['bKBFD'],'email',_0x32a78a(0x211,'fPp8'),_0x1ecc7c[_0x32a78a(0x33b,'TsH]')],_0x1ecc7c[_0x32a78a(0x3c8,'A$Dm')]]),_0x383a3a=new Map();let _0x1fad3c,_0x4abb55,_0x58e49f=!0x1,_0x46f833=null,_0x473cd0=null,_0x241540=null,_0x47934f={},_0x5f8ca1=null,_0x37d369=null,_0x5a9b4b=null;const _0x2b485d={},_0x41624e={'_loading':!0x1,'controls':Object[_0x32a78a(0x3ea,'M*v)')](null),'setReadOnly'(_0x22493a=!0x0,_0x5e1228=null){const _0x3eebee=_0x32a78a;vfc[_0x3eebee(0x3b1,'b!xJ')][_0x3eebee(0x2e5,'QUV*')]?.(this[_0x3eebee(0x4b0,'m02P')],_0x22493a,_0x5e1228);},'setReadOnlyByNames'(_0x72ee14=[],_0x5102cb=!0x0,_0x294ed0=null){const _0x336159=_0x32a78a;vfc['form'][_0x336159(0x434,'o&iM')]?.(this['controls'],_0x72ee14,_0x5102cb,_0x294ed0);},'getValue'(){const _0x35db7d=_0x32a78a;if(_0x1ecc7c[_0x35db7d(0x4e0,'ZA7G')](_0x35db7d(0x47c,'Wz$9'),_0x1ecc7c[_0x35db7d(0x2e9,'9y&s')])){if(!(!Array[_0x35db7d(0x4dc,'axXG')](_0x47934f[_0x35db7d(0x287,'97Bq')])&&_0x35db7d(0x406,'*Vp1')!=typeof _0x47934f[_0x35db7d(0x2c8,'A$Dm')]))return this[_0x35db7d(0x444,'W&6R')]();if(_0x1ecc7c[_0x35db7d(0x519,'*Vp1')]('select',_0x46f833)){const _0x4b193e=this[_0x35db7d(0x220,'!iLs')]||_0x2b485d[_0x35db7d(0x2aa,'A$Dm')];if(!_0x4b193e)return null;const _0x46aa45=_0x4b193e[_0x35db7d(0x27a,'JqPG')]??'';if(!_0x46aa45)return'';const _0x2c5fcd=_0x4b193e[_0x35db7d(0x248,'svEd')]?.[0x0],_0x5b8890=_0x2c5fcd?.[_0x35db7d(0x511,'axXG')]??null,_0xb568e0=_0x1ecc7c['OngAK'](_0x473cd0,'value'),_0x2e8a7d=_0x1ecc7c['McIWf'](_0x241540,_0x1ecc7c[_0x35db7d(0x299,'ZA7G')]);let _0x44a698='';const _0x29e889=_0x1ecc7c['gyTQb'](_0x1ecc7c['NHwlx'],typeof _0x2e8a7d);if(_0x29e889)try{_0x44a698=_0x5b8890?_0x2e8a7d(_0x5b8890,this):null;}catch{_0x44a698='';}else _0x44a698=_0x5b8890&&_0x1ecc7c[_0x35db7d(0x2f1,'Wz$9')](_0x2e8a7d,_0x5b8890)?_0x5b8890[_0x2e8a7d]:_0x2c5fcd?.[_0x35db7d(0x281,'mfBD')]??'';return{[_0xb568e0]:_0x46aa45,[_0x29e889?_0x35db7d(0x250,'OwKS'):_0x2e8a7d]:_0x44a698};}const _0x5094bf=this['_singleInputEl']||_0x2b485d[_0x35db7d(0x480,'0YjU')];return _0x5094bf?_0x5094bf[_0x35db7d(0x37f,'Wm#u')]??'':'';}else{const _0x3fc0ab=_0x44cc30['context'];if(!_0x3fc0ab||!_0x47038f[_0x3fc0ab])return;_0x265407[_0x35db7d(0x414,'Spcd')]['add'](_0x2831d4[_0x3fc0ab]['class']),_0x1acad0[_0x35db7d(0x42a,'mfct')][_0x35db7d(0x44b,'gRaj')][_0x35db7d(0x21f,'ZBzq')]='';}},'getFormData'(){const _0x2dbc59=_0x32a78a,_0x37c84a={'ANUWb':function(_0x22c16c,_0x50911b){const _0x484cb5=_0x1bb2;return _0x1ecc7c[_0x484cb5(0x4af,'6QzP')](_0x22c16c,_0x50911b);},'siJrG':_0x2dbc59(0x257,'TsH]'),'yBVTs':_0x1ecc7c['uvAXZ']};if(_0x1ecc7c[_0x2dbc59(0x33a,'EQwJ')](_0x2dbc59(0x463,'QUV*'),_0x1ecc7c[_0x2dbc59(0x48a,'7)$i')]))_0x32f368[_0x2dbc59(0x47a,'Wm#u')][_0x2dbc59(0x23a,'O5KM')]?.(this[_0x2dbc59(0x4c5,'VmeP')],_0x1656f3,_0x103462,_0x178ad8);else{const _0x1ae586={};return(_0x2b485d[_0x2dbc59(0x469,'M*v)')]||_0x1fad3c)['querySelectorAll'](_0x1ecc7c['vHWOT'])[_0x2dbc59(0x36f,'7X$a')](_0x470432=>{const _0x167ed1=_0x2dbc59,_0x573499=_0x470432[_0x167ed1(0x1ff,'cp&!')][_0x167ed1(0x497,'mfct')];_0x573499&&(_0x37c84a[_0x167ed1(0x3bd,'m02P')](_0x37c84a[_0x167ed1(0x425,'97Bq')],_0x470432[_0x167ed1(0x496,'svEd')])?_0x1ae586[_0x573499]=_0x470432[_0x167ed1(0x34f,'4$F8')]?0x1:0x0:_0x37c84a[_0x167ed1(0x40e,'Wz$9')]===_0x470432['type']?_0x470432[_0x167ed1(0x3d5,'8YLK')]&&(_0x1ae586[_0x573499]=_0x470432[_0x167ed1(0x4e4,'OwKS')]):_0x1ae586[_0x573499]=_0x470432['value']??'');}),_0x1ae586;}},'setError'(_0x38c4f7,_0x387b23=!0x0,_0x442bee=0x3){const _0x16a668=_0x32a78a,_0xaae370={'XPlIm':_0x1ecc7c['zPIZq'],'xhWhj':_0x1ecc7c[_0x16a668(0x36e,'EQwJ')],'HYLAT':function(_0x1f759a,_0x20460c){const _0x36138e=_0x16a668;return _0x1ecc7c[_0x36138e(0x386,'svEd')](_0x1f759a,_0x20460c);},'GWprl':function(_0x55a947,_0x476fd1){const _0x16a8c4=_0x16a668;return _0x1ecc7c[_0x16a8c4(0x326,'o&iM')](_0x55a947,_0x476fd1);},'xnohh':_0x16a668(0x384,'rvSP'),'QhRBC':_0x1ecc7c[_0x16a668(0x491,'VmeP')]};_0x2b485d[_0x16a668(0x2ff,'HZIx')]&&(_0x2b485d[_0x16a668(0x48c,'W&6R')][_0x16a668(0x234,'ZA7G')]=_0x1ecc7c[_0x16a668(0x2d8,'6QzP')](_0x38c4f7,''),_0x2b485d['error']['style'][_0x16a668(0x2cf,'7)$i')]=_0x38c4f7?_0x1ecc7c[_0x16a668(0x3d4,'7&x*')]:_0x1ecc7c[_0x16a668(0x4ec,'[G51')],_0x38c4f7&&(_0x1ecc7c[_0x16a668(0x309,'4$F8')](requestAnimationFrame,()=>{const _0x11091e=_0x16a668,_0x4b9df2={'YUJGb':_0xaae370[_0x11091e(0x401,'@PcC')],'ipkyz':_0xaae370[_0x11091e(0x4c8,'axXG')]};!(function(){const _0x33c4bd=_0x11091e;if(!_0x2b485d['error'])return;try{_0x2b485d[_0x33c4bd(0x457,'TsH]')][_0x33c4bd(0x36a,'4$F8')]({'behavior':_0x4b9df2[_0x33c4bd(0x242,'axXG')],'block':_0x4b9df2[_0x33c4bd(0x30b,'QUV*')]});}catch{}}());}),_0x387b23&&(_0x2b485d['error'][_0x16a668(0x246,'xYTy')][_0x16a668(0x259,'Wm#u')](_0x1ecc7c[_0x16a668(0x26e,'W&6R')]),_0x2b485d[_0x16a668(0x30e,'cI9N')]['offsetWidth'],_0x2b485d[_0x16a668(0x4a9,'lVcq')][_0x16a668(0x275,'M^@g')]['add'](_0x1ecc7c['eDZhy']),_0x1ecc7c[_0x16a668(0x310,'JqPG')](_0x442bee,0x0)&&setTimeout(()=>{const _0x4a7f97=_0x16a668,_0x2e4f62={'McdnO':function(_0x4b71e3,_0xbf0787){const _0x22a1e7=_0x1bb2;return _0xaae370[_0x22a1e7(0x3dc,'svEd')](_0x4b71e3,_0xbf0787);}};_0xaae370[_0x4a7f97(0x2af,'(67x')](_0xaae370[_0x4a7f97(0x4bc,'QUV*')],_0xaae370[_0x4a7f97(0x38e,'*Vp1')])?_0x2b485d[_0x4a7f97(0x350,'1ew4')][_0x4a7f97(0x2be,'qMY6')]['remove'](_0x4a7f97(0x52c,'o&iM')):_0x2e4f62[_0x4a7f97(0x352,'(67x')](!0x0,_0x4b83af[_0x4a7f97(0x393,'8YLK')])||_0x12fbe6[_0x4a7f97(0x4f1,'M^@g')]||_0x2b55e1['close'](!0x1);},0x3e8*_0x442bee))));},'clearError'(){const _0x4e2101=_0x32a78a;_0x2b485d[_0x4e2101(0x3e1,'7X$a')]&&(_0x2b485d[_0x4e2101(0x223,'(67x')]['textContent']='',_0x2b485d[_0x4e2101(0x483,'O5KM')]['style'][_0x4e2101(0x34d,'TsH]')]='none');},'loading'(_0x9a1d6b,_0x49f021){const _0x1fbb57=_0x32a78a;this['_loading']=!!_0x9a1d6b,_0x2b485d[_0x1fbb57(0x516,'EQwJ')]['style'][_0x1fbb57(0x1f9,'xYTy')]=_0x9a1d6b?'':_0x1ecc7c[_0x1fbb57(0x22a,'(67x')],_0x2b485d[_0x1fbb57(0x524,'JqPG')][_0x1fbb57(0x4b5,'ZBzq')]=_0x9a1d6b,_0x2b485d[_0x1fbb57(0x26b,'vDV!')][_0x1fbb57(0x517,'ZA7G')]=_0x9a1d6b,_0x1ecc7c[_0x1fbb57(0x312,'ZA7G')](null,_0x49f021)&&(_0x2b485d[_0x1fbb57(0x3ca,'97Bq')][_0x1fbb57(0x24e,'8YLK')]=_0x49f021);},'resolve'(_0x3fe94e){const _0x1abae2=_0x32a78a,_0x37fe50={'XGaOg':function(_0x23c59e,_0xb4e538){const _0x27a517=_0x1bb2;return _0x1ecc7c[_0x27a517(0x3c6,'OwKS')](_0x23c59e,_0xb4e538);},'AqGVi':function(_0x17d763){return _0x17d763();}};_0x1ecc7c['wiePg'](_0x1ecc7c[_0x1abae2(0x365,'QiW^')],_0x1ecc7c[_0x1abae2(0x3ba,'7&x*')])?(_0x37fe50[_0x1abae2(0x43d,'mfct')](_0x3d0024,'timeout'),_0x37fe50['AqGVi'](_0x29640c),_0x2bdccc[_0x1abae2(0x424,'Spcd')](!0x1)):(_0x5f8ca1&&(_0x1ecc7c['syKPX'](_0x5f8ca1,_0x3fe94e),_0x1ecc7c['zsxsx'](_0xcc4d28)),this[_0x1abae2(0x2df,'1ew4')](!0x0));},'close'(_0x36669b=!0x0){const _0x309c07=_0x32a78a,_0xd7b343={'CxoXH':function(_0x3ee898,_0x1dd95d){return _0x3ee898==_0x1dd95d;},'PEWHW':_0x309c07(0x3da,'M^@g'),'kVHGK':function(_0x147f7e,_0x2c3264){return _0x147f7e==_0x2c3264;},'gkxnt':function(_0x2c120f,_0x43f208){const _0x40c9f1=_0x309c07;return _0x1ecc7c[_0x40c9f1(0x51a,'ZBzq')](_0x2c120f,_0x43f208);},'UAHSt':_0x1ecc7c[_0x309c07(0x224,'HZIx')]};if(_0x1ecc7c[_0x309c07(0x485,'0YjU')](_0x1ecc7c[_0x309c07(0x482,'@PcC')],_0x309c07(0x336,'m02P'))){if(!(!_0x44f84c[_0x309c07(0x468,'o33y')](_0x440f07[_0x309c07(0x346,'gRaj')])&&_0x1ecc7c[_0x309c07(0x41d,'O5KM')](_0x1ecc7c['NHwlx'],typeof _0x3c0c04[_0x309c07(0x3bc,'O5KM')])))return this[_0x309c07(0x458,'JqPG')]();if('select'===_0x3dad2d){const _0x4f3215=this[_0x309c07(0x41c,'gRaj')]||_0x450525[_0x309c07(0x35e,'1ew4')];if(!_0x4f3215)return null;const _0x5c595a=_0x4f3215['value']??'';if(!_0x5c595a)return'';const _0x545fc4=_0x4f3215[_0x309c07(0x523,'6QzP')]?.[0x0],_0xcba100=_0x545fc4?.[_0x309c07(0x4b1,'Wz$9')]??null,_0x10b5a7=_0x1ecc7c[_0x309c07(0x372,'vDV!')](_0xd2ccf2,_0x1ecc7c[_0x309c07(0x21a,'@PcC')]),_0x26cd6f=_0x1ecc7c[_0x309c07(0x2ef,'o&iM')](_0x8c62d1,_0x1ecc7c[_0x309c07(0x46f,'b!xJ')]);let _0x23a254='';const _0x378055=_0x1ecc7c[_0x309c07(0x23b,'0YjU')](_0x309c07(0x4ef,'cp&!'),typeof _0x26cd6f);if(_0x378055)try{_0x23a254=_0xcba100?_0x1ecc7c[_0x309c07(0x3ee,'TsH]')](_0x26cd6f,_0xcba100,this):null;}catch{_0x23a254='';}else _0x23a254=_0xcba100&&_0x26cd6f in _0xcba100?_0xcba100[_0x26cd6f]:_0x545fc4?.['text']??'';return{[_0x10b5a7]:_0x5c595a,[_0x378055?_0x1ecc7c[_0x309c07(0x3a3,'gRaj')]:_0x26cd6f]:_0x23a254};}const _0x34e7c4=this['_singleInputEl']||_0x2f6d4e[_0x309c07(0x280,'lVcq')];return _0x34e7c4?_0x34e7c4[_0x309c07(0x31b,'[G51')]??'':'';}else{if(this[_0x309c07(0x261,'lVcq')](!0x1),_0x1fad3c[_0x309c07(0x21b,'TsH]')]['display']='none',_0x4abb55[_0x309c07(0x340,'Wm#u')]['display']=_0x1ecc7c[_0x309c07(0x2e2,'gRaj')],!0x1===_0x36669b&&_0x1ecc7c[_0x309c07(0x411,'M*v)')](_0x1ecc7c[_0x309c07(0x441,'cp&!')],typeof _0x47934f[_0x309c07(0x2f5,'7&x*')]))try{if(_0x1ecc7c[_0x309c07(0x4f3,'@PcC')]===_0x309c07(0x3ff,'fPp8'))_0x47934f['onCancel'](this);else{const _0x6869ee=_0x504a6a['isArray'](_0x472b7e[_0x309c07(0x2cc,'JqPG')])||_0xd7b343['CxoXH'](_0xd7b343[_0x309c07(0x2b9,'6QzP')],typeof _0x9025b[_0x309c07(0x428,'7&x*')]),_0x481a10=_0x6869ee?_0xd7b343[_0x309c07(0x362,'[G51')](_0xd7b343[_0x309c07(0x45a,'gRaj')],typeof _0x3c1910[_0x309c07(0x3e9,'6QzP')])?_0x518ac1['getData'](_0x1f8fd8):_0x15b5a5[_0x309c07(0x341,'9y&s')]():_0x49d96c['getValue']();if(_0x6869ee){const _0x16d008=_0x5372d7[_0x309c07(0x492,'M*v)')][_0x309c07(0x499,'xYTy')](_0x7896dd['custom']);if(_0x16d008[_0x309c07(0x2c9,'9y&s')]){const _0x30c5d3=_0x16d008[0x0];return _0x211645['setError'](_0x30c5d3[_0x309c07(0x315,'HZIx')]),void _0x133d81(()=>{const _0x512c4f=_0x309c07;_0x30c5d3['element']?.[_0x512c4f(0x2d3,'[G51')]?.();});}}else{if(!_0x508a79[_0x309c07(0x429,'mfBD')]&&_0xd7b343[_0x309c07(0x2a0,'qMY6')](_0x397c6a,_0x481a10))return void _0xbcfb4f['setError'](_0x3b9ba5[_0x309c07(0x4e7,'o33y')]||_0xd7b343[_0x309c07(0x51d,'mfBD')]);}_0x18c924['onConfirm']?.(_0x481a10,_0x4540dc['btnOk'],_0x3734e5);}}catch{}_0x37d369&&(_0x1ecc7c[_0x309c07(0x446,'lVcq')](_0x37d369,_0x1ecc7c[_0x309c07(0x376,'@PcC')](!0x1,_0x36669b)?_0x309c07(0x22b,'lVcq'):_0x1ecc7c[_0x309c07(0x34b,'7X$a')]),_0x1ecc7c[_0x309c07(0x41e,'lVcq')](_0xcc4d28));}}};function _0x58e2ed(_0x595f55={}){const _0x33dcba=_0x32a78a,_0x30ad99={'Bjgpg':function(_0x8842f,_0x507d89){return _0x1ecc7c['UsoNF'](_0x8842f,_0x507d89);}};if(_0x1ecc7c['PrOgl'](_0x1ecc7c[_0x33dcba(0x2c3,'ZA7G')],_0x1ecc7c[_0x33dcba(0x3dd,'EQwJ')])){const _0x3631d1=_0x340c6a[0x0];return _0x145059[_0x33dcba(0x214,'mfBD')](_0x3631d1[_0x33dcba(0x328,'Spcd')]),void _0x30ad99[_0x33dcba(0x3fe,'qMY6')](_0x265c1f,()=>{const _0x37313e=_0x33dcba;_0x3631d1[_0x37313e(0x38a,'HZIx')]?.[_0x37313e(0x31c,'7)$i')]?.();});}else{const _0x15c13a=(_0x595f55[_0x33dcba(0x22d,'Spcd')]||'')['toLowerCase']();if(_0x5dc484['has'](_0x15c13a))return{'mode':_0x1ecc7c['qsYiN'],'inputType':_0x15c13a};if(_0x1ecc7c['yNisd']===_0x15c13a)return{'mode':_0x1ecc7c['yNisd']};if(_0x595f55[_0x33dcba(0x2ae,'1ew4')])return{'mode':_0x33dcba(0x47e,'vDV!')};const _0x38d5e2=_0x595f55['data'];return Array[_0x33dcba(0x34c,'*Vp1')](_0x38d5e2)||_0x1ecc7c[_0x33dcba(0x4f4,'qMY6')](_0x1ecc7c[_0x33dcba(0x479,'b!xJ')],typeof _0x38d5e2)||_0x595f55['api']||_0x595f55[_0x33dcba(0x514,'97Bq')]||_0x595f55[_0x33dcba(0x418,'0YjU')]?{'mode':_0x33dcba(0x422,'OwKS')}:{'mode':_0x1ecc7c['qsYiN'],'inputType':_0x1ecc7c[_0x33dcba(0x4be,'*Vp1')]};}}function _0xaecbab(){const _0x75ac88=_0x32a78a,_0x4665b8={'zoFva':_0x1ecc7c[_0x75ac88(0x2b3,'HZIx')],'swQtS':_0x1ecc7c[_0x75ac88(0x4cc,'ZA7G')]};if(_0x1ecc7c[_0x75ac88(0x343,'VmeP')](_0x75ac88(0x375,'o&iM'),_0x1ecc7c[_0x75ac88(0x2ce,'vDV!')])){if(_0x58e49f)return;_0x58e49f=!0x0,(function(){const _0x29a01c=_0x75ac88,_0x1c0c23={'zWgaw':_0x1ecc7c['JhXJE'],'AaQdf':_0x1ecc7c[_0x29a01c(0x4d6,'cp&!')],'MdFNi':_0x1ecc7c[_0x29a01c(0x48e,'1ew4')]};if(_0x1ecc7c[_0x29a01c(0x262,'vDV!')]('zqecG',_0x1ecc7c[_0x29a01c(0x2e8,'ZA7G')])){if(document[_0x29a01c(0x442,'cp&!')](_0x29a01c(0x2cb,'9y&s')))return;const _0x9276f=document[_0x29a01c(0x349,'lVcq')](_0x1ecc7c[_0x29a01c(0x2d2,'ZA7G')]);_0x9276f['id']=_0x1ecc7c['JhXJE'],_0x9276f[_0x29a01c(0x39d,'A$Dm')]='\x0a\x20\x0a\x0a\x20\x20\x20\x0a\x20\x20.ctx-delete\x20\x20\x20\x20{\x20--ctx-color:\x20#dc2626;\x20}\x0a\x20\x20.ctx-update\x20\x20\x20\x20{\x20--ctx-color:\x20#2563eb;\x20}\x0a\x20\x20.ctx-authorize\x20{\x20--ctx-color:\x20#16a34a;\x20}\x0a\x20\x20.ctx-warning\x20\x20\x20{\x20--ctx-color:\x20#f59e0b;\x20}\x0a\x20\x20.ctx-question\x20\x20{\x20--ctx-color:\x20#0ea5e9;\x20}\x0a\x0a\x0a.inputbox-backdrop{\x0a\x20\x20position:\x20fixed;\x0a\x20\x20inset:\x200;\x0a\x20\x20background:\x20rgba(0,0,0,.35);\x0a\x20\x20z-index:\x209998;\x0a}\x0a\x0a\x0a.inputbox{\x0a\x20\x20position:\x20fixed;\x0a\x20\x20left:\x2050%;\x0a\x20\x20top:\x2016%;\x0a\x20\x20transform:\x20translateX(-50%);\x0a\x20\x20z-index:\x209999;\x0a\x20\x20font-family:\x20system-ui,\x20\x27Poppins\x27,\x20\x27Khmer\x20OS\x20Battambang\x27;\x0a}\x0a\x0a\x0a.ib-sm{\x20width:\x20min(92vw,\x20460px);\x20}\x0a.ib-md{\x20width:\x20min(92vw,\x20620px);\x20}\x0a.ib-lg{\x20width:\x20min(96vw,\x20780px);\x20}\x0a\x0a\x0a.inputbox-card{\x0a\x20\x20background:\x20#fff;\x0a\x20\x20border-radius:\x2018px;\x0a\x20\x20box-shadow:\x200\x2016px\x2050px\x20rgba(0,0,0,.22);\x0a\x20\x20overflow:\x20hidden;\x0a}\x0a\x0a\x0a.inputbox-header{\x0a\x20\x20position:\x20relative;\x0a\x20\x20display:\x20flex;\x0a\x20\x20align-items:\x20flex-start;\x0a\x20\x20justify-content:\x20space-between;\x0a\x20\x20padding:\x2016px\x2018px\x2010px;\x0a}\x0a\x0a\x0a.inputbox-title{\x0a\x20\x20font-size:\x201.15rem;\x0a\x20\x20font-weight:\x20800;\x0a\x20\x20line-height:\x201.25;\x0a}\x0a\x0a\x0a.inputbox-close{\x0a\x20\x20position:\x20absolute;\x0a\x20\x20top:\x2014px;\x0a\x20\x20right:\x2014px;\x0a\x20\x20border:\x200;\x0a\x20\x20background:\x20transparent;\x0a\x20\x20font-size:\x2022px;\x0a\x20\x20line-height:\x201;\x0a\x20\x20cursor:\x20pointer;\x0a\x20\x20color:\x20#6b7280;\x0a\x20\x20padding:\x204px;\x0a}\x0a.inputbox-close:hover{\x20opacity:.75;\x20}\x0a\x0a\x0a.inputbox-body{\x0a\x20\x20padding:\x200\x2018px\x2012px;\x0a\x20\x20overflow-y:\x20auto;\x0a\x20\x20overscroll-behavior:\x20contain;\x0a\x20\x20flex:\x201\x201\x20auto;\x0a\x20\x20min-height:\x200;\x0a}\x0a\x0a\x0a.inputbox-message{\x20margin-bottom:\x2010px;\x20font-size:\x20.95rem;\x20}\x0a\x0a\x0a.inputbox-input,\x0a.inputbox-select{\x0a\x20\x20width:\x20100%;\x0a\x20\x20box-sizing:\x20border-box;\x0a\x20\x20padding:\x2010px\x2012px;\x0a\x20\x20border-radius:\x2012px;\x0a\x20\x20border:\x201px\x20solid\x20#ddd;\x0a\x20\x20font-size:\x20.95rem;\x0a}\x0a\x0a\x0a.inputbox-error{\x0a\x20\x20min-height:\x2018px;\x0a\x20\x20margin-top:\x206px;\x0a\x20\x20font-size:\x20.85rem;\x0a}\x0a\x0a\x0a.inputbox-footer{\x0a\x20\x20display:\x20flex;\x0a\x20\x20justify-content:\x20flex-end;\x0a\x20\x20gap:\x2010px;\x0a\x20\x20padding:\x2014px\x2018px\x2018px;\x0a}\x0a\x0a\x0a.inputbox-btn{\x0a\x20\x20padding:\x209px\x2016px;\x0a\x20\x20border-radius:\x2014px;\x0a\x20\x20font-weight:\x20700;\x0a\x20\x20border:\x201px\x20solid\x20#ddd;\x0a\x20\x20background:\x20transparent;\x0a\x20\x20cursor:\x20pointer;\x0a}\x0a.inputbox-btn:disabled{\x20opacity:.6;\x20cursor:not-allowed;\x20}\x0a.inputbox-btn.ok{\x20border:none;\x20}\x0a\x0a\x0a.inputbox-context-line{\x0a\x20\x20width:\x2060%;\x0a\x20\x20height:\x202px;\x0a\x20\x20border-radius:\x20999px;\x0a\x20\x20margin-top:\x208px;\x0a\x20\x20background:\x20linear-gradient(\x0a\x20\x20\x20\x2090deg,\x0a\x20\x20\x20\x20var(--ctx-color)\x200%,\x0a\x20\x20\x20\x20var(--ctx-color)\x2035%,\x0a\x20\x20\x20\x20color-mix(in\x20srgb,\x20var(--ctx-color)\x2065%,\x20transparent)\x2060%,\x0a\x20\x20\x20\x20color-mix(in\x20srgb,\x20var(--ctx-color)\x2035%,\x20transparent)\x2080%,\x0a\x20\x20\x20\x20transparent\x20100%\x0a\x20\x20);\x0a}\x0a\x0a\x0a.spinner{\x0a\x20\x20width:\x2014px;\x0a\x20\x20height:\x2014px;\x0a\x20\x20border-radius:\x2050%;\x0a\x20\x20border:\x202px\x20solid\x20rgba(255,255,255,.4);\x0a\x20\x20border-top-color:\x20#fff;\x0a\x20\x20animation:\x20inputbox-spin\x20.7s\x20linear\x20infinite;\x0a}\x0a@keyframes\x20inputbox-spin{\x20to{\x20transform:\x20rotate(360deg);\x20}\x20}\x0a\x0a\x0a.inputbox-error-animate{\x0a\x20\x20animation:\x20inputboxErrorPulse\x200.45s\x20ease-in-out\x200s\x202,\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20inputboxErrorGlow\x203s\x20ease-out;\x0a}\x0a@keyframes\x20inputboxErrorPulse{\x0a\x20\x200%{\x20transform:translateX(0);\x20}\x0a\x20\x2020%{\x20transform:translateX(-3px);\x20}\x0a\x20\x2040%{\x20transform:translateX(3px);\x20}\x0a\x20\x2060%{\x20transform:translateX(-2px);\x20}\x0a\x20\x2080%{\x20transform:translateX(2px);\x20}\x0a\x20\x20100%{\x20transform:translateX(0);\x20}\x0a}\x0a@keyframes\x20inputboxErrorGlow{\x0a\x20\x200%{\x20text-shadow:0\x200\x200\x20rgba(220,38,38,0);\x20}\x0a\x20\x2020%{\x20text-shadow:0\x200\x208px\x20rgba(220,38,38,.45);\x20}\x0a\x20\x20100%{\x20text-shadow:0\x200\x200\x20rgba(220,38,38,0);\x20}\x0a}\x0a',document[_0x29a01c(0x472,'svEd')]['appendChild'](_0x9276f);}else{if(_0x3aa554[_0x29a01c(0x448,'97Bq')](_0x1c0c23[_0x29a01c(0x347,'gRaj')]))return;const _0x5faff9=_0x3053e5[_0x29a01c(0x247,'EQwJ')](_0x1c0c23[_0x29a01c(0x3fa,'o&iM')]);_0x5faff9['id']=_0x1c0c23[_0x29a01c(0x205,'VmeP')],_0x5faff9['textContent']=_0x1c0c23[_0x29a01c(0x50a,'vDV!')],_0x386794[_0x29a01c(0x371,'o&iM')][_0x29a01c(0x356,'mfBD')](_0x5faff9);}}()),(function(){const _0x5eb613=_0x75ac88;if(document['getElementById'](_0x1ecc7c[_0x5eb613(0x357,'7)$i')]))return;const _0x5c3731=document['createElement'](_0x1ecc7c[_0x5eb613(0x2fb,'!iLs')]);_0x5c3731['id']=_0x1ecc7c[_0x5eb613(0x385,'VmeP')],_0x5c3731[_0x5eb613(0x308,'7)$i')]=_0x1ecc7c['ngoWf'],document[_0x5eb613(0x337,'6QzP')][_0x5eb613(0x30d,'QiW^')](_0x5c3731);}()),_0x4abb55=document[_0x75ac88(0x522,'4$F8')](_0x1ecc7c[_0x75ac88(0x4f6,'7)$i')]),_0x4abb55[_0x75ac88(0x24a,'9y&s')]=_0x75ac88(0x35a,'7&x*'),_0x4abb55['style'][_0x75ac88(0x210,'axXG')]=_0x1ecc7c[_0x75ac88(0x207,'M*v)')],document[_0x75ac88(0x3cd,'mfct')]['appendChild'](_0x4abb55),_0x1fad3c=document[_0x75ac88(0x47f,'o&iM')](_0x1ecc7c['WQeRU']),_0x1fad3c[_0x75ac88(0x50c,'HZIx')]=_0x1ecc7c[_0x75ac88(0x3f6,'ZBzq')],_0x1fad3c[_0x75ac88(0x25e,'@PcC')][_0x75ac88(0x255,'(67x')]=_0x1ecc7c[_0x75ac88(0x330,'W&6R')],_0x1fad3c[_0x75ac88(0x3be,'ZBzq')]=_0x1ecc7c[_0x75ac88(0x45c,'vDV!')],document[_0x75ac88(0x3b5,'M^@g')][_0x75ac88(0x493,'[G51')](_0x1fad3c);const _0x1e2d2b=_0x5cfa8b=>_0x1fad3c[_0x75ac88(0x3d7,'QUV*')](_0x5cfa8b);Object['assign'](_0x2b485d,{'title':_0x1ecc7c['syKPX'](_0x1e2d2b,_0x75ac88(0x525,'axXG')),'message':_0x1ecc7c[_0x75ac88(0x4bd,'4$F8')](_0x1e2d2b,_0x1ecc7c[_0x75ac88(0x2a9,'o33y')]),'label':_0x1e2d2b(_0x1ecc7c[_0x75ac88(0x229,'o33y')]),'contextLine':_0x1ecc7c['AMWUt'](_0x1e2d2b,_0x1ecc7c['eNhlK']),'inputWrapper':_0x1ecc7c[_0x75ac88(0x31e,'o&iM')](_0x1e2d2b,_0x1ecc7c['pjhsv']),'selectWrapper':_0x1ecc7c[_0x75ac88(0x295,'QiW^')](_0x1e2d2b,_0x75ac88(0x3f0,'7X$a')),'custom':_0x1ecc7c[_0x75ac88(0x489,'9y&s')](_0x1e2d2b,_0x1ecc7c['WaliO']),'input':_0x1e2d2b(_0x1ecc7c[_0x75ac88(0x410,'fPp8')]),'select':_0x1ecc7c['AMWUt'](_0x1e2d2b,_0x1ecc7c[_0x75ac88(0x2f6,'HZIx')]),'error':_0x1ecc7c[_0x75ac88(0x4ae,'rvSP')](_0x1e2d2b,_0x1ecc7c[_0x75ac88(0x502,'o33y')]),'btnOk':_0x1ecc7c['AMWUt'](_0x1e2d2b,_0x75ac88(0x26a,'@PcC')),'btnOkText':_0x1ecc7c[_0x75ac88(0x48d,'EQwJ')](_0x1e2d2b,_0x75ac88(0x263,'axXG')),'btnCancel':_0x1ecc7c['urUoV'](_0x1e2d2b,'.inputbox-btn.cancel'),'spinner':_0x1ecc7c[_0x75ac88(0x32f,'qMY6')](_0x1e2d2b,_0x1ecc7c[_0x75ac88(0x494,'HZIx')]),'btnClose':_0x1ecc7c[_0x75ac88(0x3af,'cI9N')](_0x1e2d2b,_0x1ecc7c[_0x75ac88(0x2c1,'QiW^')])}),_0x2b485d['btnCancel'][_0x75ac88(0x370,'(67x')]=()=>!_0x41624e[_0x75ac88(0x390,'mfBD')]&&_0x41624e[_0x75ac88(0x23f,'4$F8')](!0x1),_0x2b485d[_0x75ac88(0x2f4,'gRaj')][_0x75ac88(0x2d7,'mfBD')]=()=>!_0x41624e[_0x75ac88(0x3a8,'cI9N')]&&_0x41624e['close'](!0x1),_0x2b485d[_0x75ac88(0x39b,'4$F8')][_0x75ac88(0x230,'4$F8')]=()=>!_0x41624e['_loading']&&(function(){const _0x5e7952=_0x75ac88,_0x15c0d4=Array[_0x5e7952(0x26f,'(67x')](_0x47934f[_0x5e7952(0x2c5,'1ew4')])||_0x1ecc7c[_0x5e7952(0x32d,'!iLs')](_0x1ecc7c[_0x5e7952(0x233,'ZA7G')],typeof _0x47934f[_0x5e7952(0x423,'EQwJ')]),_0x5d59e2=_0x15c0d4?_0x1ecc7c[_0x5e7952(0x4eb,'7&x*')](_0x1ecc7c[_0x5e7952(0x4fc,'Wz$9')],typeof _0x47934f[_0x5e7952(0x3e9,'6QzP')])?_0x47934f[_0x5e7952(0x46e,'7X$a')](_0x41624e):_0x41624e[_0x5e7952(0x458,'JqPG')]():_0x41624e[_0x5e7952(0x436,'mfct')]();if(_0x15c0d4){if(_0x1ecc7c[_0x5e7952(0x1f5,'b!xJ')]!==_0x1ecc7c[_0x5e7952(0x208,'QUV*')]){const _0x4c9b77=vfc['form'][_0x5e7952(0x378,'fPp8')](_0x2b485d[_0x5e7952(0x28e,'97Bq')]);if(_0x4c9b77[_0x5e7952(0x272,'4$F8')]){if(_0x1ecc7c[_0x5e7952(0x321,'mfBD')](_0x5e7952(0x3a1,'qMY6'),_0x1ecc7c['mtgVr'])){const _0x551628=_0x4c9b77[0x0];return _0x41624e[_0x5e7952(0x451,'cI9N')](_0x551628[_0x5e7952(0x38c,'mfct')]),void _0x1ecc7c[_0x5e7952(0x51c,'4$F8')](requestAnimationFrame,()=>{const _0x295bdb=_0x5e7952;_0x551628[_0x295bdb(0x3bb,'7X$a')]?.['focus']?.();});}else _0x50314d[_0x5e7952(0x202,'vDV!')][_0x5e7952(0x3ae,'*Vp1')]({'behavior':'smooth','block':_0x4665b8['zoFva']});}}else{_0x16ea34[_0x5e7952(0x2d1,'9y&s')]='';const _0x11f93f=_0x1bcde3[_0x5e7952(0x431,'6QzP')]('select');_0x11f93f['className']=_0x5e7952(0x24b,'xYTy'),_0x11f93f[_0x5e7952(0x24f,'7)$i')]=_0x123e98[_0x5e7952(0x244,'vDV!')]||_0x4665b8[_0x5e7952(0x322,'O5KM')],_0x11f93f[_0x5e7952(0x28f,'o&iM')][_0x5e7952(0x3e2,'Spcd')]=_0x11f93f['name'],_0x11f93f['dataset']['type']='select',_0x19d278[_0x5e7952(0x2b4,'*Vp1')]||(_0x11f93f['dataset'][_0x5e7952(0x1fc,'4$F8')]='1'),_0x1345de[_0x5e7952(0x313,'fPp8')](_0x11f93f),_0x134334[_0x5e7952(0x41c,'gRaj')]=_0x11f93f,_0x247e23=!0x0;}}else{if(!_0x47934f['allowBlankValue']&&_0x1ecc7c[_0x5e7952(0x3ed,'mfBD')](_0x227fea,_0x5d59e2))return void _0x41624e[_0x5e7952(0x332,'VmeP')](_0x47934f['requiredMessage']||_0x1ecc7c[_0x5e7952(0x2fe,'VmeP')]);}_0x47934f[_0x5e7952(0x45b,'7X$a')]?.(_0x5d59e2,_0x2b485d[_0x5e7952(0x3df,'HZIx')],_0x41624e);}()),_0x4abb55[_0x75ac88(0x23e,'vDV!')]=()=>{const _0x3a4ebd=_0x75ac88;_0x1ecc7c[_0x3a4ebd(0x2bf,'vDV!')](!0x0,_0x47934f[_0x3a4ebd(0x43a,'m02P')])||_0x41624e['_loading']||_0x41624e[_0x3a4ebd(0x29c,'EQwJ')](!0x1);},_0x2b485d[_0x75ac88(0x3eb,'9y&s')][_0x75ac88(0x289,'Wm#u')](_0x1ecc7c['QziIV'],_0x23d681=>{const _0xd4247b=_0x75ac88;_0x1ecc7c[_0xd4247b(0x510,'mfct')](_0x1ecc7c[_0xd4247b(0x2fa,'*Vp1')],_0x23d681[_0xd4247b(0x416,'6QzP')])&&(_0x23d681[_0xd4247b(0x32a,'!iLs')](),_0x2b485d[_0xd4247b(0x3ce,'b!xJ')]['click']());}),document[_0x75ac88(0x28a,'m02P')](_0x1ecc7c['QziIV'],_0x4c47ba=>{const _0xc4596a=_0x75ac88;_0x1ecc7c[_0xc4596a(0x2e2,'gRaj')]!==_0x1fad3c[_0xc4596a(0x2d5,'6QzP')]['display']&&_0x1ecc7c[_0xc4596a(0x286,'7&x*')](_0x1ecc7c['JoNso'],_0x4c47ba[_0xc4596a(0x45d,'TsH]')])&&(_0x4c47ba['preventDefault'](),_0x41624e[_0xc4596a(0x2df,'1ew4')](!0x1));});}else _0x58de9c=_0x2a0420?_0x1ecc7c[_0x75ac88(0x452,'97Bq')](_0x4608f6,_0x45812e,this):null;}function _0x40bef6(_0x329732){const _0x4d0a58=_0x32a78a;return _0x1ecc7c[_0x4d0a58(0x450,'TsH]')](null,_0x329732)?'':_0x1ecc7c[_0x4d0a58(0x218,'97Bq')](_0x1ecc7c['arUEe'],typeof _0x329732)?_0x329732+'px':_0x1ecc7c[_0x4d0a58(0x4a3,'O5KM')](String,_0x329732)[_0x4d0a58(0x33d,'lVcq')]();}function _0x3cda29(_0x4dbc09={}){const _0x3711b3=_0x32a78a,_0x23630f={'qfwFL':function(_0x4b7515,_0x17571f){return _0x4b7515!==_0x17571f;},'lKbtV':_0x1ecc7c[_0x3711b3(0x331,'Wm#u')]};_0x1ecc7c[_0x3711b3(0x40d,'6QzP')](_0xaecbab),_0x47934f=_0x4dbc09||{},_0x41624e['options']=_0x47934f,_0x473cd0=_0x47934f[_0x3711b3(0x381,'[G51')]??_0x47934f['valueKey']??_0x47934f[_0x3711b3(0x26d,'[G51')]??_0x1ecc7c[_0x3711b3(0x300,'QUV*')],_0x241540=_0x47934f['textField']??_0x47934f[_0x3711b3(0x3c0,'7X$a')]??_0x47934f['labelKey']??_0x47934f[_0x3711b3(0x200,'TsH]')]??_0x1ecc7c[_0x3711b3(0x42e,'7X$a')],_0x1fad3c[_0x3711b3(0x3fd,'Wm#u')][_0x3711b3(0x4d2,'TsH]')](_0x1ecc7c[_0x3711b3(0x2b7,'9y&s')],_0x1ecc7c[_0x3711b3(0x4ba,'QUV*')],'ib-lg'),_0x1fad3c[_0x3711b3(0x470,'*Vp1')]['add']('ib-'+(_0x4dbc09['size']||'md')),function(_0x2712be){const _0x436e65=_0x3711b3;if(_0x1ecc7c['LvIar'](_0x1ecc7c[_0x436e65(0x2bc,'ZBzq')],_0x436e65(0x447,'(67x'))){const _0x20e1fb=_0x31d5e7['form'][_0x436e65(0x484,'M*v)')](_0xc6cdd[_0x436e65(0x2ba,'EQwJ')]);if(_0x20e1fb[_0x436e65(0x43e,'QiW^')]){const _0x522169=_0x20e1fb[0x0];return _0x32ca30[_0x436e65(0x25b,'6QzP')](_0x522169[_0x436e65(0x358,'7)$i')]),void _0x599937(()=>{const _0xb9ab53=_0x436e65;_0x522169[_0xb9ab53(0x4de,'4$F8')]?.['focus']?.();});}}else{_0x1fad3c[_0x436e65(0x44b,'gRaj')][_0x436e65(0x20e,'vDV!')]='',_0x1fad3c[_0x436e65(0x254,'m02P')][_0x436e65(0x379,'EQwJ')]='',_0x1fad3c[_0x436e65(0x2d5,'6QzP')]['maxWidth']='',_0x1fad3c['style'][_0x436e65(0x52b,'ZA7G')]='';const _0x277493=_0x1fad3c[_0x436e65(0x222,'9y&s')](_0x1ecc7c[_0x436e65(0x3ac,'@PcC')]);_0x277493&&(_0x277493[_0x436e65(0x486,'cp&!')]['height']='',_0x277493['style'][_0x436e65(0x283,'JqPG')]='');const _0x5b26d3=_0x1ecc7c[_0x436e65(0x43b,'HZIx')](_0x40bef6,_0x2712be[_0x436e65(0x2d0,'ZBzq')]??_0x2712be['w']),_0x808f56=_0x1ecc7c['naufg'](_0x40bef6,_0x2712be[_0x436e65(0x505,'QiW^')]??_0x2712be['h']),_0x12e2c9=_0x1ecc7c[_0x436e65(0x3e3,'VmeP')](_0x40bef6,_0x2712be[_0x436e65(0x4ab,'HZIx')]??_0x2712be[_0x436e65(0x3e4,'qMY6')]);_0x5b26d3&&(_0x1fad3c[_0x436e65(0x3a2,'Wz$9')]['width']=_0x5b26d3,_0x1fad3c[_0x436e65(0x35b,'1ew4')][_0x436e65(0x4d9,'QUV*')]=_0x436e65(0x4b3,'Wm#u')),_0x1ecc7c['VajzG'](_0x808f56,_0x12e2c9)&&_0x277493&&(_0x808f56&&(_0x277493['style'][_0x436e65(0x413,'gRaj')]=_0x808f56),_0x12e2c9&&(_0x277493[_0x436e65(0x2c0,'OwKS')][_0x436e65(0x2e3,'W&6R')]=_0x12e2c9),_0x1ecc7c['hIqhV'](_0x12e2c9,_0x808f56)||(_0x277493[_0x436e65(0x340,'Wm#u')]['maxHeight']=_0x1ecc7c['dFnLR']));}}(_0x4dbc09),_0x41624e['clearError'](),_0x41624e[_0x3711b3(0x527,'*Vp1')](!0x1),_0x2b485d[_0x3711b3(0x4cf,'A$Dm')]&&vfc[_0x3711b3(0x4c2,'7X$a')][_0x3711b3(0x28b,'1ew4')]?.(_0x2b485d['custom']),_0x2b485d[_0x3711b3(0x334,'*Vp1')][_0x3711b3(0x46c,'rvSP')]=_0x4dbc09[_0x3711b3(0x459,'7)$i')]??'',_0x2b485d[_0x3711b3(0x4ac,'axXG')][_0x3711b3(0x2a5,'lVcq')]=_0x4dbc09[_0x3711b3(0x212,'Wz$9')]??'',Object[_0x3711b3(0x20c,'Wm#u')](_0x5738f7)[_0x3711b3(0x2e7,'6QzP')](_0x59f5c7=>_0x1fad3c[_0x3711b3(0x2bd,'7&x*')][_0x3711b3(0x269,'gRaj')](_0x59f5c7[_0x3711b3(0x27e,'gRaj')])),_0x2b485d[_0x3711b3(0x2f2,'HZIx')][_0x3711b3(0x42b,'QUV*')][_0x3711b3(0x210,'axXG')]=_0x1ecc7c[_0x3711b3(0x3b9,'EQwJ')],function(_0x256f3e){const _0x46d566=_0x3711b3,_0x370c9b={'EvccT':_0x1ecc7c[_0x46d566(0x226,'6QzP')],'oztbV':function(_0x125acd,_0x5c098d){return _0x1ecc7c['VktGz'](_0x125acd,_0x5c098d);},'TeCXL':_0x46d566(0x351,'lVcq')};if(_0x1ecc7c[_0x46d566(0x440,'o33y')]!==_0x1ecc7c['HqeFm']){const _0x510b05=_0x256f3e[_0x46d566(0x2f0,'ZA7G')];if(!_0x510b05||!_0x5738f7[_0x510b05])return;_0x1fad3c['classList']['add'](_0x5738f7[_0x510b05][_0x46d566(0x215,'m02P')]),_0x2b485d[_0x46d566(0x204,'vDV!')][_0x46d566(0x433,'9y&s')][_0x46d566(0x2fd,'m02P')]='';}else{const _0x4220c1={'wxUTa':function(_0x139f3d,_0x23e836){return _0x139f3d===_0x23e836;},'lBqSw':_0x370c9b[_0x46d566(0x297,'OwKS')],'QKQQE':function(_0x4f9a34,_0x3c8d07){const _0x1bef36=_0x46d566;return _0x370c9b[_0x1bef36(0x1fe,'axXG')](_0x4f9a34,_0x3c8d07);}},_0x4bb41e={};return(_0x3c7a89[_0x46d566(0x43c,'7&x*')]||_0x4c3c60)[_0x46d566(0x27d,'[G51')](_0x370c9b[_0x46d566(0x3de,'0YjU')])['forEach'](_0x3c2264=>{const _0x35db3b=_0x46d566,_0x32e51b=_0x3c2264['dataset']['field'];_0x32e51b&&(_0x4220c1[_0x35db3b(0x377,'4$F8')](_0x4220c1['lBqSw'],_0x3c2264['type'])?_0x4bb41e[_0x32e51b]=_0x3c2264['checked']?0x1:0x0:_0x4220c1[_0x35db3b(0x380,'9y&s')]('radio',_0x3c2264[_0x35db3b(0x2c4,'rvSP')])?_0x3c2264[_0x35db3b(0x4d7,'gRaj')]&&(_0x4bb41e[_0x32e51b]=_0x3c2264['value']):_0x4bb41e[_0x32e51b]=_0x3c2264['value']??'');}),_0x4bb41e;}}(_0x4dbc09),_0x2b485d[_0x3711b3(0x21d,'JqPG')][_0x3711b3(0x22e,'OwKS')]=_0x4dbc09[_0x3711b3(0x38d,'EQwJ')]??_0x4dbc09[_0x3711b3(0x464,'HZIx')]??(_0x4dbc09[_0x3711b3(0x4df,'7&x*')]&&_0x5738f7[_0x4dbc09[_0x3711b3(0x344,'QUV*')]]?.[_0x3711b3(0x1f4,'Spcd')])??'OK',_0x2b485d[_0x3711b3(0x437,'Wz$9')][_0x3711b3(0x316,'cI9N')]=_0x4dbc09[_0x3711b3(0x518,'1ew4')]??_0x1ecc7c[_0x3711b3(0x4d5,'JqPG')],_0x2b485d[_0x3711b3(0x3f8,'svEd')][_0x3711b3(0x35d,'[G51')][_0x3711b3(0x28c,'Wz$9')]=_0x3711b3(0x30c,'TsH]');let _0x53b137=null;!Array[_0x3711b3(0x26c,'7)$i')](_0x4dbc09[_0x3711b3(0x335,'0YjU')])||_0x4dbc09[_0x3711b3(0x359,'axXG')]||_0x4dbc09[_0x3711b3(0x49d,'A$Dm')]||(_0x53b137=vfc[_0x3711b3(0x23d,'M*v)')][_0x3711b3(0x260,'(67x')]?.[_0x3711b3(0x389,'7X$a')]?.['call'](null,_0x4dbc09[_0x3711b3(0x320,'M*v)')])||null),_0x47934f[_0x3711b3(0x460,'lVcq')]=_0x4dbc09[_0x3711b3(0x4ca,'gRaj')]||_0x53b137,_0x1d19e4['call']({'options':_0x4dbc09,'dom':_0x2b485d,'me':_0x41624e}),_0x1ecc7c['tVuxn'](requestAnimationFrame,()=>{const _0x51534d=_0x3711b3,_0x2a3509=_0x2b485d[_0x51534d(0x231,'4$F8')]&&_0x23630f[_0x51534d(0x4e9,'A$Dm')](_0x23630f['lKbtV'],_0x2b485d['custom'][_0x51534d(0x293,'QiW^')][_0x51534d(0x2b0,'8YLK')])?_0x2b485d['custom']:_0x1fad3c;_0x47934f[_0x51534d(0x46d,'7X$a')]?vfc['utils'][_0x51534d(0x318,'!iLs')][_0x51534d(0x235,'xYTy')](_0x2a3509,_0x47934f[_0x51534d(0x2ad,'m02P')],_0x41624e,_0x4dbc09):_0x41624e[_0x51534d(0x2d4,'QUV*')]&&vfc[_0x51534d(0x34e,'b!xJ')]['configSelect'][_0x51534d(0x40a,'xYTy')](_0x41624e['_singleSelectEl'],{'name':_0x41624e['_singleSelectEl'][_0x51534d(0x52d,'8YLK')],'data':_0x4dbc09[_0x51534d(0x475,'JqPG')],'api':_0x4dbc09[_0x51534d(0x417,'o&iM')]||_0x4dbc09['fetchApi']||_0x4dbc09[_0x51534d(0x249,'6QzP')],'query':_0x4dbc09[_0x51534d(0x3e6,'mfBD')],'valueField':_0x473cd0,'textField':_0x241540,'firstOption':_0x4dbc09[_0x51534d(0x3a5,'O5KM')],'defaultValue':_0x4dbc09[_0x51534d(0x2ca,'qMY6')]},_0x41624e,_0x4dbc09,null),_0x4dbc09[_0x51534d(0x46b,'7&x*')]?.(_0x41624e);}),_0x4abb55[_0x3711b3(0x251,'EQwJ')][_0x3711b3(0x34a,'7&x*')]='',_0x1fad3c[_0x3711b3(0x40c,'8YLK')]['display']='';}function _0x261e18(_0x50bb01,_0x1fb4f3){const _0x542a24=_0x32a78a,_0x5b4d69=_0x50bb01[_0x542a24(0x228,'fPp8')]||'value',_0x3946a3=(_0x50bb01[_0x542a24(0x22d,'Spcd')]||'')[_0x542a24(0x3a7,'VmeP')]();if(Array[_0x542a24(0x403,'1ew4')](_0x50bb01[_0x542a24(0x40f,'vDV!')])||_0x1ecc7c[_0x542a24(0x4ad,'M*v)')](_0x1ecc7c[_0x542a24(0x3c1,'gRaj')],typeof _0x50bb01[_0x542a24(0x20f,'mfBD')]))return _0x542a24(0x41a,'m02P');const _0xc6efeb=_0x50bb01['api']?.['endpoint']?String(_0x50bb01['api'][_0x542a24(0x306,'*Vp1')]):_0x50bb01[_0x542a24(0x237,'Wm#u')]?_0x1ecc7c[_0x542a24(0x3d3,'1ew4')](String,_0x50bb01[_0x542a24(0x306,'*Vp1')]):_0x50bb01[_0x542a24(0x529,'M^@g')]?_0x1ecc7c['QKrrE'](String,_0x50bb01[_0x542a24(0x276,'7X$a')]):Array[_0x542a24(0x391,'svEd')](_0x50bb01['data'])?'arr:'+_0x50bb01[_0x542a24(0x421,'O5KM')][_0x542a24(0x2ac,'mfBD')]:_0x1ecc7c[_0x542a24(0x23c,'A$Dm')]==typeof _0x50bb01[_0x542a24(0x3d2,'M^@g')]?_0x542a24(0x3aa,'@PcC')+_0x50bb01['data']:'';return[_0x1ecc7c[_0x542a24(0x2da,'QUV*')],_0x1fb4f3?.[_0x542a24(0x42f,'ZBzq')]||'',_0x1fb4f3?.[_0x542a24(0x49b,'M*v)')]||'',_0x5b4d69,String(_0x1ecc7c[_0x542a24(0x462,'QUV*')](_0x473cd0,'')),_0x1ecc7c['tHRrR'](String,_0x1ecc7c['NHwlx']==typeof _0x241540?'fn':_0x1ecc7c[_0x542a24(0x48b,'TsH]')](_0x241540,'')),_0x3946a3,_0xc6efeb][_0x542a24(0x4a4,'M*v)')]('|');}function _0x1d19e4(){const _0x58d8f4=_0x32a78a,_0x6fa4a0={'FNweT':function(_0x38d16f,_0x190c99){const _0x2b239f=_0x1bb2;return _0x1ecc7c[_0x2b239f(0x239,'A$Dm')](_0x38d16f,_0x190c99);},'RaOvw':_0x1ecc7c[_0x58d8f4(0x2e6,'6QzP')]};if(_0x58d8f4(0x279,'b!xJ')===_0x1ecc7c[_0x58d8f4(0x4a6,'cI9N')]){const{options:_0x1fbbe9,dom:_0x3cf8b0,me:_0x469a5a}=this,_0x940b90=Array[_0x58d8f4(0x37b,'M^@g')](_0x1fbbe9[_0x58d8f4(0x31f,'fPp8')])||_0x1ecc7c[_0x58d8f4(0x3b4,'*Vp1')](_0x58d8f4(0x37e,'mfct'),typeof _0x1fbbe9[_0x58d8f4(0x2b2,'rvSP')]),_0x25b145=_0x940b90?_0x1fbbe9['instanceKey']||null:_0x1ecc7c['VhiRE'];if(_0x1ecc7c[_0x58d8f4(0x490,'A$Dm')](_0x940b90,!_0x25b145)&&console[_0x58d8f4(0x28d,'8YLK')](_0x1ecc7c[_0x58d8f4(0x4ff,'ZBzq')]),_0x3cf8b0[_0x58d8f4(0x38b,'Wm#u')][_0x58d8f4(0x277,'axXG')][_0x58d8f4(0x2b0,'8YLK')]=_0x58d8f4(0x2f3,'QUV*'),_0x3cf8b0[_0x58d8f4(0x2db,'gRaj')][_0x58d8f4(0x35d,'[G51')][_0x58d8f4(0x32e,'lVcq')]=_0x1ecc7c[_0x58d8f4(0x4ec,'[G51')],_0x3cf8b0[_0x58d8f4(0x4bf,'vDV!')][_0x58d8f4(0x3a2,'Wz$9')][_0x58d8f4(0x41f,'QUV*')]='none',_0x469a5a[_0x58d8f4(0x369,'M^@g')]=null,_0x469a5a['_singleSelectEl']=null,_0x469a5a[_0x58d8f4(0x4a2,'svEd')]=!0x1,_0x25b145&&_0x383a3a[_0x58d8f4(0x216,'HZIx')](_0x25b145)){const _0x3e2e09=_0x383a3a['get'](_0x25b145);if(_0x940b90)return _0x3cf8b0['custom'][_0x58d8f4(0x51f,'JqPG')][_0x58d8f4(0x291,'o33y')]=_0x58d8f4(0x4e2,'8YLK'),_0x3cf8b0['custom']['innerHTML']='',_0x3cf8b0[_0x58d8f4(0x25c,'o33y')][_0x58d8f4(0x513,'QUV*')](_0x3e2e09[_0x58d8f4(0x4e8,'1ew4')]),_0x469a5a[_0x58d8f4(0x42d,'7X$a')]=_0x3e2e09['controls'],void(_0x469a5a[_0x58d8f4(0x29d,'HZIx')]=!0x0);{if(_0x1ecc7c[_0x58d8f4(0x31d,'EQwJ')]!==_0x1ecc7c[_0x58d8f4(0x2b5,'Spcd')]){const _0x2d57f8=_0x1ecc7c['Bpqvq'](_0x58e2ed,_0x1fbbe9),_0x3f3a94=_0x1ecc7c[_0x58d8f4(0x474,'m02P')](_0x261e18,_0x1fbbe9,_0x2d57f8);if(!_0x3e2e09[_0x58d8f4(0x253,'VmeP')]||_0x3e2e09[_0x58d8f4(0x4e6,'JqPG')]===_0x3f3a94)return _0x3cf8b0[_0x58d8f4(0x209,'mfBD')][_0x58d8f4(0x35b,'1ew4')][_0x58d8f4(0x338,'Wm#u')]=_0x1ecc7c[_0x58d8f4(0x4a8,'0YjU')],_0x3cf8b0[_0x58d8f4(0x4bf,'vDV!')][_0x58d8f4(0x4f7,'7)$i')]='',_0x3cf8b0[_0x58d8f4(0x304,'fPp8')][_0x58d8f4(0x3c7,'M*v)')](_0x3e2e09['container']),_0x469a5a['controls']=_0x3e2e09[_0x58d8f4(0x520,'rvSP')],_0x469a5a[_0x58d8f4(0x3cc,'o33y')]=!0x0,_0x46f833=_0x2d57f8[_0x58d8f4(0x3e8,'4$F8')],void(_0x1ecc7c[_0x58d8f4(0x1f6,'VmeP')](_0x58d8f4(0x422,'OwKS'),_0x46f833)?_0x469a5a['_singleSelectEl']=_0x3e2e09['container'][_0x58d8f4(0x367,'lVcq')](_0x58d8f4(0x2a3,'ZA7G'))||null:_0x469a5a['_singleInputEl']=_0x3e2e09['container'][_0x58d8f4(0x392,'TsH]')]('input.data-input')||_0x3cf8b0[_0x58d8f4(0x24d,'@PcC')]||null);_0x383a3a[_0x58d8f4(0x476,'4$F8')](_0x25b145);}else _0x6fa4a0[_0x58d8f4(0x3c2,'4$F8')](_0x6fa4a0[_0x58d8f4(0x29a,'qMY6')],typeof _0x4cb99e[_0x58d8f4(0x2f7,'[G51')])?_0x1b1fc4[_0x58d8f4(0x408,'Wm#u')](_0x59c5c2,_0x11afc7,_0x3aee59):_0x54c3ab['resolve'](_0x46e33f);}}const _0x3aafde=document['createElement'](_0x1ecc7c[_0x58d8f4(0x4fa,'cI9N')]);_0x25b145&&(_0x3aafde['id']=_0x25b145);let _0x2bbf32=!0x1;if(Array['isArray'](_0x1fbbe9[_0x58d8f4(0x49e,'cI9N')]))_0x3aafde[_0x58d8f4(0x521,'4$F8')]='',vfc[_0x58d8f4(0x319,'fPp8')][_0x58d8f4(0x2cd,'mfct')](_0x3aafde,_0x1fbbe9[_0x58d8f4(0x274,'VmeP')],{'layout':_0x1fbbe9[_0x58d8f4(0x267,'o33y')]||_0x1ecc7c['ZSCJx'],'columns':_0x1fbbe9[_0x58d8f4(0x317,'O5KM')]||0x1,'gap':_0x1fbbe9[_0x58d8f4(0x268,'fPp8')]||'12px','classes':_0x1fbbe9[_0x58d8f4(0x3ad,'OwKS')]||{'input':_0x1ecc7c['nhrpU'],'select':_0x58d8f4(0x2e1,'EQwJ')}}),_0x2bbf32=!0x0;else{if(_0x1ecc7c[_0x58d8f4(0x25d,'M*v)')]==typeof _0x1fbbe9[_0x58d8f4(0x360,'m02P')]){_0x3aafde['innerHTML']='';const _0x53194c=_0x1fbbe9[_0x58d8f4(0x4dd,'7)$i')](_0x469a5a);_0x1ecc7c[_0x58d8f4(0x399,'m02P')]==typeof _0x53194c?_0x3aafde['innerHTML']=_0x53194c:_0x1ecc7c[_0x58d8f4(0x51e,'7&x*')](_0x53194c,HTMLElement)&&_0x3aafde[_0x58d8f4(0x4cb,'1ew4')](_0x53194c),_0x2bbf32=!0x0;}else{if(_0x1ecc7c[_0x58d8f4(0x40b,'*Vp1')]('XaLxR',_0x1ecc7c[_0x58d8f4(0x3f1,'m02P')])){const _0x18fb6e=_0x58e2ed(_0x1fbbe9);if(_0x46f833=_0x18fb6e[_0x58d8f4(0x4b6,'TsH]')],_0x1ecc7c[_0x58d8f4(0x45e,'VmeP')](_0x58d8f4(0x36b,'fPp8'),_0x46f833)){if(_0x1ecc7c[_0x58d8f4(0x4f9,'*Vp1')](_0x1ecc7c[_0x58d8f4(0x4a0,'lVcq')],_0x1ecc7c[_0x58d8f4(0x427,'xYTy')]))_0x1661df='';else{_0x3aafde[_0x58d8f4(0x2de,'svEd')]='';const _0x4450c9=document[_0x58d8f4(0x3b6,'0YjU')](_0x1ecc7c[_0x58d8f4(0x3f7,'lVcq')]);_0x4450c9['className']='inputbox-select\x20data-input',_0x4450c9[_0x58d8f4(0x4c9,'M*v)')]=_0x1fbbe9[_0x58d8f4(0x348,'7X$a')]||_0x1ecc7c[_0x58d8f4(0x2e4,'Wm#u')],_0x4450c9[_0x58d8f4(0x3b2,'M*v)')]['field']=_0x4450c9[_0x58d8f4(0x4c3,'QiW^')],_0x4450c9[_0x58d8f4(0x466,'!iLs')]['type']=_0x1ecc7c['yNisd'],_0x1fbbe9[_0x58d8f4(0x27f,'9y&s')]||(_0x4450c9[_0x58d8f4(0x284,'JqPG')][_0x58d8f4(0x265,'rvSP')]='1'),_0x3aafde[_0x58d8f4(0x342,'o&iM')](_0x4450c9),_0x469a5a[_0x58d8f4(0x52e,'7)$i')]=_0x4450c9,_0x2bbf32=!0x0;}}else{_0x3aafde[_0x58d8f4(0x2a5,'lVcq')]='';const _0x4bb2c9=document[_0x58d8f4(0x285,'m02P')](_0x1ecc7c[_0x58d8f4(0x4c6,'OwKS')]);_0x4bb2c9[_0x58d8f4(0x303,'ZA7G')]='text',_0x4bb2c9[_0x58d8f4(0x465,'cp&!')]=_0x1ecc7c['kVMXS'],_0x4bb2c9[_0x58d8f4(0x252,'Wm#u')]=_0x1fbbe9[_0x58d8f4(0x32c,'mfct')]||_0x1ecc7c[_0x58d8f4(0x302,'ZBzq')],_0x4bb2c9[_0x58d8f4(0x1ff,'cp&!')]['field']=_0x4bb2c9['name'],_0x4bb2c9[_0x58d8f4(0x4f8,'cI9N')][_0x58d8f4(0x3f2,'!iLs')]=_0x18fb6e[_0x58d8f4(0x294,'vDV!')]||_0x58d8f4(0x4b8,'7X$a'),_0x1fbbe9['allowBlankValue']||(_0x4bb2c9[_0x58d8f4(0x488,'W&6R')][_0x58d8f4(0x265,'rvSP')]='1'),_0x4bb2c9[_0x58d8f4(0x3d6,'o&iM')]=_0x1fbbe9[_0x58d8f4(0x443,'M*v)')]??_0x1fbbe9[_0x58d8f4(0x432,'qMY6')]??'',_0x3aafde['appendChild'](_0x4bb2c9),_0x469a5a[_0x58d8f4(0x4fd,'!iLs')]=_0x4bb2c9,_0x2bbf32=!0x0;}}else return!!_0x58009e&&(!!_0x31b2b3[_0x58d8f4(0x3ec,'@PcC')](_0x57314b)&&(_0x37c0a2[_0x58d8f4(0x47b,'o33y')](_0x34d232),!0x0));}}if(!_0x2bbf32)return;_0x3cf8b0[_0x58d8f4(0x241,'ZBzq')][_0x58d8f4(0x27c,'HZIx')]['display']=_0x58d8f4(0x455,'vDV!'),_0x3cf8b0[_0x58d8f4(0x469,'M*v)')][_0x58d8f4(0x2b8,'97Bq')]='',_0x3cf8b0[_0x58d8f4(0x270,'7X$a')][_0x58d8f4(0x507,'svEd')](_0x3aafde);const _0x69d9a2=vfc[_0x58d8f4(0x29f,'gRaj')]['mount'](_0x3aafde,_0x1fbbe9);_0x469a5a['controls']=_0x69d9a2,_0x469a5a[_0x58d8f4(0x240,'7&x*')]=!0x0;const _0x14ecf1=_0x1fbbe9['configSelect']||_0x1fbbe9[_0x58d8f4(0x415,'7)$i')]||null;_0x14ecf1&&vfc[_0x58d8f4(0x354,'vDV!')][_0x58d8f4(0x39a,'6QzP')]['initConfig'](null,_0x14ecf1,_0x469a5a,_0x1fbbe9);const _0x511e21=_0x940b90?_0x1ecc7c['gWhbS']:_0x261e18(_0x1fbbe9,_0x58e2ed(_0x1fbbe9));_0x25b145&&_0x383a3a[_0x58d8f4(0x512,'@PcC')](_0x25b145,{'container':_0x3aafde,'mounted':!0x0,'controls':_0x69d9a2,'schemaKey':_0x511e21});}else _0x20e380[_0x58d8f4(0x368,'9y&s')][_0x58d8f4(0x311,'xYTy')]?.(this['controls'],_0x2d5fe2,_0x12e66a);}function _0xcc4d28(){const _0x28f0fd=_0x32a78a,_0x5010a1={'uamNz':_0x28f0fd(0x41b,'EQwJ'),'REQbN':function(_0x4a7c7f,_0x3fcab6){return _0x4a7c7f(_0x3fcab6);},'vKaSJ':function(_0x4969fc,_0x2928f7){return _0x1ecc7c['EZQsu'](_0x4969fc,_0x2928f7);},'bxAcp':function(_0x302a65,_0x3627f3){const _0x2eb762=_0x28f0fd;return _0x1ecc7c[_0x2eb762(0x3d0,'gRaj')](_0x302a65,_0x3627f3);},'EeMID':function(_0x35d1d9,_0xfdc51c){const _0x319015=_0x28f0fd;return _0x1ecc7c[_0x319015(0x395,'m02P')](_0x35d1d9,_0xfdc51c);},'nfoPy':_0x1ecc7c['dFnLR'],'Jzsmb':function(_0x33a8c3,_0x564a1f){const _0x58d875=_0x28f0fd;return _0x1ecc7c[_0x58d875(0x4e5,'7&x*')](_0x33a8c3,_0x564a1f);},'qctYS':_0x1ecc7c[_0x28f0fd(0x323,'b!xJ')]};if(_0x1ecc7c[_0x28f0fd(0x21c,'gRaj')]!==_0x1ecc7c[_0x28f0fd(0x495,'b!xJ')]){_0x24d8cf(),_0x2a47d6=_0x1cdfeb||{},_0x4369ed['options']=_0x291b17,_0x4bd233=_0x3d491e[_0x28f0fd(0x412,'JqPG')]??_0x48152c[_0x28f0fd(0x2fc,'Spcd')]??_0xe1aaca[_0x28f0fd(0x438,'0YjU')]??_0x1ecc7c['CuGco'],_0x4c2bb6=_0x4d64e3['textField']??_0x130795[_0x28f0fd(0x467,'VmeP')]??_0x26840a[_0x28f0fd(0x4d1,'cp&!')]??_0x2de930[_0x28f0fd(0x508,'axXG')]??_0x1ecc7c[_0x28f0fd(0x501,'vDV!')],_0x4cb2f7['classList'][_0x28f0fd(0x238,'cp&!')](_0x1ecc7c[_0x28f0fd(0x3ef,'VmeP')],_0x28f0fd(0x2a8,'cp&!'),_0x1ecc7c[_0x28f0fd(0x396,'TsH]')]),_0x1d4239['classList'][_0x28f0fd(0x409,'0YjU')](_0x28f0fd(0x4c1,'mfct')+(_0xcbe459[_0x28f0fd(0x4f0,'(67x')]||'md')),function(_0x128d4a){const _0xb5417=_0x28f0fd;_0x63326c[_0xb5417(0x25f,'7)$i')][_0xb5417(0x49c,'6QzP')]='',_0x1d292b[_0xb5417(0x40c,'8YLK')][_0xb5417(0x509,'7&x*')]='',_0x137681['style'][_0xb5417(0x206,'axXG')]='',_0x23103a['style']['maxHeight']='';const _0x34dcf5=_0x1f2b59[_0xb5417(0x298,'W&6R')](_0x5010a1['uamNz']);_0x34dcf5&&(_0x34dcf5[_0xb5417(0x3e5,'0YjU')]['height']='',_0x34dcf5[_0xb5417(0x2ec,'A$Dm')][_0xb5417(0x2dc,'rvSP')]='');const _0x1a221e=_0x5010a1[_0xb5417(0x245,'(67x')](_0x17a342,_0x128d4a[_0xb5417(0x266,'HZIx')]??_0x128d4a['w']),_0x17e4c7=_0x5010a1[_0xb5417(0x258,'mfct')](_0x178861,_0x128d4a[_0xb5417(0x4d8,'mfct')]??_0x128d4a['h']),_0x28f850=_0x5010a1[_0xb5417(0x400,'QUV*')](_0x6095fa,_0x128d4a[_0xb5417(0x4fe,'fPp8')]??_0x128d4a[_0xb5417(0x50b,'Spcd')]);_0x1a221e&&(_0x3bc5a9[_0xb5417(0x232,'ZBzq')][_0xb5417(0x2ab,'svEd')]=_0x1a221e,_0x579383[_0xb5417(0x25e,'@PcC')][_0xb5417(0x504,'o&iM')]=_0xb5417(0x339,'VmeP')),_0x5010a1[_0xb5417(0x2eb,'9y&s')](_0x17e4c7,_0x28f850)&&_0x34dcf5&&(_0x17e4c7&&(_0x34dcf5['style']['height']=_0x17e4c7),_0x28f850&&(_0x34dcf5[_0xb5417(0x2c0,'OwKS')][_0xb5417(0x420,'ZBzq')]=_0x28f850),_0x5010a1['EeMID'](_0x28f850,_0x17e4c7)||(_0x34dcf5['style'][_0xb5417(0x2dd,'o&iM')]=_0x5010a1[_0xb5417(0x49a,'qMY6')]));}(_0x159003),_0x50109e['clearError'](),_0x33a8f5['loading'](!0x1),_0x47a0c3['custom']&&_0x1303cc[_0x28f0fd(0x2f8,'mfct')][_0x28f0fd(0x500,'mfBD')]?.(_0x238085[_0x28f0fd(0x453,'mfct')]),_0xbe00ff[_0x28f0fd(0x3d1,'vDV!')][_0x28f0fd(0x21e,'Spcd')]=_0x199647['title']??'',_0x392c33[_0x28f0fd(0x31a,'4$F8')]['innerHTML']=_0x112499['message']??'',_0xb97e6f[_0x28f0fd(0x2ed,'@PcC')](_0x4ca366)[_0x28f0fd(0x3b8,'mfBD')](_0x398d99=>_0x1ca2c3['classList'][_0x28f0fd(0x271,'b!xJ')](_0x398d99[_0x28f0fd(0x4e3,'rvSP')])),_0x26c2e9[_0x28f0fd(0x36c,'cI9N')][_0x28f0fd(0x526,'o33y')]['display']=_0x28f0fd(0x30f,'o33y'),function(_0x570f99){const _0x824f7b=_0x28f0fd,_0x4069d6=_0x570f99[_0x824f7b(0x1f7,'*Vp1')];if(!_0x4069d6||!_0x5a475f[_0x4069d6])return;_0x18848d[_0x824f7b(0x2bb,'QUV*')]['add'](_0x31adbb[_0x4069d6][_0x824f7b(0x3b7,'Wm#u')]),_0x2c755a['contextLine'][_0x824f7b(0x2c7,'vDV!')]['display']='';}(_0x3dd961),_0x308b3a[_0x28f0fd(0x4a7,'xYTy')][_0x28f0fd(0x4ed,'QiW^')]=_0x1ed7e1['confirmText']??_0x37b2ea['confirmButtonText']??(_0x40cbb0[_0x28f0fd(0x1fb,'ZBzq')]&&_0x345da8[_0x244d55[_0x28f0fd(0x404,'gRaj')]]?.[_0x28f0fd(0x2ea,'JqPG')])??'OK',_0x347a30[_0x28f0fd(0x26b,'vDV!')][_0x28f0fd(0x39f,'M^@g')]=_0x5ed09b[_0x28f0fd(0x4ea,'@PcC')]??_0x1ecc7c['BcnYD'],_0x466fc8[_0x28f0fd(0x3cb,'M^@g')][_0x28f0fd(0x4f5,'xYTy')][_0x28f0fd(0x236,'QiW^')]=_0x1ecc7c['yllGS'];let _0x415ec8=null;!_0x3c29c8[_0x28f0fd(0x388,'M*v)')](_0xcea3d[_0x28f0fd(0x4c7,'cp&!')])||_0x317a85[_0x28f0fd(0x360,'m02P')]||_0xa2d798['configSelect']||(_0x415ec8=_0x5adc6d[_0x28f0fd(0x394,'cI9N')][_0x28f0fd(0x39a,'6QzP')]?.[_0x28f0fd(0x439,'o&iM')]?.['call'](null,_0x270745[_0x28f0fd(0x49f,'Wz$9')])||null),_0x23e670[_0x28f0fd(0x36d,'fPp8')]=_0x560afa[_0x28f0fd(0x3c5,'axXG')]||_0x415ec8,_0x4e79ec[_0x28f0fd(0x307,'cI9N')]({'options':_0x3681a9,'dom':_0x4c3a6c,'me':_0x48b3c7}),_0x1ecc7c['ZYNHZ'](_0x45b279,()=>{const _0x542ba0=_0x28f0fd,_0x23b170=_0x3b1c2a[_0x542ba0(0x43c,'7&x*')]&&_0x5010a1[_0x542ba0(0x478,'TsH]')](_0x5010a1['qctYS'],_0x4abe32[_0x542ba0(0x374,'[G51')][_0x542ba0(0x4ce,'(67x')][_0x542ba0(0x364,'svEd')])?_0x1e54de[_0x542ba0(0x3a9,'O5KM')]:_0x111fd5;_0x33e4da['_effectiveConfigSelect']?_0x472aa2['utils'][_0x542ba0(0x1f8,'7)$i')][_0x542ba0(0x454,'o&iM')](_0x23b170,_0x51d761[_0x542ba0(0x4a1,'HZIx')],_0x453362,_0x29c5da):_0x16462c[_0x542ba0(0x44d,'6QzP')]&&_0x1e88e0[_0x542ba0(0x402,'o&iM')][_0x542ba0(0x4da,'7&x*')]['loadSelect'](_0x45cb47['_singleSelectEl'],{'name':_0x308b86[_0x542ba0(0x44d,'6QzP')][_0x542ba0(0x52d,'8YLK')],'data':_0x1eabbf[_0x542ba0(0x282,'cp&!')],'api':_0x424af6['api']||_0x4a4892['fetchApi']||_0x502331['endpoint'],'query':_0x1fe001[_0x542ba0(0x39c,'o&iM')],'valueField':_0x10ef50,'textField':_0x297b71,'firstOption':_0x40f6c5['firstOption'],'defaultValue':_0x310a3e[_0x542ba0(0x22f,'!iLs')]},_0x2700bb,_0x2cc1ce,null),_0x27f35a['onOpen']?.(_0x13745f);}),_0x13aa7a[_0x28f0fd(0x35d,'[G51')][_0x28f0fd(0x34a,'7&x*')]='',_0x5f567e[_0x28f0fd(0x2c7,'vDV!')][_0x28f0fd(0x52a,'OwKS')]='';}else _0x5a9b4b&&_0x1ecc7c[_0x28f0fd(0x2d6,'7)$i')](clearTimeout,_0x5a9b4b),_0x5a9b4b=null,_0x5f8ca1=null,_0x37d369=null;}const _0x227fea=_0xa85190=>null==_0xa85190||_0x32a78a(0x43f,'cI9N')==typeof _0xa85190&&''===_0xa85190[_0x32a78a(0x47d,'7&x*')]()||_0x32a78a(0x35f,'o&iM')==typeof _0xa85190&&0x0===Object['keys'](_0xa85190)[_0x32a78a(0x256,'(67x')];return{'show':_0x3cda29,'resetInstance':function(_0x492a3a){const _0x1ac641=_0x32a78a;if(_0x1ecc7c['Oamju']===_0x1ecc7c[_0x1ac641(0x4c4,'QiW^')])return!!_0x492a3a&&(!!_0x383a3a[_0x1ac641(0x27b,'m02P')](_0x492a3a)&&(_0x383a3a['delete'](_0x492a3a),!0x0));else{_0x1f177b[_0x1ac641(0x435,'svEd')][_0x1ac641(0x3db,'mfBD')]='',_0x25c640['style'][_0x1ac641(0x4b7,'QUV*')]='',_0x2f1bb4[_0x1ac641(0x373,'Spcd')][_0x1ac641(0x243,'gRaj')]='',_0xd8abfc[_0x1ac641(0x383,'o&iM')][_0x1ac641(0x420,'ZBzq')]='';const _0x15bb52=_0x552cb9[_0x1ac641(0x366,'7X$a')](_0x1ecc7c[_0x1ac641(0x355,'m02P')]);_0x15bb52&&(_0x15bb52[_0x1ac641(0x254,'m02P')][_0x1ac641(0x217,'6QzP')]='',_0x15bb52[_0x1ac641(0x251,'EQwJ')]['maxHeight']='');const _0x469e16=_0x1ecc7c[_0x1ac641(0x430,'m02P')](_0x2c4e73,_0x1f7e71[_0x1ac641(0x44c,'97Bq')]??_0x59f786['w']),_0xff7225=_0x357560(_0x397f6e[_0x1ac641(0x2b1,'[G51')]??_0x425b14['h']),_0x5c4208=_0x1ecc7c[_0x1ac641(0x477,'qMY6')](_0x61ce0c,_0x1943de[_0x1ac641(0x419,'VmeP')]??_0x35491a['maxH']);_0x469e16&&(_0x3b3add[_0x1ac641(0x277,'axXG')][_0x1ac641(0x51b,'@PcC')]=_0x469e16,_0x8205d1[_0x1ac641(0x498,'fPp8')][_0x1ac641(0x44f,'[G51')]=_0x1ecc7c[_0x1ac641(0x445,'b!xJ')]),_0x1ecc7c[_0x1ac641(0x471,'TsH]')](_0xff7225,_0x5c4208)&&_0x15bb52&&(_0xff7225&&(_0x15bb52[_0x1ac641(0x4ee,'O5KM')][_0x1ac641(0x33c,'8YLK')]=_0xff7225),_0x5c4208&&(_0x15bb52[_0x1ac641(0x4ee,'O5KM')][_0x1ac641(0x225,'EQwJ')]=_0x5c4208),_0x1ecc7c['kqnZR'](_0x5c4208,_0xff7225)||(_0x15bb52['style'][_0x1ac641(0x426,'7X$a')]=_0x1ecc7c[_0x1ac641(0x3e7,'cp&!')]));}},'_store':_0x383a3a,'showAsync':(_0x17fd44={})=>new Promise((_0xe8cf26,_0x421c58)=>{const _0x3f59ab=_0x32a78a,_0x37207b={'GjweU':function(_0x141c76,_0x33d2f3){return _0x141c76==_0x33d2f3;},'EzFIK':_0x1ecc7c['NHwlx']};_0x1ecc7c[_0x3f59ab(0x4aa,'qMY6')](_0xcc4d28),_0x5f8ca1=_0xe8cf26,_0x37d369=_0x421c58;const _0xaec7b6=Number(_0x17fd44['timeout']);_0x1ecc7c[_0x3f59ab(0x324,'*Vp1')](_0xaec7b6,0x0)&&(_0x5a9b4b=_0x1ecc7c[_0x3f59ab(0x50e,'7X$a')](setTimeout,()=>{const _0x1d9a8c=_0x3f59ab;_0x1ecc7c[_0x1d9a8c(0x3fc,'vDV!')](_0x421c58,_0x1ecc7c['lRqJg']),_0x1ecc7c['vXwgm'](_0xcc4d28),_0x41624e[_0x1d9a8c(0x227,'VmeP')](!0x1);},_0xaec7b6)),_0x1ecc7c[_0x3f59ab(0x2c6,'gRaj')](_0x3cda29,{..._0x17fd44,'onConfirm'(_0x34fb2a,_0xd30fca,_0x575930){const _0x39ef62=_0x3f59ab;_0x37207b[_0x39ef62(0x38f,'axXG')](_0x37207b['EzFIK'],typeof _0x17fd44[_0x39ef62(0x2e0,'0YjU')])?_0x17fd44['onConfirm'](_0x34fb2a,_0xd30fca,_0x575930):_0x575930[_0x39ef62(0x345,'vDV!')](_0x34fb2a);}});})};})());
-var CircularProgressBar=function(){"use strict";const t={colorSlice:"#00a1ff",fontColor:"#000",fontSize:"1.6rem",fontWeight:400,lineargradient:!1,number:!0,round:!1,fill:"none",unit:"%",rotation:-90,size:200,stroke:10},r=264,e=t=>{let{rotation:r,animationSmooth:e}=t;return`ransform:rotate(${r}deg);transform-origin: 50% 50%;${e?`transition stroke-dashoffset ${e}`""}`},n=t=>({"stroke-dasharray":t||String(r)}),i=t=>{let{round:r}=t;return{"stroke-linecap":r?"round":"butt"}},s=t=>({"font-size":t.fontSize,"font-weight":t.fontWeight}),o=t=>document.querySelector(t),a=(t,r)=>{let{lineargradient:e,index:n,colorSlice:i}=r;t?.setAttribute("stroke",e?`rl(#linear-${n})`:i??"")},c=(t,r)=>{Object.entries(r).forEach((r=>{let[e,n]=r;t?.setAttribute(e,String(n))}))},l=t=>document.createElementNS("http;
-function _0x4578(_0x1706ba,_0x31156e){const _0x44a228=_0x44a2();return _0x4578=function(_0x45785f,_0x113068){_0x45785f=_0x45785f-0xcd;let _0x42c0af=_0x44a228[_0x45785f];if(_0x4578['GgySMl']===undefined){var _0xb01d41=function(_0x3d527f){const _0x5e4089='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+/=';let _0x8234c9='',_0x5c5dd0='';for(let _0x516a0f=0x0,_0x527b52,_0x2bfe2a,_0xd397fa=0x0;_0x2bfe2a=_0x3d527f['charAt'](_0xd397fa++);~_0x2bfe2a&&(_0x527b52=_0x516a0f%0x4?_0x527b52*0x40+_0x2bfe2a:_0x2bfe2a,_0x516a0f++%0x4)?_0x8234c9+=String['fromCharCode'](0xff&_0x527b52>>(-0x2*_0x516a0f&0x6)):0x0){_0x2bfe2a=_0x5e4089['indexOf'](_0x2bfe2a);}for(let _0x18f92c=0x0,_0x363358=_0x8234c9['length'];_0x18f92c<_0x363358;_0x18f92c++){_0x5c5dd0+='%'+('00'+_0x8234c9['charCodeAt'](_0x18f92c)['toString'](0x10))['slice'](-0x2);}return decodeURIComponent(_0x5c5dd0);};const _0x55a2c0=function(_0x3d4193,_0x4a7d98){let _0x203c1f=[],_0x4c3e4f=0x0,_0x43fdea,_0x5e02a4='';_0x3d4193=_0xb01d41(_0x3d4193);let _0x3372ab;for(_0x3372ab=0x0;_0x3372ab<0x100;_0x3372ab++){_0x203c1f[_0x3372ab]=_0x3372ab;}for(_0x3372ab=0x0;_0x3372ab<0x100;_0x3372ab++){_0x4c3e4f=(_0x4c3e4f+_0x203c1f[_0x3372ab]+_0x4a7d98['charCodeAt'](_0x3372ab%_0x4a7d98['length']))%0x100,_0x43fdea=_0x203c1f[_0x3372ab],_0x203c1f[_0x3372ab]=_0x203c1f[_0x4c3e4f],_0x203c1f[_0x4c3e4f]=_0x43fdea;}_0x3372ab=0x0,_0x4c3e4f=0x0;for(let _0x49d897=0x0;_0x49d897<_0x3d4193['length'];_0x49d897++){_0x3372ab=(_0x3372ab+0x1)%0x100,_0x4c3e4f=(_0x4c3e4f+_0x203c1f[_0x3372ab])%0x100,_0x43fdea=_0x203c1f[_0x3372ab],_0x203c1f[_0x3372ab]=_0x203c1f[_0x4c3e4f],_0x203c1f[_0x4c3e4f]=_0x43fdea,_0x5e02a4+=String['fromCharCode'](_0x3d4193['charCodeAt'](_0x49d897)^_0x203c1f[(_0x203c1f[_0x3372ab]+_0x203c1f[_0x4c3e4f])%0x100]);}return _0x5e02a4;};_0x4578['CmxSkw']=_0x55a2c0,_0x1706ba=arguments,_0x4578['GgySMl']=!![];}const _0x2c9dd2=_0x44a228[0x0],_0x18a2f6=_0x45785f+_0x2c9dd2,_0x1a7156=_0x1706ba[_0x18a2f6];return!_0x1a7156?(_0x4578['ACRHFC']===undefined&&(_0x4578['ACRHFC']=!![]),_0x42c0af=_0x4578['CmxSkw'](_0x42c0af,_0x113068),_0x1706ba[_0x18a2f6]=_0x42c0af):_0x42c0af=_0x1a7156,_0x42c0af;},_0x4578(_0x1706ba,_0x31156e);}(function(_0x218099,_0x10de59){const _0x53b9ab=_0x4578,_0x4dad71=_0x218099();while(!![]){try{const _0x537a2c=-parseInt(_0x53b9ab(0x2ca,']z]J'))/0x1*(parseInt(_0x53b9ab(0x229,'fslk'))/0x2)+-parseInt(_0x53b9ab(0x2c7,'Nt[S'))/0x3+parseInt(_0x53b9ab(0x1cd,'[mU6'))/0x4+-parseInt(_0x53b9ab(0x2a6,'mTDx'))/0x5*(parseInt(_0x53b9ab(0x2c6,'3kb('))/0x6)+-parseInt(_0x53b9ab(0x1d1,'iP4&'))/0x7*(parseInt(_0x53b9ab(0x2af,'XRUm'))/0x8)+-parseInt(_0x53b9ab(0x124,'[mU6'))/0x9*(-parseInt(_0x53b9ab(0x134,'a7!5'))/0xa)+parseInt(_0x53b9ab(0xe0,'*38W'))/0xb;if(_0x537a2c===_0x10de59)break;else _0x4dad71['push'](_0x4dad71['shift']());}catch(_0x9ebe31){_0x4dad71['push'](_0x4dad71['shift']());}}}(_0x44a2,0x324c1),!function(_0x1fdd69){const _0x2899b7=_0x4578,_0x482dda={'eSCIV':_0x2899b7(0xd4,'Uvuv'),'yUzGh':'_main_unauthcomponent','YQlPz':_0x2899b7(0x288,'9FL%'),'nuCuZ':_0x2899b7(0x282,'JXeq'),'trHNi':_0x2899b7(0x292,'87WK'),'QWFQK':function(_0xcac3ca,_0x26267b){return _0xcac3ca===_0x26267b;},'ZqERf':_0x2899b7(0x14e,'$f1e'),'RDdLP':function(_0x39f4f7,_0x283609){return _0x39f4f7!==_0x283609;},'THraP':function(_0x4da4e5,_0x9eeb8){return _0x4da4e5(_0x9eeb8);},'arESz':_0x2899b7(0x247,'[mU6'),'LFauz':_0x2899b7(0x1ad,'$oSj'),'ctKjE':_0x2899b7(0xe9,'B0uQ'),'aRKCN':_0x2899b7(0x171,'kDL('),'LkqQB':_0x2899b7(0xd2,'YXl('),'Ualns':_0x2899b7(0x2a1,'g*JL'),'lUVmv':'tzUXx','OrdAj':_0x2899b7(0x223,'!w[f'),'ESlll':_0x2899b7(0x20b,'iP4&'),'PCMjT':_0x2899b7(0x2cb,'DCDm'),'MXlRY':_0x2899b7(0x1a2,'kcg2'),'tMexy':function(_0x8d7584,_0x47080f){return _0x8d7584!==_0x47080f;},'xkfOt':_0x2899b7(0x1c4,'jsf&'),'WGaiv':_0x2899b7(0xf6,'0U%B'),'FakLM':'icwYE','kyZkg':'tXkFx','zOugF':_0x2899b7(0x28f,']z]J'),'whWvc':'25px','OEHPb':function(_0x2f6834,_0x31bfd7){return _0x2f6834!=_0x31bfd7;},'Ydnas':_0x2899b7(0x21a,'HZ5l'),'Zsfwj':'script','YUamR':'zjvsY','oTHaY':_0x2899b7(0x1d0,'RWod'),'IFiXP':_0x2899b7(0x135,'cLUJ'),'EAUCK':_0x2899b7(0x212,'3kb('),'sNpas':_0x2899b7(0x141,'a7!5'),'BpZkm':_0x2899b7(0x211,'$f1e'),'SAhYp':function(_0x5d26d7,_0x65de7c){return _0x5d26d7(_0x65de7c);},'djFSr':'meta[name=\x22main_route\x22]','uhSVW':function(_0x3d661e,_0x1be62f){return _0x3d661e+_0x1be62f;},'ikWbA':function(_0x18301b,_0x1fbdfa){return _0x18301b<_0x1fbdfa;},'FZZeW':_0x2899b7(0x198,'0U%B'),'AavrT':function(_0x2ef678,_0x31ea1e){return _0x2ef678===_0x31ea1e;},'BdRVc':function(_0x51bc89,_0x71f455){return _0x51bc89(_0x71f455);},'uNZKy':function(_0x1f7f62,_0x256a7e){return _0x1f7f62(_0x256a7e);},'HPTdT':function(_0x56e8c2,_0x31f408){return _0x56e8c2!==_0x31f408;},'aneyh':function(_0x4c83a0,_0x20cde4){return _0x4c83a0===_0x20cde4;},'NvCly':function(_0x5da155,_0x48ff7a){return _0x5da155!==_0x48ff7a;},'Zfrjz':_0x2899b7(0x2b3,'nkje'),'qsgwB':function(_0x2ec855,_0x3ba776){return _0x2ec855!==_0x3ba776;},'Bxunb':function(_0x2e570d,_0x21fa24){return _0x2e570d||_0x21fa24;},'Adnzq':function(_0x45d9db,_0x329cb5){return _0x45d9db==_0x329cb5;},'fxbCr':_0x2899b7(0xe1,'g*JL'),'sZfgL':_0x2899b7(0x21d,'a7!5'),'qrUhm':'kt_aside_mobile_toggler','lKhOE':'kt-header-mobile__toolbar-toggler--active','NeMzC':_0x2899b7(0x1d7,'Qre5'),'YgxAT':_0x2899b7(0xd9,'RWod'),'MIqUV':function(_0x73f99f,_0x43a560){return _0x73f99f==_0x43a560;},'rQicS':'missing','BoyMB':_0x2899b7(0xff,'fslk'),'kQDKs':_0x2899b7(0x257,'g*JL'),'Pntdc':'ZrRHN','jmWHB':function(_0x552452,_0x3d47c0){return _0x552452>_0x3d47c0;},'qRPKZ':function(_0x598201,_0x125c61){return _0x598201===_0x125c61;},'ccVwj':function(_0x453721,_0x10da66){return _0x453721==_0x10da66;},'XInVP':function(_0x4b9620,_0x877ba){return _0x4b9620==_0x877ba;},'EIBeb':_0x2899b7(0x28e,'IWy9'),'Gsotw':function(_0x1d3ba8,_0x23ea1f){return _0x1d3ba8===_0x23ea1f;},'PutGH':'kt-menu__item--submenu','CRfsr':_0x2899b7(0x21c,'Awvr'),'GkHZy':_0x2899b7(0x107,'2bH6'),'uVGhP':function(_0x26a2f8,_0x3cafe5){return _0x26a2f8(_0x3cafe5);},'EOPOs':_0x2899b7(0x1f1,'2bH6'),'yfFEZ':function(_0x2dcd92,_0x5b4d39){return _0x2dcd92+_0x5b4d39;},'nUIQL':function(_0x22b062,_0x56f897){return _0x22b062>_0x56f897;},'IdRgj':function(_0x36dc40,_0x306a3e){return _0x36dc40-_0x306a3e;},'WBUwY':'smooth','tWuqK':function(_0x2364c5,_0x1df372){return _0x2364c5+_0x1df372;},'zIhjI':function(_0x44e33f,_0x164734){return _0x44e33f==_0x164734;},'gvlEz':_0x2899b7(0x203,'z(Y9'),'YOqqR':'kt_aside_toggler','fwkGb':_0x2899b7(0x2ba,'cXWc'),'ZxxpJ':_0x2899b7(0x2be,'fslk'),'ktpWZ':function(_0x255d1a,_0x2dc7fb){return _0x255d1a==_0x2dc7fb;},'KLXfu':function(_0x34e5c1,_0x224903){return _0x34e5c1(_0x224903);},'vzYFT':_0x2899b7(0x184,'0U%B'),'ZYSxx':_0x2899b7(0x222,'9FL%'),'FbBxT':'navigation','GPFke':function(_0x6b09a7,_0x28afc2){return _0x6b09a7===_0x28afc2;},'iILAP':function(_0x5bdbd4,_0x136576){return _0x5bdbd4+_0x136576;},'rJYxS':function(_0x1f1a1d,_0x550b7f){return _0x1f1a1d>_0x550b7f;},'Hbwah':function(_0x4ed812,_0x11c5a8){return _0x4ed812-_0x11c5a8;},'Qvbxu':function(_0x36766e,_0x139db2){return _0x36766e!==_0x139db2;},'XfKyS':_0x2899b7(0x1dc,'cXWc'),'oyjlZ':_0x2899b7(0x17c,'iP4&'),'BNVgL':_0x2899b7(0x2bc,'Nt[S'),'PYCiG':'DashboardComponent'},_0x19110e=_0x1fdd69['VSROUTE_VERSION']||_0x482dda[_0x2899b7(0x2ac,'cLUJ')];let _0x168e85=null;const _0x621334=((()=>{const _0x1ace7f=_0x2899b7,_0x7f2b6c={'gYQbT':function(_0x2499ce,_0x189ba9){const _0xdb870e=_0x4578;return _0x482dda[_0xdb870e(0xef,'381n')](_0x2499ce,_0x189ba9);},'sqAYV':_0x482dda[_0x1ace7f(0xe2,'!w[f')],'ladGE':function(_0x17e655,_0x102845){return _0x482dda['RDdLP'](_0x17e655,_0x102845);},'JowSz':_0x1ace7f(0xe6,'kcg2'),'dCNzv':function(_0x4a9980,_0x400e51){const _0x4271e5=_0x1ace7f;return _0x482dda[_0x4271e5(0x26f,'381n')](_0x4a9980,_0x400e51);},'nQDNS':function(_0x4ed379,_0x525b3e){return _0x4ed379!==_0x525b3e;},'HXjxY':_0x482dda[_0x1ace7f(0xd1,'!w[f')],'nCghp':_0x482dda[_0x1ace7f(0x2a7,'kgK#')],'HXlmq':_0x482dda[_0x1ace7f(0x14a,'Qre5')],'Wfoqz':_0x482dda[_0x1ace7f(0x1fd,'UO3!')],'ZPNeR':_0x482dda['LkqQB'],'XrOcg':_0x482dda[_0x1ace7f(0x13a,'0U%B')]};if(_0x482dda[_0x1ace7f(0x11b,'kDL(')]!=='tzUXx')_0x3b6779[_0x1ace7f(0x167,'a7!5')](_0x1ace7f(0x108,'3kb('))[0x0];else{const _0x22bb47={'title_prop':_0x1ace7f(0x129,'2bH6'),'divInfo':null,'initAlready':!0x1,'init':()=>{const _0x24d593=_0x1ace7f;if(_0x22bb47[_0x24d593(0x183,'jsf&')])return;const _0x54c4be=document[_0x24d593(0x2ce,'2bH6')](_0x482dda['eSCIV']);let _0x28a787=_0x54c4be['querySelector'](_0x24d593(0x28a,'fslk'));if(_0x28a787)_0x22bb47[_0x24d593(0x1c1,'g*JL')]=_0x28a787;else{const _0x85721=document[_0x24d593(0x150,'s9kJ')](_0x24d593(0x2ad,'mTDx'));_0x85721['id']=_0x482dda[_0x24d593(0x1fa,'nkje')],_0x85721[_0x24d593(0xe3,'XRUm')][_0x24d593(0x16f,'5Svn')]=_0x482dda['YQlPz'],_0x85721['style'][_0x24d593(0x28c,'YXl(')]=_0x24d593(0x228,'XRUm'),_0x85721['innerHTML']=_0x482dda[_0x24d593(0xfa,'a7!5')],_0x54c4be['appendChild'](_0x85721),_0x22bb47[_0x24d593(0x264,'HZ5l')]=_0x85721;}_0x22bb47['divInfo']=_0x22bb47[_0x24d593(0x21f,'2bH6')][_0x24d593(0x236,'0U%B')](_0x482dda[_0x24d593(0x2b8,'mTDx')]),_0x22bb47['initAlready']=!0x0;},'show':(_0x574fbc={})=>{const _0x288ae3=_0x1ace7f,_0x20f0a1={'BKAAo':function(_0x4af525,_0x5b59ff){const _0x5f24f7=_0x4578;return _0x7f2b6c[_0x5f24f7(0x1d3,'RWod')](_0x4af525,_0x5b59ff);},'lVakx':function(_0x28ae7a,_0x1df8c6){const _0x1f8da3=_0x4578;return _0x7f2b6c[_0x1f8da3(0x1a9,'UIKQ')](_0x28ae7a,_0x1df8c6);},'bknQu':_0x7f2b6c[_0x288ae3(0x103,'jsf&')],'bSJtl':function(_0x52659c,_0xd5f6c5){return _0x7f2b6c['ladGE'](_0x52659c,_0xd5f6c5);},'nBlgn':_0x288ae3(0x11a,'q3^U')};if(_0x7f2b6c[_0x288ae3(0x221,'IWy9')](_0x7f2b6c[_0x288ae3(0xde,'R$HZ')],_0x7f2b6c['HXlmq'])){_0x22bb47[_0x288ae3(0x12b,'3kb(')]();const{title:_0x4f4e00=_0x22bb47[_0x288ae3(0x170,'RWod')],html:_0x4d8967=_0x7f2b6c[_0x288ae3(0x253,')qqD')]}=_0x574fbc;_0x22bb47['divInfo'][_0x288ae3(0x11f,'YXl(')]=_0x4d8967,_0x7f2b6c[_0x288ae3(0xd7,'nkje')]==typeof main_view?.['setTitle']&&main_view['setTitle'](_0x4f4e00),(Array[_0x288ae3(0xd5,'UO3!')](_0x22bb47['self'][_0x288ae3(0x154,'R$HZ')][_0x288ae3(0x188,'5Svn')])['forEach'](_0x20a6e5=>{const _0x3366f2=_0x288ae3;_0x7f2b6c['gYQbT'](_0x7f2b6c[_0x3366f2(0x1bd,'d#HR')],_0x3366f2(0x172,')qqD'))?_0x20f0a1['BKAAo'](_0x14a2f7,()=>this[_0x3366f2(0x210,'381n')](_0x1588b9)):_0x7f2b6c['ladGE'](_0x20a6e5,_0x22bb47[_0x3366f2(0x1f8,'IWy9')])&&_0x7f2b6c['ladGE'](_0x7f2b6c[_0x3366f2(0x271,'d#HR')],_0x20a6e5['style'][_0x3366f2(0x19c,'q3^U')])&&(_0x20a6e5['style'][_0x3366f2(0x23d,'w6yL')]=_0x7f2b6c[_0x3366f2(0x156,'381n')]);}),_0x7f2b6c[_0x288ae3(0x164,'XRUm')](_0x7f2b6c['XrOcg'],_0x22bb47[_0x288ae3(0x13e,'5Svn')][_0x288ae3(0x28b,'Qre5')][_0x288ae3(0x1a4,'mTDx')])&&(_0x22bb47[_0x288ae3(0x299,'mTDx')]['style'][_0x288ae3(0x2a3,'UO3!')]=0x0,_0x22bb47[_0x288ae3(0x250,'w6yL')][_0x288ae3(0x232,'cLUJ')][_0x288ae3(0x233,'jsf&')]=_0x288ae3(0x2a1,'g*JL'),requestAnimationFrame(()=>{const _0xfb7a0e=_0x288ae3;if(_0x20f0a1[_0xfb7a0e(0xcd,'R$HZ')](_0x20f0a1[_0xfb7a0e(0x26e,')qqD')],_0x20f0a1[_0xfb7a0e(0x19f,'!w[f')]))return _0x37f4d7;else _0x22bb47[_0xfb7a0e(0x144,'Uvuv')]['style'][_0xfb7a0e(0x21e,'kDL(')]=_0xfb7a0e(0x270,'[mU6'),_0x22bb47[_0xfb7a0e(0x13e,'5Svn')][_0xfb7a0e(0x232,'cLUJ')]['opacity']=0x1;})));}else _0x20f0a1[_0x288ae3(0xea,'q3^U')](_0x1c1736,_0x3732ee[_0x288ae3(0x10c,'d#HR')])&&_0x20f0a1[_0x288ae3(0x139,'RWod')](_0x20f0a1['nBlgn'],_0x3f5ea8['style'][_0x288ae3(0x23d,'w6yL')])&&(_0x16cee9[_0x288ae3(0x17f,'3emn')][_0x288ae3(0x1ba,'9FL%')]=_0x20f0a1[_0x288ae3(0x1e1,'2bH6')]);}};return _0x22bb47;}})());let _0x57da08=!0x1,_0x243a81=!0x1,_0x3a8a7=[],_0x2861a4=[],_0x514028=null,_0x3efe3c=_0x482dda[_0x2899b7(0x192,'nkje')],_0x33c041=null,_0x337970=_0x5846=>{};const _0x2b238f={'init'(_0x12cdd7,_0x215e91=null,_0x127047=null){const _0x13249d=_0x2899b7,_0x539b64={'xIQvz':'script','ohUKH':function(_0x478ac2,_0x8206cc){return _0x482dda['tMexy'](_0x478ac2,_0x8206cc);},'KknJu':_0x482dda[_0x13249d(0x174,'tM9(')],'YuuLG':function(_0x449198,_0x214b4e){const _0x190c8b=_0x13249d;return _0x482dda[_0x190c8b(0x240,'z(Y9')](_0x449198,_0x214b4e);}};_0x3efe3c=_0x215e91||_0x3efe3c,_0x168e85=_0x127047||document[_0x13249d(0x20e,'Uvuv')](_0x482dda['WGaiv']),_0x12cdd7[_0x13249d(0x290,'DCDm')](_0x17fa20=>{const _0x4a9565=_0x13249d,_0x11da40=this[_0x4a9565(0x1e9,'0U%B')](_0x17fa20[_0x4a9565(0x17d,'s9kJ')](_0x4a9565(0x278,'kcg2'))),_0x28c18e=_0x17fa20['getAttribute'](_0x482dda[_0x4a9565(0x195,'$oSj')]),_0x388a89=_0x17fa20[_0x4a9565(0x254,'R$HZ')](_0x482dda[_0x4a9565(0x29c,'mTDx')]),_0x5030f0=_0x17fa20[_0x4a9565(0x1c2,'nkje')](_0x482dda[_0x4a9565(0x147,'$oSj')])['textContent'];_0x3a8a7[_0x4a9565(0x298,'Sbkb')]({'module_id':_0x28c18e,'name':_0x11da40,'icon_url':_0x388a89?.['src']||'','descriptive_name':_0x5030f0}),_0x17fa20[_0x4a9565(0x19a,'XRUm')](_0x482dda[_0x4a9565(0x1a5,'UIKQ')],_0xc3f85=>{const _0x2eeeb0=_0x4a9565,_0x6b8f6={'eOdlC':_0x539b64['xIQvz']};_0xc3f85[_0x2eeeb0(0xd3,'$f1e')]();const _0x126d28=_0x17fa20[_0x2eeeb0(0x217,'RWod')]('href'),_0x33f400=this[_0x2eeeb0(0x23e,'B0uQ')](_0x126d28),_0x2b6ff8=this[_0x2eeeb0(0x1b0,'!w[f')](_0x126d28);if(_0x539b64[_0x2eeeb0(0x27d,'YXl(')](_0x539b64[_0x2eeeb0(0xda,'DCDm')],KTUtil)&&KTUtil[_0x2eeeb0(0xf9,'Uvuv')]()){if(_0x539b64['YuuLG'](_0x2eeeb0(0x180,'*38W'),_0x2eeeb0(0x1ff,'UIKQ'))){const _0x4c75f7=_0x9d8d90[_0x2eeeb0(0x1a6,'g*JL')](_0x6b8f6[_0x2eeeb0(0x26d,'UIKQ')]);_0x4c75f7[_0x2eeeb0(0x1e6,'YXl(')]=_0x21b60e,_0x4c75f7[_0x2eeeb0(0x24f,'DCDm')]=_0x4fa8df,_0x4c75f7[_0x2eeeb0(0xf4,'q3^U')]=_0xd75643,_0xa0ce2d[_0x2eeeb0(0x13c,'5Svn')][_0x2eeeb0(0x243,'$oSj')](_0x4c75f7);}else{const _0x25b447=this['initMobileSideMenuPanel']();_0x25b447&&_0x25b447[_0x2eeeb0(0x1a3,'JXeq')]();}}this['showComponent'](_0x33f400,_0x2b6ff8||void 0x0);});}),_0x243a81=!0x0,_0x2861a4=_0x12cdd7;},async'bootstrap'(_0x2498c2={}){const _0x422a4a=_0x2899b7,_0x2ade6c={'uVGFF':_0x482dda['zOugF'],'hIQrh':_0x482dda[_0x422a4a(0x2c9,'kcg2')],'UhrpI':'none','efeUw':_0x482dda[_0x422a4a(0x1c8,'z(Y9')],'KcPLn':_0x482dda['nuCuZ']},_0x2cf155=_0x2498c2[_0x422a4a(0x14c,'Uvuv')]||!0x1,_0x3baa31=_0x2498c2[_0x422a4a(0x29f,'w6yL')]||_0x19110e;if(_0x243a81)return;if(_0x57da08)return this['_waitUntilReady']();_0x57da08=!0x0;const _0x58648c=_0x422a4a(0x238,'R$HZ')+_0x3baa31,_0x144cea='https:;
-"use strict"
-var main_view((= const mThis{} mThis.apiCluster"menus" mThis.onLayoutLoad null mThis.elScreenTitle document.querySelector("#screen_title") mThis.elScreenTitle_mobile document.querySelector("#mobile_screen_title") mThis.base_url document.querySelector('meta[name="base_url"]').getAttribute("content") mThis.asset_url document.querySelector('meta[name="asset_url"]').getAttribute("content") mThis.branch_id document.querySelector('meta[name="sess_branch_id"]').getAttribute("content") mThis.user_id document.querySelector('meta[name="sess_user_id"]').getAttribute("content") mThis.subs_id document.querySelector('meta[name="subs_id"]').getAttribute("content") mThis.app_id document.querySelector('meta[name="app_id"]').getAttribute("content") mThis.VSAppContent document.querySelector("#_app_content") mThis.auth_script_url"https mThis.secure_endpoint mThis.base_url,"/api/1a2b3c4d5e6f7g8h9i0j1k2l3m/en",].join("") mThis.top_right_menus document.querySelector("#_main_top_right_menus") mThis.btnLang mThis.top_right_menus.querySelector("#_main_btn_lang") mThis.btnUser mThis.top_right_menus.querySelector("#_main_btn_user") mThis.btnNotif mThis.top_right_menus.querySelector("#_main_btn_notif") mThis.current_view_name"" mThis.pusher_channel{} mThis.MULTI_WAREHOUSE_OP 1 mThis.DEF_TO_WAREHOUSE_ID 1 mThis.DEF_WAREHOUSE_ID 1 mThis.mnuLogout mThis.top_right_menus.querySelector("#_main_mnu_logout") console.log(123,mThis.mnuLogout) mThis.mnuAbout1 mThis.top_right_menus.querySelector("#_main_mnu_about") if(!mThis.branch_id|!mThis.user_id console.error"branch_id(company_id and user_id are not found= so Notifications will not work!",)} mThis.backend_channel_name"ypg_backend_",(mThis.subs_id|"").toLowerCase(),].join("") mThis.getEncryptData(qstring onFinish= const p data qstring} vsapi.call([mThis.base_url"/api/vs-encrypt031181"].join("") p).then((res= onFinish(res.data| res)})} mThis.init_vsapi async(= await vsapi.init( authType vsapi.authTypes.BEARER, tokenResolver async(= const res await fetch("/api/vsx-sec/token" credentials"include", headers"X-Requested-With""XMLHttpRequest",},}) const json await res.json() if(json.status_code= 200 return json.data.token else alert"[vsapi tokenResolver( got error+ json.error_message,) return null}}, defaultLoaderSelector"#vs_loader", useStreamingProgress true,})} mThis.init async(= mThis.side_menus document.querySelector("#_dms_aside_menus") VSRoute.init mThis.side_menus.querySelectorAll("a.menu-item"),"DashboardComponent", mThis.side_menus, true,) mThis.displayUserMenus() mThis.displayNotifications() mThis.top_right_menus.onclick(e= let btn VSUtil.closestLimited(e.target".btn-dropdown") if(btn let div e.target.closest("div.dropdown").querySelector(".dropdown-menu") if mThis.prev_shown_dropdown_menus& mThis.prev_shown_dropdown_menus!= div) mThis.prev_shown_dropdown_menus.classList.remove("show") if(div div.classList.toggle("show") if(div.classList.contains("show")) mThis.prev_shown_dropdown_menus div} return} btn VSUtil.closestLimited(e.target".lnk-lang") if(btn let lang btn.dataset.lang LocaleManager.translateAll(lang) mThis.setLangMenu(lang) btn.closest(".dropdown-menu").classList.remove("show") LocaleManager.saveLang(lang) return}} document.addEventListener("click"(e= let dropdownMenu mThis.prev_shown_dropdown_menus let container dropdownMenu dropdownMenu.closest(".dropdown") null if(container if(!container.contains(e.target) dropdownMenu.classList.remove("show")}} if(e.target.matches(".dropdown-item") e.target.parentElement.classList.remove("show")}}) mThis.lnkLogout mThis.side_menus.querySelector("#_main_lnkLogout") console.log(1233 mThis.side_menus) mThis.lnkLogout.onclick(e= cv_interact.confirm"Do you want to log out?", title"Sign Out", confirmButtonText"Log Out", cancelButtonText"No I stay in", context"delete", translate true,},(e= if(e mThis.logOut()}},)} mThis.mnuLogout.addEventListener("click"(e= cv_interact.confirm"Do you want to log out?", title"Sign Out", confirmButtonText"Log Out", cancelButtonText"No I stay in", context"delete", translate true,},(e= if(e mThis.logOut()}},)}) if(typeof mThis.onLayoutLoad=="function" mThis.onLayoutLoad()} mThis.logOut(= mThis.deleteAllCookies() window.location.replace([mThis.base_url"/logout"].join(""))} mThis.setLangMenu(lang= let lnkName mThis.top_right_menus.querySelector("#_main_lang_name") let lang_name LocaleManager.langs[lang].name let icon_image LocaleManager.langs[lang].icon_image let icon_url document.querySelector('meta[name="asset_url"]').getAttribute("content"),"/images/icons/", icon_image,].join("") lnkName.textContent lang_name mThis.btnLang.querySelector("img").setAttribute("src" icon_url) mThis.btnLang.dataset.lang lang LocaleManager.lang lang const body document.body body.classList.remove("font-kh""font-en") if(lang=="km" body.classList.add("font-kh") else body.classList.add("font-en")}} mThis.addNotificationItem(notif update_count true= if(!notif|!notif.message return let div mThis.top_right_menus.querySelector(".main-notif-panel") let emptyItems div.querySelectorAll(".empty-item") emptyItems.forEach((item= item.remove()) let newDiv document.createElement("div") newDiv.classList.add("main-notif-item") let title notif.title notif.title"General" if(["na""n/a"].indexOf(title.toLowerCase()> 0 title"General" newDiv.innerHTML`span class="notif-title">${title}</span><span class="notif-text">${notif.message}</span>` div.insertBefore(newDiv div.firstChild) if(update_count mThis.incrementNotificationCount()}} mThis.changeRequestStatus(d= d.request_id d.request_id d.request_id d.id d.request_completed d.request_completed d.request_completed d.completed d.request_status d.request_status d.request_status d.status let div mThis.top_right_menus.querySelector("div.main-task-panel") let el null div.querySelectorAll(".main-task-item").forEach((el= if(el.dataset.id= d.request_id return false}) if(el let v el.querySelector("div.task-buttons") let buttons null if(d.request_completed= 1 if((d.request_status"").toLowerCase(="approved") buttons`span class="task-btn-approved"><i class="fa fa-check" style="color:green"></i> Approved</span>` else buttons`span class="task-btn-rejected"><i class="fa fa-times" style="color:red"></i> Rejected</span>`} v.innerHTML buttons}} mThis.setTitle(title_prop null= const title LocaleManager.trans(title_prop"titles") mThis.elScreenTitle.textContent title mThis.elScreenTitle_mobile.textContent title mThis.elScreenTitle.setAttribute("vslang"`itles.${title_prop}`) mThis.elScreenTitle_mobile.setAttribute"vslang",`itles.${title_prop}`,)} mThis.deleteAllCookies(= const cookies document.cookie.split(";") for(const cookie of cookies const[name cookie.trim().split("=") document.cookie`{name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`}} mThis.addTaskItem(c{} update_count true= let buttons null c.request_id c.request_id c.request_id c.id c.request_status c.request_status c.request_status c.status c.request_completed c.request_completed c.request_completed c.completed if(c.completed= 1 if((c.status"").toLowerCase(="approved") buttons`div class="task-buttons"><span class="task-btn-approved"><i class="fa fa-check" style="color:green"></i> Approved</span></div>` else buttons`div class="task-buttons"><span class="task-btn-rejected"><i class="fa fa-times" style="color:red"></i> Rejected</span></div>` else buttons`div class="task-buttons form-inline">
+'use strict';
+var main_view = (()=>{
+    const mThis = {};
+    mThis.apiCluster = 'menus';
+    mThis.onLayoutLoad = null;
+    mThis.elScreenTitle = document.querySelector('#screen_title');
+    mThis.elScreenTitle_mobile =  document.querySelector('#mobile_screen_title');
+    
+    mThis.base_url = document.querySelector('meta[name="base_url"]').getAttribute('content');
+    //mThis.mainRoute = document.querySelector('meta[name="main_route"]').getAttribute('content');
+    mThis.asset_url =document.querySelector('meta[name="asset_url"]').getAttribute('content'); 
+    mThis.branch_id = document.querySelector('meta[name="sess_branch_id"]').getAttribute('content');
+    mThis.user_id = document.querySelector('meta[name="sess_user_id"]').getAttribute('content'); 
+    mThis.subs_id = document.querySelector('meta[name="subs_id"]').getAttribute('content'); 
+    mThis.app_id = document.querySelector('meta[name="app_id"]').getAttribute('content');
+
+    mThis.VSAppContent = document.querySelector('#_app_content');
+    //mThis.appContent = $(mThis.VSAppContent); //should no longer use it !!!
+   
+    mThis.auth_script_url = [mThis.asset_url,'/js/AuthManager.v2.js?v=5'].join('');
+    mThis.secure_endpoint =  [mThis.base_url,'/api/1a2b3c4d5e6f7g8h9i0j1k2l3m/en'].join('');
+    mThis.top_right_menus = document.querySelector('#_main_top_right_menus');
+      
+    // mThis.btnTasks = mThis.top_right_menus.querySelector('#_main_btn_tasks');
+    mThis.btnLang = mThis.top_right_menus.querySelector('#_main_btn_lang');
+    mThis.btnUser = mThis.top_right_menus.querySelector('#_main_btn_user');
+    mThis.btnNotif = mThis.top_right_menus.querySelector('#_main_btn_notif');
+     
+    mThis.current_view_name = '';
+    mThis.pusher_channel = {};
+    
+    mThis.MULTI_WAREHOUSE_OP =1;
+    mThis.DEF_TO_WAREHOUSE_ID =1;
+    mThis.DEF_WAREHOUSE_ID =1;
+   
+    mThis.mnuLogout = mThis.top_right_menus.querySelector('#_main_mnu_logout');
+    mThis.mnuAbout1 = mThis.top_right_menus.querySelector('#_main_mnu_about');
+    
+    if (!mThis.branch_id || !mThis.user_id){
+        console.error('branch_id (company_id) and user_id are not found! => so Notifications will not work!');
+    }
+    /** Toto: load "mThis.backend_channel_name" and other environment's vairables from backend's env directly */
+    mThis.backend_channel_name = ['ypg_backend_',(mThis.subs_id || '').toLowerCase()].join('');
+    mThis.getEncryptData = (qstring,onFinish)=>{
+        const p = {'data':qstring};
+        vsapi.call([mThis.base_url,'/api/vs-encrypt031181'].join(''),p).then((res)=>{
+            onFinish(res.data || res);
+        }); 
+    }
+
+    // function channelPrefix(){
+    //     return 'vsksmkidsworld';
+    // }
+
+    // mThis.createChannelName = () => {
+    //     const subs_id = mThis.subs_id;
+    //     const user_id = mThis.user_id;
+    //     const branch_id = mThis.branch_id;
+    //     const user_class = mThis.user_class;
+
+    //     if (user_id && user_id > 0) {
+    //         return channelPrefix() + "_backend_" + subs_id + "_" + user_id;
+    //     } else {
+    //         if (branch_id && branch_id > 0 && user_class) {
+    //             return channelPrefix() + "_backend_" + subs_id + "_" + branch_id + "_" + user_class;
+    //         } else if (branch_id && branch_id > 0) {
+    //             return channelPrefix() + "_backend_" + subs_id + "_" + branch_id;
+    //         } else if (user_class) {
+    //             return channelPrefix() + "_backend_" + subs_id + "_" + user_class;
+    //         } else {
+    //             return channelPrefix() + "_backend_" + subs_id;
+    //         }
+    //     }
+    // };
+
+mThis.init_vsapi = async () => {
+  await vsapi.init({
+    authType: vsapi.authTypes.BEARER,
+    //fetchTokenUrl:'/api/vsx-sec/token',
+    tokenResolver: async () => {
+      const res = await fetch('/api/vsx-sec/token', { 
+         credentials: 'include',
+         headers: {
+         'X-Requested-With': 'XMLHttpRequest'
+        } 
+     });
+      const json = await res.json();
+      if(json.status_code == 200){
+         return json.data.token;
+      }else{
+        alert('[vsapi] tokenResolver() got error: ' + json.error_message);
+        return null;
+      }
+    },
+    defaultLoaderSelector: '#vs_loader',
+    useStreamingProgress: true,
+    //useCache: true,
+    //cacheTTL: 3000,
+
+    // online: () => {
+    //   console.log('🟢 Back online');
+    // },
+
+    // offline: () => {
+    //   console.warn('🔴 Connection lost');
+    // }
+    // You can later add: resolveAuthHeaders, or switch authType to 'custom' etc.
+  });
+};
+    mThis.init = async()=>{
+      //window.Sanitizer  = window.Sanitizer || StringSanitizer || null;
+     //BEGIN:: process side menus click using VSRoute
+       mThis.side_menus = document.querySelector('#_dms_aside_menus');
+       
+      //Sanitizer.setDebugMode(false);     
+      VSRoute.init(mThis.side_menus.querySelectorAll('a.menu-item'),"DashboardComponent",mThis.side_menus,true);
+
+      // Same contract UI as PRM: allow menu href ContractComponent or ContractsComponent
+      if (typeof ContractsComponent !== 'undefined' && typeof ContractComponent === 'undefined') {
+          window.ContractComponent = ContractsComponent;
+      } else if (typeof ContractComponent !== 'undefined' && typeof ContractsComponent === 'undefined') {
+          window.ContractsComponent = ContractComponent;
+      }
+
+     //END:: process side menus click using VSRoute
+
+        mThis.displayUserMenus();
+        mThis.displayNotifications();
+        //mThis.displayTasks();
+
+        mThis.top_right_menus.onclick = e =>{
+           let btn = VSUtil.closestLimited(e.target,'.btn-dropdown');
+           if(btn){
+                let div =  e.target.closest('div.dropdown').querySelector('.dropdown-menu');
+                if(mThis.prev_shown_dropdown_menus && mThis.prev_shown_dropdown_menus !== div) mThis.prev_shown_dropdown_menus.classList.remove('show');
+                if(div){
+                    div.classList.toggle('show');
+                    if (div.classList.contains('show')) mThis.prev_shown_dropdown_menus = div;
+                }
+                return;
+           }
+
+           btn = VSUtil.closestLimited(e.target,'.lnk-lang');
+           if(btn){
+            let lang = btn.dataset.lang;
+            LocaleManager.translateAll(lang);
+            mThis.setLangMenu(lang);
+            btn.closest('.dropdown-menu').classList.remove('show');
+            LocaleManager.saveLang(lang);   
+            return;
+           }
+        }
+   
+        // $(document).on('click', function(e){
+        //     let x = $(this).find('body div.dropdown-menu');
+        //     let container = x.parent();
+        //     if(container){
+        //         if(!container.is(e.target) && container.has(e.target).length === 0){
+        //             x.removeClass('show');
+        //         }
+        //     }
+        //     e.stopPropagation();
+        // });
+
+        document.addEventListener('click', e => {
+            let dropdownMenu =  mThis.prev_shown_dropdown_menus ; // //document.querySelector('.dropdown-menu');
+            // Get the container element
+            let container = dropdownMenu ? dropdownMenu.closest('.dropdown') : null;
+        
+            if (container) {
+                // Check if the click target is outside the container
+                if (!container.contains(e.target)) {
+                    dropdownMenu.classList.remove('show');
+                }
+            }
+          
+            if (e.target.matches('.dropdown-item')) {
+                // Get the parent element and remove the 'show' class
+                e.target.parentElement.classList.remove('show');
+            } 
+        });
+
+        // $(document).on('click', '.dropdown-item', function (e) {
+        //     $(this).parent().removeClass('show');
+        // });
+        
+        mThis.lnkLogout = mThis.side_menus.querySelector('#_main_lnkLogout'); 
+        mThis.lnkLogout.onclick = e =>{
+            cv_interact.confirm("Do you want to log out?",{
+                title: "Sign Out",
+                confirmButtonText: "Log Out",
+                cancelButtonText: "No, I stay in",
+                context: "delete",
+                translate: true
+            },(e) => {
+                if(e){
+                    mThis.logOut();
+                }
+            });
+        };
+
+        
+        mThis.mnuLogout.addEventListener('click',e => {
+            cv_interact.confirm("Do you want to log out?",{
+                title: "Sign Out",
+                confirmButtonText: "Log Out",
+                cancelButtonText: "No, I stay in",
+                context: "delete",
+                translate: true
+            },(e) => {
+                if(e){
+                    mThis.logOut();
+                }
+            });
+        });
+
+       
+        if (typeof mThis.onLayoutLoad ==='function') mThis.onLayoutLoad();
+    }
+    //end::main_view.init()
+
+    mThis.logOut = ()=>{
+        mThis.deleteAllCookies();
+        window.location.replace([mThis.base_url,'/logout'].join(''));
+    }
+    
+    mThis.setLangMenu = (lang)=>{
+        let lnkName = mThis.top_right_menus.querySelector('#_main_lang_name');
+        let lang_name = LocaleManager.langs[lang].name;
+        let icon_image = LocaleManager.langs[lang].icon_image;
+
+        let icon_url = [document.querySelector('meta[name="asset_url"]').getAttribute('content'),'/images/icons/',icon_image].join('');
+        lnkName.textContent =  lang_name;
+
+        mThis.btnLang.querySelector('img').setAttribute('src',icon_url);
+        mThis.btnLang.dataset.lang = lang;
+        LocaleManager.lang = lang;
+        const body = document.body;
+        body.classList.remove('font-kh', 'font-en');
+        if (lang === 'km') {
+            body.classList.add('font-kh');
+        } else {
+            body.classList.add('font-en');
+        }
+    }
+
+    mThis.addNotificationItem = (notif, update_count = true) => {
+        if(!notif || !notif.message) return;
+        let div = mThis.top_right_menus.querySelector('.main-notif-panel');
+        let emptyItems = div.querySelectorAll('.empty-item');
+        emptyItems.forEach(item => item.remove());
+        let newDiv = document.createElement('div');
+        newDiv.classList.add('main-notif-item');
+        let title = notif.title?notif.title:'General';
+        if(['na','n/a'].indexOf(title.toLowerCase()) >=0 ) title = 'General';
+        newDiv.innerHTML = `<span class="notif-title">${(title)}</span><span class="notif-text">${notif.message}</span>`;
+        div.insertBefore(newDiv, div.firstChild);
+    
+        if (update_count) {
+            mThis.incrementNotificationCount();
+        }
+    };
+          
+    mThis.changeRequestStatus = (d) => {
+        d.request_id =d.request_id?d.request_id:d.id;
+        d.request_completed =d.request_completed?d.request_completed:d.completed;
+        d.request_status = d.request_status? d.request_status:d.status;
+
+        let div = mThis.top_right_menus.querySelector('div.main-task-panel');
+        let el =null;
+        div.querySelectorAll('.main-task-item').forEach(el =>{
+            if(el.dataset.id == d.request_id) return false; 
+        });
+             
+        if(el) {
+            let v = el.querySelector('div.task-buttons');
+            let buttons = null;
+
+            if(d.request_completed == 1) {
+                if((d.request_status+'').toLowerCase() =='approved')
+                    buttons = `<span class="task-btn-approved"><i class="fa fa-check" style="color:green"></i> Approved</span>`;
+                else
+                    buttons = `<span class="task-btn-rejected"><i class="fa fa-times" style="color:red"></i> Rejected</span>`;     
+            }
+            v.innerHTML = buttons;
+        }
+    }
+
+    mThis.setTitle = (title_prop=null)=>{
+        const title = LocaleManager.trans(title_prop,'titles');
+        mThis.elScreenTitle.textContent = title;
+        mThis.elScreenTitle_mobile.textContent = title;
+          mThis.elScreenTitle.setAttribute('vslang', `titles.${title_prop}`);
+        // mThis.elScreenTitle.dataset.vslang = `titles.${title_prop}`;
+        mThis.elScreenTitle_mobile.setAttribute('vslang', `titles.${title_prop}`);
+    }
+
+    mThis.deleteAllCookies = () => {
+        const cookies = document.cookie.split(';');
+        for (const cookie of cookies) {
+            const [name] = cookie.trim().split('=');
+            document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
+        }
+    };
+
+    mThis.addTaskItem = (c={},update_count=true)=>{
+        let buttons = null;
+        c.request_id =c.request_id?c.request_id:c.id;
+        c.request_status =c.request_status?c.request_status:c.status;
+        c.request_completed =c.request_completed?c.request_completed:c.completed;
+
+        if(c.completed ==1){
+            if((c.status+'').toLowerCase() =='approved')
+                buttons = `<div class="task-buttons"><span class="task-btn-approved"><i class="fa fa-check" style="color:green"></i> Approved</span></div>`;
+            else
+                buttons = `<div class="task-buttons"><span class="task-btn-rejected"><i class="fa fa-times" style="color:red"></i> Rejected</span></div>`;     
+        }
+        else{
+            buttons = `<div class="task-buttons form-inline">
             <button data-id="${c.request_id}" data-status="${c.request_status}" class="btn btn-sm btn-danger btn-reject-request">Reject</button>&nbsp;
             <button data-id="${c.request_id}" class="btn btn-sm btn-success btn-approve-request">Approve</button>
-            </div>`} let item`div class="main-task-item" data-id="${c.request_id}" data-completed="${c.request_completed}" data-status="${c.request_status}">
+            </div>`;
+        }
+                     
+        let item =`<div class="main-task-item" data-id="${c.request_id}" data-completed="${c.request_completed}" data-status="${c.request_status}">
         <span class="task-title">${c.title}</span>
         <span class="task-text">${c.description}</span>
                 ${buttons}
-        </div>` mThis.top_right_menus.find("div.main-task-panel").prepend(item) if(update_count mThis.incrementTaskCount()} mThis.displayUserMenus(= return} mThis.displayNotifications(= vsapi.call(`{mThis.base_url}/api/user/notifications` null useCache false, cacheTTL 3000,}).then((res= let i 0 if(res.status_code== 200 let d res.data if(d let items d.items const notifCount mThis.btnNotif.querySelector"span.number--notification",) notifCount.textContent d.unread_count if(items let c do c items[i] if(!c break mThis.addNotificationItem(c false) i++ while(c)}}} if(i= 0 let empty_item`div class="main-notif-item empty-item"><span class="p-1 text-muted text-center">No Notifications</span></div>` mThis.top_right_menus.querySelector"div.main-notif-panel",).innerHTML empty_item}})} mThis.setNotificationCount(c= mThis.btnNotif.dataset.count c mThis.btnNotif.querySelector(".number--notification").textContent c} mThis.updateNotificationCount(= vsapi.call(`{mThis.base_url}/api/user/unread-count` null useCache false, cacheTTL 3000,}).then((res= if(res.status_code== 200 let d res.data const span mThis.btnNotif.querySelector".number--notification",) if(d 0 span.textContent d else span.textContent 0 if(d 0 mThis.btnNotif.dataset.count d else mThis.btnNotif.dataset.count 0}})} mThis.incrementNotificationCount(= const notifCount_span mThis.btnNotif.querySelector"span.number--notification",) let d mThis.btnNotif.dataset.count d d> 0 d 0 d++ notifCount_span.textContent d mThis.btnNotif.dataset.count d} mThis.setContentView(viewInstance title_prop null= const siblings Array.from(viewInstance.parentElement.children) siblings.forEach((div= if(div!= viewInstance& div.style.display!="none" div.style.display"none"}}) viewInstance.style.display"block" if(title_prop mThis.setTitle(title_prop)} return mThis})()
-window.addEventListener("DOMContentLoaded" async(= await main_view.init_vsapi() await VSMoney.init() main_view.init() LocaleManager.translateZone(main_view.VSAppContent) main_view.setLangMenu(LocaleManager.currentLanguage.code) const inputs main_view.VSAppContent.querySelectorAll("input") DateTimePicker.destroyAll() inputs.forEach((el= const type el.getAttribute("type"? el.dataset.select?"" if["date""daterange""datepicker"].indexOf(type.toLowerCase()> 0 new DateTimePicker(el null)} el.onselect function(e e.preventDefault()} el.onfocus function(e e.preventDefault()}})})
-const applyNumberInput(inputEl= inputEl.addEventListener("input"(e= let v e.target.value v v.replace(//^0-9.]/g"") const parts v.split(".") if(parts.length 2 v parts[0". parts[1]} if(parts[1!= undefined v parts[0". parts[1].slice(0 2)} e.target.value v}) inputEl.addEventListener("blur"(e= let v parseFloat(e.target.value) if(isNaN(v| v< 0 e.target.value"" return} e.target.value v.toFixed(2)})};
-"use strict"
-class SearchWidget constructor(container options null) const defaults searchIcon:'fa fa-search', inputClass'form-control border border-secondary rounded-3', onkeyup:()=> return;}} options options| defaults options.onkeyup(typeof options.onkeyup==='function') options.onkeyup defaults.onkeyup options.searchIcon options.searchIcon| defaults.searchIcon options.inputClass options.inputClass| defaults.inputClass this.options options this.container container this.container.innerHTML'<a href="javascript:void(0) class="sw-search-lnk"><i class="fa fa-search fs-5"></i></a>' this.state 0 const that this this.container.dataset.state 0 this.container.addEventListener('click' e=> e.preventDefault() let lnk e.target.closest('.sw-search-lnk') if(lnk) that.setState(null)}})} setState(state=null) if(state= 0) this.container.innerHTML'<a href="javascript:void(0) class="sw-search-lnk"><i class="fa fa-search fs-5"></i></a>' else if(state==1) this.container.innerHTML['<input class="sw-search-input',this.options.inputClass,' placeholder="',this.options.placeHolder,'">'].join('') let el this.container.querySelector('.sw-search-input') const that this if(el) el.focus() el.select() el.onkeyup e=> e.preventDefault() that.options.onkeyup(el.value e)} el.onmouseenter e=> el.dataset.isfocus=1 clearTimeout(that.mTimeout)} el.onmouseleave e=> e.preventDefault() el.dataset.isfocus=0 let tog_state this.state==1 0 1 if(!el.value|(tog_state'').trim(=='') that.mTimeout setTimeout(()=> if(el.dataset.isfocus= 0 that.setState(0)},1000)}}} else let tog_state this.state==1 0 1 this.setState(tog_state)}} getState() return this.state} getValue() if(this.state==1) const el this.container.querySelector('.sw-search-input') return el el.value null}else return null} setValue(value) if(this.state==1) const el this.container.querySelector('.sw-search-input') el.value value}}};
-"use strict";const ImageHelper=(()=>{const t={},e=//.(jpg|jpeg|png|gif|webp|bmp|svg|tiff|ico)$/i;return t.getBase64Info=t=>{const e=t.split("/")[1]?.split(";")[0]?.toLowerCase()||"";return{isImage:["jpeg","jpg","png","gif","bmp","webp","svg+xml","tiff","ico"].includes(e),fileType:e}},t.isImage=e=>t.getBase64Info(e).isImage,t.getBase64Type=e=>t.getBase64Info(e).fileType,t.isValidImage=a=>{const n=t.getFileName(a);return e.test(n)},t.getFileName=t=>{if(!t)return null;try{if(t.startsWith("data:image"))return"inline-base64";return(t.includes(":;
-'use strict';function _0x3526(){const _0x592d3f=['zCkeoelcJG','W54wWPX2DKryW6qIWPq7','WQynWRxdSCkqW5HjzSoxWRi','iNNdL8o+WOW','W4hdHgf6DG','r8kWWPr1WRu','nHJcJxdcGW','nbxcJgdcICoKWQGCumkvFSk5zLai','iGX9nSo+','W48qkmoBWOqgWRRdVMe','oCkHbmoiW4i','WOldSmk4t8ortejmWRK','EHn5WO/dLCk6iSoKEa','mfpdMHFcUgZcQa','WOlcQ8kyFSozBCkUnSkb','k8oba8ouWQe','EmkZrMTZWQVcLa','W5JcSCkEifK','WOuoWQVdQCkm','kSk9WPzas3rYjhFdHt8PzGhdNuZcNCombCo7emke','W4axkSokWPm8','dg7dVGRcRmkpWPpdKCkKWQu','icFdSeSVbrzO','W6LTWPqiWOu','DCkHC3HuWRJcGq','cKtdG8oZWO7cRSktW6xcJxxcJ8oOc8o6W6NcQSokW6lcReRcMXXSWQryWQGitHz6bd0WW67dOvP+pgNdRSk6xCo4W6bDbG7dGCoJWQpdHL7cRmoEjrTQAmkbW4bth8oaW63dL8kHWRdcNtRdQ8k4E1jsC8oFkhaA','z8oAW69vWRZdKHFcJCkPW49cW7ldNCk/FY7dJa','prWNwHpdS8oDbW','W6RdPmkVW6FdHCoPi8onemoLWQZdQqrR','W5bgWRrzr23dSmoZW7D3W7hdI2xcOmo6','ictdV0WUjHnOW5y','WQhdVs1aDmk8','ye8SuSkcymoW','yCkOAg1UWPxcJL8+W79lWR7dU8oLyG','ACkFWQTpWQC','WOxdUCk1wCowz2PmWR3cRCou','W7hcGmkLa3VcT0a','vSkwWO7cKJqYvW','WRKyWRpdTCkwW4vj','lX7cJM3cGSoZW5anvmkuuSoImW','W7igW6e/lmkdWRJcVYBdQ8kgah/dLmo/wmo1CCkhW5ddTqLp','W5meWQXYx1vzW6e5WRmLWQZcRMy','vfddS8oOWQlcGxBdNmksoK4Ctq','nbxcJ2VcMSoZ','rfS5EWu','WPXsWOhdMcW','W4/cN8kilem','r8kpFvfZ','r20DFSkj','WQFcNmknWRK','W7pdOtqV','W789WR8SW6m','WRdcLCkwWQ/dGGbqBeGyx1mJW4Ck','n8oKpSoiWQiaWPfNuSornW','W68NWRldJ8kxW4H+','iMtdLmo3','AvO5t8kyFmoMFG','W5KwWOr7','WOWXxmoUWRHQyfKGyq','jWX2jCopW5v8jq','WPdcKCkDWRFdSa','bqZdIxew','mcNdQfOCoJm','WR/dKYfOsW','WRpdV8oiWP0','W7dcNCkGlea','WPhdTmk2smonrKPaWRdcPCow','W5r8WRGyWOVcJ8oEtCkpW5ra','W74AW6CYmCkfWPa','kXhcKG','dGTUmmoT','WQZcPCk6W6RdGSkXDq','WP/dJSoko0G','Ab9WWP3dSCk3dmoaxG','gxRdRXNdR8k1WPVdNmkMWQmFa8om','WQ9gWPpcTrxcN8oZW6JcLcNdNuZdKSoGACka','W6xdPIOAqCo+EIi','sCkjWPpcLs85vG','tSkkWRBcRY0','vCoVg8oabmoAuKG4w2a','WRmAWRxdS8kl','WP7cLSknW6tdOa','FCofW60','s8kvWRDPWR0FWOJcVG','W67cMmk+hNVcHLdcQYdcMx4zAmkTWQS','WPpdUCk0u8ouzW','sSoAW51vjNVcP8kYW6S5','Bmotf8oFma','WO7dRmkTvConBfa','WOLtzCozta','vCknWOBcIduK','s8kwWPlcJYu7qdBcKmkz','w8o4W7zYW4K','q8kJeedcOG','t204Cc0','sYtcR8oRWPO','WPBdJmo/j1i8BcL5oW','W71LWRGFWQO','WOlcR8kzW7ldHa','gdVcK8oIWP3cKCo2','F8kttfDt','kr7cPMhcGmoZWOKkCmkvrCk7Dq','W6ieW6G3la','WQddRsnmz8kQWP0','W4DxWR1iyNpdQ8kUW799W7C','WRBdQJjaCa','baFdLMG0','BrnHWQpdJmk+bmor','W61JW40Uumk/W7RcG8oyWPdcJLyB','WRpcKSkj','cwVdRG','Dmk+WPzgchXYjG','uK3dR8oZWRhcT3xdIG','z8kTWODpeNHBjJBdHc4GqqddJbxcMSonimo5o8ktiMldOmov','AeSBvdZdMCoW','CYnbWPCU','W5rMW4OQuG','jvFdJqBcJg7cPbu','rN/dOGtdOSkjW5pdHSkQWQuCcComv0jXySomxSkVW54','W7pdVce6FSoLEYBdTbavWO9lWOjH','WOfRtWOdWR8Rw8kgW5ZcVSofa8kfW6hdGZa','C8kQWRfYWRSrWQVcUmo7AveqW7XPfxPkW4aLW6OQW4NcRKWBpq/cQCkDD8kgprjbWRrgWQWiWRe4iNLOyeTJW5jszSo9W79NdZFdISkMW4mzWPxcUmk8eSkoW7dcT8oUW7NdP1GeW5NdLCkqySonWOhdJvWdW63cJq','WQ1oW4X1WRldVSkdW6pdM8oiWPfs','Cb14WPmUWRuXwW','qSoAW5XzW5ddQW','WQFcT8kdWR7dOa','WQaVssS/','W4nPWRuvWQe','sCkoWQ18WQWwWQ3cO8o7Af0hW41ihw9tW50NW4q','W7PCWOPVzG','W63cGmk9a2a','yCkOAg1UWO7cHfe8W6rn','rbRcLCoeWOhcL8oHm8khW6KP','W6pcPgJcLSocCW','nSkDomoZW7H9W4dcVhP4nNRdSW','ySkOAg5sWQVcM1uDW65zWQtdTmoNDq','m1FdNH/cKg/cSG96oq','W4mevWiiWOhdItzBW5jFfrO5txddQSoUW4CLx8kjWR12DmopWP0TW6SlW5jwWQSAvgCwW6m','A8okW55cAq','W5aRlSoDWRS','r8kDWPH0dq','ihFdQbRcMa','W5XMW6ObBG','ErHIWPK1WRiT','mYddSuSYnrL0W4WQWOShW69XWPK','W6evW7y/nCkv','r8owW4HtEu3cV8kHW6a','WQFcTmk6W6ldNSk6CG','W68DWO8nW6/cR8kCW5u','r8kkWQ10WQaqWOG','W7JcMCk9d0FcSeNcOq','C8k7WOxcUI8','smooW4DxAhVcPCk9','W5GsWPPyqq','WQFcNmknWRNdNHfsygOtxW','WP7cQmkDFmoAw8k1iCkj','W4VdP0PiE8oQBCoKlWVdOJBdU8oUWPK','WQrdFCoEua','W7O0WRGbW7G','kCo/f8ovWRO3WR1MvSovjSohWOa','W7CbW6O9lmkpWPtcUq','bSkDWOBcIcf6','iGT9j8opW5Lwj8oEW7rnjNu','WQhcQSkGW67dG8kCvCoWna','ia1Sj8oyW5rfiSoEW65noKCogCoHjCoIW5fS','ctvoWRjmWR7cVmocWPmRkSohlSk0vqCGWR0TW5xcOfG','EWXAWOyF','fuhdL8kaW4tdHSkgaCkPW5ynp2S','WRqlWR7dMmk9','W5tcUupcO8o3','mmkDl8o9W75hW67cSwzKjhJdN8oeW40haJldRXNcQh7cLa','WOFdISo9WQXS','WQbcWRnVAmowWOpcHcpdQSkxla','FeiaqqBdVCo1nJFdSmo2zCoK','W4jcWQTmExVdNmoRW798W7q','zt/cQSo2WQm','swJcVH99sLO7WOj+W4PoWQe6WP11W4JdJ8kvkCoADHhdPmkvW48spCohzSkrW7y4ie3dVLJdTIBcMHpdPK7dS8ouWPNcRutcShytWPeXdmoeW4ixEtzFW6yxw2/dPCk6WPeQW44LW4hdVmoKzmkyi8k3icSgEK3cV8kfW4ZdMmozWPW4W5Cof8kOW6xcGZ7cPmkQo8kMW5ldHXddISouW55Mpa3dJmknW5H5WPP9cCo6W4ynWR0wW4m2kmoYmMDVW55jkqvOW7v9fCkvW6nWyCodrYZcPx8WC8o8nmoaf8khWRnBW5JcS8kGqCknW6tcQCkxomoiox7dSW5yWPpdOvjZgMJdI1NdSSoPBSolWOPmptzGcXfQrmofW73cJmkAW6yHWRJdItFdU0qleHhcGYZcJwLLW7P6W6O8WRrydghcH8kXWRjeW7LGetZdOrmtkSkcWQvci1/dP2PTW4SksCocWPFcK8kBWQFcNSkSWRS5W7VdOCkSWP3dPCk8WOCYWPNcTComW51xW7zvj2RdQaCKkW1VW6xdVwFdJSkZW7ddISoFEfldI8kGFIpcNNyrW6ldNKicW6BcGmooW7lcRSoWpCkcACoXBSkMWPWbnCknvHFdOSk3h1NcLSkZWRBcN8kRl8orw8oCWRiyaMldSG92WQlcHbGpCmklW4bnE8o/WRFcNCoVnHNdJsRcUCkKWRKkaa0iWOBcJcuvkSkxWOjnccWXdYZcScm5W4hdQtHhWQBcMSocB0NdPh7cLCkWwfVdGSkpgCkBWP7dPdeAW5bPW6DAWPRdGLWpeCkmW6OUgmkzW6tcJmk5zutdOcVdSSo4W5ijWOtcRdy4WQhdHha/BCoogqpcLN/dShNcTaexxa1NWQ7cQSoPAW7cHSkfWRlcPvxdGHOebSoYpKP0oSkuW5L4WQrbibxcUI/dGSkgWQRdGttdVmkkWPyyWQP+umkXWRPpWOeXwSkZW6mJAde/uYmmW7FdOwy2o8odWR0Us8kUW6HJW4PzWOXQyWJdOeT8W4m9fSkTW7FcIJxdK8kxW4LPW5eQv8oGy1xcQL7cJ8kZWPFcMSkHdmkwW4Hcqt1sn8kFBJRcJCkhwmociCkbh8owy8o4WQTpWRLhWQ55DmoAWOlcOJfWFCk4le1jCCkrWONcSSkFWO98WO9HWR9vWR1ExXXVW79CW6VdSmkQjHJdIumstmk3wZ3cNmoUW6NcU0VdKmk3i8kwWPeXA8klrdeJW6VcTwldTxfgbSoqAmkBx8oLemk0wCoXW5SpWPSYA1WXucX+W7LHn2eGfmkOtgLdW5RcH8kDW4hcOuadASkqA3y5WOBdLLxdOmkjy8kBBID6WQhcPNy9uftdNSkae8ozWR3cM3SAWQn/W4tcNv7cKgVcVZLaWPldPCknWOyOWR3dPSk8WQjRxKddUSowWRVdP8kPWQFdHSoIgCoUWRJdHt7cJeaDW4ncWRqeWQ5imLXmW6OZW74QW6LWsblcSSkha8oEWQxcMh4mCGZdRmoZWQldQSorESojW6FdHCklr1TQW4pcI8kOWRr5WQhcINhdNmkQBh5vsSoYWRLPWQFdIGpdICoQyuHiW7JcI8oQWOdcRqehW7zmW4L6bv5lWQVdOI1BlCoRW6rUjSkTz8kbz8oYxSoyWPfpW5KiW4OcxIlcLmo5W7PIW7PPW4DLWQbUct4jh8oYW5aSCCoHl0FdTCoAW5FdR1nfWQ3dTCoGmb1+W63dGLBdL0azWR0VWO8FW7mbW4JdRr/dVCk6WQ5/sJugWOOtW5ddQqdcHSkLW4dcH8kSqmoZW5D1W5JdPCkWWOJdUcOJWOONBCkTyCouW4TZcmoGp29vW7ldLCkwt8kYWRdcPN/dKstdT8k3FCoZzmk3aLtcI8o4E8kwWQfkvSoYfSotBJ/dJ8otWOVdPSofuficW5BcO1TwWOu6yZlcS8oXW5yBxCkYWRFcP2CuW7XLW4XshXhdMHPoWQpWSAAzWRXaia/dHX45W7hcRH/cRw/dSfBdMfyHWOJcJYpdIfRcGNSPWQfXp8oyerTgWOFcV8kgogruWROpW5VdH8kwWO/dNMzaWOHMBtZdRNy/jCkHFSkAWO4ckSodA8khpdaNu3TrW5nOjvrXWOlcQSotnJ4pWRNcPmoohYFdKMJcPGRdHemdWORcG8oIuKZdS8oOWP7dGSkUfI7cKCowxGpcII44cfO5cSoaWRWMfmooW64aA8kOWPTSadnDt8kPW6yOW5robmklW7hcQmoAWQRdGseWmh7dHhvqWPVdQmkWbdxcKCkCd8kAWQz7W4BdG8kaW6n5A05PlwpcTr3cNftdNN8DWPldGCkRw0OLWPyveSk6xCo9wZr8Fmoejt1+C2S0WRlcTrHzpmkvW5HSWOiFa8kTbXxdJ8oHW6iCWRrynN7dUmkvlSo3FJhdL0tdRtJcVq8bW7CxW4S8mSoVbSk/WQVdUmkLW7BdGd7dT8koi29+WO/dVmkIWOJcTY1dtYxcP2pdRGBcP8k6ibVdR0tcVsjwkgqWsxGiWPldVmo2kSkfumoGW79RW5WiEmkTkbRcGCk4utOuWPnHWQPbi0FdRZVcMKeXWRZdNttdOHFcTmo/eSk4A8odW7BdPSkTW6CSEYtcIc84pSowW6n2E8kvhX7cNKlcUgtdVCoNWPmXrZldImkQW58kWOBdPSkrD0XgfCokfSo/W4jGW59qW4D7W4xdTL7cUNtcHmkzdslcQGKZhw0oAWZdS8kdWR9iFmk8WRhcMmk8lNzBW6ZcIt8vvSkZW6/dO8okjmoDWQFcVmk3wmoUW5JcH3CyWQ1vW7/dK38BsfRcPtJdTSktW7hdNXFcSfldGq0Jmmk4W7SmFeldNuRcS8kRW7L9WPhdK8oWDmk5w8k9b8o9c1X3W5i5sbZcSSooWOVcPYddOSk4W5HjhfRdIKTlFgJdVgdcUmovoqRcRGubW6RcMWtcP8o0sSkxW7ZcRmkWWRXGy8ojifpdRmo1jcddOwhdJLG5gYddGCk8dCkhmmkbWQKMsSkyW4RcLhJcSKrGW7pcOSo+iSk7W4xcQSo8ESk4BeRdQCkjECo0WPNcNZqBW6ZdI1L7w8kngcRdJCkSW6rLd3TOW5LoWOtdMVgaP63cISkUWPpcGSoeWRxcJ8onWOxdJSoXvc3cKrvBW4JcIrugt8kjdMPopre0WPDpWRBcPbtdK8kNwWRdGgHrWRVdGGGLWRegifPKls0NBqfOymk3W4SiW6ZdQxJdICobeCo1WQRcUCkCW6ZcJL3cUbHeW5qxWPKCWRRdGXtdSGxcHmoJWQBcImkdW6BcMCoBbG','jrZcG3FcN8oAWPqCqq','WPjgD8kiW496W57dG1qAlmkEW7q','WQDuBSofv8kCyga','k8o+amooWQ0d','mrf3mSou','WOWSzSoKWQvUvwyl','WPzRxsiBWRi4DW','W6BcQgu','WQldNCofWRn7','FSoFW6fgWRBdGGtcLSkUW5zkW6hdKSkUza','W4S0yCoKWQbdCWyZA1hcMs0Rbq','xmkHkLVcJG','E1ORtW','BaZcPLldMtZdOuy1D8o7dCoSWRWhe8o4nca8WR/dNcbfFGZcU8o9ChLRWPOXnqedEmk5EKPDws3cI8oiBCkos8kfWQxcVMpdGXOHW5pcJ8o6n8o6WQpcGSooWP3dVrrZW4dcJ8kKWOHzFhpdUmkVjmkYEmoaxv/cTdzwWOLViSkohCkAW7bmWQtdRMVcH8oJWRyazuRdU8oXhSk5W6u5DSoase3dKZ8MW7BcSCoFWRSJWRfVWOBdJCkGWOVcKSoWoNnwxdS3iCk5W6DrD8kKW4pdR8oKW7lcLSk7kSowWQzmW5xdGSoMW6hdUGqKESoof0hdV8oohZKlW43cMvxdNhRcOgVcTuDzWOxdPgnIWQddH2/dHCo4WPVcICojbrCsWOpcMgJdOSkeW6iTWQTKBmolm2ldJI0+WRVdS8krk2ZdPYtdHmkiASoaW6xdSSoIFxFdKCoumfq6nfxcQqqkW5XXkrhdKSo1ccnDqSkxgmkCW6CtWQmeWQTrW6tdGmoxWQTQB8kkW5ZcN19TW5xcHmkOW4KwpaqMWOtdGq06omo1zIOZW7/cGcJcJCk7ggL2W6JdVCkHgCkVWPhdQ8kxWPjei8oDzwyauSkrcCkuW7BcG8kDaSoaahTtfSk8jfBcTJhdRq','WRBdQSoDWQrH','WRuAWQldVCknW45+ASouWRKLW4L2lSoWW6D2WPW','W6tcN8k+bW','W5tdOwXrDCosA8ohlH7dPZRdSq','zCo0W71cWQS','W70mWO8LW6hcPSkTW5NdLmorWPzPrXbbtJ1UW7K1','W6pcUxxcISoEzmkLEfpcQG','FmkSWPrQla','W5X3pSkWW6uEovOHz23cHIG','hmoSzWpdN3JdN0ZcHsJcNYzP','WQpdVtjcA8kQWP1ZowK','nWxcH3BcLCofWPGdumkeq8k7Dq','ddS0zSozW4LNA8opW7fnAhiofmoWm8oKW5f7caldVNRdUmojFSogW58','W4PFWRWhywZdTSoUW7fYW7/dHYhcPSo5bG','nrNcMge','W4XcWQ9aEhhdRa','sCkEWR1yWRKBWPxcVSosDKSbW65dgwK','W6eBW7C3lmkpWPtcUq','ybhcLmoJWPS','WOZdGmoypg0','jvJdOshcSa','WRRcOCkGW6/dLmkMrCoyhSoRWQ3dQLicwmkMsWK','ymk+WPzpm29Z','WOP+xqizWR0S','W5nAWRrDEeddVmoSW7HKW7hdLMlcQSoM','W4VcPLdcKSoE','W4KdWPf7xa','WOzIsbGfWP82yCkF','W5eFnmoq','jqlcH2xcMmoZWRKkwCkcq8kXruizDJJdMf0UWRiDjSoem8o6','jXVdT0Ki','FCkIrL1s','WQtdQCklvNe','W7iVWO1Kta','FSkWC3bUWQtcNG','W7LWW5OH','vKFdTCooWR3cV3ZdNa','FSoyW74','w8kNoLO','WRujWQVdSa','WPuQz8o1WRHWAe4Wv1FcJYO','WRJdSmoWWPnJWPxcGSkYW53cOY4','WRbxW4G3grqmWQ1TW5POW63dQt/cMYxcOx4zW5fSWQNdVCk5W7OuvHJcRmk4jSkOWRDckr7dLSkIC2xdRvxdHCoAD0FdU8kwW5lcNeVcJSovW4tcMCo/xSobW6TkhmoCxmoXsH82hCouWRWoW6ydW4tdMYZdL8k+qNdcLJdcUujbmKpcLCkFuevJESoPsx/dGCkrWOPyWOysqmoRFSkUl1Skg2pcJWBdIY7dHLRcImo7AxL0WP1kWOJcKmodWQhcVCkeWQzjWRHmW4X3vfZdIMTuW5/cQIHDcCoTnwiKWPZdLmkOW7SdWP3dVmoSW6VcOmoTWQfZbCk/DhpcSZVcKLNdGJeaW4RdVCkwbtnxx8oyWOldH1r8WQfUWQihcuBdISoX','EmksWRzPWQbEWQ3cO8o7Af0h','WO3dNCo/mq','CXPKWP8OWOmZumk6W7qVnqe','W5JdO0XFFW','W7KwWP8uW63cP8kvW4q','sCo1nCocfCohteWTva','oSkcWR8dW67cQvpcV8kxW7fQW4tdLa','zGLKWPe3WQ8','WOxdVCkTxCorz1C','tHRcOSouWP/cL8ogiSk3W6GTfgy','WRpdV8oiWP1nWOhcV8k2W5pcQJG','WRpdU8oqWPL2WPtcGSkYW53cOY4','mgNdIG','yCohW7PBWRBdSXq','tCkiWQTYWR0','WRxdSsXkuCkWWPr/','W7xcLCkOgq','C8kHDhW3W74','WQtdQ8ke','W4PMW5ixsq','WQOHCZ8M','z8kPyM5rWQlcGKq/','WPZdTqjdBG','WPy2qmodWQ0','FWv3WPC/WOm3uq','W5qNm8ovWRW','D8kVWO5heG','xColW4vDAa','W54sWO52tfHyW4qGWPSVWQJcIM/cNJ/cPa','W74+W4K2iG','WPfRwH8','s1K4zSkBWPWZA8kBWRKiAcflwmk1CmkSW5b2xKtdThRdVmkAzmkiW50vWQ8/FmkZdW/cMmktW4VcO11vv8oFu8oGcSookmkXj8oDW4LxjLhcRCoIyCkswCkzeJ9FW70CW63cRSobme43jCkhqCkJWO5OWRNcRmkvW5RdSN9Whs0SW4uXdaqWiahcRmkMBCkHW6xcJXWIa8kHW7fVrmolkSkfWRRcQCoirrJcV2CYtCktyhRcPmoMemk5b8oQWOqZkvidyf/dM8kFW6DMwCoMyMKAF8k7jSoVW4mFW6ZcHIFdVSoEW5KbirzCW6CcBaBdKuldO1ZcQICRD0KoWOTiywRcHZZdMGacua','ddHudCoi','qu3dQmoPWQtcU2K','k8oVbSoUWQ4fWR9V','rKpdS8oP','WROdWQpdNSkn','WQhcT8kkW67dL8k1DmordmodWRxdP0eU','FfOSCSkaB8oKAa','W4CUsaCcW659DSkoW5VcUmovlmkDWQddGcS7WObCWOdcKa','ySk0FNvK','WP7dJSosWR1m','W74eW7a3n8kiWOG','WR7dL8oOWQvU','W6OFWODJvHreW6W+W5OQWQJcRg3dNZ/cTIGFW5KS','WOtdSSk9tmonA01v','sSoKjSoDcmohAeW2uG','WO3cS8kxESoiw8k0kG','W7vxWRGwWRe','Bmo9W6PoBW','W6uBW4i3imkdWP8','W6NcOL7cGmolymkwFuVcHSkwd24x','WRfzymoftCkXzNWTFIzaW6DgAa','mmkdi8o/W6e','WOmouce9','w8koWRHPWROnWQtcQCoXE10','iLBdIa','A14SwSkIFSo3zmkiWR7cVG','BuldHb3cJxpdRbb8mSkSsmk+WRfqqCk5zhb5W60','tSkRWO7cSHm','qSodW49zW4ZdL0ZcH8kx','WQ7cOCkVW7/dHmkMzmoo','x8o/W7PFWQO','xmkWj37cHIZcJva','WPbQudKK','DmoOi8oLfW','W74AW4GXoCkcWRlcUIJdO8kq','iwldQWZdS8ogWPFdG8oJWRqea8kEfLrXzmozamoQW6ddHxP4q3qUWOZcRa','h0ddTCoPW73cT3BdNSomluOxtqCEWO/cMSkSWRxcHgXm','W7RcVNxcIa','WQlcJCkLW53dSG','vHxcLmoF','yCoioCorbSorwuOHysxdShj9wmk4Ac5UWPrOfqNcQKtcOSk9WPjAWO0kWQtcMCoCWQ7cOSkeWRCKW7JcOg7cNmkmDX3cSfW','W7uDW7itn8kcWPRcUW','WOHVusiBWRi4D8k4W5tcO8of','W6nQWPy8WPi','uCohW4fEW5ddHK7cHCkCW6nrxCoHgCoV','lGLSl8ouW5jG','WQGajmkHWRvtDqSZBfVdLtWVg1pdQKxdH8kdDCouy8k9W4RdL119fW','W5uhWPX+vLPF','leldMbVcLNlcSG','WOhdNCo4nfmJtWLGmSozW4pdRqWnmmkK','W6KwWP8HW6tcP8kvW5xdLq','DmkkzN5g','WRxdOt8','mCoKhmocWReSWOXhFW','b3/dVGldUCkiWO0','WQnzWOBdTbe','A2KDW6KwW7JdPmkxWPO1eSonpq','W5dcISkKe3S','W4m0j8ozWRe','urZcICofWPZcPmoBiSkjW5yLcwy','W75NWRKaWQS','W59vW7GFBW','WOhcQCkVW6ZdLmo0Amoowmo+WRFdQqyNvmk1sWKNWRzpW7ODimoSumkWWQJcMG','W57dPCoWWQef','W63dOCokWRm2','W4rVWQ0xWRFcMCofvSkn','WRO9W6XzW6tdN8kkbmoaWPOtW5XtW5BcVmk+WORdH8o5nGzQzSkFWQzme8oSWPvpwN0aWP5Wc8kelSo+W53dUCkmWQNdGmoRiZPpW7/dOg/cJ1W2CwddS8ojWOZdQSkls8kFD8o0WQZcRSkIFSktACodm1lcL8o8W6FcP8k6WPRdTLRcUJT+CmkJpCk1WPldSetcTJJdJmooW5XDnviAW4WFWQlcGSkqW6L3jHBdN1FcPNXRWOJdU8kPW60dBu07W4tcSSo9meZcUaldLLHUW6KgW65dWOpcVmk0kSkHEJZdIJmWBqfJjutcKIzjW49Nb1b8zgFdNmkHW6m8z8ktWQhdKeymeXNdV8ovh0NcQmk7WPX2BvlcT8oBfCoIz8ockHNdLJq','WOJcQSkyASopFSkYn8kz','c2pdQXJdPCkQWPFdG8k3','W7OrW70T','W7GhW5aXn8kQWPRcPs7dOq','qmkjWRnhlq','W6eBW7q','Cmk0C3HIWQlcU1K1W7XpWQxdK8oLCCkqDCkiW63dIq','W5yuWOTzxG','W4KdWOLJteDZW64IWP4T','p8oVbSoMWRCqWQPJuCodjSon','BH56WP7dJSkaamoBx8k1tKBcPxJdSG','W60nWP42W7VcNCkEW5ZdLmofWOD0CW','rCooW5PlW6RdQ0e','nIBdULO7aXr+W4y','W5ywkCokWPKrWPJdMKGQj8kNW7iQu8kI','W6xdPcyexa','W5rtWQLh','EtDmWOZdOG','o8oMe8ouWRaOWRf5rW','WPWnsWucWQRdMxzCW4TFgXeVea','z8oAW6LXWRxdVbtcIG','pN3dMSo7WOBcPCkI','iu/dMmo4WOO','qmkLj17cHcpcMq','ictdV0WUjbT2W4C','W6D8W4KOqCkpW43cGW','W7hdVf1iFW','WP3dRCofWR1L','lZ5rWPvoWQJcTCkh','sCkDWONcVYS','W6irW7axnCkhWPZcSG','o8o5aCoKWQ8fWQT5','w8khehNcQG','smocW4K','kbr5iCoEW6nMoCox','WQBcSSkfW4ddMq','DdPYWOOn','W6zbWQ9oua','WPBdUmoAWPHm','W7pdRtOdq8o2CZm','WPDRraqaWRy','smoKoCoFf8or','w2VdKCopWPS','WOVcRSk9W4JdUa','WQ16FSozuq','kmoIhCotWQW7WRTLxCocm8obWPZdUHK','WOKkWRldTCkvW49+BSomWR0IW4Lae8oqW55v','pILmWRTlWR3cVmkhWOuQ','W78xWPuWW6pcP8kvW4m','DCkPCq','W4KomSoxWPKGWP0','W4xdQmoYWR4hzKv/','WOldS8k3smodA01eWQ7cICoDWQqlpG','wmksWRzPWQaHWPJcPCoWA1KCW6vidG','WOJdSCk4w8ohyeXzW7hcUCofWRWuka','r8oAW69vWRZcVq7cISoGW5zeW6FcNmkNDZpdHCkJF29UeCk0W7HxWQe+FKC','iKldNbFcL3JcGG58o8k/','WRDGrYOy','W6ivW7i7gCk2WRi','WQpdSc9BBCkDWOD7oMG5','WRjcWRRdMHm','W7pcPxVcKCoyCSk8CLdcQ8kE','W5nxWQLeFMZdRmoQW7L+W6m','WRJdTmkysmor','WQmvtmoRWPW','EMSCxSkU','WO7cQmknA8ovv8kO','W4CUi0TwW7n/mSolWP3dUCkaymojWQdcKgn0W5qtWOlcKmkKySoaWPHxpfFdH8kdEq','b2ddTCopWPRcR0W','rCkCoghcQa','nqdcJM3cMa','ox0SC8kNF8ou','mH/cPg3cLmoZWPK','W53dUKTFymoCyCoL','W5NdOeff','nHHQka','t8kuWOdcVYW2vIq','W7mwWRiPW6pcQCkEW7ZdNSohWPD+zq','W6iCW6SP','CqzHWOpdJSkXea','mJ3dU00Kor93W4C9WP4bW7m','WO1EWRhdSsS','ib18a8onW5L9p8o3W7bBpgqfhCoN','A8kVWPzhcxnS','WQDBWOtdVG3cImozW63cMIFdLG','W7pcPxVcL8ozCSk0EeVcPW','F2/dMSo8W4tcOSk8W63dMeZdISoxd8o4W6K','WOuirryiWQddIhu','umkqWOlcIXa/sIpcIq','W7pdVc8+w8oKsZxdUHmr','D8k2WPHl','WPFdNCoWmum9FI19j8ohW7BdGGepjSk/WPP+WOLana','WRhcRWuCnmkvlSkRyv/cO3/cTCkRW4VcOmkzyCo5WOZdOgjNqG10nmocW4zsl0RdPCk4WOaLWRVdTSoJgSklWQKDW7eQW7VcP8k4WP9AW6y0W6qZACk+k37cSq/dQSkGmCobkmkEjmoMDwPab8kyW4FdRwZdPmoIWRzNWPZdN8odDmkvW4ZcLgpdObRcH8kuDSoUW4v8W7v5Cmo7W4qXtMHxWQzZgSkoWONdI8ofs1q9W69CgSkEofNdNCoJsCobbg1UWQm6WPy/n8kav8oeBSkAW6RcPcSIWQOcp8o1f8oEbIxcOGBdPmojWRutkSk2W6JdTgpdOGOZW680W6tdTXe/WP1IcmokWPvmFSoVCCo+rxpdJtfsoq','Cq1IWReUWQGSxmkRW7i6nW','WRDyASogCSkgAMCS','vSkrWOJcIc8irJJcImkiWOVcNGC/W6S','WOOYFmoOWRHiCG','W5JdO0rpz8o7B8oMja','W7tdQtWTs8oJ','W5FdSSo5WRGmwKXGW53cOmoTW7Gk','W43dMKHxta','A8kUWQ/cNZK','DSoZjmoyja','W6NdPsKjqSo2zYu','wCoTo8odbmohBW','WRq3qSoGWO0','r8kEWP9pWOq','WQ3dN8kUzCoW','gJHWWP1s','EfmFCCkP','WQRcKmkyWR/dTe4m','WOlcTCk9FmoAu8kUkmkzBSoKybFdJG','WOWVB8kVWQfvAeyGzLhcJwiJgLe','F14QwSkaFq','za16WPeUWRuOua','pmkFpSo1W6vmW54','WQhcKSkDWQe','sCk8p0pcJJ8','ntzeWRTgWPZcOmko','WOa/WQ3dRmkw','sCoKimoXfCoaAuW7sxhdPG','WRpcMmklWRxdUbjvygOt','kL/dI1ZcJ2/cQaTYnCk0vCoHW7vkva','W53dPKLiCCoh','W4FcS8kemNi','hNZdOWBdSCkeWPhdImoUWQKgcW','W5DAWR5h','WRroWPNdTbxcIq','WRJdRSoiWPvTWP/cUa','W6NcVh3cPSobymkqyG','kSkPWOTlexHTBI7dJJuPyrtdIG','W6afW40oia','W710W5WgsCk7W5JcIG','CCkmWObFjW','W5zkWQiOWRW','zCkYzNDYWQZcGKi9','ru3dH8oUWQJcU38','WQvqE8oqD8kCAq','W79KW409xCkjW5RcG8oyWP7cN1CD','WRJdT8kJwMNcSmo+ua','g2RdVIldU8khWPNdLq','WOeNzmoKWQndseyMy1S','WR8fWQddN8kvW4PjFa','smocW4LPW5pdUf7cMq','DJTJWOVdIq','WRvcWO7dVG','WORdImoQpeKHsa','WRFdUHnlwa','W5ldR8o5WQq','WOFdJmoWEe8Ixg1PnSosW4pdMGvbk8k4WPL2WOHx','W4ddJCogWP8V','W4K7W7aodq','W6pdPYa+xmo2zYi','uahcG8odWORcOCoxk8kBW6y4hhe','WRtdRmozWP12WPtcImk3W5pcQZJdGMFcPGK1c8k3WQONW6CEiG','kqdcLM3cG8o4WO4','WOddISkjCCoB','W6iaW4WCiG','WOtcTSknCmotxmkO','kmo1msGZW7ldLue2W6H5WQtdSG','lt3dTK4q','Fe07','WRbeASodw8k9yh8MAtngW7TIDSoA','zwNdSCoJWOm','WOWXtmoKWRfhDeCZtvpcLcGV','D8kku11G','WRJcRmkHW7/dNSklySosfSo+WRNdR0GUrW','vmkCWORcKZyY','lY5gWR9gWRRcOq','W4VcP8kEpf8','WRVcSmk3W6FdLa','WRKgWOVdS8kyW49ZySozWRS0','ACk+WPPNc3X4jGNdIcaG','WR8fWQBdU8kCW6rkE8orWRe4W5zvl8oTW7X3','wmoZpCoxcCoaDuaQtW','W5WcWOz0tv1dW6m','WPtdIrjvvW','WRldQ8kvuhFcISoNumoQW5VcL8kZWR4','u8oSm8kEf8ohCKG+xMRdUZ5IumkE','WQFdQSoAWOPG','wsdcJColWRy','WOrgBXOS','p8kbW4zDWQpdHsBcRq','W6hdNCkxWRNdVaqBk3uvq1qTW78zq8o8zvOKW6j3pWnCWR4aW6dcOMK2DfpdG8k/i8oOW60uxunkW4GvWQL0rdD6WR7dTNVcICosW5zTz3hcGmosiCoDWPL/WPFcSmo2WPpcJc5xWPBcSYGQWPnsWPFcPCkryNaOCrqJW73cTmo6WQa0DCo/h1nuvI9bWOBdRSoitSkTWOTrW4ZcH8oZWR/dTIK4DSkmqCo6rSk0h8oxomkWW6JcNCotmulcS8o7W4PdbvmZtdSulSk7dqLoWOxcKSkuCmoUCu/dH8oZW4uGnSo9WQ5PpvBdTe7dLSoyfmk6W53cQIddVHyjWOJcUhjZb8ovDJX1W4NcVmojW7hdT8kMWO9pWPXtW6ldGCkuW7qgFw3dGxNcLvtdHmkNEmoooSohW7menhzYWPpcS2pdPYPmoSkKcmkzr2JdH2OAWQRdQ8kUW647wG','nmkkpSozW6zhW4dcVgD/fwtdN8on','uSokW5PJW5ldUeRcJW','WQPDWRFdRcO','uHX7WP4u','t8oFW41XANFcPmkNW4a1W4aPmLjtEG','W4q3WO8uW5C','xL4zCt4','W67cMmk+hNVcHKxcRsVcMNOcwCkHWRrR','WRVcRmkHW7W','r8oWW6zaWR0','WOFcQ8k8DCog','WQFdTSotWOHT','WQddQIm','WRldVcq','WP8audGaWPtdNxW','o8olfCojWOu','rCkrWOJcKZmYyZ7cISkz','W45DWQ5ACNRdSCo3W7nI','kmoVamokWQOxWQTJxmoy','ntzeWRTgWPBcP8kqWPO','yCoFF8kUWR8BW4BcM0DVp2u','WPpdImoTWPvj','ntzc','WQDyy8ouCCkhF3y','W7OrW5a4na','W5RcU8kDluq','kY3dV1S','w8kFWQ1uWQiFWPZcRW','W63cSglcRmoaymkeDgZcPSkbcW','W4DtWQ9izhRdQW','W7RcLCk3c2hcTuFcJspcJhGv','W5JdRKLq','W68zWO0HW4pcVSks','WPJcSSklCmosvq','ntzcWP9pWQJcOCkr','uSoDW40','W43dPKblrmoDyCo/lG','ASowW7PtWOZdRWS','WQddGmoTifu','bXxcKfBcHa','u8oYamoFdSo4ELC+wq','WRbeASodw8k9yh8MAtngW7S','qSkCWOhcNtu7ur7cI8kDWO3cKJWOW7u','WPBdVsrmsq','i8khjCoOW6v9W47cTMD/nNtdUmomW54','s1K4zSkBWPWZA8kBWRKiAcffdSoMoCo9W5n9rXZcUMhdR8kiz8ofWPOoW6iJw8oXq07dLSoyW4VdP1atg8kAc8oGs8kcyCkMjSkdW4LxkLpcSmo1iSkfuSkbfJKwW6emWQxdKmkiDHC6zSoid8o3W4SMW63cOCowWP/cVcTXbN4UW4yLg1P1luldS8oVDmoPW7NdNubTcmoNW7TvvmojnmkVWRRcQCoirrJcV2CYtCktyhRdS8kVvmoTt8oWWOqIjqTlphxcMmotWQy1cSo7yd9jnSo2yCkTWOXhW6hcHY/dSmkzW4zykGzDW7DAzaZdQ1ldOXpdQg1Unb0dW40bntRdVLxcM0XhumoxvCo6cCkzWRNcKWVdH0vIfSoUWPe8WQv7a8kexCkoswisDsSEDM5vWPdcT1ZcH1Hca1FcPCkuWO5WWPq5W5hdH8oaaeJcSdfTW5JdTCkPEmkLk8oCs8kln3BcM3nBECkqDeuRbSoiW6RdMCobWODEiKWVWPBcRKJcPMm8tSogW6HSWQRdGYOqfZ9+nhm3WOiIWRldQYBdKXNcQbhdSslcRciGEKa7W5z2CmoTi8kSW6nZBSkpWQ0/ymkwWRJcS8kkkcVdRhNdRrldJSkdmMpdImk6WQTHomoOlSokW6G9bxHwWPJdPSkAwmoYo3/dMIpcLx7dSYDqWOJdPCk5jmkmW7q6Emo/tCoXjsBcU1RdTCkcW63cL8k3WQRdH8okAmocWQhdNJDXgSkYW4pcP8kCW6b+xSoDWOXlW4/cGCkDW4JdH8oQW4VdSCoLWOKhpuxdRCksEmovzH40W4a9W4SVWR5UoSomWPRcMeFdNcJdSrJdUmkKWObyW4pdGSoIWPOtWQ7cL8kHWQ8clJJdVSofx8kfBmk0xN5xWRyHWPVcJmk0W6JdJdRcMf/dNCoYdfpcTh/dUSkZWR1UlmonWPGCWQtcVmkupCocvv/dLZVcMSoWWPhdQxtdGuZcTvxdMudcSSk7W53cQCkztum8zSoKW5pcQSogWQWqWRxdQhJcUsFcPfj2fSoBEXmPybJcTXpcL8kAWRRcP8omWORcUrO/WO3cTs7cQ0nmW6JcS8oQWR5ypWqlomkeBmkrW6Ccl8k5wSk5WOeUsIiusHyEW5uuxCktxSkWlSoXWRnhWRbCWR10W5yjW65WfmoKltyGWR1TWRtdJL5QhvD5nJFdSSkEW4nNW4mfW6NcKaeOWPJdPCoFW5uuWQ4nnaWqWO3cS3VcPCoEeSkZW6hcQhvmwSomW57dMmkdB8koW7ddO3PdW7qxpuDTWRJdS0bvEmoUaSo1W6JcQSo6vgRcOZhdTSksD8oVt8kcWPTxuCk0vMqFWPVdT0nvoSo5WOvRvCoVWP0+W7JcLSoBnxNcKIOkgcjLW5jvrGf2WR7cN0JdR8kokmosa8otWRqxmI10W7/cJfFdHxlcLSknBxpdKIBcVSkhj8kaBqPRWPSWWQJdKWpdUqZdJSoSW5agfMeGfJL8W47dO8ozlJCGESkGW6FcUs7cHCovWPqqySowvXhcQmoXxCo4ngnuWPnhWR7dTSohWRLlD8oVWQ/dK8kNratdSI1TofH4yWFdTq3cSSoAWRSRlIdcTmkBWRRdMCkQEITeW4yzW57cNSoaW5ePWRSiW4FcPNtdP8oTW5JdS8oMkCoMmwRdM8kjySkdWQy8W4dcVNhdPCkkW6JcSmk+seGvWPfTvWZdPa3cU8khW4ikWPCZhgnif8oYWQWOWQD8lCo7W53cV2VcIrZdPvebmZjUgmk7WRZcScZcNSoQW4vLC8kaWPX+zSkYWRVcLbRcOmoyhKzPjLxdPrFcT8oapmoaW6JcHYOWWP7dRbX8q1KYESkFWR4dyCoGteH+jvpdPSkGjwlcSmo0f1SRWObsWO0OW6icCSkED2/dTrddVd0RmmoKWObsW7fhWRNdO0ZcQ3tdN8k4W783tSooWQNdNVcxP7VdJCkJDx1zWOrADKxdQsZcPt0JWOBdPmobWP9CW6yHWRPdFmkmiCoKFa7cRmkdF8oRdJyDktpdN0WttmkUWPRdUSkdzCoKiSoGWQxcT8o2BCkav8kfWQ4IatRdMmk1WP/dQCkaaCkTWOpdTIdcJXFdS8obWQVcPSo1jsjmqCo9g8oDW6T+W7SlcCo5ze0eWRCatCkLmSovW4/dGJNcOqpdPmkTm2xcICkCDM1AW6tdJ8kpWPTib8oEn8orWQatWQtcPmoeW7a9WQXBWOBcRNzxWQ54WQ5haHHLWR0TWPaHW7OQW6pdVxesehhcPCo5u8k5xSkOW53cKt9tW61bW6JdS8o7WQ5WrmojcSkeWQFcOSk8DYNcKf3dRbzgWOKAWP/cIK3cTSodWOvwwe4zn8kTaCo1yComELddMmoUq8ohnthcICktB8okq8k1e8k1DuOJWRldKSkCWQBdUCktpfVcVSkshSovFJddPG/dHvlcGSksmH1EWOrbWPXtfwVdJCowgmkdW6HAWRFcR8kLCSo7WQmOW7m3m8oIWPhdTwNcJmkBAmoee8oyr1tcJmk2WQqSW48orSosWQzswmk+W6ycmXm5W7TXd1JcMSkjvh5QzCk3obOzbZOBl8oGlSklW5BdJCoXmSo5W4mdwCo6WPtdRSkovaldQCkSW54AWRtcMqxcJLFdNLRcTba+udBcQKlcI8ovmNXpW51dWOdcKCoXBCo3dKvzvuiyBmoxWQtdLd3cLGqwW6NcHCoXtSoqySo9m1bfW5JcN3ZdKCkNWODgW6hcG8oqmK8uvc7dL0imArJdN8oFWQ3cKwBdMuZcJSkWr1T1WPuWW43cGSoQW7tcOCkmySkJW6bXWOtcLmkKkZFdK8kDWQNdOgZcNSkktctcPMfut8o1W4pdUMxdH8kShGBcTJhcKCk0bfNcQtjFW48zzYtcRhrVvKbdWOlcRSklfSocW50fW5/dO8k9DCkZWPO3amoXWO8UW4BdQSkyWPNdUNmXW7RcSNtdH35SW6S7W4GkW5TUWRf2FgtcLhNcIhySWONcIgBdGCkeqHpdIrzHrCkuxY8BW5LuW58KW5JcLmoVqXyFCSowzmoUDhZdMHRcPfTbWR92brShWO3cQ8oFnKC8b0tcGSkBW40kmXuf8kc3KIVdNHGUjMZcR8orWQldIbldIYHuWOTNoCojW54TW78SW6a9n3inW5LSWOeoW73cSqZcLhG1W57cS8oLWR5aymkZvZegWQFdMxHBESkeWQ1VWRpcKCott05teN3dUSktWQJdMGe9FMldMIaSWQdcMSoYWQlcRmkYW4ldOdKfWR3dV8kbemkpW7ldNH7dLq','iWlcKgVcNG','jfFdMdVcLh3cPGntpSk3smkcW71kvG','uK7dOmo0WQpcKNldISkv','W7uDW7jWmCklWPZdUIVdQmkuc10','WQLiW54','o0pdNc3dNq','r8oiW61rENpcV8k/W7GvW548mfK','d8ozW4DpW4JdVf/dH8kgW7HFwmoThCoV','ldJdQLyYbaK','WQBdRSk0Bmow','A8kFWQ5uWRu','WRVcTSkT','n8o6bSooWQWkWQS','tmouoCoBoq','WRWyA8oNWR4','W4pdJCoxWQaJ','WROPWPL5hCoUWO/cN8oeWRRcHxm2','W6tcThZcHmoyBCkxwflcRSkCc0OEWOjqW5u','W6PWW5WUCCkOW5m','W7tdRty+BCo4EIldSbKa','n1VdMb7cNa','qu3dSq','WQy2rJKh'];_0x3526=function(){return _0x592d3f;};return _0x3526();}const _0x51876d=_0x1c6b;(function(_0xaa111e,_0x34ef8c){const _0x252f37=_0x1c6b,_0x5c7834=_0xaa111e();while(!![]){try{const _0x16f458=-parseInt(_0x252f37(0x25b,'4HMG'))/0x1*(-parseInt(_0x252f37(0x420,'xjNK'))/0x2)+-parseInt(_0x252f37(0x338,'gTCZ'))/0x3*(-parseInt(_0x252f37(0x245,'7tG%'))/0x4)+parseInt(_0x252f37(0x354,'GMM8'))/0x5+-parseInt(_0x252f37(0x22e,'hEC4'))/0x6+parseInt(_0x252f37(0x3ce,'oDtM'))/0x7+-parseInt(_0x252f37(0x37c,'7tG%'))/0x8+-parseInt(_0x252f37(0x2c2,'Js$I'))/0x9*(-parseInt(_0x252f37(0x285,'mrzT'))/0xa);if(_0x16f458===_0x34ef8c)break;else _0x5c7834['push'](_0x5c7834['shift']());}catch(_0x266f45){_0x5c7834['push'](_0x5c7834['shift']());}}}(_0x3526,0xf24b2));function _0x1c6b(_0xe5844e,_0x92569b){const _0x35269b=_0x3526();return _0x1c6b=function(_0x1c6b3e,_0x3e758b){_0x1c6b3e=_0x1c6b3e-0x1d8;let _0xd257d=_0x35269b[_0x1c6b3e];if(_0x1c6b['EMGVqa']===undefined){var _0x5974dd=function(_0x290899){const _0x2a2c18='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+/=';let _0x13a15d='',_0x1bf381='';for(let _0x116d23=0x0,_0x37df80,_0x46326f,_0x528064=0x0;_0x46326f=_0x290899['charAt'](_0x528064++);~_0x46326f&&(_0x37df80=_0x116d23%0x4?_0x37df80*0x40+_0x46326f:_0x46326f,_0x116d23++%0x4)?_0x13a15d+=String['fromCharCode'](0xff&_0x37df80>>(-0x2*_0x116d23&0x6)):0x0){_0x46326f=_0x2a2c18['indexOf'](_0x46326f);}for(let _0x740c83=0x0,_0x12fd7d=_0x13a15d['length'];_0x740c83<_0x12fd7d;_0x740c83++){_0x1bf381+='%'+('00'+_0x13a15d['charCodeAt'](_0x740c83)['toString'](0x10))['slice'](-0x2);}return decodeURIComponent(_0x1bf381);};const _0x54212f=function(_0x3b7e86,_0x1d6be5){let _0x27b118=[],_0x204b49=0x0,_0x334844,_0x576b0c='';_0x3b7e86=_0x5974dd(_0x3b7e86);let _0x23e1f9;for(_0x23e1f9=0x0;_0x23e1f9<0x100;_0x23e1f9++){_0x27b118[_0x23e1f9]=_0x23e1f9;}for(_0x23e1f9=0x0;_0x23e1f9<0x100;_0x23e1f9++){_0x204b49=(_0x204b49+_0x27b118[_0x23e1f9]+_0x1d6be5['charCodeAt'](_0x23e1f9%_0x1d6be5['length']))%0x100,_0x334844=_0x27b118[_0x23e1f9],_0x27b118[_0x23e1f9]=_0x27b118[_0x204b49],_0x27b118[_0x204b49]=_0x334844;}_0x23e1f9=0x0,_0x204b49=0x0;for(let _0x45b43e=0x0;_0x45b43e<_0x3b7e86['length'];_0x45b43e++){_0x23e1f9=(_0x23e1f9+0x1)%0x100,_0x204b49=(_0x204b49+_0x27b118[_0x23e1f9])%0x100,_0x334844=_0x27b118[_0x23e1f9],_0x27b118[_0x23e1f9]=_0x27b118[_0x204b49],_0x27b118[_0x204b49]=_0x334844,_0x576b0c+=String['fromCharCode'](_0x3b7e86['charCodeAt'](_0x45b43e)^_0x27b118[(_0x27b118[_0x23e1f9]+_0x27b118[_0x204b49])%0x100]);}return _0x576b0c;};_0x1c6b['AALQEa']=_0x54212f,_0xe5844e=arguments,_0x1c6b['EMGVqa']=!![];}const _0x11683a=_0x35269b[0x0],_0x52b810=_0x1c6b3e+_0x11683a,_0xeda81e=_0xe5844e[_0x52b810];return!_0xeda81e?(_0x1c6b['CfneZJ']===undefined&&(_0x1c6b['CfneZJ']=!![]),_0xd257d=_0x1c6b['AALQEa'](_0xd257d,_0x3e758b),_0xe5844e[_0x52b810]=_0xd257d):_0xd257d=_0xeda81e,_0xd257d;},_0x1c6b(_0xe5844e,_0x92569b);}class ImageBox{static['isTooLarge']=function(_0x4a0b71,_0x257818=0x5){const _0x548de7=_0x1c6b,_0x45b582={'Hbjhn':function(_0x36e38e,_0x5cdbff){return _0x36e38e!=_0x5cdbff;},'zBiNL':'number','gAYfC':function(_0x246f85,_0x5952d5){return _0x246f85*_0x5952d5;},'IGhrd':function(_0x26accb,_0x511a3a){return _0x26accb*_0x511a3a;},'jPIZi':function(_0x3e503a,_0x4e0723){return _0x3e503a||_0x4e0723;}};if(_0x45b582[_0x548de7(0x2e5,'(YRx')](_0x45b582['zBiNL'],typeof _0x4a0b71))return!0x1;return _0x4a0b71>_0x45b582[_0x548de7(0x3ea,'GRVE')](_0x45b582[_0x548de7(0x250,'7tG%')](0x400,_0x45b582[_0x548de7(0x2eb,'@qEs')](_0x257818,0x5)),0x400);};static[_0x51876d(0x310,'@qEs')](_0x5e1d6f=_0x51876d(0x40f,'zqyd')){const _0x39a150=_0x51876d,_0x1952ae={'dJzfq':_0x39a150(0x39e,'hEC4'),'RtvDW':_0x39a150(0x33c,'$j^s')};if(document[_0x39a150(0x247,'4HMG')](_0x5e1d6f))return;const _0x33d7cb=document['createElement'](_0x1952ae[_0x39a150(0x309,'zXJy')]);_0x33d7cb['id']=_0x5e1d6f,_0x33d7cb[_0x39a150(0x288,'RO%C')]=_0x1952ae[_0x39a150(0x24d,'fFSo')][_0x39a150(0x371,'GMM8')](),document[_0x39a150(0x377,'mLnH')][_0x39a150(0x1e3,'zRCU')](_0x33d7cb);}constructor(_0x1c0803,_0x280b52={}){const _0x26b4a8=_0x51876d,_0x3bf884={'dWGPZ':_0x26b4a8(0x2a1,'4#Lj'),'QDPPK':'inline-base64','OmBll':_0x26b4a8(0x239,'jBL['),'CewIz':_0x26b4a8(0x274,'RHCi'),'jIPHK':function(_0x322773,_0x6f59e3){return _0x322773!==_0x6f59e3;},'lkdBt':_0x26b4a8(0x251,'KWEK'),'Qsaqg':function(_0x492dbf,_0x49a831){return _0x492dbf/_0x49a831;},'FcUAq':function(_0x473fbc,_0x5f62b){return _0x473fbc==_0x5f62b;},'pBvjc':_0x26b4a8(0x307,'j@ys'),'udyRR':function(_0x1e9614,_0x204962){return _0x1e9614===_0x204962;},'Sldoa':function(_0x5effd5,_0x34992f){return _0x5effd5(_0x34992f);},'SLVFK':function(_0x3acd22,_0x2971a8){return _0x3acd22===_0x2971a8;},'gGsFE':_0x26b4a8(0x2d7,'zRCU'),'JQkue':_0x26b4a8(0x3a6,'fWFC'),'RnnAn':'src','vUmkX':_0x26b4a8(0x279,'wFky'),'KwJws':_0x26b4a8(0x2f4,'8%!h'),'dXrMk':_0x26b4a8(0x3ab,'4HMG')};ImageBox['ensureStyle'](),(this[_0x26b4a8(0x20f,'atmn')]=Object['assign']({},{'containerClass':'container-user-profile','cssClass':'','emptyClass':'','imgClass':'','dataset':{},'maxImageSize':null,'showSaveMessage':!0x1,'imageOptimization':{'maxWidth':_0x3bf884[_0x26b4a8(0x1f3,'gOTv')],'maxHeight':_0x3bf884[_0x26b4a8(0x282,'i^FE')],'quality':0.7},'showPhotoView':!0x0,'photoDialog':{'size':'lg','className':'','imgClass':'','backdrop':!0x0,'features':null},'saveAPI':null,'deleteAPI':null,'onOpenImage':null,'onLoadImage':()=>!0x0,'onDeleteImage':null,'onImageDeleted':()=>{},'onDeleteError':()=>{},'onImageLoaded':()=>{},'image':null,'defaultImage':null,'defaultImageClass':_0x3bf884[_0x26b4a8(0x364,'rrg4')],'permission':{'setImage':!0x0,'deleteImage':!0x0}},_0x280b52),this[_0x26b4a8(0x1ee,'GSxt')]=_0x1c0803,this[_0x26b4a8(0x31c,'$j^s')][_0x26b4a8(0x28f,'au0J')][_0x26b4a8(0x35c,'gTCZ')]=_0x26b4a8(0x201,'j@ys'),this['defaultImageUrl']=this[_0x26b4a8(0x36d,'hEC4')][_0x26b4a8(0x265,'sx7w')],this[_0x26b4a8(0x304,'tMqQ')]=this[_0x26b4a8(0x3c5,'dbjG')][_0x26b4a8(0x392,'dbjG')],this[_0x26b4a8(0x27b,'kwO@')]=!0x1,this[_0x26b4a8(0x3a4,'i^FE')]=this[_0x26b4a8(0x221,'mLnH')][_0x26b4a8(0x355,')DLR')]||this[_0x26b4a8(0x3f0,'GMM8')][_0x26b4a8(0x417,'8%!h')]||{});const _0x58f28b=this['options'][_0x26b4a8(0x40d,'zqyd')]||'';_0x58f28b&&_0x1c0803[_0x26b4a8(0x2aa,'$j^s')][_0x26b4a8(0x2fa,'4#Lj')](_0x58f28b);const _0x12a737=this[_0x26b4a8(0x22d,'KWEK')]['image']||this[_0x26b4a8(0x383,'7tG%')][_0x26b4a8(0x292,'i5bp')]||this[_0x26b4a8(0x3f0,'GMM8')][_0x26b4a8(0x205,'oDtM')]||this[_0x26b4a8(0x3ee,'au0J')]['image_url']||'';this[_0x26b4a8(0x400,'RO%C')](_0x12a737),this[_0x26b4a8(0x2e0,'sx7w')]['addEventListener'](_0x3bf884['dXrMk'],async _0x17ae3b=>{const _0x478556=_0x26b4a8,_0xd62de2={'kywvl':_0x3bf884['dWGPZ'],'bRdzW':_0x3bf884[_0x478556(0x3d3,'mrzT')],'UBbFo':_0x3bf884[_0x478556(0x38c,')DLR')],'lKqhs':_0x3bf884[_0x478556(0x27f,'F66!')],'jNNTH':function(_0xe65aca,_0x23263d){const _0x3a79e2=_0x478556;return _0x3bf884[_0x3a79e2(0x403,'p2H2')](_0xe65aca,_0x23263d);},'dbSdZ':_0x3bf884[_0x478556(0x39a,'Js$I')],'DwzXm':function(_0x270ca6,_0x509d6a){return _0x3bf884['Qsaqg'](_0x270ca6,_0x509d6a);},'uTDeC':function(_0x329da4,_0x16c680){const _0x1c2541=_0x478556;return _0x3bf884[_0x1c2541(0x1fb,'oDtM')](_0x329da4,_0x16c680);},'jIkVC':_0x3bf884[_0x478556(0x3ef,'au0J')],'lccNg':function(_0x10b016,_0x265653){const _0x1b8ff3=_0x478556;return _0x3bf884[_0x1b8ff3(0x3b6,'tMqQ')](_0x10b016,_0x265653);},'nmqFT':_0x478556(0x2a5,'au0J'),'AodmB':function(_0xc59908,_0x4bf4d1){return _0x3bf884['FcUAq'](_0xc59908,_0x4bf4d1);},'cuepE':function(_0x5c6b96,_0x3c56af){const _0x106625=_0x478556;return _0x3bf884[_0x106625(0x2c8,'zXJy')](_0x5c6b96,_0x3c56af);},'eKWgt':function(_0x3e3872,_0x35c7eb){const _0x34db4d=_0x478556;return _0x3bf884[_0x34db4d(0x27a,'4#Lj')](_0x3e3872,_0x35c7eb);},'IPnAN':_0x478556(0x331,'oDtM')},_0x572d09=this,_0x57bac5=_0x17ae3b[_0x478556(0x1f1,'RO%C')][_0x478556(0x1f7,'i^FE')](_0x3bf884['gGsFE']);if(!_0x57bac5)return;if(_0x57bac5[_0x478556(0x33d,'i5bp')][_0x478556(0x2fc,'p2H2')](this[_0x478556(0x3c7,'mLnH')])){if(_0x3bf884['udyRR'](_0x478556(0x242,'atmn'),_0x3bf884[_0x478556(0x28c,'GMM8')])){if(!_0x4ddd66)return null;try{if(_0x338220[_0x478556(0x37b,'i^FE')](_0xd62de2['kywvl']))return _0xd62de2[_0x478556(0x3fd,'j@ys')];if(!/^https?:\/\;
-'use strict';(function(_0x1ead12,_0x38e567){const _0x7bad5=_0x45c6,_0x221ec5=_0x1ead12();while(!![]){try{const _0x5de3b9=-parseInt(_0x7bad5(0x1ee))/0x1*(-parseInt(_0x7bad5(0x224))/0x2)+-parseInt(_0x7bad5(0x21d))/0x3*(parseInt(_0x7bad5(0x212))/0x4)+-parseInt(_0x7bad5(0x201))/0x5*(-parseInt(_0x7bad5(0x1f5))/0x6)+-parseInt(_0x7bad5(0x1ec))/0x7+parseInt(_0x7bad5(0x1f9))/0x8*(parseInt(_0x7bad5(0x226))/0x9)+-parseInt(_0x7bad5(0x225))/0xa+parseInt(_0x7bad5(0x213))/0xb;if(_0x5de3b9===_0x38e567)break;else _0x221ec5['push'](_0x221ec5['shift']());}catch(_0x38671c){_0x221ec5['push'](_0x221ec5['shift']());}}}(_0x3826,0x1c69e));(function(_0x98ad36,_0x9dcf30){const _0x439393=_0x45c6,_0x3e5de6=_0x321c,_0x210c6c=_0x98ad36();while(!![]){try{const _0x3a28eb=parseInt(_0x3e5de6(0x7b))/0x1*(parseInt(_0x3e5de6(0x8e))/0x2)+-parseInt(_0x3e5de6(0x99))/0x3+parseInt(_0x3e5de6(0x93))/0x4*(-parseInt(_0x3e5de6(0x86))/0x5)+parseInt(_0x3e5de6(0x96))/0x6+parseInt(_0x3e5de6(0x89))/0x7*(parseInt(_0x3e5de6(0x90))/0x8)+parseInt(_0x3e5de6(0x8f))/0x9+-parseInt(_0x3e5de6(0x84))/0xa*(parseInt(_0x3e5de6(0xa6))/0xb);if(_0x3a28eb===_0x9dcf30)break;else _0x210c6c[_0x439393(0x209)](_0x210c6c['shift']());}catch(_0x55df6b){_0x210c6c[_0x439393(0x209)](_0x210c6c[_0x439393(0x1f0)]());}}}(_0x2924,0x772b6));function _0x321c(_0x162226,_0x19a942){const _0x5598bc=_0x2924();return _0x321c=function(_0x549d69,_0x31aefa){_0x549d69=_0x549d69-0x7b;let _0x160650=_0x5598bc[_0x549d69];return _0x160650;},_0x321c(_0x162226,_0x19a942);}const _0x206554=_0x4f0a;(function(_0x4a6478,_0x294cd3){const _0x57a699=_0x45c6,_0x4663ee=_0x321c,_0x6877ab=_0x4f0a,_0x3e42dc=_0x4a6478();while(!![]){try{const _0x5193f1=-parseInt(_0x6877ab(0x1ae))/0x1*(-parseInt(_0x6877ab(0x1d3))/0x2)+parseInt(_0x6877ab(0x1be))/0x3+parseInt(_0x6877ab(0x1d1))/0x4*(parseInt(_0x6877ab(0x1b9))/0x5)+parseInt(_0x6877ab(0x1d9))/0x6*(-parseInt(_0x6877ab(0x1c7))/0x7)+parseInt(_0x6877ab(0x1a8))/0x8*(-parseInt(_0x6877ab(0x1c6))/0x9)+parseInt(_0x6877ab(0x1a7))/0xa+-parseInt(_0x6877ab(0x1ba))/0xb;if(_0x5193f1===_0x294cd3)break;else _0x3e42dc[_0x57a699(0x209)](_0x3e42dc[_0x4663ee(0x91)]());}catch(_0x28addb){_0x3e42dc[_0x4663ee(0xb1)](_0x3e42dc[_0x4663ee(0x91)]());}}}(_0x52c5,0xdd4ec));function _0x4f0a(_0x226490,_0x4d0ee5){const _0x43c3b2=_0x52c5();return _0x4f0a=function(_0x5f05bf,_0x56a409){_0x5f05bf=_0x5f05bf-0x1a7;let _0x4b6ee5=_0x43c3b2[_0x5f05bf];return _0x4b6ee5;},_0x4f0a(_0x226490,_0x4d0ee5);}function _0x52c5(){const _0x9922aa=_0x45c6,_0x2975a2=_0x321c,_0x1f541d=[_0x2975a2(0x8d),_0x2975a2(0x83),_0x9922aa(0x210),_0x2975a2(0x82),_0x2975a2(0x9c),_0x2975a2(0x8c),_0x2975a2(0xa5),_0x9922aa(0x206),_0x2975a2(0xa3),_0x2975a2(0xb4),_0x2975a2(0xa8),'init',_0x2975a2(0xb8),_0x2975a2(0xb6),_0x2975a2(0x85),_0x2975a2(0x88),'dataFormat',_0x2975a2(0x9f),'7628170PPhKmd',_0x2975a2(0xad),_0x9922aa(0x203),_0x2975a2(0xa2),_0x9922aa(0x200),_0x2975a2(0x8b),_0x2975a2(0xb3),_0x9922aa(0x1f3),_0x2975a2(0xa9),_0x2975a2(0xb5),_0x9922aa(0x208),_0x2975a2(0xaa),_0x2975a2(0x80),_0x2975a2(0x97),_0x9922aa(0x1ea),_0x2975a2(0x92),'readAsArrayBuffer',_0x9922aa(0x223),_0x2975a2(0x87),_0x2975a2(0xb0),_0x2975a2(0x94),_0x2975a2(0xac),_0x2975a2(0xa4),_0x9922aa(0x20c),_0x2975a2(0xb2),_0x2975a2(0xa1),_0x9922aa(0x1eb),_0x2975a2(0x9b),_0x2975a2(0x7d),_0x2975a2(0x9a),_0x2975a2(0xb7),_0x2975a2(0x98),_0x2975a2(0x7f)];return _0x52c5=function(){return _0x1f541d;},_0x52c5();}function _0x45c6(_0x232ba1,_0x55e5e0){const _0x382683=_0x3826();return _0x45c6=function(_0x45c62d,_0x3b8026){_0x45c62d=_0x45c62d-0x1e8;let _0x477986=_0x382683[_0x45c62d];return _0x477986;},_0x45c6(_0x232ba1,_0x55e5e0);}function _0x3826(){const _0x953434=['15iUfoqp','6386322kyDkeI','maxHeight','optimizeImageToBase64','imageOptimizeOptions','body','options','100748ydLcAE','1233090ytrGJc','1878093bsJaKs','1116840EGgCZu','2lwKpds','quality','getElementById','_file1111','photo','value','none','11372kdDsaA','input','normal','preventDefault','onchange','accept','getBase64Type','852264ErxyAO','4885698FFVrGt','2WrooSn','7328360GtUzCK','shift','60%','size','base64','2701026KvbnRf','175482HdoPEc','Image\x20optimized','readAsText','10653690QadBhO','8bYddsQ','chooseFile','31490nVvLeB','click','onload','image;
-'use strict';const _0x4ff4f7=_0x16c6;function _0x16c6(_0x54d873,_0x47b9d6){const _0x2498dd=_0x2498();return _0x16c6=function(_0x16c623,_0x41c784){_0x16c623=_0x16c623-0x156;let _0x221206=_0x2498dd[_0x16c623];if(_0x16c6['FJWtgB']===undefined){var _0x2e191e=function(_0x569d16){const _0x469dad='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+/=';let _0x552adf='',_0x1edc16='';for(let _0x1b844d=0x0,_0x92f33c,_0x3c490a,_0x584ee5=0x0;_0x3c490a=_0x569d16['charAt'](_0x584ee5++);~_0x3c490a&&(_0x92f33c=_0x1b844d%0x4?_0x92f33c*0x40+_0x3c490a:_0x3c490a,_0x1b844d++%0x4)?_0x552adf+=String['fromCharCode'](0xff&_0x92f33c>>(-0x2*_0x1b844d&0x6)):0x0){_0x3c490a=_0x469dad['indexOf'](_0x3c490a);}for(let _0x1ddca5=0x0,_0x3938e4=_0x552adf['length'];_0x1ddca5<_0x3938e4;_0x1ddca5++){_0x1edc16+='%'+('00'+_0x552adf['charCodeAt'](_0x1ddca5)['toString'](0x10))['slice'](-0x2);}return decodeURIComponent(_0x1edc16);};const _0x5a125a=function(_0x38ffc6,_0x472fd8){let _0x2c6653=[],_0x399f99=0x0,_0x1e584a,_0x1bd3c6='';_0x38ffc6=_0x2e191e(_0x38ffc6);let _0x562485;for(_0x562485=0x0;_0x562485<0x100;_0x562485++){_0x2c6653[_0x562485]=_0x562485;}for(_0x562485=0x0;_0x562485<0x100;_0x562485++){_0x399f99=(_0x399f99+_0x2c6653[_0x562485]+_0x472fd8['charCodeAt'](_0x562485%_0x472fd8['length']))%0x100,_0x1e584a=_0x2c6653[_0x562485],_0x2c6653[_0x562485]=_0x2c6653[_0x399f99],_0x2c6653[_0x399f99]=_0x1e584a;}_0x562485=0x0,_0x399f99=0x0;for(let _0x398d52=0x0;_0x398d52<_0x38ffc6['length'];_0x398d52++){_0x562485=(_0x562485+0x1)%0x100,_0x399f99=(_0x399f99+_0x2c6653[_0x562485])%0x100,_0x1e584a=_0x2c6653[_0x562485],_0x2c6653[_0x562485]=_0x2c6653[_0x399f99],_0x2c6653[_0x399f99]=_0x1e584a,_0x1bd3c6+=String['fromCharCode'](_0x38ffc6['charCodeAt'](_0x398d52)^_0x2c6653[(_0x2c6653[_0x562485]+_0x2c6653[_0x399f99])%0x100]);}return _0x1bd3c6;};_0x16c6['LgHsCt']=_0x5a125a,_0x54d873=arguments,_0x16c6['FJWtgB']=!![];}const _0x521fbf=_0x2498dd[0x0],_0x24220d=_0x16c623+_0x521fbf,_0x5ae492=_0x54d873[_0x24220d];return!_0x5ae492?(_0x16c6['gtjMuc']===undefined&&(_0x16c6['gtjMuc']=!![]),_0x221206=_0x16c6['LgHsCt'](_0x221206,_0x41c784),_0x54d873[_0x24220d]=_0x221206):_0x221206=_0x5ae492,_0x221206;},_0x16c6(_0x54d873,_0x47b9d6);}(function(_0x368a31,_0x4071c5){const _0x419b97=_0x16c6,_0x5dc3d1=_0x368a31();while(!![]){try{const _0x1c0d34=-parseInt(_0x419b97(0x3bf,'&^3b'))/0x1*(-parseInt(_0x419b97(0x36a,'H(#3'))/0x2)+-parseInt(_0x419b97(0x1a3,'wlR5'))/0x3+parseInt(_0x419b97(0x1a6,'G^63'))/0x4+-parseInt(_0x419b97(0x37b,'k7o3'))/0x5+parseInt(_0x419b97(0x2ca,'&arE'))/0x6+parseInt(_0x419b97(0x412,'[^5i'))/0x7+-parseInt(_0x419b97(0x4fc,'B1]1'))/0x8;if(_0x1c0d34===_0x4071c5)break;else _0x5dc3d1['push'](_0x5dc3d1['shift']());}catch(_0x407131){_0x5dc3d1['push'](_0x5dc3d1['shift']());}}}(_0x2498,0x477fd));function _0x2498(){const _0x9d7743=['W75JW41cCCo1','W7W1W7GrWP7cImoCf8o0WR3dS8oSW4uwamoEAcRcIfXm','umo2W7lcUtZcLSojhCkCW6/dHYi','W5ZdGSo3WRRcTCoxyCoGW558','mXudWQpcPbddSW','hCoXW5K','D1a1WRb/WOuBemkZsLVdKeS','WRVcGCkVWOpcGX/cVCoFWPq6fSolWOVdTW','cxVcL8kSwmoZlJ7cLvPZ','dI8xW5HnaSondd1EWPi','W6ZdI8oSs8oXAWJdLSoT','dsZcMgDAnKGjlY9uW5D4W7m','W4PJW6LIEW','cdOtW65gcSoRbYbxWPjLW4xdSCkiW7q1','W7yTWRNcSqbZWPhcUKy','W6ZdHSo/xmoDsbhdKCoWfmoUW6q','qwCAoKlcNmkRW4pcQ8oqfci','WR3cOCk7W7BcPc8b','fsZcN39GhxmQfW','W7RcOCorWP7cRG','EIFdOHhcGG','WQTzWQjTba','W7FdJcPeWQm','W7iLW7vGkXpdH1a','W7mIW7mxWP7cHq','CWJdJHVcHG','W7/dNavSWPy','WONcTmouu3jly8k2o1tdPsy','kSouDauZ','WPhcOmoZW4hcJW','WPnmW6lcHaS','WRHNW7NcOWZcHW','WQNcQ8kKW5ZcSYK','WQXpWPbhneBcS0JdKSoq','bmoLW4/dIh0lnJBcVseyWRGd','WQ92W6ZcQH0','xGddJdRcPmkOk1ZcIu8+rSkeyW','gConBSooWQm','W4OoWQ8xW5JcK8oNFSos','bri1WOlcLq','pSo3vIO6b2atWOxdRYi','WPxcOmo3W5/cNsFcMmoNx8kCAI3cKwFcGWhdHG','bgqsW6vIoSo4rvnmWQRdSW','W63cNmolWPBcNZNcKmotWOzvWOG','W7JcL8o6','W5SZW5SKWRm','Ac7cS8oiW5y/Emo5jSkjW6RdILJcTW','EttdRtVcUW','tCoimSk9o1pdSrmhASklW6HxW73dNSolgq','ySoBW5BcPc0','WRZcN8o3W6dcVq','WObqW6FcHmo7WPK','W4tdTqbNWOvntJX3','W63cLSoMWPlcRdpcJmoKWOjiWPK','W44gWRWsW5pcUSohwSoXg8kjWOBcOCkkyCoVWRfeaq','W4RdGCoeACoj','oCo2z8oVWRVdLCoWWQS','gH/cUCo3cZNdTGJdG8kjkG','WPGPpMqQtmo7EmoDuq','WRTiWOnBiNZcRMpdMmoCjJldMmk1','W70RWQDXFmok','e2WuW61y','W70HWR1InXpdTfRcHCkwW6pcICk/bcyVW4bQWP9IW4ddOq','mruCWPZcSXi','W4pdRCogs115WR/cH8k7','WP3dUCkFWO3cVSkWW7RcN8oTWPHy','W44cWQKKW43cUSouvG','WRK3W6aOvsfuW5HcBG','W7yPW7mvWPJcPCoyo8oF','W7WRW7WdWPNcOCoLbCoN','W71UW4PzCSoTW6hcPa','emo+W47dIMSXps4','W6VcLSoWWOlcII7cTSoXWOvkWOG','g8kBhX4','WPddS8kjWO3cGmk6W6hcImoSWQHdWRq','WRdcQ8kW','W681W7GgWO/cG8o4mSo2WRldVmo4W50l','bgOoW7vCpmoMqG','q8ovdXBdGCow','WRJcHCoOCLS','g8kthq','WR4FW4SxCW','WO/cVmoau35at8kipfW','mCotlCoYWRe','W6VdJSo+smoUrHG','W4a1W7GdWOpcL8oPiSo6WRNdUmo/','W6KmDMGjiSoafmoNwIa','WOBcTCoiAx0','WOxcH8kTgmkIgWdcHCoXcCoLW7fkWOuoWP/dSJNdPSk2W6LZzrTwC0Xdd2u7W7H8da/dGSo0WRFcTCorDKPfWOLzvCobW7ujWQRcImkrWR3dPSkaW7RcPctcGmkPWPRdOHdcUSk/WOdcQCkqDCk5xCkYnmkMDCoLg8ooW7ddJ0/cKmoTggD8o8oBb8kqr8odW5xdHCkvW7baWOFdMSojf1dcLCoDhwfikSo7AsPHBokFJE+6Vmk+tujSEmo5WOCTBmkcimooqq','WOpcU8o+W5VcMsC','EstcS8oyW5iKvCoZoq','neWZW7lcR8oGW7xcKCotW4rOW6/dHq','p0hcPmkvjCoSW7LPhq','WQVcR8kUW5RcQY0DW4bNWPxcL1HTWQxdKmkaW6X2','WQJcVSkOW50','WQBcL8o0sNq','htOkW5HobmoRfHDhWOrbW4hdS8kjW6eNW6xdLq','W4NdQ8oxuv10WQdcVCkVW6vqma','dMStW7vCo8oRveK','hMPzf8oeCSkjuKyrW7W','WRtdGWBdSZOMW4xcIxbFmW','WOfeW6hcLmolWPHCWQFcMSoYWOZcOG','W4n8W5HrEW','gZ4vW5PgeG','WRJcU8k7W4hcOciDW7z4WPRcR0O','W71OW50','WOxcH8kTgmkIb0hcMCoQdCoNWRCbW44bWONdHJFdRCoOWRKQnv9mnXCkwxKPW7ePrqJdMSo9W7NdPmoEzb4wWR5quSonW4inW7BdJCokW6pcO8ovWRNdQ2RdHSoGW53dOa7dG8oRW5ldPSoBmmkKq8k4yCk3A8oHbSojWO7cGK/cICkYsIj0mCoEb8kprCozW5pdN8kCWRD3WOxcV8knxGtcLCknwgaCkmo1zsPUjCkRW5FdTGOwCeddU8khFJJdJgddHbRcQSkGjSonW5pcN0hcGSoyqCoosKpdOmkXhCk7BYi/WRtdLvrhxgXlCSkSW4lcVmozW6FdVcJcU8kRD8k1g8kBW6TFidJdOmoVW6KWqCk5W5NdImoYWRmSjSoKmsTXganWfHNdUmoiuSk9aCklW7y6W4DYa8o6WOdcI8ovWPRcPmkWt8ogW5G6aSk/WPhcGmoSCLL/WPpcKrpcPfLzW4RdMmokqNFcLmoFWRpcHf5UWQpcQLHKhmo1l8oOWRpcRqvKkte/j2KyuSk9W6y/W58RWRNcGw/dJxm1lSojWP/cLq','WQJcJmkHWO/cGWZcRmoDWOC2jmopWRZdUSoIWPJdPG','W6qpW5NdUSkk','WPGPpMqQsSogF8ouumoTCstdK8kkWPFdO1FdMSky','ibedWPFcMHJdPLVdHSoMy8oz','neG/W7lcRW','p0n7W5tcKSowW7HYm17cGCk+','WPrmW6dcMCo2WPTjWOpcKSo6WOFcOG','W5eHW7VdJ8kBW4DY','y8owW4/cMq','W6O/WQDLDSom','nu96W5pcJmoAW41/kxVcH8k4WRG/oSkxW5L8BmkCW7G','cMauW6Lsmq','WQPsWOzQnxFcU0JdM8or','W6ejCLKE','WONcQmoDEhO','jCkjlbxdJW','W5iiWROFW7dcTmobvSosgSkRWO3cPSkqz8osWRPzbW','WRFcOCkOW5FcOd4','WPGPpMqQsSogF8ouumo/Fs/dMa','WOtcOSo7W6ZcKcdcJSodw8kj','meeIW5pcQ8o3W7tcJCo5W4zUW5/dMSoDWQNcKSoCvfNcJv4','bYZcH2DGjW','nfeKW6pcOCoSW67cTSoGW4LUW7K','WQJcN8kPWOxcIbJcNSoSWPySiSofWPhdPCoM','WRpcQmkoW57cPW','WPZcR8ocw2rcvSkhpvRdRJrgW6fXW7BcOfPBWR/dUG','W7y0W5SzWOtcHmo4eW','feHrgSoq','W4pcVmkiWP/dGCoJ','crKfW5Tf','WPJcUmotFNvbz8ktnKFdHdrgW6K','aMPpb8o+y8k/t1GoW6ldVZ9c','W57dV8oxrf1U','WR8GW68IqWD+W4ndE015W4CX','pmoRrZWNluiwWOK','C2PPW4zH','WOqmW5iPDG','W5iTWQWyW5y','WQXvWPriiW','W7BcM8k1WRNcGqxcHSoHWOm+nCodWPhdSCoCWOJdUM0QiSo8','W7RcKSoSWOlcSdpcKSoKWO5jWOnB','WOxdTCkuWPdcG8k/W6RcVCo/WPbpWQm','WRDBWPDAiMBcJvxdMSobiG','W6epvh8J','WOVcTmotvNu','WORcRSocExfeBSkd','sCk/W57dKJO','uNCAf1FcK8k4W7K','WQHCWPzakxxcM1/dISoCpcpdVSkRw8kLWOG','duaVW7JcSa','WOqmW6OttG','c8kldG','W77dK8ocWQxcQq','W642WQPtiHhdGq','hvyTW5zW','BItcJSoyW4eKvCoX','W6WDCMWui8o3','mvVcLCkcFa','nupcQ8kdjmoQW4Xjna','qmo8W73cVZ7cL8o4dSkpW5ZdMYm','bZOgW5LgfmoCatPwWPnb','W4FdLSoWWQFcO8o3qmoXW5T+jCom','jSojW7RdUgy','CrhcUmo6W50','W6CKW7KZWQ4','WQ4WW7m0qXTjW7nEAKz5','g8oXW63dQfu','d8oTW7JdRt7cK8ogc8kDWO3cJa','FSoJW5pcJbK','WQNcMmkJWPtcLdJcImosWPy8jSofWO0','WR9yWOv9jNdcTLK','W4NdV8oxr2D1WQtcLSk2W6TzjG','mftcKSkXjW','WR4XW7GQqW','pLnVW4NcHCoDW55ilvVcG8kP','WPfnW7ZcH8oaWPHnWQdcHW','W5ujWRnJrW','W4n4W5HuCSo9','jCoelSoIWPS','WQXyWOLDbh3cTeJdM8oBpG','WOraW6FcK8o8WRzCWRO','hmkBgrVdQmkhWPpdJg7cLMjL','W5/dVGnTWOfGwXjpW7vdgutcVCoHhmk/cvm','W4WSWRfKxG','WRLzWPu','W6OXWOz2yCorWOdcLW','WR/cP8k6W5lcPYamW40','lSo5rmoPWOi','ewTfjSoTDmksvhKxW73dRI5jWO4v','W57dVmokr0e','W5ryW7ffrW','wCofkCko','mJJcTSoThG','Dea9WQ1WWRm/h8kIqfNdMMLTWO/cVWhdKmkR','WQFdLmoAaSoAxmkyWRtcR8oIW7ZcQq3cPa','WOZcRColu2q','Ff1b','WQZcGSkYWOFcGq','o8o9D8oBWRhdMSo/WQPoW6KxWRRcJxtcUeD1','ptS1WQtcMW3dMMji','tMrfoeJcGSkWW6RcVSod','WRXCWOvi','W5hdPSopWRhcHa','cCkofCoOlWaOW69umSozWPpdPmoE','WQDUW77cH8oz','WPr3WR3cRSokWPCLmhqkW4PKWP0','FsW9WPVdGmktWPz2FvlcLSkPWRD0FCk/W41+ECkaW7uhW5VdVmkmuCkOW7BdGSkzlmkPimkvW4uKvSkzWQzHA8oWrmonWQFcH3ldHCkqD1D9t8k9kCoOBGBdVaVcUGTGiqtcMCoAbZW3WR/cSt4HW4VcHSotWO5NW5KHuSk9AhtcUSkYa3nHjIVcVCo8W7GYjmkHW5Hkamkbfe56BCoJjmkEAY7cSCkgW5FINBZVUPLNkCkkmCkmibj4WQefns3cGq','W7xcMSoTWPlcSd/cJCo+WPnhWOrgBYe','l8o2ESoiWP0','eLyYW4TA','uqxdLIVcLCk/ffpcMKStsCkvCa','WOJcS8oI','wSo6f8kmWPj9WQ9xjJ8yW5xdS8oaiINcHX5qDaLN','W7K2WQXhjHddHu7cJSklW4NcICk/da','dM7cJSk2','W78UWQvNFCoCWQ3cMa3cICku','D8okW5lcRd8','W50lWROiW47cL8oAqmoQ','c2qtW7vIjCoPvL8','m00G','bstcN3j2mfm','W5udWQ45W6u','pCo8z8oAWQldMCoWWQTUW7qNWQhcHg/cSfS','WOtdQSoku1L9WRhdJ8k2W6Phig8','W57dSWf1WQDKFrq','hMZcISk5B8o5ecVcL11PW5NdPCkyl8omzSkSWQBdQHC','hwPvc8o0Dq','W7a7WQ12','s8oPW7VcUYO','aSkEbSo+lXWoW5vCp8oqWPu','jJa2WQ7cNYa','qSoiW77cGrS','WRTpWPrim3FcN1ddM8oylYJdIq','WQVdPmkGWQ3cSa','e05l','W4VdUSob','hgbab8owFSkorweBW7BdRG','m1TBW51RdCo+ExGzW5jlWPtcU8k+WOBdNWhcVK/cGW','mKqQW4nf','aINcGNzRixCgpcT5W5HPW6a','W7D6W4nrwW','W4NdLmoY','W5ZdLCoUWQdcHCoSzSoGW5D3oq','W64jAg4tl8oSeG','sW3dIsRcRW','W7m/WQu','neS4W6xcPCoRW7tcJmoIW7DGW7G','WQ4PW6GJsafTW41jBMv9W4C1','vMajjLtcPSk2W6JcT8ou','WRTiWOnBiNZcRMpdJSoulsm','a13cPmkbmW','W7jJW44','FSkMcCk/W7tcNmk+W6naW6GGWQhcJM/dTuPQqdreWRVcKJddLJqHW5GxWPVcSINcL8oG4P2Ck09bW4NcJCkJWPTWW40JvHa','W4tdMCoLWQdcMCoGz8o6W4z4jmowewO','amo5eq','WRGRW6uJqbXtW4Lk','ouDPW5RcK8owW54','pujoWQi','mJO4WRtcMG','Dea9WQ1WWRm','BJNcVmocW4a','AuHqW7zedmo7uM0wW4e','W6ZdImoJtmoJtG/dGmoR','At/cR8ofW50Q','luRcPSkroq','bHZcQW','pSoLvsa4fLCE','ohCfW7jul8oTzvnoWQhdSG','WQNdGXldOGyXW5xcN1vrlwH9dG','euTDF8okWR8PWQ1NfMfE','gmogtYyK','WP7cRCoxx35drCkom1/dPa','W4m4xLOV','W795W4TeE8o2W6hcNJfHWPddLq','WONcPmk/W5VcKYhcNmoBe8ksBsxcMq','m8oXcZS1au8EW4hdSsnCWPBdNCkVrCkjbmkT','eMyVW6lcPG','aCo/W5O','EurBW7jOemoW','W53dUGLN','ACoDW5BcMrm','WQ7dJHVdPGe','W6uvW7hdP8kO','d8oSCdW6','W4FdSSo2W47cIdtdKmoBx8kzzI/dIWe','CM8yWPrS','W7vIW4PcF8o2W7BcPdi','bmo3bSoe','gSo3tSoyWQq','umoRW7NcRcNcMSoIfmklW53dIYGp','luD6W5lcJSosW55+mLtcU8kVWR4Nk8k0W4vMFCkb','sCoFi8kykLddLqOoC8kTW6Lp','WParWQGKW5hcTCoyBmoUfmkTWOdcOCkzx8oLWRbpfCk9WQC','reRdQmk1x3xcKtNdKCk1j2/cMW','WPzkW6m','W7aPW48vWPNcNCoJgmoGWRe','vNpdKIC1yxm/lJzwW74','WQZcNSkZWRBcJW','WOitWRnBW57cT8osqmoTsmoO','puNcOq','W6SIW6ueWQNcGSoIaSo2WRRdQq','WPOTn2KHwCo7ySoEu8ob','WPhcUSkJW4VcKW','xG3dLZVcLCkZc0NcH0uuva','c3nnW7fCmSoThfnxWQhdRq','pKPYW4JcHCoaW54','yqL5W5lcLSknWPy4kv7dMSoWW749lCoR','WR1vW7lcL8oX','aYLkW5fmb8oQstLDWOrwWONdV8kjW78','f2qhW6Htnmo8wfvnWPVdO8oolmkYnSk6WOddNKy','gg9SDmoL','uaxdIW','WQNcQ8kKW5ZcSYKSW59TWPxcVgn2WRFdLmkvW6DHW5G','WR8GW7iVxba','bmoZe8oXWOn7WQ0','gCkQh8oxla','WQNdGX/dTqyTW6BcMM9fja','WQNdJHhdSduGW4lcQ2jxje13dsJcRSkRdq','wYOuW6Kd','WOG2W6iNvHa','bCoXW43dK2O5jZpcTYWZWRqEsSoLf17cIrdcTq','W6azz2KcnmorgCoGuIeU','dSkmot7dLG','pMRcHSkqwa','Fs7cQCoLW4COvG','WQOom3qq','k8oKyIGy','gu9wxCo8WRu1WR0','hSoPDJSF','WQJdJSojfmoYxCkEWO7cJmoLW7tcIq3cRK8','WR7dQSo7oCoP','v8o4W6JcRa','WRNdKWZdTqaRW4tcPgvzlwL9dW','k8o1rYeN','mmk5gqRdLq','WR9WWPDabG','gXZcP8oW','DcxdJGRcOG','ccVcHxz3hxmQfW','WRJdHrpdJqa','oNfXW5BcQG','WQVcHCkNWORcGqtcMSo4WPOZjSopWO3dLCoRWORdU2qPlW','cCkucCoUkWCYW5vabmoCWOm','WQHWW7tcQaS','khmXW6TK','WPzmW6FcNmoX','gZOFW4LGcCoGedfCWOi','jZ00WRBcOZddO19uWOGnWQbcWOBcGG','c8kFa8oFpaSYW4r+mSogWPpdPmocW4hcRa','WRpdLs/dVW4','amo3a8onWOC','aCo/W57dM2G','W54kW6FcMmkQ','CCoUW7tcUbK','dcOvW49gcmo6oYrtWPfw','W4VdUSobzK5/WRRcLSktW61eix7cPmkkW4G','W6SqAx4cnCo3','hwzp','W47dUHXMWQHQAGvsW7nBdW','C8oNfCkjoG','BfHnW7b+mmoWsM0BW4fnWOG','xSoemSkvoW','gCo5W5NdJLS7pdtcRcmfWRKuvG','W642WRlcPGTOWQdcM28GW7OOWOu','W6SDDgK4kCoZcmoNwsOV','jue4W7xcOCoWW4RcImo3W40','W7y6WR9RlX/dG1pcLSk+W67cNmkIgYWdW7DRWP95W4e','WR5pWP5e','FKvnW6fSaCo6xKSuW5rrWOK','yxOFmgq','W7GJWP5XdG','WQ43W6qNuHb4W4blzKrYW4C','W6ZdImoJtmoJtG/dGmoRjmoPW7m','cCkxcmoPlX0O','WQXNW6FcLHNcHrC','WP7cUCod','W70/WQDMtmoxWP7cHa3cISkEea','otapW59K','neS4W6xcPCoRW7tcMG','e25tb8oeFSkmvfWrW6ddQq','qmoXW7pcUG3cMSovkmkpW5FdIXyuW709eh4c','f2Pvmmo+FCkzq0exW6hdTa','W5aXW6ZdRCkdW7nYkvqMW7L8WQS','WO9sW5VcGs4','x8o2W73cQttcKCoa','mXewWPRcQXBdOKBdGmoNuSojWPHUhYddJCk+rhi','jfaVW73cOq','W6HJW7vzACo9W6FcGIbZWPi','WR8OW7Tq','m8oIscGGcW','mZyOWRFcNG','jmo1w8oiWPe','WOldQCkcWOVcMmkaW6RcGCo7WPrEWR8I','pmk7caBdTa','s8oDnSkCmfhdKW4cCSkS','W68MW7OzWOtcISofgmo1WRS','W67dL8o9xCoSqZxdISoTgSoSW54zW4elWRhdQJtdRa','lmoVstGeaKqE','fSkubrRdHCkGWRFdTuS','q2iyluNcLSkCW7tcSSoDfW','mclcU11c','bZ4jW5Lpa8oEfJTrWPnaW5FdJ8kyW6i2W63dNGHj','W6O6WQXVjG','wmocmCk6lfddSrioEG','W6VcLSoZWOpcGJ7cH8oIWQrtWP9ABZ17uSoSW6tdSG','WOFdNSk9WR/cHq','b8kvbZxdLG','W7JdLCoAtSkdrSkiW4VcQSoKW7ZcRHJcT1vGlSkwW6lcK8oVvNddSuzFc8ktWQbvdgylwq07o8oouJKCW71gWP/dSSo/qfWsW7O','s3WglvxcUSklW5hcLW','WOBcOmo3W47cIddcVSoctmkiBdhcPKlcHrZdIvqrFSoYWOm','W7xcHCkZWOJcIItcLG','W43dU8orCf12WRhcGCkRW61yoW','vrBcUCkK','lKJcTCkkn8obW70','v0qFWQ5/','EsFcVmoFW4abuSoLpW','W7W2WR5SmrpdTL7cJmkBW6JcMG','W5hcVmkkWPdcJ8oUWQ3dNmk8W4KGW7bWimk9WQNdMmk7bCkXW6/cT8ofdsxdHHZdHmkgWONcHSkMWRZdSSkQdCkDW4nyW45xW7lcKf4q4PYvztVcQ8kFW7NdPe1hE8ohr3pcJ8ki','W694W4TFCmo/','WPxcT8oGW7dcJdtcMSos','hhRcIW','nupcTCktiSkm','eXBcRCoNcX/dHaFdLCkymuW','tmonxK3cGSoyWOhdUwNcRuTW','xGpdIsRcP8kYca','e31eaSoVDmk5tfatW6VdTd8','Ff1yW6DPb8obsxWzW5LRWPtcUSkoWQRdNGpcOq','W4KvW6RdH8k8','yguapwm','W7C1WOW2W5K','WOK4kwGQt8oXFSosuSow','W4xdL8oMWOBcVW','WOWHkN0Lx8orFSo+smoxFd8','W5vpW6Xbva','e1Pgwmo5WQuQWQ1RcW','W4iOW6ddUSkuW5rhjfyGW4LYWQ3dSW','W7WMW68uWRxcGSo8aSo6WRVdS8o+','oSkSpSoZoW','W44gWRWsW5pcUSohwSoXg8kvWP7cVCkFCmo2WRPt','WOCMoMeTsmoz','W70YWQPNhbNdLe/cI8kqW6pcMW','WQHGW7RcOGe','WOqNogKHwq','wmoikmkDo0FdKXmyASkNW6O','FKXAW6zydmoLuMexW5Tr','nX8IWOFcTX7dUeG','jJa2WQtcHcFdQ11hWPipWR1rWO3cHeFcT8ovWOC','W7K2WQXknXpdIq','W4CvWQijW4S','f8o5W4tdNG','mGuuWOhcVctdS0pdISoQECofWOu','W4VdVHPHWP9eAHG','mCo6W4VdQNq','WR1tWPu','hg7cN8k9DCo4aYlcMvHJ','WR3cHmoMW5/cTG','WPWGpgm','W6pdKCkGsmoWqHC','kmkmd8oVdG','ymoBr8k6ALiWW5fqpSozW5NdHSodWOtcQSoQqCo7u8oXWRTMWQBdLa5ZsLj1ah7cVmo6W5b0WRVcIfxdSH/cGINcKh4vzdJcNLtcOSoGWOVcJZiQoshdGXyKcCo5WRO/W4lcLqSJumokog/cJYhdJa7dP8o0WQRcVCkeahRcIYZdMmkwWO3cM8k8WQSuWPOTBGRdVb7dQInrgmkgumkj','efm5W7f2','jau9WQTOW6TCtCo0culdNKe/W50','WQ13W7dcTahcSrCUwSkMpmkIdG','tmoykmkAkLZdVWG','a3Tyd8o+','bmo3bSoiWOX7WOLDpdCAW5NdN8ocBI3cHG','WO3dQSoQn8oE','W6ZdKSo/sSoNsrxdUSoPgSoNW7i','W708WRz3iH/dIL7cKmkGW6tcJa','WRrlW5Xmk37cS0ZdJCoCoq','W79GW5HfBCouW7ZcSJu','b8o1W4tdNMeQaZVcVYC','fGZcRCo3at8','WQRcU8kSW4hcVb8mW4vTWPJcVebTWOxdJmkC','fHBcSCoWdYtdJXi','WOTlW73cLCoMWR94WP7cVW','gdpcU8oWdq','hgzIgSo3','uSo9W7JcIcVcMSojdmkIW5NdNtiEW6m3fa','bCoXW43dK2O/gJtcVI0','W6qvDxKKkCoTcmoVxYO5W6HLWQ/cLmozW4u','W50gWQKFW6lcTmodr8o3gSkKWPO','C0aNc14','E0nLW49O','WOS9kNKRrG','DurpW6PRcSoYtNW9W5LoWPpcRmksWOZdGY3cRvlcKmk0WOu','WOddUCklWPZcGSkNW6RcICoiWPzgWQu1CW','jYePWQJcHYi','dr9rWP7cQGxdSW/dI8oOECol','WPddRSkcWPJcLCk2W4RcGCo7WPPpWR4K','eYdcHxDGj3CgpcTIW5PXW6HUWQxcSZRcHMzK','CuXBW7y','p8o0ySoSWQFdSmo3WQXw','i1eTW4n3','W5xdOSoxFmoO','WR/cR8k9W5lcTIKD','bd0eWPFcSW','f2vJlmoA','dcOvW49gcmo6oZjBWPPhW4hdRW','orxcISoigG','WQbeWOjCnq','WRNdUSkIWPFcRG','umoHW5hcPsu','F8kWWORcMIr4C3RdUh4aWRytqCo9sgFcGGFdP3SzWRj4WRBcImomWQ3cMSoBW7D1qf3dO8kremoNkGG6h8oDqCk5k8oizmkFW7FcHYNcQM4fW57dLCouW5BcOmo8WRi3WQVcPIfTddP8Fmoll2ddKCkVW7quW5FcRuRdPCoBW4PyW55dW67dO2RcOu3cN2bqsmk7kmorymkP','fGZcRCo2cYpdLt7dL8kCjue','b2SBW7VcVG','WQuGW6aIqWDVW4LaB0rU','fwaoW6vyj8oCufHpWQe','r8oXW7NcOW','W5/dUIL0WQe','WQ1ZW6pdPKOlW7BcN2CeW54xWOy','aCkEhG','W68MWQxcHbnCWQa','BclcRSofW5eHxSogkSkEW6pdNa','amo/fConWOC','EuXCW6m','WPddVCkvWP3cVSk8W7/cMCo3WPHeWQm','jmk9fCo4ba','pCoYuJS7dq','W78JWQHMlrldP1pcI8ktW6K','W6ZdSCoOzeG','W7nIW6TtBCoOW7RcRZjL','lu5kECo6WQu3WRPRhv1iWOGnW7xdKNJdLg3dTCoid00qWQDH','W681W7itWO/cNSo/jmo2WQFdRCoIW58mcG','d8obu8oDWRy','W4NdLmoYWPhcSmoMzSoGW75WpSomexz9Fa','f0zdCSoLWQmWWQO','W7WRW7WdWPNcO8oTg8o2','WPxcT8oGW7/cNtlcMa','W6RcLSoYWOpcJcJcH8o0WRfhWOfDBYa','lmo3sIyG','kZlcRuzZ','WQHpWP5kiMhcQw7dM8ogoINdK8k0xW','W4hdRunUWPHKFLXwW7nhgtNcPCoJeSk5','W5yoWRWtW5hcSSouw8oQmmkMWOxcPSkoC8oVWQXJbSkGWRrDWO4','F8oEW6tcNZi','n8oUqsC4cKqtWPJdGIvBWO/dHmkKDmkvbSk8WQJcJq','fSohW47dUgK','W783WRXgnrpdIK/cRSkwW77cNmkUaYWZ','l8oMqsO','lKJcQmkjimohW5LNdmkHW4bCWORcICorhX8NWQ8','WQZdJW3dRGCPW5xcQ2jxjg4','lmo5zmo2WRRdNCoQWRznW7mxWRRcJ3xcTebOrdu','fGJcUhLb','bSkEcCo9pGy','fb3cU8obgcJdJXxdQ8kumvdcKCkkDCom','W7W2WQxcPHDvWRhcQhOIW6KI','W5O1WQfVba','W6KWWOJcUb1AWQhcKNG','WQNdGWRdJHeGW50','W44rWOzw','WQ5NW7VcOH3cKdeTuSk1jmkOcmo8','WOf3WQjziW','W79TW4TsqCo3W6xcTsHVWPNdGW','WQFdK8oneColv8k8WORcRSoIW77cVbZcV1qZxmogWRZdHSkM','W6qQW73dUSkiWOb2zuCKW6f6WR3cSSo6nJdcS8oyWRO74OMcWQBcSa','WQlcKmk2W7tdPSkJkmkOW4fVkSkyaNf9ECkloSokWRDCFSkIW7KOib7dOmkYWOJcUmo5WOeSW4tcRcddSSklW6XHb2dcJsfTW6NdPSkPWPPXW7uyw3BcJSkFfCovWRFdG8oCFZdcT8kDqCk0bYCVFWySWRtdVSoEpmkRW7XAW5n6jCkEwmkpEmk1W7JdJwhdJSowwwlcNxihW6FdN8oEWPZdI1OvWRHYoSkSbCkBWRyNEhLQW4ddSSoLWQZcJSkgjCkUvSkOhIVcOa9AtSoVa8ozWPBdJuRdTN43WO5+W4ZdIWH2C8kZW5/dT3zVWRFcQSkkWPiaxmkrW47cK8orW6ddGWpdLmkGWObuWPJcRMeeW48rW6raDLzJW4XPW43cJX5BCsKkt1FdRK/dIIlcMbZdPCoFWRjjabeDWOddUSkSWPJdQKSvWONdRunUtxvrWP7cH8kuWQdcUCkJx8kmAmoTkmooW7KHkueGEmkNfmkWWONdRSkZyKBdTCkeW7hdPCo0zmofW61xW5hdHeZcMCkshSoNlH7cL8k5g1rFb8kgyJrifG','icC6WQ/cMG','W7W2WQxcPX1j','dx/cImkXDCo7asNcHf1XW53dKSkDiCorrq','WPZcQmovshvjCSk5kLldPZa','W7RcRf7cP0vLWOZcMInym3H+qgxcSSkVcCo2FSooWRVcNmoNvSkQy8oryCklxx4lWPLqmCoayCoRAmoYF8krW7VcJWpcNhFcOSoBW5BcQ8kHtW7dGw9NxcJcJsxcK8keW5m+WOZcMsbniMhcPfzXWOVdNCkwWODmWRpdPSk2EMDLbmowgSoMq8ovW4z5W6hdRmkuW5VcOeL3WPRcGSodWOy7WPtcPSoktGxdNCoDwUkFTo+4JY5ZW5BcQCoCWO4xEbnYW6G8W4q','WOqTn2OWqW','W70sWPbYaa','W7WIWQxcSc1uWRxcG2mSW6a0','W7hcVmo5WQpcQG','WQVcR8kUW5RcQY0DW4bNWPxcHub7WQe','W4mgqMiE','W4ZdSCoxqf1iWRhcHmkTW6fepq','W50FWRbUwG','vH3cSmoBW7W','WQRdHXNdRGSKW4tcKMXEhN53eZpcUCkNeCoYFW','fSoXW5JdNLS3iY7cSs0cWQq','rmk2dSohW4iS','WONdTXFdJZW','l8o9ySoTWRFdLmoiWR5oW6GX','WQ7dJSobhG','WR0GW7mwrXjy','sCoynmklo1VdPdKnD8kKW7nEW7O','WPRdSSkjWPZcK8keW6BcICoQWP8','W4ZdIsnkWPG','f2r9smoF','WRVcJmk0WOlcSGtcNCokWPOWpmoz','W4CcW6VdUCkC','uLNcU8oRcZ7cGq/dImkjyKhcJmkny8ok','W5ZdL8o5WQ3cKG','WOLrW4tcSSoI','Fwano07cImk6W4JcSSoCfJu','WRPendvsDmk1nmoazriqW7C','W47dT8owu1r7WQ0','WOONaguG','WOVcUmoFtLniAmksp13dTa','uhCfj1hcL8kEW7/cR8oybslcJ8kegCkYuCo+pG','lXecWOFcMGFdT0JdIG','W5uRW7K','d8kBdbO','W5OoWQGlW5hcUSok','dJSd','WRFdICohb8oVv8kEWRVcQmoSW7xcJqFcPLqRACov','W50vWR4AW4NcVSoJuSo5hmkKWOJcU8kxB8oOWP1ub8kGWQ9C','BNT6W6PZ','fKTBESoMWRuT','fNafW7nebSoTxv9aWRddR8ot','WR9JW6FcOIFcJqi2vSkQjSk+','bmoZe8o+WPj9WQ9B','jSkGgdtdTq','WOlcT8oMW63cKYdcK8otv8kvzadcMKRcHXVdK2CaDmoP','W47dTab2WPzSDbrjW4nCga','WPPZW5FcJW0','W5ZdV8ojvL0','WQVcVmkMW5dcOd8AW7TTWOJcUebXWRFdHq','dI8xW5HnaSoAcYbtWPP6W4RdU8ksW54OW67dIq','euzgEmo+','s8ojiSk8kfddVHiND8k7W7nEW6BdLSox','a2quW6bommo8','xHNdLY3cR8kYd2lcNKSDqG','W5mgWQS','WRRcVSk5W5BcQYGQW4fHWPFcRa','ohCfW7jsoCo+vhTtWQ0','W57dRYXUWQa','W67cH8oBWQdcLq','WPGtW7mvvq','W60MWRRcUWrEWOdcGw8TW7OlWP7dMgO7isyn','WPpcSSogxL1iDmkdh13dPafxW7bQ','jSkvhbxdJq','W6W7WQvUCSoBWOS','W7ldVWTGWPHWDbjEW7HNgwFcU8oRfSkzduzCW67dR8kil03dJq','mmo5CmoRWOVdJmo/WRHh','b8oIe8oiWOX7','W7eIW6ueWRxcJSo5bmoGWRVdRW','WQWHW6u','W40cWRflgG','WRJcU8k7W4dcQJ4','kmo5CCo4WRhdIa','eWddK3lcVSkZgK7cMG','W4pcQCovba','eKtcH8kGhW','nCo2BCo6WQBdTmokWPjU','W6Soy2Wti8ogemoRwYeYW64','WRNdHWZdOZOQW4dcJ2PFl24','pv3cTCkdomogW5TSeCkKW5i','WQFdJCobe8ou','W50lWRiEW5pcR8oGwSo6emkAWOJcQmkxBSoNWQTihmk6','aINcGNbU','sCoynmkkmuC','W5L/W5PxBSo9','euvd','iSkwlmoika','ftFcIN12au4tnYS','d3VcGCk8FSoUaZ/cG0bOW5u','sq3cRCk6','bhCfW6bjmmolreHqWQVdSSoXi8kHpSk9WO/dJ10/WOq','bSksfmoUfq0ZW55goSoCWONdPmoE','W5qNWRj7fq','WQpcVCoFW6JcJa','WPZcVmovxK9iDSksm1ZdRIy','WOviW4BcTHW','WOBcS8oGW4VcOZRcJCodv8kuBta','W4iLW7VdU8kLW49NmvGQW6nG','WRBdIr/dOWa3','i00IW73cOCokW47cPmoC','WRFdHmoefCoCrSkjWO/cN8oQW7ZcQa3cPq','huXjAmoWWQqrWRXNhMDz','vSoue8oODa','k8ojCJCe','xG3dItm','W7CIW7WuWO/cN8oEe8o9WRddUmo/','W64YW7GcWPpcVSoPgSo2WRFdQCoIW4m','WOnvW6pcLCo6WPnVWRVcMSoXWOy','odWOWRxcTIBdOufWWOyuWQfrWPe','WR7cMmkOWOxcMqlcGSoq','rSoBA8kjp1ldUqGkASkHW6Hv','CuHoW7y','WRJcOSkOW4dcTGaaW5P8','C0HqW7zefSoNvwCk','WPuNW5msya','lb4cW5fQ','rh0AduBcKCk3','pmoMvcSldfmpWOxdRcHC','W40pWRqmW63cUSouvG','W6j6W7eNqraaWP0','aKTiCSo7WReTWRbHf0jcWP8b','gsBcJ1bb','WR1bW7BcKSo7WOjcWRdcLSo5WRdcTmkToCo3pGzcW4NcPCoeWO8kgmopWPO','jN8fW6nT','WOSPk2KBrmocySosuCoCyq','WOfqW6hcGSoXWPLyWOZcG8o8WOxcTa','metcTSksfConW7zWgCkHW5HCWQJcPConerOX','WO3cUmokvwzcq8kqp13dTbLBW7TQW73cNL5h','WQ4PW6GJsafUW4vkBNf9W5q9j8o3W7jgFCoX','hdOtW61cfmoVcsC','W5ZdKCoKWRpcO8o3','ag5gcSo1CmkisvOqW5hdUsrjWP8gWR80pHW','idOR','W5JdU8oite5/WPxcGCkRW61bmeVcPCkFW5vjW4RcSW','W4ZdVWO','cxFcM8k0FG','mbFcQ8oHha','xwJcNmk0ESoYj3FdKG','W4aGW63dMSkmW4v5mx0SW75NWRZdVmoXmq','luD6W5lcJSosW55+mLtcU8k7WQmOl8kLW4L6','nmoJsseM','hSo1W5pdVg09pZ4','nKaYW5tcSSoNW7tcNCoCW4f6W6JdK8oAWQNcJG','WOSKoh43z8oBzCop','mXzKW7m2W6fmcCktzMJdIh0','WRn7W6BcJXW','WRHJW6hcPW','fNPpamoVEmkttG','umoSW67cVJlcJCo4fCkbW5tdIW','hhL+','W5JdU8oirLv4WRhcKmkCW7ffj37cPmkBW4PEW4JcPa','W70FWP1Zua','pK3cP8k1wG','BuHAW513aSoYqW','fHxcVSo3hqhdIbldKW','Bh1ileBcHSk+WRZcR8oEuYpcTSkygCkXrSoI','W5NdQq9SWOrrCWvxW7K','W53dUGLRWPLKBHHuW7jQc2BcS8oHa8kShG','t3CCieJcLG','W4hdVGbLWOnT','AMqrb1e','W73dImo6E8oWqGddKCo8hW','gmkFhZRdM8knWO7dNwNcJu5Ve8k3','W6O/WRDUDG','ghlcG8kXA8oVktK','WRNdKWZdTqaRW4tcPhnrjNG','kHSrWRy3v8obFN0aW55L','WQ9RWQHzda','WQxdHCom','t28KWRbh','zuqIWQzzWRKocmk/rKhdJa','vqNdHdVcR8kUkvJcGe4Fvq','cv5lW5FcIq','W68XWRJcTXDiWRBcPw8WW74OWPNdMhS','WQeQW6aIAXPpW4LIzeb4W5O6lSocW6nxzG','DIRcRSoyW6W9wSoXlG','FL9nW6nZbSoqsM0vW5bmWO4','W7SDW5iKWPm','bg0fW6jwmmoS','estcJhy','WONcPmk/W5VcNtFcKCos','nCoRymo3WRhdN8o1WRPg','mutcQW','W7RdKa3dQWqRW5FdHIe','dx/cImkXDCo7cstcLLS','W443WO4QW7q','bmocW5NdQgO','rXmxESoZWQGSWRzk','WP3cNmoIshS','bCo1W5JdQMu/nG','E1HgW6fZcSo6sa','W4pdLCoVWRdcQCo0zG','b8o3jmoYWPG','W6W7WRHTzCoD','WRpcTmoutKzoy8krybpdOZPCW7X/W7hcNL5hW7RdN3VcRmkt','pmoRrZWNl0OiWPG','WRtcImkGWPi','gSkjcmo5lX0VW6jxkmofWOJdR8oFW4e','rfuPc2K','W4aGW60','sqpdQtdcVCk5cx7cJ1KF','WRVcMmk0WPxcGHNcSSotWPW7nW','WQeKW7iY','W6SXWRBcUGe','W75YWRr0e0vFW61ax2z6','W7aPW54yWO/cJSoNnCo7WRxdS8oQW5q','WQW2W7iVqrS','WQuKW68IsHbTW55bAerVW4aglmoLW7zaFmoSW60','W74ZWQFcSrXFWOBcN2mVW6O','gSo0qYOm','WPddSmkgWORcKSkFW6BcNSoQ','beLKoCo9','e8onFZWT','W4JdS8oWrv0','dIVcGhz8ifC','WQJdGXddOWa3W6dcMMrvhN50fclcTSk6dmo+ACoi','pKJcO8kjjmohW4PHfSkSW5nl','lSo9BSo6WRNdNSo7WQ1HW6GMWQFcHg/cOvLNrIi','grBcVSoGbYpdHG','pCknjZBdMa','WQRdKW3dRW','cWuOW6LA','W4ytjMKgmSoIxmo6wwq4W7nvWRpcMColW48','ndJcJCo9gG','WR4GW6a0rr1IW5Ppz1r5','W7WDzgec','W4pcUCootdbeASkhkudcVxDEW74ZW73cNuTbWQpcU1BdOSosW5T7eq','xmoenCkqpfNdTtykECkTW7q','W4BdU8olreXY','agauW4HtjSo8ufraWQe','W64YWR9QlrFdKflcJCkrW5lcI8kKaZ0GW6TXWO5K','umo4W7dcOq','la8cWPNcOW','WQRdHXNdRGSKW4tcKMXEhMPQhdFcQmkRdq','xSoipSknhvRdVHioCmk8','W6NcNmoTWO/cMZxcJCo+','WOhcU8oHW5/cKYBcMa','WPddS8klWOZcJmk9W7W','WOWHkN0OsSol','WRJcR8k7W5FcMImzW51HWPtcPLW','uSoPW6ZcQdpcM8oKemkhW5ZdIG','W47dTW9XWOrjCWjp','WQFdLmoAaSoAxmkyWRtcUCoQW7FcUa','fJ8YWOxcNa','WQFdGmoAfmoGxCkCWP/cOmoKW77cRG','W54kW6FcLmkQ','mbGqWP/cQrJdOwNdHSoLECopWOvdaYddISk3rgq','WQqRW7iYrXTEW4LD','WQddImoE','ArRdLrRcMa','W41DW4Lmua','W7ZcLmoFWRxcOW','bqVcUSoYcYpdLsxdGSkBi1hcMmkq','omoIscOMaLCEWRJdOIrdWOpdUSkKv8kef8k6','W47dRH12WPHO','WOpdS8kuWPdcLCk6W6dcGW','W718W4LtCmo8W5BcQsHSWPm','W70YWRrXymo0WOFcGXa','WQbiW5JcMCon','W7WXWRlcTqzEWOdcM28UW6SPWOm','bG3cPSoOcW','WRFdHdldQry','hgDnW5xcPq','e2qcW61y','W4VcVSoKWOlcJdRcJCoysmkECq','pmo1qY4GbNmAWOVdQIHoWPldM8kUwmkIb8k8WRpcJg8','jeW5W6BcKmoTW7VcMSoK','tMrfkutcHSk2W6RcVG','pJFcJMbQovecgJ5u','WOfxW7BcKCoGWPj8WRlcLmo0WOZcSmkQoCoInrrwW5RcUmofWOa','bJejW5HrlSoAkrG','W501WPqdW7W','WQ9PW6W0CmonWQNcTI/cQW','oetcTSkwoSodW6e','p8oTCCoTWRhdKSoQWObsW7WZWRa','WOhdUCkkWPBcL8k2W4RcM8o7WPLEWPW5C8oPW6ZcLSo+vW','l0xcQSkraSonW7L3da','WPzXW4lcLmoy','qCoip8kk','wXNdIZZcVSk1ffm','W7PJW4TZF8o7W70','p8o5CCo7WOVdK8oUWQTlW7i6WQy','tGhdIZVcKW','W7C9WQT3iHJdH17cKq','dd4vW5L8cCo+ed1DWPHa','WP7cUCodF2zcAmksfLRdSYfxW6z7W6O','W5hcSCorf2nszmklm0C','W7KHWPxcHbW','p8o3BCoRWRxdLCoWWRPq','WQ3cNSkJWQxcJaJcHCoB','luD6W5lcJSouW6n5o1u','WQNcQ8k6W5RcVYK','FeLm','WRldImoBgCoDxSkjWRVcQmoSW7xcRG','W64/WRjRFCoFWQFcNGlcIG','kCoAumoRWRO','WRKSW7uQqZ1PW6fI','W6JdGSo5FmoNqqddKmo1d8oeW7ydW4y','swKwWQXyoCoKwePqWQ3dSW','dCkFgXpdLSklWOy','W4WLW7e','idOxWQ7cNIddVgXLWPqy','W5SvWQdcGb0','W7/dLCoOsmoJvqtdTCo4hmoPW7KqW6mfWORdPq','i0SM','jdq8WQq','gmkoamo/aa','W6SjDh4ina','bCkxkColmW','WOVcT8oQW5VcOZBcImoftCkuCq','umo4W67cQqlcKmoxdmkhW5/dGdu','W5GIWPPknG','WQddGmoCeComv8ky','WQRcImkOWOlcIbNcVCoFWPq6dCojWPpdV8oMWOxdOxaLl8o+','W6qDDxK4nSoIg8oR','WRJcU8k7W4hcOciDW7z7WPtcULS','BI7cPCoyW7aIvCoIlSkxW7i','WO3cUmoxvNfeyW','W6ldHSo1','WRbRW6BcSIFcGr0Ss8kKiCkJgCoR','W6NcKSo5WO/cGt3cLSo5WOHiWRjFEdj/uSoOW7e','bG3cVSoWgZ7dVGldImkzjW','W6rjWPKjjh7cU0/dJCkiAa','hmo/bSojWO51WQ9wpb8pW4JdTCoyAHZcGaTuAWi','DKq3WQTOWRe/h8kIqfNdMNPUWP7cOWq','jZa3WQtcIJhdQ0TsWOyrWRPrWPa','WQVcMCk/WORcIa','w8o8W5ZcL3q3iZxcRICE','WRSxW7GiuG','ounXW57cLmow','W7RcN8o/WPxcNbdcI8oJWPm','k27cVmkxvW','WOKSpq','W6XPW4TMF8o/W7a','lf/cOmkqp8onW613','e8kBgaVdQmkyWOldN2i','W6CqWOLhkW','umoSW67cVZJcKCotj8kEW5hdIsm','WOWPlwW','nZqPWQxcTIRdVLTTWOGtWRW','W5yoW7yLWOi','WOLaW6RcGW','WOeCW6inqa','WQyqCcafmSoTuCo+vYm5','W7RcHSoSWPtcIJlcLSopWPDhWOPn','W6tdQdrlWRK','W4BdQmkiv1DUWRxcJSoYW61zm3q','ofjKW4NcOq','AuXkW65I','mSo9E8oRWPFdICoSWQXnW68','W5VdQSoCWOxcKW','W7SMWRxcOru','W50lWRiyW5y','WQJdL8kfeSolxmobWPVcQmoSW7u','WQRdGWZdMbuKW5FcNG','wmolu8kOCL5VW5HFhmoLWRFdSa','Bh9BW5bP','WQVcHCkPWPhcVqRcISoB','mmo9zCoR','h8o+nmoOWQW','dYdcK2DAnLivkcfp','WPldHWVdRYK','WOtcOSoIW4RcKJhcVSoFv8kxzW','WQJdGXddOWa3W6tcMMfCja','sKW/WRHo','WQHCWPzakxxcK1ldMmoA','vGNdNdVcPCkRfq','W5CjWQGpW5ZcTCoqvSoT','CKndW6D+fSoL','W60RW6JdU8oAW614n1q','W4SUWRlcUdG','ewTf','q8odkmkClh3dHcSN','yHZdHdJcRW','gCkwcCo+eW','CMC3WODt','neuKW7xcM8oTW6RcNCo5W4DNW68'];_0x2498=function(){return _0x9d7743;};return _0x2498();}class ListView{static[_0x4ff4f7(0x41e,'40Lv')]=new Map();static[_0x4ff4f7(0x3a5,'a9!f')](_0x3abe6a,_0x3f3a86){const _0x5a8fd8=_0x4ff4f7,_0x1ae40a={'sVRht':function(_0xe6d8ee,_0x1d42af){return _0xe6d8ee!==_0x1d42af;},'BnNZu':function(_0x25b630,_0x1fe4d6){return _0x25b630!==_0x1fe4d6;}},_0x48c8d5=Object[_0x5a8fd8(0x404,'froX')](_0x3abe6a)[_0x5a8fd8(0x481,']hc!')](_0x252d69=>'current_page'!==_0x252d69),_0x4d5459=Object['keys'](_0x3f3a86)[_0x5a8fd8(0x4a8,'G^63')](_0x1b3fd9=>_0x5a8fd8(0x4a9,'dj)G')!==_0x1b3fd9);if(_0x1ae40a[_0x5a8fd8(0x2d6,'5@dZ')](_0x48c8d5[_0x5a8fd8(0x393,'x3T7')],_0x4d5459[_0x5a8fd8(0x440,'2B1n')]))return!0x0;for(let _0x1324b1 of _0x4d5459)if(_0x1ae40a['BnNZu'](_0x3abe6a[_0x1324b1],_0x3f3a86[_0x1324b1]))return!0x0;for(let _0x1d5c0e of _0x48c8d5)if(!(_0x1d5c0e in _0x3f3a86))return!0x0;return!0x1;}constructor(_0x11f523,_0x1998fa={}){const _0x2e66d5=_0x4ff4f7,_0x20ffe6={'nGADf':function(_0x1a64ec,_0x58b255,_0x25c49c){return _0x1a64ec(_0x58b255,_0x25c49c);},'kgLcj':function(_0x47793c,_0x140c12){return _0x47793c(_0x140c12);},'xZYXJ':function(_0xf69e33,_0x2df461){return _0xf69e33!==_0x2df461;},'EELSS':_0x2e66d5(0x406,'&arE'),'Ruldg':_0x2e66d5(0x3d6,'fphu'),'mJdtc':function(_0x2e6934,_0x18b7c8){return _0x2e6934==_0x18b7c8;},'YJSpd':'function','IIkUh':function(_0x1cffad,_0x580e8f){return _0x1cffad===_0x580e8f;},'tgoyT':function(_0x387ca1,_0x404335){return _0x387ca1===_0x404335;},'IRWMd':_0x2e66d5(0x266,'a9!f'),'HvyOv':function(_0x255a94,_0x9ec792){return _0x255a94!=_0x9ec792;},'tJHVj':function(_0x1174a1,_0x6814ee){return _0x1174a1!=_0x6814ee;},'pPUQI':function(_0x5bc514,_0x44443a,_0x4ec680){return _0x5bc514(_0x44443a,_0x4ec680);},'vMJvY':function(_0x59a812,_0x12f460){return _0x59a812>_0x12f460;},'cROxA':function(_0x163517,_0x9af1a7){return _0x163517==_0x9af1a7;},'CSHmA':_0x2e66d5(0x185,'Qf*w'),'kduBX':'lv-listview-container','JEgub':_0x2e66d5(0x3a7,'syZ*'),'rugeJ':'lv-pagination-wrapper','IKBGa':_0x2e66d5(0x31d,'loT3'),'wMSjD':function(_0x388c3e,_0x1696bb){return _0x388c3e instanceof _0x1696bb;},'smndY':_0x2e66d5(0x390,'&arE'),'EfIQK':_0x2e66d5(0x363,']hc!'),'QQpzN':_0x2e66d5(0x4ec,'x3T7'),'OCrub':_0x2e66d5(0x262,'zBBt'),'jECop':_0x2e66d5(0x43f,'^nn['),'RGkna':'click','fnMMo':_0x2e66d5(0x41d,'mW62'),'tsuPb':_0x2e66d5(0x3d2,']#yg')};if(this[_0x2e66d5(0x252,'^nn[')]=_0x2e66d5(0x220,'j!PX')==typeof _0x11f523?_0x11f523:_0x11f523?.['getAttribute']?.('id')||_0x2e66d5(0x344,'1#kZ')+Date[_0x2e66d5(0x179,'j!PX')](),this[_0x2e66d5(0x32b,'zBBt')]=_0x1998fa,this[_0x2e66d5(0x3e4,']hc!')]=null,this[_0x2e66d5(0x343,'hJIR')]=!0x1,this[_0x2e66d5(0x30d,'9TA)')][_0x2e66d5(0x212,'81#Q')]=_0x20ffe6[_0x2e66d5(0x2c7,'iABa')](void 0x0,_0x1998fa['rememberCurrentpage'])||_0x1998fa[_0x2e66d5(0x488,'n7WD')],this[_0x2e66d5(0x402,'KIPd')]['forceRefresh']=_0x20ffe6[_0x2e66d5(0x4c5,'k7o3')](void 0x0,_0x1998fa[_0x2e66d5(0x224,'wlR5')])||_0x1998fa[_0x2e66d5(0x2b6,'x3T7')],this[_0x2e66d5(0x1e4,'g53K')][_0x2e66d5(0x1f4,'%qeY')]=_0x1998fa[_0x2e66d5(0x4c8,'^nn[')]||_0x1998fa[_0x2e66d5(0x46a,'40Lv')]||0xa,this[_0x2e66d5(0x1ea,'&arE')][_0x2e66d5(0x4f3,'5@dZ')]=_0x1998fa[_0x2e66d5(0x4c6,'[^5i')]||_0x1998fa[_0x2e66d5(0x4e3,'froX')]||{},this[_0x2e66d5(0x2a7,'j!PX')]['pagingActiveClass']=_0x1998fa['pagingActiveClass']||_0x2e66d5(0x3ba,'%W^]'),this[_0x2e66d5(0x324,'op8%')]['loadMoreText']=_0x1998fa['loadMoreText']||_0x2e66d5(0x420,'B1]1'),this[_0x2e66d5(0x310,'B1]1')][_0x2e66d5(0x35d,'k7o3')]=_0x1998fa[_0x2e66d5(0x4a3,'40Lv')]||'Loading...',this['card_options'][_0x2e66d5(0x1c7,'syZ*')]=_0x1998fa[_0x2e66d5(0x2ed,'9TA)')]||_0x20ffe6[_0x2e66d5(0x22b,'40Lv')],_0x20ffe6[_0x2e66d5(0x34f,'%W^]')](_0x20ffe6['YJSpd'],typeof _0x1998fa[_0x2e66d5(0x21e,'^nn[')])&&(this[_0x2e66d5(0x3a3,'syZ*')]['beforeRender']=()=>{}),_0x20ffe6[_0x2e66d5(0x487,'9TA)')]!=typeof _0x1998fa[_0x2e66d5(0x2a5,'%qeY')]&&(this[_0x2e66d5(0x4e4,'iZyv')][_0x2e66d5(0x4b4,'k7o3')]=()=>{}),_0x20ffe6[_0x2e66d5(0x19b,'lTsZ')](_0x20ffe6[_0x2e66d5(0x1e5,'loT3')],typeof _0x1998fa[_0x2e66d5(0x350,'9&9p')])&&(this['card_options'][_0x2e66d5(0x211,'loT3')]=()=>{}),this[_0x2e66d5(0x3c8,'fphu')][_0x2e66d5(0x23c,'KIPd')]){const _0x4fd607=_0x20ffe6[_0x2e66d5(0x368,'40Lv')](parseInt,sessionStorage[_0x2e66d5(0x1c2,'Qf*w')](this['container_id']+'_page'),0xa);!isNaN(_0x4fd607)&&_0x20ffe6['vMJvY'](_0x4fd607,0x0)&&(this[_0x2e66d5(0x354,'tZw$')]=_0x4fd607);}if(this['current_filter']=null,this[_0x2e66d5(0x44c,'mW62')]=null,this[_0x2e66d5(0x367,'KoJS')]={},this[_0x2e66d5(0x3ea,']#yg')]=null,this[_0x2e66d5(0x482,'Qf*w')]=_0x20ffe6[_0x2e66d5(0x3be,'40Lv')](_0x20ffe6[_0x2e66d5(0x347,'KoJS')],typeof _0x11f523)?document[_0x2e66d5(0x351,'iZyv')](_0x11f523):_0x11f523,!this['container'])throw new Error(_0x2e66d5(0x371,'9TA)')+_0x11f523+_0x2e66d5(0x2c6,'wlR5'));this['container'][_0x2e66d5(0x259,'froX')]='',this[_0x2e66d5(0x3ee,'%qeY')]=document[_0x2e66d5(0x227,'1#kZ')]('div'),this[_0x2e66d5(0x433,'G^63')][_0x2e66d5(0x21d,'Qf*w')][_0x2e66d5(0x454,'81#Q')](_0x20ffe6[_0x2e66d5(0x15b,'40Lv')]),this[_0x2e66d5(0x30d,'9TA)')][_0x2e66d5(0x32d,'AM8k')]&&this[_0x2e66d5(0x30a,'[^5i')][_0x2e66d5(0x372,'op8%')][_0x2e66d5(0x16f,'iABa')](this[_0x2e66d5(0x1e4,'g53K')][_0x2e66d5(0x25e,'&arE')]),this[_0x2e66d5(0x3cf,'fphu')][_0x2e66d5(0x285,'^nn[')](this[_0x2e66d5(0x3ee,'%qeY')]),this[_0x2e66d5(0x33a,'xKWk')]=document['createElement'](_0x20ffe6['JEgub']),this[_0x2e66d5(0x398,'tZw$')]['classList'][_0x2e66d5(0x222,'KoJS')](_0x20ffe6[_0x2e66d5(0x3e1,'[^5i')]);const _0x38dc42=document['createElement']('ul');if(_0x38dc42['classList'][_0x2e66d5(0x168,'H(#3')](_0x20ffe6[_0x2e66d5(0x250,'syZ*')]),this[_0x2e66d5(0x3ef,'81#Q')]['appendChild'](_0x38dc42),_0x20ffe6[_0x2e66d5(0x29d,'G^63')](this[_0x2e66d5(0x359,'lTsZ')]['paginationContainer'],HTMLElement)?(this['card_options'][_0x2e66d5(0x29c,'fphu')][_0x2e66d5(0x4cd,'AM8k')]='',this[_0x2e66d5(0x1e4,'g53K')][_0x2e66d5(0x45e,'40Lv')][_0x2e66d5(0x450,'op8%')](this['pagination_wrapper'])):this[_0x2e66d5(0x184,'9&9p')][_0x2e66d5(0x37f,'b2#7')](this['pagination_wrapper']),this['pagination_container']=_0x38dc42,this[_0x2e66d5(0x2d9,'%qeY')]['columns']){this[_0x2e66d5(0x2d2,'40Lv')]=_0x2e66d5(0x1dc,'IX(J');const _0x3923d8=document['createElement'](_0x20ffe6[_0x2e66d5(0x425,'[^5i')]);_0x3923d8['className']=this[_0x2e66d5(0x3c8,'fphu')]['tableClass']||_0x20ffe6[_0x2e66d5(0x45f,'9&9p')],_0x3923d8['id']=this[_0x2e66d5(0x2dd,'g53K')]+_0x2e66d5(0x4e0,'j!PX'),_0x3923d8[_0x2e66d5(0x2fe,'AM8k')](document['createElement'](_0x2e66d5(0x4b9,'ccP5'))),_0x3923d8[_0x2e66d5(0x244,'KoJS')](document['createElement'](_0x20ffe6[_0x2e66d5(0x3a9,'j!PX')])),this[_0x2e66d5(0x31b,'KIPd')][_0x2e66d5(0x244,'KoJS')](_0x3923d8),this[_0x2e66d5(0x352,'&^3b')]=_0x3923d8;}else this[_0x2e66d5(0x39d,'zBBt')]=_0x20ffe6[_0x2e66d5(0x43b,'81#Q')](_0x20ffe6[_0x2e66d5(0x2a6,'ccP5')],typeof this[_0x2e66d5(0x1f6,'&^3b')]['renderItems'])?_0x20ffe6[_0x2e66d5(0x1cc,'iZyv')]:_0x20ffe6[_0x2e66d5(0x3c9,'mW62')];this[_0x2e66d5(0x3f4,'KIPd')]=new Set();const{multipleSelectOptions:_0x8c2326={}}=this[_0x2e66d5(0x1f6,'&^3b')];this[_0x2e66d5(0x1ee,'5@dZ')]=_0x8c2326[_0x2e66d5(0x483,'dj)G')]||_0x20ffe6[_0x2e66d5(0x1b4,'H(#3')],this['keyField']=_0x8c2326[_0x2e66d5(0x1c5,'H(#3')]||'id',_0x20ffe6[_0x2e66d5(0x1cf,'mW62')](_0x20ffe6['smndY'],this[_0x2e66d5(0x3c0,'AM8k')])&&this['list_container'][_0x2e66d5(0x28b,'iABa')](_0x20ffe6[_0x2e66d5(0x442,'g53K')],_0xebbeec=>{const _0x2b3c68=_0x2e66d5;if(_0x20ffe6['Ruldg']!==_0x20ffe6['Ruldg']){const _0x1cb422={'zSMWM':function(_0x3443c6,_0x53f234,_0x8f051f){const _0x43e9d6=_0x16c6;return _0x20ffe6[_0x43e9d6(0x4b6,'5@dZ')](_0x3443c6,_0x53f234,_0x8f051f);},'kdonr':function(_0x4014d5,_0x158222){return _0x20ffe6['kgLcj'](_0x4014d5,_0x158222);},'SLDyV':function(_0x35f631,_0x37c3a7){const _0x15bc54=_0x16c6;return _0x20ffe6[_0x15bc54(0x397,'KIPd')](_0x35f631,_0x37c3a7);}},_0x41da99=_0x20ffe6['nGADf'](_0x462aad,_0x3f43cb,0xa);this[_0x2b3c68(0x1b3,'XxV(')]['querySelectorAll'](_0x20ffe6[_0x2b3c68(0x47b,'IX(J')])[_0x2b3c68(0x3c7,'j!PX')](_0x2c01f6=>{const _0x21f5d7=_0x2b3c68,_0x3832ac=_0x1cb422[_0x21f5d7(0x4c9,'XxV(')](_0x54379f,_0x2c01f6[_0x21f5d7(0x3e7,'syZ*')]['page'],0xa);_0x1cb422[_0x21f5d7(0x33b,'op8%')](_0x287e0b,_0x3832ac)||_0x1cb422['SLDyV'](_0x3832ac,_0x41da99)?_0x2c01f6['classList'][_0x21f5d7(0x467,'a9!f')](this[_0x21f5d7(0x4da,'x3T7')][_0x21f5d7(0x493,'3(ov')]):_0x2c01f6['classList'][_0x21f5d7(0x3fb,'zBBt')](this['card_options'][_0x21f5d7(0x3f3,'lTsZ')]);});}else{const _0x2ba469=_0xebbeec[_0x2b3c68(0x2f7,'fphu')][_0x2b3c68(0x1e2,'&arE')]('input.'+this['checkboxClass']);if(!_0x2ba469)return;const _0xc21324=_0x2ba469[_0x2b3c68(0x1af,'xKWk')]('tr');if(!_0xc21324)return;const _0x53b252=_0xc21324[_0x2b3c68(0x2e4,'XxV(')]?.[this['keyField']];if(!_0x53b252)return;const _0x2da89f=_0x2ba469[_0x2b3c68(0x361,'XxV(')];_0x2da89f?this[_0x2b3c68(0x28f,'81#Q')]['add'](_0x53b252):this[_0x2b3c68(0x18a,'tZw$')][_0x2b3c68(0x3f8,'xKWk')](_0x53b252),_0xc21324[_0x2b3c68(0x2d7,'H(#3')][_0x2b3c68(0x468,'x3T7')]=_0x2da89f?'1':'0',_0x20ffe6[_0x2b3c68(0x25a,'wlR5')](_0x20ffe6[_0x2b3c68(0x30e,'%qeY')],typeof this[_0x2b3c68(0x1ea,'&arE')][_0x2b3c68(0x37c,'2B1n')])&&this[_0x2b3c68(0x359,'lTsZ')][_0x2b3c68(0x37c,'2B1n')](this,_0xc21324);}}),document[_0x2e66d5(0x33d,'dj)G')](_0x20ffe6[_0x2e66d5(0x261,'5@dZ')],_0x1582dc=>{const _0x251534=_0x2e66d5;_0x20ffe6[_0x251534(0x403,'2B1n')](_0x251534(0x303,'j!PX'),_0x1582dc['key'])&&this['removeActivePopover']();}),window[_0x2e66d5(0x4eb,'1#kZ')](_0x20ffe6[_0x2e66d5(0x1a7,'3(ov')],this[_0x2e66d5(0x329,'froX')][_0x2e66d5(0x23f,'FiwE')](this)),ListView[_0x2e66d5(0x48a,'XxV(')][_0x2e66d5(0x187,'wlR5')](this[_0x2e66d5(0x472,'QY2s')],this);}[_0x4ff4f7(0x219,'x3T7')](){const _0x1de0e0=_0x4ff4f7;return Array[_0x1de0e0(0x1ed,'ccP5')](this[_0x1de0e0(0x313,'syZ*')]);}[_0x4ff4f7(0x435,'n7WD')](){const _0x45063e=_0x4ff4f7;return this[_0x45063e(0x1fb,'1#kZ')]();}['getListContainer'](){const _0x5abb67=_0x4ff4f7;return this[_0x5abb67(0x30a,'[^5i')];}[_0x4ff4f7(0x4d9,'ccP5')](){return this['table'];}[_0x4ff4f7(0x458,'loT3')](_0x1cc117){const _0x3fa6d3=_0x4ff4f7;let _0x25503e=_0x1cc117[0x0];return _0x25503e?Object[_0x3fa6d3(0x3c5,'loT3')](_0x25503e)['map'](_0x517ee8=>({'title':_0x517ee8[_0x3fa6d3(0x3da,'iZyv')](///g,'\x20'),'data':_0x517ee8})):[];}['generateTableHeader'](_0x4208c0=[]){const _0x1ca485=_0x4ff4f7,_0x543b2f={'bHOnH':'col','EseeX':_0x1ca485(0x2f2,'IX(J'),'UPXtj':function(_0x171b6d,_0x585532){return _0x171b6d===_0x585532;},'CtiHC':function(_0x3fd91c,_0x4cf99d){return _0x3fd91c===_0x4cf99d;},'etyrA':_0x1ca485(0x413,'5@dZ'),'XbRTF':function(_0x20731d,_0x562311){return _0x20731d==_0x562311;},'eMtTl':_0x1ca485(0x36d,'5@dZ'),'yryrv':function(_0x33311d,_0x3e9f4f){return _0x33311d!=_0x3e9f4f;},'cxMhx':_0x1ca485(0x17d,'k7o3')},_0x5a2aae=this,_0x17382f=_0x543b2f[_0x1ca485(0x23e,'40Lv')](_0x543b2f[_0x1ca485(0x274,'hJIR')],typeof LocaleManager);return _0x1ca485(0x2f9,'9TA)')+_0x4208c0[_0x1ca485(0x173,'&^3b')](_0xa616b8=>{const _0x1f7145=_0x1ca485,_0x4e7b8a={'ONwBs':_0x1f7145(0x3b7,']hc!')};let _0x1010a7='',_0x58ee7c='';const _0x2db457=_0xa616b8[_0x1f7145(0x28d,'2B1n')]||(_0xa616b8[_0x1f7145(0x4bf,'9TA)')]||_0x543b2f['bHOnH'])[_0x1f7145(0x23b,'a9!f')]()[_0x1f7145(0x3dc,'KIPd')]()['replace'](//^a-z0-9]+/g,'_')['replace'](//_+|_+$/g,'');let _0x296f0e=_0xa616b8[_0x1f7145(0x465,'XxV(')]??'';if(_0xa616b8['transTitle']&&_0x543b2f[_0x1f7145(0x380,'op8%')]==typeof _0xa616b8[_0x1f7145(0x176,'%W^]')]){const _0x4251e8=_0xa616b8[_0x1f7145(0x306,'G^63')]['split']('.');if(_0x543b2f['UPXtj'](0x2,_0x4251e8['length'])){if(_0x543b2f[_0x1f7145(0x1c1,'KoJS')](_0x1f7145(0x369,'FiwE'),_0x543b2f[_0x1f7145(0x40a,'xKWk')])){const _0x429005=_0x4251e8[0x0],_0x5f4ed4=_0x4251e8[0x1];_0x58ee7c=_0x1f7145(0x366,'tZw$')+_0x429005+'.'+_0x5f4ed4+'\x22',_0x17382f&&_0x543b2f[_0x1f7145(0x321,'k7o3')](_0x543b2f['eMtTl'],typeof LocaleManager[_0x1f7145(0x2ab,'KIPd')])&&(_0x296f0e=LocaleManager[_0x1f7145(0x37a,'b2#7')](_0x5f4ed4,_0x429005));}else{const _0x316cc7=_0x3f363c['querySelector'](_0x4e7b8a[_0x1f7145(0x446,'%qeY')]);_0x316cc7&&_0x316cc7[_0x1f7145(0x370,'&^3b')]();}}}return _0x1010a7=_0x543b2f['XbRTF'](_0x543b2f['eMtTl'],typeof _0xa616b8[_0x1f7145(0x35a,'mW62')])?_0xa616b8[_0x1f7145(0x278,'k7o3')](_0x5a2aae,_0xa616b8)||'':_0xa616b8[_0x1f7145(0x3d7,'k7o3')]?_0xa616b8[_0x1f7145(0x44e,'40Lv')]:_0x296f0e,_0x1f7145(0x3f1,'ccP5')+_0x2db457+'\x22'+_0x58ee7c+'>'+_0x1010a7+_0x1f7145(0x4c1,'FiwE');})['join']('')+'</tr>';}[_0x4ff4f7(0x20f,'n7WD')](_0x5745a8,_0x35f41d){const _0x5d1d7b=_0x4ff4f7,_0x1d0723={'vrlUP':'col','qQbLF':'string','RrdfM':function(_0x20cbe5,_0x567d08){return _0x20cbe5===_0x567d08;},'khUIN':function(_0x47012f,_0x238c98){return _0x47012f==_0x238c98;},'ZvNny':_0x5d1d7b(0x31c,'3(ov'),'Yowjz':function(_0xcf245c,_0x3e8007){return _0xcf245c!=_0x3e8007;},'geJkw':'undefined','tcDgL':_0x5d1d7b(0x196,'hJIR'),'wBpZf':function(_0xe99978,_0xb80e58,_0x14fc72){return _0xe99978(_0xb80e58,_0x14fc72);}},_0x54f66a=(_0x35f41d=_0x35f41d||this['card_options']['api'])[_0x5d1d7b(0x374,'[^5i')]||this[_0x5d1d7b(0x232,'2B1n')][_0x5d1d7b(0x4aa,'3(ov')];if(_0x5d1d7b(0x342,'1#kZ')==typeof _0x54f66a){if(_0x1d0723['RrdfM'](_0x1d0723[_0x5d1d7b(0x1c4,'op8%')],'bvyDQ')){const _0x386a9f=this,_0x4d1d02=_0x1d0723[_0x5d1d7b(0x2ee,'iZyv')](_0x1d0723['geJkw'],typeof LocaleManager);return _0x5d1d7b(0x308,'wlR5')+_0x455d90[_0x5d1d7b(0x502,']hc!')](_0x586f31=>{const _0x427b79=_0x5d1d7b;let _0x5cdebd='',_0x252a5d='';const _0x1f8f9c=_0x586f31[_0x427b79(0x484,'AM8k')]||(_0x586f31[_0x427b79(0x336,'KoJS')]||_0x1d0723['vrlUP'])[_0x427b79(0x4ca,'Qf*w')]()[_0x427b79(0x377,'mW62')]()[_0x427b79(0x3ec,'9TA)')](//^a-z0-9]+/g,'_')[_0x427b79(0x21b,'AM8k')](//_+|_+$/g,'');let _0x3ac46a=_0x586f31[_0x427b79(0x280,'IX(J')]??'';if(_0x586f31[_0x427b79(0x46b,'k7o3')]&&_0x1d0723[_0x427b79(0x165,'hJIR')]==typeof _0x586f31[_0x427b79(0x449,'ccP5')]){const _0x16e180=_0x586f31[_0x427b79(0x34b,'g53K')][_0x427b79(0x4f2,'9TA)')]('.');if(_0x1d0723[_0x427b79(0x4e6,'&^3b')](0x2,_0x16e180[_0x427b79(0x2b0,'zBBt')])){const _0x3c290c=_0x16e180[0x0],_0x3e2588=_0x16e180[0x1];_0x252a5d='\x20vslang=\x22'+_0x3c290c+'.'+_0x3e2588+'\x22',_0x4d1d02&&_0x1d0723[_0x427b79(0x416,'IX(J')](_0x1d0723['ZvNny'],typeof LocaleManager[_0x427b79(0x1cb,'op8%')])&&(_0x3ac46a=LocaleManager[_0x427b79(0x445,']hc!')](_0x3e2588,_0x3c290c));}}return _0x5cdebd='function'==typeof _0x586f31[_0x427b79(0x1bf,'&arE')]?_0x586f31[_0x427b79(0x4cf,'n7WD')](_0x386a9f,_0x586f31)||'':_0x586f31[_0x427b79(0x43a,'G^63')]?_0x586f31[_0x427b79(0x312,'dj)G')]:_0x3ac46a,'<th\x20class=\x22'+_0x1f8f9c+'\x22'+_0x252a5d+'>'+_0x5cdebd+_0x427b79(0x1bc,'XxV(');})[_0x5d1d7b(0x2be,'syZ*')]('')+_0x5d1d7b(0x315,'[^5i');}else{const _0x3b30d7=_0x1d0723['wBpZf'](_0x54f66a,_0x5745a8,this);return _0x3b30d7||(this[_0x5d1d7b(0x452,'XxV(')][_0x5d1d7b(0x32f,'k7o3')]?[]:this[_0x5d1d7b(0x3d8,'9&9p')]());}}return _0x5745a8[_0x5d1d7b(0x1c9,'hJIR')];}[_0x4ff4f7(0x4b1,'9TA)')](){const _0xb498c7=_0x4ff4f7,_0x43c587={'dZOTy':_0xb498c7(0x326,'k7o3')};return{'status':'OK','status_code':0xc8,'data':{'current_page':0x1,'data':[],'first_page_url':_0x43c587[_0xb498c7(0x38c,'n7WD')],'from':null,'last_page':0x1,'last_page_url':_0x43c587[_0xb498c7(0x360,'2B1n')],'links':[],'next_page_url':null,'path':'/','per_page':0xa,'prev_page_url':null,'to':null,'total':0x0}};}[_0x4ff4f7(0x4ee,'loT3')](_0x413661=null,_0xd94bf9=null,_0x22ddbf=null){const _0x405daf=_0x4ff4f7,_0x10872a={'BmKiY':function(_0xfd3db5,_0x1268ab){return _0xfd3db5||_0x1268ab;}};_0xd94bf9=_0x10872a[_0x405daf(0x3b1,'froX')](_0xd94bf9,{'current_page':0x1}),this['showPage'](_0x413661,_0xd94bf9,_0x22ddbf);}['search'](_0x3396ed=null,_0x24c692=null){const _0x848524=_0x4ff4f7;this[_0x848524(0x20b,'op8%')](_0x3396ed,null,_0x24c692);}[_0x4ff4f7(0x330,'n7WD')](_0x5cf35a){const _0x24659c=_0x4ff4f7;this[_0x24659c(0x1f9,'1#kZ')]['api_params']=_0x5cf35a;}[_0x4ff4f7(0x2e8,'XxV(')](_0x35a7f5={}){const _0x369684=_0x4ff4f7,_0xbad02f={'GMudv':function(_0x1ec3fd,_0x131edf){return _0x1ec3fd(_0x131edf);},'XxGTQ':function(_0xe00bc7,_0xab5594){return _0xe00bc7<_0xab5594;},'dGpyK':function(_0x44cc70,_0x5414c0){return _0x44cc70==_0x5414c0;},'bAErk':_0x369684(0x3c6,'mW62'),'tNTxP':function(_0x4da9ab,_0x3615bf){return _0x4da9ab===_0x3615bf;}},_0x3b45d6=_0x35a7f5['api']||{},_0x4ba647=_0x3b45d6['endpoint']??_0x35a7f5[_0x369684(0x241,'g53K')]??null;let _0x517952=_0x3b45d6[_0x369684(0x34d,'%W^]')]??_0x369684(0x2a4,'&^3b');_0x517952=String(_0x517952)[_0x369684(0x453,'81#Q')]();let _0x1d0e49=_0x3b45d6['cacheTTL']??0xbb8;return _0x1d0e49=_0xbad02f[_0x369684(0x26e,'a9!f')](Number,_0x1d0e49),(!Number[_0x369684(0x4ad,'2B1n')](_0x1d0e49)||_0xbad02f[_0x369684(0x167,'QY2s')](_0x1d0e49,0x0))&&(_0x1d0e49=0xbb8),{'enabled':!!_0x4ba647,'endpoint':_0x4ba647,'method':_0x517952,'cacheTTL':_0x1d0e49,'apiCluster':_0x3b45d6['apiCluster']??_0x3b45d6['cluster']??null,'loader':_0x3b45d6[_0x369684(0x4a4,']#yg')]??null,'processResponse':_0xbad02f[_0x369684(0x4ae,'1#kZ')](_0x369684(0x24d,'loT3'),typeof _0x3b45d6[_0x369684(0x292,'ccP5')])?_0x3b45d6[_0x369684(0x2e0,']#yg')]:_0xbad02f['dGpyK'](_0xbad02f[_0x369684(0x36b,'9TA)')],typeof _0x35a7f5[_0x369684(0x289,'2B1n')])?_0x35a7f5[_0x369684(0x35c,'b2#7')]:null,'onResponse':_0xbad02f[_0x369684(0x316,'op8%')](!0x0,_0x35a7f5[_0x369684(0x40e,'b2#7')])?_0x3b45d6[_0x369684(0x1a5,'2B1n')]:null};}[_0x4ff4f7(0x15e,'g53K')](_0x141a12=null,_0x51f6cf=null,_0x3e5177=null){const _0x3d22b1=_0x4ff4f7,_0x5605c8={'QqoHx':'function','FoMGp':function(_0x534c93){return _0x534c93();},'eNRSJ':function(_0x212824,_0x1c3466){return _0x212824==_0x1c3466;},'isQxk':function(_0x2527e0,_0x8ed0f9,_0x4937e8){return _0x2527e0(_0x8ed0f9,_0x4937e8);},'qeqNX':_0x3d22b1(0x1bd,'k7o3'),'UOCvY':_0x3d22b1(0x4d7,'hJIR'),'vMpXN':_0x3d22b1(0x405,'k7o3'),'bRRcC':function(_0x1410b8,_0x393f11){return _0x1410b8===_0x393f11;},'ZsGjx':function(_0xf113ba,_0x1d203d){return _0xf113ba!==_0x1d203d;},'SQiHY':function(_0x3b7187,_0x2d6162){return _0x3b7187>_0x2d6162;},'saESz':function(_0x16a4da,_0x5a906){return _0x16a4da<_0x5a906;},'LiozH':function(_0x1c3783,_0x158f61){return _0x1c3783===_0x158f61;},'IsZIN':_0x3d22b1(0x3e2,'&arE'),'DHLtj':function(_0x2f1935,_0x433b96){return _0x2f1935>_0x433b96;},'FqBIu':_0x3d22b1(0x49b,'hJIR')};let _0x50ee71=null;const _0x8e97f=_0x5605c8[_0x3d22b1(0x4a2,'iZyv')](void 0x0,_0x51f6cf?.['forceRefresh'])?_0x51f6cf['forceRefresh']:this[_0x3d22b1(0x2c4,'3(ov')]['forceRefresh']??!0x0;_0x51f6cf&&(_0x51f6cf[_0x3d22b1(0x1e0,'n7WD')]&&(_0x50ee71=+_0x51f6cf[_0x3d22b1(0x2a0,'b2#7')]),Object[_0x3d22b1(0x37d,'k7o3')](this[_0x3d22b1(0x1f6,'&^3b')],_0x51f6cf));const _0x19b13f=this[_0x3d22b1(0x3e5,'hJIR')]['api_params']||{},_0x3c56ab=_0x141a12?{..._0x19b13f,..._0x141a12}:{..._0x19b13f};_0x51f6cf?.[_0x3d22b1(0x302,'loT3')]&&(_0x3c56ab[_0x3d22b1(0x464,'&^3b')]=_0x51f6cf[_0x3d22b1(0x256,'wlR5')]),_0x50ee71&&_0x5605c8[_0x3d22b1(0x2f5,'^nn[')](_0x50ee71,0x0)&&(this['current_page']=_0x50ee71),(!this[_0x3d22b1(0x4d4,'k7o3')]||_0x5605c8[_0x3d22b1(0x36f,'IX(J')](this[_0x3d22b1(0x490,']#yg')],0x1))&&(this[_0x3d22b1(0x251,'9&9p')]=0x1),_0x5605c8[_0x3d22b1(0x41b,'lTsZ')](_0x5605c8[_0x3d22b1(0x408,'g53K')],this[_0x3d22b1(0x2b4,']#yg')])&&this[_0x3d22b1(0x40c,'fphu')]?_0x3c56ab['cursor']=this[_0x3d22b1(0x320,'5@dZ')]:_0x3c56ab['current_page']=this['current_page'],_0x3c56ab[_0x3d22b1(0x411,'tZw$')]=this[_0x3d22b1(0x25f,'40Lv')][_0x3d22b1(0x28e,']hc!')],((_0x8e97f||ListView[_0x3d22b1(0x1d3,'3(ov')](this[_0x3d22b1(0x270,'n7WD')]||{},_0x3c56ab))&&(this[_0x3d22b1(0x42f,'3(ov')]=null),this[_0x3d22b1(0x2c0,'loT3')]=_0x3c56ab);const _0x3c8aa0=()=>{const _0x1afba5=_0x3d22b1;this[_0x1afba5(0x296,'op8%')](this['current_page']),_0x5605c8['QqoHx']==typeof _0x3e5177&&_0x5605c8[_0x1afba5(0x286,'x3T7')](_0x3e5177);};if(this[_0x3d22b1(0x30f,']hc!')][_0x3d22b1(0x300,'40Lv')]){if(this['clientPageData'])this[_0x3d22b1(0x23a,'5@dZ')][_0x3d22b1(0x498,'xKWk')](this[_0x3d22b1(0x175,'k7o3')]),this[_0x3d22b1(0x386,'tZw$')](this[_0x3d22b1(0x231,'B1]1')],this['current_page']),_0x5605c8[_0x3d22b1(0x30c,']hc!')](_0x3c8aa0);else{const _0xccf176=_0x3c56ab[_0x3d22b1(0x38f,'k7o3')]||_0x3c56ab[_0x3d22b1(0x2bd,'fphu')],_0x4fcdef=_0xccf176?0x0:0x7d0;_0xccf176&&(_0x3c56ab[_0x3d22b1(0x438,'%W^]')]=0x1,_0x3c56ab[_0x3d22b1(0x302,'loT3')]=null);const _0x14f693=this['_resolveApi'](this[_0x3d22b1(0x23a,'5@dZ')]),_0x33d68a={'loader':_0x14f693[_0x3d22b1(0x311,'tZw$')]??!0x0,'cluster':_0x14f693[_0x3d22b1(0x4a6,']hc!')],'useCache':_0x5605c8['DHLtj'](_0x14f693[_0x3d22b1(0x3d0,'3(ov')],0x0),'cacheTTL':_0x4fcdef,'method':_0x14f693[_0x3d22b1(0x160,'1#kZ')]??_0x5605c8[_0x3d22b1(0x3e6,'^nn[')]};vsapi[_0x3d22b1(0x317,'mW62')](_0x14f693[_0x3d22b1(0x46f,'FiwE')],_0x3c56ab,_0x33d68a)[_0x3d22b1(0x27a,'hJIR')](_0x191809=>{const _0x594a5e=_0x3d22b1;_0x14f693[_0x594a5e(0x287,'j!PX')]&&_0x5605c8['eNRSJ'](_0x5605c8['QqoHx'],typeof _0x14f693['onResponse'])&&_0x5605c8[_0x594a5e(0x1db,'tZw$')](onResponse,_0x191809,this);const _0x31a01c=this[_0x594a5e(0x37e,'k7o3')](_0x191809,_0x14f693);this[_0x594a5e(0x451,']hc!')](_0x31a01c),this[_0x594a5e(0x4d4,'k7o3')]>this[_0x594a5e(0x41c,'ccP5')][_0x594a5e(0x2f1,'fphu')]&&(this[_0x594a5e(0x400,'hJIR')]=this[_0x594a5e(0x3d5,'&^3b')][_0x594a5e(0x158,'XxV(')]||0x1),this[_0x594a5e(0x18b,'H(#3')][_0x594a5e(0x21e,'^nn[')](this['clientPageData']),this[_0x594a5e(0x3e8,'3(ov')](this['clientPageData'],this[_0x594a5e(0x489,'x3T7')]),_0x5605c8['FoMGp'](_0x3c8aa0);});}return;}const _0x26cae5=_0x3c56ab[_0x3d22b1(0x4ce,'hJIR')]||_0x3c56ab[_0x3d22b1(0x1ba,'tZw$')],_0x6af5a3=_0x26cae5?0x0:0x7d0;_0x26cae5&&(_0x3c56ab[_0x3d22b1(0x2e5,'mW62')]=0x1,_0x3c56ab[_0x3d22b1(0x2f6,']#yg')]=null);const _0x205e8e=this[_0x3d22b1(0x3bb,'G^63')](this[_0x3d22b1(0x3cb,'n7WD')]),_0x4a45a5={'loader':_0x205e8e[_0x3d22b1(0x238,'zBBt')]??!0x0,'cluster':_0x205e8e[_0x3d22b1(0x230,'H(#3')],'useCache':_0x5605c8[_0x3d22b1(0x2bc,'tZw$')](_0x205e8e[_0x3d22b1(0x4c0,'9TA)')],0x0),'cacheTTL':_0x6af5a3,'method':_0x205e8e[_0x3d22b1(0x49e,'XxV(')]??_0x5605c8[_0x3d22b1(0x2de,'%qeY')]};vsapi[_0x3d22b1(0x396,'hJIR')](_0x205e8e[_0x3d22b1(0x460,'fphu')],_0x3c56ab,{'loader':this['card_options'][_0x3d22b1(0x2a2,'b2#7')],'apiOptions':_0x4a45a5})[_0x3d22b1(0x246,'zBBt')](_0x39e6f5=>{const _0x48fa84=_0x3d22b1,_0x222fab={'xpgvw':function(_0x4635bf,_0x50cae8){return _0x4635bf===_0x50cae8;},'ucokU':_0x5605c8['qeqNX']};if(_0x5605c8[_0x48fa84(0x3a2,'a9!f')]!==_0x5605c8['vMpXN']){_0x205e8e['onResponse']&&_0x5605c8[_0x48fa84(0x2c3,'H(#3')](_0x5605c8['QqoHx'],typeof _0x205e8e['onResponse'])&&_0x205e8e[_0x48fa84(0x287,'j!PX')](_0x39e6f5,this);const _0x16cb5a=_0x5605c8['bRRcC'](0x195,_0x39e6f5[_0x48fa84(0x3f0,'wlR5')])?this[_0x48fa84(0x504,'^nn[')]():this['handleProcessResponse'](_0x39e6f5,_0x205e8e),_0x2272ff=_0x16cb5a['last_page']||_0x16cb5a[_0x48fa84(0x341,'%qeY')]?.[_0x48fa84(0x3e9,'&arE')]||0x1;this['current_page']>_0x2272ff&&(this[_0x48fa84(0x32c,'froX')]=_0x2272ff||0x1,this[_0x48fa84(0x4bb,'81#Q')][_0x48fa84(0x345,'x3T7')]&&sessionStorage['setItem'](this[_0x48fa84(0x1f2,'9&9p')]+_0x48fa84(0x1b1,'froX'),this[_0x48fa84(0x4dd,'xKWk')])),this[_0x48fa84(0x378,'3(ov')]=!!_0x16cb5a[_0x48fa84(0x2f3,'2B1n')],this[_0x48fa84(0x48b,'1#kZ')]=_0x16cb5a[_0x48fa84(0x417,'G^63')]||null,this[_0x48fa84(0x496,'a9!f')][_0x48fa84(0x387,'AM8k')](_0x16cb5a[_0x48fa84(0x281,'5@dZ')]),this[_0x48fa84(0x255,'FiwE')](_0x16cb5a),_0x5605c8[_0x48fa84(0x19e,'fphu')](_0x3c8aa0);}else _0x222fab[_0x48fa84(0x162,'hJIR')](_0x222fab['ucokU'],_0xd554cb[_0x48fa84(0x27d,'[^5i')])&&this[_0x48fa84(0x334,'x3T7')]();});}[_0x4ff4f7(0x3de,'9&9p')](_0x39a5be=[]){const _0x4dd5ff=_0x4ff4f7,_0x472748={'HmKRb':function(_0x381095,_0xdf925e){return _0x381095<_0xdf925e;},'TxVli':function(_0xe8454f,_0x5d7233){return _0xe8454f>=_0x5d7233;},'EBysb':function(_0x1998e2,_0xa1b747){return _0x1998e2-_0xa1b747;}};let _0x12a3e9=this['card_options'][_0x4dd5ff(0x3fc,'j!PX')],_0x1ffee3=0x0,_0x2215dc=0x0;this[_0x4dd5ff(0x16d,'G^63')]={};let _0x1e58ad=[],_0x3c0bd5=0x0;for(let _0x38c905=0x0;_0x472748[_0x4dd5ff(0x305,'[^5i')](_0x38c905,_0x39a5be[_0x4dd5ff(0x34e,'g53K')]);_0x38c905++)_0x1e58ad[_0x4dd5ff(0x38b,'tZw$')](_0x39a5be[_0x38c905]),_0x3c0bd5++,(_0x472748[_0x4dd5ff(0x35b,'xKWk')](_0x3c0bd5,_0x12a3e9)||_0x38c905===_0x472748[_0x4dd5ff(0x192,'dj)G')](_0x39a5be[_0x4dd5ff(0x29e,'[^5i')],0x1))&&(_0x1ffee3++,_0x2215dc+=_0x3c0bd5,this['clientPageData'][_0x1ffee3]=_0x1e58ad,_0x1e58ad=[],_0x3c0bd5=0x0);this[_0x4dd5ff(0x462,'zBBt')]={'current_page':this[_0x4dd5ff(0x438,'%W^]')],'last_page':_0x1ffee3,'total':_0x2215dc,'per_page':_0x12a3e9};}[_0x4ff4f7(0x268,'G^63')](_0x99a328,_0x241219=null){const _0x302852=_0x4ff4f7,_0x72698a={'LlULt':function(_0x224264,_0x456143){return _0x224264===_0x456143;},'VcTqo':'custom'};let _0x2f867d=_0x99a328[_0x241219]??[];this['pagingInfo']['current_page']=_0x241219||this['current_page'];const _0x575d2f=_0x72698a[_0x302852(0x271,'wlR5')](_0x72698a[_0x302852(0x4c7,'iABa')],this[_0x302852(0x2cb,'x3T7')])?this[_0x302852(0x239,'loT3')](_0x2f867d):0x1===this[_0x302852(0x279,'XxV(')](_0x2f867d);this[_0x302852(0x2a8,'syZ*')](this['pagingInfo'],_0x575d2f),this['card_options'][_0x302852(0x456,'Qf*w')](_0x2f867d,this);}[_0x4ff4f7(0x1eb,'dj)G')](_0xc3a61e){const _0x1484a1=_0x4ff4f7,_0x1de527={'EKmwM':function(_0x3d3bc1,_0x313b14){return _0x3d3bc1!==_0x313b14;},'DQxxR':'cursor','QBJip':_0x1484a1(0x3ad,'g53K'),'JtjxV':function(_0x1ff35c,_0xe1a619){return _0x1ff35c===_0xe1a619;}};_0x1de527[_0x1484a1(0x4fb,'froX')](void 0x0,_0xc3a61e[_0x1484a1(0x3e4,']hc!')])?(this['nextCursor']=_0xc3a61e[_0x1484a1(0x469,'QY2s')],this[_0x1484a1(0x4a5,'zBBt')]=_0x1de527[_0x1484a1(0x198,'B1]1')]):this['paginationMode']=_0x1484a1(0x2d1,'iZyv');const _0x31fa86=_0x1de527[_0x1484a1(0x459,'hJIR')]===this[_0x1484a1(0x47c,'9&9p')]?this[_0x1484a1(0x307,'KoJS')](_0xc3a61e['data']):_0x1de527[_0x1484a1(0x30b,'^nn[')](0x1,this[_0x1484a1(0x470,'81#Q')](_0xc3a61e[_0x1484a1(0x4f8,'ccP5')]));_0x1de527[_0x1484a1(0x1ac,']#yg')](_0x1484a1(0x2ac,'b2#7'),this[_0x1484a1(0x327,'H(#3')])?this[_0x1484a1(0x309,'XxV(')](_0xc3a61e,_0x31fa86):this[_0x1484a1(0x429,'2B1n')](_0xc3a61e,_0x31fa86),this[_0x1484a1(0x427,'dj)G')][_0x1484a1(0x4b2,'1#kZ')](_0xc3a61e);}['resetPagination'](){const _0x54f2e7=_0x4ff4f7;this[_0x54f2e7(0x195,'g53K')]=0x1,this['cursor']=null;}[_0x4ff4f7(0x3bc,'froX')](_0xc9e74c=null,_0x2c4ce6=0x0,_0x59d9be='page_button'){const _0x44e523=_0x4ff4f7,_0x541298={'GXOHK':function(_0x346467,_0x3539ed){return _0x346467>_0x3539ed;},'AnPtK':_0x44e523(0x247,'9&9p'),'kvzgE':function(_0x33bae9,_0x294f4b){return _0x33bae9-_0x294f4b;},'SYPBb':_0x44e523(0x218,'81#Q'),'VtTwp':function(_0x4272c3,_0x3c4a5b){return _0x4272c3>_0x3c4a5b;},'GKGNH':function(_0x3de8e0,_0x1dca0c){return _0x3de8e0+_0x1dca0c;},'DTMBJ':function(_0x95ece4,_0x144230){return _0x95ece4+_0x144230;},'xysur':_0x44e523(0x1ae,'XxV('),'cAHqC':function(_0x3b449c,_0x80e903){return _0x3b449c===_0x80e903;},'raGvV':'previous','qgcwo':_0x44e523(0x410,'syZ*'),'mgpRy':_0x44e523(0x492,'9&9p'),'VoPTe':'next','liCyl':_0x44e523(0x2aa,'iABa'),'AARyt':_0x44e523(0x269,'5@dZ'),'ZEZDj':_0x44e523(0x353,'KoJS'),'AAPnE':_0x44e523(0x253,'ccP5'),'aRMHo':'click'},_0x2cd8c6=document[_0x44e523(0x2fc,'&arE')]('li');_0x2cd8c6[_0x44e523(0x254,'j!PX')][_0x44e523(0x169,'x3T7')](_0x541298[_0x44e523(0x272,'ccP5')]);let _0x46b22f=!0x1;_0xc9e74c<0x1&&(_0xc9e74c=0x1),_0xc9e74c>_0x2c4ce6&&(_0xc9e74c=_0x2c4ce6),_0x541298[_0x44e523(0x346,'&^3b')](_0x541298[_0x44e523(0x27b,'g53K')],_0x59d9be)?_0x46b22f=_0x541298['cAHqC'](0x1,_0xc9e74c):_0x541298['cAHqC'](_0x44e523(0x1ce,'wlR5'),_0x59d9be)&&(_0x46b22f=_0x541298[_0x44e523(0x2b1,'^nn[')](_0xc9e74c,_0x2c4ce6));const _0x5963b7=document[_0x44e523(0x166,'ccP5')](_0x44e523(0x284,'op8%'));_0x5963b7[_0x44e523(0x26a,'fphu')][_0x44e523(0x422,'1#kZ')](_0x541298[_0x44e523(0x186,'AM8k')]),_0x5963b7[_0x44e523(0x4e9,']#yg')]=_0x46b22f;let _0x15fd7b=!0x1;_0x541298['cAHqC'](_0x541298[_0x44e523(0x4ea,'fphu')],_0x59d9be)?(_0x5963b7['innerHTML']=_0x541298[_0x44e523(0x22d,'iABa')],_0x5963b7['classList'][_0x44e523(0x2d3,'n7WD')](_0x541298['AnPtK'])):_0x541298[_0x44e523(0x434,'j!PX')]===_0x59d9be?(_0x5963b7[_0x44e523(0x20c,'iZyv')]=_0x541298[_0x44e523(0x25b,'1#kZ')],_0x5963b7[_0x44e523(0x46d,'2B1n')][_0x44e523(0x376,'B1]1')](_0x541298[_0x44e523(0x28a,'fphu')])):_0x541298[_0x44e523(0x38e,'wlR5')]===_0x59d9be?(_0x5963b7[_0x44e523(0x2d7,'H(#3')]['page']=_0x2c4ce6,_0x5963b7[_0x44e523(0x399,'loT3')]=_0x2c4ce6):_0x541298['cAHqC']('first',_0x59d9be)?(_0x5963b7[_0x44e523(0x3e7,'syZ*')]['page']=0x1,_0x5963b7[_0x44e523(0x45d,'81#Q')]=0x1):_0x541298[_0x44e523(0x26c,'9&9p')]===_0x59d9be?(_0x5963b7[_0x44e523(0x430,'KoJS')]='…',_0x5963b7[_0x44e523(0x3b0,'&^3b')][_0x44e523(0x3d3,'5@dZ')](_0x541298[_0x44e523(0x3b5,'xKWk')]),_0x15fd7b=!0x0):(_0x5963b7[_0x44e523(0x4cb,'&arE')][_0x44e523(0x299,'op8%')]=_0xc9e74c,_0x5963b7[_0x44e523(0x1d8,'n7WD')]=_0xc9e74c),_0x2cd8c6[_0x44e523(0x31a,'froX')](_0x5963b7);const _0xe2c646=this;return _0x15fd7b?_0x5963b7[_0x44e523(0x3cc,'9TA)')](_0x541298[_0x44e523(0x2c2,'g53K')],_0x215a7a=>{const _0x2f2364=_0x44e523;_0x215a7a['preventDefault'](),_0xe2c646['showJumpPopover'](_0xe2c646[_0x2f2364(0x18f,'j!PX')],_0x2c4ce6,_0x5963b7);}):_0x5963b7[_0x44e523(0x1da,'[^5i')](_0x541298['aRMHo'],_0xdf3cd5=>{const _0x4f12f5=_0x44e523,_0x4c7c0f={'KDXWH':function(_0x2519f5,_0x46f8e5){const _0x2b9e6e=_0x16c6;return _0x541298[_0x2b9e6e(0x477,'9TA)')](_0x2519f5,_0x46f8e5);},'SPNGV':_0x4f12f5(0x2c8,'froX')};_0xdf3cd5[_0x4f12f5(0x474,'2B1n')]();let _0x2f790e=null;_0x2f790e=_0x5963b7[_0x4f12f5(0x3f9,'81#Q')][_0x4f12f5(0x258,'wlR5')](_0x541298[_0x4f12f5(0x1c6,'op8%')])?_0x541298[_0x4f12f5(0x16e,'j!PX')](_0xe2c646['current_page'],0x1)<0x1?0x1:_0xe2c646[_0x4f12f5(0x276,'wlR5')]-0x1:_0x5963b7['classList']['contains'](_0x541298[_0x4f12f5(0x4d1,'FiwE')])?_0x541298['VtTwp'](_0x541298[_0x4f12f5(0x43c,'mW62')](_0xe2c646['current_page'],0x1),_0x2c4ce6)?_0x2c4ce6:_0x541298[_0x4f12f5(0x26b,'XxV(')](_0xe2c646[_0x4f12f5(0x438,'%W^]')],0x1):_0x5963b7[_0x4f12f5(0x26d,']#yg')][_0x4f12f5(0x19d,'IX(J')],_0xe2c646[_0x4f12f5(0x263,'5@dZ')](_0x2f790e,_0x2c4ce6),_0xe2c646[_0x4f12f5(0x177,'ccP5')]=parseInt(_0x2f790e),_0xe2c646[_0x4f12f5(0x2ba,'FiwE')][_0x4f12f5(0x388,'fphu')]&&sessionStorage[_0x4f12f5(0x2a3,'tZw$')](_0xe2c646[_0x4f12f5(0x174,'dj)G')]+_0x4f12f5(0x424,'mW62'),_0xe2c646[_0x4f12f5(0x407,'81#Q')]),_0xe2c646[_0x4f12f5(0x463,'ccP5')]['search_value']=null,_0xe2c646[_0x4f12f5(0x325,'40Lv')](_0xe2c646[_0x4f12f5(0x1ca,'tZw$')],{'current_page':_0x2f790e},()=>{const _0x5cb471=_0x4f12f5,_0x244717={'gMfiA':function(_0x2bf794,_0x500306,_0x10ab74){return _0x2bf794(_0x500306,_0x10ab74);},'GPLmn':function(_0x4f382c,_0x604425){return _0x4f382c(_0x604425);},'VohbG':function(_0x985fa3,_0x53af98){const _0x4188a3=_0x16c6;return _0x4c7c0f[_0x4188a3(0x18e,'&arE')](_0x985fa3,_0x53af98);}};if(_0x4c7c0f[_0x5cb471(0x1fd,'%qeY')]==='OXoPD'){const _0x2f6a1c=_0x244717[_0x5cb471(0x1cd,'ccP5')](_0x2403b2,_0x3cc50c[_0x5cb471(0x23d,'^nn[')](this[_0x5cb471(0x2dd,'g53K')]+_0x5cb471(0x178,'AM8k')),0xa);!_0x244717['GPLmn'](_0x40c614,_0x2f6a1c)&&_0x244717[_0x5cb471(0x1f7,'n7WD')](_0x2f6a1c,0x0)&&(this['current_page']=_0x2f6a1c);}else _0xe2c646[_0x5cb471(0x1ec,'^nn[')](_0xe2c646['current_page']);});}),_0x2cd8c6;}[_0x4ff4f7(0x228,'5@dZ')](_0x23d5e6){const _0x1a23bc=_0x4ff4f7,_0x3d1f54={'GpqOZ':_0x1a23bc(0x486,']#yg'),'LEzZg':'lv-total-info','egASL':function(_0x53ddc8,_0x5914d){return _0x53ddc8<=_0x5914d;},'DXHdq':_0x1a23bc(0x2bb,'IX(J'),'HauhL':function(_0x5c3f03,_0x3f515e){return _0x5c3f03||_0x3f515e;},'JfEnO':'.vs_lnk_paging_config','yCQDh':_0x1a23bc(0x2e2,'H(#3')},_0x5d7a9a=_0x23d5e6[_0x1a23bc(0x1dd,'FiwE')]??0x0,_0x51d328=_0x23d5e6[_0x1a23bc(0x4c2,'%W^]')]??this[_0x1a23bc(0x4bb,'81#Q')][_0x1a23bc(0x2bf,'k7o3')],_0x2f642a=document[_0x1a23bc(0x1f1,'k7o3')](_0x3d1f54['GpqOZ']);_0x2f642a[_0x1a23bc(0x372,'op8%')]['add'](_0x3d1f54[_0x1a23bc(0x4cc,'KoJS')]),_0x2f642a[_0x1a23bc(0x45c,'g53K')]=!_0x5d7a9a||_0x3d1f54[_0x1a23bc(0x3aa,'81#Q')](_0x5d7a9a,0x0)?_0x3d1f54[_0x1a23bc(0x457,'mW62')]:Math[_0x1a23bc(0x1e3,'1#kZ')](_0x51d328,_0x5d7a9a||_0x51d328)+_0x1a23bc(0x21a,'wlR5')+_0x3d1f54[_0x1a23bc(0x418,'tZw$')](_0x5d7a9a,'?')+_0x1a23bc(0x2af,'tZw$'),this[_0x1a23bc(0x332,'1#kZ')][_0x1a23bc(0x22c,'zBBt')](_0x2f642a);const _0x237b06=_0x2f642a[_0x1a23bc(0x1e9,'b2#7')](_0x3d1f54[_0x1a23bc(0x273,'QY2s')]);_0x237b06&&_0x237b06[_0x1a23bc(0x339,'B1]1')](_0x3d1f54[_0x1a23bc(0x3ff,'^nn[')],()=>{const _0x376fcb=_0x1a23bc;this['showPerPagePopover'](this[_0x376fcb(0x2fd,'tZw$')]['perPage']);});}[_0x4ff4f7(0x217,']hc!')](_0x767dec,_0x5789c4){const _0x3d4465=_0x4ff4f7,_0x3b0d18={'fbBPn':function(_0x2c8e02,_0x92dd54){return _0x2c8e02===_0x92dd54;},'DfylG':_0x3d4465(0x2b3,'81#Q'),'ChwxC':'div','CAcyC':_0x3d4465(0x293,'g53K'),'DFRSb':_0x3d4465(0x45b,'froX'),'dMmcB':_0x3d4465(0x1b2,'n7WD'),'xolJa':_0x3d4465(0x243,'ccP5')};if(this[_0x3d4465(0x395,'^nn[')]['innerHTML']='',!_0x5789c4)return;const _0x2760fb=document['createElement'](_0x3b0d18[_0x3d4465(0x1ef,'%W^]')]);_0x2760fb['className']=_0x3b0d18[_0x3d4465(0x207,'iZyv')];const _0x88f14b=document[_0x3d4465(0x1a1,'loT3')](_0x3b0d18['DFRSb']);if(_0x88f14b['className']=_0x3b0d18['dMmcB'],!_0x767dec[_0x3d4465(0x48c,'tZw$')])return _0x88f14b['classList'][_0x3d4465(0x4e7,'ccP5')](_0x3b0d18[_0x3d4465(0x214,'iZyv')]),_0x88f14b[_0x3d4465(0x4e2,'ccP5')]=this[_0x3d4465(0x2b2,'b2#7')]['loadMoreEndText'],_0x2760fb['appendChild'](_0x88f14b),void this['pagination_container'][_0x3d4465(0x20d,'%W^]')](_0x2760fb);_0x88f14b[_0x3d4465(0x170,'iABa')]=this['card_options']['loadMoreText'],_0x88f14b[_0x3d4465(0x235,'zBBt')]=()=>{const _0x6a6c52=_0x3d4465,_0x28cc37={'oysId':function(_0x4cd649,_0x1c3524){const _0x2c25f0=_0x16c6;return _0x3b0d18[_0x2c25f0(0x3ce,'b2#7')](_0x4cd649,_0x1c3524);},'tXXMs':_0x3b0d18[_0x6a6c52(0x2a1,'^nn[')]};_0x88f14b['classList'][_0x6a6c52(0x335,'g53K')](_0x6a6c52(0x389,'wlR5')),_0x88f14b[_0x6a6c52(0x3eb,'Qf*w')]=this[_0x6a6c52(0x1f6,'&^3b')][_0x6a6c52(0x35d,'k7o3')],this['showPage'](this[_0x6a6c52(0x4f1,'syZ*')],{'cursor':this['nextCursor']},()=>{const _0x3918e2=_0x6a6c52;_0x28cc37[_0x3918e2(0x340,'%qeY')](_0x28cc37['tXXMs'],_0x28cc37['tXXMs'])?(_0x88f14b[_0x3918e2(0x157,'40Lv')]['remove'](_0x3918e2(0x1fe,'hJIR')),_0x88f14b[_0x3918e2(0x2cd,'9TA)')]=this[_0x3918e2(0x18b,'H(#3')][_0x3918e2(0x16a,'1#kZ')]):this[_0x3918e2(0x1bb,'tZw$')](this[_0x3918e2(0x452,'XxV(')][_0x3918e2(0x27e,'b2#7')]);});},_0x2760fb['appendChild'](_0x88f14b),this['pagination_container'][_0x3d4465(0x419,']hc!')](_0x2760fb);}[_0x4ff4f7(0x15f,'KoJS')](_0x399921,_0x370855){const _0x147937=_0x4ff4f7,_0x2aeb92={'rJbcV':function(_0x5325fc,_0x24ecdd){return _0x5325fc>_0x24ecdd;},'DVwTo':function(_0x470a35,_0x3f1509){return _0x470a35<=_0x3f1509;},'iutTy':_0x147937(0x3fd,'AM8k'),'UAJBx':function(_0x2e933a,_0x31a8d2){return _0x2e933a<_0x31a8d2;},'kZeVn':'page_button','isRrD':function(_0x51bc78,_0x26ea9a){return _0x51bc78>_0x26ea9a;},'ICUwJ':_0x147937(0x28c,'H(#3'),'ZWDFT':_0x147937(0x379,'k7o3'),'vRyNt':_0x147937(0x161,'&^3b'),'olNQy':function(_0x2686c2,_0x96d4c8){return _0x2686c2===_0x96d4c8;},'PWYiq':function(_0x3a1260,_0xf97837){return _0x3a1260%_0xf97837;},'FbDqP':_0x147937(0x505,'KoJS'),'Atfbb':_0x147937(0x190,']hc!'),'fgHMw':_0x147937(0x4ba,'3(ov')},_0x3b3d58=_0x399921[_0x147937(0x3fe,'iZyv')]||0x1;_0x2aeb92['rJbcV'](this[_0x147937(0x2ae,'9TA)')],_0x3b3d58)&&(this['current_page']=_0x3b3d58,this['card_options']['rememberCurrentpage']&&sessionStorage['setItem'](this[_0x147937(0x1d4,'[^5i')]+_0x147937(0x48e,'j!PX'),this[_0x147937(0x177,'ccP5')]));const _0x47556f=this[_0x147937(0x3a1,'syZ*')]||0x1;if(this[_0x147937(0x1be,'FiwE')][_0x147937(0x2fb,'fphu')]='',!_0x370855)return void this[_0x147937(0x2e1,'n7WD')](_0x399921);if(_0x2aeb92[_0x147937(0x3dd,'b2#7')](_0x3b3d58,0x1))return void this[_0x147937(0x20a,'9&9p')](_0x399921);this['pagination_container'][_0x147937(0x431,'n7WD')](this[_0x147937(0x466,'^nn[')](_0x47556f,_0x3b3d58,_0x2aeb92[_0x147937(0x4a0,'&arE')])),this[_0x147937(0x392,'loT3')]=0x5,window['innerWidth']<0x1e0?this[_0x147937(0x3d4,'syZ*')]=0x2:_0x2aeb92[_0x147937(0x16c,'XxV(')](window[_0x147937(0x2c1,'QY2s')],0x300)&&(this['visiblePages']=0x3),this[_0x147937(0x443,'9TA)')]=Math[_0x147937(0x1b5,'mW62')](this[_0x147937(0x4bc,'QY2s')],_0x3b3d58);for(let _0x2a622f=0x1;_0x2a622f<=this[_0x147937(0x27f,'Qf*w')];_0x2a622f++)this[_0x147937(0x495,'zBBt')][_0x147937(0x208,'loT3')](this['createPaginationButton'](_0x2a622f,_0x3b3d58,_0x2aeb92[_0x147937(0x4d2,'Qf*w')]));_0x2aeb92[_0x147937(0x4be,'&arE')](_0x3b3d58,this[_0x147937(0x499,'froX')])&&(this[_0x147937(0x1a0,'xKWk')][_0x147937(0x22c,'zBBt')](this[_0x147937(0x3b8,'op8%')](_0x47556f,_0x3b3d58,_0x2aeb92[_0x147937(0x22f,'j!PX')])),this[_0x147937(0x2b9,'tZw$')][_0x147937(0x2e7,']#yg')](this[_0x147937(0x2d5,'40Lv')](_0x3b3d58,_0x3b3d58,_0x2aeb92[_0x147937(0x43e,'g53K')]))),this['pagination_container'][_0x147937(0x3af,'j!PX')](this[_0x147937(0x3b8,'op8%')](_0x47556f,_0x3b3d58,_0x2aeb92[_0x147937(0x3f7,'k7o3')]));const _0x3357ba=_0x399921[_0x147937(0x4f4,'3(ov')]??0x0,_0x2a8458=_0x2aeb92[_0x147937(0x3e3,'[^5i')](_0x47556f,_0x3b3d58)&&_0x2aeb92['isRrD'](_0x2aeb92[_0x147937(0x233,'[^5i')](_0x3357ba,_0x399921['per_page']),0x0)?_0x3357ba%_0x399921[_0x147937(0x221,']hc!')]:_0x399921[_0x147937(0x348,'5@dZ')],_0x4a91d1=document[_0x147937(0x166,'ccP5')](_0x2aeb92[_0x147937(0x44f,'a9!f')]);_0x4a91d1[_0x147937(0x3a0,'g53K')][_0x147937(0x357,'syZ*')](_0x2aeb92['Atfbb']),_0x4a91d1[_0x147937(0x3bd,'n7WD')]=_0x2a8458+_0x147937(0x202,'2B1n')+_0x3357ba+_0x147937(0x480,'9&9p'),this[_0x147937(0x1be,'FiwE')][_0x147937(0x506,'&^3b')](_0x4a91d1),_0x4a91d1[_0x147937(0x1e6,'5@dZ')](_0x2aeb92['fgHMw'])[_0x147937(0x25c,'hJIR')](_0x147937(0x301,'G^63'),()=>{const _0x27ed4a=_0x147937;this['showPerPagePopover'](this[_0x27ed4a(0x39e,']#yg')][_0x27ed4a(0x49a,'B1]1')]);}),this[_0x147937(0x3f2,'IX(J')](this[_0x147937(0x3c1,'fphu')]),this[_0x147937(0x294,'40Lv')](this[_0x147937(0x4a9,'dj)G')],_0x3b3d58);}['highlightEllipsisButton'](_0x30f22a,_0x303746){const _0x14dcf2=_0x4ff4f7,_0x1aac11={'QgPNG':function(_0x4ab0a9,_0x2521f5,_0x955c37){return _0x4ab0a9(_0x2521f5,_0x955c37);},'PkVsn':function(_0x55d9c1,_0x1b0c58){return _0x55d9c1>_0x1b0c58;}},_0x28f2b3=_0x1aac11[_0x14dcf2(0x20e,'G^63')](parseInt,_0x30f22a,0xa),_0x281533=this['pagination_container']['querySelector'](_0x14dcf2(0x3d9,'XxV('));_0x281533&&(_0x1aac11[_0x14dcf2(0x199,'op8%')](_0x28f2b3,this[_0x14dcf2(0x29b,'tZw$')])&&_0x28f2b3<_0x303746?(_0x281533[_0x14dcf2(0x183,'5@dZ')]=_0x28f2b3,_0x281533['dataset'][_0x14dcf2(0x362,'G^63')]=_0x28f2b3,_0x281533[_0x14dcf2(0x381,'QY2s')][_0x14dcf2(0x376,'B1]1')](this[_0x14dcf2(0x30d,'9TA)')][_0x14dcf2(0x24f,'IX(J')])):(_0x281533[_0x14dcf2(0x1aa,'2B1n')]='...',_0x281533[_0x14dcf2(0x15a,'G^63')][_0x14dcf2(0x3e0,'KIPd')]='',_0x281533['classList'][_0x14dcf2(0x164,'KIPd')](this[_0x14dcf2(0x48d,'froX')][_0x14dcf2(0x4c3,'ccP5')])));}[_0x4ff4f7(0x49d,'xKWk')](_0x543d2a){const _0x5b810a=_0x4ff4f7,_0x3ff6ee={'GbBOI':_0x5b810a(0x40f,'40Lv'),'LGxRo':function(_0x25df24,_0x4f3520){return _0x25df24!==_0x4f3520;},'snyWI':_0x5b810a(0x38a,'iZyv'),'cWdBm':function(_0x205c5d,_0x13e6ad,_0x3bcf11){return _0x205c5d(_0x13e6ad,_0x3bcf11);},'IJtrA':function(_0x1ac5c3,_0x1772d5){return _0x1ac5c3(_0x1772d5);},'gWlmJ':function(_0x59d276,_0x4c9cf1){return _0x59d276!==_0x4c9cf1;},'CDqOz':function(_0x403728,_0x4b01bb,_0x1e4064){return _0x403728(_0x4b01bb,_0x1e4064);},'VpSOL':'.lv-btn-page'},_0x207feb=_0x3ff6ee['CDqOz'](parseInt,_0x543d2a,0xa);this[_0x5b810a(0x1ff,'a9!f')][_0x5b810a(0x257,']#yg')](_0x3ff6ee[_0x5b810a(0x3fa,'KoJS')])[_0x5b810a(0x323,'%W^]')](_0x129119=>{const _0x5067a6=_0x5b810a;if(_0x3ff6ee[_0x5067a6(0x295,'hJIR')](_0x3ff6ee[_0x5067a6(0x4ff,'fphu')],_0x3ff6ee[_0x5067a6(0x4ff,'fphu')]))_0x389ffe[_0x5067a6(0x2e3,'loT3')](_0x3ff6ee['GbBOI'],_0x1535fa,!0x0);else{const _0x45e490=_0x3ff6ee[_0x5067a6(0x297,'FiwE')](parseInt,_0x129119[_0x5067a6(0x17e,'xKWk')]['page'],0xa);_0x3ff6ee[_0x5067a6(0x358,'lTsZ')](isNaN,_0x45e490)||_0x3ff6ee[_0x5067a6(0x1d2,'xKWk')](_0x45e490,_0x207feb)?_0x129119[_0x5067a6(0x46d,'2B1n')]['remove'](this['card_options']['pagingActiveClass']):_0x129119[_0x5067a6(0x31f,']#yg')]['add'](this[_0x5067a6(0x437,'9&9p')][_0x5067a6(0x2ad,'KoJS')]);}});}[_0x4ff4f7(0x41a,'tZw$')](_0xdf26f2=[]){const _0x5a4644=_0x4ff4f7,_0x32a47d={'HTHsY':'xIlPq','IISoP':function(_0x1e364b,_0x907e63){return _0x1e364b??_0x907e63;},'XVtpJ':function(_0x112517,_0x4b18b1){return _0x112517==_0x4b18b1;},'boYhd':_0x5a4644(0x2f2,'IX(J'),'uWnHv':function(_0x2db72d,_0x19460b){return _0x2db72d===_0x19460b;},'YZsKB':function(_0x34ce9b,_0x3aaa7f){return _0x34ce9b!==_0x3aaa7f;},'xcdCD':_0x5a4644(0x4c4,'dj)G'),'BFjyT':_0x5a4644(0x197,'tZw$'),'gmprC':_0x5a4644(0x237,'%qeY'),'TmelJ':_0x5a4644(0x191,'op8%')};if(!this['table'])return 0x0;const _0xf282f3=this['card_options']['columns']&&this[_0x5a4644(0x236,'^nn[')][_0x5a4644(0x226,'mW62')][0x0]?this[_0x5a4644(0x310,'B1]1')][_0x5a4644(0x39c,'QY2s')]:this[_0x5a4644(0x4f5,'fphu')](_0xdf26f2),_0x54b22e=this['table'][_0x5a4644(0x4d8,'3(ov')](_0x32a47d[_0x5a4644(0x1c3,'zBBt')]),_0x1e9558=this[_0x5a4644(0x40b,'5@dZ')][_0x5a4644(0x44a,'FiwE')](_0x32a47d['gmprC']);return _0x54b22e[_0x5a4644(0x436,'b2#7')]=this[_0x5a4644(0x3ac,'op8%')](_0xf282f3),_0x1e9558[_0x5a4644(0x20c,'iZyv')]='',this[_0x5a4644(0x3b6,'XxV(')][_0x5a4644(0x349,'wlR5')][_0x5a4644(0x1f5,'9TA)')](_0x32a47d[_0x5a4644(0x421,'b2#7')]),_0xdf26f2&&_0xdf26f2['length']?(_0xdf26f2[_0x5a4644(0x439,']#yg')]((_0x1f9137,_0x5528b3)=>{const _0x406473=_0x5a4644,_0x5360b3={'NFrbN':'LzbZn','yVYeB':_0x32a47d[_0x406473(0x4ed,'j!PX')],'stBlW':function(_0xca5abf,_0x3bacbc){return _0xca5abf==_0x3bacbc;},'mbLns':'function','QaOly':function(_0x4aea2e,_0x5c26db){const _0x1a023b=_0x406473;return _0x32a47d[_0x1a023b(0x4b7,'k7o3')](_0x4aea2e,_0x5c26db);},'hXCNz':_0x406473(0x304,'H(#3'),'GAiip':function(_0x4a96c1,_0x31d9d2){const _0x26f6bb=_0x406473;return _0x32a47d[_0x26f6bb(0x245,']hc!')](_0x4a96c1,_0x31d9d2);},'EKPep':_0x32a47d[_0x406473(0x2cc,'zBBt')],'tBgEU':function(_0x3fccaa,_0x4bcf83){return _0x32a47d['uWnHv'](_0x3fccaa,_0x4bcf83);},'UVrSs':function(_0x1b1b61,_0x34bf6e){const _0x50f668=_0x406473;return _0x32a47d[_0x50f668(0x245,']hc!')](_0x1b1b61,_0x34bf6e);}},_0xdba363=document['createElement']('tr'),_0x39e7d1=_0x1f9137[this[_0x406473(0x33c,'FiwE')]];_0x39e7d1&&(_0xdba363['dataset'][this['keyField']]=_0x39e7d1);let _0x35ef4c=_0xf282f3[_0x406473(0x2e6,'40Lv')](_0x44ac1c=>{const _0x1464ed=_0x406473;if(_0x5360b3[_0x1464ed(0x283,'[^5i')]===_0x5360b3[_0x1464ed(0x4f9,'iABa')])return this['table'];else{const _0x2a7bd9=_0x5360b3[_0x1464ed(0x2e9,'g53K')](_0x5360b3['mbLns'],typeof _0x44ac1c[_0x1464ed(0x471,'iZyv')])?_0x44ac1c[_0x1464ed(0x401,'zBBt')](_0x1f9137,_0x5528b3,_0xdba363):_0x1f9137[_0x44ac1c['data']],_0x252065=(_0x44ac1c[_0x1464ed(0x210,'^nn[')]||'')[_0x1464ed(0x4ca,'Qf*w')]();return _0x1464ed(0x4d6,'hJIR')+(_0x44ac1c[_0x1464ed(0x4b5,'op8%')]||'')+_0x1464ed(0x19a,']hc!')+_0x252065+'\x22>'+_0x5360b3[_0x1464ed(0x21c,'lTsZ')](_0x2a7bd9,'')+_0x1464ed(0x3a4,'froX');}})['join']('');if(_0xdba363['innerHTML']=_0x35ef4c,_0x39e7d1&&this[_0x406473(0x264,'QY2s')][_0x406473(0x42d,'FiwE')](_0x39e7d1)){if(_0x32a47d[_0x406473(0x2db,'iZyv')](_0x32a47d[_0x406473(0x4d3,'2B1n')],_0x32a47d[_0x406473(0x328,'G^63')])){let _0x540e35='',_0x4ae320='';const _0x5ae6cc=_0x54ac8b['className']||(_0x2c46f8[_0x406473(0x1e7,'loT3')]||_0x5360b3['hXCNz'])[_0x406473(0x4e8,'&^3b')]()[_0x406473(0x201,'j!PX')]()['replace'](//^a-z0-9]+/g,'_')[_0x406473(0x2ef,'&^3b')](//_+|_+$/g,'');let _0x28a3ef=_0x318544[_0x406473(0x1d7,'froX')]??'';if(_0x4ef911[_0x406473(0x42b,'iABa')]&&_0x5360b3[_0x406473(0x4ef,'wlR5')](_0x5360b3[_0x406473(0x494,'B1]1')],typeof _0x5dadea['transTitle'])){const _0x1538cc=_0x27ba59['transTitle'][_0x406473(0x290,'op8%')]('.');if(_0x5360b3[_0x406473(0x426,'lTsZ')](0x2,_0x1538cc[_0x406473(0x203,'op8%')])){const _0x3cb019=_0x1538cc[0x0],_0x47380e=_0x1538cc[0x1];_0x4ae320=_0x406473(0x338,'KoJS')+_0x3cb019+'.'+_0x47380e+'\x22',_0x48c33e&&_0x5360b3[_0x406473(0x18c,'op8%')](_0x406473(0x171,'&arE'),typeof LocaleManager[_0x406473(0x1d5,'%qeY')])&&(_0x28a3ef=LocaleManager[_0x406473(0x182,'Qf*w')](_0x47380e,_0x3cb019));}}return _0x540e35=_0x5360b3[_0x406473(0x2eb,'k7o3')](_0x5360b3[_0x406473(0x3b4,'tZw$')],typeof _0x23bf4d[_0x406473(0x318,'2B1n')])?_0x7a4e8f[_0x406473(0x163,'[^5i')](_0x1b48d7,_0x2313a0)||'':_0x558626[_0x406473(0x44e,'40Lv')]?_0xd25d24['titleHTML']:_0x28a3ef,_0x406473(0x1a8,'40Lv')+_0x5ae6cc+'\x22'+_0x4ae320+'>'+_0x540e35+_0x406473(0x1de,'froX');}else{_0xdba363[_0x406473(0x15a,'G^63')][_0x406473(0x364,'fphu')]='1';const _0x26ef82=_0xdba363[_0x406473(0x206,'QY2s')](_0x406473(0x223,'AM8k')+this['checkboxClass']);_0x26ef82&&(_0x26ef82['checked']=!0x0);}}_0x1e9558[_0x406473(0x47e,'&arE')](_0xdba363),this[_0x406473(0x1ad,'mW62')][_0x406473(0x49f,'ccP5')](_0x1f9137,_0x5528b3,_0xdba363);}),0x1):(_0x1e9558[_0x5a4644(0x1d0,'G^63')]=_0x5a4644(0x215,'syZ*')+(this['card_options']['emptyInfo']||_0x5a4644(0x38d,'&arE'))+_0x5a4644(0x1b0,'xKWk'),0x0);}[_0x4ff4f7(0x307,'KoJS')](_0x499ca7=[]){const _0x4ea675=_0x4ff4f7,_0xf2e25d={'sdSDC':_0x4ea675(0x34a,'%W^]'),'lyWWq':function(_0x3904b2,_0x20921e){return _0x3904b2 instanceof _0x20921e;},'GvXEt':function(_0x443d11,_0x2dc8b2){return _0x443d11==_0x2dc8b2;},'vuzBj':_0x4ea675(0x265,'KIPd')};if(this[_0x4ea675(0x17b,'iABa')][_0x4ea675(0x46c,'2B1n')]='',!_0x499ca7['length'])return this[_0x4ea675(0x1e8,'FiwE')][_0x4ea675(0x423,'loT3')]=_0x4ea675(0x391,'9TA)')+(this[_0x4ea675(0x1ad,'mW62')]['emptyInfo']||_0xf2e25d[_0x4ea675(0x43d,'ccP5')])+_0x4ea675(0x476,'iZyv'),!0x1;const _0x41723f=this['card_options'][_0x4ea675(0x1ab,'zBBt')](_0x499ca7,this['list_container'],this);return _0xf2e25d[_0x4ea675(0x4db,'AM8k')](_0x41723f,HTMLElement)?this[_0x4ea675(0x501,'mW62')][_0x4ea675(0x450,'op8%')](_0x41723f):_0xf2e25d['GvXEt'](_0xf2e25d[_0x4ea675(0x4a1,'9TA)')],typeof _0x41723f)&&(this[_0x4ea675(0x4fe,'81#Q')]['innerHTML']=_0x41723f),!0x0;}[_0x4ff4f7(0x1d9,'KIPd')](_0x494407,_0x48ff15,_0x574a56){const _0x2e8c93=_0x4ff4f7,_0x4e75cb={'rSieG':function(_0x247fb3,_0x9edf80){return _0x247fb3===_0x9edf80;},'DjaPp':'Enter','tTQdL':function(_0x4a5f88,_0x462d9d){return _0x4a5f88(_0x462d9d);},'KWfaT':function(_0xe72bba,_0x2cec82){return _0xe72bba<_0x2cec82;},'qvRAa':function(_0x101dea,_0x4dfde0){return _0x101dea>_0x4dfde0;},'POMjz':'span','OvQjY':_0x2e8c93(0x409,'x3T7'),'QOJzT':function(_0x2ba224,_0x2d1fdd){return _0x2ba224||_0x2d1fdd;},'xmXWE':function(_0x4be768,_0x2d4313){return _0x4be768===_0x2d4313;},'ojcmv':'click','JwFUv':_0x2e8c93(0x159,'dj)G'),'zKSIV':_0x2e8c93(0x503,'IX(J'),'fFbff':function(_0x31ded8,_0x6dc572){return _0x31ded8-_0x6dc572;},'uSRJg':function(_0x378203,_0x5781bd){return _0x378203/_0x5781bd;},'BwhuD':function(_0x1ea74d,_0x5dce06){return _0x1ea74d-_0x5dce06;},'SsQUb':function(_0x3d5704,_0x153b1c){return _0x3d5704<_0x153b1c;},'sQxMf':function(_0x420d21,_0x3ebcd7){return _0x420d21-_0x3ebcd7;},'tBZFd':function(_0x25a8c9,_0x1bfffa){return _0x25a8c9+_0x1bfffa;},'lJwck':_0x2e8c93(0x188,'op8%'),'KzDoy':_0x2e8c93(0x15d,'x3T7'),'hwXMz':'.lv-submit','DtFTY':_0x2e8c93(0x36e,'iABa'),'bcmJe':function(_0x5d7083,_0x102b2b,_0x8f820){return _0x5d7083(_0x102b2b,_0x8f820);}};this['removeActivePopover']();const _0x288627=document[_0x2e8c93(0x267,'QY2s')](_0x4e75cb[_0x2e8c93(0x291,'G^63')]);_0x288627['classList'][_0x2e8c93(0x1a9,'AM8k')]('lv-popover'),_0x288627[_0x2e8c93(0x436,'b2#7')]=_0x2e8c93(0x249,'[^5i')+_0x494407+_0x2e8c93(0x24b,'lTsZ')+_0x48ff15+_0x2e8c93(0x17a,'fphu');const _0x48b1e8=_0x574a56[_0x2e8c93(0x1f3,'[^5i')](_0x4e75cb[_0x2e8c93(0x1c8,'syZ*')]);_0x48b1e8[_0x2e8c93(0x450,'op8%')](_0x288627);const _0x245660=_0x574a56['getBoundingClientRect'](),_0x5be9b8=_0x48b1e8[_0x2e8c93(0x4a7,'dj)G')](),_0x4cebd0=_0x288627[_0x2e8c93(0x4d0,'iABa')]||0x28;let _0x502268=_0x4e75cb[_0x2e8c93(0x4b0,'n7WD')](_0x4e75cb[_0x2e8c93(0x2c5,'B1]1')](_0x245660['left'],_0x5be9b8[_0x2e8c93(0x373,'3(ov')])+_0x4e75cb[_0x2e8c93(0x500,'XxV(')](_0x574a56[_0x2e8c93(0x461,'wlR5')],0x2),_0x4e75cb[_0x2e8c93(0x444,'op8%')](_0x288627['offsetWidth'],0x2));_0x502268=Math[_0x2e8c93(0x3db,'B1]1')](0x8,_0x502268);let _0x3d3aa5=_0x4e75cb[_0x2e8c93(0x1df,'hJIR')](_0x4e75cb[_0x2e8c93(0x22a,'%W^]')](_0x4e75cb['BwhuD'](_0x245660['top'],_0x5be9b8[_0x2e8c93(0x333,'KIPd')]),_0x4cebd0),0x8);_0x4e75cb['SsQUb'](_0x4e75cb[_0x2e8c93(0x1b9,'[^5i')](_0x245660[_0x2e8c93(0x3df,'dj)G')],_0x4cebd0),0x14)&&(_0x3d3aa5=_0x4e75cb[_0x2e8c93(0x213,'QY2s')](_0x4e75cb[_0x2e8c93(0x248,'[^5i')](_0x245660[_0x2e8c93(0x428,'j!PX')],_0x5be9b8[_0x2e8c93(0x193,'FiwE')]),0x8)),_0x288627[_0x2e8c93(0x3f5,'3(ov')][_0x2e8c93(0x3ae,'QY2s')]=_0x4e75cb[_0x2e8c93(0x4b8,'40Lv')],_0x288627[_0x2e8c93(0x4dc,'k7o3')]['left']=_0x502268+'px',_0x288627[_0x2e8c93(0x3b3,'wlR5')][_0x2e8c93(0x17c,'IX(J')]=_0x3d3aa5+'px';const _0x5e1d00=_0x288627[_0x2e8c93(0x319,'2B1n')](_0x4e75cb[_0x2e8c93(0x2b5,'&arE')]);_0x5e1d00[_0x2e8c93(0x180,'KIPd')]();const _0x517cce=_0x288627[_0x2e8c93(0x42e,'lTsZ')](_0x4e75cb['hwXMz']),_0x100ed5=_0x35053d=>{const _0x3e9f14=_0x2e8c93;_0x4e75cb['rSieG'](_0x4e75cb[_0x3e9f14(0x242,'FiwE')],_0x35053d['key'])&&(_0x35053d[_0x3e9f14(0x3ab,'wlR5')](),_0x517cce[_0x3e9f14(0x40f,'40Lv')]());};_0x5e1d00[_0x2e8c93(0x1e1,'x3T7')](_0x4e75cb[_0x2e8c93(0x455,'2B1n')],_0x100ed5),_0x517cce['addEventListener'](_0x2e8c93(0x497,'dj)G'),()=>{const _0x575c2d=_0x2e8c93,_0x5f0ee6=parseInt(_0x5e1d00[_0x575c2d(0x172,'mW62')],0xa);_0x4e75cb[_0x575c2d(0x3c4,'froX')](isNaN,_0x5f0ee6)||_0x4e75cb[_0x575c2d(0x4df,'&^3b')](_0x5f0ee6,0x1)||_0x4e75cb[_0x575c2d(0x1c0,'iZyv')](_0x5f0ee6,_0x48ff15)?this[_0x575c2d(0x3b9,'dj)G')]('Please\x20enter\x20a\x20valid\x20page\x20between\x201\x20and\x20'+_0x48ff15):(this['current_page']=_0x5f0ee6,this[_0x575c2d(0x414,'3(ov')](this['current_filter'],{'current_page':_0x5f0ee6}),this['removeActivePopover']());});const _0x1a4b6a=_0x1817cd=>{const _0x4814ba=_0x2e8c93,_0x8b10a5={'TvpER':_0x4e75cb[_0x4814ba(0x277,'dj)G')],'PkQZF':_0x4e75cb[_0x4814ba(0x1d6,'XxV(')],'dSObe':_0x4814ba(0x4af,'QY2s'),'NdkDL':function(_0x59f1f9,_0x5c3812){return _0x4e75cb['QOJzT'](_0x59f1f9,_0x5c3812);},'bmUfe':'click'};if('FaOzY'==='FaOzY')_0x288627[_0x4814ba(0x475,'XxV(')](_0x1817cd[_0x4814ba(0x49c,'&^3b')])||_0x4e75cb[_0x4814ba(0x205,'fphu')](_0x1817cd[_0x4814ba(0x4b3,'x3T7')],_0x574a56)||(this['removeActivePopover'](),document[_0x4814ba(0x3c2,'QY2s')]('click',_0x1a4b6a,!0x0),_0x5e1d00[_0x4814ba(0x2ec,'b2#7')]('keydown',_0x100ed5));else{const _0x128d5f=_0xdcdcec['total']??0x0,_0xbfc376=_0x866fc3[_0x4814ba(0x2da,'IX(J')]??this[_0x4814ba(0x282,'QY2s')][_0x4814ba(0x1b8,'IX(J')],_0x4a3e1d=_0x389cff[_0x4814ba(0x35f,'5@dZ')](_0x8b10a5[_0x4814ba(0x3a8,'mW62')]);_0x4a3e1d['classList'][_0x4814ba(0x2f4,'k7o3')](_0x8b10a5['PkQZF']),_0x4a3e1d[_0x4814ba(0x4f6,'KIPd')]=!_0x128d5f||_0x128d5f<=0x0?_0x8b10a5['dSObe']:_0x24c2b6[_0x4814ba(0x365,'AM8k')](_0xbfc376,_0x128d5f||_0xbfc376)+_0x4814ba(0x17f,'5@dZ')+_0x8b10a5[_0x4814ba(0x441,'mW62')](_0x128d5f,'?')+_0x4814ba(0x4fd,'xKWk'),this[_0x4814ba(0x1a0,'xKWk')][_0x4814ba(0x244,'KoJS')](_0x4a3e1d);const _0x9ec0bf=_0x4a3e1d[_0x4814ba(0x240,'a9!f')](_0x4814ba(0x16b,'5@dZ'));_0x9ec0bf&&_0x9ec0bf[_0x4814ba(0x15c,'fphu')](_0x8b10a5[_0x4814ba(0x384,'x3T7')],()=>{const _0x31fc94=_0x4814ba;this[_0x31fc94(0x2d4,'syZ*')](this[_0x31fc94(0x30d,'9TA)')][_0x31fc94(0x36c,'FiwE')]);});}};_0x4e75cb[_0x2e8c93(0x1d1,'tZw$')](setTimeout,()=>{document['addEventListener'](_0x4e75cb['ojcmv'],_0x1a4b6a,!0x0);},0x0);}[_0x4ff4f7(0x1fa,'hJIR')](_0x1988a2){const _0xff298a=_0x4ff4f7,_0x14e109={'CAelI':function(_0x7cbb04,_0x48c283){return _0x7cbb04(_0x48c283);},'sZJQU':function(_0x34f8,_0x8ad3a9,_0x3e9a12){return _0x34f8(_0x8ad3a9,_0x3e9a12);},'AzebP':function(_0x44a544,_0x39722c){return _0x44a544>_0x39722c;},'hQcXF':function(_0x30fa70,_0x102460){return _0x30fa70!==_0x102460;},'gcsvw':'muEQi','QROCy':function(_0x4c061e,_0x374644){return _0x4c061e===_0x374644;},'LJYsy':_0xff298a(0x337,'wlR5'),'fGACN':_0xff298a(0x2ff,'syZ*'),'XkdqJ':function(_0x19dcbe,_0x9d924d){return _0x19dcbe<_0x9d924d;},'fpFrM':_0xff298a(0x4f7,'%W^]'),'CrZdT':_0xff298a(0x1a2,'40Lv'),'wVYpK':function(_0x1ed1be,_0x1faea9){return _0x1ed1be-_0x1faea9;},'DSNab':function(_0x2ed5f0,_0x3bb385){return _0x2ed5f0+_0x3bb385;},'naGRQ':function(_0x1730f8,_0x4b9f28){return _0x1730f8-_0x4b9f28;},'NiBFI':function(_0x57512d,_0x4cb06d){return _0x57512d/_0x4cb06d;},'WxmPl':function(_0x1437f8,_0x4c676b){return _0x1437f8/_0x4c676b;},'tFEZf':function(_0x3dd4e1,_0x548674){return _0x3dd4e1-_0x548674;},'EUmQw':_0xff298a(0x3cd,'9TA)')};this[_0xff298a(0x4f0,'lTsZ')]();const _0x18dda7=document[_0xff298a(0x3b2,'b2#7')](_0xff298a(0x478,'iZyv'));_0x18dda7[_0xff298a(0x33e,'zBBt')][_0xff298a(0x491,'j!PX')](_0x14e109[_0xff298a(0x1f0,'^nn[')]),_0x18dda7['innerHTML']=_0xff298a(0x275,'FiwE')+_0x1988a2+_0xff298a(0x21f,'QY2s'),this[_0xff298a(0x34c,'g53K')][_0xff298a(0x39f,'hJIR')](_0x18dda7);const _0x41e293=this['pagination_wrapper'][_0xff298a(0x1fc,'B1]1')](_0x14e109['CrZdT']),_0x80df6e=_0x41e293[_0xff298a(0x2dc,']hc!')](),_0x4365ce=this['pagination_wrapper']['getBoundingClientRect'](),_0x483928=_0x14e109[_0xff298a(0x24a,'XxV(')](_0x14e109[_0xff298a(0x156,'hJIR')](_0x14e109[_0xff298a(0x4d5,'FiwE')](_0x80df6e[_0xff298a(0x31e,'5@dZ')],_0x4365ce['left']),_0x14e109[_0xff298a(0x2fa,'AM8k')](_0x41e293[_0xff298a(0x4bd,'ccP5')],0x2)),_0x14e109['WxmPl'](_0x18dda7[_0xff298a(0x4bd,'ccP5')],0x2)),_0xcfe09d=_0x14e109[_0xff298a(0x356,'ccP5')](_0x14e109[_0xff298a(0x382,'1#kZ')](_0x80df6e[_0xff298a(0x1a4,'froX')],_0x4365ce['top'])-_0x18dda7[_0xff298a(0x314,'H(#3')],0x8);_0x18dda7[_0xff298a(0x200,'dj)G')][_0xff298a(0x39a,'81#Q')]=_0xff298a(0x46e,'j!PX'),_0x18dda7[_0xff298a(0x24e,'1#kZ')][_0xff298a(0x415,'fphu')]=Math[_0xff298a(0x3ed,'9&9p')](0x0,_0x483928)+'px',_0x18dda7[_0xff298a(0x44b,'%qeY')][_0xff298a(0x2d0,'B1]1')]=_0xcfe09d+'px';const _0xc42d11=_0x18dda7[_0xff298a(0x2d8,'XxV(')]('.perpage-input'),_0x151bda=_0x18dda7[_0xff298a(0x44a,'FiwE')](_0x14e109[_0xff298a(0x44d,'fphu')]);_0xc42d11[_0xff298a(0x385,'G^63')]=_0x3ee63c=>{const _0x816d2d=_0xff298a,_0x204a51={'ZragJ':function(_0x55b745,_0x305450){const _0x1225ee=_0x16c6;return _0x14e109[_0x1225ee(0x32a,'XxV(')](_0x55b745,_0x305450);}};_0x14e109[_0x816d2d(0x229,'B1]1')](_0x14e109[_0x816d2d(0x204,'KIPd')],_0x816d2d(0x45a,']hc!'))?_0x14e109[_0x816d2d(0x4e1,'IX(J')](_0x14e109[_0x816d2d(0x383,'op8%')],_0x3ee63c[_0x816d2d(0x473,']#yg')])&&_0x151bda[_0x816d2d(0x22e,'zBBt')](new Event(_0x14e109['fGACN'])):(_0x14e109[_0x816d2d(0x2b7,'&^3b')](_0x3d0d7d,this[_0x816d2d(0x2c9,'%W^]')]),this['_resizeTimer']=_0x14e109[_0x816d2d(0x479,'k7o3')](_0x58d488,()=>{const _0x154204=_0x816d2d;_0x204a51['ZragJ'](this[_0x154204(0x3d1,'xKWk')]?.[_0x154204(0x2cf,'a9!f')],0x1)&&this['createPaginationPanel'](this[_0x154204(0x47a,'9TA)')],!0x0);},0xc8));},_0x151bda[_0xff298a(0x29f,'wlR5')](_0x14e109['fGACN'],()=>{const _0x374fe5=_0xff298a,_0x397796=_0x14e109[_0x374fe5(0x40d,'iABa')](parseInt,_0xc42d11[_0x374fe5(0x2df,'x3T7')],0xa);if(_0x14e109[_0x374fe5(0x322,'n7WD')](isNaN,_0x397796)||_0x14e109['XkdqJ'](_0x397796,0x1))return void this[_0x374fe5(0x4de,'froX')](_0x374fe5(0x2a9,'B1]1'));this[_0x374fe5(0x2fd,'tZw$')][_0x374fe5(0x42c,'a9!f')]=_0x397796,(this['showPage'](this[_0x374fe5(0x4fa,'[^5i')],{'current_page':0x1}),this[_0x374fe5(0x2ce,'%W^]')]());});const _0x460fd2=_0x3c89ec=>{const _0x4cddd4=_0xff298a;_0x18dda7[_0x4cddd4(0x1f8,'dj)G')](_0x3c89ec[_0x4cddd4(0x331,'iABa')])||_0x14e109[_0x4cddd4(0x260,'%W^]')](_0x3c89ec[_0x4cddd4(0x48f,'n7WD')],_0x41e293)||(this['removeActivePopover'](),document[_0x4cddd4(0x1b6,']#yg')](_0x14e109['fGACN'],_0x460fd2,!0x0),_0xc42d11[_0x4cddd4(0x41f,'5@dZ')]=null);};setTimeout(()=>{const _0x5cecd5=_0xff298a;document[_0x5cecd5(0x298,'^nn[')](_0x14e109[_0x5cecd5(0x375,'%W^]')],_0x460fd2,!0x0);},0x0);}[_0x4ff4f7(0x4e5,'g53K')](){const _0x3f86ff=_0x4ff4f7,_0x565dce={'wtEFz':_0x3f86ff(0x3f6,'FiwE')},_0x4d1efb=document[_0x3f86ff(0x24c,'%qeY')](_0x565dce[_0x3f86ff(0x2ea,'81#Q')]);_0x4d1efb&&_0x4d1efb[_0x3f86ff(0x448,']#yg')]();}[_0x4ff4f7(0x3c3,'AM8k')](_0x4b04cd){const _0x8af2e6=_0x4ff4f7,_0x1b111a={'yhoSm':'lv-toast','LVmwO':function(_0x1ddb38,_0x3d4d95,_0x3fb12f){return _0x1ddb38(_0x3d4d95,_0x3fb12f);}};let _0x5dea25=this[_0x8af2e6(0x234,'40Lv')][_0x8af2e6(0x1fc,'B1]1')](_0x8af2e6(0x2f8,'mW62'));_0x5dea25&&_0x5dea25[_0x8af2e6(0x181,'lTsZ')](),_0x5dea25=document[_0x8af2e6(0x19f,'hJIR')]('div'),_0x5dea25[_0x8af2e6(0x432,'9&9p')]['add'](_0x1b111a[_0x8af2e6(0x47f,'9TA)')]),_0x5dea25['textContent']=_0x4b04cd,this[_0x8af2e6(0x485,']#yg')][_0x8af2e6(0x18d,'9TA)')](_0x5dea25),_0x1b111a[_0x8af2e6(0x2b8,'Qf*w')](setTimeout,()=>_0x5dea25['remove'](),0xfa0);}[_0x4ff4f7(0x288,'H(#3')](){const _0x169607=_0x4ff4f7,_0x33bcfa={'gjBOA':function(_0x18c72e,_0x2f9f95){return _0x18c72e>_0x2f9f95;},'hfGmb':function(_0x457579,_0x497120){return _0x457579(_0x497120);}};_0x33bcfa[_0x169607(0x4ab,']#yg')](clearTimeout,this[_0x169607(0x189,'XxV(')]),this[_0x169607(0x47d,'2B1n')]=setTimeout(()=>{const _0x149c53=_0x169607;_0x33bcfa[_0x149c53(0x26f,'1#kZ')](this[_0x149c53(0x209,'2B1n')]?.[_0x149c53(0x35e,'Qf*w')],0x1)&&this[_0x149c53(0x4ac,'9TA)')](this[_0x149c53(0x25d,'FiwE')],!0x0);},0xc8);}[_0x4ff4f7(0x194,'5@dZ')](){const _0x31dc28=_0x4ff4f7,_0xaf9212={'PLjRd':_0x31dc28(0x1b7,'k7o3')};window[_0x31dc28(0x32e,'9TA)')](_0xaf9212['PLjRd'],this[_0x31dc28(0x2f0,'g53K')]),this[_0x31dc28(0x29a,'AM8k')](),this['container']&&(this['container'][_0x31dc28(0x216,'%W^]')]=''),ListView[_0x31dc28(0x3ca,'^nn[')][_0x31dc28(0x447,'%qeY')](this[_0x31dc28(0x42a,'hJIR')]);}static['disposeAll'](){const _0x46927d=_0x4ff4f7;ListView[_0x46927d(0x3a6,'k7o3')]['forEach'](_0x1536b9=>_0x1536b9[_0x46927d(0x39b,']hc!')]()),ListView[_0x46927d(0x19c,'j!PX')]['clear']();}static[_0x4ff4f7(0x394,'XxV(')](_0x21555f){const _0x340757=_0x4ff4f7;return ListView[_0x340757(0x19c,'j!PX')]['get'](_0x21555f)||null;}};
-!function(t,e){"object"==typeof exports&&"object"==typeof module?module.exports=e():"function"==typeof define&&define.amd?define([],e):"object"==typeof exports?exports.Pusher=e():t.Pusher=e()}(window,(function(){return function(t){var e={};function n(r){if(e[r])return e[r].exports;var o=e[r]={i:r,l:!1,exports:{}};return t[r].call(o.exports,o,o.exports,n),o.l=!0,o.exports}return n.m=t,n.c=e,n.d=function(t,e,r){n.o(t,e)||Object.defineProperty(t,e,{enumerable:!0,get:r})},n.r=function(t){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(t,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(t,"__esModule",{value:!0})},n.t=function(t,e){if(1&e&&(t=n(t)),8&e)return t;if(4&e&&"object"==typeof t&&t&&t.__esModule)return t;var r=Object.create(null);if(n.r(r),Object.defineProperty(r,"default",{enumerable:!0,value:t}),2&e&&"string"!=typeof t)for(var o in t)n.d(r,o,function(e){return t[e]}.bind(null,o));return r},n.n=function(t){var e=t&&t.__esModule?function(){return t.default}:function(){return t};return n.d(e,"a",e),e},n.o=function(t,e){return Object.prototype.hasOwnProperty.call(t,e)},n.p="",n(n.s=2)}([function(t,e,n){"use strict";var r,o=this&&this.__extends||(r=function(t,e){return(r=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(t,e){t.__proto__=e}||function(t,e){for(var n in e)e.hasOwnProperty(n)&&(t[n]=e[n])})(t,e)},function(t,e){function n(){this.constructor=t}r(t,e),t.prototype=null===e?Object.create(e):(n.prototype=e.prototype,new n)});Object.defineProperty(e,"__esModule",{value:!0});var i=function(){function t(t){void 0===t&&(t="="),this._paddingCharacter=t}return t.prototype.encodedLength=function(t){return this._paddingCharacter?(t+2)/3*4|0:(8*t+5)/6|0},t.prototype.encode=function(t){for(var e="",n=0;n<t.length-2;n+=3){var r=t[n]<<16|t[n+1]<<8|t[n+2];e+=this._encodeByte(r>>>18&63),e+=this._encodeByte(r>>>12&63),e+=this._encodeByte(r>>>6&63),e+=this._encodeByte(r>>>0&63)}var o=t.length-n;if(o>0){r=t[n]<<16|(2===o?t[n+1]<<8:0);e+=this._encodeByte(r>>>18&63),e+=this._encodeByte(r>>>12&63),e+=2===o?this._encodeByte(r>>>6&63):this._paddingCharacter||"",e+=this._paddingCharacter||""}return e},t.prototype.maxDecodedLength=function(t){return this._paddingCharacter?t/4*3|0:(6*t+7)/8|0},t.prototype.decodedLength=function(t){return this.maxDecodedLength(t.length-this._getPaddingLength(t))},t.prototype.decode=function(t){if(0===t.length)return new Uint8Array(0);for(var e=this._getPaddingLength(t),n=t.length-e,r=new Uint8Array(this.maxDecodedLength(n)),o=0,i=0,s=0,c=0,a=0,u=0,h=0;i<n-4;i+=4)c=this._decodeChar(t.charCodeAt(i+0)),a=this._decodeChar(t.charCodeAt(i+1)),u=this._decodeChar(t.charCodeAt(i+2)),h=this._decodeChar(t.charCodeAt(i+3)),r[o++]=c<<2|a>>>4,r[o++]=a<<4|u>>>2,r[o++]=u<<6|h,s|=256&c,s|=256&a,s|=256&u,s|=256&h;if(i<n-1&&(c=this._decodeChar(t.charCodeAt(i)),a=this._decodeChar(t.charCodeAt(i+1)),r[o++]=c<<2|a>>>4,s|=256&c,s|=256&a),i<n-2&&(u=this._decodeChar(t.charCodeAt(i+2)),r[o++]=a<<4|u>>>2,s|=256&u),i<n-3&&(h=this._decodeChar(t.charCodeAt(i+3)),r[o++]=u<<6|h,s|=256&h),0!==s)throw new Error("Base64Coder incorrect characters for decoding");return r},t.prototype._encodeByte=function(t){var e=t;return e+=65,e+=25-t>>>8&6,e+=51-t>>>8&-75,e+=61-t>>>8&-15,e+=62-t>>>8&3,String.fromCharCode(e)},t.prototype._decodeChar=function(t){var e=256;return e+=(42-t&t-44)>>>8&-256+t-43+62,e+=(46-t&t-48)>>>8&-256+t-47+63,e+=(47-t&t-58)>>>8&-256+t-48+52,e+=(64-t&t-91)>>>8&-256+t-65+0,e+=(96-t&t-123)>>>8&-256+t-97+26},t.prototype._getPaddingLength=function(t){var e=0;if(this._paddingCharacter){for(var n=t.length-1;n>=0&&t[n]===this._paddingCharacter;n--)e++;if(t.length<4||e>2)throw new Error("Base64Coder incorrect padding")}return e},t}();e.Coder=i;var s=new i;e.encode=function(t){return s.encode(t)},e.decode=function(t){return s.decode(t)};var c=function(t){function e(){return null!==t&&t.apply(this,arguments)||this}return o(e,t),e.prototype._encodeByte=function(t){var e=t;return e+=65,e+=25-t>>>8&6,e+=51-t>>>8&-75,e+=61-t>>>8&-13,e+=62-t>>>8&49,String.fromCharCode(e)},e.prototype._decodeChar=function(t){var e=256;return e+=(44-t&t-46)>>>8&-256+t-45+62,e+=(94-t&t-96)>>>8&-256+t-95+63,e+=(47-t&t-58)>>>8&-256+t-48+52,e+=(64-t&t-91)>>>8&-256+t-65+0,e+=(96-t&t-123)>>>8&-256+t-97+26},e}(i);e.URLSafeCoder=c;var a=new c;e.encodeURLSafe=function(t){return a.encode(t)},e.decodeURLSafe=function(t){return a.decode(t)},e.encodedLength=function(t){return s.encodedLength(t)},e.maxDecodedLength=function(t){return s.maxDecodedLength(t)},e.decodedLength=function(t){return s.decodedLength(t)}},function(t,e,n){"use strict";Object.defineProperty(e,"__esModule",{value:!0});var r="utf8 invalid source encoding";function o(t){for(var e=0,n=0;n<t.length;n++){var r=t.charCodeAt(n);if(r<128)e+=1;else if(r<2048)e+=2;else if(r<55296)e+=3;else{if(!(r<=57343))throw new Error("utf8 invalid string");if(n>=t.length-1)throw new Error("utf8 invalid string");n++,e+=4}}return e}e.encode=function(t){for(var e=new Uint8Array(o(t)),n=0,r=0;r<t.length;r++){var i=t.charCodeAt(r);i<128?e[n++]=i:i<2048?(e[n++]=192|i>>6,e[n++]=128|63&i):i<55296?(e[n++]=224|i>>12,e[n++]=128|i>>6&63,e[n++]=128|63&i):(r++,i=(1023&i)<<10,i|=1023&t.charCodeAt(r),i+=65536,e[n++]=240|i>>18,e[n++]=128|i>>12&63,e[n++]=128|i>>6&63,e[n++]=128|63&i)}return e},e.encodedLength=o,e.decode=function(t){for(var e=[],n=0;n<t.length;n++){var o=t[n];if(128&o){var i=void 0;if(o<224){if(n>=t.length)throw new Error(r);if(128!=(192&(s=t[++n])))throw new Error(r);o=(31&o)<<6|63&s,i=128}else if(o<240){if(n>=t.length-1)throw new Error(r);var s=t[++n],c=t[++n];if(128!=(192&s)||128!=(192&c))throw new Error(r);o=(15&o)<<12|(63&s)<<6|63&c,i=2048}else{if(!(o<248))throw new Error(r);if(n>=t.length-2)throw new Error(r);s=t[++n],c=t[++n];var a=t[++n];if(128!=(192&s)||128!=(192&c)||128!=(192&a))throw new Error(r);o=(15&o)<<18|(63&s)<<12|(63&c)<<6|63&a,i=65536}if(o<i||o>=55296&&o<=57343)throw new Error(r);if(o>=65536){if(o>1114111)throw new Error(r);o-=65536,e.push(String.fromCharCode(55296|o>>10)),o=56320|1023&o}}e.push(String.fromCharCode(o))}return e.join("")}},function(t,e,n){t.exports=n(3).default},function(t,e,n){"use strict";n.r(e);var r,o=function(){function t(t,e){this.lastId=0,this.prefix=t,this.name=e}return t.prototype.create=function(t){this.lastId++;var e=this.lastId,n=this.prefix+e,r=this.name+"["+e+"]",o=!1,i=function(){o||(t.apply(null,arguments),o=!0)};return this[e]=i,{number:e,id:n,name:r,callback:i}},t.prototype.remove=function(t){delete this[t.number]},t}(),i=new o("_pusher_script_","Pusher.ScriptReceivers"),s={VERSION:"8.0.1",PROTOCOL:7,wsPort:80,wssPort:443,wsPath:"",httpHost:"sockjs.pusher.com",httpPort:80,httpsPort:443,httpPath:"/pusher",stats_host:"stats.pusher.com",authEndpoint:"/pusher/auth",authTransport:"ajax",activityTimeout:12e4,pongTimeout:3e4,unavailableTimeout:1e4,userAuthentication:{endpoint:"/pusher/user-auth",transport:"ajax"},channelAuthorization:{endpoint:"/pusher/auth",transport:"ajax"},cdn_http:"http:;
-"use strict"
-const FindContext(()=> const self{} self.fetchApis"staff":`{main_view.base_url}/api/employee/find`,"employee":`{main_view.base_url}/ypg/employee/list`,} self.getTitle(role)=> switch(role) case'sfaff' case'employee' return"Find Staff" default: return'Find Someone'}} self.getColumns(role)=> switch(role) case'staff' case'employee' return title:"Emp_ID", data:"id"}, title:"ID", data:"code"}, title:"Name", data:"name"}, title:"Sex", data:"sex"}, title:"Email", data:"email"}, title:"Position", name:"position", data:(data,index,tr)=> return[`span class="text-primary">`,data.position_id,`</span>`].join('')},]} case'user' case'login': return title:"Login", data:"login_name"}, title:"Full Name", data:"full_name"}, title:"Type", data:"user_class"}, title:"Role", data:"role"}, title:"email", data:"email"}, title:"Phone", data:"phone_number"}]} default: return[]}} self.getContext(role)=> return"title" self.getTitle(role),"columns" self.getColumns(role),"fetchApi":self.fetchApis[role],}} return self})()
-const FindPersonDialog(()=> const self{} let dialog null self.show(op)=> dialog dialog| new GeneralDialog( cssClass:"modal-lg", createContent:(me)=> return`div class="d-flex flex-column">`,`div class="d-flex">`,`input name="search_value" class="form-control" placeholder="Search" />`,`/div>`,`div class="w-100">`,`table name="tblPersons" id="tblPersons" class="table mt-3">`,`thead></thead><tbody></tbody>`,`/table>`,`/div>`,`/div>`,].join('')}, contentCreated:(me)=> me.renderColumns(tbl cols= const thead tbl.querySelector('thead') const tbody tbl.querySelector('tbody') thead.innerHTML'' tbody.innerHTML'' let rows=`;
+        </div>`;
+               
+        mThis.top_right_menus.find('div.main-task-panel').prepend(item);
+        if(update_count) mThis.incrementTaskCount();    
+    }
+
+    mThis.displayUserMenus = ()=>{
+        return;
+    }
+
+    mThis.displayNotifications = ()=> {
+        vsapi.call(`${mThis.base_url}/api/user/notifications`,null,{useCache:false,cacheTTL:3000}).then((res)=>{
+            let i=0;
+            if(res.status_code ===200){
+                let d = res.data;
+                if(d) {
+                    let items = d.items;
+                    const notifCount = mThis.btnNotif.querySelector('span.number--notification');
+                    notifCount.textContent =  d.unread_count;
+                    if(items){
+                        let c;
+                        do{
+                            c= items[i];
+                            if(!c) break;
+                            mThis.addNotificationItem(c,false);
+                            i++;
+                        }while(c);
+                    }
+                } 
+            }
+            
+            if(i==0){
+                let empty_item =`<div class="main-notif-item empty-item"><span class="p-1 text-muted text-center">No Notifications</span></div>`;
+                mThis.top_right_menus.querySelector('div.main-notif-panel').innerHTML =  empty_item;
+            }
+        });
+    };
+
+    // mThis.setTaskCount = (c)=>{
+    //     if(!mThis.btnTasks) return;
+    //     mThis.btnTasks.dataset,count = c;
+    //     mThis.btnTasks.textContent = c;
+    // }
+
+    mThis.setNotificationCount = (c)=>{
+        mThis.btnNotif.dataset.count = c;
+        mThis.btnNotif.querySelector('.number--notification').textContent = c;
+    }
+
+    // mThis.displayTasks =()=> {
+    //     //let items =null;
+    //     vsapi.call(`${mThis.base_url}/api/user/pending-requests`,null,{useCache:false, cacheTTL:3000}).then((res)=>{
+    //         if(res.status_code===200){
+    //             let d = res.data;
+    //             let i=0;
+    //             let c;
+    //             do{
+    //                 c =d[i];
+    //                     if(!c) break;
+    //                     mThis.addTaskItem(c,false);
+    //                 i++;
+    //             }while(c);
+                    
+    //             if(i==0) {
+    //                 let item =`<div class="main-task-item">
+    //                         <span class="task-text">No pending requests</span>     
+    //                     </div>`;
+    //                     let html = `<div class="dropdown-menu dropdown-menu-right">
+    //                         <span class="task-header">Requests</span> 
+    //                         <div class="main-task-panel">
+    //                             ${item}
+    //                         </div>
+    //                     </div>`;
+    //                     if(mThis.btnTasks){
+    //                         const p = mThis.btnTasks.parentElement;   
+    //                         if(p) p.insertAdjacentHTML("beforeend",html);
+    //                     }
+                    
+    //             }
+    //             mThis.setTaskCount(i);
+    //         }
+    //     });
+    // };
+
+    mThis.updateNotificationCount = ()=>{
+        vsapi.call(`${mThis.base_url}/api/user/unread-count`,null,{useCache:false,cacheTTL:3000}).then((res)=>{
+            if(res.status_code ===200){
+                let d = res.data;
+                const span = mThis.btnNotif.querySelector('.number--notification');
+                if(d > 0) span.textContent =  d; else span.textContent = 0; 
+                if(d > 0) mThis.btnNotif.dataset.count = d ; else mThis.btnNotif.dataset.count = 0; 
+            }
+        });
+    }
+    
+    mThis.incrementNotificationCount = ()=>{
+        const notifCount_span = mThis.btnNotif.querySelector('span.number--notification');
+        let d = mThis.btnNotif.dataset.count;
+        d = d>=0?d:0;
+        d++;
+        notifCount_span.textContent = d;
+        mThis.btnNotif.dataset.count = d;         
+    }
+
+    // mThis.incrementTaskCount = ()=>{
+    //     let d = mThis.btnTasks.dataset.count;
+    //     d = d>=0?d:0;
+    //     d++;
+    //     mThis.btnNotif.textContent = d;
+    //     mThis.btnNotif.dataset.count = d;
+    // }
+    
+    mThis.setContentView = (viewInstance, title_prop = null) => {
+        const siblings = Array.from(viewInstance.parentElement.children);
+        
+        // Hide all siblings smoothly
+        siblings.forEach((div) => {
+            if (div !== viewInstance && div.style.display !== 'none') {
+                div.style.display = 'none';
+            }
+        });
+    
+        // // Prepare the target view for fade-in
+        // if (viewInstance.style.display !== 'block') {
+        //     viewInstance.style.display = 'block';
+        //     viewInstance.style.opacity = 0;
+        // }
+    
+        // // Ensure transition is applied only after display change
+        // requestAnimationFrame(() => {
+        //     viewInstance.style.transition = 'opacity 200ms';
+        //     viewInstance.style.opacity = 1;
+        // });
+        viewInstance.style.display = 'block';
+        // Set the title if provided
+        if (title_prop) mThis.setTitle(title_prop);
+    };
+
+    return mThis;
+})();
+//end::main_view module
+ 
+window.addEventListener('DOMContentLoaded',async()=>{
+     VSUtil.defaultStyle = 'material';
+    await main_view.init_vsapi();
+    await VSMoney.init();
+    main_view.init();
+    LocaleManager.translateZone(main_view.VSAppContent);
+    main_view.setLangMenu(LocaleManager.currentLanguage.code);
+
+    const inputs = main_view.VSAppContent.querySelectorAll("input");
+
+    DateTimePicker.destroyAll();
+    inputs.forEach(el =>{
+        const type = el.getAttribute('type') ?? el.dataset.select ?? '';
+        if(['date','daterange','datepicker'].indexOf(type.toLowerCase()) >= 0){
+            new DateTimePicker(el,null);
+        }  
+        el.onselect = function(e){
+            e.preventDefault();
+        }
+
+        el.onfocus = function(e){
+            e.preventDefault();
+        }
+    });
+});
+  
+// window.oncontextmenu = function(){
+//     return false;
+// }
+
+// document.onkeydown = function(e){
+//     if(window.event.keyCode == 123 ||  e.button == 2)    
+//         return false;
+// }
+"use strict";
+class SearchWidget{
+    constructor(container, options = null){
+        const defaults = {
+            searchIcon:'fa fa-search',
+            inputClass: 'form-control border border-secondary rounded-3',
+            onkeyup:()=>{ return;}
+        }
+
+       options = options || defaults;
+       options.onkeyup = (typeof options.onkeyup ==='function')? options.onkeyup: defaults.onkeyup;
+       options.searchIcon =   options.searchIcon || defaults.searchIcon;
+       options.inputClass = options.inputClass || defaults.inputClass;
+       this.options = options;
+       this.container = container;
+       this.container.innerHTML = '<a href="javascript:void(0)" class="sw-search-lnk"><i class="fa fa-search fs-5"></i></a>';
+       this.state = 0; /** not in search mode */
+       const that = this;
+
+       this.container.dataset.state = 0;
+       this.container.addEventListener('click', e=>{
+          e.preventDefault();
+          let lnk = e.target.closest('.sw-search-lnk');
+          if (lnk){
+            that.setState(null);
+          }
+          
+       });
+    }
+
+    setState(state=null){
+      if(state == 0){
+        this.container.innerHTML = '<a href="javascript:void(0)" class="sw-search-lnk"><i class="fa fa-search fs-5"></i></a>';
+      } else if (state==1){
+        this.container.innerHTML = ['<input class="sw-search-input ',this.options.inputClass,'" placeholder="',this.options.placeHolder,'">'].join('');
+        let el = this.container.querySelector('.sw-search-input');
+        const that = this;
+        if(el){
+            el.focus();
+            el.select();
+
+             el.onkeyup = e=>{
+                 e.preventDefault();
+                 that.options.onkeyup(el.value, e);
+             }
+             el.onmouseenter = e=>{
+                el.dataset.isfocus =1;
+                clearTimeout(that.mTimeout);  
+             }
+             el.onmouseleave = e=>{
+                e.preventDefault();
+                el.dataset.isfocus =0; 
+                let tog_state = this.state ==1? 0 : 1;
+                if(!el.value || (tog_state + '').trim() ==''){
+                    that.mTimeout =  setTimeout(()=>{
+                        if (el.dataset.isfocus == 0) that.setState(0);
+                     },1000);
+                }
+             }
+        }
+         
+      } else{
+         let tog_state = this.state ==1? 0 : 1;
+         this.setState(tog_state);
+      }
+    }
+
+    getState(){
+      return this.state;
+    }
+    getValue(){
+       if(this.state ==1){
+         const el = this.container.querySelector('.sw-search-input');
+         return el? el.value: null;
+       }else return null;   
+    }
+
+    setValue(value){
+        if(this.state ==1){
+          const el = this.container.querySelector('.sw-search-input');
+          el.value = value;
+        }
+     }
+
+}
+
+/*!
+ * Pusher JavaScript Library v8.0.1
+ * https://pusher.com/
+ *
+ * Copyright 2020, Pusher
+ * Released under the MIT licence.
+ */
+!function(t,e){"object"==typeof exports&&"object"==typeof module?module.exports=e():"function"==typeof define&&define.amd?define([],e):"object"==typeof exports?exports.Pusher=e():t.Pusher=e()}(window,(function(){return function(t){var e={};function n(r){if(e[r])return e[r].exports;var o=e[r]={i:r,l:!1,exports:{}};return t[r].call(o.exports,o,o.exports,n),o.l=!0,o.exports}return n.m=t,n.c=e,n.d=function(t,e,r){n.o(t,e)||Object.defineProperty(t,e,{enumerable:!0,get:r})},n.r=function(t){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(t,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(t,"__esModule",{value:!0})},n.t=function(t,e){if(1&e&&(t=n(t)),8&e)return t;if(4&e&&"object"==typeof t&&t&&t.__esModule)return t;var r=Object.create(null);if(n.r(r),Object.defineProperty(r,"default",{enumerable:!0,value:t}),2&e&&"string"!=typeof t)for(var o in t)n.d(r,o,function(e){return t[e]}.bind(null,o));return r},n.n=function(t){var e=t&&t.__esModule?function(){return t.default}:function(){return t};return n.d(e,"a",e),e},n.o=function(t,e){return Object.prototype.hasOwnProperty.call(t,e)},n.p="",n(n.s=2)}([function(t,e,n){"use strict";var r,o=this&&this.__extends||(r=function(t,e){return(r=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(t,e){t.__proto__=e}||function(t,e){for(var n in e)e.hasOwnProperty(n)&&(t[n]=e[n])})(t,e)},function(t,e){function n(){this.constructor=t}r(t,e),t.prototype=null===e?Object.create(e):(n.prototype=e.prototype,new n)});Object.defineProperty(e,"__esModule",{value:!0});var i=function(){function t(t){void 0===t&&(t="="),this._paddingCharacter=t}return t.prototype.encodedLength=function(t){return this._paddingCharacter?(t+2)/3*4|0:(8*t+5)/6|0},t.prototype.encode=function(t){for(var e="",n=0;n<t.length-2;n+=3){var r=t[n]<<16|t[n+1]<<8|t[n+2];e+=this._encodeByte(r>>>18&63),e+=this._encodeByte(r>>>12&63),e+=this._encodeByte(r>>>6&63),e+=this._encodeByte(r>>>0&63)}var o=t.length-n;if(o>0){r=t[n]<<16|(2===o?t[n+1]<<8:0);e+=this._encodeByte(r>>>18&63),e+=this._encodeByte(r>>>12&63),e+=2===o?this._encodeByte(r>>>6&63):this._paddingCharacter||"",e+=this._paddingCharacter||""}return e},t.prototype.maxDecodedLength=function(t){return this._paddingCharacter?t/4*3|0:(6*t+7)/8|0},t.prototype.decodedLength=function(t){return this.maxDecodedLength(t.length-this._getPaddingLength(t))},t.prototype.decode=function(t){if(0===t.length)return new Uint8Array(0);for(var e=this._getPaddingLength(t),n=t.length-e,r=new Uint8Array(this.maxDecodedLength(n)),o=0,i=0,s=0,c=0,a=0,u=0,h=0;i<n-4;i+=4)c=this._decodeChar(t.charCodeAt(i+0)),a=this._decodeChar(t.charCodeAt(i+1)),u=this._decodeChar(t.charCodeAt(i+2)),h=this._decodeChar(t.charCodeAt(i+3)),r[o++]=c<<2|a>>>4,r[o++]=a<<4|u>>>2,r[o++]=u<<6|h,s|=256&c,s|=256&a,s|=256&u,s|=256&h;if(i<n-1&&(c=this._decodeChar(t.charCodeAt(i)),a=this._decodeChar(t.charCodeAt(i+1)),r[o++]=c<<2|a>>>4,s|=256&c,s|=256&a),i<n-2&&(u=this._decodeChar(t.charCodeAt(i+2)),r[o++]=a<<4|u>>>2,s|=256&u),i<n-3&&(h=this._decodeChar(t.charCodeAt(i+3)),r[o++]=u<<6|h,s|=256&h),0!==s)throw new Error("Base64Coder: incorrect characters for decoding");return r},t.prototype._encodeByte=function(t){var e=t;return e+=65,e+=25-t>>>8&6,e+=51-t>>>8&-75,e+=61-t>>>8&-15,e+=62-t>>>8&3,String.fromCharCode(e)},t.prototype._decodeChar=function(t){var e=256;return e+=(42-t&t-44)>>>8&-256+t-43+62,e+=(46-t&t-48)>>>8&-256+t-47+63,e+=(47-t&t-58)>>>8&-256+t-48+52,e+=(64-t&t-91)>>>8&-256+t-65+0,e+=(96-t&t-123)>>>8&-256+t-97+26},t.prototype._getPaddingLength=function(t){var e=0;if(this._paddingCharacter){for(var n=t.length-1;n>=0&&t[n]===this._paddingCharacter;n--)e++;if(t.length<4||e>2)throw new Error("Base64Coder: incorrect padding")}return e},t}();e.Coder=i;var s=new i;e.encode=function(t){return s.encode(t)},e.decode=function(t){return s.decode(t)};var c=function(t){function e(){return null!==t&&t.apply(this,arguments)||this}return o(e,t),e.prototype._encodeByte=function(t){var e=t;return e+=65,e+=25-t>>>8&6,e+=51-t>>>8&-75,e+=61-t>>>8&-13,e+=62-t>>>8&49,String.fromCharCode(e)},e.prototype._decodeChar=function(t){var e=256;return e+=(44-t&t-46)>>>8&-256+t-45+62,e+=(94-t&t-96)>>>8&-256+t-95+63,e+=(47-t&t-58)>>>8&-256+t-48+52,e+=(64-t&t-91)>>>8&-256+t-65+0,e+=(96-t&t-123)>>>8&-256+t-97+26},e}(i);e.URLSafeCoder=c;var a=new c;e.encodeURLSafe=function(t){return a.encode(t)},e.decodeURLSafe=function(t){return a.decode(t)},e.encodedLength=function(t){return s.encodedLength(t)},e.maxDecodedLength=function(t){return s.maxDecodedLength(t)},e.decodedLength=function(t){return s.decodedLength(t)}},function(t,e,n){"use strict";Object.defineProperty(e,"__esModule",{value:!0});var r="utf8: invalid source encoding";function o(t){for(var e=0,n=0;n<t.length;n++){var r=t.charCodeAt(n);if(r<128)e+=1;else if(r<2048)e+=2;else if(r<55296)e+=3;else{if(!(r<=57343))throw new Error("utf8: invalid string");if(n>=t.length-1)throw new Error("utf8: invalid string");n++,e+=4}}return e}e.encode=function(t){for(var e=new Uint8Array(o(t)),n=0,r=0;r<t.length;r++){var i=t.charCodeAt(r);i<128?e[n++]=i:i<2048?(e[n++]=192|i>>6,e[n++]=128|63&i):i<55296?(e[n++]=224|i>>12,e[n++]=128|i>>6&63,e[n++]=128|63&i):(r++,i=(1023&i)<<10,i|=1023&t.charCodeAt(r),i+=65536,e[n++]=240|i>>18,e[n++]=128|i>>12&63,e[n++]=128|i>>6&63,e[n++]=128|63&i)}return e},e.encodedLength=o,e.decode=function(t){for(var e=[],n=0;n<t.length;n++){var o=t[n];if(128&o){var i=void 0;if(o<224){if(n>=t.length)throw new Error(r);if(128!=(192&(s=t[++n])))throw new Error(r);o=(31&o)<<6|63&s,i=128}else if(o<240){if(n>=t.length-1)throw new Error(r);var s=t[++n],c=t[++n];if(128!=(192&s)||128!=(192&c))throw new Error(r);o=(15&o)<<12|(63&s)<<6|63&c,i=2048}else{if(!(o<248))throw new Error(r);if(n>=t.length-2)throw new Error(r);s=t[++n],c=t[++n];var a=t[++n];if(128!=(192&s)||128!=(192&c)||128!=(192&a))throw new Error(r);o=(15&o)<<18|(63&s)<<12|(63&c)<<6|63&a,i=65536}if(o<i||o>=55296&&o<=57343)throw new Error(r);if(o>=65536){if(o>1114111)throw new Error(r);o-=65536,e.push(String.fromCharCode(55296|o>>10)),o=56320|1023&o}}e.push(String.fromCharCode(o))}return e.join("")}},function(t,e,n){t.exports=n(3).default},function(t,e,n){"use strict";n.r(e);var r,o=function(){function t(t,e){this.lastId=0,this.prefix=t,this.name=e}return t.prototype.create=function(t){this.lastId++;var e=this.lastId,n=this.prefix+e,r=this.name+"["+e+"]",o=!1,i=function(){o||(t.apply(null,arguments),o=!0)};return this[e]=i,{number:e,id:n,name:r,callback:i}},t.prototype.remove=function(t){delete this[t.number]},t}(),i=new o("_pusher_script_","Pusher.ScriptReceivers"),s={VERSION:"8.0.1",PROTOCOL:7,wsPort:80,wssPort:443,wsPath:"",httpHost:"sockjs.pusher.com",httpPort:80,httpsPort:443,httpPath:"/pusher",stats_host:"stats.pusher.com",authEndpoint:"/pusher/auth",authTransport:"ajax",activityTimeout:12e4,pongTimeout:3e4,unavailableTimeout:1e4,userAuthentication:{endpoint:"/pusher/user-auth",transport:"ajax"},channelAuthorization:{endpoint:"/pusher/auth",transport:"ajax"},cdn_http:"http://js.pusher.com",cdn_https:"https://js.pusher.com",dependency_suffix:""},c=function(){function t(t){this.options=t,this.receivers=t.receivers||i,this.loading={}}return t.prototype.load=function(t,e,n){var r=this;if(r.loading[t]&&r.loading[t].length>0)r.loading[t].push(n);else{r.loading[t]=[n];var o=Ce.createScriptRequest(r.getPath(t,e)),i=r.receivers.create((function(e){if(r.receivers.remove(i),r.loading[t]){var n=r.loading[t];delete r.loading[t];for(var s=function(t){t||o.cleanup()},c=0;c<n.length;c++)n[c](e,s)}}));o.send(i)}},t.prototype.getRoot=function(t){var e=Ce.getDocument().location.protocol;return(t&&t.useTLS||"https:"===e?this.options.cdn_https:this.options.cdn_http).replace(/\/*$/,"")+"/"+this.options.version},t.prototype.getPath=function(t,e){return this.getRoot(e)+"/"+t+this.options.suffix+".js"},t}(),a=new o("_pusher_dependencies","Pusher.DependenciesReceivers"),u=new c({cdn_http:s.cdn_http,cdn_https:s.cdn_https,version:s.VERSION,suffix:s.dependency_suffix,receivers:a}),h={baseUrl:"https://pusher.com",urls:{authenticationEndpoint:{path:"/docs/channels/server_api/authenticating_users"},authorizationEndpoint:{path:"/docs/channels/server_api/authorizing-users/"},javascriptQuickStart:{path:"/docs/javascript_quick_start"},triggeringClientEvents:{path:"/docs/client_api_guide/client_events#trigger-events"},encryptedChannelSupport:{fullUrl:"https://github.com/pusher/pusher-js/tree/cc491015371a4bde5743d1c87a0fbac0feb53195#encrypted-channel-support"}}},p=function(t){var e,n=h.urls[t];return n?(n.fullUrl?e=n.fullUrl:n.path&&(e=h.baseUrl+n.path),e?"See: "+e:""):""};!function(t){t.UserAuthentication="user-authentication",t.ChannelAuthorization="channel-authorization"}(r||(r={}));var l,f=(l=function(t,e){return(l=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(t,e){t.__proto__=e}||function(t,e){for(var n in e)e.hasOwnProperty(n)&&(t[n]=e[n])})(t,e)},function(t,e){function n(){this.constructor=t}l(t,e),t.prototype=null===e?Object.create(e):(n.prototype=e.prototype,new n)}),d=function(t){function e(e){var n=this.constructor,r=t.call(this,e)||this;return Object.setPrototypeOf(r,n.prototype),r}return f(e,t),e}(Error),y=function(t){function e(e){var n=this.constructor,r=t.call(this,e)||this;return Object.setPrototypeOf(r,n.prototype),r}return f(e,t),e}(Error),v=function(t){function e(e){var n=this.constructor,r=t.call(this,e)||this;return Object.setPrototypeOf(r,n.prototype),r}return f(e,t),e}(Error),g=function(t){function e(e){var n=this.constructor,r=t.call(this,e)||this;return Object.setPrototypeOf(r,n.prototype),r}return f(e,t),e}(Error),b=function(t){function e(e){var n=this.constructor,r=t.call(this,e)||this;return Object.setPrototypeOf(r,n.prototype),r}return f(e,t),e}(Error),m=function(t){function e(e){var n=this.constructor,r=t.call(this,e)||this;return Object.setPrototypeOf(r,n.prototype),r}return f(e,t),e}(Error),_=function(t){function e(e){var n=this.constructor,r=t.call(this,e)||this;return Object.setPrototypeOf(r,n.prototype),r}return f(e,t),e}(Error),w=function(t){function e(e){var n=this.constructor,r=t.call(this,e)||this;return Object.setPrototypeOf(r,n.prototype),r}return f(e,t),e}(Error),S=function(t){function e(e,n){var r=this.constructor,o=t.call(this,n)||this;return o.status=e,Object.setPrototypeOf(o,r.prototype),o}return f(e,t),e}(Error),k=function(t,e,n,o,i){var s=Ce.createXHR();for(var c in s.open("POST",n.endpoint,!0),s.setRequestHeader("Content-Type","application/x-www-form-urlencoded"),n.headers)s.setRequestHeader(c,n.headers[c]);if(null!=n.headersProvider){var a=n.headersProvider();for(var c in a)s.setRequestHeader(c,a[c])}return s.onreadystatechange=function(){if(4===s.readyState)if(200===s.status){var t=void 0,e=!1;try{t=JSON.parse(s.responseText),e=!0}catch(t){i(new S(200,"JSON returned from "+o.toString()+" endpoint was invalid, yet status code was 200. Data was: "+s.responseText),null)}e&&i(null,t)}else{var c="";switch(o){case r.UserAuthentication:c=p("authenticationEndpoint");break;case r.ChannelAuthorization:c="Clients must be authorized to join private or presence channels. "+p("authorizationEndpoint")}i(new S(s.status,"Unable to retrieve auth string from "+o.toString()+" endpoint - received status: "+s.status+" from "+n.endpoint+". "+c),null)}},s.send(e),s};for(var C=String.fromCharCode,P="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",T={},O=0,E=P.length;O<E;O++)T[P.charAt(O)]=O;var A=function(t){var e=t.charCodeAt(0);return e<128?t:e<2048?C(192|e>>>6)+C(128|63&e):C(224|e>>>12&15)+C(128|e>>>6&63)+C(128|63&e)},x=function(t){return t.replace(/[^\x00-\x7F]/g,A)},L=function(t){var e=[0,2,1][t.length%3],n=t.charCodeAt(0)<<16|(t.length>1?t.charCodeAt(1):0)<<8|(t.length>2?t.charCodeAt(2):0);return[P.charAt(n>>>18),P.charAt(n>>>12&63),e>=2?"=":P.charAt(n>>>6&63),e>=1?"=":P.charAt(63&n)].join("")},R=window.btoa||function(t){return t.replace(/[\s\S]{1,3}/g,L)},j=function(){function t(t,e,n,r){var o=this;this.clear=e,this.timer=t((function(){o.timer&&(o.timer=r(o.timer))}),n)}return t.prototype.isRunning=function(){return null!==this.timer},t.prototype.ensureAborted=function(){this.timer&&(this.clear(this.timer),this.timer=null)},t}(),I=function(){var t=function(e,n){return(t=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(t,e){t.__proto__=e}||function(t,e){for(var n in e)e.hasOwnProperty(n)&&(t[n]=e[n])})(e,n)};return function(e,n){function r(){this.constructor=e}t(e,n),e.prototype=null===n?Object.create(n):(r.prototype=n.prototype,new r)}}();function D(t){window.clearTimeout(t)}function N(t){window.clearInterval(t)}var H=function(t){function e(e,n){return t.call(this,setTimeout,D,e,(function(t){return n(),null}))||this}return I(e,t),e}(j),U=function(t){function e(e,n){return t.call(this,setInterval,N,e,(function(t){return n(),t}))||this}return I(e,t),e}(j),M={now:function(){return Date.now?Date.now():(new Date).valueOf()},defer:function(t){return new H(0,t)},method:function(t){for(var e=[],n=1;n<arguments.length;n++)e[n-1]=arguments[n];var r=Array.prototype.slice.call(arguments,1);return function(e){return e[t].apply(e,r.concat(arguments))}}};function z(t){for(var e=[],n=1;n<arguments.length;n++)e[n-1]=arguments[n];for(var r=0;r<e.length;r++){var o=e[r];for(var i in o)o[i]&&o[i].constructor&&o[i].constructor===Object?t[i]=z(t[i]||{},o[i]):t[i]=o[i]}return t}function q(){for(var t=["Pusher"],e=0;e<arguments.length;e++)"string"==typeof arguments[e]?t.push(arguments[e]):t.push(K(arguments[e]));return t.join(" : ")}function B(t,e){var n=Array.prototype.indexOf;if(null===t)return-1;if(n&&t.indexOf===n)return t.indexOf(e);for(var r=0,o=t.length;r<o;r++)if(t[r]===e)return r;return-1}function F(t,e){for(var n in t)Object.prototype.hasOwnProperty.call(t,n)&&e(t[n],n,t)}function X(t){var e=[];return F(t,(function(t,n){e.push(n)})),e}function J(t,e,n){for(var r=0;r<t.length;r++)e.call(n||window,t[r],r,t)}function W(t,e){for(var n=[],r=0;r<t.length;r++)n.push(e(t[r],r,t,n));return n}function G(t,e){e=e||function(t){return!!t};for(var n=[],r=0;r<t.length;r++)e(t[r],r,t,n)&&n.push(t[r]);return n}function V(t,e){var n={};return F(t,(function(r,o){(e&&e(r,o,t,n)||Boolean(r))&&(n[o]=r)})),n}function Y(t,e){for(var n=0;n<t.length;n++)if(e(t[n],n,t))return!0;return!1}function $(t){return e=function(t){return"object"==typeof t&&(t=K(t)),encodeURIComponent((e=t.toString(),R(x(e))));var e},n={},F(t,(function(t,r){n[r]=e(t)})),n;var e,n}function Q(t){var e,n,r=V(t,(function(t){return void 0!==t}));return W((e=$(r),n=[],F(e,(function(t,e){n.push([e,t])})),n),M.method("join","=")).join("&")}function K(t){try{return JSON.stringify(t)}catch(r){return JSON.stringify((e=[],n=[],function t(r,o){var i,s,c;switch(typeof r){case"object":if(!r)return null;for(i=0;i<e.length;i+=1)if(e[i]===r)return{$ref:n[i]};if(e.push(r),n.push(o),"[object Array]"===Object.prototype.toString.apply(r))for(c=[],i=0;i<r.length;i+=1)c[i]=t(r[i],o+"["+i+"]");else for(s in c={},r)Object.prototype.hasOwnProperty.call(r,s)&&(c[s]=t(r[s],o+"["+JSON.stringify(s)+"]"));return c;case"number":case"string":case"boolean":return r}}(t,"$")))}var e,n}var Z=new(function(){function t(){this.globalLog=function(t){window.console&&window.console.log&&window.console.log(t)}}return t.prototype.debug=function(){for(var t=[],e=0;e<arguments.length;e++)t[e]=arguments[e];this.log(this.globalLog,t)},t.prototype.warn=function(){for(var t=[],e=0;e<arguments.length;e++)t[e]=arguments[e];this.log(this.globalLogWarn,t)},t.prototype.error=function(){for(var t=[],e=0;e<arguments.length;e++)t[e]=arguments[e];this.log(this.globalLogError,t)},t.prototype.globalLogWarn=function(t){window.console&&window.console.warn?window.console.warn(t):this.globalLog(t)},t.prototype.globalLogError=function(t){window.console&&window.console.error?window.console.error(t):this.globalLogWarn(t)},t.prototype.log=function(t){for(var e=[],n=1;n<arguments.length;n++)e[n-1]=arguments[n];var r=q.apply(this,arguments);if(Ge.log)Ge.log(r);else if(Ge.logToConsole){var o=t.bind(this);o(r)}},t}()),tt=function(t,e,n,r,o){void 0===n.headers&&null==n.headersProvider||Z.warn("To send headers with the "+r.toString()+" request, you must use AJAX, rather than JSONP.");var i=t.nextAuthCallbackID.toString();t.nextAuthCallbackID++;var s=t.getDocument(),c=s.createElement("script");t.auth_callbacks[i]=function(t){o(null,t)};var a="Pusher.auth_callbacks['"+i+"']";c.src=n.endpoint+"?callback="+encodeURIComponent(a)+"&"+e;var u=s.getElementsByTagName("head")[0]||s.documentElement;u.insertBefore(c,u.firstChild)},et=function(){function t(t){this.src=t}return t.prototype.send=function(t){var e=this,n="Error loading "+e.src;e.script=document.createElement("script"),e.script.id=t.id,e.script.src=e.src,e.script.type="text/javascript",e.script.charset="UTF-8",e.script.addEventListener?(e.script.onerror=function(){t.callback(n)},e.script.onload=function(){t.callback(null)}):e.script.onreadystatechange=function(){"loaded"!==e.script.readyState&&"complete"!==e.script.readyState||t.callback(null)},void 0===e.script.async&&document.attachEvent&&/opera/i.test(navigator.userAgent)?(e.errorScript=document.createElement("script"),e.errorScript.id=t.id+"_error",e.errorScript.text=t.name+"('"+n+"');",e.script.async=e.errorScript.async=!1):e.script.async=!0;var r=document.getElementsByTagName("head")[0];r.insertBefore(e.script,r.firstChild),e.errorScript&&r.insertBefore(e.errorScript,e.script.nextSibling)},t.prototype.cleanup=function(){this.script&&(this.script.onload=this.script.onerror=null,this.script.onreadystatechange=null),this.script&&this.script.parentNode&&this.script.parentNode.removeChild(this.script),this.errorScript&&this.errorScript.parentNode&&this.errorScript.parentNode.removeChild(this.errorScript),this.script=null,this.errorScript=null},t}(),nt=function(){function t(t,e){this.url=t,this.data=e}return t.prototype.send=function(t){if(!this.request){var e=Q(this.data),n=this.url+"/"+t.number+"?"+e;this.request=Ce.createScriptRequest(n),this.request.send(t)}},t.prototype.cleanup=function(){this.request&&this.request.cleanup()},t}(),rt={name:"jsonp",getAgent:function(t,e){return function(n,r){var o="http"+(e?"s":"")+"://"+(t.host||t.options.host)+t.options.path,s=Ce.createJSONPRequest(o,n),c=Ce.ScriptReceivers.create((function(e,n){i.remove(c),s.cleanup(),n&&n.host&&(t.host=n.host),r&&r(e,n)}));s.send(c)}}};function ot(t,e,n){return t+(e.useTLS?"s":"")+"://"+(e.useTLS?e.hostTLS:e.hostNonTLS)+n}function it(t,e){return"/app/"+t+("?protocol="+s.PROTOCOL+"&client=js&version="+s.VERSION+(e?"&"+e:""))}var st={getInitial:function(t,e){return ot("ws",e,(e.httpPath||"")+it(t,"flash=false"))}},ct={getInitial:function(t,e){return ot("http",e,(e.httpPath||"/pusher")+it(t))}},at={getInitial:function(t,e){return ot("http",e,e.httpPath||"/pusher")},getPath:function(t,e){return it(t)}},ut=function(){function t(){this._callbacks={}}return t.prototype.get=function(t){return this._callbacks[ht(t)]},t.prototype.add=function(t,e,n){var r=ht(t);this._callbacks[r]=this._callbacks[r]||[],this._callbacks[r].push({fn:e,context:n})},t.prototype.remove=function(t,e,n){if(t||e||n){var r=t?[ht(t)]:X(this._callbacks);e||n?this.removeCallback(r,e,n):this.removeAllCallbacks(r)}else this._callbacks={}},t.prototype.removeCallback=function(t,e,n){J(t,(function(t){this._callbacks[t]=G(this._callbacks[t]||[],(function(t){return e&&e!==t.fn||n&&n!==t.context})),0===this._callbacks[t].length&&delete this._callbacks[t]}),this)},t.prototype.removeAllCallbacks=function(t){J(t,(function(t){delete this._callbacks[t]}),this)},t}();function ht(t){return"_"+t}var pt=function(){function t(t){this.callbacks=new ut,this.global_callbacks=[],this.failThrough=t}return t.prototype.bind=function(t,e,n){return this.callbacks.add(t,e,n),this},t.prototype.bind_global=function(t){return this.global_callbacks.push(t),this},t.prototype.unbind=function(t,e,n){return this.callbacks.remove(t,e,n),this},t.prototype.unbind_global=function(t){return t?(this.global_callbacks=G(this.global_callbacks||[],(function(e){return e!==t})),this):(this.global_callbacks=[],this)},t.prototype.unbind_all=function(){return this.unbind(),this.unbind_global(),this},t.prototype.emit=function(t,e,n){for(var r=0;r<this.global_callbacks.length;r++)this.global_callbacks[r](t,e);var o=this.callbacks.get(t),i=[];if(n?i.push(e,n):e&&i.push(e),o&&o.length>0)for(r=0;r<o.length;r++)o[r].fn.apply(o[r].context||window,i);else this.failThrough&&this.failThrough(t,e);return this},t}(),lt=function(){var t=function(e,n){return(t=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(t,e){t.__proto__=e}||function(t,e){for(var n in e)e.hasOwnProperty(n)&&(t[n]=e[n])})(e,n)};return function(e,n){function r(){this.constructor=e}t(e,n),e.prototype=null===n?Object.create(n):(r.prototype=n.prototype,new r)}}(),ft=function(t){function e(e,n,r,o,i){var s=t.call(this)||this;return s.initialize=Ce.transportConnectionInitializer,s.hooks=e,s.name=n,s.priority=r,s.key=o,s.options=i,s.state="new",s.timeline=i.timeline,s.activityTimeout=i.activityTimeout,s.id=s.timeline.generateUniqueID(),s}return lt(e,t),e.prototype.handlesActivityChecks=function(){return Boolean(this.hooks.handlesActivityChecks)},e.prototype.supportsPing=function(){return Boolean(this.hooks.supportsPing)},e.prototype.connect=function(){var t=this;if(this.socket||"initialized"!==this.state)return!1;var e=this.hooks.urls.getInitial(this.key,this.options);try{this.socket=this.hooks.getSocket(e,this.options)}catch(e){return M.defer((function(){t.onError(e),t.changeState("closed")})),!1}return this.bindListeners(),Z.debug("Connecting",{transport:this.name,url:e}),this.changeState("connecting"),!0},e.prototype.close=function(){return!!this.socket&&(this.socket.close(),!0)},e.prototype.send=function(t){var e=this;return"open"===this.state&&(M.defer((function(){e.socket&&e.socket.send(t)})),!0)},e.prototype.ping=function(){"open"===this.state&&this.supportsPing()&&this.socket.ping()},e.prototype.onOpen=function(){this.hooks.beforeOpen&&this.hooks.beforeOpen(this.socket,this.hooks.urls.getPath(this.key,this.options)),this.changeState("open"),this.socket.onopen=void 0},e.prototype.onError=function(t){this.emit("error",{type:"WebSocketError",error:t}),this.timeline.error(this.buildTimelineMessage({error:t.toString()}))},e.prototype.onClose=function(t){t?this.changeState("closed",{code:t.code,reason:t.reason,wasClean:t.wasClean}):this.changeState("closed"),this.unbindListeners(),this.socket=void 0},e.prototype.onMessage=function(t){this.emit("message",t)},e.prototype.onActivity=function(){this.emit("activity")},e.prototype.bindListeners=function(){var t=this;this.socket.onopen=function(){t.onOpen()},this.socket.onerror=function(e){t.onError(e)},this.socket.onclose=function(e){t.onClose(e)},this.socket.onmessage=function(e){t.onMessage(e)},this.supportsPing()&&(this.socket.onactivity=function(){t.onActivity()})},e.prototype.unbindListeners=function(){this.socket&&(this.socket.onopen=void 0,this.socket.onerror=void 0,this.socket.onclose=void 0,this.socket.onmessage=void 0,this.supportsPing()&&(this.socket.onactivity=void 0))},e.prototype.changeState=function(t,e){this.state=t,this.timeline.info(this.buildTimelineMessage({state:t,params:e})),this.emit(t,e)},e.prototype.buildTimelineMessage=function(t){return z({cid:this.id},t)},e}(pt),dt=function(){function t(t){this.hooks=t}return t.prototype.isSupported=function(t){return this.hooks.isSupported(t)},t.prototype.createConnection=function(t,e,n,r){return new ft(this.hooks,t,e,n,r)},t}(),yt=new dt({urls:st,handlesActivityChecks:!1,supportsPing:!1,isInitialized:function(){return Boolean(Ce.getWebSocketAPI())},isSupported:function(){return Boolean(Ce.getWebSocketAPI())},getSocket:function(t){return Ce.createWebSocket(t)}}),vt={urls:ct,handlesActivityChecks:!1,supportsPing:!0,isInitialized:function(){return!0}},gt=z({getSocket:function(t){return Ce.HTTPFactory.createStreamingSocket(t)}},vt),bt=z({getSocket:function(t){return Ce.HTTPFactory.createPollingSocket(t)}},vt),mt={isSupported:function(){return Ce.isXHRSupported()}},_t={ws:yt,xhr_streaming:new dt(z({},gt,mt)),xhr_polling:new dt(z({},bt,mt))},wt=new dt({file:"sockjs",urls:at,handlesActivityChecks:!0,supportsPing:!1,isSupported:function(){return!0},isInitialized:function(){return void 0!==window.SockJS},getSocket:function(t,e){return new window.SockJS(t,null,{js_path:u.getPath("sockjs",{useTLS:e.useTLS}),ignore_null_origin:e.ignoreNullOrigin})},beforeOpen:function(t,e){t.send(JSON.stringify({path:e}))}}),St={isSupported:function(t){return Ce.isXDRSupported(t.useTLS)}},kt=new dt(z({},gt,St)),Ct=new dt(z({},bt,St));_t.xdr_streaming=kt,_t.xdr_polling=Ct,_t.sockjs=wt;var Pt=_t,Tt=function(){var t=function(e,n){return(t=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(t,e){t.__proto__=e}||function(t,e){for(var n in e)e.hasOwnProperty(n)&&(t[n]=e[n])})(e,n)};return function(e,n){function r(){this.constructor=e}t(e,n),e.prototype=null===n?Object.create(n):(r.prototype=n.prototype,new r)}}(),Ot=new(function(t){function e(){var e=t.call(this)||this,n=e;return void 0!==window.addEventListener&&(window.addEventListener("online",(function(){n.emit("online")}),!1),window.addEventListener("offline",(function(){n.emit("offline")}),!1)),e}return Tt(e,t),e.prototype.isOnline=function(){return void 0===window.navigator.onLine||window.navigator.onLine},e}(pt)),Et=function(){function t(t,e,n){this.manager=t,this.transport=e,this.minPingDelay=n.minPingDelay,this.maxPingDelay=n.maxPingDelay,this.pingDelay=void 0}return t.prototype.createConnection=function(t,e,n,r){var o=this;r=z({},r,{activityTimeout:this.pingDelay});var i=this.transport.createConnection(t,e,n,r),s=null,c=function(){i.unbind("open",c),i.bind("closed",a),s=M.now()},a=function(t){if(i.unbind("closed",a),1002===t.code||1003===t.code)o.manager.reportDeath();else if(!t.wasClean&&s){var e=M.now()-s;e<2*o.maxPingDelay&&(o.manager.reportDeath(),o.pingDelay=Math.max(e/2,o.minPingDelay))}};return i.bind("open",c),i},t.prototype.isSupported=function(t){return this.manager.isAlive()&&this.transport.isSupported(t)},t}(),At={decodeMessage:function(t){try{var e=JSON.parse(t.data),n=e.data;if("string"==typeof n)try{n=JSON.parse(e.data)}catch(t){}var r={event:e.event,channel:e.channel,data:n};return e.user_id&&(r.user_id=e.user_id),r}catch(e){throw{type:"MessageParseError",error:e,data:t.data}}},encodeMessage:function(t){return JSON.stringify(t)},processHandshake:function(t){var e=At.decodeMessage(t);if("pusher:connection_established"===e.event){if(!e.data.activity_timeout)throw"No activity timeout specified in handshake";return{action:"connected",id:e.data.socket_id,activityTimeout:1e3*e.data.activity_timeout}}if("pusher:error"===e.event)return{action:this.getCloseAction(e.data),error:this.getCloseError(e.data)};throw"Invalid handshake"},getCloseAction:function(t){return t.code<4e3?t.code>=1002&&t.code<=1004?"backoff":null:4e3===t.code?"tls_only":t.code<4100?"refused":t.code<4200?"backoff":t.code<4300?"retry":"refused"},getCloseError:function(t){return 1e3!==t.code&&1001!==t.code?{type:"PusherError",data:{code:t.code,message:t.reason||t.message}}:null}},xt=At,Lt=function(){var t=function(e,n){return(t=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(t,e){t.__proto__=e}||function(t,e){for(var n in e)e.hasOwnProperty(n)&&(t[n]=e[n])})(e,n)};return function(e,n){function r(){this.constructor=e}t(e,n),e.prototype=null===n?Object.create(n):(r.prototype=n.prototype,new r)}}(),Rt=function(t){function e(e,n){var r=t.call(this)||this;return r.id=e,r.transport=n,r.activityTimeout=n.activityTimeout,r.bindListeners(),r}return Lt(e,t),e.prototype.handlesActivityChecks=function(){return this.transport.handlesActivityChecks()},e.prototype.send=function(t){return this.transport.send(t)},e.prototype.send_event=function(t,e,n){var r={event:t,data:e};return n&&(r.channel=n),Z.debug("Event sent",r),this.send(xt.encodeMessage(r))},e.prototype.ping=function(){this.transport.supportsPing()?this.transport.ping():this.send_event("pusher:ping",{})},e.prototype.close=function(){this.transport.close()},e.prototype.bindListeners=function(){var t=this,e={message:function(e){var n;try{n=xt.decodeMessage(e)}catch(n){t.emit("error",{type:"MessageParseError",error:n,data:e.data})}if(void 0!==n){switch(Z.debug("Event recd",n),n.event){case"pusher:error":t.emit("error",{type:"PusherError",data:n.data});break;case"pusher:ping":t.emit("ping");break;case"pusher:pong":t.emit("pong")}t.emit("message",n)}},activity:function(){t.emit("activity")},error:function(e){t.emit("error",e)},closed:function(e){n(),e&&e.code&&t.handleCloseEvent(e),t.transport=null,t.emit("closed")}},n=function(){F(e,(function(e,n){t.transport.unbind(n,e)}))};F(e,(function(e,n){t.transport.bind(n,e)}))},e.prototype.handleCloseEvent=function(t){var e=xt.getCloseAction(t),n=xt.getCloseError(t);n&&this.emit("error",n),e&&this.emit(e,{action:e,error:n})},e}(pt),jt=function(){function t(t,e){this.transport=t,this.callback=e,this.bindListeners()}return t.prototype.close=function(){this.unbindListeners(),this.transport.close()},t.prototype.bindListeners=function(){var t=this;this.onMessage=function(e){var n;t.unbindListeners();try{n=xt.processHandshake(e)}catch(e){return t.finish("error",{error:e}),void t.transport.close()}"connected"===n.action?t.finish("connected",{connection:new Rt(n.id,t.transport),activityTimeout:n.activityTimeout}):(t.finish(n.action,{error:n.error}),t.transport.close())},this.onClosed=function(e){t.unbindListeners();var n=xt.getCloseAction(e)||"backoff",r=xt.getCloseError(e);t.finish(n,{error:r})},this.transport.bind("message",this.onMessage),this.transport.bind("closed",this.onClosed)},t.prototype.unbindListeners=function(){this.transport.unbind("message",this.onMessage),this.transport.unbind("closed",this.onClosed)},t.prototype.finish=function(t,e){this.callback(z({transport:this.transport,action:t},e))},t}(),It=function(){function t(t,e){this.timeline=t,this.options=e||{}}return t.prototype.send=function(t,e){this.timeline.isEmpty()||this.timeline.send(Ce.TimelineTransport.getAgent(this,t),e)},t}(),Dt=function(){var t=function(e,n){return(t=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(t,e){t.__proto__=e}||function(t,e){for(var n in e)e.hasOwnProperty(n)&&(t[n]=e[n])})(e,n)};return function(e,n){function r(){this.constructor=e}t(e,n),e.prototype=null===n?Object.create(n):(r.prototype=n.prototype,new r)}}(),Nt=function(t){function e(e,n){var r=t.call(this,(function(t,n){Z.debug("No callbacks on "+e+" for "+t)}))||this;return r.name=e,r.pusher=n,r.subscribed=!1,r.subscriptionPending=!1,r.subscriptionCancelled=!1,r}return Dt(e,t),e.prototype.authorize=function(t,e){return e(null,{auth:""})},e.prototype.trigger=function(t,e){if(0!==t.indexOf("client-"))throw new d("Event '"+t+"' does not start with 'client-'");if(!this.subscribed){var n=p("triggeringClientEvents");Z.warn("Client event triggered before channel 'subscription_succeeded' event . "+n)}return this.pusher.send_event(t,e,this.name)},e.prototype.disconnect=function(){this.subscribed=!1,this.subscriptionPending=!1},e.prototype.handleEvent=function(t){var e=t.event,n=t.data;if("pusher_internal:subscription_succeeded"===e)this.handleSubscriptionSucceededEvent(t);else if("pusher_internal:subscription_count"===e)this.handleSubscriptionCountEvent(t);else if(0!==e.indexOf("pusher_internal:")){this.emit(e,n,{})}},e.prototype.handleSubscriptionSucceededEvent=function(t){this.subscriptionPending=!1,this.subscribed=!0,this.subscriptionCancelled?this.pusher.unsubscribe(this.name):this.emit("pusher:subscription_succeeded",t.data)},e.prototype.handleSubscriptionCountEvent=function(t){t.data.subscription_count&&(this.subscriptionCount=t.data.subscription_count),this.emit("pusher:subscription_count",t.data)},e.prototype.subscribe=function(){var t=this;this.subscribed||(this.subscriptionPending=!0,this.subscriptionCancelled=!1,this.authorize(this.pusher.connection.socket_id,(function(e,n){e?(t.subscriptionPending=!1,Z.error(e.toString()),t.emit("pusher:subscription_error",Object.assign({},{type:"AuthError",error:e.message},e instanceof S?{status:e.status}:{}))):t.pusher.send_event("pusher:subscribe",{auth:n.auth,channel_data:n.channel_data,channel:t.name})})))},e.prototype.unsubscribe=function(){this.subscribed=!1,this.pusher.send_event("pusher:unsubscribe",{channel:this.name})},e.prototype.cancelSubscription=function(){this.subscriptionCancelled=!0},e.prototype.reinstateSubscription=function(){this.subscriptionCancelled=!1},e}(pt),Ht=function(){var t=function(e,n){return(t=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(t,e){t.__proto__=e}||function(t,e){for(var n in e)e.hasOwnProperty(n)&&(t[n]=e[n])})(e,n)};return function(e,n){function r(){this.constructor=e}t(e,n),e.prototype=null===n?Object.create(n):(r.prototype=n.prototype,new r)}}(),Ut=function(t){function e(){return null!==t&&t.apply(this,arguments)||this}return Ht(e,t),e.prototype.authorize=function(t,e){return this.pusher.config.channelAuthorizer({channelName:this.name,socketId:t},e)},e}(Nt),Mt=function(){function t(){this.reset()}return t.prototype.get=function(t){return Object.prototype.hasOwnProperty.call(this.members,t)?{id:t,info:this.members[t]}:null},t.prototype.each=function(t){var e=this;F(this.members,(function(n,r){t(e.get(r))}))},t.prototype.setMyID=function(t){this.myID=t},t.prototype.onSubscription=function(t){this.members=t.presence.hash,this.count=t.presence.count,this.me=this.get(this.myID)},t.prototype.addMember=function(t){return null===this.get(t.user_id)&&this.count++,this.members[t.user_id]=t.user_info,this.get(t.user_id)},t.prototype.removeMember=function(t){var e=this.get(t.user_id);return e&&(delete this.members[t.user_id],this.count--),e},t.prototype.reset=function(){this.members={},this.count=0,this.myID=null,this.me=null},t}(),zt=function(){var t=function(e,n){return(t=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(t,e){t.__proto__=e}||function(t,e){for(var n in e)e.hasOwnProperty(n)&&(t[n]=e[n])})(e,n)};return function(e,n){function r(){this.constructor=e}t(e,n),e.prototype=null===n?Object.create(n):(r.prototype=n.prototype,new r)}}(),qt=function(t,e,n,r){return new(n||(n=Promise))((function(o,i){function s(t){try{a(r.next(t))}catch(t){i(t)}}function c(t){try{a(r.throw(t))}catch(t){i(t)}}function a(t){var e;t.done?o(t.value):(e=t.value,e instanceof n?e:new n((function(t){t(e)}))).then(s,c)}a((r=r.apply(t,e||[])).next())}))},Bt=function(t,e){var n,r,o,i,s={label:0,sent:function(){if(1&o[0])throw o[1];return o[1]},trys:[],ops:[]};return i={next:c(0),throw:c(1),return:c(2)},"function"==typeof Symbol&&(i[Symbol.iterator]=function(){return this}),i;function c(i){return function(c){return function(i){if(n)throw new TypeError("Generator is already executing.");for(;s;)try{if(n=1,r&&(o=2&i[0]?r.return:i[0]?r.throw||((o=r.return)&&o.call(r),0):r.next)&&!(o=o.call(r,i[1])).done)return o;switch(r=0,o&&(i=[2&i[0],o.value]),i[0]){case 0:case 1:o=i;break;case 4:return s.label++,{value:i[1],done:!1};case 5:s.label++,r=i[1],i=[0];continue;case 7:i=s.ops.pop(),s.trys.pop();continue;default:if(!(o=s.trys,(o=o.length>0&&o[o.length-1])||6!==i[0]&&2!==i[0])){s=0;continue}if(3===i[0]&&(!o||i[1]>o[0]&&i[1]<o[3])){s.label=i[1];break}if(6===i[0]&&s.label<o[1]){s.label=o[1],o=i;break}if(o&&s.label<o[2]){s.label=o[2],s.ops.push(i);break}o[2]&&s.ops.pop(),s.trys.pop();continue}i=e.call(t,s)}catch(t){i=[6,t],r=0}finally{n=o=0}if(5&i[0])throw i[1];return{value:i[0]?i[1]:void 0,done:!0}}([i,c])}}},Ft=function(t){function e(e,n){var r=t.call(this,e,n)||this;return r.members=new Mt,r}return zt(e,t),e.prototype.authorize=function(e,n){var r=this;t.prototype.authorize.call(this,e,(function(t,e){return qt(r,void 0,void 0,(function(){var r,o;return Bt(this,(function(i){switch(i.label){case 0:return t?[3,3]:null==(e=e).channel_data?[3,1]:(r=JSON.parse(e.channel_data),this.members.setMyID(r.user_id),[3,3]);case 1:return[4,this.pusher.user.signinDonePromise];case 2:if(i.sent(),null==this.pusher.user.user_data)return o=p("authorizationEndpoint"),Z.error("Invalid auth response for channel '"+this.name+"', expected 'channel_data' field. "+o+", or the user should be signed in."),n("Invalid auth response"),[2];this.members.setMyID(this.pusher.user.user_data.id),i.label=3;case 3:return n(t,e),[2]}}))}))}))},e.prototype.handleEvent=function(t){var e=t.event;if(0===e.indexOf("pusher_internal:"))this.handleInternalEvent(t);else{var n=t.data,r={};t.user_id&&(r.user_id=t.user_id),this.emit(e,n,r)}},e.prototype.handleInternalEvent=function(t){var e=t.event,n=t.data;switch(e){case"pusher_internal:subscription_succeeded":this.handleSubscriptionSucceededEvent(t);break;case"pusher_internal:subscription_count":this.handleSubscriptionCountEvent(t);break;case"pusher_internal:member_added":var r=this.members.addMember(n);this.emit("pusher:member_added",r);break;case"pusher_internal:member_removed":var o=this.members.removeMember(n);o&&this.emit("pusher:member_removed",o)}},e.prototype.handleSubscriptionSucceededEvent=function(t){this.subscriptionPending=!1,this.subscribed=!0,this.subscriptionCancelled?this.pusher.unsubscribe(this.name):(this.members.onSubscription(t.data),this.emit("pusher:subscription_succeeded",this.members))},e.prototype.disconnect=function(){this.members.reset(),t.prototype.disconnect.call(this)},e}(Ut),Xt=n(1),Jt=n(0),Wt=function(){var t=function(e,n){return(t=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(t,e){t.__proto__=e}||function(t,e){for(var n in e)e.hasOwnProperty(n)&&(t[n]=e[n])})(e,n)};return function(e,n){function r(){this.constructor=e}t(e,n),e.prototype=null===n?Object.create(n):(r.prototype=n.prototype,new r)}}(),Gt=function(t){function e(e,n,r){var o=t.call(this,e,n)||this;return o.key=null,o.nacl=r,o}return Wt(e,t),e.prototype.authorize=function(e,n){var r=this;t.prototype.authorize.call(this,e,(function(t,e){if(t)n(t,e);else{var o=e.shared_secret;o?(r.key=Object(Jt.decode)(o),delete e.shared_secret,n(null,e)):n(new Error("No shared_secret key in auth payload for encrypted channel: "+r.name),null)}}))},e.prototype.trigger=function(t,e){throw new m("Client events are not currently supported for encrypted channels")},e.prototype.handleEvent=function(e){var n=e.event,r=e.data;0!==n.indexOf("pusher_internal:")&&0!==n.indexOf("pusher:")?this.handleEncryptedEvent(n,r):t.prototype.handleEvent.call(this,e)},e.prototype.handleEncryptedEvent=function(t,e){var n=this;if(this.key)if(e.ciphertext&&e.nonce){var r=Object(Jt.decode)(e.ciphertext);if(r.length<this.nacl.secretbox.overheadLength)Z.error("Expected encrypted event ciphertext length to be "+this.nacl.secretbox.overheadLength+", got: "+r.length);else{var o=Object(Jt.decode)(e.nonce);if(o.length<this.nacl.secretbox.nonceLength)Z.error("Expected encrypted event nonce length to be "+this.nacl.secretbox.nonceLength+", got: "+o.length);else{var i=this.nacl.secretbox.open(r,o,this.key);if(null===i)return Z.debug("Failed to decrypt an event, probably because it was encrypted with a different key. Fetching a new key from the authEndpoint..."),void this.authorize(this.pusher.connection.socket_id,(function(e,s){e?Z.error("Failed to make a request to the authEndpoint: "+s+". Unable to fetch new key, so dropping encrypted event"):null!==(i=n.nacl.secretbox.open(r,o,n.key))?n.emit(t,n.getDataToEmit(i)):Z.error("Failed to decrypt event with new key. Dropping encrypted event")}));this.emit(t,this.getDataToEmit(i))}}}else Z.error("Unexpected format for encrypted event, expected object with `ciphertext` and `nonce` fields, got: "+e);else Z.debug("Received encrypted event before key has been retrieved from the authEndpoint")},e.prototype.getDataToEmit=function(t){var e=Object(Xt.decode)(t);try{return JSON.parse(e)}catch(t){return e}},e}(Ut),Vt=function(){var t=function(e,n){return(t=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(t,e){t.__proto__=e}||function(t,e){for(var n in e)e.hasOwnProperty(n)&&(t[n]=e[n])})(e,n)};return function(e,n){function r(){this.constructor=e}t(e,n),e.prototype=null===n?Object.create(n):(r.prototype=n.prototype,new r)}}(),Yt=function(t){function e(e,n){var r=t.call(this)||this;r.state="initialized",r.connection=null,r.key=e,r.options=n,r.timeline=r.options.timeline,r.usingTLS=r.options.useTLS,r.errorCallbacks=r.buildErrorCallbacks(),r.connectionCallbacks=r.buildConnectionCallbacks(r.errorCallbacks),r.handshakeCallbacks=r.buildHandshakeCallbacks(r.errorCallbacks);var o=Ce.getNetwork();return o.bind("online",(function(){r.timeline.info({netinfo:"online"}),"connecting"!==r.state&&"unavailable"!==r.state||r.retryIn(0)})),o.bind("offline",(function(){r.timeline.info({netinfo:"offline"}),r.connection&&r.sendActivityCheck()})),r.updateStrategy(),r}return Vt(e,t),e.prototype.connect=function(){this.connection||this.runner||(this.strategy.isSupported()?(this.updateState("connecting"),this.startConnecting(),this.setUnavailableTimer()):this.updateState("failed"))},e.prototype.send=function(t){return!!this.connection&&this.connection.send(t)},e.prototype.send_event=function(t,e,n){return!!this.connection&&this.connection.send_event(t,e,n)},e.prototype.disconnect=function(){this.disconnectInternally(),this.updateState("disconnected")},e.prototype.isUsingTLS=function(){return this.usingTLS},e.prototype.startConnecting=function(){var t=this,e=function(n,r){n?t.runner=t.strategy.connect(0,e):"error"===r.action?(t.emit("error",{type:"HandshakeError",error:r.error}),t.timeline.error({handshakeError:r.error})):(t.abortConnecting(),t.handshakeCallbacks[r.action](r))};this.runner=this.strategy.connect(0,e)},e.prototype.abortConnecting=function(){this.runner&&(this.runner.abort(),this.runner=null)},e.prototype.disconnectInternally=function(){(this.abortConnecting(),this.clearRetryTimer(),this.clearUnavailableTimer(),this.connection)&&this.abandonConnection().close()},e.prototype.updateStrategy=function(){this.strategy=this.options.getStrategy({key:this.key,timeline:this.timeline,useTLS:this.usingTLS})},e.prototype.retryIn=function(t){var e=this;this.timeline.info({action:"retry",delay:t}),t>0&&this.emit("connecting_in",Math.round(t/1e3)),this.retryTimer=new H(t||0,(function(){e.disconnectInternally(),e.connect()}))},e.prototype.clearRetryTimer=function(){this.retryTimer&&(this.retryTimer.ensureAborted(),this.retryTimer=null)},e.prototype.setUnavailableTimer=function(){var t=this;this.unavailableTimer=new H(this.options.unavailableTimeout,(function(){t.updateState("unavailable")}))},e.prototype.clearUnavailableTimer=function(){this.unavailableTimer&&this.unavailableTimer.ensureAborted()},e.prototype.sendActivityCheck=function(){var t=this;this.stopActivityCheck(),this.connection.ping(),this.activityTimer=new H(this.options.pongTimeout,(function(){t.timeline.error({pong_timed_out:t.options.pongTimeout}),t.retryIn(0)}))},e.prototype.resetActivityCheck=function(){var t=this;this.stopActivityCheck(),this.connection&&!this.connection.handlesActivityChecks()&&(this.activityTimer=new H(this.activityTimeout,(function(){t.sendActivityCheck()})))},e.prototype.stopActivityCheck=function(){this.activityTimer&&this.activityTimer.ensureAborted()},e.prototype.buildConnectionCallbacks=function(t){var e=this;return z({},t,{message:function(t){e.resetActivityCheck(),e.emit("message",t)},ping:function(){e.send_event("pusher:pong",{})},activity:function(){e.resetActivityCheck()},error:function(t){e.emit("error",t)},closed:function(){e.abandonConnection(),e.shouldRetry()&&e.retryIn(1e3)}})},e.prototype.buildHandshakeCallbacks=function(t){var e=this;return z({},t,{connected:function(t){e.activityTimeout=Math.min(e.options.activityTimeout,t.activityTimeout,t.connection.activityTimeout||1/0),e.clearUnavailableTimer(),e.setConnection(t.connection),e.socket_id=e.connection.id,e.updateState("connected",{socket_id:e.socket_id})}})},e.prototype.buildErrorCallbacks=function(){var t=this,e=function(e){return function(n){n.error&&t.emit("error",{type:"WebSocketError",error:n.error}),e(n)}};return{tls_only:e((function(){t.usingTLS=!0,t.updateStrategy(),t.retryIn(0)})),refused:e((function(){t.disconnect()})),backoff:e((function(){t.retryIn(1e3)})),retry:e((function(){t.retryIn(0)}))}},e.prototype.setConnection=function(t){for(var e in this.connection=t,this.connectionCallbacks)this.connection.bind(e,this.connectionCallbacks[e]);this.resetActivityCheck()},e.prototype.abandonConnection=function(){if(this.connection){for(var t in this.stopActivityCheck(),this.connectionCallbacks)this.connection.unbind(t,this.connectionCallbacks[t]);var e=this.connection;return this.connection=null,e}},e.prototype.updateState=function(t,e){var n=this.state;if(this.state=t,n!==t){var r=t;"connected"===r&&(r+=" with new socket ID "+e.socket_id),Z.debug("State changed",n+" -> "+r),this.timeline.info({state:t,params:e}),this.emit("state_change",{previous:n,current:t}),this.emit(t,e)}},e.prototype.shouldRetry=function(){return"connecting"===this.state||"connected"===this.state},e}(pt),$t=function(){function t(){this.channels={}}return t.prototype.add=function(t,e){return this.channels[t]||(this.channels[t]=function(t,e){if(0===t.indexOf("private-encrypted-")){if(e.config.nacl)return Qt.createEncryptedChannel(t,e,e.config.nacl);var n=p("encryptedChannelSupport");throw new m("Tried to subscribe to a private-encrypted- channel but no nacl implementation available. "+n)}if(0===t.indexOf("private-"))return Qt.createPrivateChannel(t,e);if(0===t.indexOf("presence-"))return Qt.createPresenceChannel(t,e);if(0===t.indexOf("#"))throw new y('Cannot create a channel with name "'+t+'".');return Qt.createChannel(t,e)}(t,e)),this.channels[t]},t.prototype.all=function(){return function(t){var e=[];return F(t,(function(t){e.push(t)})),e}(this.channels)},t.prototype.find=function(t){return this.channels[t]},t.prototype.remove=function(t){var e=this.channels[t];return delete this.channels[t],e},t.prototype.disconnect=function(){F(this.channels,(function(t){t.disconnect()}))},t}();var Qt={createChannels:function(){return new $t},createConnectionManager:function(t,e){return new Yt(t,e)},createChannel:function(t,e){return new Nt(t,e)},createPrivateChannel:function(t,e){return new Ut(t,e)},createPresenceChannel:function(t,e){return new Ft(t,e)},createEncryptedChannel:function(t,e,n){return new Gt(t,e,n)},createTimelineSender:function(t,e){return new It(t,e)},createHandshake:function(t,e){return new jt(t,e)},createAssistantToTheTransportManager:function(t,e,n){return new Et(t,e,n)}},Kt=function(){function t(t){this.options=t||{},this.livesLeft=this.options.lives||1/0}return t.prototype.getAssistant=function(t){return Qt.createAssistantToTheTransportManager(this,t,{minPingDelay:this.options.minPingDelay,maxPingDelay:this.options.maxPingDelay})},t.prototype.isAlive=function(){return this.livesLeft>0},t.prototype.reportDeath=function(){this.livesLeft-=1},t}(),Zt=function(){function t(t,e){this.strategies=t,this.loop=Boolean(e.loop),this.failFast=Boolean(e.failFast),this.timeout=e.timeout,this.timeoutLimit=e.timeoutLimit}return t.prototype.isSupported=function(){return Y(this.strategies,M.method("isSupported"))},t.prototype.connect=function(t,e){var n=this,r=this.strategies,o=0,i=this.timeout,s=null,c=function(a,u){u?e(null,u):(o+=1,n.loop&&(o%=r.length),o<r.length?(i&&(i*=2,n.timeoutLimit&&(i=Math.min(i,n.timeoutLimit))),s=n.tryStrategy(r[o],t,{timeout:i,failFast:n.failFast},c)):e(!0))};return s=this.tryStrategy(r[o],t,{timeout:i,failFast:this.failFast},c),{abort:function(){s.abort()},forceMinPriority:function(e){t=e,s&&s.forceMinPriority(e)}}},t.prototype.tryStrategy=function(t,e,n,r){var o=null,i=null;return n.timeout>0&&(o=new H(n.timeout,(function(){i.abort(),r(!0)}))),i=t.connect(e,(function(t,e){t&&o&&o.isRunning()&&!n.failFast||(o&&o.ensureAborted(),r(t,e))})),{abort:function(){o&&o.ensureAborted(),i.abort()},forceMinPriority:function(t){i.forceMinPriority(t)}}},t}(),te=function(){function t(t){this.strategies=t}return t.prototype.isSupported=function(){return Y(this.strategies,M.method("isSupported"))},t.prototype.connect=function(t,e){return function(t,e,n){var r=W(t,(function(t,r,o,i){return t.connect(e,n(r,i))}));return{abort:function(){J(r,ee)},forceMinPriority:function(t){J(r,(function(e){e.forceMinPriority(t)}))}}}(this.strategies,t,(function(t,n){return function(r,o){n[t].error=r,r?function(t){return function(t,e){for(var n=0;n<t.length;n++)if(!e(t[n],n,t))return!1;return!0}(t,(function(t){return Boolean(t.error)}))}(n)&&e(!0):(J(n,(function(t){t.forceMinPriority(o.transport.priority)})),e(null,o))}}))},t}();function ee(t){t.error||t.aborted||(t.abort(),t.aborted=!0)}var ne=function(){function t(t,e,n){this.strategy=t,this.transports=e,this.ttl=n.ttl||18e5,this.usingTLS=n.useTLS,this.timeline=n.timeline}return t.prototype.isSupported=function(){return this.strategy.isSupported()},t.prototype.connect=function(t,e){var n=this.usingTLS,r=function(t){var e=Ce.getLocalStorage();if(e)try{var n=e[re(t)];if(n)return JSON.parse(n)}catch(e){oe(t)}return null}(n),o=[this.strategy];if(r&&r.timestamp+this.ttl>=M.now()){var i=this.transports[r.transport];i&&(this.timeline.info({cached:!0,transport:r.transport,latency:r.latency}),o.push(new Zt([i],{timeout:2*r.latency+1e3,failFast:!0})))}var s=M.now(),c=o.pop().connect(t,(function r(i,a){i?(oe(n),o.length>0?(s=M.now(),c=o.pop().connect(t,r)):e(i)):(!function(t,e,n){var r=Ce.getLocalStorage();if(r)try{r[re(t)]=K({timestamp:M.now(),transport:e,latency:n})}catch(t){}}(n,a.transport.name,M.now()-s),e(null,a))}));return{abort:function(){c.abort()},forceMinPriority:function(e){t=e,c&&c.forceMinPriority(e)}}},t}();function re(t){return"pusherTransport"+(t?"TLS":"NonTLS")}function oe(t){var e=Ce.getLocalStorage();if(e)try{delete e[re(t)]}catch(t){}}var ie=function(){function t(t,e){var n=e.delay;this.strategy=t,this.options={delay:n}}return t.prototype.isSupported=function(){return this.strategy.isSupported()},t.prototype.connect=function(t,e){var n,r=this.strategy,o=new H(this.options.delay,(function(){n=r.connect(t,e)}));return{abort:function(){o.ensureAborted(),n&&n.abort()},forceMinPriority:function(e){t=e,n&&n.forceMinPriority(e)}}},t}(),se=function(){function t(t,e,n){this.test=t,this.trueBranch=e,this.falseBranch=n}return t.prototype.isSupported=function(){return(this.test()?this.trueBranch:this.falseBranch).isSupported()},t.prototype.connect=function(t,e){return(this.test()?this.trueBranch:this.falseBranch).connect(t,e)},t}(),ce=function(){function t(t){this.strategy=t}return t.prototype.isSupported=function(){return this.strategy.isSupported()},t.prototype.connect=function(t,e){var n=this.strategy.connect(t,(function(t,r){r&&n.abort(),e(t,r)}));return n},t}();function ae(t){return function(){return t.isSupported()}}var ue,he=function(t,e,n){var r={};function o(e,o,i,s,c){var a=n(t,e,o,i,s,c);return r[e]=a,a}var i,s=Object.assign({},e,{hostNonTLS:t.wsHost+":"+t.wsPort,hostTLS:t.wsHost+":"+t.wssPort,httpPath:t.wsPath}),c=Object.assign({},s,{useTLS:!0}),a=Object.assign({},e,{hostNonTLS:t.httpHost+":"+t.httpPort,hostTLS:t.httpHost+":"+t.httpsPort,httpPath:t.httpPath}),u={loop:!0,timeout:15e3,timeoutLimit:6e4},h=new Kt({lives:2,minPingDelay:1e4,maxPingDelay:t.activityTimeout}),p=new Kt({lives:2,minPingDelay:1e4,maxPingDelay:t.activityTimeout}),l=o("ws","ws",3,s,h),f=o("wss","ws",3,c,h),d=o("sockjs","sockjs",1,a),y=o("xhr_streaming","xhr_streaming",1,a,p),v=o("xdr_streaming","xdr_streaming",1,a,p),g=o("xhr_polling","xhr_polling",1,a),b=o("xdr_polling","xdr_polling",1,a),m=new Zt([l],u),_=new Zt([f],u),w=new Zt([d],u),S=new Zt([new se(ae(y),y,v)],u),k=new Zt([new se(ae(g),g,b)],u),C=new Zt([new se(ae(S),new te([S,new ie(k,{delay:4e3})]),k)],u),P=new se(ae(C),C,w);return i=e.useTLS?new te([m,new ie(P,{delay:2e3})]):new te([m,new ie(_,{delay:2e3}),new ie(P,{delay:5e3})]),new ne(new ce(new se(ae(l),i,P)),r,{ttl:18e5,timeline:e.timeline,useTLS:e.useTLS})},pe={getRequest:function(t){var e=new window.XDomainRequest;return e.ontimeout=function(){t.emit("error",new v),t.close()},e.onerror=function(e){t.emit("error",e),t.close()},e.onprogress=function(){e.responseText&&e.responseText.length>0&&t.onChunk(200,e.responseText)},e.onload=function(){e.responseText&&e.responseText.length>0&&t.onChunk(200,e.responseText),t.emit("finished",200),t.close()},e},abortRequest:function(t){t.ontimeout=t.onerror=t.onprogress=t.onload=null,t.abort()}},le=function(){var t=function(e,n){return(t=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(t,e){t.__proto__=e}||function(t,e){for(var n in e)e.hasOwnProperty(n)&&(t[n]=e[n])})(e,n)};return function(e,n){function r(){this.constructor=e}t(e,n),e.prototype=null===n?Object.create(n):(r.prototype=n.prototype,new r)}}(),fe=function(t){function e(e,n,r){var o=t.call(this)||this;return o.hooks=e,o.method=n,o.url=r,o}return le(e,t),e.prototype.start=function(t){var e=this;this.position=0,this.xhr=this.hooks.getRequest(this),this.unloader=function(){e.close()},Ce.addUnloadListener(this.unloader),this.xhr.open(this.method,this.url,!0),this.xhr.setRequestHeader&&this.xhr.setRequestHeader("Content-Type","application/json"),this.xhr.send(t)},e.prototype.close=function(){this.unloader&&(Ce.removeUnloadListener(this.unloader),this.unloader=null),this.xhr&&(this.hooks.abortRequest(this.xhr),this.xhr=null)},e.prototype.onChunk=function(t,e){for(;;){var n=this.advanceBuffer(e);if(!n)break;this.emit("chunk",{status:t,data:n})}this.isBufferTooLong(e)&&this.emit("buffer_too_long")},e.prototype.advanceBuffer=function(t){var e=t.slice(this.position),n=e.indexOf("\n");return-1!==n?(this.position+=n+1,e.slice(0,n)):null},e.prototype.isBufferTooLong=function(t){return this.position===t.length&&t.length>262144},e}(pt);!function(t){t[t.CONNECTING=0]="CONNECTING",t[t.OPEN=1]="OPEN",t[t.CLOSED=3]="CLOSED"}(ue||(ue={}));var de=ue,ye=1;function ve(t){var e=-1===t.indexOf("?")?"?":"&";return t+e+"t="+ +new Date+"&n="+ye++}function ge(t){return Ce.randomInt(t)}var be,me=function(){function t(t,e){this.hooks=t,this.session=ge(1e3)+"/"+function(t){for(var e=[],n=0;n<t;n++)e.push(ge(32).toString(32));return e.join("")}(8),this.location=function(t){var e=/([^\?]*)\/*(\??.*)/.exec(t);return{base:e[1],queryString:e[2]}}(e),this.readyState=de.CONNECTING,this.openStream()}return t.prototype.send=function(t){return this.sendRaw(JSON.stringify([t]))},t.prototype.ping=function(){this.hooks.sendHeartbeat(this)},t.prototype.close=function(t,e){this.onClose(t,e,!0)},t.prototype.sendRaw=function(t){if(this.readyState!==de.OPEN)return!1;try{return Ce.createSocketRequest("POST",ve((e=this.location,n=this.session,e.base+"/"+n+"/xhr_send"))).start(t),!0}catch(t){return!1}var e,n},t.prototype.reconnect=function(){this.closeStream(),this.openStream()},t.prototype.onClose=function(t,e,n){this.closeStream(),this.readyState=de.CLOSED,this.onclose&&this.onclose({code:t,reason:e,wasClean:n})},t.prototype.onChunk=function(t){var e;if(200===t.status)switch(this.readyState===de.OPEN&&this.onActivity(),t.data.slice(0,1)){case"o":e=JSON.parse(t.data.slice(1)||"{}"),this.onOpen(e);break;case"a":e=JSON.parse(t.data.slice(1)||"[]");for(var n=0;n<e.length;n++)this.onEvent(e[n]);break;case"m":e=JSON.parse(t.data.slice(1)||"null"),this.onEvent(e);break;case"h":this.hooks.onHeartbeat(this);break;case"c":e=JSON.parse(t.data.slice(1)||"[]"),this.onClose(e[0],e[1],!0)}},t.prototype.onOpen=function(t){var e,n,r;this.readyState===de.CONNECTING?(t&&t.hostname&&(this.location.base=(e=this.location.base,n=t.hostname,(r=/(https?:\/\/)([^\/:]+)((\/|:)?.*)/.exec(e))[1]+n+r[3])),this.readyState=de.OPEN,this.onopen&&this.onopen()):this.onClose(1006,"Server lost session",!0)},t.prototype.onEvent=function(t){this.readyState===de.OPEN&&this.onmessage&&this.onmessage({data:t})},t.prototype.onActivity=function(){this.onactivity&&this.onactivity()},t.prototype.onError=function(t){this.onerror&&this.onerror(t)},t.prototype.openStream=function(){var t=this;this.stream=Ce.createSocketRequest("POST",ve(this.hooks.getReceiveURL(this.location,this.session))),this.stream.bind("chunk",(function(e){t.onChunk(e)})),this.stream.bind("finished",(function(e){t.hooks.onFinished(t,e)})),this.stream.bind("buffer_too_long",(function(){t.reconnect()}));try{this.stream.start()}catch(e){M.defer((function(){t.onError(e),t.onClose(1006,"Could not start streaming",!1)}))}},t.prototype.closeStream=function(){this.stream&&(this.stream.unbind_all(),this.stream.close(),this.stream=null)},t}(),_e={getReceiveURL:function(t,e){return t.base+"/"+e+"/xhr_streaming"+t.queryString},onHeartbeat:function(t){t.sendRaw("[]")},sendHeartbeat:function(t){t.sendRaw("[]")},onFinished:function(t,e){t.onClose(1006,"Connection interrupted ("+e+")",!1)}},we={getReceiveURL:function(t,e){return t.base+"/"+e+"/xhr"+t.queryString},onHeartbeat:function(){},sendHeartbeat:function(t){t.sendRaw("[]")},onFinished:function(t,e){200===e?t.reconnect():t.onClose(1006,"Connection interrupted ("+e+")",!1)}},Se={getRequest:function(t){var e=new(Ce.getXHRAPI());return e.onreadystatechange=e.onprogress=function(){switch(e.readyState){case 3:e.responseText&&e.responseText.length>0&&t.onChunk(e.status,e.responseText);break;case 4:e.responseText&&e.responseText.length>0&&t.onChunk(e.status,e.responseText),t.emit("finished",e.status),t.close()}},e},abortRequest:function(t){t.onreadystatechange=null,t.abort()}},ke={createStreamingSocket:function(t){return this.createSocket(_e,t)},createPollingSocket:function(t){return this.createSocket(we,t)},createSocket:function(t,e){return new me(t,e)},createXHR:function(t,e){return this.createRequest(Se,t,e)},createRequest:function(t,e,n){return new fe(t,e,n)},createXDR:function(t,e){return this.createRequest(pe,t,e)}},Ce={nextAuthCallbackID:1,auth_callbacks:{},ScriptReceivers:i,DependenciesReceivers:a,getDefaultStrategy:he,Transports:Pt,transportConnectionInitializer:function(){var t=this;t.timeline.info(t.buildTimelineMessage({transport:t.name+(t.options.useTLS?"s":"")})),t.hooks.isInitialized()?t.changeState("initialized"):t.hooks.file?(t.changeState("initializing"),u.load(t.hooks.file,{useTLS:t.options.useTLS},(function(e,n){t.hooks.isInitialized()?(t.changeState("initialized"),n(!0)):(e&&t.onError(e),t.onClose(),n(!1))}))):t.onClose()},HTTPFactory:ke,TimelineTransport:rt,getXHRAPI:function(){return window.XMLHttpRequest},getWebSocketAPI:function(){return window.WebSocket||window.MozWebSocket},setup:function(t){var e=this;window.Pusher=t;var n=function(){e.onDocumentBody(t.ready)};window.JSON?n():u.load("json2",{},n)},getDocument:function(){return document},getProtocol:function(){return this.getDocument().location.protocol},getAuthorizers:function(){return{ajax:k,jsonp:tt}},onDocumentBody:function(t){var e=this;document.body?t():setTimeout((function(){e.onDocumentBody(t)}),0)},createJSONPRequest:function(t,e){return new nt(t,e)},createScriptRequest:function(t){return new et(t)},getLocalStorage:function(){try{return window.localStorage}catch(t){return}},createXHR:function(){return this.getXHRAPI()?this.createXMLHttpRequest():this.createMicrosoftXHR()},createXMLHttpRequest:function(){return new(this.getXHRAPI())},createMicrosoftXHR:function(){return new ActiveXObject("Microsoft.XMLHTTP")},getNetwork:function(){return Ot},createWebSocket:function(t){return new(this.getWebSocketAPI())(t)},createSocketRequest:function(t,e){if(this.isXHRSupported())return this.HTTPFactory.createXHR(t,e);if(this.isXDRSupported(0===e.indexOf("https:")))return this.HTTPFactory.createXDR(t,e);throw"Cross-origin HTTP requests are not supported"},isXHRSupported:function(){var t=this.getXHRAPI();return Boolean(t)&&void 0!==(new t).withCredentials},isXDRSupported:function(t){var e=t?"https:":"http:",n=this.getProtocol();return Boolean(window.XDomainRequest)&&n===e},addUnloadListener:function(t){void 0!==window.addEventListener?window.addEventListener("unload",t,!1):void 0!==window.attachEvent&&window.attachEvent("onunload",t)},removeUnloadListener:function(t){void 0!==window.addEventListener?window.removeEventListener("unload",t,!1):void 0!==window.detachEvent&&window.detachEvent("onunload",t)},randomInt:function(t){return Math.floor((window.crypto||window.msCrypto).getRandomValues(new Uint32Array(1))[0]/Math.pow(2,32)*t)}};!function(t){t[t.ERROR=3]="ERROR",t[t.INFO=6]="INFO",t[t.DEBUG=7]="DEBUG"}(be||(be={}));var Pe=be,Te=function(){function t(t,e,n){this.key=t,this.session=e,this.events=[],this.options=n||{},this.sent=0,this.uniqueID=0}return t.prototype.log=function(t,e){t<=this.options.level&&(this.events.push(z({},e,{timestamp:M.now()})),this.options.limit&&this.events.length>this.options.limit&&this.events.shift())},t.prototype.error=function(t){this.log(Pe.ERROR,t)},t.prototype.info=function(t){this.log(Pe.INFO,t)},t.prototype.debug=function(t){this.log(Pe.DEBUG,t)},t.prototype.isEmpty=function(){return 0===this.events.length},t.prototype.send=function(t,e){var n=this,r=z({session:this.session,bundle:this.sent+1,key:this.key,lib:"js",version:this.options.version,cluster:this.options.cluster,features:this.options.features,timeline:this.events},this.options.params);return this.events=[],t(r,(function(t,r){t||n.sent++,e&&e(t,r)})),!0},t.prototype.generateUniqueID=function(){return this.uniqueID++,this.uniqueID},t}(),Oe=function(){function t(t,e,n,r){this.name=t,this.priority=e,this.transport=n,this.options=r||{}}return t.prototype.isSupported=function(){return this.transport.isSupported({useTLS:this.options.useTLS})},t.prototype.connect=function(t,e){var n=this;if(!this.isSupported())return Ee(new w,e);if(this.priority<t)return Ee(new g,e);var r=!1,o=this.transport.createConnection(this.name,this.priority,this.options.key,this.options),i=null,s=function(){o.unbind("initialized",s),o.connect()},c=function(){i=Qt.createHandshake(o,(function(t){r=!0,h(),e(null,t)}))},a=function(t){h(),e(t)},u=function(){var t;h(),t=K(o),e(new b(t))},h=function(){o.unbind("initialized",s),o.unbind("open",c),o.unbind("error",a),o.unbind("closed",u)};return o.bind("initialized",s),o.bind("open",c),o.bind("error",a),o.bind("closed",u),o.initialize(),{abort:function(){r||(h(),i?i.close():o.close())},forceMinPriority:function(t){r||n.priority<t&&(i?i.close():o.close())}}},t}();function Ee(t,e){return M.defer((function(){e(t)})),{abort:function(){},forceMinPriority:function(){}}}var Ae=Ce.Transports,xe=function(t,e,n,r,o,i){var s,c=Ae[n];if(!c)throw new _(n);return!(t.enabledTransports&&-1===B(t.enabledTransports,e)||t.disabledTransports&&-1!==B(t.disabledTransports,e))?(o=Object.assign({ignoreNullOrigin:t.ignoreNullOrigin},o),s=new Oe(e,r,i?i.getAssistant(c):c,o)):s=Le,s},Le={isSupported:function(){return!1},connect:function(t,e){var n=M.defer((function(){e(new w)}));return{abort:function(){n.ensureAborted()},forceMinPriority:function(){}}}};var Re=function(t){if(void 0===Ce.getAuthorizers()[t.transport])throw"'"+t.transport+"' is not a recognized auth transport";return function(e,n){var o=function(t,e){var n="socket_id="+encodeURIComponent(t.socketId);for(var r in e.params)n+="&"+encodeURIComponent(r)+"="+encodeURIComponent(e.params[r]);if(null!=e.paramsProvider){var o=e.paramsProvider();for(var r in o)n+="&"+encodeURIComponent(r)+"="+encodeURIComponent(o[r])}return n}(e,t);Ce.getAuthorizers()[t.transport](Ce,o,t,r.UserAuthentication,n)}},je=function(t){if(void 0===Ce.getAuthorizers()[t.transport])throw"'"+t.transport+"' is not a recognized auth transport";return function(e,n){var o=function(t,e){var n="socket_id="+encodeURIComponent(t.socketId);for(var r in n+="&channel_name="+encodeURIComponent(t.channelName),e.params)n+="&"+encodeURIComponent(r)+"="+encodeURIComponent(e.params[r]);if(null!=e.paramsProvider){var o=e.paramsProvider();for(var r in o)n+="&"+encodeURIComponent(r)+"="+encodeURIComponent(o[r])}return n}(e,t);Ce.getAuthorizers()[t.transport](Ce,o,t,r.ChannelAuthorization,n)}},Ie=function(){return(Ie=Object.assign||function(t){for(var e,n=1,r=arguments.length;n<r;n++)for(var o in e=arguments[n])Object.prototype.hasOwnProperty.call(e,o)&&(t[o]=e[o]);return t}).apply(this,arguments)};function De(t){return t.httpHost?t.httpHost:t.cluster?"sockjs-"+t.cluster+".pusher.com":s.httpHost}function Ne(t){return t.wsHost?t.wsHost:"ws-"+t.cluster+".pusher.com"}function He(t){return"https:"===Ce.getProtocol()||!1!==t.forceTLS}function Ue(t){return"enableStats"in t?t.enableStats:"disableStats"in t&&!t.disableStats}function Me(t){var e=Ie(Ie({},s.userAuthentication),t.userAuthentication);return"customHandler"in e&&null!=e.customHandler?e.customHandler:Re(e)}function ze(t,e){var n=function(t,e){var n;return"channelAuthorization"in t?n=Ie(Ie({},s.channelAuthorization),t.channelAuthorization):(n={transport:t.authTransport||s.authTransport,endpoint:t.authEndpoint||s.authEndpoint},"auth"in t&&("params"in t.auth&&(n.params=t.auth.params),"headers"in t.auth&&(n.headers=t.auth.headers)),"authorizer"in t&&(n.customHandler=function(t,e,n){var r={authTransport:e.transport,authEndpoint:e.endpoint,auth:{params:e.params,headers:e.headers}};return function(e,o){var i=t.channel(e.channelName);n(i,r).authorize(e.socketId,o)}}(e,n,t.authorizer))),n}(t,e);return"customHandler"in n&&null!=n.customHandler?n.customHandler:je(n)}var qe=function(){var t=function(e,n){return(t=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(t,e){t.__proto__=e}||function(t,e){for(var n in e)e.hasOwnProperty(n)&&(t[n]=e[n])})(e,n)};return function(e,n){function r(){this.constructor=e}t(e,n),e.prototype=null===n?Object.create(n):(r.prototype=n.prototype,new r)}}(),Be=function(t){function e(e){var n=t.call(this,(function(t,e){Z.debug("No callbacks on watchlist events for "+t)}))||this;return n.pusher=e,n.bindWatchlistInternalEvent(),n}return qe(e,t),e.prototype.handleEvent=function(t){var e=this;t.data.events.forEach((function(t){e.emit(t.name,t)}))},e.prototype.bindWatchlistInternalEvent=function(){var t=this;this.pusher.connection.bind("message",(function(e){"pusher_internal:watchlist_events"===e.event&&t.handleEvent(e)}))},e}(pt);var Fe=function(){var t,e;return{promise:new Promise((function(n,r){t=n,e=r})),resolve:t,reject:e}},Xe=function(){var t=function(e,n){return(t=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(t,e){t.__proto__=e}||function(t,e){for(var n in e)e.hasOwnProperty(n)&&(t[n]=e[n])})(e,n)};return function(e,n){function r(){this.constructor=e}t(e,n),e.prototype=null===n?Object.create(n):(r.prototype=n.prototype,new r)}}(),Je=function(t){function e(e){var n=t.call(this,(function(t,e){Z.debug("No callbacks on user for "+t)}))||this;return n.signin_requested=!1,n.user_data=null,n.serverToUserChannel=null,n.signinDonePromise=null,n._signinDoneResolve=null,n._onAuthorize=function(t,e){if(t)return Z.warn("Error during signin: "+t),void n._cleanup();n.pusher.send_event("pusher:signin",{auth:e.auth,user_data:e.user_data})},n.pusher=e,n.pusher.connection.bind("state_change",(function(t){var e=t.previous,r=t.current;"connected"!==e&&"connected"===r&&n._signin(),"connected"===e&&"connected"!==r&&(n._cleanup(),n._newSigninPromiseIfNeeded())})),n.watchlist=new Be(e),n.pusher.connection.bind("message",(function(t){"pusher:signin_success"===t.event&&n._onSigninSuccess(t.data),n.serverToUserChannel&&n.serverToUserChannel.name===t.channel&&n.serverToUserChannel.handleEvent(t)})),n}return Xe(e,t),e.prototype.signin=function(){this.signin_requested||(this.signin_requested=!0,this._signin())},e.prototype._signin=function(){this.signin_requested&&(this._newSigninPromiseIfNeeded(),"connected"===this.pusher.connection.state&&this.pusher.config.userAuthenticator({socketId:this.pusher.connection.socket_id},this._onAuthorize))},e.prototype._onSigninSuccess=function(t){try{this.user_data=JSON.parse(t.user_data)}catch(e){return Z.error("Failed parsing user data after signin: "+t.user_data),void this._cleanup()}if("string"!=typeof this.user_data.id||""===this.user_data.id)return Z.error("user_data doesn't contain an id. user_data: "+this.user_data),void this._cleanup();this._signinDoneResolve(),this._subscribeChannels()},e.prototype._subscribeChannels=function(){var t,e=this;this.serverToUserChannel=new Nt("#server-to-user-"+this.user_data.id,this.pusher),this.serverToUserChannel.bind_global((function(t,n){0!==t.indexOf("pusher_internal:")&&0!==t.indexOf("pusher:")&&e.emit(t,n)})),(t=this.serverToUserChannel).subscriptionPending&&t.subscriptionCancelled?t.reinstateSubscription():t.subscriptionPending||"connected"!==e.pusher.connection.state||t.subscribe()},e.prototype._cleanup=function(){this.user_data=null,this.serverToUserChannel&&(this.serverToUserChannel.unbind_all(),this.serverToUserChannel.disconnect(),this.serverToUserChannel=null),this.signin_requested&&this._signinDoneResolve()},e.prototype._newSigninPromiseIfNeeded=function(){if(this.signin_requested&&(!this.signinDonePromise||this.signinDonePromise.done)){var t=Fe(),e=t.promise,n=t.resolve;t.reject;e.done=!1;var r=function(){e.done=!0};e.then(r).catch(r),this.signinDonePromise=e,this._signinDoneResolve=n}},e}(pt),We=function(){function t(e,n){var r,o,i,c=this;!function(t){if(null==t)throw"You must pass your app key when you instantiate Pusher."}(e),function(t){if(null==t)throw"You must pass an options object";if(null==t.cluster)throw"Options object must provide a cluster";"disableStats"in t&&Z.warn("The disableStats option is deprecated in favor of enableStats")}(n),this.key=e,this.config=(o=this,i={activityTimeout:(r=n).activityTimeout||s.activityTimeout,cluster:r.cluster,httpPath:r.httpPath||s.httpPath,httpPort:r.httpPort||s.httpPort,httpsPort:r.httpsPort||s.httpsPort,pongTimeout:r.pongTimeout||s.pongTimeout,statsHost:r.statsHost||s.stats_host,unavailableTimeout:r.unavailableTimeout||s.unavailableTimeout,wsPath:r.wsPath||s.wsPath,wsPort:r.wsPort||s.wsPort,wssPort:r.wssPort||s.wssPort,enableStats:Ue(r),httpHost:De(r),useTLS:He(r),wsHost:Ne(r),userAuthenticator:Me(r),channelAuthorizer:ze(r,o)},"disabledTransports"in r&&(i.disabledTransports=r.disabledTransports),"enabledTransports"in r&&(i.enabledTransports=r.enabledTransports),"ignoreNullOrigin"in r&&(i.ignoreNullOrigin=r.ignoreNullOrigin),"timelineParams"in r&&(i.timelineParams=r.timelineParams),"nacl"in r&&(i.nacl=r.nacl),i),this.channels=Qt.createChannels(),this.global_emitter=new pt,this.sessionID=Ce.randomInt(1e9),this.timeline=new Te(this.key,this.sessionID,{cluster:this.config.cluster,features:t.getClientFeatures(),params:this.config.timelineParams||{},limit:50,level:Pe.INFO,version:s.VERSION}),this.config.enableStats&&(this.timelineSender=Qt.createTimelineSender(this.timeline,{host:this.config.statsHost,path:"/timeline/v2/"+Ce.TimelineTransport.name}));this.connection=Qt.createConnectionManager(this.key,{getStrategy:function(t){return Ce.getDefaultStrategy(c.config,t,xe)},timeline:this.timeline,activityTimeout:this.config.activityTimeout,pongTimeout:this.config.pongTimeout,unavailableTimeout:this.config.unavailableTimeout,useTLS:Boolean(this.config.useTLS)}),this.connection.bind("connected",(function(){c.subscribeAll(),c.timelineSender&&c.timelineSender.send(c.connection.isUsingTLS())})),this.connection.bind("message",(function(t){var e=0===t.event.indexOf("pusher_internal:");if(t.channel){var n=c.channel(t.channel);n&&n.handleEvent(t)}e||c.global_emitter.emit(t.event,t.data)})),this.connection.bind("connecting",(function(){c.channels.disconnect()})),this.connection.bind("disconnected",(function(){c.channels.disconnect()})),this.connection.bind("error",(function(t){Z.warn(t)})),t.instances.push(this),this.timeline.info({instances:t.instances.length}),this.user=new Je(this),t.isReady&&this.connect()}return t.ready=function(){t.isReady=!0;for(var e=0,n=t.instances.length;e<n;e++)t.instances[e].connect()},t.getClientFeatures=function(){return X(V({ws:Ce.Transports.ws},(function(t){return t.isSupported({})})))},t.prototype.channel=function(t){return this.channels.find(t)},t.prototype.allChannels=function(){return this.channels.all()},t.prototype.connect=function(){if(this.connection.connect(),this.timelineSender&&!this.timelineSenderTimer){var t=this.connection.isUsingTLS(),e=this.timelineSender;this.timelineSenderTimer=new U(6e4,(function(){e.send(t)}))}},t.prototype.disconnect=function(){this.connection.disconnect(),this.timelineSenderTimer&&(this.timelineSenderTimer.ensureAborted(),this.timelineSenderTimer=null)},t.prototype.bind=function(t,e,n){return this.global_emitter.bind(t,e,n),this},t.prototype.unbind=function(t,e,n){return this.global_emitter.unbind(t,e,n),this},t.prototype.bind_global=function(t){return this.global_emitter.bind_global(t),this},t.prototype.unbind_global=function(t){return this.global_emitter.unbind_global(t),this},t.prototype.unbind_all=function(t){return this.global_emitter.unbind_all(),this},t.prototype.subscribeAll=function(){var t;for(t in this.channels.channels)this.channels.channels.hasOwnProperty(t)&&this.subscribe(t)},t.prototype.subscribe=function(t){var e=this.channels.add(t,this);return e.subscriptionPending&&e.subscriptionCancelled?e.reinstateSubscription():e.subscriptionPending||"connected"!==this.connection.state||e.subscribe(),e},t.prototype.unsubscribe=function(t){var e=this.channels.find(t);e&&e.subscriptionPending?e.cancelSubscription():(e=this.channels.remove(t))&&e.subscribed&&e.unsubscribe()},t.prototype.send_event=function(t,e,n){return this.connection.send_event(t,e,n)},t.prototype.shouldUseTLS=function(){return this.config.useTLS},t.prototype.signin=function(){this.user.signin()},t.instances=[],t.isReady=!1,t.logToConsole=!1,t.Runtime=Ce,t.ScriptReceivers=Ce.ScriptReceivers,t.DependenciesReceivers=Ce.DependenciesReceivers,t.auth_callbacks=Ce.auth_callbacks,t}(),Ge=e.default=We;Ce.setup(We)}])}));
+//# sourceMappingURL=pusher.min.js.map
+"use strict";
+const FindContext = (()=>{
+   const self = {};
+
+    self.fetchApis = {
+        "staff":`${main_view.base_url}/api/employee/find`,
+        "employee":`${main_view.base_url}/ypg/employee/list`,
+        // "parent":`${main_view.base_url}/api/guardian/find`,
+        //"user":`${main_view.base_url}/api/user/find`  
+    };  
+
+    self.getTitle = (role)=>{
+       switch(role){
+          case  'sfaff':
+          case 'employee':  
+            return "Find Staff";
+          default:{
+            return 'Find Someone'
+          }  
+       }
+    };
+
+    self.getColumns = (role)=>{
+        switch(role){
+            case 'staff': 
+            case 'employee':
+               {
+                   return [
+                     {
+                        title:"Emp_ID",
+                        data:"id"
+                     },
+                    {
+                        title:"ID",
+                        data:"code"
+                     },
+                     {
+                        title:"Name",
+                        data:"name"
+                     },
+                     {
+                        title:"Sex",
+                        data:"sex"
+                     },
+                     {
+                        title:"Email",
+                        data:"email"
+                     },
+                     {
+                        title:"Position",
+                        name:"position",
+                        data:(data,index,tr)=>{
+                           return [`<span class="text-primary">`,data.position_id,` </span>`].join('');
+                        } 
+                     },
+                   ];
+                   
+               }
+               
+            case 'user':  
+            case 'login':{
+                return [
+                     {
+                        title:"Login",
+                        data:"login_name"
+                     },
+                     {
+                        title:"Full Name",
+                        data:"full_name"
+                     },
+                     {
+                        title:"Type",
+                        data:"user_class"
+                     },
+                     {
+                        title:"Role",
+                        data:"role"
+                     },
+                     {
+                        title:"email",
+                        data:"email"
+                     },
+                     {
+                        title:"Phone",
+                        data:"phone_number"
+                     }
+                   ];
+            }
+            default:{
+               return [];
+            } 
+         }
+    };
+
+
+    self.getContext = (role)=>{
+        return {
+            "title": self.getTitle(role),
+            "columns": self.getColumns(role),
+            "fetchApi":self.fetchApis[role],
+        };
+    };
+
+    return self;
+})();
+
+const FindPersonDialog = (()=>{
+   const self = {};
+   let dialog = null;
+     self.show = (op)=>{
+        //let dTitle = 'Find Someone';
+        dialog = dialog || new GeneralDialog({
+            cssClass:"modal-lg",
+            createContent:(me)=>{
+                return [
+                  `<div class="d-flex flex-column">`,
+                      `<div class="d-flex">`,
+                        `<input name="search_value" class="form-control" placeholder="Search" />`,
+                      `</div>`,
+                      `<div class="w-100">`,
+                         `<table name="tblPersons" id="tblPersons" class="table mt-3">`,
+                             
+                         `<thead></thead><tbody></tbody>`,
+                         `</table>`,
+                       `</div>`,
+                   `</div>`,
+               ].join('');
+            },
+            contentCreated:(me)=>{
+                me.renderColumns = (tbl, cols) => {
+                  
+                    const thead = tbl.querySelector('thead');
+                    const tbody = tbl.querySelector('tbody');
+                    thead.innerHTML = '';
+                    tbody.innerHTML = '';
+                    let rows =``;
                     let html = '';
                     cols.map(c =>{
                         html = [html, '<th>',c.title,'</th>'].join('');
                     });
                     thead.innerHTML = ['<tr>',html,'</tr>'].join('');
                     
-                    rows = [rows ,`<tr<td colspan="100%<span class="d-flex align-items-center justify-content-center">Search for someone here</span</td</tr> let tbody tbl.querySelector('tbody') let ps[] let tds null tbody.querySelectorAll('tr').forEach(tr=> if(tr.classList.contains('row-selected')) tds tds||tr.querySelectorAll('td' let item{} tds.forEach(td=> item[td.dataset.name td.textContent}) item.emp_id tr.dataset.id item.id tr.dataset.id ps.push(item)}}) return ps} me.beginSearch(search_value,tbl,context=> let p{"search_value":search_value} vsapi.call(context.fetchApi,p,false,false).then(res=> let data res.status_code==200 res.data[] me.renderItems(data,tbl,context.columns)})} me.renderItems(data,tbl,cols)=> const tbody tbl.querySelector('tbody') tbody.innerHTML'' let index=0 let html'' data.map(item=> let row_html='' cols.map(c=> let name c.name let val typeof c.data='function c.data(item,index(item[c.data| c.name]) row_html[row_html,'<td data-name="',name,'">',val,'</td>'].join('')}) html+['<tr data-id="',item.id,'">',row_html,'</tr>'].join('') index++}) tbody.innerHTML html} me.controls.search_value.onkeyup e=> setTimeout(()=> me.beginSearch(e.target.value,me.controls.tblPersons,me.context)},300)}}, prepareFormOptions: createTitle"Find Someone",}, onPrepareForm:(me,data,fields,divModal)=> me.controls.search_value.value'' const context FindContext.getContext(me.dataOptions.role) me.context context divModal.querySelector('.modal-header').classList.add('border-0','pb-0') divModal.querySelector('.modal-footer').classList.add('border-0','pt-0') me.renderColumns(me.controls.tblPersons context.columns) const elTitle divModal.querySelector('.modal-content.modal-title') if(elTitle) elTitle.textContent context.title} LocaleManager.translateZone(me.divModal)}, buttons: label:"<span>Cancel</span>", cssClass:"btn btn-warning", click:(me)=> me.hide(false)}}, label:'<span vslang="DataTransferItemList.OK"></span>', cssClass:'btn btn-primary', click:(me)=> me.context me.context| FindContext.getContext(me.dataOptions.role) const p me.getSelection(me.controls.tblPersons,me.context.columns) if(!p|!p[0]) cv_interact.warning('No one is selected!') return} const d me.dataOptions.singleSelect p[0] p me.hide(true,d)}],}) dialog.show(op)} return self})();
-"use strict"
-const PusherClient new function() const mThis this this.branch_id document.querySelector('meta[name="sess_branch_id"]').getAttribute('content') this.user_id document.querySelector('meta[name="sess_user_id"]').getAttribute('content') this.base_url main_view.base_url| document.querySelector('meta[name="base_url"]').getAttribute('content') this.current_view_name'' this.backend_channel_name['dms.backend.',this.branch_id].join('') this.pusher_channel{'bind':()=> return;}} const pusher_app_key'e71b395ef6f9326086ca' const pusher new Pusher(pusher_app_key, cluster'ap1', useTLS:true, disableStats:true, authorizer function authorizer(channel options) return authorize function authorize(socketId callback const p{"socket_id":socketId,"channel_name":channel.name} vsapi.call(`{main_view.base_url}/api/broadcast/auth`,p,false,false).then(d=> const auth_data d.data| d if(auth_data) callback(null auth_data)}else console.error('Pusher authorization failed This can happen when token expired!')}})}}}}) pusher.connection.bind('error' function(err console.error("Pusher error:" err)}) pusher.connection.bind('connected',(payload)=> console.info('Web socket connection successful:)')}) mThis.pusher_channel pusher.subscribe(`rivate-${mThis.backend_channel_name}`) mThis.pusher_channel.bind('pusher:subscription_succeeded',(d)=> console.info("Channel subscription succeeded")}) mThis.pusher_channel.bind('pusher:subscription_error',(d)=> console.error("Channel subscription error"+d)}) mThis.pusher_channel.bind('order_image_created',d=> let data d.data Swal.fire( position'top-end', icon'success', title data.message, toast:true, showConfirmButton false, timer:2000, showClass popup'animate__animated animate__fadeInDown'},}) let order_id data.order?data.order.id:0 let image_count(data.order|{}).image_count OrderImagesComponent.addImage(order_id,data.img,image_count)}) mThis.pusher_channel.bind('order_image_deleted',d=> let data d.data Swal.fire( position'top-end', icon'success', title data.message, toast:true, showConfirmButton false, timer:2000, showClass popup'animate__animated animate__fadeInDown'},}) let order_id data.order_id OrderImagesComponent.removeImage(order_id,data.image_id,data.image_count)}) mThis.pusher_channel.bind('package_status_changed',(d=> let data d.data main_view.addNotificationItem({'title':data.title,'message':data.message}) let msg DUtil.escapeHtml(data.message) if(data.status_id==8 toastr.success(msg,data.title) else if(data.status_id==9 toastr.warning(msg,data.title) else toastr.info(msg,data.title) if(PackageListComponent.self.is(':visible')) let tr PackageListComponent.findRowByBarcode(data.barcode| data.bar_code) PackageListComponent.displayDriverData(tr,{"driver_id":data.driver_id,"driver_name":data.driver_name,'status':data.status,'status_id':data.status_id})} if(TripListComponent.self.is(':visible')) TripListComponent.packageStatusChanged_eventHandler(data)}}) mThis.pusher_channel.bind('order_created'(d)=> toastr.info(d.data.message'Order Created') main_view.addNotificationItem({'title':d.data.title,'message':d.data.message}) const tr PickupListComponent.getExpandedRow_tr() if(!tr PickupListComponent.orderCreated_eventHandler(d)}) mThis.pusher_channel.bind('driver_accepted_order',(d=> let data d.data toastr.success(DUtil.escapeHtml(data.message),data.title?data.title:'Order Accepted') main_view.addNotificationItem({'title':data.title,'message':data.message}) if(PickupListComponent.tblOrders) if(PickupListComponent.tblOrders.style.display!='none') let tr PickupListComponent.findRowByOrdderId(data.order_id) PickupListComponent.updatePickupStatus(tr,data)}}}) mThis.pusher_channel.bind'driver_canceled_order',(d=> let data d.data toastr.success(DUtil.escapeHtml(data.message),data.title?data.title:'Order Canceled') main_view.addNotificationItem({'title':data.title,'message':data.message}) if(PickupListComponent.tblOrders& PickupListComponent.tblOrders.style.display!='none') let tr PickupListComponent.findRowByOrdderId(data.order_id) PickupListComponent.updatePickupStatus(tr,data)}}) mThis.pusher_channel.bind('pickup_driver_changed',(d=> let data d.data if(PickupListComponent.tblOrders& PickupListComponent.tblOrders.style.display!='none') toastr.success(DUtil.escapeHtml(data.message),'Pickup Driver Changed',data.title?data.title:'Pickup Driver Changed') main_view.addNotificationItem({'title':data.title,'message':data.message}) let tr PickupListComponent.findRowByOrdderId(data.order_id) PickupListComponent.updatePickupStatus(tr,data)}}) mThis.pusher_channel.bind'order_status_changed',(d=> let data d.data if(PickupListComponent.tblOrders& PickupListComponent.tblOrders.style.display!='none') main_view.addNotificationItem({'title':data.title,'message':data.message}) toastr.success(DUtil.escapeHtml(data.message),data.title?data.title:'Order Status') let tr PickupListComponent.findRowByOrdderId(data.order_id) PickupListComponent.updatePickupStatus(tr,data)}) mThis.pusher_channel.bind('order_deleted',(d=> let data d.data toastr.error(DUtil.escapeHtml(data.message),'Order Deleted',data.title?data.title:'Order Deleted') main_view.addNotificationItem({'title':data.title,'message':data.message}) if(PickupListComponent.tblOrders& PickupListComponent.tblOrders.style.display!='none') let tr PickupListComponent.findRowByOrdderId(data.order_id) if(tr) const detail_tr tr.nextElementSibling if(detail_tr& detail_tr.classList.contains('detail-row')) detail_tr.remove()} tr.remove()}}}) mThis.pusher_channel.bind('package_photo_picked',(d=> let data d.data data.title data.title|'Photo Picked' toastr.info(DUtil.escapeHtml(data.message),'Photo Picked',data.title) main_view.addNotificationItem({'title':data.title,'message':data.message}) if(PickupListComponent.tblOrders& PickupListComponent.tblOrders.style.display!='none') PickupListComponent.setImageCount(data.order_id,data.img_count)}}) mThis.pusher_channel.bind('package_photo_deleted',(d=> let data d.data data.title data.title|'Photo Deleted' toastr.warning(DUtil.escapeHtml(data.message),'Photo Deleted',data.title) main_view.addNotificationItem({'title':data.title,'message':data.message}) if(PickupListComponent.tblOrders& PickupListComponent.tblOrders.style.display!='none') PickupListComponent.setImageCount(data.order_id,data.img_count)}}) mThis.pusher_channel.bind('message_received' function(data Swal.fire( position'top-end', icon'success', title JSON.stringify(data), toast:true, showConfirmButton false, timer:2000, showClass popup'animate__animated animate__fadeInDown'},})})};
-"use strict"
-var AccountStaffComponent((= const mThis{} mThis.title_prop"Account Staff" mThis.base_url main_view.base_url mThis.self main_view.VSAppContent.querySelector"#_main_accountStaff_component",) mThis.btnAdd mThis.self.querySelector("#_btnAddAccountStaff") mThis.divFilter mThis.self.querySelector("#_divFilter_accountStaff") mThis.elSearch mThis.self.querySelector("#_search_accountStaff_info") mThis.elFilter_status mThis.self.querySelector("#el_status") mThis.cols title"", className"align-middle text-capitalize",}, title"Tenant ID", className"align-middle text-capitalize", data(data=`span class="text-yp-custom"><small>${data.tenant_id ?? "N/A"}</small></span>`,}, title"Staff ID", className"align-middle text-capitalize", data(data=`span class="text-yp-custom"><small>${data.code ?? "N/A"}</small></span>`,}, title"Name", className"align-middle text-capitalize", data(data= const sexLabel data.sex=="M""Male" data.sex=="F""Female""Other" return`span class="d-block text-yp-custom" style="width:75px;"><small>${data.name ?? ""}</small></span>
-                        <small class="text-muted">${sexLabel}</small>`},}, title"Khmer Name", className"align-middle text-capitalize", data(data= const sexLabel data.sex=="M""Male" data.sex=="F""Female""Other" return`span class="d-block text-yp-custom" style="width:75px;"><small>${data.name_kh ?? ""}</small></span>
-                        <small class="text-muted">${sexLabel}</small>`},}, title"Contact Info", className"align-middle", data(data= const phone data.phone_number|"N/A" let telegramHTML'<span class="text-muted">Telegram N/A</span>' if(data.telegram_link& data.telegram_link.trim(!="" const url data.telegram_link.trim() const displayText url.replace(//https?:\/\/t\.me\//"") const deepLink displayText.startsWith("+")`g://resolve?domain=${displayText}` telegramHTML`                        <a href="${url}"
-                        onclick="event.preventDefault(); window.location='${deepLink}';"
-                        class="text-decoration-none d-inline-flex align-items-center mt-1"
-                        target="_blank"
-                        title="Open in Telegram"
-                        aria-label="Telegram">
-                            <small><i class="fa-brands fa-telegram me-1" style="color:#229ED9;"></i></small>
-                            <small class="text-nowrap">${displayText}</small>
-                        </a>`} return`                    <div class="d-flex flex-column">
-                        <div><small><i class="fa-solid fa-phone me-1 text-success"></i></small><small class="text-nowrap text-yp-custom">${phone}</small></div>
-                        <div>${telegramHTML}</div>
-                    </div>`},}, title"Address", className"align-middle text-capitalize", data(data=`span class="text-nowrap text-yp-custom">${data.address ?? ""}</span>`,}, title"Remark", className"align-middle text-capitalize", data(data=`span class="text-nowrap text-yp-custom">${data.remarks ?? ""}</span>`,}, title"Status", className"align-middle", data(data= const status(data.status?"").toLowerCase() let cls"text-info" if(status=="inactive" cls"text-danger px-2 py-1 d-inline-block" else if(status=="active" cls"text-success px-2 py-1 d-inline-block"} return`span class="${cls} text-capitalize" data-status_id="${data.status_id}"><small>${data.status ?? ""}</small></span>`},}, title"Updated By", className"align-middle", data(data index tr= return`div class="d-flex flex-column">
-                    <span class="text-capitalize text-start text-yp-custom fw-semibold"><small>${data.update_user ?? ""}</small></span>
-                    <small class="text-muted">${data.updated_at ?? ""}</small>
-                </div>`},}, className"col_action align-middle", data(data=`                <div class="d-flex justify-content-center align-items-end">
-                    <a href="javascript:void(0)" class=" ${data.action_id > 1 ? "d-none" : "btn_leave_action"}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
-                       <button class="btn btn-sm btn-outline-yp-custom rounded-2 text-nowrap">
-                           <span><i class="fa fa-pencil"></i></span>
-                           <i class="fa-solid fa-caret-down"></i>
-                       </button>
-                    </a>
-                </div>`,},] mThis.init(= if(mThis.initAlready return mThis.AccStaffListView new ListView("_staffAccount_info_list" fetchApi`{main_view.base_url}/prm/account-staff/list-paginate`, perPage 10, apiCluster main_view.apiCluster, columns mThis.cols, tableClass"table table--white rounded-2 overflow-hidden header-uppercase", rowCreated(data index tr= tr.dataset.statusid data.status_id tr.classList.add("zone") tr.setAttribute("id"["zone_id" data.id].join(""))}, listContainerClass null,}) mThis.btnAdd.onclick function(e e.preventDefault() const op id null, btn e.target, onClose(= mThis.AccStaffListView.showPage(mThis.getFilterData())},} if(!AuthManager.allowed(240) return AccStaffDialog.show(op)} mThis.pr_tbl mThis.AccStaffListView.getListContainer() const sh_parent mThis.pr_tbl.parentElement sh_parent.style.height window.innerHeight 200"px" sh_parent.classList.add("overflow-y-auto") sh_parent.classList.add("overflow-x-hidden") window.onresize(= sh_parent.style.maxHeight window.innerHeight 200"px"} mThis.tblAccStaff mThis.AccStaffListView.getTable() mThis.initDropdownMenus(mThis.tblAccStaff) mThis.divFilter.querySelectorAll(".filter-field").forEach((el= el.onchange(e= e.preventDefault() mThis.AccStaffListView.showPage(mThis.getFilterData())}}) mThis.elSearch.addEventListener("keyup"(e= e.preventDefault() clearTimeout(mThis.search_timeout) mThis.search_timeout setTimeout((= mThis.AccStaffListView.showPage(mThis.getFilterData())} 250)}) mThis.initAlready true} mThis.getFilterData(= let p status_id mThis.elFilter_status.value, search_value mThis.elSearch.value,} mThis.divFilter.querySelectorAll(".filter-field").forEach((el= const f el.dataset.field p[f el.value}) return p} mThis.initDropdownMenus(table= const menuOptions containerElement table, actionButtonClass"btn_leave_action", cssClass"bg-white shadow", menus html'<span class="ps-2 vslang="titles.Change Status">Change Status</span>', icon`i class="fa fa-exchange fs-5 text-info"></i>`, cssClass"border-bottom pb-2", name"change_status",}, html'<span class="ps-2 vslang="titles.Edit Staff"></span>', icon`i class="fa-regular fa-edit fs-5 text-warning"></i>`, cssClass"border-bottom pb-2", name"edit_staff",}, html'<span class="ps-2 vslang="titles.Delete Staff"></span>', icon`i class="fa-regular fa-trash-can fs-5 text-danger"></i>`, cssClass"border-bottom pb-2", name"delete_staff",},], onClick(menuLink id name= switch(name case"change_status" mThis.changeStatus(id menuLink) break} case"edit_staff" mThis.editStaff(id menuLink) break} case"delete_staff" mThis.deleteStaff(id menuLink) break} default break}}},} new VSDropdownMenu(menuOptions)} mThis.changeStatus(id lnk= const tr lnk.closest("tr") const status_id VSUtil.properCase(tr?.dataset.statusid|"") console.log(123 status_id) const inputOptions title"Change Status", dataLabel"Account Staff Status", valueMember"status_id", textMember"name", confirmButtonText"Save", blankErrorMessage"Status is not correct!", data status_id"1" name"Active}, status_id"2" name"Inactive},], defaultValue status_id,} InputBox2.show(inputOptions(selected= if(!selected return if(!AuthManager.allowed(321) return const status id status_id selected.value} vsapi.call`{mThis.base_url}/prm/account-staff/update-status`, status,).then((res= if(res.status_code== 200 InputBox2.close() cv_interact.success"The Account Staff Status has been updated",) mThis.AccStaffListView.showPage(mThis.getFilterData()) else cv_interact.error res.error_message|"Unable to update status",)}})})} mThis.editStaff(id menulink= let op id id, btn menulink, onClose(= mThis.AccStaffListView.showPage(mThis.getFilterData())},} AccStaffDialog.show(op)} mThis.deleteStaff(id menuLink= let op id id, btn menuLink, onClose(= mThis.AccStaffListView.showPage(mThis.getFilterData())},} if(!AuthManager.allowed(242) return cv_interact.confirm"Delete this Staff?", title"Delete Staff", context"delete", confirmButtonText"Delete",}, function(e if(e vsapi.call`{main_view.base_url}/prm/account-staff/delete`, op, false, false, false,).then((res= if(res.status_code= 200 mThis.AccStaffListView.showPage()}}) else cv_interact.error(res.error_message)}},)} mThis.prepareFormOptions(onFinish= vsapi.call`{main_view.base_url}/prm/account-staff/form-options`, null, null, null,).then((res= const d res.status_code= 200 res.data{} VSUtil.setComboItems mThis.elFilter_status, d.statuses,"id","staff_status", true,"All Statuses", null,) if(typeof onFinish=="function" onFinish()})} mThis.show(options= mThis.init() mThis.options options mThis.prepareFormOptions((= main_view.setContentView(mThis.self mThis.title_prop) mThis.AccStaffListView.showPage(mThis.getFilterData())})} return mThis})()
-const AccStaffDialog((= const self{} let dialog null self.show(op= dialog dialog| new GeneralDialog( cssClass"modal-md", backdrop"static", keyboard true, createContent(= return`div class="row justify-content-center">
+                    rows = [rows ,`<tr>
+                                 <td colspan="100%" >
+                                    <span class="d-flex align-items-center justify-content-center">Search for someone here</span>
+                                 </td>
+                              </tr>`].join('');
+                    tbody.innerHTML = rows;
+                    // tbody.addEventListener('click', function(event) 
+                    tbody.onclick = (event) =>{
+                     let tr = VSUtil.closestLimited(event.target,'tr');
+                     if (tr) {
+                        tr.classList.toggle('row-selected'); 
+                        if(me.dataOptions.singleSelect && tr.classList.contains('row-selected')){
+                           if(me.prev_selected_tr) me.prev_selected_tr.classList.remove('row-selected');
+                        }
+                        me.prev_selected_tr = tr;
+                     }
+                  };
+                };
+              
+               me.getSelection = (tbl, cols)=>{
+                 //const tbl = me.controls.tblPersons;
+                 //const context = FindContext.getColumns(me.dataOptions.role);`
+                 let tbody = tbl.querySelector('tbody');
+                 let ps = [];
+                 let tds = null;
+                 tbody.querySelectorAll('tr').forEach(tr =>{
+                     if(tr.classList.contains('row-selected')){
+                        tds = tds||tr.querySelectorAll('td') 
+                        let item = {};
+                        tds.forEach(td=>{
+                           item[td.dataset.name] = td.textContent;
+                        });
+                        item.emp_id = tr.dataset.id;
+                        item.id = tr.dataset.id;
+                        ps.push(item);
+                     }
+                 });
+                 return ps;
+               }
 
-                            <div class="col-12">
-                                <div class="material-input outlined">
-                                    <input type="id" name="id" required class="data-input form-control" data-field="tenant_id" placeholder=" " />
-                                    <label>Tenant ID</label>
-                                </div>
-                            </div>
+               me.beginSearch = (search_value,tbl,context) =>{
+                   let p = {"search_value":search_value};
+                   vsapi.call(context.fetchApi,p,false,false).then(res =>{
+                     let data = res.status_code ==200 ? res.data : [];
+                     me.renderItems(data,tbl,context.columns);
+                   });
+               }
 
-                            <div class="col-12">
-                                <div class="material-input outlined">
-                                    <input type="id" name="id" required class="data-input form-control" data-field="code" placeholder=" " />
-                                    <label>Staff ID</label>
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <div class="material-input outlined">
-                                    <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder=" " />
-                                    <label>Staff Name</label>
-                                </div>
-                            </div>
+               me.renderItems = (data,tbl,cols)=>{
+                  const tbody = tbl.querySelector('tbody');
+                   tbody.innerHTML = '';
+                   let index =0;
+                   let html = '';
+                   data.map(item =>{
+                     let row_html ='';
+                        cols.map(c =>{
+                           let name = c.name;
+                           let val = typeof c.data == 'function' ? c.data(item,index) : (item[c.data || c.name]);
+                           
+                           row_html = [row_html,'<td data-name="',name,'">',val,'</td>'].join('');
+                        });
+                        html += ['<tr data-id="',item.id,'">',row_html,'</tr>'].join('');
+                        index++;
+                   });
+                   tbody.innerHTML = html;
+               }
 
-                            <div class="col-12">
-                                <div class="material-input outlined">
-                                    <input type="text" name="name" required class="data-input form-control" data-field="name_kh" placeholder=" " />
-                                    <label>Khmer Name</label>
-                                </div>
-                            </div>
-                            
-                            
-                            <div class="col-12">    
-                                <div class="material-input outlined">
-                                    <input type="tel" name="phone_number" required class="data-input form-control" data-field="phone_number" placeholder=" " />
-                                    <label>Phone Number</label>
-                                </div>
-                            </div>
-                            
-                            
-                            <div class="col-12">
-                                <div class="material-input outlined">
-                                    <textarea class="data-input form-control" data-field="address" placeholder=" "></textarea>
-                                    <label>Address</label>
-                                </div>
-                            </div>
+               me.controls.search_value.onkeyup = e =>{
+                  setTimeout(()=>{
+                     me.beginSearch(e.target.value,me.controls.tblPersons,me.context);
+                  },300);
+               };
+            },
+            // extendMethods:{
+            //     "getData":(me,dataOptions)=>{
+            //        return {"photo":me.controls.userImageBox.getImage()};
+            //     }
+            // },
+            prepareFormOptions:{
+               createTitle: "Find Someone",
+            },
+            onPrepareForm:(me,data,fields,divModal)=>{
+               me.controls.search_value.value = '';
+               const context = FindContext.getContext(me.dataOptions.role);
+               me.context = context;
+               divModal.querySelector('.modal-header').classList.add('border-0','pb-0');
+               divModal.querySelector('.modal-footer').classList.add('border-0','pt-0');
+               me.renderColumns(me.controls.tblPersons, context.columns);
+               const elTitle = divModal.querySelector('.modal-content .modal-title');
+               if(elTitle){
+                  elTitle.textContent = context.title; 
+               }
+               LocaleManager.translateZone(me.divModal);
+            },
+            buttons:[
+               {
+                 label:"<span>Cancel</span>",
+                 cssClass:"btn btn-warning",
+                 click:(me)=>{
+                    me.hide(false);
+                 }
+               },
+               {
+                label:'<span vslang="DataTransferItemList.OK"></span>',
+                cssClass:'btn btn-primary',
+                click:(me)=>{
+                  me.context = me.context || FindContext.getContext(me.dataOptions.role);  
+                  const p = me.getSelection(me.controls.tblPersons,me.context.columns);
+                  if (!p || !p[0]){
+                     cv_interact.warning('No one is selected!');
+                     return;
+                  }
+                  const d = me.dataOptions.singleSelect ? p[0]: p;
+                  me.hide(true,d);
+                }
+              }  
+            ],
+        
+         });
+        dialog.show(op);
+     }
 
-                            <div class="col-12">
-                                <div class="material-input outlined">
-                                    <textarea class="data-input form-control" data-field="remarks" placeholder=" "></textarea>
-                                    <label>Remarks</label>
+   return self;
+})();
+"use strict";
+const PusherClient = new function(){
+    const mThis = this;
+ 
+    this.branch_id = document.querySelector('meta[name="sess_branch_id"]').getAttribute('content');
+    this.user_id = document.querySelector('meta[name="sess_user_id"]').getAttribute('content');
+    // this.branch_id = $('meta[name="sess_branch_id"]').attr('content');
+    // this.user_id = $('meta[name="sess_user_id"]').attr('content');
+    this.base_url = main_view.base_url || document.querySelector('meta[name="base_url"]').getAttribute('content');
+    this.current_view_name = '';
+
+       //*** For Demo DMS */
+    this.backend_channel_name = ['dms.backend.',this.branch_id].join('');
+    //*** FOr HouExpress */
+   // this.backend_channel_name = ['houex.backend.',this.branch_id].join('');
+   
+    this.pusher_channel = {'bind':()=>{ return;}};
+
+    //pusher_app_key are in .env file, and in main.js
+    //cookie_name are set in main.js, app.js, vsapi.js, loginController.php, Master.blade.php, "login/index.blade.php" 
+    
+    //*** For Demo DMS */
+    const pusher_app_key = 'e71b395ef6f9326086ca'; //process.env.PUSHER_APP_KEY 
+
+    //** For HOUExpress */
+    //let pusher_app_key = '105a036ea697941d67d1'; //process.env.PUSHER_APP_KEY
+
+    const pusher = new Pusher(pusher_app_key,{
+        cluster: 'ap1',
+        useTLS:true,
+        disableStats:true,
+        // authEndpoint:"/dms/broadcast/auth",
+        //authTransport:'ajax', //two options = {'ajax','jsonp'}. The default is "ajax"
+        authorizer: function authorizer(channel, options){
+            return {
+                authorize: function authorize(socketId, callback) {
+                    const p = {"socket_id":socketId,"channel_name":channel.name};
+                    vsapi.call(`${main_view.base_url}/api/broadcast/auth`,p,false,false).then(d =>{
+                        const auth_data = d.data || d;
+                        //NOTE: @auth_data ={"auth":"app_key:sig"} . For example,  @auth_data = {"auth":"b7351506ee87f3eec932:3c27d88c6944726d39052efd50770468b23b0e9987e981acbc5ed58ba4bb1d51"}
+                        if(auth_data){
+                             callback(null, auth_data);
+                             //console.log('Pusher authorization succeeded!');
+                        }else{
+                            console.error('Pusher authorization failed. This can happen when token expired!');
+                        }
+                       
+                    });
+                }
+            };
+        }
+    });
+ 
+    pusher.connection.bind('error', function(err) {
+        console.error("Pusher error:", err);
+    });
+    
+    pusher.connection.bind('connected',(payload)=>{
+        console.info('Web socket connection successful :)');
+    });
+ 
+    mThis.pusher_channel = pusher.subscribe(`private-${mThis.backend_channel_name}`);
+
+    mThis.pusher_channel.bind('pusher:subscription_succeeded',(d)=>{
+        console.info("Channel subscription succeeded");
+    });
+
+    mThis.pusher_channel.bind('pusher:subscription_error',(d)=>{
+        console.error("Channel subscription error: "+d);
+    });
+
+    mThis.pusher_channel.bind('order_image_created',d=>{
+        let data = d.data;
+        Swal.fire({
+            position: 'top-end',
+            icon: 'success',
+            title: data.message,
+            toast:true,
+            showConfirmButton: false,
+            timer:2000,
+            showClass: {
+                popup: 'animate__animated animate__fadeInDown'
+            },
+        });
+
+        let order_id = data.order?data.order.id:0;
+        let image_count = (data.order || {}).image_count; 
+        OrderImagesComponent.addImage(order_id,data.img,image_count);
+    });
+
+    mThis.pusher_channel.bind('order_image_deleted',d=>{
+        let data = d.data;
+        Swal.fire({
+            position: 'top-end',
+            icon: 'success',
+            title: data.message,
+            toast:true,
+            showConfirmButton: false,
+            timer:2000,
+            showClass: {
+                popup: 'animate__animated animate__fadeInDown'
+            },
+        });
+
+        let order_id = data.order_id;
+        OrderImagesComponent.removeImage(order_id,data.image_id,data.image_count);
+    });
+
+    mThis.pusher_channel.bind('package_status_changed',(d) =>{
+        let data = d.data;
+        //Add new notification to the notif list
+        main_view.addNotificationItem({'title':data.title,'message':data.message});
+        let msg = DUtil.escapeHtml(data.message);
+        if (data.status_id==8) toastr.success(msg,data.title);
+        else if (data.status_id==9) toastr.warning(msg,data.title);
+        else toastr.info(msg,data.title);
+
+        if(PackageListComponent.self.is(':visible')){
+            let tr = PackageListComponent.findRowByBarcode(data.barcode || data.bar_code);
+            PackageListComponent.displayDriverData(tr,{"driver_id":data.driver_id,"driver_name":data.driver_name,'status':data.status,'status_id':data.status_id});
+        }
+        if (TripListComponent.self.is(':visible')){
+            TripListComponent.packageStatusChanged_eventHandler(data);
+        }
+
+    });
+
+    // mThis.pusher_channel.bind('package_status_changed', (d)=>{
+    //     TripListComponent.packageStatusChanged_eventHandler(d);
+    // });
+
+    mThis.pusher_channel.bind('order_created', (d)=>{ 
+        toastr.info(d.data.message, 'Order Created');
+        main_view.addNotificationItem({'title':d.data.title,'message':d.data.message});
+        const tr = PickupListComponent.getExpandedRow_tr();
+        //Automatically prepend new Order Row (TR), only when there is no expanded row being opened
+        if(!tr) PickupListComponent.orderCreated_eventHandler(d);
+    });
+
+    mThis.pusher_channel.bind('driver_accepted_order',(d) =>{
+        let data = d.data;
+        toastr.success(DUtil.escapeHtml(data.message),data.title?data.title:'Order Accepted');
+        main_view.addNotificationItem({'title':data.title,'message':data.message});
+
+        if(PickupListComponent.tblOrders){
+            if(PickupListComponent.tblOrders.style.display !== 'none'){
+                let tr = PickupListComponent.findRowByOrdderId(data.order_id);
+                PickupListComponent.updatePickupStatus(tr,data);
+            }
+        }
+    });
+
+    mThis.pusher_channel.bind( 'driver_canceled_order',(d) =>{
+        let data = d.data;
+        toastr.success(DUtil.escapeHtml(data.message),data.title?data.title:'Order Canceled');
+        main_view.addNotificationItem({'title':data.title,'message':data.message});
+
+        if(PickupListComponent.tblOrders && PickupListComponent.tblOrders.style.display !== 'none'){
+            let tr = PickupListComponent.findRowByOrdderId(data.order_id);
+            PickupListComponent.updatePickupStatus(tr,data);
+        }
+    });
+
+    mThis.pusher_channel.bind('pickup_driver_changed',(d) =>{
+        let data = d.data;
+        if(PickupListComponent.tblOrders && PickupListComponent.tblOrders.style.display !== 'none'){
+            toastr.success(DUtil.escapeHtml(data.message),'Pickup Driver Changed',data.title?data.title:'Pickup Driver Changed');
+            main_view.addNotificationItem({'title':data.title,'message':data.message});
+            let tr = PickupListComponent.findRowByOrdderId(data.order_id);
+            PickupListComponent.updatePickupStatus(tr,data);
+        }
+    });
+
+    mThis.pusher_channel.bind( 'order_status_changed',(d) =>{
+        let data = d.data;
+
+        if(PickupListComponent.tblOrders && PickupListComponent.tblOrders.style.display !== 'none'){
+            main_view.addNotificationItem({'title':data.title,'message':data.message});
+            toastr.success(DUtil.escapeHtml(data.message),data.title?data.title:'Order Status');
+
+            let tr = PickupListComponent.findRowByOrdderId(data.order_id);
+            PickupListComponent.updatePickupStatus(tr,data);
+        } 
+    });
+                    
+    mThis.pusher_channel.bind('order_deleted',(d) =>{
+        let data = d.data;
+        toastr.error(DUtil.escapeHtml(data.message),'Order Deleted',data.title?data.title:'Order Deleted');
+        main_view.addNotificationItem({'title':data.title,'message':data.message});
+        if(PickupListComponent.tblOrders && PickupListComponent.tblOrders.style.display !== 'none'){
+            let tr = PickupListComponent.findRowByOrdderId(data.order_id);
+            if(tr){
+                const detail_tr = tr.nextElementSibling;
+                if (detail_tr && detail_tr.classList.contains('detail-row')){
+                    detail_tr.remove();
+                }
+                tr.remove();
+            }
+        }
+    });
+   
+    mThis.pusher_channel.bind('package_photo_picked',(d) =>{
+        let data = d.data;
+        data.title = data.title || 'Photo Picked';
+        toastr.info(DUtil.escapeHtml(data.message),'Photo Picked',data.title);
+        main_view.addNotificationItem({'title':data.title,'message':data.message});
+        if(PickupListComponent.tblOrders && PickupListComponent.tblOrders.style.display !== 'none'){
+            PickupListComponent.setImageCount(data.order_id,data.img_count); 
+        }
+    });
+
+    mThis.pusher_channel.bind('package_photo_deleted',(d) =>{
+        let data = d.data;
+        data.title = data.title || 'Photo Deleted';
+        toastr.warning(DUtil.escapeHtml(data.message),'Photo Deleted',data.title);
+        main_view.addNotificationItem({'title':data.title,'message':data.message});
+        if(PickupListComponent.tblOrders && PickupListComponent.tblOrders.style.display !== 'none'){
+            PickupListComponent.setImageCount(data.order_id,data.img_count); 
+        }
+    });
+
+    mThis.pusher_channel.bind('message_received', function(data) {
+        Swal.fire({
+            position: 'top-end',
+            icon: 'success',
+            title: JSON.stringify(data),
+            toast:true,
+            showConfirmButton: false,
+            timer:2000,
+            showClass: {
+                popup: 'animate__animated animate__fadeInDown'
+            },
+        });
+    });
+}
+"use strict";
+
+var TenantProfileComponent = new (function () {
+    const mThis = this;
+    mThis.title_prop = "Tenant Management";
+    this.defaultPage = "tenant_list";
+    mThis.self = main_view.VSAppContent.querySelector(
+        "#_main_tenant_component",
+    );
+    mThis.btnAdd = mThis.self.querySelector("#_btnAddTenant");
+    mThis.btnDocument = mThis.self.querySelector("#_btnDocument");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter_tenant");
+    mThis.elSearch = mThis.self.querySelector("#_search_tenant_");
+    mThis.elStatus = mThis.self.querySelector("#_el_tenant_status");
+    mThis.btnBack = document.querySelector("#_btn_back_tenant");
+    mThis.divTenantListContainer = mThis.self.querySelector(
+        "#_tenant_list_container",
+    );
+    mThis.divProfileView = document.querySelector("#_ten_profile_view");
+    mThis.cardViewContainer = mThis.self.querySelector("#_tenant_card_view");
+    mThis.listViewContainer = mThis.self.querySelector("#_tenant_list_view");
+    mThis.currentViewMode = "card";
+    mThis.paginationContainer = mThis.self.querySelector(
+        "#tenant_card_container_pagination",
+    );
+    this.pages = {
+        tenant_list: this.divTenantListContainer,
+        profile_view: this.divProfileView,
+    };
+    mThis.profile_info_tenant = this.divProfileView.querySelector(
+        "#profile_info_tenant",
+    );
+    // mThis.cols = [
+    //     {
+    //         transTitle: "",
+    //         className: "align-middle",
+    //     },
+    //     {
+    //         transTitle: "titles.Photo",
+    //         className: "align-middle",
+    //         data: (data) =>
+    //             `<img class="btn-view-tenant-photo" data-id="${data.id}" src="${data.image_url || `${main_view.base_url}/assets/images/default/placeholder.svg`}" alt="" style="width: 50px; height: 50px; border-radius: 6px; margin-right: 10px;"/>`,
+    //     },
+    //     {
+    //         transTitle: "titles.Code",
+    //         className: "align-middle",
+    //         data: (data) => {
+    //             return `<span class="text-prm-custom text-nowrap">${data.code ?? "_"}</span>`;
+    //         },
+    //     },
+    //     {
+    //         transTitle: "titles.Name",
+    //         className: "align-middle",
+    //         data: (data) => {
+    //             const sexLabel =
+    //                 data.sex === "M"
+    //                     ? "Male"
+    //                     : data.sex === "F"
+    //                       ? "Female"
+    //                       : "_";
+    //             return `
+    //                 <div class="text-prm-custom" style="width:120px;">
+    //                     <span class="text-wrap text-break text-capitalize" style ="word-break:break-word;">${data.name ?? "_"}</span>
+    //                     <span class="d-block text-primary" style="font-size:12px;">${sexLabel}</span>
+    //                 </div>
+    //             `;
+    //         },
+    //     },
+    //     {
+    //         transTitle: "titles.Date of Birth",
+    //         className: "align-middle ",
+    //         data: (data) => {
+    //             return `<span class="text-prm-custom text-nowrap">${data.date_of_birth ?? "_"}</span>`;
+    //         },
+    //     },
+    //     {
+    //         transTitle: "titles.National ID",
+    //         className: "align-middle",
+    //         data: (data) => {
+    //             return `<span class="text-prm-custom text-nowrap">${data.national_id ?? "_"}</span>`;
+    //         },
+    //     },
+    //     {
+    //         transTitle: "titles.Passport",
+    //         className: "align-middle",
+    //         data: (data) => {
+    //             return `<span class="text-prm-custom text-nowrap">${data.passport_number ?? "_"}</span>`;
+    //         },
+    //     },
+    //     {
+    //         transTitle: "titles.Contact Info",
+    //         className: "align-middle",
+    //         data: (data) =>
+    //             `<span class="d-block text-prm-custom"><i class="fa-solid text-success px-1 fa-phone" style="font-size:12px;"></i> ${data.phone_number ?? "_"}</span>
+    //              <span class="d-block text-primary"><i class="fa-solid text-primary px-1 fa-envelope" style="font-size:12px;"></i> ${data.email ?? "_"}</span>`,
+    //     },
+    //     {
+    //         transTitle: "titles.Status",
+    //         className: "align-middle text-center",
+    //         data: (data) => {
+    //             const status = data.status;
+    //             let cls =
+    //                 "badge text-warning bg-warning-subtle border border-warning";
+
+    //             if (status == "Pending") {
+    //                 cls =
+    //                     "badge text-warning bg-warning-subtle border border-warning";
+    //             } else if (status === "Inactive") {
+    //                 cls =
+    //                     "badge text-danger bg-danger-subtle border border-danger";
+    //             } else if (status == "Active") {
+    //                 cls =
+    //                     "badge text-success bg-success-subtle border border-success";
+    //             }
+
+    //             return `
+    //                 <span class="${cls} text-capitalize d-inline-block text-center"
+    //                     style="min-width:70px"
+    //                     data-status_id="${data.status_id}">
+    //                     ${data.status ?? ""}
+    //                 </span>
+    //             `;
+    //         },
+    //     },
+
+    //     {
+    //         transTitle: "titles.Last Updated",
+    //         className: "align-middle",
+    //         data: (data) => {
+    //             return `<div class="d-flex flex-column">
+    //                 <span class="text-capitalize text-start text-prm-custom">${data.update_user ?? ""}</span>
+    //                 <small class="text-muted">${data.updated_at ?? ""}</small>
+    //             </div>`;
+    //         },
+    //     },
+    //     {
+    //         className: "col_action align-middle",
+    //         data: (data) => `
+    //             <div class="d-flex justify-content-center align-items-end">
+    //                 <a href="javascript:void(0)"
+    //                 class="btn-tenant-dropdown-action"
+    //                 data-id="${data.id}"
+    //                 data-statusid="${data.status_id}"
+    //                 aria-haspopup="true"
+    //                 aria-expanded="false"
+    //                 style="cursor: pointer; padding: 8px;">
+    //                     <i class="fa-solid fa-ellipsis-vertical text-prm-custom fs-5" ></i>
+    //                 </a>
+    //             </div>`,
+    //     },
+    // ];
+    mThis.init = () => {
+        if (mThis.initAlready) return;
+        mThis.tenantCardView = new ListView(mThis.cardViewContainer, {
+            fetchApi: `${main_view.base_url}/prm/tenant/list-paginate`,
+            perPage: 8,
+            apiCluster: main_view.apiCluster,
+            paginationContainer: mThis.paginationContainer,
+            renderItems: (items, container) => {
+                mThis.renderTenantCard(container, items);
+            },
+            listContainerClass: null,
+        });
+        mThis.tenantListView = new ListView(mThis.listViewContainer, {
+            fetchApi: `${main_view.base_url}/prm/tenant/list-paginate`,
+            perPage: 8,
+            columns: mThis.cols,
+            apiCluster: main_view.apiCluster,
+            tableClass:
+                "table table--white rounded-2 overflow-hidden header-uppercase text-nowrap",
+            rowCreated: (data, index, tr) => {
+                // console.log(9090,tr);
+
+                tr.dataset.id = data.id;
+                tr.dataset.statusid = data.status_id;
+                mThis.initDropdownMenus(tr);
+            },
+        });
+        mThis.btnAdd.onclick = function (e) {
+            e.preventDefault();
+            const op = {
+                id: null,
+                btn: e.target,
+                onClose: () => {
+                    mThis.renderView();
+                    mThis.tenantListView.showPage(mThis.getFilterData());
+                },
+            };
+            CreateTenantDialog.show(op);
+        };
+        mThis.btnBack.onclick = function (e) {
+            e.preventDefault();
+            mThis.showPage("tenant_list", mThis.getFilterData());
+        };
+        const cardTab = document.getElementById("tenantViewCard");
+        const listTab = document.getElementById("tenantViewList");
+        if (cardTab && listTab) {
+            cardTab.addEventListener("change", () => {
+                mThis.currentViewMode = "card";
+                mThis.renderView();
+            });
+
+            listTab.addEventListener("change", () => {
+                mThis.currentViewMode = "list";
+                mThis.renderView();
+            });
+        }
+        mThis.pr_tbl = mThis.tenantListView.getListContainer();
+        const sh_parent = mThis.pr_tbl.parentElement;
+        sh_parent.style.maxHeight = window.innerHeight - 190 + "px";
+        sh_parent.classList.add("overflow-y-auto");
+        // sh_parent.classList.add("overflow-x-hidden");
+        window.onresize = () => {
+            sh_parent.style.maxHeight = window.innerHeight - 190 + "px";
+        };
+        mThis.tblTenant = mThis.tenantListView.getTable();
+
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
+            el.onchange = () => {
+                mThis.renderView();
+            };
+        });
+        let timeOut = null;
+        mThis.elSearch.onkeyup = function (e) {
+            e.preventDefault();
+            clearTimeout(timeOut);
+            timeOut = setTimeout(() => {
+                mThis.renderView();
+            }, 250);
+        };
+
+        mThis.initDropdownMenus(mThis.cardViewContainer);
+        mThis.initAlready = true;
+    };
+
+    mThis.initDropdownMenus = (listContainer) => {
+        const menuOptions = {
+            containerElement: listContainer,
+            actionButtonClass: "btn-tenant-dropdown-action",
+            cssClass: "bg-white shadow",
+            //menuItemClass:"",
+            menus: [
+                {
+                    html: '<span class="ps-2">View Details</span>',
+                    icon: `<i class="fa-solid fa-user fs-5 text-info"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "view_profile",
+                },
+                {
+                    html: '<span class="ps-2">Modify Tenant</span>',
+                    icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "modify_tenant",
+                },
+                {
+                    html: '<span class="ps-2">Delete Tenant</span>',
+                    icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "delete_tenant",
+                },
+                {
+                    html: '<span class="ps-2">Upload Document</span>',
+                    icon: `<i class="fa-solid fa-file-upload fs-5 text-muted"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "upload_document",
+                },
+                {
+                    html: '<span class="ps-2">Create Contract</span>',
+                    icon: `<i class="fa-solid fa-file-contract fs-5 text-success"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "create_contract",
+                },
+                {
+                    html: '<span class="ps-2">Service Requests</span>',
+                    icon: `<i class="fa-solid fa-screwdriver-wrench fs-5"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "service_request",
+                },
+            ],
+            onShow: (me, container) => {
+                const menu = me.getActiveMenus(container);
+                const status_id = container.dataset.statusid;
+                // console.log(123456, status_id);
+
+                // menu.edit_student.style.display = enroll_finalized == 1 ? 'none' : 'block';
+                menu.create_contract.style.display =
+                    Number(status_id) !== 2 ? "block" : "none";
+                menu.service_request.style.display = "none";
+                // menu.upload_document.style.display =status_id == 1 || status_id == 2  ? "block" : "none";
+            },
+            // adjustPosition: {
+            //     top: -200,
+            //     left: -300
+            // },
+
+            onClick: (menuLink, id, name) => {
+                switch (name) {
+                    case "view_profile": {
+                        mThis.showPage("profile_view", { tenant_id: id });
+                        break;
+                    }
+                    case "create_contract": {
+                        mThis.createContract(id, menuLink);
+                        break;
+                    }
+                    case "upload_document": {
+                        mThis.uploadDocument(id, menuLink);
+                        break;
+                    }
+                    case "modify_document": {
+                        mThis.modifyDocument(id, menuLink);
+                        break;
+                    }
+                    case "modify_tenant": {
+                        mThis.editTenant(id, menuLink);
+                        break;
+                    }
+                    case "delete_tenant": {
+                        mThis.deleteTenant(id, menuLink);
+                        break;
+                    }
+                    case "service_request": {
+                        mThis.serviceRequest(id, menuLink);
+                        break;
+                    }
+                    default: {
+                        break;
+                    }
+                }
+            },
+        };
+        new VSDropdownMenu(menuOptions);
+    };
+    mThis.editTenant = (id, menuLink) => {
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.renderView();
+            },
+        };
+        CreateTenantDialog.show(op);
+    };
+    mThis.serviceRequest = (id, menuLink) => {
+        let op = {
+            id: null, // id
+            btn: menuLink,
+            onClose: () => {
+                mThis.renderView();
+            },
+        };
+        CreateServiceRequestDialog.show(op);
+    };
+    mThis.createContract = (id, menuLink) => {
+        let op = {
+            id: null,
+            tenant_id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.renderView();
+            },
+        };
+        ContractDialog.show(op);
+    };
+    mThis.uploadDocument = (id, menuLink) => {
+        let op = {
+            id: null,
+            tenant_id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.renderView();
+            },
+        };
+        // console.log(111, op);
+
+        TenantDocumentDialog.show(op);
+    };
+    mThis.modifyDocument = (id, menuLink) => {
+        onClose: (() => {
+            mThis.renderView();
+        },
+            // mThis.showPage("profile_view", { tenant_id: id });
+            TenantDocumentDialog.show(op));
+    };
+    mThis.renewContract = (id, menuLink) => {
+        let op = {
+            id: null,
+            btn: menuLink,
+            onClose: () => {
+                mThis.renderView();
+            },
+        };
+        // renewDialog.show(op);
+        // alert("coming soon!");
+    };
+    mThis.deleteTenant = (id, menuLink) => {
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.renderView();
+            },
+        };
+        // if (!AuthManager.allowed(242)) return;
+        cv_interact.confirm(
+            "Delete this Tenant?",
+            {
+                title: "Delete Tenant",
+                context: "delete",
+                confirmButtonText: "Delete",
+            },
+            function (e) {
+                if (e) {
+                    vsapi
+                        .call(
+                            `${main_view.base_url}/prm/tenant/delete`,
+                            op,
+                            false,
+                            false,
+                            false,
+                        )
+                        .then((res) => {
+                            if (res.status_code == 200) {
+                                mThis.renderView();
+                                cv_interact.success("Tenant has been deleted.");
+                            } else {
+                                cv_interact.error(res.error_message);
+                            }
+                        });
+                }
+            },
+        );
+    };
+    mThis.renderTenantCard = (div, data) => {
+        data = data ?? [];
+        // if (!AuthManager) {
+        //     cv_interact.info("It seems that you have problem with connection, you may need to refresh page and try again!");
+        //     return;
+        // }
+        AuthManager.init().then((user) => {
+            mThis.renderCard(div, data);
+        });
+    };
+    mThis.renderCard = (container, data) => {
+        // console.log(8888, data);
+        container.innerHTML = "";
+        let html = `<div class="row g-3">`;
+        if (Array.isArray(data) && data.length > 0) {
+            data.forEach((d) => {
+                /** Backend: status_id 2 means tenant has a currently active contract. */
+                const hasContractAlready = Number(d.status_id) === 2;
+                const currentUnitCode =
+                    hasContractAlready && d.space_code ? d.space_code : "Unit";
+                const status = (d.status || "Pending").toLowerCase();
+                let statusClass = "";
+                switch (status) {
+                    case "active":
+                        statusClass =
+                            "badge text-success bg-success-subtle border border-success";
+
+                        break;
+                    case "inactive":
+                        statusClass =
+                            "badge text-danger bg-danger-subtle border border-danger";
+
+                        break;
+                    default:
+                        statusClass =
+                            "badge text-warning bg-warning-subtle border border-warning";
+
+                        break;
+                }
+                html += `
+                    <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+                        <div class="card h-100 shadow-sm border-0 rounded-2">
+                            <div class="card-header-tenant border-0 rounded-top-2 d-flex justify-content-center align-items-center">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="d-flex gap-3 align-items-start">
+                                        <div class="flex-shrink-0 rounded-3 shadow-sm overflow-hidden d-flex align-items-center justify-content-center"
+                                            style="width:80px;height:80px;">
+                                            <img src="${d.image_url || main_view.asset_url + "/images/default/placeholder.svg"}" alt="Profile" class="img-fluid w-100 h-100 object-fit-cover">
+                                        </div>
+                                        <div class="flex items-start justify-between mb-6">
+                                            <span class="fw-semibold text-start mb-1 text-dark text-capitalize">${d.name}</span>
+                                            <div class="d-flex align-items-center mt-1 gap-2">
+                                                    <span class="${statusClass}" style="min-width:70px; text-transform: capitalize;">${status}</span>
+                                            </div>
+                                        </div>
+                                        <div class="flex-shrink-0"> <a href="javascript:void(0)" class="btn-tenant-dropdown-action" data-id="${d.id}" data-statusid="${d.status_id}" aria-haspopup="true" aria-expanded="false">
+                                            <i class="fa-solid fa-ellipsis-vertical text-primary-custom fs-5"></i>
+                                        </a>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>`,].join("")}, contentCreated(me= const footer me.divModal.querySelector(".modal-footer") const header me.divModal.querySelector(".modal-header") const headerTitle header.querySelector(".modal-title") const btnClose header.querySelector("button") btnClose.classList.add("d-none") header.classList.add("bg-yp-custom""modal-header-custom") header.parentElement.classList.add("overflow-hidden") header.parentElement.style"border-radius 20px!important;" const headerWrapper document.createElement("div") headerWrapper.classList.add"d-flex","flex-column","align-items-center","w-100",) headerTitle.classList.add"text-white","text-center","w-100",) headerWrapper.appendChild(headerTitle) header.innerHTML"" header.appendChild(headerWrapper)}, prepareFormOptions createTitle"Create Account Staff", modifyTitle"Edit Account Staff", targetProp"acc_staff_details", api endpoint main_view.base_url,"/prm/account-staff/form-options",].join(""), params(op= return id op.id}},},}, onPrepareForm(me data= LocaleManager.translateZone(me.divModal) console.log(12 data) const header me.divModal.querySelector(".modal-header") const btnClose header.querySelector("button") if(btnClose btnClose.classList.add("d-none")}, buttons label"<span>Cancel</span>", cssClass"btn-vs-cancel", click(me btn= me.hide(false)},}, label"<span>Submit</span>", cssClass"btn-vs-save", click(me btn= const op me.getData() op.id me.dataOptions.id vsapi.call main_view.base_url,"/prm/account-staff/save",].join(""), op, btn, null,).then((res= if(res.status_code== 200 me.hide(true op) if(me.dataOptions.id 0 cv_interact.success"Staff has been updated successfully",) else cv_interact.success"New staff has been added successfully",)} else cv_interact.error(res.error_message)}})},},],}) dialog.show(op)} return self})();
-"use strict"
-var ContractsComponent new(function( const mThis this mThis.title_prop"Contract Management" mThis.self main_view.VSAppContent.querySelector("#_main_contracts_component") mThis.btnAdd mThis.self.querySelector("#_btnAddContract") mThis.elBusinessType mThis.self.querySelector('#business_type_id') mThis.divFilter mThis.self.querySelector("#_divFilter_contracts") mThis.elStatus mThis.self.querySelector("#el_contract_status_id") mThis.elSearch mThis.self.querySelector("#_search_contract") mThis.cols title"", className"align-middle",}, transTitle"titles.Tenant", className"align-middle text-nowrap", data(data,index= return`                        <div class="d-flex flex-column">
+                            <div class="card-body text-center" style="background-color:#fbfcfd; padding: 1rem;">
+                                <div class="row g-4 py-2 border-bottom border-gray">
+                                    <div class="col-5">
+                                        <div class="card bg-prm-custom text-center shadow-sm">
+                                                <div class="fs-6 py-1 text-gold-custom">${currentUnitCode}</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-1"></div>
+                                    <div class="col-6">
+                                        ${
+                                            hasContractAlready
+                                                ? `
+                                                <div class="d-flex flex-column text-center gap-1">
+                                                    <span class="text-prm-custom fw-semibold">
+                                                        Lease Expiry
+                                                    </span>
+                                                    <small class="text-muted">
+                                                        ${d.end_date || d.start_date || "—"}
+                                                    </small>
+                                                </div>
+                                            `
+                                                : `
+                                                <div class="text-end">
+                                                    <a href="javascript:void(0)"
+                                                    class="create-tenant-contract fw-semibold"
+                                                    data-id="${d.id}" data-name="${d.name}">
+                                                        <span class="tool-tip">
+                                                            <i class="fa-solid fa-file-circle-plus text-prm-custom fs-6"></i>
+                                                            <span class="tool-tiptext fs-6">Create Contract</span>
+                                                        </span>
+                                                    </a>
+                                                </div>
+                                            `
+                                        }
+
+                                    </div>
+                                </div>
+                                <div class="card_container" style="max-width: 250px;">
+                                    <p class="ps-3 mb-2 text-prm-custom">
+                                        <i class="fa-solid fa-hashtag me-2 text-muted"></i>
+                                        <span>${d.code ?? "_"}</span>
+                                    </p>
+                                    <p class="ps-3 mb-2 text-prm-custom">
+                                        <i class="fa-regular fa-calendar me-2 text-muted"></i>
+                                        <span>${d.date_of_birth ?? "_"}</span>
+                                    </p>
+                                    <p class="ps-3 mb-2 text-prm-custom">
+                                        <i class="fa-solid fa-phone me-2 text-muted"></i>
+                                        ${d.phone_number || ""}
+                                    </p>
+                                    <p class="ps-3 mb-2 text-prm-custom">
+                                        <i class="fa-solid fa-at me-2 text-muted"></i>
+                                        ${d.email || "_"}
+                                    </p>
+
+
+                                </div>
+                            </div>
+                                <div class="d-flex justify-content-between rounded-bottom-2 align-items-center px-2 py-2"
+                                    style="font-size: 1rem; background-color: #d4d4db; border-top: 1px solid #e2e8f0;">
+
+                                    <span style="color: #64748b; font-size: 0.85rem;">
+                                        Last Updated :  ${d.update_user || "System"}
+                                    </span>
+
+                                    <a href="javascript:void(0)"
+                                    class="text-primary-custom see-tenant-detail  text-decoration-none" style="font-size: 0.85rem;"
+                                    data-id="${d.id}">
+                                        View Details <i class="fa-solid fa-arrow-right ms-1" style="font-size: 0.85rem;"></i>
+                                    </a>
+                                </div>
+
+                        </div>
+                    </div>
+                    `;
+            });
+        } else {
+            html += `
+            <div class="col-12">
+                <div class="text-center py-5 text-muted">
+                    No tenants found
+                </div>
+            </div>`;
+        }
+        html += `</div>`;
+        container.innerHTML = html;
+        const seeProfileInfo =
+            mThis.cardViewContainer.querySelectorAll(".see-tenant-detail");
+        seeProfileInfo.forEach((link) => {
+            link.addEventListener("click", (e) => {
+                const tenantId = e.currentTarget.dataset.id;
+                mThis.tenant_id = tenantId;
+                mThis.showPage("profile_view", tenantId);
+                //const employeeData = data.find((emp) => emp.id == employeeId);
+                // if (employeeData) {
+                //     let sub_content = mThis.self.querySelector("#sub_content");
+                //     sub_content.classList.add("d-none");
+                //     let view_see_info =
+                //         mThis.self.querySelector("#view_see_info__");
+                //     view_see_info.classList.remove("d-none");
+
+                //     mThis.renderProfile(employeeData);
+                //     mThis.renderCardCenter(employeeId);
+                //     mThis.renderCardLeft(employeeId);
+                //     mThis.renderCardRight(employeeId);
+                //     mThis.renderCardTaxAllowance(employeeId);
+                //     mThis.renderEmpDocuments(employeeId);
+                // } else {
+                //     console.error(
+                //         "Employee data not found for ID:",
+                //         employeeId
+                //     );
+                // }
+            });
+        });
+
+        const createContract = mThis.cardViewContainer.querySelectorAll(
+            ".create-tenant-contract",
+        );
+        createContract.forEach((link) => {
+            link.addEventListener("click", (e) => {
+                const tenantId = e.currentTarget.dataset.id;
+                mThis.tenant_id = tenantId;
+                const op = {
+                    id: null,
+                    tenant_id: tenantId,
+                    btn: e.currentTarget,
+                    onClose: () => {
+                        mThis.renderView();
+                    },
+                };
+                ContractDialog.show(op);
+            });
+        });
+        const container_te = mThis.cardViewContainer;
+        const te_parent = container_te;
+        te_parent.style.maxHeight = window.innerHeight - 230 + "px";
+        te_parent.classList.add("overflow-y-auto");
+        te_parent.classList.add("overflow-x-hidden");
+
+        window.onresize = () => {
+            te_parent.style.maxHeight = window.innerHeight - 230 + "px";
+        };
+    };
+
+    mThis.renderView = () => {
+        const params = mThis.getFilterData();
+
+        if (mThis.currentViewMode === "card") {
+            mThis.cardViewContainer.classList.remove("d-none");
+            mThis.listViewContainer.classList.add("d-none");
+            mThis.paginationContainer.style.display = "block";
+            mThis.tenantCardView.showPage(params);
+        } else {
+            mThis.cardViewContainer.classList.add("d-none");
+            mThis.listViewContainer.classList.remove("d-none");
+            // mThis.paginationContainer.style.display = "none";
+            mThis.tenantListView.showPage(params);
+        }
+    };
+    mThis.getFilterData = () => {
+        let p = {
+            search_value: mThis.elSearch.value,
+        };
+
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
+            p[el.dataset.field] = el.value;
+        });
+
+        return p;
+    };
+    mThis.getPageContainer = (pageName) => {
+        return mThis.pages[pageName];
+    };
+    mThis.openTenantDocument = async (id, mode = "view") => {
+        const res = await vsapi.call(
+            [main_view.base_url, "/prm/tenant/document/download"].join(""),
+            { id },
+            false,
+            null,
+        );
+        if (res.status_code !== 200) {
+            cv_interact.error(res.error_message || "Failed to open document.");
+            return;
+        }
+        const { data_url, file_name } = res.data || {};
+        if (!data_url) {
+            cv_interact.error("Document URL is missing.");
+            return;
+        }
+        if (mode === "download") {
+            const a = document.createElement("a");
+            a.href = data_url;
+            a.download = file_name || "document";
+            a.target = "_blank";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            return;
+        }
+
+        const extFromName = (file_name || "").split(".").pop();
+        const ext = String(
+            (res.data && res.data.ext) || extFromName || "",
+        ).toLowerCase();
+
+        const overlay = document.createElement("div");
+        overlay.style.cssText =
+            "position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:9999; display:flex; justify-content:center; align-items:center; cursor:pointer;";
+
+        const wrapper = document.createElement("div");
+        wrapper.style.cssText =
+            "position:relative; max-width:90vw; max-height:90vh;";
+
+        const isImage = ["png", "jpg", "jpeg"].includes(ext);
+        const isPdf = ext === "pdf";
+
+        if (isImage) {
+            const img = document.createElement("img");
+            img.src = data_url;
+            img.style.cssText =
+                "max-width:100%; max-height:90vh; border-radius:8px; box-shadow:0 4px 32px #000;";
+            wrapper.appendChild(img);
+        } else if (isPdf) {
+            const iframe = document.createElement("iframe");
+            iframe.src = data_url;
+            iframe.style.cssText =
+                "width:80vw; height:85vh; border:none; border-radius:8px;";
+            wrapper.appendChild(iframe);
+        } else {
+            window.open(data_url, "_blank");
+            return;
+        }
+
+        const btnClose = document.createElement("button");
+        btnClose.style.cssText =
+            "position:absolute; top:-16px; right:-16px; border:none; background:#fff; border-radius:50%; width:32px; height:32px; font-size:18px; cursor:pointer; line-height:1;";
+        btnClose.innerHTML = "&times;";
+        btnClose.onclick = (e) => {
+            e.stopPropagation();
+            document.body.removeChild(overlay);
+        };
+
+        wrapper.appendChild(btnClose);
+        overlay.appendChild(wrapper);
+        overlay.onclick = () => document.body.removeChild(overlay);
+        document.body.appendChild(overlay);
+    };
+    mThis.showPage = async (pageName, op = {}) => {
+        if (this.self.style.display !== "block") {
+            main_view.setContentView(this.self, this.title_prop);
+        }
+        switch (pageName) {
+            case "tenant_list": {
+                mThis.currentPage = "tenant_list";
+                mThis.renderView();
+                break;
+            }
+            case "profile_view": {
+                mThis.currentPage = "profile_view";
+                const tenant_id = op.tenant_id || op.id || op;
+                const p = { id: tenant_id };
+                const res = await vsapi.call(
+                    [main_view.base_url, "/prm/tenant/details"].join(""),
+                    p,
+                    false,
+                    null,
+                );
+                const data = res.data || {};
+                mThis.renderProfile(data);
+                break;
+            }
+            default: {
+                return;
+            }
+        }
+        const targetPage = mThis.getPageContainer(pageName);
+        const siblings = Array.from(targetPage.parentElement.children);
+        // Hide all siblings smoothly
+        siblings.forEach((div) => {
+            if (div !== targetPage && div.style.display !== "none") {
+                div.style.display = "none";
+            }
+        });
+        targetPage.style.display = "block";
+    };
+    mThis.renderProfile = (data) => {
+        // console.log(123, data);
+
+        let cls_class = "";
+        if (data && data.status) {
+            switch (data.status) {
+                case "Pending":
+                    cls_class =
+                        "badge text-warning bg-warning-subtle border border-warning";
+                    break;
+                case "Active":
+                    cls_class =
+                        "badge text-success bg-success-subtle border border-success";
+                    break;
+                case "Inactive":
+                    cls_class =
+                        "badge text-danger bg-danger-subtle border border-danger";
+                    break;
+                default:
+                    cls_class = "badge text-muted bg-light";
+                    break;
+            }
+        }
+        let html = `
+        <div class="row g-4 d-flex align-items-stretch"> <div class="col-12 col-lg-3">
+                <div class="card shadow-sm mb-3 h-100">
+                    <div class="card-body text-center d-flex flex-column">
+                        <div class="position-relative d-inline-block mb-3">
+                            <img src="${data.image_url || `${main_view.base_url}/assets/images/default/placeholder.svg`}"
+                                class="rounded-circle border shadow-sm"
+                                width="140" height="140"
+                                style="object-fit: cover; object-position: center;">
+                        </div>
+                        <h4 class="fw-bold mb-2 text-capitalize">${data.name}</h4>
+                        <div class="mb-3">
+                            <span class="${cls_class} px-3 py-2">${data.status}</span>
+                        </div>
+                        <hr class="my-3">
+
+                        <div class="mt-auto">
+                            <div class="row g-3 text-center">
+                                <div class="col-6">
+                                    <div class="p-3 bg-light rounded">
+                                        <div class="text-muted small">ID</div>
+                                        <div class="">${data.code ?? "_"}</div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="p-3 bg-light rounded">
+                                        <div class="text-muted small">Unit</div>
+                                        <div class="">${data.space_code ?? "_"}</div>
+                                    </div>
+                                </div>
+                                <div class="col-12 mb-2">
+                                    <div class="p-3 bg-light rounded text-center">
+                                        <h6 class="mb-3">Lease Terms</h6>
+                                        <div class="row text-center">
+                                            <div class="col-6 border-end border-info">
+                                                <div class="text-muted mb-1 small">Start Date</div>
+                                                <div class="small">${data.start_date ?? "_"}</div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="text-muted mb-1 small">End Date</div>
+                                                <div class="small">${data.end_date ?? "_"}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-9">
+                <div class="card shadow-sm h-100"> <div class="card-header bg-white">
+                        <ul class="nav nav-tabs card-header-tabs" id="tenantTabs">
+                            <li class="nav-item">
+                                <a class="nav-link active fw-semibold" href="#overview_tenant_detail">Overview</a>  
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link fw-semibold" href="#lease_tenant_history">Contract</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link fw-semibold" href="#document_tenant_list">Documents</a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="card-body tab-content">
+                        <div class="tab-pane py-2 active" id="overview_tenant_detail">
+                            <h5 class="fw-bold mb-2 d-flex align-items-center">
+                                <i class="fa fa-user me-2 text-primary"></i> Personal Information
+                            </h5>
+                            <div class="row g-4 mb-5">
+                                <div class="col-md-4"><small class="text-muted">Name</small><div class="text-capitalize">${data.name ?? "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Gender</small><div class="">${data.sex == "M" ? "Male" : data.sex == "F" ? "Female" : "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Date of Birth</small><div class="">${data.date_of_birth ?? "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Legal Name</small><div class="">${data.legal_name ?? "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">National ID</small><div class="">${data.national_id ?? "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Passport Number</small><div class="">${data.passport_number ?? "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Phone</small><div class=" text-primary">${data.phone_number ?? "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Email</small><div class=" text-primary">${data.email ?? "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Relationship</small><div class="">Partner</div></div>
+                                <div class="col-12"><small class="text-muted">Address</small><div class="text-prm-custom text-capitalize">${data.address ?? "_"}</div></div>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane" id="lease_tenant_history">
+                            <h5 class="fw-bold mb-2 d-flex align-items-center">
+                                <i class="fa fa-file-text me-2 text-primary"></i> Contract
+                            </h5>
+                            <div class="container py-4 position-relative overflow-auto lease-history-scroll" style="max-height: 360px; scrollbar-width: thin;scrollbar-color: #888 #f1f1f1;">
+                                <p class="text-muted small mb-0">Open this tab to load contracts.</p>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane" id="document_tenant_list">
+                            <h5 class="fw-bold mb-4 d-flex align-items-center">
+                                <i class="fa fa-folder me-2 text-primary"></i> Documents
+                            </h5>
+                            <div class="table-responsive">
+                                <table class="table align-middle">
+                                    <thead class="bg-light">
+                                        <tr class="text-uppercase">
+                                            <th class="border-0 ps-3" style="letter-spacing: 0.05em;">Type</th>
+                                            <th class="border-0">File Name</th>
+                                            <th class="border-0">File Type</th>
+                                            <th class="border-0">Remark</th>
+                                            <th class="border-0 text-start">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="border-bottom">
+                                            <td class="ps-3 py-3">
+                                                <div class="fw-bold text-dark">${data.document_type_id ?? ""}</div>
+                                            </td>
+                                            <td><div class="fw-bold text-dark">${data.original_file_name ?? ""}</div></td>
+                                            <td><div class="fw-semibold text-dark">${data.ext ?? ""}</div></td>
+                                            <td><span class="text-muted small">${data.remarks ?? ""}</span></td>
+                                            <td class="text-end pe-3">
+                                                <button class="btn btn-sm text-muted p-0 ">
+                                                    <i class="fa-solid fa-ellipsis fa-shake"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+        mThis.profile_info_tenant.innerHTML = html;
+
+        // ===== Tabs JS =====
+        const tabLinks =
+            mThis.profile_info_tenant.querySelectorAll("#tenantTabs a");
+        const tabPanes =
+            mThis.profile_info_tenant.querySelectorAll(".tab-pane");
+
+        tabLinks.forEach((link) => {
+            link.addEventListener("click", (e) => {
+                e.preventDefault();
+                const target = link.getAttribute("href").replace("#", "");
+
+                // remove active class
+                tabLinks.forEach((l) => l.classList.remove("active"));
+                tabPanes.forEach((p) => p.classList.remove("active"));
+
+                link.classList.add("active");
+                const profile_info_tenant =
+                    mThis.profile_info_tenant.querySelector(`#${target}`);
+                profile_info_tenant.classList.add("active");
+                mThis.renderOverView(profile_info_tenant, target, data);
+            });
+        });
+
+        mThis.setActionsProfileInfo(mThis.profile_info_tenant);
+    };
+    mThis._escapeHtml = (s) => {
+        if (s == null) return "";
+        return String(s)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;");
+    };
+    mThis._fmtMoney = (n) => {
+        if (n == null || n === "") return "—";
+        const x = Number(n);
+        if (Number.isNaN(x)) return String(n);
+        return x.toLocaleString(undefined, {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 2,
+        });
+    };
+    mThis._getUnitCode = (row, fallback = "—") => {
+        if (!row) return fallback;
+        const value =
+            row.unit_code ??
+            row.space_code ??
+            row.unit ??
+            row.code ??
+            row.unit_number;
+        return value == null || value === "" ? fallback : value;
+    };
+    mThis._leaseHistoryContractsHtml = (renewalEntriesRaw) => {
+        const entries = Array.isArray(renewalEntriesRaw)
+            ? renewalEntriesRaw
+            : [];
+        if (!entries.length) {
+            return `<div class="text-center py-5 text-muted">
+                <i class="fa fa-file-text fa-2x mb-2 opacity-50 d-block"></i>
+                <p class="mb-0">No contract recorded for this tenant.</p>
+            </div>`;
+        }
+
+        // Group by contract_id so we render one card per contract.
+        const groupsByContractId = new Map();
+        entries.forEach((e) => {
+            const cid = e.contract_id ?? "0";
+            if (!groupsByContractId.has(cid)) groupsByContractId.set(cid, []);
+            groupsByContractId.get(cid).push(e);
+        });
+
+        let cards = "";
+        groupsByContractId.forEach((group) => {
+            if (!group.length) return;
+            const first = group[0];
+
+            const contractStatusName = String(
+                first.contract_status ?? "",
+            ).trim();
+            const contractStatusLower = contractStatusName.toLowerCase();
+
+            // const hasCurrent = group.some((r) => !!r.is_current);
+
+            let accent = "#adb5bd";
+            let circleBg = "#6c757d";
+            let headerBadgeHtml = "";
+            let priceColor = "#212529";
+            let depositBadgeStyle =
+                "color:#3f51d8;background-color:#e7efff;border:1px solid #cfdbff;";
+
+            if (contractStatusLower === "active") {
+                accent = "#0f49bd";
+                circleBg = "#0f49bd";
+                priceColor = "#3f51d8";
+
+                headerBadgeHtml = `<span class="badge text-uppercase rounded-4 text-white ms-1" style="background-color:#0f49bd;">CURRENT</span>`;
+            } else if (contractStatusLower === "pending") {
+                accent = "#fd7e14";
+                circleBg = "#fd7e14";
+                priceColor = "#fd7e14";
+
+                headerBadgeHtml = `<span class="badge text-uppercase rounded-4 text-white ms-1" style="background-color:#fd7e14;">PENDING</span>`;
+            } else if (contractStatusLower === "terminated") {
+                accent = "#dc3545";
+                circleBg = "#dc3545";
+                priceColor = "#dc3545";
+
+                headerBadgeHtml = `<span class="badge text-uppercase rounded-4 text-white ms-1" style="background-color:#dc3545;">TERMINATED</span>`;
+            } else {
+                headerBadgeHtml = `<span class="badge text-uppercase rounded-4 ms-1" style="color:#4a4a4a;background-color:#f6f4ee;border:1px solid #e5dfd1;">${mThis._escapeHtml(contractStatusName || "—")}</span>`;
+            }
+
+            const start = mThis._escapeHtml(first.contract_start_date ?? "");
+            const end = mThis._escapeHtml(first.contract_end_date ?? "");
+            const title = `Contract: ${start} — ${end}`;
+
+            const unitPart = mThis._escapeHtml(mThis._getUnitCode(first, "—"));
+            const sqmPart =
+                first.sqm_size != null && first.sqm_size !== ""
+                    ? `${mThis._fmtMoney(first.sqm_size)} m²`
+                    : "—";
+            const bldg = first.building_name
+                ? mThis._escapeHtml(first.building_name)
+                : "";
+            const detailPillsHtml = `
+                <div class="d-flex flex-wrap gap-2 mt-2">
+                    <span class="badge rounded-pill fw-normal px-3 py-2" style="color:#4a4a4a;background-color:#f6f4ee;border:1px solid #e5dfd1;">Unit ${unitPart}</span>
+                    <span class="badge rounded-pill fw-normal px-3 py-2" style="color:#4a4a4a;background-color:#f6f4ee;border:1px solid #e5dfd1;">${sqmPart}</span>
+                    ${bldg ? `<span class="badge rounded-pill fw-normal px-3 py-2" style="color:#4a4a4a;background-color:#f6f4ee;border:1px solid #e5dfd1;">${bldg}</span>` : ""}
+                </div>`;
+
+            const priceNum = Number(first.price ?? 0);
+            const sqmNum = Number(first.space_sqm_size ?? first.sqm_size ?? 0);
+            const isTotalPriceType =
+                String(first.price_type ?? "sqm").toLowerCase() === "total";
+            const totalPriceNum = isTotalPriceType
+                ? priceNum
+                : sqmNum > 0
+                  ? priceNum * sqmNum
+                  : null;
+            const priceLine =
+                totalPriceNum != null && !Number.isNaN(totalPriceNum)
+                    ? `${VSMoney.formatAmount(totalPriceNum, "USD")}`
+                    : "—";
+            const depositSmallHtml =
+                first.deposit != null && first.deposit !== ""
+                    ? `Deposit ${VSMoney.formatAmount(first.deposit, "USD")}`
+                    : "";
+            if (first.deposit_remarks) {
+                depositSmallHtml = dep
+                    ? `${depositSmallHtml} <span class="text-muted">• ${mThis._escapeHtml(first.deposit_remarks)}</span>`
+                    : `<span class="text-muted">${mThis._escapeHtml(first.deposit_remarks)}</span>`;
+            }
+            const depositBadgeHtml = depositSmallHtml
+                ? `<span class="badge rounded-2 px-3 py-2" style="${depositBadgeStyle}">${depositSmallHtml}</span>`
+                : "";
+
+            const renewalsTableRowsHtml = group
+                .map((r) => {
+                    const isInitial = !!r.is_initial;
+                    const renewalDate = r.renewal_date
+                        ? mThis._escapeHtml(r.renewal_date)
+                        : isInitial
+                          ? "Initial"
+                          : "—";
+
+                    const rowStart = mThis._escapeHtml(
+                        r.renewal_start_date ?? "—",
+                    );
+                    const rowEnd = mThis._escapeHtml(r.renewal_end_date ?? "—");
+
+                    const rowUnitCode = mThis._escapeHtml(
+                        mThis._getUnitCode(first, "—"),
+                    );
+                    const currentBadgeHtml = r.is_current
+                        ? `<span class="badge text-uppercase rounded-4 text-white ms-1" style="background-color:#0f49bd;">Current</span>`
+                        : "";
+
+                    const remarks =
+                        r.remarks != null && r.remarks !== ""
+                            ? mThis._escapeHtml(r.remarks)
+                            : "—";
+
+                    const updatedBy = r.update_user
+                        ? `${mThis._escapeHtml(r.update_user)}${r.updated_at ? ` • ${mThis._escapeHtml(r.updated_at)}` : ""}`
+                        : "—";
+
+                    return `<tr class="${r.is_current ? "table-prm-current-row" : ""}">
+                        <td class="text-nowrap">${renewalDate}</td>
+                        <td class="text-nowrap">${rowStart}</td>
+                        <td class="text-nowrap">${rowEnd}</td>
+                        <td class="text-nowrap">
+                            <span class="fw-semibold text-prm-custom">${rowUnitCode}</span>
+                            ${currentBadgeHtml}
+                        </td>
+                        <td>${remarks}</td>
+                        <td class="text-nowrap">${updatedBy}</td>
+                    </tr>`;
+                })
+                .join("");
+
+            const renewalsCount = group.length;
+
+            cards += `<div class="d-flex position-relative mb-4">
+
+                <div class="flex-grow-1 ms-3">
+                    <div class="card shadow-sm" style="border-left: 6px solid ${accent};border-radius: 14px;">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between flex-column flex-md-row mb-3">
+                                <div>
+                                    <h5 class="card-title mb-1">${title} ${headerBadgeHtml}</h5>
+                                    ${detailPillsHtml}
+                                </div>
+                                <div class="text-end mt-2 mt-md-0">
+                                    <small class="text-muted d-block mb-1">Monthly</small>
+                                    <p class="h5 mb-0" style="color:${priceColor};">${priceLine}</p>
+                                    <div class="mt-2">${depositBadgeHtml}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+        });
+
+        return cards;
+    };
+    mThis.renderOverView = (div, target, data) => {
+        if (target == "overview_tenant_detail") {
+            const p = { id: data.id };
+
+            vsapi
+                .call(
+                    [main_view.base_url, "/prm/tenant/details"].join(""),
+                    p,
+                    false,
+                    null,
+                )
+                .then((res) => {
+                    const d = res.status_code == 200 ? res.data : {};
+
+                    let html = "";
+                    html += `<div class="tab-pane py-2 active" id="overview_tenant_detail">
+                            <h5 class="fw-bold mb-2"><i class="fa fa-user me-1 text-primary"></i> Personal Information</h5>
+                            <div class="row g-4 mb-5">
+                                <div class="col-md-4"><small class="text-muted">Name</small><div class="">${data.name ?? "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Sex</small><div class="">${data.sex == "M" ? "Male" : data.sex == "F" ? "Female" : "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Date of Birth</small><div class="">${data.date_of_birth ?? "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Legal Name</small><div class="">${data.legal_name ?? ""}</div></div>
+                                <div class="col-md-4"><small class="text-muted">National ID</small><div class="">${data.national_id ?? "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Passport Number</small><div class="">${data.passport_number ?? "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Phone</small><div class="">${data.phone_number ?? "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Email</small><div class=" text-primary">${data.email ?? "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Relationship</small><div class="">Partner</div></div>
+                                <div class="col-12"><small class="text-muted">Address</small><div class="text-prm-custom text-capitalize">${data.address ?? "_"}</div></div>
+                            </div>
+                        </div>`;
+                    div.innerHTML = html;
+                });
+        }
+        if (target == "lease_tenant_history") {
+            const p = { id: data.id };
+            vsapi
+                .call(
+                    [main_view.base_url, "/prm/tenant/lease-history"].join(""),
+                    p,
+                    false,
+                    null,
+                )
+                .then((res) => {
+                    const raw =
+                        res.status_code == 200 && res.data != null
+                            ? res.data
+                            : [];
+                    const contracts = Array.isArray(raw) ? raw : [];
+                    const cardsHtml =
+                        mThis._leaseHistoryContractsHtml(contracts);
+                    div.innerHTML = `<div class="tab-pane active" id="lease_tenant_history">
+                            <h5 class="fw-bold mb-2">
+                                <i class="fa fa-file-text me-1 text-primary"></i>
+                                Contract
+                            </h5>
+                            <div class=" py-4 position-relative overflow-auto lease-history-scroll" style="max-height: 360px; scrollbar-width: thin;scrollbar-color: #888 #f1f1f1;">
+                                ${cardsHtml}
+                            </div>
+                        </div>`;
+                })
+                .catch((err) => {
+                    div.innerHTML = `<div class="tab-pane active" id="lease_tenant_history">
+                            <h5 class="fw-bold mb-2">
+                                <i class="fa fa-file-text me-1 text-primary"></i>
+                                Contract
+                            </h5>
+                            <div class="alert alert-danger m-3">Failed to load contracts: ${mThis._escapeHtml(err && err.message ? err.message : "Unknown error")}</div>
+                        </div>`;
+                });
+        }
+        if (target === "document_tenant_list") {
+            vsapi
+                .call(
+                    [main_view.base_url, "/prm/tenant/document/list"].join(""),
+                    { tenant_id: data.id },
+                    false,
+                    null,
+                )
+                .then((res) => {
+                    const documents =
+                        res.status_code === 200 && Array.isArray(res.data)
+                            ? res.data
+                            : [];
+
+                    let rows = "";
+
+                    documents.forEach((doc) => {
+                        rows += `
+                    <tr class="border-bottom">
+                        <td class="ps-3 py-3" style="width: 20%; height: 55px; vertical-align: middle;">
+                            <div class="d-flex align-items-center">
+                                <div>
+                                    <div class="text-dark">
+                                        ${doc.document_type || doc.document_type_id || "—"}
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="width: 20%; height: 55px; vertical-align: middle;">
+                            <div class="text-dark">
+                                ${doc.original_file_name || "—"}
+                            </div>
+                        </td>
+                        <td style="width: 12%; height: 55px; vertical-align: middle;">
+                            <div class="text-dark">
+                                ${doc.ext ? doc.ext.toUpperCase() : "—"}
+                            </div>
+                        </td>
+                        <td style="width: 30%; height: 65px; vertical-align: middle;">
+                            <span class="text-dark">
+                                ${doc.remarks || "_"}
+                            </span>
+                        </td>
+                        <td class="text-end py-3 px-3" style="width: 10%; height: 55px; vertical-align: middle; ">
+                            <div class="d-flex justify-content-start gap-2">
+                                <a href="javascript:void(0)" class="view-doc" data-id="${doc.id}">
+                                    <span class="tool-tip">
+                                        <i class="fa-regular fa-eye text-success fs-6"></i>
+                                        <span class="tool-tiptext fs-6">View</span>
+                                    </span>
+                                </a>
+                                <a href="javascript:void(0)" class="modify-doc" data-id="${doc.id}">
+                                    <span class="tool-tip">
+                                        <i class="fa-regular fa-edit fs-6 text-warning"></i>
+                                        <span class="tool-tiptext fs-6">Modify</span>
+                                    </span>
+                                </a>
+                                <a href="javascript:void(0)" class="download-doc" data-id="${doc.id}">
+                                    <span class="tool-tip">
+                                        <i class="fa-solid fa-cloud-arrow-down text-primary fs-6"></i>
+                                        <span class="tool-tiptext fs-6">Download</span>
+                                    </span>
+                                </a>
+                                <a href="javascript:void(0)" class="delete-doc-btn" data-id="${doc.id}">
+                                    <span class="tool-tip">
+                                        <i class="fa-regular fa-trash-can text-danger fs-6"></i>
+                                        <span class="tool-tiptext fs-6">Delete</span>
+                                    </span>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                    });
+
+                    // Empty state
+                    if (documents.length === 0) {
+                        rows = `
+                    <tr>
+                        <td colspan="5" class="text-center py-4 text-muted">
+                            No data to display
+                        </td>
+                    </tr>`;
+                    }
+
+                    const html = `
+                <div class="tab-pane active" id="document_tenant_list">
+
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="fw-bold mb-2"><i class="fa fa-address-card me-2 text-primary"></i> Identity Documents</h5>
+                        <button type="button" class="fw-light btn btn-primary w-16 w-md-auto btnAddNewPrm" id="_btnDocument">
+                            <span vslang="buttons.Upload Document">Upload Document</span>
+                        </button>
+                    </div>
+
+                    <div class="table-responsive " style="max-height: 290px; overflow-y: auto; scrollbar-width: thin;">
+                        <table class="table align-middle mb-3">
+                            <thead class="bg-light">
+                                <tr class="text-uppercase small">
+                                    <th class="border-0 ps-3" style="letter-spacing: 0.05em;">Type</th>
+                                    <th class="border-0">File Name</th>
+                                    <th class="border-0">File Type</th>
+                                    <th class="border-0">Remark</th>
+                                    <th class="border-0 text-start">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${rows}
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>`;
+
+                    div.innerHTML = html;
+                    const btnDocument = div.querySelector("#_btnDocument");
+                    if (btnDocument) {
+                        btnDocument.onclick = () => {
+                            TenantDocumentDialog.show({
+                                id: null,
+                                tenant_id: data.id,
+                                onClose: () => {
+                                    mThis.renderOverView(div, target, data);
+                                },
+                            });
+                        };
+                    }
+
+                    div.querySelectorAll(".view-doc").forEach((btn) => {
+                        btn.addEventListener("click", async (e) => {
+                            const id = e.currentTarget.dataset.id;
+                            mThis.openTenantDocument(id, "view");
+                        });
+                    });
+                    div.querySelectorAll(".download-doc").forEach((btn) => {
+                        btn.addEventListener("click", (e) => {
+                            const id = e.currentTarget.dataset.id;
+                            mThis.openTenantDocument(id, "download");
+                        });
+                    });
+
+                    document.querySelectorAll(".modify-doc").forEach((btn) => {
+                        btn.addEventListener("click", async function (e) {
+                            e.preventDefault();
+                            const op = {
+                                id: parseInt(this.dataset.id),
+                                tenant_id: data.id,
+                                btn: e.target,
+                                onClose: () => {
+                                    mThis.renderOverView(div, target, data);
+                                    mThis.tenantListView.showPage(
+                                        mThis.getFilterData(),
+                                    );
+                                },
+                            };
+                            TenantDocumentDialog.show(op);
+                        });
+                    });
+
+                    document
+                        .querySelectorAll(".delete-doc-btn")
+                        .forEach((btn) => {
+                            btn.addEventListener("click", async function (e) {
+                                const docId = this.dataset.id;
+
+                                const confirmed = await cv_interact.confirm(
+                                    "Are you sure you want to delete this document?",
+                                    {
+                                        title: "Delete Document",
+                                        context: "delete",
+                                    },
+                                );
+
+                                if (confirmed) {
+                                    const p = { id: docId };
+                                    vsapi
+                                        .call(
+                                            [
+                                                main_view.base_url,
+                                                "/prm/tenant/document/delete",
+                                            ].join(""),
+                                            p,
+                                            false,
+                                            false,
+                                        )
+                                        .then((res) => {
+                                            if (res.status_code === 200) {
+                                                cv_interact.success(
+                                                    "Document deleted.",
+                                                );
+                                                mThis.renderOverView(
+                                                    div,
+                                                    target,
+                                                    data,
+                                                );
+                                            } else {
+                                                cv_interact.error(
+                                                    res.error_message,
+                                                );
+                                            }
+                                        });
+                                }
+                            });
+                        });
+                })
+
+                .catch((err) => {
+                    div.innerHTML = `<div class="alert alert-danger m-3">Failed to load documents: ${err.message}</div>`;
+                });
+        }
+    };
+
+    mThis.setActionsProfileInfo = (divProfile) => {
+        // console.log(33, divProfile);
+
+        divProfile.addEventListener("click", (e) => {
+            // let btn = VSUtil.closestLimited(e.target, ".edit_tenant_profile_info ");
+            // if (btn) {
+            //     mThis.editTenantInfo(btn.dataset.id, btn);
+            //     return;
+            // }
+            // btn = VSUtil.closestLimited(e.target, ".delete_employee");
+            // if (btn) {
+            //     mThis.deleteEmployee(btn.dataset.id, btn);
+            //     return;
+            // }
+            // btn = VSUtil.closestLimited(e.target, ".set_resign");
+            // if (btn) {
+            //     mThis.setResign(btn.dataset.id, btn);
+            //     return;
+            // }
+            // btn = VSUtil.closestLimited(e.target, ".movement");
+            // if (btn) {
+            //     mThis.movement(btn.dataset.id, btn);
+            //     return;
+            // }
+        });
+    };
+
+    mThis.prepareFormOptions = (onFinish) => {
+        vsapi
+            .call(
+                `${main_view.base_url}/prm/tenant/form-options`,
+                null,
+                null,
+                null,
+            )
+            .then((res) => {
+                const d = res.status_code == 200 ? res.data : {};
+                VSUtil.setComboItems(
+                    mThis.elStatus,
+                    d.statuses,
+                    "id",
+                    "name",
+                    "",
+                    "All Statuses",
+                    "",
+                );
+                if (typeof onFinish === "function") onFinish();
+            });
+    };
+    mThis.show = (options) => {
+        mThis.init();
+        mThis.options = options;
+        mThis.prepareFormOptions(() => {
+            // main_view.setContentView(mThis.self, mThis.title_prop);
+            // mThis.renderView();
+            mThis.showPage(mThis.defaultPage, mThis.getFilterData());
+        });
+    };
+
+    return mThis;
+})();
+"use strict";
+
+var ContractsComponent = new (function () {
+    const mThis = this;
+    mThis.title_prop = "Contract Management";
+    mThis.self = main_view.VSAppContent.querySelector("#_main_contract_component");
+    mThis.btnAdd = mThis.self.querySelector("#_btnAddContract");
+    mThis.btnPDF = mThis.self.querySelector('#_asusp_btn_pdf');
+    // mThis.elTenant = mThis.self.querySelector('#tenant_id');
+    mThis.elBusinessType = mThis.self.querySelector('#business_type_id');
+    // mThis.elSpaceType = mThis.self.querySelector('#space_type_id');
+    mThis.divFilter = mThis.self.querySelector("#_divFilter_contract");
+    mThis.elStatus = mThis.self.querySelector("#el_contract_status_id");
+    mThis.elSearch = mThis.self.querySelector("#_search_contract");
+
+
+    mThis.cols = [
+        {
+            title: "",
+            className: "align-middle",
+        },
+        {
+            transTitle: "titles.Tenant",
+            className: "align-middle text-nowrap",
+            data: (data,index) => {
+                return `
+                        <div class="d-flex flex-column">
                             ${data.tenant_name ?? ''}
                             <span class="d-block text-primary" style="font-size:12px;">${data.phone_number ?? ''}</span>
-                        </div>`}}, transTitle"titles.Start Date", className"align-middle", data(data index tr= const displayDate data.start_date?'' return`small class="px-2 py-2 bg-body-secondary text-nowrap text-muted rounded-2"><i class="fa-regular fa-clock"></i> ${displayDate}</small>`}}, transTitle"titles.End Date", className"align-middle", data(data index tr= return`small class="px-2 py-2 bg-body-secondary text-muted text-nowrap rounded-2"><i class="fa-regular fa-clock"></i> ${data.end_date ?? ''}</smaLL>`}}, transTitle"titles.Business", className"align-middle", data(data= return`span class="text-nowrap text-prm-custom">${data.business_type ?? ''}</span>`}}, transTitle"titles.Type", className"align-middle", data(data= return`span class="text-nowrap text-prm-custom">${data.space_type ?? ''}</span>`}}, transTitle"titles.Unit", className"align-middle", data(data index tr= return`span class="px-2 py-1 bg-prm-custom text-nowrap text-white rounded font-medium">${data.space_code ?? ''}</span>`}}, transTitle"titles.Price", className"align-middle", data(data= const price VSMoney.formatAmount(data.price,data.currency_code?'USD') if(data.price_type=='total' return`                        <span class="text-nowrap w-semibold">${price} <small class="text-nowrap text-muted">/mon</small></span>
+                        </div>`;
+                }
+        },
+         {
+            transTitle: "titles.Start Date",
+            className: "align-middle",
+            data: (data, index, tr) => {
+                // const displayDate = (data.last_renewal_date && data.last_renewal_date.trim()) ? data.last_renewal_date : (data.start_date ?? '');
+                const displayDate = data.start_date ?? '';
+                return `<small class="px-2 py-2 bg-body-secondary text-nowrap text-muted rounded-2"><i class="fa-regular fa-clock"></i> ${displayDate}</small>`;
+            }
+        },
+         {
+            transTitle: "titles.End Date",
+            className: "align-middle",
+            data: (data, index, tr) => {
+                return `<small class="px-2 py-2 bg-body-secondary text-muted text-nowrap rounded-2"><i class="fa-regular fa-clock"></i> ${data.end_date ?? ''}</smaLL>`;
+            }
+        },
+        {
+            transTitle: "titles.Business",
+            className: "align-middle",
+            data: (data) => {
+                return `<span class="text-nowrap text-prm-custom">${data.business_type ?? ''}</span>`;
+            }
+        },
+         {
+            transTitle: "titles.Type",
+            className: "align-middle",
+            data: (data) => {
+                return `<span class="text-nowrap text-prm-custom">${data.space_type ?? ''}</span>`;
+            }
+        },
+        {
+            transTitle: "titles.Unit",
+            className: "align-middle",
+            data: (data, index, tr) => {
+                return `<span class="px-2 py-1 bg-prm-custom text-nowrap text-white rounded font-medium">${data.space_code ?? ''}</span>`;
+            }
+        },
+
+        {
+            transTitle: "titles.Price",
+            className: "align-middle",
+            data: (data) => {
+                const price = VSMoney.formatAmount(data.price,data.currency_code ?? 'USD');
+
+                if (data.price_type === 'total') {
+                    return `
+                        <span class="text-nowrap w-semibold">${price} <small class="text-nowrap text-muted">/mon</small></span>
                         <span class="d-block text-primary" style="font-size:12px;">Whole Room</span>
-                    `} return`                    <span class="text-nowrap text-primary-custom">
+                    `;
+                }
+
+                return `
+                    <span class="text-nowrap text-primary-custom">
                             ${price}
                         <small class="text-nowrap text-muted"> /m²</small>
                     </span>
                     <span class="d-block text-primary" style="font-size:12px;">${data.sqm_size ?? '-'} m²</span>
-                `}}, transTitle"titles.Deposit", className"align-middle", data(data= const deposit VSMoney.formatAmount(data.deposit data.currency_code?'USD') return`div class="text-primary-prm text-capitalize" style="width:90px;">
+                `;
+            }
+        },
+        {
+            transTitle: "titles.Deposit",
+            className: "align-middle",
+            data: (data) => {
+               const deposit = VSMoney.formatAmount(data.deposit, data.currency_code ?? 'USD');
+                return `<div class="text-primary-prm text-capitalize" style="width:90px;">
                         <span class="text-prm-custom" >${deposit}</span>
-                    </div>`}}, transTitle"titles.Remark", className"align-middle", data(data index tr= return`                    <div class="text-primary-prm text-capitalize" style="width:300px;">
+                    </div>`;
+
+            }
+        },
+        {
+            transTitle: "titles.Remark",
+            className: "align-middle",
+            data: (data, index, tr) => {
+                return `
+                    <div class="text-primary-prm text-capitalize" style="width:300px;">
                         <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ?? '_'}</span>
                     </div>
-                `}}, transTitle"titles.Status", className"align-middle", data(data= const statusId parseInt(data.status_id 10) const statusKey(data.status?'').toLowerCase() const map 1 text'Pending' cls'bg-warning-subtle text-warning border border-warning}, 2 text'Active' cls'bg-success-subtle text-success border border-success}, 3 text'Expired' cls'bg-danger-subtle text-danger border border-danger}, 4 text'Terminated' cls'bg-danger-subtle text-danger border border-danger},} const byName pending'bg-warning-subtle text-warning border border-warning', active'bg-success-subtle text-success border border-success', expired'bg-danger-subtle text-danger border border-danger', terminated'bg-danger-subtle text-danger border border-danger',} const m map[statusId| null const label m?.text|(statusKey=='terminated'Terminated(data.status?'—')) const cls m?.cls| byName[statusKey|'bg-light text-muted' return`span class="badge ${cls}" style="min-width: 100px;" data-status_id="${data.status_id}">${label}</span>`},}, transTitle"titles.Last Updated", className'align-middle text-nowrap', data(data index tr= return`div class="d-flex flex-column">
+                `;
+            }
+        },
+        {
+            transTitle: "titles.Status",
+            className: "align-middle",
+            data: (data) => {
+                const statusId = parseInt(data.status_id, 10);
+                const statusKey = (data.status ?? '').toLowerCase();
+                const map = {
+                    1: { text: 'Pending', cls: 'bg-warning-subtle text-warning border border-warning' },
+                    2: { text: 'Active', cls: 'bg-success-subtle text-success border border-success' },
+                    3: { text: 'Expired', cls: 'bg-danger-subtle text-danger border border-danger' },
+                    4: { text: 'Terminated', cls: 'bg-danger-subtle text-danger border border-danger' },
+                };
+                const byName = {
+                    pending: 'bg-warning-subtle text-warning border border-warning',
+                    active: 'bg-success-subtle text-success border border-success',
+                    expired: 'bg-danger-subtle text-danger border border-danger',
+                    terminated: 'bg-danger-subtle text-danger border border-danger',
+                };
+                const m = map[statusId] || null;
+                const label = m?.text || (statusKey === 'terminated' ? 'Terminated' : (data.status ?? '—'));
+                const cls = m?.cls || byName[statusKey] || 'bg-light text-muted';
+                return `<span class="badge ${cls}" style="min-width: 100px;" data-status_id="${data.status_id}">${label}</span>`;
+            },
+        },
+        {
+            transTitle: "titles.Last Updated",
+            className: 'align-middle text-nowrap',
+            data: (data, index, tr) => {
+                return `<div class="d-flex flex-column">
                     <span class="text-capitalize text-start text-prm-custom">${data.update_user ?? ''}</span>
                     <small class="text-muted">${data.updated_at ?? ''}</small>
-                </div>`}}, className'col_action align-middle', data(data=},] mThis.init(= if(mThis.initAlready return mThis.ContractListView new ListView('_contract_list' fetchApi`{main_view.base_url}/prm/contract/list-paginate`, perPage 10, apiCluster main_view.apiCluster, columns mThis.cols, tableClass'table table--white rounded-2 header-uppercase', rowCreated(data index tr= tr.dataset.statusid data.status_id tr.dataset.status data.status?'' tr.dataset.endDate data.end_date?'' tr.classList.add('contract') tr.setAttribute('id'['contract_invoice_id' data.id].join(''))}, listContainerClass null}) mThis.btnAdd.onclick function(e e.preventDefault() const op id null, btn e.target, onClose(= mThis.ContractListView.showPage(mThis.getFilterData())}} ContractDialog.show(op)} mThis.pr_tbl mThis.ContractListView.getListContainer() const sh_parent mThis.pr_tbl.parentElement sh_parent.style.maxHeight(window.innerHeight 200'px' sh_parent.classList.add("overflow-y-auto") window.onresize(= sh_parent.style.maxHeight(window.innerHeight 200'px'} mThis.tblContract mThis.ContractListView.getTable() mThis.initDropdownMenus(mThis.tblContract) if(!mThis.tblContract.id mThis.tblContract.id'_contract_list_table' new ExpandableRowConfig(mThis.tblContract.id dontExpandByClickingOn['btn_contract_action'], onOpen(container detail_tr parent_tr= const rawId parent_tr.getAttribute('id'|'' const id rawId.replace(//contract_invoice_id/'') if(id&!Number.isNaN(Number(id)) mThis.displayContractDetail(container id)}}) mThis.divFilter.querySelectorAll('.filter-field').forEach(el= el.onchange(e= e.preventDefault() mThis.ContractListView.showPage(mThis.getFilterData()) setTimeout((= $('[data-bs-toggle="tooltip"]').tooltip()} 500)}}) mThis.elSearch.addEventListener('keyup'(e= e.preventDefault() clearTimeout(mThis.search_timeout) mThis.search_timeout setTimeout((= mThis.ContractListView.showPage(mThis.getFilterData()) setTimeout((= $('[data-bs-toggle="tooltip"]').tooltip()} 500)} 250)}) mThis.initAlready true} mThis.getFilterData(= let p search_value mThis.elSearch.value,} mThis.divFilter.querySelectorAll('.filter-field').forEach(el= const f el.dataset.field p[f el.value}) return p} mThis.parseSafeDate(value= if(!value return null const raw String(value).trim() if(!raw return null const monthMap jan 0 feb 1 mar 2 apr 3 may 4 jun 5, jul 6 aug 7 sep 8 oct 9 nov 10 dec 11} if(//\d{4}-\d{2}-\d{2}$/.test(raw) const[year month day raw.split('-').map(Number) return new Date(year month 1 day)} if(//\d{2}-[A-Za-z]{3}-\d{4}$/.test(raw) const[dayStr monthStr yearStr raw.split('-') const month monthMap[monthStr.toLowerCase()] if(month== undefined return null return new Date(Number(yearStr) month Number(dayStr))} if(//\d{2}\/\d{2}\/\d{4}$/.test(raw) const[day month year raw.split('/').map(Number) return new Date(year month 1 day)} const parsed new Date(raw) if(Number.isNaN(parsed.getTime()) return null return new Date(parsed.getFullYear() parsed.getMonth() parsed.getDate())} mThis.isWithinNextThreeMonths(date= if(!date return false const today new Date() today.setHours(0 0 0 0) const maxDate new Date(today) maxDate.setMonth(maxDate.getMonth( 3) return date> today& date< maxDate} mThis.displayContractDetail(container id= container.innerHTML`div class="text-center py-3"><div class="spinner-border text-primary" role="status"></div></div>` Promise.all( vsapi.call(`{main_view.base_url}/prm/contract/details` id} null null), vsapi.call(`{main_view.base_url}/prm/contract/list-renewals` contract_id id per_page 50} null null)]).then(([detailsRes renewalsRes]= if(detailsRes.status_code!= 200 container.innerHTML`div class="alert alert-danger m-3">Failed to load contract details</div>` return} const renewals(renewalsRes.status_code== 200& renewalsRes.data& renewalsRes.data.data renewalsRes.data.data[] mThis.renderContractDetail(container detailsRes.data|{} id renewals)}).catch((= container.innerHTML`div class="alert alert-danger m-3">Network error loading contract details</div>`})} mThis.renderContractDetail(container d contractId renewals= const renewalsList Array.isArray(renewals renewals[] const escapeHtml(str= if(!str return'' const div document.createElement('div') div.textContent str return div.innerHTML} let renewalTableHtml'' if(renewalsList.length 0 const unitPillClass'px-2 py-1 bg-prm-custom text-white rounded font-medium' const rows renewalsList.map((r= const spaceCode(r.space_code?'').trim() const unitCell`span class="${unitPillClass}">${escapeHtml(spaceCode)}</span>` return`                <tr>
+                </div>`;
+            }
+        },
+        {
+            className: 'col_action align-middle',
+            data: (data) => `
+                <div class="d-flex justify-content-center align-items-end">
+                    <a href="javascript:void(0)" class="btn_contract_action" data-id="${data.id}" data-statusid="${data.status_id}" data-status="${data.status ?? ''}" data-end-date="${data.end_date ?? ''}" aria-haspopup="true" aria-expanded="false">
+                       <button class="btn btn-sm  rounded-2 text-nowrap">
+                            <span>
+                                <i class="fa-solid fa-ellipsis-vertical text-black fs-5"></i>
+                            </span>
+                       </button>
+                    </a>
+                </div>`
+        },
+    ];
+
+    mThis.init = () => {
+        if (mThis.initAlready) return;
+
+        mThis.ContractListView = new ListView('_contract_list', {
+            fetchApi: `${main_view.base_url}/prm/contract/list-paginate`,
+            perPage: 10,
+            apiCluster: main_view.apiCluster,
+            columns: mThis.cols,
+            tableClass: 'table table--white rounded-2 header-uppercase',
+            rowCreated: (data, index, tr) => {
+                tr.dataset.statusid = data.status_id;
+                tr.dataset.status = data.status ?? '';
+                tr.dataset.endDate = data.end_date ?? '';
+                tr.classList.add('contract');
+                tr.setAttribute('id', ['contract_invoice_id', data.id].join(''));
+            },
+            listContainerClass: null
+        });
+
+        mThis.btnAdd.onclick = function (e) {
+            e.preventDefault();
+            const op = {
+                id: null,
+                btn: e.target,
+                onClose: () => {
+                    mThis.ContractListView.showPage(mThis.getFilterData());
+                }
+            };
+            ContractDialog.show(op);
+        };
+
+        mThis.pr_tbl = mThis.ContractListView.getListContainer();
+        const sh_parent = mThis.pr_tbl.parentElement;
+        sh_parent.style.maxHeight = (window.innerHeight - 200) + 'px';
+        sh_parent.classList.add("overflow-y-auto");
+        window.onresize = () => {
+            sh_parent.style.maxHeight = (window.innerHeight - 200) + 'px';
+        }
+
+        mThis.tblContract = mThis.ContractListView.getTable();
+        mThis.initDropdownMenus(mThis.tblContract);
+
+        if (!mThis.tblContract.id) mThis.tblContract.id = '_contract_list_table';
+        new ExpandableRowConfig(mThis.tblContract.id, {
+            dontExpandByClickingOn: ['btn_contract_action'],
+            onOpen: (container, detail_tr, parent_tr) => {
+                const rawId = parent_tr.getAttribute('id') || '';
+                const id = rawId.replace(/^contract_invoice_id/, '');
+                if (id && !Number.isNaN(Number(id))) mThis.displayContractDetail(container, id);
+            }
+        });
+
+        // Filter change handler with tooltip reinitialization
+        mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
+            el.onchange = (e) => {
+                e.preventDefault();
+                mThis.ContractListView.showPage(mThis.getFilterData());
+
+                // Re-initialize tooltips after filter
+                setTimeout(() => {
+                    // $('[data-bs-toggle="tooltip"]').tooltip('dispose');
+                    $('[data-bs-toggle="tooltip"]').tooltip();
+                }, 500);
+            }
+        });
+
+        // Search handler with tooltip reinitialization
+        mThis.elSearch.addEventListener('keyup', (e) => {
+            e.preventDefault();
+            clearTimeout(mThis.search_timeout);
+            mThis.search_timeout = setTimeout(() => {
+                mThis.ContractListView.showPage(mThis.getFilterData());
+
+                // Re-initialize tooltips after search
+                setTimeout(() => {
+                    // $('[data-bs-toggle="tooltip"]').tooltip('dispose');
+                    $('[data-bs-toggle="tooltip"]').tooltip();
+                }, 500);
+            }, 250);
+        });
+
+        mThis.initAlready = true;
+    };
+
+    mThis.getFilterData = () => {
+        let p = {
+            search_value: mThis.elSearch.value,
+        };
+
+        mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
+            const f = el.dataset.field;
+            p[f] = el.value;
+        });
+
+        return p;
+    };
+
+    mThis.parseSafeDate = (value) => {
+        if (!value) return null;
+        const raw = String(value).trim();
+        if (!raw) return null;
+
+        const monthMap = {
+            jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5,
+            jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11
+        };
+
+        if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) {
+            const [year, month, day] = raw.split('-').map(Number);
+            return new Date(year, month - 1, day);
+        }
+
+        if (/^\d{2}-[A-Za-z]{3}-\d{4}$/.test(raw)) {
+            const [dayStr, monthStr, yearStr] = raw.split('-');
+            const month = monthMap[monthStr.toLowerCase()];
+            if (month === undefined) return null;
+            return new Date(Number(yearStr), month, Number(dayStr));
+        }
+
+        if (/^\d{2}\/\d{2}\/\d{4}$/.test(raw)) {
+            const [day, month, year] = raw.split('/').map(Number);
+            return new Date(year, month - 1, day);
+        }
+
+        const parsed = new Date(raw);
+        if (Number.isNaN(parsed.getTime())) return null;
+        return new Date(parsed.getFullYear(), parsed.getMonth(), parsed.getDate());
+    };
+
+    mThis.isWithinNextThreeMonths = (date) => {
+        if (!date) return false;
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const maxDate = new Date(today);
+        maxDate.setMonth(maxDate.getMonth() + 3);
+
+        return date >= today && date <= maxDate;
+    };
+
+    mThis.displayContractDetail = (container, id) => {
+        container.innerHTML = `<div class="text-center py-3"><div class="spinner-border text-primary" role="status"></div></div>`;
+        Promise.all([
+            vsapi.call(`${main_view.base_url}/prm/contract/details`, { id }, null, null),
+            vsapi.call(`${main_view.base_url}/prm/contract/list-renewals`, { contract_id: id, per_page: 50 }, null, null)
+        ])
+            .then(([detailsRes, renewalsRes]) => {
+                if (detailsRes.status_code !== 200) {
+                    container.innerHTML = `<div class="alert alert-danger m-3">Failed to load contract details</div>`;
+                    return;
+                }
+                const renewals = (renewalsRes.status_code === 200 && renewalsRes.data && renewalsRes.data.data) ? renewalsRes.data.data : [];
+                mThis.renderContractDetail(container, detailsRes.data || {}, id, renewals);
+            })
+            .catch(() => {
+                container.innerHTML = `<div class="alert alert-danger m-3">Network error loading contract details</div>`;
+            });
+    };
+
+    mThis.renderContractDetail = (container, d, contractId, renewals) => {
+        // const cur = (d.cur_symbol != null) ? d.cur_symbol : '$';
+        // const priceLabel = (d.price_type === 'total') ? 'Whole Room' : 'Per sqm';
+        // const priceVal = d.price != null ? Number(d.price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : 'â€”';
+        // const depositVal = (d.deposit != null && d.deposit !== '') ? Number(d.deposit).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : 'â€”';
+
+        const renewalsList = Array.isArray(renewals) ? renewals : [];
+        const escapeHtml = (str) => {
+            if (!str) return '';
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        };
+        let renewalTableHtml = '';
+        if (renewalsList.length > 0) {
+            const unitPillClass = 'px-2 py-1 bg-prm-custom text-white rounded font-medium ';
+            const rows = renewalsList.map((r) => {
+                const spaceCode = (r.space_code ?? '').trim();
+                const unitCell = `<span class="${unitPillClass}">${escapeHtml(spaceCode)}</span>`;
+                return `
+                <tr>
                     <td class="align-middle text-nowrap">${(r.renewal_date ?? '').trim() }</td>
                     <td class="align-middle text-nowrap">${(r.start_date ?? '').trim() }</td>
                     <td class="align-middle text-nowrap">${(r.end_date ?? '').trim() }</td>
                     <td class="align-middle text-nowrap">${unitCell}</td>
                     <td class="text-break align-middle" style="width: 300px;">${escapeHtml((r.remarks ?? '_').trim())}</td>
                     <td class="align-middle text-nowrap"><div class="d-flex flex-column"><span class="text-capitalize">${escapeHtml((r.update_user ?? '').trim()) || '_'}</span><small class="text-muted">${(r.updated_at ?? '').trim() || ''}</small></div></td>
-                </tr>`}).join('') renewalTableHtml`                    <div class="card  shadow-sm overflow-hidden">
+                </tr>`;
+            }).join('');
+            renewalTableHtml = `
+                    <div class="card  shadow-sm overflow-hidden">
                         <div class="card-body p-0">
                             <div class="table-responsive ">
                                 <table class="table table-hover table-sm mb-0 align-middle table--dropdown">
@@ -155,17 +2978,689 @@ var ContractsComponent new(function( const mThis this mThis.title_prop"Contract 
                             </div>
                         </div>
                     </div>
-                ` else renewalTableHtml`                    <div class="card  shadow-sm">
+                `;
+        } else {
+            renewalTableHtml = `
+                    <div class="card  shadow-sm">
                         <div class="card-body text-center py-4">
                             <span class="rounded-circle d-inline-flex align-items-center justify-content-center bg-light text-muted mb-2" style="width:48px;height:48px;"><i class="fa-solid fa-rotate-right fa-lg"></i></span>
                             <p class="text-muted mb-0">No renewal history for this contract.</p>
                             <small class="text-muted">Renewals will appear here when the contract is renewed.</small>
                         </div>
-                    </div>`} container.innerHTML`
-                 ${renewalTableHtml}`} mThis.initDropdownMenus(table= const menuOptopns containerElement table, actionButtonClass"btn_contract_action", cssClass"bg-white shadow", menus html'<span class="ps-2 vslang="titles.Modify Contract"></span>', icon`i class="fa-regular fa-edit fs-5 text-warning"></i>`, cssClass"border-bottom pb-2", name"edit_contract"}, html'<span class="ps-2 vslang="titles.Renew Contract"></span>', icon`i class="fa-solid fa-arrow-up-right-from-square fs-5 text-prm-custom"></i>`, cssClass"border-bottom pb-2", name"renew_contract"}, html'<span class="ps-2 vslang="titles.Terminate Contract"></span>', icon`i class="fa-regular fa-circle-xmark fs-5 text-danger"></i>`, cssClass"border-bottom pb-2", name"terminate_contract"}, html'<span class="ps-2 vslang="titles.Delete Contract"></span>', icon`i class="fa-regular fa-trash-can fs-5 text-danger"></i>`, cssClass"border-bottom pb-2", name"delete_contract"},], onShow(me container= const menu me.getActiveMenus(container) const row container.closest('tr') const statusId Number(container.dataset.statusid? row?.dataset?.statusid) const statusText String(container.dataset.status? row?.dataset?.status?'').trim().toLowerCase() const isActive statusText=='active| statusId== 2 const endDate mThis.parseSafeDate(container.dataset.endDate? row?.dataset?.endDate?'') const isPending statusText=='pending' const isExpired statusText=='expired' const isTerminated statusText=='terminated' const showRenew isActive& endDate& mThis.isWithinNextThreeMonths(endDate) const canModify!isExpired&!isTerminated menu.edit_contract.style.display canModify'block'none' menu.renew_contract.style.display showRenew'block'none' if(menu.terminate_contract menu.terminate_contract.style.display isActive'block'none'} if(menu.delete_contract menu.delete_contract.style.display(isPending| isExpired| isTerminated'block'none'}}, onClick(menuLink id name= switch(name case'edit_contract' mThis.editContract(id menuLink) break} case'renew_contract' mThis.renewContract(id menuLink) break} case'terminate_contract' mThis.terminateContract(id menuLink) break} case'delete_contract' mThis.deleteContract(id menuLink) break} default break}}}} new VSDropdownMenu(menuOptopns)} mThis.editContract(id menulink= let op id id, btn menulink, onClose(= mThis.ContractListView.showPage(mThis.getFilterData())}} ContractDialog.show(op)} mThis.renewContract(id menulink= if(!id return let op id id, contract_id id, btn menulink, onClose(= mThis.ContractListView.showPage(mThis.getFilterData())}} RenewDialog.show(op)} mThis.terminateContract(id menuLink= if(!id return const op id id, btn menuLink,} cv_interact.confirm"Terminate this contract?", title"Terminate Contract", context"delete", confirmButtonText"Terminate",},(yes= if(!yes return vsapi.call[main_view.base_url"/prm/contract/terminate"].join(""), op, menuLink, null,).then((res= if(res.status_code== 200 cv_interact.success("Contract has been terminated.") if(mThis.ContractListView mThis.ContractListView.showPage(mThis.getFilterData())} else cv_interact.error(res.error_message|"Failed to terminate contract.")}})},)} mThis.deleteContract(id menuLink= if(!id return cv_interact.confirm"Delete this contract?", title"Delete Contract", context"delete", confirmButtonText"Delete",},(yes= if(!yes return vsapi.call[main_view.base_url"/prm/contract/delete"].join(""), id}, menuLink, null,).then((res= if(res.status_code== 200 cv_interact.success("Contract has been deleted.") if(mThis.ContractListView mThis.ContractListView.showPage(mThis.getFilterData())} else cv_interact.error(res.error_message|"Failed to delete contract.")}})},)} mThis.prepareFormOptions(onFinish= vsapi.call(`{main_view.base_url}/prm/contract/form-options` null null null).then(res= const d res.status_code= 200 res.data{} VSUtil.setComboItems(mThis.elStatus d.statuses'id''status_name''''All Statuses','') VSUtil.setComboItems(mThis.elBusinessType d.business_types'id''business_type''''All Business Types''') if(typeof onFinish=='function' onFinish()})} mThis.show(options= mThis.init() mThis.options options mThis.prepareFormOptions((= main_view.setContentView(mThis.self mThis.title_prop) mThis.ContractListView.showPage(mThis.getFilterData()) setTimeout((= $('[data-bs-toggle="tooltip"]').tooltip()} 800) if(!mThis.autoRefreshInterval mThis.autoRefreshInterval setInterval((= console.log('Auto-refreshing contracts...') mThis.ContractListView.showPage(mThis.getFilterData()) setTimeout((= $('[data-bs-toggle="tooltip"]').tooltip('dispose') $('[data-bs-toggle="tooltip"]').tooltip()} 800)} 3600000)}})} return mThis})()
-const ContractDialog((= const self{} let dialog null self.show(op= dialog dialog| new GeneralDialog( cssClass"modal-lg vs-modal", backdrop"static", keyboard true, createContent(= return].join("")}, contentCreated(me= me.searchTenant VSSearchInput.init(me.controls.tenant type"select", prefetch true, maxDropdownHeight"380px", query from"tenants", select["id""name""code""legal_name"], searchFields name"LIKE" code"=" legal_name"LIKE}, orderBy[["id""desc"]]}, showColumnHeader true, columns code"Code", name"Name",}, onSelect(item= const tenantId item?.id|"" const tenantName item?.name|"" const tenantCode item?.code|"" me.controls.tenant.value tenantCode tenantName me.controls.tenant.dataset.tenantId tenantId me.tenant_id tenantId me.controls.legal_name.value item?.legal_name|""}}) applyNumberInput(me.controls.deposit)}, configSelect name"tenant_id", data"tenants", textField"tenant", valueField"id",}, name"business_type_id", data"business_types", textField"business_type", valueField"id",}, name"code", data"building_spaces", textField"code", valueField"id",},], prepareFormOptions createTitle"Create Contract", modifyTitle"Modify Contract", targetProp"contract_details", api endpoint[main_view.base_url"/prm/contract/form-options",].join(""), params(op= return id op.id, space_id op.space_id? null, tenant_id op.tenant_id? null}},},}, onPrepareForm(me data= const isReadOnly me.dataOptions.id 0| data.prefill_tenant_id console.log(123,me.dataOptions.id) me.controls.tenant.disabled isReadOnly if(me.dataOptions.id) me.setReadOnly(true['code','start_date','end_date'])} if(me.searchTenant& typeof me.searchTenant.reset=="function" me.searchTenant.reset()} const prefillTenantId!me.dataOptions.id(me.dataOptions.tenant_id? data?.prefill_tenant_id? null) null if(prefillTenantId me.tenant_id prefillTenantId vsapi.call[main_view.base_url"/prm/tenant/details"].join(""), id prefillTenantId}, false, null,).then((res= if(res.status_code== 200& res.data const t res.data const tenantInput me.divModal.querySelector('input[name="tenant"]') if(tenantInput const tenantCode t.code|"" tenantInput.value tenantCode(t.name|"") tenantInput.dataset.tenantId prefillTenantId} if(me.controls.legal_name me.controls.legal_name.value t.legal_name|""}}}).catch((={}) else me.tenant_id data?.contract_details?.tenant_id? null} const unitSelect me.divModal.querySelector('[data-field="space_id"]') const spaceRows Array.isArray(data?.building_spaces data.building_spaces[] const spaceTypes Array.isArray(data?.space_types data.space_types[] const getSpaceTypeName(spaceTypeId= const row spaceTypes.find((x= String(x.id== String(spaceTypeId)) return row?.space_type?''} const applyUnitData(spaceId= const selected spaceRows.find((row= String(row.id== String(spaceId)) if(!selected me._createContractSpaceTypeId null return} me._createContractSpaceTypeId selected.space_type_id? null if(me.controls.space_name me.controls.space_name.value selected.space_type? getSpaceTypeName(selected.space_type_id?''} if(me.controls.sqm_size me.controls.sqm_size.value selected.sqm_size?'' if(me.controls.price_type& me.controls.price_type_label me.controls.price_type.value selected.price_type?'' me.controls.price_type_label.value selected.price_type=='sqm'm² selected.price_type=='total'Unit''} if(me.controls.price me.controls.price.value selected.price?''} if(unitSelect unitSelect.onchange(e= applyUnitData(e.target.value)} const prefillSpaces Array.isArray(data?.prefill_spaces data.prefill_spaces[] const prefillSpaceIds prefillSpaces.map((s= String(s?.id?"").trim()).filter((v= v!="") const defaultSpaceId me.dataOptions?.space_id? data?.contract_details?.space_id? prefillSpaceIds[0]?'' if(defaultSpaceId unitSelect.value defaultSpaceId applyUnitData(defaultSpaceId) else if(unitSelect.value applyUnitData(unitSelect.value)}}}, buttons label'<span vslang="buttons.Cancel"></span>', cssClass'btn btn-secondary', click(me btn= me.hide(false)},}, label'<span vslang="buttons.Save"></span>', cssClass'btn btn-primary', click(me btn= const op me.getData() if(me._createContractSpaceTypeId!= undefined& me._createContractSpaceTypeId!= null op.space_type_id me._createContractSpaceTypeId} op.tenant_id me.tenant_id op.id me.dataOptions.id vsapi.call([main_view.base_url"/prm/contract/save",].join("") op btn null).then((res= if(res.status_code== 200 me.hide(true op) if(me.dataOptions.id 0 cv_interact.success("Contract has been updated successfully.") else cv_interact.success("New contract has been created successfully.")} else cv_interact.error(res.error_message)}})},},],}) dialog.show(op)} return self})()
-function normalizeContractDateToIso(raw if(raw= null| raw=="" return"" const s String(raw).trim() if(//\d{4}-\d{2}-\d{2}$/.test(s) return s const m s.match(//(\d{1,2})-([A-Za-z]{3})-(\d{4})$/) if(m const months jan 0,feb 1,mar 2,apr 3,may 4 jun 5,jul 6,aug 7,sep 8,oct 9 nov 10,dec 11,} const mon months[m[2].toLowerCase()] if(mon= null return"" const d new Date(parseInt(m[3] 10) mon parseInt(m[1] 10)) if(!Number.isNaN(d.getTime()) return d.getFullYear(+"-+ String(d.getMonth( 1).padStart(2"0"+"-+ String(d.getDate()).padStart(2"0"))} return""} const d2 new Date(s) if(!Number.isNaN(d2.getTime()) return d2.getFullYear(+"-+ String(d2.getMonth( 1).padStart(2"0"+"-+ String(d2.getDate()).padStart(2"0"))} return""}
-const RenewDialog((= const self{} let dialog null const hasAtLeastOneMonth(startDate endDate= const monthsDiff(endDate.getFullYear( startDate.getFullYear() 12+(endDate.getMonth( startDate.getMonth()) if(monthsDiff 1 return true if(monthsDiff 1 return false return endDate.getDate(> startDate.getDate()} self.show(op= dialog dialog| new GeneralDialog( cssClass"modal-lg vs-modal", backdrop"static", keyboard true, createContent(= return`                    <div class="row g-3">
+                    </div>`;
+        }
+
+        container.innerHTML = `
+
+                 ${renewalTableHtml}`;
+
+    };
+
+    mThis.initDropdownMenus = (table) => {
+        const menuOptopns = {
+            containerElement: table,
+            actionButtonClass: "btn_contract_action",
+            cssClass: "bg-white shadow",
+            menus: [
+
+                {
+                    html: '<span class="ps-2 " vslang="titles.Modify Contract"></span>',
+                    icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "edit_contract"
+                },
+                {
+                    html: '<span class="ps-2 " vslang="titles.Renew Contract"></span>',
+                    icon: `<i class="fa-solid fa-arrow-up-right-from-square fs-5 text-prm-custom"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "renew_contract"
+                },
+                {
+                    html: '<span class="ps-2 " vslang="titles.Terminate Contract"></span>',
+                    icon: `<i class="fa-regular fa-circle-xmark fs-5 text-danger"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "terminate_contract"
+                },
+                {
+                    html: '<span class="ps-2 " vslang="titles.Delete Contract"></span>',
+                    icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "delete_contract"
+                },
+            ],
+            onShow: (me, container) => {
+                const menu = me.getActiveMenus(container);
+                const row = container.closest('tr');
+                const statusId = Number(container.dataset.statusid ?? row?.dataset?.statusid);
+                const statusText = String(container.dataset.status ?? row?.dataset?.status ?? '').trim().toLowerCase();
+                const isActive = statusText === 'active' || statusId === 2;
+                const endDate = mThis.parseSafeDate(container.dataset.endDate ?? row?.dataset?.endDate ?? '');
+                const isPending = statusText === 'pending';
+                const isExpired = statusText === 'expired';
+                const isTerminated = statusText === 'terminated';
+                              // show renew only when status is active and end date is within next 3 months (not for pending)
+                              const showRenew = isActive && endDate && mThis.isWithinNextThreeMonths(endDate);
+                const canModify = !isExpired && !isTerminated;
+
+                menu.edit_contract.style.display = canModify ? 'block' : 'none';
+                menu.renew_contract.style.display = showRenew ? 'block' : 'none';
+                if (menu.terminate_contract) {
+                    // show terminate only when status is active
+                    menu.terminate_contract.style.display = isActive ? 'block' : 'none';
+                }
+                if (menu.delete_contract) {
+                    // show delete when status is pending, expired, or terminated
+                    menu.delete_contract.style.display = (isPending || isExpired || isTerminated) ? 'block' : 'none';
+                }
+            },
+            onClick: (menuLink, id, name) => {
+                switch (name) {
+
+                    case 'edit_contract': {
+                        mThis.editContract(id, menuLink);
+                        break;
+                    }
+                    case 'renew_contract': {
+                        mThis.renewContract(id, menuLink);
+                        break;
+                    }
+                    case 'terminate_contract': {
+                        mThis.terminateContract(id, menuLink);
+                        break;
+                    }
+                    case 'delete_contract': {
+                        mThis.deleteContract(id, menuLink);
+                        break;
+                    }
+                    default: {
+                        break;
+                    }
+                }
+            }
+        }
+        new VSDropdownMenu(menuOptopns);
+    }
+
+    mThis.editContract = (id, menulink) => {
+        let op = {
+            id: id,
+            btn: menulink,
+            onClose: () => {
+                mThis.ContractListView.showPage(mThis.getFilterData());
+            }
+        };
+        ContractDialog.show(op);
+    }
+    mThis.renewContract = (id, menulink) => {
+        if (!id) return;
+
+        let op = {
+            id: id,
+            contract_id: id,
+            btn: menulink,
+            onClose: () => {
+                mThis.ContractListView.showPage(mThis.getFilterData());
+            }
+        };
+
+        RenewDialog.show(op);
+    };
+
+    mThis.terminateContract = (id, menuLink) => {
+        if (!id) return;
+
+        const op = {
+            id: id,
+            btn: menuLink,
+        };
+
+        cv_interact.confirm(
+            "Terminate this contract?",
+            {
+                title: "Terminate Contract",
+                context: "delete",
+                confirmButtonText: "Terminate",
+            },
+            (yes) => {
+                if (!yes) return;
+                vsapi
+                    .call(
+                        [main_view.base_url, "/prm/contract/terminate"].join(""),
+                        op,
+                        menuLink,
+                        null,
+                    )
+                    .then((res) => {
+                        if (res.status_code === 200) {
+                            cv_interact.success("Contract has been terminated.");
+                            if (mThis.ContractListView) {
+                                mThis.ContractListView.showPage(mThis.getFilterData());
+                            }
+                        } else {
+                            cv_interact.error(res.error_message || "Failed to terminate contract.");
+                        }
+                    });
+            },
+        );
+    };
+    mThis.deleteContract = (id, menuLink) => {
+        if (!id) return;
+
+        cv_interact.confirm(
+            "Delete this contract?",
+            {
+                title: "Delete Contract",
+                context: "delete",
+                confirmButtonText: "Delete",
+            },
+            (yes) => {
+                if (!yes) return;
+                vsapi
+                    .call(
+                        [main_view.base_url, "/prm/contract/delete"].join(""),
+                        { id },
+                        menuLink,
+                        null,
+                    )
+                    .then((res) => {
+                        if (res.status_code === 200) {
+                            cv_interact.success("Contract has been deleted.");
+                            if (mThis.ContractListView) {
+                                mThis.ContractListView.showPage(mThis.getFilterData());
+                            }
+                        } else {
+                            cv_interact.error(res.error_message || "Failed to delete contract.");
+                        }
+                    });
+            },
+        );
+    };
+
+
+    mThis.prepareFormOptions = (onFinish) => {
+        vsapi.call(`${main_view.base_url}/prm/contract/form-options`, null, null, null)
+            .then(res => {
+                const d = res.status_code == 200 ? res.data : {};
+                // VSUtil.setComboItems(mThis.elTenant, d.tenants, 'id', 'tenant', '', 'All Tenants', null);
+                VSUtil.setComboItems(mThis.elStatus, d.statuses, 'id', 'status_name', '', 'All Statuses','');
+                VSUtil.setComboItems(mThis.elBusinessType, d.business_types, 'id', 'business_type', '', 'All Business Types', '');
+
+                if (typeof onFinish === 'function') onFinish();
+            })
+    }
+
+    mThis.show = (options) => {
+        mThis.init();
+        mThis.options = options;
+        mThis.prepareFormOptions(() => {
+            main_view.setContentView(mThis.self, mThis.title_prop);
+            mThis.ContractListView.showPage(mThis.getFilterData());
+
+            // Initialize tooltips after table loads
+            setTimeout(() => {
+                $('[data-bs-toggle="tooltip"]').tooltip();
+                // console.log('Tooltips initialized');
+            }, 800);
+
+            // Auto-refresh every hour to update contract statuses
+            if (!mThis.autoRefreshInterval) {
+                mThis.autoRefreshInterval = setInterval(() => {
+                    console.log('Auto-refreshing contracts...');
+                    mThis.ContractListView.showPage(mThis.getFilterData());
+
+                    // Re-initialize tooltips after refresh
+                    setTimeout(() => {
+                        $('[data-bs-toggle="tooltip"]').tooltip('dispose');
+                        $('[data-bs-toggle="tooltip"]').tooltip();
+                    }, 800);
+                }, 3600000); // 1 hour = 3600000ms
+            }
+        });
+    };
+
+    return mThis;
+})();
+const ContractDialog = (() => {
+    const self = {};
+    let dialog = null;
+    // const parseDateInput = (value) => {
+    //     if (!value) return null;
+    //     const raw = String(value).trim();
+    //     if (!raw) return null;
+    //     if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) {
+    //         const [year, month, day] = raw.split('-').map(Number);
+    //         return new Date(year, month - 1, day);
+    //     }
+
+    //     if (/^\d{2}-[A-Za-z]{3}-\d{4}$/.test(raw)) {
+    //         const [dayStr, monthStr, yearStr] = raw.split('-');
+    //         const monthMap = {
+    //             Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5,
+    //             Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11
+    //         };
+    //         const month = monthMap[monthStr];
+    //         if (month === undefined) return null;
+    //         return new Date(Number(yearStr), month, Number(dayStr));
+    //     }
+
+    //     if (/^\d{2}\/\d{2}\/\d{4}$/.test(raw)) {
+    //         const [day, month, year] = raw.split('/').map(Number);
+    //         return new Date(year, month - 1, day);
+    //     }
+
+    //     const parsed = new Date(raw);
+    //     return Number.isNaN(parsed.getTime()) ? null : parsed;
+    // };
+
+    self.show = (op) => {
+        dialog = dialog || new GeneralDialog({
+            cssClass: "modal-lg vs-modal",
+            backdrop: "static",
+            keyboard: true,
+            createContent: () => {
+                return [
+                    `<div class="row g-3 justify-content-start">
+                 <div class="">
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <div class="vs-material-field">
+                                <input name="tenant" class="data-input form-control" data-field="tenant_name"  placeholder="Tenant" />
+                                <label>Tenant</label>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="vs-material-field">
+                                <input name="legal_name" class="data-input form-control" disabled data-field="legal_name" placeholder=" " />
+                                <label>Legal Name</label>
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <select data-style="material" placeholder="Business Type" name="business_type_id" class="data-input form-control" data-field="business_type_id"> </select>
+                        </div>
+                        <div class="col-3">
+                            <select data-style="material" placeholder="Unit Code" name="code" class="data-input form-control" data-field="space_id"> </select>
+                        </div>
+                        <div class="col-3">
+                            <div class="vs-material-field">
+                                <input type="text" name="deposit" class="data-input form-control" data-field="deposit" placeholder=" " />
+                                <label>Deposit</label>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="vs-material-field">
+                                <input type="text" data-type="date" name="start_date" class="data-input form-control form_input" data-field="start_date" placeholder=" " />
+                                <label>Start Date</label>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="vs-material-field">
+                                <input type="text" data-type="date" name="end_date" class="data-input form-control form_input" data-field="end_date" placeholder=" " />
+                                <label>End Date</label>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="p-3 bg-white border rounded shadow-sm">
+                        <h6 class="mb-3 text-golden">Unit Details</h6>
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <div class="vs-material-field">
+                                    <input type="text" name="space_name" class="data-input form-control" data-field="space_name" disabled />
+                                    <label>Type</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="vs-material-field">
+                                    <input type="number" name="sqm_size" class="data-input form-control" data-field="sqm_size" disabled />
+                                    <label>Size (m²)</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="vs-material-field">
+                                    <input type="hidden" name="price_type" class="data-input" data-field="price_type" />
+                                    <input type="text" name="price_type_label" class="data-input form-control" disabled />
+                                    <label>Charge As</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="vs-material-field">
+                                    <input type="number" name="price" class="data-input form-control" data-field="price" disabled />
+                                    <label>Price</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                 <div class="col-12 mt-3">
+                        <div class="vs-material-field">
+                            <textarea name="remarks" class="data-input form-control" data-field="remarks" placeholder=" "></textarea>
+                            <label>Remark</label>
+                        </div>
+                    </div>
+                </div>`
+                ].join("");
+            },
+
+            contentCreated: (me) => {
+                me.searchTenant = VSSearchInput.init(me.controls.tenant, {
+                    type: "select",
+                    prefetch: true,
+                    maxDropdownHeight: "380px",
+                    // api:
+                    query: {
+                        from: "tenants",
+                        select: ["id", "name", "code", "legal_name"],
+                        searchFields: { name: "LIKE", code: "=", legal_name: "LIKE" },
+                        orderBy: [["id", "desc"]]
+                    },
+                    showColumnHeader: true,
+                    columns: {
+                        code: "Code",
+                        name: "Name",
+                        // legal_name: "Legal Name"
+                    },
+                    onSelect: (item) => {
+                        const tenantId = item?.id || "";
+                        const tenantName = item?.name || "";
+                        const tenantCode = item?.code || "";
+                        me.controls.tenant.value = tenantCode
+                            ? `${tenantName} (${tenantCode})`
+                            : tenantName;
+                        me.controls.tenant.dataset.tenantId = tenantId;
+                        me.tenant_id = tenantId;
+                        me.controls.legal_name.value = item?.legal_name || "";
+                    }
+                });
+                applyNumberInput(me.controls.deposit);
+
+                // me.controls.deposit.addEventListener('input', (e) => {
+                //     let v = e.target.value;
+                //     v = v.replace(/[^0-9.]/g, '');
+
+                //     const parts = v.split('.');
+                //     if (parts.length > 2) {
+                //         v = parts[0] + '.' + parts[1];
+                //     }
+                //     if (parts[1] !== undefined) {
+                //         v = parts[0] + '.' + parts[1].slice(0, 2);
+                //     }
+
+                //     e.target.value = v;
+                // });
+                // me.controls.deposit.addEventListener('blur', (e) => {
+                //     let v = parseFloat(e.target.value);
+
+                //     if (isNaN(v) || v <= 0) {
+                //         e.target.value = '';
+                //         return;
+                //     }
+                //     e.target.value = v;
+                // });
+            },
+
+            configSelect: [
+                {
+                    name: "tenant_id",
+                    data: "tenants",
+                    textField: "tenant",
+                    valueField: "id",
+                },
+                {
+                    name: "business_type_id",
+                    data: "business_types",
+                    textField: "business_type",
+                    valueField: "id",
+                },
+                {
+                    name: "code",
+                    data: "building_spaces",
+                    textField: "code",
+                    valueField: "id",
+                },
+            ],
+            prepareFormOptions: {
+                createTitle: "Create Contract",
+                modifyTitle: "Modify Contract",
+                targetProp: "contract_details",
+                api: {
+                    endpoint: [main_view.base_url, "/prm/contract/form-options",].join(""),
+                    params: (op) => {
+                        return {
+                            id: op.id,
+                            space_id: op.space_id ?? null,
+                            tenant_id: op.tenant_id ?? null
+                        };
+                    },
+                },
+            },
+
+            onPrepareForm: (me, data) => {
+                const isReadOnly = me.dataOptions.id > 0 || data.prefill_tenant_id;
+                console.log(123,me.dataOptions.id);
+                me.controls.tenant.disabled = isReadOnly;
+                if(me.dataOptions.id){
+                    me.setReadOnly(true, ['code','start_date','end_date']);
+                }
+
+                // me.setReadOnly(true, ['code','start_date','end_date']);
+
+                if (me.searchTenant && typeof me.searchTenant.reset === "function") {
+                    me.searchTenant.reset();
+                }
+                // Preselect tenant when coming from TenantComponent or from booked unit phone-match.
+                const prefillTenantId = !me.dataOptions.id
+                    ? (me.dataOptions.tenant_id ?? data?.prefill_tenant_id ?? null)
+                    : null;
+                if (prefillTenantId) {
+                    me.tenant_id = prefillTenantId;
+                    vsapi
+                        .call(
+                            [main_view.base_url, "/prm/tenant/details"].join(""),
+                            { id: prefillTenantId },
+                            false,
+                            null,
+                        )
+                        .then((res) => {
+                            if (res.status_code === 200 && res.data) {
+                                const t = res.data;
+                                const tenantInput =
+                                    me.divModal.querySelector('input[name="tenant"]');
+                                if (tenantInput) {
+                                    const tenantCode = t.code || "";
+                                    tenantInput.value = tenantCode
+                                        ? `${t.name || ""} (${tenantCode})`
+                                        : (t.name || "");
+                                    tenantInput.dataset.tenantId = prefillTenantId;
+                                }
+                                if (me.controls.legal_name) {
+                                    me.controls.legal_name.value = t.legal_name || "";
+                                }
+                            }
+                        })
+                        .catch(() => {});
+                } else {
+                    me.tenant_id = data?.contract_details?.tenant_id ?? null;
+                }
+                const unitSelect = me.divModal.querySelector('[data-field="space_id"]');
+                const spaceRows = Array.isArray(data?.building_spaces) ? data.building_spaces : [];
+
+                const spaceTypes = Array.isArray(data?.space_types) ? data.space_types : [];
+                const getSpaceTypeName = (spaceTypeId) => {
+                    const row = spaceTypes.find((x) => String(x.id) === String(spaceTypeId));
+                    return row?.space_type ?? '';
+                };
+                const applyUnitData = (spaceId) => {
+                    const selected = spaceRows.find((row) => String(row.id) === String(spaceId));
+                    if (!selected) {
+                        me._createContractSpaceTypeId = null;
+                        return;
+                    }
+                    me._createContractSpaceTypeId = selected.space_type_id ?? null;
+                    if (me.controls.space_name) {
+                        me.controls.space_name.value = selected.space_type ?? getSpaceTypeName(selected.space_type_id) ?? '';
+                    }
+                    if (me.controls.sqm_size) me.controls.sqm_size.value = selected.sqm_size ?? '';
+                    if (me.controls.price_type && me.controls.price_type_label) {
+                        me.controls.price_type.value = selected.price_type ?? '';
+
+                        me.controls.price_type_label.value = selected.price_type === 'sqm' ? 'm²' : selected.price_type === 'total' ? 'Unit' : '';
+                    }
+                    if (me.controls.price) me.controls.price.value = selected.price ?? '';
+                };
+
+                if (unitSelect) {
+                    unitSelect.onchange = (e) => {
+                        applyUnitData(e.target.value);
+                    };
+                    const prefillSpaces = Array.isArray(data?.prefill_spaces) ? data.prefill_spaces : [];
+                    const prefillSpaceIds = prefillSpaces
+                        .map((s) => String(s?.id ?? "").trim())
+                        .filter((v) => v !== "");
+                    const defaultSpaceId = me.dataOptions?.space_id
+                        ?? data?.contract_details?.space_id
+                        ?? prefillSpaceIds[0]
+                        ?? '';
+                    if (defaultSpaceId) {
+                        unitSelect.value = defaultSpaceId;
+                        applyUnitData(defaultSpaceId);
+                    } else if (unitSelect.value) {
+                        applyUnitData(unitSelect.value);
+                    }
+                }
+            },
+
+            buttons: [
+                {
+                    label: '<span vslang="buttons.Cancel"></span>',
+                    cssClass: 'btn btn-secondary',
+                    click: (me, btn) => {
+                        me.hide(false);
+                    },
+                },
+                {
+                    label: '<span vslang="buttons.Save"></span>',
+                    cssClass: 'btn btn-primary',
+                    click: (me, btn) => {
+                        const op = me.getData();
+                        // if (!me.tenant_id) {
+                        //     cv_interact.error("Please select a tenant.");
+                        //     return;
+                        // }
+                        // if (!op.business_type_id) {
+                        //     cv_interact.error("Please select a business type.");
+                        //     return;
+                        // }
+                        if (me._createContractSpaceTypeId !== undefined && me._createContractSpaceTypeId !== null) {
+                            op.space_type_id = me._createContractSpaceTypeId;
+                        }
+                        op.tenant_id = me.tenant_id;
+                        op.id = me.dataOptions.id;
+                        // op.tenant_id = me.tenant_id;
+
+                        // if (!op.id) {
+                        //     const endDt = parseDateInput(op.end_date);
+                        //     if (!endDt || Number.isNaN(endDt.getTime())) {
+                        //         cv_interact.error("Please enter a valid End Date.");
+                        //         return;
+                        //     }
+                        //     const endDay = new Date(
+                        //         endDt.getFullYear(),
+                        //         endDt.getMonth(),
+                        //         endDt.getDate(),
+                        //     );
+                        //     const today = new Date();
+                        //     today.setHours(0, 0, 0, 0);
+                        //     if (endDay < today) {
+                        //         cv_interact.error("End date cannot be in the past.");
+                        //         return;
+                        //     }
+                        // }
+
+                        vsapi.call([main_view.base_url, "/prm/contract/save",].join(""), op, btn, null).then((res) => {
+                            if (res.status_code === 200) {
+                                me.hide(true, op);
+                                if (me.dataOptions.id > 0) {
+                                    cv_interact.success("Contract has been updated successfully.");
+                                } else {
+                                    cv_interact.success("New contract has been created successfully.");
+                                }
+                            } else {
+                                cv_interact.error(res.error_message);
+                            }
+                        });
+                    },
+                },
+            ],
+        });
+        dialog.show(op);
+    };
+    return self;
+})();
+
+/**
+ * Normalize contract dates from API or display (e.g. 30-Jun-2026) to YYYY-MM-DD for date inputs.
+ */
+function normalizeContractDateToIso(raw) {
+    if (raw == null || raw === "") return "";
+    const s = String(raw).trim();
+    if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+    const m = s.match(/^(\d{1,2})-([A-Za-z]{3})-(\d{4})$/);
+    if (m) {
+        const months = {
+            jan: 0,feb: 1,mar: 2,apr: 3,may: 4, jun: 5,jul: 6,aug: 7,sep: 8,oct: 9, nov: 10,dec: 11,
+        };
+        const mon = months[m[2].toLowerCase()];
+        if (mon == null) return "";
+        const d = new Date(parseInt(m[3], 10), mon, parseInt(m[1], 10));
+        if (!Number.isNaN(d.getTime())) {
+            return (
+                d.getFullYear() +
+                "-" +
+                String(d.getMonth() + 1).padStart(2, "0") +
+                "-" +
+                String(d.getDate()).padStart(2, "0")
+            );
+        }
+        return "";
+    }
+    const d2 = new Date(s);
+    if (!Number.isNaN(d2.getTime())) {
+        return (
+            d2.getFullYear() +
+            "-" +
+            String(d2.getMonth() + 1).padStart(2, "0") +
+            "-" +
+            String(d2.getDate()).padStart(2, "0")
+        );
+    }
+    return "";
+}
+
+const RenewDialog = (() => {
+    const self = {};
+    let dialog = null;
+    const hasAtLeastOneMonth = (startDate, endDate) => {
+        const monthsDiff =
+            (endDate.getFullYear() - startDate.getFullYear()) * 12 +
+            (endDate.getMonth() - startDate.getMonth());
+
+        if (monthsDiff > 1) return true;
+        if (monthsDiff < 1) return false;
+
+        return endDate.getDate() >= startDate.getDate();
+    };
+
+    self.show = (op) => {
+        dialog = dialog || new GeneralDialog({
+            cssClass: "modal-lg vs-modal",
+            backdrop: "static",
+            keyboard: true,
+           createContent: () => {
+                return `
+                    <div class="row g-3">
                         <div class="col-12">
                             <div class="p-3 border rounded">
                                 <h6 class="mb-3 text-golden">Old Contract</h6>
@@ -257,4 +3752,2332 @@ const RenewDialog((= const self{} let dialog null const hasAtLeastOneMonth(start
                         </div>
 
                     </div>
-                `}, contentCreated(me= DateTimePicker.initAll(me.divModal)}, prepareFormOptions createTitle"Renew Contract", modifyTitle"Renew Contract", targetProp"contract_details", api endpoint[main_view.base_url"/prm/contract/form-options"].join(""), params(op=( id op.id}),},}, configSelect name"code", data"building_spaces", textField"code", valueField"id",},], onPrepareForm(me data= LocaleManager.translateZone(me.divModal) const det data.contract_details|{} if(me.controls.old_contract_start me.controls.old_contract_start.value det.start_date|""} if(me.controls.old_contract_end me.controls.old_contract_end.value det.end_date|""} if(me.controls.old_contract_price me.controls.old_contract_price.value det.price! null& det.price!=" det.price""} const renewStartIso det.renew_start_date|"" if(me.controls.start_date me.controls.start_date.value renewStartIso} if(me.controls.end_date me.controls.end_date.value"" if(me.controls.price me.controls.price.value det.price! null& det.price!=" det.price""} if(me.controls.price_type me.controls.price_type.value det.price_type?""} if(me.controls.remarks me.controls.remarks.value"" setTimeout((= if(me.controls.start_date& renewStartIso me.controls.start_date.value renewStartIso} if(me.controls.end_date me.controls.end_date.value""}} 0) const unitSelect me.divModal.querySelector('[data-field="space_id"]') const spaceRows Array.isArray(data?.building_spaces data.building_spaces[] const spaceTypes Array.isArray(data?.space_types data.space_types[] const getSpaceTypeName(spaceTypeId= const row spaceTypes.find((x= String(x.id== String(spaceTypeId)) return row?.space_type?''} const applyContractPriceFields(= if(me.controls.price_type me.controls.price_type.value det.price_type?""} if(me.controls.price me.controls.price.value det.price! null& det.price!=" det.price""}} const setUnitFields(unitData= if(!unitData return if(me.controls.space_name me.controls.space_name.value unitData.space_type? getSpaceTypeName(unitData.space_type_id)} if(me.controls.sqm_size me.controls.sqm_size.value unitData.sqm_size?'' if(me.controls.price_type me.controls.price_type.value unitData.price_type?'' me.controls.price_type.value unitData.price_type=='sqm'm² unitData.price_type=='total'Unit''} if(me.controls.price me.controls.price.value unitData.price?'' applyContractPriceFields()} const applyUnitData(spaceId= if(!spaceId return const selected spaceRows.find((row= String(row.id== String(spaceId)) if(selected setUnitFields(selected)} vsapi.call(`{main_view.base_url}/prm/building-space/details` id spaceId} null null).then((res= if(res.status_code!= 200|!res.data return const merged selected...selected...res.data res.data setUnitFields(merged)}).catch((={})} if(unitSelect unitSelect.onchange(e= applyUnitData(e.target.value)} const defaultSpaceId data?.contract_details?.space_id?'' if(defaultSpaceId unitSelect.value defaultSpaceId applyUnitData(defaultSpaceId)}} applyContractPriceFields() me.detail data.contract_details}, buttons label'<span>Cancel</span>', cssClass'btn btn-secondary', click(me= me.hide(false),}, label'<span>Renew</span>', cssClass'btn btn-primary', click(me btn= const op me.getData() const renewStart op.start_date new Date(op.start_date null const renewEnd op.end_date new Date(op.end_date null if(!renewEnd| Number.isNaN(renewEnd.getTime()) cv_interact.error("Please select a valid Renew End Date.") return} if(renewStart&!Number.isNaN(renewStart.getTime()& renewEnd< renewStart cv_interact.error("Renew End Date must be after Renew Start Date.") return} delete op.old_contract_start delete op.old_contract_end delete op.old_contract_price delete op.price delete op.price_type op.id me.dataOptions.id vsapi.call([main_view.base_url"/prm/contract/renew"].join("") op btn null).then((res= if(res.status_code== 200 me.hide(true op) cv_interact.success("Contract has been renewed successfully") else cv_interact.error(res.error_message)}})},},],}) dialog.show(op)} return self})();
+                `;
+            },
+            contentCreated: (me) => {
+                DateTimePicker.initAll(me.divModal);
+            },
+
+            prepareFormOptions: {
+                createTitle: "Renew Contract",
+                modifyTitle: "Renew Contract",
+                targetProp: "contract_details",
+                api: {
+                    endpoint: [main_view.base_url, "/prm/contract/form-options"].join(""),
+                    params: (op) => ({ id: op.id }),
+                },
+            },
+            configSelect: [
+                {
+                    name: "code",
+                    data: "building_spaces",
+                    textField: "code",
+                    valueField: "id",
+                },
+            ],
+
+            onPrepareForm: (me, data) => {
+                LocaleManager.translateZone(me.divModal);
+                const det = data.contract_details || {};
+                // const oldStartIso = normalizeContractDateToIso(det.start_date);
+                // const oldEndIso = normalizeContractDateToIso(det.end_date);
+                if (me.controls.old_contract_start) {
+                    me.controls.old_contract_start.value = det.start_date || "";
+                }
+                if (me.controls.old_contract_end) {
+                    me.controls.old_contract_end.value = det.end_date || "";
+                }
+                if (me.controls.old_contract_price) {
+                    me.controls.old_contract_price.value =
+                        det.price != null && det.price !== "" ? det.price : "";
+                }
+                // Renew period starts the same calendar day as the current contract end_date.
+                const renewStartIso = det.renew_start_date || "";
+
+                if (me.controls.start_date) {
+                    me.controls.start_date.value = renewStartIso;
+                }
+                if (me.controls.end_date) me.controls.end_date.value = "";
+                if (me.controls.price) {
+                    me.controls.price.value =
+                        det.price != null && det.price !== "" ? det.price : "";
+                }
+                if (me.controls.price_type) {
+                    me.controls.price_type.value = det.price_type ?? "";
+                }
+                if (me.controls.remarks) me.controls.remarks.value = "";
+                // DateTimePicker may attach after first paint; force final values.
+                setTimeout(() => {
+                    if (me.controls.start_date && renewStartIso) {
+                        me.controls.start_date.value = renewStartIso;
+                    }
+                    // Keep renew end_date empty by default (user must choose).
+                    if (me.controls.end_date) {
+                        me.controls.end_date.value = "";
+                    }
+                }, 0);
+                const unitSelect = me.divModal.querySelector('[data-field="space_id"]');
+                const spaceRows = Array.isArray(data?.building_spaces) ? data.building_spaces : [];
+                const spaceTypes = Array.isArray(data?.space_types) ? data.space_types : [];
+                const getSpaceTypeName = (spaceTypeId) => {
+                    const row = spaceTypes.find((x) => String(x.id) === String(spaceTypeId));
+                    return row?.space_type ?? '';
+                };
+                const applyContractPriceFields = () => {
+                    if (me.controls.price_type) {
+                        me.controls.price_type.value = det.price_type ?? "";
+                    }
+                    if (me.controls.price) {
+                        me.controls.price.value =
+                            det.price != null && det.price !== "" ? det.price : "";
+                    }
+                };
+                const setUnitFields = (unitData) => {
+                    if (!unitData) return;
+                    if (me.controls.space_name) {
+                        me.controls.space_name.value = unitData.space_type ?? getSpaceTypeName(unitData.space_type_id);
+                    }
+                    if (me.controls.sqm_size) me.controls.sqm_size.value = unitData.sqm_size ?? '';
+                    // if (me.controls.price_type) me.controls.price_type.value = unitData.price_type ?? '';
+                    if (me.controls.price_type) {
+                        me.controls.price_type.value = unitData.price_type ?? '';
+                        me.controls.price_type.value = unitData.price_type === 'sqm' ? 'm²' : unitData.price_type === 'total' ? 'Unit' : '';
+                    }
+                    if (me.controls.price) me.controls.price.value = unitData.price ?? '';
+                    applyContractPriceFields();
+                };
+                const applyUnitData = (spaceId) => {
+                    if (!spaceId) return;
+                    const selected = spaceRows.find((row) => String(row.id) === String(spaceId));
+                    if (selected) {
+                        setUnitFields(selected);
+                    }
+
+                    // Refresh selected unit data from API when unit code changes.
+                    vsapi.call(`${main_view.base_url}/prm/building-space/details`, { id: spaceId }, null, null)
+                        .then((res) => {
+                            if (res.status_code !== 200 || !res.data) return;
+                            const merged = selected ? { ...selected, ...res.data } : res.data;
+                            setUnitFields(merged);
+                        })
+                        .catch(() => {});
+                };
+
+                if (unitSelect) {
+                    unitSelect.onchange = (e) => {
+                        applyUnitData(e.target.value);
+                    };
+
+                    const defaultSpaceId = data?.contract_details?.space_id ?? '';
+                    if (defaultSpaceId) {
+                        unitSelect.value = defaultSpaceId;
+                        applyUnitData(defaultSpaceId);
+                    }
+                }
+                applyContractPriceFields();
+                me.detail = data.contract_details;
+            },
+
+            buttons: [
+                {
+                    label: '<span>Cancel</span>',
+                    cssClass: 'btn btn-secondary',
+                    click: (me) => me.hide(false),
+                },
+                {
+                    label: '<span>Renew</span>',
+                    cssClass: 'btn btn-primary',
+                    click: (me, btn) => {
+                        const op = me.getData();
+                        const renewStart = op.start_date ? new Date(op.start_date) : null;
+                        const renewEnd = op.end_date ? new Date(op.end_date) : null;
+                        if (!renewEnd || Number.isNaN(renewEnd.getTime())) {
+                            cv_interact.error("Please select a valid Renew End Date.");
+                            return;
+                        }
+                        if (renewStart && !Number.isNaN(renewStart.getTime()) && renewEnd <= renewStart) {
+                            cv_interact.error("Renew End Date must be after Renew Start Date.");
+                            return;
+                        }
+                        delete op.old_contract_start;
+                        delete op.old_contract_end;
+                        delete op.old_contract_price;
+                        delete op.price;
+                        delete op.price_type;
+                        op.id = me.dataOptions.id;
+                        vsapi.call([main_view.base_url, "/prm/contract/renew"].join(""), op, btn, null)
+                            .then((res) => {
+                                if (res.status_code === 200) {
+                                    me.hide(true, op);
+                                    cv_interact.success("Contract has been renewed successfully");
+                                } else {
+                                    cv_interact.error(res.error_message);
+                                }
+                            });
+                    },
+                },
+            ],
+        });
+
+        dialog.show(op);
+    };
+
+    return self;
+})();
+
+"use strict";
+var ReservationComponent = (() => {
+    const mThis = {};
+    mThis.title_prop = "Reservation";
+    mThis.base_url = main_view.base_url;
+    mThis.self = main_view.VSAppContent.querySelector(
+        "#_main_reservation_component",
+    );
+    mThis.btnAdd = mThis.self.querySelector("#_btnReservation");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter_reservation");
+    mThis.elFilter_status = mThis.self.querySelector("#_reservation_status");
+    mThis.elAmenity = mThis.self.querySelector("#amenity_id");
+    mThis.elBookingDate = mThis.self.querySelector("#booking_date");
+    mThis.elSearch = mThis.self.querySelector("#_search_reservation");
+    mThis.elBookingDateTo = mThis.self.querySelector("booking_date_to");
+    mThis.autoRefreshMs = 60000;
+    mThis.autoRefreshTimer = null;
+    mThis.autoRefreshStartTimeout = null;
+
+    mThis.cols = [
+        {
+            title: "",
+            className: "align-middle text-capitalize",
+        },
+        // {
+        //     transTitle: "titles.Tenant",
+        //     className: "align-middle",
+        //     data: (data) => {
+        //         return `<span class="text-primary-custom text-capitalize">${data.tenant_name ?? "_"}</span>
+        //                 <span class="d-block text-primary"style="font-size:12px;">${data.phone_number ?? "_"}</span>`;
+        //     },
+        // },
+        {
+            transTitle: "titles.Amenity",
+            className: "align-middle",
+            data: (data) => {
+                return `<span class="text-primary-custom">${data.amenity_name ?? "_"}</span>`;
+            },
+        },
+        {
+            transTitle: "titles.Reservation Date",
+            className: "align-middle",
+            data: (data) => {
+                const to12h = (hhmm) => {
+                    if (!hhmm) return "";
+                    const [h, m] = String(hhmm).trim().split(":").map(Number);
+                    const hour = isNaN(h) ? 0 : h % 24;
+                    const min = isNaN(m) ? 0 : m;
+                    const ampm = hour < 12 ? "AM" : "PM";
+                    const h12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+                    return `${h12}:${String(min).padStart(2, "0")} ${ampm}`;
+                };
+                const start12 = to12h((data.start_time ?? "").substring(0, 5));
+                const end12 = to12h((data.end_time ?? "").substring(0, 5));
+                return `<span class="d-block text-prm-custom">${data.booking_date ?? ""}</span>
+                            <span class="d-block text-primary"style="font-size:12px;">${start12} - ${end12}</span>`;
+            },
+        },
+        {
+            transTitle: "titles.Remark",
+            className: "align-middle",
+            data: (data, index, tr) => {
+                return `
+                    <div class="text-primary-custom" style="width:320px;">
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ?? "_"}</span>
+                    </div>
+                `;
+            },
+        },
+        {
+            transTitle: "titles.Status",
+            className: "align-middle text-center",
+            data: (data) => {
+                const status = (data.status ?? "").toLowerCase();
+                let cls =
+                    "badge border border-secondary text-secondary bg-secondary-subtle";
+                let label = "Upcoming";
+                if (status === "upcoming") {
+                    cls = "badge border border-info text-info bg-info-subtle";
+                    label = "Upcoming";
+                } else if (status === "in-progress") {
+                    cls =
+                        "badge border border-warning text-warning bg-warning-subtle";
+                    label = "In-Progress";
+                } else if (status === "completed") {
+                    cls =
+                        "badge border border-success text-success bg-success-subtle";
+                    label = "Completed";
+                } else if (status === "cancelled") {
+                    cls =
+                        "badge border border-danger text-danger bg-danger-subtle";
+                    label = "Cancelled";
+                }
+                return `
+                    <span class="${cls} px-3 d-inline-flex align-items-center" style="min-width:90px">
+                        ${label}
+                    </span>
+                `;
+            },
+        },
+        {
+            transTitle: "titles.Last Updated",
+            className: "align-middle",
+            data: (data, index, tr) => {
+                return `<div class="d-flex flex-column">
+                    <span class="text-capitalize text-start text-prm-custom"><span>${data.update_user ?? ""}</span></span>
+                    <span class="text-muted small">${data.updated_at ?? ""}</span>
+                </div>`;
+            },
+        },
+        {
+            transTitle: "titles.Action",
+            className: "col_action align-middle",
+            data: (data) => {
+                // console.log(444, data.status_id);
+
+                if (data.status_id == 2) return "";
+                return `<div class="d-flex justify-content-center align-items-end">
+                    <a href="javascript:void(0)" class="btn--Options btn_reservation_action" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
+                       <i class="fa-solid fa-ellipsis-vertical text-black fs-5"></i>
+                    </a>
+                </div>`;
+            },
+        },
+    ];
+
+    mThis.init = () => {
+        if (mThis.initAlready) return;
+
+        if (mThis.elBookingDateTo && !mThis.elBookingDateTo.value) {
+            const today = new Date().toISOString().split("T")[0];
+            mThis.elBookingDateTo.value = today;
+        }
+
+        mThis.ReservationListView = new ListView("_reservation_list", {
+            fetchApi: `${main_view.base_url}/prm/reservation/list-paginate`,
+            perPage: 8,
+            // rememberCurrentPage: false,
+            apiCluster: main_view.apiCluster,
+            columns: mThis.cols,
+            tableClass:
+                "table table--white rounded-2 overflow-hidden header-uppercase",
+            rowCreated: (data, index, tr) => {
+                tr.dataset.statusid = data.status_id;
+                tr.classList.add("reservation");
+                tr.setAttribute("id", `reservation_id${data.id}`);
+            },
+            listContainerClass: null,
+        });
+
+        mThis.btnAdd.onclick = function (e) {
+            e.preventDefault();
+            const op = {
+                id: null,
+                btn: e.target,
+                onClose: () => {
+                    mThis.ReservationListView.showPage(mThis.getFilterData());
+                },
+            };
+            // if (!AuthManager.allowed(240)) return;
+            CreateReservationDialog.show(op);
+        };
+
+        mThis.pr_tbl = mThis.ReservationListView.getListContainer();
+        const sh_parent = mThis.pr_tbl.parentElement;
+        sh_parent.style.maxHeight = window.innerHeight - 200 + "px";
+        sh_parent.classList.add("overflow-y-auto");
+        sh_parent.classList.add("overflow-x-hidden");
+        window.onresize = () => {
+            sh_parent.style.maxHeight = window.innerHeight - 200 + "px";
+        };
+        mThis.tblReservation = mThis.ReservationListView.getTable();
+
+        mThis.initDropdownMenus(mThis.tblReservation);
+
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
+            el.onchange = (e) => {
+                e.preventDefault();
+                mThis.ReservationListView.showPage(mThis.getFilterData());
+            };
+        });
+
+        mThis.elSearch.addEventListener("keyup", (e) => {
+            e.preventDefault();
+            clearTimeout(mThis.search_timeout);
+            mThis.search_timeout = setTimeout(() => {
+                mThis.ReservationListView.showPage(mThis.getFilterData());
+            }, 250);
+        });
+
+        mThis.initAlready = true;
+    };
+
+    mThis.getFilterData = () => {
+        let p = {
+            status_id: mThis.elFilter_status.value,
+            search_value: mThis.elSearch.value,
+            // building_id: mThis.elBuilding.value,
+            // floor_id: mThis.elFloor.value,
+        };
+
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
+            const f = el.dataset.field;
+            p[f] = el.value;
+        });
+
+        return p;
+    };
+
+    mThis.isActiveView = () =>
+        !!(mThis.self && mThis.self.offsetParent !== null);
+    mThis.refreshListIfActive = () => {
+        if (!mThis.initAlready || !mThis.isActiveView()) return;
+        mThis.ReservationListView.showPage(mThis.getFilterData());
+    };
+
+    mThis.startAutoRefresh = () => {
+        clearInterval(mThis.autoRefreshTimer);
+        clearTimeout(mThis.autoRefreshStartTimeout);
+        const now = Date.now();
+        const msToNextMinute = 60000 - (now % 60000);
+        mThis.autoRefreshStartTimeout = setTimeout(() => {
+            mThis.refreshListIfActive();
+            mThis.autoRefreshTimer = setInterval(() => {
+                mThis.refreshListIfActive();
+            }, mThis.autoRefreshMs);
+        }, msToNextMinute);
+    };
+
+    mThis.initDropdownMenus = (table) => {
+        const menuOptions = {
+            containerElement: table,
+            actionButtonClass: "btn_reservation_action",
+            cssClass: "bg-white shadow",
+            menus: [
+                {
+                    html: '<span class="ps-2" vslang="titles.Modify"></span>',
+                    icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "edit_reservation",
+                },
+                {
+                    html: '<span class="ps-2">Cancel</span>',
+                    icon: `<i class="fa-solid fa-square-xmark fs-5 text-danger"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "cancel_reservation",
+                },
+                {
+                    html: '<span class="ps-2 " vslang="titles.Delete"></span>',
+                    icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "delete_reservation",
+                },
+            ],
+
+            onShow: (me, container) => {
+                const menu = me.getActiveMenus(container);
+                const status_id = parseInt(container.dataset.statusid);
+
+                menu.edit_reservation.style.display = "none";
+                menu.cancel_reservation.style.display = "none";
+                menu.delete_reservation.style.display = "none";
+
+                if (status_id === 1) {
+                    menu.cancel_reservation.style.display = "block";
+                    menu.edit_reservation.style.display = "block";
+                } else if (status_id === 3 || status_id === 4) {
+                    menu.delete_reservation.style.display = "block";
+                }
+            },
+
+            onClick: (menuLink, id, name) => {
+                switch (name) {
+                    case "edit_reservation": {
+                        mThis.editReservation(id, menuLink);
+                        break;
+                    }
+                    case "cancel_reservation": {
+                        mThis.cancelReservation(id, menuLink);
+                        break;
+                    }
+                    case "delete_reservation": {
+                        mThis.deleteReservation(id, menuLink);
+                        break;
+                    }
+
+                    default: {
+                        break;
+                    }
+                }
+            },
+        };
+        new VSDropdownMenu(menuOptions);
+    };
+
+    mThis.editReservation = (id, menulink) => {
+        const op = {
+            id: id,
+            btn: menulink,
+            onClose: () => {
+                mThis.ReservationListView.showPage(mThis.getFilterData());
+            },
+        };
+        CreateReservationDialog.show(op);
+    };
+
+    mThis.cancelReservation = (id, menuLink) => {
+        if (!AuthManager.allowed(242)) return;
+        cv_interact.confirm(
+            "Cancel this reservation ?",
+            {
+                transTitle: "Cancel Reservation",
+                context: "delete",
+                confirmButtonText: "Cancel",
+            },
+            (confirmed) => {
+                if (!confirmed) return;
+                vsapi
+                    .call(
+                        `${main_view.base_url}/prm/reservation/cancel`,
+                        { id: id },
+                        false,
+                        false,
+                        false,
+                    )
+                    .then((res) => {
+                        if (res.status_code === 200) {
+                            cv_interact.success("Reservation cancelled.");
+                            mThis.ReservationListView.showPage(
+                                mThis.getFilterData(),
+                            );
+                        } else {
+                            cv_interact.error(
+                                res.error_message || "Cancel failed",
+                            );
+                        }
+                    });
+            },
+        );
+    };
+
+    mThis.deleteReservation = (id, menuLink) => {
+        if (!AuthManager.allowed(242)) return;
+        cv_interact.confirm(
+            "Delete this reservation?",
+            {
+                transTitle: "Delete Reservation",
+                context: "delete",
+                confirmButtonText: "Delete",
+            },
+            (e) => {
+                if (!e) return;
+                vsapi
+                    .call(
+                        `${main_view.base_url}/prm/reservation/delete`,
+                        { id: id },
+                        false,
+                        false,
+                        false,
+                    )
+                    .then((res) => {
+                        if (res.status_code === 200) {
+                            cv_interact.success("Reservation deleted.");
+                            mThis.ReservationListView.showPage(
+                                mThis.getFilterData(),
+                            );
+                        } else {
+                            cv_interact.error(
+                                res.error_message || "Delete failed",
+                            );
+                        }
+                    });
+            },
+        );
+    };
+
+    mThis.prepareFormOptions = (onFinish) => {
+        vsapi
+            .call(
+                `${main_view.base_url}/prm/reservation/form-options`,
+                null,
+                null,
+                null,
+            )
+            .then((res) => {
+                const d = res.status_code == 200 ? res.data : {};
+                VSUtil.setComboItems(
+                    mThis.elFilter_status,
+                    d.reservation_statuses,
+                    "id",
+                    "reservation_status",
+                    "",
+                    "All Statuses",
+                    "",
+                );
+                if (typeof onFinish === "function") onFinish();
+            });
+    };
+
+    mThis.show = (options) => {
+        mThis.init();
+        mThis.options = options;
+        mThis.prepareFormOptions(() => {
+            main_view.setContentView(mThis.self, mThis.title_prop);
+            mThis.ReservationListView.showPage(mThis.getFilterData());
+            mThis.startAutoRefresh();
+        });
+    };
+    return mThis;
+})();
+
+const CreateReservationDialog = (() => {
+    const self = {};
+    let dialog = null;
+
+    self.show = (op) => {
+        dialog =
+            dialog ||
+            new GeneralDialog({
+                cssClass: "modal-lg vs-modal",
+                backdrop: "static",
+                keyboard: true,
+                createContent: () => {
+                    return [
+                        `<div class="row g-3 justify-content-center">
+                            <input type="hidden" class="data-input" data-field="tenant_id">
+                            <div class="col-6">
+                                <div class="vs-material-field">
+                                    <input name="tenant" class="data-input form-control" data-field="tenant_name" placeholder="Tenant" autocomplete="off">
+                                    <label>Tenant</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="vs-material-field">
+                                    <input name="phone_number" class="data-input form-control" data-field="phone_number" disabled placeholder=" "></input>
+                                    <label>Phone Number</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <select data-style="material" name="amenity" class="data-input form-control" data-field="amenity_id" placeholder="Amenity">
+                                </select>
+                            </div>
+
+                            <div class="col-6">
+                                <div class="vs-material-field">
+                                    <input type="text" class="data-input form-control" data-field="amenity_code" placeholder=" " disabled />
+                                    <label>Amenity Code</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="vs-material-field">
+                                    <input type="text" data-type="date" name="booking_date" required class="data-input form-control form_input" data-field="booking_date" />
+                                    <label>Booking Date</label>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="vs-material-field">
+                                    <input type="time" name="start_time" class="data-input form-control form_input" data-field="start_time" placeholder=" " />
+                                    <label>Check-in Time</label>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="vs-material-field">
+                                    <input type="time" name="end_time" required class="data-input form-control form_input" data-field="end_time" placeholder=" " />
+                                    <label>Check-out Time</label>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="vs-material-field">
+                                    <textarea name="remarks" class="data-input form-control" data-field="remarks" placeholder=" "></textarea>
+                                    <label>Remark</label>
+                                </div>
+                            </div>
+                        </div>`,
+                    ].join("");
+                },
+
+                contentCreated: (me) => {
+                    me.searchTenant = VSSearchInput.init(me.controls.tenant, {
+                        type: "select",
+                        prefetch: true,
+                        query: {
+                            from: "tenants",
+                            select: ["id", "name", "phone_number"],
+                            where: [["status_id", "=", 2]],
+                            orderBy: [["id", "DESC"]],
+                            limit: 50,
+                            searchFields: {
+                                name: "LIKE",
+                                phone_number: "LIKE",
+                            },
+                        },
+                        showColumnHeader: true,
+                        columns: {
+                            name: "Name",
+                            phone_number: "Phone",
+                        },
+                        onSelect: (tenant) => {
+                            me._selectedTenantId = tenant.id;
+
+                            // Direct mapping from the search result
+                            if (me.controls.phone_number) {
+                                me.controls.phone_number.value =
+                                    tenant.phone_number || "";
+                            }
+                        },
+                    });
+                    me.searchTenant.reset("");
+                },
+
+                configSelect: [
+                    {
+                        name: "amenity_id",
+                        data: "amenities",
+                        textField: "amenity",
+                        valueField: "id",
+                    },
+
+                    {
+                        name: "reservation_statuses",
+                        data: "reservation_statuses",
+                        textField: "reservation_status",
+                        valueField: "id",
+                    },
+                ],
+
+                prepareFormOptions: {
+                    createTitle: "Create Reservation",
+                    modifyTitle: "Modify Reservation",
+                    targetProp: "reservation_details",
+                    api: {
+                        endpoint: [
+                            main_view.base_url,
+                            "/prm/reservation/form-options",
+                        ].join(""),
+                        params: (op) => {
+                            return {
+                                id: op.id,
+                                tenant_id: op.tenant_id ?? null,
+                            };
+                        },
+                    },
+                },
+
+                onPrepareForm: (me, data) => {
+                    const details = data?.reservation_details || {};
+                    const amenitySelect = me.divModal.querySelector(
+                        '[data-field="amenity_id"]',
+                    );
+                    const applyAmenityData = (amenityId) => {
+                        const amenities = Array.isArray(data?.amenities)
+                            ? data.amenities
+                            : [];
+                        const selected = amenities.find(
+                            (item) => String(item.id) === String(amenityId),
+                        );
+                        const codeInput = me.divModal.querySelector(
+                            '[data-field="amenity_code"]',
+                        );
+                        if (codeInput)
+                            codeInput.value = selected?.amenity_code ?? "";
+                    };
+                    if (
+                        me.searchTenant &&
+                        typeof me.searchTenant.reset === "function"
+                    ) {
+                        me.searchTenant.reset();
+                    }
+
+                    amenitySelect.onchange = (e) =>
+                        applyAmenityData(e.target.value);
+                    if (me.dataOptions.id > 0) {
+                        // console.log(1221, data);
+                        me.controls.tenant_id.value = details.tenant_id;
+                        setTimeout(() => {
+                            if (details.amenity_id) {
+                                amenitySelect.value = details.amenity_id;
+                                applyAmenityData(details.amenity_id);
+                            }
+                            // $(amenitySelect).trigger("change");
+                        }, 500);
+                    }
+                },
+
+                buttons: [
+                    {
+                        label: '<span vslang="buttons.Cancel"></span>',
+                        cssClass: "btn btn-secondary",
+                        click: (me, btn) => {
+                            me.hide(false);
+                            me._selectedTenantId = null;
+                        },
+                    },
+                    {
+                        label: '<span vslang="buttons.Save"></span>',
+                        cssClass: "btn btn-primary",
+                        click: (me, btn) => {
+                            const op = me.getData();
+                            op.id = me.dataOptions.id;
+                            if (
+                                me._selectedTenantId != null &&
+                                me._selectedTenantId !== undefined
+                            ) {
+                                op.tenant_id = me._selectedTenantId;
+                            }
+
+                            // op.tenant_id = me._selectedTenantId;
+                            op.id = me.dataOptions.id;
+                            // console.log(123, op);
+
+                            vsapi
+                                .call(
+                                    [
+                                        main_view.base_url,
+                                        "/prm/reservation/save",
+                                    ].join(""),
+                                    op,
+                                    btn,
+                                    null,
+                                )
+                                .then((res) => {
+                                    if (res.status_code === 200) {
+                                        me.hide(true, op);
+                                        me._selectedTenantId = null;
+                                        if (me.dataOptions.id > 0) {
+                                            cv_interact.success(
+                                                "Reservation has been updated successfully.",
+                                            );
+                                        } else {
+                                            cv_interact.success(
+                                                "New reservation has been added successfully.",
+                                            );
+                                        }
+                                    } else {
+                                        cv_interact.error(res.error_message);
+                                    }
+                                });
+                        },
+                    },
+                ],
+            });
+        dialog.show(op);
+    };
+    return self;
+})();
+
+"use strict";
+
+var TenantProfileComponent = new (function () {
+    const mThis = this;
+    mThis.title_prop = "Tenant Management";
+    this.defaultPage = "tenant_list";
+    mThis.self = main_view.VSAppContent.querySelector(
+        "#_main_tenant_component",
+    );
+    mThis.btnAdd = mThis.self.querySelector("#_btnAddTenant");
+    mThis.btnDocument = mThis.self.querySelector("#_btnDocument");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter_tenant");
+    mThis.elSearch = mThis.self.querySelector("#_search_tenant_");
+    mThis.elStatus = mThis.self.querySelector("#_el_tenant_status");
+    mThis.btnBack = document.querySelector("#_btn_back_tenant");
+    mThis.divTenantListContainer = mThis.self.querySelector(
+        "#_tenant_list_container",
+    );
+    mThis.divProfileView = document.querySelector("#_ten_profile_view");
+    mThis.cardViewContainer = mThis.self.querySelector("#_tenant_card_view");
+    mThis.listViewContainer = mThis.self.querySelector("#_tenant_list_view");
+    mThis.currentViewMode = "card";
+    mThis.paginationContainer = mThis.self.querySelector(
+        "#tenant_card_container_pagination",
+    );
+    this.pages = {
+        tenant_list: this.divTenantListContainer,
+        profile_view: this.divProfileView,
+    };
+    mThis.profile_info_tenant = this.divProfileView.querySelector(
+        "#profile_info_tenant",
+    );
+    // mThis.cols = [
+    //     {
+    //         transTitle: "",
+    //         className: "align-middle",
+    //     },
+    //     {
+    //         transTitle: "titles.Photo",
+    //         className: "align-middle",
+    //         data: (data) =>
+    //             `<img class="btn-view-tenant-photo" data-id="${data.id}" src="${data.image_url || `${main_view.base_url}/assets/images/default/placeholder.svg`}" alt="" style="width: 50px; height: 50px; border-radius: 6px; margin-right: 10px;"/>`,
+    //     },
+    //     {
+    //         transTitle: "titles.Code",
+    //         className: "align-middle",
+    //         data: (data) => {
+    //             return `<span class="text-prm-custom text-nowrap">${data.code ?? "_"}</span>`;
+    //         },
+    //     },
+    //     {
+    //         transTitle: "titles.Name",
+    //         className: "align-middle",
+    //         data: (data) => {
+    //             const sexLabel =
+    //                 data.sex === "M"
+    //                     ? "Male"
+    //                     : data.sex === "F"
+    //                       ? "Female"
+    //                       : "_";
+    //             return `
+    //                 <div class="text-prm-custom" style="width:120px;">
+    //                     <span class="text-wrap text-break text-capitalize" style ="word-break:break-word;">${data.name ?? "_"}</span>
+    //                     <span class="d-block text-primary" style="font-size:12px;">${sexLabel}</span>
+    //                 </div>
+    //             `;
+    //         },
+    //     },
+    //     {
+    //         transTitle: "titles.Date of Birth",
+    //         className: "align-middle ",
+    //         data: (data) => {
+    //             return `<span class="text-prm-custom text-nowrap">${data.date_of_birth ?? "_"}</span>`;
+    //         },
+    //     },
+    //     {
+    //         transTitle: "titles.National ID",
+    //         className: "align-middle",
+    //         data: (data) => {
+    //             return `<span class="text-prm-custom text-nowrap">${data.national_id ?? "_"}</span>`;
+    //         },
+    //     },
+    //     {
+    //         transTitle: "titles.Passport",
+    //         className: "align-middle",
+    //         data: (data) => {
+    //             return `<span class="text-prm-custom text-nowrap">${data.passport_number ?? "_"}</span>`;
+    //         },
+    //     },
+    //     {
+    //         transTitle: "titles.Contact Info",
+    //         className: "align-middle",
+    //         data: (data) =>
+    //             `<span class="d-block text-prm-custom"><i class="fa-solid text-success px-1 fa-phone" style="font-size:12px;"></i> ${data.phone_number ?? "_"}</span>
+    //              <span class="d-block text-primary"><i class="fa-solid text-primary px-1 fa-envelope" style="font-size:12px;"></i> ${data.email ?? "_"}</span>`,
+    //     },
+    //     {
+    //         transTitle: "titles.Status",
+    //         className: "align-middle text-center",
+    //         data: (data) => {
+    //             const status = data.status;
+    //             let cls =
+    //                 "badge text-warning bg-warning-subtle border border-warning";
+
+    //             if (status == "Pending") {
+    //                 cls =
+    //                     "badge text-warning bg-warning-subtle border border-warning";
+    //             } else if (status === "Inactive") {
+    //                 cls =
+    //                     "badge text-danger bg-danger-subtle border border-danger";
+    //             } else if (status == "Active") {
+    //                 cls =
+    //                     "badge text-success bg-success-subtle border border-success";
+    //             }
+
+    //             return `
+    //                 <span class="${cls} text-capitalize d-inline-block text-center"
+    //                     style="min-width:70px"
+    //                     data-status_id="${data.status_id}">
+    //                     ${data.status ?? ""}
+    //                 </span>
+    //             `;
+    //         },
+    //     },
+
+    //     {
+    //         transTitle: "titles.Last Updated",
+    //         className: "align-middle",
+    //         data: (data) => {
+    //             return `<div class="d-flex flex-column">
+    //                 <span class="text-capitalize text-start text-prm-custom">${data.update_user ?? ""}</span>
+    //                 <small class="text-muted">${data.updated_at ?? ""}</small>
+    //             </div>`;
+    //         },
+    //     },
+    //     {
+    //         className: "col_action align-middle",
+    //         data: (data) => `
+    //             <div class="d-flex justify-content-center align-items-end">
+    //                 <a href="javascript:void(0)"
+    //                 class="btn-tenant-dropdown-action"
+    //                 data-id="${data.id}"
+    //                 data-statusid="${data.status_id}"
+    //                 aria-haspopup="true"
+    //                 aria-expanded="false"
+    //                 style="cursor: pointer; padding: 8px;">
+    //                     <i class="fa-solid fa-ellipsis-vertical text-prm-custom fs-5" ></i>
+    //                 </a>
+    //             </div>`,
+    //     },
+    // ];
+    mThis.init = () => {
+        if (mThis.initAlready) return;
+        mThis.tenantCardView = new ListView(mThis.cardViewContainer, {
+            fetchApi: `${main_view.base_url}/prm/tenant/list-paginate`,
+            perPage: 8,
+            apiCluster: main_view.apiCluster,
+            paginationContainer: mThis.paginationContainer,
+            renderItems: (items, container) => {
+                mThis.renderTenantCard(container, items);
+            },
+            listContainerClass: null,
+        });
+        mThis.tenantListView = new ListView(mThis.listViewContainer, {
+            fetchApi: `${main_view.base_url}/prm/tenant/list-paginate`,
+            perPage: 8,
+            columns: mThis.cols,
+            apiCluster: main_view.apiCluster,
+            tableClass:
+                "table table--white rounded-2 overflow-hidden header-uppercase text-nowrap",
+            rowCreated: (data, index, tr) => {
+                // console.log(9090,tr);
+
+                tr.dataset.id = data.id;
+                tr.dataset.statusid = data.status_id;
+                mThis.initDropdownMenus(tr);
+            },
+        });
+        mThis.btnAdd.onclick = function (e) {
+            e.preventDefault();
+            const op = {
+                id: null,
+                btn: e.target,
+                onClose: () => {
+                    mThis.renderView();
+                    mThis.tenantListView.showPage(mThis.getFilterData());
+                },
+            };
+            CreateTenantDialog.show(op);
+        };
+        mThis.btnBack.onclick = function (e) {
+            e.preventDefault();
+            mThis.showPage("tenant_list", mThis.getFilterData());
+        };
+        const cardTab = document.getElementById("tenantViewCard");
+        const listTab = document.getElementById("tenantViewList");
+        if (cardTab && listTab) {
+            cardTab.addEventListener("change", () => {
+                mThis.currentViewMode = "card";
+                mThis.renderView();
+            });
+
+            listTab.addEventListener("change", () => {
+                mThis.currentViewMode = "list";
+                mThis.renderView();
+            });
+        }
+        mThis.pr_tbl = mThis.tenantListView.getListContainer();
+        const sh_parent = mThis.pr_tbl.parentElement;
+        sh_parent.style.maxHeight = window.innerHeight - 190 + "px";
+        sh_parent.classList.add("overflow-y-auto");
+        // sh_parent.classList.add("overflow-x-hidden");
+        window.onresize = () => {
+            sh_parent.style.maxHeight = window.innerHeight - 190 + "px";
+        };
+        mThis.tblTenant = mThis.tenantListView.getTable();
+
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
+            el.onchange = () => {
+                mThis.renderView();
+            };
+        });
+        let timeOut = null;
+        mThis.elSearch.onkeyup = function (e) {
+            e.preventDefault();
+            clearTimeout(timeOut);
+            timeOut = setTimeout(() => {
+                mThis.renderView();
+            }, 250);
+        };
+
+        mThis.initDropdownMenus(mThis.cardViewContainer);
+        mThis.initAlready = true;
+    };
+
+    mThis.initDropdownMenus = (listContainer) => {
+        const menuOptions = {
+            containerElement: listContainer,
+            actionButtonClass: "btn-tenant-dropdown-action",
+            cssClass: "bg-white shadow",
+            //menuItemClass:"",
+            menus: [
+                {
+                    html: '<span class="ps-2">View Details</span>',
+                    icon: `<i class="fa-solid fa-user fs-5 text-info"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "view_profile",
+                },
+                {
+                    html: '<span class="ps-2">Modify Tenant</span>',
+                    icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "modify_tenant",
+                },
+                {
+                    html: '<span class="ps-2">Delete Tenant</span>',
+                    icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "delete_tenant",
+                },
+                {
+                    html: '<span class="ps-2">Upload Document</span>',
+                    icon: `<i class="fa-solid fa-file-upload fs-5 text-muted"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "upload_document",
+                },
+                {
+                    html: '<span class="ps-2">Create Contract</span>',
+                    icon: `<i class="fa-solid fa-file-contract fs-5 text-success"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "create_contract",
+                },
+                {
+                    html: '<span class="ps-2">Service Requests</span>',
+                    icon: `<i class="fa-solid fa-screwdriver-wrench fs-5"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "service_request",
+                },
+            ],
+            onShow: (me, container) => {
+                const menu = me.getActiveMenus(container);
+                const status_id = container.dataset.statusid;
+                // console.log(123456, status_id);
+
+                // menu.edit_student.style.display = enroll_finalized == 1 ? 'none' : 'block';
+                menu.create_contract.style.display =
+                    Number(status_id) !== 2 ? "block" : "none";
+                menu.service_request.style.display = "none";
+                // menu.upload_document.style.display =status_id == 1 || status_id == 2  ? "block" : "none";
+            },
+            // adjustPosition: {
+            //     top: -200,
+            //     left: -300
+            // },
+
+            onClick: (menuLink, id, name) => {
+                switch (name) {
+                    case "view_profile": {
+                        mThis.showPage("profile_view", { tenant_id: id });
+                        break;
+                    }
+                    case "create_contract": {
+                        mThis.createContract(id, menuLink);
+                        break;
+                    }
+                    case "upload_document": {
+                        mThis.uploadDocument(id, menuLink);
+                        break;
+                    }
+                    case "modify_document": {
+                        mThis.modifyDocument(id, menuLink);
+                        break;
+                    }
+                    case "modify_tenant": {
+                        mThis.editTenant(id, menuLink);
+                        break;
+                    }
+                    case "delete_tenant": {
+                        mThis.deleteTenant(id, menuLink);
+                        break;
+                    }
+                    case "service_request": {
+                        mThis.serviceRequest(id, menuLink);
+                        break;
+                    }
+                    default: {
+                        break;
+                    }
+                }
+            },
+        };
+        new VSDropdownMenu(menuOptions);
+    };
+    mThis.editTenant = (id, menuLink) => {
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.renderView();
+            },
+        };
+        CreateTenantDialog.show(op);
+    };
+    mThis.serviceRequest = (id, menuLink) => {
+        let op = {
+            id: null, // id
+            btn: menuLink,
+            onClose: () => {
+                mThis.renderView();
+            },
+        };
+        CreateServiceRequestDialog.show(op);
+    };
+    mThis.createContract = (id, menuLink) => {
+        let op = {
+            id: null,
+            tenant_id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.renderView();
+            },
+        };
+        ContractDialog.show(op);
+    };
+    mThis.uploadDocument = (id, menuLink) => {
+        let op = {
+            id: null,
+            tenant_id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.renderView();
+            },
+        };
+        // console.log(111, op);
+
+        TenantDocumentDialog.show(op);
+    };
+    mThis.modifyDocument = (id, menuLink) => {
+        onClose: (() => {
+            mThis.renderView();
+        },
+            // mThis.showPage("profile_view", { tenant_id: id });
+            TenantDocumentDialog.show(op));
+    };
+    mThis.renewContract = (id, menuLink) => {
+        let op = {
+            id: null,
+            btn: menuLink,
+            onClose: () => {
+                mThis.renderView();
+            },
+        };
+        // renewDialog.show(op);
+        // alert("coming soon!");
+    };
+    mThis.deleteTenant = (id, menuLink) => {
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.renderView();
+            },
+        };
+        // if (!AuthManager.allowed(242)) return;
+        cv_interact.confirm(
+            "Delete this Tenant?",
+            {
+                title: "Delete Tenant",
+                context: "delete",
+                confirmButtonText: "Delete",
+            },
+            function (e) {
+                if (e) {
+                    vsapi
+                        .call(
+                            `${main_view.base_url}/prm/tenant/delete`,
+                            op,
+                            false,
+                            false,
+                            false,
+                        )
+                        .then((res) => {
+                            if (res.status_code == 200) {
+                                mThis.renderView();
+                                cv_interact.success("Tenant has been deleted.");
+                            } else {
+                                cv_interact.error(res.error_message);
+                            }
+                        });
+                }
+            },
+        );
+    };
+    mThis.renderTenantCard = (div, data) => {
+        data = data ?? [];
+        // if (!AuthManager) {
+        //     cv_interact.info("It seems that you have problem with connection, you may need to refresh page and try again!");
+        //     return;
+        // }
+        AuthManager.init().then((user) => {
+            mThis.renderCard(div, data);
+        });
+    };
+    mThis.renderCard = (container, data) => {
+        // console.log(8888, data);
+        container.innerHTML = "";
+        let html = `<div class="row g-3">`;
+        if (Array.isArray(data) && data.length > 0) {
+            data.forEach((d) => {
+                /** Backend: status_id 2 means tenant has a currently active contract. */
+                const hasContractAlready = Number(d.status_id) === 2;
+                const currentUnitCode =
+                    hasContractAlready && d.space_code ? d.space_code : "Unit";
+                const status = (d.status || "Pending").toLowerCase();
+                let statusClass = "";
+                switch (status) {
+                    case "active":
+                        statusClass =
+                            "badge text-success bg-success-subtle border border-success";
+
+                        break;
+                    case "inactive":
+                        statusClass =
+                            "badge text-danger bg-danger-subtle border border-danger";
+
+                        break;
+                    default:
+                        statusClass =
+                            "badge text-warning bg-warning-subtle border border-warning";
+
+                        break;
+                }
+                html += `
+                    <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+                        <div class="card h-100 shadow-sm border-0 rounded-2">
+                            <div class="card-header-tenant border-0 rounded-top-2 d-flex justify-content-center align-items-center">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="d-flex gap-3 align-items-start">
+                                        <div class="flex-shrink-0 rounded-3 shadow-sm overflow-hidden d-flex align-items-center justify-content-center"
+                                            style="width:80px;height:80px;">
+                                            <img src="${d.image_url || main_view.asset_url + "/images/default/placeholder.svg"}" alt="Profile" class="img-fluid w-100 h-100 object-fit-cover">
+                                        </div>
+                                        <div class="flex items-start justify-between mb-6">
+                                            <span class="fw-semibold text-start mb-1 text-dark text-capitalize">${d.name}</span>
+                                            <div class="d-flex align-items-center mt-1 gap-2">
+                                                    <span class="${statusClass}" style="min-width:70px; text-transform: capitalize;">${status}</span>
+                                            </div>
+                                        </div>
+                                        <div class="flex-shrink-0"> <a href="javascript:void(0)" class="btn-tenant-dropdown-action" data-id="${d.id}" data-statusid="${d.status_id}" aria-haspopup="true" aria-expanded="false">
+                                            <i class="fa-solid fa-ellipsis-vertical text-primary-custom fs-5"></i>
+                                        </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body text-center" style="background-color:#fbfcfd; padding: 1rem;">
+                                <div class="row g-4 py-2 border-bottom border-gray">
+                                    <div class="col-5">
+                                        <div class="card bg-prm-custom text-center shadow-sm">
+                                                <div class="fs-6 py-1 text-gold-custom">${currentUnitCode}</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-1"></div>
+                                    <div class="col-6">
+                                        ${
+                                            hasContractAlready
+                                                ? `
+                                                <div class="d-flex flex-column text-center gap-1">
+                                                    <span class="text-prm-custom fw-semibold">
+                                                        Lease Expiry
+                                                    </span>
+                                                    <small class="text-muted">
+                                                        ${d.end_date || d.start_date || "—"}
+                                                    </small>
+                                                </div>
+                                            `
+                                                : `
+                                                <div class="text-end">
+                                                    <a href="javascript:void(0)"
+                                                    class="create-tenant-contract fw-semibold"
+                                                    data-id="${d.id}" data-name="${d.name}">
+                                                        <span class="tool-tip">
+                                                            <i class="fa-solid fa-file-circle-plus text-prm-custom fs-6"></i>
+                                                            <span class="tool-tiptext fs-6">Create Contract</span>
+                                                        </span>
+                                                    </a>
+                                                </div>
+                                            `
+                                        }
+
+                                    </div>
+                                </div>
+                                <div class="card_container" style="max-width: 250px;">
+                                    <p class="ps-3 mb-2 text-prm-custom">
+                                        <i class="fa-solid fa-hashtag me-2 text-muted"></i>
+                                        <span>${d.code ?? "_"}</span>
+                                    </p>
+                                    <p class="ps-3 mb-2 text-prm-custom">
+                                        <i class="fa-regular fa-calendar me-2 text-muted"></i>
+                                        <span>${d.date_of_birth ?? "_"}</span>
+                                    </p>
+                                    <p class="ps-3 mb-2 text-prm-custom">
+                                        <i class="fa-solid fa-phone me-2 text-muted"></i>
+                                        ${d.phone_number || ""}
+                                    </p>
+                                    <p class="ps-3 mb-2 text-prm-custom">
+                                        <i class="fa-solid fa-at me-2 text-muted"></i>
+                                        ${d.email || "_"}
+                                    </p>
+
+
+                                </div>
+                            </div>
+                                <div class="d-flex justify-content-between rounded-bottom-2 align-items-center px-2 py-2"
+                                    style="font-size: 1rem; background-color: #d4d4db; border-top: 1px solid #e2e8f0;">
+
+                                    <span style="color: #64748b; font-size: 0.85rem;">
+                                        Last Updated :  ${d.update_user || "System"}
+                                    </span>
+
+                                    <a href="javascript:void(0)"
+                                    class="text-primary-custom see-tenant-detail  text-decoration-none" style="font-size: 0.85rem;"
+                                    data-id="${d.id}">
+                                        View Details <i class="fa-solid fa-arrow-right ms-1" style="font-size: 0.85rem;"></i>
+                                    </a>
+                                </div>
+
+                        </div>
+                    </div>
+                    `;
+            });
+        } else {
+            html += `
+            <div class="col-12">
+                <div class="text-center py-5 text-muted">
+                    No tenants found
+                </div>
+            </div>`;
+        }
+        html += `</div>`;
+        container.innerHTML = html;
+        const seeProfileInfo =
+            mThis.cardViewContainer.querySelectorAll(".see-tenant-detail");
+        seeProfileInfo.forEach((link) => {
+            link.addEventListener("click", (e) => {
+                const tenantId = e.currentTarget.dataset.id;
+                mThis.tenant_id = tenantId;
+                mThis.showPage("profile_view", tenantId);
+                //const employeeData = data.find((emp) => emp.id == employeeId);
+                // if (employeeData) {
+                //     let sub_content = mThis.self.querySelector("#sub_content");
+                //     sub_content.classList.add("d-none");
+                //     let view_see_info =
+                //         mThis.self.querySelector("#view_see_info__");
+                //     view_see_info.classList.remove("d-none");
+
+                //     mThis.renderProfile(employeeData);
+                //     mThis.renderCardCenter(employeeId);
+                //     mThis.renderCardLeft(employeeId);
+                //     mThis.renderCardRight(employeeId);
+                //     mThis.renderCardTaxAllowance(employeeId);
+                //     mThis.renderEmpDocuments(employeeId);
+                // } else {
+                //     console.error(
+                //         "Employee data not found for ID:",
+                //         employeeId
+                //     );
+                // }
+            });
+        });
+
+        const createContract = mThis.cardViewContainer.querySelectorAll(
+            ".create-tenant-contract",
+        );
+        createContract.forEach((link) => {
+            link.addEventListener("click", (e) => {
+                const tenantId = e.currentTarget.dataset.id;
+                mThis.tenant_id = tenantId;
+                const op = {
+                    id: null,
+                    tenant_id: tenantId,
+                    btn: e.currentTarget,
+                    onClose: () => {
+                        mThis.renderView();
+                    },
+                };
+                ContractDialog.show(op);
+            });
+        });
+        const container_te = mThis.cardViewContainer;
+        const te_parent = container_te;
+        te_parent.style.maxHeight = window.innerHeight - 230 + "px";
+        te_parent.classList.add("overflow-y-auto");
+        te_parent.classList.add("overflow-x-hidden");
+
+        window.onresize = () => {
+            te_parent.style.maxHeight = window.innerHeight - 230 + "px";
+        };
+    };
+
+    mThis.renderView = () => {
+        const params = mThis.getFilterData();
+
+        if (mThis.currentViewMode === "card") {
+            mThis.cardViewContainer.classList.remove("d-none");
+            mThis.listViewContainer.classList.add("d-none");
+            mThis.paginationContainer.style.display = "block";
+            mThis.tenantCardView.showPage(params);
+        } else {
+            mThis.cardViewContainer.classList.add("d-none");
+            mThis.listViewContainer.classList.remove("d-none");
+            // mThis.paginationContainer.style.display = "none";
+            mThis.tenantListView.showPage(params);
+        }
+    };
+    mThis.getFilterData = () => {
+        let p = {
+            search_value: mThis.elSearch.value,
+        };
+
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
+            p[el.dataset.field] = el.value;
+        });
+
+        return p;
+    };
+    mThis.getPageContainer = (pageName) => {
+        return mThis.pages[pageName];
+    };
+    mThis.openTenantDocument = async (id, mode = "view") => {
+        const res = await vsapi.call(
+            [main_view.base_url, "/prm/tenant/document/download"].join(""),
+            { id },
+            false,
+            null,
+        );
+        if (res.status_code !== 200) {
+            cv_interact.error(res.error_message || "Failed to open document.");
+            return;
+        }
+        const { data_url, file_name } = res.data || {};
+        if (!data_url) {
+            cv_interact.error("Document URL is missing.");
+            return;
+        }
+        if (mode === "download") {
+            const a = document.createElement("a");
+            a.href = data_url;
+            a.download = file_name || "document";
+            a.target = "_blank";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            return;
+        }
+
+        const extFromName = (file_name || "").split(".").pop();
+        const ext = String(
+            (res.data && res.data.ext) || extFromName || "",
+        ).toLowerCase();
+
+        const overlay = document.createElement("div");
+        overlay.style.cssText =
+            "position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:9999; display:flex; justify-content:center; align-items:center; cursor:pointer;";
+
+        const wrapper = document.createElement("div");
+        wrapper.style.cssText =
+            "position:relative; max-width:90vw; max-height:90vh;";
+
+        const isImage = ["png", "jpg", "jpeg"].includes(ext);
+        const isPdf = ext === "pdf";
+
+        if (isImage) {
+            const img = document.createElement("img");
+            img.src = data_url;
+            img.style.cssText =
+                "max-width:100%; max-height:90vh; border-radius:8px; box-shadow:0 4px 32px #000;";
+            wrapper.appendChild(img);
+        } else if (isPdf) {
+            const iframe = document.createElement("iframe");
+            iframe.src = data_url;
+            iframe.style.cssText =
+                "width:80vw; height:85vh; border:none; border-radius:8px;";
+            wrapper.appendChild(iframe);
+        } else {
+            window.open(data_url, "_blank");
+            return;
+        }
+
+        const btnClose = document.createElement("button");
+        btnClose.style.cssText =
+            "position:absolute; top:-16px; right:-16px; border:none; background:#fff; border-radius:50%; width:32px; height:32px; font-size:18px; cursor:pointer; line-height:1;";
+        btnClose.innerHTML = "&times;";
+        btnClose.onclick = (e) => {
+            e.stopPropagation();
+            document.body.removeChild(overlay);
+        };
+
+        wrapper.appendChild(btnClose);
+        overlay.appendChild(wrapper);
+        overlay.onclick = () => document.body.removeChild(overlay);
+        document.body.appendChild(overlay);
+    };
+    mThis.showPage = async (pageName, op = {}) => {
+        if (this.self.style.display !== "block") {
+            main_view.setContentView(this.self, this.title_prop);
+        }
+        switch (pageName) {
+            case "tenant_list": {
+                mThis.currentPage = "tenant_list";
+                mThis.renderView();
+                break;
+            }
+            case "profile_view": {
+                mThis.currentPage = "profile_view";
+                const tenant_id = op.tenant_id || op.id || op;
+                const p = { id: tenant_id };
+                const res = await vsapi.call(
+                    [main_view.base_url, "/prm/tenant/details"].join(""),
+                    p,
+                    false,
+                    null,
+                );
+                const data = res.data || {};
+                mThis.renderProfile(data);
+                break;
+            }
+            default: {
+                return;
+            }
+        }
+        const targetPage = mThis.getPageContainer(pageName);
+        const siblings = Array.from(targetPage.parentElement.children);
+        // Hide all siblings smoothly
+        siblings.forEach((div) => {
+            if (div !== targetPage && div.style.display !== "none") {
+                div.style.display = "none";
+            }
+        });
+        targetPage.style.display = "block";
+    };
+    mThis.renderProfile = (data) => {
+        // console.log(123, data);
+
+        let cls_class = "";
+        if (data && data.status) {
+            switch (data.status) {
+                case "Pending":
+                    cls_class =
+                        "badge text-warning bg-warning-subtle border border-warning";
+                    break;
+                case "Active":
+                    cls_class =
+                        "badge text-success bg-success-subtle border border-success";
+                    break;
+                case "Inactive":
+                    cls_class =
+                        "badge text-danger bg-danger-subtle border border-danger";
+                    break;
+                default:
+                    cls_class = "badge text-muted bg-light";
+                    break;
+            }
+        }
+        let html = `
+        <div class="row g-4 d-flex align-items-stretch"> <div class="col-12 col-lg-3">
+                <div class="card shadow-sm mb-3 h-100">
+                    <div class="card-body text-center d-flex flex-column">
+                        <div class="position-relative d-inline-block mb-3">
+                            <img src="${data.image_url || `${main_view.base_url}/assets/images/default/placeholder.svg`}"
+                                class="rounded-circle border shadow-sm"
+                                width="140" height="140"
+                                style="object-fit: cover; object-position: center;">
+                        </div>
+                        <h4 class="fw-bold mb-2 text-capitalize">${data.name}</h4>
+                        <div class="mb-3">
+                            <span class="${cls_class} px-3 py-2">${data.status}</span>
+                        </div>
+                        <hr class="my-3">
+
+                        <div class="mt-auto">
+                            <div class="row g-3 text-center">
+                                <div class="col-6">
+                                    <div class="p-3 bg-light rounded">
+                                        <div class="text-muted small">ID</div>
+                                        <div class="">${data.code ?? "_"}</div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="p-3 bg-light rounded">
+                                        <div class="text-muted small">Unit</div>
+                                        <div class="">${data.space_code ?? "_"}</div>
+                                    </div>
+                                </div>
+                                <div class="col-12 mb-2">
+                                    <div class="p-3 bg-light rounded text-center">
+                                        <h6 class="mb-3">Lease Terms</h6>
+                                        <div class="row text-center">
+                                            <div class="col-6 border-end border-info">
+                                                <div class="text-muted mb-1 small">Start Date</div>
+                                                <div class="small">${data.start_date ?? "_"}</div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="text-muted mb-1 small">End Date</div>
+                                                <div class="small">${data.end_date ?? "_"}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-9">
+                <div class="card shadow-sm h-100"> <div class="card-header bg-white">
+                        <ul class="nav nav-tabs card-header-tabs" id="tenantTabs">
+                            <li class="nav-item">
+                                <a class="nav-link active fw-semibold" href="#overview_tenant_detail">Overview</a>  
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link fw-semibold" href="#lease_tenant_history">Contract</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link fw-semibold" href="#document_tenant_list">Documents</a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="card-body tab-content">
+                        <div class="tab-pane py-2 active" id="overview_tenant_detail">
+                            <h5 class="fw-bold mb-2 d-flex align-items-center">
+                                <i class="fa fa-user me-2 text-primary"></i> Personal Information
+                            </h5>
+                            <div class="row g-4 mb-5">
+                                <div class="col-md-4"><small class="text-muted">Name</small><div class="text-capitalize">${data.name ?? "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Gender</small><div class="">${data.sex == "M" ? "Male" : data.sex == "F" ? "Female" : "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Date of Birth</small><div class="">${data.date_of_birth ?? "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Legal Name</small><div class="">${data.legal_name ?? "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">National ID</small><div class="">${data.national_id ?? "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Passport Number</small><div class="">${data.passport_number ?? "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Phone</small><div class=" text-primary">${data.phone_number ?? "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Email</small><div class=" text-primary">${data.email ?? "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Relationship</small><div class="">Partner</div></div>
+                                <div class="col-12"><small class="text-muted">Address</small><div class="text-prm-custom text-capitalize">${data.address ?? "_"}</div></div>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane" id="lease_tenant_history">
+                            <h5 class="fw-bold mb-2 d-flex align-items-center">
+                                <i class="fa fa-file-text me-2 text-primary"></i> Contract
+                            </h5>
+                            <div class="container py-4 position-relative overflow-auto lease-history-scroll" style="max-height: 360px; scrollbar-width: thin;scrollbar-color: #888 #f1f1f1;">
+                                <p class="text-muted small mb-0">Open this tab to load contracts.</p>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane" id="document_tenant_list">
+                            <h5 class="fw-bold mb-4 d-flex align-items-center">
+                                <i class="fa fa-folder me-2 text-primary"></i> Documents
+                            </h5>
+                            <div class="table-responsive">
+                                <table class="table align-middle">
+                                    <thead class="bg-light">
+                                        <tr class="text-uppercase">
+                                            <th class="border-0 ps-3" style="letter-spacing: 0.05em;">Type</th>
+                                            <th class="border-0">File Name</th>
+                                            <th class="border-0">File Type</th>
+                                            <th class="border-0">Remark</th>
+                                            <th class="border-0 text-start">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="border-bottom">
+                                            <td class="ps-3 py-3">
+                                                <div class="fw-bold text-dark">${data.document_type_id ?? ""}</div>
+                                            </td>
+                                            <td><div class="fw-bold text-dark">${data.original_file_name ?? ""}</div></td>
+                                            <td><div class="fw-semibold text-dark">${data.ext ?? ""}</div></td>
+                                            <td><span class="text-muted small">${data.remarks ?? ""}</span></td>
+                                            <td class="text-end pe-3">
+                                                <button class="btn btn-sm text-muted p-0 ">
+                                                    <i class="fa-solid fa-ellipsis fa-shake"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+        mThis.profile_info_tenant.innerHTML = html;
+
+        // ===== Tabs JS =====
+        const tabLinks =
+            mThis.profile_info_tenant.querySelectorAll("#tenantTabs a");
+        const tabPanes =
+            mThis.profile_info_tenant.querySelectorAll(".tab-pane");
+
+        tabLinks.forEach((link) => {
+            link.addEventListener("click", (e) => {
+                e.preventDefault();
+                const target = link.getAttribute("href").replace("#", "");
+
+                // remove active class
+                tabLinks.forEach((l) => l.classList.remove("active"));
+                tabPanes.forEach((p) => p.classList.remove("active"));
+
+                link.classList.add("active");
+                const profile_info_tenant =
+                    mThis.profile_info_tenant.querySelector(`#${target}`);
+                profile_info_tenant.classList.add("active");
+                mThis.renderOverView(profile_info_tenant, target, data);
+            });
+        });
+
+        mThis.setActionsProfileInfo(mThis.profile_info_tenant);
+    };
+    mThis._escapeHtml = (s) => {
+        if (s == null) return "";
+        return String(s)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;");
+    };
+    mThis._fmtMoney = (n) => {
+        if (n == null || n === "") return "—";
+        const x = Number(n);
+        if (Number.isNaN(x)) return String(n);
+        return x.toLocaleString(undefined, {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 2,
+        });
+    };
+    mThis._getUnitCode = (row, fallback = "—") => {
+        if (!row) return fallback;
+        const value =
+            row.unit_code ??
+            row.space_code ??
+            row.unit ??
+            row.code ??
+            row.unit_number;
+        return value == null || value === "" ? fallback : value;
+    };
+    mThis._leaseHistoryContractsHtml = (renewalEntriesRaw) => {
+        const entries = Array.isArray(renewalEntriesRaw)
+            ? renewalEntriesRaw
+            : [];
+        if (!entries.length) {
+            return `<div class="text-center py-5 text-muted">
+                <i class="fa fa-file-text fa-2x mb-2 opacity-50 d-block"></i>
+                <p class="mb-0">No contract recorded for this tenant.</p>
+            </div>`;
+        }
+
+        // Group by contract_id so we render one card per contract.
+        const groupsByContractId = new Map();
+        entries.forEach((e) => {
+            const cid = e.contract_id ?? "0";
+            if (!groupsByContractId.has(cid)) groupsByContractId.set(cid, []);
+            groupsByContractId.get(cid).push(e);
+        });
+
+        let cards = "";
+        groupsByContractId.forEach((group) => {
+            if (!group.length) return;
+            const first = group[0];
+
+            const contractStatusName = String(
+                first.contract_status ?? "",
+            ).trim();
+            const contractStatusLower = contractStatusName.toLowerCase();
+
+            // const hasCurrent = group.some((r) => !!r.is_current);
+
+            let accent = "#adb5bd";
+            let circleBg = "#6c757d";
+            let headerBadgeHtml = "";
+            let priceColor = "#212529";
+            let depositBadgeStyle =
+                "color:#3f51d8;background-color:#e7efff;border:1px solid #cfdbff;";
+
+            if (contractStatusLower === "active") {
+                accent = "#0f49bd";
+                circleBg = "#0f49bd";
+                priceColor = "#3f51d8";
+
+                headerBadgeHtml = `<span class="badge text-uppercase rounded-4 text-white ms-1" style="background-color:#0f49bd;">CURRENT</span>`;
+            } else if (contractStatusLower === "pending") {
+                accent = "#fd7e14";
+                circleBg = "#fd7e14";
+                priceColor = "#fd7e14";
+
+                headerBadgeHtml = `<span class="badge text-uppercase rounded-4 text-white ms-1" style="background-color:#fd7e14;">PENDING</span>`;
+            } else if (contractStatusLower === "terminated") {
+                accent = "#dc3545";
+                circleBg = "#dc3545";
+                priceColor = "#dc3545";
+
+                headerBadgeHtml = `<span class="badge text-uppercase rounded-4 text-white ms-1" style="background-color:#dc3545;">TERMINATED</span>`;
+            } else {
+                headerBadgeHtml = `<span class="badge text-uppercase rounded-4 ms-1" style="color:#4a4a4a;background-color:#f6f4ee;border:1px solid #e5dfd1;">${mThis._escapeHtml(contractStatusName || "—")}</span>`;
+            }
+
+            const start = mThis._escapeHtml(first.contract_start_date ?? "");
+            const end = mThis._escapeHtml(first.contract_end_date ?? "");
+            const title = `Contract: ${start} — ${end}`;
+
+            const unitPart = mThis._escapeHtml(mThis._getUnitCode(first, "—"));
+            const sqmPart =
+                first.sqm_size != null && first.sqm_size !== ""
+                    ? `${mThis._fmtMoney(first.sqm_size)} m²`
+                    : "—";
+            const bldg = first.building_name
+                ? mThis._escapeHtml(first.building_name)
+                : "";
+            const detailPillsHtml = `
+                <div class="d-flex flex-wrap gap-2 mt-2">
+                    <span class="badge rounded-pill fw-normal px-3 py-2" style="color:#4a4a4a;background-color:#f6f4ee;border:1px solid #e5dfd1;">Unit ${unitPart}</span>
+                    <span class="badge rounded-pill fw-normal px-3 py-2" style="color:#4a4a4a;background-color:#f6f4ee;border:1px solid #e5dfd1;">${sqmPart}</span>
+                    ${bldg ? `<span class="badge rounded-pill fw-normal px-3 py-2" style="color:#4a4a4a;background-color:#f6f4ee;border:1px solid #e5dfd1;">${bldg}</span>` : ""}
+                </div>`;
+
+            const priceNum = Number(first.price ?? 0);
+            const sqmNum = Number(first.space_sqm_size ?? first.sqm_size ?? 0);
+            const isTotalPriceType =
+                String(first.price_type ?? "sqm").toLowerCase() === "total";
+            const totalPriceNum = isTotalPriceType
+                ? priceNum
+                : sqmNum > 0
+                  ? priceNum * sqmNum
+                  : null;
+            const priceLine =
+                totalPriceNum != null && !Number.isNaN(totalPriceNum)
+                    ? `${VSMoney.formatAmount(totalPriceNum, "USD")}`
+                    : "—";
+            const depositSmallHtml =
+                first.deposit != null && first.deposit !== ""
+                    ? `Deposit ${VSMoney.formatAmount(first.deposit, "USD")}`
+                    : "";
+            if (first.deposit_remarks) {
+                depositSmallHtml = dep
+                    ? `${depositSmallHtml} <span class="text-muted">• ${mThis._escapeHtml(first.deposit_remarks)}</span>`
+                    : `<span class="text-muted">${mThis._escapeHtml(first.deposit_remarks)}</span>`;
+            }
+            const depositBadgeHtml = depositSmallHtml
+                ? `<span class="badge rounded-2 px-3 py-2" style="${depositBadgeStyle}">${depositSmallHtml}</span>`
+                : "";
+
+            const renewalsTableRowsHtml = group
+                .map((r) => {
+                    const isInitial = !!r.is_initial;
+                    const renewalDate = r.renewal_date
+                        ? mThis._escapeHtml(r.renewal_date)
+                        : isInitial
+                          ? "Initial"
+                          : "—";
+
+                    const rowStart = mThis._escapeHtml(
+                        r.renewal_start_date ?? "—",
+                    );
+                    const rowEnd = mThis._escapeHtml(r.renewal_end_date ?? "—");
+
+                    const rowUnitCode = mThis._escapeHtml(
+                        mThis._getUnitCode(first, "—"),
+                    );
+                    const currentBadgeHtml = r.is_current
+                        ? `<span class="badge text-uppercase rounded-4 text-white ms-1" style="background-color:#0f49bd;">Current</span>`
+                        : "";
+
+                    const remarks =
+                        r.remarks != null && r.remarks !== ""
+                            ? mThis._escapeHtml(r.remarks)
+                            : "—";
+
+                    const updatedBy = r.update_user
+                        ? `${mThis._escapeHtml(r.update_user)}${r.updated_at ? ` • ${mThis._escapeHtml(r.updated_at)}` : ""}`
+                        : "—";
+
+                    return `<tr class="${r.is_current ? "table-prm-current-row" : ""}">
+                        <td class="text-nowrap">${renewalDate}</td>
+                        <td class="text-nowrap">${rowStart}</td>
+                        <td class="text-nowrap">${rowEnd}</td>
+                        <td class="text-nowrap">
+                            <span class="fw-semibold text-prm-custom">${rowUnitCode}</span>
+                            ${currentBadgeHtml}
+                        </td>
+                        <td>${remarks}</td>
+                        <td class="text-nowrap">${updatedBy}</td>
+                    </tr>`;
+                })
+                .join("");
+
+            const renewalsCount = group.length;
+
+            cards += `<div class="d-flex position-relative mb-4">
+
+                <div class="flex-grow-1 ms-3">
+                    <div class="card shadow-sm" style="border-left: 6px solid ${accent};border-radius: 14px;">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between flex-column flex-md-row mb-3">
+                                <div>
+                                    <h5 class="card-title mb-1">${title} ${headerBadgeHtml}</h5>
+                                    ${detailPillsHtml}
+                                </div>
+                                <div class="text-end mt-2 mt-md-0">
+                                    <small class="text-muted d-block mb-1">Monthly</small>
+                                    <p class="h5 mb-0" style="color:${priceColor};">${priceLine}</p>
+                                    <div class="mt-2">${depositBadgeHtml}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+        });
+
+        return cards;
+    };
+    mThis.renderOverView = (div, target, data) => {
+        if (target == "overview_tenant_detail") {
+            const p = { id: data.id };
+
+            vsapi
+                .call(
+                    [main_view.base_url, "/prm/tenant/details"].join(""),
+                    p,
+                    false,
+                    null,
+                )
+                .then((res) => {
+                    const d = res.status_code == 200 ? res.data : {};
+
+                    let html = "";
+                    html += `<div class="tab-pane py-2 active" id="overview_tenant_detail">
+                            <h5 class="fw-bold mb-2"><i class="fa fa-user me-1 text-primary"></i> Personal Information</h5>
+                            <div class="row g-4 mb-5">
+                                <div class="col-md-4"><small class="text-muted">Name</small><div class="">${data.name ?? "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Sex</small><div class="">${data.sex == "M" ? "Male" : data.sex == "F" ? "Female" : "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Date of Birth</small><div class="">${data.date_of_birth ?? "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Legal Name</small><div class="">${data.legal_name ?? ""}</div></div>
+                                <div class="col-md-4"><small class="text-muted">National ID</small><div class="">${data.national_id ?? "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Passport Number</small><div class="">${data.passport_number ?? "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Phone</small><div class="">${data.phone_number ?? "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Email</small><div class=" text-primary">${data.email ?? "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Relationship</small><div class="">Partner</div></div>
+                                <div class="col-12"><small class="text-muted">Address</small><div class="text-prm-custom text-capitalize">${data.address ?? "_"}</div></div>
+                            </div>
+                        </div>`;
+                    div.innerHTML = html;
+                });
+        }
+        if (target == "lease_tenant_history") {
+            const p = { id: data.id };
+            vsapi
+                .call(
+                    [main_view.base_url, "/prm/tenant/lease-history"].join(""),
+                    p,
+                    false,
+                    null,
+                )
+                .then((res) => {
+                    const raw =
+                        res.status_code == 200 && res.data != null
+                            ? res.data
+                            : [];
+                    const contracts = Array.isArray(raw) ? raw : [];
+                    const cardsHtml =
+                        mThis._leaseHistoryContractsHtml(contracts);
+                    div.innerHTML = `<div class="tab-pane active" id="lease_tenant_history">
+                            <h5 class="fw-bold mb-2">
+                                <i class="fa fa-file-text me-1 text-primary"></i>
+                                Contract
+                            </h5>
+                            <div class=" py-4 position-relative overflow-auto lease-history-scroll" style="max-height: 360px; scrollbar-width: thin;scrollbar-color: #888 #f1f1f1;">
+                                ${cardsHtml}
+                            </div>
+                        </div>`;
+                })
+                .catch((err) => {
+                    div.innerHTML = `<div class="tab-pane active" id="lease_tenant_history">
+                            <h5 class="fw-bold mb-2">
+                                <i class="fa fa-file-text me-1 text-primary"></i>
+                                Contract
+                            </h5>
+                            <div class="alert alert-danger m-3">Failed to load contracts: ${mThis._escapeHtml(err && err.message ? err.message : "Unknown error")}</div>
+                        </div>`;
+                });
+        }
+        if (target === "document_tenant_list") {
+            vsapi
+                .call(
+                    [main_view.base_url, "/prm/tenant/document/list"].join(""),
+                    { tenant_id: data.id },
+                    false,
+                    null,
+                )
+                .then((res) => {
+                    const documents =
+                        res.status_code === 200 && Array.isArray(res.data)
+                            ? res.data
+                            : [];
+
+                    let rows = "";
+
+                    documents.forEach((doc) => {
+                        rows += `
+                    <tr class="border-bottom">
+                        <td class="ps-3 py-3" style="width: 20%; height: 55px; vertical-align: middle;">
+                            <div class="d-flex align-items-center">
+                                <div>
+                                    <div class="text-dark">
+                                        ${doc.document_type || doc.document_type_id || "—"}
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="width: 20%; height: 55px; vertical-align: middle;">
+                            <div class="text-dark">
+                                ${doc.original_file_name || "—"}
+                            </div>
+                        </td>
+                        <td style="width: 12%; height: 55px; vertical-align: middle;">
+                            <div class="text-dark">
+                                ${doc.ext ? doc.ext.toUpperCase() : "—"}
+                            </div>
+                        </td>
+                        <td style="width: 30%; height: 65px; vertical-align: middle;">
+                            <span class="text-dark">
+                                ${doc.remarks || "_"}
+                            </span>
+                        </td>
+                        <td class="text-end py-3 px-3" style="width: 10%; height: 55px; vertical-align: middle; ">
+                            <div class="d-flex justify-content-start gap-2">
+                                <a href="javascript:void(0)" class="view-doc" data-id="${doc.id}">
+                                    <span class="tool-tip">
+                                        <i class="fa-regular fa-eye text-success fs-6"></i>
+                                        <span class="tool-tiptext fs-6">View</span>
+                                    </span>
+                                </a>
+                                <a href="javascript:void(0)" class="modify-doc" data-id="${doc.id}">
+                                    <span class="tool-tip">
+                                        <i class="fa-regular fa-edit fs-6 text-warning"></i>
+                                        <span class="tool-tiptext fs-6">Modify</span>
+                                    </span>
+                                </a>
+                                <a href="javascript:void(0)" class="download-doc" data-id="${doc.id}">
+                                    <span class="tool-tip">
+                                        <i class="fa-solid fa-cloud-arrow-down text-primary fs-6"></i>
+                                        <span class="tool-tiptext fs-6">Download</span>
+                                    </span>
+                                </a>
+                                <a href="javascript:void(0)" class="delete-doc-btn" data-id="${doc.id}">
+                                    <span class="tool-tip">
+                                        <i class="fa-regular fa-trash-can text-danger fs-6"></i>
+                                        <span class="tool-tiptext fs-6">Delete</span>
+                                    </span>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                    });
+
+                    // Empty state
+                    if (documents.length === 0) {
+                        rows = `
+                    <tr>
+                        <td colspan="5" class="text-center py-4 text-muted">
+                            No data to display
+                        </td>
+                    </tr>`;
+                    }
+
+                    const html = `
+                <div class="tab-pane active" id="document_tenant_list">
+
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="fw-bold mb-2"><i class="fa fa-address-card me-2 text-primary"></i> Identity Documents</h5>
+                        <button type="button" class="fw-light btn btn-primary w-16 w-md-auto btnAddNewPrm" id="_btnDocument">
+                            <span vslang="buttons.Upload Document">Upload Document</span>
+                        </button>
+                    </div>
+
+                    <div class="table-responsive " style="max-height: 290px; overflow-y: auto; scrollbar-width: thin;">
+                        <table class="table align-middle mb-3">
+                            <thead class="bg-light">
+                                <tr class="text-uppercase small">
+                                    <th class="border-0 ps-3" style="letter-spacing: 0.05em;">Type</th>
+                                    <th class="border-0">File Name</th>
+                                    <th class="border-0">File Type</th>
+                                    <th class="border-0">Remark</th>
+                                    <th class="border-0 text-start">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${rows}
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>`;
+
+                    div.innerHTML = html;
+                    const btnDocument = div.querySelector("#_btnDocument");
+                    if (btnDocument) {
+                        btnDocument.onclick = () => {
+                            TenantDocumentDialog.show({
+                                id: null,
+                                tenant_id: data.id,
+                                onClose: () => {
+                                    mThis.renderOverView(div, target, data);
+                                },
+                            });
+                        };
+                    }
+
+                    div.querySelectorAll(".view-doc").forEach((btn) => {
+                        btn.addEventListener("click", async (e) => {
+                            const id = e.currentTarget.dataset.id;
+                            mThis.openTenantDocument(id, "view");
+                        });
+                    });
+                    div.querySelectorAll(".download-doc").forEach((btn) => {
+                        btn.addEventListener("click", (e) => {
+                            const id = e.currentTarget.dataset.id;
+                            mThis.openTenantDocument(id, "download");
+                        });
+                    });
+
+                    document.querySelectorAll(".modify-doc").forEach((btn) => {
+                        btn.addEventListener("click", async function (e) {
+                            e.preventDefault();
+                            const op = {
+                                id: parseInt(this.dataset.id),
+                                tenant_id: data.id,
+                                btn: e.target,
+                                onClose: () => {
+                                    mThis.renderOverView(div, target, data);
+                                    mThis.tenantListView.showPage(
+                                        mThis.getFilterData(),
+                                    );
+                                },
+                            };
+                            TenantDocumentDialog.show(op);
+                        });
+                    });
+
+                    document
+                        .querySelectorAll(".delete-doc-btn")
+                        .forEach((btn) => {
+                            btn.addEventListener("click", async function (e) {
+                                const docId = this.dataset.id;
+
+                                const confirmed = await cv_interact.confirm(
+                                    "Are you sure you want to delete this document?",
+                                    {
+                                        title: "Delete Document",
+                                        context: "delete",
+                                    },
+                                );
+
+                                if (confirmed) {
+                                    const p = { id: docId };
+                                    vsapi
+                                        .call(
+                                            [
+                                                main_view.base_url,
+                                                "/prm/tenant/document/delete",
+                                            ].join(""),
+                                            p,
+                                            false,
+                                            false,
+                                        )
+                                        .then((res) => {
+                                            if (res.status_code === 200) {
+                                                cv_interact.success(
+                                                    "Document deleted.",
+                                                );
+                                                mThis.renderOverView(
+                                                    div,
+                                                    target,
+                                                    data,
+                                                );
+                                            } else {
+                                                cv_interact.error(
+                                                    res.error_message,
+                                                );
+                                            }
+                                        });
+                                }
+                            });
+                        });
+                })
+
+                .catch((err) => {
+                    div.innerHTML = `<div class="alert alert-danger m-3">Failed to load documents: ${err.message}</div>`;
+                });
+        }
+    };
+
+    mThis.setActionsProfileInfo = (divProfile) => {
+        // console.log(33, divProfile);
+
+        divProfile.addEventListener("click", (e) => {
+            // let btn = VSUtil.closestLimited(e.target, ".edit_tenant_profile_info ");
+            // if (btn) {
+            //     mThis.editTenantInfo(btn.dataset.id, btn);
+            //     return;
+            // }
+            // btn = VSUtil.closestLimited(e.target, ".delete_employee");
+            // if (btn) {
+            //     mThis.deleteEmployee(btn.dataset.id, btn);
+            //     return;
+            // }
+            // btn = VSUtil.closestLimited(e.target, ".set_resign");
+            // if (btn) {
+            //     mThis.setResign(btn.dataset.id, btn);
+            //     return;
+            // }
+            // btn = VSUtil.closestLimited(e.target, ".movement");
+            // if (btn) {
+            //     mThis.movement(btn.dataset.id, btn);
+            //     return;
+            // }
+        });
+    };
+
+    mThis.prepareFormOptions = (onFinish) => {
+        vsapi
+            .call(
+                `${main_view.base_url}/prm/tenant/form-options`,
+                null,
+                null,
+                null,
+            )
+            .then((res) => {
+                const d = res.status_code == 200 ? res.data : {};
+                VSUtil.setComboItems(
+                    mThis.elStatus,
+                    d.statuses,
+                    "id",
+                    "name",
+                    "",
+                    "All Statuses",
+                    "",
+                );
+                if (typeof onFinish === "function") onFinish();
+            });
+    };
+    mThis.show = (options) => {
+        mThis.init();
+        mThis.options = options;
+        mThis.prepareFormOptions(() => {
+            // main_view.setContentView(mThis.self, mThis.title_prop);
+            // mThis.renderView();
+            mThis.showPage(mThis.defaultPage, mThis.getFilterData());
+        });
+    };
+
+    return mThis;
+})();

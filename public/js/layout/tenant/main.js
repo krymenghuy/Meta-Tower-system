@@ -115,6 +115,13 @@ mThis.init_vsapi = async () => {
       //Sanitizer.setDebugMode(false);     
       VSRoute.init(mThis.side_menus.querySelectorAll('a.menu-item'),"DashboardComponent",mThis.side_menus,true);
 
+      // Same contract UI as PRM: allow menu href ContractComponent or ContractsComponent
+      if (typeof ContractsComponent !== 'undefined' && typeof ContractComponent === 'undefined') {
+          window.ContractComponent = ContractsComponent;
+      } else if (typeof ContractComponent !== 'undefined' && typeof ContractsComponent === 'undefined') {
+          window.ContractsComponent = ContractComponent;
+      }
+
      //END:: process side menus click using VSRoute
 
         mThis.displayUserMenus();

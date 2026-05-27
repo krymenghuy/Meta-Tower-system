@@ -74,47 +74,18 @@ class ContractController extends Controller
         }
 
         $space_id = $req->space_id ?? null;
-        $tenant_id = $req->tenant_id ?? null;
         $bookingTenantMatch = null;
-        $prefillSpaceIds = [];
-        $restrictToPrefillSpaces = false;
         if ($space_id && is_numeric($space_id)) {
             $check = Contract::validateBookingTenantPhone($space_id);
             if (!($check->status ?? false)) {
                 return JDV::error($check->message ?? 'Please create tenant first.');
             }
             $bookingTenantMatch = $check;
-            $restrictToPrefillSpaces = true;
-            if (!empty($check->spaces) && is_iterable($check->spaces)) {
-                foreach ($check->spaces as $spaceRow) {
-                    $sid = (int) ($spaceRow->id ?? 0);
-                    if ($sid > 0) {
-                        $prefillSpaceIds[] = $sid;
-                    }
-                }
-            }
         }
-        if (empty($prefillSpaceIds) && $tenant_id && is_numeric($tenant_id)) {
-            $spacesByTenant = Contract::getBookingSpacesByTenantId((int) $tenant_id);
-            if (!empty($spacesByTenant)) {
-                $restrictToPrefillSpaces = true;
-            }
-            foreach ($spacesByTenant as $spaceRow) {
-                $sid = (int) ($spaceRow->id ?? 0);
-                if ($sid > 0) {
-                    $prefillSpaceIds[] = $sid;
-                }
-            }
-        }
-        $out = $this->contracts->getFormOptions($req->id, $ss, $space_id, $prefillSpaceIds, $restrictToPrefillSpaces);
+        $out = $this->contracts->getFormOptions($req->id, $ss, $space_id);
         if ($bookingTenantMatch && !empty($bookingTenantMatch->tenant_id)) {
             $out->prefill_tenant_id = $bookingTenantMatch->tenant_id;
             $out->prefill_tenant_name = $bookingTenantMatch->tenant_name ?? null;
-            $out->prefill_spaces = $bookingTenantMatch->spaces ?? [];
-        } elseif (!empty($prefillSpaceIds)) {
-            $out->prefill_spaces = array_map(function ($sid) {
-                return (object) ['id' => (int) $sid];
-            }, $prefillSpaceIds);
         }
 
         return JDV::result($out);
@@ -164,41 +135,6 @@ class ContractController extends Controller
 
         return JDV::raw($res);
     }
-
-    public function cancelPendingRenewal(Request $req)
-    {
-        $ss = XAuthService::verifyAuth($req, -1);
-        if ($ss->status_code !== 200) {
-            return JDV::raw($ss);
-        }
-
-        if (!isset($req->id) || !is_numeric($req->id)) {
-            return JDV::error('Invalid ID');
-        }
-
-        $contract = new Contract($req->id, $ss);
-        $res = $contract->cancelPendingRenewal($req->id, $ss);
-
-        return JDV::raw($res);
-    }
-
-    public function updatePendingRenewal(Request $req)
-    {
-        $ss = XAuthService::verifyAuth($req, -1);
-        if ($ss->status_code !== 200) {
-            return JDV::raw($ss);
-        }
-
-        $id = $req->id ?? $req->contract_id;
-        if (!$id || !is_numeric($id)) {
-            return JDV::error('Invalid ID');
-        }
-
-        $contract = new Contract($id, $ss);
-        $res = $contract->updatePendingRenewal($req->all(), $id, $ss);
-
-        return JDV::raw($res);
-    }
      function getTenantInfo(Request $req){
         $ss = XAuthService::verifyAuth($req,-1);
         if($ss->status_code !==200) return JDV::raw($ss);
@@ -213,7 +149,7 @@ class ContractController extends Controller
 
         $data = $req->json()->all();
         $contract_id = $data['contract_id'] ?? $data['id'] ?? $req->input('contract_id') ?? $req->input('id') ?? null;
-        $months = Contract::generateContractMonths((int) $contract_id);
+        $months = Contract::generateContractMonths( $contract_id);
 
         return JDV::result(['months' => $months]);
     }
@@ -230,7 +166,7 @@ class ContractController extends Controller
             return JDV::error('Invalid space ID');
         }
 
-        $res = Contract::validateBookingTenantPhone((int) $space_id);
+        $res = Contract::validateBookingTenantPhone( $space_id);
         if (!($res->status ?? false)) {
             return JDV::error($res->message ?? 'Phone number validation failed.');
         }
