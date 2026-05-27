@@ -91,7 +91,7 @@
             </li>
 
             <li class="kt-menu__item" aria-haspopup="true">
-                <a href="CampusManagementComponent" class="menu-item kt-menu__link" modid="229" <?php v_display(229);?>>
+                <a href="CampusManagementComponent" class="menu-item kt-menu__link" modid="102" <?php v_display(102);?>>
                     <span class="kt-menu__link-icon">
                         <img class="icons" src="{{ asset('assets/images/icons/campus.png') }}"/>
                     </span>

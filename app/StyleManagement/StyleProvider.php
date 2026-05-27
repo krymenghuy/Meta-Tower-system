@@ -86,7 +86,7 @@ class StyleProvider
                 'assets/css/bootstrap.min.css',
             ]
         ],
-          'umt-style'=>[
+        'umt-style'=>[
             'output_file'=>'/dist/css/umtstyle.css?v=1',
             'files' => [
                 'assets/css/vsstyle.css',/** Must be set before bootstrap**/
@@ -99,12 +99,7 @@ class StyleProvider
                 //'assets/vendors/general/bootstrap-touchspin/dist/jquery.bootstrap-touchspin.css',
                 //'assets/css/select2.min.css',
                 'assets/css/choices.min.css',
-                // 'assets/css/choices.custom.css',
-                
-                //'assets/css/choices_style.css',
-                 'assets/css/vs_select.base.css', 
-                 'assets/css/vs_select.material.css', 
-                 'assets/css/vs_input.material.css', 
+                'assets/css/choices_style.css',
 
                 //'assets/vendors/general/owl.carousel/dist/assets/owl.theme.default.css',
                 //'assets/vendors/general/dropzone/dist/dropzone.css',
@@ -116,6 +111,8 @@ class StyleProvider
                 'assets/css/demo1/style.bundle.css',
                 // 'assets/dist/css/adminlte.min.css',
                 'assets/css/ksm_style.css', /** Must be placed below all.min.css **/
+                'assets/css/vs-page-title.wave.css',
+                'assets/css/menu_style.css',
                 'assets/css/dialog_style.css',
                 'assets/css/vs_loader.css',
                 'assets/css/vsa_dropdown_button.css',
