@@ -10,7 +10,7 @@ use Vsd\Vsloquent\VSModel;
 use App\Models\Prm\GeneralSettings;
 use Log;
 
-class Reservations extends VSModel
+class Reservation extends VSModel
 {
     protected $table = 'reservations';
     protected $userInfo = null;
@@ -99,7 +99,7 @@ class Reservations extends VSModel
 
         $exists = self::where('amenity_id', $d->amenity_id)
             ->where('booking_date', $booking_date)
-            ->whereIn('status_id', [1, 2, 3])
+            ->whereIn('status_id', [1, 2, 3]) 
             ->where(function ($query) use ($startTime, $endTime) {
                 $query->where('start_time', '<', $endTime)
                       ->where('end_time', '>', $startTime);

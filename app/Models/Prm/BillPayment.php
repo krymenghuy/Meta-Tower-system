@@ -395,7 +395,7 @@ class BillPayment
     {
         $bill     = null;
         $payments = collect();
-
+        \Log::info($bill_id);
         if ($bill_id) {
             $bill = DB::table('bills as b')
                 ->leftJoin('vendors as v', 'v.id', 'b.vendor_id')

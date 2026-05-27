@@ -38,7 +38,14 @@ var ReservationComponent = (() => {
             },
         },
         {
-            transTitle: "titles.Reservation Date",
+            transTitle: "titles.Date",
+            className: "align-middle",
+            data: (data) => {
+                return `<span class="d-block text-prm-custom">${data.booking_date ?? ""}</span>`;
+            },
+        },
+        {
+            transTitle: "titles.Time",
             className: "align-middle",
             data: (data) => {
                 const to12h = (hhmm) => {
@@ -52,8 +59,7 @@ var ReservationComponent = (() => {
                 };
                 const start12 = to12h((data.start_time ?? "").substring(0, 5));
                 const end12 = to12h((data.end_time ?? "").substring(0, 5));
-                return `<span class="d-block text-prm-custom">${data.booking_date ?? ""}</span>
-                            <span class="d-block text-primary"style="font-size:12px;">${start12} - ${end12}</span>`;
+                return `<span class="d-block">${start12} - ${end12}</span>`;
             },
         },
         {
