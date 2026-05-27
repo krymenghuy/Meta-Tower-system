@@ -47,14 +47,14 @@ const ChangeRoleDialog = (()=>{
             buttons:[
             {
                 label:"Cancel",
-                cssClass:"btn btn-secondary",
+                cssClass:"btn-vs-cancel",
                 action:"cancel",
                 dismissModal:true,
                 icon:""
             },
             {
                 label:"<span>Change Now</span>",
-                cssClass:"btn btn-info",
+                cssClass:"btn-vs-cancel",
                 icon:"",
                 click:(me,btn,divModal)=>{
                     let p = me.getData();

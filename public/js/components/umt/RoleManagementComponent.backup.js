@@ -1,133 +1,26 @@
 'use strict';
 /** begin:RoleManagementComponent */
-var RoleManagementComponent =  (() =>{
-    const mThis = {};
-    mThis.selected_role = {};
-    mThis.title_prop = 'Role Management';
-    mThis.base_url = main_view.base_url;
-    mThis.self = main_view.VSAppContent.querySelector('#_um_roleManagementComponent');
-    mThis.div_role_list = mThis.self.querySelector('div#_um_rolelist');
-    //mThis.tblCard_body = mThis.self.querySelector('div#_um_card');
-//  console.log(mmThis.tblCard_body);
-    mThis.lnkNewRole = mThis.self.querySelector('#_lnkNewRole');
-    mThis.elSearchRole = mThis.self.querySelector('#_search_role');
-    mThis.btnPrint = mThis.self.querySelector('#_um_btn_pdf');
-    mThis.div_search_widget = mThis.self.querySelector('#um_search_widget');
-    mThis.lblSelectedRoleName = mThis.self.querySelector('#um_selected_role');
-    mThis.lnkToggleRoleList = mThis.self.querySelector('#um_lnk_toggle_list');
-    mThis.parentId = false;
+var RoleManagementComponent = new function(){
+    const mThis = this;
+    this.selected_role = null;
+    this.title_prop = 'Role Management';
+    this.base_url = main_view.base_url;
+    this.jm = main_view.appContent.children('#_um_roleManagementComponent');
+    this.self = this.jm[0];
+    this.div_role_list = this.self.querySelector('div#_um_rolelist');
+    //this.tblCard_body = this.self.querySelector('div#_um_card');
+//  console.log(mThis.tblCard_body);
+    this.lnkNewRole = this.self.querySelector('#_lnkNewRole');
+    this.elSearchRole = this.self.querySelector('#_search_role');
+    this.btnPrint = this.self.querySelector('#_um_btn_pdf');
+    this.div_search_widget = this.self.querySelector('#um_search_widget');
+    this.lblSelectedRoleName = this.self.querySelector('#um_selected_role');
+    this.lnkToggleRoleList = this.self.querySelector('#um_lnk_toggle_list');
+    this.parentId = false;
 
-  const injectCSS = (() => {
-    let injected = false;
-
-    return function () {
-        if (injected) return;
-        injected = true;
-
-        const style = document.createElement('style');
-        style.id = 'choice-app-style';
-        style.textContent = `
-
-.choice-app-item {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    margin-right:8px;
-    padding: 8px 10px;
-    border-radius: 8px;
-    background: none;
-}
-
-.choice-app-item-line {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.choice-app-item-name {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.choice-app-icon {
-    width: 20px;
-    height: 20px;
-    object-fit: contain;
-}
-
-.choice-app-icon-fallback {
-    font-size: 18px;
-}
-
-.choice-app-badge {
-    font-size: 11px;
-    padding: 2px 6px;
-    border-radius: 6px;
-    font-weight: 500;
-}
-
-.choice-app-badge-mobile {
-    background: #e0f2fe;
-    color: #0369a1;
-}
-
-.choice-app-badge-web {
-    background: #f1f5f9;
-    color: #334155;
-}
-
-
-   `.trim();
-
-        document.head.appendChild(style);
-    };
-})();
-
-mThis.formatChoice_app = (apps = []) =>
-    apps.map(app => ({
-        value: app.id ?? app.app_id,
-        label: mThis.formatChoice_app_item(app)
- }));
-
-
- mThis.formatChoice_app_item = (app) => {
-    if (!app) return '';
-
-    const esc = s =>
-        String(s)
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;');
-
-    const name = app.name ? esc(app.name) : '';
-    const isMobile = String(app.is_mobile_app) === '1';
-
-    const icon = app.icon
-        ? `<img src="${esc(app.icon)}" class="choice-app-icon" alt="">`
-        : `<i class="fas fa-volleyball-ball text-muted choice-app-icon-fallback"></i>`;
-
-    return `
-        <div class="choice-app-item">
-            <div class="choice-app-item-line">
-                <span class="choice-app-item-name">
-                    ${icon}
-                    ${name ? `<span class="choice-app-item-name-text">${name}</span>` : ''}
-                </span>
-
-                <span class="choice-app-badge ${
-                    isMobile ? 'choice-app-badge-mobile' : 'choice-app-badge-web'
-                }">
-                    ${isMobile ? 'Mobile' : 'Web'}
-                </span>
-            </div>
-        </div>
-    `;
-};
-
-    mThis.deleteRole = (role_id)=>{
+    this.deleteRole = (role_id)=>{
         const p = {id:role_id};
-        vsapi.post([main_view.base_url,'/api/role/delete'].join(''),p,{loader:false,cacheTTL:0}).then(res =>{
+        vsapi.call([main_view.base_url,'/api/role/delete'].join(''),p,false,false).then(res =>{
            if(res.status_code ==200){
              mThis.loadRoles(mThis.getFilterData(),roles =>{
                  mThis.renderRoleCards(roles,null,null);
@@ -137,51 +30,34 @@ mThis.formatChoice_app = (apps = []) =>
         })
     }
 
-    mThis.renderRoleCards = (data, container = null,selected_role = null) => {;
+    this.renderRoleCards = (data, container = null,selected_role = null) => {;
         let html = '';
         let cnt = 0;
         container = container || mThis.div_role_list;
         if (container.style.display =='none') mThis.setRoleListState(1);
         container.innerHTML =  '<div class="d-flex flex-column justify-content-center align-items-center h-100 w-100"><div class="animation-line" style="height:2px;margin:0;"></div></div>';
         (data || []).map(item =>{
-            html = [ html,`<div class="col-3 col-md-3 col-lg-2 role-card" data-id="${item.id}" data-roleid="${item.id}" data-usersearchvalue="${item.user_search_value ?? ''}" data-userclass="${item.user_class ?? 'NA'}" data-rolename="${item.name ?? 'No Name'}">
-            <div class="card-content bg-white shadow-sm p-2 rounded-2 d-flex flex-column justify-content-between h-100">
-                <div class="d-flex flex-column justify-content-center align-items-center">
-                    <span class="data-input text-center fw-semibold text-primary-custom fs-6" data-field="user_class">
-                        ${item.name ?? 'No Name'}
-                    </span>
-                    <span class="mt-2 d-flex justify-content-center align-items-center rounded-circle bg-light text-primary-custom fw-bold"
-                        style="width:50px; height:50px; font-size:1.2em;">
-                        ${item.name ? item.name.charAt(0).toUpperCase() : '?'}
-                    </span>
-                </div>
-
-                <hr class="my-2">
-
-                <span class="data-input text-muted text-center mb-2" style="font-size:0.85em">
-                    Users: ${item.user_count ?? 0}
+            html = [ html,`<div data-id="`,item.id,`" data-roleid="`,item.id,`" data-usersearchvalue="`,item.user_search_value,`" data-userclass="${item.user_class}" data-rolename="${item.name}" class="col-sm-2 role-card">
+            <div class="card-content card bg-white shadow p-2 border rounded-3 d-flex flex-column justify-content-between" data-roleid="${item.id}" style="height:20vh;min-width:120px;">
+               <div class="d-flex flex-column justify-content-center align-items-center p-2">
+                  <span class="data-input text-success text-center" style="font-size:1em" data-field="user_class">${item.name}</span>
+                  <span class="role-name-title mt-2">
+                    ${item.name.charAt(0).toUpperCase()}
                 </span>
+              </div>
+                <span class="pg-alert-card-line" style="width:100%"></span>
+                <span class="data-input text-muted p-1" style="font-size:0.8em" >Total Member: ${item.user_count ?? 0}</span>
 
-                <div class="d-flex flex-row justify-content-between align-items-center border-top">
-                    <span class="text-dark" style="font-size:0.9em">
-                        ${item.user_class === 'admin' ? 'Staff' : (item.user_class ?? 'NA')}
-                    </span>
-                    <div class="edit_menus d-flex gap-2" style="visibility:hidden">
-                        <a data-roleid="${item.id}" href="javascript:void(0)" class="lnk-edit-role">
-                            <span class="d-flex align-items-center justify-content-center bg-info rounded-circle" style="width:28px; height:28px;">
-                                <i class="fa fa-pencil text-white" style="font-size:12px;"></i>
-                            </span>
-                        </a>
-                        <a data-roleid="${item.id}" href="javascript:void(0)" class="lnk-delete-role">
-                            <span class="d-flex align-items-center justify-content-center bg-danger rounded-circle" style="width:28px; height:28px;">
-                                <i class="fa fa-times text-white" style="font-size:12px;"></i>
-                            </span>
-                        </a>
-                    </div>
+                <div class="d-flex flex-row justify-content-between align-items-center border-top border-1">
+                  <span class="text-muted p-1">${item.user_class == 'admin' ? 'Staff':(item.user_class ?? 'NA')}</span>
+                  <div class="edit_menus d-flex flex-row flex-wrap justify-content-end gap-2" style="visibility:hidden">
+                    <a data-roleid="`,item.id,`" href="javascript:void(0)" class="lnk-edit-role"><span class="pr-2 pl-2 pt-1 pb-1 bg-info border rounded-4" ><i class="fa fa-pencil text-white fw-semibold"></i></span></a>
+                    <a data-roleid="`,item.id,`"  href="javascript:void(0)" class="lnk-delete-role"><span class="pr-2 pl-2 pt-1 pb-1 bg-danger rounded-4"><i class="fa fa-times text-white"></i></span></a>
+                  </div>
                 </div>
             </div>
-        </div>
-        `].join('');
+
+         </div>`].join('');
           cnt++;
         });
         container.innerHTML = html;
@@ -257,28 +133,25 @@ mThis.formatChoice_app = (apps = []) =>
 
        let role = null;
        if(card){
-         const role_id = card.dataset.roleid || card.dataset.id;
          role = {
-            "role_id":role_id,
-            "id":role_id,
+            "role_id":card.dataset.roleid || card.dataset.id,
             "name":card.dataset.rolename || card.dataset.name,
             "user_class":card.dataset.userclass
          }
          card.classList.add('selected');
-         mThis.selected_role = role; //ensure one role is selected effectively on first load
          mThis.scrollCardToView(card);
          mThis.lblSelectedRoleName.innerHTML = role.name;
        }
        RoleTabView.displayContent(role,null,{"user_search_value":user_search_value});
     }
 
-    mThis.scrollCardToView =(div_card) =>{
+    this.scrollCardToView =(div_card) =>{
         //mThis.div_role_list.style.overflow = 'auto';
         div_card.scrollIntoView({ behavior: 'smooth', block: 'center' });
         //mThis.div_role_list.style.overflow = 'hidden';
     }
 
-    mThis.getRoleCard = (role_id)=>{
+    this.getRoleCard = (role_id)=>{
         let found_card = null;
         mThis.div_role_list.querySelectorAll('div.role-card').forEach(div =>{
             let m_id = div.dataset.id || div.dataset.roleid;
@@ -291,7 +164,7 @@ mThis.formatChoice_app = (apps = []) =>
     }
 
     /** displayItems() display items by category as its header similiar to Report Center's reports display layout */
-    mThis.displayItems = (data, div) => {
+    this.displayItems = (data, div) => {
         div.innerHTML = '<div class="d-flex flex-column justify-content-center align-items-center h-100 w-100"><div class="animation-line" style="height:2px;margin:0;"></div></div>';
 
             let html = '';
@@ -309,40 +182,17 @@ mThis.formatChoice_app = (apps = []) =>
             mThis.div_report_list.innerHTML = html;
     }
 
-    // mThis.loadRoles = (filter, onFinish)=>{
-    //     filter = filter || {"search_value":filter.search_value ?? ''};
-    //     vsapi.post(`${main_view.base_url}/api/role/list`,filter,{loader:false,cacheTTL: (filter.search_value?  0 : 2000) }).then(res =>{
-    //        const roles = res.status_code ==200? res.data : [];
-    //        onFinish(roles);
-    //     })
-    //     .catch((e)=>{
-    //         console.error(e);
-    //         onFinish([]);
-    //     });
-    // }
-
-
-  mThis.loadRoles = (filter = {}, onFinish) => {
-    const payload = {
-        search_value: filter.search_value ?? '',
-        user_class: filter.user_class ?? null,
-        app_id: filter.app_id ?? null
-    };
-
-    vsapi.post(
-        `${main_view.base_url}/api/role/list`,
-        payload,
-        {
-            loader: false,
-            cacheTTL: payload.search_value ? 0 : 2000
-        }
-    ).then(res => {
-        onFinish(res.status_code === 200 ? res.data : []);
-    }).catch(err => {
-        console.error(err);
-        onFinish([]);
-    });
-};
+    this.loadRoles = (filter, onFinish)=>{
+        filter = filter || {"search_value":mThis.elSearchRole.value};
+        vsapi.call(`${main_view.base_url}/api/role/list`,filter,null,false).then(res =>{
+           const roles = res.status_code ==200? res.data : [];
+           onFinish(roles);
+        })
+        .catch((e)=>{
+            console.error(e);
+            onFinish([]);
+        });
+    }
 
 
     function slideDown(element, duration = 500, onFinish = null) {
@@ -386,13 +236,13 @@ mThis.formatChoice_app = (apps = []) =>
 
 
     /** if state == null => setRoleListState() is like toggleRoleList() */
-    mThis.setRoleListState = (state = null,duration = 600) =>{
+    this.setRoleListState = (state = null,duration = 600) =>{
         const div =  mThis.div_role_list;
         mThis.lnkToggleRoleList.classList.add('disabled');
         if(state === 1){
            //div.classList.add('d-flex');
            //div.style.display ='flex';
-          // *** Todo: later put functions slideDown() and slideUp() in general reusable library
+          // *** Todo: later put funcitons slideDown() and slideUp() in general reusable library
            slideDown(div,duration,()=>{
             mThis.lnkToggleRoleList.dataset.state =1;
             mThis.lnkToggleRoleList.innerHTML = `<i class="fa fa-minimize text-white fs-6"></i>`;
@@ -418,21 +268,20 @@ mThis.formatChoice_app = (apps = []) =>
 
         }else{
             let x = state ==1? 0:1;
-            mThis.setRoleListState(x);
+            this.setRoleListState(x);
         }
     }
 
-    mThis.init = () => {
+    this.init = () => {
         if(mThis.initAlready) return;
 
-        injectCSS();
         mThis.searchWidget = new SearchWidget(mThis.div_search_widget,{
-            inputClass:'form-control-sm text-yp-custom form-control border border-secondary rounded-4',
+            inputClass:'form-control-sm form-control border border-secondary rounded-4',
             placeHolder:'Search role or user',
             onkeyup:(value,e)=>{
                 clearTimeout(mThis.search_timeout);
                 mThis.search_timeout = setTimeout(()=>{
-                    const p =  {"search_value":value};
+                    let p =  {"search_value":value};
                     mThis.loadRoles(p, roles =>{
                         mThis.renderRoleCards(roles);
                     });
@@ -460,14 +309,12 @@ mThis.formatChoice_app = (apps = []) =>
             }
         }
 
-        mThis.div_role_list.addEventListener('click', e=>{
+        this.div_role_list.addEventListener('click', e=>{
             e.preventDefault();
               //Click on Delete Role icon
             let lnk = VSUtil.closestLimited(e.target,'a.lnk-delete-role');
             if(lnk){
                let role_id = lnk.dataset.roleid;
-                if(!AuthManager.allowed(104)) return;
-
                cv_interact.confirm(['Delete ', (RoleTabView.selected_role? `role ${RoleTabView.selected_role.name}`: 'this role') ,' permanently?'].join(''),{context:"delete","title":"Delete Role",confirmButtonText:"Delete"}, e=>{
                     if(e){
                         mThis.deleteRole(role_id);
@@ -487,14 +334,14 @@ mThis.formatChoice_app = (apps = []) =>
                 const op = {
                   id: role_id,
                   onClose:(d)=>{
-                        const p = mThis.getFilterData();
+                        let p = mThis.getFilterData();
                         mThis.loadRoles(p, roles =>{
                             let new_role = d.role;
                             mThis.renderRoleCards(roles,null,new_role);
                         });
                   }
                 };
-                if(!AuthManager.allowed(103)) return;
+
                 RoleDialog.show(op);
                 return;
             }
@@ -515,7 +362,6 @@ mThis.formatChoice_app = (apps = []) =>
                     });
                 }
             }
-            if(!AuthManager.allowed(102)) return;
             RoleDialog.show(op);
         });
 
@@ -533,95 +379,44 @@ mThis.formatChoice_app = (apps = []) =>
                     // });
                 }
             }
-            if(!AuthManager.allowed(105)) return;
             PrintDialog.show(op);
         });
 
         mThis.initAlready = true;
     }
 
-    // mThis.ensureSelectedRole = (roles = [], preferred = null) => {
-    //     if (!Array.isArray(roles) || roles.length === 0) {
-    //         mThis.selected_role = null;
-    //         return null;
-    //     }
-
-    //     let role = null;
-
-    //     if (preferred) {
-    //         role = roles.find(r =>
-    //             r.id == preferred.id || r.id == preferred.role_id
-    //         );
-    //     }
-
-    //     if (!role) role = roles[0];
-
-    //     mThis.selected_role = {
-    //         role_id: role.id,
-    //         id: role.id,
-    //         name: role.name,
-    //         user_class: role.user_class
-    //     };
-
-    //     return mThis.selected_role;
-    // };
-
-mThis.ensureSelectedRole = (roles = [], preferred = null) => {
-    if (!Array.isArray(roles) || roles.length === 0) {
-        mThis.selected_role = null;
-        return null;
-    }
-
-    let role = null;
-
-    if (preferred) {
-        role = roles.find(r =>
-            r.id == preferred.id || r.id == preferred.role_id
-        );
-    }
-
-    if (!role) role = roles[0];
-
-    mThis.selected_role = {
-        role_id: role.id,
-        id:role.id,
-        name: role.name,
-        user_class: role.user_class
-    };
-
-    return mThis.selected_role;
-};
-
-    mThis.getFilterData = ()=>{
-        const p = {};
+    this.getFilterData = ()=>{
+        let p = {};
         p.search_value = mThis.searchWidget? mThis.searchWidget.getValue() : '';
         return p;
     }
 
-    mThis.show = (options)=>{
+    this.show = (options)=>{
         options = options || {};
         mThis.init();
         mThis.selected_role = null;
         mThis.options = options;
         mThis.div_role_list.style.maxHeight='';
 
-        mThis.loadRoles(mThis.getFilterData(), roles =>{
+        main_view.setTitle(mThis.title_prop);
+
+        mThis.loadRoles(this.getFilterData(), roles =>{
             mThis.setRoleListState(1,0);
             mThis.renderRoleCards(roles,null);
            // mThis.setEvent();
 
         });
-        main_view.setContentView(mThis.self,mThis.title_prop);
+
+        mThis.jm.siblings().hide();
+        mThis.jm.fadeIn(200);
     }
 
-    mThis.updateSelectRole = function(col_name, data){
+    this.updateSelectRole = function(col_name, data){
         let selected_class_name = 'row-selected';
         mThis.div_role_list.querySelector(`tr.${selected_class_name}>td.${col_name}`).innerHTML = data;
     }
 
-     return mThis;
-})();
-//end::RoleManagementComponent
+};
 
 /** begin:: vs-tab-view for role details */
 const RoleTabView = new function(){
@@ -654,7 +449,7 @@ const RoleTabView = new function(){
            title:"Login Name",
            className:"login_name",
            data:(data,index,tr)=>{
-               let lock_html = data.is_locked ==1? '<span class="d-block text-danger fw-semibold p-1">Locked</span>' : '';
+               let lock_html = data.is_locked ==1? '<span class="d-block text-danger fw-sembold p-1">Locked</span>' : '';
                return [data.login_name,lock_html].join('');
            }
 
@@ -674,20 +469,16 @@ const RoleTabView = new function(){
 
          },
          {
-            title: "Primary Role",
-            data: (data, index, tr) => {
-                return [
-                    '<span class="d-block">', data.role_name, '</span>',
-                    data.official_code
-                        ? '<span class="text-left p-1"><span class="text-nowrap">ID: </span>' + data.official_code + '</span>'
-                        : ''
-                ].join('');
+            title:"Primary Role",
+            data:(data,index,tr)=>{
+                return ['<span class="d-block">',data.role_name,'</span>','<span class="text-left p-1">',`<span class="text-muted">`,` ID: </span>`,(data.official_code || 'NA'),'</span>'].join('');
             }
-        },
+
+         },
         {
            title:"Last Login",
            data:(data,index,tr)=>{
-               return [`<span class="d-block p-1">Last login: `,(data.last_login_date || 'N/A'),`</span>`].join('');
+               return [`<span class="d-block p-1">Last login: `,data.last_login_date,`</span>`].join('');
            }
 
         },
@@ -703,11 +494,11 @@ const RoleTabView = new function(){
             data:(data,index,tr)=>{
                 return [`<div class="d-flex gap-3 flex-wrap">`,
                 // `<a data-id="`,data.id,`" href="javascript:void(0)" class="lnk-edit-user"><i class="fa fa-edit"></i></a>`,
-                `<a data-id="`,data.id,`" data-loginname="${data.login_name}" href="javascript:void(0)" class="lnk-reset-password"><span class="tool-tip"><i class="fa fa-key text-warning"></i><span class="tool-tiptext fs-6">Reset Password</span></span></a>`,
-                `<a data-id="`,data.id,`"  data-loginname="${data.login_name}" href="javascript:void(0)" data-action="`,(data.is_locked ==1? 'unlock':'lock'),`" class="lnk-lock-user"><span class="tool-tip"><i class="${data.is_locked==1? 'fa fa-unlock text-info':'fa fa-lock text-danger'}"></i><span class="tool-tiptext fs-6">Lock User</span></span></a>`,
-                `<a data-id="`,data.id,`"   data-loginname="${data.login_name}" href="javascript:void(0)" class="lnk-remove-user"><span class="p-1 rounded-4"><span class="tool-tip"><i class="fa fa-times text-danger fs-5"></i><span class="tool-tiptext fs-6">Remove User</span></span></span></a>`,
+                `<a data-id="`,data.id,`" data-loginname="${data.login_name}" href="javascript:void(0)" class="lnk-reset-password"><i class="fa fa-key text-warning tool-tip"><span class="tool-tiptext fs-6">Reset Password</span></i></a>`,
+                `<a data-id="`,data.id,`"  data-loginname="${data.login_name}" href="javascript:void(0)" data-action="`,(data.is_locked ==1? 'unlock':'lock'),`" class="lnk-lock-user"><i class="${data.is_locked==1? 'fa fa-unlock text-info':'fa fa-lock text-danger'} tool-tip"><span class="tool-tiptext fs-6">Lock User</span></i></a>`,
+                `<a data-id="`,data.id,`"   data-loginname="${data.login_name}" href="javascript:void(0)" class="lnk-remove-user"><span class="p-1 rounded-4"><i class="fa fa-times text-danger fw-bold tool-tip"><span class="tool-tiptext fs-6">Remove User</span></i></span></a>`,
                 `<a data-id="`,data.id,`"  data-loginname="${data.login_name}"  href="javascript:void(0)" class="user_action d-none"><span class="p-1 rounded-4"><i class="fa fa-tasks text-info fw-bold tool-tip"><span class="tool-tiptext fs-6">User Action</span></i></span></a>`,
-                `<a data-id="`,data.id,`"  data-loginname="${data.login_name}"  href="javascript:void(0)" class="user-print"><span class="p-1 rounded-4"><span class="tool-tip"><i class="fa fa-print text-dark"></i><span class="tool-tiptext fs-6">Print</span></span></span></a>`,
+                `<a data-id="`,data.id,`"  data-loginname="${data.login_name}"  href="javascript:void(0)" class="user-print"><span class="p-1 rounded-4"><i class="fa fa-print text-dark fw-bold tool-tip"><span class="tool-tiptext fs-6">Print</span></i></span></a>`,
                 `</div>`].join('');
             }
 
@@ -721,11 +512,11 @@ const RoleTabView = new function(){
      this.divAppList = this.self.querySelector('#_um_role_app_list');
 
      this.loadApps =()=>{
-        const p = {
+        let p = {
             subs_id: main_view.subs_id,
             role_id:mThis.selected_role.role_id
         };
-        vsapi.post(`${main_view.base_url}/api/role/apps`,p,{loader:false,useCache:true,cacheTTL:1500}).then(res=>{
+        vsapi.call(`${main_view.base_url}/api/role/apps`,p,false,false).then(res=>{
             let apps = res.status_code ==200? res.data : [];
             that.renderContent(apps);
         });
@@ -790,7 +581,7 @@ const RoleTabView = new function(){
            const role_id = RoleManagementComponent.selected_role?.role_id || RoleManagementComponent.selected_role?.id;
            const p = {role_id: role_id, app_id: app_id, allowed : allowed};
 
-           vsapi.post(`${main_view.base_url}/api/role/apps/set-status`,p,{loader:false}).then(res =>{
+           vsapi.call(`${main_view.base_url}/api/role/apps/set-status`,p,false,false,false).then(res =>{
 
                if(res.status_code ==200){
                    return;
@@ -809,18 +600,83 @@ const RoleTabView = new function(){
  this.UserPanel = new function(){
     //NOTE  "mThis" refers to RoleTabView instance
     const that = this;
-    let userSearchTimer = null;
     this.divSelf =  mThis.tabBody.querySelector('#view_users');
     this.btnAddRoleMember = this.divSelf.querySelector('#_um_role_add_member');
     this.btnCreateUser = this.divSelf.querySelector('#_um_role_create_user');
     this.btnPrintUser = this.divSelf.querySelector('#_um_role_print_user');
     this.elSearchUser = this.divSelf.querySelector('#_um_role_search_user');
 
+    // this.resetPassword = (user_id, lnk)=>{
+    //     if(!AuthManager.allowed(109)) return;
+    //     const dlg = new GeneralDialog({
+    //        dialogId:"resetpass",
+    //        title:"Reset Password",
+    //        showCancelButton:false,
+    //        //dialogId:"resetpwd",
+    //        fields:[
+    //           {
+    //             name:"password",
+    //             label:"Password",
+    //             type:"password",
+    //             required:true
+    //           },
+    //           {
+    //            name:"confirm_password",
+    //            label:"Conform Password",
+    //            type:"password",
+    //            required:true
+    //           },
+    //        ],
+    //        buttons:[
+    //         {
+    //             label:"<span>Set Now</span>",
+    //             cssClass:"btn btn-info",
+    //             icon:"",
+    //             click:(me,btn,divModal)=>{
+    //                let p = me.getData();
+    //                if(!p.password || p.password ==''){
+    //                 cv_interact.error('Password is required');
+    //                 return;
+    //               }
+
+    //                if(p.password !== p.confirm_password){
+    //                   cv_interact.error('Password and confirmed password do not match');
+    //                   return;
+    //                }
+    //                vsapi.call(`${main_view.base_url}/api/user/set-password`,p,btn,false,false).then(res=>{
+    //                     if (res.status_code ==200){
+    //                         me.hide();
+    //                         cv_interact.success('Password has been changed');
+    //                     }else cv_interact.error(res.error_message);
+    //                });
+    //             }
+    //         }
+    //        ],
+    //     //    override:{
+    //     //      getData:(me,divModal)=>{
+    //     //         return {new_prop:"111", newOne:"222"};
+    //     //      }
+    //     //    },
+    //     //    extendMethod:{
+    //     //      setData:(me,data,divModal)=>{
+
+    //     //      }
+    //     //    },
+    //        onClose:(canceled)=>{
+    //           return;
+    //        }
+    //     });
+
+    //     dlg.show({id: user_id});
+    // }
+
+
+
     this.deleteUser = (user_id)=>{
        let p = {"id":user_id}
       cv_interact.confirm('Delete this user permanently?',{context:"delete",title:"Delete User"}, e=>{
          if(e){
-             vsapi.post(`${main_view.base_url}/api/user/delete`,p,{loader:false}).then(res =>{
+             vsapi.call(`${main_view.base_url}/api/user/delete`,p,false,false).then(res =>{
                  if(res.status_code ==200){
                     mThis.userListView.showPage(mThis.UserPanel.getFilterData(), mThis.userListView.current_page);
                  }else cv_interact.error(res.error_message);
@@ -851,7 +707,7 @@ const RoleTabView = new function(){
                     if(u.id > 0) cnt++;
                 });
                let p = {"role_id":mThis.selected_role.role_id, "user_ids":ids,'is_primary':1};
-               vsapi.post([main_view.base_url, '/api/role/add-members'].join(''),p,{loader:false}).then(res =>{
+               vsapi.call([main_view.base_url, '/api/role/add-members'].join(''),p,null,false).then(res =>{
                   if(res.status_code == 200){
                      let d = res.data;
                      mThis.userListView.showPage(RoleTabView.UserPanel.getFilterData());
@@ -876,7 +732,6 @@ const RoleTabView = new function(){
                 // });
             }
         }
-        // if(!AuthManager.allowed(119)) return;
         PrintDialog.show(op);
     });
 
@@ -893,59 +748,44 @@ const RoleTabView = new function(){
                mThis.userListView.showPage({"role_id":role_id,"search_value":  that.elSearchUser.value});
             }
         }
-
-        if(!AuthManager.allowed(107)) return;
         CreateLoginDialog.show(op);
     }
 
-    that.elSearchUser.onkeyup = e => {
-        const value = e.target.value;
-        clearTimeout(userSearchTimer);
-
-        userSearchTimer = setTimeout(() => {
-            mThis.userListView.showPage(that.getFilterData());
-        }, 300);
+    that.elSearchUser.onkeyup = e =>{
+        e.preventDefault();
+        setTimeout(()=>{
+           mThis.userListView.showPage(that.getFilterData());
+        },250);
     };
  }
 /** end: Userpanel defintion */
 
 /** begin: ModulePanel defintion */
-mThis.ModulePanel = new function(){
-    const that = {};
-    let searchModTimer = null;
-    that.divSelf =  mThis.tabBody.querySelector('#view_modules');
-    that.btnPrintModule = that.divSelf.querySelector('#_um_role_print_module');
-    that.elAppFilter = mThis.self.querySelector('#mod_app_chooser');
-    that.elSearchMod = mThis.self.querySelector('#mod_search_module');
-    that.elAppFilter.onchange = e=>{
+this.ModulePanel = new function(){
+    const that = this;
+    this.divSelf =  mThis.tabBody.querySelector('#view_modules');
+    this.btnPrintModule = this.divSelf.querySelector('#_um_role_print_module');
+    this.elAppFilter = mThis.self.querySelector('#mod_app_chooser');
+    this.elAppFilter.onchange = e=>{
       e.preventDefault();
       that.def_app_id = e.target.value;
       that.displayModules(mThis.selected_role.role_id, that.def_app_id);
     }
 
-    that.elSearchMod.onkeyup = e => {
-    clearTimeout(searchModTimer);
-    searchModTimer = setTimeout(() => {
-        that.displayModules(
-            mThis.selected_role.role_id,
-            that.def_app_id,
-            that.elSearchMod.value ?? null
-        );
-    }, 300);
-  };
-
     //loadAppOptions
     this.loadAppChoices = async ()=>{
         let apps = await getAccessibleApps();
-        let icon_apps = RoleManagementComponent.formatChoice_app(apps);
-        that.def_app_id = that.def_app_id || (icon_apps[0]?  (icon_apps[0].value ?? null) : "");
-        VSUtil.setComboItems(that.elAppFilter,icon_apps,"value","label",'','(All Apps)',(that.def_app_id || ""));
-        //Please add search Input for module
-        that.displayModules(mThis.selected_role.role_id, that.def_app_id, that.elSearchMod.value ?? null);
+
+        let icon_apps = apps.map(x =>({
+            value: x.id,
+            label:`<i class="fas fa-volleyball-ball text-muted"></i>  <span>${x.name}</span>`
+        }));
+        that.def_app_id = that.def_app_id || (icon_apps[0]? icon_apps[0].value : "");
+        VSUtil.setComboItems(that.elAppFilter,icon_apps,"value","label",true,"(All Apps)",(that.def_app_id || ""));
     }
 
-    that.displayModules = (role_id,app_id, search_value = null)=>{
-        role_id = role_id || RoleManagementComponent.selected_role?.role_id || RoleManagementComponent.selected_role?.id;
+    this.displayModules = (role_id,app_id)=>{
+        role_id = RoleManagementComponent.selected_role?.role_id || RoleManagementComponent.selected_role?.id;
         mThis.div_modules = mThis.div_modules || mThis.self.querySelector('#_um_role_mod_list');
 
         mThis.modulesList = mThis.modulesList || new  UMExpandItemView(mThis.div_modules,{
@@ -970,34 +810,34 @@ mThis.ModulePanel = new function(){
             },
             onStatusChange:(statusInfo,item_id,parent_id,checkBox)=>{
                 //console.log('todo: save permission via api ', status, ' id: ',item_id, ' cat_id ',parent_id);
-
                 const role_id = RoleManagementComponent.selected_role?.role_id || RoleManagementComponent.selected_role?.id;
-
                 const p = {
                     "role_id":role_id,
                     "module_id":item_id,
                     "app_id": parent_id,
                     "status_id": (statusInfo.status_id || statusInfo.id)
                 };
-                vsapi.post(`${main_view.base_url}/api/role/modules/set-status`,p,{loader:false}).then(res =>{
+                vsapi.call(`${main_view.base_url}/api/role/modules/set-status`,p,false,false).then(res =>{
                     if(res.status_code ==200){
                        return;
                     }else{
-                        mThis.modulesList.setCheck(checkBox,0);
+                        modulesList.setCheck(checkBox,0);
                         cv_interact.warning(res.error_message);
                     }
                 });
             }
         });
 
-        const p = {"role_id":role_id,"app_id":app_id,search_value: search_value,"order_by":"display_order"};
-        vsapi.post(`${main_view.base_url}/api/role/modules`,p,{loader:false, cacheTTL: (search_value? 0:1500)}).then(res =>{
-            const data = res.status_code ==200 ? res.data : [];
+        let p = {"role_id":role_id,"app_id":app_id};
+        vsapi.call(`${main_view.base_url}/api/role/modules`,p,false,false,false).then(res =>{
+            let data = res.status_code ==200 ? res.data : [];
             mThis.modulesList.setData(data);
+
         });
+
     }
 
-    that.btnPrintModule.addEventListener('click', e =>{
+    this.btnPrintModule.addEventListener('click', e =>{
         e.preventDefault();
         let op = {
             role_id: mThis.selected_role.role_id,
@@ -1010,7 +850,6 @@ mThis.ModulePanel = new function(){
                 // });
             }
         }
-        if (!AuthManager.allowed(108)) return;
         PrintDialog.show(op);
     });
 
@@ -1020,7 +859,6 @@ mThis.ModulePanel = new function(){
 /** begin: PermissionPanel defintion */
 this.PermissionPanel = new function(){
     const that = this;
-    let searchTimer = null;
     this.divSelf =  mThis.tabBody.querySelector('#view_permissions');
     this.btnPrintPermission = this.divSelf.querySelector('#_um_role_print_permission');
     this.elAppFilter = mThis.self.querySelector('#prn_app_chooser');
@@ -1031,29 +869,30 @@ this.PermissionPanel = new function(){
         that.displayPermissionList(mThis.selected_role.role_id, that.def_app_id, that.elSearchPrn.value);
     }
 
-        this.elSearchPrn.onkeyup = e => {
-            const value = e.target.value;
+    this.elSearchPrn.onkeyup = e =>{
+       e.preventDefault();
+       setTimeout(()=>{
+            if((e.target.value || '').length > 0){
+                that.elAppFilter.value ="";
+            }
+            that.elAppFilter.dispatchEvent(new Event("change"));
+       },250);
 
-            clearTimeout(searchTimer);
 
-            searchTimer = setTimeout(() => {
-                that.displayPermissionList(
-                    mThis.selected_role.id,
-                    that.elAppFilter.value,
-                    value
-                );
-            }, 300); // adjust delay if needed
-        };
+    }
 
     this.loadAppChoices = async ()=>{
         let apps =  await getAccessibleApps();
-        let icon_apps = RoleManagementComponent.formatChoice_app(apps);
-        that.def_app_id = that.def_app_id || ((icon_apps[0].value ?? null )?? null);
-        VSUtil.setComboItems(that.elAppFilter,icon_apps,"value","label",null,null,that.def_app_id);
+        let icon_apps = apps.map(x =>({
+            value: x.id,
+            label:`<i class="fas fa-volleyball-ball text-muted"></i>  <span>${x.name}</span>`
+        }));
+        that.def_app_id = that.def_app_id || "";
+        VSUtil.setComboItems(that.elAppFilter,icon_apps,"value","label",true,"All Applications",(that.def_app_id || ""));
     }
 
     this.displayPermissionList = (role_id, app_id,search_value)=>{
-        role_id = role_id || RoleManagementComponent.selected_role?.role_id || RoleManagementComponent.selected_role?.id;
+        role_id = RoleManagementComponent.selected_role?.role_id || RoleManagementComponent.selected_role?.id;
         mThis.div_permissions = mThis.div_permissions || mThis.self.querySelector('#_um_role_prn_list');
 
         that.prnAttributes = ['category','module_id'];
@@ -1078,15 +917,13 @@ this.PermissionPanel = new function(){
               }
             },
             onStatusChange:(statusInfo,item_id,parent_id, checkBox)=>{
-
                 const role_id = RoleManagementComponent.selected_role?.role_id || RoleManagementComponent.selected_role?.id;
-
                 const p = {
                     role_id: role_id,
                     prn_id: item_id,
                     status_id: statusInfo.status_id
                 };
-                vsapi.post(`${main_view.base_url}/api/role/permissions/set-status`,p,{loader:false}).then(res =>{
+                vsapi.call(`${main_view.base_url}/api/role/permissions/set-status`,p,false,false).then(res =>{
                      if(res.status_code ==200){
                         return;
                      }else cv_interact.warning(res.error_message);
@@ -1095,10 +932,11 @@ this.PermissionPanel = new function(){
             }
         });
 
-            const p = {"role_id":role_id,"app_id":app_id, "search_value":search_value,"order_by":"display_order"};
-            vsapi.post(`${main_view.base_url}/api/role/permissions`,p,{loader:false,useCache:true, cacheTTL: (search_value? 0: 1500)}).then(res =>{
+            let p = {"role_id":role_id,"app_id":app_id, "search_value":search_value};
+            vsapi.call(`${main_view.base_url}/api/role/permissions`,p,false,false,false).then(res =>{
                 let data = res.status_code ==200 ? res.data : [];
                 mThis.permissionList.setData(data);
+
             });
     }
 
@@ -1115,7 +953,6 @@ this.PermissionPanel = new function(){
                 // });
             }
         }
-        if (!AuthManager.allowed(116)) return;
         PrintDialog.show(op);
     });
 }
@@ -1125,7 +962,6 @@ this.PermissionPanel = new function(){
 /** begin: ReportPanel defintion */
 this.ReportPanel = new function(){
     const that = this;
-    let reportSearchTimer = null;
     this.elAppFilter = mThis.self.querySelector('#rpt_app_chooser');
     this.elSearchRpt =mThis.self.querySelector('#rpt_search');
 
@@ -1135,27 +971,25 @@ this.ReportPanel = new function(){
         that.displayReportList(mThis.selected_role.role_id, that.def_app_id, that.elSearchRpt.value);
     }
 
-    this.elSearchRpt.onkeyup = e => {
-        const value = e.target.value;
-
-        clearTimeout(reportSearchTimer);
-
-        reportSearchTimer = setTimeout(() => {
-            that.displayReportList(
-                mThis.selected_role.id,
-                that.elAppFilter.value,
-                value
-            );
-        }, 300);
-    };
+    this.elSearchRpt.onkeyup = e =>{
+        e.preventDefault();
+        setTimeout(()=>{
+            if ((e.target.value || "").length > 0){
+                 that.elAppFilter.value = "";
+            }
+            that.elAppFilter.dispatchEvent(new Event("change"));
+        },250);
+    }
 
     this.loadAppChoices = async ()=>{
         let apps =  await getAccessibleApps();;
-        let icon_apps = RoleManagementComponent.formatChoice_app(apps);
-        that.def_app_id = that.def_app_id || (icon_apps[0]? icon_apps[0].value: null);
-        VSUtil.setComboItems(that.elAppFilter,icon_apps,"value","label",null,null,that.def_app_id);
-        that.displayReportList(mThis.selected_role.role_id, that.def_app_id, that.elSearchRpt.value);
 
+        let icon_apps = apps.map(x =>({
+            value: x.id,
+            label:`<i class="fas fa-volleyball-ball text-muted"></i>  <span>${x.name}</span>`
+        }));
+        that.def_app_id = that.def_app_id || (icon_apps[0]? icon_apps[0].value:"");
+        VSUtil.setComboItems(that.elAppFilter,icon_apps,"value","label",false,null,that.def_app_id);
     }
 
     function hasMoreThanOneKey(obj) {
@@ -1171,7 +1005,7 @@ this.ReportPanel = new function(){
 
     this.displayReportList = async (role_id,app_id,search_value) => {
         const that = this;
-        role_id = role_id || RoleManagementComponent.selected_role?.role_id || RoleManagementComponent.selected_role?.id;
+        role_id = RoleManagementComponent.selected_role?.role_id || RoleManagementComponent.selected_role?.id;
         mThis.div_reports = mThis.div_reports || mThis.self.querySelector('#_um_role_report_list');
 
         if (!that.reportActions){
@@ -1204,9 +1038,8 @@ this.ReportPanel = new function(){
             },
             onStatusChange:(statusInfo,item_id,parent_id)=>{
                 const role_id = RoleManagementComponent.selected_role?.role_id || RoleManagementComponent.selected_role?.id;
-
                 const p = {role_id: role_id, prn_id:item_id, app_id:null, status_id : statusInfo.status_id};
-                vsapi.post([main_view.base_url,'/api/role/reports/set-status'].join(''),p, {loader:false}).then(res =>{
+                vsapi.call([main_view.base_url,'/api/role/reports/set-status'].join(''),p, null,false).then(res =>{
                     if (res.status_code==200){
                     }else cv_interact.warning(res.error_message);
                 });
@@ -1214,8 +1047,8 @@ this.ReportPanel = new function(){
 
         });
 
-        const p = {role_id: mThis.selected_role.role_id, app_id:app_id, search_value:search_value,"order_by":"display_order"};
-        vsapi.post([main_view.base_url, '/api/role/reports'].join(''), p,{loader:false,cacheTTL: (search_value? 0:1500)}).then(res =>{
+        const p = {role_id: mThis.selected_role.role_id, app_id:app_id, search_value:search_value};
+        vsapi.call([main_view.base_url, '/api/role/reports'].join(''), p,false,false).then(res =>{
              const d = res.status_code ==200? res.data: {};
              mThis.reportList.setData(d);
         });
@@ -1225,7 +1058,7 @@ this.ReportPanel = new function(){
 
  async function getAccessibleApps(){
     const p = {id: (mThis.selected_role.role_id || mThis.selected_role.id)};
-    const res = await vsapi.post(`${main_view.base_url}/api/role/accessible-apps`,p,{loader:false,useCache:true,cacheTTL:1500});
+    const res = await vsapi.call(`${main_view.base_url}/api/role/accessible-apps`,p,false,false,false);
     return res.status_code ==200? res.data : [];
  }
 
@@ -1257,7 +1090,6 @@ this.ReportPanel = new function(){
               perPage:10,
                fetchApi:[main_view.base_url,'/api/role/members'].join(''),
                processResponse:(res)=>{
-
                    return res.data;
                },
                apiCluster:null,
@@ -1537,7 +1369,7 @@ this.ReportPanel = new function(){
          mThis.selected_role = role;
          if(role.user_class ==='parent') RoleManagementComponent.parentId = true;
          else RoleManagementComponent.parentId = false;
-    // console.log(4444,RoleManagementComponent.parentId);
+        console.log(4444,RoleManagementComponent.parentId);
         if(!role || (!role.role_id || role.role_id ==0)){
             RoleTabView.self.classList.remove('d-flex');
             RoleTabView.self.style.display='none';
@@ -1613,8 +1445,7 @@ const RoleDialog = (()=>{
                   valueField:"id",
                   textField:"role_group_name",
                   defaultValue:"Official"
-              },
-              {
+              },{
                   name:"user_class",
                   data:"user_classes",
                   valueField:"user_class",
@@ -1624,12 +1455,12 @@ const RoleDialog = (()=>{
           buttons:[
             {
                label:"Cancel",
-               cssClass:"btn btn-vs-cancel",
+               cssClass:"btn btn-secondary",
                dismissModal:true
             },
             {
                label:"Save",
-               cssClass:"btn btn-vs-save",
+               cssClass:"btn btn-primary",
                click:(modal,btn,divModal)=>{
                    let p = modal.getData();
                    //let p = {id:mThis.options.id, group_id:mThis.elRoleGroup.value, name: mThis.elRoleName.value};
@@ -1654,7 +1485,7 @@ const RoleDialog = (()=>{
                   return {id: op.id};
               },
               // onResponse:(res)=>{
-              // // console.log(res);
+              //     console.log(res);
               // }
             }
           },
@@ -1669,37 +1500,33 @@ const RoleDialog = (()=>{
 
   const PrintDialog = new function(){
     const mThis = this;
-    this.self = main_view.VSAppContent.querySelector('#dlg_print_');
+    this.self = main_view.appContent.children('#dlg_print_');
     this.modal = new bootstrap.Modal(this.self);
-    this.elBody = mThis.self.querySelector('div.modal-body');
-    this.btnPrint = mThis.self.querySelector('#dlg_print_btn'); //** this btn use both print and receive payment */
-    this.elTitle = mThis.self.querySelector('.modal-title');
+    this.elBody = mThis.self.find('div.modal-body');
+    this.btnPrint = mThis.self.find('#dlg_print_btn'); //** this btn use both print and receive payment */
+    this.elTitle = mThis.self.find('.modal-title');
     this.htmlString = null;
     this.company_profile_url = [];
     this.controlButton = (div, op) => {
 
-
-        mThis.btnPrint.onclick = e => {
-        e.preventDefault();
-
-        if (!mThis.htmlString) return;
-
-        mThis.modal.hide();
-
-        let style = `
-                #_zoom {
-                    zoom: 100%;
+        mThis.btnPrint.off('click').on('click', function(e)
+        {
+            e.preventDefault();
+            if(mThis.htmlString)
+            {
+                mThis.self.modal('hide');
+                let style = `
+                table{
+                    max-width: 800px;
+                    margin: auto;
                 }
-
-                .zoom_table {
-                    zoom: 100%;
+                table tr th, table tr td {
+                    text-align: left;
                 }
-        `;
-
-        windowPrintRole(mThis.htmlString, style);
-    };
-
-
+                `;
+                windowPrintRole(mThis.htmlString,style);
+            }
+        });
     }
 
     this.prepareRolePrint = (div, d) => {
@@ -1709,39 +1536,23 @@ const RoleDialog = (()=>{
         company_info = d.company_profile ?? {};
         if(d)
         {
-            let html = `
-            <div id="full_elbody" style="zoom:95%">
-                <style>
-                    #full_elbody {
-                        background: #fff !important;
-                        font-family: "Khmer OS Battambang", Arial, sans-serif !important;
-                    }
-                    .table-bordered th, .table-bordered td { border:1px solid #000 !important; padding:4px 6px; }
-
-                </style>
-
-                <div class="page">
-                    <div class="row mb-3">
-                        <div class="col-2">
-                            <img src="${main_view.base_url}/assets/images/logo/ksm-logo.png" style="max-width:100px; max-height:100px;" alt="logo" />
-                        </div>
-                    </div>
-
-                    <div class="text-center">
-                        <h4 class="text-uppercase mb-1">List Of Roles</h4>
-                        <p class="mb-0"></p>
-                    </div>
-                </div>
-            `;
+            let html = `<div class="d-block position-relative">
+                            <div class="height-logo-report position-absolute float-start">
+                                <img style="max-width: 100px; max-height: 100px;" class=" object-fit-scale set-min-size-logo" src="${main_view.base_url}/assets/images/logo/ksm-logo.png" alt=""/> alt="logo"/>
+                            </div>
+                            <div class="d-flex flex-column gap-2 justify-content-center align-items-center set-min-size-container-title">
+                                <h4 class="text-center text-uppercase">List Of Role</h4>
+                                <p class="text-center w-100 fs-5-1 get-subtitle"> </p>
+                            </div>
+                        </div>`;
 
             const tHead = `
                         <thead>
                             <tr>
                                 <th class="text-nowrap">No</th>
                                 <th class="text-nowrap">Role Name</th>
-                                <th class="text-nowrap">Member</th>
-                                <th class="text-nowrap">Created By</th>
-                                <th class="text-nowrap">Created Date</th>
+                                <th class="text-nowrap">Member Count</th>
+                                <th class="text-nowrap">Cearted By</th>
                             </tr>
                         </thead>
                     `;
@@ -1752,112 +1563,101 @@ const RoleDialog = (()=>{
                 tBody +=`
                         <tr>
                             <td class="align-middle">${i}</td>
-                            <td class="align-middle text-start">${r.name}</td>
-                            <td class="align-middle">${r.user_count}</td>
-                            <td class="align-middle">${r.create_user ?? ''}</td>
-                            <td class="align-middle text-start">${r.created_at ?? ''}</td>
+                            <td class="align-middle">${r.name}</td>
+                            <td class="align-middle"><span class="p-2 rounded-5 border border-primary" weigth = "25px">${r.user_count}</span></td>
+                            <td class="align-middle"><p class="pb-0 mb-1">${r.create_user ?? ''}</p>
+                            <small>${r.created_at ?? ''}</small>
+                        </td>
                         </tr>`;
                 i++;
             });
             tBody = '<tbody>' + tBody + '</tbody>';
-            html += '<table class = "table table-bordered text-center align-middle">' + tHead + tBody + '</table>';
+            html += '<table class = "table w-100">' + tHead + tBody + '</table>';
 
-            div.innerHTML =  html;
+            div.html(html);
             mThis.htmlString = html;
-            div.classList.remove('d-flex', 'justify-content-center', 'align-items-center');
+            div[0].classList.remove('d-flex', 'justify-content-center', 'align-items-center');
             LocaleManager.translateZone(div);
 
         }
     }
 
     this.getCompanyLogo_url = ()=>{
-            return vsapi.call(`${main_view.base_url}/api/company/details`,null,{loader:false,agent:null}).then(res => {
-            if(res.status_code == 200){
-                const d = res.data.logo_url ?? [];
+         return vsapi.call(`${main_view.base_url}/api/company/details`,null,null,false).then(res => {
+			if(res.status_code ==200){
+				const d = res.data.logo_url ?? [];
                 return d;
-            }
-        });
+			}
+		});
     }
 
-    this.prepareUserPrint = (div, d, users) => {
-        d = d || {};
-        users = Array.isArray(users) ? users : [];
+    this.prepareUserPrint = (div, d , users) => {
+        d = d || [];
+        users = users || [];
 
-        if (!users.length) return;
+        const company_info = d.company_profile ?? {};
+        if(users)
+        {
+            let html = `<div class="d-block position-relative">
+                            <div class="height-logo-report position-absolute float-start">
+                                <img style="max-width: 100px; max-height: 100px;" class="CompanyLogo object-fit-scale set-min-size-logo" src="${main_view.base_url}/assets/images/logo/ksm-logo.png" alt="logo"/>
+                            </div>
+                            <div class="d-flex flex-column gap-2 justify-content-center align-items-center set-min-size-container-title">
+                                <h4 class="text-center text-uppercase">Users List</h4>
+                                <p class="text-center w-100 fs-5-1 get-subtitle"> </p>
+                            </div>
+                        </div>`;
+            const tHead = `
+                        <!--<thead>
+                            <tr>
+                                <th colspan="100%" class="text-nowrap text-uppercase text-center">Uers</th>
+                            </tr>
+                        </thead> -->
+                        <thead>
+                            <tr>
+                                <th class="text-nowrap">No</th>
+                                <th class="text-nowrap">Full Name</th>
+                                <th class="text-nowrap">Login Name</th>
+                                <th class="text-nowrap">Cearted By</th>
+                            </tr>
+                        </thead>
+                    `;
 
-        let html = `
-        <div id="full_elbody" style="zoom:95%">
-            <style>
-                #full_elbody {
-                    background: #fff !important;
-                    font-family: "Khmer OS Battambang", Arial, sans-serif !important;
-                }
-                .table-bordered th, .table-bordered td { border:1px solid #000 !important; padding:4px 6px; }
+            let tBody = ``;
+            let i = 1;
+            users.map( u =>{
+                tBody +=`
+                    <tr>
+                        <td class="align-middle">${i}</td>
+                        <td class="align-middle">${u.full_name}</td>
+                        <td class="align-middle"><span class=" " >${u.login_name}</span></td>
+                        <td class="align-middle"><p class="pb-0 mb-1">${u.create_user ?? ''}</p>
+                            <small>${u.created_at ?? ''}</small>
+                        </td>
+                    </tr>`;
+                i++;
+            });
+            tBody = '<tbody>' + tBody + '</tbody>';
+            // html += '<table class = "table w-100">' + tHead + tBody + '</table>';
+            // let body = mThis.renderTableBody(d);
+            html += `<table  class= "table table-bordered w-100 mt-3">${tHead + tBody }</table>`;
+            // html += body;
+            mThis.self[0].classList.remove('modal-custom-size');
+            div.html(html);
 
-            </style>
+            div[0].classList.remove('d-flex', 'justify-content-center', 'align-items-center');
+            LocaleManager.translateZone(div);
+            mThis.getCompanyLogo_url().then(logoUrl => {
+                let imgLogo = div[0].querySelector('.CompanyLogo');
+                imgLogo.dataset.src = logoUrl;
+            });
+            mThis.htmlString = html;
+            console.log(2121,mThis.htmlString);
 
-            <div class="page">
-                <div class="row mb-3">
-                    <div class="col-2">
-                        <img src="${main_view.base_url}/assets/images/logo/ksm-logo.png" style="max-width:100px; max-height:100px;" alt="logo" />
-                    </div>
-                </div>
 
-                <div class="text-center">
-                    <h4 class="text-uppercase mb-1">Users List</h4>
-                    <p class="mb-0"></p>
-                </div>
-            </div>
-        `;
+        }
 
-        const tHead = `
-            <thead class="text-center">
-                <tr>
-                    <th>No</th>
-                    <th>Full Name</th>
-                    <th>Login Name</th>
-                    <th>User Class</th>
-                    <th>Role</th>
-                    <th>Last Login</th>
-                    <th>Created By</th>
-                </tr>
-            </thead>
-        `;
-
-        let tBody = '';
-        users.forEach((u, i) => {
-            tBody += `
-                <tr>
-                    <td>${i + 1}</td>
-                    <td>${u.full_name ?? ''}</td>
-                    <td>${u.login_name ?? ''}</td>
-                    <td>${u.user_class ?? ''}</td>
-                    <td>${u.role_name ?? ''}</td>
-                    <td>${u.last_login_date ?? 'N/A'}</td>
-                    <td>
-                        <div>${u.create_user ?? ''}</div>
-                        <small>${u.created_at ?? ''}</small>
-                    </td>
-                </tr>
-            `;
-        });
-
-        html += `
-                <table class="table table-bordered">
-                    ${tHead}
-                    <tbody>${tBody}</tbody>
-                </table>
-        </div>
-        `;
-
-        mThis.self.classList.remove('modal-custom-size');
-        div.classList.remove('d-flex', 'justify-content-center', 'align-items-center');
-        div.innerHTML = html;
-
-        LocaleManager.translateZone(div);
-        mThis.htmlString = html;
-    };
-
+    }
 
     this.permissionUserPrint = (div, d , users) => {
         d = d || [];
@@ -1865,39 +1665,36 @@ const RoleDialog = (()=>{
         let u = users[0];
         let app = null,mod = null, per = null, tr = null;
         const company_info = d.company_profile ?? {};
-        const check_icon = `<img style="max-width: 15px; max-height: 15px; color: green" class="" src="${main_view.base_url}/assets/images/icons/check-solid.svg" alt="check :"/>`,
-        cross_icon = `<img style="max-width: 15px; max-height: 15px; color:red" class="" src="${main_view.base_url}/assets/images/icons/xmark-solid.svg" alt="xmark :"/>`;
         if(users)
         {
-            let html = `
-                <div id="full_elbody" style="zoom:95%">
-                    <style>
-                        #full_elbody {
-                            background: #fff !important;
-                            font-family: "Khmer OS Battambang", Arial, sans-serif !important;
-                        }
-                        .table-bordered th, .table-bordered td {padding:4px 6px; }
-
-                    </style>
-
-                    <div class="page">
-                        <div class="row mb-3">
-                            <div class="col-2">
-                                <img src="${main_view.base_url}/assets/images/logo/ksm-logo.png" style="max-width:100px; max-height:100px;" alt="logo" />
+            let html = `<div class="d-block position-relative">
+                            <div class="height-logo-report position-absolute float-start">
+                                <img style="max-width: 100px; max-height: 100px;" class="CompanyLogo object-fit-scale set-min-size-logo" src="${main_view.base_url}/assets/images/logo/ksm-logo.png" alt=""/>
                             </div>
-                        </div>
-
-                        <div class="text-center">
-                            <h4 class="text-center text-uppercase">Permissions for ${users[0].full_name}</h4>
-                            <h5 class="text-center w-100 get-subtitle">Role : ${users[0].role_name ?? ''}</h5>
-                        </div>
-                    </div>
-                `;
-
+                            <div class="d-flex flex-column gap-2 justify-content-center align-items-center set-min-size-container-title">
+                                <h4 class="text-center text-uppercase">Permissions for ${users[0].full_name}</h4>
+                                <p class="text-center w-100 fs-5-1 get-subtitle"> </p>
+                            </div>
+                        </div>`;
+            const tHead = `
+                        <!--<thead>
+                            <tr>
+                                <th colspan="100%" class="text-nowrap text-uppercase text-center">Uers</th>
+                            </tr>
+                        </thead> -->
+                        <thead>
+                            <tr>
+                                <th class="text-nowrap">No</th>
+                                <th class="text-nowrap">Full Name</th>
+                                <th class="text-nowrap">Login Name</th>
+                                <th class="text-nowrap">Cearted By</th>
+                            </tr>
+                        </thead>
+                    `;
 
             let tBody = ``;
             let i = 1;
-        // console.log(JSON.stringify(d, null, 2));
+            console.log();
             // users.map( u =>{
                 tBody =`
                     <!-- <tr>
@@ -1923,10 +1720,7 @@ const RoleDialog = (()=>{
                                                                             per = [per,`${tr=null,
                                                                                 (d[key] || []).forEach(pe => {
                                                                                     if(pe.module_id == mo.id){
-                                                                                        const values = pe.action_string.split('|');
-                                                                                        let status = null;
-                                                                                        values[0] == 'primary:1' ? status = check_icon : values[0] == 'primary:0' ? status = cross_icon : '';
-                                                                                        tr = [tr,`<tr class="text-nowrap"><td class="align-middle "><div class="ms-5 pe-5 d-flex justify-content-between"> <span class="ms-5 ps-5 d-flex gap-2 align-items-center"> <span class="text-icon ">P</span> ${pe.permission_name ?? ''}</span> ${status}</div></td></tr>`].join('');
+                                                                                        tr = [tr,`<tr class="text-nowrap"><td class="align-middle "><div class="ms-5"> <span class="ms-5 ps-5 d-flex gap-2 align-items-center"> <span class="text-icon ">P</span> ${pe.permission_name ?? ''}</span></div></td></tr>`].join('');
                                                                                         // tr += ``;
                                                                                     }
                                                                                 }),
@@ -1953,15 +1747,15 @@ const RoleDialog = (()=>{
             tBody = '<tbody>' + tBody + '</tbody>';
             // html += '<table class = "table w-100">' + tHead + tBody + '</table>';
             // let body = mThis.renderTableBody(d);
-            html += `<table  class= "table table-bordered text-center align-middle">${tBody}</table>`;
+            html += `<table  class= "table table-bordered w-100 mt-3">${tBody}</table>`;
             // html += body;
-            mThis.self.classList.remove('modal-custom-size');
-            div.innerHTML = html;
+            mThis.self[0].classList.remove('modal-custom-size');
+            div.html(html);
             mThis.htmlString = html;
-            div.classList.remove('d-flex', 'justify-content-center', 'align-items-center');
+            div[0].classList.remove('d-flex', 'justify-content-center', 'align-items-center');
             LocaleManager.translateZone(div);
             // mThis.getCompanyLogo_url().then(logoUrl => {
-            //     let imgLogo = div.querySelector('.CompanyLogo');
+            //     let imgLogo = div[0].querySelector('.CompanyLogo');
             //     imgLogo.setAttribute('src', logoUrl);
             // });
 
@@ -1969,103 +1763,91 @@ const RoleDialog = (()=>{
 
     }
 
-    this.getHeaderText = (key)=>{
-    let h = {
-        'application_list':'Applications',
-        'permission_list':'Permissions',
-        'report_list':'Reports',
-    };
-    return h[key];
+     this.getHeaderText = (key)=>{
+        let h = {
+            'application_list':'Applications',
+            'permission_list':'Permissions',
+            'report_list':'Reports',
+        };
+        return h[key];
     }
 
     this.renderTableBody = (d) => {
-    let table = ``;
-    let thead = '';
-    let tbody = '';
-    // console.log('d',d);
-    // const check_icon = `<i class="fa fa-check text-success fs-5 p-0 m-0"></i>`,
-    // cross_icon = `<i class="fa fa-times text-danger fs-5 p-0 m-0"></i>`;
+        let table = ``;
+        let thead = '';
+        let tbody = '';
+        // console.log('d',d);
+        // const check_icon = `<i class="fa fa-check text-success fs-5 p-0 m-0"></i>`,
+        // cross_icon = `<i class="fa fa-times text-danger fs-5 p-0 m-0"></i>`;
 
-            // console.log(222,d);
-            Object.keys(d || {}).forEach(key => {
-                // const item = d[key];
-                let headItem = mThis.getHeaderText(key);
+                // console.log(222,d);
+                Object.keys(d || {}).forEach(key => {
+                    // const item = d[key];
+                    let headItem = mThis.getHeaderText(key);
 
-                thead = `<thead>
-                    <tr class="">
-                        <th colspan="100%" class="text-nowrap text-uppercase text-center">${headItem}</th>
-                    </tr>
-                </thead>`;
-                // table += thead;
-                let module_id = '';
-                if(!d[key] || d[key] == ''){
-                    tbody = `<tr>
-                            <td colspan="100%" class=" d-flex justify-content-center align-items-center"><span class="">No ${headItem} List </span> </td>
-                        </tr>`;
-                }else{
-                    (d[key] || []).forEach(item => {
-                        let item_name = item.name ?? item.app_name ?? item.module_name ?? item.permission_name ;
-                        if(key=='permission_list')
-                            module_id = `(${item.module_id})`;
-                        else if (key =='module_list'){
-                            module_id = `(${item.module_id})`;
-                        }
-                        // module_id = `(${item.module_id})`;
+                    thead = `<thead>
+                        <tr class="">
+                            <th colspan="100%" class="text-nowrap text-uppercase text-center">${headItem}</th>
+                        </tr>
+                    </thead>`;
+                    // table += thead;
+                    let module_id = '';
+                    if(!d[key] || d[key] == ''){
+                        tbody = `<tr>
+                                <td colspan="100%" class=" d-flex justify-content-center align-items-center"><span class="">No ${headItem} List </span> </td>
+                            </tr>`;
+                    }else{
+                        (d[key] || []).forEach(item => {
+                            let item_name = item.name ?? item.app_name ?? item.module_name ?? item.permission_name ;
+                            if(key=='permission_list')
+                               module_id = `(${item.module_id})`;
+                            else if (key =='module_list'){
+                                module_id = `(${item.module_id})`;
+                            }
+                            // module_id = `(${item.module_id})`;
 
-                        tbody += `<tr>
-                            <td colspan="100%" class="align-middle text-uppercase  d-flex gap-3"><span class="ps-3">${item_name ?? ''} </span> <span class=""> ${module_id??''}</span></td>
-                        </tr>`;
-                    });
-                }
-                table += `<table  class= "table table-bordered w-100">${thead + tbody}</table>`;
-                tbody = '';
-            });
+                            tbody += `<tr>
+                                <td colspan="100%" class="align-middle text-uppercase  d-flex gap-3"><span class="ps-3">${item_name ?? ''} </span> <span class=""> ${module_id??''}</span></td>
+                            </tr>`;
+                        });
+                    }
+                    table += `<table  class= "table table-bordered w-100">${thead + tbody}</table>`;
+                    tbody = '';
+                });
 
-    return table;
+        return table;
     }
 
     this.prepareModulePrint = (div, d) => {
         const data = d || [];
-
         let table = ``;
         let thead = '';
         let tbody = '';
-        const role_selected_info = RoleManagementComponent.selected_role;
-
         const check_icon = `<img style="max-width: 15px; max-height: 15px;" class="" src="${main_view.base_url}/assets/images/icons/check-solid.svg" alt="check :"/> `,
         cross_icon = ` <img style="max-width: 15px; max-height: 15px;" class="" src="${main_view.base_url}/assets/images/icons/xmark-solid.svg" alt="xmark :"/>`;
         if(data)
         {
-            let html = `
-            <div id="full_elbody" style="zoom:95%">
-                <style>
-                    #full_elbody {
-                        background: #fff !important;
-                        font-family: "Khmer OS Battambang", Arial, sans-serif !important;
-                    }
-                    .table-bordered th, .table-bordered td { border:1px solid #000 !important; padding:4px 6px; }
-
-                </style>
-
-                <div class="page">
-                    <div class="row mb-3">
-                        <div class="col-2">
-                            <img src="${main_view.base_url}/assets/images/logo/ksm-logo.png" style="max-width:100px; max-height:100px;" alt="logo" />
+            let html = `<div class="d-block position-relative">
+                            <div class="height-logo-report position-absolute float-start">
+                                <img style="max-width: 100px; max-height: 100px;" class="CompanyLogo object-fit-scale set-min-size-logo" src="" alt=""/>
+                            </div>
+                            <div class="d-flex flex-column gap-2 justify-content-center align-items-center set-min-size-container-title">
+                                <h4 class="text-center text-uppercase">Module List By Role : </h4>
+                                <p class="text-center w-100 fs-5-1 get-subtitle"> </p>
+                            </div>
                         </div>
-                    </div>
-
-                    <div class="text-center">
-                        <h4 class="text-uppercase mb-1">Module List Role : ${role_selected_info?.name}</h4>
-                        <p class="mb-0"></p>
-                    </div>
-                </div>
-            `;
+                        <style>
+                        thead tr th, tbody tr td{
+                            border: solid 2px grey !important;
+                            padding: 5px !important;
+                        }
+                        </style>`;
 
             let tBody = ``;
             Object.keys(d || {}).forEach(key => {
                 // const item = d[key];
                 // let headItem = mThis.getHeaderText(key);
-            // console.log(4444,key);
+                console.log(4444,key);
                 if(key == 'status') return;
 
                 thead = `<thead>
@@ -2074,7 +1856,7 @@ const RoleDialog = (()=>{
                     </tr>
                     <tr class="">
                         <th class="text-nowrap text-capitalize text-center">No</th>
-                        <th class="text-nowrap text-capitalize text-center">Module Name</th>
+                        <th class="text-nowrap text-capitalize">Module Name</th>
                         <th class="text-nowrap text-capitalize text-center">Allow</th>
                     </tr>
                 </thead>`;
@@ -2088,15 +1870,14 @@ const RoleDialog = (()=>{
                     let i = 1;
                     (d[key].items || []).forEach(item => {
                         let item_name = item.name ?? item.app_name ?? item.module_name;
-                        let status = item.action_string == 'primary:1' ? check_icon : cross_icon;
 
                         tbody += `<tr>
                             <td class="align-middle text-center">
                                 <span class="">${i} </span>
                             </td>
-                            <td class="align-middle text-capitalize text-start"><span class="">${item_name ?? ''} </span></td>
+                            <td class="align-middle text-capitalize"><span class="">${item_name ?? ''} </span></td>
                             <td class="align-middle text-center">
-                                <span class="chg_icon">${status}</span>
+                                <span class="chg_icon">${item.status_id ? check_icon : cross_icon}</span>
                             </td>
 
                         </tr>`;
@@ -2107,23 +1888,23 @@ const RoleDialog = (()=>{
                 tbody = '';
             });
             tBody = table ;
-            html += '<table class = "table table-bordered text-center align-middle">' + tBody + '</table>';
+            html += '<table class = "table table--border w-100">' + tBody + '</table>';
 
-            div.innerHTML = (html);
+            div.html(html);
             mThis.htmlString = html;
-            div.classList.remove('d-flex', 'justify-content-center', 'align-items-center');
+            div[0].classList.remove('d-flex', 'justify-content-center', 'align-items-center');
             LocaleManager.translateZone(div);
-            // mThis.getCompanyLogo_url().then(logoUrl => {
-            //     let imgLogo = div.querySelector('.CompanyLogo');
-            //     imgLogo.setAttribute('src', logoUrl);
-            // });
+            mThis.getCompanyLogo_url().then(logoUrl => {
+                let imgLogo = div[0].querySelector('.CompanyLogo');
+                imgLogo.setAttribute('src', logoUrl);
+            });
 
         }
     }
 
     this.preparePermissionPrint_old = (div, d) => {
         const data = d || [];
-    // console.log(2222,d);
+        console.log(2222,d);
         let table = ``;
         let thead = '';
         let tbody = '';
@@ -2151,7 +1932,7 @@ const RoleDialog = (()=>{
             Object.keys(d || {}).forEach(key => {
                 // const item = d[key];
                 // let headItem = mThis.getHeaderText(key);
-            // console.log(4444,key);
+                console.log(4444,key);
                 if(key == 'status') return;
 
                 thead = `<thead>
@@ -2194,12 +1975,12 @@ const RoleDialog = (()=>{
             tBody = table ;
             html += '<table class = "table table--border w-100">' + tBody + '</table>';
 
-            div.innerHTML = (html);
+            div.html(html);
             mThis.htmlString = html;
-            div.classList.remove('d-flex', 'justify-content-center', 'align-items-center');
+            div[0].classList.remove('d-flex', 'justify-content-center', 'align-items-center');
             LocaleManager.translateZone(div);
             mThis.getCompanyLogo_url().then(logoUrl => {
-                let imgLogo = div.querySelector('.CompanyLogo');
+                let imgLogo = div[0].querySelector('.CompanyLogo');
                 imgLogo.setAttribute('src', logoUrl);
             });
 
@@ -2207,53 +1988,42 @@ const RoleDialog = (()=>{
     }
     this.preparePermissionPrint = (div, d) => {
         const data = d || [];
-    // console.log(2222,d);
+        console.log(2222,d);
         let table = ``;
         let thead = '';
         let tbody = '';
-        const role_selected_info = RoleManagementComponent.selected_role;
-
         const check_icon = `<img style="max-width: 15px; max-height: 15px; color: green" class="" src="${main_view.base_url}/assets/images/icons/check-solid.svg" alt="check :"/>`,
         cross_icon = `<img style="max-width: 15px; max-height: 15px; color:red" class="" src="${main_view.base_url}/assets/images/icons/xmark-solid.svg" alt="xmark :"/>`;
         if(data)
         {
-                let html = `
-                <div id="full_elbody" style="zoom:95%">
-                    <style>
-                        #full_elbody {
-                            background: #fff !important;
-                            font-family: "Khmer OS Battambang", Arial, sans-serif !important;
-                        }
-                        .table-bordered th, .table-bordered td {padding:4px 6px; }
-
-                    </style>
-
-                    <div class="page">
-                        <div class="row mb-3">
-                            <div class="col-2">
-                                <img src="${main_view.base_url}/assets/images/logo/ksm-logo.png" style="max-width:100px; max-height:100px;" alt="logo" />
+            let html = `<div class="d-block position-relative">
+                            <div class="height-logo-report position-absolute float-start">
+                                <img style="max-width: 100px; max-height: 100px;" class="CompanyLogo object-fit-scale set-min-size-logo" src="" alt=""/>
+                            </div>
+                            <div class="d-flex flex-column gap-2 justify-content-center align-items-center set-min-size-container-title">
+                                <h4 class="text-center text-uppercase">Permissions for Role System</h4>
+                                <p class="text-center w-100 fs-5-1 get-subtitle"> </p>
                             </div>
                         </div>
-
-                        <div class="text-center">
-                            <h4 class="text-uppercase mb-1">Permissions for Role : ${role_selected_info?.name}</h4>
-                            <p class="mb-0"></p>
-                        </div>
-                    </div>
-                `;
+                        <!--<style>
+                         thead tr th, tbody tr td{
+                            border: solid 2px grey !important;
+                            padding: 5px !important;
+                        }
+                        </style> -->`;
 
             let tBody = ``;
             Object.keys(d || {}).forEach(key => {
                 // const item = d[key];
                 // let headItem = mThis.getHeaderText(key);
-            // console.log(4444,key);
+                console.log(4444,key);
                 if(key == 'status') return;
 
-                thead = `
+                thead = `<thead>
                     <tr class="">
-                        <td colspan="" class="text-nowrap text-uppercase fs-6 text-start text-bold ps-5 d-flex gap-2 align-items-center" style="font-weight: 600;" ><span class="text-icon" > M </span> ${key}</td>
+                        <th colspan="" class="text-nowrap text-uppercase fs-6 text-start ps-5 d-flex gap-2 align-items-center"><span class="text-icon"> M </span> ${key}</th>
                     </tr>
-                `;
+                </thead>`;
                 table += thead;
                 // let module_id = '';
                 if(!d[key] || d[key] == ''){
@@ -2264,10 +2034,9 @@ const RoleDialog = (()=>{
                     let i = 1;
                     (d[key].items || []).forEach(item => {
                         let item_name = item.name ;
-                        let status = item.action_string == 'primary:0' ? cross_icon : item.action_string == 'primary:1' ? check_icon : '';
 
                         tbody += `<tr>
-                            <td class="d-flex justify-content-between align-items-center pe-5"><div class="align-middle text-capitalize ps-5"><span class="ms-5 d-flex gap-2 align-items-center "><span class="text-icon"> P </span> ${item_name ?? ''} </span></div> ${status}</td>
+                            <td class="align-middle text-capitalize ps-5"><span class="ms-5 d-flex gap-2 align-items-center "><span class="text-icon"> P </span> ${item_name ?? ''} </span></td>
                         </tr>`;
                         i++;
                     });
@@ -2276,14 +2045,14 @@ const RoleDialog = (()=>{
                 tbody = '';
             });
             tBody = table ;
-            html += '<table class = "table table-bordered text-center align-middle">' + tBody + '</table>';
+            html += '<table class = "table mx-auto w-75 border mt-4">' + tBody + '</table>';
 
-            div.innerHTML = (html);
+            div.html(html);
             mThis.htmlString = html;
-            div.classList.remove('d-flex', 'justify-content-center', 'align-items-center');
+            div[0].classList.remove('d-flex', 'justify-content-center', 'align-items-center');
             LocaleManager.translateZone(div);
             mThis.getCompanyLogo_url().then(logoUrl => {
-                let imgLogo = div.querySelector('.CompanyLogo');
+                let imgLogo = div[0].querySelector('.CompanyLogo');
                 imgLogo.setAttribute('src', logoUrl);
             });
 
@@ -2294,12 +2063,12 @@ const RoleDialog = (()=>{
         mThis.controlButton(div, op);
         if (op.action === 'gen_role')
         {
-            div.innerHTML = '';
+            div.empty();
             const modal = div.closest('.modal');
-            modal.classList.add('modal-custom-size');
-            const modal_dialog = modal.querySelector('.modal-dialog');
-            modal_dialog.classList.add(['modal-lg']);
-            modal_dialog.classList.remove('modal-xl');
+            modal.addClass('modal-custom-size');
+            const modal_dialog = modal.find('.modal-dialog');
+            modal_dialog.addClass(['modal-lg']);
+            modal_dialog.removeClass('modal-xl');
             delete(op.action);
 
             vsapi.call(`${main_view.base_url}/api/role/listForPrint`, {
@@ -2319,13 +2088,13 @@ const RoleDialog = (()=>{
                 }
             });
         }else if(op.action === 'gen_user'){
-            div.innerHTML = '';
-        // console.log(3333,op);
+            div.empty();
+            console.log(3333,op);
             const modal = div.closest('.modal');
-            modal.classList.add('modal-custom-size');
-            const modal_dialog = modal.querySelector('.modal-dialog');
-            modal_dialog.classList.add(['modal-xl']);
-            modal_dialog.classList.remove('modal-lg');
+            modal.addClass('modal-custom-size');
+            const modal_dialog = modal.find('.modal-dialog');
+            modal_dialog.addClass(['modal-lg']);
+            modal_dialog.removeClass('modal-xl');
             delete(op.action);
 
             // api/role/members
@@ -2334,7 +2103,7 @@ const RoleDialog = (()=>{
             }, null).then(res => {
                 if(res.status_code === 200)
                 {
-                    const u = res.data || {};
+                    const u = res.data.data || {};
                     // user.map( u =>{
                         // console.log(999,u);
                         mThis.prepareUserPrint(div, null ,u);
@@ -2346,7 +2115,7 @@ const RoleDialog = (()=>{
                         //     if(res.status_code === 200)
                         //     {
                         //         const d = res.data || {};
-                        //     // console.log(2323,d);
+                        //         console.log(2323,d);
                         //         // d.status = op.status;
                         //         // if(typeof onFinish === 'function') onFinish();
                         //     }
@@ -2384,23 +2153,23 @@ const RoleDialog = (()=>{
             //     }
             // });
         }else if(op.action === 'gen_modules'){
-            div.innerHTML = '';
-        // console.log(3333,op);
+            div.empty();
+            console.log(3333,op);
             const modal = div.closest('.modal');
-            modal.classList.add('modal-custom-size');
-            const modal_dialog = modal.querySelector('.modal-dialog');
-            modal_dialog.classList.add(['modal-lg']);
-            modal_dialog.classList.remove('modal-xl');
+            modal.addClass('modal-custom-size');
+            const modal_dialog = modal.find('.modal-dialog');
+            modal_dialog.addClass(['modal-lg']);
+            modal_dialog.removeClass('modal-xl');
             delete(op.action);
 
             vsapi.call(`${main_view.base_url}/api/role/modules`, {
-                role_id: op.role_id, order_by : 'display_order'
-            }, {loader:false,agent:null}).then(res => {
+                role_id: op.role_id
+            }, null).then(res => {
                 if(res.status_code === 200)
                 {
                     const d = res.data || {};
                     d.status = op.status;
-                // console.log(3333,d);
+                    console.log(3333,d);
                     mThis.prepareModulePrint(div, d);
                     if(typeof onFinish === 'function') onFinish();
                 }
@@ -2411,22 +2180,21 @@ const RoleDialog = (()=>{
                 }
             });
         }else if(op.action === 'gen_permissions'){
-            div.innerHTML = '';
-        // console.log(3333,op);
+            div.empty();
+            console.log(3333,op);
             const modal = div.closest('.modal');
-            modal.classList.add('modal-custom-size');
-            const modal_dialog = modal.querySelector('.modal-dialog');
-            modal_dialog.classList.add(['modal-lg']);
-            modal_dialog.classList.remove('modal-xl');
+            modal.addClass('modal-custom-size');
+            const modal_dialog = modal.find('.modal-dialog');
+            modal_dialog.addClass(['modal-lg']);
+            modal_dialog.removeClass('modal-xl');
             delete(op.action);
 
             vsapi.call(`${main_view.base_url}/api/role/permissions`, {
-                role_id: op.role_id, order_by : 'display_order'
-            }, null,{loader:false,agent:null}).then(res => {
+                role_id: op.role_id
+            }, null).then(res => {
                 if(res.status_code === 200)
                 {
                     const d = res.data || {};
-                // console.log(1233434,JSON.stringify(d, null, 2));
                     d.status = op.status;
                     mThis.preparePermissionPrint(div, d);
                     if(typeof onFinish === 'function') onFinish();
@@ -2438,13 +2206,13 @@ const RoleDialog = (()=>{
                 }
             });
         }else if(op.action === 'user-print'){
-            div.innerHTML = '';
-        // console.log(3333,op);
+            div.empty();
+            console.log(3333,op);
             const modal = div.closest('.modal');
-            modal.classList.add('modal-custom-size');
-            const modal_dialog = modal.querySelector('.modal-dialog');
-            modal_dialog.classList.add(['modal-lg']);
-            modal_dialog.classList.remove('modal-xl');
+            modal.addClass('modal-custom-size');
+            const modal_dialog = modal.find('.modal-dialog');
+            modal_dialog.addClass(['modal-lg']);
+            modal_dialog.removeClass('modal-xl');
             delete(op.action);
 
             // api/role/members
@@ -2453,12 +2221,12 @@ const RoleDialog = (()=>{
             }, null).then(res => {
                 if(res.status_code === 200)
                 {
-                    const u = res.data || [];
+                    const u = res.data.data || {};
                     // user.map( u =>{
-                        console.log(999,op.role_id,222,res.data);
-                        vsapi.call(`${main_view.base_url}/api/user/authization/report`, {
+                        // console.log(999,u);
+                        vsapi.call(`${main_view.base_url}/api/user/authorization-report`, {
                             role_id: op.role_id,
-                            user_id: u[0].id
+                            user_id: u.id
                         }, null).then(res => {
                             if(res.status_code === 200)
                             {
@@ -2496,8 +2264,8 @@ const RoleDialog = (()=>{
 
         if(title)
         {
-            mThis.elTitle.textContent = (LocaleManager.trans(title, 'titles'));
-            mThis.btnPrint.textContent  = (LocaleManager.trans(btn_name, 'titles'));
+            mThis.elTitle.text(LocaleManager.trans(title, 'titles'));
+            mThis.btnPrint.children().text(LocaleManager.trans(btn_name, 'titles'));
         }
         mThis.loadFormDetails(mThis.elBody, options,() => {
             mThis.modal.show();
