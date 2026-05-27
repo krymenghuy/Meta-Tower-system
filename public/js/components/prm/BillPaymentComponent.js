@@ -193,7 +193,7 @@ var BillPaymentComponent = (() => {
     };
 
     mThis.initDropdownMenus = (table) => {
-        const menuOptopns = {
+        const menuOptions = {
             containerElement: table,
             actionButtonClass: "btn_bill_action",
             cssClass: "bg-white shadow",
@@ -234,7 +234,7 @@ var BillPaymentComponent = (() => {
                 }
             },
         };
-        new VSDropdownMenu(menuOptopns);
+        new VSDropdownMenu(menuOptions);
     };
 
     mThis.editBill = (id, menuLink) => {
@@ -615,29 +615,44 @@ const BillPaymentDialog = (() => {
                         let due = 0;
                         const dueEl = me.divModal.querySelector("#f_due");
                         if (dueEl) {
-                            due = parseFloat(dueEl.textContent.replace(/[^0-9.-]+/g, ""),) || 0;
+                            due =
+                                parseFloat(
+                                    dueEl.textContent.replace(/[^0-9.-]+/g, ""),
+                                ) || 0;
                         }
                         const remaining = due - totalPaid;
-                        me.divModal.querySelector("#f_tot").textContent = fmt(totalPaid);
+                        me.divModal.querySelector("#f_tot").textContent =
+                            fmt(totalPaid);
                         const balEl = me.divModal.querySelector("#f_bal");
                         if (balEl) {
                             if (totalPaid > due + 0.001) {
                                 balEl.style.color = "#dc3545";
-                                balEl.textContent ="Overpaid: " + fmt(Math.abs(remaining));
+                                balEl.textContent =
+                                    "Overpaid: " + fmt(Math.abs(remaining));
                             } else {
-                                balEl.style.color = remaining <= 0.001 ? "#3B6D11" : "#FAB31C";
+                                balEl.style.color =
+                                    remaining <= 0.001 ? "#3B6D11" : "#FAB31C";
                                 balEl.textContent = fmt(Math.max(0, remaining));
                             }
                         }
 
-                        me.divModal.querySelector("#c_e").textContent = cash > 0 ? fmt(cash) : "—";
-                        me.divModal.querySelector("#b_e").textContent = bank > 0 ? fmt(bank) : "—";
-                        me.divModal.querySelector("#ch_e").textContent = cheque > 0 ? fmt(cheque) : "—";
+                        me.divModal.querySelector("#c_e").textContent =
+                            cash > 0 ? fmt(cash) : "—";
+                        me.divModal.querySelector("#b_e").textContent =
+                            bank > 0 ? fmt(bank) : "—";
+                        me.divModal.querySelector("#ch_e").textContent =
+                            cheque > 0 ? fmt(cheque) : "—";
                     };
 
-                    const amountFields = ["cash","bank_amount","cheque_amount"];
+                    const amountFields = [
+                        "cash",
+                        "bank_amount",
+                        "cheque_amount",
+                    ];
                     amountFields.forEach((name) => {
-                        const input = me.divModal.querySelector(`[name="${name}"]`,);
+                        const input = me.divModal.querySelector(
+                            `[name="${name}"]`,
+                        );
                         if (input) {
                             input.addEventListener("input", updateTotals);
                             input.addEventListener("change", updateTotals);
@@ -645,7 +660,8 @@ const BillPaymentDialog = (() => {
                     });
 
                     // Original amount formatting
-                    const amountInput = me.divModal.querySelector('[name="amount"]');
+                    const amountInput =
+                        me.divModal.querySelector('[name="amount"]');
                     if (amountInput) {
                         amountInput.addEventListener("input", (e) => {
                             let v = e.target.value.replace(/[^0-9.]/g, "");
@@ -676,9 +692,7 @@ const BillPaymentDialog = (() => {
                                 method: "Bank",
                                 amount: parseAmt(data.bank_amount),
                                 currency_code: "USD",
-                                bank_id:
-                                    parseInt(data.bank) ||
-                                    null,
+                                bank_id: parseInt(data.bank) || null,
                                 bank_name: me.getSelectText
                                     ? me.getSelectText("bank")
                                     : null,
@@ -743,18 +757,27 @@ const BillPaymentDialog = (() => {
                     }
 
                     if (me.controls.total_amount)
-                        me.controls.total_amount.value = Number(bill.total_amount || 0).toFixed(2);
+                        me.controls.total_amount.value = Number(
+                            bill.total_amount || 0,
+                        ).toFixed(2);
                     if (me.controls.paid_amount)
-                        me.controls.paid_amount.value = Number(bill.paid_amount || 0,).toFixed(2);
+                        me.controls.paid_amount.value = Number(
+                            bill.paid_amount || 0,
+                        ).toFixed(2);
                     if (me.controls.balance)
-                        me.controls.balance.value = Number(bill.balance || 0,).toFixed(2);
+                        me.controls.balance.value = Number(
+                            bill.balance || 0,
+                        ).toFixed(2);
 
                     if (me.controls.vendor) {
                         me.controls.vendor.value = bill.vendor_name || "";
                         me.controls.vendor.readOnly = true;
                     }
 
-                    if (me.controls.payment_date &&!me.controls.payment_date.value) {
+                    if (
+                        me.controls.payment_date &&
+                        !me.controls.payment_date.value
+                    ) {
                         const now = new Date();
                         const months = [
                             "Jan",
@@ -782,9 +805,25 @@ const BillPaymentDialog = (() => {
                         '[name="cheque_bank_id"]',
                     );
                     if (bankEl)
-                        VSUtil.setComboItems(bankEl,banks,"id","name","","Select Bank","",);
+                        VSUtil.setComboItems(
+                            bankEl,
+                            banks,
+                            "id",
+                            "name",
+                            "",
+                            "Select Bank",
+                            "",
+                        );
                     if (chequeEl)
-                        VSUtil.setComboItems(chequeEl,banks,"id","name","","Select Bank","",);
+                        VSUtil.setComboItems(
+                            chequeEl,
+                            banks,
+                            "id",
+                            "name",
+                            "",
+                            "Select Bank",
+                            "",
+                        );
                 },
                 buttons: [
                     {
@@ -814,7 +853,7 @@ const BillPaymentDialog = (() => {
                                       ),
                                   ) || 0
                                 : 0;
-                            
+
                             vsapi
                                 .call(
                                     `${main_view.base_url}/prm/bill-payment/save`,

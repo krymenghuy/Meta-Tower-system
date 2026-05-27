@@ -79,7 +79,7 @@ var ReportComponent = (() => {
             value_field: 'status_id',
             text_field: 'name',
             required: false,
-            dot_object:'status'
+            dot_object:'statuses'
         },
         {
             type: 'select',
@@ -113,13 +113,13 @@ var ReportComponent = (() => {
         },
         {
             type: 'select',
-            api_fetch: `${main_view.base_url}/api/form-option`,
+            api_fetch: `${main_view.base_url}/prm/form-option`,
             api_params: {},
-            name: 'fee_type_id',
+            name: 'building_id',
             value_field: 'id',
-            text_field: 'name',
+            text_field: 'building',
             required: false,
-            dot_object: 'non_fee_types'
+            dot_object: 'buildings'
         },
         {
             type: 'select',
@@ -143,13 +143,13 @@ var ReportComponent = (() => {
         },
         {
             type: 'select',
-            api_fetch: `${main_view.base_url}/api/form-option`,
+            api_fetch: `${main_view.base_url}/prm/form-option`,
             api_params: {},
-            name: 'student_id',
+            name: 'vendor_id',
             value_field: 'id',
-            text_field: 'name',
+            text_field: 'vendor',
             required: false,
-            dot_object: 'students'
+            dot_object: 'vendors'
         },
         {
             type: 'select',
@@ -403,14 +403,14 @@ var ReportComponent = (() => {
                     case 'total_payment':
                         totalPaymentByYear(containerTable,d);
                         break;
-                    case 'total_student_payment_history':
-                        totalStudentPaymentHistory(containerTable,d);
+                    case 'total_payment_history':
+                        totalPaymentHistory(containerTable,d);
                         break;
                     case 'leave_student':
                         leaveStudent(containerTable,d);
                         break;
-                    case 'student_payment_history':
-                        studentPaymentHistory(containerTable,d);
+                    case 'payments':
+                        Payments(containerTable,d);
                         break;
                     case 'income_by_class':
                         incomeByClassTable(containerTable,d);
@@ -504,7 +504,7 @@ var ReportComponent = (() => {
 
     mThis.getFormGroupLabelText = (key) => {
         const labels = {
-            'student_id': 'Student', 'campus_id': 'Campus', 'level_id': 'Level',
+            'vendor_id': 'Vendor', 'building_id': 'Building', 'campus_id': 'Campus', 'level_id': 'Level',
             'leave_type_id': 'Leave Type', 'status_id': 'All Statuses','term_id': 'Term','ac_year_id': 'Academic Year',
             'from_campus_id': 'From Campus', 'to_campus_id': 'To Campus',
             'fee_type_id': 'Fee Type', 'start_date': 'Start Date', 'end_date': 'End Date',

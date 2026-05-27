@@ -254,7 +254,7 @@ var BillComponent = (() => {
     };
 
     mThis.initDropdownMenus = (table) => {
-        const menuOptopns = {
+        const menuOptions = {
             containerElement: table,
             actionButtonClass: "btn_dropdown_vendor_action",
             cssClass: "bg-white shadow",
@@ -352,7 +352,7 @@ var BillComponent = (() => {
                 }
             },
         };
-        new VSDropdownMenu(menuOptopns);
+        new VSDropdownMenu(menuOptions);
     };
 
     mThis.editBill = (id, menuLink) => {
