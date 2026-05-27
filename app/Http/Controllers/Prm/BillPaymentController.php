@@ -38,10 +38,25 @@ class BillPaymentController extends Controller
 
     public function getFormOptions(Request $req)
     {
-        $ss = XAuthService::verifyAuth($req, -1);
-        if ($ss->status_code !== 200) return JDV::raw($ss);
+        // 1. Log the initial incoming request payload
+        \Log::info("Incoming Request Payload", $req->all());
 
-        $bill_id = $req->bill_id ?? $req->id ?? null;
+        // 2. Verify Authentication
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+
+        // 3. Log again after auth pass to ensure data wasn't mutated
+        \Log::info("Request Payload After Auth Check", $req->all());
+
+        // 4. Extract the ID (Handles the typo 'bil_id' from your logs, 'bill_id', or 'id')
+        $bill_id = $req->input('bil_id') ?? $req->input('bill_id') ?? $req->input('id');
+
+        // 5. Log the final extracted ID to confirm it works
+        \Log::info("Fetching bill details", ['bill_id' => $bill_id]);
+
+        // 6. Return the results
         return JDV::result(BillPayment::getFormOptions($bill_id, $ss));
     }
 
@@ -69,7 +84,7 @@ class BillPaymentController extends Controller
 
         $d = (object)[
             'id'  => $req->id,
-            'note' => $req->note ?? null ,
+            'note' => $req->note ?? null,
         ];
 
         $x = new BillPayment(null, $ss);

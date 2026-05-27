@@ -169,7 +169,7 @@ return [
                 '/assets/js/SearchWidget.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/ImageHelper.js',
                 //'/assets/js/ImageHelper.js',
-               'https://cdn.vectoraclouds.com/frontcore/components/ImageBox.js',
+                'https://cdn.vectoraclouds.com/frontcore/components/ImageBox.js',
                 //'/assets/js/ImageBox.js',
 
                 'https://cdn.vectoraclouds.com/frontcore/components/FileChooser.js',

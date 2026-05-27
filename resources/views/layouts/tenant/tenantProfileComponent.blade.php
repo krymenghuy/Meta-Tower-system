@@ -46,16 +46,16 @@
         id="view_buttons">
         <div class="d-flex flex-wrap align-items-center gap-3">
             <a href="javascript:void(0)" id="_btn_back_tenant"
-                class="d-flex align-items-center gap-2 shadow-sm btn-outline-secondary btn btn-sm">
+                {{-- class="d-flex align-items-center gap-2 shadow-sm btn-outline-secondary btn btn-sm">
                 <i class="fa-angles-left fa-solid fs-5"></i>
-                Back to Tenants
+                Back to Tenants --}}
             </a>
             <div class="d-sm-block vr d-none"></div>
             <nav aria-label="breadcrumb">
                 <ol class="align-items-center mb-0 breadcrumb">
-                    <li class="breadcrumb-item">
+                    {{-- <li class="breadcrumb-item">
                         <a href="javascript:void(0)" class="text-muted text-decoration-none fw-medium">Tenants</a>
-                    </li>
+                    </li> --}}
                     <li class="text-muted breadcrumb-item active fw-semibold" aria-current="page">
                         Personal Information
                     </li>
