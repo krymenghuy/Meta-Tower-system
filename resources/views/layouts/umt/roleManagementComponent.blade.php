@@ -126,7 +126,7 @@ div.role-card.selected > div.card-content {
                      <div class="pt-2">
                         <input type="text" class="form-control" id="_um_role_search_user" placeholder="Search user">
                      </div>
-                      <div class="d-flex pt-2 gap-3">
+                      <div class="d-flex pt-2">
                         <a href="javascript:void(0)" id="_um_role_add_member" class=""><span class="btnAddNewEdv d-none" vslang="buttons.Add Member">Add Member</span></a>
                         <a href="javascript:void(0)" id="_um_role_create_user" class=""><span class="btnAddNewEdv" vslang="buttons.New User">New User</span></a>
                       </div>
@@ -141,24 +141,23 @@ div.role-card.selected > div.card-content {
            </div>
            <div id="view_apps" data-view="view_apps" class="tab-page w-100" style="display:none">
                <div class="h-100">
-                  <div class="d-flex flex-wrap gap-2 border rounded-2 border-secondary p-2 w-100" id="_um_role_app_list" style="overflow-y:auto;max-height:50vh">
+                  <div class="d-flex flex-wrap gap-2 border rounded-2 border-secondary p-2 w-100" id="_um_role_app_list" style="overflow-y:auto;max-height:30vh">
                   </div>
                </div>
            </div>
 
            <div id="view_modules" data-view="view_modules" class="tab-page w-100" style="display:none">
                <div class="h-100">
-                  <div id="mod_list" class="d-flex flex-column gap-2">
-                      <div class="w-50 d-flex justify-content-between align-items-center">
-                        <div class="w-75">
-                          <select class="modal-select2 " id="mod_app_chooser"> </select> 
+                 <form action="">
+                    <div id="mod_list" class="d-flex flex-column gap-2">
+                        <div class="w-50 d-flex flex-row gap-2 justify-content-start align-items-center">
+                           <div style="width:50%"><select class="modal-select2" id="mod_app_chooser"> </select> </div>
+                            <div style="width:40%"><input class="form-control" id="mod_search_module" placeholder="search" /> </div>
+                            <a href="javascript:void(0)" id="_um_role_print_module" class="btn-print"> <i class="fa fa-print text-white pe-2"> </i><span class=" " vslang="buttons.Modules"></span></a> 
                         </div> 
-                        <div class="">
-                          <a href="javascript:void(0)" id="_um_role_print_module" class="w-25 pr-2 pl-2 p-1 bg-warning text-white border border-warning rounded-4"> <i class="fa fa-print text-white pe-2"> </i><span class=" " vslang="buttons.Print Modules"></span></a> 
-                        </div>
-                      </div>
-                      <div id="_um_role_mod_list" class="w-50 mt-2 p-3 m-1 border border-secondary" style="max-height:34vh;overflow-y:auto;"></div> 
-                  </div>
+                        <div id="_um_role_mod_list" class="w-50 mt-2 p-3 m-1 border border-secondary" style="max-height:30vh;overflow-y:auto;"></div> 
+                    </div>
+                   </form>
                </div>
            </div>
 
@@ -166,12 +165,12 @@ div.role-card.selected > div.card-content {
                <div class="h-100">
                    <form action="">
                         <div id="mod_list" class="d-flex flex-column gap-2">
-                            <div class="w-50 d-flex flex-row gap-2 justify-content-between align-items-center">
-                                <div style="min-width:250px"> <select class="modal-select2" id="prn_app_chooser"></select></div>
-                                <div><input id="prn_search" class="form-control" placeholder="Search by code or name" autocomplete="off"></div>
-                                <a href="javascript:void(0)" id="_um_role_print_permission" class=" pr-2 pl-2 p-2 bg-warning text-white border border-warning rounded-4 text-nowrap"> <i class="fa fa-print text-white pe-2"> </i><span class=" " vslang="buttons.Print"></span></a> 
+                            <div class="w-50 d-flex flex-row gap-2 justify-content-start align-items-center">
+                                <div style="width:50%"><select class="modal-select2" id="prn_app_chooser"></select></div>
+                                <div style="width:40%"><input id="prn_search" class="form-control" placeholder="Search by code or name" autocomplete="off"></div>
+                                <a href="javascript:void(0)" id="_um_role_print_permission" class="btn-print ms-auto"> <i class="fa fa-print text-white pe-2"> </i><span class=" " vslang="buttons.Print"></span></a> 
                             </div>
-                            <div id="_um_role_prn_list" class="p-3 w-50 m-1 border border-secondary" style="max-height:34vh;overflow-y:auto;"></div>
+                            <div id="_um_role_prn_list" class="p-3 w-50 m-1 border border-secondary" style="max-height:30vh;overflow-y:auto;"></div>
                         </div>
                    </form>
                </div>
@@ -179,16 +178,15 @@ div.role-card.selected > div.card-content {
 
            <div id="view_reports" data-view="view_reports" class="tab-page w-100" style="display:none">
                <div class="h-100">
-                 <div id="mod_list" class="d-flex flex-column gap-2">
-                    
+                 <div id="mod_list" class="d-flex flex-column gap-3">
                   <form action="">
-                      <div class="w-50 d-flex flex-row justify-content-between">
-                          <div style="min-width:350px"> <select class="modal-select2" id="rpt_app_chooser"></select></div>
-                          <div><input id="rpt_search" type="text" class="form-control" placeholder="Search by code or name"></div>
+                      <div class="w-50 d-flex flex-row justify-content-start align-items-center gap-2">
+                          <div style="width:60%"> <select class="modal-select2" id="rpt_app_chooser"></select></div>
+                          <div style="width:40%"><input id="rpt_search" type="text" class="form-control" placeholder="Search by code or name"></div>
                       </div>
                   </form>
 
-                    <div id="_um_role_report_list" class="w-50 p-3 m-1 border border-secondary" style="max-height:34vh;overflow-y:auto;"></div>
+                    <div id="_um_role_report_list" class="w-50 p-3 m-1 border border-secondary" style="max-height:30vh;overflow-y:auto;"></div>
                  </div>
                </div>
            </div>
@@ -336,10 +334,10 @@ div.role-card.selected > div.card-content {
             </div>
             <div id="dlg_print_elBody" class="modal-body"></div>
             <div class="modal-footer border-top-0">
-                <button type="button" class="btn btn-sm btn-secondary rounded-5" data-bs-dismiss="modal">
+                <button type="button" class="btn btn-vs-cancel" data-bs-dismiss="modal">
                     <span class="" vslang="buttons.Cancel"></span>
                 </button>
-                <button id="dlg_print_btn" type="button" class="btn btn-sm btn-primary rounded-5">
+                <button id="dlg_print_btn" type="button" class="btn btn-vs-save">
                     <span class="" vslang="buttons.Print Now"></span>
                 </button>
             </div>

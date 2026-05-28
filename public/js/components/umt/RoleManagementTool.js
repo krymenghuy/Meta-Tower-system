@@ -65,7 +65,7 @@ var RoleManagementComponent = new function(){
             html = [ html,`<div data-id="`,item.id,`" data-roleid="`,item.id,`" data-usersearchvalue="`,item.user_search_value,`" data-userclass="${item.user_class}" data-rolename="${item.name}" class="col-sm-2 role-card">
             <div class="card-content card bg-white shadow p-2 border rounded-3 d-flex flex-column justify-content-between" data-roleid="${item.id}" style="height:20vh;min-width:120px;">
                <div class="d-flex flex-column justify-content-center align-items-center p-2">
-                  <span class="data-input text-success text-center" style="font-size:1em" data-field="user_class">${item.name}</span>
+                  <span class="data-input text-primary-custom text-center" style="font-size:1em" data-field="user_class">${item.name}</span>
                   <span class="role-name-title mt-2">
                     ${item.name.charAt(0).toUpperCase()} 
                 </span>
@@ -159,12 +159,15 @@ var RoleManagementComponent = new function(){
 
        let role = null;
        if(card){
+         const role_id = card.dataset.roleid || card.dataset.id;
          role = {
-            "role_id":card.dataset.roleid || card.dataset.id,
+            "role_id":role_id,
+            "id":role_id,
             "name":card.dataset.rolename || card.dataset.name,
             "user_class":card.dataset.userclass
          }
          card.classList.add('selected');
+          mThis.selected_role = role; // ensure one role is selected on first load
          mThis.scrollCardToView(card);
          mThis.lblSelectedRoleName.innerHTML = role.name;
        }
@@ -341,6 +344,7 @@ var RoleManagementComponent = new function(){
             let lnk = VSUtil.closestLimited(e.target,'a.lnk-delete-role');
             if(lnk){
                let role_id = lnk.dataset.roleid;
+               if(!AuthManager.allowed(103)) return;
                cv_interact.confirm(['Delete ', (RoleTabView.selected_role? `role ${RoleTabView.selected_role.name}`: 'this role') ,' permanently?'].join(''),{context:"delete","title":"Delete Role",confirmButtonText:"Delete"}, e=>{
                     if(e){
                         mThis.deleteRole(role_id);
@@ -367,7 +371,7 @@ var RoleManagementComponent = new function(){
                         }); 
                   }
                 };
-
+                if(!AuthManager.allowed(104)) return;
                 RoleDialog.show(op);
                 return;
             }
@@ -388,6 +392,7 @@ var RoleManagementComponent = new function(){
                     }); 
                 }
             }
+            if(!AuthManager.allowed(102)) return;
             RoleDialog.show(op);
         });
       
@@ -441,7 +446,14 @@ const RoleTabView = new function(){
                 return [`<img src="`,data.image_url,`" class="image-student-tbl">`].join('');
             }
  
-         },
+        },
+        {
+           title:"Full Name",
+           data:(data,index,tr)=>{
+               return data.full_name;
+           }
+
+        },
         {
            title:"Loin Name",
            className:"login_name",
@@ -452,30 +464,28 @@ const RoleTabView = new function(){
 
         },
         {
-           title:"Full Name",
-           data:(data,index,tr)=>{
-               return data.full_name;
-           }
-
-        },
-        {
             title:"User Class",
             data:(data,index,tr)=>{
                 return data.user_class;
             }
  
-         },
-         {
-            title:"Primary Role",
-            data:(data,index,tr)=>{
-                return ['<span class="d-block">',data.role_name,'</span>','<span class="text-left p-1">',`<span class="text-muted">`,` ID: </span>`,(data.official_code || 'NA'),'</span>'].join('');
+        },
+        {
+            title: "Primary Role",
+            data: (data, index, tr) => {
+                return [
+                    '<span class="d-block">', data.role_name, '</span>',
+                    data.official_code
+                        ? '<span class="text-left p-1"><span class="text-nowrap">ID: </span>' + data.official_code + '</span>'
+                        : ''
+                ].join('');
             }
- 
-         },
+        },
         {
            title:"Last Login",
            data:(data,index,tr)=>{
-               return [`<span class="d-block p-1">Last login: `,data.last_login_date,`</span>`].join('');
+               return `<span class="d-block p-1">Last login: ${data.last_login_date || 'N/A'}</span>`;
+
            }
 
         },
@@ -677,14 +687,11 @@ const RoleTabView = new function(){
      this.loadApps =()=>{
         let p = {
             subs_id: main_view.subs_id,
-            role_id:mThis.selected_role.role_id
+            role_id:mThis.selected_role.role_id,
+            show_hidden:1
         };
-        console.log(22,p);
-        
         vsapi.call(`${main_view.base_url}/api/role/apps`,p,false,false).then(res=>{
             let apps = res.status_code ==200? res.data : [];
-            console.log(11,res);
-            
             that.renderContent(apps);
         });
      }
@@ -761,32 +768,21 @@ const RoleTabView = new function(){
         that.AppDialog = that.AppDialog || new GeneralDialog({  
          createContent:()=>{
            return [
-             `<div class="col-md-12">
-                <div class="material-input outlined">
-                    <input type="text" class="form-control data-input"  name="name" data-field="name" placeholder=" " />
-                    <label>App Name</label>
-                </div>
-                </div>`,
-              `<div class="col-md-12">
-              <label style="color:#0f6694; font-size:11px;" vslang="titles.Is Mobile App">Is Mobile App</label>
-                <div class="material-input outlined">
+             `<div class="form-group col-md-12">
+                <label vslang="titles.App Name">App Name</label>
+                <input type="text" class="form-control data-input"  name="name" data-field="name" placeholder=" " />
+              </div>`,
+              `<div class="form-group col-md-12">
+               <label vslang="titles.Is Mobile App">Is Mobile App</label>
                 <select class="data-input" name="is_mobile_app" data-field="is_mobile_app"></select>
-                <label class="d-none">Is Mobile App</label>
-                </div>
                </div>`,
-
-               `<div class="col-md-12">
-                    <div class="material-input outlined">
+               `<div class="form-group col-md-12">
+                    <label vslang="titles.Home Route">Home Route</label>
                     <input class="form-control data-input" name="home_route" data-field="home_route" placeholder=" " />
-                    <label>Home Route</label>
-                    </div>
                 </div>`,
-             `<div class="col-md-12">
-                <label style="color:#0f6694; font-size:11px;" vslang="titles.User Class">User Class</label>
-                <div class="material-input outlined">
+             `<div class="form-group col-md-12">
+                <label vslang="titles.User Class">User Class</label>
                 <select class="data-input" name="user_class" data-field="user_class"></select>
-                <label class="d-none">User Class</label>
-                </div>
              </div>`,
             ].join('');
          },
@@ -797,7 +793,7 @@ const RoleTabView = new function(){
                     const btnClose = header.querySelector('button');
 
                     // btnClose.classList.add('d-none');
-                    header.classList.add('bg-yp-custom', 'modal-header-custom');
+                    header.classList.add('bg-primary-custom', 'modal-header-custom');
                     header.parentElement.classList.add('overflow-hidden');
                     header.parentElement.style = 'border-radius: 20px !important;';
                     const headerWrapper = document.createElement('div');
@@ -824,14 +820,14 @@ const RoleTabView = new function(){
          buttons:[
             {
               label:'<span vslang="buttons.Cancel"></span>',
-              cssClass: 'btn btn-sm btn-warning text-white',
+              cssClass: 'btn-vs-cancel',
               click:(me,btn)=>{
                  me.hide(false);
               }
             },
             {
                 label:"<span vslang='buttons.Save'>Save</span",
-                   cssClass:'btn btn-sm btn-yp-custom',
+                   cssClass:'btn-vs-save',
                 click:(me, btn,divModal)=>{
                      const p = me.getData();
                      
@@ -1027,6 +1023,7 @@ const RoleTabView = new function(){
         }
 
         // UserDialog.show(op); 
+        if(!AuthManager.allowed(107)) return;
         CreateLoginDialog.show(op); 
     }
    
@@ -1140,7 +1137,7 @@ this.ModulePanel = new function(){
                 }
             });
 
-            const p = {"role_id":role_id,"app_id":app_id};
+            const p = {"role_id":role_id,"app_id":app_id,"order_by":"display_order"};
             vsapi.call(`${main_view.base_url}/api/role/modules`,p,false,false,false).then(res =>{
                 let data = res.status_code ==200 ? res.data : [];
                 mThis.modulesList.setData(data);
@@ -1209,21 +1206,17 @@ this.ModulePanel = new function(){
               cssClass:"",
               createContent:()=>{
                 return [
-                  `<div class="col-md-12">`,
-                  `<label style="color:#0f6694; font-size:11px;" vslang="titles.Role Group">Role Group</label>`,
-                  `<div class="material-input outlined">`,
+                  `<div class="form-group col-md-12">`,
+                  `<label class="form-label" vslang="titles.Role Group">Role Group</label>`,
                     `<div><select name="app" class="form-control data-input" data-field="app_id"></select></div>`,
                   `</div>`,
-                  `</div>`,
-                 `<div class="col-md-12">`,
-                 `<div class="material-input outlined">`,
-                    `<input type="text" name="name" class="form-control data-input" data-field="name" placeholder=" " />`,
+                 `<div class="form-group col-md-12">`,
                     `<label vslang="titles.Module Name">Module Name</label>`,
+                    `<input type="text" name="name" class="form-control data-input" data-field="name" placeholder=" " />`,
                  `</div>`,
-                 `</div>`,
-                 `<div class="col-md-12">`,
-                   `<label style="color:#0f6694; font-size:11px;" vslang="titles.Visibility">Visibility</label>`,
-                   `<div><select name="visibility"  class="data-input" data-field="hidden"></select></div>`,
+                 `<div class="form-group col-md-12">`,
+                   `<label vslang="titles.Visibility">Visibility</label>`,
+                   `<div><select name="visibility"  class="form-control data-input" data-field="hidden"></select></div>`,
                  `</div>`,
                ].join('');
               },
@@ -1234,13 +1227,13 @@ this.ModulePanel = new function(){
                     const btnClose = header.querySelector('button');
 
                     btnClose.classList.add('d-none');
-                    header.classList.add('bg-yp-custom', 'modal-header-custom');
+                    header.classList.add('bg-primary-custom', 'modal-header-custom');
                     header.parentElement.classList.add('overflow-hidden');
                     header.parentElement.style = 'border-radius: 20px !important;';
 
                     const headerWrapper = document.createElement('div');
                     headerWrapper.classList.add('d-flex', 'flex-column', 'align-items-center', 'w-100');
-                    headerTitle.classList.add('text-white', 'text-center', 'w-100');
+                    headerTitle.classList.add('text-white','text-center', 'w-100');
                     headerWrapper.appendChild(headerTitle);
                     header.innerHTML = '';
                     header.appendChild(headerWrapper);
@@ -1250,14 +1243,14 @@ this.ModulePanel = new function(){
               buttons:[
                 {
                   label:"<span>Cancel</span>",
-                  cssClass:"btn btn-sm text-white btn-warning",
+                  cssClass:"btn-vs-cancel",
                   click:(me,btn)=>{
                      me.hide(false);
                   }
                 },
                    {
                      label:"<span>Save</span>",
-                     cssClass:'btn btn-sm btn-yp-custom',
+                     cssClass:'btn-vs-save',
                      click:(me,dataOptions, divModal)=>{
                          let p = me.getData();
                          vsapi.call(`${main_view.base_url}/api/module/save`,p,false,false,false).then(res =>{
@@ -1425,7 +1418,7 @@ this.PermissionPanel = new function(){
             }
         });
      
-            let p = {"role_id":role_id,"app_id":app_id, "search_value":search_value};
+            let p = {"role_id":role_id,"app_id":app_id, "search_value":search_value,"order_by":"display_order"};
             vsapi.call(`${main_view.base_url}/api/role/permissions`,p,false,false,false).then(res =>{
                 let data = res.status_code ==200 ? res.data : [];
                 mThis.permissionList.setData(data);
@@ -1498,42 +1491,30 @@ this.PermissionPanel = new function(){
            cssClass:"",
            createContent:()=>{
              return [
-              `
-              <div class="col-md-12">`,
-              `<div class="material-input outlined">`,
-                `<input name ="force_permission_id" class="data-input form-control" data-field="force_permission_id" placeholder=" " />`,
+              `<div class="form-group col-md-12">`,
                 `<label vslang="titles.Permission Number">Permission Number</label>`,
+                `<input name ="force_permission_id" class="data-input form-control" data-field="force_permission_id" placeholder=" " />`,
               `</div>`,
-              `</div>`,
-             `<div class="col-md-12">`,
-             `<div class="material-input outlined">`,
+              `<div class="form-group col-md-12">`,
+                `<label vslang="titles.Applications">Applications</label>`,
                 `<div><select name ="app" class="data-input" data-field="app_id"></select></div>`,
               `</div>`,
-              `</div>`,
-              `<div class="col-md-12">`,
-              `<div class="material-input outlined">`,
+              `<div class="form-group col-md-12">`,
+              `<label vslang="titles.Module">Module</label>`,
               `<div><select name ="module" class="data-input" data-field="module_id"></select></div>`,
-            `</div>`,
-            `</div>`,
-              `<div class="col-md-12">`,
-              `<div class="material-input outlined">`,
-                `<input name ="name" class="data-input form-control" data-field="name" placeholder=" " />`,
+              `</div>`,
+              `<div class="form-group col-md-12">`,
                 `<label vslang="titles.Permission Name">Permission Name</label>`,
+                `<input name ="name" class="data-input form-control" data-field="name" placeholder=" " />`,
               `</div>`,
-              `</div>`,
-            `<div class="form-group col-md-12">`,
-            `<div class="material-input outlined">`,
+              `<div class="form-group col-md-12">`,
+              `<label vslang="titles.Category">Category</label>`,
               `<div><select name="category" class="form-control data-input" data-field="category"></select></div>`,
-           `</div>`,
-           `</div>`,
-           `<div class="form-group col-md-12">`,
-             `<div class="material-input outlined">`,
-                `<input name ="actions" class="data-input form-control" data-field="actions" placeholder=" " />`,
-                `<label vslang="titles.Actions">Actions</label>`,
               `</div>`,
-         
-          `</div>`,
-            ].join('');
+              `<div class="form-group col-md-12">`,
+                `<label vslang="titles.Actions">Actions</label>`,
+                `<input name ="actions" class="data-input form-control" data-field="actions" placeholder=" " />`,
+              `</div>`].join('');
            },
            showCancelButton:true,
            extendMethod:{
@@ -1549,14 +1530,14 @@ this.PermissionPanel = new function(){
            buttons:[
               {
                   label:"<span>Cancel</span>",
-                  cssClass:"btn btn-sm text-white btn-warning",
+                  cssClass:"btn-vs-cancel",
                   click:(me,btn)=>{
                      me.hide(false);
                   }
                 },
                 {
                   label:"<span>Save</span>",
-                  cssClass:"btn btn-sm btn-yp-custom",
+                  cssClass:"btn-vs-save",
                   click:(me,btn, divModal)=>{
                       const p = me.getData();
                       vsapi.call(`${main_view.base_url}/api/permission/save`,p,btn, false,false).then(res =>{
@@ -1645,13 +1626,13 @@ this.PermissionPanel = new function(){
                  if(cat ==='report'){
                     me.actions.value = 'view|print|export_pdf|export_excel|export_csv'; 
                  }else{
-                    me,actions.value = me.org_actions;
+                    me.actions.value = me.org_actions;
                  } 
               };
                 const header = me.divModal.querySelector('.modal-header');
                 const headerTitle = header.querySelector('.modal-title');
 
-                header.classList.add('bg-yp-custom', 'modal-header-custom');
+                header.classList.add('bg-primary-custom', 'modal-header-custom');
                 header.parentElement.classList.add('overflow-hidden');
                 header.parentElement.style = 'border-radius: 20px !important;';
 
@@ -1803,7 +1784,6 @@ this.ReportPanel = new function(){
                     }else cv_interact.warning(res.error_message);
                 });
             }
-
         });
 
         const p = {role_id: mThis.selected_role.role_id, app_id:app_id, search_value:search_value};
@@ -2580,9 +2560,10 @@ const RoleDialog = (()=>{
                               </div>
                            </div>
                            <div class="col-12">
+                              <label style="color:#0f6694;">Role Name</label>
                               <div class="material-input outlined">
                                  <input name="name" class="form-control data-input" data-field="name" placeholder=" " />
-                                 <label>Role Name</label>
+                                 <label class="d-none">Role Name</label>
                               </div>
                            </div>                     
                     </div>`].join('');
@@ -2594,7 +2575,7 @@ const RoleDialog = (()=>{
                 const btnClose = header.querySelector('button');
 
                 btnClose.classList.add('d-none');
-                header.classList.add('bg-yp-custom', 'modal-header-custom');
+                header.classList.add('bg-primary-custom', 'modal-header-custom');
                 header.parentElement.style = 'border-radius: 20px !important';
                 header.parentElement.classList.add('overflow-hidden');
 
@@ -2624,12 +2605,12 @@ const RoleDialog = (()=>{
         buttons:[
           {
              label:"Cancel",
-             cssClass:"btn btn-sm text-white btn-warning",
+             cssClass:"btn btn-vs-cancel",
              dismissModal:true
           },
           {
              label:"Save",
-             cssClass:"btn btn-sm btn-yp-custom",
+             cssClass:"btn btn-vs-save",
              click:(modal,btn,divModal)=>{
                  let p = modal.getData();
                  //let p = {id:mThis.options.id, group_id:mThis.elRoleGroup.value, name: mThis.elRoleName.value};

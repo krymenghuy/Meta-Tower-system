@@ -320,3 +320,41 @@
 .vs-modal.vs-modal--compact .modal-footer {
     padding: 10px 18px;
 }
+.btn-vs-cancel,
+.btn-vs-save {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 14px;
+    line-height: 1.5;
+    width: 120px;
+    color: #ffffff;
+    cursor: pointer;
+    transition: background-color 0.3s, border-color 0.3s, transform 0.3s;
+}
+
+.btn-vs-cancel {
+    background-color: #dc3545;
+    border: 1px solid #dc3545;
+}
+
+.btn-vs-cancel:hover {
+    background-color: #c82333;
+    border-color: #c82333;
+    color: #fff;
+    transform: scale(1.05);
+}
+
+.btn-vs-save {
+    background-color: #194075;
+    border: 1px solid #194075;
+}
+
+.btn-vs-save:hover {
+    background-color: #163866;
+    border-color: #163866;
+    color: #fff;
+    transform: scale(1.05);
+}

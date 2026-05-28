@@ -367,17 +367,42 @@ class BillPayment
         if (!empty($date_to)) {
             $query->whereDate('bp.payment_date', '<=', date('Y-m-d', strtotime($date_to)));
         }
+        $driver = DB::connection()->getDriverName();
 
-        $query->selectRaw("
-            bp.id, bp.bill_id, b.bill_number, v.name as vendor_name,
-            b.expense_type_id, ex.name as expense_type_name,
-            bp.payment_date, bp.total_amount as amount, bp.payer,
-            b.ref_no, bp.currency_code, bp.note as remark,
-            b.total_amount, b.paid_amount, b.balance,b.due_date,
-            bp.status_id, ps.name as payment_status,
-            bp.create_user, bp.update_user, bp.created_at, bp.updated_at,
-            GROUP_CONCAT(CONCAT(bpb.method, ' ', bpb.amount, '\$') ORDER BY bpb.amount SEPARATOR ', ') AS payment_method
-        ")->groupBy('bp.id')->orderBy('bp.id', 'desc');
+      $payment_method = $driver === 'pgsql'
+        ? "(SELECT STRING_AGG(CONCAT(bpb.method, ' $', bpb.amount::text), ', ')
+            FROM bill_payment_breakdowns bpb
+            WHERE bpb.bill_payment_id = bp.id) AS payment_method"
+        : "(SELECT GROUP_CONCAT(CONCAT(bpb.method, ' $', bpb.amount) SEPARATOR ', ')
+            FROM bill_payment_breakdowns bpb
+            WHERE bpb.bill_payment_id = bp.id) AS payment_method";
+
+    $query->selectRaw("
+        bp.id,
+        bp.bill_id,
+        b.bill_number,
+        v.name as vendor_name,
+        b.expense_type_id,
+        ex.name as expense_type_name,
+        bp.payment_date,
+        bp.total_amount as amount,
+        bp.payer,
+        b.ref_no,
+        bp.currency_code,
+        bp.note as remark,
+        b.total_amount,
+        b.paid_amount,
+        b.balance,
+        b.due_date,
+        bp.status_id,
+        ps.name as payment_status,
+        bp.create_user,
+        bp.update_user,
+        bp.created_at,
+        bp.updated_at,
+        {$payment_method}
+    ")
+    ->orderBy('bp.id', 'desc');
 
 
         $count = (clone $query)->count('bp.id');
@@ -395,7 +420,7 @@ class BillPayment
     {
         $bill     = null;
         $payments = collect();
-
+        \Log::info($bill_id);
         if ($bill_id) {
             $bill = DB::table('bills as b')
                 ->leftJoin('vendors as v', 'v.id', 'b.vendor_id')

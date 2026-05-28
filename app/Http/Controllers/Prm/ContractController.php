@@ -164,6 +164,41 @@ class ContractController extends Controller
 
         return JDV::raw($res);
     }
+
+    public function cancelPendingRenewal(Request $req)
+    {
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+
+        if (!isset($req->id) || !is_numeric($req->id)) {
+            return JDV::error('Invalid ID');
+        }
+
+        $contract = new Contract($req->id, $ss);
+        $res = $contract->cancelPendingRenewal($req->id, $ss);
+
+        return JDV::raw($res);
+    }
+
+    public function updatePendingRenewal(Request $req)
+    {
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+
+        $id = $req->id ?? $req->contract_id;
+        if (!$id || !is_numeric($id)) {
+            return JDV::error('Invalid ID');
+        }
+
+        $contract = new Contract($id, $ss);
+        $res = $contract->updatePendingRenewal($req->all(), $id, $ss);
+
+        return JDV::raw($res);
+    }
      function getTenantInfo(Request $req){
         $ss = XAuthService::verifyAuth($req,-1);
         if($ss->status_code !==200) return JDV::raw($ss);

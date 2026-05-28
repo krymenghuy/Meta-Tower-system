@@ -33,6 +33,8 @@ use App\Http\Controllers\tenant\AccountStaffController;
 use App\Http\Controllers\tenant\ZoneController;
 use App\Http\Controllers\tenant\ContractsController;
 use App\Http\Controllers\Prm\InvoiceSettingController;
+use App\Http\Controllers\tenant\ReservationsController;
+use App\Http\Controllers\tenant\TenantProfileController;
 
 
 
@@ -148,6 +150,8 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('contract')->g
     Route::post('/form-options', [ContractController::class, 'getFormOptions']);
     Route::post('/delete', [ContractController::class, 'deleteContract']);
     Route::post('/renew', [ContractController::class, 'renewContract']);
+    Route::post('/cancel-renewal', [ContractController::class, 'cancelPendingRenewal']);
+    Route::post('/update-renewal', [ContractController::class, 'updatePendingRenewal']);
     Route::post('/terminate', [ContractController::class, 'terminateContract']);
     Route::post('/get-tenant-info', [ContractController::class, 'getTenantInfo']);
     Route::post('/month', [ContractController::class, 'getContractMonths']);
@@ -230,7 +234,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('expense')->gr
 });
 
 
-Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('contracts')->group(function () {
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant/contracts')->group(function () {
     Route::post('/save', [ContractsController::class, 'saveContracts']);
     Route::post('/list-paginate', [ContractsController::class, 'getListContracts']);
     Route::post('/details', [ContractsController::class, 'contractsDetails']);
@@ -272,6 +276,16 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('reservation')
     Route::post('/cancel', [ReservationController::class, 'cancelReservation']);
 });
 
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('reservation')->group(function () {
+    Route::post('/save', [ReservationController::class, 'saveReservation']);
+    Route::post('/list-paginate', [ReservationController::class, 'getListPaginate']);
+    Route::post('/details', [ReservationController::class, 'reservationDetails']);
+    Route::post('/form-options', [ReservationController::class, 'getFormOptions']);
+    Route::post('/delete', [ReservationController::class, 'deleteReservation']);
+    Route::post('/update-status', [ReservationController::class, 'updateReservationStatus']);
+    Route::post('/get-amenity-info', [ReservationController::class, 'getAmenityInfo']);
+    Route::post('/cancel', [ReservationController::class, 'cancelReservation']);
+});
 Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('purchase/order')->group(function(){
     Route::post('/save', [PurchaseOrderController::class, 'savePurchaseOrder']);
     Route::post('/authorized',[PurchaseOrderController::class,'authorized']);
