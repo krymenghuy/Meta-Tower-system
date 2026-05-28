@@ -18,6 +18,7 @@ var InvoiceComponent = (() => {
     mThis.tblReceive = mThis.self.querySelector("#_tblReceive");
 
     let InvoiceItemDialog = null;
+
     mThis.cols = [
         { transTitle: "", className: "align-middle text-capitalize" },
         {
@@ -269,6 +270,26 @@ var InvoiceComponent = (() => {
                 if (id && !isNaN(id)) mThis.displayInvoiceDetail(container, id);
             }
         });
+
+        vsapi
+            .call(
+                `${main_view.base_url}/prm/invoice_setting/get`, //call restapi get first
+                {}
+            )
+            .then(res => {
+                 InvoiceSetting = res.data;
+                console.log(111112, InvoiceSetting)
+                if (res.status_code !== 200) {
+                    cv_interact.error(
+                        "Failed to load invoice details."
+                    );
+                    return;
+                }
+                
+            });
+
+
+        
 
         mThis.initAlready = true;
     };
@@ -673,6 +694,8 @@ const InvoiceDialog = (() => {
     const self = {};
     let dialog = null;
     let availableItem = [];
+    let InvoiceSetting = null;
+    
 
     self.show = op => {
         dialog = new GeneralDialog({
@@ -865,36 +888,8 @@ const InvoiceDialog = (() => {
                 me.controls.div_invoice_summary = me.divModal.querySelector(
                     '[name="div_invoice_summary"]'
                 );
-                // me.controls.invoice_type.addEventListener("change", function() {
-                //     updateButtonVisibility();
-                // });
 
-                // function updateButtonVisibility() {
-                //     const invoiceType = me.controls.invoice_type.value;
 
-                //     const btnRent = me.controls.btnRent;
-                //     const btnElectric = me.controls.btnElectric;
-                //     const btnService = me.controls.btnService;
-                //     const btnRequest = me.controls.btnRequest;
-
-                //     if (!btnRent || !btnElectric || !btnService || !btnRequest) return;
-
-                //     if (invoiceType === "1") {
-                //         // === TAX ===
-                //         btnRent.style.display = "inline-block";
-
-                //         btnElectric.style.display = "none";
-                //         btnService.style.display = "none";
-                //         btnRequest.style.display = "none";
-                //     }
-                //     else {
-                //         // === NO TAX (2) or COMMERCIAL (3) ===
-                //         btnRent.style.display = "inline-block";
-                //         btnElectric.style.display = "inline-block";
-                //         btnService.style.display = "inline-block";
-                //         btnRequest.style.display = "inline-block";
-                //     }
-                // }
 
                 me.controls.btnRent.onclick = () => {
                     if (!me._selectedTenantId) {
@@ -1228,6 +1223,8 @@ const InvoiceDialog = (() => {
                         return cv_interact.error("Please select Space.");
                     }
 
+                    // Fetch InvoiceSetting first, then open popup
+                    const openElectricPopup = () => {
                     let electricDiv = null;
                     InputBox.resetInstance("electricPopUp");
                     InputBox.show({
@@ -1398,7 +1395,13 @@ const InvoiceDialog = (() => {
                                 "#wrapper_units_readonly"
                             );
 
-                            // Currency conversion handlers
+                    
+                             elExchangeRate.value = InvoiceSetting ? (InvoiceSetting.exchange_rate ?? "") : "";
+
+
+                             console.log("InvoiceSetting.exchange_rate", InvoiceSetting ? InvoiceSetting.exchange_rate : null);
+
+                                // Currency conversion handlers
                             elPriceKHR.addEventListener("input", e => {
                                 const rate =
                                     parseFloat(elExchangeRate.value) || 4000;
@@ -1673,6 +1676,26 @@ const InvoiceDialog = (() => {
                             ibMe.close();
                         }
                     });
+                    }; // end openElectricPopup
+
+                    if (InvoiceSetting) {
+                        openElectricPopup();
+                    } else {
+                        vsapi
+                            .call(`${main_view.base_url}/prm/invoice_setting/get`, {})
+                            .then(res => {
+                                if (res.status_code === 200 && res.data && res.data.length > 0) {
+                                    InvoiceSetting = res.data[0];
+                                } else {
+                                    InvoiceSetting = {};
+                                }
+                                openElectricPopup();
+                            })
+                            .catch(() => {
+                                InvoiceSetting = {};
+                                openElectricPopup();
+                            });
+                    }
                 };
 
                 // =====================Service ===================
@@ -2553,25 +2576,23 @@ const InvoiceDialog = (() => {
                         const type = ctx.data.type;
                         const unit_type = ctx.data.unit_type;
 
-
                         item.setRowMeta(tr, {
                             item_id: item_id,
                             type: type,
                             unit_type: unit_type
                         });
-                 
+
                         if (item.rows.length >= 2) {
                             me.controls.tenant.disabled = true;
                             me.setReadOnly(true, [
-                                            "tenant_id",
-                                            "space_id",
-                                            "invoice_type"
-                                        ]);
-                        }    
+                                "tenant_id",
+                                "space_id",
+                                "invoice_type"
+                            ]);
+                        }
                     },
 
                     onItemChange: (rowId, item, fieldName, td, tr) => {
-                   
                         if (fieldName === "item_id") {
                             const selectedService = availableItem.find(
                                 s => String(s.id) === String(item.item_id)
