@@ -343,15 +343,6 @@ class BillPayment
             $search_value = escape_like_str($search_value);
             $str_search   = "(v.name LIKE '%" . $search_value . "%' OR b.bill_number LIKE '%" . $search_value . "%' OR bp.payer LIKE '%" . $search_value . "%')";
         }
-
-        $query = DB::table('bill_payments as bp')
-            ->leftJoin('bills as b', 'b.id', 'bp.bill_id')
-            ->leftJoin('vendors as v', 'v.id', 'b.vendor_id')
-            ->leftJoin('expense_categories as ex', 'ex.id', 'b.expense_type_id')
-            ->leftJoin('bill_payment_statuses as ps', 'ps.id', 'bp.status_id')
-            ->leftJoin('bill_payment_breakdowns as bpb', 'bpb.bill_payment_id', 'bp.id')
-            ->whereRaw($str_search);
-
         if ($bill_id) {
             $str_moreWhere .= 'AND bp.bill_id = ' . $bill_id;
         }
@@ -361,48 +352,58 @@ class BillPayment
         if ($status_id) {
             $str_moreWhere .= 'AND bp.status_id = ' . $status_id;
         }
+        $driver = DB::connection()->getDriverName();
+
+        $payment_method = $driver === 'pgsql'
+            ? "(SELECT STRING_AGG(CONCAT(bpb.method, ' $', bpb.amount::text), ', ')
+                FROM bill_payment_breakdowns bpb
+                WHERE bpb.bill_payment_id = bp.id) AS payment_method"
+            : "(SELECT GROUP_CONCAT(CONCAT(bpb.method, ' $', bpb.amount) SEPARATOR ', ')
+                FROM bill_payment_breakdowns bpb
+                WHERE bpb.bill_payment_id = bp.id) AS payment_method";
+        $query = DB::table('bill_payments as bp')
+            ->leftJoin('bills as b', 'b.id', 'bp.bill_id')
+            ->leftJoin('vendors as v', 'v.id', 'b.vendor_id')
+            ->leftJoin('expense_categories as ex', 'ex.id', 'b.expense_type_id')
+            ->leftJoin('payment_statuses as ps', 'ps.id', 'bp.status_id')
+            ->selectRaw("
+                bp.id,
+                bp.bill_id,
+                b.bill_number,
+                v.name as vendor_name,
+                b.expense_type_id,
+                ex.name as expense_type_name,
+                bp.payment_date,
+                bp.total_amount as amount,
+                bp.payer,
+                b.ref_no,
+                bp.currency_code,
+                bp.note as remark,
+                b.total_amount,
+                b.paid_amount,
+                b.balance,
+                b.due_date,
+                bp.status_id,
+                ps.name as payment_status,
+                bp.create_user,
+                bp.update_user,
+                bp.created_at,
+                bp.updated_at,
+                {$payment_method}
+            ")
+            ->orderBy('bp.id', 'desc');
+
+        
         if (!empty($date_from)) {
             $query->whereDate('bp.payment_date', '>=', date('Y-m-d', strtotime($date_from)));
         }
         if (!empty($date_to)) {
             $query->whereDate('bp.payment_date', '<=', date('Y-m-d', strtotime($date_to)));
         }
-        $driver = DB::connection()->getDriverName();
+       
+        
 
-      $payment_method = $driver === 'pgsql'
-        ? "(SELECT STRING_AGG(CONCAT(bpb.method, ' $', bpb.amount::text), ', ')
-            FROM bill_payment_breakdowns bpb
-            WHERE bpb.bill_payment_id = bp.id) AS payment_method"
-        : "(SELECT GROUP_CONCAT(CONCAT(bpb.method, ' $', bpb.amount) SEPARATOR ', ')
-            FROM bill_payment_breakdowns bpb
-            WHERE bpb.bill_payment_id = bp.id) AS payment_method";
-
-    $query->selectRaw("
-        bp.id,
-        bp.bill_id,
-        b.bill_number,
-        v.name as vendor_name,
-        b.expense_type_id,
-        ex.name as expense_type_name,
-        bp.payment_date,
-        bp.total_amount as amount,
-        bp.payer,
-        b.ref_no,
-        bp.currency_code,
-        bp.note as remark,
-        b.total_amount,
-        b.paid_amount,
-        b.balance,
-        b.due_date,
-        bp.status_id,
-        ps.name as payment_status,
-        bp.create_user,
-        bp.update_user,
-        bp.created_at,
-        bp.updated_at,
-        {$payment_method}
-    ")
-    ->orderBy('bp.id', 'desc');
+     
 
 
         $count = (clone $query)->count('bp.id');
