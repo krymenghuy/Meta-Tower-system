@@ -679,8 +679,6 @@ class Invoice extends VSModel
         );
     }
 
-
-
     public static function getInvoiceDetails($id)
     {
         $header = DB::table('invoices as i')

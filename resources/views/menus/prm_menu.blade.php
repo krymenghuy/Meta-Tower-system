@@ -244,7 +244,7 @@ function v_display($mod_id, $module_ids = null)
                     </a>
                 </li>
                 
-                <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover"
+                {{-- <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover"
                     <?php v_display(null, [210, 211, 212, 213, 214]); ?>>
                     <a href="SettingComponent" class="kt-menu__link kt-menu__toggle">
                         <span class="kt-menu__link-icon">
@@ -252,7 +252,8 @@ function v_display($mod_id, $module_ids = null)
                         </span>
                         <span class="kt-menu__link-text " vslang="menus.Settings"></span>
                         <i class="kt-menu__ver-arrow la la-angle-right"></i>
-                    </a>
+                    </a> --}}
+
 
                     {{-- <li class="kt-menu__item" aria-haspopup="true" <?php v_display(206); ?>>
                         <a href="InvoiceSettingComponent" modid="270" class="menu-item kt-menu__link">
@@ -287,6 +288,15 @@ function v_display($mod_id, $module_ids = null)
                                 </li> -->
 
             
+                {{-- </li> --}}
+                <li class="kt-menu__item" aria-haspopup="true" <?php v_display(210); ?>>
+                    <a href="InvoiceSettingComponent" modid="270" class="menu-item kt-menu__link">
+                        <span class="kt-menu__link-icon">
+                            <img class="icons opacity-icons"
+                                src="{{ asset('assets/images/icons/barcode.svg') }}" />
+                        </span>
+                        <span class="kt-menu__link-text font-color " vslang="menus.Invoice Setting"></span>
+                    </a>
                 </li>
                 <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true"
                     data-ktmenu-submenu-toggle="hover">
