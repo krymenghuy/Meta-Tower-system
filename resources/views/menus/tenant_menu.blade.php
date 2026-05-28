@@ -179,8 +179,8 @@ function v_display($mod_id, $module_ids = null)
                     </a>
                 </li>
 
-                <li class="kt-menu__item" aria-haspopup="true" <?php v_display(206); ?>>
-                    <a href="ReservationComponent" modid="270" class="menu-item kt-menu__link">
+                <li class="kt-menu__item" aria-haspopup="true" <?php v_display(300); ?>>
+                    <a href="ReservationComponent" modid="300" class="menu-item kt-menu__link">
                         <span class="kt-menu__link-icon">
                             <img class="opacity-icons icons" src="{{ asset('assets/images/icons/reservation.svg') }}" />
                         </span>
@@ -227,7 +227,7 @@ function v_display($mod_id, $module_ids = null)
                             </a>
                         </li> -->
 
-                {{-- <li class="kt-menu__item" aria-haspopup="true" <?php v_display(201); ?>>
+                {{-- <li class="kt-menu__item" aria-haspopup="true" <?php v_display(); ?>>
                     <a href="AccountStaffComponent" modid="201" class="menu-item kt-menu__link">
                         <span class="kt-menu__link-icon">
                             <img class="opacity-icons icons" src="{{ asset('assets/images/icons/staff.svg') }}" />
@@ -235,8 +235,8 @@ function v_display($mod_id, $module_ids = null)
                         <span class="font-color kt-menu__link-text" vslang="menus.Profile">Profile</span>
                     </a>
                 </li> --}}
-                <li class="kt-menu__item" aria-haspopup="true" <?php v_display(201); ?>>
-                    <a href="TenantProfileComponent" modid="201" class="menu-item kt-menu__link">
+                <li class="kt-menu__item" aria-haspopup="true" <?php v_display(301); ?>>
+                    <a href="TenantProfileComponent" modid="219" class="menu-item kt-menu__link">
                         <span class="kt-menu__link-icon">
                             <img class="opacity-icons icons" src="{{ asset('assets/images/icons/staff.svg') }}" />
                         </span>
