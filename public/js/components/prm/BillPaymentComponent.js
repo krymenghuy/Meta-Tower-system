@@ -741,7 +741,6 @@ const BillPaymentDialog = (() => {
                         status_id == 1 || status_id == 2 ? "block" : "none";
                 },
                 onPrepareForm: (me, data) => {
-                    console.log(123456, data);
 
                     let bill;
 
@@ -755,6 +754,7 @@ const BillPaymentDialog = (() => {
                         .then((res) => {
                             if (res.status_code == 200) {
                                 bill = res.data.bill;
+                    console.log(123456, bill);
 
                                 const dueAmount = Number(bill?.balance || 0);
                                 const dueEl =
@@ -787,7 +787,7 @@ const BillPaymentDialog = (() => {
                                 if (me.controls.vendor) {
                                     me.controls.vendor.value =
                                         bill.vendor_name || "";
-                                    me.controls.vendor.value = "";
+                                    // me.controls.vendor.value = "";
 
                                     me.controls.vendor.readOnly = true;
                                 }
