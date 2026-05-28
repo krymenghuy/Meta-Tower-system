@@ -282,8 +282,8 @@ function v_display($mod_id, $module_ids = null)
 
             
                 {{-- </li> --}}
-                <li class="kt-menu__item" aria-haspopup="true" <?php v_display(210); ?>>
-                    <a href="InvoiceSettingComponent" modid="270" class="menu-item kt-menu__link">
+                <li class="kt-menu__item" aria-haspopup="true" <?php v_display(218); ?>>
+                    <a href="InvoiceSettingComponent" modid="218" class="menu-item kt-menu__link">
                         <span class="kt-menu__link-icon">
                             <img class="icons opacity-icons"
                                 src="{{ asset('assets/images/icons/barcode.svg') }}" />
