@@ -171,6 +171,12 @@ var TenantProfileComponent = new (function () {
             rowCreated: (data, index, tr) => {
                 // console.log(9090,tr);
 
+                // tr.dataset.id = data.id;
+                // tr.dataset.statusid = data.status_id;
+                // mThis.initDropdownMenus(tr);
+                if (data.id !== 1) {
+                    tr.style.display = "none"; // hide rows that don't match
+                }
                 tr.dataset.id = data.id;
                 tr.dataset.statusid = data.status_id;
                 mThis.initDropdownMenus(tr);
@@ -656,6 +662,7 @@ var TenantProfileComponent = new (function () {
     mThis.getFilterData = () => {
         let p = {
             search_value: mThis.elSearch.value,
+            id: 1,
         };
 
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
@@ -1518,7 +1525,8 @@ var TenantProfileComponent = new (function () {
         mThis.prepareFormOptions(() => {
             // main_view.setContentView(mThis.self, mThis.title_prop);
             // mThis.renderView();
-            mThis.showPage(mThis.defaultPage, mThis.getFilterData());
+            // mThis.showPage(mThis.defaultPage, mThis.getFilterData());
+            mThis.showPage("profile_view", { tenant_id: 1 });
         });
     };
 

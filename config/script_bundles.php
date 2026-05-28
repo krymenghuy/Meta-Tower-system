@@ -183,10 +183,9 @@ return [
                 '/js/components/tenant/TenantProfileComponent.js',
                 '/js/components/tenant/ContractsComponent.js',
                 '/js/components/tenant/InvoicesComponent.js',
-                '/js/components/tenant/BuildingServiceComponent.js',
+                '/js/components/tenant/RequestServiceComponent.js',
                 '/js/components/tenant/AnnouncementComponent.js',
                 '/js/components/tenant/ReservationComponent.js',
-                '/js/components/tenant/TenantProfileComponent.js',
 
 
             ]
