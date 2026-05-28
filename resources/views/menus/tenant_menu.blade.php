@@ -184,7 +184,7 @@ function v_display($mod_id, $module_ids = null)
                         <span class="kt-menu__link-icon">
                             <img class="opacity-icons icons" src="{{ asset('assets/images/icons/reservation.svg') }}" />
                         </span>
-                        <span class="font-color kt-menu__link-text" vslang="menus.Reservation"></span>
+                        <span class="font-color kt-menu__link-text" vslang="menus.Booking Amenity"></span>
                     </a>
                 </li>
 
@@ -199,13 +199,12 @@ function v_display($mod_id, $module_ids = null)
                 </li>
 
                 <li class="kt-menu__item" aria-haspopup="true" <?php v_display(202); ?>>
-                    <a href="BuildingServiceComponent" modid="202" class="menu-item kt-menu__link">
+                    <a href="RequestServiceComponent" modid="202" class="menu-item kt-menu__link">
                         <span class="kt-menu__link-icon">
                             <img class="opacity-icons icons"
                                 src="{{ asset('assets/images/icons/zone_floor.svg') }}" />
                         </span>
-                        <span class="font-color kt-menu__link-text" vslang="menus.Service Booking">Service
-                            Booking</span>
+                        <span class="font-color kt-menu__link-text" vslang="menus.Request Service">Request Service</span>
                     </a>
                 </li>
 
@@ -240,7 +239,7 @@ function v_display($mod_id, $module_ids = null)
                         <span class="kt-menu__link-icon">
                             <img class="opacity-icons icons" src="{{ asset('assets/images/icons/staff.svg') }}" />
                         </span>
-                        <span class="font-color kt-menu__link-text" vslang="menus.Profile">Profile</span>
+                        <span class="font-color kt-menu__link-text" vslang="menus.Staff">Profile</span>
                     </a>
                 </li>
                 <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true"

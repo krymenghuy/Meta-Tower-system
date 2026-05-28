@@ -1,7 +1,7 @@
 "use strict";
 var ReservationComponent = (() => {
     const mThis = {};
-    mThis.title_prop = "Reservation";
+    mThis.title_prop = "Booking Amenity";
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector(
         "#_main_reservation_component",

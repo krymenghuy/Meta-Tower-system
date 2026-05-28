@@ -313,7 +313,7 @@
                             {{-- @include('layouts.tenant.accountStaffComponent') --}}
                             @include('layouts.tenant.contractsComponent')
                             @include('layouts.tenant.invoicesComponent')
-                            @include('layouts.tenant.buildingServiceComponent')
+                            @include('layouts.tenant.requestServiceComponent')
                             @include('layouts.tenant.announcementComponent')
                             @include('layouts.tenant.reservationComponent')
                             @include('layouts.tenant.tenantProfileComponent')
