@@ -150,7 +150,6 @@ class ReservationsController extends Controller
             return JDV::raw($ss);
         }
 
-        // ✅ If tenant, always use their own tenant_id
         $id = (isset($ss->tenant_id) && $ss->tenant_id)
             ? $ss->tenant_id
             : ($req->tenant_id ?? $req->id);
@@ -170,7 +169,6 @@ class ReservationsController extends Controller
             return JDV::error('Invalid or missing ID');
         }
 
-        // ✅ Verify ownership before cancelling
         if (isset($ss->tenant_id) && $ss->tenant_id) {
             $owner = DB::table('reservations')->where('id', $id)->value('tenant_id');
             if ($owner != $ss->tenant_id) {

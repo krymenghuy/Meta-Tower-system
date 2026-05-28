@@ -10,7 +10,7 @@
                 <select id="_service_request_category_id" class="filter-field data-input form-control" data-field="category_id"></select>
             </div>
             <div class="col-12 col-md-6 col-lg-2">
-                <select id="_service_request_status" class="filter-field data-input form-control" data-field="status_id" placeholder="Status"></select>
+                <select id="_service_request_status" class="filter-field data-input form-control" data-field="status_id" placeholder=" "></select>
             </div>
             <div class="ms-md-auto text-md-end col-12 col-md-auto">
                 <button type="button" class="w-100 w-md-auto btnAddNewPrm" id="_btnServiceRequest">

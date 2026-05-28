@@ -32,6 +32,7 @@ use App\Http\Controllers\Prm\ReportController;
 use App\Http\Controllers\tenant\AccountStaffController;
 use App\Http\Controllers\tenant\ZoneController;
 use App\Http\Controllers\tenant\ContractsController;
+use App\Http\Controllers\Prm\InvoiceSettingController;
 use App\Http\Controllers\tenant\ReservationsController;
 use App\Http\Controllers\tenant\TenantProfileController;
 
@@ -335,6 +336,11 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('reports')->gr
 
 
 
+});
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('invoice_setting')->group(function () {
+    Route::post('/get', [InvoiceSettingController::class, 'getInvoiceSetting']);
+    Route::post('/save', [InvoiceSettingController::class, 'saveInvoiceSetting']);
 });
 
 
