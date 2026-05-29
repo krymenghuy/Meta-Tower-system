@@ -169,7 +169,7 @@ return [
                 '/assets/js/SearchWidget.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/ImageHelper.js',
                 //'/assets/js/ImageHelper.js',
-               'https://cdn.vectoraclouds.com/frontcore/components/ImageBox.js',
+                'https://cdn.vectoraclouds.com/frontcore/components/ImageBox.js',
                 //'/assets/js/ImageBox.js',
 
                 'https://cdn.vectoraclouds.com/frontcore/components/FileChooser.js',
@@ -183,10 +183,9 @@ return [
                 '/js/components/tenant/TenantProfileComponent.js',
                 '/js/components/tenant/ContractsComponent.js',
                 '/js/components/tenant/InvoicesComponent.js',
-                '/js/components/tenant/BuildingServiceComponent.js',
+                '/js/components/tenant/RequestServiceComponent.js',
                 '/js/components/tenant/AnnouncementComponent.js',
                 '/js/components/tenant/ReservationComponent.js',
-                '/js/components/tenant/TenantProfileComponent.js',
 
 
             ]
@@ -253,12 +252,7 @@ return [
                 'https://cdn.vectoraclouds.com/frontcore/vsroute/vsroute.js',
                 '/js/layout/umt/main.js',
                 // '/js/components/abm/PDFReport.js',
-               // '/js/components/tutor/RenderTableReport.js',
-
-                 'https://cdn.vectoraclouds.com/frontcore/components/SearchInput/VSSearchInputHelper.js',
-                 'https://cdn.vectoraclouds.com/beta-frontcore/components/SearchInput/VSSearchInput.js',
-
-                '/js/components/formal/RenderTableReport.js',
+                '/js/components/prm/RenderTableReport.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/ImageHelper.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/ImageBox.js',
 
@@ -277,8 +271,8 @@ return [
                 '/js/components/umt/SetPasswordDialog.js',
                 '/js/components/umt/UserManagementComponent.js',
                 '/js/components/umt/CampusManagementComponent.js',
-                // '/js/components/umt/RoleManagementTool.js',
-                 '/js/components/umt/RoleManagementComponent.js',
+                '/js/components/umt/RoleManagementTool.js',
+                //  '/js/components/umt/RoleManagementComponent.js',
                 'https://js.pusher.com/8.2.0/pusher.min.js',
                 //'/js/components/abm/pusher_client_houxpress.js',
                 //'/js/components/common/pusher_connect.js',

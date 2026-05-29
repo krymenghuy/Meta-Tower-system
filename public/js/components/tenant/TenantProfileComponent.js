@@ -3,7 +3,7 @@
 var TenantProfileComponent = new (function () {
     const mThis = this;
     mThis.title_prop = "Tenant Management";
-    this.defaultPage = "tenant_list";
+    this.defaultPage = "profile_view";
     mThis.self = main_view.VSAppContent.querySelector(
         "#_main_tenant_component",
     );
@@ -171,6 +171,12 @@ var TenantProfileComponent = new (function () {
             rowCreated: (data, index, tr) => {
                 // console.log(9090,tr);
 
+                // tr.dataset.id = data.id;
+                // tr.dataset.statusid = data.status_id;
+                // mThis.initDropdownMenus(tr);
+                if (data.id !== 1) {
+                    tr.style.display = "none"; // hide rows that don't match
+                }
                 tr.dataset.id = data.id;
                 tr.dataset.statusid = data.status_id;
                 mThis.initDropdownMenus(tr);
@@ -649,13 +655,14 @@ var TenantProfileComponent = new (function () {
         } else {
             mThis.cardViewContainer.classList.add("d-none");
             mThis.listViewContainer.classList.remove("d-none");
-            // mThis.paginationContainer.style.display = "none";
+            mThis.paginationContainer.style.display = "none";
             mThis.tenantListView.showPage(params);
         }
     };
     mThis.getFilterData = () => {
         let p = {
             search_value: mThis.elSearch.value,
+            id: 1,
         };
 
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
@@ -761,11 +768,28 @@ var TenantProfileComponent = new (function () {
                     false,
                     null,
                 );
+                // const data = res.data || {};
+                // mThis.renderProfile(data);
+                // break;
+            }
+            case "profile_view": {
+                mThis.currentPage = "profile_view";
+                const tenant_id = op.tenant_id || op.id || op;
+                const p = { id: tenant_id };
+                const res = await vsapi.call(
+                    [main_view.base_url, "/prm/tenant/details"].join(""),
+                    p,
+                    false,
+                    null,
+                );
                 const data = res.data || {};
                 mThis.renderProfile(data);
                 break;
             }
+
+
             default: {
+                
                 return;
             }
         }
@@ -857,7 +881,7 @@ var TenantProfileComponent = new (function () {
                 <div class="card shadow-sm h-100"> <div class="card-header bg-white">
                         <ul class="nav nav-tabs card-header-tabs" id="tenantTabs">
                             <li class="nav-item">
-                                <a class="nav-link active fw-semibold" href="#overview_tenant_detail">Overview</a>  
+                                <a class="nav-link active fw-semibold" href="#overview_tenant_detail">Overview</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link fw-semibold" href="#lease_tenant_history">Contract</a>
@@ -1501,7 +1525,8 @@ var TenantProfileComponent = new (function () {
         mThis.prepareFormOptions(() => {
             // main_view.setContentView(mThis.self, mThis.title_prop);
             // mThis.renderView();
-            mThis.showPage(mThis.defaultPage, mThis.getFilterData());
+            // mThis.showPage(mThis.defaultPage, mThis.getFilterData());
+            mThis.showPage("profile_view", { tenant_id: 1 });
         });
     };
 

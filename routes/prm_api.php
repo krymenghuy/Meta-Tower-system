@@ -32,6 +32,7 @@ use App\Http\Controllers\Prm\ReportController;
 use App\Http\Controllers\tenant\AccountStaffController;
 use App\Http\Controllers\tenant\ZoneController;
 use App\Http\Controllers\tenant\ContractsController;
+use App\Http\Controllers\Prm\InvoiceSettingController;
 use App\Http\Controllers\tenant\ReservationsController;
 use App\Http\Controllers\tenant\TenantProfileController;
 
@@ -111,14 +112,14 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('building-spac
     Route::post('/update-status', [BuildingSpaceController::class, 'updateBuildingSpaceStatus']);
 });
 
-Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('account-staff')->group(function () {
-    Route::post('/save', [AccountStaffController::class, 'saveAccountStaff']);
-    Route::post('/list-paginate', [AccountStaffController::class, 'getListAccountStaff']);
-    Route::post('/details', [AccountStaffController::class, 'accountStaffDetails']);
-    Route::post('/form-options', [AccountStaffController::class, 'getFormOptions']);
-    Route::post('/delete', [AccountStaffController::class, 'deleteAccountStaff']);
-    Route::post('/update-status', [AccountStaffController::class, 'updateAccountStaffStatus']);
-});
+// Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('account-staff')->group(function () {
+//     Route::post('/save', [AccountStaffController::class, 'saveAccountStaff']);
+//     Route::post('/list-paginate', [AccountStaffController::class, 'getListAccountStaff']);
+//     Route::post('/details', [AccountStaffController::class, 'accountStaffDetails']);
+//     Route::post('/form-options', [AccountStaffController::class, 'getFormOptions']);
+//     Route::post('/delete', [AccountStaffController::class, 'deleteAccountStaff']);
+//     Route::post('/update-status', [AccountStaffController::class, 'updateAccountStaffStatus']);
+// });
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('zone')->group(function () {
     Route::post('/save', [ZoneController::class, 'saveZone']);
@@ -233,7 +234,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('expense')->gr
 });
 
 
-Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant/contracts')->group(function () {
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('contracts')->group(function () {
     Route::post('/save', [ContractsController::class, 'saveContracts']);
     Route::post('/list-paginate', [ContractsController::class, 'getListContracts']);
     Route::post('/details', [ContractsController::class, 'contractsDetails']);
@@ -336,6 +337,36 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('reports')->gr
 
 
 });
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('invoice_setting')->group(function () {
+    Route::post('/get', [InvoiceSettingController::class, 'getInvoiceSetting']);
+    Route::post('/save', [InvoiceSettingController::class, 'saveInvoiceSetting']);
+});
+
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant/tenantProfile')->group(function () {
+    Route::post('/create', [TenantController::class, 'createTenant']);
+    Route::post('/profile/photo',[TenantController::class,'getProfilePhoto']);
+    Route::post('/profile/photo/delete',[TenantController::class,'deleteProfilePhoto']);
+    Route::post('/profile/photo/create',[TenantController::class,'createProfilePhoto']);
+    Route::post('/list-paginate', [TenantController::class, 'getListPaginate']);
+    Route::post('/details', [TenantController::class, 'getDetails']);
+    Route::post('/form-options', [TenantController::class, 'getFormOptions']);
+    Route::post('/delete', [TenantController::class, 'delete']);
+});
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant/reservation')->group(function () {
+    Route::post('/save', [ReservationController::class, 'saveReservation']);
+    Route::post('/list-paginate', [ReservationController::class, 'getListPaginate']);
+    Route::post('/details', [ReservationController::class, 'reservationDetails']);
+    Route::post('/form-options', [ReservationController::class, 'getFormOptions']);
+    Route::post('/delete', [ReservationController::class, 'deleteReservation']);
+    Route::post('/update-status', [ReservationController::class, 'updateReservationStatus']);
+    Route::post('/get-amenity-info', [ReservationController::class, 'getAmenityInfo']);
+    Route::post('/cancel', [ReservationController::class, 'cancelReservation']);
+});
+
+
 
 
 

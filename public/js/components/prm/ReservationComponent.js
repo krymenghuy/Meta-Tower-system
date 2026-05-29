@@ -34,7 +34,7 @@ var ReservationComponent = (() => {
             transTitle: "titles.Amenity",
             className: "align-middle",
             data: (data) => {
-                return `<span class="text-primary-custom">${data.amenity_name ?? "_"}</span>`;
+                return `<span class="text-primary-custom text-capitalize">${data.amenity_name ?? "_"}</span>`;
             },
         },
         {

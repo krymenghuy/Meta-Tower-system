@@ -533,7 +533,7 @@ var ReportComponent = (() => {
     const payload = { app_id: main_view.app_id };
     console.log(12,payload);
     
-    vsapi.call(`${main_view.base_url}/prm/reports/list`, payload, null, null, main_view.apiCluster)
+    vsapi.call(`${main_view.base_url}/api/report-center/report-list`, payload, null, null, main_view.apiCluster)
         
         .then(res => {
             console.log(JSON.stringify(res,null,2));
