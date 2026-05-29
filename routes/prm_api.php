@@ -327,6 +327,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('receipts')->g
     Route::post('/cancel',[ReceiptController::class,'cancelReceipt']);
     Route::post('/form-options',[ReceiptController::class,'getFormOptions']);
 });
+
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('reports')->group(function () {
     Route::post('/list', [ReportController::class, 'getReportList']);
     Route::post('/tenant_list', [ReportController::class, 'getTenantReportList']);

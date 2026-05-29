@@ -28,7 +28,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
     <?php
-    StyleManager::render('prm-style', 1, 42);
+    StyleManager::render('prm-style', 1, 43);
     ?>
     <style>
         /* Custom animations for the modal like Materialize css effect */
@@ -99,7 +99,7 @@
     ScriptManager::render('priority-one', 1, 9);
     ScriptManager::render('primary', 1, 13);
     ScriptManager::render('primary-defer', 1, 37);
-    ScriptManager::render('prm-components', 1, 242);
+    ScriptManager::render('prm-components', 1, 243);
     //ScriptManager::render('pdfmake', 1);
     ?>
 </head>
