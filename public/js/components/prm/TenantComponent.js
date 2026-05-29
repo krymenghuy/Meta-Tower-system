@@ -486,9 +486,10 @@ var TenantComponent = new (function () {
                                                     <span class="${statusClass}" style="min-width:70px; text-transform: capitalize;">${status}</span>
                                             </div>
                                         </div>
-                                        <div class="flex-shrink-0"> <a href="javascript:void(0)" class="btn-tenant-dropdown-action" data-id="${d.id}" data-statusid="${d.status_id}" aria-haspopup="true" aria-expanded="false">
-                                            <i class="fa-solid fa-ellipsis-vertical text-primary-custom fs-5"></i>
-                                        </a>
+                                        <div class="flex-shrink-0">
+                                            <a href="javascript:void(0)" class="btn-tenant-dropdown-action" data-id="${d.id}" data-statusid="${d.status_id}" aria-haspopup="true" aria-expanded="false" style="padding: 0 10px;">
+                                                <i class="fa-solid fa-ellipsis-vertical text-primary-custom fs-5"></i>
+                                            </a>
                                         </div>
                                     </div>
                                 </div>
@@ -1642,15 +1643,36 @@ const CreateTenantDialog = (() => {
                     me.ext = null;
 
                     me.renderTenantImage = () => {
-                        if (me.fileBase64) {
-                            me.uploadZone.classList.add("d-none");
-                            me.previewZone.classList.remove("d-none");
-                        } else {
+                        // console.log(1, me.dataOptions.id);
+                        // console.log(2, me.fileBase64);
+
+                        const src = new URL(me.previewImg.src).pathname
+                            .split("/")
+                            .pop();
+
+                        // console.log(3, src);
+
+                        if (
+                            me.dataOptions.id == null ||
+                            !me.fileBase64
+                        ) {
                             me.uploadZone.classList.remove("d-none");
                             me.previewZone.classList.add("d-none");
                             me.uploadInput.value = "";
                             if (me.displayInput) me.displayInput.value = "";
                             if (me.previewImg) me.previewImg.src = "";
+                        } else if (me.dataOptions.id > 0 &&
+                            me.fileBase64 &&
+                            src == "placeholder.svg"
+                        ) {
+                            me.uploadZone.classList.remove("d-none");
+                            me.previewZone.classList.add("d-none");
+                            me.uploadInput.value = "";
+                            if (me.displayInput) me.displayInput.value = "";
+                            if (me.previewImg) me.previewImg.src = "";
+                        } else {
+                            me.uploadZone.classList.add("d-none");
+                            me.previewZone.classList.remove("d-none");
                         }
                     };
 
@@ -1681,6 +1703,8 @@ const CreateTenantDialog = (() => {
                             const reader = new FileReader();
                             reader.onload = (event) => {
                                 const fullResult = event.target.result;
+
+                                me.fileBase64 = null;
 
                                 me.fileBase64 = fullResult.split(",")[1];
                                 let detectedExt = fullResult
@@ -1788,6 +1812,8 @@ const CreateTenantDialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
+                    me.renderTenantImage();
+                    // console.log(6666666, me);
                     if (me.dataOptions.phone_number) {
                         me.controls.name.value = me.dataOptions.name;
                         me.controls.phone_number.value =
@@ -1798,11 +1824,13 @@ const CreateTenantDialog = (() => {
 
                 extendMethod: {
                     setData: (me, data) => {
-                        if (data && data.image_url) {
-                            me.previewImg.src = data.image_url;
-                            me.fileBase64 = data.image_url;
-                            me.renderTenantImage();
+                        if (me.dataOptions.id > 0) {
+                            if (data && data.image_url) {
+                                me.previewImg.src = data.image_url;
+                                me.fileBase64 = data.image_url;
+                            }
                         }
+                        // me.renderTenantImage();
                     },
                 },
                 buttons: [
@@ -1840,13 +1868,26 @@ const CreateTenantDialog = (() => {
                                             cv_interact.success(
                                                 "Tenant has been updated successfully.",
                                             );
+                                            me.previewZone.classList.add(
+                                                "d-none",
+                                            );
                                         } else {
                                             cv_interact.success(
                                                 "New tenant has been created successfully.",
                                             );
+                                            me.previewZone.classList.add(
+                                                "d-none",
+                                            );
                                         }
                                     } else {
                                         cv_interact.error(res.error_message);
+                                        // me.fileData = null;
+                                        if (me.controls?.documents) {
+                                            me.controls.documents.value = "";
+                                            me.controls.documents.classList.add(
+                                                "d-none",
+                                            );
+                                        }
                                     }
                                 });
                         },

@@ -115,8 +115,8 @@ var MaintenanceComponent = (() => {
                        data-id="${data.id}"
                        data-statusid="${data.effective_status_id ?? data.status_id}"
                        aria-haspopup="true"
-                       aria-expanded="false">
-                        <i class="fa-solid fa-ellipsis-vertical text-black fs-5"></i>
+                       aria-expanded="false" style="padding: 0 10px;">
+                        <i class="fa-solid fa-ellipsis-vertical text-prm-custom fs-5"></i>
                     </a>
                 </div>`
         }

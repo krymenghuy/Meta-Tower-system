@@ -161,13 +161,13 @@ var BillComponent = (() => {
             className: "col_action align-middle text-nowrap",
             data: (data) => `
                 <div class="d-flex justify-content-center align-items-end">
-                    <a href="javascript:void(0)" class="btn--Options btn_dropdown_vendor_action"
+                    <a href="javascript:void(0)" class="btn--Options btn_dropdown_bill_action"
                         data-id="${data.id}"
                         data-vendorId="${data.vendor_id}"
                         data-statusid="${data.status_id}"
                         data-fileurl="${data.image_url ?? ""}"
-                        aria-haspopup="true" aria-expanded="false">
-                        <i class="fa-solid fa-ellipsis-vertical text-black fs-5"></i>
+                        aria-haspopup="true" aria-expanded="false" style="padding: 0 10px;">
+                        <i class="fa-solid fa-ellipsis-vertical text-prm-custom fs-5"></i>
                     </a>
                 </div>`,
         },
@@ -256,7 +256,7 @@ var BillComponent = (() => {
     mThis.initDropdownMenus = (table) => {
         const menuOptions = {
             containerElement: table,
-            actionButtonClass: "btn_dropdown_vendor_action",
+            actionButtonClass: "btn_dropdown_bill_action",
             cssClass: "bg-white shadow",
             menus: [
                 {

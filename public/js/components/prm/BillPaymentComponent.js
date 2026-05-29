@@ -108,10 +108,10 @@ var BillPaymentComponent = (() => {
             className: "col_action align-middle",
             data: (data) => `
                 <div class="d-flex justify-content-center align-items-end">
-                    <a href="javascript:void(0)" class="btn--Options btn_bill_action"
+                    <a href="javascript:void(0)" class="btn--Options btn_bill_payment_action"
                         data-id="${data.id}" data-vendorId="${data.vendor_id || ""}"
-                        data-statusid="${data.status_id || ""}" aria-haspopup="true" aria-expanded="false">
-                        <i class="fa-solid fa-ellipsis-vertical text-black fs-5"></i>
+                        data-statusid="${data.status_id || ""}" aria-haspopup="true" aria-expanded="false" style="padding: 0 10px;">
+                        <i class="fa-solid fa-ellipsis-vertical text-prm-custom fs-5"></i>
                     </a>
                 </div>`,
         },
@@ -195,7 +195,7 @@ var BillPaymentComponent = (() => {
     mThis.initDropdownMenus = (table) => {
         const menuOptions = {
             containerElement: table,
-            actionButtonClass: "btn_bill_action",
+            actionButtonClass: "btn_bill_payment_action",
             cssClass: "bg-white shadow",
             menus: [
                 {

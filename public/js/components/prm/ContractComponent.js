@@ -150,12 +150,10 @@ var ContractComponent = new (function () {
             className: 'col_action align-middle',
             data: (data) => `
                 <div class="d-flex justify-content-center align-items-end">
-                    <a href="javascript:void(0)" class="btn_contract_action" data-id="${data.id}" data-statusid="${data.status_id}" data-status="${data.status ?? ''}" data-end-date="${data.end_date ?? ''}" aria-haspopup="true" aria-expanded="false">
-                       <button class="btn btn-sm  rounded-2 text-nowrap">
-                            <span>
-                                <i class="fa-solid fa-ellipsis-vertical text-black fs-5"></i>
-                            </span>
-                       </button>
+                    <a href="javascript:void(0)" class="btn_contract_action" data-id="${data.id}" data-statusid="${data.status_id}" data-status="${data.status ?? ''}" data-end-date="${data.end_date ?? ''}" aria-haspopup="true" aria-expanded="false" style="padding: 0 10px;">
+                       <span>
+                            <i class="fa-solid fa-ellipsis-vertical text-prm-custom fs-5"></i>
+                       </span>
                     </a>
                 </div>`
         },
