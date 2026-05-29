@@ -130,7 +130,6 @@ class ReservationsController extends Controller
             return JDV::error('Missing or invalid id/status_id');
         }
 
-        // ✅ Verify ownership before updating status
         if (isset($ss->tenant_id) && $ss->tenant_id) {
             $owner = DB::table('reservations')->where('id', $id)->value('tenant_id');
             if ($owner != $ss->tenant_id) {

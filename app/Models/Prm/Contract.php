@@ -38,15 +38,15 @@ class Contract
 
         $spaceId = $arr['space_id'] ?? null;
         if ($spaceId === null || $spaceId === '' || !is_numeric($spaceId)) {
-            return DV::error('Please select a valid unit code');
+            return DV::error('Please select a valid unit code.');
         }
 
         $deposit = $arr['deposit'] ?? null;
         if ($deposit === null || $deposit === '') {
-            return DV::error('Deposit is required');
+            return DV::error('Deposit is required.');
         }
         if (!is_numeric($deposit)) {
-            return DV::error('Deposit is required');
+            return DV::error('Deposit is required.');
         }
 
         $startDate = trim(($arr['start_date'] ?? ''));

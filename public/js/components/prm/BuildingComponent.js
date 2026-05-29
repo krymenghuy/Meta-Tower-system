@@ -118,7 +118,7 @@ var BuildingComponent = (() => {
                        class="btn--Options ${data.action_id > 1 ? "d-none" : "btn_leave_action"}"
                        data-id="${data.id}"
                        data-statusid="${data.status_id}">
-                       <i class="fa-solid fa-ellipsis-vertical text-prm-custom fs-5"></i>
+                       <i class="fa-solid fa-ellipsis-vertical text-prm-custom fs-5" style="padding: 0 10px;"></i>
                     </a>
                 </div>
             `,

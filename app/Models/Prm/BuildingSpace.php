@@ -46,9 +46,9 @@ class BuildingSpace
         $isCreate = empty($id);
 
         $v_rule = [
-            'building_id' => '1|number|exists=buildings.id|text=Please select a building',
-            'floor_id' => '1|number|exists=floors.id|text=Please select the floor',
-            'space_type_id' => '1|number|exists=space_types.id|text=Please select space type',
+            'building_id' => '1|number|exists=buildings.id|text=Please select a building.',
+            'floor_id' => '1|number|exists=floors.id|text=Please select the floor.',
+            'space_type_id' => '1|number|exists=space_types.id|text=Please select space type.',
             'sqm_size' => '1|number|text=Please enter a valid number for Size.',
             'price' => '1|number',
             'price_type' => '1|string|text=Please select the Charge As.',

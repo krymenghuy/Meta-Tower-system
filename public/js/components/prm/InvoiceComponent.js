@@ -5,7 +5,7 @@ var InvoiceComponent = (() => {
     mThis.title_prop = "Invoice Management";
     mThis.currency_symbol = "$";
     mThis.self = main_view.VSAppContent.querySelector(
-        "#_main_invoice_component"
+        "#_main_invoice_component",
     );
     mThis.btnAdd = mThis.self.querySelector("#_btnInvoice");
     mThis.btnAddTest = mThis.self.querySelector("#_btnInvoice_test");
@@ -24,7 +24,7 @@ var InvoiceComponent = (() => {
         {
             transTitle: "titles.Invoice No",
             className: "align-middle text-start text-nowrap",
-            data: function(data) {
+            data: function (data) {
                 const code = data.code
                     ? `<span class="text-prm-custom">${data.code}</span>`
                     : `<span class="text-muted fst-italic">_</span>`;
@@ -46,24 +46,25 @@ var InvoiceComponent = (() => {
                         ${typeHtml}
                     </div>
                 `;
-            }
+            },
         },
         {
             transTitle: "titles.Tenant",
             className: "align-middle text-nowrap",
-            data: data => {
+            data: (data) => {
                 return `
                         <div class="d-flex flex-column">
                             <span>${data.tenant_name ?? ""}</span>
-                            <span class="d-block text-primary"style="font-size:12px;">${data.tenant_phone ??
-                                ""}</span>
+                            <span class="d-block text-primary"style="font-size:12px;">${
+                                data.tenant_phone ?? ""
+                            }</span>
                         </div>`;
-            }
+            },
         },
         {
             transTitle: "titles.Unit",
             className: "align-middle text-nowrap",
-            data: data => {
+            data: (data) => {
                 return ` <div class="d-flex text-warning align-items-center gap-2">
                 <div>
                     <span class="d-block text-prm-custom ">
@@ -71,74 +72,76 @@ var InvoiceComponent = (() => {
                     </span>
                 </div>
             </div>`;
-            }
+            },
         },
         {
             transTitle: "titles.Issue Date",
             className: "align-middle text-nowrap text-center",
-            data: data => {
+            data: (data) => {
                 return `
                     <div class="d-flex flex-column align-items-center">
-                        <span class="text-prm-custom text-nowrap">${data.issue_date ??
-                            ""}
+                        <span class="text-prm-custom text-nowrap">${
+                            data.issue_date ?? ""
+                        }
                     </div>
                 `;
-            }
+            },
         },
         {
             transTitle: "titles.Due Date",
             className: "align-middle text-nowrap text-center",
-            data: data => {
+            data: (data) => {
                 const statusId = Number(data.payment_status_id || 0);
                 return `
                     <div class="d-flex flex-column align-items-center ">
-                        <span class="text-prm-custom text-nowrap">${data.due_date ??
-                            ""}
+                        <span class="text-prm-custom text-nowrap">${
+                            data.due_date ?? ""
+                        }
                     </div>
                 `;
-            }
+            },
         },
         {
             transTitle: "titles.Amount",
             className: "align-middle text-nowrap text-primary",
-            data: data => {
+            data: (data) => {
                 const amt = data.amount_payable
                     ? Number(data.amount_payable).toLocaleString("en-US", {
-                          minimumFractionDigits: 2
+                          minimumFractionDigits: 2,
                       })
                     : "0.00";
                 return `<span class="d-block text-primary fw-semibold">${mThis.currency_symbol}${amt}</span>`;
-            }
+            },
         },
         {
             transTitle: "titles.Paid",
             className: "align-middle text-success  text-nowrap",
-            data: data => {
+            data: (data) => {
                 const amt = data.paid_amount
                     ? Number(data.paid_amount).toLocaleString("en-US", {
-                          minimumFractionDigits: 2
+                          minimumFractionDigits: 2,
                       })
                     : "0.00";
                 return `<span class="d-block  fw-semibold">${mThis.currency_symbol}${amt}</span>`;
-            }
+            },
         },
         {
             transTitle: "titles.Balance",
             className: "align-middle text-danger  text-nowrap",
-            data: data => {
+            data: (data) => {
                 const amt = data.due_amount
                     ? Number(data.due_amount).toLocaleString("en-US", {
-                          minimumFractionDigits: 2
+                          minimumFractionDigits: 2,
                       })
                     : "0.00";
                 return `<span class="d-block  fw-semibold">${mThis.currency_symbol}${amt}</span>`;
-            }
+            },
         },
 
         {
             transTitle: "titles.Status",
             className: "align-middle text-center text-nowrap",
-            data: data => {
+            data: (data) => {
                 const statusId = Number(data.payment_status_id || 0);
                 let cls = "bg-secondary";
                 let icon = "bi bi-question-circle";
@@ -162,35 +165,37 @@ var InvoiceComponent = (() => {
                     <span class="badge ${cls} text-capitalize d-inline-flex align-items-center justify-content-center px-3 py-2 gap-1" style="min-width:110px">
                         ${data.payment_status_name || "—"}
                     </span>`;
-            }
+            },
         },
         {
             transTitle: "titles.Remark",
             className: "align-middle text-nowrap text-center",
-            data: data => {
+            data: (data) => {
                 return `
                     <div class="text-primary-custom" style="width:200px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.general_remark ??
-                            "_"}</span>
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${
+                            data.general_remark ?? "_"
+                        }</span>
                     </div>
                 `;
-            }
+            },
         },
 
         {
             transTitle: "titles.Last Updated",
             className: "align-middle text-nowrap",
-            data: data => `
+            data: (data) => `
                 <div class="d-flex flex-column">
-                    <span class="text-capitalize text-prm-custom">${data.update_user ||
-                        "—"}</span>
+                    <span class="text-capitalize text-prm-custom">${
+                        data.update_user || "—"
+                    }</span>
                     <small class="text-muted">${data.updated_at || "—"}</small>
-                </div>`
+                </div>`,
         },
         {
             transTitle: "titles.Action",
             className: "col_action align-middle text-center text-nowrap",
-            data: data => {
+            data: (data) => {
                 // if (data.payment_status_id === 4) {
                 //     return "";
                 // }
@@ -199,12 +204,12 @@ var InvoiceComponent = (() => {
                     <a href="javascript:void(0)" class="btn--Options btn_leave_action"
                         data-id="${
                             data.id
-                        }" data-statusid="${data.payment_status_id || ""}">
-                        <i class="fa-solid fa-ellipsis-vertical text-black fs-5"></i>
+                        }" data-statusid="${data.payment_status_id || ""}" style="padding: 0 10px;">
+                        <i class="fa-solid fa-ellipsis-vertical text-prm-custom fs-5"></i>
                     </a>
                 </div>`;
-            }
-        }
+            },
+        },
     ];
 
     mThis.init = () => {
@@ -223,16 +228,16 @@ var InvoiceComponent = (() => {
                 tr.dataset.statusid = data.payment_status_id || 0;
                 tr.dataset.canceled = 0;
             },
-            listContainerClass: null
+            listContainerClass: null,
         });
 
-        mThis.btnAdd.onclick = e => {
+        mThis.btnAdd.onclick = (e) => {
             e.preventDefault();
             InvoiceDialog.show({
                 id: null,
                 btn: e.target,
                 onClose: () =>
-                    mThis.InvoiceListView.showPage(mThis.getFilterData())
+                    mThis.InvoiceListView.showPage(mThis.getFilterData()),
             });
         };
 
@@ -249,13 +254,13 @@ var InvoiceComponent = (() => {
 
         mThis.initDropdownMenus(mThis.tblInvoice);
 
-        mThis.divFilter.querySelectorAll(".filter-field").forEach(el => {
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             el.onchange = () =>
                 mThis.InvoiceListView.showPage(mThis.getFilterData());
         });
 
         let timeOut = null;
-        mThis.elSearch.onkeyup = function(e) {
+        mThis.elSearch.onkeyup = function (e) {
             e.preventDefault();
             clearTimeout(timeOut);
             timeOut = setTimeout(() => {
@@ -268,28 +273,22 @@ var InvoiceComponent = (() => {
             onOpen: (container, detail_tr, parent_tr) => {
                 const id = parent_tr.id.replace("invoice_id_", "");
                 if (id && !isNaN(id)) mThis.displayInvoiceDetail(container, id);
-            }
+            },
         });
 
         vsapi
             .call(
                 `${main_view.base_url}/prm/invoice_setting/get`, //call restapi get first
-                {}
+                {},
             )
-            .then(res => {
-                 InvoiceSetting = res.data;
-                console.log(111112, InvoiceSetting)
+            .then((res) => {
+                InvoiceSetting = res.data;
+                console.log(111112, InvoiceSetting);
                 if (res.status_code !== 200) {
-                    cv_interact.error(
-                        "Failed to load invoice details."
-                    );
+                    cv_interact.error("Failed to load invoice details.");
                     return;
                 }
-                
             });
-
-
-        
 
         mThis.initAlready = true;
     };
@@ -298,7 +297,7 @@ var InvoiceComponent = (() => {
         container.innerHTML = `<div class="text-center py-3"><div class="spinner-border text-primary" role="status"></div></div>`;
         vsapi
             .call(`${main_view.base_url}/prm/invoice/details`, { id })
-            .then(res => {
+            .then((res) => {
                 if (res.status_code !== 200) {
                     container.innerHTML = `<div class="alert alert-danger m-3">Failed to load invoice details</div>`;
                     return;
@@ -315,23 +314,23 @@ var InvoiceComponent = (() => {
     mThis.renderInvoiceDetail = (container, invoice) => {
         const currency = mThis.currency_symbol || "$";
         const validItems = (invoice.items || []).filter(
-            item =>
+            (item) =>
                 parseFloat(item.price || 0) > 0 ||
                 parseFloat(item.total || 0) > 0 ||
-                parseFloat(item.amount || 0) > 0
+                parseFloat(item.amount || 0) > 0,
         );
 
-        const formatDate = dateStr => {
+        const formatDate = (dateStr) => {
             if (!dateStr) return "—";
             const date = new Date(dateStr);
             if (isNaN(date.getTime())) return dateStr;
             return date.toLocaleDateString("en-GB", {
                 day: "2-digit",
                 month: "short",
-                year: "numeric"
+                year: "numeric",
             });
         };
-        const getDiscountDisplay = item => {
+        const getDiscountDisplay = (item) => {
             const value = parseFloat(item.discount || 0);
             const type = (item.discount_type || "percent").toLowerCase().trim();
 
@@ -353,7 +352,7 @@ var InvoiceComponent = (() => {
             }
         };
         const itemsHtml = validItems
-            .map(item => {
+            .map((item) => {
                 const qty = parseFloat(item.qty || 1);
                 const price = parseFloat(item.price || 0);
 
@@ -367,27 +366,27 @@ var InvoiceComponent = (() => {
                     <td class="fw-medium">${item.remarks || "—"}
                     </td>
                     <td class="text-center small">${formatDate(
-                        item.start_date
+                        item.start_date,
                     )}</td>
                     <td class="text-center small">${formatDate(
-                        item.end_date
+                        item.end_date,
                     )}</td>
                     <td class="text-center small">${qty} ${unit_type}</td>
                     <td class="text-end">${currency}${price.toLocaleString(
-                    "en-US",
-                    {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2
-                    }
-                )}</td>
+                        "en-US",
+                        {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                        },
+                    )}</td>
                     <td class="text-end text-danger">${getDiscountDisplay(
-                        item
+                        item,
                     )}</td>
                     <td class="text-center text-info">${taxAmount}%</td>
                     <td class="text-end fw-bold">${currency}${total.toLocaleString(
-                    "en-US",
-                    { minimumFractionDigits: 2, maximumFractionDigits: 2 }
-                )}</td>
+                        "en-US",
+                        { minimumFractionDigits: 2, maximumFractionDigits: 2 },
+                    )}</td>
 
                 </tr>`;
             })
@@ -400,10 +399,10 @@ var InvoiceComponent = (() => {
                 acc.total += total;
                 return acc;
             },
-            { discount: 0, tax: 0, total: 0 }
+            { discount: 0, tax: 0, total: 0 },
         );
 
-        const fmt = n =>
+        const fmt = (n) =>
             n.toLocaleString("en-US", { minimumFractionDigits: 2 });
         container.innerHTML = `
             <div class="bg-white rounded shadow-sm">
@@ -422,8 +421,10 @@ var InvoiceComponent = (() => {
                             </tr>
                         </thead>
                         <tbody>
-                            ${itemsHtml ||
-                                '<tr><td colspan="8" class="text-center py-4 text-muted">No items found</td></tr>'}
+                            ${
+                                itemsHtml ||
+                                '<tr><td colspan="8" class="text-center py-4 text-muted">No items found</td></tr>'
+                            }
                         </tbody>
                         <tfoot class="table-light fw-bold">
                                 <!-- Displaying Net Total -->
@@ -431,8 +432,8 @@ var InvoiceComponent = (() => {
                                 <td colspan="7" class="text-end  ">Sub Total</td>
                                 <td colspan="1" class="text-end  fs-6">
                                     ${currency}${fmt(
-            parseFloat(invoice.amount || 0)
-        )}
+                                        parseFloat(invoice.amount || 0),
+                                    )}
                                 </td>
                             </tr>
                             <tr>
@@ -440,7 +441,7 @@ var InvoiceComponent = (() => {
                                 <td colspan="1" class="text-end text-danger fs-6">
                                     ${(() => {
                                         const discVal = parseFloat(
-                                            invoice.discount_value || 0
+                                            invoice.discount_value || 0,
                                         );
                                         const discType = (
                                             invoice.discount_type || ""
@@ -462,8 +463,8 @@ var InvoiceComponent = (() => {
                                 <td colspan="7" class="text-end  text-primary">Grand (Net)</td>
                                 <td colspan="1" class="text-end text-success fs-6">
                                     ${currency}${fmt(
-            parseFloat(invoice.amount_payable || 0)
-        )}
+                                        parseFloat(invoice.amount_payable || 0),
+                                    )}
                                 </td>
                             </tr>
                         </tfoot>
@@ -485,9 +486,9 @@ var InvoiceComponent = (() => {
     mThis.getFilterData = () => {
         const params = {
             payment_status_id: mThis.elFilter_status.value,
-            search_value: mThis.elSearch.value.trim()
+            search_value: mThis.elSearch.value.trim(),
         };
-        mThis.divFilter.querySelectorAll(".filter-field").forEach(el => {
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             if (el.value && el.dataset.field) {
                 params[el.dataset.field] = el.value.trim();
             }
@@ -495,7 +496,7 @@ var InvoiceComponent = (() => {
         return params;
     };
 
-    mThis.initDropdownMenus = container => {
+    mThis.initDropdownMenus = (container) => {
         const menuOptions = {
             containerElement: container,
             actionButtonClass: "btn_leave_action",
@@ -505,26 +506,26 @@ var InvoiceComponent = (() => {
                     html: '<span class="ps-2" vslang="titles.Receive"></span>',
                     icon: `<i class="fa-solid fa-hand-holding-dollar text-success fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "receive_invoice"
+                    name: "receive_invoice",
                 },
                 {
                     html: '<span class="ps-2" vslang="titles.Modify"></span>',
                     icon: `<i class="fa-solid fa-edit text-primary fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "modify_invoice"
+                    name: "modify_invoice",
                 },
                 {
                     html: '<span class="ps-2" vslang="titles.Print"></span>',
                     icon: `<i class="fa-solid fa-receipt text-primary fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "print_invoice"
+                    name: "print_invoice",
                 },
                 {
                     html: '<span class="ps-2" vslang="titles.Delete"></span>',
                     icon: `<i class="fa-regular fa-trash-can text-danger fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "delete_invoice"
-                }
+                    name: "delete_invoice",
+                },
             ],
             onShow: (me, menuContainer) => {
                 const menu = me.getActiveMenus(menuContainer);
@@ -554,7 +555,7 @@ var InvoiceComponent = (() => {
                 } else if (name === "modify_invoice") {
                     mThis.editInvoice(id, menulink);
                 }
-            }
+            },
         };
 
         new VSDropdownMenu(menuOptions);
@@ -568,30 +569,30 @@ var InvoiceComponent = (() => {
             {
                 transTitle: "Delete Invoice",
                 confirmButtonText: "Delete",
-                context: "danger"
+                context: "danger",
             },
-            confirmed => {
+            (confirmed) => {
                 if (!confirmed) return;
 
                 vsapi
                     .call(
                         `${main_view.base_url}/prm/invoice/delete`,
                         { id },
-                        menuLink
+                        menuLink,
                     )
-                    .then(res => {
+                    .then((res) => {
                         if (res.status_code === 200) {
                             mThis.InvoiceListView.showPage(
-                                mThis.getFilterData()
+                                mThis.getFilterData(),
                             );
                             cv_interact.success("Invoice deleted successfully");
                         } else {
                             cv_interact.error(
-                                res.error_message || "Failed to delete."
+                                res.error_message || "Failed to delete.",
                             );
                         }
                     });
-            }
+            },
         );
     };
 
@@ -600,7 +601,8 @@ var InvoiceComponent = (() => {
         InvoiceDialog.show({
             id: id,
             btn: menulink,
-            onClose: () => mThis.InvoiceListView.showPage(mThis.getFilterData())
+            onClose: () =>
+                mThis.InvoiceListView.showPage(mThis.getFilterData()),
         });
     };
 
@@ -608,19 +610,20 @@ var InvoiceComponent = (() => {
         ReceiveDialog.show({
             invoice_id: id,
             btn: menulink,
-            onClose: () => mThis.InvoiceListView.showPage(mThis.getFilterData())
+            onClose: () =>
+                mThis.InvoiceListView.showPage(mThis.getFilterData()),
         });
     };
 
     mThis.printInvoice = (id, invoice_type, menulink) => {
         if (!invoice_type || invoice_type === "undefined") {
             console.warn(
-                "Type missing for ID " + id + ". Fetching from server..."
+                "Type missing for ID " + id + ". Fetching from server...",
             );
 
             vsapi
                 .call(`${main_view.base_url}/prm/invoice/details`, { id: id })
-                .then(res => {
+                .then((res) => {
                     if (res.status_code === 200) {
                         mThis.printInvoice(id, res.data.invoice_type, menulink);
                     } else {
@@ -642,10 +645,10 @@ var InvoiceComponent = (() => {
         }
     };
 
-    mThis.prepareFormOptions = onFinish => {
+    mThis.prepareFormOptions = (onFinish) => {
         vsapi
             .call(`${main_view.base_url}/prm/invoice/form-options`)
-            .then(res => {
+            .then((res) => {
                 const d = res.status_code === 200 ? res.data : {};
                 VSUtil.setComboItems(
                     mThis.elFilter_status,
@@ -654,14 +657,14 @@ var InvoiceComponent = (() => {
                     "payment_status",
                     "",
                     "All Statuses",
-                    ""
+                    "",
                 );
 
                 // Populate Invoice Type filter
                 const typeOptions = [
                     { id: 1, name: "Tax" },
                     { id: 2, name: "No Tax" },
-                    { id: 3, name: "Commercial" }
+                    { id: 3, name: "Commercial" },
                 ];
                 VSUtil.setComboItems(
                     mThis.elFilter_invoice_type,
@@ -670,7 +673,7 @@ var InvoiceComponent = (() => {
                     "name",
                     "",
                     "All Types",
-                    ""
+                    "",
                 );
 
                 if (typeof onFinish === "function") onFinish();
@@ -695,9 +698,8 @@ const InvoiceDialog = (() => {
     let dialog = null;
     let availableItem = [];
     let InvoiceSetting = null;
-    
 
-    self.show = op => {
+    self.show = (op) => {
         dialog = new GeneralDialog({
             cssClass: "modal-xl vs-modal",
             backdrop: "static",
@@ -870,26 +872,24 @@ const InvoiceDialog = (() => {
 
                     `,
 
-            contentCreated: me => {
+            contentCreated: (me) => {
                 me.controls = me.controls || {};
                 const btn_close = me.divModal.querySelector(".close");
                 if (btn_close) btn_close.classList.add("d-none");
                 const allInputs = me.divModal.querySelectorAll(
-                    ".data-input, input, select, textarea"
+                    ".data-input, input, select, textarea",
                 );
-                allInputs.forEach(el => {
+                allInputs.forEach((el) => {
                     const key = el.dataset.field || el.name;
                     if (key) me.controls[key] = el;
                 });
                 me.controls.divItemsView = me.divModal.querySelector(
-                    '[name="divItemsView"]'
+                    '[name="divItemsView"]',
                 );
 
                 me.controls.div_invoice_summary = me.divModal.querySelector(
-                    '[name="div_invoice_summary"]'
+                    '[name="div_invoice_summary"]',
                 );
-
-
 
                 me.controls.btnRent.onclick = () => {
                     if (!me._selectedTenantId) {
@@ -918,21 +918,22 @@ const InvoiceDialog = (() => {
 
                     const matchedSpace =
                         spaces.find(
-                            s => String(s.space_id) === String(selectedSpaceId)
+                            (s) =>
+                                String(s.space_id) === String(selectedSpaceId),
                         ) || spaces[0];
 
                     if (!matchedSpace) {
                         return cv_interact.error("No space/contract found.");
                     }
                     const availableMonths = months.filter(
-                        m =>
+                        (m) =>
                             String(m.contract_id) ===
-                            String(matchedSpace.contract_id)
+                            String(matchedSpace.contract_id),
                     );
 
                     if (!availableMonths || availableMonths.length === 0) {
                         return cv_interact.error(
-                            "Rent has already reached the final month of the contract."
+                            "Rent has already reached the final month of the contract.",
                         );
                     }
 
@@ -1033,22 +1034,22 @@ const InvoiceDialog = (() => {
 
                         onOpen(ibMe) {
                             const elContract = rentDiv.querySelector(
-                                '[data-field="contract_id"]'
+                                '[data-field="contract_id"]',
                             );
                             const elMonthly = rentDiv.querySelector(
-                                '[data-field="monthly"]'
+                                '[data-field="monthly"]',
                             );
                             const elPrice = rentDiv.querySelector(
-                                '[data-field="price"]'
+                                '[data-field="price"]',
                             );
                             const elStartDate = rentDiv.querySelector(
-                                '[data-field="start_date"]'
+                                '[data-field="start_date"]',
                             );
                             const elEndDate = rentDiv.querySelector(
-                                '[data-field="end_date"]'
+                                '[data-field="end_date"]',
                             );
                             const elDiscountType = rentDiv.querySelector(
-                                '[data-field="discount_type"]'
+                                '[data-field="discount_type"]',
                             );
 
                             if (!elContract || !elMonthly || !elPrice) return;
@@ -1056,19 +1057,19 @@ const InvoiceDialog = (() => {
                             elContract.value =
                                 matchedSpace.space_code || "(No code)";
                             elContract.dataset.contractId = String(
-                                matchedSpace.contract_id
+                                matchedSpace.contract_id,
                             );
 
                             const effectivePrice = Number(
-                                matchedSpace.effective_price || 0
+                                matchedSpace.effective_price || 0,
                             );
                             elPrice.value = effectivePrice.toFixed(2);
 
                             const matchedMonth =
                                 months.find(
-                                    m =>
+                                    (m) =>
                                         String(m.contract_id) ===
-                                        String(matchedSpace.contract_id)
+                                        String(matchedSpace.contract_id),
                                 ) || {};
 
                             elMonthly.value = matchedMonth.month || "";
@@ -1086,16 +1087,18 @@ const InvoiceDialog = (() => {
 
                             const numericInputs = [
                                 rentDiv.querySelector(
-                                    '[data-field="discount"]'
+                                    '[data-field="discount"]',
                                 ),
-                                rentDiv.querySelector('[data-field="tax_rate"]')
-                            ].filter(input => input !== null);
+                                rentDiv.querySelector(
+                                    '[data-field="tax_rate"]',
+                                ),
+                            ].filter((input) => input !== null);
 
-                            numericInputs.forEach(input => {
-                                input.addEventListener("input", e => {
+                            numericInputs.forEach((input) => {
+                                input.addEventListener("input", (e) => {
                                     let v = e.target.value.replace(
                                         /[^0-9.]/g,
-                                        ""
+                                        "",
                                     );
                                     const parts = v.split(".");
                                     if (parts.length > 2) {
@@ -1110,7 +1113,7 @@ const InvoiceDialog = (() => {
                                     e.target.value = v;
                                 });
 
-                                input.addEventListener("blur", e => {
+                                input.addEventListener("blur", (e) => {
                                     let v = parseFloat(e.target.value);
                                     if (isNaN(v) || v < 0) {
                                         e.target.value = "";
@@ -1124,7 +1127,7 @@ const InvoiceDialog = (() => {
                         onConfirm(data, btn, ibMe) {
                             // 1. Check if Tax field exists in the DOM layout tree (Invoice Type !== 2)
                             const elTaxRate = document.querySelector(
-                                '[data-field="tax_rate"]'
+                                '[data-field="tax_rate"]',
                             );
 
                             if (elTaxRate) {
@@ -1135,20 +1138,20 @@ const InvoiceDialog = (() => {
                                     String(data.tax_rate).trim() === ""
                                 ) {
                                     return ibMe.setError(
-                                        "Tax % is required for this invoice type."
+                                        "Tax % is required for this invoice type.",
                                     );
                                 }
 
                                 const taxValue = Number(data.tax_rate);
                                 if (isNaN(taxValue) || taxValue < 0) {
                                     return ibMe.setError(
-                                        "Please enter a valid Tax % value."
+                                        "Please enter a valid Tax % value.",
                                     );
                                 }
                             }
 
                             const elContract = document.querySelector(
-                                '[data-field="contract_id"]'
+                                '[data-field="contract_id"]',
                             );
                             const realContractId =
                                 elContract?.dataset.contractId ||
@@ -1156,13 +1159,13 @@ const InvoiceDialog = (() => {
 
                             if (!realContractId) {
                                 return ibMe.setError(
-                                    "Unit Code / Room is missing."
+                                    "Unit Code / Room is missing.",
                                 );
                             }
 
                             const roomCode = matchedSpace.space_code || "—";
                             const finalPrice = Number(
-                                data.price || matchedSpace.effective_price || 0
+                                data.price || matchedSpace.effective_price || 0,
                             );
 
                             const dataToAdd = {
@@ -1170,8 +1173,9 @@ const InvoiceDialog = (() => {
                                 type: "rent",
                                 price: finalPrice,
                                 qty: 1,
-                                remarks: `Rent - ${roomCode} (${data.monthly ||
-                                    "N/A"})`,
+                                remarks: `Rent - ${roomCode} (${
+                                    data.monthly || "N/A"
+                                })`,
                                 contract_id: realContractId,
                                 start_date: data.start_date || "",
                                 end_date: data.end_date || "",
@@ -1179,36 +1183,37 @@ const InvoiceDialog = (() => {
                                 discount: Number(data.discount) || 0,
                                 discount_type: data.discount_type || "percent",
                                 tax_rate: Number(data.tax_rate) || 0,
-                                unit_type: `monthly`
+                                unit_type: `monthly`,
                             };
 
                             const existingIds = me.itemsView.rows
                                 .map(
-                                    row =>
-                                        row.meta?.item_id || row.data?.item_id
+                                    (row) =>
+                                        row.meta?.item_id || row.data?.item_id,
                                 )
                                 .filter(
-                                    id =>
+                                    (id) =>
                                         id !== undefined &&
                                         id !== "" &&
-                                        id !== null
+                                        id !== null,
                                 );
 
                             const isDuplicate = existingIds.some(
-                                id => String(id) === String(dataToAdd.item_id)
+                                (id) =>
+                                    String(id) === String(dataToAdd.item_id),
                             );
                             if (isDuplicate) {
                                 return ibMe.setError(
-                                    `Rent is already in the list.`
+                                    `Rent is already in the list.`,
                                 );
                             }
 
                             me.itemsView.addRow(dataToAdd, 0);
                             cv_interact.success(
-                                `Rent for ${roomCode} added successfully.`
+                                `Rent for ${roomCode} added successfully.`,
                             );
                             ibMe.close();
-                        }
+                        },
                     });
                 };
 
@@ -1225,20 +1230,20 @@ const InvoiceDialog = (() => {
 
                     // Fetch InvoiceSetting first, then open popup
                     const openElectricPopup = () => {
-                    let electricDiv = null;
-                    InputBox.resetInstance("electricPopUp");
-                    InputBox.show({
-                        title: "Electricity Utility",
-                        instanceKey: "electricPopUp",
-                        confirmButtonText: "Save",
+                        let electricDiv = null;
+                        InputBox.resetInstance("electricPopUp");
+                        InputBox.show({
+                            title: "Electricity Utility",
+                            instanceKey: "electricPopUp",
+                            confirmButtonText: "Save",
 
-                        createContent() {
-                            const div = document.createElement("div");
-                            electricDiv = div;
-                            div.style.cssText =
-                                "display:flex; flex-direction:column;";
+                            createContent() {
+                                const div = document.createElement("div");
+                                electricDiv = div;
+                                div.style.cssText =
+                                    "display:flex; flex-direction:column;";
 
-                            div.innerHTML = `
+                                div.innerHTML = `
                                 <!-- Tabs Container -->
                                 <div class="d-flex mb-3" style="border-bottom:1px solid #eee; gap:16px;">
                                     <div id="btn_tab_reading" style="cursor:pointer; padding:8px 12px; border-bottom:2px solid #0C447C; color:#0C447C; font-weight:600;">By Reading</div>
@@ -1331,360 +1336,402 @@ const InvoiceDialog = (() => {
                                 </div>
                                 <input class="data-input" type="text" data-field="entry_mode" value="reading" style="display:none;">
                             `;
-                            return div;
-                        },
+                                return div;
+                            },
 
-                        onOpen(ibMe) {
-                            // Target elements using structural selectors
-                            const elOld = electricDiv.querySelector(
-                                '[data-field="old_electric"]'
-                            );
-                            const elNew = electricDiv.querySelector(
-                                '[data-field="new_electric"]'
-                            );
-                            const elUnits = electricDiv.querySelector(
-                                '[data-field="units_used"]'
-                            );
-                            const elUnitsReadonly = electricDiv.querySelector(
-                                "#units_used_readonly"
-                            );
+                            onOpen(ibMe) {
+                                // Target elements using structural selectors
+                                const elOld = electricDiv.querySelector(
+                                    '[data-field="old_electric"]',
+                                );
+                                const elNew = electricDiv.querySelector(
+                                    '[data-field="new_electric"]',
+                                );
+                                const elUnits = electricDiv.querySelector(
+                                    '[data-field="units_used"]',
+                                );
+                                const elUnitsReadonly =
+                                    electricDiv.querySelector(
+                                        "#units_used_readonly",
+                                    );
 
-                            const elExchangeRate = electricDiv.querySelector(
-                                '[data-field="exchange_rate"]'
-                            );
-                            const elPriceKHR = electricDiv.querySelector(
-                                '[data-field="price_khr"]'
-                            );
-                            const elPriceUSD = electricDiv.querySelector(
-                                '[data-field="price_usd"]'
-                            );
+                                const elExchangeRate =
+                                    electricDiv.querySelector(
+                                        '[data-field="exchange_rate"]',
+                                    );
+                                const elPriceKHR = electricDiv.querySelector(
+                                    '[data-field="price_khr"]',
+                                );
+                                const elPriceUSD = electricDiv.querySelector(
+                                    '[data-field="price_usd"]',
+                                );
 
-                            const elStartDate = electricDiv.querySelector(
-                                '[data-field="start_date"]'
-                            );
-                            const elEndDate = electricDiv.querySelector(
-                                '[data-field="end_date"]'
-                            );
-                            const elTotal = electricDiv.querySelector(
-                                '[data-field="total_amount"]'
-                            );
-                            const elRemark = electricDiv.querySelector(
-                                '[data-field="remark"]'
-                            );
-                            const elMode = electricDiv.querySelector(
-                                '[data-field="entry_mode"]'
-                            );
+                                const elStartDate = electricDiv.querySelector(
+                                    '[data-field="start_date"]',
+                                );
+                                const elEndDate = electricDiv.querySelector(
+                                    '[data-field="end_date"]',
+                                );
+                                const elTotal = electricDiv.querySelector(
+                                    '[data-field="total_amount"]',
+                                );
+                                const elRemark = electricDiv.querySelector(
+                                    '[data-field="remark"]',
+                                );
+                                const elMode = electricDiv.querySelector(
+                                    '[data-field="entry_mode"]',
+                                );
 
-                            // Structural layout layout control nodes
-                            const btnTabReading = electricDiv.querySelector(
-                                "#btn_tab_reading"
-                            );
-                            const btnTabManual = electricDiv.querySelector(
-                                "#btn_tab_manual"
-                            );
-                            const txtConsumptionHeader = electricDiv.querySelector(
-                                "#consumption_header"
-                            );
-                            const rowReadingFields = electricDiv.querySelector(
-                                "#row_reading_fields"
-                            );
-                            const rowManualFields = electricDiv.querySelector(
-                                "#row_manual_fields"
-                            );
-                            const wrapperUnitsReadonly = electricDiv.querySelector(
-                                "#wrapper_units_readonly"
-                            );
+                                // Structural layout layout control nodes
+                                const btnTabReading =
+                                    electricDiv.querySelector(
+                                        "#btn_tab_reading",
+                                    );
+                                const btnTabManual =
+                                    electricDiv.querySelector(
+                                        "#btn_tab_manual",
+                                    );
+                                const txtConsumptionHeader =
+                                    electricDiv.querySelector(
+                                        "#consumption_header",
+                                    );
+                                const rowReadingFields =
+                                    electricDiv.querySelector(
+                                        "#row_reading_fields",
+                                    );
+                                const rowManualFields =
+                                    electricDiv.querySelector(
+                                        "#row_manual_fields",
+                                    );
+                                const wrapperUnitsReadonly =
+                                    electricDiv.querySelector(
+                                        "#wrapper_units_readonly",
+                                    );
 
-                    
-                             elExchangeRate.value = InvoiceSetting ? (InvoiceSetting.exchange_rate ?? "") : "";
+                                elExchangeRate.value = InvoiceSetting
+                                    ? (InvoiceSetting.exchange_rate ?? "")
+                                    : "";
 
-
-                             console.log("InvoiceSetting.exchange_rate", InvoiceSetting ? InvoiceSetting.exchange_rate : null);
+                                console.log(
+                                    "InvoiceSetting.exchange_rate",
+                                    InvoiceSetting
+                                        ? InvoiceSetting.exchange_rate
+                                        : null,
+                                );
 
                                 // Currency conversion handlers
-                            elPriceKHR.addEventListener("input", e => {
-                                const rate =
-                                    parseFloat(elExchangeRate.value) || 4000;
-                                const khrVal = parseFloat(e.target.value) || 0;
-                                elPriceUSD.value =
-                                    khrVal > 0
-                                        ? (khrVal / rate).toFixed(2)
-                                        : "";
-                                recalc();
-                            });
-
-                            elPriceUSD.addEventListener("input", e => {
-                                const rate =
-                                    parseFloat(elExchangeRate.value) || 4000;
-                                const usdVal = parseFloat(e.target.value) || 0;
-                                elPriceKHR.value =
-                                    usdVal > 0 ? Math.round(usdVal * rate) : "";
-                                recalc();
-                            });
-
-                            elExchangeRate.addEventListener("input", () => {
-                                const rate =
-                                    parseFloat(elExchangeRate.value) || 4000;
-                                const usdVal =
-                                    parseFloat(elPriceUSD.value) || 0;
-                                if (usdVal > 0) {
-                                    elPriceKHR.value = Math.round(
-                                        usdVal * rate
-                                    );
-                                } else {
+                                elPriceKHR.addEventListener("input", (e) => {
+                                    const rate =
+                                        parseFloat(elExchangeRate.value) ||
+                                        4000;
                                     const khrVal =
-                                        parseFloat(elPriceKHR.value) || 0;
-                                    if (khrVal > 0)
-                                        elPriceUSD.value = (
-                                            khrVal / rate
-                                        ).toFixed(2);
-                                }
-                                recalc();
-                            });
-
-                            // UI Tab switcher
-
-                            // New structural nodes for 3-in-1 row switching
-                            const rowCalculationFields = electricDiv.querySelector(
-                                "#row_calculation_fields"
-                            );
-
-                            // UI Tab switcher
-                            const switchTab = mode => {
-                                elMode.value = mode;
-                                if (mode === "reading") {
-                                    // Form structure configuration
-                                    rowReadingFields.style.display = "grid";
-                                    rowManualFields.style.display = "none";
-                                    txtConsumptionHeader.textContent =
-                                        "Readings";
-
-                                    // Calculation Row: Standard 2x2 layout look
-                                    rowCalculationFields.style.gridTemplateColumns =
-                                        "1fr 1fr";
-                                    wrapperUnitsReadonly.style.display =
-                                        "block";
-
-                                    // Tab Styles
-                                    btnTabReading.style.cssText =
-                                        "cursor:pointer; padding:8px 12px; border-bottom:2px solid #0C447C; color:#0C447C; font-weight:600;";
-                                    btnTabManual.style.cssText =
-                                        "cursor:pointer; padding:8px 12px; color:#777; font-weight:400; border-bottom:none;";
-                                } else {
-                                    // Form structure configuration
-                                    rowReadingFields.style.display = "none";
-                                    rowManualFields.style.display = "block";
-                                    txtConsumptionHeader.textContent =
-                                        "Manual Entry";
-
-                                    // Calculation Row: Shrinks into 1 clean row with 3 columns
-                                    rowCalculationFields.style.gridTemplateColumns =
-                                        "1fr 1fr 1fr";
-                                    wrapperUnitsReadonly.style.display = "none";
-
-                                    // Tab Styles
-                                    btnTabManual.style.cssText =
-                                        "cursor:pointer; padding:8px 12px; border-bottom:2px solid #0C447C; color:#0C447C; font-weight:600;";
-                                    btnTabReading.style.cssText =
-                                        "cursor:pointer; padding:8px 12px; color:#777; font-weight:400; border-bottom:none;";
-                                }
-                                recalc();
-                            };
-
-                            btnTabReading.onclick = () => switchTab("reading");
-                            btnTabManual.onclick = () => switchTab("manual");
-
-                            // Centralized recalculation logic
-                            const recalc = () => {
-                                const mode = elMode.value;
-                                let units = 0;
-
-                                if (mode === "reading") {
-                                    const oldVal = parseFloat(elOld.value) || 0;
-                                    const newVal = parseFloat(elNew.value) || 0;
-                                    units = newVal - oldVal;
-
-                                    if (units < 0) {
-                                        elUnitsReadonly.value = "0.00";
-                                        elUnitsReadonly.style.color = "red";
-                                    } else {
-                                        elUnitsReadonly.value = units.toFixed(
-                                            2
-                                        );
-                                        elUnitsReadonly.style.color = "#212529";
-                                    }
-                                } else {
-                                    units = parseFloat(elUnits.value) || 0;
-                                }
-
-                                const ppu = parseFloat(elPriceUSD.value) || 0;
-                                const total = Math.max(0, units) * ppu;
-
-                                if (elTotal) elTotal.value = total.toFixed(2);
-
-                                if (elRemark) {
-                                    const start = elStartDate.value || "";
-                                    const end = elEndDate.value || "";
-                                    const period =
-                                        start && end
-                                            ? ` (${start} - ${end})`
+                                        parseFloat(e.target.value) || 0;
+                                    elPriceUSD.value =
+                                        khrVal > 0
+                                            ? (khrVal / rate).toFixed(2)
                                             : "";
-                                    const calcStr =
-                                        units > 0 && ppu > 0
-                                            ? ` — ${units.toFixed(
-                                                  2
-                                              )} kWh × $${ppu.toFixed(2)}`
-                                            : mode === "reading"
-                                            ? " — Reading Setup"
-                                            : " — Manual Entry";
-
-                                    elRemark.value = `Electric${period}${calcStr}`;
-                                }
-                            };
-
-                            // Input format validation helpers and recalculation binding
-                            [
-                                elOld,
-                                elNew,
-                                elUnits,
-                                elPriceUSD,
-                                elExchangeRate,
-                                elStartDate,
-                                elEndDate
-                            ].forEach(el => {
-                                if (!el) return;
-                                el.addEventListener("input", recalc);
-                                if (el.dataset.type === "date") {
-                                    el.addEventListener("change", recalc);
-                                }
-
-                                // Block non-numeric characters while tying
-                                el.addEventListener("input", e => {
-                                    if (el.dataset.type === "date") return;
-                                    let v = e.target.value.replace(
-                                        /[^0-9.]/g,
-                                        ""
-                                    );
-                                    const parts = v.split(".");
-                                    if (parts.length > 2)
-                                        v = parts[0] + "." + parts[1];
-                                    if (parts[1] !== undefined)
-                                        v =
-                                            parts[0] +
-                                            "." +
-                                            parts[1].slice(0, 2);
-                                    e.target.value = v;
+                                    recalc();
                                 });
 
-                                // Enforce proper floats on losing input focus
-                                el.addEventListener("blur", e => {
-                                    if (el.dataset.type === "date") return;
-                                    let v = parseFloat(e.target.value);
-                                    if (isNaN(v) || v < 0) {
-                                        e.target.value = "";
-                                        return;
+                                elPriceUSD.addEventListener("input", (e) => {
+                                    const rate =
+                                        parseFloat(elExchangeRate.value) ||
+                                        4000;
+                                    const usdVal =
+                                        parseFloat(e.target.value) || 0;
+                                    elPriceKHR.value =
+                                        usdVal > 0
+                                            ? Math.round(usdVal * rate)
+                                            : "";
+                                    recalc();
+                                });
+
+                                elExchangeRate.addEventListener("input", () => {
+                                    const rate =
+                                        parseFloat(elExchangeRate.value) ||
+                                        4000;
+                                    const usdVal =
+                                        parseFloat(elPriceUSD.value) || 0;
+                                    if (usdVal > 0) {
+                                        elPriceKHR.value = Math.round(
+                                            usdVal * rate,
+                                        );
+                                    } else {
+                                        const khrVal =
+                                            parseFloat(elPriceKHR.value) || 0;
+                                        if (khrVal > 0)
+                                            elPriceUSD.value = (
+                                                khrVal / rate
+                                            ).toFixed(2);
                                     }
-                                    e.target.value = v.toFixed(2);
+                                    recalc();
                                 });
-                            });
-                        },
 
-                        onConfirm(data, btn, ibMe) {
-                            const mode = data.entry_mode || "reading";
-                            const ppu = parseFloat(data.price_usd) || 0;
-                            let units = 0;
-                            let remarks = "";
+                                // UI Tab switcher
 
-                            // Validation rules per view mode
-                            if (mode === "reading") {
-                                const oldReading =
-                                    parseFloat(data.old_electric) || 0;
-                                const newReading =
-                                    parseFloat(data.new_electric) || 0;
-                                units = newReading - oldReading;
-
-                                if (newReading <= 0)
-                                    return ibMe.setError(
-                                        "New reading is required."
+                                // New structural nodes for 3-in-1 row switching
+                                const rowCalculationFields =
+                                    electricDiv.querySelector(
+                                        "#row_calculation_fields",
                                     );
-                                if (newReading <= oldReading)
+
+                                // UI Tab switcher
+                                const switchTab = (mode) => {
+                                    elMode.value = mode;
+                                    if (mode === "reading") {
+                                        // Form structure configuration
+                                        rowReadingFields.style.display = "grid";
+                                        rowManualFields.style.display = "none";
+                                        txtConsumptionHeader.textContent =
+                                            "Readings";
+
+                                        // Calculation Row: Standard 2x2 layout look
+                                        rowCalculationFields.style.gridTemplateColumns =
+                                            "1fr 1fr";
+                                        wrapperUnitsReadonly.style.display =
+                                            "block";
+
+                                        // Tab Styles
+                                        btnTabReading.style.cssText =
+                                            "cursor:pointer; padding:8px 12px; border-bottom:2px solid #0C447C; color:#0C447C; font-weight:600;";
+                                        btnTabManual.style.cssText =
+                                            "cursor:pointer; padding:8px 12px; color:#777; font-weight:400; border-bottom:none;";
+                                    } else {
+                                        // Form structure configuration
+                                        rowReadingFields.style.display = "none";
+                                        rowManualFields.style.display = "block";
+                                        txtConsumptionHeader.textContent =
+                                            "Manual Entry";
+
+                                        // Calculation Row: Shrinks into 1 clean row with 3 columns
+                                        rowCalculationFields.style.gridTemplateColumns =
+                                            "1fr 1fr 1fr";
+                                        wrapperUnitsReadonly.style.display =
+                                            "none";
+
+                                        // Tab Styles
+                                        btnTabManual.style.cssText =
+                                            "cursor:pointer; padding:8px 12px; border-bottom:2px solid #0C447C; color:#0C447C; font-weight:600;";
+                                        btnTabReading.style.cssText =
+                                            "cursor:pointer; padding:8px 12px; color:#777; font-weight:400; border-bottom:none;";
+                                    }
+                                    recalc();
+                                };
+
+                                btnTabReading.onclick = () =>
+                                    switchTab("reading");
+                                btnTabManual.onclick = () =>
+                                    switchTab("manual");
+
+                                // Centralized recalculation logic
+                                const recalc = () => {
+                                    const mode = elMode.value;
+                                    let units = 0;
+
+                                    if (mode === "reading") {
+                                        const oldVal =
+                                            parseFloat(elOld.value) || 0;
+                                        const newVal =
+                                            parseFloat(elNew.value) || 0;
+                                        units = newVal - oldVal;
+
+                                        if (units < 0) {
+                                            elUnitsReadonly.value = "0.00";
+                                            elUnitsReadonly.style.color = "red";
+                                        } else {
+                                            elUnitsReadonly.value =
+                                                units.toFixed(2);
+                                            elUnitsReadonly.style.color =
+                                                "#212529";
+                                        }
+                                    } else {
+                                        units = parseFloat(elUnits.value) || 0;
+                                    }
+
+                                    const ppu =
+                                        parseFloat(elPriceUSD.value) || 0;
+                                    const total = Math.max(0, units) * ppu;
+
+                                    if (elTotal)
+                                        elTotal.value = total.toFixed(2);
+
+                                    if (elRemark) {
+                                        const start = elStartDate.value || "";
+                                        const end = elEndDate.value || "";
+                                        const period =
+                                            start && end
+                                                ? ` (${start} - ${end})`
+                                                : "";
+                                        const calcStr =
+                                            units > 0 && ppu > 0
+                                                ? ` — ${units.toFixed(
+                                                      2,
+                                                  )} kWh × $${ppu.toFixed(2)}`
+                                                : mode === "reading"
+                                                  ? " — Reading Setup"
+                                                  : " — Manual Entry";
+
+                                        elRemark.value = `Electric${period}${calcStr}`;
+                                    }
+                                };
+
+                                // Input format validation helpers and recalculation binding
+                                [
+                                    elOld,
+                                    elNew,
+                                    elUnits,
+                                    elPriceUSD,
+                                    elExchangeRate,
+                                    elStartDate,
+                                    elEndDate,
+                                ].forEach((el) => {
+                                    if (!el) return;
+                                    el.addEventListener("input", recalc);
+                                    if (el.dataset.type === "date") {
+                                        el.addEventListener("change", recalc);
+                                    }
+
+                                    // Block non-numeric characters while tying
+                                    el.addEventListener("input", (e) => {
+                                        if (el.dataset.type === "date") return;
+                                        let v = e.target.value.replace(
+                                            /[^0-9.]/g,
+                                            "",
+                                        );
+                                        const parts = v.split(".");
+                                        if (parts.length > 2)
+                                            v = parts[0] + "." + parts[1];
+                                        if (parts[1] !== undefined)
+                                            v =
+                                                parts[0] +
+                                                "." +
+                                                parts[1].slice(0, 2);
+                                        e.target.value = v;
+                                    });
+
+                                    // Enforce proper floats on losing input focus
+                                    el.addEventListener("blur", (e) => {
+                                        if (el.dataset.type === "date") return;
+                                        let v = parseFloat(e.target.value);
+                                        if (isNaN(v) || v < 0) {
+                                            e.target.value = "";
+                                            return;
+                                        }
+                                        e.target.value = v.toFixed(2);
+                                    });
+                                });
+                            },
+
+                            onConfirm(data, btn, ibMe) {
+                                const mode = data.entry_mode || "reading";
+                                const ppu = parseFloat(data.price_usd) || 0;
+                                let units = 0;
+                                let remarks = "";
+
+                                // Validation rules per view mode
+                                if (mode === "reading") {
+                                    const oldReading =
+                                        parseFloat(data.old_electric) || 0;
+                                    const newReading =
+                                        parseFloat(data.new_electric) || 0;
+                                    units = newReading - oldReading;
+
+                                    if (newReading <= 0)
+                                        return ibMe.setError(
+                                            "New reading is required.",
+                                        );
+                                    if (newReading <= oldReading)
+                                        return ibMe.setError(
+                                            "New reading must be greater than old reading.",
+                                        );
+                                    remarks = `Electricity ${oldReading}kWh - ${newReading}kWh`;
+                                } else {
+                                    units = parseFloat(data.units_used) || 0;
+                                    if (units <= 0)
+                                        return ibMe.setError(
+                                            "Units Used field is required and must be greater than 0.",
+                                        );
+                                    remarks = `Electric Utility - ${
+                                        data.start_date || ""
+                                    } to ${data.end_date || ""}`;
+                                }
+
+                                if (ppu <= 0)
                                     return ibMe.setError(
-                                        "New reading must be greater than old reading."
+                                        "Price per kWh (USD) is required.",
                                     );
-                                remarks = `Electricity ${oldReading}kWh - ${newReading}kWh`;
-                            } else {
-                                units = parseFloat(data.units_used) || 0;
-                                if (units <= 0)
+                                if (!data.start_date || !data.end_date)
                                     return ibMe.setError(
-                                        "Units Used field is required and must be greater than 0."
+                                        "Start and End dates are required.",
                                     );
-                                remarks = `Electric Utility - ${data.start_date ||
-                                    ""} to ${data.end_date || ""}`;
-                            }
+                                if (
+                                    new Date(data.end_date) <
+                                    new Date(data.start_date)
+                                ) {
+                                    return ibMe.setError(
+                                        "End date cannot be before Start date.",
+                                    );
+                                }
 
-                            if (ppu <= 0)
-                                return ibMe.setError(
-                                    "Price per kWh (USD) is required."
+                                // Push payload to items view structure
+                                me.itemsView.addRow(
+                                    {
+                                        item_id: null,
+                                        type: "utility",
+                                        price: ppu,
+                                        qty: units,
+                                        // remarks: remarks,
+                                        remarks:
+                                            mode === "reading"
+                                                ? `Electricity ${
+                                                      data.old_electric || 0
+                                                  }KWh - ${
+                                                      data.new_electric || 0
+                                                  }KWh`
+                                                : `Electricity ${units}KWh`,
+                                        unit_type: "KWh",
+                                        old_reading:
+                                            mode === "reading"
+                                                ? parseFloat(
+                                                      data.old_electric,
+                                                  ) || 0
+                                                : 0,
+                                        new_reading:
+                                            mode === "reading"
+                                                ? parseFloat(
+                                                      data.new_electric,
+                                                  ) || 0
+                                                : 0,
+                                        units_used: units,
+                                        price_per_unit: ppu,
+                                        start_date: data.start_date,
+                                        end_date: data.end_date,
+                                        discount: 0,
+                                        discount_type: "percent",
+                                    },
+                                    0,
                                 );
-                            if (!data.start_date || !data.end_date)
-                                return ibMe.setError(
-                                    "Start and End dates are required."
-                                );
-                            if (
-                                new Date(data.end_date) <
-                                new Date(data.start_date)
-                            ) {
-                                return ibMe.setError(
-                                    "End date cannot be before Start date."
-                                );
-                            }
 
-                            // Push payload to items view structure
-                            me.itemsView.addRow(
-                                {
-                                    item_id: null,
-                                    type: "utility",
-                                    price: ppu,
-                                    qty: units,
-                                    // remarks: remarks,
-                                    remarks:
-                                        mode === "reading"
-                                            ? `Electricity ${data.old_electric ||
-                                                  0}KWh - ${data.new_electric ||
-                                                  0}KWh`
-                                            : `Electricity ${units}KWh`,
-                                    unit_type: "KWh",
-                                    old_reading:
-                                        mode === "reading"
-                                            ? parseFloat(data.old_electric) || 0
-                                            : 0,
-                                    new_reading:
-                                        mode === "reading"
-                                            ? parseFloat(data.new_electric) || 0
-                                            : 0,
-                                    units_used: units,
-                                    price_per_unit: ppu,
-                                    start_date: data.start_date,
-                                    end_date: data.end_date,
-                                    discount: 0,
-                                    discount_type: "percent"
-                                },
-                                0
-                            );
-
-                            cv_interact.success("Electric item added.");
-                            ibMe.close();
-                        }
-                    });
+                                cv_interact.success("Electric item added.");
+                                ibMe.close();
+                            },
+                        });
                     }; // end openElectricPopup
 
                     if (InvoiceSetting) {
                         openElectricPopup();
                     } else {
                         vsapi
-                            .call(`${main_view.base_url}/prm/invoice_setting/get`, {})
-                            .then(res => {
-                                if (res.status_code === 200 && res.data && res.data.length > 0) {
+                            .call(
+                                `${main_view.base_url}/prm/invoice_setting/get`,
+                                {},
+                            )
+                            .then((res) => {
+                                if (
+                                    res.status_code === 200 &&
+                                    res.data &&
+                                    res.data.length > 0
+                                ) {
                                     InvoiceSetting = res.data[0];
                                 } else {
                                     InvoiceSetting = {};
@@ -1717,10 +1764,10 @@ const InvoiceDialog = (() => {
 
                     const serviceOptions = services
                         .map(
-                            s =>
-                                `<option value="${s.id}">${s.service ||
-                                    s.name ||
-                                    `Service #${s.id}`}</option>`
+                            (s) =>
+                                `<option value="${s.id}">${
+                                    s.service || s.name || `Service #${s.id}`
+                                }</option>`,
                         )
                         .join("");
 
@@ -1823,41 +1870,40 @@ const InvoiceDialog = (() => {
                         },
                         onOpen(ibMe) {
                             const elBillingCont = serviceDiv.querySelector(
-                                "#billing_period_container"
+                                "#billing_period_container",
                             );
-                            const elPriceWrapper = serviceDiv.querySelector(
-                                "#price_wrapper"
-                            );
+                            const elPriceWrapper =
+                                serviceDiv.querySelector("#price_wrapper");
 
                             const elService = serviceDiv.querySelector(
-                                '[data-field="service_id"]'
+                                '[data-field="service_id"]',
                             );
                             const elUnitType = serviceDiv.querySelector(
-                                '[data-field="charge_as"]'
+                                '[data-field="charge_as"]',
                             );
                             const elPrice = serviceDiv.querySelector(
-                                '[data-field="price"]'
+                                '[data-field="price"]',
                             );
                             const elDuration = serviceDiv.querySelector(
-                                '[data-field="duration_months"]'
+                                '[data-field="duration_months"]',
                             );
                             const elDurationCont = serviceDiv.querySelector(
-                                "#duration_container"
+                                "#duration_container",
                             );
                             const elStartDate = serviceDiv.querySelector(
-                                '[data-field="start_date"]'
+                                '[data-field="start_date"]',
                             );
                             const elEndDate = serviceDiv.querySelector(
-                                '[data-field="end_date"]'
+                                '[data-field="end_date"]',
                             );
                             const elDiscount = serviceDiv.querySelector(
-                                '[data-field="discount"]'
+                                '[data-field="discount"]',
                             );
                             const elDiscountType = serviceDiv.querySelector(
-                                '[data-field="discount_type"]'
+                                '[data-field="discount_type"]',
                             );
                             const elTotalAmount = serviceDiv.querySelector(
-                                '[data-field="total_amount"]'
+                                '[data-field="total_amount"]',
                             );
 
                             // --- Calculation Engine ---
@@ -1891,9 +1937,9 @@ const InvoiceDialog = (() => {
                                 }
                             };
 
-                            const fillFields = serviceId => {
+                            const fillFields = (serviceId) => {
                                 const selected = services.find(
-                                    s => String(s.id) === String(serviceId)
+                                    (s) => String(s.id) === String(serviceId),
                                 );
                                 if (selected) {
                                     const unit = (
@@ -1905,7 +1951,7 @@ const InvoiceDialog = (() => {
                                             selected.charge_as || "—";
                                     if (elPrice)
                                         elPrice.value = Number(
-                                            selected.price || 0
+                                            selected.price || 0,
                                         ).toFixed(2);
 
                                     if (unit === "month") {
@@ -1940,7 +1986,7 @@ const InvoiceDialog = (() => {
                                     end.setMonth(end.getMonth() + months);
                                     end.setDate(end.getDate() - 1);
 
-                                    const formatDate = date => {
+                                    const formatDate = (date) => {
                                         const monthsArr = [
                                             "Jan",
                                             "Feb",
@@ -1953,10 +1999,10 @@ const InvoiceDialog = (() => {
                                             "Sep",
                                             "Oct",
                                             "Nov",
-                                            "Dec"
+                                            "Dec",
                                         ];
                                         const day = String(
-                                            date.getDate()
+                                            date.getDate(),
                                         ).padStart(2, "0");
                                         const month =
                                             monthsArr[date.getMonth()];
@@ -1973,13 +2019,13 @@ const InvoiceDialog = (() => {
 
                             if (elService) {
                                 fillFields(elService.value);
-                                elService.addEventListener("change", e =>
-                                    fillFields(e.target.value)
+                                elService.addEventListener("change", (e) =>
+                                    fillFields(e.target.value),
                                 );
                             }
 
                             // Recalculate dates AND totals on configuration inputs
-                            [elDuration, elStartDate].forEach(el => {
+                            [elDuration, elStartDate].forEach((el) => {
                                 el?.addEventListener("change", () => {
                                     recalcDates();
                                     calculateTotalAmount();
@@ -1990,15 +2036,15 @@ const InvoiceDialog = (() => {
                             if (elDiscountType) {
                                 elDiscountType.addEventListener(
                                     "change",
-                                    calculateTotalAmount
+                                    calculateTotalAmount,
                                 );
                             }
 
                             if (elDiscount) {
-                                elDiscount.addEventListener("input", e => {
+                                elDiscount.addEventListener("input", (e) => {
                                     let v = e.target.value.replace(
                                         /[^0-9.]/g,
-                                        ""
+                                        "",
                                     );
                                     const parts = v.split(".");
                                     if (parts.length > 2)
@@ -2008,7 +2054,7 @@ const InvoiceDialog = (() => {
                                     calculateTotalAmount(); // Live recalculation as you type
                                 });
 
-                                elDiscount.addEventListener("blur", e => {
+                                elDiscount.addEventListener("blur", (e) => {
                                     let v = parseFloat(e.target.value);
                                     e.target.value =
                                         isNaN(v) || v < 0 ? "" : v.toFixed(2);
@@ -2019,12 +2065,12 @@ const InvoiceDialog = (() => {
                         onConfirm(data, btn, ibMe) {
                             if (!data.service_id) {
                                 return ibMe.setError(
-                                    "Please select a Service."
+                                    "Please select a Service.",
                                 );
                             }
 
                             const selectedService = services.find(
-                                s => String(s.id) === String(data.service_id)
+                                (s) => String(s.id) === String(data.service_id),
                             );
                             if (!selectedService) return;
 
@@ -2040,12 +2086,12 @@ const InvoiceDialog = (() => {
                             if (unit === "month") {
                                 if (!data.duration_months) {
                                     return ibMe.setError(
-                                        "Please input Duration."
+                                        "Please input Duration.",
                                     );
                                 }
                                 if (!data.start_date || !data.end_date) {
                                     return ibMe.setError(
-                                        "Please input Start and End Date."
+                                        "Please input Start and End Date.",
                                     );
                                 }
                             }
@@ -2064,7 +2110,7 @@ const InvoiceDialog = (() => {
 
                             // Read the dynamically computed total amount from input
                             const totalAmountInput = serviceDiv.querySelector(
-                                '[data-field="total_amount"]'
+                                '[data-field="total_amount"]',
                             );
                             const calculatedTotal = totalAmountInput
                                 ? parseFloat(totalAmountInput.value)
@@ -2072,22 +2118,22 @@ const InvoiceDialog = (() => {
 
                             const existingIds = me.itemsView.rows
                                 .map(
-                                    row =>
-                                        row.meta?.item_id || row.data?.item_id
+                                    (row) =>
+                                        row.meta?.item_id || row.data?.item_id,
                                 )
                                 .filter(
-                                    id =>
+                                    (id) =>
                                         id !== undefined &&
                                         id !== "" &&
-                                        id !== null
+                                        id !== null,
                                 );
 
                             const isDuplicate = existingIds.some(
-                                id => String(id) === String(data.service_id)
+                                (id) => String(id) === String(data.service_id),
                             );
                             if (isDuplicate) {
                                 return ibMe.setError(
-                                    `Service is already in the list.`
+                                    `Service is already in the list.`,
                                 );
                             }
 
@@ -2106,21 +2152,21 @@ const InvoiceDialog = (() => {
                                     end_date: data.end_date || "",
                                     discount_type:
                                         data.discount_type || "percent",
-                                    total_amount: calculatedTotal
+                                    total_amount: calculatedTotal,
                                 },
-                                0
+                                0,
                             );
 
                             cv_interact.success(
                                 `Service added for ${qtyMonths} ${
                                     unit === "month" ? "month(s)" : "unit"
-                                }`
+                                }`,
                             );
                             ibMe.close();
                         },
                         onCancel(ibMe) {
                             ibMe.close();
-                        }
+                        },
                     });
                 };
 
@@ -2140,19 +2186,19 @@ const InvoiceDialog = (() => {
                     console.log("All Requests", requests);
 
                     const filteredRequests = requests.filter(
-                        r => String(r.space_id) === String(selectedSpaceId)
+                        (r) => String(r.space_id) === String(selectedSpaceId),
                     );
 
                     if (filteredRequests.length === 0) {
                         return cv_interact.error(
-                            "No Requests relate to this space."
+                            "No Requests relate to this space.",
                         );
                     }
 
                     const serviceRequestOption = filteredRequests
                         .map(
-                            sr =>
-                                `<option value="${sr.request_id}">${sr.code} (${sr.space_code})</option>`
+                            (sr) =>
+                                `<option value="${sr.request_id}">${sr.code} (${sr.space_code})</option>`,
                         )
                         .join("");
 
@@ -2236,37 +2282,37 @@ const InvoiceDialog = (() => {
 
                         onOpen(ibMe) {
                             const elPriceWrapperR = requestDiv.querySelector(
-                                "#price_wrapper_requested"
+                                "#price_wrapper_requested",
                             );
                             const elRequest = requestDiv.querySelector(
-                                '[data-field="request_id"]'
+                                '[data-field="request_id"]',
                             );
                             const elDuration = requestDiv.querySelector(
-                                '[data-field="duration_hours"]'
+                                '[data-field="duration_hours"]',
                             );
                             const elPrice = requestDiv.querySelector(
-                                '[data-field="price"]'
+                                '[data-field="price"]',
                             );
                             const elServiceName = requestDiv.querySelector(
-                                '[data-field="service_name"]'
+                                '[data-field="service_name"]',
                             );
                             const elUnitType = requestDiv.querySelector(
-                                '[data-field="unit_type"]'
+                                '[data-field="unit_type"]',
                             );
                             const elRemark = requestDiv.querySelector(
-                                '[data-field="remark"]'
+                                '[data-field="remark"]',
                             );
                             const elDurationWrapper = requestDiv.querySelector(
-                                '[data-wrapper="duration"]'
+                                '[data-wrapper="duration"]',
                             );
                             const elDiscount = requestDiv.querySelector(
-                                '[data-field="discount"]'
+                                '[data-field="discount"]',
                             );
                             const elDiscountType = requestDiv.querySelector(
-                                '[data-field="discount_type"]'
+                                '[data-field="discount_type"]',
                             );
                             const elTotalAmount = requestDiv.querySelector(
-                                '[data-field="total_amount"]'
+                                '[data-field="total_amount"]',
                             );
 
                             if (elPriceWrapperR)
@@ -2306,11 +2352,11 @@ const InvoiceDialog = (() => {
                                 elTotalAmount.value = finalTotal.toFixed(2);
                             };
 
-                            const fillRequestData = selectedId => {
+                            const fillRequestData = (selectedId) => {
                                 const matched = filteredRequests.find(
-                                    r =>
+                                    (r) =>
                                         String(r.request_id) ===
-                                        String(selectedId)
+                                        String(selectedId),
                                 );
 
                                 if (matched) {
@@ -2320,7 +2366,7 @@ const InvoiceDialog = (() => {
                                     elDuration.value =
                                         matched.duration_hours || "0";
                                     elPrice.value = Number(
-                                        matched.price
+                                        matched.price,
                                     ).toFixed(2);
                                     elRemark.value = matched.remarks || "";
 
@@ -2342,22 +2388,22 @@ const InvoiceDialog = (() => {
                                 elDiscountType.value = "percent";
                                 elDiscountType.addEventListener(
                                     "change",
-                                    calculateTotalAmount
+                                    calculateTotalAmount,
                                 );
                             }
 
                             if (elRequest) {
                                 fillRequestData(elRequest.value);
-                                elRequest.addEventListener("change", e => {
+                                elRequest.addEventListener("change", (e) => {
                                     fillRequestData(e.target.value);
                                 });
                             }
 
                             if (elDiscount) {
-                                elDiscount.addEventListener("input", e => {
+                                elDiscount.addEventListener("input", (e) => {
                                     let v = e.target.value.replace(
                                         /[^0-9.]/g,
-                                        ""
+                                        "",
                                     );
                                     const parts = v.split(".");
                                     if (parts.length > 2)
@@ -2372,7 +2418,7 @@ const InvoiceDialog = (() => {
                                     calculateTotalAmount(); // Recalculate on keystroke
                                 });
 
-                                elDiscount.addEventListener("blur", e => {
+                                elDiscount.addEventListener("blur", (e) => {
                                     const v = parseFloat(e.target.value);
                                     e.target.value =
                                         isNaN(v) || v < 0 ? "" : v.toFixed(2);
@@ -2384,14 +2430,14 @@ const InvoiceDialog = (() => {
 
                         onConfirm(data, btn, ibMe) {
                             const selectedRequest = filteredRequests.find(
-                                r =>
+                                (r) =>
                                     String(r.request_id) ===
-                                    String(data.request_id)
+                                    String(data.request_id),
                             );
 
                             if (!selectedRequest) {
                                 return cv_interact.error(
-                                    "Please select a service request."
+                                    "Please select a service request.",
                                 );
                             }
 
@@ -2401,24 +2447,24 @@ const InvoiceDialog = (() => {
 
                             const existingIds = me.itemsView.rows
                                 .map(
-                                    row =>
-                                        row.meta?.item_id || row.data?.item_id
+                                    (row) =>
+                                        row.meta?.item_id || row.data?.item_id,
                                 )
                                 .filter(
-                                    id =>
+                                    (id) =>
                                         id !== undefined &&
                                         id !== "" &&
-                                        id !== null
+                                        id !== null,
                                 );
 
                             const isDuplicate = existingIds.some(
-                                id =>
+                                (id) =>
                                     String(id) ===
-                                    String(selectedRequest.request_id)
+                                    String(selectedRequest.request_id),
                             );
                             if (isDuplicate) {
                                 return ibMe.setError(
-                                    "Service Request is already in the list."
+                                    "Service Request is already in the list.",
                                 );
                             }
 
@@ -2436,15 +2482,15 @@ const InvoiceDialog = (() => {
                                 space_code: selectedRequest.space_code,
                                 discount: Number(data.discount) || 0,
                                 discount_type: data.discount_type || "percent",
-                                request_id: selectedRequest.request_id
+                                request_id: selectedRequest.request_id,
                             };
 
                             me.itemsView.addRow(dataToAdd, 0);
                             cv_interact.success(
-                                "Service request added to invoice"
+                                "Service request added to invoice",
                             );
                             ibMe.close();
-                        }
+                        },
                     });
                 };
 
@@ -2465,7 +2511,7 @@ const InvoiceDialog = (() => {
                             dataType: "string",
                             readOnly: true,
                             className: "small col-item-name",
-                            width: "230px"
+                            width: "230px",
                             // html: '<input type="checkbox" class="check_accept">',
                         },
 
@@ -2475,7 +2521,7 @@ const InvoiceDialog = (() => {
                             dataType: "text",
                             readOnly: true,
                             defaultValue: "-",
-                            width: "130px"
+                            width: "130px",
                         },
                         {
                             name: "end_date",
@@ -2483,7 +2529,7 @@ const InvoiceDialog = (() => {
                             dataType: "text",
                             readOnly: true,
                             defaultValue: "-",
-                            width: "130px"
+                            width: "130px",
                         },
                         {
                             name: "qty",
@@ -2491,7 +2537,7 @@ const InvoiceDialog = (() => {
                             dataType: "number",
                             readOnly: true,
                             className: "text-start",
-                            width: "70px"
+                            width: "70px",
                         },
 
                         {
@@ -2500,7 +2546,7 @@ const InvoiceDialog = (() => {
                             dataType: "text",
                             readOnly: true,
                             defaultValue: "-",
-                            width: "110px"
+                            width: "110px",
                         },
                         {
                             name: "price",
@@ -2508,7 +2554,7 @@ const InvoiceDialog = (() => {
                             readOnly: true,
                             isNumeric: true,
                             dataType: "money",
-                            width: "150px"
+                            width: "150px",
                         },
                         {
                             name: "discount",
@@ -2518,13 +2564,13 @@ const InvoiceDialog = (() => {
                             defaultDiscountType: "percent",
                             discountBeforeTax: true,
                             readOnly: true,
-                            width: "100px"
+                            width: "100px",
                         },
                         {
                             name: "tax_rate",
                             transTitle: "titles.Tax",
                             dataType: "percent",
-                            readOnly: true
+                            readOnly: true,
                         },
                         {
                             name: "total",
@@ -2532,8 +2578,8 @@ const InvoiceDialog = (() => {
                             dataType: "money",
                             readOnly: true,
                             isNumeric: true,
-                            width: "150px"
-                        }
+                            width: "150px",
+                        },
                     ],
                     calc: {
                         mode: "auto",
@@ -2541,14 +2587,14 @@ const InvoiceDialog = (() => {
                         priceField: "price",
                         totalField: "total",
                         taxField: "tax_rate",
-                        currencyPrecision: 2
+                        currencyPrecision: 2,
                     },
 
                     totalSummary: {
                         container: me.controls.div_invoice_summary,
                         showTax: false,
                         allowDiscount: true,
-                        discountBeforeTax: true
+                        discountBeforeTax: true,
                         // currencyConversion: {
                         //     currency_code: "KHR",
                         //     rate: 4100
@@ -2567,7 +2613,7 @@ const InvoiceDialog = (() => {
                     validateColumns: {
                         item_id: "positive",
                         qty: "positive",
-                        price: "positive"
+                        price: "positive",
                     },
 
                     itemRendered(item, ctx) {
@@ -2579,7 +2625,7 @@ const InvoiceDialog = (() => {
                         item.setRowMeta(tr, {
                             item_id: item_id,
                             type: type,
-                            unit_type: unit_type
+                            unit_type: unit_type,
                         });
 
                         if (item.rows.length >= 2) {
@@ -2587,7 +2633,7 @@ const InvoiceDialog = (() => {
                             me.setReadOnly(true, [
                                 "tenant_id",
                                 "space_id",
-                                "invoice_type"
+                                "invoice_type",
                             ]);
                         }
                     },
@@ -2595,18 +2641,18 @@ const InvoiceDialog = (() => {
                     onItemChange: (rowId, item, fieldName, td, tr) => {
                         if (fieldName === "item_id") {
                             const selectedService = availableItem.find(
-                                s => String(s.id) === String(item.item_id)
+                                (s) => String(s.id) === String(item.item_id),
                             );
                             if (selectedService) {
                                 me.itemsView.setCellValue(
                                     tr,
                                     "price",
-                                    Number(selectedService.price) || 0
+                                    Number(selectedService.price) || 0,
                                 );
                                 me.itemsView.setCellValue(
                                     tr,
                                     "unit_type",
-                                    selectedService.unit_type || "—"
+                                    selectedService.unit_type || "—",
                                 );
                                 me.itemsView.setCellValue(tr, "qty", 1);
                                 me.itemsView.setCellValue(
@@ -2614,28 +2660,28 @@ const InvoiceDialog = (() => {
                                     "remarks",
                                     selectedService.service ||
                                         selectedService.name ||
-                                        "—"
+                                        "—",
                                 );
                                 me.itemsView.setCellValue(
                                     tr,
                                     "type",
-                                    "service"
+                                    "service",
                                 );
                             } else if (item.contract_id || item.space_price) {
                                 const rentPrice =
                                     parseFloat(
-                                        item.space_price || item.price
+                                        item.space_price || item.price,
                                     ) || 0;
                                 me.itemsView.setCellValue(
                                     tr,
                                     "price",
-                                    rentPrice
+                                    rentPrice,
                                 );
                                 me.itemsView.setCellValue(tr, "type", "rent");
                                 me.itemsView.setCellValue(tr, "unit_type", "—");
                             }
                         }
-                    }
+                    },
                 });
 
                 me.searchTenant = VSSearchInput.init(me.controls.tenant, {
@@ -2649,25 +2695,25 @@ const InvoiceDialog = (() => {
                             "name",
                             "legal_name",
                             "email",
-                            "phone_number"
+                            "phone_number",
                         ],
                         searchFields: {
                             name: "LIKE",
                             legal_name: "like",
                             email: "=",
-                            phone: "="
-                        }
+                            phone: "=",
+                        },
                     },
                     columns: { name: "Name", phone_number: "Phone" },
-                    onSelect: tenant => {
+                    onSelect: (tenant) => {
                         me._selectedTenantId = tenant.id;
                         vsapi
                             .post(
                                 `${main_view.base_url}/prm/tenant/option-tenant-with-contract`,
                                 { tenant_id: tenant.id },
-                                {}
+                                {},
                             )
-                            .then(res => {
+                            .then((res) => {
                                 const d = res.data || {};
 
                                 me.controls.phone_number.value =
@@ -2687,10 +2733,10 @@ const InvoiceDialog = (() => {
                                     "space_code",
                                     "",
                                     "Select Space",
-                                    ""
+                                    "",
                                 );
                             });
-                    }
+                    },
                 });
 
                 me.searchTenant.reset("");
@@ -2698,7 +2744,7 @@ const InvoiceDialog = (() => {
                 me.saveData = () => {
                     let header = me.getData();
                     const items = me.itemsView.getItems({
-                        metaKeys: ["item_id", "type", "remark", "unit_type"]
+                        metaKeys: ["item_id", "type", "remark", "unit_type"],
                     }); // Retrieves all row data
 
                     console.log("Items", items);
@@ -2712,7 +2758,7 @@ const InvoiceDialog = (() => {
                         header.id = me.dataOptions.id;
                     }
 
-                    const toMySQLDate = dateStr => {
+                    const toMySQLDate = (dateStr) => {
                         if (!dateStr) return null;
                         const d = new Date(dateStr);
                         return isNaN(d.getTime())
@@ -2722,12 +2768,12 @@ const InvoiceDialog = (() => {
 
                     const mappedItems = items
                         .filter(
-                            item =>
+                            (item) =>
                                 parseFloat(item.price || 0) > 0 ||
-                                parseFloat(item.qty || 0) > 0
+                                parseFloat(item.qty || 0) > 0,
                         )
 
-                        .map(item => {
+                        .map((item) => {
                             return {
                                 ...item,
                                 item_id: item.item_id || null,
@@ -2740,7 +2786,7 @@ const InvoiceDialog = (() => {
                                 end_date: item.end_date,
                                 discount: parseFloat(item.discount || 0),
                                 tax_rate: parseFloat(item.tax_rate || 0),
-                                amount: parseFloat(item.total || 0)
+                                amount: parseFloat(item.total || 0),
                             };
                         });
 
@@ -2750,14 +2796,14 @@ const InvoiceDialog = (() => {
                         discount_value: totals.discount_value || 0,
                         discount_type: totals.discount_type || "percent",
                         amount: totals.subtotal, // Total for the invoice header
-                        amount_payable: totals.grand_total
+                        amount_payable: totals.grand_total,
                     };
                 };
             },
 
             onPrepareForm: (me, data) => {
                 availableItem = (data.services || []).filter(
-                    s => s.type_id == 2
+                    (s) => s.type_id == 2,
                 );
 
                 const isReadOnly = me.dataOptions.id > 0;
@@ -2765,7 +2811,7 @@ const InvoiceDialog = (() => {
                 me.setReadOnly(isReadOnly, [
                     "tenant_id",
                     "space_id",
-                    "invoice_type"
+                    "invoice_type",
                 ]);
 
                 // me.set;
@@ -2777,7 +2823,7 @@ const InvoiceDialog = (() => {
 
                 // Clear all inputs
                 if (me.controls) {
-                    Object.values(me.controls).forEach(el => {
+                    Object.values(me.controls).forEach((el) => {
                         if (
                             el &&
                             (el.tagName === "INPUT" ||
@@ -2791,7 +2837,7 @@ const InvoiceDialog = (() => {
                             '<option value="">-- Select Room / Space --</option>';
                         me.controls.space.value = "";
                         me.controls.space.dispatchEvent(
-                            new Event("change", { bubbles: true })
+                            new Event("change", { bubbles: true }),
                         );
                     }
                 }
@@ -2801,12 +2847,12 @@ const InvoiceDialog = (() => {
                 if (me.dataOptions.id) {
                     vsapi
                         .call(`${main_view.base_url}/prm/invoice/details`, {
-                            id: me.dataOptions.id
+                            id: me.dataOptions.id,
                         })
-                        .then(res => {
+                        .then((res) => {
                             if (res.status_code !== 200) {
                                 cv_interact.error(
-                                    "Failed to load invoice details."
+                                    "Failed to load invoice details.",
                                 );
                                 return;
                             }
@@ -2836,9 +2882,9 @@ const InvoiceDialog = (() => {
                                     .post(
                                         `${main_view.base_url}/prm/tenant/option-tenant-with-contract`,
                                         { tenant_id: detail.tenant_id },
-                                        {}
+                                        {},
                                     )
-                                    .then(res => {
+                                    .then((res) => {
                                         const d = res.data || {};
                                         me._tenantSpaces = d.spaces || [];
                                         me._tenantMonths = d.months || [];
@@ -2852,13 +2898,12 @@ const InvoiceDialog = (() => {
                                             "space_code",
                                             "",
                                             "Select Space",
-                                            ""
+                                            "",
                                         );
                                         setTimeout(() => {
                                             if (detail.space_id) {
-                                                me.controls.space.value = String(
-                                                    detail.space_id
-                                                );
+                                                me.controls.space.value =
+                                                    String(detail.space_id);
 
                                                 // ✅ Verify — if Choices.js overrides, force via option.selected
                                                 if (
@@ -2867,13 +2912,13 @@ const InvoiceDialog = (() => {
                                                 ) {
                                                     const opt = Array.from(
                                                         me.controls.space
-                                                            .options
+                                                            .options,
                                                     ).find(
-                                                        o =>
+                                                        (o) =>
                                                             String(o.value) ===
                                                             String(
-                                                                detail.space_id
-                                                            )
+                                                                detail.space_id,
+                                                            ),
                                                     );
                                                     if (opt) {
                                                         opt.selected = true;
@@ -2881,24 +2926,24 @@ const InvoiceDialog = (() => {
                                                             new Event(
                                                                 "change",
                                                                 {
-                                                                    bubbles: true
-                                                                }
-                                                            )
+                                                                    bubbles: true,
+                                                                },
+                                                            ),
                                                         );
                                                         console.log(
                                                             "space restored via option.selected:",
-                                                            opt.text
+                                                            opt.text,
                                                         );
                                                     } else {
                                                         console.warn(
                                                             "space option not found for id:",
-                                                            detail.space_id
+                                                            detail.space_id,
                                                         );
                                                     }
                                                 } else {
                                                     console.log(
                                                         "space restored:",
-                                                        me.controls.space.value
+                                                        me.controls.space.value,
                                                     );
                                                 }
                                             }
@@ -2910,13 +2955,13 @@ const InvoiceDialog = (() => {
 
                             console.log(
                                 "Invoice items loaded into view:",
-                                detail.items
+                                detail.items,
                             );
                         });
                 }
             },
 
-            onShow: me => {
+            onShow: (me) => {
                 const title = me.divModal.querySelector(".modal-title");
                 if (title) {
                     const isModify = !!me.dataOptions?.id;
@@ -2932,14 +2977,14 @@ const InvoiceDialog = (() => {
                 targetProp: "invoice_details",
                 api: {
                     endpoint: `${main_view.base_url}/prm/invoice/form-options`,
-                    params: op => {
+                    params: (op) => {
                         console.log("API params op:", op);
                         return { id: op.id };
-                    }
-                }
+                    },
+                },
             },
 
-            onClose: me => {
+            onClose: (me) => {
                 if (me.controls && me.controls.space) {
                     me.controls.space.innerHTML =
                         '<option value="">-- Select Room / Space --</option>';
@@ -2952,9 +2997,9 @@ const InvoiceDialog = (() => {
                 {
                     label: '<span vslang="buttons.Cancel"></span>',
                     cssClass: "btn btn-secondary",
-                    click: me => {
+                    click: (me) => {
                         me.hide(false);
-                    }
+                    },
                 },
                 {
                     label: '<span vslang="buttons.Save"></span>',
@@ -2973,25 +3018,25 @@ const InvoiceDialog = (() => {
                             .call(
                                 `${main_view.base_url}/prm/invoice/save`,
                                 formData,
-                                btn
+                                btn,
                             )
-                            .then(res => {
+                            .then((res) => {
                                 if (res.status_code === 200) {
                                     cv_interact.success(
                                         formData.id
                                             ? "Invoice has been updated."
-                                            : "Invoice has been successfully created."
+                                            : "Invoice has been successfully created.",
                                     );
                                     me.hide(true);
                                 } else {
                                     cv_interact.error(
-                                        res.error_message || "Save failed."
+                                        res.error_message || "Save failed.",
                                     );
                                 }
                             });
-                    }
-                }
-            ]
+                    },
+                },
+            ],
         });
 
         dialog.show(op);
@@ -3003,7 +3048,7 @@ const ReceiveDialog = (() => {
     const self = {};
     let dialog = null;
 
-    self.show = op => {
+    self.show = (op) => {
         dialog = new GeneralDialog({
             title: "Receive Payment",
             cssClass: "modal-lg vs-modal",
@@ -3125,16 +3170,16 @@ const ReceiveDialog = (() => {
                     </div>
                 </div>`,
 
-            contentCreated: me => {
+            contentCreated: (me) => {
                 const updateTotals = () => {
-                    const getValue = name => {
+                    const getValue = (name) => {
                         const el = me.divModal.querySelector(
-                            `[name="${name}"]`
+                            `[name="${name}"]`,
                         );
                         return el ? parseFloat(el.value) || 0 : 0;
                     };
 
-                    const fmt = n => "$" + Number(n).toFixed(2);
+                    const fmt = (n) => "$" + Number(n).toFixed(2);
 
                     const cash = getValue("cash");
                     const bank = getValue("transfer_amount");
@@ -3148,16 +3193,15 @@ const ReceiveDialog = (() => {
                     if (dueEl) {
                         due =
                             parseFloat(
-                                dueEl.textContent.replace(/[^0-9.-]+/g, "")
+                                dueEl.textContent.replace(/[^0-9.-]+/g, ""),
                             ) || 0;
                     }
 
                     const remaining = due - totalPaid;
 
                     // --- Update Summary Header ---
-                    me.divModal.querySelector("#f_tot").textContent = fmt(
-                        totalPaid
-                    );
+                    me.divModal.querySelector("#f_tot").textContent =
+                        fmt(totalPaid);
 
                     const balEl = me.divModal.querySelector("#f_bal");
                     if (balEl) {
@@ -3189,9 +3233,9 @@ const ReceiveDialog = (() => {
                     "cash",
                     "transfer_amount",
                     "card_amount",
-                    "cheque_amount"
+                    "cheque_amount",
                 ];
-                amountFields.forEach(name => {
+                amountFields.forEach((name) => {
                     const input = me.divModal.querySelector(`[name="${name}"]`);
                     if (input) {
                         input.addEventListener("input", updateTotals);
@@ -3199,8 +3243,8 @@ const ReceiveDialog = (() => {
                     }
                 });
 
-                me.convertPayment = data => {
-                    const parseAmt = v =>
+                me.convertPayment = (data) => {
+                    const parseAmt = (v) =>
                         isNaN(parseFloat(v)) ? 0 : parseFloat(v);
                     const breakdowns = [];
 
@@ -3208,7 +3252,7 @@ const ReceiveDialog = (() => {
                         breakdowns.push({
                             method: "Cash",
                             amount: parseAmt(data.cash),
-                            currency_code: "USD"
+                            currency_code: "USD",
                         });
                     }
                     if (parseAmt(data.transfer_amount) > 0) {
@@ -3221,7 +3265,7 @@ const ReceiveDialog = (() => {
                             bank_name: me.getSelectText
                                 ? me.getSelectText("bank_transfer_bank_id")
                                 : null,
-                            bank_ref_number: data.bank_ref_number || null
+                            bank_ref_number: data.bank_ref_number || null,
                         });
                     }
                     if (parseAmt(data.card_amount) > 0) {
@@ -3230,7 +3274,7 @@ const ReceiveDialog = (() => {
                             amount: parseAmt(data.card_amount),
                             currency_code: "USD",
                             card_type: data.card_type || null,
-                            card_number: data.card_number || null
+                            card_number: data.card_number || null,
                         });
                     }
                     if (parseAmt(data.cheque_amount) > 0) {
@@ -3242,13 +3286,13 @@ const ReceiveDialog = (() => {
                             cheque_bank_name: me.getSelectText
                                 ? me.getSelectText("cheque_bank_id")
                                 : null,
-                            cheque_number: data.cheque_number || null
+                            cheque_number: data.cheque_number || null,
                         });
                     }
                     return {
                         invoice_id: me.dataOptions?.invoice_id || null,
                         remarks: (data.remarks || "").trim(), // Correctly picks up manual entry
-                        pmt_breakdowns: breakdowns
+                        pmt_breakdowns: breakdowns,
                     };
                 };
 
@@ -3258,20 +3302,20 @@ const ReceiveDialog = (() => {
                 applyNumberInput(me.controls.transfer_amount);
             },
 
-            onPrepareForm: me => {
+            onPrepareForm: (me) => {
                 const opts = me.dataOptions || {};
                 if (opts.invoice_id) {
                     vsapi
                         .call(`${main_view.base_url}/prm/invoice/details`, {
-                            id: opts.invoice_id
+                            id: opts.invoice_id,
                         })
-                        .then(res => {
+                        .then((res) => {
                             if (res.status_code === 200) {
                                 const d = res.data || {};
                                 const bal = Number(d.balance || 0).toFixed(2);
                                 const set = (id, val) => {
                                     const el = me.divModal.querySelector(
-                                        "#" + id
+                                        "#" + id,
                                     );
                                     if (el) el.textContent = val;
                                 };
@@ -3284,7 +3328,7 @@ const ReceiveDialog = (() => {
 
                 vsapi
                     .call(`${main_view.base_url}/prm/invoice/form-options`)
-                    .then(res => {
+                    .then((res) => {
                         const banks = res?.data?.banks || [];
                         if (me.controls.bank_transfer_bank_id) {
                             VSUtil.setComboItems(
@@ -3293,7 +3337,7 @@ const ReceiveDialog = (() => {
                                 "id",
                                 "name",
                                 true,
-                                "— Select Bank —"
+                                "— Select Bank —",
                             );
                         }
                         if (me.controls.cheque_bank_id) {
@@ -3303,7 +3347,7 @@ const ReceiveDialog = (() => {
                                 "id",
                                 "name",
                                 true,
-                                "— Select Bank —"
+                                "— Select Bank —",
                             );
                         }
                     });
@@ -3313,7 +3357,7 @@ const ReceiveDialog = (() => {
                 {
                     label: "Cancel",
                     cssClass: "btn btn-secondary",
-                    click: me => me.hide(false)
+                    click: (me) => me.hide(false),
                 },
                 {
                     label: "Receive",
@@ -3323,12 +3367,12 @@ const ReceiveDialog = (() => {
                         const payload = me.convertPayment(rawData);
                         const totalInput = payload.pmt_breakdowns.reduce(
                             (sum, item) => sum + item.amount,
-                            0
+                            0,
                         );
 
                         if (totalInput <= 0) {
                             return cv_interact.error(
-                                "Please enter a payment amount."
+                                "Please enter a payment amount.",
                             );
                         }
 
@@ -3336,27 +3380,27 @@ const ReceiveDialog = (() => {
                             .call(
                                 `${main_view.base_url}/prm/invoice/receive`,
                                 payload,
-                                btn
+                                btn,
                             )
-                            .then(res => {
+                            .then((res) => {
                                 if (res.status_code === 200) {
                                     cv_interact.success(
-                                        "Payment Received Successfully."
+                                        "Payment Received Successfully.",
                                     );
                                     me.hide(true);
                                 } else {
                                     cv_interact.error(
-                                        res.error_message || "Save failed."
+                                        res.error_message || "Save failed.",
                                     );
                                 }
                             })
-                            .catch(err => {
+                            .catch((err) => {
                                 console.error(err);
                                 cv_interact.error("Network error occurred.");
                             });
-                    }
-                }
-            ]
+                    },
+                },
+            ],
         });
 
         dialog.show(op);
