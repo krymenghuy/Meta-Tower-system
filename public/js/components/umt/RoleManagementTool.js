@@ -1623,6 +1623,8 @@ this.PermissionPanel = new function(){
               }
               me.controls.category.onchange = e =>{
                  const cat = (e.target.value || '').toLowerCase();
+                 console.log(22,cat);
+                 
                  if(cat ==='report'){
                     me.actions.value = 'view|print|export_pdf|export_excel|export_csv'; 
                  }else{

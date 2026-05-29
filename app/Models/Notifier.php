@@ -12,7 +12,8 @@ use DBX;
 use Illuminate\Support\Facades\Log;
 use App\Models\Dms\Promotion;
 use Config;
-
+ use XUMTSettings;
+ use XUser;
 class Notifier
 {
     protected static $admin_user_class ='admin';
@@ -20,6 +21,12 @@ class Notifier
      * $d = {branch_id,[user_id or target_user_id],[role_name] and other props such as "img", ...}
      * NOTE: Unlikc mobile users or other users with official_id,  the admin user's target_user_id or user_id is the uid matches with the value of "um_users.id"
     */
+     protected static $promotion_categories = [
+        'student_app_promotion',
+        'parent_app_promotion',
+        'school_promotion',
+        'promotion'
+    ];
     static function notify_admin($event_name, $cdata){
       $data = (object)$cdata;
       $subs_id = getCurrentSubsId(true);
@@ -397,67 +404,177 @@ static function notify_mobile($scope,$data=[],$category_id = null){
     static function getUnreadCount_admin($d=null){
         return 0;
     }
+     static function isPromotion($category)
+    {
+        return strpos($category, '_promotion') !== false
+            || in_array($category, self::$promotion_categories);
+    }
 
     static function markReadAll_admin($d =null){
         return null;
     }
  
     //$d= {'branch_id','user_class','user_id'}
-    static function getNotificationListByUser($arr, $ss =null,$use_cache= 1){
-       $user_id = null;
-       $user_class =null;
-       $d = (object)$arr;
-       $category = $d->category ?? 'default';
-       $ss = $ss ?? XAuthService::user();
-       //Need to be cautious when the system is running as SaS model (or subscription model) where multiple companies are subscribers
-       $branch_id = 0;
-       $bin_subs_id = null;
-       $category = strtolower($category);
-       $cache_key = 'notifls';
-       if($ss){
-          $user_id = $ss->user_id;
-          $user_class = strtolower($ss->user_class);
-          $branch_id = $ss->branch_id;
-          $subs_id = $ss->subs_id;
-          $bin_subs_id = hex2bin($subs_id);
-          $cache_key .=$user_class.$branch_id.$user_id.$category;
-       }
-       if ($use_cache){
-          $cache_key = str_replace(['/','-','?','@','|'],'',$cache_key);
-          $data = Cache::get($cache_key);
-          if($data !==null) return $data;
-       }
-        $more_wheres =$user_class? 'n.user_class =\''.escape_like_str($user_class).'\' ': '1=1';
-        if ($user_id > 0)
-          $more_wheres .=' AND (n.user_id ='.$user_id.' OR IFNULL(n.user_id,0) =0)';
-        else $more_wheres .=' AND IFNULL(n.user_id,0) =0';  //return empty rows if there is user_id supplied
-        $str_date = '1=1'; //'DATE(create_date) =\''.date('Y-m-d').'\'';
-        $str_read ='1=1';
-        if (in_array(strtolower($user_class),['merchant','driver','sales_agent'])){
-            $str_read = 'is_read(n.id,'.($user_id? $user_id:0).') = 0 AND IFNULL(is_read,0)=0';
-        }else{
-            $str_read = ' DATEDIFF(now(),n.create_date) <=30 ';
-        }
-        $col_date = DBX::formatDate('n.create_date','create_date');
-        $col_time = DBX::formatTimeOnly('n.create_date','time');
-        $def_image_url = '';
-        $query = DB::table('notifications AS n')->join('notif_categories as c','c.id','=','n.category_id')
-        ->whereRaw($more_wheres)->whereRaw($str_date)->whereRaw($str_read)
-        ->selectRaw('n.id,n.detail_id,is_read(n.id,n.user_id) AS is_read,CASE IFNULL(user_id,0) WHEN 0 THEN \'all\' ELSE \'me\' END AS target_user,message,title,image_url,c.text_color, c.title_color,n.photo_file_name, \'\' AS image_url,'.$col_date.','.$col_time)->orderBy('n.id','DESC');
-        if($bin_subs_id) $query->where('n.subs_id',$bin_subs_id);
-        if($category) $query->where('c.notif_category',$category);
-        //if(is_numeric($branch_id) && $branch_id > 0) $query->where('n.branch_id',$branch_id);
-        $data = $query->get();
-        if($category ==='merchant_app_promotion'){
-           foreach($data as &$row){
-            if($row->detail_id){
-              $row->image_url = Promotion::photo($ss,$row->detail_id,$row->photo_file_name);
-            }
-           }
-        }
-        Cache::put($cache_key,$data,5);
-        return $data;
+    // static function getNotificationListByUser($arr, $ss =null,$use_cache= 1){
+    //    $user_id = null;
+    //    $user_class =null;
+    //    $d = (object)$arr;
+    //    $category = $d->category ?? 'default';
+    //    $ss = $ss ?? XAuthService::user();
+    //    //Need to be cautious when the system is running as SaS model (or subscription model) where multiple companies are subscribers
+    //    $branch_id = 0;
+    //    $bin_subs_id = null;
+    //    $category = strtolower($category);
+    //    $cache_key = 'notifls';
+    //    if($ss){
+    //       $user_id = $ss->user_id;
+    //       $user_class = strtolower($ss->user_class);
+    //       $branch_id = $ss->branch_id;
+    //       $subs_id = $ss->subs_id;
+    //       $bin_subs_id = hex2bin($subs_id);
+    //       $cache_key .=$user_class.$branch_id.$user_id.$category;
+    //    }
+    //    if ($use_cache){
+    //       $cache_key = str_replace(['/','-','?','@','|'],'',$cache_key);
+    //       $data = Cache::get($cache_key);
+    //       if($data !==null) return $data;
+    //    }
+    //     $more_wheres =$user_class? 'n.user_class =\''.escape_like_str($user_class).'\' ': '1=1';
+    //     if ($user_id > 0)
+    //       $more_wheres .=' AND (n.user_id ='.$user_id.' OR IFNULL(n.user_id,0) =0)';
+    //     else $more_wheres .=' AND IFNULL(n.user_id,0) =0';  //return empty rows if there is user_id supplied
+    //     $str_date = '1=1'; //'DATE(create_date) =\''.date('Y-m-d').'\'';
+    //     $str_read ='1=1';
+    //     if (in_array(strtolower($user_class),['merchant','driver','sales_agent'])){
+    //         $str_read = 'is_read(n.id,'.($user_id? $user_id:0).') = 0 AND IFNULL(is_read,0)=0';
+    //     }else{
+    //         $str_read = ' DATEDIFF(now(),n.create_date) <=30 ';
+    //     }
+    //     $col_date = DBX::formatDate('n.create_date','create_date');
+    //     $col_time = DBX::formatTimeOnly('n.create_date','time');
+    //     $def_image_url = '';
+    //     $query = DB::table('notifications AS n')->join('notif_categories as c','c.id','=','n.category_id')
+    //     ->whereRaw($more_wheres)->whereRaw($str_date)->whereRaw($str_read)
+    //     ->selectRaw('n.id,n.detail_id,is_read(n.id,n.user_id) AS is_read,CASE IFNULL(user_id,0) WHEN 0 THEN \'all\' ELSE \'me\' END AS target_user,message,title,image_url,c.text_color, c.title_color,n.photo_file_name, \'\' AS image_url,'.$col_date.','.$col_time)->orderBy('n.id','DESC');
+    //     if($bin_subs_id) $query->where('n.subs_id',$bin_subs_id);
+    //     if($category) $query->where('c.notif_category',$category);
+    //     //if(is_numeric($branch_id) && $branch_id > 0) $query->where('n.branch_id',$branch_id);
+    //     $data = $query->get();
+    //     if($category ==='merchant_app_promotion'){
+    //        foreach($data as &$row){
+    //         if($row->detail_id){
+    //           $row->image_url = Promotion::photo($ss,$row->detail_id,$row->photo_file_name);
+    //         }
+    //        }
+    //     }
+    //     Cache::put($cache_key,$data,5);
+    //     return $data;
+    // }
+
+     static function getNotificationListByUser(array $arr, $ss = null, int $use_cache = 1)
+{
+    $ss = $ss ?? XAuthService::user();
+    if (!$ss) {
+        return collect();
     }
+
+    $d = (object) $arr;
+
+    $user_id    = (int) ($ss->user_id ?? 0);
+    $user_class = strtolower((string) ($ss->user_class ?? ''));
+    $branch_id  = (int) ($ss->branch_id ?? 0);
+    $subs_id    = (string) ($ss->subs_id ?? '');
+    $category   = strtolower((string) ($d->category ?? ''));
+
+    $created_at = DBX::createdAt();
+
+    $cache_key = 'notifls:' . md5(json_encode([
+        'u' => $user_id,
+        'c' => $user_class,
+        'b' => $branch_id,
+        's' => $subs_id,
+        'k' => $category
+    ]));
+
+    if ($use_cache && ($cached = Cache::get($cache_key)) !== null) {
+        return $cached;
+    }
+
+    $query = DB::table('notifications AS n')
+        ->join('notif_categories AS c', 'c.id', '=', 'n.category_id')
+        ->where('n.user_class', $user_class);
+
+    if ($user_id > 0) {
+        $query->where(function ($q) use ($user_id) {
+            $q->where('n.user_id', $user_id)
+              ->orWhereNull('n.user_id')
+              ->orWhere('n.user_id', 0);
+        });
+    } else {
+        $query->where(function ($q) {
+            $q->whereNull('n.user_id')
+              ->orWhere('n.user_id', 0);
+        });
+    }
+
+    if (!XUMTSettings::correctUserClass($user_class)) {
+        $query->whereNotExists(function ($q) use ($user_id) {
+            $q->select(DB::raw(1))
+              ->from('notification_reads AS nr')
+              ->whereColumn('nr.notif_id', 'n.id')
+              ->where('nr.user_id', $user_id);
+        });
+    } else {
+        $query->whereDate("n.$created_at", '=', date('Y-m-d'));
+    }
+    if ($subs_id !== '') {
+        $query->whereRaw(DBX::whereBinary('n.subs_id',$subs_id));
+    }
+
+    if ($category !== '') {
+        $query->where('c.notif_category', $category);
+    }
+    $query->select([
+        'n.id',
+        'n.detail_id',
+        'n.message',
+        'n.title',
+        'n.image_url',
+        'n.photo_file_name',
+        'c.text_color',
+        'c.title_color',
+    ]);
+
+    // Safe derived columns
+    $query->selectRaw("
+        CASE 
+            WHEN n.user_id IS NULL OR n.user_id = 0 THEN 'all'
+            ELSE 'me'
+        END AS target_user
+    ");
+
+    $query->selectRaw(DBX::formatDate("n.$created_at", 'create_date'));
+    $query->selectRaw(DBX::formatTimeOnly("n.$created_at", 'time',true));
+
+    $data = $query->orderBy('n.id', 'desc')->get();
+
+    if (self::isPromotion($category)) {
+        foreach ($data as $row) {
+            if (!empty($row->detail_id)) {
+                $row->image_url = Promotion::photo(
+                    $ss,
+                    $row->detail_id,
+                    $row->photo_file_name
+                );
+            }
+        }
+    }
+
+    Cache::put($cache_key, $data, 5);
+
+    return $data;
+}
+
  
     //$d= {'branch_id','user_class','user_id'}
     static function getNotificationListByUser_paginate($arr, $ss){
