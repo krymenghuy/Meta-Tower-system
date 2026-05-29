@@ -1,0 +1,111 @@
+/** Theme: you can change colors theme here */
+:root {
+  --vs-page-title-bg-start: #0b3160;
+  --vs-page-title-bg-mid:   #215ba5 ;
+  --vs-page-title-bg-end:   #4f86c6;
+
+  --vs-page-title-text: #ffffff;
+
+  /* Dot colors */
+  --vs-dot-small: rgba(255,255,255,0.25);
+  --vs-dot-large: rgba(255,255,255,0.15);
+
+  --vs-page-title-radius: 8px;
+  --vs-page-title-padding-y: 10px;
+  --vs-page-title-padding-x: 20px;
+}
+
+/* ---------------------------------------------------------
+   TITLE CONTAINER
+   --------------------------------------------------------- */
+.vs-page-title {
+  position: relative;
+  overflow: hidden;
+  padding: var(--vs-page-title-padding-y)
+           var(--vs-page-title-padding-x);
+  border-radius: var(--vs-page-title-radius);
+
+  /* ✅ Smooth gradient — NO hard cut */
+  background: linear-gradient(
+    90deg,
+    var(--vs-page-title-bg-start) 0%,
+    var(--vs-page-title-bg-mid)   55%,
+    var(--vs-page-title-bg-end)   100%
+  );
+
+  animation: vs-title-enter 520ms ease-out both;
+}
+
+/* ---------------------------------------------------------
+   TITLE TEXT
+   --------------------------------------------------------- */
+.vs-page-title .screen-title {
+  font-size: 15.5px;
+  font-weight: 600;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--vs-page-title-text);
+  position: relative;
+  z-index: 3;
+}
+
+/* ---------------------------------------------------------
+   DOT ART LAYER (modern + subtle)
+   --------------------------------------------------------- */
+.vs-page-title::before,
+.vs-page-title::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* SMALL DOTS */
+.vs-page-title::before {
+  background-image:
+    radial-gradient(circle at 78% 35%, var(--vs-dot-small) 1.5px, transparent 2px),
+    radial-gradient(circle at 85% 55%, var(--vs-dot-small) 1.5px, transparent 2px),
+    radial-gradient(circle at 72% 65%, var(--vs-dot-small) 1.5px, transparent 2px),
+    radial-gradient(circle at 90% 30%, var(--vs-dot-small) 1.5px, transparent 2px);
+  z-index: 1;
+}
+
+/* LARGE DOTS */
+.vs-page-title::after {
+  background-image:
+    radial-gradient(circle at 82% 48%, var(--vs-dot-large) 6px, transparent 7px),
+    radial-gradient(circle at 92% 62%, var(--vs-dot-large) 8px, transparent 9px);
+  z-index: 2;
+  animation: vs-dot-float 6s ease-in-out infinite;
+}
+
+/* ---------------------------------------------------------
+   ANIMATIONS
+   --------------------------------------------------------- */
+@keyframes vs-title-enter {
+  from {
+    opacity: 0;
+    transform: translateX(-14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Very subtle floating motion */
+@keyframes vs-dot-float {
+  0%   { transform: translateY(0); }
+  50%  { transform: translateY(-4px); }
+  100% { transform: translateY(0); }
+}
+
+/* ---------------------------------------------------------
+   REDUCED MOTION
+   --------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .vs-page-title,
+  .vs-page-title::after {
+    animation: none;
+  }
+}

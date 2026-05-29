@@ -16,14 +16,14 @@ class StyleProvider
                 'assets/css/font-awesome/6.2.0/css/all.min.css',
                 'assets/css/demo1/style.bundle.css',
                 'assets/css/choices.min.css',
-                 'assets/css/vs_select.base.css', 
-                 'assets/css/vs_select.material.css', 
-                'assets/css/vs_input.material.css', 
+                 'assets/css/vs_select.base.css',
+                 'assets/css/vs_select.material.css',
+                'assets/css/vs_input.material.css',
                 'assets/css/dialog_style.css',
                 'assets/css/vs_loader.css',
- 
+
                 'https://cdn.vectoraclouds.com/frontcore/components/DateTimePicker/DateTimePicker.css',
- 
+
                 'https://cdn.vectoraclouds.com/frontcore/components/listview/vs_listview.css',
                 'https://cdn.vectoraclouds.com/frontcore/components/listview/vs_listview_table.css',
                 'assets/css/sweetalert2.min.css',
@@ -36,7 +36,7 @@ class StyleProvider
                 'https://cdn.vectoraclouds.com/frontcore/components/items_view/v2/style/items_view.css',
                 'assets/css/items_view.theme.css',
             ]
-            ],    
+            ],
         'report-styles' => [
             'output_file' => '/dist/css/report-styles.css',
             'files' => [
@@ -71,18 +71,17 @@ class StyleProvider
                 'assets/css/bootstrap.min.css',
             ]
         ],
-          'umt-style'=>[
+        'umt-style'=>[
             'output_file'=>'/dist/css/umtstyle.css?v=1',
             'files' => [
                 'assets/css/vsstyle.css',/** Must be set before bootstrap**/
                 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css',
                 'assets/css/choices.min.css',
-                // 'assets/css/choices.custom.css',
-                
-                //'assets/css/choices_style.css',
-                 'assets/css/vs_select.base.css', 
-                 'assets/css/vs_select.material.css', 
-                 'assets/css/vs_input.material.css', 
+                'assets/css/choices_style.css',
+
+                //'assets/vendors/general/owl.carousel/dist/assets/owl.theme.default.css',
+                //'assets/vendors/general/dropzone/dist/dropzone.css',
+                //'assets/vendors/general/bootstrap-markdown/css/bootstrap-markdown.min.css',
                 'assets/css/toastr/toastr.css',
                 //'assets/vendors/general/morris.js/morris.css', /** morris is jquery build and used for chartjs but now No need of this */
                 'assets/css/line-awesome/css/line-awesome.css',
@@ -90,6 +89,8 @@ class StyleProvider
                 'assets/css/demo1/style.bundle.css',
                 // 'assets/dist/css/adminlte.min.css',
                 'assets/css/ksm_style.css', /** Must be placed below all.min.css **/
+                'assets/css/vs-page-title.wave.css',
+                'assets/css/menu_style.css',
                 'assets/css/dialog_style.css',
                 'assets/css/vs_loader.css',
                 'assets/css/vsa_dropdown_button.css',
@@ -111,14 +112,16 @@ class StyleProvider
                 'assets/vendors/general/morris.js/morris.css',
                 'assets/vendors/custom/vendors/line-awesome/css/line-awesome.css',
                 'assets/css/font-awesome/6.2.0/css/all.min.css',
-                'assets/css/demo1/style.bundle.css',               
+                'assets/css/demo1/style.bundle.css',
                 'assets/css/choices.min.css',
+                 'assets/css/vs_select.base.css',
+                 'assets/css/vs_select.material.css',
+                'assets/css/vs_input.material.css',
                 'assets/css/dialog_style.css',
- 
                 'assets/css/vs_loader.css',
-                //'assets/css/jquery.datepicker2.css',
+
                 'https://cdn.vectoraclouds.com/frontcore/components/DateTimePicker/DateTimePicker.css',
-                //'assets/css/vs-pagination.css',
+
                 'https://cdn.vectoraclouds.com/frontcore/components/listview/vs_listview.css',
                 'https://cdn.vectoraclouds.com/frontcore/components/listview/vs_listview_table.css',
                 'assets/css/sweetalert2.min.css',
@@ -132,7 +135,7 @@ class StyleProvider
                 'assets/css/items_view.theme.css',
             ]
             ],
-        
+
     ];
 
     static function bundle($bundle_name = null)

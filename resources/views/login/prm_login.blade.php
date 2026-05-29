@@ -70,12 +70,11 @@
                     <input
                         type="text"
                         name="login_name"
-                        placeholder=" "
+                        placeholder="Username"
                         autocomplete="username"
                         required
                     />
 
-                    <label>Username</label>
                 </div>
 
                 <div class="form-group">
@@ -84,12 +83,11 @@
                     <input
                         type="password"
                         name="password"
-                        placeholder=" "
+                        placeholder="Password"
                         autocomplete="current-password"
                         required
                     />
 
-                    <label>Password</label>
                 </div>
 
                 <div class="remember-forgot">
