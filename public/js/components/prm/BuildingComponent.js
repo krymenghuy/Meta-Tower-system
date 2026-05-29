@@ -229,7 +229,7 @@ var BuildingComponent = (() => {
                         ? `
                 <div class="rounded-3 p-2 l mb-2">
                     <button data-buildingid="${id}" class="btn-add-floor btnAddNewPrm" type="button">
-                        <span>${LocaleManager.trans("New Floor", "buttons")}</span>
+                        <span vslang="buttons.New Floor">New Floor</span>
                     </button>
                 </div>`
                         : ""
@@ -238,7 +238,7 @@ var BuildingComponent = (() => {
                 <table class="table table-sm table-hover align-middle tbl_list_floor table--dropdown">
                     <thead class="table-light text-nowrap">
                         <tr>
-                            <th>${LocaleManager.trans("Name")}</th>
+                            <th>${LocaleManager.trans("Floor")}</th>
                             <th>${LocaleManager.trans("Floor Number")}</th>
                             <th>${LocaleManager.trans("Total Space")}</th>
                             <th>${LocaleManager.trans("Description")}</th>
@@ -256,7 +256,7 @@ var BuildingComponent = (() => {
                         ? `
                 <div class="rounded-3 p-2 l mb-2">
                     <button data-buildingid="${id}" class="btn-add-floor btnAddNewPrm" type="button">
-                        <span>${LocaleManager.trans("New Floor", "buttons")}</span>
+                        <span vslang="buttons.New Floor">New Floor</span>
                     </button>
                 </div>`
                         : ""
