@@ -7,6 +7,7 @@ use Vsd\Database\DBX;
 use DV;
 use XPublicStorage;
 use XBranch;
+use App\Models\CompanyProfile;
 
 class Report //extends Model
 {
