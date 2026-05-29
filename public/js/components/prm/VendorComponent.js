@@ -476,7 +476,7 @@ const CreateVendorDialog = (() => {
                              <div class="col-12 col-md-6">
                                 <div class="vs-material-field">
                                     <input type="number" name="phone_number" class="data-input form-control" data-field="phone_number" placeholder=" " />
-                                    <label>Phone Number</label>
+                                    <label vslang="titles.Phone Number"></label>
                                 </div>
                             </div>
                              <div class="col-12 col-md-6">
@@ -548,8 +548,8 @@ const CreateVendorDialog = (() => {
                     },
                 ],
                 prepareFormOptions: {
-                    createTitle: "Create Vendor",
-                    modifyTitle: "Modify Vendor",
+                    createTitle: "vslang:titles.Create Vendor",
+                    modifyTitle: "vslang:titles.Modify Vendor",
                     targetProp: "vendor_details",
                     api: {
                         endpoint: [

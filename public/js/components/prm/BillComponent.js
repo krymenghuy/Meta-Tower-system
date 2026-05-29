@@ -17,11 +17,11 @@ var BillComponent = (() => {
 
     mThis.cols = [
         {
-            title: "",
+            transTitle: "",
             className: "align-middle",
         },
         {
-            title: "Building",
+            transTitle: "titles.Building",
             className: "align-middle text-nowrap",
             data: (data) =>
                 `<span class="d-block text-nowrap">${data.building_name ?? "_"}</span>`,
