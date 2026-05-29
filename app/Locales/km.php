@@ -80,6 +80,7 @@ return [
         'Name' => 'ឈ្មោះ',
         'Start Date' => 'ថ្ងៃចាប់ផ្តើម',
         'End Date' => 'ថ្ងៃបញ្ចប់',
+        'All Statuses' => 'ស្ថានភាពទាំងអស់',
         'Business' => 'អាជីវកម្ម',
         'Unit' => 'បន្ទប់',
         'Type' => 'ប្រភេទ',
@@ -97,6 +98,7 @@ return [
         'Date of Birth' => 'ថ្ងៃខែឆ្នាំកើត',
         'National ID' => 'អត្តសញ្ញាណប័ណ្ណ',
         'Passport' => 'លិខិតឆ្លងដែន',
+        'Invoice Setting' => 'ការកំណត់វិក័យប័ត្រ',
         'Last Updated' => 'បានធ្វើបច្ចុប្បន្នភាពចុងក្រោយ',
 
 
@@ -125,7 +127,7 @@ return [
         'Merchant Transactions' => 'ការទូទាត់អ្នកផ្ញើរ',
         'Sales Commissions' => 'កំរៃជើងសារភ្នាក់ងារ',
         'Posters' => 'ទាំងរូបភាព',
-        'Report Center' => 'មណ្ឌលរបាយការណ៍',
+        'Report Center' => 'របាយការណ៍',
         'Commission Policies' => 'ក្រមកម្រៃជើងសារ',
         'Commission Payments' => 'ការទូទាត់កម្រៃជើងសារ',
         'Leads' => 'អតិថិជនគោលដៅ',
@@ -155,6 +157,7 @@ return [
 
         'Schedule Date' => 'កាលបរិច្ឆេទ',
         'unit' => 'បន្ទប់',
+        'unit & Type' => 'បន្ទប់ និង ប្រភេទ',
         'Deposit' => 'ប្រាក់កក់',
         'Request No' => 'លេខសំណើ',
         'Request Type' => 'ប្រភេទសំណើ',
@@ -178,7 +181,7 @@ return [
         'Contact Person' => 'បុគ្គលទំនាក់ទំនង',
         'Address' => 'អាស័យដ្ឋាន',
         'Contact Info' => 'ព័ត៌មានទំនាក់ទំនង',
-        'Amenity Name' => 'ឈ្មោះសេវាកម្ម',
+        'Amenity' => 'ឈ្មោះសេវាកម្ម',
         'Reservation Date' => 'កាលបរិច្ឆេទកក់',
         'Total Areas' => 'ផ្ទៃសរុប',
         'Total Floors' => 'ចំនួនជាន់សរុប',
@@ -196,6 +199,8 @@ return [
         'Unit Used' => 'តម្លៃឯកតា',
         'Tax' => 'ពន្ធ',
         'Total' => 'សរុប',
+        'List of report' => 'បញ្ជីរបាយការណ៍',
+        'Request Category' => 'ប្រភេទសំណើ',
 
     ],
     'menus' => [
@@ -216,6 +221,7 @@ return [
         'Bill Payments' => 'ទូទាត់វិក្កយបត្រ',
         'Service Price' => 'តំលៃសេវាកម្ម',
         'Vendors' => 'អ្នកលក់',
+
         'Bills' => 'វិក្កយបត្រចំណាយ',
         'Bill Payment' => 'ការទូទាត់វិក័យប័ត្រ',
         'Expense' => 'ចំណាយ',
@@ -308,6 +314,7 @@ return [
         'Departments' => 'នាយកដ្ឋាន',
         'Job Levels' => 'កម្រិតការងារ',
         'Positions' => 'មុខតំណែង',
+        'Invoice Setting' => 'ការកំណត់វិក័យប័ត្រ',
         'Skills' => 'ជំនាញ',
         'Tax Brackets' => 'កម្រិតពន្ធ',
         'Checkpoint Categories' => 'ផ្នែកត្រួតពិនិត្យសម្ភារៈ',
@@ -363,12 +370,15 @@ return [
 
         'View Card' => 'កាត',
         'View List' => 'បញ្ជី',
+        'Choose Report' => 'ជ្រើសរើសរបាយការណ៍',
+        'Export' => 'នាំចេញ',
 
 
     ],
     'filters' =>[
         'Start Date :' => 'ថ្ងៃចាប់ផ្ដើម :',
         'End Date :' => 'ថ្ងៃបញ្ជប់ :',
+
     ],
     'transaction' => [
         'Date' => 'Date',

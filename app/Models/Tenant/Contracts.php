@@ -103,7 +103,7 @@ class Contracts  //extends Model
         $clone_query = clone $query;
         $count = $clone_query->count('ct.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
-     
+
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
@@ -122,7 +122,7 @@ class Contracts  //extends Model
         return (object)[
             'contracts' => $contracts,
             'statuses' => GeneralSettings::options_acc_staff_status($ss),
-            
+
         ];
     }
     public function deleteContracts($id){
