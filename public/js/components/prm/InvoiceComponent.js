@@ -271,22 +271,22 @@ var InvoiceComponent = (() => {
             }
         });
 
-        vsapi
-            .call(
-                `${main_view.base_url}/prm/invoice_setting/get`, //call restapi get first
-                {}
-            )
-            .then(res => {
-                 InvoiceSetting = res.data;
-                console.log(111112, InvoiceSetting)
-                if (res.status_code !== 200) {
-                    cv_interact.error(
-                        "Failed to load invoice details."
-                    );
-                    return;
-                }
+        // vsapi
+        //     .call(
+        //         `${main_view.base_url}/prm/invoice_setting/get`, //call restapi get first
+        //         {}
+        //     )
+        //     .then(res => {
+        //          InvoiceSetting = res.data;
+        //         console.log(111112, InvoiceSetting)
+        //         if (res.status_code !== 200) {
+        //             cv_interact.error(
+        //                 "Failed to load invoice details."
+        //             );
+        //             return;
+        //         }
                 
-            });
+        //     });
 
 
         
@@ -305,7 +305,6 @@ var InvoiceComponent = (() => {
                 }
                 mThis.renderInvoiceDetail(container, res.data || {});
 
-                console.log(1112345678, res.data);
             })
             .catch(() => {
                 container.innerHTML = `<div class="alert alert-danger m-3">Network error loading invoice detail.</div>`;
@@ -499,31 +498,44 @@ var InvoiceComponent = (() => {
         const menuOptions = {
             containerElement: container,
             actionButtonClass: "btn_leave_action",
-            cssClass: "bg-white box-shadow",
+            cssClass: "bg-white box-shadow ",
             menus: [
                 {
-                    html: '<span class="ps-2" vslang="titles.Receive"></span>',
+                    html: '<span class="ps-2" vslang="titles.Receive Payment"></span>',
                     icon: `<i class="fa-solid fa-hand-holding-dollar text-success fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "receive_invoice"
                 },
+                
                 {
-                    html: '<span class="ps-2" vslang="titles.Modify"></span>',
+                    html: '<span class="ps-2" vslang="titles.Modify Invoice"></span>',
                     icon: `<i class="fa-solid fa-edit text-primary fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "modify_invoice"
                 },
                 {
-                    html: '<span class="ps-2" vslang="titles.Print"></span>',
+                    html: '<span class="ps-2" vslang="titles.Print Invoice"></span>',
                     icon: `<i class="fa-solid fa-receipt text-primary fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "print_invoice"
                 },
                 {
-                    html: '<span class="ps-2" vslang="titles.Delete"></span>',
+                    html: '<span class="ps-2" vslang="titles.Delete Invoice"></span>',
                     icon: `<i class="fa-regular fa-trash-can text-danger fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "delete_invoice"
+                },
+                {
+                    html: '<span class="ps-2" vslang="titles.Invoice Setting "></span>',
+                    icon: `<i class="fa-solid fa-file-invoice-dollar text-warning-emphasis fs-5"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "invoice_setting"
+                },
+                {
+                    html: '<span class="ps-2" vslang="titles.Clear Setting"></span>',
+                    icon: `<i class="fa-solid fa-trash-can-arrow-up fs-5 text-danger"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "reset_invoice_setting"
                 }
             ],
             onShow: (me, menuContainer) => {
@@ -553,6 +565,10 @@ var InvoiceComponent = (() => {
                     mThis.receiveInvoice(id);
                 } else if (name === "modify_invoice") {
                     mThis.editInvoice(id, menulink);
+                }else if (name === "invoice_setting") {
+                    mThis.invoiceSetting(id, menulink);
+                }else if (name === "reset_invoice_setting") {
+                    mThis.resetInvoiceSetting(id, menulink);
                 }
             }
         };
@@ -594,6 +610,52 @@ var InvoiceComponent = (() => {
             }
         );
     };
+
+    mThis.invoiceSetting = (id, menulink) => {
+        InvoiceSettingDialog.show({
+            invoice_id: id,
+            btn: menulink,
+            onClose: () => mThis.InvoiceListView.showPage(mThis.getFilterData())
+        });
+    };
+    
+    mThis.resetInvoiceSetting = (id, menulink) => {
+        if (!AuthManager.allowed(242)) return;
+
+        cv_interact.confirm(
+            "Are you sure you want to reset this invoice settings?",
+            {
+                transTitle: "Reset Invoice Settings",
+                confirmButtonText: "Reset",
+                context: "danger"
+            },
+            confirmed => {
+                if (!confirmed) return;
+
+                vsapi
+                    .call(
+                        `${main_view.base_url}/prm/invoice/reset-setting`,
+                        { id },
+                        menulink // Fixed typo: changed menuLink to menulink to match parameters
+                    )
+                    .then(res => {
+                        if (res.status_code === 200) {
+                            // Refresh the data view to display updated status states
+                            mThis.InvoiceListView.showPage(
+                                mThis.getFilterData()
+                            );
+                            // Cleaned up messages so it describes a reset, not a deletion
+                            cv_interact.success("Invoice settings reset successfully.");
+                        } else {
+                            cv_interact.error(
+                                res.error_message || "Failed to reset settings."
+                            );
+                        }
+                    });
+            }
+        );
+    };
+    
 
     mThis.editInvoice = (id, menulink) => {
         console.log("editInvoice id:", id);
@@ -3364,3 +3426,184 @@ const ReceiveDialog = (() => {
 
     return self;
 })();
+
+
+
+
+const InvoiceSettingDialog = (() => {
+    const self = {};
+    let dialog = null;
+
+    self.show = op => {
+        const currentData = op || {};
+        const invoiceId = currentData.id || currentData.invoice_id || 0; 
+
+        if (!invoiceId) {
+            console.error("InvoiceSettingDialog Error: No valid invoice ID was provided.");
+        }
+
+        dialog = new GeneralDialog({
+            title: "Invoice Setting",
+            cssClass: "modal-lg vs-modal",
+            backdrop: "static",
+            keyboard: true,
+
+            createContent: () => `
+                <div class="is-card">
+                    <p class="is-section-title">Invoice Display Options</p>
+
+                    <div class="is-row d-flex justify-content-between align-items-center mb-3">
+                        <span class="is-row-label">
+                            <i class="fa-solid fa-receipt me-2"></i>
+                            Show Commission Tax
+                        </span>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input toggle-setting" type="checkbox" data-field="show_comm_tax" id="_is_show_comm_tax">
+                        </div>
+                    </div>
+
+                    <div class="is-row d-flex justify-content-between align-items-center mb-3">
+                        <span class="is-row-label">
+                            <i class="fa-solid fa-credit-card me-2"></i>
+                            Show Payment Status
+                        </span>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input toggle-setting" type="checkbox" data-field="show_pay_status" id="_is_show_pay_status">
+                        </div>
+                    </div>
+
+                    <div class="is-row d-flex justify-content-between align-items-center mb-3">
+                        <span class="is-row-label">
+                            <i class="fa-solid fa-scale-balanced me-2"></i>
+                            Show Balance
+                        </span>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input toggle-setting" type="checkbox" data-field="show_baland" id="_is_show_baland">
+                        </div>
+                    </div>
+
+                    <div class="is-row d-flex justify-content-between align-items-center mb-3">
+                        <span class="is-row-label">
+                            <i class="fa-solid fa-money-bill-wave me-2"></i>
+                            Show Amount Paid
+                        </span>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input toggle-setting" type="checkbox" data-field="show_amount_paid" id="_is_show_amount_paid">
+                        </div>
+                    </div>
+                </div>
+            `,
+
+            contentCreated: me => {
+                const dataSource = currentData.settings ? currentData.settings : currentData;
+
+                const normalizedData = {
+                    show_comm_tax:    dataSource.show_comm_tax,
+                    show_pay_status:  dataSource.show_pay_status,
+                    show_baland:      dataSource.show_baland,
+                    show_amount_paid: dataSource.show_amount_paid !== undefined
+                                        ? dataSource.show_amount_paid
+                                        : dataSource.show_amount_piad
+                };
+
+                // Fix: Safely locate checkboxes inside document context if framework wrappers fail
+                const container = me.divModal || document;
+                container.querySelectorAll('.toggle-setting').forEach(input => {
+                    const field = input.getAttribute('data-field');
+                    if (field && normalizedData[field] !== undefined) {
+                        input.checked = parseInt(normalizedData[field]) === 1;
+                    }
+                });
+            },
+
+            onPrepareForm: me => {
+                vsapi 
+                    .call(`${main_view.base_url}/prm/invoice/get-setting`, { id: invoiceId })
+                    .then((res) => {
+                        if (res && res.status_code === 200 && res.data) {
+                            
+                            const settingsData = res.data.settings || {};
+                            
+                            const normalizedData = {
+                                show_comm_tax:   settingsData.show_comm_tax,
+                                show_pay_status: settingsData.show_pay_status,
+                                show_baland:      settingsData.show_baland,
+                                show_amount_paid: settingsData.show_amount_paid !== undefined
+                                                    ? settingsData.show_amount_paid
+                                                    : settingsData.show_amount_piad
+                            };
+
+                            // 3. Select container context and map checkbox statuses dynamically
+                            const container = me.divModal || document;
+                            container.querySelectorAll('.toggle-setting').forEach(input => {
+                                const field = input.getAttribute('data-field');
+                                if (field && normalizedData[field] !== undefined) {
+                                    input.checked = parseInt(normalizedData[field]) === 1;
+                                }
+                            });
+                        } else {
+                            console.error("Failed to map configurations:", res.error_message);
+                        }
+                    })
+                    .catch(err => {
+                        console.error("AJAX Gateway Exception:", err);
+                    });
+            },
+            
+
+            buttons: [
+                {
+                    label: '<span vslang="buttons.Cancel"></span>',
+                    cssClass: "btn btn-secondary",
+                    click: (me, btn) => {
+                        me.hide(false);
+                    },
+                },
+                {
+                    label: '<span vslang="buttons.Save"></span>',
+                    cssClass: "btn btn-primary",
+                    click: (me, btn) => {
+                        const payload = { id: invoiceId };
+                        
+                        // Fix: Changed from me.divModal to document context to guarantee loops evaluate
+                        const container = me.divModal || document;
+                        container.querySelectorAll('.toggle-setting').forEach(input => {
+                            const field = input.getAttribute('data-field');
+                            if (field) {
+                                payload[field] = input.checked ? 1 : 0;
+                            }
+                        });
+
+                        // Verify this log shows fields like "show_comm_tax: 1" in your dev console!
+                        console.log('Invoice Setting Payload gathered:', payload);
+                        
+                        vsapi 
+                            .call(`${main_view.base_url}/prm/invoice/setting`, payload, btn)
+                            .then((res) => {
+                                if (res.status_code === 200) {
+                                    me.hide(true, res);
+                                    cv_interact.success("Settings updated successfully.");
+                                    
+                                    if (typeof currentData.onClose === 'function') {
+                                        currentData.onClose();
+                                    } else if (mThis.loadSettings) {
+                                        mThis.loadSettings(null);
+                                    } else if (mThis.InvoiceListView && typeof mThis.InvoiceListView.showPage === 'function') {
+                                        mThis.InvoiceListView.showPage();
+                                    }
+                                } else {
+                                    cv_interact.error(res.error_message || "An error occurred while saving.");
+                                }
+                            });
+                    },
+                }
+            ],
+        });
+
+        dialog.show(op);
+    };
+
+    return self;
+})();
+
+
