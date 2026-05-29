@@ -33,7 +33,7 @@
         margin-right: 5px;
         color: #fff;
     }
-    
+
     #kt_aside_brand{
       background-color: #D6D6D6;
     }
@@ -50,7 +50,7 @@
         padding: 10px;
         margin-bottom: 15px;
     }
- 
+
     .kt-aside__brand-logo {
         height: 150px;
         display: flex;
@@ -59,7 +59,7 @@
         gap: 0.5rem;
         background-color: #D6D6D6;
     }
- 
+
     /* #_dms_aside_menus::-webkit-scrollbar {
         display: none;
     } */

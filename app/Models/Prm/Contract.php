@@ -229,7 +229,7 @@ class Contract
     $id = DBX::saveData($ss, 'contracts', ['id' => $id], $inputs, [], 1);
     if ($id) {
         // Only Active contracts occupy the unit; Pending (future start) leaves space Available.
-        if ($space_id && (int) ($inputs['status_id'] ?? 0) === (int) self::getActiveStatusId()) {
+        if ($space_id && ($inputs['status_id'] ?? 0) ===  self::getActiveStatusId()) {
             self::syncBuildingSpaceOccupiedForSpaceIds([$space_id]);
         }
         self::syncTenantStatusForTenantIds([$tenant_id]);
@@ -377,7 +377,6 @@ class Contract
     }
 
 //  Set building_spaces to Available when no Active/Pending contract remains on that space.
-
     public static function syncBuildingSpaceAvailabilityForSpaceIds($spaceIds): void
     {
         $availableId = self::getSpaceAvailableStatusId();
@@ -1257,3 +1256,4 @@ class Contract
         return $months;
     }
 }
+ 

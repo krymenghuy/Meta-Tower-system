@@ -16,14 +16,14 @@ class StyleProvider
                 'assets/css/font-awesome/6.2.0/css/all.min.css',
                 'assets/css/demo1/style.bundle.css',
                 'assets/css/choices.min.css',
-                 'assets/css/vs_select.base.css', 
-                 'assets/css/vs_select.material.css', 
-                'assets/css/vs_input.material.css', 
+                 'assets/css/vs_select.base.css',
+                 'assets/css/vs_select.material.css',
+                'assets/css/vs_input.material.css',
                 'assets/css/dialog_style.css',
                 'assets/css/vs_loader.css',
- 
+
                 'https://cdn.vectoraclouds.com/frontcore/components/DateTimePicker/DateTimePicker.css',
- 
+
                 'https://cdn.vectoraclouds.com/frontcore/components/listview/vs_listview.css',
                 'https://cdn.vectoraclouds.com/frontcore/components/listview/vs_listview_table.css',
                 'assets/css/sweetalert2.min.css',
@@ -36,7 +36,7 @@ class StyleProvider
                 'https://cdn.vectoraclouds.com/frontcore/components/items_view/v2/style/items_view.css',
                 'assets/css/items_view.theme.css',
             ]
-            ],    
+            ],
         'report-styles' => [
             'output_file' => '/dist/css/report-styles.css',
             'files' => [
@@ -113,19 +113,19 @@ class StyleProvider
                 'assets/vendors/custom/vendors/line-awesome/css/line-awesome.css',
                 'assets/css/font-awesome/6.2.0/css/all.min.css',
                 'assets/css/demo1/style.bundle.css',
+                'assets/css/demo1/style.bundle.css',
                 // 'assets/dist/css/adminlte.min.css',
                 'assets/css/choices.min.css',
-            
-                 'assets/css/vs_select.base.css', 
-                 'assets/css/vs_select.material.css', 
-                   'assets/css/vs_input.material.css', 
+
+                 'assets/css/vs_select.base.css',
+                 'assets/css/vs_select.material.css',
+                   'assets/css/vs_input.material.css',
 
                 'assets/css/dialog_style.css',
- 
                 'assets/css/vs_loader.css',
-                //'assets/css/jquery.datepicker2.css',
+
                 'https://cdn.vectoraclouds.com/frontcore/components/DateTimePicker/DateTimePicker.css',
-                //'assets/css/vs-pagination.css',
+
                 'https://cdn.vectoraclouds.com/frontcore/components/listview/vs_listview.css',
                 'https://cdn.vectoraclouds.com/frontcore/components/listview/vs_listview_table.css',
                 'assets/css/sweetalert2.min.css',
@@ -139,7 +139,7 @@ class StyleProvider
                 'assets/css/items_view.theme.css',
             ]
             ],
-        
+
     ];
 
     static function bundle($bundle_name = null)
