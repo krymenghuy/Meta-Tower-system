@@ -132,8 +132,6 @@ var RequestServiceComponent = (function () {
             data: (data) => {
                 const status = (data.status_name ?? '').toLowerCase();
                 const statusId = Number(data.status_id) || 0;
-                console.log
-                (22, statusId, status);
                 const statusClasses = {
                     pending: 'badge text-warning bg-warning-subtle border border-warning',
 
@@ -253,7 +251,6 @@ var RequestServiceComponent = (function () {
             category_id: mThis.elService_category?.value,
             search_value: mThis.elSearch.value,
         };
-        console.log(22, p);
         mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
             const f = el.dataset.field;
             p[f] = el.value;
