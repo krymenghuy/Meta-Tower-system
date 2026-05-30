@@ -1,21 +1,57 @@
-<div id="_main_invoices_component" class="mobile-padding px-3" style="display:none;">
-    <div class="d-flex justify-content-between w-100 rounded-2 shadow p-3 mt-2" style="background-color:#ffffff;" id="_divFilter_invoices">
-        <div class="d-flex justify-content-start gap-3 w-50">
-            <div class="d-flex justify-content-start w-50 position-relative">
-                <input type="text" class="form-control rounded-2 filter-field pe-5" id="_search_invoices" placeholder="Search">
-                <i class="fa fa-search fs-6 text-muted position-absolute" style="right: 15px; top: 50%; transform: translateY(-50%);"></i>
+<div id="_main_invoice_component" class="p-3 mobile-padding" style="display:none;">
+     <div id="_divFilter_invoice" class="bg-white shadow-sm p-3 rounded-2" >
+        <div class="align-items-center row g-3">
+            <div class="col-12 col-md-6 col-lg-4" >
+                <div class="position-relative w-100">
+                <input type="text" class="filter-field rounded-2 input-search" id="_search_invoice" placeholder="Search by tenant or invoice no" >
             </div>
-              <div class="col-6 col-md-3   text-md-end">
-                <input data-select="datepicker" class="form-control filter-field" placeholder="Select Date" data-field="start_date" />
+         </div>
+
+           <div class="col-12 col-md-6 col-lg-2">
+                <select id="payment_status" class="filter-field data-input form-control" data-field="status_id"></select>
             </div>
+             <div class="col-12 col-md-6 col-lg-2">
+                <select id="invoice_type" class="filter-field data-input form-control" data-field="invoice_type"></select>
+            </div>
+            <div class="ms-md-auto text-md-end col-12 col-md-auto">
+                {{-- <button type="button" class="w-100 w-md-auto btnAddNewPrm" id="_btnInvoice">
+                        <i class="mr-2 fa-solid fa-file-invoice-dollar"></i>
+                    <span vslang="buttons.Generate Invoice"></span>
+                </button> --}}
+            </div>
+
         </div>
-       
-        <div class="d-flex align-items-center justify-content-end w-50">
-            <button type="button" class="btnAddNewPrm d-flex align-items-center gap-2" id="_btnInvoices">
-                <i class="fa fa-user-plus"></i>
-                <span vslang="buttons.Pay the Invoice"></span>
-            </button>
-        </div>
+
     </div>
-    <div id="_invoices_list" class="mt-3"></div>
+
+    <div id="_invoices_list" class="bg-white mt-3 border rounded-2"></div>
 </div>
+
+<script src="{{ asset('js/components/prm/InvoiceTaxDialog.js') }}"></script>
+<script src="{{ asset('js/components/prm/InvoiceNoTaxDialog.js') }}"></script>
+<script src="{{ asset('js/components/prm/InvoiceCommercialDialog.js') }}"></script>
+<style>
+.status-overdue {
+    color: #990000 !important;
+    background-color: rgba(178, 34, 34, 0.1);
+    border: 1px solid #fd397a;
+    padding: 0.25rem 0.6rem;
+    border-radius: 4px;
+    font-weight: 400;
+    display: inline-block;
+}
+/* Professional Green for Paid Status */
+.status-paid {
+    color: #157347 !important;                /* Deep green for text */
+    background-color: rgba(25, 135, 84, 0.1); /* Subtle green tint (10% opacity) */
+    border: 1px solid rgba(25, 135, 84, 0.3); /* Subtle green border */
+    padding: 0.25rem 0.6rem;
+    border-radius: 4px;
+    font-weight: 600;
+    display: inline-block;
+    text-transform: capitalize;
+}
+</style>
+
+
+

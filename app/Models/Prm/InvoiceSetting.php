@@ -20,7 +20,7 @@ class InvoiceSetting extends VSModel
         $this->userInfo = $userInfo;
     }
 
-  public function saveInvoiceSetting($arr = [], $id = null, $ss = null)
+    public function saveInvoiceSetting($arr = [], $id = null, $ss = null)
     {
         if (is_object($id) && is_null($ss)) {
             $ss = $id;
@@ -33,21 +33,17 @@ class InvoiceSetting extends VSModel
         // Default to 'en' (English) if the session or language is STILL missing
         $lang = ($ss && isset($ss->lang)) ? $ss->lang : 'en';
 
-        // ONLY keep exchange_rate validation here
         $v_rule = [
             'exchange_rate' => '1|number|text=Please enter the exchange rate.',
         ];
 
-        // Validate incoming request parameters
         $res = DBX::validateObject($arr, $v_rule, 1, [], $lang, 0, null);
         if ($res->error) {
             return DV::error($res->error);
         }
         
-        // $inputs will now ONLY contain ['exchange_rate' => value]
         $inputs = $res->values;
 
-        // Save data updates ONLY the exchange_rate field in row id = 1
         $resSave = DBX::saveData($ss, $this->table, ['id' => 1], $inputs, [], 1);
         if (!$resSave) {
             return DV::error('Error saving invoice setting!');
@@ -57,11 +53,20 @@ class InvoiceSetting extends VSModel
             'id' => 1
         ]);
     }
-  
-    public function getInvoiceSetting(array $arr = [], $ss = null)
+
+   public function getInvoiceSetting()
     {
-        // FIXED: Changed from ->get() to ->first() to return a single configurations object 
-        // instead of an indexed array array containing the record wrapper
-        return DB::table($this->table)->first();
+        // Fetch the row where id = 1
+        $setting = DB::table($this->table)->where('id', 1)->first();
+
+        if (!$setting) {
+            return DV::error('Invoice settings not found!');
+        }
+
+        // Cast the stdClass object to an array to satisfy DV::success()
+        return DV::success((array) $setting);
     }
+
+   
 }
+

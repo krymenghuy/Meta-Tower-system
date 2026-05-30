@@ -93,7 +93,6 @@ const InvoiceNoTaxDialog = (() => {
         };
     };
 
-
     const buildInvoiceHTML = (invoice) => {
         const subTotal      = parseFloat(invoice.amount         || 0);
         const totalDiscount = parseFloat(invoice.discount_value || 0);
@@ -101,7 +100,11 @@ const InvoiceNoTaxDialog = (() => {
         const paid          = parseFloat(invoice.paid_amount    || 0);
         const balance       = parseFloat(invoice.due_amount     || 0);
 
-        // ✅ Fixed: added missing `today`
+        // ✅ Visibility Settings added from your request (Mapped from invoice properties)
+        const showPayStatus  = parseInt(invoice.show_pay_status !== undefined ? invoice.show_pay_status : 1) === 1;
+        const showBaland     = parseInt(invoice.show_baland !== undefined ? invoice.show_baland : 1) === 1;
+        const showAmountPaid = parseInt((invoice.show_amount_paid !== undefined ? invoice.show_amount_paid : invoice.show_amount_piad) !== undefined ? (invoice.show_amount_paid ?? invoice.show_amount_piad) : 1) === 1;
+
         const today = new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
 
         const discType     = (invoice.discount_type || "percent").toLowerCase();
@@ -123,17 +126,17 @@ const InvoiceNoTaxDialog = (() => {
             service: { bg: "#F0FDF4", fg: "#166534", dot: "#22C55E" },
         };
 
-         //*** DO NOT show Invoice Discount if it is zero */
-            const invoiceDiscount_html = totalDiscount > 0 ? ` <tr class="pi-totals-row">
-                                <td style="padding:12px 16px;color:#DC2626;">
-                                    Discount ${totalDiscount > 0 ? `(${discDisplay})` : ''}
-                                </td>
-                                <td style="padding:12px 16px;text-align:right;font-weight:600;color:#DC2626;">
-                                    ${currency}${fmt(subTotal - netTotal)}
-                                </td>
-                            </tr>` : '';
+        // *** DO NOT show Invoice Discount if it is zero */
+        const invoiceDiscount_html = totalDiscount > 0 ? `
+            <tr class="pi-totals-row">
+                <td style="padding:12px 16px;color:#DC2626;">
+                    Discount ${totalDiscount > 0 ? `(${discDisplay})` : ''}
+                </td>
+                <td style="padding:12px 16px;text-align:right;font-weight:600;color:#DC2626;">
+                    -${currency}${fmt(subTotal - netTotal)}
+                </td>
+            </tr>` : '';
               
-        // ✅ Fixed: `validItems` was never declared
         const validItems = (invoice.items || []).filter(
             (item) => parseFloat(item.price || 0) > 0 || parseFloat(item.total || 0) > 0
         );
@@ -144,10 +147,7 @@ const InvoiceNoTaxDialog = (() => {
             const total = parseFloat(item.total || (qty * price));
             const disc  = parseFloat(item.discount || item.special_discount_value || 0);
 
-            // ✅ Fixed: item-level discType renamed to avoid shadowing outer scope
             const itemDiscType = (item.discount_type || item.special_discount_type || "percent").toLowerCase();
-
-            // ✅ Fixed: `rawType` was undefined
             const rawType = (item.type || "service").toLowerCase();
             const cfg = typeConfig[rawType] || typeConfig.service;
 
@@ -160,7 +160,6 @@ const InvoiceNoTaxDialog = (() => {
 
             const rowBg = i % 2 !== 0 ? "#FAFAFA" : "#FFFFFF";
 
-           
             return `
             <tr style="background:${rowBg};">
                 <td style="padding:10px 24px;text-align:start;border-bottom:1px solid #EEF0F5;font-size:12px;color:#555;">
@@ -228,14 +227,8 @@ const InvoiceNoTaxDialog = (() => {
 
             <div class="pi-root" id="pi-invoice-content">
 
-                <!-- ═══ HEADER BAND ═══ -->
                 <div style="padding:0px 32px 16px 32px;border-bottom:2px solid #E5E9F5;display:flex;justify-content:space-between;align-items:center;">
                     <div style="display:flex;align-items:center;gap:14px;">
-                       <!-- <div style="width:80px;height:80px;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;border-radius:10px;border:1.5px solid #E5E9F5;">
-                            <img src="../assets/images/meta/Meta_logo1.png" alt="Logo"
-                                style="width:64px;height:64px;object-fit:contain;"
-                                onerror="this.parentElement.innerHTML='<span style=&quot;font-size:24px;font-weight:900;color:#1A3D91;&quot;>M</span>'">
-                        </div> -->
                         <div style="display:flex;flex-direction:column;gap:2px;">
                             <div style="font-size:30px;font-weight:800;letter-spacing:-1px;line-height:1;color:#1A3D91;font-family:'Inter',sans-serif;">INVOICE</div>
                             <div style="font-size:14px;font-weight:700;color:#1A3D91;letter-spacing:0.2px;font-family:'Inter',sans-serif;">
@@ -252,13 +245,13 @@ const InvoiceNoTaxDialog = (() => {
                     <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
                         <div style="font-size:11px;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.8px;font-family:'Inter',sans-serif;">Invoice No.</div>
                         <div style="font-size:18px;font-weight:800;color:#0F2060;font-family:'Inter',sans-serif;">${invoice.code || "—"}</div>
-                        <div style="display:none;padding:4px 14px;border-radius:99px;background:${statusBg};color:${statusColor};font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;font-family:'Inter',sans-serif;">
+                        
+                        <div style="display:${showPayStatus ? 'block' : 'none'}; padding:4px 14px;border-radius:99px;background:${statusBg};color:${statusColor};font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;font-family:'Inter',sans-serif;">
                             ${statusLabel}
                         </div>
                     </div>
                 </div>
 
-                <!-- ═══ BILLED TO / DATE LINE ═══ -->
                 <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:14px 32px;border-bottom:1px solid #E8E8E8;background:#FAFBFF;">
                     <div>
                         <div style="font-size:10px;font-weight:700;color:#9CA3AF;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.8px;font-family:'Inter',sans-serif;">Customer</div>
@@ -273,7 +266,6 @@ const InvoiceNoTaxDialog = (() => {
                     </div>
                 </div>
 
-                <!-- ═══ ITEMS TABLE ═══ -->
                 <div class="pi-tbl-wrap">
                     <table class="pi-table">
                         <thead>
@@ -288,13 +280,11 @@ const InvoiceNoTaxDialog = (() => {
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- ✅ Fixed: colspan was 9 but table has 8 columns -->
-                            ${itemRows || `<tr><td colspan="8" style="text-align:center;padding:48px;color:#999;font-size:13px;font-family:'Inter',sans-serif;">No items found</td></tr>`}
+                            ${itemRows || `<tr><td colspan="7" style="text-align:center;padding:48px;color:#999;font-size:13px;font-family:'Inter',sans-serif;">No items found</td></tr>`}
                         </tbody>
                     </table>
                 </div>
 
-                <!-- ═══ TOTALS ═══ -->
                 <div style="display:flex;justify-content:flex-end;padding:24px 0px;">
                     <div style="min-width:300px;border:1px solid #E5E9F5;border-radius:12px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.03);">
                         <table style="width:100%;border-collapse:collapse;">
@@ -302,36 +292,33 @@ const InvoiceNoTaxDialog = (() => {
                                 <td style="padding:12px 16px;color:#666;">Sub Total</td>
                                 <td style="padding:12px 16px;text-align:right;font-weight:600;">${currency}${fmt(subTotal)}</td>
                             </tr>
+                            
                             ${invoiceDiscount_html}
-                            ${invoice.payment_status_id === 2 ? `
-                                <tr style="background:linear-gradient(135deg,#0F2060,#1A3D91);">
-                                    <td style="padding:14px 16px;color:#fff;font-weight:700;">Total (Net)</td>
-                                    <td style="padding:14px 16px;text-align:right;font-weight:800;color:#FDE68A;font-size:16px;">${currency}${fmt(netTotal)}</td>
-                                </tr>` : `
-                                <tr class="pi-totals-row" style="background:#F8FAFF;border-top:2px solid #E5E9F5;">
-                                    <td style="padding:12px 16px;color:#111;font-weight:700;">Total (Net)</td>
-                                    <td style="padding:12px 16px;text-align:right;font-weight:700;color:#111;font-size:14px;">${currency}${fmt(netTotal)}</td>
-                                </tr>
-                                <tr class="pi-totals-row">
-                                    <td style="padding:12px 16px;color:#059669;">Amount Paid</td>
-                                    <td style="padding:12px 16px;text-align:right;font-weight:600;color:#059669;">${currency}${fmt(paid)}</td>
-                                </tr>
-                                <tr style="background:linear-gradient(135deg,#0F2060,#1A3D91);">
-                                    <td style="padding:14px 16px;color:#fff;font-weight:700;">Balance Due</td>
-                                    <td style="padding:14px 16px;text-align:right;font-weight:800;color:#FDE68A;font-size:16px;">${currency}${fmt(balance)}</td>
-                                </tr>`}
+                            
+                            <tr class="pi-totals-row" style="background:#F8FAFF;border-top:2px solid #E5E9F5;">
+                                <td style="padding:12px 16px;color:#111;font-weight:700;">Total (Net)</td>
+                                <td style="padding:12px 16px;text-align:right;font-weight:700;color:#111;font-size:14px;">${currency}${fmt(netTotal)}</td>
+                            </tr>
+                            
+                            <tr class="pi-totals-row" style="display:${showAmountPaid ? 'table-row' : 'none'};">
+                                <td style="padding:12px 16px;color:#059669;">Amount Paid</td>
+                                <td style="padding:12px 16px;text-align:right;font-weight:600;color:#059669;">${currency}${fmt(paid)}</td>
+                            </tr>
+                            
+                            <tr style="background:linear-gradient(135deg,#0F2060,#1A3D91); display:${showBaland ? 'table-row' : 'none'};">
+                                <td style="padding:14px 16px;color:#fff;font-weight:700;">Balance Due</td>
+                                <td style="padding:14px 16px;text-align:right;font-weight:800;color:#FDE68A;font-size:16px;">${currency}${fmt(balance)}</td>
+                            </tr>
                         </table>
                     </div>
                 </div>
 
-                <!-- ═══ REMARKS ═══ -->
                 ${invoice.general_remark ? `
                 <div style="margin:8px 0px 16px;padding:12px 16px;background:#FFFBEB;border-left:3px solid #F59E0B;border-radius:0 8px 8px 0;">
                     <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#92400E;margin-bottom:4px;">Remarks</div>
                     <div style="font-size:12px;color:#78350F;line-height:1.5;">${invoice.general_remark}</div>
                 </div>` : ""}
 
-                <!-- ═══ FOOTER ═══ -->
                 <div style="display:flex;justify-content:space-between;align-items:flex-end;padding:14px 24px;background:#F8FAFF;border-top:1px solid #E5E9F5;flex-wrap:wrap;gap:12px;">
                     <div>
                         <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#1A3D91;margin-bottom:4px;">Terms &amp; Conditions</div>
@@ -342,7 +329,6 @@ const InvoiceNoTaxDialog = (() => {
                         <div style="font-size:11px;font-weight:600;color:#4B5563;margin-top:2px;">${formatDate(invoice.issue_date)}</div>
                     </div>
                 </div>
-                <!-- ═══ ACTION BAR ═══ -->
                 <div class="pi-action-bar" style="display:flex;justify-content:flex-end;gap:10px;padding:14px 0px;border-top:1px solid #EBEBEB;background:#fff;">
                     <button id="pi-print-btn"
                         style="padding:9px 20px;border-radius:8px;border:1.5px solid #1A3D91;background:#fff;color:#1A3D91;font-weight:600;display:inline-flex;align-items:center;gap:7px;font-family:'Inter',sans-serif;">
@@ -372,7 +358,7 @@ const InvoiceNoTaxDialog = (() => {
         }
 
         const dlg = new GeneralDialog({
-            title: "No Tax  Invoice",
+            title: "No Tax Invoice",
             cssClass: "modal-xl vs-modal",
             backdrop: "static",
             keyboard: true,
