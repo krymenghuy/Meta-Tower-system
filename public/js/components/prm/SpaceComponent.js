@@ -110,7 +110,7 @@ var SpaceComponent = new (function () {
                 <div class="metric-card-sm" style="border-left:6px solid ${pal.total};">
                     <div class="metric-head-sm">
                         <span class="metric-dot d-inline-block rounded-circle" style="width:8px;height:8px;background:${pal.total};"></span>
-                        <span >Total Units</span>
+                        <span vslang="titles.Total Spaces">Total Spaces</span>
                     </div>
                     <div class="metric-value-sm fw-bold px-4" style="color:${pal.total};">${total}</div>
                 </div>
@@ -120,7 +120,7 @@ var SpaceComponent = new (function () {
                 <div class="metric-card-sm" style="border-left:6px solid ${pal.available};">
                     <div class="metric-head-sm">
                         <span class="metric-dot d-inline-block rounded-circle" style="width:8px;height:8px;background:${pal.available};"></span>
-                        <span>Available</span>
+                        <span vslang="titles.Available">Available</span>
                     </div>
                     <div class="metric-value-sm fw-bold px-4" style="color:${pal.available};">${avail}</div>
                 </div>
@@ -130,7 +130,7 @@ var SpaceComponent = new (function () {
                 <div class="metric-card-sm" style="border-left:6px solid ${pal.booked};">
                     <div class="metric-head-sm">
                         <span class="metric-dot d-inline-block rounded-circle" style="width:8px;height:8px;background:${pal.booked};"></span>
-                        <span>Booked</span>
+                        <span vslang="titles.Booked">Booked</span>
                     </div>
                     <div class="metric-value-sm fw-bold px-4" style="color:${pal.booked};">${booked}</div>
                 </div>
@@ -140,7 +140,7 @@ var SpaceComponent = new (function () {
                 <div class="metric-card-sm" style="border-left:6px solid ${pal.occupancy};">
                     <div class="metric-head-sm">
                         <span class="metric-dot d-inline-block rounded-circle" style="width:8px;height:8px;background:${pal.occupancy};"></span>
-                        <span>Occupancy</span>
+                        <span vslang="titles.Occupied">Occupied</span>
                     </div>
                     <div class="metric-value-sm fw-bold px-4" style="color:${pal.occupancy};">${occ}</div>
                 </div>
@@ -207,6 +207,7 @@ var SpaceComponent = new (function () {
             cssClass: "bg-white shadow",
             //menuItemClass:"",
             menus: [
+               
                 {
                     html: '<span class="ps-2" vslang="titles.Modify Space"></span>',
                     icon: `<i class="fa-regular fa-pen-to-square fs-5 text-warning"></i>`,
@@ -443,7 +444,7 @@ var SpaceComponent = new (function () {
 
                                 </div>
                                 <span>
-                                    <a href="javascript:void(0)" class="btn_space_action" data-id="${d.id}" data-buildingid="${d.building_id}" data-floorid="${d.floor_id}" data-statusid="${d.status_id}" data-maintenanceStatusId="${d.maintenance_status_id}" aria-haspopup="true" aria-expanded="false">
+                                    <a href="javascript:void(0)" class="btn_space_action" data-id="${d.id}" data-buildingid="${d.building_id}" data-floorid="${d.floor_id}" data-statusid="${d.status_id}" data-maintenanceStatusId="${d.maintenance_status_id}" aria-haspopup="true" aria-expanded="false" style="padding: 0 10px;">
                                         <i class="fa-solid fa-ellipsis-vertical text-primary-custom fs-5"></i>
                                     </a>
                                 </span>

@@ -1,7 +1,7 @@
 "use strict";
 var ReservationComponent = (() => {
     const mThis = {};
-    mThis.title_prop = "Reservation";
+    mThis.title_prop = "Booking Amenity";
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector(
         "#_main_reservation_component",
@@ -34,7 +34,7 @@ var ReservationComponent = (() => {
             transTitle: "titles.Amenity",
             className: "align-middle",
             data: (data) => {
-                return `<span class="text-primary-custom">${data.amenity_name ?? "_"}</span>`;
+                return `<span class="text-primary-custom text-capitalize">${data.amenity_name ?? "_"}</span>`;
             },
         },
         {

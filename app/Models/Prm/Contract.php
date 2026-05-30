@@ -38,15 +38,15 @@ class Contract
 
         $spaceId = $arr['space_id'] ?? null;
         if ($spaceId === null || $spaceId === '' || !is_numeric($spaceId)) {
-            return DV::error('Please select a valid unit code');
+            return DV::error('Please select a valid unit code.');
         }
 
         $deposit = $arr['deposit'] ?? null;
         if ($deposit === null || $deposit === '') {
-            return DV::error('Deposit is required');
+            return DV::error('Deposit is required.');
         }
         if (!is_numeric($deposit)) {
-            return DV::error('Deposit is required');
+            return DV::error('Deposit is required.');
         }
 
         $startDate = trim(($arr['start_date'] ?? ''));
@@ -229,7 +229,7 @@ class Contract
     $id = DBX::saveData($ss, 'contracts', ['id' => $id], $inputs, [], 1);
     if ($id) {
         // Only Active contracts occupy the unit; Pending (future start) leaves space Available.
-        if ($space_id && (int) ($inputs['status_id'] ?? 0) === (int) self::getActiveStatusId()) {
+        if ($space_id && ($inputs['status_id'] ?? 0) ===  self::getActiveStatusId()) {
             self::syncBuildingSpaceOccupiedForSpaceIds([$space_id]);
         }
         self::syncTenantStatusForTenantIds([$tenant_id]);
@@ -377,7 +377,6 @@ class Contract
     }
 
 //  Set building_spaces to Available when no Active/Pending contract remains on that space.
-
     public static function syncBuildingSpaceAvailabilityForSpaceIds($spaceIds): void
     {
         $availableId = self::getSpaceAvailableStatusId();
@@ -1257,3 +1256,4 @@ class Contract
         return $months;
     }
 }
+ 

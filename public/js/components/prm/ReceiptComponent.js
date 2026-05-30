@@ -162,8 +162,8 @@ var ReceiptComponent = new (function() {
             transTitle: "titles.Action",
             className: "col_action align-middle text-center text-nowrap",
             data: data => `
-                <a href="javascript:void(0)" class="btn_leave_action" data-id="${data.id}" data-statusid="${data.receipt_status_id}">
-                    <i class="fa-solid fa-ellipsis-vertical text-muted fs-5"></i>
+                <a href="javascript:void(0)" class="btn_leave_action" data-id="${data.id}" data-statusid="${data.receipt_status_id}" style="padding: 0 10px;">
+                    <i class="fa-solid fa-ellipsis-vertical text-primary-custom fs-5"></i>
                 </a>`
         }
     ];

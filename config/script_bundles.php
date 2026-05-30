@@ -65,7 +65,7 @@ return [
 
                 'assets/js/choices.11.2.js',
                 'https://cdn.vectoraclouds.com/beta-frontcore/components/vs_choices.js',
-             
+
                 'https://cdn.vectoraclouds.com/frontcore/utils/validator.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/cv_interact.js',
                 //'/assets/js/date.js',
@@ -108,7 +108,7 @@ return [
                 // 'https://cdn.vectoraclouds.com/frontcore/components/ExpandableTableRow.v2.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/FileChooser.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/listview/listview.v2.js',
- 
+
                 //'/assets/js/xlsx/xlsx.full.min.js',
                 'assets/js/pusher/pusher.min.js',
                 '/js/components/common/FindPersonDialog.js',
@@ -183,10 +183,9 @@ return [
                 '/js/components/tenant/TenantProfileComponent.js',
                 '/js/components/tenant/ContractsComponent.js',
                 '/js/components/tenant/InvoicesComponent.js',
-                '/js/components/tenant/BuildingServiceComponent.js',
+                '/js/components/tenant/RequestServiceComponent.js',
                 '/js/components/tenant/AnnouncementComponent.js',
                 '/js/components/tenant/ReservationComponent.js',
-                '/js/components/tenant/TenantProfileComponent.js',
 
 
             ]
@@ -215,7 +214,7 @@ return [
                 'https://cdn.vectoraclouds.com/frontcore/components/validator.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/cv_interact.js',
                 'https://cdn.vectoraclouds.com/frontcore/utils/DateHelper.js',
- 
+
                  'https://cdn.vectoraclouds.com/frontcore/components/DateTimePicker/DateTimePicker.js',
                 'https://cdn.jsdelivr.net/npm/fuse.js@7.1.0',
                 '/assets/js/choices.js',
@@ -253,9 +252,10 @@ return [
                 'https://cdn.vectoraclouds.com/frontcore/vsroute/vsroute.js',
                 '/js/layout/umt/main.js',
                 // '/js/components/abm/PDFReport.js',
-                '/js/components/formal/RenderTableReport.js',
+                '/js/components/prm/RenderTableReport.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/ImageHelper.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/ImageBox.js',
+
                 // 'https://cdn.vectoraclouds.com/frontcore/components/ImageBox.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/SearchInput/VSSearchInput.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/VSMoney.js',
@@ -271,8 +271,8 @@ return [
                 '/js/components/umt/SetPasswordDialog.js',
                 '/js/components/umt/UserManagementComponent.js',
                 '/js/components/umt/CampusManagementComponent.js',
-                // '/js/components/umt/RoleManagementTool.js',
-                 '/js/components/umt/RoleManagementComponent.js',
+                '/js/components/umt/RoleManagementTool.js',
+                //  '/js/components/umt/RoleManagementComponent.js',
                 'https://js.pusher.com/8.2.0/pusher.min.js',
                 //'/js/components/abm/pusher_client_houxpress.js',
                 //'/js/components/common/pusher_connect.js',

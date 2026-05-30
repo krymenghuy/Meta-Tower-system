@@ -33,7 +33,7 @@
         margin-right: 5px;
         color: #fff;
     }
-    
+
     #kt_aside_brand{
       background-color: #D6D6D6;
     }
@@ -50,7 +50,7 @@
         padding: 10px;
         margin-bottom: 15px;
     }
- 
+
     .kt-aside__brand-logo {
         height: 150px;
         display: flex;
@@ -59,7 +59,7 @@
         gap: 0.5rem;
         background-color: #D6D6D6;
     }
- 
+
     /* #_dms_aside_menus::-webkit-scrollbar {
         display: none;
     } */
@@ -179,8 +179,8 @@ function v_display($mod_id, $module_ids = null)
                     </a>
                 </li>
 
-                <li class="kt-menu__item" aria-haspopup="true" <?php v_display(206); ?>>
-                    <a href="ReservationComponent" modid="270" class="menu-item kt-menu__link">
+                <li class="kt-menu__item" aria-haspopup="true" <?php v_display(303); ?>>
+                    <a href="ReservationComponent" modid="204" class="menu-item kt-menu__link">
                         <span class="kt-menu__link-icon">
                             <img class="opacity-icons icons" src="{{ asset('assets/images/icons/reservation.svg') }}" />
                         </span>
@@ -199,13 +199,12 @@ function v_display($mod_id, $module_ids = null)
                 </li>
 
                 <li class="kt-menu__item" aria-haspopup="true" <?php v_display(202); ?>>
-                    <a href="BuildingServiceComponent" modid="202" class="menu-item kt-menu__link">
+                    <a href="RequestServiceComponent" modid="202" class="menu-item kt-menu__link">
                         <span class="kt-menu__link-icon">
                             <img class="opacity-icons icons"
                                 src="{{ asset('assets/images/icons/zone_floor.svg') }}" />
                         </span>
-                        <span class="font-color kt-menu__link-text" vslang="menus.Service Booking">Service
-                            Booking</span>
+                        <span class="font-color kt-menu__link-text" vslang="menus.Request Service">Request Service</span>
                     </a>
                 </li>
 
@@ -227,7 +226,7 @@ function v_display($mod_id, $module_ids = null)
                             </a>
                         </li> -->
 
-                {{-- <li class="kt-menu__item" aria-haspopup="true" <?php v_display(201); ?>>
+                {{-- <li class="kt-menu__item" aria-haspopup="true" <?php v_display(); ?>>
                     <a href="AccountStaffComponent" modid="201" class="menu-item kt-menu__link">
                         <span class="kt-menu__link-icon">
                             <img class="opacity-icons icons" src="{{ asset('assets/images/icons/staff.svg') }}" />
@@ -235,12 +234,12 @@ function v_display($mod_id, $module_ids = null)
                         <span class="font-color kt-menu__link-text" vslang="menus.Profile">Profile</span>
                     </a>
                 </li> --}}
-                <li class="kt-menu__item" aria-haspopup="true" <?php v_display(201); ?>>
-                    <a href="TenantProfileComponent" modid="201" class="menu-item kt-menu__link">
+                <li class="kt-menu__item" aria-haspopup="true" <?php v_display(301); ?>>
+                    <a href="TenantProfileComponent" modid="219" class="menu-item kt-menu__link">
                         <span class="kt-menu__link-icon">
                             <img class="opacity-icons icons" src="{{ asset('assets/images/icons/staff.svg') }}" />
                         </span>
-                        <span class="font-color kt-menu__link-text" vslang="menus.Profile">Profile</span>
+                        <span class="font-color kt-menu__link-text" vslang="menus.Staff">Profile</span>
                     </a>
                 </li>
                 <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true"

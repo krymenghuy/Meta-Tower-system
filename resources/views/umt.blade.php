@@ -8,7 +8,7 @@
         <base href="../">
         <meta charset="utf-8" />
         <title>Authorization Manager</title>
-        <link type="images/png" rel="icon" href="{{ asset('assets/images/logo/Mainlogo.png') }}" />
+        <link type="images/png" rel="icon" href="{{ asset('assets/images/meta/Meta_logo.png') }}" />
         <meta name="description" content="Updates and statistics">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
         <meta name="csrf-token" content="{{ csrf_token() }}" />

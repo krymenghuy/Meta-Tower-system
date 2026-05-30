@@ -533,7 +533,7 @@ var ReportComponent = (() => {
     const payload = { app_id: main_view.app_id };
     console.log(12,payload);
     
-    vsapi.call(`${main_view.base_url}/prm/reports/list`, payload, null, null, main_view.apiCluster)
+    vsapi.call(`${main_view.base_url}/api/report-center/report-list`, payload, null, null, main_view.apiCluster)
         
         .then(res => {
             console.log(JSON.stringify(res,null,2));
@@ -585,7 +585,7 @@ var ReportComponent = (() => {
                         <div class="card-report">
                             <div class="row gy-2 w-100 h-100">
                                 <div id="_rpt_name" class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
-                                    <h5 class="text-uppercase">List of report</h5>
+                                    <h5 class="text-uppercase" vslang="titles.List of report">List of report</h5>
                                     <ul class="del-marker h-100" style="max-height: ${(window.innerHeight - 160)}px;">
                                         ${mThis.renderReportType(data)}
                                     </ul>

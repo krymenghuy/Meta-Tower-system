@@ -149,8 +149,8 @@ var PurchaseOrdersComponent = (() => {
                        data-id="${data.id}"
                        data-authorized="${data.authorized}"
                        data-statusid="${data.status_id}"
-                       aria-haspopup="true" aria-expanded="false">
-                        <i class="fa-solid fa-ellipsis-vertical text-black fs-5"></i>
+                       aria-haspopup="true" aria-expanded="false" style="padding: 0 10px;">
+                        <i class="fa-solid fa-ellipsis-vertical text-prm-custom fs-5"></i>
                     </a>
                 </div>`;
             }
