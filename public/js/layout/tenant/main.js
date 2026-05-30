@@ -17,9 +17,7 @@ var main_view = (()=>{
     mThis.VSAppContent = document.querySelector('#_app_content');
     //mThis.appContent = $(mThis.VSAppContent); //should no longer use it !!!
    
-    // mThis.auth_script_url = 'https://cdn.vectoraclouds.com/frontcore/utils/AuthManager.v2.js';
-        mThis.auth_script_url =
-        "https://cdn.vectoraclouds.com/frontcore/utils/AuthManager.v2.js";
+     mThis.auth_script_url ="https://cdn.vectoraclouds.com/frontcore/utils/AuthManager.v2.js?v=2";
     mThis.secure_endpoint =  [mThis.base_url,'/api/1a2b3c4d5e6f7g8h9i0j1k2l3m/en'].join('');
     mThis.top_right_menus = document.querySelector('#_main_top_right_menus');
       
@@ -479,9 +477,7 @@ window.addEventListener('DOMContentLoaded',async()=>{
     main_view.setLangMenu(LocaleManager.currentLanguage.code);
 
     const inputs = main_view.VSAppContent.querySelectorAll("input");
-    console.log(1111111, AuthManager.user);
-
-
+       
     DateTimePicker.destroyAll();
     inputs.forEach(el =>{
         const type = el.getAttribute('type') ?? el.dataset.select ?? '';

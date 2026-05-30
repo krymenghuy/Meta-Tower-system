@@ -101,7 +101,6 @@ return [
                 'https://cdn.jsdelivr.net/gh/tomik23/circular-progress-bar@latest/docs/circularProgressBar.min.js',
                 'https://cdn.vectoraclouds.com/frontcore/vsroute/vsroute.js',
                 '/js/layout/prm/main.js',
-                '/assets/js/SearchWidget.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/ImageHelper.js',
                'https://cdn.vectoraclouds.com/frontcore/components/ImageBox.js',
                 //'/assets/js/ImageBox.js',
