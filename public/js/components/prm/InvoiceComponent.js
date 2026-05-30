@@ -271,26 +271,6 @@ var InvoiceComponent = (() => {
             }
         });
 
-        // vsapi
-        //     .call(
-        //         `${main_view.base_url}/prm/invoice_setting/get`, //call restapi get first
-        //         {}
-        //     )
-        //     .then(res => {
-        //          InvoiceSetting = res.data;
-        //         console.log(111112, InvoiceSetting)
-        //         if (res.status_code !== 200) {
-        //             cv_interact.error(
-        //                 "Failed to load invoice details."
-        //             );
-        //             return;
-        //         }
-                
-        //     });
-
-
-        
-
         mThis.initAlready = true;
     };
 
@@ -304,7 +284,6 @@ var InvoiceComponent = (() => {
                     return;
                 }
                 mThis.renderInvoiceDetail(container, res.data || {});
-
             })
             .catch(() => {
                 container.innerHTML = `<div class="alert alert-danger m-3">Network error loading invoice detail.</div>`;
@@ -501,38 +480,44 @@ var InvoiceComponent = (() => {
             cssClass: "bg-white box-shadow ",
             menus: [
                 {
-                    html: '<span class="ps-2" vslang="titles.Receive Payment"></span>',
+                    html:
+                        '<span class="ps-2" vslang="titles.Receive Payment"></span>',
                     icon: `<i class="fa-solid fa-hand-holding-dollar text-success fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "receive_invoice"
                 },
-                
+
                 {
-                    html: '<span class="ps-2" vslang="titles.Modify Invoice"></span>',
+                    html:
+                        '<span class="ps-2" vslang="titles.Modify Invoice"></span>',
                     icon: `<i class="fa-solid fa-edit text-primary fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "modify_invoice"
                 },
                 {
-                    html: '<span class="ps-2" vslang="titles.Print Invoice"></span>',
+                    html:
+                        '<span class="ps-2" vslang="titles.Print Invoice"></span>',
                     icon: `<i class="fa-solid fa-receipt text-primary fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "print_invoice"
                 },
                 {
-                    html: '<span class="ps-2" vslang="titles.Delete Invoice"></span>',
+                    html:
+                        '<span class="ps-2" vslang="titles.Delete Invoice"></span>',
                     icon: `<i class="fa-regular fa-trash-can text-danger fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "delete_invoice"
                 },
                 {
-                    html: '<span class="ps-2" vslang="titles.Invoice Setting "></span>',
+                    html:
+                        '<span class="ps-2" vslang="titles.Invoice Setting "></span>',
                     icon: `<i class="fa-solid fa-file-invoice-dollar text-warning-emphasis fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "invoice_setting"
                 },
                 {
-                    html: '<span class="ps-2" vslang="titles.Clear Setting"></span>',
+                    html:
+                        '<span class="ps-2" vslang="titles.Clear Setting"></span>',
                     icon: `<i class="fa-solid fa-trash-can-arrow-up fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "reset_invoice_setting"
@@ -565,9 +550,9 @@ var InvoiceComponent = (() => {
                     mThis.receiveInvoice(id);
                 } else if (name === "modify_invoice") {
                     mThis.editInvoice(id, menulink);
-                }else if (name === "invoice_setting") {
+                } else if (name === "invoice_setting") {
                     mThis.invoiceSetting(id, menulink);
-                }else if (name === "reset_invoice_setting") {
+                } else if (name === "reset_invoice_setting") {
                     mThis.resetInvoiceSetting(id, menulink);
                 }
             }
@@ -618,7 +603,7 @@ var InvoiceComponent = (() => {
             onClose: () => mThis.InvoiceListView.showPage(mThis.getFilterData())
         });
     };
-    
+
     mThis.resetInvoiceSetting = (id, menulink) => {
         if (!AuthManager.allowed(242)) return;
 
@@ -645,7 +630,9 @@ var InvoiceComponent = (() => {
                                 mThis.getFilterData()
                             );
                             // Cleaned up messages so it describes a reset, not a deletion
-                            cv_interact.success("Invoice settings reset successfully.");
+                            cv_interact.success(
+                                "Invoice settings reset successfully."
+                            );
                         } else {
                             cv_interact.error(
                                 res.error_message || "Failed to reset settings."
@@ -655,7 +642,6 @@ var InvoiceComponent = (() => {
             }
         );
     };
-    
 
     mThis.editInvoice = (id, menulink) => {
         console.log("editInvoice id:", id);
@@ -757,7 +743,7 @@ const InvoiceDialog = (() => {
     let dialog = null;
     let availableItem = [];
     let InvoiceSetting = null;
-    
+    let globalSetting = null;
 
     self.show = op => {
         dialog = new GeneralDialog({
@@ -950,8 +936,6 @@ const InvoiceDialog = (() => {
                 me.controls.div_invoice_summary = me.divModal.querySelector(
                     '[name="div_invoice_summary"]'
                 );
-
-
 
                 me.controls.btnRent.onclick = () => {
                     if (!me._selectedTenantId) {
@@ -1275,6 +1259,7 @@ const InvoiceDialog = (() => {
                 };
 
                 me.controls.btnElectric.onclick = () => {
+                    console.log("Global Setting", globalSetting);
                     if (!me._selectedTenantId) {
                         return cv_interact.error("Please select Tenant first.");
                     }
@@ -1284,23 +1269,25 @@ const InvoiceDialog = (() => {
                     ) {
                         return cv_interact.error("Please select Space.");
                     }
+                    // const exchangeRate = me.exchangeRate;
+                    // console.log(1111111111111111111,exchangeRate);
 
                     // Fetch InvoiceSetting first, then open popup
                     const openElectricPopup = () => {
-                    let electricDiv = null;
-                    InputBox.resetInstance("electricPopUp");
-                    InputBox.show({
-                        title: "Electricity Utility",
-                        instanceKey: "electricPopUp",
-                        confirmButtonText: "Save",
+                        let electricDiv = null;
+                        InputBox.resetInstance("electricPopUp");
+                        InputBox.show({
+                            title: "Electricity Utility",
+                            instanceKey: "electricPopUp",
+                            confirmButtonText: "Save",
 
-                        createContent() {
-                            const div = document.createElement("div");
-                            electricDiv = div;
-                            div.style.cssText =
-                                "display:flex; flex-direction:column;";
+                            createContent() {
+                                const div = document.createElement("div");
+                                electricDiv = div;
+                                div.style.cssText =
+                                    "display:flex; flex-direction:column;";
 
-                            div.innerHTML = `
+                                div.innerHTML = `
                                 <!-- Tabs Container -->
                                 <div class="d-flex mb-3" style="border-bottom:1px solid #eee; gap:16px;">
                                     <div id="btn_tab_reading" style="cursor:pointer; padding:8px 12px; border-bottom:2px solid #0C447C; color:#0C447C; font-weight:600;">By Reading</div>
@@ -1393,371 +1380,378 @@ const InvoiceDialog = (() => {
                                 </div>
                                 <input class="data-input" type="text" data-field="entry_mode" value="reading" style="display:none;">
                             `;
-                            return div;
-                        },
+                                return div;
+                            },
 
-                        onOpen(ibMe) {
-                            // Target elements using structural selectors
-                            const elOld = electricDiv.querySelector(
-                                '[data-field="old_electric"]'
-                            );
-                            const elNew = electricDiv.querySelector(
-                                '[data-field="new_electric"]'
-                            );
-                            const elUnits = electricDiv.querySelector(
-                                '[data-field="units_used"]'
-                            );
-                            const elUnitsReadonly = electricDiv.querySelector(
-                                "#units_used_readonly"
-                            );
+                            onOpen(ibMe) {
+                                // Target elements using structural selectors
+                                const elOld = electricDiv.querySelector(
+                                    '[data-field="old_electric"]'
+                                );
+                                const elNew = electricDiv.querySelector(
+                                    '[data-field="new_electric"]'
+                                );
+                                const elUnits = electricDiv.querySelector(
+                                    '[data-field="units_used"]'
+                                );
+                                const elUnitsReadonly = electricDiv.querySelector(
+                                    "#units_used_readonly"
+                                );
 
-                            const elExchangeRate = electricDiv.querySelector(
-                                '[data-field="exchange_rate"]'
-                            );
-                            const elPriceKHR = electricDiv.querySelector(
-                                '[data-field="price_khr"]'
-                            );
-                            const elPriceUSD = electricDiv.querySelector(
-                                '[data-field="price_usd"]'
-                            );
+                                const elExchangeRate = electricDiv.querySelector(
+                                    '[data-field="exchange_rate"]'
+                                );
+                                const elPriceKHR = electricDiv.querySelector(
+                                    '[data-field="price_khr"]'
+                                );
+                                const elPriceUSD = electricDiv.querySelector(
+                                    '[data-field="price_usd"]'
+                                );
 
-                            const elStartDate = electricDiv.querySelector(
-                                '[data-field="start_date"]'
-                            );
-                            const elEndDate = electricDiv.querySelector(
-                                '[data-field="end_date"]'
-                            );
-                            const elTotal = electricDiv.querySelector(
-                                '[data-field="total_amount"]'
-                            );
-                            const elRemark = electricDiv.querySelector(
-                                '[data-field="remark"]'
-                            );
-                            const elMode = electricDiv.querySelector(
-                                '[data-field="entry_mode"]'
-                            );
+                                const elStartDate = electricDiv.querySelector(
+                                    '[data-field="start_date"]'
+                                );
+                                const elEndDate = electricDiv.querySelector(
+                                    '[data-field="end_date"]'
+                                );
+                                const elTotal = electricDiv.querySelector(
+                                    '[data-field="total_amount"]'
+                                );
+                                const elRemark = electricDiv.querySelector(
+                                    '[data-field="remark"]'
+                                );
+                                const elMode = electricDiv.querySelector(
+                                    '[data-field="entry_mode"]'
+                                );
 
-                            // Structural layout layout control nodes
-                            const btnTabReading = electricDiv.querySelector(
-                                "#btn_tab_reading"
-                            );
-                            const btnTabManual = electricDiv.querySelector(
-                                "#btn_tab_manual"
-                            );
-                            const txtConsumptionHeader = electricDiv.querySelector(
-                                "#consumption_header"
-                            );
-                            const rowReadingFields = electricDiv.querySelector(
-                                "#row_reading_fields"
-                            );
-                            const rowManualFields = electricDiv.querySelector(
-                                "#row_manual_fields"
-                            );
-                            const wrapperUnitsReadonly = electricDiv.querySelector(
-                                "#wrapper_units_readonly"
-                            );
+                                // Structural layout layout control nodes
+                                const btnTabReading = electricDiv.querySelector(
+                                    "#btn_tab_reading"
+                                );
+                                const btnTabManual = electricDiv.querySelector(
+                                    "#btn_tab_manual"
+                                );
+                                const txtConsumptionHeader = electricDiv.querySelector(
+                                    "#consumption_header"
+                                );
+                                const rowReadingFields = electricDiv.querySelector(
+                                    "#row_reading_fields"
+                                );
+                                const rowManualFields = electricDiv.querySelector(
+                                    "#row_manual_fields"
+                                );
+                                const wrapperUnitsReadonly = electricDiv.querySelector(
+                                    "#wrapper_units_readonly"
+                                );
 
-                    
-                             elExchangeRate.value = InvoiceSetting ? (InvoiceSetting.exchange_rate ?? "") : "";
+                                elExchangeRate.value = globalSetting
+                                    ? globalSetting.exchange_rate ?? ""
+                                    : "";
 
-
-                             console.log("InvoiceSetting.exchange_rate", InvoiceSetting ? InvoiceSetting.exchange_rate : null);
+                                console.log(
+                                    "InvoiceSetting.exchange_rate",
+                                    globalSetting
+                                        ? globalSetting.exchange_rate
+                                        : null
+                                );
 
                                 // Currency conversion handlers
-                            elPriceKHR.addEventListener("input", e => {
-                                const rate =
-                                    parseFloat(elExchangeRate.value) || 4000;
-                                const khrVal = parseFloat(e.target.value) || 0;
-                                elPriceUSD.value =
-                                    khrVal > 0
-                                        ? (khrVal / rate).toFixed(2)
-                                        : "";
-                                recalc();
-                            });
-
-                            elPriceUSD.addEventListener("input", e => {
-                                const rate =
-                                    parseFloat(elExchangeRate.value) || 4000;
-                                const usdVal = parseFloat(e.target.value) || 0;
-                                elPriceKHR.value =
-                                    usdVal > 0 ? Math.round(usdVal * rate) : "";
-                                recalc();
-                            });
-
-                            elExchangeRate.addEventListener("input", () => {
-                                const rate =
-                                    parseFloat(elExchangeRate.value) || 4000;
-                                const usdVal =
-                                    parseFloat(elPriceUSD.value) || 0;
-                                if (usdVal > 0) {
-                                    elPriceKHR.value = Math.round(
-                                        usdVal * rate
-                                    );
-                                } else {
+                                elPriceKHR.addEventListener("input", e => {
+                                    const rate =
+                                        parseFloat(elExchangeRate.value) ||
+                                        4000;
                                     const khrVal =
-                                        parseFloat(elPriceKHR.value) || 0;
-                                    if (khrVal > 0)
-                                        elPriceUSD.value = (
-                                            khrVal / rate
-                                        ).toFixed(2);
-                                }
-                                recalc();
-                            });
-
-                            // UI Tab switcher
-
-                            // New structural nodes for 3-in-1 row switching
-                            const rowCalculationFields = electricDiv.querySelector(
-                                "#row_calculation_fields"
-                            );
-
-                            // UI Tab switcher
-                            const switchTab = mode => {
-                                elMode.value = mode;
-                                if (mode === "reading") {
-                                    // Form structure configuration
-                                    rowReadingFields.style.display = "grid";
-                                    rowManualFields.style.display = "none";
-                                    txtConsumptionHeader.textContent =
-                                        "Readings";
-
-                                    // Calculation Row: Standard 2x2 layout look
-                                    rowCalculationFields.style.gridTemplateColumns =
-                                        "1fr 1fr";
-                                    wrapperUnitsReadonly.style.display =
-                                        "block";
-
-                                    // Tab Styles
-                                    btnTabReading.style.cssText =
-                                        "cursor:pointer; padding:8px 12px; border-bottom:2px solid #0C447C; color:#0C447C; font-weight:600;";
-                                    btnTabManual.style.cssText =
-                                        "cursor:pointer; padding:8px 12px; color:#777; font-weight:400; border-bottom:none;";
-                                } else {
-                                    // Form structure configuration
-                                    rowReadingFields.style.display = "none";
-                                    rowManualFields.style.display = "block";
-                                    txtConsumptionHeader.textContent =
-                                        "Manual Entry";
-
-                                    // Calculation Row: Shrinks into 1 clean row with 3 columns
-                                    rowCalculationFields.style.gridTemplateColumns =
-                                        "1fr 1fr 1fr";
-                                    wrapperUnitsReadonly.style.display = "none";
-
-                                    // Tab Styles
-                                    btnTabManual.style.cssText =
-                                        "cursor:pointer; padding:8px 12px; border-bottom:2px solid #0C447C; color:#0C447C; font-weight:600;";
-                                    btnTabReading.style.cssText =
-                                        "cursor:pointer; padding:8px 12px; color:#777; font-weight:400; border-bottom:none;";
-                                }
-                                recalc();
-                            };
-
-                            btnTabReading.onclick = () => switchTab("reading");
-                            btnTabManual.onclick = () => switchTab("manual");
-
-                            // Centralized recalculation logic
-                            const recalc = () => {
-                                const mode = elMode.value;
-                                let units = 0;
-
-                                if (mode === "reading") {
-                                    const oldVal = parseFloat(elOld.value) || 0;
-                                    const newVal = parseFloat(elNew.value) || 0;
-                                    units = newVal - oldVal;
-
-                                    if (units < 0) {
-                                        elUnitsReadonly.value = "0.00";
-                                        elUnitsReadonly.style.color = "red";
-                                    } else {
-                                        elUnitsReadonly.value = units.toFixed(
-                                            2
-                                        );
-                                        elUnitsReadonly.style.color = "#212529";
-                                    }
-                                } else {
-                                    units = parseFloat(elUnits.value) || 0;
-                                }
-
-                                const ppu = parseFloat(elPriceUSD.value) || 0;
-                                const total = Math.max(0, units) * ppu;
-
-                                if (elTotal) elTotal.value = total.toFixed(2);
-
-                                if (elRemark) {
-                                    const start = elStartDate.value || "";
-                                    const end = elEndDate.value || "";
-                                    const period =
-                                        start && end
-                                            ? ` (${start} - ${end})`
+                                        parseFloat(e.target.value) || 0;
+                                    elPriceUSD.value =
+                                        khrVal > 0
+                                            ? (khrVal / rate).toFixed(2)
                                             : "";
-                                    const calcStr =
-                                        units > 0 && ppu > 0
-                                            ? ` — ${units.toFixed(
-                                                  2
-                                              )} kWh × $${ppu.toFixed(2)}`
-                                            : mode === "reading"
-                                            ? " — Reading Setup"
-                                            : " — Manual Entry";
-
-                                    elRemark.value = `Electric${period}${calcStr}`;
-                                }
-                            };
-
-                            // Input format validation helpers and recalculation binding
-                            [
-                                elOld,
-                                elNew,
-                                elUnits,
-                                elPriceUSD,
-                                elExchangeRate,
-                                elStartDate,
-                                elEndDate
-                            ].forEach(el => {
-                                if (!el) return;
-                                el.addEventListener("input", recalc);
-                                if (el.dataset.type === "date") {
-                                    el.addEventListener("change", recalc);
-                                }
-
-                                // Block non-numeric characters while tying
-                                el.addEventListener("input", e => {
-                                    if (el.dataset.type === "date") return;
-                                    let v = e.target.value.replace(
-                                        /[^0-9.]/g,
-                                        ""
-                                    );
-                                    const parts = v.split(".");
-                                    if (parts.length > 2)
-                                        v = parts[0] + "." + parts[1];
-                                    if (parts[1] !== undefined)
-                                        v =
-                                            parts[0] +
-                                            "." +
-                                            parts[1].slice(0, 2);
-                                    e.target.value = v;
+                                    recalc();
                                 });
 
-                                // Enforce proper floats on losing input focus
-                                el.addEventListener("blur", e => {
-                                    if (el.dataset.type === "date") return;
-                                    let v = parseFloat(e.target.value);
-                                    if (isNaN(v) || v < 0) {
-                                        e.target.value = "";
-                                        return;
+                                elPriceUSD.addEventListener("input", e => {
+                                    const rate =
+                                        parseFloat(elExchangeRate.value) ||
+                                        4000;
+                                    const usdVal =
+                                        parseFloat(e.target.value) || 0;
+                                    elPriceKHR.value =
+                                        usdVal > 0
+                                            ? Math.round(usdVal * rate)
+                                            : "";
+                                    recalc();
+                                });
+
+                                elExchangeRate.addEventListener("input", () => {
+                                    const rate =
+                                        parseFloat(elExchangeRate.value) ||
+                                        4000;
+                                    const usdVal =
+                                        parseFloat(elPriceUSD.value) || 0;
+                                    if (usdVal > 0) {
+                                        elPriceKHR.value = Math.round(
+                                            usdVal * rate
+                                        );
+                                    } else {
+                                        const khrVal =
+                                            parseFloat(elPriceKHR.value) || 0;
+                                        if (khrVal > 0)
+                                            elPriceUSD.value = (
+                                                khrVal / rate
+                                            ).toFixed(2);
                                     }
-                                    e.target.value = v.toFixed(2);
+                                    recalc();
                                 });
-                            });
-                        },
 
-                        onConfirm(data, btn, ibMe) {
-                            const mode = data.entry_mode || "reading";
-                            const ppu = parseFloat(data.price_usd) || 0;
-                            let units = 0;
-                            let remarks = "";
+                                // UI Tab switcher
 
-                            // Validation rules per view mode
-                            if (mode === "reading") {
-                                const oldReading =
-                                    parseFloat(data.old_electric) || 0;
-                                const newReading =
-                                    parseFloat(data.new_electric) || 0;
-                                units = newReading - oldReading;
+                                // New structural nodes for 3-in-1 row switching
+                                const rowCalculationFields = electricDiv.querySelector(
+                                    "#row_calculation_fields"
+                                );
 
-                                if (newReading <= 0)
+                                // UI Tab switcher
+                                const switchTab = mode => {
+                                    elMode.value = mode;
+                                    if (mode === "reading") {
+                                        // Form structure configuration
+                                        rowReadingFields.style.display = "grid";
+                                        rowManualFields.style.display = "none";
+                                        txtConsumptionHeader.textContent =
+                                            "Readings";
+
+                                        // Calculation Row: Standard 2x2 layout look
+                                        rowCalculationFields.style.gridTemplateColumns =
+                                            "1fr 1fr";
+                                        wrapperUnitsReadonly.style.display =
+                                            "block";
+
+                                        // Tab Styles
+                                        btnTabReading.style.cssText =
+                                            "cursor:pointer; padding:8px 12px; border-bottom:2px solid #0C447C; color:#0C447C; font-weight:600;";
+                                        btnTabManual.style.cssText =
+                                            "cursor:pointer; padding:8px 12px; color:#777; font-weight:400; border-bottom:none;";
+                                    } else {
+                                        // Form structure configuration
+                                        rowReadingFields.style.display = "none";
+                                        rowManualFields.style.display = "block";
+                                        txtConsumptionHeader.textContent =
+                                            "Manual Entry";
+
+                                        // Calculation Row: Shrinks into 1 clean row with 3 columns
+                                        rowCalculationFields.style.gridTemplateColumns =
+                                            "1fr 1fr 1fr";
+                                        wrapperUnitsReadonly.style.display =
+                                            "none";
+
+                                        // Tab Styles
+                                        btnTabManual.style.cssText =
+                                            "cursor:pointer; padding:8px 12px; border-bottom:2px solid #0C447C; color:#0C447C; font-weight:600;";
+                                        btnTabReading.style.cssText =
+                                            "cursor:pointer; padding:8px 12px; color:#777; font-weight:400; border-bottom:none;";
+                                    }
+                                    recalc();
+                                };
+
+                                btnTabReading.onclick = () =>
+                                    switchTab("reading");
+                                btnTabManual.onclick = () =>
+                                    switchTab("manual");
+
+                                // Centralized recalculation logic
+                                const recalc = () => {
+                                    const mode = elMode.value;
+                                    let units = 0;
+
+                                    if (mode === "reading") {
+                                        const oldVal =
+                                            parseFloat(elOld.value) || 0;
+                                        const newVal =
+                                            parseFloat(elNew.value) || 0;
+                                        units = newVal - oldVal;
+
+                                        if (units < 0) {
+                                            elUnitsReadonly.value = "0.00";
+                                            elUnitsReadonly.style.color = "red";
+                                        } else {
+                                            elUnitsReadonly.value = units.toFixed(
+                                                2
+                                            );
+                                            elUnitsReadonly.style.color =
+                                                "#212529";
+                                        }
+                                    } else {
+                                        units = parseFloat(elUnits.value) || 0;
+                                    }
+
+                                    const ppu =
+                                        parseFloat(elPriceUSD.value) || 0;
+                                    const total = Math.max(0, units) * ppu;
+
+                                    if (elTotal)
+                                        elTotal.value = total.toFixed(2);
+
+                                    if (elRemark) {
+                                        const start = elStartDate.value || "";
+                                        const end = elEndDate.value || "";
+                                        const period =
+                                            start && end
+                                                ? ` (${start} - ${end})`
+                                                : "";
+                                        const calcStr =
+                                            units > 0 && ppu > 0
+                                                ? ` — ${units.toFixed(
+                                                      2
+                                                  )} kWh × $${ppu.toFixed(2)}`
+                                                : mode === "reading"
+                                                ? " — Reading Setup"
+                                                : " — Manual Entry";
+
+                                        elRemark.value = `Electric${period}${calcStr}`;
+                                    }
+                                };
+
+                                // Input format validation helpers and recalculation binding
+                                [
+                                    elOld,
+                                    elNew,
+                                    elUnits,
+                                    elPriceUSD,
+                                    elExchangeRate,
+                                    elStartDate,
+                                    elEndDate
+                                ].forEach(el => {
+                                    if (!el) return;
+                                    el.addEventListener("input", recalc);
+                                    if (el.dataset.type === "date") {
+                                        el.addEventListener("change", recalc);
+                                    }
+
+                                    // Block non-numeric characters while tying
+                                    el.addEventListener("input", e => {
+                                        if (el.dataset.type === "date") return;
+                                        let v = e.target.value.replace(
+                                            /[^0-9.]/g,
+                                            ""
+                                        );
+                                        const parts = v.split(".");
+                                        if (parts.length > 2)
+                                            v = parts[0] + "." + parts[1];
+                                        if (parts[1] !== undefined)
+                                            v =
+                                                parts[0] +
+                                                "." +
+                                                parts[1].slice(0, 2);
+                                        e.target.value = v;
+                                    });
+
+                                    // Enforce proper floats on losing input focus
+                                    el.addEventListener("blur", e => {
+                                        if (el.dataset.type === "date") return;
+                                        let v = parseFloat(e.target.value);
+                                        if (isNaN(v) || v < 0) {
+                                            e.target.value = "";
+                                            return;
+                                        }
+                                        e.target.value = v.toFixed(2);
+                                    });
+                                });
+                            },
+
+                            onConfirm(data, btn, ibMe) {
+                                const mode = data.entry_mode || "reading";
+                                const ppu = parseFloat(data.price_usd) || 0;
+                                let units = 0;
+                                let remarks = "";
+
+                                // Validation rules per view mode
+                                if (mode === "reading") {
+                                    const oldReading =
+                                        parseFloat(data.old_electric) || 0;
+                                    const newReading =
+                                        parseFloat(data.new_electric) || 0;
+                                    units = newReading - oldReading;
+
+                                    if (newReading <= 0)
+                                        return ibMe.setError(
+                                            "New reading is required."
+                                        );
+                                    if (newReading <= oldReading)
+                                        return ibMe.setError(
+                                            "New reading must be greater than old reading."
+                                        );
+                                    remarks = `Electricity ${oldReading}kWh - ${newReading}kWh`;
+                                } else {
+                                    units = parseFloat(data.units_used) || 0;
+                                    if (units <= 0)
+                                        return ibMe.setError(
+                                            "Units Used field is required and must be greater than 0."
+                                        );
+                                    remarks = `Electric Utility - ${data.start_date ||
+                                        ""} to ${data.end_date || ""}`;
+                                }
+
+                                if (ppu <= 0)
                                     return ibMe.setError(
-                                        "New reading is required."
+                                        "Price per kWh (USD) is required."
                                     );
-                                if (newReading <= oldReading)
+                                if (!data.start_date || !data.end_date)
                                     return ibMe.setError(
-                                        "New reading must be greater than old reading."
+                                        "Start and End dates are required."
                                     );
-                                remarks = `Electricity ${oldReading}kWh - ${newReading}kWh`;
-                            } else {
-                                units = parseFloat(data.units_used) || 0;
-                                if (units <= 0)
+                                if (
+                                    new Date(data.end_date) <
+                                    new Date(data.start_date)
+                                ) {
                                     return ibMe.setError(
-                                        "Units Used field is required and must be greater than 0."
+                                        "End date cannot be before Start date."
                                     );
-                                remarks = `Electric Utility - ${data.start_date ||
-                                    ""} to ${data.end_date || ""}`;
+                                }
+
+                                // Push payload to items view structure
+                                me.itemsView.addRow(
+                                    {
+                                        item_id: null,
+                                        type: "utility",
+                                        price: ppu,
+                                        qty: units,
+                                        // remarks: remarks,
+                                        remarks:
+                                            mode === "reading"
+                                                ? `Electricity ${data.old_electric ||
+                                                      0}KWh - ${data.new_electric ||
+                                                      0}KWh`
+                                                : `Electricity ${units}KWh`,
+                                        unit_type: "KWh",
+                                        old_reading:
+                                            mode === "reading"
+                                                ? parseFloat(
+                                                      data.old_electric
+                                                  ) || 0
+                                                : 0,
+                                        new_reading:
+                                            mode === "reading"
+                                                ? parseFloat(
+                                                      data.new_electric
+                                                  ) || 0
+                                                : 0,
+                                        units_used: units,
+                                        price_per_unit: ppu,
+                                        start_date: data.start_date,
+                                        end_date: data.end_date,
+                                        discount: 0,
+                                        discount_type: "percent"
+                                    },
+                                    0
+                                );
+
+                                cv_interact.success("Electric item added.");
+                                ibMe.close();
                             }
-
-                            if (ppu <= 0)
-                                return ibMe.setError(
-                                    "Price per kWh (USD) is required."
-                                );
-                            if (!data.start_date || !data.end_date)
-                                return ibMe.setError(
-                                    "Start and End dates are required."
-                                );
-                            if (
-                                new Date(data.end_date) <
-                                new Date(data.start_date)
-                            ) {
-                                return ibMe.setError(
-                                    "End date cannot be before Start date."
-                                );
-                            }
-
-                            // Push payload to items view structure
-                            me.itemsView.addRow(
-                                {
-                                    item_id: null,
-                                    type: "utility",
-                                    price: ppu,
-                                    qty: units,
-                                    // remarks: remarks,
-                                    remarks:
-                                        mode === "reading"
-                                            ? `Electricity ${data.old_electric ||
-                                                  0}KWh - ${data.new_electric ||
-                                                  0}KWh`
-                                            : `Electricity ${units}KWh`,
-                                    unit_type: "KWh",
-                                    old_reading:
-                                        mode === "reading"
-                                            ? parseFloat(data.old_electric) || 0
-                                            : 0,
-                                    new_reading:
-                                        mode === "reading"
-                                            ? parseFloat(data.new_electric) || 0
-                                            : 0,
-                                    units_used: units,
-                                    price_per_unit: ppu,
-                                    start_date: data.start_date,
-                                    end_date: data.end_date,
-                                    discount: 0,
-                                    discount_type: "percent"
-                                },
-                                0
-                            );
-
-                            cv_interact.success("Electric item added.");
-                            ibMe.close();
-                        }
-                    });
+                        });
                     }; // end openElectricPopup
 
-                    if (InvoiceSetting) {
-                        openElectricPopup();
-                    } else {
-                        vsapi
-                            .call(`${main_view.base_url}/prm/invoice_setting/get`, {})
-                            .then(res => {
-                                if (res.status_code === 200 && res.data && res.data.length > 0) {
-                                    InvoiceSetting = res.data[0];
-                                } else {
-                                    InvoiceSetting = {};
-                                }
-                                openElectricPopup();
-                            })
-                            .catch(() => {
-                                InvoiceSetting = {};
-                                openElectricPopup();
-                            });
-                    }
+                    openElectricPopup();
                 };
 
                 // =====================Service ===================
@@ -2986,6 +2980,20 @@ const InvoiceDialog = (() => {
                         ? '<h4 class="text-prm-custom text-start fw-bold">Modify Invoice</h4>'
                         : '<h4 class="text-prm-custom text-start fw-bold">Create Invoice</h4>';
                 }
+
+                vsapi
+                    .call(`${main_view.base_url}/prm/invoice_setting/get`, {})
+                    .then(res => {
+                        if (res.status_code !== 200) {
+                            cv_interact.error(
+                                "Failed to load invoice details."
+                            );
+                            return;
+                        }
+                        console.log("Global Setting", res);
+
+                        globalSetting = res.data;
+                    });
             },
 
             prepareFormOptions: {
@@ -3427,19 +3435,18 @@ const ReceiveDialog = (() => {
     return self;
 })();
 
-
-
-
 const InvoiceSettingDialog = (() => {
     const self = {};
     let dialog = null;
 
     self.show = op => {
         const currentData = op || {};
-        const invoiceId = currentData.id || currentData.invoice_id || 0; 
+        const invoiceId = currentData.id || currentData.invoice_id || 0;
 
         if (!invoiceId) {
-            console.error("InvoiceSettingDialog Error: No valid invoice ID was provided.");
+            console.error(
+                "InvoiceSettingDialog Error: No valid invoice ID was provided."
+            );
         }
 
         dialog = new GeneralDialog({
@@ -3495,21 +3502,24 @@ const InvoiceSettingDialog = (() => {
             `,
 
             contentCreated: me => {
-                const dataSource = currentData.settings ? currentData.settings : currentData;
+                const dataSource = currentData.settings
+                    ? currentData.settings
+                    : currentData;
 
                 const normalizedData = {
-                    show_comm_tax:    dataSource.show_comm_tax,
-                    show_pay_status:  dataSource.show_pay_status,
-                    show_baland:      dataSource.show_baland,
-                    show_amount_paid: dataSource.show_amount_paid !== undefined
-                                        ? dataSource.show_amount_paid
-                                        : dataSource.show_amount_piad
+                    show_comm_tax: dataSource.show_comm_tax,
+                    show_pay_status: dataSource.show_pay_status,
+                    show_baland: dataSource.show_baland,
+                    show_amount_paid:
+                        dataSource.show_amount_paid !== undefined
+                            ? dataSource.show_amount_paid
+                            : dataSource.show_amount_piad
                 };
 
                 // Fix: Safely locate checkboxes inside document context if framework wrappers fail
                 const container = me.divModal || document;
-                container.querySelectorAll('.toggle-setting').forEach(input => {
-                    const field = input.getAttribute('data-field');
+                container.querySelectorAll(".toggle-setting").forEach(input => {
+                    const field = input.getAttribute("data-field");
                     if (field && normalizedData[field] !== undefined) {
                         input.checked = parseInt(normalizedData[field]) === 1;
                     }
@@ -3517,39 +3527,52 @@ const InvoiceSettingDialog = (() => {
             },
 
             onPrepareForm: me => {
-                vsapi 
-                    .call(`${main_view.base_url}/prm/invoice/get-setting`, { id: invoiceId })
-                    .then((res) => {
+                vsapi
+                    .call(`${main_view.base_url}/prm/invoice/get-setting`, {
+                        id: invoiceId
+                    })
+                    .then(res => {
                         if (res && res.status_code === 200 && res.data) {
-                            
                             const settingsData = res.data.settings || {};
-                            
+
                             const normalizedData = {
-                                show_comm_tax:   settingsData.show_comm_tax,
+                                show_comm_tax: settingsData.show_comm_tax,
                                 show_pay_status: settingsData.show_pay_status,
-                                show_baland:      settingsData.show_baland,
-                                show_amount_paid: settingsData.show_amount_paid !== undefined
-                                                    ? settingsData.show_amount_paid
-                                                    : settingsData.show_amount_piad
+                                show_baland: settingsData.show_baland,
+                                show_amount_paid:
+                                    settingsData.show_amount_paid !== undefined
+                                        ? settingsData.show_amount_paid
+                                        : settingsData.show_amount_piad
                             };
 
                             // 3. Select container context and map checkbox statuses dynamically
                             const container = me.divModal || document;
-                            container.querySelectorAll('.toggle-setting').forEach(input => {
-                                const field = input.getAttribute('data-field');
-                                if (field && normalizedData[field] !== undefined) {
-                                    input.checked = parseInt(normalizedData[field]) === 1;
-                                }
-                            });
+                            container
+                                .querySelectorAll(".toggle-setting")
+                                .forEach(input => {
+                                    const field = input.getAttribute(
+                                        "data-field"
+                                    );
+                                    if (
+                                        field &&
+                                        normalizedData[field] !== undefined
+                                    ) {
+                                        input.checked =
+                                            parseInt(normalizedData[field]) ===
+                                            1;
+                                    }
+                                });
                         } else {
-                            console.error("Failed to map configurations:", res.error_message);
+                            console.error(
+                                "Failed to map configurations:",
+                                res.error_message
+                            );
                         }
                     })
                     .catch(err => {
                         console.error("AJAX Gateway Exception:", err);
                     });
             },
-            
 
             buttons: [
                 {
@@ -3557,47 +3580,68 @@ const InvoiceSettingDialog = (() => {
                     cssClass: "btn btn-secondary",
                     click: (me, btn) => {
                         me.hide(false);
-                    },
+                    }
                 },
                 {
                     label: '<span vslang="buttons.Save"></span>',
                     cssClass: "btn btn-primary",
                     click: (me, btn) => {
                         const payload = { id: invoiceId };
-                        
+
                         // Fix: Changed from me.divModal to document context to guarantee loops evaluate
                         const container = me.divModal || document;
-                        container.querySelectorAll('.toggle-setting').forEach(input => {
-                            const field = input.getAttribute('data-field');
-                            if (field) {
-                                payload[field] = input.checked ? 1 : 0;
-                            }
-                        });
+                        container
+                            .querySelectorAll(".toggle-setting")
+                            .forEach(input => {
+                                const field = input.getAttribute("data-field");
+                                if (field) {
+                                    payload[field] = input.checked ? 1 : 0;
+                                }
+                            });
 
                         // Verify this log shows fields like "show_comm_tax: 1" in your dev console!
-                        console.log('Invoice Setting Payload gathered:', payload);
-                        
-                        vsapi 
-                            .call(`${main_view.base_url}/prm/invoice/setting`, payload, btn)
-                            .then((res) => {
+                        console.log(
+                            "Invoice Setting Payload gathered:",
+                            payload
+                        );
+
+                        vsapi
+                            .call(
+                                `${main_view.base_url}/prm/invoice/setting`,
+                                payload,
+                                btn
+                            )
+                            .then(res => {
                                 if (res.status_code === 200) {
                                     me.hide(true, res);
-                                    cv_interact.success("Settings updated successfully.");
-                                    
-                                    if (typeof currentData.onClose === 'function') {
+                                    cv_interact.success(
+                                        "Settings updated successfully."
+                                    );
+
+                                    if (
+                                        typeof currentData.onClose ===
+                                        "function"
+                                    ) {
                                         currentData.onClose();
                                     } else if (mThis.loadSettings) {
                                         mThis.loadSettings(null);
-                                    } else if (mThis.InvoiceListView && typeof mThis.InvoiceListView.showPage === 'function') {
+                                    } else if (
+                                        mThis.InvoiceListView &&
+                                        typeof mThis.InvoiceListView
+                                            .showPage === "function"
+                                    ) {
                                         mThis.InvoiceListView.showPage();
                                     }
                                 } else {
-                                    cv_interact.error(res.error_message || "An error occurred while saving.");
+                                    cv_interact.error(
+                                        res.error_message ||
+                                            "An error occurred while saving."
+                                    );
                                 }
                             });
-                    },
+                    }
                 }
-            ],
+            ]
         });
 
         dialog.show(op);
@@ -3605,4 +3649,3 @@ const InvoiceSettingDialog = (() => {
 
     return self;
 })();
-
