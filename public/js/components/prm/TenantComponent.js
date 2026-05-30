@@ -241,37 +241,37 @@ var TenantComponent = new (function () {
             //menuItemClass:"",
             menus: [
                 {
-                    html: '<span class="ps-2">View Details</span>',
+                    html: '<span class="ps-2" vslang="titles.View Details">View Details</span>',
                     icon: `<i class="fa-solid fa-user fs-5 text-info"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "view_profile",
                 },
                 {
-                    html: '<span class="ps-2">Modify Tenant</span>',
+                    html: '<span class="ps-2" vslang="titles.Modify Tenant">Modify Tenant</span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "modify_tenant",
                 },
                 {
-                    html: '<span class="ps-2">Delete Tenant</span>',
+                    html: '<span class="ps-2" vslang="titles.Delete Tenant">Delete Tenant</span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "delete_tenant",
                 },
                 {
-                    html: '<span class="ps-2">Upload Document</span>',
+                    html: '<span class="ps-2" vslang="titles.Upload Document">Upload Document</span>',
                     icon: `<i class="fa-solid fa-file-upload fs-5 text-muted"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "upload_document",
                 },
                 {
-                    html: '<span class="ps-2">Create Contract</span>',
+                    html: '<span class="ps-2" vslang="titles.Create Contract">Create Contract</span>',
                     icon: `<i class="fa-solid fa-file-contract fs-5 text-success"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "create_contract",
                 },
                 {
-                    html: '<span class="ps-2">Service Requests</span>',
+                    html: '<span class="ps-2" vslang="titles.Service Requests">Service Requests</span>',
                     icon: `<i class="fa-solid fa-screwdriver-wrench fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "service_request",
@@ -554,15 +554,12 @@ var TenantComponent = new (function () {
                             </div>
                                 <div class="d-flex justify-content-between rounded-bottom-2 align-items-center px-2 py-2"
                                     style="font-size: 1rem; background-color: #d4d4db; border-top: 1px solid #e2e8f0;">
-
                                     <span style="color: #64748b; font-size: 0.85rem;">
-                                        Last Updated :  ${d.update_user || "System"}
+                                        <span class="small" vslang="titles.Last Updated">Last Updated</span>:
+                                        ${d.update_user || "System"}
                                     </span>
-
-                                    <a href="javascript:void(0)"
-                                    class="text-primary-custom see-tenant-detail  text-decoration-none" style="font-size: 0.85rem;"
-                                    data-id="${d.id}">
-                                        View Details <i class="fa-solid fa-arrow-right ms-1" style="font-size: 0.85rem;"></i>
+                                    <a href="javascript:void(0)" class="text-primary-custom see-tenant-detail  text-decoration-none" style="font-size: 0.85rem;" data-id="${d.id}">
+                                        <span vslang="titles.View Details">View Details</span> <i class="fa-solid fa-arrow-right ms-1" style="font-size: 0.85rem;"></i>
                                     </a>
                                 </div>
 
@@ -580,63 +577,64 @@ var TenantComponent = new (function () {
         }
         html += `</div>`;
         container.innerHTML = html;
-        const seeProfileInfo =
-            mThis.cardViewContainer.querySelectorAll(".see-tenant-detail");
-        seeProfileInfo.forEach((link) => {
-            link.addEventListener("click", (e) => {
-                const tenantId = e.currentTarget.dataset.id;
-                mThis.tenant_id = tenantId;
-                mThis.showPage("profile_view", tenantId);
-                //const employeeData = data.find((emp) => emp.id == employeeId);
-                // if (employeeData) {
-                //     let sub_content = mThis.self.querySelector("#sub_content");
-                //     sub_content.classList.add("d-none");
-                //     let view_see_info =
-                //         mThis.self.querySelector("#view_see_info__");
-                //     view_see_info.classList.remove("d-none");
+        LocaleManager.translateZone(container);
 
-                //     mThis.renderProfile(employeeData);
-                //     mThis.renderCardCenter(employeeId);
-                //     mThis.renderCardLeft(employeeId);
-                //     mThis.renderCardRight(employeeId);
-                //     mThis.renderCardTaxAllowance(employeeId);
-                //     mThis.renderEmpDocuments(employeeId);
-                // } else {
-                //     console.error(
-                //         "Employee data not found for ID:",
-                //         employeeId
-                //     );
-                // }
+        const seeProfileInfo = mThis.cardViewContainer.querySelectorAll(".see-tenant-detail");
+            seeProfileInfo.forEach((link) => {
+                link.addEventListener("click", (e) => {
+                    const tenantId = e.currentTarget.dataset.id;
+                    mThis.tenant_id = tenantId;
+                    mThis.showPage("profile_view", tenantId);
+                    //const employeeData = data.find((emp) => emp.id == employeeId);
+                    // if (employeeData) {
+                    //     let sub_content = mThis.self.querySelector("#sub_content");
+                    //     sub_content.classList.add("d-none");
+                    //     let view_see_info =
+                    //         mThis.self.querySelector("#view_see_info__");
+                    //     view_see_info.classList.remove("d-none");
+
+                    //     mThis.renderProfile(employeeData);
+                    //     mThis.renderCardCenter(employeeId);
+                    //     mThis.renderCardLeft(employeeId);
+                    //     mThis.renderCardRight(employeeId);
+                    //     mThis.renderCardTaxAllowance(employeeId);
+                    //     mThis.renderEmpDocuments(employeeId);
+                    // } else {
+                    //     console.error(
+                    //         "Employee data not found for ID:",
+                    //         employeeId
+                    //     );
+                    // }
+                });
             });
-        });
 
-        const createContract = mThis.cardViewContainer.querySelectorAll(
-            ".create-tenant-contract",
-        );
-        createContract.forEach((link) => {
-            link.addEventListener("click", (e) => {
-                const tenantId = e.currentTarget.dataset.id;
-                mThis.tenant_id = tenantId;
-                const op = {
-                    id: null,
-                    tenant_id: tenantId,
-                    btn: e.currentTarget,
-                    onClose: () => {
-                        mThis.renderView();
-                    },
-                };
-                ContractDialog.show(op);
+            const createContract = mThis.cardViewContainer.querySelectorAll(
+                ".create-tenant-contract",
+            );
+            createContract.forEach((link) => {
+                link.addEventListener("click", (e) => {
+                    const tenantId = e.currentTarget.dataset.id;
+                    mThis.tenant_id = tenantId;
+                    const op = {
+                        id: null,
+                        tenant_id: tenantId,
+                        btn: e.currentTarget,
+                        onClose: () => {
+                            mThis.renderView();
+                        },
+                    };
+                    ContractDialog.show(op);
+                });
             });
-        });
-        const container_te = mThis.cardViewContainer;
-        const te_parent = container_te;
-        te_parent.style.maxHeight = window.innerHeight - 230 + "px";
-        te_parent.classList.add("overflow-y-auto");
-        te_parent.classList.add("overflow-x-hidden");
-
-        window.onresize = () => {
+            const container_te = mThis.cardViewContainer;
+            const te_parent = container_te;
             te_parent.style.maxHeight = window.innerHeight - 230 + "px";
-        };
+            te_parent.classList.add("overflow-y-auto");
+            te_parent.classList.add("overflow-x-hidden");
+
+            window.onresize = () => {
+                te_parent.style.maxHeight = window.innerHeight - 230 + "px";
+            };
     };
 
     mThis.renderView = () => {
@@ -647,6 +645,7 @@ var TenantComponent = new (function () {
             mThis.listViewContainer.classList.add("d-none");
             mThis.paginationContainer.style.display = "block";
             mThis.tenantCardView.showPage(params);
+            
         } else {
             mThis.cardViewContainer.classList.add("d-none");
             mThis.listViewContainer.classList.remove("d-none");
@@ -858,13 +857,13 @@ var TenantComponent = new (function () {
                 <div class="card shadow-sm h-100"> <div class="card-header bg-white">
                         <ul class="nav nav-tabs card-header-tabs" id="tenantTabs">
                             <li class="nav-item">
-                                <a class="nav-link active fw-semibold" href="#overview_tenant_detail">Overview</a>
+                                <a class="nav-link active fw-semibold" href="#overview_tenant_detail"><span vslang="titles.Overview">Overview</span></a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link fw-semibold" href="#lease_tenant_history">Contract</a>
+                                <a class="nav-link fw-semibold" href="#lease_tenant_history"><span vslang="titles.Contract">Contract</span></a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link fw-semibold" href="#document_tenant_list">Documents</a>
+                                <a class="nav-link fw-semibold" href="#document_tenant_list"><span vslang="titles.Document">Documents</span></a>
                             </li>
                         </ul>
                     </div>
@@ -872,7 +871,7 @@ var TenantComponent = new (function () {
                     <div class="card-body tab-content">
                         <div class="tab-pane py-2 active" id="overview_tenant_detail">
                             <h5 class="fw-bold mb-2 d-flex align-items-center">
-                                <i class="fa fa-user me-2 text-primary"></i> Personal Information
+                                <i class="fa fa-user me-2 text-primary"></i> <span vslang="titles.Personal Information">Personal Information</span> 
                             </h5>
                             <div class="row g-4 mb-5">
                                 <div class="col-md-4"><small class="text-muted">Name</small><div class="text-capitalize">${data.name ?? "_"}</div></div>
@@ -890,7 +889,7 @@ var TenantComponent = new (function () {
 
                         <div class="tab-pane" id="lease_tenant_history">
                             <h5 class="fw-bold mb-2 d-flex align-items-center">
-                                <i class="fa fa-file-text me-2 text-primary"></i> Contract
+                                <i class="fa fa-file-text me-2 text-primary"></i> <span vslang="titles.Contract">Contract</span>
                             </h5>
                             <div class="container py-4 position-relative overflow-auto lease-history-scroll" style="max-height: 360px; scrollbar-width: thin;scrollbar-color: #888 #f1f1f1;">
                                 <p class="text-muted small mb-0">Open this tab to load contracts.</p>
@@ -899,7 +898,7 @@ var TenantComponent = new (function () {
 
                         <div class="tab-pane" id="document_tenant_list">
                             <h5 class="fw-bold mb-4 d-flex align-items-center">
-                                <i class="fa fa-folder me-2 text-primary"></i> Documents
+                                <i class="fa fa-folder me-2 text-primary"></i> <span vslang="titles.Documents">Documents</span>
                             </h5>
                             <div class="table-responsive">
                                 <table class="table align-middle">
@@ -956,10 +955,13 @@ var TenantComponent = new (function () {
                 link.classList.add("active");
                 const profile_info_tenant =
                     mThis.profile_info_tenant.querySelector(`#${target}`);
+
                 profile_info_tenant.classList.add("active");
                 mThis.renderOverView(profile_info_tenant, target, data);
+
             });
         });
+        LocaleManager.translateZone(mThis.profile_info_tenant);
 
         mThis.setActionsProfileInfo(mThis.profile_info_tenant);
     };
@@ -1181,7 +1183,10 @@ var TenantComponent = new (function () {
 
                     let html = "";
                     html += `<div class="tab-pane py-2 active" id="overview_tenant_detail">
-                            <h5 class="fw-bold mb-2"><i class="fa fa-user me-1 text-primary"></i> Personal Information</h5>
+                            <h5 class="fw-bold mb-2">
+                                <i class="fa fa-user me-1 text-primary"></i>
+                                <span vslang="titles.Personal Information">Personal Information</span>
+                            </h5>
                             <div class="row g-4 mb-5">
                                 <div class="col-md-4"><small class="text-muted">Name</small><div class="">${data.name ?? "_"}</div></div>
                                 <div class="col-md-4"><small class="text-muted">Sex</small><div class="">${data.sex == "M" ? "Male" : data.sex == "F" ? "Female" : "_"}</div></div>
@@ -1196,6 +1201,8 @@ var TenantComponent = new (function () {
                             </div>
                         </div>`;
                     div.innerHTML = html;
+                    LocaleManager.translateZone(div);
+
                 });
         }
         if (target == "lease_tenant_history") {
@@ -1218,18 +1225,19 @@ var TenantComponent = new (function () {
                     div.innerHTML = `<div class="tab-pane active" id="lease_tenant_history">
                             <h5 class="fw-bold mb-2">
                                 <i class="fa fa-file-text me-1 text-primary"></i>
-                                Contract
+                                <span vslang="titles.Contract">Contract</span>
                             </h5>
                             <div class=" py-4 position-relative overflow-auto lease-history-scroll" style="max-height: 360px; scrollbar-width: thin;scrollbar-color: #888 #f1f1f1;">
                                 ${cardsHtml}
                             </div>
                         </div>`;
+                        LocaleManager.translateZone(div);
                 })
                 .catch((err) => {
                     div.innerHTML = `<div class="tab-pane active" id="lease_tenant_history">
                             <h5 class="fw-bold mb-2">
                                 <i class="fa fa-file-text me-1 text-primary"></i>
-                                Contract
+                                <span>Contract</span>
                             </h5>
                             <div class="alert alert-danger m-3">Failed to load contracts: ${mThis._escapeHtml(err && err.message ? err.message : "Unknown error")}</div>
                         </div>`;
@@ -1308,6 +1316,7 @@ var TenantComponent = new (function () {
                         </td>
                     </tr>
                 `;
+                LocaleManager.translateZone(div);
                     });
 
                     // Empty state
@@ -1324,7 +1333,7 @@ var TenantComponent = new (function () {
                 <div class="tab-pane active" id="document_tenant_list">
 
                     <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h5 class="fw-bold mb-2"><i class="fa fa-address-card me-2 text-primary"></i> Identity Documents</h5>
+                        <h5 class="fw-bold mb-2"><i class="fa fa-address-card me-2 text-primary"></i> <span vslang="titles.Identity Documents">Identity Documents</span></h5>
                         <button type="button" class="fw-light btn btn-primary w-16 w-md-auto btnAddNewPrm" id="_btnDocument">
                             <span vslang="buttons.Upload Document">Upload Document</span>
                         </button>
@@ -1350,6 +1359,7 @@ var TenantComponent = new (function () {
                 </div>`;
 
                     div.innerHTML = html;
+                    LocaleManager.translateZone(div);
                     const btnDocument = div.querySelector("#_btnDocument");
                     if (btnDocument) {
                         btnDocument.onclick = () => {
@@ -1551,7 +1561,7 @@ const CreateTenantDialog = (() => {
                             <div class="col-12 ">
                                 <div class="vs-material-field">
                                     <input type="text" name="name" class="data-input form-control" data-field="name" placeholder="" />
-                                    <label>Full Name</label>
+                                    <label vslang="labels.Full Name">Full Name</label>
                                 </div>
                             </div>
                             <div class="col-12 col-md-6">
@@ -1563,7 +1573,7 @@ const CreateTenantDialog = (() => {
                             <div class="col-12 col-md-6">
                                 <div class="vs-material-field">
                                     <input type="text" data-type="date" name="date_of_birth" class="data-input form-control form_input" data-field="date_of_birth" placeholder=" " />
-                                    <label>Date of Birth</label>
+                                    <label vslang="labels.Date of Birth">Date of Birth</label>
                                 </div>
                             </div>
                             <div class="col-12 col-md-6 d-none">
@@ -1575,7 +1585,7 @@ const CreateTenantDialog = (() => {
                             <div class="col-12 col-md-6">
                                 <div class="vs-material-field">
                                     <input type="text" name="legal_name" class="data-input form-control" data-field="legal_name" placeholder=" " />
-                                    <label>Legal Name</label>
+                                    <label vslang="labels.Legal Name">Legal Name</label>
                                 </div>
                             </div>
                             <div class="col-12 col-md-6" >
@@ -1586,31 +1596,31 @@ const CreateTenantDialog = (() => {
                         <div class="col-12 col-md-6">
                             <div class="vs-material-field">
                                 <input type="text" name="national_id" class="data-input form-control" data-field="national_id" placeholder=" " />
-                                <label>National ID</label>
+                                <label vslang="labels.National ID">National ID</label>
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
                             <div class="vs-material-field">
                                 <input type="text" name="passport_number" class="data-input form-control" data-field="passport_number" placeholder=" " />
-                                <label>Passport Number</label>
+                                <label vslang="labels.Passport">Passport Number</label>
                             </div>
                         </div>
                         <div class="col-12 col-md-6 pt-2">
                             <div class="vs-material-field">
                                 <input type="number" name="phone_number" class="data-input form-control" data-field="phone_number" placeholder=" " />
-                                <label>Phone Number</label>
+                                <label vslang="labels.Phone Number">Phone Number</label>
                             </div>
                         </div>
                         <div class="col-12 col-md-6 pt-2">
                             <div class="vs-material-field">
                                 <input type="email" name="email" class="data-input form-control" data-field="email" placeholder=" " />
-                                <label>Email</label>
+                                <label vslang="labels.Email">Email</label>
                             </div>
                         </div>
                     <div class="col-12 pt-2">
                         <div class="vs-material-field">
                             <textarea name="address" class="data-input form-control" data-field="address" rows="3" placeholder=" "></textarea>
-                            <label>Address</label>
+                            <label vslang="labels.Address">Address</label>
                         </div>
                     </div>
 
@@ -1797,8 +1807,8 @@ const CreateTenantDialog = (() => {
                     },
                 ],
                 prepareFormOptions: {
-                    createTitle: "Create New Tenant",
-                    modifyTitle: "Modify Tenant",
+                    createTitle: "vslang:titles.Create New Tenant",
+                    modifyTitle: "vslang:titles.Modify Tenant",
                     targetProp: "tenant",
                     api: {
                         endpoint: [
@@ -1909,6 +1919,11 @@ const TenantDocumentDialog = (() => {
                 cssClass: "modal-md vs-modal",
                 backdrop: "static",
                 keyboard: true,
+                    title: (me)=>{
+                    const title = me.dataOptions.id ? "Modify Document" : "Upload Document";
+                    return  `<h4 class="text-prm-custom text-start fw-bold">${LocaleManager.trans(title,'titles')}</h4>`;
+                    // return me.dataOptions.id ? `<h4 class="text-prm-custom text-start fw-bold" vslang="titles.Modify Space"></h4>` : `<h4 class="text-prm-custom text-start fw-bold" vslang="titles.Create Space"></h4>`;
+                },
 
                 createContent: () => {
                     return `
@@ -1931,7 +1946,7 @@ const TenantDocumentDialog = (() => {
                     <div class="col-12">
                         <div class="vs-material-field">
                             <textarea type="text" name="remarks" class="data-input form-control" data-field="remarks" placeholder=" " /></textarea>
-                            <label>Remark</label>
+                            <label vslang="labels.Remarks">Remark</label>
                         </div>
                     </div>
 
@@ -2034,23 +2049,11 @@ const TenantDocumentDialog = (() => {
                         valueField: "id",
                     },
                 ],
-                onShow: (me) => {
-                    const isModify = !!me.dataOptions?.id;
-                    const title = me.divModal.querySelector(".modal-title");
-                    // if (!isModify){
-                    //     me.controlss.documents.value = Null;
-                    // }
-
-                    if (title) {
-                        title.innerHTML = isModify
-                            ? '<h4 class="text-prm-custom text-start fw-bold">Modify Document</h4>'
-                            : '<h4 class="text-prm-custom text-start fw-bold">Upload Document</h4>';
-                    }
-                },
+                
 
                 prepareFormOptions: {
-                    createTitle: "Upload Document",
-                    modifyTitle: "Modify Document",
+                    // createTitle: "Upload Document",
+                    // modifyTitle: "Modify Document",
                     targetProp: "document_details",
                     api: {
                         endpoint: [
@@ -2090,7 +2093,7 @@ const TenantDocumentDialog = (() => {
 
                 buttons: [
                     {
-                        label: '<span vslang="buttons.Close"></span>',
+                        label: '<span vslang="buttons.Cancel"></span>',
                         cssClass: "btn btn-secondary",
                         click: (me) => me.hide(false),
                     },
