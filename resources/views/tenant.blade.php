@@ -15,7 +15,7 @@
     <meta name="sess_user_id" content="{{ sess_user_id() }}" />
     <meta name="base_url" content="{{ url('/') }}" />
     <meta name="main_route" content="tenant" />
-    <meta name="app_id" content="{{ sess_app_id('prm') }}" />
+    <meta name="app_id" content="{{ sess_app_id('tenant') }}" />
     <meta name="subs_id" content="{{ sess_subs_id() }}" />
     <meta name="default_component" content="<?php echo $defaultComponent; ?>" />
     <meta name="asset_url" content="{{ asset('assets') }}" />

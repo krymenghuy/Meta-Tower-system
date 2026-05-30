@@ -163,7 +163,9 @@ return [
 
                 'https://cdn.vectoraclouds.com/beta-frontcore/components/InputBox.v2.js',
                 'https://cdn.jsdelivr.net/gh/tomik23/circular-progress-bar@latest/docs/circularProgressBar.min.js',
+                
                 'https://cdn.vectoraclouds.com/frontcore/vsroute/vsroute.js',
+        
                 '/js/layout/tenant/main.js',
                 '/assets/js/SearchWidget.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/ImageHelper.js',
