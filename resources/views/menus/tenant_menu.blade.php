@@ -156,8 +156,8 @@ function v_display($mod_id, $module_ids = null)
         </div>
         <div class="" id ="_dms_aside_menus" style="display:none;">
             <ul class="kt-menu__nav">
-                <li class="kt-menu__item" aria-haspopup="true" <?php v_display(306); ?>>
-                    <a href="DashboardComponent" modid="306" class="menu-item kt-menu__link">
+                <li class="kt-menu__item" aria-haspopup="true" <?php v_display(357); ?>>
+                    <a href="DashboardComponent" modid="357" class="menu-item kt-menu__link">
                         <span class="kt-menu__link-icon">
                             <img class="opacity-icons icons" src="{{ asset('assets/images/icons/dashboard.svg') }}" />
                         </span>
