@@ -16,16 +16,7 @@ class InvoiceSettingController extends Controller
     {
         $this->invoiceSetting = new InvoiceSetting();
     }
-
-    public function getInvoiceSetting(Request $req)
-    {
-        $ss = XAuthService::verifyAuth($req, -1);
-        if ($ss->status_code !== 200) {
-            return JDV::raw($ss);
-        }
-        return JDV::result($this->invoiceSetting->getInvoiceSetting($req->all(), $ss));
-    }
-    public function saveInvoiceSetting(Request $req)
+        public function saveInvoiceSetting(Request $req)
     {
         $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
@@ -35,4 +26,15 @@ class InvoiceSettingController extends Controller
         // Pass 'null' as the second argument so $ss lands in the 3rd position
         return JDV::result($this->invoiceSetting->saveInvoiceSetting($req->all(), null, $ss));
     }
+    public function getInvoiceSetting(Request $req)
+    {
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        
+        return JDV::result($this->invoiceSetting->getInvoiceSetting($req->all(), $ss));
+    }
+
+
 }
