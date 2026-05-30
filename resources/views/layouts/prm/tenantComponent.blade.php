@@ -47,17 +47,16 @@
         <div class="d-flex flex-wrap align-items-center gap-3">
             <a href="javascript:void(0)" id="_btn_back_tenant"
                 class="d-flex align-items-center gap-2 shadow-sm btn-outline-secondary btn btn-sm">
-                <i class="fa-angles-left fa-solid fs-5"></i>
-                Back to Tenants
+                <i class="fa-angles-left fa-solid fs-5"></i><span vslang="buttons.Back">Back</span>
             </a>
             <div class="d-sm-block vr d-none"></div>
             <nav aria-label="breadcrumb">
                 <ol class="align-items-center mb-0 breadcrumb">
                     <li class="breadcrumb-item">
-                        <a href="javascript:void(0)" class="text-muted text-decoration-none fw-medium">Tenants</a>
+                        <a href="javascript:void(0)" class="text-muted text-decoration-none fw-medium"></a><span vslang="titles.Tenant">Tenant</span>
                     </li>
                     <li class="text-muted breadcrumb-item active fw-semibold" aria-current="page">
-                        Personal Information
+                        <span vslang="titles.Personal Information">Personal Information</span>
                     </li>
                 </ol>
             </nav>

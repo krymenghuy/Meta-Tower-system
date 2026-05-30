@@ -98,7 +98,7 @@ return [
         'Mode of Payment' => 'របៀបទូទាត់',
         'Photo' => 'រូបភាព',
         'Code' => 'លេខកូដ',
-        'Date of Birth' => 'ថ្ងៃខែឆ្នាំកើត',
+        'Date of Birth' => 'ថ្ងៃខែឆ្នាំកំណើត',
         'National ID' => 'អត្តសញ្ញាណប័ណ្ណ',
         'Passport' => 'លិខិតឆ្លងដែន',
         'Invoice Setting' => 'ការកំណត់វិក័យប័ត្រ',
@@ -106,7 +106,23 @@ return [
         'Create Booking' => 'បង្កើតការកក់',
         'Modify Space' => 'កែប្រែបន្ទប់',
         'Delete Space' => 'លុបបន្ទប់',
-
+        'Create New Tenant' => 'បង្កើតអ្នកជួលថ្មី',
+        'Modify Tenant' => 'កែប្រែអ្នកជួល',
+        
+        'View Details' => 'ព័ត៌មានលម្អិត',
+        'Upload Document' => 'ផ្ទុកឯកសារ',
+        'Modify Document' => 'កែប្រែឯកសារ',
+        'Create Contract' => 'បង្កើតកិច្ចសន្យា',
+        'Service Requests' => 'សំណើសេវាកម្ម',
+        'Delete Tenant' => 'លុបអ្នកជួល',
+        'Personal Information' => 'ព័ត៌មានផ្ទាល់ខ្លួន',
+        'Overview' => 'ទិដ្ឋភាពទូទៅ',
+        'Contract' => 'កិច្ចសន្យា',
+        'Document' => 'ឯកសារ',
+        'Create Space' => 'បង្កើតបន្ទប់',
+        'Identity Documents' => 'ឯកសារសម្គាល់',
+        
+        
 
 
         'Authorize'=>'អនុម័ត',
@@ -201,6 +217,7 @@ return [
         'Finish Maintenance' => 'បញ្ចប់ការថែទាំ',
         'View Booking' => 'មើលការកក់',
         'Modify Booking' => 'កែប្រែការកក់',
+        'Edit Booking' => 'កែប្រែការកក់',
         'Cancel Booking' => 'បោះបង់ការកក់',
         'Booking' => 'ការកក់',
         'Unit Used' => 'តម្លៃឯកតា',
@@ -343,6 +360,7 @@ return [
         'Create Space' => 'បង្កើតបន្ទប់',
         'Create Reservation' => 'បង្កើតការកក់',
         'Create Maintenance' => 'បង្កើតការថែទាំ',
+        'Upload Document' => 'ផ្ទុកឯកសារ',
         
         'Purchase Orders' => 'បង្កើតបញ្ជាទិញ',
         'Quick Order' => 'បញ្ជាលឿន',
@@ -402,5 +420,30 @@ return [
         'Remarks' => 'Remarks',
         'payer' => 'Payer',
         'Payee' => 'Payee'
-    ]
+    ],
+    'labels' => [
+        'Name' => 'ឈ្មោះ',
+        'Full Name' => 'ឈ្មោះពេញ',
+        'Email' => 'អ៊ីមែល',
+        'Gender' => 'ភេទ',
+        'Legal Name' => 'ឈ្មោះស្របច្បាប់',
+        'Date of Birth' => 'ថ្ងៃខែឆ្នាំកំណើត',
+        'National ID' => 'អត្តសញ្ញាណប័ណ្ណ',
+        'Passport' => 'លិខិតឆ្លងដែន',
+        'Phone Number' => 'លេខទូរសព្ទ',
+        'Address' => 'អាសយដ្ឋាន',
+
+        'Unit Code (Optional)' => 'លេខកូដបន្ទប់ (Optional)',
+        'Size (m²)' => 'ទំហំ (m²)',
+        'Price' => 'តម្លៃ',
+
+        'Booker Name' => 'ឈ្មោះអ្នកកក់',
+        'Booker Phone' => 'លេខទូរសព្ទអ្នកកក់',
+        'Email (Optional)' => 'អ៊ីមែល (Optional)',
+        'Booking Date' => 'ថ្ងៃកក់',
+        'Expired Date' => 'ថ្ងៃផុតកំណត់',
+        'Booking Amount' => 'ចំនួនទឹកប្រាក់កក់',
+        'Remarks' => 'កំណត់សម្គាល់',
+      
+    ],
 ];

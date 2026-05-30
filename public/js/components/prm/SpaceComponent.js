@@ -491,7 +491,10 @@ var SpaceComponent = new (function () {
                             <div class="mt-auto">
                                 <div class="d-flex justify-content-between text-muted small">
                                     <div class="d-flex align-items-center gap-1">
-                                        <div class="text-muted small">Last Updated :</i> ${d.update_user ?? ""}</div>
+                                        <span style="color: #64748b; font-size: 0.85rem;">
+                                        <span class="small" vslang="titles.Last Updated">Last Updated</span>:
+                                        ${d.update_user || "System"}
+                                    </span>
                                     </div>
                                     <div class="d-flex align-items-center gap-1">
                                         <div class="text-muted small"><i class="fa-regular fa-clock fs-6"></i> <span class="small">${d.updated_at ?? ""}</span></div>
@@ -880,6 +883,11 @@ const BuildingSpaceDialog = (() => {
                 cssClass: "modal-md vs-modal",
                 backdrop: "static",
                 keyboard: true,
+                title: (me)=>{
+                    const title = me.dataOptions.id ? "Modify Space" : "Create Space";
+                    return  `<h4 class="text-prm-custom text-start fw-bold">${LocaleManager.trans(title,'titles')}</h4>`;
+                    // return me.dataOptions.id ? `<h4 class="text-prm-custom text-start fw-bold" vslang="titles.Modify Space"></h4>` : `<h4 class="text-prm-custom text-start fw-bold" vslang="titles.Create Space"></h4>`;
+                },
                 createContent: () => {
                     return [
                         `<div class="row g-3 justify-content-center">
@@ -894,7 +902,7 @@ const BuildingSpaceDialog = (() => {
                             <div class="col-6">
                                 <div class="vs-material-field">
                                     <input type="text" name="code" class="data-input form-control" data-field="code" placeholder=" " />
-                                    <label>Unit Code (Optional)</label>
+                                    <label vslang="labels.Unit Code (Optional)"></label>
                                 </div>
                             </div>
                             <div class="col-6">
@@ -904,13 +912,13 @@ const BuildingSpaceDialog = (() => {
                             <div class="col-6">
                                 <div class="vs-material-field">
                                     <input type="text" name="sqm_size" class="data-input  form-control" data-field="sqm_size" placeholder=" " />
-                                    <label>Size (m²)</label>
+                                    <label vslang="labels.Size (m²)"></label>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="vs-material-field">
                                     <input type="text" name="price" class="data-input form-control" data-field="price" placeholder=" " />
-                                    <label>Price</label>
+                                    <label vslang="labels.Price"></label>
                                 </div>
                             </div>
                             <div class="col-6">
@@ -966,18 +974,10 @@ const BuildingSpaceDialog = (() => {
                         valueField: "id",
                     },
                 ],
-                onShow: (me) => {
-                    const title = me.divModal.querySelector(".modal-title");
-                    if (title) {
-                        const isModify = !!me.dataOptions?.id;
-                        title.innerHTML = isModify
-                            ? '<h4 class="text-prm-custom text-start fw-bold">Modify Space</h4>'
-                            : '<h4 class="text-prm-custom text-start fw-bold">Create Space</h4>';
-                    }
-                },
+            
                 prepareFormOptions: {
-                    createTitle: "Create Space",
-                    modifyTitle: "Modify Space ",
+                    // createTitle: "vslang:titles.Create Space",
+                    // modifyTitle: "vslang:titles.Modify Space",
                     targetProp: "space_details",
                     api: {
                         endpoint: [
@@ -1067,37 +1067,42 @@ const CreateBookingDialog = (() => {
                 cssClass: "modal-md vs-modal",
                 backdrop: "static",
                 keyboard: true,
+                title: (me)=>{
+                    const title = me.dataOptions.id ? "Edit Booking" : "Create Booking";
+                    return  `<h4 class="text-prm-custom text-start fw-bold">${LocaleManager.trans(title,'titles')}</h4>`;
+                    // return me.dataOptions.id ? `<h4 class="text-prm-custom text-start fw-bold" vslang="titles.Modify Space"></h4>` : `<h4 class="text-prm-custom text-start fw-bold" vslang="titles.Create Space"></h4>`;
+                },
                 createContent: () => {
                     return [
                         `<div class="row g-3 justify-content-center">
                             <div class="col-6">
                                 <div class="vs-material-field">
                                     <input type="text" name="booker_name" class="data-input form-control" data-field="booker_name" placeholder=" " />
-                                    <label>Booker Name</label>
+                                    <label vslang="labels.Booker Name">Booker Name</label>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="vs-material-field">
                                     <input type="number" name="booker_phone" class="data-input form-control" data-field="booker_phone" placeholder=" " />
-                                    <label>Booker Phone</label>
+                                    <label vslang="labels.Booker Phone">Booker Phone</label>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="vs-material-field">
                                     <input type="email" name="booker_email" class="data-input form-control" data-field="booker_email" placeholder=" " />
-                                    <label>Email (Optional)</label>
+                                    <label vslang="labels.Email (Optional)">Email (Optional)</label>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="vs-material-field">
                                     <input type="text" data-type="date" name="booking_date" class="data-input form-control" Readonly data-field="booking_date" placeholder=" " />
-                                    <label>Booking Date</label>
+                                    <label vslang="labels.Booking Date">Booking Date</label>
                                 </div>
                             </div>
                             <div class="col-12 col-md-6">
                                 <div class="vs-material-field">
                                     <input type="text" data-type="date" name="expired_booking_date" class="data-input form-control form_input" data-field="expired_booking_date" />
-                                    <label>Expired  Date</label>
+                                    <label vslang="labels.Expired Date">Expired  Date</label>
                                 </div>
 
                             </div>
@@ -1110,13 +1115,13 @@ const CreateBookingDialog = (() => {
                                         class="data-input form-control"
                                         data-field="booking_fee"
                                         placeholder=" " />
-                                    <label>Booking Amount</label>
+                                    <label vslang="labels.Booking Amount">Booking Amount</label>
                                 </div>
                             </div>
                             <div class="col-12">
                                 <div class="vs-material-field">
                                     <textarea name="remarks" class="data-input form-control" data-field="remarks" rows="3" placeholder=" "></textarea>
-                                    <label>Remark</label>
+                                    <label vslang="labels.Remarks">Remarks</label>
                                 </div>
                             </div>
 
@@ -1133,9 +1138,9 @@ const CreateBookingDialog = (() => {
                     const bookingId =
                         me.dataOptions?.booking?.id ?? me.detail?.booking?.id;
                     const isEdit = Number(bookingId) > 0;
-                    title.innerHTML = isEdit
-                        ? '<h4 class="text-prm-custom text-start fw-bold">Edit Booking</h4>'
-                        : '<h4 class="text-prm-custom text-start fw-bold">Create Booking</h4>';
+                    // title.innerHTML = isEdit
+                    //     ? '<h4 class="text-prm-custom text-start fw-bold">Edit Booking</h4>'
+                    //     : '<h4 class="text-prm-custom text-start fw-bold">Create Booking</h4>';
                     const c = me.controls;
                     if (c?.booking_date) c.booking_date.disabled = isEdit;
                     if (c?.expired_booking_date)
@@ -1143,8 +1148,8 @@ const CreateBookingDialog = (() => {
                 },
                 configSelect: [],
                 prepareFormOptions: {
-                    createTitle: "Create Booking",
-                    modifyTitle: "Edit Booking",
+                    // createTitle: "Create Booking",
+                    // modifyTitle: "Edit Booking",
                     targetProp: "space_details",
                     api: {
                         endpoint: [
