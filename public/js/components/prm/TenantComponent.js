@@ -522,7 +522,7 @@ var TenantComponent = new (function () {
                                                     data-id="${d.id}" data-name="${d.name}">
                                                         <span class="tool-tip">
                                                             <i class="fa-solid fa-file-circle-plus text-prm-custom fs-6"></i>
-                                                            <span class="tool-tiptext fs-6">Create Contract</span>
+                                                            <span class="tool-tiptext fs-6" vslang="titles.Create Contract">Create Contract</span>
                                                         </span>
                                                     </a>
                                                 </div>
@@ -822,26 +822,26 @@ var TenantComponent = new (function () {
                             <div class="row g-3 text-center">
                                 <div class="col-6">
                                     <div class="p-3 bg-light rounded">
-                                        <div class="text-muted small">ID</div>
+                                        <div class="text-muted small" vslang="labels.ID">ID</div>
                                         <div class="">${data.code ?? "_"}</div>
                                     </div>
                                 </div>
                                 <div class="col-6">
                                     <div class="p-3 bg-light rounded">
-                                        <div class="text-muted small">Unit</div>
+                                        <div class="text-muted small" vslang="labels.Unit">Unit</div>
                                         <div class="">${data.space_code ?? "_"}</div>
                                     </div>
                                 </div>
                                 <div class="col-12 mb-2">
                                     <div class="p-3 bg-light rounded text-center">
-                                        <h6 class="mb-3">Lease Terms</h6>
+                                        <h6 class="mb-3" vslang="labels.Lease Terms">Lease Terms</h6>
                                         <div class="row text-center">
                                             <div class="col-6 border-end border-info">
-                                                <div class="text-muted mb-1 small">Start Date</div>
+                                                <div class="text-muted mb-1 small" vslang="labels.Start Date">Start Date</div>
                                                 <div class="small">${data.start_date ?? "_"}</div>
                                             </div>
                                             <div class="col-6">
-                                                <div class="text-muted mb-1 small">End Date</div>
+                                                <div class="text-muted mb-1 small" vslang="labels.End Date">End Date</div>
                                                 <div class="small">${data.end_date ?? "_"}</div>
                                             </div>
                                         </div>
@@ -1054,7 +1054,9 @@ var TenantComponent = new (function () {
 
             const start = mThis._escapeHtml(first.contract_start_date ?? "");
             const end = mThis._escapeHtml(first.contract_end_date ?? "");
-            const title = `Contract: ${start} — ${end}`;
+            // const title = `vslang:titles.Contract: ${start} — ${end}`;
+            // const title = `${vslang('titles.Contract')}: ${start} — ${end}`;
+            const title = `${LocaleManager.trans('Contract','titles')} : ${start} — ${end}`;
 
             const unitPart = mThis._escapeHtml(mThis._getUnitCode(first, "—"));
             const sqmPart =
@@ -1066,7 +1068,7 @@ var TenantComponent = new (function () {
                 : "";
             const detailPillsHtml = `
                 <div class="d-flex flex-wrap gap-2 mt-2">
-                    <span class="badge rounded-pill fw-normal px-3 py-2" style="color:#4a4a4a;background-color:#f6f4ee;border:1px solid #e5dfd1;">Unit ${unitPart}</span>
+                    <span class="badge rounded-pill fw-normal px-3 py-2" style="color:#4a4a4a;background-color:#f6f4ee;border:1px solid #e5dfd1;">${LocaleManager.trans('unit','titles')} ${unitPart}</span>
                     <span class="badge rounded-pill fw-normal px-3 py-2" style="color:#4a4a4a;background-color:#f6f4ee;border:1px solid #e5dfd1;">${sqmPart}</span>
                     ${bldg ? `<span class="badge rounded-pill fw-normal px-3 py-2" style="color:#4a4a4a;background-color:#f6f4ee;border:1px solid #e5dfd1;">${bldg}</span>` : ""}
                 </div>`;
@@ -1154,7 +1156,7 @@ var TenantComponent = new (function () {
                                     ${detailPillsHtml}
                                 </div>
                                 <div class="text-end mt-2 mt-md-0">
-                                    <small class="text-muted d-block mb-1">Monthly</small>
+                                    <small class="text-muted d-block mb-1" vslang="labels.Monthly">Monthly</small>
                                     <p class="h5 mb-0" style="color:${priceColor};">${priceLine}</p>
                                     <div class="mt-2">${depositBadgeHtml}</div>
                                 </div>
@@ -1291,25 +1293,25 @@ var TenantComponent = new (function () {
                                 <a href="javascript:void(0)" class="view-doc" data-id="${doc.id}">
                                     <span class="tool-tip">
                                         <i class="fa-regular fa-eye text-success fs-6"></i>
-                                        <span class="tool-tiptext fs-6">View</span>
+                                        <span class="tool-tiptext fs-6" vslang="buttons.View Document">View</span>
                                     </span>
                                 </a>
                                 <a href="javascript:void(0)" class="modify-doc" data-id="${doc.id}">
                                     <span class="tool-tip">
                                         <i class="fa-regular fa-edit fs-6 text-warning"></i>
-                                        <span class="tool-tiptext fs-6">Modify</span>
+                                        <span class="tool-tiptext fs-6" vslang="buttons.Modify Document">Modify</span>
                                     </span>
                                 </a>
                                 <a href="javascript:void(0)" class="download-doc" data-id="${doc.id}">
                                     <span class="tool-tip">
                                         <i class="fa-solid fa-cloud-arrow-down text-primary fs-6"></i>
-                                        <span class="tool-tiptext fs-6">Download</span>
+                                        <span class="tool-tiptext fs-6" vslang="buttons.Download Document">Download</span>
                                     </span>
                                 </a>
                                 <a href="javascript:void(0)" class="delete-doc-btn" data-id="${doc.id}">
                                     <span class="tool-tip">
                                         <i class="fa-regular fa-trash-can text-danger fs-6"></i>
-                                        <span class="tool-tiptext fs-6">Delete</span>
+                                        <span class="tool-tiptext fs-6" vslang="buttons.Delete Document">Delete</span>
                                     </span>
                                 </a>
                             </div>
@@ -1343,11 +1345,11 @@ var TenantComponent = new (function () {
                         <table class="table align-middle mb-3">
                             <thead class="bg-light">
                                 <tr class="text-uppercase small">
-                                    <th class="border-0 ps-3" style="letter-spacing: 0.05em;">Type</th>
-                                    <th class="border-0">File Name</th>
-                                    <th class="border-0">File Type</th>
-                                    <th class="border-0">Remark</th>
-                                    <th class="border-0 text-start">Actions</th>
+                                    <th class="border-0 ps-3" vslang="labels.Type">Type</th>
+                                    <th class="border-0" vslang="labels.File Name">File Name</th>
+                                    <th class="border-0 text-nowrap" vslang="labels.File Type">File Type</th>
+                                    <th class="border-0" vslang="labels.Remarks">Remark</th>
+                                    <th class="border-0 text-start" vslang="labels.Actions">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -1933,7 +1935,7 @@ const TenantDocumentDialog = (() => {
                     </div>
                     <div class="col-4">
                         <div class="vs-material-field d-flex">
-                            <button name ="btn_chooseFile"  class="btn btn-secondary btn-block" style="padding: 0.5rem 0.75rem !important;">Choose File </button>
+                            <button name ="btn_chooseFile"  class="btn btn-secondary btn-block" style="padding: 0.5rem 0.75rem !important;" vslang="buttons.Choose File">Choose File </button>
                         </div>
                     </div>
                     <div class="col-12">

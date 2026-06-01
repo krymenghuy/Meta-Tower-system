@@ -72,8 +72,8 @@ class Tenant
         $branch_id = $ss->branch_id;
         $v_rule = [
             'name'            => '1|string|0-30',
-            'sex'             => '1|choice|F,M|text=Please select a valid gender.',
-            'date_of_birth'   => '1|date|text=Date of birth is required.',
+            'sex'             => '1|choice|F,M|text=gender_not_correct',
+            'date_of_birth'   => '1|date',
             'legal_name'      => '1|string|0-30',
             'nationality_id'  => '1|number|text=Please select nationality.',
             'national_id'     => '0|string|0-20',
