@@ -67,7 +67,7 @@ var ReservationComponent = (() => {
             className: "align-middle",
             data: (data, index, tr) => {
                 return `
-                    <div class="text-primary-custom" style="width:320px;">
+                    <div class="text-primary-custom" style="width:250px;">
                         <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ?? "_"}</span>
                     </div>
                 `;
@@ -104,16 +104,16 @@ var ReservationComponent = (() => {
                 `;
             },
         },
-        {
-            transTitle: "titles.Last Updated",
-            className: "align-middle",
-            data: (data, index, tr) => {
-                return `<div class="d-flex flex-column">
-                            <span class="text-muted">${data.updated_at ?? ""}</span>
-                        </div>`;
-            },
-            // <span class="text-capitalize text-start text-prm-custom"><span>${data.update_user ?? ""}</span></span>
-        },
+        // {
+        //     transTitle: "titles.Last Updated",
+        //     className: "align-middle",
+        //     data: (data, index, tr) => {
+        //         return `<div class="d-flex flex-column">
+        //                     <span class="text-muted">${data.updated_at ?? ""}</span>
+        //                 </div>`;
+        //     },
+        //     <span class="text-capitalize text-start text-prm-custom"><span>${data.update_user ?? ""}</span></span>
+        // },
         {
             transTitle: "titles.Action",
             className: "col_action align-middle",
@@ -139,7 +139,7 @@ var ReservationComponent = (() => {
         }
 
         mThis.ReservationListView = new ListView("_reservation_list", {
-            fetchApi: `${main_view.base_url}/prm/reservation/list-paginate`,
+            fetchApi: `${main_view.base_url}/prm/tenant/reservation/list-paginate`,
             perPage: 8,
             // rememberCurrentPage: false,
             apiCluster: main_view.apiCluster,
@@ -429,8 +429,8 @@ const CreateReservationDialog = (() => {
                 createContent: () => {
                     return [
                         `<div class="row g-3 justify-content-center">
-                            <input type="hidden" class="data-input" data-field="tenant_id">
-                            <div class="col-6">
+                            <!-- <input type="hidden" class="data-input" data-field="tenant_id"> -->
+                            <!-- <div class="col-6">
                                 <div class="vs-material-field">
                                     <input name="tenant" class="data-input form-control" data-field="tenant_name" placeholder="Tenant" autocomplete="off">
                                     <label>Tenant</label>
@@ -441,7 +441,7 @@ const CreateReservationDialog = (() => {
                                     <input name="phone_number" class="data-input form-control" data-field="phone_number" disabled placeholder=" "></input>
                                     <label>Phone Number</label>
                                 </div>
-                            </div>
+                            </div> -->
                             <div class="col-6">
                                 <select data-style="material" name="amenity" class="data-input form-control" data-field="amenity_id" placeholder="Amenity">
                                 </select>
@@ -483,36 +483,36 @@ const CreateReservationDialog = (() => {
                 },
 
                 contentCreated: (me) => {
-                    me.searchTenant = VSSearchInput.init(me.controls.tenant, {
-                        type: "select",
-                        prefetch: true,
-                        query: {
-                            from: "tenants",
-                            select: ["id", "name", "phone_number"],
-                            where: [["status_id", "=", 2]],
-                            orderBy: [["id", "DESC"]],
-                            limit: 50,
-                            searchFields: {
-                                name: "LIKE",
-                                phone_number: "LIKE",
-                            },
-                        },
-                        showColumnHeader: true,
-                        columns: {
-                            name: "Name",
-                            phone_number: "Phone",
-                        },
-                        onSelect: (tenant) => {
-                            me._selectedTenantId = tenant.id;
+                    // me.searchTenant = VSSearchInput.init(me.controls.tenant, {
+                    //     type: "select",
+                    //     prefetch: true,
+                    //     query: {
+                    //         from: "tenants",
+                    //         select: ["id", "name", "phone_number"],
+                    //         where: [["status_id", "=", 2]],
+                    //         orderBy: [["id", "DESC"]],
+                    //         limit: 50,
+                    //         searchFields: {
+                    //             name: "LIKE",
+                    //             phone_number: "LIKE",
+                    //         },
+                    //     },
+                    //     showColumnHeader: true,
+                    //     columns: {
+                    //         name: "Name",
+                    //         phone_number: "Phone",
+                    //     },
+                    //     onSelect: (tenant) => {
+                    //         me._selectedTenantId = tenant.id;
 
-                            // Direct mapping from the search result
-                            if (me.controls.phone_number) {
-                                me.controls.phone_number.value =
-                                    tenant.phone_number || "";
-                            }
-                        },
-                    });
-                    me.searchTenant.reset("");
+                    //         // Direct mapping from the search result
+                    //         if (me.controls.phone_number) {
+                    //             me.controls.phone_number.value =
+                    //                 tenant.phone_number || "";
+                    //         }
+                    //     },
+                    // });
+                    // me.searchTenant.reset("");
                 },
 
                 configSelect: [
@@ -603,23 +603,23 @@ const CreateReservationDialog = (() => {
                         cssClass: "btn btn-primary",
                         click: (me, btn) => {
                             const op = me.getData();
-                            op.id = me.dataOptions.id;
-                            if (
-                                me._selectedTenantId != null &&
-                                me._selectedTenantId !== undefined
-                            ) {
-                                op.tenant_id = me._selectedTenantId;
-                            }
+                            // op.id = me.dataOptions.id;
+                            // if (
+                            //     me._selectedTenantId != null &&
+                            //     me._selectedTenantId !== undefined
+                            // ) {
+                            //     op.tenant_id = me._selectedTenantId;
+                            // }
 
                             // op.tenant_id = me._selectedTenantId;
-                            op.id = me.dataOptions.id;
-                            // console.log(123, op);
+                            // op.id = me.dataOptions.id;
+                            console.log(123, op);
 
                             vsapi
                                 .call(
                                     [
                                         main_view.base_url,
-                                        "/prm/reservation/save",
+                                        "/prm/tenant/reservation/save",
                                     ].join(""),
                                     op,
                                     btn,
@@ -628,7 +628,7 @@ const CreateReservationDialog = (() => {
                                 .then((res) => {
                                     if (res.status_code === 200) {
                                         me.hide(true, op);
-                                        me._selectedTenantId = null;
+                                        // me._selectedTenantId = null;
                                         if (me.dataOptions.id > 0) {
                                             cv_interact.success(
                                                 "Reservation has been updated successfully.",
