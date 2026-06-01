@@ -61,7 +61,7 @@ const InvoiceCommercialDialog = (() => {
         };
     };
 
-    const buildInvoiceHTML = (invoice) => {
+    const buildInvoiceHTML = (invoice, setting) => {
         const subTotal      = parseFloat(invoice.amount         || 0);
         const totalDiscount = parseFloat(invoice.discount_value || 0);
         const netTotal      = parseFloat(invoice.amount_payable || 0);
@@ -69,9 +69,10 @@ const InvoiceCommercialDialog = (() => {
         const balance       = parseFloat(invoice.due_amount     || 0);
 
         // Fixed undefined "src" reference bug by mapping to "invoice" object instead
-        const showPayStatus  = parseInt(invoice.show_pay_status !== undefined ? invoice.show_pay_status : 1) === 1;
-        const showBaland     = parseInt(invoice.show_baland !== undefined ? invoice.show_baland : 1) === 1;
-        const showAmountPaid = parseInt((invoice.show_amount_paid !== undefined ? invoice.show_amount_paid : invoice.show_amount_piad) !== undefined ? (invoice.show_amount_paid ?? invoice.show_amount_piad) : 1) === 1;
+        const showPayStatus  = setting.show_pay_status;
+        const showBaland     = setting.show_baland;
+        const showAmountPaid = setting.show_amount_paid;
+        const showCommTax    = setting.show_comm_tax;
 
         const discType = (invoice.discount_type || "percent").toLowerCase();
         const isAmountDisc = (discType === "amount" || discType === "$");
@@ -315,18 +316,8 @@ const InvoiceCommercialDialog = (() => {
                 </div>`,
             contentCreated: (me) => {
                 const container = me.divModal.querySelector('[name="pi_container"]');
-                vsapi.call(`${main_view.base_url}/prm/invoice/details`, { id: op.invoice_id })
-                    .then((res) => {
-                        if (res.status_code !== 200) {
-                            container.innerHTML = `<div class="alert alert-danger m-4">Error: ${res.error_message || "Unknown error"}</div>`;
-                            return;
-                        }
-                        container.innerHTML = buildInvoiceHTML(res.data || {});
-                        wireButtons(container);
-                    })
-                    .catch(() => {
-                        container.innerHTML = `<div class="alert alert-danger m-4">Network error — could not load invoice.</div>`;
-                    });
+                container.innerHTML = buildInvoiceHTML(op.invoice, op.setting);
+
             },
             buttons: [{ label: "Close", cssClass: "btn btn-secondary", click: (me) => me.hide() }]
         });

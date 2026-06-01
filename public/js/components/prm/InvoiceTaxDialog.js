@@ -61,9 +61,7 @@ const InvoiceTaxDialog = (() => {
         };
     };
 
-    const buildInvoiceHTML = (invoice) => {
-        // Safe source normalization in case settings are nested or flat
-        const src = invoice.settings ? invoice.settings : invoice;
+    const buildInvoiceHTML = (invoice, global) => {
 
         const subTotal      = parseFloat(invoice.amount         || 0);
         const totalDiscount = parseFloat(invoice.discount_value || 0);
@@ -72,9 +70,9 @@ const InvoiceTaxDialog = (() => {
         const balance       = parseFloat(invoice.due_amount     || 0);
 
         // Visibility Flags (Normalized values checking integer conversion status)
-        const showPayStatus  = parseInt(src.show_pay_status !== undefined ? src.show_pay_status : 1) === 1;
-        const showBaland     = parseInt(src.show_baland !== undefined ? src.show_baland : 1) === 1;
-        const showAmountPaid = parseInt((src.show_amount_paid !== undefined ? src.show_amount_paid : src.show_amount_piad) !== undefined ? (src.show_amount_paid ?? src.show_amount_piad) : 1) === 1;
+        const showPayStatus  = global.show_pay_status;
+        const showBaland     = global.show_baland;
+        const showAmountPaid = global.show_amount_paid;
 
         const discType     = (invoice.discount_type || "percent").toLowerCase();
         const isAmountDisc = (discType === "amount" || discType === "$");
@@ -331,11 +329,14 @@ const InvoiceTaxDialog = (() => {
         const invoiceEl   = container.querySelector("#pi-invoice-content");
         const printBtn    = container.querySelector("#pi-print-btn");
         const downloadBtn = container.querySelector("#pi-download-btn");
-        if (printBtn)     printBtn.addEventListener("click",    () => printViaIframe(invoiceEl));
+        
+        if (printBtn)    printBtn.addEventListener("click",    () => printViaIframe(invoiceEl));
         if (downloadBtn) downloadBtn.addEventListener("click", () => printViaIframe(invoiceEl));
     };
 
     self.show = (op) => {
+        console.log(222, op);
+
         if (!op || !op.invoice_id) {
             cv_interact?.error("Invoice ID is missing");
             return;
@@ -356,20 +357,10 @@ const InvoiceTaxDialog = (() => {
                 </div>`,
             contentCreated: (me) => {
                 const container = me.divModal.querySelector('[name="pi_container"]');
-                vsapi.call(`${main_view.base_url}/prm/invoice/details`, { id: op.invoice_id })
-                    .then((res) => {
-                        console.log("Invoice Details API Response:", res);
-                        
-                        if (res.status_code !== 200) {
-                            container.innerHTML = `<div class="alert alert-danger m-4">Error: ${res.error_message || "Unknown error"}</div>`;
-                            return;
-                        }
-                        container.innerHTML = buildInvoiceHTML(res.data || {});
-                        wireButtons(container);
-                    })
-                    .catch(() => {
-                        container.innerHTML = `<div class="alert alert-danger m-4">Network error — could not load invoice.</div>`;
-                    });
+                container.innerHTML = buildInvoiceHTML(op.invoice, op.global);
+                
+                // CRITICAL FIX: Wire the action elements right after appending HTML to the DOM
+                wireButtons(container);
             },
             buttons: [{ label: "Close", cssClass: "btn btn-secondary", click: (me) => me.hide() }]
         });
