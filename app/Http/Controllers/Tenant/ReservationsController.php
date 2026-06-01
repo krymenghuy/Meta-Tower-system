@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Prm;
+namespace App\Http\Controllers\Tenant;
 
 use App\Http\Controllers\Controller;
-use App\Models\Prm\Reservations;
+use App\Models\Tenant\Reservation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use JDV;
@@ -15,7 +15,7 @@ class ReservationsController extends Controller
 
     public function __construct()
     {
-        $this->reservation = new Reservations();
+        $this->reservation = new Reservation();
     }
 
     public function saveReservation(Request $req)
@@ -26,9 +26,8 @@ class ReservationsController extends Controller
         }
 
         $id = $req->id ?? $req->reservation_id;
-        $reservation = new Reservations($id, $ss);
+        $reservation = new Reservation($id, $ss);
 
-        // ✅ If tenant, force their own tenant_id (prevent saving for another tenant)
         $params = $req->all();
         if (isset($ss->tenant_id) && $ss->tenant_id) {
             $params['tenant_id'] = $ss->tenant_id;
@@ -48,7 +47,6 @@ class ReservationsController extends Controller
 
         $params = $req->all();
 
-        // ✅ If tenant account, force filter to their own tenant_id only
         if (isset($ss->tenant_id) && $ss->tenant_id) {
             $params['tenant_id'] = $ss->tenant_id;
         }
