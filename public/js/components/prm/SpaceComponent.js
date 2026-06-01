@@ -148,6 +148,7 @@ var SpaceComponent = new (function () {
 
         html += `</div>`;
         mThis.divSummary.innerHTML = html;
+        LocaleManager.translateZone(mThis.divSummary,'titles');
     };
 
     mThis.getFilterData = () => {
@@ -477,7 +478,7 @@ var SpaceComponent = new (function () {
                                         </div>
                                         <div class="section-title mt-3 mx-3 mb-0 fs-6 text-start w-100">
                                             <div class="w-100">
-                                                <p class="fs-6 text-prm-custom m-0">Total Price</p>
+                                                <p class="fs-6 text-prm-custom m-0" vslang="titles.Total Price">Total Price</p>
                                                 <hr style="margin: 4px 0; border: 0; border-top: 2px solid #2b3991; width: 80%;">
                                                 <p class="fs-6" style="color: #2b3991;">
                                                    ${priceLabelPerMonth}
@@ -519,6 +520,7 @@ var SpaceComponent = new (function () {
 
         html += `</div>`;
         container.innerHTML = html;
+        LocaleManager.translateZone(container);
     };
 
     mThis.createContract = (id, menulink) => {

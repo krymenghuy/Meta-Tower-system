@@ -6,6 +6,7 @@ return [
     'code'=>'km',
     'validation'=>[
         'required' => 'សូមបញ្ចូល ??.',
+
         'numeric' => 'សូមបញ្ចូលលេខត្រឹមត្រូវសម្រាប់ ??.',
 
         'positive' => '?? ត្រូវតែធំជាង 0។',
@@ -36,19 +37,50 @@ return [
 
         'file_size_between' => 'ទំហំឯកសារត្រូវតែចន្លោះពី ??KB ដល់ ??KB។',
 
-        'default' => '?? មិនត្រឹមត្រូវ។'
+        'default' => '?? មិនត្រឹមត្រូវ។',
+
+        'building_name_is_required' => 'សូមបញ្ចូលឈ្មោះអគារ។',
+        'building_prefix_is_required' => 'សូមបញ្ចូលអក្សរកាត់របស់អគារ។',  
+        'building_total_floor_is_required' => 'សូមបញ្ចូលចំនួនជាន់សរុប។',
+        'building_total_area_is_required' => 'សូមបញ្ចូលចំនួនផ្ទៃដីសរុប។',
+        'building_address_is_required' => 'សូមបញ្ចូលអាសយដ្ឋាន។',
+
+        'gender_not_correct' => 'សូមជ្រើសរើសភេទត្រឹមត្រូវ។',
+        
     ],
     'titles' => [
+        'Create Building' => 'បង្កើតអគារ',
+        'Modify Building' => 'កែប្រែអគារ',
+        'Create Floor' => 'បង្កើតជាន់ថ្មី',
+        'Modify Floor' => 'កែប្រែជាន់',
+        'Floor' => 'ជាន់',
+        'Floor Number' => 'លេខជាន់',
+        'Total Space' => 'បន្ទប់សរុប',
+        'Last Updated' => 'កែប្រែចុងក្រោយ',
+        'Description' => 'ការពិពណ៌នា',
+        'Action' => 'សកម្មភាព',
+        'Change Status' => 'ប្ដូរស្ថានភាព',
+        'Delete' => 'លុបចោល',
+        'Modify' => 'កែប្រែ',
+        'Cancel' => 'បោះបង់',
+
+
+        'Create Service Price' => 'បង្កើតតម្លៃសេវាកម្ម',
+        'Modify Service Price' => 'កែប្រែតម្លៃសេវាកម្ម',
+
+
+
+
         'Invoice Num'=>'ចំនួនវិក័យប័ត្រ',
         'Tenant' => 'អ្នកជួល',
         'Building' => 'អគារ',
         'Space Code' => 'លេខកូដបន្ទប់',
         'Paid' => 'បានបង់',
+        'Total Price' => 'តម្លៃសរុប',
         'Balance' => 'សមតុល្យនៅសល់',
         'Due Date' => 'ថ្ងៃផុតកំណត់',
         'Status' => 'ស្ថានភាព',
         'Updated By' => 'បានកែប្រែដោយ',
-        'Action' => 'សកម្មភាព',
         'Expense' => 'ចំណាយ',
         'Contracts' => 'កិច្ចសន្យា',
         'Service' => 'សេវាកម្ម',
@@ -79,7 +111,6 @@ return [
         'Request Num' => 'លេខសំណើ',
         'Room Code' => 'លេខកូដបន្ទប់',
         'Price' => 'តម្លៃ',
-        'Description' => 'ការពិពណ៌នា',
         'Name' => 'ឈ្មោះ',
         'Start Date' => 'ថ្ងៃចាប់ផ្តើម',
         'End Date' => 'ថ្ងៃបញ្ចប់',
@@ -89,8 +120,7 @@ return [
         'Type' => 'ប្រភេទ',
         'Remark' => 'កំណត់សម្គាល់',
         'Category' => 'ប្រភេទសេវាកម្ម',
-        'Delete' => 'លុបចោល',
-        'Modify' => 'កែប្រែ',
+        
         'Space' => 'បន្ទប់',
         'Invoice No' => 'លេខវិក្កយបត្រ',
         'Expiration Date' => 'កាលបរិច្ឆេទផុតកំណត់',
@@ -102,7 +132,6 @@ return [
         'National ID' => 'អត្តសញ្ញាណប័ណ្ណ',
         'Passport' => 'លិខិតឆ្លងដែន',
         'Invoice Setting' => 'ការកំណត់វិក័យប័ត្រ',
-        'Last Updated' => 'កែប្រែចុងក្រោយ',
         'Create Booking' => 'បង្កើតការកក់',
         'Modify Space' => 'កែប្រែបន្ទប់',
         'Delete Space' => 'លុបបន្ទប់',
@@ -113,8 +142,13 @@ return [
         'Upload Document' => 'ផ្ទុកឯកសារ',
         'Modify Document' => 'កែប្រែឯកសារ',
         'Create Contract' => 'បង្កើតកិច្ចសន្យា',
+        'Modify Contract' => 'កែប្រែកិច្ចសន្យា',
+        'Renew Contract' => 'បន្តកិច្ចសន្យា',
+        'Terminate Contract' => 'បញ្ចប់កិច្ចសន្យា',
+        'Delete Contract' => 'លុបកិច្ចសន្យា',
         'Service Requests' => 'សំណើសេវាកម្ម',
         'Delete Tenant' => 'លុបអ្នកជួល',
+        'Old Contract' => 'កិច្ចសន្យាចាស់',
         'Personal Information' => 'ព័ត៌មានផ្ទាល់ខ្លួន',
         'Overview' => 'ទិដ្ឋភាពទូទៅ',
         'Contract' => 'កិច្ចសន្យា',
@@ -122,8 +156,9 @@ return [
         'Create Space' => 'បង្កើតបន្ទប់',
         'Identity Documents' => 'ឯកសារសម្គាល់',
         
-        
-
+        // Mantenance
+        'Create Maintenance' => 'បង្កើតការថែទាំ',
+        'Modify Maintenance' => 'កែប្រែការថែទាំ',
 
         'Authorize'=>'អនុម័ត',
         'Reset'=>'ត្រឡប់វិញ',
@@ -173,6 +208,7 @@ return [
         'Role Management' => 'គ្រប់គ្រងតួនាទី',
         'User Management' => 'គ្រប់គ្រងអ្នកប្រើប្រាស់',
         'Mobile Settings' => 'ការកំណត់ចលត័',
+        'Campus Management' => 'ការគ្រប់គ្រងសាខា',
 
         'Schedule Date' => 'កាលបរិច្ឆេទ',
         'unit' => 'បន្ទប់',
@@ -209,11 +245,8 @@ return [
         'Available' => 'បន្ទប់នៅសល់',
         'Booked' => 'បន្ទប់បានកក់',
         'Occupied' => 'បន្ទប់បានជួល',
-        'Floor' => 'ចំនួនជាន់',
         'Capacity' => 'សមត្ថភាពផ្ទុក',
         'Bookable' => 'អាចកក់បាន',
-        'Create Contract' => 'បង្កើតកិច្ចសន្យា',
-        'Create Maintenance' => 'បង្កើតការថែទាំ',
         'Finish Maintenance' => 'បញ្ចប់ការថែទាំ',
         'View Booking' => 'មើលការកក់',
         'Modify Booking' => 'កែប្រែការកក់',
@@ -226,18 +259,18 @@ return [
         'ShortCut' => 'អក្សរកាត់',
         'List of report' => 'បញ្ជីរបាយការណ៍',
         'Request Category' => 'ប្រភេទសំណើ',
-
+        'Yes' => 'បាទ',
     ],
     'menus' => [
         'Dashboard' => 'ព័ត៌មានសង្ខេប',
         'Tenants' => 'អ្នកជួល',
-        'Maintenance' => 'ជួលជុល',
+        'Maintenance' => 'ការថែទាំ',
         'Spaces' => 'បន្ទប់ / ទីតាំង',
         // 'Receipts' => 'វិក្កយបត្រ',
         'Contracts' => 'កិច្ចសន្យា',
         'Services' => 'សេវាកម្ម',
         'Amenities' => 'សេវាកម្ម',
-        'Price Services' => 'តំលៃសេវាកម្ម',
+        'Service Prices' => 'តំលៃសេវាកម្ម',
         'Service Requests' => 'សំណើសេវាកម្ម',
         'Purchase Orders' => 'ការបញ្ជាទិញ',
         'Invoices' => 'វិក័យប័ត្រ',
@@ -304,6 +337,7 @@ return [
         'Locations' => 'ទីតាំង និង តំបន់',
         'User and Roles' => 'អ្នកប្រើប្រាស់និងតួនាទី',
         'Role Management' => 'គ្រប់គ្រងតួនាទី',
+        'Campus Management' => 'ការគ្រប់គ្រងសាខា',
         'User Management' => 'គ្រប់គ្រងអ្នកប្រើប្រាស់',
         'Company Profile' => 'ព័ត៌មានក្រុមហ៊ុន',
         'Mobile Settings' => 'ការកំណត់ចលត័',
@@ -349,9 +383,15 @@ return [
         'Roles and Users' => 'តួនាទី​ និង អ្នកប្រើប្រាស់',
     ],
     'buttons' => [
+        'Create Building' => 'បង្កើតអគារ',
+        'Create Floor' => 'បង្កើតជាន់ថ្មី',
+
+
+
         'Create Tenant' => 'បង្កើតអ្នកជួល',
         'Create Contract' => 'បង្កើតកិច្ចសន្យា',
-        'Create Building' => 'បង្កើតអគារ',
+        'Renew Contract' => 'បង្កើតកិច្ចសន្យា',
+        
         'Create New Expense' => 'បង្កើតចំណាយថ្មី',
         'Generate Invoice' => 'បង្កើតវិក័យប័ត្រ',
         'Payment' => 'បង្កើតការបង់ប្រាក់',
@@ -368,11 +408,12 @@ return [
         'Submit' => 'បញ្ជូន',
         'Add' => 'បន្ថែម',
         'OK' => 'បាទ',
+        'Finish' => 'បាទ',
         'Print' => 'បោះពុម្ព',
         'Close' => 'បិទ',
         'Continue' => 'បន្តរ',
         'Continue Now' => 'បន្តរ',
-        'Choose File' => 'រើសឯកសារ',
+        'Choose File' => 'ជ្រើសរើសឯកសារ',
         'Refresh' => 'Refresh',
         'Dont Delete' => 'មិនលុប',
         'Delete' => 'លុបចោល',
@@ -402,6 +443,18 @@ return [
         'Export' => 'នាំចេញ',
         'New Floor' => 'បង្កើតជាន់ថ្មី',
         'Add New Vendor' => 'បង្កើតអ្នកលក់ថ្មី',
+        'View Document' => 'មើលឯកសារ',
+        'Modify Document' => 'កែប្រែឯកសារ',
+        'Download Document' => 'ទាញយកឯកសារ',
+        'Delete Document' => 'លុបឯកសារ',
+
+
+
+        'New User' => 'បង្កើតអ្នកប្រើប្រាស់ថ្មី',
+        'New Role' => 'បង្កើតតួនាទីថ្មី',
+        'Add Campus' => 'បង្កើតសាខា',
+        'Add Location' => 'បង្កើតទីតាំង',
+
 
 
     ],
@@ -423,6 +476,18 @@ return [
     ],
     'labels' => [
         'Name' => 'ឈ្មោះ',
+        'Shortcut' => 'អក្សរកាត់',
+        'Total Floors' => 'ចំនួនជាន់សរុប',
+        'Total Units' => 'ចំនួនបន្ទប់សរុប',
+        'Total Area' => 'ចំនួនផ្ទៃដីសរុប',
+        'Floor Number' => 'លេខជាន់',
+        'Floor Name' => 'ឈ្មោះជាន់',
+        'Description' => 'ការពិពណ៌នា',
+        
+
+
+
+
         'Full Name' => 'ឈ្មោះពេញ',
         'Email' => 'អ៊ីមែល',
         'Gender' => 'ភេទ',
@@ -433,9 +498,28 @@ return [
         'Phone Number' => 'លេខទូរសព្ទ',
         'Address' => 'អាសយដ្ឋាន',
 
+        'ID' => 'លេខសម្គាល់',
+        'Unit' => 'បន្ទប់',
+        'Start Date' => 'ថ្ងៃចាប់ផ្ដើម',
+        'End Date' => 'ថ្ងៃបញ្ជប់',
+        'Start Time' => 'ម៉ោងចាប់ផ្ដើម',
+        'End Time' => 'ម៉ោងបញ្ជប់',
+        'Lease Terms' => 'លក្ខខណ្ឌជួល',
+        'Monthly' => 'តម្លៃជួលប្រចាំខែ',
+        'Deposit' => 'ប្រាក់កក់',
+        
+        'Type' => 'ប្រភេទឯកសារ',
+        'File Name' => 'ឈ្មោះឯកសារ',
+        'File Type' => 'ទម្រង់ឯកសារ',
+        'Remarks' => 'កំណត់សម្គាល់',
+        'Remark' => 'កំណត់សម្គាល់',
+        'Actions' => 'សកម្មភាព',
+
         'Unit Code (Optional)' => 'លេខកូដបន្ទប់ (Optional)',
         'Size (m²)' => 'ទំហំ (m²)',
         'Price' => 'តម្លៃ',
+        'Charge As' => 'គិតជា',
+        'Unit Details' => 'ព័ត៌មានបន្ទប់',
 
         'Booker Name' => 'ឈ្មោះអ្នកកក់',
         'Booker Phone' => 'លេខទូរសព្ទអ្នកកក់',
@@ -443,7 +527,51 @@ return [
         'Booking Date' => 'ថ្ងៃកក់',
         'Expired Date' => 'ថ្ងៃផុតកំណត់',
         'Booking Amount' => 'ចំនួនទឹកប្រាក់កក់',
-        'Remarks' => 'កំណត់សម្គាល់',
-      
+
+
+       
+
+
+    ],
+
+    'message_box_default' => [
+        'Confirm' => 'បញ្ជាក់',
+        "Log Out" => "ចាកចេញ",
+        "Cancel" => "បោះបង់",
+        "OK" => "បាទ",
+        "Remove" => "លុប",
+        "Delete" => "លុប",
+        "Dont Delete" => "មិនលុប",
+        "Dont Remove" => "មិនលុប",
+        "Create" => "បង្កើត",
+        "Yes" => "បាទ",
+        "No" => "ទេ",
+        "Finish" => "បញ្ចប់",
+
+        'building_created' => 'អគារថ្មីត្រូវបានបង្កើតដោយជោគជ័យ។',
+        'building_updated' => 'អគារត្រូវបានកែប្រែដោយជោគជ័យ។',
+        'save_building_failed' => 'មិនអាចរក្សាទុកព័ត៌មានអគារបានទេ។',
+
+        'floor_created' => 'ជាន់ថ្មីត្រូវបានបង្កើតដោយជោគជ័យ។',
+        'floor_updated' => 'ជាន់ត្រូវបានកែប្រែដោយជោគជ័យ។',
+        'save_floor_failed' => 'មិនអាចរក្សាទុកព័ត៌មានជាន់បានទេ។',
+
+        'delete_floor' => 'លុបជាន់',
+        'confirm_delete_floor' => 'តើអ្នកពិតជាចង់លុបជាន់នេះមែនទេ?',
+        'floor_deleted' => 'ជាន់ត្រូវបានលុបដោយជោគជ័យ។',
+
+       
+
+        'delete_maintenance' => 'លុបការថែទាំ',
+        'confirm_delete_maintenance' => 'តើអ្នកពិតជាចង់លុបការថែទាំនេះមែនទេ?',
+        'maintenance_deleted' => 'ការថែទាំត្រូវបានលុបដោយជោគជ័យ។',
+
+        'cancel_maintenance' => 'បោះបង់ការថែទាំ',
+        'confirm_cancel_maintenance' => 'តើអ្នកពិតជាចង់បោះបង់ការថែទាំនេះមែនទេ?',
+        'maintenance_cancelled' => 'ការថែទាំត្រូវបានបោះបង់ដោយជោគជ័យ។',
+
+        'finish_maintenance' => 'បញ្ចប់ការថែទាំ',
+        'confirm_finish_maintenance' => 'តើអ្នកពិតជាចង់បញ្ចប់ការថែទាំនេះមែនទេ?',
+        'maintenance_finished' => 'ការថែទាំត្រូវបានបញ្ចប់ដោយជោគជ័យ។',
     ],
 ];
