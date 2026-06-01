@@ -763,7 +763,7 @@ var TenantProfileComponent = new (function () {
                 const tenant_id = op.tenant_id || op.id || op;
                 const p = { id: tenant_id };
                 const res = await vsapi.call(
-                    [main_view.base_url, "/prm/tenant/details"].join(""),
+                    [main_view.base_url, "/prm/tenant/tenant/details"].join(""),
                     p,
                     false,
                     null,
@@ -777,7 +777,7 @@ var TenantProfileComponent = new (function () {
                 const tenant_id = op.tenant_id || op.id || op;
                 const p = { id: tenant_id };
                 const res = await vsapi.call(
-                    [main_view.base_url, "/prm/tenant/details"].join(""),
+                    [main_view.base_url, "/prm/tenant/tenant/details"].join(""),
                     p,
                     false,
                     null,
@@ -1500,7 +1500,7 @@ var TenantProfileComponent = new (function () {
     mThis.prepareFormOptions = (onFinish) => {
         vsapi
             .call(
-                `${main_view.base_url}/prm/tenant/form-options`,
+                `${main_view.base_url}/prm/tenant/tenant/form-options`,
                 null,
                 null,
                 null,
