@@ -194,7 +194,7 @@ class Reservation extends VSModel
             $str_moreWhere .= ' AND r.status_id =' . $status_id;
         }
         if ($booking_date) {
-            $booking_date_to = $booking_date_to ?? date('Y-m-d'); 
+            $booking_date_to = $booking_date_to ?? date('Y-m-d');
             $str_moreWhere .= " AND r.booking_date BETWEEN '" . $booking_date . "' AND '" . $booking_date_to . "'";
         }
 

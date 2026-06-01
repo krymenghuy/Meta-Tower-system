@@ -192,7 +192,7 @@ var RequestServiceComponent = (function () {
         mThis.ServiceRequestListView = new ListView(mThis.divListView, {
             //fetchApi: `${main_view.base_url}/prm/service-request/list`, // Old version
             api: {
-                endpoint: `${main_view.base_url}/prm/service-request/list`, // new version
+                endpoint: `${main_view.base_url}/prm/tenant/request-service/list`, // new version
                 method: 'POST',
                 cacheTTL: 3000 //Cache data 3 seconds
             },
@@ -750,7 +750,7 @@ const CreateServiceRequestDialog = (() => {
                         const data = me.getData();
                         data.id = op?.id || null;
                         const saveFailedMessage = 'Failed to save service request.';
-                        vsapi.call([main_view.base_url, "/prm/service-request/save",].join(""), data, btn, null)
+                        vsapi.call([main_view.base_url, "/prm/tenant/request-service/save",].join(""), data, btn, null)
                             .then((res) => {
                                 if (res.status_code === 200) {
                                     me.hide(true, data);
