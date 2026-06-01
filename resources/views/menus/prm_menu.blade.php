@@ -233,7 +233,7 @@ function v_display($mod_id, $module_ids = null)
                             <img class="icons opacity-icons"
                                 src="{{ asset('assets/images/icons/service_price.svg') }}" />
                         </span>
-                        <span class="kt-menu__link-text font-color " vslang="menus.Services"></span>
+                        <span class="kt-menu__link-text font-color " vslang="menus.Service Prices"></span>
                     </a>
                 </li>
                 

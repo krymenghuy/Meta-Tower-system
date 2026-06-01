@@ -146,7 +146,7 @@
                         <!-- <img class="icons opacity-icons" src="{{ asset('assets/images/icons/log_out.svg') }}" /> -->
                         <img class="icons opacity-icons" src="{{ asset('assets/images/icons/menu_icons/logout.svg')}}" />
                     </span>
-                    <span class="kt-menu__link-text font-color " vslang="menus.logout">Log Out</span>
+                    <span class="kt-menu__link-text font-color " vslang="menus.Log Out">Log Out</span>
                 </a>
             </li>
 
