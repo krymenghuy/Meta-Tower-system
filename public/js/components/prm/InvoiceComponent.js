@@ -17,6 +17,8 @@ var InvoiceComponent = (() => {
     mThis.elSearch = mThis.self.querySelector("#_search_invoice");
     mThis.tblReceive = mThis.self.querySelector("#_tblReceive");
 
+    mThis.globalSetting = null;
+    mThis.invoiceSetting = null;
     let InvoiceItemDialog = null;
 
     mThis.cols = [
@@ -235,6 +237,16 @@ var InvoiceComponent = (() => {
                     mThis.InvoiceListView.showPage(mThis.getFilterData())
             });
         };
+
+        vsapi
+            .call(`${main_view.base_url}/prm/invoice_setting/get`, {})
+            .then(res => {
+                if (res.status_code !== 200) {
+                    cv_interact.error("Failed to load invoice details.");
+                    return;
+                }
+                mThis.globalSetting = res.data;
+            });
 
         mThis.listContainer = mThis.InvoiceListView.getListContainer();
         const sh_parent = mThis.listContainer.parentElement;
@@ -551,9 +563,9 @@ var InvoiceComponent = (() => {
                 } else if (name === "modify_invoice") {
                     mThis.editInvoice(id, menulink);
                 } else if (name === "invoice_setting") {
-                    mThis.invoiceSetting(id, menulink);
+                    mThis.btnInvoiceSetting(id, menulink);
                 } else if (name === "reset_invoice_setting") {
-                    mThis.resetInvoiceSetting(id, menulink);
+                    mThis.btnResetInvoiceSetting(id, menulink);
                 }
             }
         };
@@ -596,15 +608,16 @@ var InvoiceComponent = (() => {
         );
     };
 
-    mThis.invoiceSetting = (id, menulink) => {
+    mThis.btnInvoiceSetting = (id, menulink) => {
         InvoiceSettingDialog.show({
             invoice_id: id,
             btn: menulink,
+            setting : mThis.invoiceSetting,
             onClose: () => mThis.InvoiceListView.showPage(mThis.getFilterData())
         });
     };
 
-    mThis.resetInvoiceSetting = (id, menulink) => {
+    mThis.btnResetInvoiceSetting = (id, menulink) => {
         if (!AuthManager.allowed(242)) return;
 
         cv_interact.confirm(
@@ -660,34 +673,45 @@ var InvoiceComponent = (() => {
         });
     };
 
-    mThis.printInvoice = (id, invoice_type, menulink) => {
-        if (!invoice_type || invoice_type === "undefined") {
-            console.warn(
-                "Type missing for ID " + id + ". Fetching from server..."
-            );
+    mThis.printInvoice = (id, menulink) => {
+        let invoice = null;
+        vsapi
+            .call(`${main_view.base_url}/prm/invoice/details`, { id: id })
+            .then(res => {
+                if (res.status_code === 200) {
+                    mThis.invoiceSetting = res.data.settings;
 
-            vsapi
-                .call(`${main_view.base_url}/prm/invoice/details`, { id: id })
-                .then(res => {
-                    if (res.status_code === 200) {
-                        mThis.printInvoice(id, res.data.invoice_type, menulink);
+                    invoice = res.data;
+
+                    const invType = invoice.invoice_type;
+                    const params = {
+                        invoice_id: id,
+                        btn: menulink,
+                        invoice: invoice,
+                        global: mThis.globalSetting
+
+                    };
+
+                    const settings = mThis.invoiceSetting || {};
+                    const global = mThis.globalSetting || {};
+
+                    if (settings.show_balan !== null) {
+                        params.setting = settings;
                     } else {
-                        cv_interact.error("Could not determine invoice type.");
+                        params.setting = global;
                     }
-                });
-            return;
-        }
 
-        const invType = parseInt(invoice_type);
-        const params = { invoice_id: id, btn: menulink };
-
-        if (invType === 1) {
-            InvoiceTaxDialog.show(params);
-        } else if (invType === 2) {
-            InvoiceNoTaxDialog.show(params);
-        } else if (invType === 3) {
-            InvoiceCommercialDialog.show(params);
-        }
+                    if (invType === 1) {
+                        InvoiceTaxDialog.show(params);
+                    } else if (invType === 2) {
+                        InvoiceNoTaxDialog.show(params);
+                    } else if (invType === 3) {
+                        InvoiceCommercialDialog.show(params);
+                    }
+                } else {
+                    cv_interact.error("Could not determine invoice type.");
+                }
+            });
     };
 
     mThis.prepareFormOptions = onFinish => {
@@ -3074,6 +3098,7 @@ const ReceiveDialog = (() => {
     let dialog = null;
 
     self.show = op => {
+        
         dialog = new GeneralDialog({
             title: "Receive Payment",
             cssClass: "modal-lg vs-modal",
@@ -3440,14 +3465,11 @@ const InvoiceSettingDialog = (() => {
     let dialog = null;
 
     self.show = op => {
+        console.log(12,op);
+        
         const currentData = op || {};
         const invoiceId = currentData.id || currentData.invoice_id || 0;
 
-        if (!invoiceId) {
-            console.error(
-                "InvoiceSettingDialog Error: No valid invoice ID was provided."
-            );
-        }
 
         dialog = new GeneralDialog({
             title: "Invoice Setting",
@@ -3528,12 +3550,14 @@ const InvoiceSettingDialog = (() => {
 
             onPrepareForm: me => {
                 vsapi
-                    .call(`${main_view.base_url}/prm/invoice/get-setting`, {
-                        id: invoiceId
-                    })
+                    .call(`${main_view.base_url}/prm/invoice/get-setting`, {id: invoiceId})
                     .then(res => {
-                        if (res && res.status_code === 200 && res.data) {
+                        if (res && res.data) {
                             const settingsData = res.data.settings || {};
+
+                            console.log(13,settingsData);
+                            console.log(14,res);
+                            
 
                             const normalizedData = {
                                 show_comm_tax: settingsData.show_comm_tax,

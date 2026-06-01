@@ -5,32 +5,33 @@ var InvoiceSettingComponent = (() => {
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_invoiceSetting_component");
 
-    // DOM refs for summary display cards
     mThis.elExchangeRate  = mThis.self.querySelector("#_is_exchange_rate");
-    mThis.elShowCommTax   = mThis.self.querySelector("#_is_show_comm_tax");
-    mThis.elShowPayStatus = mThis.self.querySelector("#_is_show_pay_status");
-    mThis.elShowBaland    = mThis.self.querySelector("#_is_show_baland");
     mThis.btnEdit         = mThis.self.querySelector("#_btnEditInvoiceSetting");
 
     // ── Helpers ────────────────────────────────────────────────────────────────
 
-    const renderToggleBadge = (el, value) => {
-        const on = parseInt(value) === 1;
-        el.innerHTML   = on
-            ? '<i class="fa-solid fa-check" style="font-size:11px"></i> On'
-            : '<i class="fa-solid fa-minus" style="font-size:11px"></i> Off';
-        el.className   = on ? "is-badge-on" : "is-badge-off";
-    };
-    // Populate the summary cards with data returned from the API
+    // FIXED: This now changes the checkbox state directly instead of injecting old HTML badges
     mThis.renderSummary = (data) => {
         if (!data) return;
+
+        // 1. Render Exchange Rate Text
         const rate = data.exchange_rate ?? "—";
         mThis.elExchangeRate.textContent = rate !== "—"
             ? `${Number(rate).toLocaleString()} ៛`
             : "—";
-        renderToggleBadge(mThis.elShowCommTax,   data.show_comm_tax);
-        renderToggleBadge(mThis.elShowPayStatus, data.show_pay_status);
-        renderToggleBadge(mThis.elShowBaland,    data.show_baland);
+
+        // 2. Loop through all checkboxes on the page and match them with server data
+        const container = mThis.self;
+        container.querySelectorAll(".toggle-setting").forEach(input => {
+            const field = input.getAttribute("data-field");
+            
+            if (field && data[field] !== undefined) {
+                input.checked = parseInt(data[field]) === 1;
+            } else if (field && field === "show_amount_paid" && data.show_amount_piad !== undefined) {
+                // Safe check for the database typo fallback '_piad'
+                input.checked = parseInt(data.show_amount_piad) === 1;
+            }
+        });
     };
 
     // Fetch current settings from API, then run callback with data
@@ -57,11 +58,17 @@ var InvoiceSettingComponent = (() => {
 
         mThis.btnEdit.onclick = (e) => {
             e.preventDefault();
-            // Fetch latest before opening so the form is pre-filled
             mThis.loadSettings((currentData) => {
                 mThis.exchangeRateDialog.show(currentData);
             });
         };
+
+        // FIXED: Listens to the switch interaction and sends full payload state to backend
+        mThis.self.querySelectorAll(".toggle-setting").forEach(input => {
+            input.onchange = (e) => {
+                mThis.saveToggleButtons();
+            };
+        });
     };
 
     mThis.show = () => {
@@ -70,8 +77,42 @@ var InvoiceSettingComponent = (() => {
         mThis.loadSettings(null);
     };
 
-    // ── Dialog ─────────────────────────────────────────────────────────────────
+    // ── Save Action Gateway ──────────────────────────────────────────────────
+    mThis.saveToggleButtons = () => {
+        const payload = { id: 1 }; 
 
+        mThis.self.querySelectorAll(".toggle-setting").forEach(input => {
+            const field = input.getAttribute("data-field");
+            if (field) {
+                payload[field] = input.checked ? 1 : 0;
+            }
+        });
+
+        vsapi
+            .call(
+                `${mThis.base_url}/prm/invoice_setting/update-toggle-button`,
+                payload,
+                null
+            )
+            .then(res => {
+                if (res && res.status_code === 200) {
+                    // cv_interact.success("Display options altered successfully.");
+                    
+                    // Pull either settings wrapper or the data root directly
+                    const serverData = res.data && res.data.settings ? res.data.settings : res.data;
+                    mThis.renderSummary(serverData);
+                } else {
+                    // cv_interact.error(res.error_message || "An error occurred while saving.");
+                    mThis.loadSettings(null); // Reset layout to original data if failed
+                }
+            })
+            .catch(err => {
+                console.error("AJAX Gateway Exception:", err);
+                mThis.loadSettings(null);
+            });
+    };
+
+    // ── Dialog ─────────────────────────────────────────────────────────────────
     const CreateExchangeRateDialog = () => {
         const self = {};
         let dialog = null;
@@ -82,7 +123,7 @@ var InvoiceSettingComponent = (() => {
                 cssClass: "modal-md vs-modal",
                 backdrop: "static",
                 keyboard: true,
-               createContent: () => {
+                createContent: () => {
                     return [
                         `
                         <div class="p-2">
@@ -110,29 +151,23 @@ var InvoiceSettingComponent = (() => {
                         `
                     ];
                 },
-                // Pre-fill form fields after the DOM is created
                 contentCreated: (me) => {
                     const d = me.dataOptions || {};
                     if (me.controls.exchange_rate) {
                         me.controls.exchange_rate.value = d.exchange_rate ?? "";
                     }
                 },
-
                 buttons: [
                     {
                         label: '<span vslang="buttons.Cancel"></span>',
                         cssClass: "btn btn-secondary",
-                        click: (me, btn) => {
-                            me.hide(false);
-                        },
+                        click: (me) => { me.hide(false); },
                     },
                     {
                         label: '<span vslang="buttons.Save"></span>',
                         cssClass: "btn btn-primary",
                         click: (me, btn) => {
                             const op = me.getData();
-                            // op.id = 1; // invoice_settings always uses id = 1
-
                             vsapi
                                 .call(
                                     [mThis.base_url, "/prm/invoice_setting/save"].join(""),
@@ -144,7 +179,6 @@ var InvoiceSettingComponent = (() => {
                                     if (res.status_code === 200) {
                                         me.hide(true, op);
                                         cv_interact.success("Settings updated successfully.");
-                                        // Refresh the summary cards
                                         mThis.loadSettings(null);
                                     } else {
                                         cv_interact.error(res.error_message);
@@ -155,159 +189,6 @@ var InvoiceSettingComponent = (() => {
                 ],
             });
 
-            // Store current data as options so contentCreated can pre-fill fields
-            dialog.dataOptions = currentData || {};
-            dialog.show();
-        };
-
-        return self;
-    };
-
-    const changeToggleButtonInvoiceDialog = () => {
-        const self = {};
-        let dialog = null;
-
-        self.show = (currentData) => {
-            dialog = dialog || new GeneralDialog({
-                cssClass: "modal-md vs-modal",
-                backdrop: "static",
-                keyboard: true,
-                createContent: () => {
-                    return [
-                        `
-                        <div class="p-2">
-                            <h6 class="mb-4 text-primary-custom border-bottom pb-2 fw-semibold">
-                                <i class="fa-solid fa-file-invoice me-2"></i>Invoice Settings
-                            </h6>
-
-                            <!-- Exchange Rate -->
-                            <div class="row g-3 align-items-center mb-3">
-                                <div class="col-12 col-md-5">
-                                    <label for="exchange_rate" class="form-label fw-semibold mb-0">Exchange Rate (KHR)</label>
-                                    <div class="small text-muted">1 USD = ? KHR</div>
-                                </div>
-                                <div class="col-12 col-md-7">
-                                    <div class="input-group">
-                                        <span class="input-group-text">៛</span>
-                                        <input type="number"
-                                            class="form-control data-input"
-                                            id="exchange_rate"
-                                            name="exchange_rate"
-                                            data-field="exchange_rate"
-                                            placeholder="e.g. 4000"
-                                            min="1"
-                                            step="any">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Show Commission Tax -->
-                            <div class="row g-3 align-items-center mb-3 border-top pt-3">
-                                <div class="col-12 col-md-5">
-                                    <label class="form-label fw-semibold mb-0">Show Commission Tax</label>
-                                </div>
-                                <div class="col-12 col-md-7">
-                                    <select class="form-select data-input"
-                                        id="show_comm_tax"
-                                        name="show_comm_tax"
-                                        data-field="show_comm_tax">
-                                        <option value="1">Yes</option>
-                                        <option value="0">No</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <!-- Show Payment Status -->
-                            <div class="row g-3 align-items-center mb-3 border-top pt-3">
-                                <div class="col-12 col-md-5">
-                                    <label class="form-label fw-semibold mb-0">Show Payment Status</label>
-                                </div>
-                                <div class="col-12 col-md-7">
-                                    <select class="form-select data-input"
-                                        id="show_pay_status"
-                                        name="show_pay_status"
-                                        data-field="show_pay_status">
-                                        <option value="1">Yes</option>
-                                        <option value="0">No</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <!-- Show Balance -->
-                            <div class="row g-3 align-items-center border-top pt-3">
-                                <div class="col-12 col-md-5">
-                                    <label class="form-label fw-semibold mb-0">Show Balance</label>
-                                </div>
-                                <div class="col-12 col-md-7">
-                                    <select class="form-select data-input"
-                                        id="show_baland"
-                                        name="show_baland"
-                                        data-field="show_baland">
-                                        <option value="1">Yes</option>
-                                        <option value="0">No</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        `
-                    ];
-                },
-
-                // Pre-fill form fields after the DOM is created
-                contentCreated: (me) => {
-                    const d = me.dataOptions || {};
-                    if (me.controls.exchange_rate) {
-                        me.controls.exchange_rate.value = d.exchange_rate ?? "";
-                    }
-                    if (me.controls.show_comm_tax) {
-                        me.controls.show_comm_tax.value = (d.show_comm_tax != null) ? String(d.show_comm_tax) : "0";
-                    }
-                    if (me.controls.show_pay_status) {
-                        me.controls.show_pay_status.value = (d.show_pay_status != null) ? String(d.show_pay_status) : "0";
-                    }
-                    if (me.controls.show_baland) {
-                        me.controls.show_baland.value = (d.show_baland != null) ? String(d.show_baland) : "0";
-                    }
-                },
-
-                buttons: [
-                    {
-                        label: '<span vslang="buttons.Cancel"></span>',
-                        cssClass: "btn btn-secondary",
-                        click: (me, btn) => {
-                            me.hide(false);
-                        },
-                    },
-                    {
-                        label: '<span vslang="buttons.Save"></span>',
-                        cssClass: "btn btn-primary",
-                        click: (me, btn) => {
-                            const op = me.getData();
-                            op.id = 1; // invoice_settings always uses id = 1
-
-                            vsapi
-                                .call(
-                                    [mThis.base_url, "/prm/invoice_setting/save"].join(""),
-                                    op,
-                                    btn,
-                                    null
-                                )
-                                .then((res) => {
-                                    if (res.status_code === 200) {
-                                        me.hide(true, op);
-                                        cv_interact.success("Settings updated successfully.");
-                                        // Refresh the summary cards
-                                        mThis.loadSettings(null);
-                                    } else {
-                                        cv_interact.error(res.error_message);
-                                    }
-                                });
-                        },
-                    },
-                ],
-            });
-
-            // Store current data as options so contentCreated can pre-fill fields
             dialog.dataOptions = currentData || {};
             dialog.show();
         };

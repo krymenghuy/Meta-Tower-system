@@ -337,14 +337,13 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('reports')->gr
     Route::post('total_payment_history',[ReportController::class,'getTotalPaymentHistory']);
     Route::post('payments',[ReportController::class,'getPaymentReport']);
 
-
-
-
 });
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('invoice_setting')->group(function () {
     Route::post('/get', [InvoiceSettingController::class, 'getInvoiceSetting']);
     Route::post('/save', [InvoiceSettingController::class, 'saveInvoiceSetting']);
+    Route::post('/update-toggle-button', [InvoiceSettingController::class, 'updateToglleButton']);
+    Route::post('/get-toggle-button', [InvoiceSettingController::class, 'getToglleButton']);
 });
 
 

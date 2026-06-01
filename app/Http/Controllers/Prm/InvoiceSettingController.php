@@ -36,5 +36,23 @@ class InvoiceSettingController extends Controller
         return JDV::result($this->invoiceSetting->getInvoiceSetting($req->all(), $ss));
     }
 
+    public function updateToglleButton(Request $req)
+    {
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        return JDV::result($this->invoiceSetting->updateToglleButton($req->all(), $ss));
+    }
+
+     public function getToglleButton(Request $req)
+    {
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        return JDV::result($this->invoiceSetting->getToglleButton($req->all(), $ss));
+    }
+
 
 }
