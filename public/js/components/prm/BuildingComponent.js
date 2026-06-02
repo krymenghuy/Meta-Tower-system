@@ -309,7 +309,7 @@ var BuildingComponent = (() => {
                             e.preventDefault();
                             mThis.editFloor(
                                 {
-                                    id: btnEdit.dataset.floorid,
+                                    id: btnEdit.dataset.id,
                                     building_id: btnEdit.dataset.buildingid,
                                 },
                                 () => {
@@ -328,6 +328,7 @@ var BuildingComponent = (() => {
                             mThis.deleteFloor(
                                 {
                                     id: btnDelete.dataset.id,
+                                    floor_id: btnDelete.dataset.floorid,
                                     building_id: btnDelete.dataset.buildingid,
                                 },
                                 () => {
@@ -388,9 +389,10 @@ var BuildingComponent = (() => {
     };
 
     mThis.editFloor = (op, onDone) => {
+        console.log(8888, op);
         CreateFloorDialog.show({
-            id: parseInt(op.id || 0, 10),
-            building_id: parseInt(op.building_id || 0, 10),
+            id: op.id,
+            building_id: op.building_id,
             onClose: (success) => {
                 if (success && typeof onDone === "function") onDone();
             },
@@ -754,6 +756,7 @@ const CreateFloorDialog = (() => {
     let dialog = null;
 
     self.show = (op) => {
+        console.log(9999, op);
         dialog =
             dialog ||
             new GeneralDialog({
@@ -794,17 +797,16 @@ const CreateFloorDialog = (() => {
                     api: {
                         endpoint:
                             main_view.base_url + "/prm/building/form-options",
-                        params: (op) => ({
-                            id: op.id,
+                        params: (me,op) => ({
                             building_id: op.building_id,
+                            id: op.id,
                         }),
                     },
                 },
-                onShow: (me) => {
-                    
-                },
+              
                 onPrepareForm: (me, data) => {
                     const details = data?.floor_details || {};
+                    console.log(5555, details);
                     const floorNumber = me.divModal.querySelector(
                         '[data-field="floor_number"]',
                     );
