@@ -242,11 +242,11 @@ var MaintenanceComponent = (() => {
                     });
                 } else if (name === "finish_maintenance") {
                     cv_interact.confirm(
-                        "confirm_finish_maintenance",
+                        "confirm_finish",
                         {
                             langSection: "message_box_default",
                             translate: true,
-                            title: "finish_maintenance",
+                            title: "finished",
                             context: "update",
                             confirmButtonText: "Finish",
                             cancelButtonText: "Cancel"
@@ -260,44 +260,44 @@ var MaintenanceComponent = (() => {
                                     null
                                 ).then(res => {
                                     if (res.status_code === 200) {
-                                        cv_interact.success("maintenance_finished"
+                                        cv_interact.success("finished"
                                         );
                                         mThis.MaintenanceListView.showPage(mThis.getFilterData());
                                     } else {
-                                        cv_interact.error(res.error_message || "Failed");
+                                        cv_interact.error(res.error_message);
                                     }
                                 });
                             }
                         }
                     );
                 } else if (name === "cancel_maintenance") {
-                    cv_interact.confirm("confirm_cancel_maintenance", { langSection: "message_box_default",translate:true, context: "update", confirmButtonText: "Cancel" }, (e) => {
+                    cv_interact.confirm("confirm_cancel", { langSection: "message_box_default",translate:true, context: "update", confirmButtonText: "Cancel" }, (e) => {
                         if (e) {
                             vsapi.call(`${main_view.base_url}/prm/maintenance/set-status`, { id: id, status_id: 4 }, menuLink, null).then(res => {
                                 if (res.status_code === 200) {
-                                    cv_interact.success("maintenance_cancelled");
+                                    cv_interact.success("cancelled");
                                     mThis.MaintenanceListView.showPage(mThis.getFilterData());
                                 } else {
-                                    cv_interact.error(res.error_message || "Failed");
+                                    cv_interact.error(res.error_message);
                                 }
                             });
                         }
                     });
                 } else if (name === "delete") {
-                    cv_interact.confirm("confirm_delete_maintenance", {
+                    cv_interact.confirm("confirm_deleted", {
                         langSection: 'message_box_default',
                         translate: true,
-                        title: "delete_maintenance",
+                        title: "deleted",
                         context: "delete",
                         confirmButtonText: "Delete"
                         }, (e) => {
                         if (e) {
                             vsapi.call(`${main_view.base_url}/prm/maintenance/delete`, { id: id }, false, false, false).then(res => {
                                 if (res.status_code === 200) {
-                                    cv_interact.success("maintenance_deleted");
+                                    cv_interact.success("deleted");
                                     mThis.MaintenanceListView.showPage(mThis.getFilterData());
                                 } else {
-                                    cv_interact.error(res.error_message || "Delete failed");
+                                    cv_interact.error(res.error_message);
                                 }
                             });
                         }
@@ -570,7 +570,7 @@ const CreateMaintenanceDialog = (() => {
                         op.id = me.dataOptions?.id;
                         const buildingId = op.building_id ? String(op.building_id).trim() : "";
                         if (!buildingId) {
-                            cv_interact.error("Please select a valid building.");
+                            cv_interact.error("select_building");
                             return;
                         }
                         // if (!op.type_unit) {
@@ -580,17 +580,17 @@ const CreateMaintenanceDialog = (() => {
                         if (op.type_unit === 'space') {
                             op.amenity_id = null;
                             if (!op.space_id) {
-                                cv_interact.error("Please select unit.");
+                                cv_interact.error("select_space");
                                 return;
                             }
                         } else if (op.type_unit === 'amenity') {
                             op.space_id = null;
                             if (!op.amenity_id) {
-                                cv_interact.error("Please select unit.");
+                                cv_interact.error("select_amenity");
                                 return;
                             }
                         } else {
-                            cv_interact.error("Please select type.");
+                            cv_interact.error("select_type");
                             return;
                         }
                         delete op.type_unit;
@@ -622,10 +622,10 @@ const CreateMaintenanceDialog = (() => {
                             .then(res => {
                                 if (res.status_code === 200) {
                                     me.hide(true, op);
-                                    cv_interact.success(op.id ? "Maintenance has been updated successfully." : "Maintenance has been created successfully.");
+                                    cv_interact.success(op.id ? "updated" : "created");
                                     if (op && typeof op.onClose === "function") op.onClose();
                                 } else {
-                                    cv_interact.error(res.error_message || "Save failed");
+                                    cv_interact.error(res.error_message);
                                 }
                             });
                     }

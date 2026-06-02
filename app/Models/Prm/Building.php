@@ -47,13 +47,13 @@ class Building //extends Model
         $total_area = $inputs['total_area'] ?? 0;
 
         if ($total_floor <= 0) {
-            return DV::error('Total floors must be greater than 0.');
+            return DV::error('total_floors_greater_than_zero');
         }
         if ($total_floor > 50) {
-            return DV::error('Total floors must be less than or equal to 50.');
+            return DV::error('total_floors_limit');
         }
         if ($total_area <= 0) {
-            return DV::error('Total area must be greater than 0.');
+            return DV::error('total_area_greater_than_zero');
         }
         $isCreate = !$id || $id == 0;
 
@@ -66,7 +66,7 @@ class Building //extends Model
         if ($dup) {
             return DV::error(
                 $isCreate
-                    ? 'A building with this name already exists.'
+                    ? 'building_exists'
                     : 'Another building already uses this name.'
             );
         }
@@ -82,7 +82,7 @@ class Building //extends Model
             if ($dupPrefix) {
                 return DV::error(
                     $isCreate
-                        ? 'A building with this prefix already exists.'
+                        ? 'building_prefix_exists'
                         : 'Another building already uses this prefix.'
                 );
             }
@@ -93,7 +93,7 @@ class Building //extends Model
             $id = DBX::saveData($ss, 'buildings', ['id' => $id], $inputs, [], 1);
             if ($id <= 0) {
                 DB::rollBack();
-                return DV::error($isCreate ? 'Create failed.' : 'Update failed.');
+                return DV::error($isCreate ? 'create_failed' : 'update_failed');
             }
 
             if (!$isCreate) {
@@ -104,7 +104,7 @@ class Building //extends Model
             DB::commit();
         } catch (\Throwable $e) {
             DB::rollBack();
-            return DV::error($isCreate ? 'Create failed.' : 'Update failed.');
+            return DV::error($isCreate ? 'create_failed' : 'update_failed');
         }
 
         try {
@@ -127,7 +127,7 @@ class Building //extends Model
         } catch (\Throwable $e) {
             DB::table('building_floors')->where('building_id', $id)->delete();
             DB::table('buildings')->where('id', $id)->delete();
-            return DV::error($isCreate ? 'Create failed.' : 'Update failed.');
+            return DV::error($isCreate ? 'create_failed' : 'update_failed');
         }
 
         return DV::depends(1, ['buildings' => $inputs, 'id' => $id]);
@@ -357,7 +357,7 @@ class Building //extends Model
             ->first();
 
         if (!$building) {
-            return DV::error("Building not found.");
+            return DV::error("not_found");
         }
 
         $floor_number = isset($d->floor_number) && is_numeric($d->floor_number)
@@ -377,11 +377,11 @@ class Building //extends Model
         }
 
         if ($floor_number <= 0) {
-            return DV::error("Floor number is required.");
+            return DV::error("floor_number_required");
         }
 
         if ($floor_number > $building->total_floor) {
-            return DV::error("Floor number cannot exceed total floors ({$building->total_floor}).");
+            return DV::error("floor_number_exceeds_total ({$building->total_floor}).");
         }
 
         $expectedName = "Floor " . $floor_number;
@@ -430,7 +430,7 @@ class Building //extends Model
         }
 
         if (!$floor_id) {
-            return DV::error($floor_id ? 'Update failed.' : 'Create failed.');
+            return DV::error($floor_id ? 'update_failed' : 'create_failed');
         }
 
         DBX::saveData(
@@ -461,7 +461,7 @@ class Building //extends Model
 
     $floor = DB::table('building_floors')->where('id', $id)->first();
     if (!$floor) {
-        return DV::error('Floor not found.');
+        return DV::error('not_found');
     }
 
     $maxFloor = DB::table('building_floors')
@@ -469,7 +469,7 @@ class Building //extends Model
         ->max('floor_id');
 
     if ($floor->floor_id != $maxFloor) {
-        return DV::error('Cannot delete this floor. Delete the top floor first.');
+        return DV::error('delete_top_floor');
     }
     $check_space = DB::table('building_spaces')
         ->where('building_id', $floor->building_id)
@@ -477,7 +477,7 @@ class Building //extends Model
         ->exists();
 
     if ($check_space) {
-        return DV::error('Cannot delete floor because it has associated spaces.');
+        return DV::error('cannot_delete_floor_has_associated_spaces');
     }
     $deleted = DB::table('building_floors')->where('id', $id)->delete();
     return $deleted
