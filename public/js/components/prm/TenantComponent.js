@@ -83,8 +83,8 @@ var TenantComponent = new (function () {
             transTitle: "titles.Contact Info",
             className: "align-middle",
             data: (data) =>
-                `<span class="d-block text-prm-custom"><i class="fa-solid text-success px-1 fa-phone" style="font-size:12px;"></i> ${data.phone_number ?? ""}</span>
-                 <span class="d-block text-primary"><i class="fa-solid text-primary px-1 fa-envelope" style="font-size:12px;"></i> ${data.email ?? ""}</span>`,
+                `<span class="d-block text-prm-custom"><i class="fa-solid text-success px-1 fa-phone" style="font-size:12px;"></i> ${data.phone_number ?? "N/A"}</span>
+                 <span class="d-block text-primary"><i class="fa-solid text-primary px-1 fa-envelope" style="font-size:12px;"></i> ${data.email ?? "N/A"}</span>`,
         },
         {
             transTitle: "titles.Status",
@@ -233,16 +233,22 @@ var TenantComponent = new (function () {
             //menuItemClass:"",
             menus: [
                 {
-                    html: '<span class="ps-2">View Profile</span>',
+                    html: '<span class="ps-2">View Details</span>',
                     icon: `<i class="fa-solid fa-user fs-5 text-info"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "view_profile",
                 },
                 {
-                    html: '<span class="ps-2">Create Contract</span>',
-                    icon: `<i class="fa-solid fa-file-contract fs-5 text-success"></i>`,
+                    html: '<span class="ps-2">Modify Tenant</span>',
+                    icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "create_contract",
+                    name: "modify_tenant",
+                },
+                {
+                    html: '<span class="ps-2">Delete Tenant</span>',
+                    icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "delete_tenant",
                 },
                 {
                     html: '<span class="ps-2">Upload Document</span>',
@@ -251,16 +257,10 @@ var TenantComponent = new (function () {
                     name: "upload_document",
                 },
                 {
-                    html: '<span class="ps-2">Edit Information</span>',
-                    icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
+                    html: '<span class="ps-2">Create Contract</span>',
+                    icon: `<i class="fa-solid fa-file-contract fs-5 text-success"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "edit_tenant",
-                },
-                {
-                    html: '<span class="ps-2">Delete Tenant</span>',
-                    icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
-                    cssClass: "border-bottom pb-2",
-                    name: "delete_tenant",
+                    name: "create_contract",
                 },
                 {
                     html: '<span class="ps-2">Service Requests</span>',
@@ -275,9 +275,9 @@ var TenantComponent = new (function () {
                 // console.log(123456, status_id);
 
                 // menu.edit_student.style.display = enroll_finalized == 1 ? 'none' : 'block';
-                menu.create_contract.style.display = status_id == 1 ? "block" : "none";
+                menu.create_contract.style.display = status_id == 1 || status_id == 3 ? "block" : "none";
                 menu.service_request.style.display = "none";
-                menu.upload_document.style.display =status_id == 1 || status_id == 2  ? "block" : "none";
+                // menu.upload_document.style.display =status_id == 1 || status_id == 2  ? "block" : "none";
             },
             // adjustPosition: {
             //     top: -200,
@@ -298,7 +298,7 @@ var TenantComponent = new (function () {
                         mThis.uploadDocument(id, menuLink);
                         break;
                     }
-                    case "edit_tenant": {
+                    case "modify_tenant": {
                         mThis.editTenant(id, menuLink);
                         break;
                     }
@@ -529,7 +529,7 @@ var TenantComponent = new (function () {
                                     </p>
                                     <p class="ps-3 mb-2 text-prm-custom">
                                         <i class="fa-solid fa-at me-2 text-muted"></i>
-                                        ${d.email || ""}
+                                        ${d.email || "N/A"}
                                     </p>
 
 
@@ -1069,9 +1069,7 @@ var TenantComponent = new (function () {
                     const rowStart = mThis._escapeHtml(r.renewal_start_date ?? "—");
                     const rowEnd = mThis._escapeHtml(r.renewal_end_date ?? "—");
 
-                    const rowUnitCode = mThis._escapeHtml(
-                        mThis._getUnitCode(r, mThis._getUnitCode(first, "—")),
-                    );
+                    const rowUnitCode = mThis._escapeHtml(mThis._getUnitCode(first, "—"));
                     const currentBadgeHtml = r.is_current
                         ? `<span class="badge text-uppercase rounded-4 text-white ms-1" style="background-color:#0f49bd;">Current</span>`
                         : "";
@@ -1149,7 +1147,7 @@ var TenantComponent = new (function () {
                                 <div class="col-md-4"><small class="text-muted">National ID</small><div class="">${data.national_id ?? ""}</div></div>
                                 <div class="col-md-4"><small class="text-muted">Passport Number</small><div class="">${data.passport_number ?? ""}</div></div>
                                 <div class="col-md-4"><small class="text-muted">Phone</small><div class="">${data.phone_number ?? ""}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Email</small><div class=" text-primary">${data.email ?? ""}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Email</small><div class=" text-primary">${data.email ?? "N/A"}</div></div>
                                 <div class="col-md-4"><small class="text-muted">Relationship</small><div class="">Partner</div></div>
                                 <div class="col-12"><small class="text-muted">Address</small><div class="text-prm-custom text-capitalize">${data.address ?? "N/A"}</div></div>
                             </div>
@@ -1240,19 +1238,19 @@ var TenantComponent = new (function () {
                                 <a href="javascript:void(0)" class="view-doc"  data-id="${doc.id}">
                                     <span class="tool-tip">
                                         <i class="fa-regular fa-eye text-success fs-6"></i>
-                                        <span class="tool-tiptext fs-6">View Document</span>
+                                        <span class="tool-tiptext fs-6">View</span>
                                     </span>
                                 </a>
                                 <a href="javascript:void(0)" class="download-doc" data-id="${doc.id}">
                                     <span class="tool-tip">
                                         <i class="fa-solid fa-cloud-arrow-down text-primary fs-6"></i>
-                                        <span class="tool-tiptext fs-6">Download Document</span>
+                                        <span class="tool-tiptext fs-6">Download </span>
                                     </span>
                                 </a>
                                 <a href="javascript:void(0)" class="delete-doc-btn"  data-id="${doc.id}">
                                     <span class="tool-tip">
                                         <i class="fa-regular fa-trash-can text-danger fs-6"></i>
-                                        <span class="tool-tiptext fs-6">Delete Document</span>
+                                        <span class="tool-tiptext fs-6">Delete</span>
                                     </span>
                                 </a>
 
@@ -1267,7 +1265,7 @@ var TenantComponent = new (function () {
                 rows = `
                     <tr>
                         <td colspan="5" class="text-center py-4 text-muted">
-                            No documents uploaded yet.
+                            No data to display
                         </td>
                     </tr>`;
             }

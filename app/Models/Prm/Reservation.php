@@ -40,7 +40,7 @@ public function upsert($arr = [], $id = null, $ss = null){
             'tenant_id'          => '1|number|exists=tenants.id|text=Please select a valid tenant.',
             'amenity_id'         => '1|number|exists=amenities.id|text=Please select a valid amenity.',
             'booking_date'       => '1|date|text=Please enter a valid booking date.',
-            'start_time'         => '1|time|Please enter a valid check-in time.',
+            'start_time'         => '1|time|text=Please enter a valid check-in time.',
             'end_time'           => '1|time|text=Please enter a valid check-out time.',
             'remarks'            => '0|string|0-350',
             'status_id'          => '0|number|default=1',
@@ -294,7 +294,7 @@ public function upsert($arr = [], $id = null, $ss = null){
         $now = time();
 
         if (($bookingStart - $now) < (15 * 60)) {
-            return DV::error('Reservations cannot be canceled within 15 minutes of the start time.');
+            return DV::error('Reservations cannot be canceled less than 15 minutes before start time.');
         }
 
         $cancelled = DB::table('reservations')->where('id', $id)->update([
