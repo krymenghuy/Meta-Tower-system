@@ -46,12 +46,12 @@ class BuildingSpace
         $isCreate = empty($id);
 
         $v_rule = [
-            'building_id' => '1|number|exists=buildings.id|text=Please select a building.',
-            'floor_id' => '1|number|exists=floors.id|text=Please select the floor.',
-            'space_type_id' => '1|number|exists=space_types.id|text=Please select space type.',
-            'sqm_size' => '1|number|text=Please enter a valid number for Size.',
-            'price' => '1|number',
-            'price_type' => '1|string|text=Please select the Charge As.',
+            'building_id' => '1|number|exists=buildings.id|text=select_building',
+            'floor_id' => '1|number|exists=floors.id|text=select_floor',
+            'space_type_id' => '1|number|exists=space_types.id|text=select_space_type',
+            'sqm_size' => '1|number|text=invalid_size',
+            'price' => '1|number|text=invalid_price',
+            'price_type' => '1|string|text=select_price_type',
             'code' => '0|string',
         ];
 
@@ -66,26 +66,26 @@ class BuildingSpace
                 ->where('code', $d->code)
                 ->when($id, fn($q) => $q->where('id', '<>', $id))
                 ->exists();
-            if ($exists) return DV::error('Unit code already exists.');
+            if ($exists) return DV::error('unit_code_exists');
         }
         if ((float) $inputs['price'] <= 0 ){
-            return DV::error('Price must be greater than zero.');
+            return DV::error('price_greater_than_zero');
         }
         if ((float) $inputs['sqm_size'] <= 0 ){
-            return DV::error('Size must be greater than zero.');
+            return DV::error('size_greater_than_zero');
         }
         $floor = DB::table('floors')
             ->select('floor_number')
             ->where('id', $d->floor_id)
             ->first();
-        if (!$floor) return DV::error('Invalid floor selected.');
+        if (!$floor) return DV::error('invalid_floor');
         DB::beginTransaction();
         try {
             $space_id = DBX::saveData($ss, 'building_spaces', ['id' => $id], $inputs, [], 1);
 
             if (!$space_id) {
                 DB::rollBack();
-                return DV::error('Error saving Building Space ...!');
+                return DV::error('error_saving_building_space');
             }
             if (empty($d->code)) {
                 self::createBuildingSpaceCode(
@@ -105,7 +105,7 @@ class BuildingSpace
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return DV::error('Transaction failed. Please try again.');
+            return DV::error('transaction_failed');
         }
     }
     static function createBuildingSpaceCode($branch_id, $building_id, $floor_number, $space_id)
@@ -473,12 +473,12 @@ class BuildingSpace
         $ss = $ss ?? $this->userInfo;
         $v_rule = [
             'space_id' => '1|number|exists=building_spaces.id',
-            'booker_name' => '1|string|1-50|text=Booker name is required.',
-            'booker_phone' => '1|string|1-25|text=Booker phone is required.',
+            'booker_name' => '1|string|1-50|text=booker_name_required',
+            'booker_phone' => '1|string|1-25|text=booker_phone_required',
             'booker_email' => '0|email',
-            'booking_date' => '1|date|text=Booking date is required.',
-            'expired_booking_date' => '1|date|text=Expired date is required.',
-            'booking_fee' => '1|number|min=0|text=Booking amount is required.',
+            'booking_date' => '1|date|text=booking_date_required',
+            'expired_booking_date' => '1|date|text=expired_booking_date_required',
+            'booking_fee' => '1|number|min=0|text=booking_fee_required',
             'remarks' => '0|string|1-255',
         ];
         $email_char = ['@', '.', '_', '-', '+'];
@@ -493,18 +493,18 @@ class BuildingSpace
         if ($booker_email !== null && $booker_email !== '') {
 
             if (strpos($booker_email, '@') === false) {
-                return DV::error('Email must contain @');
+                return DV::error('email_contain');
             }
 
             if (!filter_var($booker_email, FILTER_VALIDATE_EMAIL)) {
-                return DV::error('Invalid email format');
+                return DV::error('valid_email');
             }
         }
         $today = date('Y-m-d');
         $bookingDate = $d->booking_date;
         $expiredDate = $d->expired_booking_date;
         if ($bookingDate != $today) {
-            return DV::error('Booking date must be today.');
+            return DV::error('booking_date_must');
         }
         if (strtotime($expiredDate) < strtotime($today)) {
             return DV::error('Expired booking date cannot be in the past.');

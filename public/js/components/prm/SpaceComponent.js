@@ -682,9 +682,9 @@ var SpaceComponent = new (function () {
         };
         // if (!AuthManager.allowed(242)) return;
         cv_interact.confirm(
-            "Delete this Space?",
+            "confirm_deleted",
             {
-                title: "Delete ",
+                title: "deleted",
                 context: "delete",
                 confirmButtonText: "Delete",
             },
@@ -700,7 +700,7 @@ var SpaceComponent = new (function () {
                         )
                         .then((res) => {
                             if (res.status_code == 200) {
-                                cv_interact.success("Unit has been deleted.");
+                                cv_interact.success("deleted");
                                 mThis.applyListFilters();
                             } else {
                                 cv_interact.error(res.error_message);
@@ -993,7 +993,6 @@ const BuildingSpaceDialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
-                    console.log(777, data);
                     if (me.dataOptions.id) {
                         me.controls.price_type.value =
                             data.space_details.price_type;
@@ -1016,12 +1015,6 @@ const BuildingSpaceDialog = (() => {
                         click: (me, btn) => {
                             const op = me.getData();
                             op.id = me.dataOptions.id;
-                            console.log(220, op);
-
-                            // if (!op.price_type) {
-                            //     cv_interact.error("Please select Price Type");
-                            //     return;
-                            // }
                             vsapi
                                 .call(
                                     [
@@ -1036,13 +1029,9 @@ const BuildingSpaceDialog = (() => {
                                     if (res.status_code === 200) {
                                         me.hide(true, op);
                                         if (me.dataOptions.id > 0) {
-                                            cv_interact.success(
-                                                "Space has been updated successfully.",
-                                            );
+                                            cv_interact.success("updated");
                                         } else {
-                                            cv_interact.success(
-                                                "New space has been added successfully.",
-                                            );
+                                            cv_interact.success("created");
                                         }
                                     } else {
                                         cv_interact.error(res.error_message);
@@ -1253,8 +1242,8 @@ const CreateBookingDialog = (() => {
                                         me.hide(true, op);
                                         cv_interact.success(
                                             isEdit
-                                                ? "Booking has been updated successfully."
-                                                : "New booking has been created successfully.",
+                                                ? "updated"
+                                                : "created",
                                         );
                                     } else {
                                         cv_interact.error(res.error_message);
