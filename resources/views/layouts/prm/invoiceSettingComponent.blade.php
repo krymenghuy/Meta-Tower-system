@@ -1,15 +1,15 @@
 <div id="_main_invoiceSetting_component" class="mobile-padding p-3" style="display:none;">
-
     <div class="is-grid">
 
-        <!-- Exchange Rate Card -->
         <div class="is-card">
-            <div class="is-card-row">
+
+            {{-- Exchange Rate row --}}
+            <div class="is-card-row border-bottom pb-3 mb-3">
                 <div class="is-icon-wrap">
                     <i class="fa-solid fa-dollar-sign"></i>
                 </div>
                 <div class="is-card-info">
-                    <p class="is-label">Exchange Rate</p>
+                    <p class="is-label">Exchange Rate (USD - KHR)</p>
                     <p class="is-value" id="_is_exchange_rate">—</p>
                 </div>
                 <button type="button" class="is-edit-btn" id="_btnEditInvoiceSetting">
@@ -17,13 +17,43 @@
                     Edit
                 </button>
             </div>
-            <div class="is-card-footer">
-                <i class="fa-solid fa-circle-info"></i>
-                1 USD = ? KHR (Khmer Riel)
+
+            {{-- Representative Info --}}
+            <div class="d-flex flex-column gap-3">
+
+                {{-- Row 1: icon + title + edit button --}}
+                <div class="d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="is-icon-wrap">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+                        <p class="is-section-title mb-0">Representative Info</p>
+                    </div>
+                    <button type="button" class="is-edit-btn" id="_btnEditRepresentative">
+                        <i class="fa-regular fa-pen-to-square"></i>
+                        Edit
+                    </button>
+                </div>
+
+                {{-- Row 2: fields, single column --}}
+                <div class="d-flex flex-column gap-3">
+                    <div class="is-card-info">
+                        <p class="is-label"> Name</p>
+                        <p class="is-value fs-6 " id="_is_representative">—</p>
+                    </div>
+                    <div class="is-card-info">
+                        <p class="is-label"> Phone</p>
+                        <p class="is-value fs-6 " id="_is_representative_phone">—</p>
+                    </div>
+                    <div class="is-card-info">
+                        <p class="is-label"> Address</p>
+                        <p class="is-value fs-6 " id="_is_representative_address">—</p>
+                    </div>
+                </div>
+
             </div>
         </div>
 
-        <!-- Toggle Settings Card -->
         <div class="is-card">
             <p class="is-section-title">Invoice Display Options</p>
 
@@ -32,7 +62,10 @@
                     <i class="fa-solid fa-receipt"></i>
                     Show Commission Tax
                 </span>
-                <span id="_is_show_comm_tax">—</span>
+                <div class="form-check form-switch">
+                    <input class="form-check-input toggle-setting" type="checkbox"
+                           data-field="show_comm_tax" id="_is_show_comm_tax">
+                </div>
             </div>
 
             <div class="is-row">
@@ -40,7 +73,10 @@
                     <i class="fa-solid fa-credit-card"></i>
                     Show Payment Status
                 </span>
-                <span id="_is_show_pay_status">—</span>
+                <div class="form-check form-switch">
+                    <input class="form-check-input toggle-setting" type="checkbox"
+                           data-field="show_pay_status" id="_is_show_pay_status">
+                </div>
             </div>
 
             <div class="is-row">
@@ -48,7 +84,21 @@
                     <i class="fa-solid fa-scale-balanced"></i>
                     Show Balance
                 </span>
-                <span id="_is_show_baland">—</span>
+                <div class="form-check form-switch">
+                    <input class="form-check-input toggle-setting" type="checkbox"
+                           data-field="show_balance" id="_is_show_balance">
+                </div>
+            </div>
+
+            <div class="is-row">
+                <span class="is-row-label">
+                    <i class="fa-solid fa-money-bill-wave"></i>
+                    Show Amount Paid
+                </span>
+                <div class="form-check form-switch">
+                    <input class="form-check-input toggle-setting" type="checkbox"
+                           data-field="show_amount_paid" id="_is_amount_paid">
+                </div>
             </div>
         </div>
 
@@ -56,7 +106,6 @@
 </div>
 
 <style>
-    /* ── Layout ─────────────────────────────────────────── */
 .is-grid {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
@@ -69,7 +118,6 @@
     }
 }
 
-/* ── Card ───────────────────────────────────────────── */
 .is-card {
     background: #fff;
     border: 0.5px solid rgba(0, 0, 0, 0.12);
@@ -214,4 +262,7 @@
     color: #6c757d;
     border: 0.5px solid rgba(0, 0, 0, 0.15);
 }
+
+
+
 </style>

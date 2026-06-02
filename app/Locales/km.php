@@ -385,21 +385,20 @@ return [
     'buttons' => [
         'Create Building' => 'បង្កើតអគារ',
         'Create Floor' => 'បង្កើតជាន់ថ្មី',
-
-
-
+        'Create Space' => 'បង្កើតបន្ទប់',
         'Create Tenant' => 'បង្កើតអ្នកជួល',
+        'Create Reservation' => 'បង្កើតការកក់',
+        'Create Maintenance' => 'បង្កើតការថែទាំ',
+
         'Create Contract' => 'បង្កើតកិច្ចសន្យា',
-        'Renew Contract' => 'បង្កើតកិច្ចសន្យា',
+        'Renew Contract' => 'បន្តកិច្ចសន្យា',
         
         'Create New Expense' => 'បង្កើតចំណាយថ្មី',
         'Generate Invoice' => 'បង្កើតវិក័យប័ត្រ',
         'Payment' => 'បង្កើតការបង់ប្រាក់',
         'Create Service' => 'បង្កើតសេវាកម្ម',
         'Create New Request' => 'បង្កើតការស្នើសុំសេវាកម្ម',
-        'Create Space' => 'បង្កើតបន្ទប់',
-        'Create Reservation' => 'បង្កើតការកក់',
-        'Create Maintenance' => 'បង្កើតការថែទាំ',
+        
         'Upload Document' => 'ផ្ទុកឯកសារ',
         
         'Purchase Orders' => 'បង្កើតបញ្ជាទិញ',
@@ -483,10 +482,19 @@ return [
         'Floor Number' => 'លេខជាន់',
         'Floor Name' => 'ឈ្មោះជាន់',
         'Description' => 'ការពិពណ៌នា',
+
+        'Unit Code (Optional)' => 'លេខកូដបន្ទប់ (Optional)',
+        'Size (m²)' => 'ទំហំ (m²)',
+        'Price' => 'តម្លៃ',
+        'Charge As' => 'គិតជា',
+        'Unit Details' => 'ព័ត៌មានបន្ទប់',
         
-
-
-
+        'Booker Name' => 'ឈ្មោះអ្នកកក់',
+        'Booker Phone' => 'លេខទូរសព្ទអ្នកកក់',
+        'Email (Optional)' => 'អ៊ីមែល (Optional)',
+        'Booking Date' => 'ថ្ងៃកក់',
+        'Expired Date' => 'ថ្ងៃផុតកំណត់',
+        'Booking Amount' => 'ចំនួនទឹកប្រាក់កក់',
 
         'Full Name' => 'ឈ្មោះពេញ',
         'Email' => 'អ៊ីមែល',
@@ -515,19 +523,9 @@ return [
         'Remark' => 'កំណត់សម្គាល់',
         'Actions' => 'សកម្មភាព',
 
-        'Unit Code (Optional)' => 'លេខកូដបន្ទប់ (Optional)',
-        'Size (m²)' => 'ទំហំ (m²)',
-        'Price' => 'តម្លៃ',
-        'Charge As' => 'គិតជា',
-        'Unit Details' => 'ព័ត៌មានបន្ទប់',
+        
 
-        'Booker Name' => 'ឈ្មោះអ្នកកក់',
-        'Booker Phone' => 'លេខទូរសព្ទអ្នកកក់',
-        'Email (Optional)' => 'អ៊ីមែល (Optional)',
-        'Booking Date' => 'ថ្ងៃកក់',
-        'Expired Date' => 'ថ្ងៃផុតកំណត់',
-        'Booking Amount' => 'ចំនួនទឹកប្រាក់កក់',
-
+     
 
        
 

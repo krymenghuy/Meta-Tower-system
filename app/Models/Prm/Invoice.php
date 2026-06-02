@@ -410,7 +410,7 @@ class Invoice extends VSModel
 
                 // 2. Map toggle fields from request, fallback to existing DB values (Notice '_piad')
                 $updateData = [
-                    'show_baland'      => isset($d->show_baland)      ? (int) $d->show_baland      : $invoice->show_baland,
+                    'show_balance'      => isset($d->show_balance)      ? (int) $d->show_balance      : $invoice->show_balance,
                     'show_comm_tax'    => isset($d->show_comm_tax)    ? (int) $d->show_comm_tax    : $invoice->show_comm_tax,
                     'show_pay_status'  => isset($d->show_pay_status)  ? (int) $d->show_pay_status  : $invoice->show_pay_status,
                     'show_amount_paid' => isset($d->show_amount_paid) ? (int) $d->show_amount_paid : $invoice->show_amount_paid, // Fixed DB key here
@@ -428,7 +428,7 @@ class Invoice extends VSModel
                 return DV::depends(1, [
                     'id' => $id,
                     'settings' => [
-                        'show_baland'      => (int) $updateData['show_baland'],
+                        'show_balance'      => (int) $updateData['show_balance'],
                         'show_comm_tax'    => (int) $updateData['show_comm_tax'],
                         'show_pay_status'  => (int) $updateData['show_pay_status'],
                         'show_amount_paid' => (int) $updateData['show_amount_paid'], // Maps internal '_piad' back to clean '_paid' for your frontend
@@ -461,7 +461,7 @@ class Invoice extends VSModel
                 return DV::depends(1, [
                     'id' => $id,    
                     'settings' => [
-                        'show_baland'      => (int) $invoice->show_baland,
+                        'show_balance'      => (int) $invoice->show_balance,
                         'show_comm_tax'    => (int) $invoice->show_comm_tax,
                         'show_pay_status'  => (int) $invoice->show_pay_status,
                         'show_amount_paid' => (int) $invoice->show_amount_paid,
@@ -494,10 +494,10 @@ class Invoice extends VSModel
 
                     // 2. Perform the Update (Resetting all toggles to 0)
                     DB::table('invoices')->where('id', $id)->update([
-                        'show_baland'      => 0,
-                        'show_comm_tax'    => 0,
-                        'show_pay_status'  => 0,
-                        'show_amount_paid' => 0, 
+                        'show_balance'      => null,
+                        'show_comm_tax'    => null,
+                        'show_pay_status'  => null,
+                        'show_amount_paid' => null, 
                     ]);
 
                     DB::commit();
@@ -506,7 +506,7 @@ class Invoice extends VSModel
                     return DV::depends(1, [
                         'id' => $id,    
                         'settings' => [
-                            'show_baland'      => 0,
+                            'show_balance'      => 0,
                             'show_comm_tax'    => 0,
                             'show_pay_status'  => 0,
                             'show_amount_paid' => 0,
@@ -694,10 +694,6 @@ class Invoice extends VSModel
                     'i.amount_payable',
                     'i.due_amount',
                     'i.amount',
-                    'i.show_baland',
-                    'i.show_comm_tax',
-                    'i.show_pay_status',
-                    'i.show_amount_paid',
                     'i.paid_amount',
                     'i.start_time',
                     'i.invoice_type',
@@ -712,14 +708,23 @@ class Invoice extends VSModel
                     't.phone_number as tenant_phone',
                     't.email as tenant_email',
                     'bs.code as space_code',
-                    'ct.legal_name as contract_legal_name'
+                    'ct.legal_name as contract_legal_name',
 
-
+                    // Merging the 4 toggle flags into a single JSON Object string alias 'settings'
+                    DB::raw("JSON_OBJECT(
+                        'show_balance', COALESCE(i.show_balance),
+                        'show_comm_tax', COALESCE(i.show_comm_tax),
+                        'show_pay_status', COALESCE(i.show_pay_status),
+                        'show_amount_paid', COALESCE(i.show_amount_paid)
+                    ) as settings")
                 )
                 ->first();
 
             if (!$header) {
                 return null;
+            }
+            if ($header && is_string($header->settings)) {
+                $header->settings = json_decode($header->settings);
             }
 
             $header->items = DB::table('invoice_items as ii')
@@ -760,6 +765,8 @@ class Invoice extends VSModel
                     ")
                 )
                 ->get();
+
+                
             foreach ($header->items as $i) {
                 $i = setOfficialDates($i, ['end_date', 'start_date'], [], []);
             }
