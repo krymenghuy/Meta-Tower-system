@@ -19,17 +19,17 @@ var ContractsComponent = new (function () {
             title: "",
             className: "align-middle",
         },
-        {
-            transTitle: "titles.Tenant",
-            className: "align-middle text-nowrap",
-            data: (data,index) => {
-                return `
-                        <div class="d-flex flex-column">
-                            ${data.tenant_name ?? ''}
-                            <span class="d-block text-primary" style="font-size:12px;">${data.phone_number ?? ''}</span>
-                        </div>`;
-                }
-        },
+        // {
+        //     transTitle: "titles.Tenant",
+        //     className: "align-middle text-nowrap",
+        //     data: (data,index) => {
+        //         return `
+        //                 <div class="d-flex flex-column">
+        //                     ${data.tenant_name ?? ''}
+        //                     <span class="d-block text-primary" style="font-size:12px;">${data.phone_number ?? ''}</span>
+        //                 </div>`;
+        //         }
+        // },
          {
             transTitle: "titles.Start Date",
             className: "align-middle",
@@ -136,36 +136,36 @@ var ContractsComponent = new (function () {
                 return `<span class="badge ${cls}" style="min-width: 100px;" data-status_id="${data.status_id}">${label}</span>`;
             },
         },
-        {
-            transTitle: "titles.Last Updated",
-            className: 'align-middle text-nowrap',
-            data: (data, index, tr) => {
-                return `<div class="d-flex flex-column">
-                    <span class="text-capitalize text-start text-prm-custom">${data.update_user ?? ''}</span>
-                    <small class="text-muted">${data.updated_at ?? ''}</small>
-                </div>`;
-            }
-        },
-        {
-            className: 'col_action align-middle',
-            data: (data) => `
-                <div class="d-flex justify-content-center align-items-end">
-                    <a href="javascript:void(0)" class="btn_contract_action" data-id="${data.id}" data-statusid="${data.status_id}" data-status="${data.status ?? ''}" data-end-date="${data.end_date ?? ''}" aria-haspopup="true" aria-expanded="false">
-                       <button class="btn btn-sm  rounded-2 text-nowrap">
-                            <span>
-                                <i class="fa-solid fa-ellipsis-vertical text-black fs-5"></i>
-                            </span>
-                       </button>
-                    </a>
-                </div>`
-        },
+        // {
+        //     transTitle: "titles.Last Updated",
+        //     className: 'align-middle text-nowrap',
+        //     data: (data, index, tr) => {
+        //         return `<div class="d-flex flex-column">
+        //             <span class="text-capitalize text-start text-prm-custom">${data.update_user ?? ''}</span>
+        //             <small class="text-muted">${data.updated_at ?? ''}</small>
+        //         </div>`;
+        //     }
+        // },
+        // {
+        //     className: 'col_action align-middle',
+        //     data: (data) => `
+        //         <div class="d-flex justify-content-center align-items-end">
+        //             <a href="javascript:void(0)" class="btn_contract_action" data-id="${data.id}" data-statusid="${data.status_id}" data-status="${data.status ?? ''}" data-end-date="${data.end_date ?? ''}" aria-haspopup="true" aria-expanded="false">
+        //                <button class="btn btn-sm  rounded-2 text-nowrap">
+        //                     <span>
+        //                         <i class="fa-solid fa-ellipsis-vertical text-black fs-5"></i>
+        //                     </span>
+        //                </button>
+        //             </a>
+        //         </div>`
+        // },
     ];
 
     mThis.init = () => {
         if (mThis.initAlready) return;
 
         mThis.ContractListView = new ListView('_contract_list', {
-            fetchApi: `${main_view.base_url}/prm/contract/list-paginate`,
+            fetchApi: `${main_view.base_url}/prm/tenant/contract/list-paginate`,
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
@@ -205,7 +205,7 @@ var ContractsComponent = new (function () {
 
         if (!mThis.tblContract.id) mThis.tblContract.id = '_contract_list_table';
         new ExpandableRowConfig(mThis.tblContract.id, {
-            dontExpandByClickingOn: ['btn_contract_action'],
+            dontExpandByClickingOn: [],
             onOpen: (container, detail_tr, parent_tr) => {
                 const rawId = parent_tr.getAttribute('id') || '';
                 const id = rawId.replace(/^contract_invoice_id/, '');
@@ -346,7 +346,7 @@ var ContractsComponent = new (function () {
                     <td class="align-middle text-nowrap">${(r.end_date ?? '').trim() }</td>
                     <td class="align-middle text-nowrap">${unitCell}</td>
                     <td class="text-break align-middle" style="width: 300px;">${escapeHtml((r.remarks ?? '_').trim())}</td>
-                    <td class="align-middle text-nowrap"><div class="d-flex flex-column"><span class="text-capitalize">${escapeHtml((r.update_user ?? '').trim()) || '_'}</span><small class="text-muted">${(r.updated_at ?? '').trim() || ''}</small></div></td>
+                    // <td class="align-middle text-nowrap"><div class="d-flex flex-column"><span class="text-capitalize">${escapeHtml((r.update_user ?? '').trim()) || '_'}</span><small class="text-muted">${(r.updated_at ?? '').trim() || ''}</small></div></td>
                 </tr>`;
             }).join('');
             renewalTableHtml = `
@@ -361,7 +361,7 @@ var ContractsComponent = new (function () {
                                             <th class="text-nowrap  py-2 px-3">End date</th>
                                             <th class="text-nowrap  py-2 px-3">Unit</th>
                                             <th class="text-nowrap  py-2 px-3">Remark</th>
-                                            <th class="text-nowrap  py-2 px-3">Last Updated</th>
+                                            // <th class="text-nowrap  py-2 px-3">Last Updated</th>
                                         </tr>
                                     </thead>
                                     <tbody class="border-top">${rows}</tbody>
