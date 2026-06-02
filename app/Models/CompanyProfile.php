@@ -133,9 +133,8 @@ class CompanyProfile //extends Model
       $ss = $ss ?? $this->userInfo;
       $customer_id = $ss->subscriber_id;
       if(!$customer_id) return null;
-      $bin_customer_id = hex2bin($customer_id);
       $col_customer_id = DBX::getHEX('id','id');
-      $row = DB::table('um_customers')->where('id',$bin_customer_id)->selectRaw($col_customer_id.',name,name_kh,`address`,address_kh, phone_number,email,first_cp_name,second_cp_name,first_cp_phone,second_cp_phone')->first();
+      $row =XCustomer::query()->alias('c')->whereRow(DBX::whereBinary('c.id',$customer_id))->selectRaw($col_customer_id.',name,name_kh,`address`,address_kh, phone_number,email,first_cp_name,second_cp_name,first_cp_phone,second_cp_phone')->first();
       if (!$row) return null;
       $row->logo_url =self::logoUrl($ss);
       return $row;

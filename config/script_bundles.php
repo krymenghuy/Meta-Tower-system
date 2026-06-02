@@ -138,7 +138,7 @@ return [
                 'js/components/prm/BillPaymentComponent.js',
                 'js/components/prm/PurchaseOrdersComponent.js',
                 'js/components/prm/InvoiceComponent.js',
-                'js/components/prm/AccessControlComponent.js',
+                'js/components/prm/CompanyProfileComponent.js',
                 'js/components/prm/SettingComponent.js',
                 'js/components/prm/ReportComponent.js',
                 'js/components/prm/ExpenseComponent.js',

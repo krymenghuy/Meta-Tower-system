@@ -414,7 +414,7 @@
                             @include('layouts.prm.maintenanceComponent')
 
                             @include('layouts.prm.invoiceComponent')
-                            @include('layouts.prm.accessControlComponent')
+                            @include('layouts.prm.companyProfileComponent')
                             @include('layouts.prm.settingComponent')
                             @include('layouts.prm.reportComponent')
                             @include('layouts.prm.expenseComponent')
