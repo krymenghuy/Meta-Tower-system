@@ -65,6 +65,9 @@
                 'building_created' => 'Building has been created successfully.',
                 'building_updated' => 'Building has been updated successfully.',
                 'save_building_failed' => 'Failed to save building.',
+                'confirm_delete_building' => 'Are you sure you want to delete this building?',
+                'delete_building' => 'Delete Building',
+                'building_deleted' => 'Building has been deleted successfully.',
 
                 'floor_created' => 'Floor has been created successfully.',
                 'floor_updated' => 'Floor has been updated successfully.',
