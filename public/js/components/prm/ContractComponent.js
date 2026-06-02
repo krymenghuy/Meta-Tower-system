@@ -471,6 +471,7 @@ var ContractComponent = new (function () {
     }
 
     mThis.editContract = (id, menulink) => {
+        if (!id) return;
         let op = {
             id: id,
             btn: menulink,
@@ -612,6 +613,25 @@ var ContractComponent = new (function () {
 const ContractDialog = (() => {
     const self = {};
     let dialog = null;
+
+    const clearStrayModalBackdrop = () => {
+        document.querySelectorAll('.modal-backdrop').forEach((el) => el.remove());
+        document.body.classList.remove('modal-open');
+        document.body.style.removeProperty('overflow');
+        document.body.style.removeProperty('padding-right');
+    };
+
+    const wrapDialogOp = (op) => {
+        if (!op) return op;
+        const onClose = op.onClose;
+        return {
+            ...op,
+            onClose: (...args) => {
+                clearStrayModalBackdrop();
+                if (typeof onClose === 'function') onClose(...args);
+            },
+        };
+    };
     // const parseDateInput = (value) => {
     //     if (!value) return null;
     //     const raw = String(value).trim();
@@ -827,20 +847,23 @@ const ContractDialog = (() => {
             },
 
             onPrepareForm: (me, data) => {
-                const isReadOnly = me.dataOptions.id > 0 || data.prefill_tenant_id;
-                console.log(123,me.dataOptions.id);
-                me.controls.tenant.disabled = isReadOnly;
-                if(me.dataOptions.id){
-                    me.setReadOnly(true, ['code','start_date','end_date']);
-                }
+                const isModify = Number(me.dataOptions?.id) > 0;
+                const tenantLocked = isModify || !!data?.prefill_tenant_id;
+                me.controls.tenant.disabled = tenantLocked;
+                me.setReadOnly(isModify, ['code', 'start_date', 'end_date']);
 
-                // me.setReadOnly(true, ['code','start_date','end_date']);
+                const prepareOpts = me.options?.prepareFormOptions;
+                if (isModify && me.elTitle && prepareOpts?.modifyTitle) {
+                    me.elTitle.innerHTML = prepareOpts.modifyTitle;
+                } else if (!isModify && me.elTitle && prepareOpts?.createTitle) {
+                    me.elTitle.innerHTML = prepareOpts.createTitle;
+                }
 
                 if (me.searchTenant && typeof me.searchTenant.reset === "function") {
                     me.searchTenant.reset();
                 }
                 // Preselect tenant when coming from TenantComponent or from booked unit phone-match.
-                const prefillTenantId = !me.dataOptions.id
+                const prefillTenantId = !isModify
                     ? (me.dataOptions.tenant_id ?? data?.prefill_tenant_id ?? null)
                     : null;
                 if (prefillTenantId) {
@@ -984,7 +1007,7 @@ const ContractDialog = (() => {
                 },
             ],
         });
-        dialog.show(op);
+        dialog.show(wrapDialogOp(op));
     };
     return self;
 })();
@@ -1233,7 +1256,7 @@ const RenewDialog = (() => {
                         me.controls.price_type.value = unitData.price_type ?? '';
 
                         console.log(3333,unitData.price_type);
-                        
+
                         me.controls.price_type.value = unitData.price_type === 'sqm' ? 'm²' : unitData.price_type === 'total' ? 'Unit' : '';
                     }
                     if (me.controls.price) me.controls.price.value = unitData.price ?? '';
