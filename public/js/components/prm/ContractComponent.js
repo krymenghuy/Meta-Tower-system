@@ -654,13 +654,13 @@ const ContractDialog = (() => {
                         <div class="col-6">
                             <div class="vs-material-field">
                                 <input name="tenant" class="data-input form-control" data-field="tenant_name"  placeholder="Tenant" />
-                                <label>Tenant</label>
+                                <label vslang="labels.Tenant">Tenant</label>
                             </div>
                         </div>
                         <div class="col-6">
                             <div class="vs-material-field">
                                 <input name="legal_name" class="data-input form-control" disabled data-field="legal_name" placeholder=" " />
-                                <label>Legal Name</label>
+                                <label vslang="labels.Legal Name">Legal Name</label>
                             </div>
                         </div>
 
@@ -673,19 +673,19 @@ const ContractDialog = (() => {
                         <div class="col-3">
                             <div class="vs-material-field">
                                 <input type="text" name="deposit" class="data-input form-control" data-field="deposit" placeholder=" " />
-                                <label>Deposit</label>
+                                <label vslang="labels.Deposit">Deposit</label>
                             </div>
                         </div>
                         <div class="col-6">
                             <div class="vs-material-field">
                                 <input type="text" data-type="date" name="start_date" class="data-input form-control form_input" data-field="start_date" placeholder=" " />
-                                <label>Start Date</label>
+                                <label vslang="labels.Start Date">Start Date</label>
                             </div>
                         </div>
                         <div class="col-6">
                             <div class="vs-material-field">
                                 <input type="text" data-type="date" name="end_date" class="data-input form-control form_input" data-field="end_date" placeholder=" " />
-                                <label>End Date</label>
+                                <label vslang="labels.End Date">End Date</label>
                             </div>
                         </div>
 
@@ -693,31 +693,31 @@ const ContractDialog = (() => {
                 </div>
                 <div class="col-12">
                     <div class="p-3 bg-white border rounded shadow-sm">
-                        <h6 class="mb-3 text-golden">Unit Details</h6>
+                        <h6 class="mb-3 text-golden" vslang="labels.Unit Details">Unit Details</h6>
                         <div class="row g-3">
                             <div class="col-6">
                                 <div class="vs-material-field">
                                     <input type="text" name="space_name" class="data-input form-control" data-field="space_name" disabled />
-                                    <label>Type</label>
+                                    <label vslang="labels.Type">Type</label>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="vs-material-field">
                                     <input type="number" name="sqm_size" class="data-input form-control" data-field="sqm_size" disabled />
-                                    <label>Size (m²)</label>
+                                    <label vslang="labels.Size (m²)">Size (m²)</label>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="vs-material-field">
                                     <input type="hidden" name="price_type" class="data-input" data-field="price_type" />
                                     <input type="text" name="price_type_label" class="data-input form-control" disabled />
-                                    <label>Charge As</label>
+                                    <label vslang="labels.Charge As">Charge As</label>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="vs-material-field">
                                     <input type="number" name="price" class="data-input form-control" data-field="price" disabled />
-                                    <label>Price</label>
+                                    <label vslang="labels.Price">Price</label>
                                 </div>
                             </div>
                         </div>
@@ -726,7 +726,7 @@ const ContractDialog = (() => {
                  <div class="col-12 mt-3">
                         <div class="vs-material-field">
                             <textarea name="remarks" class="data-input form-control" data-field="remarks" placeholder=" "></textarea>
-                            <label>Remark</label>
+                            <label vslang="labels.Remark">Remark</label>
                         </div>
                     </div>
                 </div>`
@@ -811,8 +811,8 @@ const ContractDialog = (() => {
                 },
             ],
             prepareFormOptions: {
-                createTitle: "Create Contract",
-                modifyTitle: "Modify Contract",
+                createTitle: "vslang:titles.Create Contract",
+                modifyTitle: "vslang:titles.Modify Contract",
                 targetProp: "contract_details",
                 api: {
                     endpoint: [main_view.base_url, "/prm/contract/form-options",].join(""),
@@ -1052,24 +1052,24 @@ const RenewDialog = (() => {
                     <div class="row g-3">
                         <div class="col-12">
                             <div class="p-3 border rounded">
-                                <h6 class="mb-3 text-golden">Old Contract</h6>
+                                <h6 class="mb-3 text-golden" vslang="titles.Old Contract">Old Contract</h6>
                                 <div class="row g-2">
                                     <div class="col-4">
                                         <div class="vs-material-field">
                                             <input  data-style="material" type="date" name="old_contract_start" class="data-input form-control" data-field="old_contract_start"  placeholder=" " disabled />
-                                            <label>Start Date</label>
+                                            <label vslang="labels.Start Date">Start Date</label>
                                         </div>
                                     </div>
                                     <div class="col-4">
                                         <div class="vs-material-field">
                                             <input  data-style="material" type="date" name="old_contract_end" class="data-input form-control" data-field="old_contract_end" placeholder=" " disabled />
-                                            <label>End Date</label>
+                                            <label vslang="labels.End Date">End Date</label>
                                         </div>
                                     </div>
                                     <div class="col-4">
                                         <div class="vs-material-field">
                                             <input  data-style="material" type="number" name="old_contract_price" class="data-input form-control" data-field="old_contract_price" placeholder=" " disabled />
-                                            <label>Price</label>
+                                            <label vslang="labels.Price">Price</label>
                                         </div>
                                     </div>
                                 </div>
@@ -1078,18 +1078,18 @@ const RenewDialog = (() => {
 
                         <div class="col-12">
                             <div class="p-3 bg-white border rounded shadow-sm">
-                                <h6 class="mb-3 text-golden">Renew Contract</h6>
+                                <h6 class="mb-3 text-golden" vslang="titles.Renew Contract">Renew Contract</h6>
                                 <div class="row g-3">
                                     <div class="col-4">
                                        <div class="vs-material-field">
                                            <input  data-style="material" type="date" name="start_date" class="data-input form-control" data-field="start_date" placeholder=" " disabled />
-                                             <label>Start Date</label>
+                                             <label vslang="labels.Start Date">Start Date</label>
                                        </div>
                                    </div>
                                     <div class="col-4">
                                         <div class="vs-material-field">
                                             <input  data-style="material" type="date" name="end_date" class="data-input form-control" data-field="end_date" placeholder=" " />
-                                            <label>End Date</label>
+                                            <label vslang="labels.End Date">End Date</label>
                                         </div>
                                     </div>
                                     <div class="col-4">
@@ -1101,7 +1101,7 @@ const RenewDialog = (() => {
                                      <div class="col-12">
                                         <div class="vs-material-field">
                                             <textarea name="remarks" class="data-input form-control" data-field="remarks"></textarea>
-                                            <label>Renewal Remark</label>
+                                            <label vslang="labels.Remark">Renewal Remark</label>
                                         </div>
                                     </div>
                                 </div>
@@ -1110,30 +1110,30 @@ const RenewDialog = (() => {
 
                         <div class="col-12">
                             <div class="p-3 bg-white border rounded shadow-lg">
-                                <h6 class="mb-3 text-golden">Unit Details</h6>
+                                <h6 class="mb-3 text-golden" vslang="labels.Unit Details">Unit Details</h6>
                                 <div class="row g-3">
                                     <div class="col-6">
                                 <div class="vs-material-field">
                                     <input type="text" name="space_name" class="data-input form-control" data-field="space_name" placeholder=" " readonly disabled />
-                                    <label>Type</label>
+                                    <label vslang="labels.Type">Type</label>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="vs-material-field">
                                     <input type="number" name="sqm_size" class="data-input form-control" data-field="sqm_size" placeholder=" " readonly disabled />
-                                    <label>Size</label>
+                                    <label vslang="labels.Size (m²)">Size (m²)</label>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="vs-material-field">
                                     <input type="text" name="price_type" class="data-input form-control" data-field="price_type" placeholder=" " readonly disabled />
-                                    <label>Charge As</label>
+                                    <label vslang="labels.Charge As">Charge As</label>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="vs-material-field">
                                     <input type="number" name="price" class="data-input form-control" data-field="price" placeholder=" " readonly disabled />
-                                    <label>Price</label>
+                                    <label vslang="labels.Price">Price</label>
                                 </div>
                             </div>
                                 </div>
@@ -1148,8 +1148,8 @@ const RenewDialog = (() => {
             },
 
             prepareFormOptions: {
-                createTitle: "Renew Contract",
-                modifyTitle: "Renew Contract",
+                createTitle: "vslang:titles.Renew Contract",
+                modifyTitle: "vslang:titles.Renew Contract",
                 targetProp: "contract_details",
                 api: {
                     endpoint: [main_view.base_url, "/prm/contract/form-options"].join(""),
@@ -1215,6 +1215,7 @@ const RenewDialog = (() => {
                 const applyContractPriceFields = () => {
                     if (me.controls.price_type) {
                         me.controls.price_type.value = det.price_type ?? "";
+                        me.controls.price_type.value = det.price_type == "sqm" ? "m²" : det.price_type === "total" ? "Unit" : "";
                     }
                     if (me.controls.price) {
                         me.controls.price.value =
@@ -1230,6 +1231,9 @@ const RenewDialog = (() => {
                     // if (me.controls.price_type) me.controls.price_type.value = unitData.price_type ?? '';
                     if (me.controls.price_type) {
                         me.controls.price_type.value = unitData.price_type ?? '';
+
+                        console.log(3333,unitData.price_type);
+                        
                         me.controls.price_type.value = unitData.price_type === 'sqm' ? 'm²' : unitData.price_type === 'total' ? 'Unit' : '';
                     }
                     if (me.controls.price) me.controls.price.value = unitData.price ?? '';
@@ -1269,12 +1273,12 @@ const RenewDialog = (() => {
 
             buttons: [
                 {
-                    label: '<span>Cancel</span>',
+                    label: '<span vslang="buttons.Cancel"></span>',
                     cssClass: 'btn btn-secondary',
                     click: (me) => me.hide(false),
                 },
                 {
-                    label: '<span>Renew</span>',
+                    label: '<span vslang="buttons.Save"></span>',
                     cssClass: 'btn btn-primary',
                     click: (me, btn) => {
                         const op = me.getData();

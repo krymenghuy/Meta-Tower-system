@@ -33,8 +33,9 @@ use App\Http\Controllers\tenant\AccountStaffController;
 use App\Http\Controllers\tenant\ZoneController;
 use App\Http\Controllers\tenant\ContractsController;
 use App\Http\Controllers\Prm\InvoiceSettingController;
-use App\Http\Controllers\tenant\ReservationsController;
-use App\Http\Controllers\tenant\TenantProfileController;
+use App\Http\Controllers\Tenant\TenantProfileController;
+use App\Http\Controllers\Tenant\ReservationsController;
+use App\Http\Controllers\Tenant\RequestServiceController;
 
 
 
@@ -166,7 +167,6 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('service-reque
     Route::post('/accept',[ServiceRequestController::class,'acceptRequest']);
     Route::post('/reject',[ServiceRequestController::class,'rejectRequest']);
     Route::post('/complete',[ServiceRequestController::class,'completeRequest']);
-
 
 });
 
@@ -349,28 +349,38 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('invoice_setti
 
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant/tenantProfile')->group(function () {
-    Route::post('/create', [TenantController::class, 'createTenant']);
-    Route::post('/profile/photo',[TenantController::class,'getProfilePhoto']);
-    Route::post('/profile/photo/delete',[TenantController::class,'deleteProfilePhoto']);
-    Route::post('/profile/photo/create',[TenantController::class,'createProfilePhoto']);
-    Route::post('/list-paginate', [TenantController::class, 'getListPaginate']);
-    Route::post('/details', [TenantController::class, 'getDetails']);
-    Route::post('/form-options', [TenantController::class, 'getFormOptions']);
-    Route::post('/delete', [TenantController::class, 'delete']);
+    Route::post('/create', [TenantProfileController::class, 'createTenant']);
+    Route::post('/profile/photo',[TenantProfileController::class,'getProfilePhoto']);
+    Route::post('/profile/photo/delete',[TenantProfileController::class,'deleteProfilePhoto']);
+    Route::post('/profile/photo/create',[TenantProfileController::class,'createProfilePhoto']);
+    Route::post('/list-paginate', [TenantProfileController::class, 'getListPaginate']);
+    Route::post('/details', [TenantProfileController::class, 'getDetails']);
+    Route::post('/form-options', [TenantProfileController::class, 'getFormOptions']);
+    Route::post('/delete', [TenantProfileController::class, 'delete']);
 });
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant/reservation')->group(function () {
-    Route::post('/save', [ReservationController::class, 'saveReservation']);
-    Route::post('/list-paginate', [ReservationController::class, 'getListPaginate']);
-    Route::post('/details', [ReservationController::class, 'reservationDetails']);
-    Route::post('/form-options', [ReservationController::class, 'getFormOptions']);
-    Route::post('/delete', [ReservationController::class, 'deleteReservation']);
-    Route::post('/update-status', [ReservationController::class, 'updateReservationStatus']);
-    Route::post('/get-amenity-info', [ReservationController::class, 'getAmenityInfo']);
-    Route::post('/cancel', [ReservationController::class, 'cancelReservation']);
+    Route::post('/save', [ReservationsController::class, 'saveReservation']);
+    Route::post('/list-paginate', [ReservationsController::class, 'getListPaginate']);
+    Route::post('/details', [ReservationsController::class, 'reservationDetails']);
+    Route::post('/form-options', [ReservationsController::class, 'getFormOptions']);
+    Route::post('/delete', [ReservationsController::class, 'deleteReservation']);
+    Route::post('/update-status', [ReservationsController::class, 'updateReservationStatus']);
+    Route::post('/get-amenity-info', [ReservationsController::class, 'getAmenityInfo']);
+    Route::post('/cancel', [ReservationsController::class, 'cancelReservation']);
 });
 
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant/request-service')->group(function () {
+    Route::post('/save', [RequestServiceController::class, 'saveServiceRequest']);
+    Route::post('/list',[RequestServiceController::class, 'getServiceRequestList']);
+    Route::post('/details',[RequestServiceController::class, 'serviceRequestDetails']);
+    Route::post('/delete',[RequestServiceController::class,'delete']);
+    Route::post('/form-options',[RequestServiceController::class,'getFormOptions']);
+    Route::post('/accept',[RequestServiceController::class,'acceptRequest']);
+    Route::post('/reject',[RequestServiceController::class,'rejectRequest']);
+    Route::post('/complete',[RequestServiceController::class,'completeRequest']);
 
+});
 
 
 

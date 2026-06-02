@@ -28,13 +28,13 @@ class Building //extends Model
         $subs_id = $ss->subs_id ?? getCurrentSubsId(true);
 
         $v_rule = [
-            'name' => '1|string|0-50|text=Name is required',
-            'prefix' => '1|string|0-20|text=Shortcut is required',
-            'total_floor' => '1|number|text=Total floor is required',
-            'total_area' => '1|number|min=0|text=Total area is required',
+            'name' => '1|string|0-50|text=building_name_is_required',
+            'prefix' => '1|string|0-20|text=building_prefix_is_required',
+            'total_floor' => '1|number|text=building_total_floor_is_required',
+            'total_area' => '1|number|min=0|text=building_total_area_is_required',
             'total_space' => '0|number',
             'occupancy' => '0|number',
-            'address' => '1|string|0-255|text=Address is required',
+            'address' => '1|string|0-255|text=building_address_is_required',
         ];
 
         $allowSign = ['$', '#', '@', '!', '.', '-', ',', '_', '=', '?'];
@@ -267,7 +267,7 @@ class Building //extends Model
 
         $v_rule = [
             'id' => '0|number',
-            'name' => '0|string|1-250',
+            'name' => '0|string|1-50|text',
             'floor_number' => '0|number',
             'building_id' => '1|number',
             'description' => '0|string|0-250',
