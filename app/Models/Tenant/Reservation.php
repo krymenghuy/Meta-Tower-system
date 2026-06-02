@@ -1,4 +1,4 @@
-    <?php
+<?php
 
     namespace App\Models\Tenant;
     use Illuminate\Pagination\LengthAwarePaginator;
@@ -169,7 +169,7 @@
 
             $d = (object) $arr;
             $search_value = $d->search_value ?? null;
-            $tenant_id = $d->tenant_id ?? null; 
+            $tenant_id = $d->tenant_id ?? null;
             $amenity_id = $d->amenity_id ?? null;
             $current_page = $d->current_page ?? 1;
             $per_page = $d->per_page ?? 10;
@@ -184,6 +184,9 @@
             $str_moreWhere = '2=2';
 
             $tenant_id = $ss->official_id;
+
+            \Log::info(print_r($ss, true));
+
 
             if($search_value){
                 $skip_rows = 0;
