@@ -75,4 +75,31 @@ class InvoiceSettingController extends Controller
     }
 
 
+    public function getInvoiceBuildingInfo(Request $req)
+    {
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+
+        $invoiceSetting = new InvoiceSetting();
+        $res = $invoiceSetting->getInvoiceBuildingInfo($req->all(), $ss);
+        
+        // Will cleanly wrap either the real database values or the default empty structure
+        return JDV::result($res);
+    }
+
+    public function saveInvoiceSettingRepresentative(Request $req)
+    {
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+
+        $invoiceSetting = new InvoiceSetting();
+        $res = $invoiceSetting->saveInvoiceSettingRepresentative($req->all(), $ss);
+    
+        return JDV::result($res);
+    }
+
 }
