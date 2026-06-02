@@ -61,7 +61,7 @@ const InvoiceTaxDialog = (() => {
         };
     };
 
-    const buildInvoiceHTML = (invoice, global) => {
+    const buildInvoiceHTML = (invoice, setting) => {
 
         const subTotal      = parseFloat(invoice.amount         || 0);
         const totalDiscount = parseFloat(invoice.discount_value || 0);
@@ -70,9 +70,9 @@ const InvoiceTaxDialog = (() => {
         const balance       = parseFloat(invoice.due_amount     || 0);
 
         // Visibility Flags (Normalized values checking integer conversion status)
-        const showPayStatus  = global.show_pay_status;
-        const showBaland     = global.show_baland;
-        const showAmountPaid = global.show_amount_paid;
+        const showPayStatus  = setting.show_pay_status;
+        const showBaland     = setting.show_baland;
+        const showAmountPaid = setting.show_amount_paid;
 
         const discType     = (invoice.discount_type || "percent").toLowerCase();
         const isAmountDisc = (discType === "amount" || discType === "$");
@@ -356,8 +356,10 @@ const InvoiceTaxDialog = (() => {
                     <style>@keyframes pi-spin{to{transform:rotate(360deg)}}</style>
                 </div>`,
             contentCreated: (me) => {
+                console.log(121212,op);
+                
                 const container = me.divModal.querySelector('[name="pi_container"]');
-                container.innerHTML = buildInvoiceHTML(op.invoice, op.global);
+                container.innerHTML = buildInvoiceHTML(op.invoice, op.setting);
                 
                 // CRITICAL FIX: Wire the action elements right after appending HTML to the DOM
                 wireButtons(container);

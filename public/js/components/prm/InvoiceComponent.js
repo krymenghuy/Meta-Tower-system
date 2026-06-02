@@ -238,15 +238,15 @@ var InvoiceComponent = (() => {
             });
         };
 
-        vsapi
-            .call(`${main_view.base_url}/prm/invoice_setting/get`, {})
-            .then(res => {
-                if (res.status_code !== 200) {
-                    cv_interact.error("Failed to load invoice details.");
-                    return;
-                }
-                mThis.globalSetting = res.data;
-            });
+        // vsapi
+        //     .call(`${main_view.base_url}/prm/invoice_setting/get`, {})
+        //     .then(res => {
+        //         if (res.status_code !== 200) {
+        //             cv_interact.error("Failed to load invoice details.");
+        //             return;
+        //         }
+        //         mThis.globalSetting = res.data;
+        //     });
 
         mThis.listContainer = mThis.InvoiceListView.getListContainer();
         const sh_parent = mThis.listContainer.parentElement;
@@ -675,13 +675,27 @@ var InvoiceComponent = (() => {
 
     mThis.printInvoice = (id, menulink) => {
         let invoice = null;
+        let globalSetting = null;
+        let localSetting = null;
+
+        vsapi
+            .call(`${main_view.base_url}/prm/invoice_setting/get-toggle-button`,)
+            .then(res => {
+                if (res.status_code === 200) {
+                 globalSetting = res.data;
+                } else {
+                    cv_interact.error("Could not determine invoice type.");
+                }
+            });
+
         vsapi
             .call(`${main_view.base_url}/prm/invoice/details`, { id: id })
             .then(res => {
                 if (res.status_code === 200) {
-                    mThis.invoiceSetting = res.data.settings;
+                    localSetting = res.data.settings;
 
                     invoice = res.data;
+                    
 
                     const invType = invoice.invoice_type;
                     const params = {
@@ -692,14 +706,21 @@ var InvoiceComponent = (() => {
 
                     };
 
-                    const settings = mThis.invoiceSetting || {};
-                    const global = mThis.globalSetting || {};
+                    const settings = localSetting || {};
+                    const global = globalSetting || {};
 
-                    if (settings.show_balan !== null) {
+                    console.log(12, settings);
+                    console.log(23, global);
+                    
+
+                    if (settings.show_baland !== null) {
                         params.setting = settings;
                     } else {
                         params.setting = global;
                     }
+
+                    console.log(34, params);
+                    
 
                     if (invType === 1) {
                         InvoiceTaxDialog.show(params);
@@ -713,6 +734,9 @@ var InvoiceComponent = (() => {
                 }
             });
     };
+
+
+
 
     mThis.prepareFormOptions = onFinish => {
         vsapi
@@ -768,6 +792,7 @@ const InvoiceDialog = (() => {
     let availableItem = [];
     let InvoiceSetting = null;
     let globalSetting = null;
+    let exchangeRate = null;
 
     self.show = op => {
         dialog = new GeneralDialog({
@@ -1468,14 +1493,14 @@ const InvoiceDialog = (() => {
                                     "#wrapper_units_readonly"
                                 );
 
-                                elExchangeRate.value = globalSetting
-                                    ? globalSetting.exchange_rate ?? ""
+                                elExchangeRate.value = exchangeRate
+                                    ? exchangeRate.exchange_rate ?? ""
                                     : "";
 
                                 console.log(
                                     "InvoiceSetting.exchange_rate",
-                                    globalSetting
-                                        ? globalSetting.exchange_rate
+                                    exchangeRate
+                                        ? exchangeRate.exchange_rate
                                         : null
                                 );
 
@@ -3006,7 +3031,7 @@ const InvoiceDialog = (() => {
                 }
 
                 vsapi
-                    .call(`${main_view.base_url}/prm/invoice_setting/get`, {})
+                    .call(`${main_view.base_url}/prm/invoice_setting/get-exchange-rate`, {})
                     .then(res => {
                         if (res.status_code !== 200) {
                             cv_interact.error(
@@ -3016,7 +3041,9 @@ const InvoiceDialog = (() => {
                         }
                         console.log("Global Setting", res);
 
-                        globalSetting = res.data;
+                        exchangeRate = res.data;
+
+                        
                     });
             },
 

@@ -340,6 +340,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('reports')->gr
 });
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('invoice_setting')->group(function () {
+    Route::post('/get-exchange-rate', [InvoiceSettingController::class, 'getExchangeRate']);
     Route::post('/get', [InvoiceSettingController::class, 'getInvoiceSetting']);
     Route::post('/save', [InvoiceSettingController::class, 'saveInvoiceSetting']);
     Route::post('/update-toggle-button', [InvoiceSettingController::class, 'updateToglleButton']);
