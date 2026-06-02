@@ -86,7 +86,7 @@ class TenantProfileController extends Controller
         if ($ss->status_code !== 200) return JDV::raw($ss);
         $id = $req->tenant_id ?? $req->id;
         $photo = $req->photo ?? $req->img;
-        $res = TenantProfile::saveProfilePicture($photo, null, $id, $ss);
+        $res = TenantProfile::createProfilePicture($photo, null, $id, $ss);
         return JDV::raw($res);
     }
     function deleteProfilePhoto(Request $req)

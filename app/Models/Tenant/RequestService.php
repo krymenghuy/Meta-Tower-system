@@ -2,7 +2,7 @@
 
 namespace App\Models\Tenant;
 
-use App\Models\Prm\GeneralSettings;
+use App\Models\Tenant\GeneralSettings;
 use DV;
 use Vsd\Vsloquent\VSModel;
 use DBX;
@@ -26,7 +26,7 @@ class RequestService extends VSModel
     {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
-        $branch_id = $ss->branch_id;
+        // $branch_id = $ss->branch_id;
         $v_rule = [
             'tenant_id'         => '0|number|exists=tenants.id|text=Please select a tenant.',
             'space_id'          => '1|number|exists=building_spaces.id|text=Please select a space.',
@@ -106,6 +106,7 @@ class RequestService extends VSModel
 
         $input['request_date'] = !empty($input['request_date'])? date('Ymd', strtotime($input['request_date'])): date('Ymd');
         $created = !$id;
+        $input['tenant_id'] = $ss->official_id;
         try {
             $save_id = DBX::saveData($ss, 'service_requests', ['id' => $id], $input, [], 1);
             if (!$save_id) return DV::error('Failed to save service request.');
@@ -152,6 +153,7 @@ class RequestService extends VSModel
     {
         $d = (object) $arr;
         $search_value      = $d->search_value ?? null;
+        // $tenant_id = $d->tenant_id ?? null;
         $category_id         = $d->category_id ?? null;
         $service_id          = $d->service_id ?? null;
         $status_id         = $d->status_id ?? null;
@@ -181,8 +183,6 @@ class RequestService extends VSModel
             $str_moreWhere .= ' AND sr.service_id =' . $service_id;
         }
 
-        \Log::info("123456789");
-
 
         $query = DB::table('service_requests as sr')
             ->join('tenants as t', 't.id', '=', 'sr.tenant_id')
@@ -191,6 +191,7 @@ class RequestService extends VSModel
             ->join('service_categories as sc', 'sc.id', '=', 's.category_id')
             ->join('request_statuses as rs', 'rs.id', '=', 'sr.status_id')
             ->whereRaw($str_search)
+            ->where('sr.tenant_id', $tenant_id)
             ->whereRaw($str_moreWhere)
             ->selectRaw("
                 sr.id, sr.code, sr.tenant_id, t.name as tenant_name, t.email as tenant_email, t.phone_number as tenant_phone,
@@ -260,12 +261,12 @@ class RequestService extends VSModel
         $details = $id ? self::getServiceRequestDetails($id) : null;
         $category_id = $d->category_id ?? null;
         return (object) [
-            'request_details'     => $details,
-            'service_categories'  => GeneralSettings::options_service_categories($ss),
-            'tenants'             => GeneralSettings::options_tenant_with_active_contract($ss),
-            'services'            => GeneralSettings::options_service_request_type($category_id),
+            // 'request_details'     => $details,
+            // 'service_categories'  => GeneralSettings::options_service_categories($ss),
+            // 'tenants'             => GeneralSettings::options_tenant_with_active_contract($ss),
+            // 'services'            => GeneralSettings::options_service_request_type($category_id),
             'building_spaces'   => GeneralSettings::options_building_space($ss),
-            'request_statuses'  => GeneralSettings::options_request_status($ss)
+            // 'request_statuses'  => GeneralSettings::options_request_status($ss)
         ];
     }
 
