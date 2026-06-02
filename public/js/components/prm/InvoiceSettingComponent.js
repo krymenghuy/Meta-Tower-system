@@ -5,36 +5,45 @@ var InvoiceSettingComponent = (() => {
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_invoiceSetting_component");
 
-    mThis.elExchangeRate  = mThis.self.querySelector("#_is_exchange_rate");
-    mThis.btnEdit         = mThis.self.querySelector("#_btnEditInvoiceSetting");
+    // Element View Selectors
+    mThis.elExchangeRate          = mThis.self.querySelector("#_is_exchange_rate");
+    mThis.elRepresentativeName    = mThis.self.querySelector("#_is_representative");
+    mThis.elRepresentativePhone   = mThis.self.querySelector("#_is_representative_phone");
+    mThis.elRepresentativeAddress = mThis.self.querySelector("#_is_representative_address");
 
-    // ── Helpers ────────────────────────────────────────────────────────────────
+    // Button Selectors
+    mThis.btnEditRate = mThis.self.querySelector("#_btnEditInvoiceSetting");
+    mThis.btnEditRep  = mThis.self.querySelector("#_btnEditRepresentative");
 
-    // FIXED: This now changes the checkbox state directly instead of injecting old HTML badges
+    // Render Data to Card Dashboard View
     mThis.renderSummary = (data) => {
         if (!data) return;
 
-        // 1. Render Exchange Rate Text
+        // 1. Render Exchange Rate Text Box
         const rate = data.exchange_rate ?? "—";
-        mThis.elExchangeRate.textContent = rate !== "—"
-            ? `${Number(rate).toLocaleString()} ៛`
-            : "—";
+        if (mThis.elExchangeRate) {
+            mThis.elExchangeRate.textContent = rate !== "—"
+                ? `${Number(rate).toLocaleString()} ៛`
+                : "—";
+        }
 
-        // 2. Loop through all checkboxes on the page and match them with server data
-        const container = mThis.self;
-        container.querySelectorAll(".toggle-setting").forEach(input => {
+        // 2. Render Representative Info Text Elements (Mapped to schema keys)
+        if (mThis.elRepresentativeName)    mThis.elRepresentativeName.textContent    = data.build_representative || "—";
+        if (mThis.elRepresentativePhone)   mThis.elRepresentativePhone.textContent   = data.representative_phone          || "—";
+        if (mThis.elRepresentativeAddress) mThis.elRepresentativeAddress.textContent = data.representative_address        || "—";
+
+        // 3. Loop through all checkboxes and toggle states
+        mThis.self.querySelectorAll(".toggle-setting").forEach(input => {
             const field = input.getAttribute("data-field");
-            
             if (field && data[field] !== undefined) {
                 input.checked = parseInt(data[field]) === 1;
             } else if (field && field === "show_amount_paid" && data.show_amount_piad !== undefined) {
-                // Safe check for the database typo fallback '_piad'
                 input.checked = parseInt(data.show_amount_piad) === 1;
             }
         });
     };
 
-    // Fetch current settings from API, then run callback with data
+    // Fetch setting data structure from backend gateway
     mThis.loadSettings = (onLoaded) => {
         vsapi
             .call(
@@ -44,28 +53,38 @@ var InvoiceSettingComponent = (() => {
                 null
             )
             .then((res) => {
-                const data = res.status_code === 200 ? res.data : null;
+                const data = res.status_code === 200 ? (res.data?.settings ?? res.data) : null;
                 mThis.renderSummary(data);
                 if (typeof onLoaded === "function") onLoaded(data);
             });
     };
 
     // ── Init ───────────────────────────────────────────────────────────────────
-
     mThis.init = () => {
         if (mThis.initAlready) return;
         mThis.initAlready = true;
 
-        mThis.btnEdit.onclick = (e) => {
+        // Exchange Rate Dialog Show Trigger
+        mThis.btnEditRate.onclick = (e) => {
             e.preventDefault();
             mThis.loadSettings((currentData) => {
                 mThis.exchangeRateDialog.show(currentData);
             });
         };
 
-        // FIXED: Listens to the switch interaction and sends full payload state to backend
+        // Representative Info Dialog Show Trigger
+        mThis.btnEditRep.onclick = (e) => {
+            e.preventDefault();
+            mThis.loadSettings((currentData) => {
+                console.log(121222,currentData);
+
+                mThis.representativeDialog.show(currentData);
+            });
+        };
+
+        // Switch changes trigger immediate background database updates
         mThis.self.querySelectorAll(".toggle-setting").forEach(input => {
-            input.onchange = (e) => {
+            input.onchange = () => {
                 mThis.saveToggleButtons();
             };
         });
@@ -77,7 +96,7 @@ var InvoiceSettingComponent = (() => {
         mThis.loadSettings(null);
     };
 
-    // ── Save Action Gateway ──────────────────────────────────────────────────
+    // ── Save Switches Gateway ──────────────────────────────────────────────────
     mThis.saveToggleButtons = () => {
         const payload = { id: 1 }; 
 
@@ -89,30 +108,22 @@ var InvoiceSettingComponent = (() => {
         });
 
         vsapi
-            .call(
-                `${mThis.base_url}/prm/invoice_setting/update-toggle-button`,
-                payload,
-                null
-            )
+            .call(`${mThis.base_url}/prm/invoice_setting/update-toggle-button`, payload, null)
             .then(res => {
                 if (res && res.status_code === 200) {
-                    // cv_interact.success("Display options altered successfully.");
-                    
-                    // Pull either settings wrapper or the data root directly
                     const serverData = res.data && res.data.settings ? res.data.settings : res.data;
                     mThis.renderSummary(serverData);
                 } else {
-                    // cv_interact.error(res.error_message || "An error occurred while saving.");
-                    mThis.loadSettings(null); // Reset layout to original data if failed
+                    mThis.loadSettings(null);
                 }
             })
             .catch(err => {
-                console.error("AJAX Gateway Exception:", err);
+                console.error("AJAX Processing Error:", err);
                 mThis.loadSettings(null);
             });
     };
 
-    // ── Dialog ─────────────────────────────────────────────────────────────────
+    // ── Dialog Windows Factories ────────────────────────────────────────────────
     const CreateExchangeRateDialog = () => {
         const self = {};
         let dialog = null;
@@ -169,12 +180,7 @@ var InvoiceSettingComponent = (() => {
                         click: (me, btn) => {
                             const op = me.getData();
                             vsapi
-                                .call(
-                                    [mThis.base_url, "/prm/invoice_setting/save"].join(""),
-                                    op,
-                                    btn,
-                                    null
-                                )
+                                .call([mThis.base_url, "/prm/invoice_setting/save"].join(""), op, btn, null)
                                 .then((res) => {
                                     if (res.status_code === 200) {
                                         me.hide(true, op);
@@ -196,7 +202,91 @@ var InvoiceSettingComponent = (() => {
         return self;
     };
 
-    mThis.exchangeRateDialog = CreateExchangeRateDialog();
+    const CreateRepresentativeDialog = () => {
+        const self = {};
+        let dialog = null;
+
+        self.show = (currentData) => {
+            dialog = dialog || new GeneralDialog({
+                title: "Representative Information",
+                cssClass: "modal-md vs-modal",
+                backdrop: "static",
+                keyboard: true,
+                createContent: () => {
+                    return [
+                        `
+                        <div>
+                            
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                                <div class="material-input outlined style-main mb-3">
+                                    <input class="data-input form-control" data-field="build_representative" id="build_representative" name="build_representative" type="text" placeholder=" ">
+                                    <label>Representative Name</label>
+                                </div>
+                                <div class="material-input outlined style-main mb-3">
+                                    <input class="data-input form-control" data-field="representative_phone" id="representative_phone" name="representative_phone" type="text" placeholder=" ">
+                                    <label>Representative Phone</label>
+                                </div>
+                            </div>
+                            <div class="material-input outlined style-main mb-3 ">
+                                <textarea class="data-input form-control" data-field="representative_address" id="representative_address" name="representative_address" type="text" placeholder=" ">
+                                <label>Representative Address</label>
+                            </div>
+                         </div>
+                        `
+                    ];
+                },
+
+                onPrepareForm : (me)=>{
+                    console.log(777,me);
+                    me.controls.build_representative.value = me.dataOptions.build_representative;
+                    me.controls.representative_phone.value = me.dataOptions.representative_phone;
+                    me.controls.representative_address.value = me.dataOptions.representative_address;
+                },
+                
+
+                buttons: [
+                    {
+                        label: '<span vslang="buttons.Cancel"></span>',
+                        cssClass: "btn btn-secondary",
+                        click: (me) => { me.hide(false); },
+                    },
+                    {
+                        label: '<span vslang="buttons.Save"></span>',
+                        cssClass: "btn btn-primary",
+                        click: (me, btn) => {
+                            const op = me.getData();
+                            op.id = 1; // Explicit database identity anchor targeting row #1
+
+                            op.build_representative = op.build_representative != ""  ? op.build_representative : me.dataOptions.build_representative;
+                            op.representative_phone = op.representative_phone != ""  ? op.representative_phone : me.dataOptions.representative_phone;
+                            op.representative_address = op.representative_address != ""  ? op.representative_address : me.dataOptions.representative_address;
+
+
+                            vsapi
+                                .call([mThis.base_url, "/prm/invoice_setting/save-buildign-representative"].join(""), op, btn, null)
+                                .then((res) => {
+                                    if (res.status_code === 200) {
+                                        me.hide(true, op);
+                                        cv_interact.success("Representative information saved successfully.");
+                                        mThis.loadSettings(null); // Force screen update refresh
+                                    } else {
+                                        cv_interact.error(res.error_message || "Failed to update information.");
+                                    }
+                                });
+                        },
+                    },
+                ],
+            });
+
+            dialog.dataOptions = currentData || {};
+            dialog.show(currentData);
+        };
+
+        return self;
+    };
+
+    mThis.exchangeRateDialog  = CreateExchangeRateDialog();
+    mThis.representativeDialog = CreateRepresentativeDialog();
 
     return mThis;
 })();

@@ -105,6 +105,10 @@ const InvoiceNoTaxDialog = (() => {
         const showBalance    = setting.show_balance;
         const showAmountPaid = setting.show_amount_paid;
 
+        const buildRepresentation  = setting.build_representative ;
+        const representativePhone  = setting.representative_phone;
+        const representativeAddress  = setting.representative_address;
+
         const discType     = (invoice.discount_type || "percent").toLowerCase();
         const isAmountDisc = (discType === "amount" || discType === "$");
         let discDisplay = `<span style="color:#9CA3AF;font-size:12px;">—</span>`;
@@ -218,13 +222,13 @@ const InvoiceNoTaxDialog = (() => {
                         <div style="display:flex;flex-direction:column;gap:2px;">
                             <div style="font-size:30px;font-weight:800;letter-spacing:-1px;line-height:1;color:#1A3D91;font-family:'Inter',sans-serif;">INVOICE</div>
                             <div style="font-size:14px;font-weight:700;color:#1A3D91;letter-spacing:0.2px;font-family:'Inter',sans-serif;">
-                                ${invoice.company_name || "META HOLDING"}
+                                ${buildRepresentation}
                             </div>
-                            <div style="font-size:11px;color:#6B7280;margin-top:2px;font-family:'Inter',sans-serif;">
-                                ${invoice.company_phone || "+855 12 345 678"}
+                             <div style="font-size:11px;color:#666;font-family:'Inter',sans-serif;">
+                                ${representativePhone}
                             </div>
-                            <div style="font-size:11px;color:#6B7280;margin-top:2px;font-family:'Inter',sans-serif;">
-                                ${invoice.company_address || "Samdech Monireth Blvd (217), Phnom Penh"}
+                             <div style="font-size:11px;color:#666;font-family:'Inter',sans-serif;">
+                                ${representativeAddress}
                             </div>
                         </div>
                     </div>

@@ -52,14 +52,14 @@
             </a>
             <div class="d-sm-block vr d-none"></div>
             <nav aria-label="breadcrumb">
-                <ol class="align-items-center mb-0 breadcrumb">
+                {{-- <ol class="align-items-center mb-0 breadcrumb">
                     {{-- <li class="breadcrumb-item">
                         <a href="javascript:void(0)" class="text-muted text-decoration-none fw-medium">Tenants</a>
                     </li> --}}
-                    <li class="text-muted breadcrumb-item active fw-semibold" aria-current="page">
+                    {{-- <li class="text-muted breadcrumb-item active fw-semibold" aria-current="page">
                         Personal Information
                     </li>
-                </ol>
+                </ol> --}} 
             </nav>
         </div>
     </div>

@@ -10,7 +10,7 @@ var DashboardComponent = new (function () {
 		if (mThis.initAlready) return;
 		mThis.initAlready = true;
 	};
-    
+
 	mThis.renderDashboard = () => {
 		const div = mThis.self;
 		const html = `

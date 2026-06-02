@@ -317,7 +317,7 @@
                             @include('layouts.tenant.announcementComponent')
                             @include('layouts.tenant.reservationComponent')
                             @include('layouts.tenant.tenantProfileComponent')
-
+                            @include('layouts.tenant.servicesComponent')
 
 
 
