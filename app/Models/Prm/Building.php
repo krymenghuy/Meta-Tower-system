@@ -167,52 +167,75 @@ class Building //extends Model
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
+    // public static function buildingDetails($id)
+    // {
+    //     $row = DB::table('buildings as b')
+    //         ->where('b.id', $id)
+    //         ->selectRaw('b.id, b.name,b.prefix, b.total_floor, b.total_space, b.total_area,b.address')
+    //         ->first();
+
+    //     return $row;
+    // }
     public static function buildingDetails($id)
     {
-        $row = DB::table('buildings as b')
+        return DB::table('buildings as b')
             ->where('b.id', $id)
-            ->selectRaw('b.id, b.name,b.prefix, b.total_floor, b.total_space, b.total_area,b.address')
+            ->selectRaw('b.id, b.name, b.prefix, b.total_floor, b.total_space, b.total_area, b.address')
             ->first();
-
-        return $row;
+    }
+   public static function floorDetails($building_id, $floor_id)
+    {
+        return DB::table('building_floors as bf')
+            ->join('floors as f', 'f.id', '=', 'bf.floor_id')
+            ->where('bf.building_id', $building_id)
+            ->where('f.id', $floor_id)
+            ->selectRaw('
+                f.id,
+                f.floor_number,
+                f.name,
+                bf.description,
+                bf.building_id
+            ')
+            ->first();
     }
 
-    public function getFormOptions($id, $building_id = null)
+    public function getFormOptions($building_id = null, $id = null)
     {
-        $building_details = null;
-        $floor_details = null;
+        $building_id = is_numeric($building_id) ? (int) $building_id : null;
+        $id = is_numeric($id) ? (int) $id : null;
 
-        if ($id && is_numeric($id) && (!$building_id || !is_numeric($building_id))) {
-            $building_details = self::buildingDetails($id) ?? null;
+        $building_details = $building_id
+            ? self::buildingDetails($building_id)
+            : null;
+
+        $floor_details = null;
+        \Log::info(json_encode([
+            'building_id' => $building_id,
+            'floor_id' => $id,
+        ]));
+
+        // EDIT FLOOR
+        if ($building_id && $id) {
+            $floor_details = self::floorDetails($building_id, $id);
         }
 
-        if ($id && is_numeric($id) && $building_id && is_numeric($building_id)) {
-            $floor_details = DB::table('building_floors as bf')
+        // ADD FLOOR
+        if ($building_id && !$id) {
+
+            $max_floor_no = DB::table('building_floors as bf')
                 ->join('floors as f', 'f.id', '=', 'bf.floor_id')
                 ->where('bf.building_id', $building_id)
-                ->where('f.id', $id)
-                ->selectRaw('f.id,f.floor_number,f.name,bf.description,bf.building_id')
-                ->first();
-        }
+                ->max('f.floor_number');
 
-        if ($building_id && is_numeric($building_id)) {
-            if (!$floor_details) {
-                $max_floor_no = DB::table('building_floors as bf')
-                    ->join('floors as f', 'f.id', '=', 'bf.floor_id')
-                    ->where('bf.building_id', $building_id)
-                    ->max('f.floor_number');
+            $next_floor_no = max(1, (int) $max_floor_no + 1);
 
-                $next_floor_no = ($max_floor_no) + 1;
-                if ($next_floor_no <= 0) {
-                    $next_floor_no = 1;
-                }
-
-                $floor_details = (object) [
-                    'floor_number' => $next_floor_no,
-                    'name' => "Floor {$next_floor_no}",
-                    'building_id' => $building_id,
-                ];
-            }
+            $floor_details = (object) [
+                'id' => null,
+                'floor_number' => $next_floor_no,
+                'name' => "Floor {$next_floor_no}",
+                'description' => null,
+                'building_id' => $building_id,
+            ];
         }
 
         return (object) [
@@ -220,6 +243,50 @@ class Building //extends Model
             'floor_details' => $floor_details,
         ];
     }
+
+    // public function getFormOptions($id, $building_id = null)
+    // {
+    //     $building_details = null;
+    //     $floor_details = null;
+
+    //     if ($id && is_numeric($id) && (!$building_id || !is_numeric($building_id))) {
+    //         $building_details = self::buildingDetails($id) ?? null;
+    //     }
+
+    //     if ($id && is_numeric($id) && $building_id && is_numeric($building_id)) {
+    //         $floor_details = DB::table('building_floors as bf')
+    //             ->join('floors as f', 'f.id', '=', 'bf.floor_id')
+    //             ->where('bf.building_id', $building_id)
+    //             ->where('f.id', $id)
+    //             ->selectRaw('f.id,f.floor_number,f.name,bf.description,bf.building_id')
+    //             ->first();
+    //     }
+
+    //     if ($building_id && is_numeric($building_id)) {
+    //         if (!$floor_details) {
+    //             $max_floor_no = DB::table('building_floors as bf')
+    //                 ->join('floors as f', 'f.id', '=', 'bf.floor_id')
+    //                 ->where('bf.building_id', $building_id)
+    //                 ->max('f.floor_number');
+
+    //             $next_floor_no = ($max_floor_no) + 1;
+    //             if ($next_floor_no <= 0) {
+    //                 $next_floor_no = 1;
+    //             }
+
+    //             $floor_details = (object) [
+    //                 'floor_number' => $next_floor_no,
+    //                 'name' => "Floor {$next_floor_no}",
+    //                 'building_id' => $building_id,
+    //             ];
+    //         }
+    //     }
+
+    //     return (object) [
+    //         'building_details' => $building_details,
+    //         'floor_details' => $floor_details,
+    //     ];
+    // }
 
     public function deleteBuilding($id = null)
     {
