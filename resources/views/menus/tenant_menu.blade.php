@@ -215,6 +215,14 @@ function v_display($mod_id, $module_ids = null)
                         <span class="font-color kt-menu__link-text" vslang="menus.Announcements">Announcements</span>
                     </a>
                 </li>
+                <li class="kt-menu__item" aria-haspopup="true" <?php v_display(201); ?>>
+                    <a href="ServicesComponent" modid="201" class="menu-item kt-menu__link">
+                        <span class="kt-menu__link-icon">
+                            <img class="opacity-icons icons" src="{{ asset('assets/images/icons/staff.svg') }}" />
+                        </span>
+                        <span class="font-color kt-menu__link-text" vslang="menus.Services">Services</span>
+                    </a>
+                </li>
 
                 <!-- <li class="kt-menu__item" aria-haspopup="true" <?php v_display(201); ?>>
                             <a href="AccessControlComponent" modid="201" class="menu-item kt-menu__link">

@@ -30,125 +30,7 @@ var TenantProfileComponent = new (function () {
     mThis.profile_info_tenant = this.divProfileView.querySelector(
         "#profile_info_tenant",
     );
-    // mThis.cols = [
-    //     {
-    //         transTitle: "",
-    //         className: "align-middle",
-    //     },
-    //     {
-    //         transTitle: "titles.Photo",
-    //         className: "align-middle",
-    //         data: (data) =>
-    //             `<img class="btn-view-tenant-photo" data-id="${data.id}" src="${data.image_url || `${main_view.base_url}/assets/images/default/placeholder.svg`}" alt="" style="width: 50px; height: 50px; border-radius: 6px; margin-right: 10px;"/>`,
-    //     },
-    //     {
-    //         transTitle: "titles.Code",
-    //         className: "align-middle",
-    //         data: (data) => {
-    //             return `<span class="text-prm-custom text-nowrap">${data.code ?? "_"}</span>`;
-    //         },
-    //     },
-    //     {
-    //         transTitle: "titles.Name",
-    //         className: "align-middle",
-    //         data: (data) => {
-    //             const sexLabel =
-    //                 data.sex === "M"
-    //                     ? "Male"
-    //                     : data.sex === "F"
-    //                       ? "Female"
-    //                       : "_";
-    //             return `
-    //                 <div class="text-prm-custom" style="width:120px;">
-    //                     <span class="text-wrap text-break text-capitalize" style ="word-break:break-word;">${data.name ?? "_"}</span>
-    //                     <span class="d-block text-primary" style="font-size:12px;">${sexLabel}</span>
-    //                 </div>
-    //             `;
-    //         },
-    //     },
-    //     {
-    //         transTitle: "titles.Date of Birth",
-    //         className: "align-middle ",
-    //         data: (data) => {
-    //             return `<span class="text-prm-custom text-nowrap">${data.date_of_birth ?? "_"}</span>`;
-    //         },
-    //     },
-    //     {
-    //         transTitle: "titles.National ID",
-    //         className: "align-middle",
-    //         data: (data) => {
-    //             return `<span class="text-prm-custom text-nowrap">${data.national_id ?? "_"}</span>`;
-    //         },
-    //     },
-    //     {
-    //         transTitle: "titles.Passport",
-    //         className: "align-middle",
-    //         data: (data) => {
-    //             return `<span class="text-prm-custom text-nowrap">${data.passport_number ?? "_"}</span>`;
-    //         },
-    //     },
-    //     {
-    //         transTitle: "titles.Contact Info",
-    //         className: "align-middle",
-    //         data: (data) =>
-    //             `<span class="d-block text-prm-custom"><i class="fa-solid text-success px-1 fa-phone" style="font-size:12px;"></i> ${data.phone_number ?? "_"}</span>
-    //              <span class="d-block text-primary"><i class="fa-solid text-primary px-1 fa-envelope" style="font-size:12px;"></i> ${data.email ?? "_"}</span>`,
-    //     },
-    //     {
-    //         transTitle: "titles.Status",
-    //         className: "align-middle text-center",
-    //         data: (data) => {
-    //             const status = data.status;
-    //             let cls =
-    //                 "badge text-warning bg-warning-subtle border border-warning";
 
-    //             if (status == "Pending") {
-    //                 cls =
-    //                     "badge text-warning bg-warning-subtle border border-warning";
-    //             } else if (status === "Inactive") {
-    //                 cls =
-    //                     "badge text-danger bg-danger-subtle border border-danger";
-    //             } else if (status == "Active") {
-    //                 cls =
-    //                     "badge text-success bg-success-subtle border border-success";
-    //             }
-
-    //             return `
-    //                 <span class="${cls} text-capitalize d-inline-block text-center"
-    //                     style="min-width:70px"
-    //                     data-status_id="${data.status_id}">
-    //                     ${data.status ?? ""}
-    //                 </span>
-    //             `;
-    //         },
-    //     },
-
-    //     {
-    //         transTitle: "titles.Last Updated",
-    //         className: "align-middle",
-    //         data: (data) => {
-    //             return `<div class="d-flex flex-column">
-    //                 <span class="text-capitalize text-start text-prm-custom">${data.update_user ?? ""}</span>
-    //                 <small class="text-muted">${data.updated_at ?? ""}</small>
-    //             </div>`;
-    //         },
-    //     },
-    //     {
-    //         className: "col_action align-middle",
-    //         data: (data) => `
-    //             <div class="d-flex justify-content-center align-items-end">
-    //                 <a href="javascript:void(0)"
-    //                 class="btn-tenant-dropdown-action"
-    //                 data-id="${data.id}"
-    //                 data-statusid="${data.status_id}"
-    //                 aria-haspopup="true"
-    //                 aria-expanded="false"
-    //                 style="cursor: pointer; padding: 8px;">
-    //                     <i class="fa-solid fa-ellipsis-vertical text-prm-custom fs-5" ></i>
-    //                 </a>
-    //             </div>`,
-    //     },
-    // ];
     mThis.init = () => {
         if (mThis.initAlready) return;
         mThis.tenantCardView = new ListView(mThis.cardViewContainer, {
@@ -662,7 +544,7 @@ var TenantProfileComponent = new (function () {
     mThis.getFilterData = () => {
         let p = {
             search_value: mThis.elSearch.value,
-            id: 1,
+            // id: 1,
         };
 
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
@@ -763,7 +645,10 @@ var TenantProfileComponent = new (function () {
                 const tenant_id = op.tenant_id || op.id || op;
                 const p = { id: tenant_id };
                 const res = await vsapi.call(
-                    [main_view.base_url, "/prm/tenant/tenant/details"].join(""),
+                    [
+                        main_view.base_url,
+                        "/prm/tenant/tenantProfile/details",
+                    ].join(""),
                     p,
                     false,
                     null,
@@ -777,7 +662,10 @@ var TenantProfileComponent = new (function () {
                 const tenant_id = op.tenant_id || op.id || op;
                 const p = { id: tenant_id };
                 const res = await vsapi.call(
-                    [main_view.base_url, "/prm/tenant/tenant/details"].join(""),
+                    [
+                        main_view.base_url,
+                        "/prm/tenant/tenantProfile/details",
+                    ].join(""),
                     p,
                     false,
                     null,
@@ -787,9 +675,7 @@ var TenantProfileComponent = new (function () {
                 break;
             }
 
-
             default: {
-                
                 return;
             }
         }
@@ -842,61 +728,15 @@ var TenantProfileComponent = new (function () {
                         </div>
                         <hr class="my-3">
 
-                        <div class="mt-auto">
-                            <div class="row g-3 text-center">
-                                <div class="col-6">
-                                    <div class="p-3 bg-light rounded">
-                                        <div class="text-muted small">ID</div>
-                                        <div class="">${data.code ?? "_"}</div>
-                                    </div>
-                                </div>
-                                <div class="col-6">
-                                    <div class="p-3 bg-light rounded">
-                                        <div class="text-muted small">Unit</div>
-                                        <div class="">${data.space_code ?? "_"}</div>
-                                    </div>
-                                </div>
-                                <div class="col-12 mb-2">
-                                    <div class="p-3 bg-light rounded text-center">
-                                        <h6 class="mb-3">Lease Terms</h6>
-                                        <div class="row text-center">
-                                            <div class="col-6 border-end border-info">
-                                                <div class="text-muted mb-1 small">Start Date</div>
-                                                <div class="small">${data.start_date ?? "_"}</div>
-                                            </div>
-                                            <div class="col-6">
-                                                <div class="text-muted mb-1 small">End Date</div>
-                                                <div class="small">${data.end_date ?? "_"}</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
 
             <div class="col-12 col-lg-9">
-                <div class="card shadow-sm h-100"> <div class="card-header bg-white">
-                        <ul class="nav nav-tabs card-header-tabs" id="tenantTabs">
-                            <li class="nav-item">
-                                <a class="nav-link active fw-semibold" href="#overview_tenant_detail">Overview</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link fw-semibold" href="#lease_tenant_history">Contract</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link fw-semibold" href="#document_tenant_list">Documents</a>
-                            </li>
-                        </ul>
-                    </div>
-
+                <div class="card shadow-sm h-100"> 
+                    
                     <div class="card-body tab-content">
                         <div class="tab-pane py-2 active" id="overview_tenant_detail">
-                            <h5 class="fw-bold mb-2 d-flex align-items-center">
-                                <i class="fa fa-user me-2 text-primary"></i> Personal Information
-                            </h5>
                             <div class="row g-4 mb-5">
                                 <div class="col-md-4"><small class="text-muted">Name</small><div class="text-capitalize">${data.name ?? "_"}</div></div>
                                 <div class="col-md-4"><small class="text-muted">Gender</small><div class="">${data.sex == "M" ? "Male" : data.sex == "F" ? "Female" : "_"}</div></div>
@@ -910,50 +750,6 @@ var TenantProfileComponent = new (function () {
                                 <div class="col-12"><small class="text-muted">Address</small><div class="text-prm-custom text-capitalize">${data.address ?? "_"}</div></div>
                             </div>
                         </div>
-
-                        <div class="tab-pane" id="lease_tenant_history">
-                            <h5 class="fw-bold mb-2 d-flex align-items-center">
-                                <i class="fa fa-file-text me-2 text-primary"></i> Contract
-                            </h5>
-                            <div class="container py-4 position-relative overflow-auto lease-history-scroll" style="max-height: 360px; scrollbar-width: thin;scrollbar-color: #888 #f1f1f1;">
-                                <p class="text-muted small mb-0">Open this tab to load contracts.</p>
-                            </div>
-                        </div>
-
-                        <div class="tab-pane" id="document_tenant_list">
-                            <h5 class="fw-bold mb-4 d-flex align-items-center">
-                                <i class="fa fa-folder me-2 text-primary"></i> Documents
-                            </h5>
-                            <div class="table-responsive">
-                                <table class="table align-middle">
-                                    <thead class="bg-light">
-                                        <tr class="text-uppercase">
-                                            <th class="border-0 ps-3" style="letter-spacing: 0.05em;">Type</th>
-                                            <th class="border-0">File Name</th>
-                                            <th class="border-0">File Type</th>
-                                            <th class="border-0">Remark</th>
-                                            <th class="border-0 text-start">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr class="border-bottom">
-                                            <td class="ps-3 py-3">
-                                                <div class="fw-bold text-dark">${data.document_type_id ?? ""}</div>
-                                            </td>
-                                            <td><div class="fw-bold text-dark">${data.original_file_name ?? ""}</div></td>
-                                            <td><div class="fw-semibold text-dark">${data.ext ?? ""}</div></td>
-                                            <td><span class="text-muted small">${data.remarks ?? ""}</span></td>
-                                            <td class="text-end pe-3">
-                                                <button class="btn btn-sm text-muted p-0 ">
-                                                    <i class="fa-solid fa-ellipsis fa-shake"></i>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -1194,7 +990,10 @@ var TenantProfileComponent = new (function () {
 
             vsapi
                 .call(
-                    [main_view.base_url, "/prm/tenant/details"].join(""),
+                    [
+                        main_view.base_url,
+                        "/prm/tenant/tenantProfile/details",
+                    ].join(""),
                     p,
                     false,
                     null,
@@ -1500,7 +1299,7 @@ var TenantProfileComponent = new (function () {
     mThis.prepareFormOptions = (onFinish) => {
         vsapi
             .call(
-                `${main_view.base_url}/prm/tenant/tenant/form-options`,
+                `${main_view.base_url}/prm/tenant/tenantProfile/form-options`,
                 null,
                 null,
                 null,
@@ -1519,14 +1318,28 @@ var TenantProfileComponent = new (function () {
                 if (typeof onFinish === "function") onFinish();
             });
     };
+    // mThis.show = (options) => {
+    //     mThis.init();
+    //     mThis.options = options;
+    //     mThis.prepareFormOptions(() => {
+    //         // main_view.setContentView(mThis.self, mThis.title_prop);
+    //         // mThis.renderView();
+    //         // mThis.showPage(mThis.defaultPage, mThis.getFilterData());
+    //         mThis.showPage("profile_view", { tenant_id: tenantId });
+    //     });
+    // };
     mThis.show = (options) => {
         mThis.init();
         mThis.options = options;
         mThis.prepareFormOptions(() => {
-            // main_view.setContentView(mThis.self, mThis.title_prop);
-            // mThis.renderView();
-            // mThis.showPage(mThis.defaultPage, mThis.getFilterData());
-            mThis.showPage("profile_view", { tenant_id: 1 });
+            AuthManager.init().then((user) => {
+                const tenantId = user.official_id || user.id;
+                if (!tenantId) {
+                    cv_interact.error("Could not identify tenant.");
+                    return;
+                }
+                mThis.showPage("profile_view", { tenant_id: tenantId });
+            });
         });
     };
 

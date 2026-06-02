@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Models\Tenant;
-
+use App\Models\Prm\GeneralSettings;
 use DV;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -23,7 +23,7 @@ class TenantProfile
     public static function liveContractSubquery()
     {
         return DB::table('contracts')
-            ->whereIn('status_id', [Contract::getActiveStatusId(), Contract::getPendingStatusId()])
+            // ->whereIn('status_id', [Contract::getActiveStatusId(), Contract::getPendingStatusId()])
             ->whereDate('end_date', '>=', date('Y-m-d'))
             ->selectRaw('MAX(id) as id, tenant_id')
             ->groupBy('tenant_id');
@@ -176,8 +176,8 @@ class TenantProfile
 
     public function getListPaginate($arr, $ss = null)
     {
-        Contract::applyPendingRenewalUnitChanges();
-        Contract::applyAutomaticContractRollups();
+        // Contract::applyPendingRenewalUnitChanges();
+        // Contract::applyAutomaticContractRollups();
 
         $d = (object) $arr;
         $branch_id = $ss->branch_id;
@@ -292,8 +292,8 @@ class TenantProfile
     
     public static function getDetails($id, $ss = null)
     {
-        Contract::applyPendingRenewalUnitChanges();
-        Contract::applyAutomaticContractRollups();
+        // Contract::applyPendingRenewalUnitChanges();
+        // Contract::applyAutomaticContractRollups();
 
         $start_date = DBX::formatDate("c.start_date", 'start_date');
         $end_date = DBX::formatDate("c.end_date", 'end_date');
