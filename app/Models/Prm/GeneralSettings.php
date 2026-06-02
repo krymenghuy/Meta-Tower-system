@@ -504,7 +504,7 @@ static function options_maintenance_amenity($ss)
         $rows = DB::table(table: 'services as s')
             ->join('service_types as st','st.id','=','s.service_type_id')
             ->whereRaw($str_where)
-            ->where('s.type', 1)
+            // ->where('s.type', 1)
             ->selectRaw('s.id,s.name as service_name,s.type, s.price, s.unit_type, s.service_type_id,st.name as service_type')->get();
         return $rows;
     }

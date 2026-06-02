@@ -49,7 +49,7 @@ var InvoiceComponent = (() => {
                             <hr class="m-0 border border-secondary border-3 opacity-75">
                             ${data.tenant_phone ?? ""}
                         </div>`;
-                }
+            }
         },
         {
             transTitle: "titles.Space",
@@ -115,7 +115,6 @@ var InvoiceComponent = (() => {
             }
         },
 
-
         {
             transTitle: "titles.Status",
             className: "align-middle text-center text-nowrap",
@@ -140,8 +139,7 @@ var InvoiceComponent = (() => {
                     icon = "fa-regular fa-hourglass-half";
                 } else if (statusId === 4) {
                     // Overdue
-                    cls =
-                        "status-overdue";
+                    cls = "status-overdue";
                     icon = "fa-solid fa-triangle-exclamation";
                 }
                 return `
@@ -202,9 +200,10 @@ var InvoiceComponent = (() => {
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
-            tableClass: "table table--white rounded-2 rounded-2 overflow-hidden header-uppercase",
+            tableClass:
+                "table table--white rounded-2 rounded-2 overflow-hidden header-uppercase",
             rowCreated: (data, index, tr) => {
-                tr.classList.add("invoice","cursor-pointer");
+                tr.classList.add("invoice", "cursor-pointer");
                 tr.id = `invoice_id_${data.id}`;
                 tr.dataset.statusid = data.payment_status_id || 0;
                 tr.dataset.canceled = 0;
@@ -335,6 +334,7 @@ var InvoiceComponent = (() => {
 
                 const qty = parseFloat(item.qty || 1);
                 const price = parseFloat(item.price || 0);
+
                 const discount = parseFloat(
                     item.discount || item.special_discount_value || 0
                 );
@@ -364,9 +364,7 @@ var InvoiceComponent = (() => {
                     <td class="text-center small">${formatDate(
                         item.end_date
                     )}</td>
-                    <td class="text-end">$${price.toLocaleString("en-US", {
-                        minimumFractionDigits: 2
-                    })}</td>
+                    <td class="text-end">${currency}${price}</td>
                     <td class="text-end text-danger">${getDiscountDisplay(
                         item
                     )}</td>
@@ -457,29 +455,25 @@ var InvoiceComponent = (() => {
             cssClass: "bg-white box-shadow",
             menus: [
                 {
-                    html:
-                        '<span class="ps-2" vslang="titles.Receive"></span>',
+                    html: '<span class="ps-2" vslang="titles.Receive"></span>',
                     icon: `<i class="fa-solid fa-hand-holding-dollar text-success fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "receive_invoice"
                 },
                 {
-                    html:
-                        '<span class="ps-2" vslang="titles.Modify"></span>',
+                    html: '<span class="ps-2" vslang="titles.Modify"></span>',
                     icon: `<i class="fa-solid fa-edit text-primary fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "modify_invoice"
                 },
                 {
-                    html:
-                        '<span class="ps-2" vslang="titles.Print"></span>',
+                    html: '<span class="ps-2" vslang="titles.Print"></span>',
                     icon: `<i class="fa-solid fa-receipt text-primary fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "print_invoice"
                 },
                 {
-                    html:
-                        '<span class="ps-2" vslang="titles.Delete"></span>',
+                    html: '<span class="ps-2" vslang="titles.Delete"></span>',
                     icon: `<i class="fa-regular fa-trash-can text-danger fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "delete_invoice"
@@ -494,8 +488,10 @@ var InvoiceComponent = (() => {
                         ? "block"
                         : "none";
                 menu.receive_invoice.style.display =
-                    statusId === 2 || statusId === 3 || statusId === 4 ? "block" : "none";
-                    statusId === 2 || statusId === 3 ? "block" : "none";
+                    statusId === 2 || statusId === 3 || statusId === 4
+                        ? "block"
+                        : "none";
+                statusId === 2 || statusId === 3 ? "block" : "none";
                 menu.delete_invoice.style.display =
                     statusId === 2 ? "block" : "none";
                 menu.modify_invoice.style.display =
@@ -511,7 +507,6 @@ var InvoiceComponent = (() => {
                 } else if (name === "modify_invoice") {
                     mThis.editInvoice(id, menulink);
                 }
-
             }
         };
 
@@ -553,15 +548,14 @@ var InvoiceComponent = (() => {
         );
     };
 
-
     mThis.editInvoice = (id, menulink) => {
         console.log("editInvoice id:", id);
         InvoiceDialog.show({
-            id : id,
+            id: id,
             btn: menulink,
             onClose: () => mThis.InvoiceListView.showPage(mThis.getFilterData())
         });
-    }
+    };
 
     mThis.receiveInvoice = (id, menulink) => {
         ReceiveDialog.show({
@@ -817,11 +811,15 @@ const InvoiceDialog = (() => {
                         return cv_interact.error("No space/contract found");
                     }
                     const availableMonths = months.filter(
-                        m => String(m.contract_id) === String(matchedSpace.contract_id)
+                        m =>
+                            String(m.contract_id) ===
+                            String(matchedSpace.contract_id)
                     );
 
                     if (!availableMonths || availableMonths.length === 0) {
-                        return cv_interact.error("Rent has already reached the final month of the contract.");
+                        return cv_interact.error(
+                            "Rent has already reached the final month of the contract."
+                        );
                     }
 
                     // 3. Popup Initialization
@@ -957,19 +955,34 @@ const InvoiceDialog = (() => {
                             if (elEndDate)
                                 elEndDate.value = matchedMonth.end_date || "";
 
-                            [rentDiv.querySelector('[data-field="discount"]'),
-                            rentDiv.querySelector('[data-field="tax_rate"]')].forEach(input => {
+                            [
+                                rentDiv.querySelector(
+                                    '[data-field="discount"]'
+                                ),
+                                rentDiv.querySelector('[data-field="tax_rate"]')
+                            ].forEach(input => {
                                 if (!input) return;
-                                input.addEventListener('input', (e) => {
-                                    let v = e.target.value.replace(/[^0-9.]/g, '');
-                                    const parts = v.split('.');
-                                    if (parts.length > 2) v = parts[0] + '.' + parts[1];
-                                    if (parts[1] !== undefined) v = parts[0] + '.' + parts[1].slice(0, 2);
+                                input.addEventListener("input", e => {
+                                    let v = e.target.value.replace(
+                                        /[^0-9.]/g,
+                                        ""
+                                    );
+                                    const parts = v.split(".");
+                                    if (parts.length > 2)
+                                        v = parts[0] + "." + parts[1];
+                                    if (parts[1] !== undefined)
+                                        v =
+                                            parts[0] +
+                                            "." +
+                                            parts[1].slice(0, 2);
                                     e.target.value = v;
                                 });
-                                input.addEventListener('blur', (e) => {
+                                input.addEventListener("blur", e => {
                                     let v = parseFloat(e.target.value);
-                                    if (isNaN(v) || v < 0) { e.target.value = ''; return; }
+                                    if (isNaN(v) || v < 0) {
+                                        e.target.value = "";
+                                        return;
+                                    }
                                     e.target.value = v.toFixed(2);
                                 });
                             });
@@ -1022,7 +1035,6 @@ const InvoiceDialog = (() => {
                         }
                     });
                 };
-
 
                 // ================== Electric ================
                 me.controls.btnElectric.onclick = () => {
@@ -1171,26 +1183,37 @@ const InvoiceDialog = (() => {
                                 }
                             };
 
-                        [elOld, elNew, elPPU].forEach(el => {
-                        if (!el) return;
-                        el.addEventListener("input", recalc);
-                        el.addEventListener("input", (e) => {
-                            let v = e.target.value.replace(/[^0-9.]/g, '');
-                            const parts = v.split('.');
-                            if (parts.length > 2) v = parts[0] + '.' + parts[1];
-                            if (parts[1] !== undefined) v = parts[0] + '.' + parts[1].slice(0, 2);
-                            e.target.value = v;
-                        });
-                        el.addEventListener('blur', (e) => {
-                            let v = parseFloat(e.target.value);
-                            if (isNaN(v) || v < 0) { e.target.value = ''; return; }
-                            e.target.value = v.toFixed(2);
-                        });
-                    });
+                            [elOld, elNew, elPPU].forEach(el => {
+                                if (!el) return;
+                                el.addEventListener("input", recalc);
+                                el.addEventListener("input", e => {
+                                    let v = e.target.value.replace(
+                                        /[^0-9.]/g,
+                                        ""
+                                    );
+                                    const parts = v.split(".");
+                                    if (parts.length > 2)
+                                        v = parts[0] + "." + parts[1];
+                                    if (parts[1] !== undefined)
+                                        v =
+                                            parts[0] +
+                                            "." +
+                                            parts[1].slice(0, 2);
+                                    e.target.value = v;
+                                });
+                                el.addEventListener("blur", e => {
+                                    let v = parseFloat(e.target.value);
+                                    if (isNaN(v) || v < 0) {
+                                        e.target.value = "";
+                                        return;
+                                    }
+                                    e.target.value = v.toFixed(2);
+                                });
+                            });
 
-                    [elStartDate, elEndDate].forEach(el =>
-                        el?.addEventListener("change", recalc)
-);
+                            [elStartDate, elEndDate].forEach(el =>
+                                el?.addEventListener("change", recalc)
+                            );
                         },
 
                         onConfirm(data, btn, ibMe) {
@@ -1234,9 +1257,7 @@ const InvoiceDialog = (() => {
                                     type: "utility",
                                     price: ppu,
                                     qty: units,
-                                    remarks:
-                                        data.remark ||
-                                        `Electric (${units.toFixed(2)} kWh)`,
+                                    remarks: data.remark || `Electric `,
                                     unit_type: "kWh",
                                     start_date: data.start_date || "",
                                     end_date: data.end_date || "",
@@ -1406,27 +1427,36 @@ const InvoiceDialog = (() => {
                             };
 
                             [elOld, elNew, elPPU].forEach(el => {
-                            if (!el) return;
-                            el.addEventListener("input", recalc);
-                            el.addEventListener("input", (e) => {
-                                let v = e.target.value.replace(/[^0-9.]/g, '');
-                                const parts = v.split('.');
-                                if (parts.length > 2) v = parts[0] + '.' + parts[1];
-                                if (parts[1] !== undefined) v = parts[0] + '.' + parts[1].slice(0, 2);
-                                e.target.value = v;
+                                if (!el) return;
+                                el.addEventListener("input", recalc);
+                                el.addEventListener("input", e => {
+                                    let v = e.target.value.replace(
+                                        /[^0-9.]/g,
+                                        ""
+                                    );
+                                    const parts = v.split(".");
+                                    if (parts.length > 2)
+                                        v = parts[0] + "." + parts[1];
+                                    if (parts[1] !== undefined)
+                                        v =
+                                            parts[0] +
+                                            "." +
+                                            parts[1].slice(0, 2);
+                                    e.target.value = v;
+                                });
+                                el.addEventListener("blur", e => {
+                                    let v = parseFloat(e.target.value);
+                                    if (isNaN(v) || v < 0) {
+                                        e.target.value = "";
+                                        return;
+                                    }
+                                    e.target.value = v.toFixed(2);
+                                });
                             });
-                            el.addEventListener('blur', (e) => {
-                                let v = parseFloat(e.target.value);
-                                if (isNaN(v) || v < 0) { e.target.value = ''; return; }
-                                e.target.value = v.toFixed(2);
-                            });
-                        });
 
-                        [elStartDate, elEndDate].forEach(el =>
-                            el?.addEventListener("change", recalc)
-                        );
-
-
+                            [elStartDate, elEndDate].forEach(el =>
+                                el?.addEventListener("change", recalc)
+                            );
                         },
 
                         onConfirm(data, btn, ibMe) {
@@ -1494,6 +1524,240 @@ const InvoiceDialog = (() => {
                 };
 
                 // ===================== Service =================
+                // me.controls.btnService.onclick = () => {
+                //     if (!me._selectedTenantId) {
+                //         return cv_interact.error("Please select Tenant first");
+                //     }
+                //     if (
+                //         !me.controls.space.value ||
+                //         me.controls.space.value === ""
+                //     ) {
+                //         return cv_interact.error("Please select Space");
+                //     }
+
+                //     const services = availableItem || [];
+                //     if (services.length === 0) {
+                //         return cv_interact.error("No services available");
+                //     }
+
+                //     const serviceOptions = services
+                //         .map(
+                //             s =>
+                //                 `<option value="${s.id}">${s.service ||
+                //                     s.name ||
+                //                     `Service #${s.id}`}</option>`
+                //         )
+                //         .join("");
+
+                //     let serviceDiv = null;
+                //     InputBox.show({
+                //         title: "Add Service",
+                //         instanceKey: "servicePopUp",
+                //         createContent() {
+                //             const div = document.createElement("div");
+                //             serviceDiv = div;
+                //             div.style.cssText =
+                //                 "display:flex; flex-direction:column;";
+
+                //             div.innerHTML = `
+                //                     <div>
+                //                         <div class="d-flex align-items-center  mb-3">
+                //                             <span style=" color:#0C447C; font-size:13px;">Service Selection</span>
+                //                             <div style="flex:1; height:1px; background:#e0e0e0;"></div>
+                //                         </div>
+                //                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                //                             <div class="material-input outlined" style="margin-bottom: 1rem;">
+                //                                 <select class="data-input form-control" data-style="material" data-field="service_id" name="service_id" placeholder="Select Service">
+                //                                     ${serviceOptions}
+                //                                 </select>
+                //                             </div>
+                //                             <div class="material-input outlined" style="margin-bottom: 1rem;">
+                //                                 <input class="data-input form-control bg-light" data-field="unit_type" name="unit_type" type="text" readonly placeholder=" ">
+                //                                 <label style="color:#777;">Unit Type</label>
+                //                             </div>
+                //                             <div class="material-input outlined" style="margin-bottom: 1rem;">
+                //                                 <input class="data-input form-control bg-light" data-field="price" name="price" type="text" readonly placeholder=" ">
+                //                                 <label style="color:#777;">Unit Price ($)</label>
+                //                             </div>
+                //                             <div class="material-input outlined" style="margin-bottom: 1rem;">
+                //                                 <select class="data-input form-control bg-light" data-style="material" data-field="duration_months" name="duration_months" type="text" readonly placeholder="Duration Months">
+                //                                     <option value="">Select Duration</option>
+                //                                     <option value="1">1 Month</option>
+                //                                     <option value="3">3 Months</option>
+                //                                     <option value="6">6 Months</option>
+                //                                     <option value="12">12 Months</option>
+                //                                 </select>
+                //                             </div>
+                //                         </div>
+                //                     </div>
+
+                //                     <div>
+                //                         <div class="d-flex align-items-center  mb-3">
+                //                             <span style=" color:#0C447C; font-size:13px;">Billing Period</span>
+                //                             <div style="flex:1; height:1px; background:#e0e0e0;"></div>
+                //                         </div>
+                //                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                //                             <div class="material-input outlined" style="margin-bottom: 1rem;">
+                //                                 <input class="data-input form-control" data-field="start_date" name="start_date" type="text" data-type="date" placeholder="d-m-y">
+                //                                 <label style="color:#777;">Start Date</label>
+                //                             </div>
+                //                             <div class="material-input outlined" style="margin-bottom: 1rem;">
+                //                                 <input class="data-input form-control" data-field="end_date" name="end_date" type="text" data-type="date" placeholder="d-m-y">
+                //                                 <label style="color:#777;">End Date</label>
+                //                             </div>
+                //                         </div>
+                //                     </div>
+
+                //                     <div>
+                //                         <div class="d-flex align-items-center  mb-3">
+                //                             <span style=" color:#0C447C; font-size:13px;">Financials</span>
+                //                             <div style="flex:1; height:1px; background:#e0e0e0;"></div>
+                //                         </div>
+                //                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                //                             <div class="material-input outlined" style="display:flex; gap:8px; align-items:flex-end;">
+                //                                 <div style="flex:1">
+                //                                     <input class="data-input form-control" data-field="discount" name="discount" type="text" inputmode="decimal" placeholder="0">
+                //                                     <label style="color:#777;">Discount</label>
+                //                                 </div>
+                //                                 <div style="width:80px;">
+                //                                     <select class="data-input form-control" data-field="discount_type" name="discount_type">
+                //                                         <option value="percent">%</option>
+                //                                         <option value="amount">$</option>
+                //                                     </select>
+                //                                 </div>
+                //                             </div>
+                //                             <div class="material-input outlined">
+                //                                 <input class="data-input form-control" data-field="tax_rate" name="tax_rate" type="number" placeholder="0">
+                //                                 <label style="color:#777;">Tax (%)</label>
+                //                             </div>
+                //                         </div>
+                //                     </div>
+
+                //                     <div class="material-input outlined">
+                //                         <textarea class="data-input form-control" data-field="remark" name="remark" rows="2" placeholder=" "></textarea>
+                //                         <label style="color:#777;">Remark </label>
+                //                     </div>
+                //                 `;
+                //             return div;
+                //         },
+                //         onOpen(ibMe) {
+                //             const elService = document.querySelector(
+                //                 '[data-field="service_id"]'
+                //             );
+                //             const elUnitType = document.querySelector(
+                //                 '[data-field="unit_type"]'
+                //             );
+                //             const elPrice = document.querySelector(
+                //                 '[data-field="price"]'
+                //             );
+                //             const elDurationMonths = document.querySelector(
+                //                 '[data-field="duration_months"]'
+                //             );
+                //             const elStartDate = document.querySelector(
+                //                 '[data-field="start_date"]'
+                //             );
+                //             const elEndDate = document.querySelector(
+                //                 '[data-field="end_date"]'
+                //             );
+
+                //             const fillFields = serviceId => {
+                //                 const selected = services.find(
+                //                     s => String(s.id) === String(serviceId)
+                //                 );
+                //                 if (selected) {
+                //                     if (elUnitType)
+                //                         elUnitType.value =
+                //                             selected.unit_type || "—";
+                //                     if (elPrice)
+                //                         elPrice.value = Number(
+                //                             selected.price || 0
+                //                         ).toFixed(2);
+                //                 }
+                //             };
+
+                //             const calMonth = elPrice.value * elDurationMonths;
+
+                //             if (elService) {
+                //                 if (elService.value) {
+                //                     fillFields(elService.value);
+                //                 }
+                //                 elService.addEventListener("change", e =>
+                //                     fillFields(e.target.value)
+                //                 );
+                //             }
+                //             [serviceDiv.querySelector('[data-field="discount"]'),
+                //             serviceDiv.querySelector('[data-field="tax_rate"]')].forEach(input => {
+                //                 if (!input) return;
+                //                 input.addEventListener('input', (e) => {
+                //                     let v = e.target.value.replace(/[^0-9.]/g, '');
+                //                     const parts = v.split('.');
+                //                     if (parts.length > 2) v = parts[0] + '.' + parts[1];
+                //                     if (parts[1] !== undefined) v = parts[0] + '.' + parts[1].slice(0, 2);
+                //                     e.target.value = v;
+                //                 });
+                //                 input.addEventListener('blur', (e) => {
+                //                     let v = parseFloat(e.target.value);
+                //                     if (isNaN(v) || v < 0) { e.target.value = ''; return; }
+                //                     e.target.value = v.toFixed(2);
+                //                 });
+                //             });
+
+                //             [elStartDate, elEndDate].forEach(el =>
+                //                 el?.addEventListener("change", recalc)
+                //             ),
+                //         },
+
+                //         onConfirm(data, btn, ibMe) {
+                //             if (!data.service_id) {
+                //                 return ibMe.setError("Please select a Service");
+                //             }
+                //             if (
+                //                 data.start_date &&
+                //                 data.end_date &&
+                //                 new Date(data.end_date) <
+                //                     new Date(data.start_date)
+                //             ) {
+                //                 return ibMe.setError(
+                //                     "End date cannot be before Start date"
+                //                 );
+                //             }
+
+                //             const selectedService = services.find(
+                //                 s => String(s.id) === String(data.service_id)
+                //             );
+                //             if (!selectedService) return;
+
+                //             const serviceDisplayName =
+                //                 selectedService.service ||
+                //                 selectedService.name ||
+                //                 `Service #${selectedService.id}`;
+
+                //             me.itemsView.addRow(
+                //                 {
+                //                     item_id: data.service_id,
+                //                     item_name: serviceDisplayName,
+                //                     type: "service",
+                //                     price: Number(selectedService.calMonth) || 0,
+                //                     qty: 1,
+                //                     remarks: data.remark || serviceDisplayName,
+                //                     unit_type: selectedService.unit_type || "—",
+                //                     discount: Number(data.discount) || 0,
+                //                     start_date: data.start_date || "",
+                //                     end_date: data.end_date || "",
+                //                     discount_type:
+                //                         data.discount_type || "percent",
+                //                     tax_rate: Number(data.tax_rate) || 0
+                //                 },
+                //                 0
+                //             );
+
+                //             cv_interact.success("Service item added");
+                //             ibMe.close();
+                //         }
+                //     });
+                // };
+
+                // ===================== Service =================
                 me.controls.btnService.onclick = () => {
                     if (!me._selectedTenantId) {
                         return cv_interact.error("Please select Tenant first");
@@ -1520,6 +1784,7 @@ const InvoiceDialog = (() => {
                         .join("");
 
                     let serviceDiv = null;
+
                     InputBox.show({
                         title: "Add Service",
                         instanceKey: "servicePopUp",
@@ -1530,69 +1795,103 @@ const InvoiceDialog = (() => {
                                 "display:flex; flex-direction:column;";
 
                             div.innerHTML = `
-                                    <div>
-                                        <div class="d-flex align-items-center  mb-3">
-                                            <span style=" color:#0C447C; font-size:13px;">Service Selection</span>
-                                            <div style="flex:1; height:1px; background:#e0e0e0;"></div>
+                                <div>
+                                    <div class="d-flex align-items-center mb-3">
+                                        <span style="color:#0C447C; font-size:13px;">Service Selection</span>
+                                        <div style="flex:1; height:1px; background:#e0e0e0;"></div>
+                                    </div>
+                                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                                        <div class="material-input outlined" style="margin-bottom: 1rem;">
+                                            <select class="data-input form-control" data-style="material" data-field="service_id" name="service_id" placeholder="Select Service">
+                                                ${serviceOptions}
+                                            </select>
                                         </div>
-                                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                                            <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                                <select class="data-input form-control" data-style="material" data-field="service_id" name="service_id" placeholder="Select Service">
-                                                    ${serviceOptions}
+                                        <div class="material-input outlined" style="margin-bottom: 1rem;">
+                                            <input class="data-input form-control bg-light" data-field="unit_type" name="unit_type" type="text" readonly placeholder=" ">
+                                            <label style="color:#777;">Unit Type</label>
+                                        </div>
+                                        <div class="material-input outlined" style="margin-bottom: 1rem;">
+                                            <input class="data-input form-control bg-light" data-field="price" name="price" type="text" readonly placeholder=" ">
+                                            <label style="color:#777;">Unit Price ($)</label>
+                                        </div>
+                                        <div class="material-input outlined" style="margin-bottom: 1rem;">
+                                            <select class="data-input form-control" data-style="material" data-field="duration_months" name="duration_months" placeholder="Duration (Qty)">
+                                                <option value="1">1 Month</option>
+                                                <option value="3">3 Months</option>
+                                                <option value="6">6 Months</option>
+                                                <option value="12">12 Months</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <div class="d-flex align-items-center  mb-3">
+                                        <span style=" color:#0C447C; font-size:13px;">Billing Period</span>
+                                        <div style="flex:1; height:1px; background:#e0e0e0;"></div>
+                                    </div>
+                                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                                        <div class="material-input outlined" style="margin-bottom: 1rem;">
+                                            <input class="data-input form-control" data-field="start_date" name="start_date" type="text" data-type="date" placeholder="d-m-y">
+                                            <label style="color:#777;">Start Date</label>
+                                        </div>
+                                        <div class="material-input outlined" style="margin-bottom: 1rem;">
+                                            <input class="data-input form-control" data-field="end_date" name="end_date" type="text" data-type="date" placeholder="d-m-y">
+                                            <label style="color:#777;">End Date</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <div class="d-flex align-items-center  mb-3">
+                                        <span style=" color:#0C447C; font-size:13px;">Financials</span>
+                                        <div style="flex:1; height:1px; background:#e0e0e0;"></div>
+                                    </div>
+                                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                                        <div class="material-input outlined" style="display:flex; gap:8px; align-items:flex-end;">
+                                            <div style="flex:1">
+                                                <input class="data-input form-control" data-field="discount" name="discount" type="text" inputmode="decimal" placeholder="0">
+                                                <label style="color:#777;">Discount</label>
+                                            </div>
+                                            <div style="width:80px;">
+                                                <select class="data-input form-control" data-field="discount_type" name="discount_type">
+                                                    <option value="percent">%</option>
+                                                    <option value="amount">$</option>
                                                 </select>
                                             </div>
-                                            <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                                <input class="data-input form-control bg-light" data-field="unit_type" name="unit_type" type="text" readonly placeholder=" ">
-                                                <label style="color:#777;">Unit Type</label>
-                                            </div>
-                                            <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                                <input class="data-input form-control bg-light" data-field="price" name="price" type="text" readonly placeholder=" ">
-                                                <label style="color:#777;">Unit Price ($)</label>
-                                            </div>
+                                        </div>
+                                        <div class="material-input outlined">
+                                            <input class="data-input form-control" data-field="tax_rate" name="tax_rate" type="number" placeholder="0">
+                                            <label style="color:#777;">Tax (%)</label>
                                         </div>
                                     </div>
+                                </div>
 
-                                    <div>
-                                        <div class="d-flex align-items-center  mb-3">
-                                            <span style=" color:#0C447C; font-size:13px;">Financials</span>
-                                            <div style="flex:1; height:1px; background:#e0e0e0;"></div>
-                                        </div>
-                                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                                            <div class="material-input outlined" style="display:flex; gap:8px; align-items:flex-end;">
-                                                <div style="flex:1">
-                                                    <input class="data-input form-control" data-field="discount" name="discount" type="text" inputmode="decimal" placeholder="0">
-                                                    <label style="color:#777;">Discount</label>
-                                                </div>
-                                                <div style="width:80px;">
-                                                    <select class="data-input form-control" data-field="discount_type" name="discount_type">
-                                                        <option value="percent">%</option>
-                                                        <option value="amount">$</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div class="material-input outlined">
-                                                <input class="data-input form-control" data-field="tax_rate" name="tax_rate" type="number" placeholder="0">
-                                                <label style="color:#777;">Tax (%)</label>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="material-input outlined">
-                                        <textarea class="data-input form-control" data-field="remark" name="remark" rows="2" placeholder=" "></textarea>
-                                        <label style="color:#777;">Remark </label>
-                                    </div>
-                                `;
+                                <div class="material-input outlined mt-3">
+                                    <textarea class="data-input form-control" data-field="remark" name="remark" rows="2" placeholder=" "></textarea>
+                                    <label style="color:#777;">Remark</label>
+                                </div>
+                            `;
                             return div;
                         },
                         onOpen(ibMe) {
-                            const elService = document.querySelector(
+                            const elService = serviceDiv.querySelector(
                                 '[data-field="service_id"]'
                             );
-                            const elUnitType = document.querySelector(
+                            const elUnitType = serviceDiv.querySelector(
                                 '[data-field="unit_type"]'
                             );
-                            const elPrice = document.querySelector(
+                            const elPrice = serviceDiv.querySelector(
                                 '[data-field="price"]'
+                            );
+                            const elDuration = serviceDiv.querySelector(
+                                '[data-field="duration_months"]'
+                            );
+                            const elStartDate = serviceDiv.querySelector(
+                                '[data-field="start_date"]'
+                            );
+                            const elEndDate = serviceDiv.querySelector(
+                                '[data-field="end_date"]'
                             );
 
                             const fillFields = serviceId => {
@@ -1610,32 +1909,58 @@ const InvoiceDialog = (() => {
                                 }
                             };
 
-                            if (elService) {
-                                if (elService.value) {
-                                    fillFields(elService.value);
+                            const recalcDates = () => {
+                                if (elStartDate.value && elDuration.value) {
+                                    let start = new Date(elStartDate.value);
+                                    let months = parseInt(elDuration.value);
+                                    // Add months to start date
+                                    start.setMonth(start.getMonth() + months);
+                                    elEndDate.value = start
+                                        .toISOString()
+                                        .split("T")[0];
                                 }
+                            };
+
+                            if (elService) {
                                 elService.addEventListener("change", e =>
                                     fillFields(e.target.value)
                                 );
                             }
-                            [serviceDiv.querySelector('[data-field="discount"]'),
-                            serviceDiv.querySelector('[data-field="tax_rate"]')].forEach(input => {
+
+                            [elDuration, elStartDate].forEach(el => {
+                                el?.addEventListener("change", recalcDates);
+                            });
+
+                            // Numeric logic for discount/tax
+                            [
+                                serviceDiv.querySelector(
+                                    '[data-field="discount"]'
+                                ),
+                                serviceDiv.querySelector(
+                                    '[data-field="tax_rate"]'
+                                )
+                            ].forEach(input => {
                                 if (!input) return;
-                                input.addEventListener('input', (e) => {
-                                    let v = e.target.value.replace(/[^0-9.]/g, '');
-                                    const parts = v.split('.');
-                                    if (parts.length > 2) v = parts[0] + '.' + parts[1];
-                                    if (parts[1] !== undefined) v = parts[0] + '.' + parts[1].slice(0, 2);
+                                input.addEventListener("input", e => {
+                                    let v = e.target.value.replace(
+                                        /[^0-9.]/g,
+                                        ""
+                                    );
+                                    const parts = v.split(".");
+                                    if (parts.length > 2)
+                                        v = parts[0] + "." + parts[1];
                                     e.target.value = v;
                                 });
-                                input.addEventListener('blur', (e) => {
+                                input.addEventListener("blur", e => {
                                     let v = parseFloat(e.target.value);
-                                    if (isNaN(v) || v < 0) { e.target.value = ''; return; }
+                                    if (isNaN(v) || v < 0) {
+                                        e.target.value = "";
+                                        return;
+                                    }
                                     e.target.value = v.toFixed(2);
                                 });
                             });
                         },
-
                         onConfirm(data, btn, ibMe) {
                             if (!data.service_id) {
                                 return ibMe.setError("Please select a Service");
@@ -1651,16 +1976,23 @@ const InvoiceDialog = (() => {
                                 selectedService.name ||
                                 `Service #${selectedService.id}`;
 
+                            // qty is derived from duration_months
+                            const qtyMonths =
+                                parseInt(data.duration_months) || 1;
+
                             me.itemsView.addRow(
                                 {
                                     item_id: data.service_id,
                                     item_name: serviceDisplayName,
                                     type: "service",
-                                    price: Number(selectedService.price) || 0,
-                                    qty: 1,
+                                    price: Number(selectedService.price) || 0, // Unit price (per month)
+                                    qty: qtyMonths, // Number of months
                                     remarks: data.remark || serviceDisplayName,
-                                    unit_type: selectedService.unit_type || "—",
+                                    unit_type:
+                                        selectedService.unit_type || "Month",
                                     discount: Number(data.discount) || 0,
+                                    start_date: data.start_date || "",
+                                    end_date: data.end_date || "",
                                     discount_type:
                                         data.discount_type || "percent",
                                     tax_rate: Number(data.tax_rate) || 0
@@ -1668,7 +2000,9 @@ const InvoiceDialog = (() => {
                                 0
                             );
 
-                            cv_interact.success("Service item added");
+                            cv_interact.success(
+                                "Service added for " + qtyMonths + " month(s)"
+                            );
                             ibMe.close();
                         }
                     });
@@ -1711,7 +2045,7 @@ const InvoiceDialog = (() => {
 
                     InputBox.resetInstance("requestPopUp");
 
-                    let requestDiv  = null;
+                    let requestDiv = null;
                     InputBox.show({
                         title: "Service Request",
                         instanceKey: "requestPopUp",
@@ -1843,19 +2177,36 @@ const InvoiceDialog = (() => {
                                 fillRequestData(e.target.value);
                             });
 
-                            [requestDiv.querySelector('[data-field="discount"]'),
-                            requestDiv.querySelector('[data-field="tax_rate"]')].forEach(input => {
+                            [
+                                requestDiv.querySelector(
+                                    '[data-field="discount"]'
+                                ),
+                                requestDiv.querySelector(
+                                    '[data-field="tax_rate"]'
+                                )
+                            ].forEach(input => {
                                 if (!input) return;
-                                input.addEventListener('input', (e) => {
-                                    let v = e.target.value.replace(/[^0-9.]/g, '');
-                                    const parts = v.split('.');
-                                    if (parts.length > 2) v = parts[0] + '.' + parts[1];
-                                    if (parts[1] !== undefined) v = parts[0] + '.' + parts[1].slice(0, 2);
+                                input.addEventListener("input", e => {
+                                    let v = e.target.value.replace(
+                                        /[^0-9.]/g,
+                                        ""
+                                    );
+                                    const parts = v.split(".");
+                                    if (parts.length > 2)
+                                        v = parts[0] + "." + parts[1];
+                                    if (parts[1] !== undefined)
+                                        v =
+                                            parts[0] +
+                                            "." +
+                                            parts[1].slice(0, 2);
                                     e.target.value = v;
                                 });
-                                input.addEventListener('blur', (e) => {
+                                input.addEventListener("blur", e => {
                                     let v = parseFloat(e.target.value);
-                                    if (isNaN(v) || v < 0) { e.target.value = ''; return; }
+                                    if (isNaN(v) || v < 0) {
+                                        e.target.value = "";
+                                        return;
+                                    }
                                     e.target.value = v.toFixed(2);
                                 });
                             });
@@ -1911,6 +2262,7 @@ const InvoiceDialog = (() => {
                     columns: [
                         {
                             name: "item_id",
+                            transTitle: "titles.Items ID",
                             displayType: "hidden",
                             readOnly: true,
                             width: "20px"
@@ -2130,7 +2482,8 @@ const InvoiceDialog = (() => {
                     if (me.dataOptions?.id) {
                         header.id = me.dataOptions.id;
                     }
-
+                    console.log("1234567890", items);
+                    console.log("1234567890total", totals);
 
                     const toMySQLDate = dateStr => {
                         if (!dateStr) return null;
@@ -2295,7 +2648,7 @@ const InvoiceDialog = (() => {
 
             onPrepareForm: (me, data) => {
                 // availableItem = (data.services || []);
-                availableItem = (data.services || []).filter(s => s.type == 1);
+                availableItem = (data.services || []).filter(s => s.type == 0);
                 // console.log("Available services for invoice:", availableItem);
                 me._selectedTenantId = null;
                 me._tenantData = null;
@@ -2305,24 +2658,36 @@ const InvoiceDialog = (() => {
                 // Clear all inputs
                 if (me.controls) {
                     Object.values(me.controls).forEach(el => {
-                        if (el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA")) {
+                        if (
+                            el &&
+                            (el.tagName === "INPUT" ||
+                                el.tagName === "TEXTAREA")
+                        ) {
                             el.value = "";
                         }
                     });
                     if (me.controls.space) {
-                        me.controls.space.innerHTML = '<option value="">-- Select Room / Space --</option>';
+                        me.controls.space.innerHTML =
+                            '<option value="">-- Select Room / Space --</option>';
                         me.controls.space.value = "";
-                        me.controls.space.dispatchEvent(new Event("change", { bubbles: true }));
+                        me.controls.space.dispatchEvent(
+                            new Event("change", { bubbles: true })
+                        );
                     }
                 }
                 if (me.searchTenant) me.searchTenant.reset("");
                 if (me.itemsView) me.itemsView.setData([]);
 
                 if (me.dataOptions.id) {
-                    vsapi.call(`${main_view.base_url}/prm/invoice/details`, { id: me.dataOptions.id })
+                    vsapi
+                        .call(`${main_view.base_url}/prm/invoice/details`, {
+                            id: me.dataOptions.id
+                        })
                         .then(res => {
                             if (res.status_code !== 200) {
-                                cv_interact.error("Failed to load invoice details");
+                                cv_interact.error(
+                                    "Failed to load invoice details"
+                                );
                                 return;
                             }
                             const detail = res.data || {};
@@ -2334,57 +2699,104 @@ const InvoiceDialog = (() => {
                                 const d = new Date(raw);
                                 if (!isNaN(d.getTime())) {
                                     const y = d.getFullYear();
-                                    const m = String(d.getMonth() + 1).padStart(2, "0");
-                                    const day = String(d.getDate()).padStart(2, "0");
+                                    const m = String(d.getMonth() + 1).padStart(
+                                        2,
+                                        "0"
+                                    );
+                                    const day = String(d.getDate()).padStart(
+                                        2,
+                                        "0"
+                                    );
                                     me.controls.due_date.value = `${y}-${m}-${day}`;
                                 }
                             }
                             if (me.controls.general_remark) {
-                                me.controls.general_remark.value = detail.general_remark || "";
+                                me.controls.general_remark.value =
+                                    detail.general_remark || "";
                             }
                             if (me.controls.tenant) {
-                                me.controls.tenant.value = detail.tenant_name || "";
+                                me.controls.tenant.value =
+                                    detail.tenant_name || "";
                             }
                             if (detail.tenant_id) {
                                 me._selectedTenantId = detail.tenant_id;
-                                me.controls.phone_number.value = detail.tenant_phone || "";
-                                me.controls.email.value = detail.tenant_email || "";
+                                me.controls.phone_number.value =
+                                    detail.tenant_phone || "";
+                                me.controls.email.value =
+                                    detail.tenant_email || "";
 
-                                vsapi.post(
-                                    `${main_view.base_url}/prm/tenant/option-tenant-with-contract`,
-                                    { tenant_id: detail.tenant_id }, {}
-                                ).then(res => {
-                                    const d = res.data || {};
-                                    me._tenantSpaces = d.spaces || [];
-                                    me._tenantMonths = d.months || [];
-                                    me._requestedServices = d.service_requests || [];
+                                vsapi
+                                    .post(
+                                        `${main_view.base_url}/prm/tenant/option-tenant-with-contract`,
+                                        { tenant_id: detail.tenant_id },
+                                        {}
+                                    )
+                                    .then(res => {
+                                        const d = res.data || {};
+                                        me._tenantSpaces = d.spaces || [];
+                                        me._tenantMonths = d.months || [];
+                                        me._requestedServices =
+                                            d.service_requests || [];
 
-                                    VSUtil.setComboItems(
-                                        me.controls.space,
-                                        d.spaces || [],
-                                        "space_id", "space_code", "", "Select Space", ""
-                                    );
-                                    setTimeout(() => {
-                                        if (detail.space_id) {
-                                            me.controls.space.value = String(detail.space_id);
+                                        VSUtil.setComboItems(
+                                            me.controls.space,
+                                            d.spaces || [],
+                                            "space_id",
+                                            "space_code",
+                                            "",
+                                            "Select Space",
+                                            ""
+                                        );
+                                        setTimeout(() => {
+                                            if (detail.space_id) {
+                                                me.controls.space.value = String(
+                                                    detail.space_id
+                                                );
 
-                                            // ✅ Verify — if Choices.js overrides, force via option.selected
-                                            if (me.controls.space.value !== String(detail.space_id)) {
-                                                const opt = Array.from(me.controls.space.options)
-                                                    .find(o => String(o.value) === String(detail.space_id));
-                                                if (opt) {
-                                                    opt.selected = true;
-                                                    me.controls.space.dispatchEvent(new Event("change", { bubbles: true }));
-                                                    console.log("space restored via option.selected:", opt.text);
+                                                // ✅ Verify — if Choices.js overrides, force via option.selected
+                                                if (
+                                                    me.controls.space.value !==
+                                                    String(detail.space_id)
+                                                ) {
+                                                    const opt = Array.from(
+                                                        me.controls.space
+                                                            .options
+                                                    ).find(
+                                                        o =>
+                                                            String(o.value) ===
+                                                            String(
+                                                                detail.space_id
+                                                            )
+                                                    );
+                                                    if (opt) {
+                                                        opt.selected = true;
+                                                        me.controls.space.dispatchEvent(
+                                                            new Event(
+                                                                "change",
+                                                                {
+                                                                    bubbles: true
+                                                                }
+                                                            )
+                                                        );
+                                                        console.log(
+                                                            "space restored via option.selected:",
+                                                            opt.text
+                                                        );
+                                                    } else {
+                                                        console.warn(
+                                                            "space option not found for id:",
+                                                            detail.space_id
+                                                        );
+                                                    }
                                                 } else {
-                                                    console.warn("space option not found for id:", detail.space_id);
+                                                    console.log(
+                                                        "space restored:",
+                                                        me.controls.space.value
+                                                    );
                                                 }
-                                            } else {
-                                                console.log("space restored:", me.controls.space.value);
                                             }
-                                        }
-                                    }, 100);
-                                });
+                                        }, 100);
+                                    });
                             }
 
                             if (me.itemsView) {
@@ -2404,22 +2816,21 @@ const InvoiceDialog = (() => {
                                     }));
                                 }
 
-
                                 // Add each real row manually from mapped data
                                 finalItems.forEach((itemData, index) => {
-                                    console.log(`Injecting row ${index + 1}:`, itemData.item_name);
+                                    console.log(
+                                        `Injecting row ${index + 1}:`,
+                                        itemData.item_name
+                                    );
                                     me.itemsView.addRow(itemData, 0);
                                 });
                             }
-
                         });
-
                 }
                 // ── CREATE MODE — already cleared above ──
             },
 
-
-            onShow: (me) => {
+            onShow: me => {
                 const title = me.divModal.querySelector(".modal-title");
                 if (title) {
                     const isModify = !!me.dataOptions?.id;
@@ -2435,7 +2846,7 @@ const InvoiceDialog = (() => {
                 targetProp: "invoice_details",
                 api: {
                     endpoint: `${main_view.base_url}/prm/invoice/form-options`,
-                    params: (op) => {
+                    params: op => {
                         console.log("API params op:", op);
                         return { id: op.id };
                     }
