@@ -71,7 +71,7 @@ const InvoiceTaxDialog = (() => {
 
         // Visibility Flags (Normalized values checking integer conversion status)
         const showPayStatus  = setting.show_pay_status;
-        const showBaland     = setting.show_baland;
+        const showBaland     = setting.show_balance;
         const showAmountPaid = setting.show_amount_paid;
 
         const discType     = (invoice.discount_type || "percent").toLowerCase();

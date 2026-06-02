@@ -95,7 +95,7 @@ class InvoiceSetting extends VSModel
         }
 
         $resData = array(
-            'show_baland' => $setting->show_baland,
+            'show_balance' => $setting->show_balance,
             'show_comm_tax' => $setting->show_comm_tax,
             'show_pay_status' => $setting->show_pay_status,
             'show_amount_paid' => $setting->show_amount_paid,
@@ -142,7 +142,7 @@ class InvoiceSetting extends VSModel
             // 3. FIX: Cast or format directly to a raw array so your JDV wrapper doesn't serialize framework properties
             return [
                 'id' => $id,
-                'show_baland' =>  $inputs['show_baland'] ?? $InvocieSetting->show_baland,
+                'show_balance' =>  $inputs['show_balance'] ?? $InvocieSetting->show_balance,
                 'show_comm_tax' => $inputs['show_comm_tax'] ?? $InvocieSetting->show_comm_tax,
                 'show_pay_status' => $inputs['show_pay_status'] ?? $InvocieSetting->show_pay_status,
                 'show_amount_paid' => $inputs['show_amount_paid'] ?? $InvocieSetting->show_amount_paid,
@@ -177,7 +177,7 @@ class InvoiceSetting extends VSModel
 
         // Return a clean raw array to feed nicely into your JDV controller wrapper
         return [
-            'show_baland'      => (int) $setting->show_baland,
+            'show_balance'      => (int) $setting->show_balance,
             'show_comm_tax'    => (int) $setting->show_comm_tax,
             'show_pay_status'  => (int) $setting->show_pay_status,
             'show_amount_paid' => (int) $setting->show_amount_paid,

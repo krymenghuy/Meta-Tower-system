@@ -93,19 +93,17 @@ const InvoiceNoTaxDialog = (() => {
         };
     };
 
-    const buildInvoiceHTML = (invoice) => {
+    const buildInvoiceHTML = (invoice, setting) => {
         const subTotal      = parseFloat(invoice.amount         || 0);
         const totalDiscount = parseFloat(invoice.discount_value || 0);
         const netTotal      = parseFloat(invoice.amount_payable || 0);
         const paid          = parseFloat(invoice.paid_amount    || 0);
         const balance       = parseFloat(invoice.due_amount     || 0);
 
-        // ✅ Visibility Settings added from your request (Mapped from invoice properties)
-        const showPayStatus  = parseInt(invoice.show_pay_status !== undefined ? invoice.show_pay_status : 1) === 1;
-        const showBaland     = parseInt(invoice.show_baland !== undefined ? invoice.show_baland : 1) === 1;
-        const showAmountPaid = parseInt((invoice.show_amount_paid !== undefined ? invoice.show_amount_paid : invoice.show_amount_piad) !== undefined ? (invoice.show_amount_paid ?? invoice.show_amount_piad) : 1) === 1;
-
-        const today = new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
+        // Visibility Settings mapped from settings
+        const showPayStatus  = setting.show_pay_status;
+        const showBalance    = setting.show_balance;
+        const showAmountPaid = setting.show_amount_paid;
 
         const discType     = (invoice.discount_type || "percent").toLowerCase();
         const isAmountDisc = (discType === "amount" || discType === "$");
@@ -125,17 +123,6 @@ const InvoiceNoTaxDialog = (() => {
             utility: { bg: "#FFF7ED", fg: "#C2410C", dot: "#F97316" },
             service: { bg: "#F0FDF4", fg: "#166534", dot: "#22C55E" },
         };
-
-        // *** DO NOT show Invoice Discount if it is zero */
-        const invoiceDiscount_html = totalDiscount > 0 ? `
-            <tr class="pi-totals-row">
-                <td style="padding:12px 16px;color:#DC2626;">
-                    Discount ${totalDiscount > 0 ? `(${discDisplay})` : ''}
-                </td>
-                <td style="padding:12px 16px;text-align:right;font-weight:600;color:#DC2626;">
-                    -${currency}${fmt(subTotal - netTotal)}
-                </td>
-            </tr>` : '';
               
         const validItems = (invoice.items || []).filter(
             (item) => parseFloat(item.price || 0) > 0 || parseFloat(item.total || 0) > 0
@@ -176,7 +163,6 @@ const InvoiceNoTaxDialog = (() => {
 
         return `
             <style>
-                @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
                 .pi-root {
                     font-family: 'Inter', 'Segoe UI', sans-serif;
                     background: #fff;
@@ -292,23 +278,35 @@ const InvoiceNoTaxDialog = (() => {
                                 <td style="padding:12px 16px;color:#666;">Sub Total</td>
                                 <td style="padding:12px 16px;text-align:right;font-weight:600;">${currency}${fmt(subTotal)}</td>
                             </tr>
-                            
-                            ${invoiceDiscount_html}
-                            
-                            <tr class="pi-totals-row" style="background:#F8FAFF;border-top:2px solid #E5E9F5;">
-                                <td style="padding:12px 16px;color:#111;font-weight:700;">Total (Net)</td>
-                                <td style="padding:12px 16px;text-align:right;font-weight:700;color:#111;font-size:14px;">${currency}${fmt(netTotal)}</td>
+                            <tr class="pi-totals-row">
+                                <td style="padding:12px 16px;color:#DC2626;">
+                                    Discount ${totalDiscount > 0 ? `(${discDisplay})` : ''}
+                                </td>
+                                <td style="padding:12px 16px;text-align:right;font-weight:600;color:#DC2626;">
+                                     ${currency}${fmt(subTotal - netTotal)}
+                                </td>
                             </tr>
-                            
-                            <tr class="pi-totals-row" style="display:${showAmountPaid ? 'table-row' : 'none'};">
-                                <td style="padding:12px 16px;color:#059669;">Amount Paid</td>
-                                <td style="padding:12px 16px;text-align:right;font-weight:600;color:#059669;">${currency}${fmt(paid)}</td>
-                            </tr>
-                            
-                            <tr style="background:linear-gradient(135deg,#0F2060,#1A3D91); display:${showBaland ? 'table-row' : 'none'};">
-                                <td style="padding:14px 16px;color:#fff;font-weight:700;">Balance Due</td>
-                                <td style="padding:14px 16px;text-align:right;font-weight:800;color:#FDE68A;font-size:16px;">${currency}${fmt(balance)}</td>
-                            </tr>
+
+                            ${invoice.payment_status_id === 2 || !showAmountPaid ? `
+                                <tr style="background:linear-gradient(135deg,#0F2060,#1A3D91);">
+                                    <td style="padding:14px 16px;color:#fff;font-weight:700;">Total (Net)</td>
+                                    <td  style="padding:14px 16px;text-align:right;font-weight:800;color:#FDE68A;font-size:16px;">${currency}${fmt(netTotal)}</td>
+                                </tr>` : `
+                                 <tr class="pi-totals-row" style="background:#F8FAFF;border-top:2px solid #E5E9F5;">
+                                    <td style="padding:12px 16px;color:#111;font-weight:700;">Total (Net)</td>
+                                    <td style="padding:12px 16px;text-align:right;font-weight:700;color:#111;font-size:14px;">${currency}${fmt(netTotal)}</td>
+                                </tr>
+                                `}
+                                ${invoice.payment_status_id === 2 || !showAmountPaid ? '' : `
+                                <tr class="pi-totals-row" style="${showAmountPaid ? '' : 'display:none;'}">
+                                    <td style="padding:12px 16px;color:#059669;">Amount Paid</td>
+                                    <td style="padding:12px 16px;text-align:right;font-weight:600;color:#059669;">${currency}${fmt(paid)}</td>
+                                </tr>
+                                <tr style="${showBalance ? '' : 'display:none;'} background:linear-gradient(135deg,#0F2060,#1A3D91);">
+                                    <td style="padding:14px 16px;color:#fff;font-weight:700;">Balance Due</td>
+                                    <td style="padding:14px 16px;text-align:right;font-weight:800;color:#FDE68A;font-size:16px;">${currency}${fmt(balance)}</td>
+                                </tr>`}
+                           
                         </table>
                     </div>
                 </div>
@@ -372,18 +370,8 @@ const InvoiceNoTaxDialog = (() => {
                 </div>`,
             contentCreated: (me) => {
                 const container = me.divModal.querySelector('[name="pi_container"]');
-                vsapi.call(`${main_view.base_url}/prm/invoice/details`, { id: op.invoice_id })
-                    .then((res) => {
-                        if (res.status_code !== 200) {
-                            container.innerHTML = `<div class="alert alert-danger m-4">Error: ${res.error_message || "Unknown error"}</div>`;
-                            return;
-                        }
-                        container.innerHTML = buildInvoiceHTML(res.data || {});
-                        wireButtons(container);
-                    })
-                    .catch(() => {
-                        container.innerHTML = `<div class="alert alert-danger m-4">Network error — could not load invoice.</div>`;
-                    });
+                container.innerHTML = buildInvoiceHTML(op.invoice, op.setting);
+                wireButtons(container);
             },
             buttons: [{ label: "Close", cssClass: "btn btn-secondary", click: (me) => me.hide() }]
         });

@@ -68,9 +68,8 @@ const InvoiceCommercialDialog = (() => {
         const paid          = parseFloat(invoice.paid_amount    || 0);
         const balance       = parseFloat(invoice.due_amount     || 0);
 
-        // Fixed undefined "src" reference bug by mapping to "invoice" object instead
         const showPayStatus  = setting.show_pay_status;
-        const showBaland     = setting.show_baland;
+        const showBaland     = setting.show_balance;
         const showAmountPaid = setting.show_amount_paid;
         const showCommTax    = setting.show_comm_tax;
 
@@ -148,11 +147,10 @@ const InvoiceCommercialDialog = (() => {
                     border-bottom: 2px solid #E5E9F5;
                     font-family: 'Inter', sans-serif;
                 }
-                /* Aligned CSS layout rules explicitly to match the 5 columns */
+                /* FIX: Cleaned up typo and grouped standard item alignments */
                 .pi-table thead th:nth-child(1) { text-align: left; }
                 .pi-table thead th:nth-child(2),
                 .pi-table thead th:nth-child(3),
-                .pi-table reply-th:nth-child(4),
                 .pi-table thead th:nth-child(4) { text-align: center; }
                 .pi-table thead th:nth-child(5) { text-align: right; }
                 
@@ -309,7 +307,7 @@ const InvoiceCommercialDialog = (() => {
             createContent: () => `
                 <div name="pi_container" style="min-height:280px;border-radius:8px;overflow:hidden;">
                     <div style="display:flex;align-items:center;justify-content:center;padding:80px 0;gap:14px;color:#6B7280;font-size:13px;font-family:'Inter',sans-serif;">
-                        <div style="width:28px;height:28px;border:3px solid #E5E5E5;border-top-color:#1A3D91;border-radius:50%;animation:pi-spin .7s linear infinite;"></div>
+                        <div style="width:28px;height:28px;border:3px solid #E5E9F5;border-top-color:#1A3D91;border-radius:50%;animation:pi-spin .7s linear infinite;"></div>
                         Loading invoice…
                     </div>
                     <style>@keyframes pi-spin{to{transform:rotate(360deg)}}</style>
@@ -317,7 +315,9 @@ const InvoiceCommercialDialog = (() => {
             contentCreated: (me) => {
                 const container = me.divModal.querySelector('[name="pi_container"]');
                 container.innerHTML = buildInvoiceHTML(op.invoice, op.setting);
-
+                
+                // FIX: Wire up the button action listeners here so print/download clicks execute!
+                wireButtons(container);
             },
             buttons: [{ label: "Close", cssClass: "btn btn-secondary", click: (me) => me.hide() }]
         });

@@ -713,7 +713,7 @@ var InvoiceComponent = (() => {
                     console.log(23, global);
                     
 
-                    if (settings.show_baland !== null) {
+                    if (settings.show_balance !== null) {
                         params.setting = settings;
                     } else {
                         params.setting = global;
@@ -3534,7 +3534,7 @@ const InvoiceSettingDialog = (() => {
                             Show Balance
                         </span>
                         <div class="form-check form-switch">
-                            <input class="form-check-input toggle-setting" type="checkbox" data-field="show_baland" id="_is_show_baland">
+                            <input class="form-check-input toggle-setting" type="checkbox" data-field="show_balance" id="_is_show_balance">
                         </div>
                     </div>
 
@@ -3558,7 +3558,7 @@ const InvoiceSettingDialog = (() => {
                 const normalizedData = {
                     show_comm_tax: dataSource.show_comm_tax,
                     show_pay_status: dataSource.show_pay_status,
-                    show_baland: dataSource.show_baland,
+                    show_balance: dataSource.show_balance,
                     show_amount_paid:
                         dataSource.show_amount_paid !== undefined
                             ? dataSource.show_amount_paid
@@ -3589,7 +3589,7 @@ const InvoiceSettingDialog = (() => {
                             const normalizedData = {
                                 show_comm_tax: settingsData.show_comm_tax,
                                 show_pay_status: settingsData.show_pay_status,
-                                show_baland: settingsData.show_baland,
+                                show_balance: settingsData.show_balance,
                                 show_amount_paid:
                                     settingsData.show_amount_paid !== undefined
                                         ? settingsData.show_amount_paid
