@@ -17,6 +17,8 @@ var InvoiceComponent = (() => {
     mThis.elSearch = mThis.self.querySelector("#_search_invoice");
     mThis.tblReceive = mThis.self.querySelector("#_tblReceive");
 
+    mThis.globalSetting = null;
+    mThis.invoiceSetting = null;
     let InvoiceItemDialog = null;
 
     mThis.cols = [
@@ -235,6 +237,16 @@ var InvoiceComponent = (() => {
                     mThis.InvoiceListView.showPage(mThis.getFilterData())
             });
         };
+
+        // vsapi
+        //     .call(`${main_view.base_url}/prm/invoice_setting/get`, {})
+        //     .then(res => {
+        //         if (res.status_code !== 200) {
+        //             cv_interact.error("Failed to load invoice details.");
+        //             return;
+        //         }
+        //         mThis.globalSetting = res.data;
+        //     });
 
         mThis.listContainer = mThis.InvoiceListView.getListContainer();
         const sh_parent = mThis.listContainer.parentElement;
@@ -551,9 +563,9 @@ var InvoiceComponent = (() => {
                 } else if (name === "modify_invoice") {
                     mThis.editInvoice(id, menulink);
                 } else if (name === "invoice_setting") {
-                    mThis.invoiceSetting(id, menulink);
+                    mThis.btnInvoiceSetting(id, menulink);
                 } else if (name === "reset_invoice_setting") {
-                    mThis.resetInvoiceSetting(id, menulink);
+                    mThis.btnResetInvoiceSetting(id, menulink);
                 }
             }
         };
@@ -596,15 +608,16 @@ var InvoiceComponent = (() => {
         );
     };
 
-    mThis.invoiceSetting = (id, menulink) => {
+    mThis.btnInvoiceSetting = (id, menulink) => {
         InvoiceSettingDialog.show({
             invoice_id: id,
             btn: menulink,
+            setting : mThis.invoiceSetting,
             onClose: () => mThis.InvoiceListView.showPage(mThis.getFilterData())
         });
     };
 
-    mThis.resetInvoiceSetting = (id, menulink) => {
+    mThis.btnResetInvoiceSetting = (id, menulink) => {
         if (!AuthManager.allowed(242)) return;
 
         cv_interact.confirm(
@@ -660,35 +673,70 @@ var InvoiceComponent = (() => {
         });
     };
 
-    mThis.printInvoice = (id, invoice_type, menulink) => {
-        if (!invoice_type || invoice_type === "undefined") {
-            console.warn(
-                "Type missing for ID " + id + ". Fetching from server..."
-            );
+    mThis.printInvoice = (id, menulink) => {
+        let invoice = null;
+        let globalSetting = null;
+        let localSetting = null;
 
-            vsapi
-                .call(`${main_view.base_url}/prm/invoice/details`, { id: id })
-                .then(res => {
-                    if (res.status_code === 200) {
-                        mThis.printInvoice(id, res.data.invoice_type, menulink);
+        vsapi
+            .call(`${main_view.base_url}/prm/invoice_setting/get-toggle-button`,)
+            .then(res => {
+                if (res.status_code === 200) {
+                 globalSetting = res.data;
+                } else {
+                    cv_interact.error("Could not determine invoice type.");
+                }
+            });
+
+        vsapi
+            .call(`${main_view.base_url}/prm/invoice/details`, { id: id })
+            .then(res => {
+                if (res.status_code === 200) {
+                    localSetting = res.data.settings;
+
+                    invoice = res.data;
+                    
+
+                    const invType = invoice.invoice_type;
+                    const params = {
+                        invoice_id: id,
+                        btn: menulink,
+                        invoice: invoice,
+                        global: mThis.globalSetting
+
+                    };
+
+                    const settings = localSetting || {};
+                    const global = globalSetting || {};
+
+                    console.log(12, settings);
+                    console.log(23, global);
+                    
+
+                    if (settings.show_balance !== null) {
+                        params.setting = settings;
                     } else {
-                        cv_interact.error("Could not determine invoice type.");
+                        params.setting = global;
                     }
-                });
-            return;
-        }
 
-        const invType = parseInt(invoice_type);
-        const params = { invoice_id: id, btn: menulink };
+                    console.log(34, params);
+                    
 
-        if (invType === 1) {
-            InvoiceTaxDialog.show(params);
-        } else if (invType === 2) {
-            InvoiceNoTaxDialog.show(params);
-        } else if (invType === 3) {
-            InvoiceCommercialDialog.show(params);
-        }
+                    if (invType === 1) {
+                        InvoiceTaxDialog.show(params);
+                    } else if (invType === 2) {
+                        InvoiceNoTaxDialog.show(params);
+                    } else if (invType === 3) {
+                        InvoiceCommercialDialog.show(params);
+                    }
+                } else {
+                    cv_interact.error("Could not determine invoice type.");
+                }
+            });
     };
+
+
+
 
     mThis.prepareFormOptions = onFinish => {
         vsapi
@@ -744,6 +792,7 @@ const InvoiceDialog = (() => {
     let availableItem = [];
     let InvoiceSetting = null;
     let globalSetting = null;
+    let exchangeRate = null;
 
     self.show = op => {
         dialog = new GeneralDialog({
@@ -1444,14 +1493,14 @@ const InvoiceDialog = (() => {
                                     "#wrapper_units_readonly"
                                 );
 
-                                elExchangeRate.value = globalSetting
-                                    ? globalSetting.exchange_rate ?? ""
+                                elExchangeRate.value = exchangeRate
+                                    ? exchangeRate.exchange_rate ?? ""
                                     : "";
 
                                 console.log(
                                     "InvoiceSetting.exchange_rate",
-                                    globalSetting
-                                        ? globalSetting.exchange_rate
+                                    exchangeRate
+                                        ? exchangeRate.exchange_rate
                                         : null
                                 );
 
@@ -2982,7 +3031,7 @@ const InvoiceDialog = (() => {
                 }
 
                 vsapi
-                    .call(`${main_view.base_url}/prm/invoice_setting/get`, {})
+                    .call(`${main_view.base_url}/prm/invoice_setting/get-exchange-rate`, {})
                     .then(res => {
                         if (res.status_code !== 200) {
                             cv_interact.error(
@@ -2992,7 +3041,9 @@ const InvoiceDialog = (() => {
                         }
                         console.log("Global Setting", res);
 
-                        globalSetting = res.data;
+                        exchangeRate = res.data;
+
+                        
                     });
             },
 
@@ -3074,6 +3125,7 @@ const ReceiveDialog = (() => {
     let dialog = null;
 
     self.show = op => {
+        
         dialog = new GeneralDialog({
             title: "Receive Payment",
             cssClass: "modal-lg vs-modal",
@@ -3440,14 +3492,11 @@ const InvoiceSettingDialog = (() => {
     let dialog = null;
 
     self.show = op => {
+        console.log(12,op);
+        
         const currentData = op || {};
         const invoiceId = currentData.id || currentData.invoice_id || 0;
 
-        if (!invoiceId) {
-            console.error(
-                "InvoiceSettingDialog Error: No valid invoice ID was provided."
-            );
-        }
 
         dialog = new GeneralDialog({
             title: "Invoice Setting",
@@ -3485,7 +3534,7 @@ const InvoiceSettingDialog = (() => {
                             Show Balance
                         </span>
                         <div class="form-check form-switch">
-                            <input class="form-check-input toggle-setting" type="checkbox" data-field="show_baland" id="_is_show_baland">
+                            <input class="form-check-input toggle-setting" type="checkbox" data-field="show_balance" id="_is_show_balance">
                         </div>
                     </div>
 
@@ -3509,7 +3558,7 @@ const InvoiceSettingDialog = (() => {
                 const normalizedData = {
                     show_comm_tax: dataSource.show_comm_tax,
                     show_pay_status: dataSource.show_pay_status,
-                    show_baland: dataSource.show_baland,
+                    show_balance: dataSource.show_balance,
                     show_amount_paid:
                         dataSource.show_amount_paid !== undefined
                             ? dataSource.show_amount_paid
@@ -3528,17 +3577,19 @@ const InvoiceSettingDialog = (() => {
 
             onPrepareForm: me => {
                 vsapi
-                    .call(`${main_view.base_url}/prm/invoice/get-setting`, {
-                        id: invoiceId
-                    })
+                    .call(`${main_view.base_url}/prm/invoice/get-setting`, {id: invoiceId})
                     .then(res => {
-                        if (res && res.status_code === 200 && res.data) {
+                        if (res && res.data) {
                             const settingsData = res.data.settings || {};
+
+                            console.log(13,settingsData);
+                            console.log(14,res);
+                            
 
                             const normalizedData = {
                                 show_comm_tax: settingsData.show_comm_tax,
                                 show_pay_status: settingsData.show_pay_status,
-                                show_baland: settingsData.show_baland,
+                                show_balance: settingsData.show_balance,
                                 show_amount_paid:
                                     settingsData.show_amount_paid !== undefined
                                         ? settingsData.show_amount_paid
