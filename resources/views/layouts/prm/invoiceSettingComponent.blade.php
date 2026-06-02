@@ -27,28 +27,44 @@
         <div class="is-card">
             <p class="is-section-title">Invoice Display Options</p>
 
-            <div class="is-row">
+            <div class="is-row d-flex justify-content-between align-items-center mb-3">
                 <span class="is-row-label">
-                    <i class="fa-solid fa-receipt"></i>
+                    <i class="fa-solid fa-receipt me-2"></i>
                     Show Commission Tax
                 </span>
-                <span id="_is_show_comm_tax">—</span>
+                <div class="form-check form-switch">
+                    <input class="form-check-input toggle-setting" type="checkbox" data-field="show_comm_tax" id="_is_show_comm_tax">
+                </div>
             </div>
 
-            <div class="is-row">
+            <div class="is-row d-flex justify-content-between align-items-center mb-3">
                 <span class="is-row-label">
-                    <i class="fa-solid fa-credit-card"></i>
+                    <i class="fa-solid fa-credit-card me-2"></i>
                     Show Payment Status
                 </span>
-                <span id="_is_show_pay_status">—</span>
+                <div class="form-check form-switch">
+                    <input class="form-check-input toggle-setting" type="checkbox" data-field="show_pay_status" id="_is_show_pay_status">
+                </div>
             </div>
 
-            <div class="is-row">
+            <div class="is-row d-flex justify-content-between align-items-center mb-3">
                 <span class="is-row-label">
-                    <i class="fa-solid fa-scale-balanced"></i>
+                    <i class="fa-solid fa-scale-balanced me-2"></i>
                     Show Balance
                 </span>
-                <span id="_is_show_baland">—</span>
+                <div class="form-check form-switch">
+                    <input class="form-check-input toggle-setting" type="checkbox" data-field="show_balance" id="_is_show_balance">
+                </div>
+            </div>
+
+            <div class="is-row d-flex justify-content-between align-items-center mb-3">
+                <span class="is-row-label">
+                    <i class="fa-solid fa-money-bill-wave me-2"></i>
+                    Show Amount Paid
+                </span>
+                <div class="form-check form-switch">
+                    <input class="form-check-input toggle-setting" type="checkbox" data-field="show_amount_paid" id="_is_amount_paid">
+                </div>
             </div>
         </div>
 
@@ -56,7 +72,6 @@
 </div>
 
 <style>
-    /* ── Layout ─────────────────────────────────────────── */
 .is-grid {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
@@ -69,7 +84,6 @@
     }
 }
 
-/* ── Card ───────────────────────────────────────────── */
 .is-card {
     background: #fff;
     border: 0.5px solid rgba(0, 0, 0, 0.12);
