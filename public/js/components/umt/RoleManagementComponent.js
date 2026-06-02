@@ -19,6 +19,7 @@ var RoleManagementComponent =  (() =>{
 
   const injectCSS = (() => {
     let injected = false;
+    
 
     return function () {
         if (injected) return;

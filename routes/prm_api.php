@@ -31,7 +31,7 @@ use App\Http\Controllers\Prm\ReportController;
 
 use App\Http\Controllers\tenant\AccountStaffController;
 use App\Http\Controllers\tenant\ZoneController;
-use App\Http\Controllers\tenant\ContractsController;
+use App\Http\Controllers\Tenant\ContractsController;
 use App\Http\Controllers\Prm\InvoiceSettingController;
 use App\Http\Controllers\Tenant\TenantProfileController;
 use App\Http\Controllers\Tenant\ReservationsController;
@@ -382,7 +382,14 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant/reques
     Route::post('/reject',[RequestServiceController::class,'rejectRequest']);
     Route::post('/complete',[RequestServiceController::class,'completeRequest']);
 
+
 });
 
-
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant/contract')->group(function () {
+    Route::post('/save', [ContractsController::class, 'saveContracts']);
+    Route::post('/list-paginate', [ContractsController::class, 'getListContracts']);
+    Route::post('/details', [ContractsController::class, 'contractsDetails']);
+    Route::post('/form-options', [ContractsController::class, 'getFormOptions']);
+    Route::post('/delete', [ContractsController::class, 'deleteContracts']);
+});
 
