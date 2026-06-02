@@ -401,9 +401,9 @@ var BuildingComponent = (() => {
 
     mThis.deleteFloor = (op, onDone) => {
         cv_interact.confirm(
-            "confirm_delete_floor",
+            "confirm_deleted",
             {
-                title: "delete_floor",
+                title: "deleted",
                 context: "delete",
                 confirmButtonText: "Delete",
             },
@@ -420,13 +420,11 @@ var BuildingComponent = (() => {
                     .then((res) => {
                         if (res.status_code === 200) {
                             cv_interact.success(
-                                "floor_deleted",
+                                "deleted",
                             );
                             if (typeof onDone === "function") onDone();
                         } else {
-                            cv_interact.error(
-                                res.error_message || "Delete failed",
-                            );
+                            cv_interact.error(res.error_message);
                         }
                     });
             },
@@ -507,11 +505,11 @@ var BuildingComponent = (() => {
         };
         // if (!AuthManager.allowed(242)) return;
         cv_interact.confirm(
-            "confirm_delete_building",
+            "confirm_deleted",
             {
                 'langSection': "message_box_default",
                 'translate': true,
-                'title': "building_delete",
+                'title': "deleted",
                 'context': "delete",
                 'confirmButtonText': "Delete",
             },
@@ -528,7 +526,7 @@ var BuildingComponent = (() => {
                         .then((res) => {
                             if (res.status_code == 200) {
                                 mThis.BuildingListView.showPage();
-                                cv_interact.success("building_deleted");
+                                cv_interact.success("deleted");
                             } else {
                                 cv_interact.error(res.error_message);
                             }
@@ -722,9 +720,9 @@ const BuildingDialog = (() => {
                                 if (res.status_code === 200) {
                                     me.hide(true, op);
                                     if(me.dataOptions.id > 0){
-                                        cv_interact.success("building_updated");
+                                        cv_interact.success("updated");
                                     }else {
-                                        cv_interact.success("building_created");
+                                        cv_interact.success("created");
                                     }
                                     
                                 } else {
@@ -846,8 +844,8 @@ const CreateFloorDialog = (() => {
                                     me.hide(true, op);
                                     cv_interact.success(
                                         op.id > 0
-                                            ? "floor_updated"
-                                            : "floor_created"
+                                            ? "updated"
+                                            : "created"
                                     );
                                 } else {
                                     cv_interact.error(res.error_message);
