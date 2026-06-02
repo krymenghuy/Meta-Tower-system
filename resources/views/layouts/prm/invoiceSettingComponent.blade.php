@@ -53,7 +53,7 @@
                     Show Balance
                 </span>
                 <div class="form-check form-switch">
-                    <input class="form-check-input toggle-setting" type="checkbox" data-field="show_baland" id="_is_show_baland">
+                    <input class="form-check-input toggle-setting" type="checkbox" data-field="show_balance" id="_is_show_balance">
                 </div>
             </div>
 
