@@ -677,16 +677,26 @@ var InvoiceComponent = (() => {
         let invoice = null;
         let globalSetting = null;
         let localSetting = null;
+        let representativeData = null;
 
-        vsapi
-            .call(`${main_view.base_url}/prm/invoice_setting/get-toggle-button`,)
-            .then(res => {
-                if (res.status_code === 200) {
-                 globalSetting = res.data;
-                } else {
-                    cv_interact.error("Could not determine invoice type.");
-                }
-            });
+        // vsapi
+        //     .call(`${main_view.base_url}/prm/invoice_setting/get-toggle-button`,)
+        //     .then(res => {
+        //         if (res.status_code === 200) {
+        //          globalSetting = res.data;
+        //         } else {
+        //             cv_interact.error("Could not determine invoice type.");
+        //         }
+        //     });
+            vsapi
+                .call(`${main_view.base_url}/prm/invoice_setting/get`)
+                .then(res => {
+                    if (res.status_code === 200) {
+                        globalSetting = res.data;
+                    } else {
+                        cv_interact.error("Could not determine invoice type.");
+                    }
+                });
 
         vsapi
             .call(`${main_view.base_url}/prm/invoice/details`, { id: id })
@@ -708,15 +718,23 @@ var InvoiceComponent = (() => {
 
                     const settings = localSetting || {};
                     const global = globalSetting || {};
+                    // const representative = representativeData || {}; 
 
                     console.log(12, settings);
                     console.log(23, global);
                     
 
                     if (settings.show_balance !== null) {
+
+                        settings.build_representative = global.build_representative;
+                        settings.representative_phone = global.representative_phone;
+                        settings.representative_address = global.representative_address;
                         params.setting = settings;
+
+                        // params.representative = representative;
                     } else {
                         params.setting = global;
+                        // params.representative = representative;
                     }
 
                     console.log(34, params);
