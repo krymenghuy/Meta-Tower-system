@@ -686,14 +686,12 @@ const BuildingDialog = (() => {
                             main_view.base_url,
                             "/prm/building/form-options",
                         ].join(""),
-                        params: (op) => {
-                            return { id: op.id };
+                        params: (me,op) => {
+                            return { building_id: op.id };
                         },
                     },
                 },
-                onShow: (me) => {
-                    
-                },
+              
                 onPrepareForm: (me, data) => {
                     const isReadOnly = me.dataOptions.id > 0;
                     console.log(4444, data, me.dataOptions.id);
