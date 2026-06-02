@@ -118,7 +118,7 @@ var BuildingComponent = (() => {
                        class="btn--Options ${data.action_id > 1 ? "d-none" : "btn_leave_action"}"
                        data-id="${data.id}"
                        data-statusid="${data.status_id}">
-                       <i class="fa-solid fa-ellipsis-vertical text-prm-custom fs-5"></i>
+                       <i class="fa-solid fa-ellipsis-vertical text-prm-custom fs-5" style="padding: 0 10px;"></i>
                     </a>
                 </div>
             `,
@@ -150,7 +150,7 @@ var BuildingComponent = (() => {
                 btn: e.target,
                 onClose: () => {
                     mThis.BuildingListView.showPage(mThis.getFilterData());
-                    mThis.fetchSummaryData();
+                    // mThis.fetchSummaryData();
                 },
             };
             BuildingDialog.show(op);
@@ -229,7 +229,7 @@ var BuildingComponent = (() => {
                         ? `
                 <div class="rounded-3 p-2 l mb-2">
                     <button data-buildingid="${id}" class="btn-add-floor btnAddNewPrm" type="button">
-                        <span>${LocaleManager.trans("New Floor", "buttons")}</span>
+                        <span vslang="buttons.Create Floor">Create Floor</span>
                     </button>
                 </div>`
                         : ""
@@ -238,12 +238,12 @@ var BuildingComponent = (() => {
                 <table class="table table-sm table-hover align-middle tbl_list_floor table--dropdown">
                     <thead class="table-light text-nowrap">
                         <tr>
-                            <th>${LocaleManager.trans("Name")}</th>
-                            <th>${LocaleManager.trans("Floor Number")}</th>
-                            <th>${LocaleManager.trans("Total Space")}</th>
-                            <th>${LocaleManager.trans("Description")}</th>
-                            <th>${LocaleManager.trans("Last Updated")}</th>
-                            <th>${LocaleManager.trans("Action")}</th>
+                            <th vslang="titles.Floor">Floor</th>
+                            <th vslang="titles.Floor Number">Floor Number</th>
+                            <th vslang="titles.Total Space">Total Space</th>
+                            <th vslang="titles.Description">Description</th>
+                            <th vslang="titles.Last Updated">Last Updated</th>
+                            <th vslang="titles.Action">Action</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -256,7 +256,7 @@ var BuildingComponent = (() => {
                         ? `
                 <div class="rounded-3 p-2 l mb-2">
                     <button data-buildingid="${id}" class="btn-add-floor btnAddNewPrm" type="button">
-                        <span>${LocaleManager.trans("New Floor", "buttons")}</span>
+                        <span vslang="buttons.Create Floor"></span>
                     </button>
                 </div>`
                         : ""
@@ -269,6 +269,7 @@ var BuildingComponent = (() => {
                 }
 
                 container.innerHTML = html;
+                LocaleManager.translateZone(container);
 
                 const tbody = container.querySelector("tbody");
                 const btnNewFloor = container.querySelector(".btn-add-floor");
@@ -398,9 +399,9 @@ var BuildingComponent = (() => {
 
     mThis.deleteFloor = (op, onDone) => {
         cv_interact.confirm(
-            "Delete this Floor?",
+            "confirm_delete_floor",
             {
-                title: "Delete Floor",
+                title: "delete_floor",
                 context: "delete",
                 confirmButtonText: "Delete",
             },
@@ -417,7 +418,7 @@ var BuildingComponent = (() => {
                     .then((res) => {
                         if (res.status_code === 200) {
                             cv_interact.success(
-                                "Floor has been deleted successfully.",
+                                "floor_deleted",
                             );
                             if (typeof onDone === "function") onDone();
                         } else {
@@ -487,7 +488,7 @@ var BuildingComponent = (() => {
             btn: menulink,
             onClose: () => {
                 mThis.BuildingListView.showPage(mThis.getFilterData());
-                mThis.fetchSummaryData();
+                // mThis.fetchSummaryData();
             },
         };
         BuildingDialog.show(op);
@@ -499,7 +500,7 @@ var BuildingComponent = (() => {
             btn: menuLink,
             onClose: () => {
                 mThis.BuildingListView.showPage(mThis.getFilterData());
-                mThis.fetchSummaryData();
+                // mThis.fetchSummaryData();
             },
         };
         if (!AuthManager.allowed(242)) return;
@@ -574,38 +575,44 @@ const BuildingDialog = (() => {
                 cssClass: "modal-md vs-modal",
                 backdrop: "static",
                 keyboard: true,
+                title: (me) => {
+                    const title = me.dataOptions.id ? "Modify Building" : "Create Building";
+                    if (title) {
+                       return  `<h4 class="text-prm-custom text-start fw-bold">${LocaleManager.trans(title,'titles')}</h4>`;
+                    }
+                },
                 createContent: () => {
                     return [
                         `<div class="row g-3 justify-content-center">
                         <div class="col-6">
                             <div class="vs-material-field">
                                 <input type="text" name="name" class="data-input form-control" data-field="name" placeholder=" " />
-                                <label>Name</label>
+                                <label vslang="labels.Name"></label>
                             </div>
                         </div>
                         <div class="col-6">
                             <div class="vs-material-field">
                                 <input type="text" name="prefix" class="data-input form-control" data-field="prefix" placeholder=" " />
-                                <label>Shortcut</label>
+                                <label vslang="labels.Shortcut"></label>
                             </div>
                         </div>
                         <div class="col-6">
                             <div class="vs-material-field">
                                 <input type="text" name="total_floor" class="data-input form-control" data-field="total_floor" placeholder=" " />
-                                <label>Total Floor</label>
+                                <label vslang="labels.Total Floors"></label>
                             </div>
                         </div>
                         <div class="col-6">
                             <div class="vs-material-field">
                                 <input type="text" name="total_area" class="data-input form-control" data-field="total_area" placeholder=" " />
-                                <label>Total Area (m²)</label>
+                                <label vslang="labels.Total Area"></label>
                             </div>
                         </div>
 
                         <div class="col-12">
                             <div class="vs-material-field">
                                 <textarea type="text" name="address" class="data-input form-control" data-field="address" placeholder=" "></textarea>
-                                <label>Address</label>
+                                <label vslang="labels.Address"></label>
                             </div>
                         </div>
                     </div>`,
@@ -671,8 +678,6 @@ const BuildingDialog = (() => {
                     }
                 },
                 prepareFormOptions: {
-                    createTitle: "Create Building",
-                    modifyTitle: "Modify Building",
                     targetProp: "building_details",
                     api: {
                         endpoint: [
@@ -685,17 +690,11 @@ const BuildingDialog = (() => {
                     },
                 },
                 onShow: (me) => {
-                    const title = me.divModal.querySelector(".modal-title");
-                    if (title) {
-                        const isModify = !!me.dataOptions?.id;
-                        title.innerHTML = isModify
-                            ? '<h4 class="text-prm-custom text-start fw-bold">Modify Building</h4>'
-                            : '<h4 class="text-prm-custom text-start fw-bold">Create Building</h4>';
-                    }
+                    
                 },
                 onPrepareForm: (me, data) => {
                     const isReadOnly = me.dataOptions.id > 0;
-                    console.log(4444, data, me.dataOptions);
+                    console.log(4444, data, me.dataOptions.id);
 
                     me.setReadOnly(isReadOnly, ["total_floor"]);
                     const hasUnit = data.building_details.total_space > 0;
@@ -715,32 +714,32 @@ const BuildingDialog = (() => {
                         click: (me, btn) => {
                             const op = me.getData();
                             op.id = me.dataOptions.id;
-                            vsapi
-                                .call(
-                                    [
-                                        main_view.base_url,
-                                        "/prm/building/save",
-                                    ].join(""),
-                                    op,
-                                    btn,
-                                    null,
-                                )
-                                .then((res) => {
-                                    if (res.status_code === 200) {
-                                        me.hide(true, op);
-                                        if (me.dataOptions.id > 0) {
-                                            cv_interact.success(
-                                                "Building has been updated successfully",
-                                            );
-                                        } else {
-                                            cv_interact.success(
-                                                "New building has been added successfully.",
-                                            );
+
+                            vsapi.call(
+                                [main_view.base_url, "/prm/building/save"].join(""),
+                                op,
+                                btn,
+                                null
+                            ).then((res) => {
+                                if (res.status_code === 200) {
+                                    me.hide(true, op);
+
+                                    cv_interact.success(
+                                        me.dataOptions.id > 0
+                                            ? "building_updated"
+                                            : "building_created",
+                                        {
+                                            langSection: "message_box_default",
+                                            title:{},
+                                            translate: true
                                         }
-                                    } else {
-                                        cv_interact.error(res.error_message);
-                                    }
-                                });
+                                    );
+                                } else {
+                                    cv_interact.error(
+                                        res.error_message || "Failed"
+                                    );
+                                }
+                            });
                         },
                     },
                 ],
@@ -761,32 +760,36 @@ const CreateFloorDialog = (() => {
                 cssClass: "modal-md vs-modal",
                 backdrop: "static",
                 keyboard: true,
+                title: (me) => {
+                    const title = me.dataOptions.id ? "Modify Floor" : "Create Floor";
+                    if (title) {
+                       return  `<h4 class="text-prm-custom text-start fw-bold">${LocaleManager.trans(title,'titles')}</h4>`;
+                    }
+                },
                 createContent: () => `
                 <div class="row justify-content-center">
                     <div class="col-6">
                         <div class="material-input outlined">
                             <input type="number" name="floor_number" required class="data-input form-control" data-field="floor_number" placeholder=" " />
-                            <label style="color:#777777;padding-left:6px;">Floor Number</label>
+                            <label vslang="labels.Floor Number">Floor Number</label>
                         </div>
                     </div>
                     <div class="col-6">
                         <div class="material-input outlined">
                             <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder=" " />
-                            <label style="color:#777777;padding-left:6px;">Floor Name</label>
+                            <label vslang="labels.Floor Name">Floor Name</label>
                         </div>
                     </div>
                     <div class="col-12">
                         <div class="material-input outlined">
                             <textarea name="description" class="data-input form-control" data-field="description" placeholder=" "></textarea>
-                            <label style="color:#777777;padding-left:6px;">Description</label>
+                            <label vslang="labels.Description">Description</label>
                         </div>
                     </div>
                 </div>
             `,
                 contentCreated: (me) => {},
                 prepareFormOptions: {
-                    createTitle: "Create Floor",
-                    modifyTitle: "Add Floor",
                     targetProp: "floor_details",
                     api: {
                         endpoint:
@@ -798,13 +801,7 @@ const CreateFloorDialog = (() => {
                     },
                 },
                 onShow: (me) => {
-                    const title = me.divModal.querySelector(".modal-title");
-                    if (title) {
-                        const isModify = !!me.dataOptions?.id;
-                        title.innerHTML = isModify
-                            ? '<h4 class="text-prm-custom text-start fw-bold">Modify Floor</h4>'
-                            : '<h4 class="text-prm-custom text-start fw-bold">New Floor</h4>';
-                    }
+                    
                 },
                 onPrepareForm: (me, data) => {
                     const details = data?.floor_details || {};
@@ -834,51 +831,43 @@ const CreateFloorDialog = (() => {
                 },
                 buttons: [
                     {
-                        label: "Cancel",
+                        label: '<span vslang="buttons.Cancel"></span>',
                         cssClass: "btn btn-secondary",
                         click: (me) => me.hide(false),
                     },
-                    {
-                        label: "Save",
+                   {
+                        label: '<span vslang="buttons.Save"></span>',
                         cssClass: "btn btn-primary",
                         click: (me, btn) => {
                             const op = me.getData();
                             op.building_id = me.dataOptions.building_id;
                             op.id = me.dataOptions?.id || 0;
 
-                            vsapi
-                                .call(
-                                    main_view.base_url +
-                                        "/prm/building/add-floor",
-                                    op,
-                                    btn,
-                                )
-                                .then((res) => {
-                                    if (res.status_code === 200) {
-                                        if (
-                                            typeof me.dataOptions?.onClose ===
-                                            "function"
-                                        ) {
-                                            me.dataOptions.onClose(
-                                                true,
-                                                res.data,
-                                            );
-                                        }
-                                        me.hide(true, op);
-                                        const msg =
-                                            op.id > 0
-                                                ? "Floor has been updated successfully"
-                                                : "New floor has been added successfully";
-                                        cv_interact.success(msg);
-                                    } else {
-                                        cv_interact.error(
-                                            res.error_message ||
-                                                "Failed to save floor",
-                                        );
+                            vsapi.call(
+                                main_view.base_url + "/prm/building/add-floor",
+                                op,
+                                btn
+                            ).then((res) => {
+                                if (res.status_code === 200) {
+                                    if (typeof me.dataOptions?.onClose === "function") {
+                                        me.dataOptions.onClose(true, res.data);
                                     }
-                                });
+                                    me.hide(true, op);
+                                    cv_interact.success(
+                                        op.id > 0
+                                            ? "floor_updated"
+                                            : "floor_created",
+                                        {
+                                            langSection: "message_box_default",
+                                            translate: true
+                                        }
+                                    );
+                                } else {
+                                    cv_interact.error(res.error_message);
+                                }
+                            });
                         },
-                    },
+                    }
                 ],
             });
 

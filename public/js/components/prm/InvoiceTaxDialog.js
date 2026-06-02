@@ -61,15 +61,18 @@ const InvoiceTaxDialog = (() => {
         };
     };
 
-    const buildInvoiceHTML = (invoice) => {
+    const buildInvoiceHTML = (invoice, setting) => {
 
-    
         const subTotal      = parseFloat(invoice.amount         || 0);
         const totalDiscount = parseFloat(invoice.discount_value || 0);
         const netTotal      = parseFloat(invoice.amount_payable || 0);
         const paid          = parseFloat(invoice.paid_amount    || 0);
         const balance       = parseFloat(invoice.due_amount     || 0);
 
+        // Visibility Flags (Normalized values checking integer conversion status)
+        const showPayStatus  = setting.show_pay_status;
+        const showBaland     = setting.show_balance;
+        const showAmountPaid = setting.show_amount_paid;
 
         const discType     = (invoice.discount_type || "percent").toLowerCase();
         const isAmountDisc = (discType === "amount" || discType === "$");
@@ -93,7 +96,6 @@ const InvoiceTaxDialog = (() => {
             service: { bg: "#F0FDF4", fg: "#166534", dot: "#22C55E" },
         };
 
-        // ✅ Fixed: was referencing undefined `validItems`
         const validItems = (invoice.items || []).filter(
             (item) => parseFloat(item.price || 0) > 0 || parseFloat(item.total || 0) > 0
         );
@@ -105,10 +107,7 @@ const InvoiceTaxDialog = (() => {
             const disc  = parseFloat(item.discount || item.special_discount_value || 0);
             const tax   = parseFloat(item.tax_rate || 0);
 
-            // ✅ Fixed: was referencing outer `discType`, now uses item-level
             const itemDiscType = (item.discount_type || item.special_discount_type || "percent").toLowerCase();
-
-            // ✅ Fixed: was referencing undefined `rawType`
             const rawType = (item.type || "service").toLowerCase();
             const cfg = typeConfig[rawType] || typeConfig.service;
 
@@ -183,7 +182,6 @@ const InvoiceTaxDialog = (() => {
 
                 <div class="pi-root" id="pi-invoice-content">
 
-                    <!-- ═══ HEADER BAND ═══ -->
                     <div style="background:linear-gradient(135deg,#0F2060 0%,#1A3D91 55%,#2254C5 100%);padding:10px;display:flex;justify-content:space-between;align-items:flex-start;gap:20px;position:relative;overflow:hidden;">
                         <div style="position:absolute;right:-40px;top:-40px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,0.04);pointer-events:none;"></div>
                         <div style="position:absolute;right:60px;top:20px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,0.05);pointer-events:none;"></div>
@@ -214,16 +212,16 @@ const InvoiceTaxDialog = (() => {
                             <div style="font-family:'Playfair Display',serif;font-size:32px;font-weight:900;color:#FFFFFF;letter-spacing:-0.5px;line-height:1;">INVOICE</div>
                             <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:6px;letter-spacing:0.5px;text-transform:uppercase;">Invoice Number</div>
                             <div style="font-size:16px;font-weight:700;color:#FDE68A;margin-top:2px;letter-spacing:0.3px;">${invoice.code || "—"}</div>
-                            <div style="margin-top:10px;display: none;padding:4px 12px;border-radius:20px;background:${statusBg};color:${statusColor};font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;">
+                            
+                            ${showPayStatus ? `
+                            <div style="display:inline-block;margin-top:6px;padding:4px 12px;border-radius:20px;background:${statusBg};color:${statusColor};font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;">
                                 ${statusLabel}
                             </div>
+                            ` : ''}
                         </div>
                     </div>
 
-                    <!-- ═══ META BAR ═══ -->
                     <div style="display:flex;justify-content:space-between;align-items:stretch;gap:0;flex-wrap:wrap;">
-
-                        <!-- Bill To -->
                         <div style="padding:18px 24px;flex:1;min-width:200px;">
                             <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#9CA3AF;margin-bottom:7px;">Bill To</div>
                             <div style="font-size:17px;font-weight:700;color:#111827;line-height:1.2;">${invoice.tenant_name || "—"}</div>
@@ -232,14 +230,12 @@ const InvoiceTaxDialog = (() => {
                             ${invoice.tenant_phone ? `<div style="margin-top:3px;font-size:11px;color:#6B7280;display:flex;align-items:center;gap:4px;"><i class="bi bi-telephone" style="color:#1A3D91;font-size:10px;"></i> ${invoice.tenant_phone}</div>` : ""}
                         </div>
 
-                        <!-- Due Date -->
                         <div style="padding:18px 24px;display:flex;flex-direction:column;align-items:flex-end;justify-content:center;min-width:160px;text-align:right;">
                             <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#9CA3AF;margin-bottom:3px;">Due Date</div>
                             <div style=" font-size:15px;font-weight:600;color:#111827;">${formatDate(invoice.due_date)}</div>
                         </div>
                     </div>
 
-                    <!-- ═══ ITEMS TABLE ═══ -->
                     <div class="pi-tbl-wrap">
                         <table class="pi-table">
                             <thead>
@@ -260,7 +256,6 @@ const InvoiceTaxDialog = (() => {
                         </table>
                     </div>
 
-                    <!-- ═══ TOTALS ═══ -->
                     <div style="display:flex;justify-content:flex-end;padding:24px 0px;">
                         <div style="min-width:300px;border:1px solid #E5E9F5;border-radius:12px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.03);">
                             <table style="width:100%;border-collapse:collapse;">
@@ -277,37 +272,34 @@ const InvoiceTaxDialog = (() => {
                                     </td>
                                 </tr>
 
-                                ${invoice.payment_status_id === 2 ? `
-                                <tr style="background:linear-gradient(135deg,#0F2060,#1A3D91);">
-                                    <td style="padding:14px 16px;color:#fff;font-weight:700;">Total (Net)</td>
-                                    <td  style="padding:14px 16px;text-align:right;font-weight:800;color:#FDE68A;font-size:16px;">${currency}${fmt(netTotal)}</td>
-                                </tr>` : `
-                                 <tr class="pi-totals-row" style="background:#F8FAFF;border-top:2px solid #E5E9F5;">
+                                <tr class="pi-totals-row" style="background:#F8FAFF;border-top:2px solid #E5E9F5;">
                                     <td style="padding:12px 16px;color:#111;font-weight:700;">Total (Net)</td>
                                     <td style="padding:12px 16px;text-align:right;font-weight:700;color:#111;font-size:14px;">${currency}${fmt(netTotal)}</td>
                                 </tr>
-                                `}
-                                ${invoice.payment_status_id === 2 ? '' : `
+
+                                ${showAmountPaid ? `
                                 <tr class="pi-totals-row">
                                     <td style="padding:12px 16px;color:#059669;">Amount Paid</td>
                                     <td style="padding:12px 16px;text-align:right;font-weight:600;color:#059669;">${currency}${fmt(paid)}</td>
                                 </tr>
+                                ` : ''}
+
+                                ${showBaland ? `
                                 <tr style="background:linear-gradient(135deg,#0F2060,#1A3D91);">
                                     <td style="padding:14px 16px;color:#fff;font-weight:700;">Balance Due</td>
                                     <td style="padding:14px 16px;text-align:right;font-weight:800;color:#FDE68A;font-size:16px;">${currency}${fmt(balance)}</td>
-                                </tr>`} 
+                                </tr>
+                                ` : ''}
                             </table>
                         </div>
                     </div>
 
-                    <!-- ═══ REMARKS ═══ -->
                     ${invoice.general_remark ? `
                     <div style="margin:8px 0px 16px;padding:12px 16px;background:#FFFBEB;border-left:3px solid #F59E0B;border-radius:0 8px 8px 0;">
                         <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#92400E;margin-bottom:4px;">Remarks</div>
                         <div style="font-size:12px;color:#78350F;line-height:1.5;">${invoice.general_remark}</div>
                     </div>` : ""}
 
-                    <!-- ═══ FOOTER ═══ -->
                     <div style="display:flex;justify-content:space-between;align-items:flex-end;padding:14px 24px;background:#F8FAFF;border-top:1px solid #E5E9F5;flex-wrap:wrap;gap:12px;">
                         <div>
                             <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#1A3D91;margin-bottom:4px;">Terms &amp; Conditions</div>
@@ -319,7 +311,6 @@ const InvoiceTaxDialog = (() => {
                         </div>
                     </div>
 
-                    <!-- ═══ ACTION BAR ═══ -->
                     <div class="pi-action-bar" style="display:flex;justify-content:flex-end;gap:10px;padding:14px 20px;border-top:1px solid #E5E9F5;background:#fff;">
                         <button id="pi-print-btn"
                             style="padding:9px 20px;border-radius:8px;border:1.5px solid #1A3D91;background:#fff;color:#1A3D91;font-weight:600;display:inline-flex;align-items:center;gap:7px;">
@@ -338,11 +329,14 @@ const InvoiceTaxDialog = (() => {
         const invoiceEl   = container.querySelector("#pi-invoice-content");
         const printBtn    = container.querySelector("#pi-print-btn");
         const downloadBtn = container.querySelector("#pi-download-btn");
+        
         if (printBtn)    printBtn.addEventListener("click",    () => printViaIframe(invoiceEl));
         if (downloadBtn) downloadBtn.addEventListener("click", () => printViaIframe(invoiceEl));
     };
 
     self.show = (op) => {
+        console.log(222, op);
+
         if (!op || !op.invoice_id) {
             cv_interact?.error("Invoice ID is missing");
             return;
@@ -362,19 +356,13 @@ const InvoiceTaxDialog = (() => {
                     <style>@keyframes pi-spin{to{transform:rotate(360deg)}}</style>
                 </div>`,
             contentCreated: (me) => {
+                console.log(121212,op);
+                
                 const container = me.divModal.querySelector('[name="pi_container"]');
-                vsapi.call(`${main_view.base_url}/prm/invoice/details`, { id: op.invoice_id })
-                    .then((res) => {
-                        if (res.status_code !== 200) {
-                            container.innerHTML = `<div class="alert alert-danger m-4">Error: ${res.error_message || "Unknown error"}</div>`;
-                            return;
-                        }
-                        container.innerHTML = buildInvoiceHTML(res.data || {});
-                        wireButtons(container);
-                    })
-                    .catch(() => {
-                        container.innerHTML = `<div class="alert alert-danger m-4">Network error — could not load invoice.</div>`;
-                    });
+                container.innerHTML = buildInvoiceHTML(op.invoice, op.setting);
+                
+                // CRITICAL FIX: Wire the action elements right after appending HTML to the DOM
+                wireButtons(container);
             },
             buttons: [{ label: "Close", cssClass: "btn btn-secondary", click: (me) => me.hide() }]
         });

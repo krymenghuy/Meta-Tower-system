@@ -67,8 +67,8 @@ class Amenity extends VSModel
 
         if ($exist) {
             return DV::error($id 
-                ? 'Another amenity with this name already exists'
-                : 'This amenity name already exists'
+                ? 'Another amenity with this name already exists.'
+                : 'This amenity name already exists.'
             );
         }
 
@@ -342,3 +342,5 @@ class Amenity extends VSModel
             ->exists();
     }
 }
+
+

@@ -132,8 +132,6 @@ var RequestServiceComponent = (function () {
             data: (data) => {
                 const status = (data.status_name ?? '').toLowerCase();
                 const statusId = Number(data.status_id) || 0;
-                console.log
-                (22, statusId, status);
                 const statusClasses = {
                     pending: 'badge text-warning bg-warning-subtle border border-warning',
 
@@ -194,7 +192,7 @@ var RequestServiceComponent = (function () {
         mThis.ServiceRequestListView = new ListView(mThis.divListView, {
             //fetchApi: `${main_view.base_url}/prm/service-request/list`, // Old version
             api: {
-                endpoint: `${main_view.base_url}/prm/service-request/list`, // new version
+                endpoint: `${main_view.base_url}/prm/tenant/request-service/list`, // new version
                 method: 'POST',
                 cacheTTL: 3000 //Cache data 3 seconds
             },
@@ -253,7 +251,6 @@ var RequestServiceComponent = (function () {
             category_id: mThis.elService_category?.value,
             search_value: mThis.elSearch.value,
         };
-        console.log(22, p);
         mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
             const f = el.dataset.field;
             p[f] = el.value;
@@ -753,7 +750,7 @@ const CreateServiceRequestDialog = (() => {
                         const data = me.getData();
                         data.id = op?.id || null;
                         const saveFailedMessage = 'Failed to save service request.';
-                        vsapi.call([main_view.base_url, "/prm/service-request/save",].join(""), data, btn, null)
+                        vsapi.call([main_view.base_url, "/prm/tenant/request-service/save",].join(""), data, btn, null)
                             .then((res) => {
                                 if (res.status_code === 200) {
                                     me.hide(true, data);

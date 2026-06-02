@@ -148,7 +148,7 @@ var VendorComponent = (() => {
             className: "col_action align-middle",
             data: (data) => `
                 <div class="d-flex justify-content-center align-items-end">
-                    <a href="javascript:void(0)" class="btn--Options btn_dropdown_vendor_action" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
+                    <a href="javascript:void(0)" class="btn--Options btn_dropdown_vendor_action" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false" style="padding: 0 10px;">
                         <i class="fa-solid fa-ellipsis-vertical text-black fs-5"></i>
                     </a>
                 </div>`,
@@ -476,7 +476,7 @@ const CreateVendorDialog = (() => {
                              <div class="col-12 col-md-6">
                                 <div class="vs-material-field">
                                     <input type="number" name="phone_number" class="data-input form-control" data-field="phone_number" placeholder=" " />
-                                    <label>Phone Number</label>
+                                    <label vslang="titles.Phone Number"></label>
                                 </div>
                             </div>
                              <div class="col-12 col-md-6">
@@ -548,8 +548,8 @@ const CreateVendorDialog = (() => {
                     },
                 ],
                 prepareFormOptions: {
-                    createTitle: "Create Vendor",
-                    modifyTitle: "Modify Vendor",
+                    createTitle: "vslang:titles.Create Vendor",
+                    modifyTitle: "vslang:titles.Modify Vendor",
                     targetProp: "vendor_details",
                     api: {
                         endpoint: [

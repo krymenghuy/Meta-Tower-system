@@ -132,8 +132,8 @@ var ServiceComponent = (() => {
             className: "col_action align-middle",
             data: (data) => `
                 <div class="d-flex justify-content-center align-items-end">
-                    <a href="javascript:void(0)" class="btn--Options ${data.action_id > 1 ? "d-none" : "btn_service_action"}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
-                        <i class="fa-solid fa-ellipsis-vertical text-black fs-5"></i>
+                    <a href="javascript:void(0)" class="btn--Options ${data.action_id > 1 ? "d-none" : "btn_service_action"}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false" style="padding: 0 10px;">
+                        <i class="fa-solid fa-ellipsis-vertical text-prm-custom fs-5"></i>
                     </a>
                 </div>`,
         },
@@ -254,7 +254,7 @@ var ServiceComponent = (() => {
             <div class="card-body py-3 px-4">
 
                 <div class="text-uppercase small text-muted mb-2 fw-semibold">
-                    Description
+                    <span vslang="labels.Description"></span>
                 </div>
                 <div class="text-primary-custom text-break;">_</div>
             </div>
@@ -272,7 +272,7 @@ var ServiceComponent = (() => {
             <div class="card-body py-3 px-4">
 
                 <div class="text-uppercase small text-muted mb-2 fw-semibold">
-                    Description
+                    <span vslang="labels.Description"></span>
                 </div>
 
                 <div class="text-primary-custom text-break;">
@@ -514,7 +514,7 @@ const CreateServicePriceDialog = (() => {
                             <div class="col-6">
                                 <div class="vs-material-field">
                                     <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder="" />
-                                    <label>Name</label>
+                                    <label vslang="labels.Name"></label>
                                 </div>
                             </div>
                             <div class="col-6">
@@ -542,13 +542,13 @@ const CreateServicePriceDialog = (() => {
                             <div class="col-6">
                                 <div class="vs-material-field">
                                     <input data-type="money" name="price" class="data-input inputbox-input form-control" data-field="price" placeholder="" />
-                                    <label>Price</label>
+                                    <label vslang="labels.Price"></label>
                                 </div>
                             </div>
                             <div class="col-12">
                                 <div class="vs-material-field">
                                     <textarea name="description" class="data-input form-control" data-field="description" placeholder=" "></textarea>
-                                    <label>Description</label>
+                                    <label vslang="labels.Description"></label>
                                 </div>
                             </div>
                         </div>`,
@@ -590,8 +590,8 @@ const CreateServicePriceDialog = (() => {
                     },
                 ],
                 prepareFormOptions: {
-                    createTitle: "Create Service Price",
-                    modifyTitle: "Modify Service Price",
+                    createTitle: "vslang:titles.Create Service Price",
+                    modifyTitle: "vslang:titles.Modify Service Price",
                     targetProp: "service_details",
                     api: {
                         endpoint: [

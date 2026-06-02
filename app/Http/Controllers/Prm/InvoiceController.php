@@ -63,31 +63,6 @@ class InvoiceController extends Controller
         return JDV::result($detail);
     }  
 
-//     public function invoiceDetails(Request $req)
-// {
-//     $ss = XAuthService::verifyAuth($req, -1);
-//     if ($ss->status_code !== 200) {
-//         return JDV::raw($ss);
-//     }
-
-//     $id = $req->id;
-
-//     if (empty($id)) {
-//         return JDV::error('Invoice ID is required');
-//     }
-
-//     $detail = $this->invoices->getInvoiceDetails($id);
-
-//     if (!$detail) {
-//         return JDV::error('Invoice not found');
-//     }
-
-//     $detail->total_amount = $detail->amount;
-//     $detail->total_discount = $detail->discount_value;
-//     $detail->net_total = $detail->amount - $detail->discount_value;
-
-//     return JDV::result($detail);
-// }
 
     public function getFormOptions(Request $req)
     {
@@ -131,14 +106,35 @@ class InvoiceController extends Controller
             return JDV::raw($res);
         }
 
-    // public function setInvoiceStatus(Request $req)
-    // {
-    //     $ss = XAuthService::verifyAuth($req, -1);
-    //     if ($ss->status_code !== 200) {
-    //         return JDV::raw($ss);
-    //     }
+       public function invoiceSetting(Request $req)
+        {
+            $ss = XAuthService::verifyAuth($req, -1);
+            if ($ss->status_code !== 200) {
+                return JDV::raw($ss);
+            }
+            $invoice = new Invoice(null, $ss);
+            $res = $invoice->invoiceSetting($req->all(), $ss);
+            return JDV::raw($res);
+        }
+        public function getInvoiceSetting(Request $req)
+        {
+            $ss = XAuthService::verifyAuth($req, -1);
+            if ($ss->status_code !== 200) {
+                return JDV::raw($ss);
+            }
+            $invoice = new Invoice(null, $ss);
+            $res = $invoice->getInvoiceSetting($req->all(), $ss);
+            return JDV::raw($res);
+        }
+         public function resetInvoiceSetting(Request $req)
+        {
+            $ss = XAuthService::verifyAuth($req, -1);
+            if ($ss->status_code !== 200) {
+                return JDV::raw($ss);
+            }
+            $invoice = new Invoice(null, $ss);
+            $res = $invoice->resetInvoiceSettings($req->all(), $ss);
+            return JDV::raw($res);
+        }
 
-    //     return JDV::raw($this->invoices->setInvoiceStatus($req->all(), $ss));
-
-    // }
 }

@@ -17,7 +17,9 @@ var main_view = (()=>{
     mThis.VSAppContent = document.querySelector('#_app_content');
     //mThis.appContent = $(mThis.VSAppContent); //should no longer use it !!!
    
-    mThis.auth_script_url = 'https://cdn.vectoraclouds.com/frontcore/utils/AuthManager.v2.js';
+    mThis.auth_script_url ="https://cdn.vectoraclouds.com/frontcore/utils/AuthManager.v2.js?v=2";
+    //mThis.auth_script_url = mThis.base_url +  "/assets/js/AuthManager.v2.js?v=2";
+
     mThis.secure_endpoint =  [mThis.base_url,'/api/1a2b3c4d5e6f7g8h9i0j1k2l3m/en'].join('');
     mThis.top_right_menus = document.querySelector('#_main_top_right_menus');
       
@@ -113,7 +115,7 @@ mThis.init_vsapi = async () => {
        mThis.side_menus = document.querySelector('#_dms_aside_menus');
        
       //Sanitizer.setDebugMode(false);     
-      VSRoute.init(mThis.side_menus.querySelectorAll('a.menu-item'),"DashboardComponent",mThis.side_menus,true);
+      VSRoute.init(mThis.side_menus.querySelectorAll('a.menu-item'),"DashboardComponent",mThis.side_menus,{debug:true});
 
       // Same contract UI as PRM: allow menu href ContractComponent or ContractsComponent
       if (typeof ContractsComponent !== 'undefined' && typeof ContractComponent === 'undefined') {
@@ -477,7 +479,7 @@ window.addEventListener('DOMContentLoaded',async()=>{
     main_view.setLangMenu(LocaleManager.currentLanguage.code);
 
     const inputs = main_view.VSAppContent.querySelectorAll("input");
-
+       
     DateTimePicker.destroyAll();
     inputs.forEach(el =>{
         const type = el.getAttribute('type') ?? el.dataset.select ?? '';

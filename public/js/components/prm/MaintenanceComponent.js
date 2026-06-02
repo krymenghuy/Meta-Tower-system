@@ -115,8 +115,8 @@ var MaintenanceComponent = (() => {
                        data-id="${data.id}"
                        data-statusid="${data.effective_status_id ?? data.status_id}"
                        aria-haspopup="true"
-                       aria-expanded="false">
-                        <i class="fa-solid fa-ellipsis-vertical text-black fs-5"></i>
+                       aria-expanded="false" style="padding: 0 10px;">
+                        <i class="fa-solid fa-ellipsis-vertical text-prm-custom fs-5"></i>
                     </a>
                 </div>`
         }
@@ -241,24 +241,41 @@ var MaintenanceComponent = (() => {
                         onClose: () => mThis.MaintenanceListView.showPage(mThis.getFilterData())
                     });
                 } else if (name === "finish_maintenance") {
-                    cv_interact.confirm("Finish this maintenance?", { transTitle: "Finish Maintenance", context: "confirm", confirmButtonText: "Finish" }, (e) => {
-                        if (e) {
-                            vsapi.call(`${main_view.base_url}/prm/maintenance/set-status`, { id: id, status_id: 3 }, menuLink, null).then(res => {
-                                if (res.status_code === 200) {
-                                    cv_interact.success("Maintenance finished.");
-                                    mThis.MaintenanceListView.showPage(mThis.getFilterData());
-                                } else {
-                                    cv_interact.error(res.error_message || "Failed");
-                                }
-                            });
+                    cv_interact.confirm(
+                        "confirm_finish_maintenance",
+                        {
+                            langSection: "message_box_default",
+                            translate: true,
+                            title: "finish_maintenance",
+                            context: "update",
+                            confirmButtonText: "Finish",
+                            cancelButtonText: "Cancel"
+                        },
+                        (e) => {
+                            if (e) {
+                                vsapi.call(
+                                    `${main_view.base_url}/prm/maintenance/set-status`,
+                                    { id: id, status_id: 3 },
+                                    menuLink,
+                                    null
+                                ).then(res => {
+                                    if (res.status_code === 200) {
+                                        cv_interact.success("maintenance_finished"
+                                        );
+                                        mThis.MaintenanceListView.showPage(mThis.getFilterData());
+                                    } else {
+                                        cv_interact.error(res.error_message || "Failed");
+                                    }
+                                });
+                            }
                         }
-                    });
+                    );
                 } else if (name === "cancel_maintenance") {
-                    cv_interact.confirm("Cancel this maintenance?", { transTitle: "Cancel Maintenance", context: "confirm", confirmButtonText: "Cancel" }, (e) => {
+                    cv_interact.confirm("confirm_cancel_maintenance", { langSection: "message_box_default",translate:true, context: "update", confirmButtonText: "Cancel" }, (e) => {
                         if (e) {
                             vsapi.call(`${main_view.base_url}/prm/maintenance/set-status`, { id: id, status_id: 4 }, menuLink, null).then(res => {
                                 if (res.status_code === 200) {
-                                    cv_interact.success("Maintenance cancelled.");
+                                    cv_interact.success("maintenance_cancelled");
                                     mThis.MaintenanceListView.showPage(mThis.getFilterData());
                                 } else {
                                     cv_interact.error(res.error_message || "Failed");
@@ -267,11 +284,17 @@ var MaintenanceComponent = (() => {
                         }
                     });
                 } else if (name === "delete") {
-                    cv_interact.confirm("Delete this maintenance record?", { transTitle: "Delete Maintenance", context: "delete", confirmButtonText: "Delete" }, (e) => {
+                    cv_interact.confirm("confirm_delete_maintenance", {
+                        langSection: 'message_box_default',
+                        translate: true,
+                        title: "delete_maintenance",
+                        context: "delete",
+                        confirmButtonText: "Delete"
+                        }, (e) => {
                         if (e) {
                             vsapi.call(`${main_view.base_url}/prm/maintenance/delete`, { id: id }, false, false, false).then(res => {
                                 if (res.status_code === 200) {
-                                    cv_interact.success(res.message || "Maintenance has been deleted.");
+                                    cv_interact.success("maintenance_deleted");
                                     mThis.MaintenanceListView.showPage(mThis.getFilterData());
                                 } else {
                                     cv_interact.error(res.error_message || "Delete failed");
@@ -380,13 +403,13 @@ const CreateMaintenanceDialog = (() => {
                             <div class="col-12 col-md-6">
                                 <div class="vs-material-field">
                                     <input type="text" data-type="date" name="start_date" class="data-input form-control" data-field="start_date" placeholder=" ">
-                                    <label>Start date</label>
+                                    <label vslang="labels.Start Date">Start date</label>
                                 </div>
                             </div>
                             <div class="col-12 col-md-6">
                                 <div class="vs-material-field">
                                     <input type="time" name="start_time" class="data-input form-control" data-field="start_time"  placeholder=" ">
-                                    <label>Start time</label>
+                                    <label vslang="labels.Start Time">Start time</label>
                                 </div>
                             </div>
                         </div>
@@ -396,13 +419,13 @@ const CreateMaintenanceDialog = (() => {
                             <div class="col-12 col-md-6">
                                 <div class="vs-material-field">
                                     <input type="text" data-type="date" name="end_date" class="data-input form-control" data-field="end_date" placeholder=" ">
-                                    <label>End date</label>
+                                    <label vslang="labels.End Date">End date</label>
                                 </div>
                             </div>
                             <div class="col-12 col-md-6">
                                 <div class="vs-material-field">
                                     <input type="time" name="end_time" class="data-input form-control" data-field="end_time" placeholder=" ">
-                                    <label>End time</label>
+                                    <label vslang="labels.End Time">End time</label>
                                 </div>
                             </div>
                         </div>
@@ -410,7 +433,7 @@ const CreateMaintenanceDialog = (() => {
                     <section class="maintenance-form-section mb-3 bg-white">
                         <div class="vs-material-field">
                             <textarea name="remarks" class="data-input form-control" data-field="remarks" rows="2" placeholder=" "></textarea>
-                            <label>Remark</label>
+                            <label vslang="labels.Remark">Remark</label>
                         </div>
                     </section>
                 </div>
@@ -444,8 +467,8 @@ const CreateMaintenanceDialog = (() => {
                 { name: "amenity_id", data: "amenities", textField: "amenity_code", valueField: "id" }
             ],
             prepareFormOptions: {
-                createTitle: "Create Maintenance",
-                modifyTitle: "Modify Maintenance",
+                createTitle: "vslang:titles.Create Maintenance",
+                modifyTitle: "vslang:titles.Modify Maintenance",
                 targetProp: "maintenance_details",
                 api: {
                     endpoint: `${main_view.base_url}/prm/maintenance/form-options`,

@@ -16,23 +16,63 @@ class InvoiceSettingController extends Controller
     {
         $this->invoiceSetting = new InvoiceSetting();
     }
+        public function saveInvoiceSetting(Request $req)
+    {
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        $invoiceSetting = new InvoiceSetting();
+        $res = $invoiceSetting->saveInvoiceSetting($req->all(), null, $ss);
+        // Pass 'null' as the second argument so $ss lands in the 3rd position
+        return JDV::result($res);
+    }
+    public function getExchangeRate(Request $req)
+    {
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
 
+        
+        $invoiceSetting = new InvoiceSetting();
+        $res = $invoiceSetting->getExchangeRate(null, $ss);
+        return JDV::result($res);
+    }
     public function getInvoiceSetting(Request $req)
     {
         $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        return JDV::result($this->invoiceSetting->getInvoiceSetting($req->all(), $ss));
+
+        
+        $invoiceSetting = new InvoiceSetting();
+        $res = $invoiceSetting->getInvoiceSetting(null, $ss);
+        return JDV::result($res);
     }
-    public function saveInvoiceSetting(Request $req)
+
+    public function updateToglleButton(Request $req)
     {
         $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        
-        // Pass 'null' as the second argument so $ss lands in the 3rd position
-        return JDV::result($this->invoiceSetting->saveInvoiceSetting($req->all(), null, $ss));
+         $invoiceSetting = new InvoiceSetting();
+        $res = $invoiceSetting->updateToglleButton($req->all(), $ss);
+        return JDV::result($res);
     }
+
+     public function getToglleButton(Request $req)
+    {
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        $invoiceSetting = new InvoiceSetting();
+        $res = $invoiceSetting->getToglleButton(null, $ss);
+        return JDV::result($res);
+    }
+
+
 }
