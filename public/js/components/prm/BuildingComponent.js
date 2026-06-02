@@ -505,13 +505,15 @@ var BuildingComponent = (() => {
                 // mThis.fetchSummaryData();
             },
         };
-        if (!AuthManager.allowed(242)) return;
+        // if (!AuthManager.allowed(242)) return;
         cv_interact.confirm(
-            "Delete this Building?",
+            "confirm_delete_building",
             {
-                title: "Delete Building",
-                context: "delete",
-                confirmButtonText: "Delete",
+                'langSection': "message_box_default",
+                'translate': true,
+                'title': "building_delete",
+                'context': "delete",
+                'confirmButtonText': "Delete",
             },
             function (e) {
                 if (e) {
@@ -526,13 +528,9 @@ var BuildingComponent = (() => {
                         .then((res) => {
                             if (res.status_code == 200) {
                                 mThis.BuildingListView.showPage();
-                                cv_interact.success(
-                                    "Building has been deleted",
-                                );
+                                cv_interact.success("building_deleted");
                             } else {
-                                cv_interact.error(
-                                    res.error_message || "Delete failed",
-                                );
+                                cv_interact.error(res.error_message);
                             }
                         });
                 }
@@ -723,21 +721,14 @@ const BuildingDialog = (() => {
                             ).then((res) => {
                                 if (res.status_code === 200) {
                                     me.hide(true, op);
-
-                                    cv_interact.success(
-                                        me.dataOptions.id > 0
-                                            ? "building_updated"
-                                            : "building_created",
-                                        {
-                                            langSection: "message_box_default",
-                                            title:{},
-                                            translate: true
-                                        }
-                                    );
+                                    if(me.dataOptions.id > 0){
+                                        cv_interact.success("building_updated");
+                                    }else {
+                                        cv_interact.success("building_created");
+                                    }
+                                    
                                 } else {
-                                    cv_interact.error(
-                                        res.error_message || "Failed"
-                                    );
+                                    cv_interact.error(res.error_message);
                                 }
                             });
                         },
@@ -856,11 +847,7 @@ const CreateFloorDialog = (() => {
                                     cv_interact.success(
                                         op.id > 0
                                             ? "floor_updated"
-                                            : "floor_created",
-                                        {
-                                            langSection: "message_box_default",
-                                            translate: true
-                                        }
+                                            : "floor_created"
                                     );
                                 } else {
                                     cv_interact.error(res.error_message);
