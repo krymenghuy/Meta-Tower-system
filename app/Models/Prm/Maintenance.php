@@ -164,11 +164,11 @@ class Maintenance extends VSModel
         $ss = $ss ?? $this->userInfo;
 
         $v_rule = [
-            'building_id' => '1|number|exists=buildings.id|text=Please select a valid building.',
+            'building_id' => '1|number|exists=buildings.id|text=select_building',
             'space_id'    => '0|number|exists=building_spaces.id',
             'amenity_id'  => '0|number|exists=amenities.id',
-            'start_date'  => '1|TIMESTAMP|text=Start date is required.',
-            'end_date'    => '1|TIMESTAMP|text=End date is required.',
+            'start_date'  => '1|TIMESTAMP|text=required_start_date',
+            'end_date'    => '1|TIMESTAMP|text=required_end_date',
             'remarks'     => '0|string|0-255',
         ];
 
@@ -182,7 +182,7 @@ class Maintenance extends VSModel
             preg_match('/\d{1,2}:\d{2}/', (string)$arr['start_date']);
 
         if (!$hasStartTime) {
-            return DV::error('Start time is required.');
+            return DV::error('required_start_time');
         }
 
         $hasEndTime =
@@ -190,30 +190,30 @@ class Maintenance extends VSModel
             preg_match('/\d{1,2}:\d{2}/', (string)$arr['end_date']);
 
         if (!$hasEndTime) {
-            return DV::error('End time is required.');
+            return DV::error('required_end_time');
         }
 
         $start = strtotime($input['start_date']);
         $end = strtotime($input['end_date']);
         $now = time();
         if ($start < strtotime(date('Y-m-d'))) {
-            return DV::error('Start date cannot be in the past.');
+            return DV::error('start_date_cannot_in_past');
         }
 
         if ($end < strtotime(date('Y-m-d'))) {
-            return DV::error('End date cannot be in the past.');
+            return DV::error('end_date_cannot_in_past');
         }
 
         if ($start >= $end) {
-            return DV::error('End date/time must be after start date/time.');
+            return DV::error('end_after_start');
         }
 
         if ($start < $now) {
-            return DV::error('Start time cannot be in the past.');
+            return DV::error('start_time_cannot_in_past');
         }
 
         if ($end < $now) {
-            return DV::error('End time cannot be in the past.');
+            return DV::error('end_time_cannot_in_past');
         }
 
         if (!empty($input['amenity_id'])) {
