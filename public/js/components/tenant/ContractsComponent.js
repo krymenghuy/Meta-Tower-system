@@ -4,7 +4,6 @@ var ContractsComponent = new (function () {
     const mThis = this;
     mThis.title_prop = "Contract Management";
     mThis.self = main_view.VSAppContent.querySelector("#_main_contract_component");
-    mThis.btnAdd = mThis.self.querySelector("#_btnAddContract");
     mThis.btnPDF = mThis.self.querySelector('#_asusp_btn_pdf');
     // mThis.elTenant = mThis.self.querySelector('#tenant_id');
     mThis.elBusinessType = mThis.self.querySelector('#business_type_id');
@@ -163,10 +162,6 @@ var ContractsComponent = new (function () {
 
     mThis.init = () => {
         if (mThis.initAlready) return;
-
-        if (mThis.btnAdd) {
-            mThis.btnAdd.style.display = 'none';
-        }
 
         mThis.ContractListView = new ListView('_contract_list', {
             fetchApi: `${main_view.base_url}/prm/tenant/contract/list-paginate`,
