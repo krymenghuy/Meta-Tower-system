@@ -132,7 +132,7 @@ class Contract
     }
 
     $v_rule = [
-        'tenant_id'        => '1|number|exists=tenants.id|text=Please select a tenant.',
+        'tenant_id'        => '1|number|exists=tenants.id|text=select_tenant',
         'legal_name'       => '0|string|0-100',
         'business_type_id' => '1|number|exists=business_types.id|text=Please select a business type.',
         'space_id'         => '1|number|exists=building_spaces.id|text=Please select a valid unit code',

@@ -507,17 +507,17 @@ class BuildingSpace
             return DV::error('booking_date_must');
         }
         if (strtotime($expiredDate) < strtotime($today)) {
-            return DV::error('Expired booking date cannot be in the past.');
+            return DV::error('expired_date_cannot_in_past');
         }
 
         $minExpire = date('Y-m-d', strtotime($bookingDate . ' +14 days'));
         if (strtotime($expiredDate) < strtotime($minExpire)) {
-            return DV::error('Expired booking date must be at least 14 days after booking date.');
+            return DV::error('expired_date_min_14_days');
         }
         $maxExpire = date('Y-m-d', strtotime($bookingDate . ' +3 months'));
 
         if (strtotime($expiredDate) > strtotime($maxExpire)) {
-            return DV::error('Booking duration cannot exceed 3 months.');
+            return DV::error('booking_duration_max_3_months');
         }
         if (empty($inputs['remarks'])) {
             $inputs['remarks'] = "Booking created by {$ss->full_name} on " . date('d-M-Y H:i:s');
