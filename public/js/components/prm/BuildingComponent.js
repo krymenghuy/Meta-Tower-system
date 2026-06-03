@@ -401,7 +401,7 @@ var BuildingComponent = (() => {
 
     mThis.deleteFloor = (op, onDone) => {
         cv_interact.confirm(
-            "confirm_deleted",
+            "confirm_delete",
             {
                 title: "deleted",
                 context: "delete",
@@ -419,9 +419,7 @@ var BuildingComponent = (() => {
                     )
                     .then((res) => {
                         if (res.status_code === 200) {
-                            cv_interact.success(
-                                "deleted",
-                            );
+                            cv_interact.success = (message,title=null,position='center');
                             if (typeof onDone === "function") onDone();
                         } else {
                             cv_interact.error(res.error_message);
@@ -505,7 +503,7 @@ var BuildingComponent = (() => {
         };
         // if (!AuthManager.allowed(242)) return;
         cv_interact.confirm(
-            "confirm_deleted",
+            "confirm_delete",
             {
                 'langSection': "message_box_default",
                 'translate': true,
@@ -526,7 +524,7 @@ var BuildingComponent = (() => {
                         .then((res) => {
                             if (res.status_code == 200) {
                                 mThis.BuildingListView.showPage();
-                                cv_interact.success("deleted");
+                               cv_interact.success = (message,title=null,position='center');
                             } else {
                                 cv_interact.error(res.error_message);
                             }
@@ -720,9 +718,9 @@ const BuildingDialog = (() => {
                                 if (res.status_code === 200) {
                                     me.hide(true, op);
                                     if(me.dataOptions.id > 0){
-                                        cv_interact.success("updated");
+                                        cv_interact.success = (message,title=null,position='center');
                                     }else {
-                                        cv_interact.success("created");
+                                        cv_interact.success = (message,title=null,position='center');
                                     }
                                     
                                 } else {
@@ -842,11 +840,11 @@ const CreateFloorDialog = (() => {
                                         me.dataOptions.onClose(true, res.data);
                                     }
                                     me.hide(true, op);
-                                    cv_interact.success(
-                                        op.id > 0
-                                            ? "updated"
-                                            : "created"
-                                    );
+                                    if (me.dataOptions.id > 0) {
+                                        cv_interact.success = (message,title=null,position='center');
+                                    } else {
+                                        cv_interact.success = (message,title=null,position='center');
+                                    }
                                 } else {
                                     cv_interact.error(res.error_message);
                                 }

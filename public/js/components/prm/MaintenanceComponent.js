@@ -284,7 +284,7 @@ var MaintenanceComponent = (() => {
                         }
                     });
                 } else if (name === "delete") {
-                    cv_interact.confirm("confirm_deleted", {
+                    cv_interact.confirm("confirm_delete", {
                         langSection: 'message_box_default',
                         translate: true,
                         title: "deleted",
@@ -294,7 +294,7 @@ var MaintenanceComponent = (() => {
                         if (e) {
                             vsapi.call(`${main_view.base_url}/prm/maintenance/delete`, { id: id }, false, false, false).then(res => {
                                 if (res.status_code === 200) {
-                                    cv_interact.success("deleted");
+                                    cv_interact.success = (message,title=null,position='center');
                                     mThis.MaintenanceListView.showPage(mThis.getFilterData());
                                 } else {
                                     cv_interact.error(res.error_message);

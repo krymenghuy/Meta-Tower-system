@@ -17,6 +17,7 @@ Route::middleware([CustomRateLimiter::class])->prefix('settings')->group(functio
         return response()->json(['uuid' => createUUID(true)]);
     });
 });
+ 
 //begin::CompanyProfileController
     Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('company')->group(function(){
         Route::post('/save-logo', [CompanyProfileController::class, 'saveCompanyLogo']);
@@ -27,6 +28,7 @@ Route::middleware([CustomRateLimiter::class])->prefix('settings')->group(functio
         Route::post('/info', [CompanyProfileController::class, 'getCompanyInfo']);
     });
 //end::CompanyProfileController
+ 
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('company/social-media')->group(function(){
     Route::post('/save',[SocialMediaController::class,'save']);

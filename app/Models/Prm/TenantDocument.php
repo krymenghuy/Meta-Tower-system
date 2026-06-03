@@ -35,7 +35,7 @@ class TenantDocument
             'id'                 => '0|number',
             'tenant_id'          => '1|number|exists=tenants.id',
             'remarks'            => '0|string|0-255',
-            'document_type_id'   => '1|number|exists=document_types.id',
+            'document_type_id'   => '1|number|exists=document_types.id|text=select_document_type',
             'ext'                => '0|string',
             'original_file_name' => '0|string|0-255',
             'data'               => '0|string',
@@ -50,7 +50,7 @@ class TenantDocument
         $d      = (object) $inputs;
         $data   = $d->data ?? null;
         $ext    = strtolower($d->ext ?? '');
-        \Log::info(json_encode($res));
+        // \Log::info(json_encode($res));
 
 
         if ($data && $ext) {
@@ -76,7 +76,7 @@ class TenantDocument
                 return DV::error($res->error_message);
             }
 
-            \Log::info(json_encode($res));
+            // \Log::info(json_encode($res));
 
             unset($inputs['data']);
             $inputs['file_name'] = $res->file_name;
@@ -85,10 +85,10 @@ class TenantDocument
         else {
             unset($inputs['data'], $inputs['ext'], $inputs['file_name'], $inputs['category'], $inputs['original_file_name']);
         }
-        \Log::info(($inputs));
+        // \Log::info(($inputs));
 
         $id = DBX::saveData($ss, 'tenant_documents', ['id' => $id], $inputs, [], 1);
-        \Log::info(($id));
+        // \Log::info(($id));
         // $file_name = DB::table('tenant_documents')->where ('id', $id)->select('original_file_name');
         $inputs['file_name'] = $d->original_file_name ?? null;
 
