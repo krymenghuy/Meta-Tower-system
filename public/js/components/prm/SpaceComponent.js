@@ -1410,3 +1410,4 @@ const ViewBookingDialog = (() => {
 
     return self;
 })();
+

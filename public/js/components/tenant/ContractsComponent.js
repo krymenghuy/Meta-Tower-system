@@ -164,6 +164,10 @@ var ContractsComponent = new (function () {
     mThis.init = () => {
         if (mThis.initAlready) return;
 
+        if (mThis.btnAdd) {
+            mThis.btnAdd.style.display = 'none';
+        }
+
         mThis.ContractListView = new ListView('_contract_list', {
             fetchApi: `${main_view.base_url}/prm/tenant/contract/list-paginate`,
             perPage: 10,
@@ -179,18 +183,6 @@ var ContractsComponent = new (function () {
             },
             listContainerClass: null
         });
-
-        mThis.btnAdd.onclick = function (e) {
-            e.preventDefault();
-            const op = {
-                id: null,
-                btn: e.target,
-                onClose: () => {
-                    mThis.ContractListView.showPage(mThis.getFilterData());
-                }
-            };
-            ContractDialog.show(op);
-        };
 
         mThis.pr_tbl = mThis.ContractListView.getListContainer();
         const sh_parent = mThis.pr_tbl.parentElement;
@@ -247,7 +239,7 @@ var ContractsComponent = new (function () {
 
     mThis.getFilterData = () => {
         let p = {
-            search_value: mThis.elSearch.value,
+            search_value: (mThis.elSearch.value || "").trim(),
         };
 
         mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
