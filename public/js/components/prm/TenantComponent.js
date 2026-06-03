@@ -579,62 +579,63 @@ var TenantComponent = new (function () {
         container.innerHTML = html;
         LocaleManager.translateZone(container);
 
-        const seeProfileInfo = mThis.cardViewContainer.querySelectorAll(".see-tenant-detail");
-            seeProfileInfo.forEach((link) => {
-                link.addEventListener("click", (e) => {
-                    const tenantId = e.currentTarget.dataset.id;
-                    mThis.tenant_id = tenantId;
-                    mThis.showPage("profile_view", tenantId);
-                    //const employeeData = data.find((emp) => emp.id == employeeId);
-                    // if (employeeData) {
-                    //     let sub_content = mThis.self.querySelector("#sub_content");
-                    //     sub_content.classList.add("d-none");
-                    //     let view_see_info =
-                    //         mThis.self.querySelector("#view_see_info__");
-                    //     view_see_info.classList.remove("d-none");
+        const seeProfileInfo =
+            mThis.cardViewContainer.querySelectorAll(".see-tenant-detail");
+        seeProfileInfo.forEach((link) => {
+            link.addEventListener("click", (e) => {
+                const tenantId = e.currentTarget.dataset.id;
+                mThis.tenant_id = tenantId;
+                mThis.showPage("profile_view", tenantId);
+                //const employeeData = data.find((emp) => emp.id == employeeId);
+                // if (employeeData) {
+                //     let sub_content = mThis.self.querySelector("#sub_content");
+                //     sub_content.classList.add("d-none");
+                //     let view_see_info =
+                //         mThis.self.querySelector("#view_see_info__");
+                //     view_see_info.classList.remove("d-none");
 
-                    //     mThis.renderProfile(employeeData);
-                    //     mThis.renderCardCenter(employeeId);
-                    //     mThis.renderCardLeft(employeeId);
-                    //     mThis.renderCardRight(employeeId);
-                    //     mThis.renderCardTaxAllowance(employeeId);
-                    //     mThis.renderEmpDocuments(employeeId);
-                    // } else {
-                    //     console.error(
-                    //         "Employee data not found for ID:",
-                    //         employeeId
-                    //     );
-                    // }
-                });
+                //     mThis.renderProfile(employeeData);
+                //     mThis.renderCardCenter(employeeId);
+                //     mThis.renderCardLeft(employeeId);
+                //     mThis.renderCardRight(employeeId);
+                //     mThis.renderCardTaxAllowance(employeeId);
+                //     mThis.renderEmpDocuments(employeeId);
+                // } else {
+                //     console.error(
+                //         "Employee data not found for ID:",
+                //         employeeId
+                //     );
+                // }
             });
+        });
 
-            const createContract = mThis.cardViewContainer.querySelectorAll(
-                ".create-tenant-contract",
-            );
-            createContract.forEach((link) => {
-                link.addEventListener("click", (e) => {
-                    const tenantId = e.currentTarget.dataset.id;
-                    mThis.tenant_id = tenantId;
-                    const op = {
-                        id: null,
-                        tenant_id: tenantId,
-                        btn: e.currentTarget,
-                        onClose: () => {
-                            mThis.renderView();
-                        },
-                    };
-                    ContractDialog.show(op);
-                });
+        const createContract = mThis.cardViewContainer.querySelectorAll(
+            ".create-tenant-contract",
+        );
+        createContract.forEach((link) => {
+            link.addEventListener("click", (e) => {
+                const tenantId = e.currentTarget.dataset.id;
+                mThis.tenant_id = tenantId;
+                const op = {
+                    id: null,
+                    tenant_id: tenantId,
+                    btn: e.currentTarget,
+                    onClose: () => {
+                        mThis.renderView();
+                    },
+                };
+                ContractDialog.show(op);
             });
-            const container_te = mThis.cardViewContainer;
-            const te_parent = container_te;
+        });
+        const container_te = mThis.cardViewContainer;
+        const te_parent = container_te;
+        te_parent.style.maxHeight = window.innerHeight - 230 + "px";
+        te_parent.classList.add("overflow-y-auto");
+        te_parent.classList.add("overflow-x-hidden");
+
+        window.onresize = () => {
             te_parent.style.maxHeight = window.innerHeight - 230 + "px";
-            te_parent.classList.add("overflow-y-auto");
-            te_parent.classList.add("overflow-x-hidden");
-
-            window.onresize = () => {
-                te_parent.style.maxHeight = window.innerHeight - 230 + "px";
-            };
+        };
     };
 
     mThis.renderView = () => {
@@ -645,7 +646,6 @@ var TenantComponent = new (function () {
             mThis.listViewContainer.classList.add("d-none");
             mThis.paginationContainer.style.display = "block";
             mThis.tenantCardView.showPage(params);
-            
         } else {
             mThis.cardViewContainer.classList.add("d-none");
             mThis.listViewContainer.classList.remove("d-none");
@@ -958,7 +958,6 @@ var TenantComponent = new (function () {
 
                 profile_info_tenant.classList.add("active");
                 mThis.renderOverView(profile_info_tenant, target, data);
-
             });
         });
         LocaleManager.translateZone(mThis.profile_info_tenant);
@@ -1056,7 +1055,7 @@ var TenantComponent = new (function () {
             const end = mThis._escapeHtml(first.contract_end_date ?? "");
             // const title = `vslang:titles.Contract: ${start} — ${end}`;
             // const title = `${vslang('titles.Contract')}: ${start} — ${end}`;
-            const title = `${LocaleManager.trans('Contract','titles')} : ${start} — ${end}`;
+            const title = `${LocaleManager.trans("Contract", "titles")} : ${start} — ${end}`;
 
             const unitPart = mThis._escapeHtml(mThis._getUnitCode(first, "—"));
             const sqmPart =
@@ -1068,7 +1067,7 @@ var TenantComponent = new (function () {
                 : "";
             const detailPillsHtml = `
                 <div class="d-flex flex-wrap gap-2 mt-2">
-                    <span class="badge rounded-pill fw-normal px-3 py-2" style="color:#4a4a4a;background-color:#f6f4ee;border:1px solid #e5dfd1;">${LocaleManager.trans('unit','titles')} ${unitPart}</span>
+                    <span class="badge rounded-pill fw-normal px-3 py-2" style="color:#4a4a4a;background-color:#f6f4ee;border:1px solid #e5dfd1;">${LocaleManager.trans("unit", "titles")} ${unitPart}</span>
                     <span class="badge rounded-pill fw-normal px-3 py-2" style="color:#4a4a4a;background-color:#f6f4ee;border:1px solid #e5dfd1;">${sqmPart}</span>
                     ${bldg ? `<span class="badge rounded-pill fw-normal px-3 py-2" style="color:#4a4a4a;background-color:#f6f4ee;border:1px solid #e5dfd1;">${bldg}</span>` : ""}
                 </div>`;
@@ -1204,7 +1203,6 @@ var TenantComponent = new (function () {
                         </div>`;
                     div.innerHTML = html;
                     LocaleManager.translateZone(div);
-
                 });
         }
         if (target == "lease_tenant_history") {
@@ -1233,7 +1231,7 @@ var TenantComponent = new (function () {
                                 ${cardsHtml}
                             </div>
                         </div>`;
-                        LocaleManager.translateZone(div);
+                    LocaleManager.translateZone(div);
                 })
                 .catch((err) => {
                     div.innerHTML = `<div class="tab-pane active" id="lease_tenant_history">
@@ -1318,7 +1316,7 @@ var TenantComponent = new (function () {
                         </td>
                     </tr>
                 `;
-                LocaleManager.translateZone(div);
+                        LocaleManager.translateZone(div);
                     });
 
                     // Empty state
@@ -1655,34 +1653,75 @@ const CreateTenantDialog = (() => {
                     me.ext = null;
 
                     me.renderTenantImage = () => {
-                        // console.log(1, me.dataOptions.id);
-                        // console.log(2, me.fileBase64);
+                        console.log(1, me.dataOptions.id);
+                        console.log(2, me.fileBase64);
 
                         const src = new URL(me.previewImg.src).pathname
                             .split("/")
                             .pop();
 
-                        // console.log(3, src);
+                        console.log(3, src);
 
-                        if (
-                            me.dataOptions.id == null ||
+                        // if (
+                        //     me.dataOptions.id == null ||
+                        //     !me.fileBase64
+                        // ) {
+                        // console.log(4, "start if");
+
+                        //     me.uploadZone.classList.remove("d-none");
+                        //     me.previewZone.classList.add("d-none");
+                        //     me.uploadInput.value = "";
+                        //     if (me.displayInput) me.displayInput.value = "";
+                        //     if (me.previewImg) me.previewImg.src = "";
+                        // } else if (me.dataOptions.id > 0 &&
+                        //     me.fileBase64 &&
+                        //     src == "placeholder.svg"
+                        // ) {
+                        // console.log(4, "start else if "  );
+
+                        //     me.uploadZone.classList.remove("d-none");
+                        //     me.previewZone.classList.add("d-none");
+                        //     me.uploadInput.value = "";
+                        //     if (me.displayInput) me.displayInput.value = "";
+                        //     if (me.previewImg) me.previewImg.src = "";
+                        // } else {
+                        // console.log(4, "start else");
+
+                        //     me.uploadZone.classList.add("d-none");
+                        //     me.previewZone.classList.remove("d-none");
+                        // }
+
+                        if (me.dataOptions.id == null && me.fileBase64) {
+                            console.log(4, "start if");
+
+                            me.uploadZone.classList.add("d-none");
+                            me.previewZone.classList.remove("d-none");
+                        } else if (
+                            me.dataOptions.id == null &&
                             !me.fileBase64
                         ) {
+                            console.log(4, "start else if 1");
+
                             me.uploadZone.classList.remove("d-none");
                             me.previewZone.classList.add("d-none");
                             me.uploadInput.value = "";
                             if (me.displayInput) me.displayInput.value = "";
                             if (me.previewImg) me.previewImg.src = "";
-                        } else if (me.dataOptions.id > 0 &&
-                            me.fileBase64 &&
+                        } else if (
+                            me.dataOptions.id > 0 &&
+                            !me.fileBase64 &&
                             src == "placeholder.svg"
                         ) {
+                            console.log(4, "start else if 2");
+
                             me.uploadZone.classList.remove("d-none");
                             me.previewZone.classList.add("d-none");
                             me.uploadInput.value = "";
                             if (me.displayInput) me.displayInput.value = "";
                             if (me.previewImg) me.previewImg.src = "";
                         } else {
+                            console.log(4, "start else");
+
                             me.uploadZone.classList.add("d-none");
                             me.previewZone.classList.remove("d-none");
                         }
@@ -1921,9 +1960,11 @@ const TenantDocumentDialog = (() => {
                 cssClass: "modal-md vs-modal",
                 backdrop: "static",
                 keyboard: true,
-                    title: (me)=>{
-                    const title = me.dataOptions.id ? "Modify Document" : "Upload Document";
-                    return  `<h4 class="text-prm-custom text-start fw-bold">${LocaleManager.trans(title,'titles')}</h4>`;
+                title: (me) => {
+                    const title = me.dataOptions.id
+                        ? "Modify Document"
+                        : "Upload Document";
+                    return `<h4 class="text-prm-custom text-start fw-bold">${LocaleManager.trans(title, "titles")}</h4>`;
                     // return me.dataOptions.id ? `<h4 class="text-prm-custom text-start fw-bold" vslang="titles.Modify Space"></h4>` : `<h4 class="text-prm-custom text-start fw-bold" vslang="titles.Create Space"></h4>`;
                 },
 
@@ -2051,7 +2092,6 @@ const TenantDocumentDialog = (() => {
                         valueField: "id",
                     },
                 ],
-                
 
                 prepareFormOptions: {
                     // createTitle: "Upload Document",
