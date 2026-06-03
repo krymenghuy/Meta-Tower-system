@@ -3,9 +3,13 @@
 var RequestServiceComponent = (function () {
     const mThis = {};
     mThis.title_prop = "Request Service";
-    mThis.self = main_view.VSAppContent.querySelector("#_main_service_request_component",);
+    mThis.self = main_view.VSAppContent.querySelector(
+        "#_main_service_request_component",
+    );
     mThis.divFilter = mThis.self.querySelector("#_divFilter_service_request");
-    mThis.elService_category = mThis.self.querySelector("#_service_request_category_id",);
+    mThis.elService_category = mThis.self.querySelector(
+        "#_service_request_category_id",
+    );
     mThis.elStatus = mThis.self.querySelector("#_service_request_status");
     mThis.elSearch = mThis.self.querySelector("#_search_service_request");
     mThis.elBtnCreate = mThis.self.querySelector("#_btnServiceRequest");
@@ -22,17 +26,17 @@ var RequestServiceComponent = (function () {
                 return `<div class="d-flex flex-column">${code}</div>`;
             },
         },
-        {
-            transTitle: "titles.Tenant",
-            className: "align-middle",
-            data: (data) => `
-                <div class="d-flex text-nowrap align-items-center gap-2">
-                    <div>
-                        <span class="text-prm-custom d-block text-capitalize">${data.tenant_name ?? ""}</span>
-                        <small class="d-block text-primary">${data.space_code ?? ""}</small>
-                    </div>
-                </div>`,
-        },
+        // {
+        //     transTitle: "titles.Tenant",
+        //     className: "align-middle",
+        //     data: (data) => `
+        //         <div class="d-flex text-nowrap align-items-center gap-2">
+        //             <div>
+        //                 <span class="text-prm-custom d-block text-capitalize">${data.tenant_name ?? ""}</span>
+        //                 <small class="d-block text-primary">${data.space_code ?? ""}</small>
+        //             </div>
+        //         </div>`,
+        // },
         {
             transTitle: "titles.Request Category",
             className: "align-middle text-nowrap",
@@ -127,15 +131,15 @@ var RequestServiceComponent = (function () {
                     </span>`;
             },
         },
-        {
-            transTitle: "titles.Updated By",
-            className: "align-middle text-nowrap",
-            data: (data) => `
-                <div class="d-flex flex-column">
-                    <span class="text-capitalize text-primary-custom">${data.update_user ?? ""}</span>
-                    <span class="text-muted small">${data.updated_at ?? ""}</span>
-                </div>`,
-        },
+        // {
+        //     transTitle: "titles.Updated By",
+        //     className: "align-middle text-nowrap",
+        //     data: (data) => `
+        //         <div class="d-flex flex-column">
+        //             <span class="text-capitalize text-primary-custom">${data.update_user ?? ""}</span>
+        //             <span class="text-muted small">${data.updated_at ?? ""}</span>
+        //         </div>`,
+        // },
         {
             transTitle: "titles.Action",
             className: "col_action align-middle text-nowrap",
@@ -524,6 +528,53 @@ const CreateServiceRequestDialog = (() => {
         }
     };
 
+    // const _populateCategoryAndService = (me, services,restoreValues = null,) => {
+    //     const categoryMap = {};
+    //     services.forEach((s) => {
+    //         const cid = s.category_id;
+    //         const cname = s.service_category ?? "";
+    //         if (cid && !categoryMap[cid])
+    //             categoryMap[cid] = { id: cid, name: cname };
+    //     });
+    //     const categories = Object.values(categoryMap);
+
+    //     VSUtil.setComboItems(
+    //         me.controls.category_id,
+    //         categories,
+    //         "id",
+    //         "name",
+    //         "",
+    //         "Select Category",
+    //     );
+
+    //     if (restoreValues?.category_id) {
+    //         me.controls.category_id.value = String(restoreValues.category_id);
+    //     }
+
+    //     const activeCategoryId = me.controls.category_id.value;
+    //     const filtered = activeCategoryId
+    //         ? services.filter((s) => String(s.category_id) === activeCategoryId)
+    //         : services;
+
+    //     VSUtil.setComboItems(
+    //         me.controls.service_id,
+    //         filtered,
+    //         "id",
+    //         "service_name",
+    //         "",
+    //         "Select Service",
+    //     );
+
+    //     if (restoreValues?.service_id) {
+    //         me.controls.service_id.value = String(restoreValues.service_id);
+
+    //         const svc = services.find(
+    //             (s) => String(s.id) === String(restoreValues.service_id),
+    //         );
+    //         if (svc) me.servicePrice = parseFloat(svc.price) || 0;
+    //     }
+    // };
+
     const _populateCategoryAndService = (
         me,
         services,
@@ -532,14 +583,19 @@ const CreateServiceRequestDialog = (() => {
         const categoryMap = {};
         services.forEach((s) => {
             const cid = s.category_id;
-            const cname =
-                s.category_name ?? s.service_category ?? s.category ?? "";
+            const cname = s.service_category ?? "";
             if (cid && !categoryMap[cid])
                 categoryMap[cid] = { id: cid, name: cname };
         });
-        const categories = Object.values(categoryMap);
 
-        VSUtil.setComboItems(me.controls.category_id, categories,"id","name","","Select Category",);
+        VSUtil.setComboItems(
+            me.controls.category_id,
+            Object.values(categoryMap),
+            "id",
+            "name",
+            "",
+            "Select Category",
+        );
 
         if (restoreValues?.category_id) {
             me.controls.category_id.value = String(restoreValues.category_id);
@@ -551,16 +607,23 @@ const CreateServiceRequestDialog = (() => {
             : services;
 
         VSUtil.setComboItems(
-            me.controls.service_id,filtered, "id","name","", "Select Service",);
+            me.controls.service_id,
+            filtered,
+            "id",
+            "service_name",
+            "",
+            "Select Service",
+        );
 
         if (restoreValues?.service_id) {
             me.controls.service_id.value = String(restoreValues.service_id);
- 
             const svc = services.find(
                 (s) => String(s.id) === String(restoreValues.service_id),
             );
             if (svc) me.servicePrice = parseFloat(svc.price) || 0;
         }
+        me.controls.category_id.dispatchEvent(new Event("input"));
+        me.controls.service_id.dispatchEvent(new Event("input"));
     };
 
     self.show = (op) => {
@@ -581,7 +644,7 @@ const CreateServiceRequestDialog = (() => {
                             <select data-style="material" name="category_id" class="data-input form-control" data-field="category_id" required placeholder="Service Category"></select>
                         </div>
                         <div class="col-md-6">
-                            <select data-style="material" name="service_id" class="data-input form-control" data-field="service_id" required placeholder=""></select>
+                            <select data-style="material" name="service_id" class="data-input form-control" data-field="service_id" placeholder="Service Name"></select>
                         </div>
                     </div>
                     <div class="row g-3 mb-3">
@@ -649,28 +712,6 @@ const CreateServiceRequestDialog = (() => {
             `,
 
             contentCreated: (me) => {
-                me.controls.category_id?.addEventListener("change", () => {
-                    const categoryId = me.controls.category_id.value;
-                    const all = me._availableServices || [];
-                    const filtered = categoryId
-                        ? all.filter(
-                              (s) =>
-                                  String(s.category_id) === String(categoryId),
-                          )
-                        : all;
-                    VSUtil.setComboItems(
-                        me.controls.service_id,
-                        filtered,
-                        "id",
-                        "service_name",
-                        "",
-                        "Select Service",
-                    );
-                    me.controls.service_id.value = "";
-                    me.servicePrice = 0;
-                    _updatePricePreview(me);
-                });
-
                 // service change → auto-set unit_type & price
                 me.controls.service_id?.addEventListener("change", () => {
                     const svc = (me._availableServices || []).find(
@@ -697,6 +738,31 @@ const CreateServiceRequestDialog = (() => {
 
             onPrepareForm: (me, data) => {
                 const d = data || {};
+
+                me.controls.category_id?.addEventListener("change", () => {
+                    const categoryId = me.controls.category_id.value;
+                    const all = me._availableServices || [];
+                    const filtered = categoryId
+                        ? all.filter(
+                              (s) =>
+                                  String(s.category_id) === String(categoryId),
+                          )
+                        : all;
+
+                    VSUtil.setComboItems(
+                        me.controls.service_id,
+                        filtered,
+                        "id",
+                        "service_name",
+                        "",
+                        "Select Service",
+                    );
+
+                    me.servicePrice = 0;
+                    _updatePricePreview(me);
+                });
+
+                // me.controls.service_id.value = "";
 
                 const spaces = d.building_spaces || [];
                 VSUtil.setComboItems(
