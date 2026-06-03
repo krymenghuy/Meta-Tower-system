@@ -229,7 +229,7 @@ var InvoicesComponent = (() => {
                 tr.dataset.canceled = 0;
             },
             listContainerClass: null,
-        }); 
+        });
 
         // mThis.btnAdd.onclick = (e) => {
         //     e.preventDefault();
@@ -1003,7 +1003,7 @@ const InvoiceDialog = (() => {
                         ${
                             Number(invoiceType) === 2
                                 ? ""
-                                : `                                        
+                                : `
                             <div class="material-input outlined" style="margin-bottom: 1rem;">
                                 <input class="data-input form-control" data-field="tax_rate" name="tax_rate" type="text" inputmode="decimal" placeholder="0" required>
                                 <label style="color:#777;">Tax % </label>
@@ -1282,13 +1282,13 @@ const InvoiceDialog = (() => {
 
                                 <!-- Dynamic Row Container: Swaps between 2 columns (Reading mode) and 3 columns (Manual mode) -->
                                 <div id="row_calculation_fields" style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                                    
+
                                     <!-- Only visible in Reading Tab -->
                                     <div id="wrapper_units_readonly" class="material-input outlined" style="margin-bottom: 1rem;">
                                         <input id="units_used_readonly" class="form-control bg-light cursor-blocked" type="text" readonly placeholder="0.00">
                                         <label style="color:#777;">Calculated Units (kWh)</label>
                                     </div>
-                                    
+
                                     <!-- Shared Field: Changes grid position dynamically -->
                                     <div id="wrapper_exchange_rate" class="material-input outlined" style="margin-bottom: 1rem;">
                                         <input class="data-input form-control" data-field="exchange_rate" name="exchange_rate" type="text" inputmode="decimal" placeholder="0.00" value="4025">
@@ -1329,7 +1329,7 @@ const InvoiceDialog = (() => {
                                         style="background-color: #f0f7ff; border-color: #0c447c; color: #0c447c; font-weight: bold; font-size: 1.1em;">
                                     <label style="color:#0c447c;">Total Amount ($)</label>
                                 </div>
-                                
+
                                 <div class="material-input outlined" style="display:none;">
                                     <textarea class="data-input form-control" data-field="remark" name="remark" rows="2" placeholder=" "></textarea>
                                     <label style="color:#777;">Remark</label>
@@ -2264,7 +2264,7 @@ const InvoiceDialog = (() => {
                                                 </select>
                                             </div>
                                         </div>
-                                        
+
                                         <div class="material-input outlined" style="grid-column: span 2; margin-top: 0.5rem;">
                                             <input class="data-input form-control cursor-blocked" data-field="total_amount" name="total_amount" type="text" readonly
                                                 style="background-color: #f0f7ff; border-color: #0c447c; color: #0c447c; font-weight: bold; font-size: 1.1em;" placeholder=" ">

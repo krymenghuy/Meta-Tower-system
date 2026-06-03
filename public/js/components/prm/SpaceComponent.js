@@ -1399,3 +1399,4 @@ const ViewBookingDialog = (() => {
 
     return self;
 })();
+

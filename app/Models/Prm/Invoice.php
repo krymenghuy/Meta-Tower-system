@@ -257,7 +257,7 @@ class Invoice extends VSModel
                 $already_paid        = (float)$invoice->paid_amount;
                 $total_received      = array_sum(array_column($pmt_breakdowns, 'amount'));
                 $current_balance_due = ($invoice_amount - $already_paid) + $penal_amount;
-                
+
                 $total_paid = $already_paid + $total_received;
 
                 if ($total_received > $current_balance_due) {
@@ -459,7 +459,7 @@ class Invoice extends VSModel
                 }
                 // 4. Return the newly saved visibility states to the frontend (Keeping frontend keys clean)
                 return DV::depends(1, [
-                    'id' => $id,    
+                    'id' => $id,
                     'settings' => [
                         'show_balance'      => (int) $invoice->show_balance,
                         'show_comm_tax'    => (int) $invoice->show_comm_tax,
@@ -497,14 +497,14 @@ class Invoice extends VSModel
                         'show_balance'      => null,
                         'show_comm_tax'    => null,
                         'show_pay_status'  => null,
-                        'show_amount_paid' => null, 
+                        'show_amount_paid' => null,
                     ]);
 
                     DB::commit();
 
                     // 4. Return the newly reset states to the frontend
                     return DV::depends(1, [
-                        'id' => $id,    
+                        'id' => $id,
                         'settings' => [
                             'show_balance'      => 0,
                             'show_comm_tax'    => 0,
@@ -518,7 +518,7 @@ class Invoice extends VSModel
                     return DV::error('Failed to reset invoice display settings: ' . $e->getMessage());
                 }
             }
-    
+
 
 
         public static function checkDuplicateSpaceId($tenant_id, $invoice_id = null)
@@ -608,7 +608,7 @@ class Invoice extends VSModel
                     DB::raw('(i.amount - COALESCE(i.paid_amount, 0)) as balance')
                 ]);
 
-        
+
             if (!empty($d->invoice_type)) {
                 $query->where('i.invoice_type', $d->invoice_type);
             }
@@ -766,7 +766,7 @@ class Invoice extends VSModel
                 )
                 ->get();
 
-                
+
             foreach ($header->items as $i) {
                 $i = setOfficialDates($i, ['end_date', 'start_date'], [], []);
             }

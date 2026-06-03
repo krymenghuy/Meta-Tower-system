@@ -61,7 +61,7 @@ class InvoiceController extends Controller
         }
 
         return JDV::result($detail);
-    }  
+    }
 
 
     public function getFormOptions(Request $req)
