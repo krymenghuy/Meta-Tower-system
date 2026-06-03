@@ -403,9 +403,9 @@ var TenantComponent = new (function () {
         };
         // if (!AuthManager.allowed(242)) return;
         cv_interact.confirm(
-            "Delete this Tenant?",
+            "confirm_delete",
             {
-                title: "Delete Tenant",
+                title: "deleted",
                 context: "delete",
                 confirmButtonText: "Delete",
             },
@@ -422,7 +422,7 @@ var TenantComponent = new (function () {
                         .then((res) => {
                             if (res.status_code == 200) {
                                 mThis.renderView();
-                                cv_interact.success("Tenant has been deleted.");
+                                cv_interact.success("deleted");
                             } else {
                                 cv_interact.error(res.error_message);
                             }
@@ -1877,16 +1877,12 @@ const CreateTenantDialog = (() => {
                                             res.data?.id || null;
                                         me.hide(true, op, newTenantId);
                                         if (me.dataOptions.id > 0) {
-                                            cv_interact.success(
-                                                "Tenant has been updated successfully.",
-                                            );
+                                            cv_interact.success = (message,title=null,position='center');
                                             me.previewZone.classList.add(
                                                 "d-none",
                                             );
                                         } else {
-                                            cv_interact.success(
-                                                "New tenant has been created successfully.",
-                                            );
+                                           cv_interact.success = (message,title=null,position='center');
                                             me.previewZone.classList.add(
                                                 "d-none",
                                             );
@@ -2009,9 +2005,9 @@ const TenantDocumentDialog = (() => {
 
                     me.deleteTenantDocument = async (documentId) => {
                         const confirmed = await cv_interact.confirm(
-                            "Are you sure you want to delete this document? This action cannot be undone.",
+                            "confirm_delete",
                             {
-                                title: "Delete Document",
+                                title: "deleted",
                                 context: "delete",
                             },
                         );
@@ -2030,7 +2026,7 @@ const TenantDocumentDialog = (() => {
                             )
                             .then((res) => {
                                 if (res.status_code === 200) {
-                                    cv_interact.info("Document deleted.");
+                                    cv_interact.success = (message,title=null,position='center');
                                     if (
                                         typeof me.loadTenantDocuments ===
                                         "function"
@@ -2105,18 +2101,18 @@ const TenantDocumentDialog = (() => {
                         click: (me, btn) => {
                             if (!me.controls.document_type.value) {
                                 cv_interact.error(
-                                    "Please select a document type.",
+                                    "select_document_type",
                                 );
                                 return;
                             }
                             if (!me.fileData && !(me.dataOptions?.id > 0)) {
-                                cv_interact.error("Please select a file.");
+                                cv_interact.error("select_file");
                                 return;
                             }
                             const remarks = me.controls.remarks.value || "";
                             if (remarks.length > 255) {
                                 cv_interact.error(
-                                    "Remarks must not exceed 255 characters.",
+                                    "remarks_max_255",
                                 );
                                 return;
                             }
@@ -2127,7 +2123,7 @@ const TenantDocumentDialog = (() => {
                                 allowExt.indexOf(me.fileData.ext) === -1
                             ) {
                                 cv_interact.error(
-                                    "Please select a valid file.",
+                                    "select_valid_file",
                                 );
                                 return;
                             }
@@ -2168,13 +2164,9 @@ const TenantDocumentDialog = (() => {
                                             res.dataOptions?.id || null;
                                         me.hide(true, p, newDocumentId);
                                         if (me.dataOptions.id > 0) {
-                                            cv_interact.success(
-                                                "Document has been updated successfully.",
-                                            );
+                                            cv_interact.success = (message,title=null,position='center');
                                         } else {
-                                            cv_interact.success(
-                                                "Document saved successfully.",
-                                            );
+                                            cv_interact.success = (message,title=null,position='center');
                                         }
                                     } else {
                                         cv_interact.error(res.error_message);

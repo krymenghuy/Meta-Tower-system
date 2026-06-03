@@ -71,14 +71,14 @@ class Tenant
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
         $v_rule = [
-            'name'            => '1|string|0-30',
-            'sex'             => '1|choice|F,M|text=gender_not_correct',
-            'date_of_birth'   => '1|date',
-            'legal_name'      => '1|string|0-30',
-            'nationality_id'  => '1|number|text=Please select nationality.',
+            'name'            => '1|string|0-30|text=name_required',
+            'sex'             => '1|choice|F,M|text=select_gender',
+            'date_of_birth'   => '1|date|text=date_of_birth_required',
+            'legal_name'      => '1|string|0-30|text=legal_name_required',
+            'nationality_id'  => '1|number|text=nationality_required',
             'national_id'     => '0|string|0-20',
             'passport_number' => '0|string|0-20',
-            'phone_number'    => '1|string|1-20|text=Phone number is required',
+            'phone_number'    => '1|string|1-20|text=phone_number_required',
             'email'           => '0|email|1-30',
             'address'         => '0|string|0-255',
             'photo'           => '0|image'
@@ -100,10 +100,10 @@ class Tenant
         if ($dob) {
             $birth = new \DateTime($dob);
             $today = new \DateTime();
-            if ($birth > $today) return DV::error('Date of birth cannot be in the future.');
+            if ($birth > $today) return DV::error('date_of_birth_cannot_be_in_the_future');
             $age = $today->diff($birth)->y;
-            if ($age < 18) return DV::error('Tenant must be 18 years or older.');
-            if ($age > 120) return DV::error('Invalid date of birth age.');
+            if ($age < 18) return DV::error('tenant_must_be_18');
+            if ($age > 120) return DV::error('invalid_date_of_birth_age');
         }
         $nationality_id = $d->nationality_id ?? null;
         if ($nationality_id === 14) {
@@ -111,7 +111,7 @@ class Tenant
             $passport = $d->passport_number ?? null;
 
             if (empty($national_id)) {
-                return DV::error('National ID is required for Khmer nationality.');
+                return DV::error('national_id_required');
             }
             $nid_check = $this->checkUniqueTenantByNID($national_id, $id);
             if ($nid_check) return DV::error($nid_check);
@@ -122,7 +122,7 @@ class Tenant
             $passport = $d->passport_number ?? null;
             $national_id = $d->national_id ?? null;
             if (empty($passport)) {
-                return DV::error('Passport number is required for foreign nationality.');
+                return DV::error('passport_number_required');
             }
             $nid_check = $this->checkUniqueTenantByNID($national_id, $id);
             if ($nid_check) return DV::error($nid_check);
@@ -135,7 +135,7 @@ class Tenant
         $inputs['phone_number'] = $phone_number;
         $address = $d->address ?? null;
         if(!$address){
-            return DV::error('Address is required.');
+            return DV::error('address_required');
         }
         $photo = $d->photo ?? null;
         unset($inputs['photo']);
@@ -143,7 +143,7 @@ class Tenant
         $created = !$id;
         $id = DBX::saveData($ss, 'tenants', ['id' => $id], $inputs, [], 1);
         if (!$id) {
-            return DV::error('Failed to save tenant');
+            return DV::error('create_failed');
         }
         if ($created) {
             setOfficialCode($branch_id, 'tenant_code_control', 'tenants', ['id' => $id], 'T-', 4, null);
