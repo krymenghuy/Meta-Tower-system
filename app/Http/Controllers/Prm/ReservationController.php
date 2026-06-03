@@ -39,7 +39,7 @@ class ReservationController extends Controller
             return JDV::raw($ss);
         }
 
-         return JDV::result($this->reservation->getListPaginate($req->all(), $ss));
+        return JDV::result($this->reservation->getListPaginate($req->all(), $ss));
     }
 
     public function reservationDetails(Request $req)
@@ -49,12 +49,11 @@ class ReservationController extends Controller
             return JDV::raw($ss);
         }
 
-        if(!isset($req->id) || !is_numeric($req->id)){
+        if (!isset($req->id) || !is_numeric($req->id)) {
             return JDV::error('Invalid ID');
         }
-        
+
         return JDV::result($this->reservation->reservationDetails($req->id));
-        
     }
 
     public function getFormOptions(Request $req)
@@ -64,7 +63,7 @@ class ReservationController extends Controller
             return JDV::raw($ss);
         }
 
-        return JDV::result($this->reservation->getFormOptions($req->id,$ss));
+        return JDV::result($this->reservation->getFormOptions($req->id, $ss));
     }
 
     public function deleteReservation(Request $req)
@@ -103,13 +102,14 @@ class ReservationController extends Controller
         return JDV::raw($result);
     }
 
-    public function option_select_amenity_info(Request $req){
+    public function option_select_amenity_info(Request $req)
+    {
         $ss = XAuthService::verifyAuth($req, -1);
-        if($ss->status_code !== 200){
+        if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-         $id = $req->tenant_id ?? $req->id;
-        return JDV::result($this->tenants->getAmenityInfo($id,$ss));
+        $id = $req->tenant_id ?? $req->id;
+        return JDV::result($this->tenants->getAmenityInfo($id, $ss));
     }
 
     public function cancelReservation(Request $req)
@@ -128,6 +128,4 @@ class ReservationController extends Controller
 
         return JDV::raw($res);
     }
-
-
 }

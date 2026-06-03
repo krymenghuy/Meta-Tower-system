@@ -73,6 +73,10 @@ const InvoiceCommercialDialog = (() => {
         const showAmountPaid = setting.show_amount_paid;
         const showCommTax    = setting.show_comm_tax;
 
+        const buildRepresentation  = setting.build_representative ;
+        const representativePhone  = setting.representative_phone;
+        const representativeAddress  = setting.representative_address;
+
         const discType = (invoice.discount_type || "percent").toLowerCase();
         const isAmountDisc = (discType === "amount" || discType === "$");
         let discDisplay = `<span style="color:#9CA3AF;font-size:12px;">—</span>`;
@@ -170,8 +174,15 @@ const InvoiceCommercialDialog = (() => {
                         <div style="display:flex;flex-direction:column;gap:2px;">
                             <div style="font-size:30px;font-weight:800;letter-spacing:-1px;line-height:1;color:#1A3D91;font-family:'Inter',sans-serif;">Commercial Invoice</div>
                             <div style="font-size:14px;font-weight:700;color:#1A3D91;letter-spacing:0.2px;font-family:'Inter',sans-serif;">
-                                ${invoice.company_name || "Chan Dava"}
+                                ${buildRepresentation}
                             </div>
+                             <div style="font-size:11px;color:#666;font-family:'Inter',sans-serif;">
+                                ${representativePhone}
+                            </div>
+                             <div style="font-size:11px;color:#666;font-family:'Inter',sans-serif;">
+                                ${representativeAddress}
+                            </div>
+                            
                         </div>
                     </div>
                     <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
@@ -298,6 +309,9 @@ const InvoiceCommercialDialog = (() => {
             cv_interact?.error("Invoice ID is missing");
             return;
         }
+
+        console.log(111,op);
+        
 
         const dlg = new GeneralDialog({
             title: "Commercial Invoice",
