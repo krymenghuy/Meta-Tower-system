@@ -419,8 +419,9 @@ var BuildingComponent = (() => {
                     )
                     .then((res) => {
                         if (res.status_code === 200) {
-                            cv_interact.success = (message,title=null,position='center');
+                            
                             if (typeof onDone === "function") onDone();
+                            cv_interact.success = (message,title=null,position='center');
                         } else {
                             cv_interact.error(res.error_message);
                         }
@@ -829,7 +830,8 @@ const CreateFloorDialog = (() => {
                             const op = me.getData();
                             op.building_id = me.dataOptions.building_id;
                             op.id = me.dataOptions?.id || 0;
-
+                            console.log(8000,op);
+                            
                             vsapi.call(
                                 main_view.base_url + "/prm/building/add-floor",
                                 op,
