@@ -188,7 +188,7 @@ class Building //extends Model
         return DB::table('building_floors as bf')
             ->join('floors as f', 'f.id', '=', 'bf.floor_id')
             ->where('bf.building_id', $building_id)
-            ->where('f.id', $floor_id)
+            ->where('bf.id', $floor_id)
             ->selectRaw('
                 f.id,
                 f.floor_number,
