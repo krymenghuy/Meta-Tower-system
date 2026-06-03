@@ -4,7 +4,6 @@ var ContractsComponent = new (function () {
     const mThis = this;
     mThis.title_prop = "Contract Management";
     mThis.self = main_view.VSAppContent.querySelector("#_main_contract_component");
-    mThis.btnAdd = mThis.self.querySelector("#_btnAddContract");
     mThis.btnPDF = mThis.self.querySelector('#_asusp_btn_pdf');
     // mThis.elTenant = mThis.self.querySelector('#tenant_id');
     mThis.elBusinessType = mThis.self.querySelector('#business_type_id');
@@ -180,18 +179,6 @@ var ContractsComponent = new (function () {
             listContainerClass: null
         });
 
-        mThis.btnAdd.onclick = function (e) {
-            e.preventDefault();
-            const op = {
-                id: null,
-                btn: e.target,
-                onClose: () => {
-                    mThis.ContractListView.showPage(mThis.getFilterData());
-                }
-            };
-            ContractDialog.show(op);
-        };
-
         mThis.pr_tbl = mThis.ContractListView.getListContainer();
         const sh_parent = mThis.pr_tbl.parentElement;
         sh_parent.style.maxHeight = (window.innerHeight - 200) + 'px';
@@ -247,7 +234,7 @@ var ContractsComponent = new (function () {
 
     mThis.getFilterData = () => {
         let p = {
-            search_value: mThis.elSearch.value,
+            search_value: (mThis.elSearch.value || "").trim(),
         };
 
         mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {

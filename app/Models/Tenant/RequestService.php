@@ -22,11 +22,13 @@ class RequestService extends VSModel
         $this->userInfo = $userInfo;
     }
 
-    public function upsert($arr = [], $id = null, $ss = null)
+    public function upsert($arr = [], $ss = null)
     {
-        $id = $id ?? $this->id;
+        $id = $arr->id ?? null;
         $ss = $ss ?? $this->userInfo;
-        // $branch_id = $ss->branch_id;
+        $branch_id = $ss->branch_id;
+
+        \Log::info(array($arr, $id, $ss));
         $v_rule = [
             'tenant_id'         => '0|number|exists=tenants.id|text=Please select a tenant.',
             'space_id'          => '1|number|exists=building_spaces.id|text=Please select a space.',
@@ -64,7 +66,7 @@ class RequestService extends VSModel
             $end = date('H:i:s', strtotime("+{$duration} hours", strtotime($start)));
         }
         $overlap = DB::table('service_requests')
-            ->where('tenant_id', $input['tenant_id']= $ss->official_id)
+            ->where('tenant_id', $input['tenant_id'] = $ss->official_id)
             ->where('service_id', $input['service_id'])
             ->where('scheduled_date', $scheduledDate)
             ->where('status_id', 1)
@@ -74,7 +76,7 @@ class RequestService extends VSModel
                     $q->where('start_time', $start);
                 } else {
                     $q->whereRaw('start_time < ?', [$end])
-                    ->whereRaw('ADDTIME(start_time, SEC_TO_TIME(duration_hours * 3600)) > ?', [$start]);
+                        ->whereRaw('ADDTIME(start_time, SEC_TO_TIME(duration_hours * 3600)) > ?', [$start]);
                 }
             })
             ->exists();
@@ -93,7 +95,6 @@ class RequestService extends VSModel
 
             $input['total_price'] = round($service->price * $duration, 2);
             $input['price'] = $service->price;
-
         } else {
             $service = DB::table('services')->where('id', $input['service_id'])->first(['price']);
 
@@ -104,16 +105,17 @@ class RequestService extends VSModel
             $input['price'] = $service->price;
         }
 
-        $input['request_date'] = !empty($input['request_date'])? date('Ymd', strtotime($input['request_date'])): date('Ymd');
+        $input['request_date'] = !empty($input['request_date']) ? date('Ymd', strtotime($input['request_date'])) : date('Ymd');
         $created = !$id;
-        $input['tenant_id'] = $ss->official_id;
+
+        // $input['tenant_id'] = $ss->official_id;
+
         try {
             $save_id = DBX::saveData($ss, 'service_requests', ['id' => $id], $input, [], 1);
-            if (!$save_id) return DV::error('Failed to save service request.');
-
             $return_data = [];
 
             if ($created) {
+
                 $codeRes = setOfficialCode(
                     $branch_id,
                     'service_request_code_control',
@@ -123,6 +125,8 @@ class RequestService extends VSModel
                     5,
                     null
                 );
+
+                 \Log::info(array($codeRes));
 
                 if (!empty($codeRes->code)) {
                     $return_data['code'] = $codeRes->code;
@@ -138,7 +142,6 @@ class RequestService extends VSModel
             }
 
             return DV::success($return_data + ['message' => $message]);
-
         } catch (\Throwable $e) {
             Log::error('Service request save failed', [
                 'error' => $e->getMessage(),
@@ -169,17 +172,17 @@ class RequestService extends VSModel
         if ($search_value) {
             $skip_rows = 0;
             $search_value = escape_like_str($search_value);
-            $str_search = "(sr.code LIKE '%" .$search_value . "%' OR t.name LIKE '%" . $search_value . "%')";
+            $str_search = "(sr.code LIKE '%" . $search_value . "%' OR t.name LIKE '%" . $search_value . "%')";
         }
 
         if ($category_id) {
             $str_moreWhere .= ' AND sr.category_id = ' . $category_id;
         }
 
-       if ($status_id) {
+        if ($status_id) {
             $str_moreWhere .= ' AND sr.status_id =' . $status_id;
         }
-         if ($service_id) {
+        if ($service_id) {
             $str_moreWhere .= ' AND sr.service_id =' . $service_id;
         }
 
@@ -212,7 +215,7 @@ class RequestService extends VSModel
         $clone_query = clone $query;
         $count = $clone_query->count('sr.id');
         $rows  = $query->skip($skip_rows)->take($per_page)->get();
-        foreach($rows as $row){
+        foreach ($rows as $row) {
             $scheduledDateTime = strtotime($row->scheduled_date . ' ' . $row->start_time);
             if ($row->status_id == 1 && !empty($row->scheduled_date) && !empty($row->start_time) && $scheduledDateTime < time()) {
                 // $row->status_name = 'Expired';
@@ -224,7 +227,7 @@ class RequestService extends VSModel
                     ]);
             }
             $row->unit_type = $row->unit_type == '1' ? 'One Time' : ($row->unit_type == '2' ? 'Hour' : ($row->unit_type == '3' ? 'Unit' : ''));
-            $row = setOfficialDates($row,['complete_date','request_date','scheduled_date'],['updated_at','created_at'],[]);
+            $row = setOfficialDates($row, ['complete_date', 'request_date', 'scheduled_date'], ['updated_at', 'created_at'], []);
         }
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
@@ -235,7 +238,7 @@ class RequestService extends VSModel
             ->join('tenants as t', 't.id', '=', 'sr.tenant_id')
             ->join('services as s', 's.id', '=', 'sr.service_id')
             ->join('building_spaces as bs', 'bs.id', '=', 'sr.space_id')
-            // ->leftJoin('request_statuses as rs', 'rs.id', '=', 'sr.status_id') // leftJoin for safety
+            // ->leftJoin('request_statuses as rs', 'rs.id', '=', 'sr.status_id') 
             ->join('service_categories as sc', 'sc.id', '=', 's.category_id')
             ->where('sr.id', $id)
             ->selectRaw("sr.id, sr.code, sr.tenant_id, sr.space_id, sr.service_id,
@@ -246,10 +249,10 @@ class RequestService extends VSModel
                 sr.unit_type, sr.status_id,t.name as tenant_name, bs.code as space_code,s.price as price, s.name as service_name, s.category_id, sc.name as service_category
             ")
             ->first();
-                if($row){
-                    setOfficialDates($row, ['scheduled_date','complete_date'], [], []);
-                }
-            return $row;
+        if ($row) {
+            setOfficialDates($row, ['scheduled_date', 'complete_date'], [], []);
+        }
+        return $row;
     }
 
 
@@ -259,14 +262,12 @@ class RequestService extends VSModel
         $d = (object)$arr;
         $id = $d->id ?? $this->id;
         $details = $id ? self::getServiceRequestDetails($id) : null;
-        $category_id = $d->category_id ?? null;
+
         return (object) [
-            // 'request_details'     => $details,
-            // 'service_categories'  => GeneralSettings::options_service_categories($ss),
-            // 'tenants'             => GeneralSettings::options_tenant_with_active_contract($ss),
-            // 'services'            => GeneralSettings::options_service_request_type($category_id),
-            'building_spaces'   => GeneralSettings::options_building_space($ss),
-            // 'request_statuses'  => GeneralSettings::options_request_status($ss)
+            'request_details'    => $details,
+            'service_categories' => GeneralSettings::options_service_categories($ss),
+            'services'           => GeneralSettings::options_service_request_type(null),
+            'building_spaces'    => GeneralSettings::options_building_space($ss),
         ];
     }
 
@@ -274,7 +275,7 @@ class RequestService extends VSModel
     {
         $id = $id ?? $this->id;
         $req = DB::table('service_requests')->where('id', $id)->select('status_id')->first();
-        if($req->status_id == 4){
+        if ($req->status_id == 4) {
             return DV::error('This request has already been completed and cannot be deleted.');
         }
         // if($req->status_id == 3){
@@ -285,7 +286,7 @@ class RequestService extends VSModel
         return DV::depends($deleted, 'Failed to delete service request');
     }
 
-   public function acceptRequest($arr = [], $ss = null)
+    public function acceptRequest($arr = [], $ss = null)
     {
         $ss = $ss ?? $this->userInfo;
         $d  = (object) $arr;
@@ -315,7 +316,7 @@ class RequestService extends VSModel
             return DV::error('You already accepted this request.');
         }
 
-        if (in_array($req->status_id, [3,4,5])) {
+        if (in_array($req->status_id, [3, 4, 5])) {
             return DV::error('Request already processed.');
         }
 
@@ -373,24 +374,25 @@ class RequestService extends VSModel
 
         return DV::depends($reject, ['action' => 'reject']);
     }
-    function completeRequest($arr = [], $ss = null){
-            $ss = $ss ?? $this->userInfo;
+    function completeRequest($arr = [], $ss = null)
+    {
+        $ss = $ss ?? $this->userInfo;
 
-            $d = (object) $arr;
+        $d = (object) $arr;
 
-            $id = $d->id ?? null;
+        $id = $d->id ?? null;
 
-            if (empty($id)) {
-                return DV::error('ID is required.');
-            }
+        if (empty($id)) {
+            return DV::error('ID is required.');
+        }
 
-            $complete = DB::table('service_requests')
-                ->where('id', $id)
-                ->update([
-                    'status_id' => 4,
-                    'complete_date' => date('Y-m-d'),
-                ]);
+        $complete = DB::table('service_requests')
+            ->where('id', $id)
+            ->update([
+                'status_id' => 4,
+                'complete_date' => date('Y-m-d'),
+            ]);
 
-            return DV::depends($complete, ['action' => 'complete']);
+        return DV::depends($complete, ['action' => 'complete']);
     }
 }

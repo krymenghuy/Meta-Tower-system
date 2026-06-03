@@ -224,7 +224,7 @@ class Building //extends Model
                 ->where('bf.building_id', $building_id)
                 ->max('f.floor_number');
 
-            $next_floor_no = max(1, (int) $max_floor_no + 1);
+            $next_floor_no = max(1,$max_floor_no + 1);
 
             $floor_details = (object) [
                 'id' => null,

@@ -306,7 +306,7 @@ class Contracts  //extends Model
         if ($search_value) {
             $skip_rows = 0;
             $search_value = escape_like_str($search_value);
-            $str_search = "(t.name LIKE '%" . $search_value . "%'  OR t.phone_number LIKE '%" . $search_value . "%' OR bs.code LIKE '%" . $search_value . "%' )";
+            $str_search = "(bs.code LIKE '%" . $search_value . "%')";
         }
         if ($tenant_id) {
             $str_moreWhere .= ' AND c.tenant_id = ' . $tenant_id;
