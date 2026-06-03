@@ -38,7 +38,7 @@ class Building //extends Model
         ];
 
         $allowSign = ['$', '#', '@', '!', '.', '-', ',', '_', '=', '?'];
-        $res = DBX::validateObject($arr, $v_rule, true, ['name' => $allowSign, 'address' => $allowSign], $ss-> ., false);
+        $res = DBX::validateObject($arr, $v_rule, true, ['name' => $allowSign, 'address' => $allowSign], $ss->lang, false);
         if ($res->error) {
             return DV::error($res->error);
         }
@@ -209,10 +209,7 @@ class Building //extends Model
             : null;
 
         $floor_details = null;
-        \Log::info(json_encode([
-            'building_id' => $building_id,
-            'floor_id' => $id,
-        ]));
+        
 
         // EDIT FLOOR
         if ($building_id && $id) {
