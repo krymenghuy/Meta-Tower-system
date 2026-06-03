@@ -1,14 +1,14 @@
 "use strict";
-var AccountStaffComponent = (() => {
+var StaffComponent = (() => {
     const mThis = {};
-    mThis.title_prop = "Account & Staff";
+    mThis.title_prop = "Staff Component ";
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector(
-        "#_main_accountStaff_component",
+        "#_main_staff_component",
     );
-    mThis.btnAdd = mThis.self.querySelector("#_btnAddAccountStaff");
-    mThis.divFilter = mThis.self.querySelector("#_divFilter_accountStaff");
-    mThis.elSearch = mThis.self.querySelector("#_search_accountStaff_info");
+    mThis.btnAdd = mThis.self.querySelector("#_btnAddStaff");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter_staff");
+    mThis.elSearch = mThis.self.querySelector("#_search_staff_info");
     mThis.elFilter_status = mThis.self.querySelector("#el_status");
 
     mThis.cols = [

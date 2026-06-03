@@ -182,6 +182,7 @@ return [
                 '/js/components/common/pusher_client.js',
                 '/js/components/tenant/DashboardComponent.js',
                 '/js/components/tenant/TenantProfileComponent.js',
+                '/js/components/tenant/StaffComponent.js',
                 '/js/components/tenant/ContractsComponent.js',
                 '/js/components/tenant/InvoicesComponent.js',
                 '/js/components/tenant/RequestServiceComponent.js',
