@@ -1,4 +1,4 @@
-<?php
+o<?php
 
 namespace App\Http\Controllers\Tenant;
 

@@ -188,7 +188,7 @@ var MaintenanceComponent = (() => {
             const f = el.dataset.field;
             if (f) p[f] = el.value;
         });
-        console.log(444,p);
+        // console.log(444,p);
 
         return p;
     };
