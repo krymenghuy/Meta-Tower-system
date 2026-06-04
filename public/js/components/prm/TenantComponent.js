@@ -1414,10 +1414,12 @@ var TenantComponent = new (function () {
                                 const docId = this.dataset.id;
 
                                 const confirmed = await cv_interact.confirm(
-                                    "Are you sure you want to delete this document?",
+                                    "confirm_delete",
                                     {
-                                        title: "Delete Document",
+                                        title: "deleted",
                                         context: "delete",
+                                        confirmButtonText: "Delete",
+
                                     },
                                 );
 
@@ -1435,9 +1437,7 @@ var TenantComponent = new (function () {
                                         )
                                         .then((res) => {
                                             if (res.status_code === 200) {
-                                                cv_interact.success(
-                                                    "Document deleted.",
-                                                );
+                                                cv_interact.success("deleted");
                                                 mThis.renderOverView(
                                                     div,
                                                     target,
@@ -1919,12 +1919,12 @@ const CreateTenantDialog = (() => {
                                             res.data?.id || null;
                                         me.hide(true, op, newTenantId);
                                         if (me.dataOptions.id > 0) {
-                                            cv_interact.success = (message,title=null,position='center');
+                                            cv_interact.success("updated");
                                             me.previewZone.classList.add(
                                                 "d-none",
                                             );
                                         } else {
-                                           cv_interact.success = (message,title=null,position='center');
+                                           cv_interact.success("created");
                                             me.previewZone.classList.add(
                                                 "d-none",
                                             );
@@ -2053,6 +2053,8 @@ const TenantDocumentDialog = (() => {
                             {
                                 title: "deleted",
                                 context: "delete",
+                                confirmButtonText: "Delete",
+
                             },
                         );
 
@@ -2070,7 +2072,7 @@ const TenantDocumentDialog = (() => {
                             )
                             .then((res) => {
                                 if (res.status_code === 200) {
-                                    cv_interact.success = (message,title=null,position='center');
+                                    cv_interact.success("deleted");
                                     if (
                                         typeof me.loadTenantDocuments ===
                                         "function"
@@ -2207,9 +2209,9 @@ const TenantDocumentDialog = (() => {
                                             res.dataOptions?.id || null;
                                         me.hide(true, p, newDocumentId);
                                         if (me.dataOptions.id > 0) {
-                                            cv_interact.success = (message,title=null,position='center');
+                                           cv_interact.success("updated");
                                         } else {
-                                            cv_interact.success = (message,title=null,position='center');
+                                            cv_interact.success("created");
                                         }
                                     } else {
                                         cv_interact.error(res.error_message);

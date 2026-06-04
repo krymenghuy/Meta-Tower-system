@@ -1029,9 +1029,9 @@ const BuildingSpaceDialog = (() => {
                                     if (res.status_code === 200) {
                                         me.hide(true, op);
                                         if (me.dataOptions.id > 0) {
-                                            cv_interact.success = (message,title=null,position='center');
+                                           cv_interact.success("updated");
                                         } else {
-                                            cv_interact.success = (message,title=null,position='center');
+                                            cv_interact.success("created");
                                         }
                                     } else {
                                         cv_interact.error(res.error_message);
@@ -1241,9 +1241,9 @@ const CreateBookingDialog = (() => {
                                     if (res.status_code === 200) {
                                         me.hide(true, op);
                                         if(me.dataOptions.id > 0){
-                                            cv_interact.success = (message,title=null,position='center');
+                                            cv_interact.success("updated");
                                         }else {
-                                            cv_interact.success = (message,title=null,position='center');
+                                            cv_interact.success("created");
                                         }
                                     } else {
                                         cv_interact.error(res.error_message);

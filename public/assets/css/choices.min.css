@@ -346,6 +346,6 @@
 }
 .choices__placeholder {
     font-size: 14px;
-    font-family: 'inter';
+    /* font-family: 'inter'; */
     color: #757575;
 }
