@@ -27,8 +27,8 @@ class RequestServiceController extends Controller
         $id = $req->id ?? $req->request_id;
 
         $params = $req->all();
-        if (isset($ss->tenant_id) && $ss->tenant_id) {
-            $params['tenant_id'] = $ss->tenant_id;
+        if (isset($ss->official_id) && $ss->official_id) {
+            $params['tenant_id'] = $ss->official_id;
         }
         $res = $this->request_service->upsert($params, $ss);
         return JDV::raw($res);

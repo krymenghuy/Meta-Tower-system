@@ -28,13 +28,13 @@ class Building //extends Model
         $subs_id = $ss->subs_id ?? getCurrentSubsId(true);
 
         $v_rule = [
-            'name' => '1|string|0-50|text=building_name_is_required',
-            'prefix' => '1|string|0-20|text=building_prefix_is_required',
-            'total_floor' => '1|number|text=building_total_floor_is_required',
-            'total_area' => '1|number|min=0|text=building_total_area_is_required',
+            'name' => '1|string|0-50|text=name_required',
+            'prefix' => '1|string|0-20|text=prefix_required',
+            'total_floor' => '1|number|text=total_floor_required',
+            'total_area' => '1|number|min=0|text=total_area_required',
             'total_space' => '0|number',
             'occupancy' => '0|number',
-            'address' => '1|string|0-255|text=building_address_is_required',
+            'address' => '1|string|0-255|text=address_required',
         ];
 
         $allowSign = ['$', '#', '@', '!', '.', '-', ',', '_', '=', '?'];
@@ -188,7 +188,7 @@ class Building //extends Model
         return DB::table('building_floors as bf')
             ->join('floors as f', 'f.id', '=', 'bf.floor_id')
             ->where('bf.building_id', $building_id)
-            ->where('f.id', $floor_id)
+            ->where('bf.id', $floor_id)
             ->selectRaw('
                 f.id,
                 f.floor_number,
@@ -209,10 +209,7 @@ class Building //extends Model
             : null;
 
         $floor_details = null;
-        \Log::info(json_encode([
-            'building_id' => $building_id,
-            'floor_id' => $id,
-        ]));
+        
 
         // EDIT FLOOR
         if ($building_id && $id) {
@@ -227,7 +224,7 @@ class Building //extends Model
                 ->where('bf.building_id', $building_id)
                 ->max('f.floor_number');
 
-            $next_floor_no = max(1, (int) $max_floor_no + 1);
+            $next_floor_no = max(1,$max_floor_no + 1);
 
             $floor_details = (object) [
                 'id' => null,
@@ -293,7 +290,7 @@ class Building //extends Model
         $id = $id ?? $this->id;
         $check_space = DB::table('building_spaces')->where('building_id', $id)->exists();
         if ($check_space) {
-            return DV::error('Cannot delete building because it has associated spaces.');
+            return DV::error('cannot_delete_building_has_spaces');
         }
         $deleted = DB::table('buildings')->where('id', $id)->delete();
         if ($deleted) {
@@ -349,6 +346,7 @@ class Building //extends Model
 
         $inputs = $res->values;
         $d = (object) $inputs;
+        
         $floor_id = $d->id ?? 0;
         $isCreate = $floor_id <= 0;
 
@@ -395,18 +393,16 @@ class Building //extends Model
         if ($name !== $expectedName) {
             return DV::error("Floor name must be '{$expectedName}'.");
         }
-
-        $existingFloor = DB::table('building_floors as bf')
+        \Log::info([$floor_number,$floor_id]);
+        $exists = DB::table('building_floors as bf')
             ->join('floors as f', 'f.id', '=', 'bf.floor_id')
             ->where('bf.building_id', $d->building_id)
             ->where('f.floor_number', $floor_number)
-            ->when($floor_id > 0, function ($q) use ($floor_id) {
-                $q->where('f.id', '<>', $floor_id);
-            })
-            ->first();
+            ->where('bf.id', '!=', $floor_id)
+            ->exists();
 
-        if ($existingFloor) {
-            return DV::error("Floor number '{$floor_number}' already exists in this building.");
+        if ($exists) {
+            return DV::error("Floor number {$floor_number} already exists in this building.11");
         }
 
         $floor_data = [

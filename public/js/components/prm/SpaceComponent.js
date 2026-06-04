@@ -682,7 +682,7 @@ var SpaceComponent = new (function () {
         };
         // if (!AuthManager.allowed(242)) return;
         cv_interact.confirm(
-            "confirm_deleted",
+            "confirm_delete",
             {
                 title: "deleted",
                 context: "delete",
@@ -700,7 +700,7 @@ var SpaceComponent = new (function () {
                         )
                         .then((res) => {
                             if (res.status_code == 200) {
-                                cv_interact.success("deleted");
+                               cv_interact.success = (message,title=null,position='center');
                                 mThis.applyListFilters();
                             } else {
                                 cv_interact.error(res.error_message);
@@ -1029,9 +1029,9 @@ const BuildingSpaceDialog = (() => {
                                     if (res.status_code === 200) {
                                         me.hide(true, op);
                                         if (me.dataOptions.id > 0) {
-                                            cv_interact.success("updated");
+                                            cv_interact.success = (message,title=null,position='center');
                                         } else {
-                                            cv_interact.success("created");
+                                            cv_interact.success = (message,title=null,position='center');
                                         }
                                     } else {
                                         cv_interact.error(res.error_message);
@@ -1240,11 +1240,11 @@ const CreateBookingDialog = (() => {
                                 .then((res) => {
                                     if (res.status_code === 200) {
                                         me.hide(true, op);
-                                        cv_interact.success(
-                                            isEdit
-                                                ? "updated"
-                                                : "created",
-                                        );
+                                        if(me.dataOptions.id > 0){
+                                            cv_interact.success = (message,title=null,position='center');
+                                        }else {
+                                            cv_interact.success = (message,title=null,position='center');
+                                        }
                                     } else {
                                         cv_interact.error(res.error_message);
                                     }
@@ -1399,3 +1399,4 @@ const ViewBookingDialog = (() => {
 
     return self;
 })();
+

@@ -393,3 +393,12 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant/contra
     Route::post('/delete', [ContractsController::class, 'deleteContracts']);
 });
 
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant/invoice')->group(function () {
+    Route::post('/list-paginate', [InvoiceController::class, 'getListPaginate']);
+    Route::post('/details', [InvoiceController::class, 'invoiceDetails']);
+    Route::post('/form-options', [InvoiceController::class, 'getFormOptions']);
+    Route::post('/receive', [InvoiceController::class, 'receive']);
+    Route::post('/delete', [InvoiceController::class, 'deleteInvoice']);
+});
+
+
