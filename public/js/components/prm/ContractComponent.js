@@ -505,9 +505,9 @@ var ContractComponent = new (function () {
         };
 
         cv_interact.confirm(
-            "Terminate this contract?",
+            "confirm_terminate",
             {
-                title: "Terminate Contract",
+                title: "terminated",
                 context: "delete",
                 confirmButtonText: "Terminate",
             },
@@ -522,12 +522,12 @@ var ContractComponent = new (function () {
                     )
                     .then((res) => {
                         if (res.status_code === 200) {
-                            cv_interact.success("Contract has been terminated.");
+                            cv_interact.success("terminated");
                             if (mThis.ContractListView) {
                                 mThis.ContractListView.showPage(mThis.getFilterData());
                             }
                         } else {
-                            cv_interact.error(res.error_message || "Failed to terminate contract.");
+                            cv_interact.error(res.error_message);
                         }
                     });
             },
@@ -537,9 +537,9 @@ var ContractComponent = new (function () {
         if (!id) return;
 
         cv_interact.confirm(
-            "Delete this contract?",
+            "confirm_delete",
             {
-                title: "Delete Contract",
+                title: "deleted",
                 context: "delete",
                 confirmButtonText: "Delete",
             },
@@ -554,12 +554,12 @@ var ContractComponent = new (function () {
                     )
                     .then((res) => {
                         if (res.status_code === 200) {
-                            cv_interact.success("Contract has been deleted.");
+                            cv_interact.success("deleted");
                             if (mThis.ContractListView) {
                                 mThis.ContractListView.showPage(mThis.getFilterData());
                             }
                         } else {
-                            cv_interact.error(res.error_message || "Failed to delete contract.");
+                            cv_interact.error(res.error_message);
                         }
                     });
             },
@@ -836,7 +836,7 @@ const ContractDialog = (() => {
                 targetProp: "contract_details",
                 api: {
                     endpoint: [main_view.base_url, "/prm/contract/form-options",].join(""),
-                    params: (op) => {
+                    params: (me,op) => {
                         return {
                             id: op.id,
                             space_id: op.space_id ?? null,
@@ -847,10 +847,13 @@ const ContractDialog = (() => {
             },
 
             onPrepareForm: (me, data) => {
-                const isModify = Number(me.dataOptions?.id) > 0;
+                console.log(888,data);
+                
+                const isModify = me.dataOptions?.id > 0;
+                me.setReadOnly(isModify, ['code', 'start_date', 'end_date']);
                 const tenantLocked = isModify || !!data?.prefill_tenant_id;
                 me.controls.tenant.disabled = tenantLocked;
-                me.setReadOnly(isModify, ['code', 'start_date', 'end_date']);
+               
 
                 const prepareOpts = me.options?.prepareFormOptions;
                 if (isModify && me.elTitle && prepareOpts?.modifyTitle) {
@@ -995,9 +998,9 @@ const ContractDialog = (() => {
                             if (res.status_code === 200) {
                                 me.hide(true, op);
                                 if (me.dataOptions.id > 0) {
-                                    cv_interact.success("Contract has been updated successfully.");
+                                    cv_interact.success("updated");
                                 } else {
-                                    cv_interact.success("New contract has been created successfully.");
+                                    cv_interact.success("created");
                                 }
                             } else {
                                 cv_interact.error(res.error_message);

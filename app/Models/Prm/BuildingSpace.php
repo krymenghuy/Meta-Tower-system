@@ -63,6 +63,7 @@ class BuildingSpace
 
         if (!empty($d->code)) {
             $exists = DB::table('building_spaces')
+                ->where('building_id',$d->building_id)
                 ->where('code', $d->code)
                 ->when($id, fn($q) => $q->where('id', '<>', $id))
                 ->exists();

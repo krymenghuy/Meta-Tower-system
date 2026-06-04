@@ -3,8 +3,8 @@
     margin: 0;
     box-sizing: border-box;
     -webkit-user-drag: none;
-    font-family: 'Inter','Battambang', sans-serif;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Battambang', sans-serif;
+    /* font-family: 'Inter', sans-serif; */
     /* Improved default settings */
     font-size: 0.95rem;
     /* line-height: 1.5; */
