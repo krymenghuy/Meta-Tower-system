@@ -346,6 +346,7 @@ class Building //extends Model
 
         $inputs = $res->values;
         $d = (object) $inputs;
+        
         $floor_id = $d->id ?? 0;
         $isCreate = $floor_id <= 0;
 
@@ -392,18 +393,16 @@ class Building //extends Model
         if ($name !== $expectedName) {
             return DV::error("Floor name must be '{$expectedName}'.");
         }
-
-        $existingFloor = DB::table('building_floors as bf')
+        \Log::info([$floor_number,$floor_id]);
+        $exists = DB::table('building_floors as bf')
             ->join('floors as f', 'f.id', '=', 'bf.floor_id')
             ->where('bf.building_id', $d->building_id)
             ->where('f.floor_number', $floor_number)
-            ->when($floor_id > 0, function ($q) use ($floor_id) {
-                $q->where('f.id', '<>', $floor_id);
-            })
-            ->first();
+            ->where('bf.id', '!=', $floor_id)
+            ->exists();
 
-        if ($existingFloor) {
-            return DV::error("Floor number '{$floor_number}' already exists in this building.");
+        if ($exists) {
+            return DV::error("Floor number {$floor_number} already exists in this building.11");
         }
 
         $floor_data = [
