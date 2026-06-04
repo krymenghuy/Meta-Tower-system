@@ -1102,33 +1102,30 @@ function jsonToTable(div, d) {
 
 
 function tenantList(div, data) {
+     const d = data?.list ?? [];
+     const company_info = data.company_profile ?? {};
     let html = `
-        <div class="d-flex position-relative w-100">
-            <div class="d-block mt-3 w-100">
-                <h4 class="text-center text-uppercase">
-                    ${data?.title ?? ''}
-                </h4>
-                <p class="text-center w-100 fs-5-1 get-subtitle fs-5">${data?.sub_title ?? ""}</p>
-            </div>
+    <div class="d-block position-relative">
+        <div class="height-logo-report position-absolute overflow-hidden">
+            <img style="max-width: 100px; max-height: 100px;" class=" object-fit-scale set-min-size-logo" src="${company_info.logo_url ?? ''}" alt=""/>
         </div>
+        <div class="d-flex flex-column gap-2 justify-content-center align-items-center set-min-size-container-title">
+            <h4 class="text-center text-uppercase">${data.title ?? ''}</h4>
+            <p class="text-center w-100 fs-5-1 pb-0 mb-0 get-subtitle fs-5">${data.sub_title ?? ''}</p>
+        </div>
+    </div>
     `;
-
-    const d = data?.list ?? [];
-
     html += `
     <div class="table-responsive mt-3 pt-3 pb-3 bg-white overflow-x-hover-auto">
         <table class="table table-bordered text-nowrap">
             <thead>
                 <tr>
                     <th class="text-center">No</th>
-                    <th class="text-center">Photo</th>
-                    <th class="text-center">Code</th>
                     <th class="text-center">Name</th>
                     <th class="text-center">Legal Name</th>
                     <th class="text-center">National ID</th>
                     <th class="text-center">Passport</th>
-                    <th class="text-center">DOB</th>
-                    <th class="text-center">Gender</th>
+                    <th class="text-center">Sex</th>
                     <th class="text-center">Phone</th>
                     <th class="text-center">Email</th>
                     <th class="text-center">Status</th>
@@ -1145,13 +1142,6 @@ function tenantList(div, data) {
                     <td class="text-center align-middle">
                         ${index + 1}
                     </td>
-
-                    <td class="text-center align-middle">
-                        <img class="btn-view-tenant-photo"  src="${st.image_url || `${main_view.base_url}/assets/images/default/placeholder.svg`}" alt="" style="width: 50px; height: 50px; border-radius: 6px; margin-right: 10px;"/>
-                    </td>
-                    <td class="text-center align-middle">
-                        ${st.code ?? 'N/A'}
-                    </td>
                     <td class="align-middle">
                         ${st.name ?? 'N/A'}
                     </td>
@@ -1163,9 +1153,6 @@ function tenantList(div, data) {
                     </td>
                     <td class="text-center align-middle">
                         ${st.passport_number ?? 'N/A'}
-                    </td>
-                    <td class="text-center align-middle">
-                        ${st.date_of_birth ?? 'N/A'}
                     </td>
                     <td class="text-center align-middle">
                         ${
@@ -1209,7 +1196,6 @@ function tenantList(div, data) {
 
     div.innerHTML = html;
     // togglePanelTable(div);
-
     HtmlString = html;
 }
 function totalPaymentHistory(div, data) {
@@ -3317,42 +3303,39 @@ function togglePanelTable(div) {
  * These function for print report table
  */
 function windowPrint(html=null, style) {
-    console.log(9090, html);
     HtmlString = html ? html : HtmlString;
     if (HtmlString) {
         let myWindow = window.open("", "PRINT");
         myWindow.document.write(`<!DOCTYPE html>
         <html>
-            <head>
-                <title>Print Report</title>
+           <title>Print Report</title>
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"/>
                 <link rel="preconnect" href="https://fonts.googleapis.com">
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
                 <link href="https://fonts.googleapis.com/css2?family=Moul&display=swap" rel="stylesheet">
-                <link rel="stylesheet" type="text/css" href="${
-                    main_view.base_url
-                }/assets/css/vsstyle.css"/>
-                <link rel="stylesheet" type="text/css" href="${
-                    main_view.base_url
-                }/assets/css/css_for_print_invoice.css"/>
-                <link rel="stylesheet" type="text/css" href="${
-                    main_view.base_url
-                }/assets/css/font-awesome/6.2.0/css/all.min.css" media="print//"/>
-                <link rel="stylesheet" type="text/css" href="${
-                    main_view.base_url
-                }/assets/css/ksm_style.css" media="print//"/>
+                <link rel="stylesheet" type="text/css" href="${main_view.base_url}/assets/css/ksm_style.css"/>
+                <link rel="stylesheet" type="text/css" href="${main_view.base_url}/assets/css/vsstyle.css"/>
+                <!-- <link rel="stylesheet" type="text/css" href="${main_view.base_url}/assets/css/css_for_print_invoice.css"/> -->
                 <style>
                     *{
-                        margin:10px;
+                        margin:0;
                         padding:0;
                         box-sizing: border-box;
-                        font-size:14px;
+                        font-size:11px;
                     }
                     ${style}
+                    .table.w-100.mt-5{
+                        margin-top: 80px !important;
+                    }
+                    .set-min-size-container-title {
+                        min-height: 100px;
+                    }
+
                 </style>
 
             </head>
-            <body>${HtmlString.replace(/table-responsive\s+/g, "")}</body>
+            <body class="row flex-column" style="overflow: unset;">${HtmlString.replace(/table-responsive\s+/g,'')}</body>
         </html>`);
         //${HtmlString.replace(/table-responsive\s+/g,'')}
         myWindow.document.close();

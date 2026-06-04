@@ -885,6 +885,8 @@ var TenantComponent = new (function () {
                                 <div class="col-md-4"><small class="text-muted">Relationship</small><div class="">Partner</div></div>
                                 <div class="col-12"><small class="text-muted">Address</small><div class="text-prm-custom text-capitalize">${data.address ?? "_"}</div></div>
                             </div>
+                            
+
                         </div>
 
                         <div class="tab-pane" id="lease_tenant_history">
@@ -1200,6 +1202,7 @@ var TenantComponent = new (function () {
                                 <div class="col-md-4"><small class="text-muted">Relationship</small><div class="">Partner</div></div>
                                 <div class="col-12"><small class="text-muted">Address</small><div class="text-prm-custom text-capitalize">${data.address ?? "_"}</div></div>
                             </div>
+                           
                         </div>`;
                     div.innerHTML = html;
                     LocaleManager.translateZone(div);

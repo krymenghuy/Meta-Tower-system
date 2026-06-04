@@ -1,87 +1,74 @@
-*,
-html,
-body{
-    padding:0;
-    margin:0;
-    box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    font-family: Poppins;
-}
-
-html,
-body{
-    height:fit-content;
-    width:fit-content;
-    padding:10px;
-}
-
-body table{
-    font-size:normal;
-    text-align: center;
-    vertical-align: middle;
-}
-
-.width-show-total{
-    min-width:200px;
-    clear: both;
-    float: right;
-    display:block;
-    position: absolute;
-    width: fit-content;
-    height:fit-content;
-    right: 0;
-}
-
-.fs-5-1{
-    font-size:1.1rem;
-}
-
-@page{
-    size:A4 landscape;
+html, body {
+    width: 100% !important;
+    height: auto !important;
     margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-.height-logo-report{
-    height: -webkit-fill-available;
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Poppins, sans-serif;
+}
+
+table {
+    width: 100% !important;
+    table-layout: fixed;
+    border-collapse: collapse;
+    font-size: 11px;
+}
+
+td, th {
+    word-wrap: break-word;
+    white-space: normal;
+    padding: 4px;
+}
+
+.width-show-total {
+    min-width: 200px;
+    width: fit-content;
+    margin-left: auto;
+}
+
+.fs-5-1 {
+    font-size: 1.1rem;
+}
+
+.height-logo-report {
     max-height: 100px;
+    height: auto;
 }
 
-.min-height-top{
-    min-height:80px;
+.min-height-top {
+    min-height: 80px;
 }
 
-.set-min-size-container-title{
+.set-min-size-container-title {
     min-height: 100px;
 }
 
-@media print{
-    html,
-    body{
-        width:100%;
-        height:100%;
-        zoom:85%;
-        -webkit-print-color-adjust: exact !important;
-        color-adjust: exact !important;
-        print-color-adjust: exact !important;
+@page {
+    size: A4 landscape;
+    margin: 10mm;
+}
+
+@media print {
+    body {
+        zoom: 1;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
     }
 
-    body table{
-        font-size:normal;
-        text-align: center;
-        vertical-align: middle;
-        width:100%;
+    .no-print {
+        display: none !important;
     }
 
-    .set-min-size-container-title{
-        min-height: 100px;
-    }
-
-    @page{
-        size:A4 landscape;
-        margin: 10px;
-    }
-
-    header, footer, aside, form{
-        display: none;
+    .width-show-total {
+        position: static !important;
+        float: none !important;
+        text-align: right;
     }
 }
