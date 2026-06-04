@@ -191,14 +191,7 @@ function v_display($mod_id, $module_ids = null)
                     <h4 class="kt-menu__section-text " vslang="menus.System Settings"></h4>
                     <i class="kt-menu__section-icon flaticon-more-v2"></i>
                 </li>
-                <li class="kt-menu__item d-none" aria-haspopup="true" <?php v_display(244); ?>>
-                    <a href="CompanyComponent" modid="244" class="menu-item kt-menu__link">
-                        <span class="kt-menu__link-icon">
-                            <img class="icons opacity-icons" src="{{ asset('assets/images/icons/setting.png') }}" />
-                        </span>
-                        <span class="kt-menu__link-text font-color " vslang="menus.Building profile"></span>
-                    </a>
-                </li>
+
 
                 <li class="kt-menu__item" aria-haspopup="true" <?php v_display(214); ?>>
                     <a href="BuildingComponent" modid="214" class="menu-item kt-menu__link">
@@ -250,14 +243,24 @@ function v_display($mod_id, $module_ids = null)
                     <div class="kt-menu__submenu">
                         <span class="kt-menu__arrow"></span>
                         <ul class="kt-menu__subnav">
-                            <li class="kt-menu__item" aria-haspopup="true" <?php v_display(211); ?>>
+                            {{-- <li class="kt-menu__item" aria-haspopup="true" <?php v_display(211); ?>>
                                     <a href="CompanyProfileComponent" modid="270" class="menu-item kt-menu__link">
                                         <span class="kt-menu__link-icon">
                                             <img class="icons opacity-icons" src="{{ asset('assets/images/icons/userprofile.png') }}" />
                                         </span>
                                         <span class="kt-menu__link-text font-color " vslang="menus.Company Profile"></span>
                                     </a>
+                                </li> --}}
+
+                                <li class="kt-menu__item " aria-haspopup="true" <?php v_display(244); ?>>
+                                    <a href="CompanyComponent" modid="244" class="menu-item kt-menu__link">
+                                        <span class="kt-menu__link-icon">
+                                            <img class="icons opacity-icons" src="{{ asset('assets/images/icons/setting.png') }}" />
+                                        </span>
+                                        <span class="kt-menu__link-text font-color " vslang="menus.Company profile"></span>
+                                    </a>
                                 </li>
+
                                  <li class="kt-menu__item" aria-haspopup="true" <?php v_display(218); ?>>
                                     <a href="InvoiceSettingComponent" modid="218" class="menu-item kt-menu__link">
                                         <span class="kt-menu__link-icon">
