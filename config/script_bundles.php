@@ -117,7 +117,7 @@ return [
                 '/js/components/prm/RenderTableReport.js',
                 // '/js/components/prm/ReportCenterComponent.js',
                 // 'js/components/common/LocationComponent.js',
-                'js/components/common/CompanyComponent.js',
+                '/js/components/common/CompanyComponent.js',
                 'js/components/umt/ChangeRoleDialog.js',
                 'js/components/umt/ChangeLoginNameDialog.js',
                 'js/components/umt/SetPasswordDialog.js',

@@ -1,129 +1,44 @@
 'use strict';
 var CompanyComponent = (function(){
     const mThis = {};
-	mThis.title_prop = "Company Profile";
+    mThis.title_prop = "Company Profile";
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector('#_main_companyComponent');
     mThis.divScroll = mThis.self.querySelector('#_div_cpn_scroll');
     mThis.btnSave = mThis.self.querySelector('#_main_comp_btnSaveProfile');
 
-	mThis.imgLogo = mThis.self.querySelector('#com_imgLogo');
-	mThis.btnChooseLogo = mThis.self.querySelector('#com_btnChooseLogo');
-	mThis.btnDeleteLogo = mThis.self.querySelector('#com_btnDeleteLogo');
-	mThis.fields = [];
+    mThis.imgLogo = mThis.self.querySelector('#com_imgLogo');
+    mThis.btnChooseLogo = mThis.self.querySelector('#com_btnChooseLogo');
+    mThis.btnDeleteLogo = mThis.self.querySelector('#com_btnDeleteLogo');
+    mThis.logoPlaceholder = mThis.self.querySelector('#_logo_placeholder'); // ✅ cache it once
+    mThis.fields = [];
 
-	mThis.displayCompanyInfo = ()=>{
-		vsapi.call(`${mThis.base_url}/api/company/details`,false,null,main_view.apiCluster).then(res => {
-			if(res.status_code ==200){
-				const d = res.data;
-				mThis.setData(d);
-			}
-		});
-	}
 
-	// mThis.setScroll = ()=>{
-    //     const parent = mThis.divScroll;
-    //     parent.style.height = (window.innerHeight - 100)+'px';
-    //     parent.classList.add('overflow-y-auto');
-    //     parent.classList.add('overflow-x-hidden');
-    //     window.onresize = () => {
-    //         parent.style.height = (window.innerHeight - 100)+'px';
-    //     }
-    // }
+        mThis.showLogo = function() {
+            console.log(222);
+            
+            mThis.imgLogo.style.display = 'block';
+            mThis.logoPlaceholder.style.display = 'none';
+        };
 
-	//begin:: CompanyComponent.init()
-    mThis.init = ()=>{
-		if (mThis.initAlready) return;
-		//mThis.setScroll();
+        mThis.hideLogo = function() {
+            console.log(111);
+            
+            mThis.imgLogo.style.display = 'none';
+            mThis.imgLogo.src = '';
+            mThis.logoPlaceholder.style.display = 'flex';
+        };
 
-		mThis.btnSave.addEventListener('click', function(e) {
-            e.preventDefault();
-            const p = mThis.getData();
-            if (!AuthManager.allowed(209)) return;
-
-            vsapi.call(`${mThis.base_url}/api/company/save-details`, p, null).then(res => {
-                if (res.status_code === 200) {
-                    cv_interact.success('Company information updated!', '', 'info');
-                } else {
-                    cv_interact.error(res.error_message);
-                }
-            });
+    // ─── Load company info ────────────────────────────────────────────────────
+    mThis.displayCompanyInfo = () => {
+        vsapi.call(`${mThis.base_url}/api/company/details`, false, null, main_view.apiCluster).then(res => {
+            if (res.status_code == 200) {
+                mThis.setData(res.data);
+            }
         });
+    };
 
-		mThis.self.querySelectorAll('.data-input').forEach(function(e){
-			mThis.fields.push({
-				element: e,
-				dataMember: e.dataset.field
-			});
-		});
-
-        mThis.btnDeleteLogo.addEventListener('click',function(e){
-
-			e.preventDefault();
-
-			if(!AuthManager.allowed(259)) return;
-			cv_interact.confirm('Delete this logo?',{
-				title:'Delete Logo',
-				context: 'delete'
-			},e => {
-				if(e){
-					vsapi.call(`${mThis.base_url}/api/company/delete-logo`,null).then((res)=> {
-						if(res.status_code === 200){
-							mThis.imgLogo.prop('src','');
-							cv_interact.success('Logo deleted!');
-						}
-						else
-							cv_interact.error(res.error_message );
-					});
-				}
-			});
-		});
-
-        mThis.btnChooseLogo.addEventListener('click', function(e) {
-            e.preventDefault();
-
-            if (!AuthManager.allowed(259)) return;
-
-            FileChooser.chooseFile(null, d => {
-                if (d) {
-                    mThis.imgLogo.src = d.dataUrl;
-
-                    let p = {
-                        photo_data: d.dataUrl,
-                        file_type: d.file_type
-                    };
-
-                    console.log(11, JSON.stringify(p, null, 2));
-
-                    vsapi.call(`${main_view.base_url}/api/company/save-logo`, p, null, false).then(res => {
-                        if (res.status_code === 200) {
-                            let d = res.data;
-                            cv_interact.success('Logo has been saved');
-                            mThis.imgLogo.src = d.logo_url; // Update image from server
-                        } else {
-                            cv_interact.warning(res.error_message);
-                        }
-                    });
-                }
-            });
-        });
-
-
-		mThis.initAlready = true;
-    }
-    //end:: CompanyComponent.init()
-
-    mThis.show = (option)=>{
-		mThis.init(); //init one time only
-		if(!option) option = {};
-        main_view.setContentView(mThis.self, mThis.title_prop);
-        mThis.displayCompanyInfo();
-    }
-
-    mThis.hide = () => {
-        mThis.self.hide();
-    }
-
+    // ─── setData ──────────────────────────────────────────────────────────────
     mThis.setData = function(com) {
         let i = 0, c;
 
@@ -131,14 +46,20 @@ var CompanyComponent = (function(){
             c = mThis.fields[i];
             if (!c) break;
 
-            const el = c.element; // DOM element
+            const el = c.element;
             const value = com[c.dataMember] ?? '';
 
             if (el.tagName === 'IMG') {
-                el.src = com.logo_url ?? '';
+                const logoUrl = com.logo_url ?? '';
+                if (logoUrl && logoUrl !== '') {
+                    el.src = logoUrl;
+                    mThis.showLogo(); // ✅ Has logo → show image, hide placeholder
+                } else {
+                    mThis.hideLogo(); // ✅ No logo → hide image, show placeholder
+                }
             } else if (el.tagName === 'SELECT') {
                 el.value = value;
-                el.dispatchEvent(new Event('change')); // trigger change event manually
+                el.dispatchEvent(new Event('change'));
             } else {
                 el.value = value;
             }
@@ -147,9 +68,8 @@ var CompanyComponent = (function(){
         } while (c);
     };
 
-
-	//NOTE: getData() does NOT include logo data with its returned object.
-	mThis.getData = function() {
+    // ─── getData ──────────────────────────────────────────────────────────────
+    mThis.getData = function() {
         let i = 0, c;
         let d = {};
 
@@ -159,7 +79,6 @@ var CompanyComponent = (function(){
 
             const el = c.element;
 
-            // If it's an input/select/textarea, get the value
             if (el instanceof HTMLInputElement || el instanceof HTMLSelectElement || el instanceof HTMLTextAreaElement) {
                 d[c.dataMember] = el.value;
             } else if (el.tagName === 'IMG') {
@@ -171,18 +90,103 @@ var CompanyComponent = (function(){
             i++;
         } while (c);
 
-        // Clean up phone numbers
         ['phone_number', 'first_cp_phone'].forEach(key => {
-            if (d[key]) {
-                d[key] = d[key].replace(/\D/g, '').trim();
-            } else {
-                d[key] = '';
-            }
+            d[key] = d[key] ? d[key].replace(/\D/g, '').trim() : '';
         });
 
         return d;
     };
 
-	return mThis;
-})();
+    // ─── init ─────────────────────────────────────────────────────────────────
+    mThis.init = () => {
+        if (mThis.initAlready) return;
 
+        // Collect all data-input fields
+        mThis.self.querySelectorAll('.data-input').forEach(function(e) {
+            mThis.fields.push({
+                element: e,
+                dataMember: e.dataset.field
+            });
+        });
+
+        // Save profile
+        mThis.btnSave.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (!AuthManager.allowed(209)) return;
+            const p = mThis.getData();
+            vsapi.call(`${mThis.base_url}/api/company/save-details`, p, null).then(res => {
+                if (res.status_code === 200) {
+                    cv_interact.success('Company information updated!', '', 'info');
+                } else {
+                    cv_interact.error(res.error_message);
+                }
+            });
+        });
+
+        // Upload logo
+        mThis.btnChooseLogo.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (!AuthManager.allowed(259)) return;
+
+            FileChooser.chooseFile(null, d => {
+                if (d) {
+                    mThis.imgLogo.src = d.dataUrl;
+                    mThis.showLogo(); // ✅ Show image, hide placeholder
+
+                    let p = {
+                        photo_data: d.dataUrl,
+                        file_type: d.file_type
+                    };
+
+                    vsapi.call(`${mThis.base_url}/api/company/save-logo`, p, null, false).then(res => {
+                        if (res.status_code === 200) {
+                            cv_interact.success('Logo has been saved');
+                            mThis.imgLogo.src = res.data.logo_url; // ✅ Update to server URL
+                        } else {
+                            mThis.hideLogo(); // ✅ Revert on failure
+                            cv_interact.warning(res.error_message || 'Failed to save logo');
+                        }
+                    });
+                }
+            });
+        });
+
+        // Delete logo
+        mThis.btnDeleteLogo.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (!AuthManager.allowed(259)) return;
+
+            cv_interact.confirm('Delete this logo?', {
+                title: 'Delete Logo',
+                context: 'delete'
+            }, confirmed => {
+                if (confirmed) {
+                    vsapi.call(`${mThis.base_url}/api/company/delete-logo`, null).then((res) => {
+                        if (res.status_code === 200) {
+                            mThis.hideLogo(); // ✅ Hide image, show placeholder
+                            cv_interact.success('Logo deleted!');
+                        } else {
+                            cv_interact.error(res.error_message);
+                        }
+                    });
+                }
+            });
+        });
+
+        mThis.initAlready = true;
+    };
+
+    // ─── show / hide ──────────────────────────────────────────────────────────
+    mThis.show = (option) => {
+        mThis.init();
+        if (!option) option = {};
+        main_view.setContentView(mThis.self, mThis.title_prop);
+        mThis.displayCompanyInfo();
+    };
+
+    mThis.hide = () => {
+        mThis.self.hide();
+    };
+
+    return mThis;
+})();

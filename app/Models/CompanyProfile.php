@@ -130,7 +130,7 @@ static function details($ss)
     $col_customer_id = DBX::getHEX('id', 'id');
     $row = XSubscriber::firstBy(
         ['_raw_' => $where_customer_id],
-        $col_customer_id . ",name,name_kh,address,address_kh,phone_number,email,first_cp_name,second_cp_name,first_cp_phone,second_cp_phone"
+        $col_customer_id . ",name,name_kh,address,address_kh,phone_number,email,first_cp_name,second_cp_name,first_cp_phone,second_cp_phone,first_cp_email,second_cp_email,first_cp_position,second_cp_position,website"
     );
 
     if (!$row) {
