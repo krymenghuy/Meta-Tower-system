@@ -260,7 +260,7 @@ var TenantComponent = new (function () {
                 },
                 {
                     html: '<span class="ps-2" vslang="titles.Upload Document">Upload Document</span>',
-                    icon: `<i class="fa-solid fa-file-upload fs-5 text-muted"></i>`,
+                    icon: `<i class="fa-solid fa-cloud-arrow-up" style="color: rgb(63, 96, 159);"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "upload_document",
                 },
