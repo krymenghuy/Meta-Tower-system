@@ -102,4 +102,19 @@ class InvoiceSettingController extends Controller
         return JDV::result($res);
     }
 
+    public function saveQR(Request $req)
+    {
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        
+        $invoiceSetting = new InvoiceSetting();
+        
+        // FIXED: Passing 'null' explicitly for $id so $ss aligns with the 3rd parameter
+        $res = $invoiceSetting->saveQR($req->all(), null, $ss);
+
+        return JDV::result($res);
+    }
+
 }
