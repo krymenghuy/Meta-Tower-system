@@ -28,15 +28,15 @@ class Vendor //extends Model
         $ss = $ss ?? $this->userInfo;
 
         $v_rule = [
-            'name' => '1|string|1-150',
-            'phone_number' => '1|string|0-50',
+            'name' => '1|string|1-150|text=name_required',
+            'phone_number' => '1|string|0-50|text=phone_number_required',
             'email' => '0|string|0-100',
             'tax_number' => '0|string|0-30',
-            'vendor_type_id' => '1|number|exists=vendor_types.id|text=Please select a type.',
-            'category_id' => '1|number|exists=vendor_categories.id|text=Please select a category.',
-            'contact_person' => '1|string|0-100',
-            'contact_phone' => '1|string|0-25',
-            'address' => '1|string|0-255',
+            'vendor_type_id' => '1|number|exists=vendor_types.id|text=select_type',
+            'category_id' => '1|number|exists=vendor_categories.id|text=please_select_a_valid_category',
+            'contact_person' => '1|string|0-100|text=contact_person_required',
+            'contact_phone' => '1|string|0-25|text=contact_phone_required',
+            'address' => '1|string|0-255|text=address_required',
 
         ];
 
@@ -53,7 +53,7 @@ class Vendor //extends Model
         $email = $d->email ?? null;
         if ($email !== null && $email !== '') {
                 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                    return DV::error('Invalid email format.');
+                    return DV::error('valid_email');
                 }
         }
 
@@ -65,7 +65,7 @@ class Vendor //extends Model
             ->exists();
 
         if ($exist)
-            return DV::error('Vendor name already exists!');
+            return DV::error('vendor_name_already_exists');
 
         $id = DBX::saveData($ss, 'vendors', ['id' => $id], $inputs, [], 1);
 

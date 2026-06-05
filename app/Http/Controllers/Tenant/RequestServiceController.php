@@ -17,7 +17,6 @@ class RequestServiceController extends Controller
         $this->request_service = new RequestService();
     }
 
-    // Save or update   
     public function saveServiceRequest(Request $req)
     {
         $ss = XAuthService::verifyAuth($req, -1);
@@ -34,7 +33,6 @@ class RequestServiceController extends Controller
         return JDV::raw($res);
     }
 
-    // Get paginated list
     public function getServiceRequestList(Request $req)
     {
         $ss = XAuthService::verifyAuth($req, -1);
@@ -76,7 +74,6 @@ class RequestServiceController extends Controller
         return JDV::result($details);
     }
 
-    // Delete service request
     public function delete(Request $req, $id = null)
     {
         $ss = XAuthService::verifyAuth($req, -1);
@@ -92,7 +89,6 @@ class RequestServiceController extends Controller
         return JDV::raw($result);
     }
 
-    //  GetFromOption
         public function getFormOptions(Request $req){
             $ss = XAuthService::verifyAuth($req, -1);
             if($ss->status_code !==200){
