@@ -101,7 +101,7 @@ var PurchaseOrdersComponent = (() => {
                         data-id="${data.id}">
                             <span class="tool-tip">
                                 <i class="fa-solid fa-user-clock fs-6"></i>
-                                <span class="tool-tiptext fs-6">Authorize</span>
+                                <span class="tool-tiptext fs-6" >${LocaleManager.trans('Authorize','titles')}</span>
                             </span>
                         </a>
                     </div>`;
@@ -232,7 +232,7 @@ var PurchaseOrdersComponent = (() => {
                   name: "modify_purchase_order"
                 },
                 {
-                    html: '<span class="ps-2" vslang="title.Reject PO"></span>',
+                    html: '<span class="ps-2" vslang="titles.Reject PO"></span>',
                     icon: `<i class="fa-solid fa-rectangle-xmark fs-5 text-danger-emphasis"></i>`,
                     name: "reject_purchase_order",
                     cssClass: "border-bottom pb-2"
@@ -355,19 +355,21 @@ var PurchaseOrdersComponent = (() => {
     };
 
     mThis.deletePurchaseOrder = (id, menuLink) => {
-        cv_interact.confirm('Delete this Purchase Order?', {
-            transTitle: 'Delete Purchase Order',
-            context: 'delete',
-            confirmButtonText: "Delete"
+        cv_interact.confirm('confirm_delete', {
+            'langSection':"message_box_default",
+            'translate': true,
+            'title': 'deleted',
+            'context': 'delete',
+            'confirmButtonText': "Delete"
         }, (e) => {
             if (e) {
                 vsapi.call(`${main_view.base_url}/prm/purchase/order/delete`, { id: id }, false)
                     .then(res => {
                         if (res.status_code == 200) {
-                            cv_interact.success(res.message || 'Purchase order has been deleted.');
+                            cv_interact.success('deleted');
                             mThis.PoListView.showPage(mThis.getFilterData());
                         } else {
-                            cv_interact.error(res.error_message || 'Failed to delete purchase order.');
+                            cv_interact.error(res.error_message);
                         }
                     });
             }
@@ -377,22 +379,28 @@ var PurchaseOrdersComponent = (() => {
     const showPurchaseOrderDialog = (op) => {
         PurchaseOrderDialog = PurchaseOrderDialog || new GeneralDialog({
             cssClass: "modal-xl vs-modal",
+            title: (me) => {
+                    const title = me.dataOptions.id ? "Modify Purchase Orders" : "Purchase Orders";
+                    if (title) {
+                       return  `<h4 class="text-prm-custom text-start fw-bold">${LocaleManager.trans(title,'titles')}</h4>`;
+                    }
+                },
             createContent: () => {
                 return `<div class="row">
                     <div class="col-md-4">
                         <div class="d-flex align-items-center mb-2">
-                            <span class="fw-bold" style="min-width:90px;">Vendor</span>
+                            <span class="fw-bold" style="min-width:90px;"​ vslang="labels.Vendor"></span>
                             <span class="mx-2 fw-bold">:</span>
                             <input type="hidden" name="vendor_id" class="data-input" data-field="vendor_id">
                             <input type="text" name="vendor" class="data-input form-control flex-grow-1" Readonly>
                         </div>
                         <div class="d-flex align-items-center mb-2">
-                            <span class="fw-bold" style="min-width:90px;">Phone</span>
+                            <span class="fw-bold" style="min-width:90px;" vslang="labels.Phone"></span>
                             <span class="mx-2 fw-bold">:</span>
                             <input type="text" name="phone_number" class="data-input form-control flex-grow-1" Readonly data-field="phone_number">
                         </div>
                         <div class="d-flex align-items-center mb-2">
-                            <span class="fw-bold" style="min-width:90px;">Address</span>
+                            <span class="fw-bold" style="min-width:90px;" vslang="labels.Address"></span>
                             <span class="mx-2 fw-bold">:</span>
                             <input type="text" name="address" class="data-input form-control flex-grow-1" Readonly data-field="address">
                         </div>
@@ -401,13 +409,13 @@ var PurchaseOrdersComponent = (() => {
                     
                     <div class="col-md-3 mt-3 mt-md-0">
                         <div class="d-flex align-items-center mb-2">
-                            <span class="fw-bold" style="min-width:90px;">Building</span>
+                            <span class="fw-bold" style="min-width:90px;" vslang="labels.Building"></span>
                             <span class="mx-2 fw-bold">:</span>
                             <div class="w-100"><select  name="building_id" data-style="material" class="data-input form-control" data-field="building_id" placeholder=" " >
                             </select></div>
                         </div>
                         <div class="d-flex align-items-center mb-2">
-                            <span class="fw-bold" style="min-width:90px;">PO Date</span>
+                            <span class="fw-bold" style="min-width:90px;" vslang="labels.PO Date"></span>
                             <span class="mx-2 fw-bold">:</span>
                             <input data-type="date" name="po_date" class="data-input form-control flex-grow-1" data-field="po_date">
                         </div>
@@ -421,7 +429,7 @@ var PurchaseOrdersComponent = (() => {
                     <div class="col-12">
                         <div class="vs-material-field">
                             <textarea class="data-input form-control" data-field="remarks" name="remarks" placeholder="" rows="1"></textarea>
-                            <label>Remarks</label>
+                            <label vslang="labels.Remarks"></label>
                         </div>
                     </div>
                 </div>`;
@@ -538,9 +546,9 @@ var PurchaseOrdersComponent = (() => {
                     let items = me.purchaseItemsView.getItems();
                     let totals = me.purchaseItemsView.getCurrentTotals?.() || {};
                     // let items = po_data.items || [];
-                    if (!me.hasValidPOItems(items)) {
-                        return cv_interact.error('Please select at least one item before saving the purchase order.');
-                    }
+                    // if (!me.hasValidPOItems(items)) {
+                    //     return cv_interact.error('Please select at least one item before saving the purchase order.');
+                    // }
                     p.items = items;
                     p.totals = totals;
                     p.id = me.dataOptions.id;
@@ -564,18 +572,18 @@ var PurchaseOrdersComponent = (() => {
                     me.purchaseItemsView.setData(null);
                 };
                 
-                me.hasValidPOItems = (items) => {
-                    if (!Array.isArray(items) || items.length === 0) return false;
+                // me.hasValidPOItems = (items) => {
+                //     if (!Array.isArray(items) || items.length === 0) return false;
 
-                    return items.some((row) => {
-                        const rawId = row?.item_id || row?.id;
-                        const qty = Number(row?.qty);
+                //     return items.some((row) => {
+                //         const rawId = row?.item_id || row?.id;
+                //         const qty = Number(row?.qty);
 
-                        const id = Number(rawId);
+                //         const id = Number(rawId);
 
-                        return Number.isFinite(id) && id > 0 && Number.isFinite(qty) && qty > 0;
-                    });
-                };
+                //         return Number.isFinite(id) && id > 0 && Number.isFinite(qty) && qty > 0;
+                //     });
+                // };
                 me.controls.purchaseItemList.addEventListener('input', (e) => {
                     const target = e.target;
                     if (!target.closest('td[data-name="unit_price"]')) return;
@@ -601,22 +609,26 @@ var PurchaseOrdersComponent = (() => {
                 }, true);
             },
             buttons: [
-                { label: "Cancel", cssClass: "btn btn-secondary", click: (me) => me.hide(false) },
+                { 
+                    label: '<span vslang="buttons.Cancel"></span>',
+                    cssClass: "btn btn-secondary",
+                    click: (me, btn) => {
+                        me.hide(false);
+                    },
+                },
                 {
-                    label: "<span>Save</span>",
+                    label: '<span vslang="buttons.Save"></span>',
                     cssClass: "btn btn-primary",
                     click: (me) => {
                         const isUpdate = me.dataOptions?.id || 0 > 0;
 
                         me.saveData((res) => {
                             if (res?.status_code === 200) {
-                                cv_interact.success(isUpdate ? "Updated successfully."  : "Saved successfully.");
+                                cv_interact.success(isUpdate ? "updated"  : "created");
                                 me.hide(true);
                                 mThis.PoListView.showPage(mThis.getFilterData());
                             } else {
-                                cv_interact.error(
-                                    res?.error_message || "Failed to save data."
-                                );
+                                cv_interact.error(res.error_message);
                             }
                         });
                     }
@@ -664,15 +676,15 @@ var PurchaseOrdersComponent = (() => {
                     }
                 }
             },
-            onShow: (me) => {
-                const title = me.divModal.querySelector('.modal-title');
-                if (title) {
-                    const isModify = !!me.dataOptions?.id;
-                    title.innerHTML = isModify
-                        ? '<h2 class="text-prm-custom text-start fw-bold">Modify Purchase Order</h2>'
-                        : '<h2 class="text-prm-custom text-start fw-bold">Purchase Order</h2>';
-                }
-            },
+            // onShow: (me) => {
+            //     const title = me.divModal.querySelector('.modal-title');
+            //     if (title) {
+            //         const isModify = !!me.dataOptions?.id;
+            //         title.innerHTML = isModify
+            //             ? '<h2 class="text-prm-custom text-start fw-bold" vslang="titles.Modify Purchase Order"></h2>'
+            //             : '<h2 class="text-prm-custom text-start fw-bold" vslang="titles.Purchase Order"></h2>';
+            //     }
+            // },
             configSelect: [
                     
                     {
@@ -684,8 +696,8 @@ var PurchaseOrdersComponent = (() => {
 
                 ],
             prepareFormOptions: {
-                modifyTitle: "Modify Purchase Order",
-                createTitle: "Purchase Order",
+                // modifyTitle: "Modify Purchase Order",
+                // createTitle: "Purchase Order",
                 targetProp: "po_detail",
                 api: {
                     endpoint: `${main_view.base_url}/prm/purchase/order/po-form-options`,
@@ -700,22 +712,29 @@ var PurchaseOrdersComponent = (() => {
      const showReceivePurchaseOrderDialog = (op) => {
         ReceivePurchaseOrderDialog = ReceivePurchaseOrderDialog || new GeneralDialog({
             cssClass: "modal-xl vs-modal",
+            title: (me) => {
+                    const title = me.dataOptions.id ? "Receive Purchase Order" : "Purchase Orders";
+                    if (title) {
+                       return  `<h4 class="text-prm-custom text-start fw-bold">${LocaleManager.trans(title,'titles')}</h4>`;
+                    }
+            },
+                    
             createContent: () => {
                 return `<div class="row">
                     <div class="col-md-4">
                         <div class="d-flex align-items-center mb-2">
-                            <span class="fw-bold" style="min-width:90px;">Vendor</span>
+                            <span class="fw-bold" style="min-width:90px;" vslang="labels.Vendor"></span>
                             <span class="mx-2 fw-bold">:</span>
                             <input type="hidden" name="vendor_id" class="data-input" data-field="vendor_id">
                             <input type="text" name="vendor" class="data-input form-control flex-grow-1">
                         </div>
                         <div class="d-flex align-items-center mb-2">
-                            <span class="fw-bold" style="min-width:90px;">Phone</span>
+                            <span class="fw-bold" style="min-width:90px;" vslang="labels.Phone"></span>
                             <span class="mx-2 fw-bold">:</span>
                             <input type="text" name="phone_number" class="data-input form-control flex-grow-1" Readonly data-field="phone_number">
                         </div>
                         <div class="d-flex align-items-center mb-2">
-                            <span class="fw-bold" style="min-width:90px;">Address</span>
+                            <span class="fw-bold" style="min-width:90px;" vslang="labels.Address"></span>
                             <span class="mx-2 fw-bold">:</span>
                             <input type="text" name="address" class="data-input form-control flex-grow-1" Readonly data-field="address">
                         </div>
@@ -723,13 +742,13 @@ var PurchaseOrdersComponent = (() => {
                     <div class="col-md-5"></div>
                     <div class="col-md-3 mt-3 mt-md-0">
                         <div class="d-flex align-items-center mb-2">
-                            <span class="fw-bold" style="min-width:90px;">Building</span>
+                            <span class="fw-bold" style="min-width:90px;" vslang="labels.Building"></span>
                             <span class="mx-2 fw-bold">:</span>
                             <div class="w-100"><select  name="building_id" data-style="material" class="data-input form-control" data-field="building_id" placeholder=" " >
                             </select></div>
                         </div>
                         <div class="d-flex align-items-center mb-2">
-                            <span class="fw-bold" style="min-width:90px;">PO Date</span>
+                            <span class="fw-bold" style="min-width:90px;" vslang="labels.PO Date"></span>
                             <span class="mx-2 fw-bold">:</span>
                             <input data-type="date" name="po_date" class="data-input form-control flex-grow-1" data-field="po_date">
                         </div>
@@ -841,14 +860,20 @@ var PurchaseOrdersComponent = (() => {
             
             },
             buttons: [
-                { label: "Cancel", cssClass: "btn btn-secondary", click: (me) => me.hide(false) },
+                { 
+                    label: '<span vslang="buttons.Cancel"></span>',
+                    cssClass: "btn btn-secondary",
+                    click: (me, btn) => {
+                        me.hide(false);
+                    },
+                },
                 {
-                    label: "<span>Save</span>",
+                    label: '<span vslang="buttons.Save"></span>',
                     cssClass: "btn btn-primary",
                     click: (me) => {
                         me.saveData(res => {
                             if (res.status_code == 200) {
-                                cv_interact.success("purchase order Received.");
+                                cv_interact.success("success");
                                 me.hide(true);
                                 mThis.PoListView.showPage(mThis.getFilterData());
                             } else {
@@ -908,15 +933,7 @@ var PurchaseOrdersComponent = (() => {
                     }
                 }
             },
-            onShow: (me) => {
-                const title = me.divModal.querySelector('.modal-title');
-                if (title) {
-                    const isModify = !!me.dataOptions?.id;
-                    title.innerHTML = isModify
-                        ? '<h2 class="text-prm-custom text-start fw-bold">Receive Purchase Order</h2>'
-                        : '<h2 class="text-prm-custom text-start fw-bold">Purchase Order</h2>';
-                }
-            },
+        
             configSelect: [
                 {
                     name: "building_id",
@@ -927,8 +944,8 @@ var PurchaseOrdersComponent = (() => {
 
             ],
             prepareFormOptions: {
-                modifyTitle: "Receive Purchase Order",
-                createTitle: "Purchase Order",
+                // modifyTitle: "Receive Purchase Order",
+                // createTitle: "Purchase Order",
                 targetProp: "po_detail",
                 api: {
                     endpoint: `${main_view.base_url}/prm/purchase/order/po-form-options`,
@@ -947,11 +964,11 @@ var PurchaseOrdersComponent = (() => {
                 let html = '';
                 const tHead = `<thead class="text-primary"><tr>
                     <th class="text-nowrap">#</th>
-                    <th class="text-nowrap">Name</th>
-                    <th class="text-nowrap">Unit Price</th>
-                    <th class="text-nowrap">Order Qty</th>
-                    <th class="text-nowrap">Received Qty</th>
-                    <th class="text-nowrap">Receiver</th>
+                    <th class="text-nowrap" vslang="labels.Name"></th>
+                    <th class="text-nowrap" vslang="labels.Unit Price"></th>
+                    <th class="text-nowrap" vslang="labels.Order Qty"></th>
+                    <th class="text-nowrap" vslang="labels.Received Qty"></th>
+                    <th class="text-nowrap" vslang="labels.Receiver"></th>
                 </tr></thead>`;
 
                 let tBody = '';
@@ -980,6 +997,7 @@ var PurchaseOrdersComponent = (() => {
 
                 html = `<table class="table table--dropdown">${tHead}<tbody>${tBody}</tbody></table>`;
                 elBody.innerHTML = html;
+                LocaleManager.translateZone(elBody);
                 elBody.classList.add(['p-3','table-responsive']);
             });
     };
