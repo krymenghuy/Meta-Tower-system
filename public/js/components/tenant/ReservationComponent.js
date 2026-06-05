@@ -55,6 +55,7 @@ var ReservationComponent = (() => {
                     const min = isNaN(m) ? 0 : m;
                     const ampm = hour < 12 ? "AM" : "PM";
                     const h12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+                    
                     return `${h12}:${String(min).padStart(2, "0")} ${ampm}`;
                 };
                 const start12 = to12h((data.start_time ?? "").substring(0, 5));
