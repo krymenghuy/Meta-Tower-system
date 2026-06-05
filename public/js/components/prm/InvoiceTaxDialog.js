@@ -61,7 +61,7 @@ const InvoiceTaxDialog = (() => {
         };
     };
 
-    const buildInvoiceHTML = (invoice, setting) => {
+    const buildInvoiceHTML = (invoice, setting, company) => {
 
         const subTotal      = parseFloat(invoice.amount         || 0);
         const totalDiscount = parseFloat(invoice.discount_value || 0);
@@ -73,6 +73,12 @@ const InvoiceTaxDialog = (() => {
         const showPayStatus  = setting.show_pay_status;
         const showBaland     = setting.show_balance;
         const showAmountPaid = setting.show_amount_paid;
+
+        const companyLogo  = company.logo_url;
+        const email    = company.email ;
+        const address    = company.address ;
+        const phone    = company.phone_number ;  
+        const companyName  = company.name ;  
 
         const discType     = (invoice.discount_type || "percent").toLowerCase();
         const isAmountDisc = (discType === "amount" || discType === "$");
@@ -188,21 +194,21 @@ const InvoiceTaxDialog = (() => {
 
                         <div style="display:flex;gap:18px;align-items:flex-start;position:relative;">
                             <div style="width:70px;height:76px;background:rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;">
-                                <img src="../assets/images/meta/Meta_logo1.png" alt="Logo"
+                                <img src="${companyLogo}" alt="Logo"
                                     style="width:60px;height:63px;object-fit:contain;"
                                     onerror="this.parentElement.innerHTML='<span style=\'font-size:22px;font-weight:900;color:#fff;font-family:Playfair Display,serif;\'>M</span>'">
                             </div>
                             <div>
-                                <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:#FFFFFF;letter-spacing:0.5px;line-height:1.1;">META HOLDING</div>
+                                <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:#FFFFFF;letter-spacing:0.5px;line-height:1.1;">${companyName}</div>
                                 <div style="margin-top:6px;display:flex;flex-direction:column;gap:3px;">
                                     <div style="font-size:11px;color:rgba(255,255,255,0.65);display:flex;align-items:center;gap:5px;">
-                                        <i class="bi bi-envelope-fill" style="font-size:9px;"></i> metaholding@gmail.com
+                                         ${email}
                                     </div>
                                     <div style="font-size:11px;color:rgba(255,255,255,0.65);display:flex;align-items:center;gap:5px;">
-                                        <i class="bi bi-telephone-fill" style="font-size:9px;"></i> +855 12 345 678
+                                        ${phone}
                                     </div>
                                     <div style="font-size:11px;color:rgba(255,255,255,0.65);display:flex;align-items:center;gap:5px;">
-                                        <i class="bi bi-geo-alt-fill" style="font-size:9px;"></i>  #S8-0 2, Financial Street, Phum 7, Sangkat Veal Vong, Khan 7 Makara, Phnom Penh
+                                        ${address}
                                     </div>
                                 </div>
                             </div>
@@ -359,7 +365,7 @@ const InvoiceTaxDialog = (() => {
                 console.log(121212,op);
                 
                 const container = me.divModal.querySelector('[name="pi_container"]');
-                container.innerHTML = buildInvoiceHTML(op.invoice, op.setting);
+                container.innerHTML = buildInvoiceHTML(op.invoice, op.setting, op.company);
                 
                 // CRITICAL FIX: Wire the action elements right after appending HTML to the DOM
                 wireButtons(container);
