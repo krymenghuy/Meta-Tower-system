@@ -8,6 +8,7 @@ var TenantComponent = new (function () {
         "#_main_tenant_component",
     );
     mThis.btnAdd = mThis.self.querySelector("#_btnAddTenant");
+    mThis.btnPDF = mThis.self.querySelector("#_tenant_btn_pdf");
     mThis.btnDocument = mThis.self.querySelector("#_btnDocument");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_tenant");
     mThis.elSearch = mThis.self.querySelector("#_search_tenant_");
@@ -188,6 +189,196 @@ var TenantComponent = new (function () {
             };
             CreateTenantDialog.show(op);
         };
+         mThis.btnPDF.onclick = function (e) {
+            e.preventDefault();
+            let op = mThis.getFilterData();
+            // const op = {
+            //     id: null,
+            //     btn: e.target,
+            //     onClose: () => {
+            //         mThis.renderView();
+            //         mThis.tenantListView.showPage(mThis.getFilterData());
+            //     },
+            // };
+            console.log(9090,op);
+            
+            let html = `
+                <div id="full_elbody" style="zoom:95%">
+                <style>
+                    @media print {
+                        body {
+                            font-family: "Khmer OS Battambang", Arial, sans-serif !important;
+                            font-size: 12px;
+                            color: #000;
+                        }
+                    }
+
+                    #full_elbody{
+                        font-family: "Khmer OS Battambang", Arial, sans-serif;
+                    }
+
+                    .report-nation {
+                        font-family: "Khmer OS Muol Light", Arial, sans-serif;
+                        line-height: 1.5;
+                    }
+
+                    .kh-title {
+                        font-size: 14px;
+                        font-weight: normal;
+                    }
+
+                    .kh-subtitle {
+                        display: flex;
+                        justify-content: center;
+                        gap: 14px;
+                        font-size: 14px;
+                        letter-spacing: 0.6px;
+                        font-family: "Khmer OS Battambang", Arial, sans-serif;
+                    }
+
+                    .en-title {
+                        font-size: 12px;
+                        font-weight: bold;
+                        letter-spacing: 0.5px;
+                    }
+                    .en-subtitle {
+                        display: flex;
+                        justify-content: center;
+                        gap: 16px;
+                        font-size: 12px;
+                        font-weight: bold;
+                        letter-spacing: 0.6px;
+                    }
+
+                    .center-title {
+                        margin-top: 6rem !important;
+                    }
+
+
+                    .report-title p {
+                        margin: 0;
+                    }
+
+                    .table-report {
+                        width: 100%;
+                        border-collapse: collapse;
+                    }
+
+                    .table-report th,
+                    .table-report td {
+                        border: 1px solid #000;
+                        padding: 4px 6px;
+                        vertical-align: middle;
+                    }
+
+                    .table-report thead th {
+                        background: #ffff99;
+                        text-align: center;
+                        font-weight: bold;
+                    }
+
+                    .text-center {
+                        text-align: center;
+                    }
+                </style>
+
+                <div class="page">
+                    <div class="row">
+                        <div class="col-3">
+                            <div class="d-flex align-items-to">
+                                <div class=" position-relative" style="max-width: 120px;">
+                                    <img src="${main_view.base_url}/assets/images/meta/Meta_logo.png"alt="Company Logo"class="img-fluid">
+                                </div>
+                            </div>
+                            
+                        </div>
+                        <div class="col-5 center-title">
+                            <h5 class="fw-bold text-center mb-1 ps-4 ">List All Tenants</h5>
+                        </div>
+
+                        <div class="col-4 ms-auto report-nation">
+                            <div class="kh-title text-center">ព្រះរាជាណាចក្រកម្ពុជា</div>
+                            <div class="kh-subtitle text-center">
+                                <span>ជាតិ</span>
+                                <span>សាសនា</span>
+                                <span>ព្រះមហាក្សត្រ</span>
+                            </div>
+                            <div class="en-title text-center">KINGDOM OF CAMBODIA</div>
+                            <div class="en-subtitle text-center">
+                                <span>NATION</span>
+                                <span>RELIGION</span>
+                                <span>KING</span>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <table class="table-report">
+                        <thead>
+                            <tr>
+                                <th>N°</th>
+                                <th>Code</th>
+                                <th>Name</th>
+                                <th>Sex</th>
+                                <th>Legal Name</th>
+                                <th>Date Of Birth</th>
+                                <th>National ID</th>
+                                <th>Passport</th>
+                                <th>Phone Number</th>
+                                <th>Email</th>
+                                <th style="width: 200px;">Address</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                // console.log(JSON.stringify(op, null, 2));
+
+
+                vsapi.call(`${main_view.base_url}/prm/tenant/list`, op, false, null, null)
+                    .then(res => {
+                        if (res.status_code === 200) {
+
+                            const d = res.data.list;
+                            let i = 1;
+
+                            d.forEach(data => {
+                                html += `
+                                    <tr>
+                                       <td class="text-center">${i++}</td>
+                                        <td class="text-center">${data.code ?? ""}</td>
+                                        <td>${data.name ?? ""}</td>
+                                        <td class="text-center">${data.sex ?? ""}</td>
+                                        <td>${data.legal_name ?? ""}</td>
+                                        <td>${data.date_of_birth ?? ""}</td>
+                                        <td>${data.national_id ?? ""}</td>
+                                        <td>${data.passport_number ?? ""}</td>
+                                        <td>${data.phone_number ?? ""}</td>
+                                        <td>${data.email ?? ""}</td>
+                                        <td>${data.address ?? ""}</td>
+                                    </tr>
+                                `;
+                            });
+
+                            html += `
+                                </tbody>
+                            </table>
+
+                            <div style="text-align:right; margin-top:10px;">
+                                Date : ${new Date().toLocaleDateString('en-GB')}
+                            </div>
+                        </div>
+                        </div>
+                    `;
+
+                            htmlToTable('Other Requested', html);
+                        }
+                    });
+
+                return;
+        };
+
+
+
         mThis.btnBack.onclick = function (e) {
             e.preventDefault();
             mThis.showPage("tenant_list", mThis.getFilterData());

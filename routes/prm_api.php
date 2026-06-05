@@ -81,6 +81,8 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant')->gro
     Route::post('/profile/photo/delete',[TenantController::class,'deleteProfilePhoto']);
     Route::post('/profile/photo/create',[TenantController::class,'createProfilePhoto']);
     Route::post('/list-paginate', [TenantController::class, 'getListPaginate']);
+    Route::post('/list', [TenantController::class, 'getList']);
+
     Route::post('/details', [TenantController::class, 'getDetails']);
     Route::post('/form-options', [TenantController::class, 'getFormOptions']);
     Route::post('/delete', [TenantController::class, 'delete']);

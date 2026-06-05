@@ -685,4 +685,27 @@ class Tenant
             'service_requests' => $serviceRequests,
         ];
     }
+     function getList($arr, $ss){
+        $d = (object) $arr;
+        $status_id = $d->status_id ?? null;
+        $building_id = $d->building_id ?? null;
+        $str_search = '1=1';
+        if($status_id){
+            $str_search .= " AND t.status_id = $status_id";
+        }
+        if($building_id){
+            $str_search .= " AND bs.building_id = $building_id";
+        }
+        $rows = DB::table('tenants as t')
+        ->whereRaw($str_search)
+            ->selectRaw("t.id,t.name,t.code,t.national_id,t.passport_number,t.date_of_birth,t.nationality_id,t.sex,t.tenant_type,t.status_id,t.legal_name,t.phone_number,t.email,t.address")->get();
+            foreach($rows as $row){
+                setOfficialDates($row, ['start_date', 'date_of_birth' ,'end_date'], [''], []);
+
+            }
+        return (object) [
+            'list' => $rows,
+            'company_profile' => Report::getCompanyInfo($ss),
+        ];
+    }
 }
