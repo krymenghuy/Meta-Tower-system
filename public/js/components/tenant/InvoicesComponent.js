@@ -216,7 +216,7 @@ var InvoicesComponent = (() => {
         if (mThis.initAlready) return;
 
         mThis.InvoiceListView = new ListView("_invoices_list", {
-            fetchApi: `${main_view.base_url}/prm/tenant/invoice/list-paginate`,
+            fetchApi: `${main_view.base_url}/prm/invoice/list-paginate`,
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
@@ -296,7 +296,7 @@ var InvoicesComponent = (() => {
     mThis.displayInvoiceDetail = (container, id) => {
         container.innerHTML = `<div class="text-center py-3"><div class="spinner-border text-primary" role="status"></div></div>`;
         vsapi
-            .call(`${main_view.base_url}/prm/tenant/invoice/details`, { id })
+            .call(`${main_view.base_url}/prm/invoice/details`, { id })
             .then((res) => {
                 if (res.status_code !== 200) {
                     container.innerHTML = `<div class="alert alert-danger m-3">Failed to load invoice details</div>`;
@@ -531,21 +531,79 @@ var InvoicesComponent = (() => {
                 const menu = me.getActiveMenus(menuContainer);
                 const statusId = Number(menuContainer.dataset.statusid);
 
+                // menu.print_invoice.style.display =
+                //     statusId === 1 || statusId === 3 || statusId === 2
+                //         ? "block"
+                //         : "none";
                 menu.receive_invoice.style.display =
                     statusId === 2 || statusId === 3 || statusId === 4
                         ? "block"
                         : "none";
+                statusId === 2 || statusId === 3 ? "block" : "none";
+                menu.delete_invoice.style.display =
+                    statusId === 2 ? "block" : "none";
+                menu.modify_invoice.style.display =
+                    statusId === 2 ? "block" : "none";
             },
             onClick: (menulink, id, name) => {
-                if (name === "print_invoice") {
-                    mThis.printInvoice(id, menulink);
+                if (name === "delete_invoice") {
+                    mThis.deleteInvoice(id);
+                } else if (name === "print_invoice") {
+                    mThis.printInvoice(id);
                 } else if (name === "receive_invoice") {
-                    mThis.receiveInvoice(id, menulink);
+                    mThis.receiveInvoice(id);
+                } else if (name === "modify_invoice") {
+                    mThis.editInvoice(id, menulink);
                 }
             },
         };
 
         new VSDropdownMenu(menuOptions);
+    };
+
+    mThis.deleteInvoice = (id, menuLink) => {
+        if (!AuthManager.allowed(242)) return;
+
+        cv_interact.confirm(
+            "Are you sure you want to delete this invoice?",
+            {
+                transTitle: "Delete Invoice",
+                confirmButtonText: "Delete",
+                context: "danger",
+            },
+            (confirmed) => {
+                if (!confirmed) return;
+
+                vsapi
+                    .call(
+                        `${main_view.base_url}/prm/invoice/delete`,
+                        { id },
+                        menuLink,
+                    )
+                    .then((res) => {
+                        if (res.status_code === 200) {
+                            mThis.InvoiceListView.showPage(
+                                mThis.getFilterData(),
+                            );
+                            cv_interact.success("Invoice deleted successfully");
+                        } else {
+                            cv_interact.error(
+                                res.error_message || "Failed to delete.",
+                            );
+                        }
+                    });
+            },
+        );
+    };
+
+    mThis.editInvoice = (id, menulink) => {
+        console.log("editInvoice id:", id);
+        InvoiceDialog.show({
+            id: id,
+            btn: menulink,
+            onClose: () =>
+                mThis.InvoiceListView.showPage(mThis.getFilterData()),
+        });
     };
 
     mThis.receiveInvoice = (id, menulink) => {
@@ -557,66 +615,39 @@ var InvoicesComponent = (() => {
         });
     };
 
-    mThis.printInvoice = (id, menulink) => {
-        let globalSetting = null;
+    mThis.printInvoice = (id, invoice_type, menulink) => {
+        if (!invoice_type || invoice_type === "undefined") {
+            console.warn(
+                "Type missing for ID " + id + ". Fetching from server...",
+            );
 
-        vsapi
-            .call(`${main_view.base_url}/prm/invoice_setting/get`)
-            .then((res) => {
-                if (res.status_code === 200) {
-                    globalSetting = res.data;
-                }
-            });
+            vsapi
+                .call(`${main_view.base_url}/prm/invoice/details`, { id: id })
+                .then((res) => {
+                    if (res.status_code === 200) {
+                        mThis.printInvoice(id, res.data.invoice_type, menulink);
+                    } else {
+                        cv_interact.error("Could not determine invoice type.");
+                    }
+                });
+            return;
+        }
 
-        vsapi
-            .call(`${main_view.base_url}/prm/tenant/invoice/details`, { id: id })
-            .then((res) => {
-                if (res.status_code !== 200) {
-                    cv_interact.error(
-                        res.error_message || "Could not load invoice.",
-                    );
-                    return;
-                }
+        const invType = parseInt(invoice_type);
+        const params = { invoice_id: id, btn: menulink };
 
-                const invoice = res.data;
-                const localSetting = invoice.settings;
-                const invType = invoice.invoice_type;
-                const params = {
-                    invoice_id: id,
-                    btn: menulink,
-                    invoice: invoice,
-                };
-
-                const settings = localSetting || {};
-                const global = globalSetting || {};
-
-                if (settings.show_balance !== null) {
-                    settings.build_representative =
-                        global.build_representative;
-                    settings.representative_phone =
-                        global.representative_phone;
-                    settings.representative_address =
-                        global.representative_address;
-                    params.setting = settings;
-                } else {
-                    params.setting = global;
-                }
-
-                if (invType === 1) {
-                    InvoiceTaxDialog.show(params);
-                } else if (invType === 2) {
-                    InvoiceNoTaxDialog.show(params);
-                } else if (invType === 3) {
-                    InvoiceCommercialDialog.show(params);
-                } else {
-                    cv_interact.error("Could not determine invoice type.");
-                }
-            });
+        if (invType === 1) {
+            InvoiceTaxDialog.show(params);
+        } else if (invType === 2) {
+            InvoiceNoTaxDialog.show(params);
+        } else if (invType === 3) {
+            InvoiceCommercialDialog.show(params);
+        }
     };
 
     mThis.prepareFormOptions = (onFinish) => {
         vsapi
-            .call(`${main_view.base_url}/prm/tenant/invoice/form-options`)
+            .call(`${main_view.base_url}/prm/invoice/form-options`)
             .then((res) => {
                 const d = res.status_code === 200 ? res.data : {};
                 VSUtil.setComboItems(
@@ -2815,7 +2846,7 @@ const InvoiceDialog = (() => {
 
                 if (me.dataOptions.id) {
                     vsapi
-                        .call(`${main_view.base_url}/prm/tenant/invoice/details`, {
+                        .call(`${main_view.base_url}/prm/invoice/details`, {
                             id: me.dataOptions.id,
                         })
                         .then((res) => {
@@ -2945,7 +2976,7 @@ const InvoiceDialog = (() => {
                 createTitle: "Create Invoice",
                 targetProp: "invoice_details",
                 api: {
-                    endpoint: `${main_view.base_url}/prm/tenant/invoice/form-options`,
+                    endpoint: `${main_view.base_url}/prm/invoice/form-options`,
                     params: (op) => {
                         console.log("API params op:", op);
                         return { id: op.id };
@@ -2985,7 +3016,7 @@ const InvoiceDialog = (() => {
 
                         vsapi
                             .call(
-                                `${main_view.base_url}/prm/tenant/invoice/save`,
+                                `${main_view.base_url}/prm/invoice/save`,
                                 formData,
                                 btn,
                             )
@@ -3275,7 +3306,7 @@ const ReceiveDialog = (() => {
                 const opts = me.dataOptions || {};
                 if (opts.invoice_id) {
                     vsapi
-                        .call(`${main_view.base_url}/prm/tenant/invoice/details`, {
+                        .call(`${main_view.base_url}/prm/invoice/details`, {
                             id: opts.invoice_id,
                         })
                         .then((res) => {
@@ -3296,7 +3327,7 @@ const ReceiveDialog = (() => {
                 }
 
                 vsapi
-                    .call(`${main_view.base_url}/prm/tenant/invoice/form-options`)
+                    .call(`${main_view.base_url}/prm/invoice/form-options`)
                     .then((res) => {
                         const banks = res?.data?.banks || [];
                         if (me.controls.bank_transfer_bank_id) {
@@ -3347,7 +3378,7 @@ const ReceiveDialog = (() => {
 
                         vsapi
                             .call(
-                                `${main_view.base_url}/prm/tenant/invoice/receive`,
+                                `${main_view.base_url}/prm/invoice/receive`,
                                 payload,
                                 btn,
                             )
