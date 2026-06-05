@@ -393,7 +393,7 @@ class Building //extends Model
         if ($name !== $expectedName) {
             return DV::error("Floor name must be '{$expectedName}'.");
         }
-        \Log::info([$floor_number,$floor_id]);
+        // \Log::info([$floor_number,$floor_id]);
         $exists = DB::table('building_floors as bf')
             ->join('floors as f', 'f.id', '=', 'bf.floor_id')
             ->where('bf.building_id', $d->building_id)

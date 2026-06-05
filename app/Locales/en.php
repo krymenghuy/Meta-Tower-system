@@ -137,6 +137,9 @@
                 'select_file' => 'Please select a file.',
                 'select_valid_file' => 'Please select a valid file.',
                 'remarks_max_255' => 'Remarks must not exceed 255 characters.',
+                'tenant_national_id' => 'A tenant with national ID',
+                'exists_in_system' => 'already exists in the system1.',
+                
 
 
 

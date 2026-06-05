@@ -754,7 +754,7 @@ const BillPaymentDialog = (() => {
                         .then((res) => {
                             if (res.status_code == 200) {
                                 bill = res.data.bill;
-                    console.log(123456, bill);
+                    // console.log(123456, bill);
 
                                 const dueAmount = Number(bill?.balance || 0);
                                 const dueEl =

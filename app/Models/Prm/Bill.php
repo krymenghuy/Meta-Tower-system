@@ -235,7 +235,7 @@ class Bill
                 $end_date = date('Y-m-d', strtotime($end_date));
                 $str_moreWhere .= " AND b.bill_date <= '$end_date'";
             }
-             if ($due_date) {
+            if ($due_date) {
                 $due_date = date('Y-m-d', strtotime($due_date));
                 $str_moreWhere .= " AND b.due_date >= '$due_date'";
             }
@@ -374,6 +374,108 @@ class Bill
 
         return DV::depends($x, ['Bill status', 'updated']);
     }
+
+    public function uploadAttachment($arr = [], $id = null, $ss = null)
+    {
+        $id = $id ?? $this->id;
+        $ss = $ss ?? $this->userInfo;
+
+        if (!$id) return DV::error('Bill not found.');
+
+        $bill = DB::table('bills')
+            ->where('id', $id)
+            ->select('id', 'file_image')
+            ->first();
+
+        if (!$bill) return DV::error('Bill not found.');
+
+        $v_rule = [
+            'id'                 => '1|integer|exists:bills,id',
+            'data'               => '1|string',
+            'ext'                => '1|string',
+            'mime_type'          => '0|string',
+            'original_file_name' => '0|string|0-255',
+            'remark'             => '0|string|0-255',
+        ];
+
+        $res = DBX::validateObject(
+            $arr,
+            $v_rule,
+            1,
+            [
+                'data'      => GeneralSettings::$image_chars,
+                'mime_type' => GeneralSettings::$mime_type_chars,
+            ],
+            $ss->lang
+        );
+        if ($res->error) return DV::error($res->error);
+        $inputs = $res->values;
+
+        $data             = $inputs['data']               ?? null;
+        $ext              = strtolower($inputs['ext']     ?? '');
+        $originalFileName = $inputs['original_file_name'] ?? null;
+        $remark           = $inputs['remark']             ?? null;
+
+        if (!$data || !$ext) return DV::error('File is required.');
+
+        // validate extension
+        $allowedExt = array_merge(self::$allowed_image_extensions, self::$allowed_doc_extensions);
+        if (!in_array($ext, $allowedExt)) {
+            return DV::error('Invalid file type.');
+        }
+
+
+        DB::beginTransaction();
+        try {
+            // delete old file if exists
+            if ($bill->file_image) {
+                $oldExt      = strtolower(pathinfo($bill->file_image, PATHINFO_EXTENSION));
+                $oldCategory = in_array($oldExt, self::$allowed_image_extensions) ? 'image' : 'document';
+                XPublicStorage::delete(
+                    ['subs_id' => $ss->subs_id, 'dir' => self::$img_dir],
+                    $oldCategory,
+                    $bill->file_image
+                );
+            }
+
+            // strip base64 header
+            $data = preg_replace('#^data:.*;base64,#', '', $data);
+
+            $file = XPublicStorage::savefile(
+                ['subs_id' => $ss->subs_id, 'dir' => self::$img_dir],
+                $ext,
+                $data,
+                $originalFileName
+            );
+
+            if ($file->status === 'Error') {
+                DB::rollBack();
+                return DV::error($file->error_message);
+            }
+
+            $updateData = [
+                'file_image'         => $file->file_name,
+                'ext'                => $ext,
+                'original_file_name' => $originalFileName ?? $file->file_name,
+                'update_user'        => $ss->full_name ?? 'Admin',
+                'updated_at'         => getNowTime(),
+            ];
+
+            if (!is_null($remark)) {
+                $updateData['remark'] = $remark;
+            }
+
+            DB::table('bills')->where('id', $id)->update($updateData);
+
+            DB::commit();
+            return DV::depends(1, ['id' => $id, 'file_name' => $file->file_name, "message"=>'1234567890']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Bill::uploadAttachment Error: ' . $e->getMessage());
+            return DV::error($e->getMessage());
+        }
+    }
+
     public function viewBillAttachment($id = null, $ss = null)
     {
         $id = $id ?? $this->id;
