@@ -188,7 +188,7 @@ var MaintenanceComponent = (() => {
             const f = el.dataset.field;
             if (f) p[f] = el.value;
         });
-        console.log(444,p);
+        // console.log(444,p);
 
         return p;
     };
@@ -260,8 +260,7 @@ var MaintenanceComponent = (() => {
                                     null
                                 ).then(res => {
                                     if (res.status_code === 200) {
-                                        cv_interact.success("finished"
-                                        );
+                                        cv_interact.success("finished");
                                         mThis.MaintenanceListView.showPage(mThis.getFilterData());
                                     } else {
                                         cv_interact.error(res.error_message);
@@ -294,7 +293,7 @@ var MaintenanceComponent = (() => {
                         if (e) {
                             vsapi.call(`${main_view.base_url}/prm/maintenance/delete`, { id: id }, false, false, false).then(res => {
                                 if (res.status_code === 200) {
-                                    cv_interact.success = (message,title=null,position='center');
+                                    cv_interact.success("deleted");
                                     mThis.MaintenanceListView.showPage(mThis.getFilterData());
                                 } else {
                                     cv_interact.error(res.error_message);

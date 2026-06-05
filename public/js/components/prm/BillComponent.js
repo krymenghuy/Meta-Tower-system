@@ -188,6 +188,7 @@ var BillComponent = (() => {
                 tr.dataset.displaystatusid =
                     data.display_status_id ?? data.status_id;
                 tr.dataset.vendorId = data.vendor_id;
+                tr.dataset.buildingId = data.building_id;
                 tr.dataset.billid = data.bill_id;
                 tr.dataset.fileurl = data.image_url ?? "";
                 tr.classList.add("bill");
@@ -278,13 +279,19 @@ var BillComponent = (() => {
                     name: "bill_payment",
                 },
                 {
-                    html: '<span class="ps-2">View Attachment</span>',
+                    html: '<span class="ps-2" vslang="titles.Upload Photo">Upload Attachment</span>',
+                    icon: `<i class="fa-solid fa-cloud-arrow-up" style="color: rgb(63, 96, 159);"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "upload_attachment",
+                },
+                {
+                    html: '<span class="ps-2">View Photo</span>',
                     icon: `<i class="fa-solid fa-panorama" style="color: rgb(59, 125, 74);"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "view_attachment",
                 },
                 {
-                    html: '<span class="ps-2">Delete Attachment</span>',
+                    html: '<span class="ps-2">Delete Photo</span>',
                     icon: `<i class="fa-regular fa-rectangle-xmark" style="color: rgb(209, 23, 54);"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "delete_attachment",
@@ -332,6 +339,10 @@ var BillComponent = (() => {
                     }
                     case "delete_bill": {
                         mThis.deleteBill(id, menuLink);
+                        break;
+                    }
+                    case "upload_attachment": {
+                        mThis.uploadAttachment(id, menuLink);
                         break;
                     }
                     case "view_attachment": {
@@ -428,6 +439,86 @@ var BillComponent = (() => {
         };
         BillPaymentDialog.show(op);
     };
+    mThis.uploadAttachment = (id, menuLink) => {
+        const tr = menuLink.closest("tr");
+        const fileUrl = tr?.dataset.fileurl || null;
+        const vendor_id = tr?.dataset.vendorId || null;
+        const building_id = tr?.dataset.buildingId || null;
+
+        // 1. Trigger your existing FileChooser helper
+        FileChooser.chooseFile(
+            {
+                accept: ".pdf,.png,.jpg,.jpeg",
+            },
+            (d) => {
+                // This callback runs after the user successfully selects a file
+                const extension = d.fileName.split(".").pop().toLowerCase();
+
+                // 2. Build your configuration object using the file data 'd'
+                let op = {
+                    id: fileUrl ? id : null,
+                    bill_id: id,
+                    vendor_id: vendor_id,
+                    building_id: building_id,
+                    btn: menuLink,
+                    fileData: d, // Pass the chosen file data here
+                    fileExtension: extension,
+                    onClose: () => {
+                        mThis.BillListView.showPage(mThis.getFilterData());
+                    },
+                };
+
+                // 3. Call your upload/save method here using 'op'
+                // Example: mThis.submitAttachment(op);
+                console.log("File metadata ready for upload:", op);
+
+                const p = {
+                    id: id,
+                    ext: extension,
+                    original_file_name: d.fileName,
+                    data: d.base64,
+                    mime_type: extension,
+                };
+
+                vsapi
+                    .call(
+                        [
+                            main_view.base_url,
+                            "/prm/bill/upload-attachment",
+                        ].join(""),
+                        p,
+                        null,
+                    )
+
+                    .then((res) => {
+                        console.log(123123123, res);
+                        console.log(123123123, mThis);
+
+                        if (res.status_code === 200) {
+                            console.log(445, res);
+
+                            const newAttachmentId = res.data?.id || null;
+                            me.hide(true, p, newAttachmentId);
+
+                            cv_interact.success(
+                                "Bill record has been uploaded.",
+                            );
+                        } else {
+                            cv_interact.error(res.error_message);
+                            // me.fileData = null;
+
+                            //            console.log(44225, res);
+                            
+
+                            // if (me.controls?.documents) {
+                            //     me.controls.documents.value = "";
+                            //     me.controls.documents.classList.add("d-none");
+                            // }
+                        }
+                    });
+            },
+        );
+    };
     mThis.viewAttachment = (id, menuLink) => {
         vsapi
             .call(
@@ -463,21 +554,21 @@ var BillComponent = (() => {
                     const img = document.createElement("img");
                     img.src = data_url;
                     img.style.cssText = `
-        max-width:100%;
-        max-height:90vh;
-        border-radius:8px;
-        box-shadow:0 4px 32px #000;
-    `;
+                        max-width:100%;
+                        max-height:90vh;
+                        border-radius:8px;
+                        box-shadow:0 4px 32px #000;
+                    `;
                     wrapper.appendChild(img);
                 } else if (isPdf) {
                     const iframe = document.createElement("iframe");
                     iframe.src = data_url;
                     iframe.style.cssText = `
-        width:80vw;
-        height:85vh;
-        border:none;
-        border-radius:8px;
-    `;
+                        width:80vw;
+                        height:85vh;
+                        border:none;
+                        border-radius:8px;
+                    `;
                     wrapper.appendChild(iframe);
                 } else if (isDoc) {
                     const iframe = document.createElement("iframe");
@@ -487,12 +578,12 @@ var BillComponent = (() => {
                         encodeURIComponent(data_url);
 
                     iframe.style.cssText = `
-        width:80vw;
-        height:85vh;
-        border:none;
-        border-radius:8px;
-        background:#fff;
-    `;
+                        width:80vw;
+                        height:85vh;
+                        border:none;
+                        border-radius:8px;
+                        background:#fff;
+                    `;
 
                     wrapper.appendChild(iframe);
                 } else {
@@ -809,7 +900,7 @@ const BillDialog = (() => {
                                     .split(".")
                                     .pop()
                                     .toLowerCase();
-                                
+
                                 me.fileData = d;
                                 me.controls.documents.value = d.fileName;
                                 me.controls.documents.classList.remove(
@@ -953,57 +1044,6 @@ const BillDialog = (() => {
                             }
                         });
                     }
-
-                    // setTimeout(() => {
-                    //     const months = [
-                    //         "Jan",
-                    //         "Feb",
-                    //         "Mar",
-                    //         "Apr",
-                    //         "May",
-                    //         "Jun",
-                    //         "Jul",
-                    //         "Aug",
-                    //         "Sep",
-                    //         "Oct",
-                    //         "Nov",
-                    //         "Dec",
-                    //     ];
-                    //     const toFormatted = (val) => {
-                    //         if (/^\d{2}-[A-Za-z]{3}-\d{4}$/.test(val))
-                    //             return val;
-                    //         const parsed = new Date(val);
-                    //         if (isNaN(parsed)) return val;
-                    //         const d = String(parsed.getDate()).padStart(2, "0");
-                    //         const m = months[parsed.getMonth()];
-                    //         const y = parsed.getFullYear();
-                    //         return `${d}-${m}-${y}`;
-                    //     };
-                    //     if (me.controls.bill_date) {
-                    //         if (!me.controls.bill_date.value) {
-                    //             const now = new Date();
-                    //             const d = String(now.getDate()).padStart(
-                    //                 2,
-                    //                 "0",
-                    //             );
-                    //             const m = months[now.getMonth()];
-                    //             const y = now.getFullYear();
-                    //             me.controls.bill_date.value = `${d}-${m}-${y}`;
-                    //         } else {
-                    //             me.controls.bill_date.value = toFormatted(
-                    //                 me.controls.bill_date.value,
-                    //             );
-                    //         }
-                    //     }
-                    //     if (
-                    //         me.controls.due_date &&
-                    //         me.controls.due_date.value
-                    //     ) {
-                    //         me.controls.due_date.value = toFormatted(
-                    //             me.controls.due_date.value,
-                    //         );
-                    //     }
-                    // }, 0);
                 },
 
                 buttons: [
@@ -1118,3 +1158,443 @@ const BillDialog = (() => {
     return self;
 })();
 window.BillDialog = BillDialog;
+
+// const AttachmentDialog = (() => {
+//     const self = {};
+//     let dialog = null;
+
+//     self.show = (op = {}) => {
+//         dialog =
+//             dialog ||
+//             new GeneralDialog({
+//                 cssClass: "modal-md vs-modal",
+//                 backdrop: "static",
+//                 keyboard: true,
+
+//                 onShow: (me) => {
+//                     const title = me.divModal.querySelector(".modal-title");
+//                     if (title) {
+//                         const isModify = !!me.dataOptions?.id;
+//                         title.innerHTML = isModify
+//                             ? '<h4 class="text-prm-custom text-start fw-bold">Modify Attachment</h4>'
+//                             : '<h4 class="text-prm-custom text-start fw-bold">Upload Attachment</h4>';
+//                     }
+//                 },
+
+//                 createContent: () => {
+//                     return `
+//                         <div class="document-form row g-3 justify-content-start">
+//                             <div class="col-8">
+//                                 <div class="vs-material-field">
+//                                     <input type="text" name="documents" class="form-control" disabled>
+//                                     <label>File</label>
+//                                 </div>
+//                             </div>
+//                             <div class="col-4">
+//                                 <div class="vs-material-field d-flex">
+//                                     <button name="btn_chooseFile" class="btn btn-block" style="background-color: #e1e5f2; padding: 0.5rem 0.75rem !important;">Choose File</button>
+//                                 </div>
+//                             </div>
+//                             <div class="col-12">
+//                                 <div class="vs-material-field">
+//                                     <textarea name="remark" class="data-input form-control" data-field="remark" placeholder=" "></textarea>
+//                                     <label>Remark</label>
+//                                 </div>
+//                             </div>
+//                         </div>`;
+//                 },
+
+//                 contentCreated: (me) => {
+//                     me.fileData = null;
+
+//                     me.controls.btn_chooseFile.onclick = () => {
+//                         FileChooser.chooseFile(
+//                             { accept: ".pdf,.png,.jpg,.jpeg" },
+//                             (d) => {
+//                                 me.fileData = d;
+//                                 me.controls.documents.value = d.fileName;
+//                             },
+//                         );
+//                     };
+//                 },
+
+//                 prepareFormOptions: {
+//                     createTitle: "Upload Attachment",
+//                     modifyTitle: "Modify Attachment",
+//                     targetProp: "bill_details",
+//                     api: {
+//                         endpoint: [
+//                             main_view.base_url,
+//                             "/prm/bill/form-options",
+//                         ].join(""),
+//                         params: (op) => ({ id: op.id }),
+//                     },
+//                 },
+
+//                 onPrepareForm: (me, data) => {
+//                     me.fileData = null;
+//                     me.controls.documents.value = "";
+
+//                     const details = data?.bill_details;
+
+//                     if (details?.file_image) {
+//                         const displayName = details.original_file_name
+//                             ? `${details.original_file_name}.${details.file_image.split(".").pop()}`
+//                             : details.file_image;
+//                         me.controls.documents.value = displayName;
+//                     }
+
+//                     if (me.controls.remark) {
+//                         me.controls.remark.value = details?.remark || "";
+//                     }
+//                 },
+
+//                 buttons: [
+//                     {
+//                         label: '<span vslang="buttons.Cancel"></span>',
+//                         cssClass: "btn btn-secondary",
+//                         click: (me) => me.hide(false),
+//                     },
+//                     {
+//                         label: '<span vslang="buttons.Save"></span>',
+//                         cssClass: "btn btn-primary",
+//                         click: (me, btn) => {
+//                             if (!me.fileData && !(me.dataOptions?.id > 0)) {
+//                                 cv_interact.error("Please select a file.");
+//                                 return;
+//                             }
+
+//                             if (me.fileData) {
+//                                 const allowExt = ["jpg", "jpeg", "png", "pdf"];
+//                                 const fileExt = me.fileData.fileName
+//                                     .split(".")
+//                                     .pop()
+//                                     .toLowerCase();
+
+//                                 if (!allowExt.includes(fileExt)) {
+//                                     cv_interact.error(
+//                                         "Please select a valid file.",
+//                                     );
+//                                     return;
+//                                 }
+//                             }
+
+//                             let p = {
+//                                 id: me.dataOptions.bill_id || null,
+//                                 remark: me.controls.remark?.value || "",
+//                             };
+
+//                             if (me.fileData) {
+//                                 const fileExt = me.fileData.fileName
+//                                     .split(".")
+//                                     .pop()
+//                                     .toLowerCase();
+//                                 const nameWithoutExt =
+//                                     me.fileData.fileName.replace(
+//                                         /\.[^/.]+$/,
+//                                         "",
+//                                     );
+
+//                                 let base64Data = me.fileData.dataUrl || "";
+//                                 if (
+//                                     base64Data &&
+//                                     !base64Data.includes("base64,")
+//                                 ) {
+//                                     base64Data =
+//                                         "data:application/octet-stream;base64," +
+//                                         base64Data;
+//                                 }
+
+//                                 p = {
+//                                     ...p,
+//                                     ext: fileExt,
+//                                     original_file_name: nameWithoutExt,
+//                                     data: base64Data,
+//                                     mime_type: me.fileData.ext,
+//                                 };
+//                             }
+
+//                             vsapi
+//                                 .call(
+//                                     [main_view.base_url, "/prm/bill/save"].join(
+//                                         "",
+//                                     ),
+//                                     p,
+//                                     btn,
+//                                     null,
+//                                 )
+//                                 .then((res) => {
+//                                     if (res.status_code === 200) {
+//                                         me.hide(true, p);
+//                                         cv_interact.success(
+//                                             me.dataOptions?.id > 0
+//                                                 ? "Attachment has been updated successfully."
+//                                                 : "Attachment has been uploaded successfully.",
+//                                         );
+//                                     } else {
+//                                         cv_interact.error(res.error_message);
+//                                     }
+//                                 })
+//                                 .catch(() => {
+//                                     cv_interact.error(
+//                                         "Network error while uploading attachment.",
+//                                     );
+//                                 });
+//                         },
+//                     },
+//                 ],
+//             });
+
+//         dialog.show(op);
+//     };
+
+//     return self;
+// })();
+
+// const AttachmentDialog = (() => {
+//     const self = {};
+//     let dialog = null;
+
+//     self.show = (op = {}) => {
+//         dialog =
+//             dialog ||
+//             new GeneralDialog({
+//                 cssClass: "modal-md vs-modal",
+//                 backdrop: "static",
+//                 keyboard: true,
+//                 title: (me) => {
+//                     const title = me.dataOptions.id
+//                         ? "Modify Photo"
+//                         : "Upload Photo";
+//                     return `<h4 class="text-prm-custom text-start fw-bold">${LocaleManager.trans(title, "titles")}</h4>`;
+//                 },
+
+//                 createContent: () => {
+//                     return `
+//                 <div class="document-form row g-3 justify-content-start">
+//                     <div class="col-8">
+//                                 <div class="vs-material-field">
+//                                     <input type="text" name="documents" class=" form-control " accept=".png,.jpg,.jpeg" /disabled>
+//                                     <label>File</label>
+//                                 </div>
+//                             </div>
+//                             <div class="col-4">
+//                                 <div class="vs-material-field d-flex">
+//                                     <button name ="btn_chooseFile"  class="btn btn-block" style="background-color: #e1e5f2; padding: 0.5rem 0.75rem !important;">Choose File </button>
+//                                 </div>
+//                             </div>
+//                 </div>`;
+//                 },
+
+//                 contentCreated: (me) => {
+//                     me.uploadInput = me.divModal.querySelector(
+//                         'input[name="documents"]',
+//                     );
+//                     me.fileBase64 = null; // Store base64 data here
+//                     // me.controls.btn_chooseFile.onclick = () => {
+//                     //     FileChooser.chooseFile(
+//                     //         {
+//                     //             accept: ".pdf,.png,.jpg,.jpeg",
+//                     //         },
+//                     //         (d) => {
+//                     //             me.fileData = d;
+//                     //             me.controls.documents.value = d.fileName;
+//                     //             me.controls.documents.classList.remove('d-none');
+//                     //         },
+//                     //     );
+//                     // };
+//                     me.controls.btn_chooseFile.onclick = () => {
+//                         FileChooser.chooseFile(
+//                             {
+//                                 accept: ".pdf,.png,.jpg,.jpeg",
+//                             },
+//                             (d) => {
+//                                 const extension = d.fileName
+//                                     .split(".")
+//                                     .pop()
+//                                     .toLowerCase();
+//                                 me.fileData = d;
+//                                 me.controls.documents.value = d.fileName;
+//                                 me.controls.documents.classList.remove(
+//                                     "d-none",
+//                                 );
+//                             },
+//                         );
+//                     };
+//                     me.uploadInput.addEventListener("change", (e) => {
+//                         const file = e.target.files[0];
+//                         if (file) {
+//                             const reader = new FileReader();
+//                             reader.onload = (event) => {
+//                                 me.fileBase64 =
+//                                     event.target.result.split(",")[1];
+
+//                                 me.ext = event.target.result
+//                                     .split(";")[0]
+//                                     .split(":")[1];
+//                                 me.ext = me.ext.split("/")[1];
+//                             };
+//                             reader.readAsDataURL(file);
+//                         }
+//                     });
+
+//                     me.deleteAttachment = async (attachmentId) => {
+//                         const confirmed = await cv_interact.confirm(
+//                             "confirm_delete",
+//                             {
+//                                 title: "deleted",
+//                                 context: "delete",
+//                             },
+//                         );
+
+//                         if (!confirmed) return;
+
+//                         const p = { id: attachmentId };
+
+//                         vsapi
+//                             .call(
+//                                 main_view.base_url,
+//                                 "/prm/tenant/document/delete",
+//                                 p,
+//                                 false,
+//                                 false,
+//                             )
+//                             .then((res) => {
+//                                 if (res.status_code === 200) {
+//                                     cv_interact.success = (message,title=null,position='center');
+//                                     if (
+//                                         typeof me.loadAttachments ===
+//                                         "function"
+//                                     ) {
+//                                         me.loadAttachments();
+//                                     }
+//                                     me.hide(true);
+//                                 }
+//                             });
+//                     };
+//                 },
+
+//                 configSelect: [
+//                     // {
+//                     //     name: "document_type_id",
+//                     //     data: "document_types",
+//                     //     textField: "document_type",
+//                     //     valueField: "id",
+//                     // },
+//                 ],
+
+//                 prepareFormOptions: {
+//                     // createTitle: "Upload Document",
+//                     // modifyTitle: "Modify Document",
+//                     targetProp: "document_details",
+//                     api: {
+//                         endpoint: [
+//                             main_view.base_url,
+//                             "/prm/bill/details",
+//                         ].join(""),
+//                         params: (op) => ({ id: op.id }),
+//                     },
+//                 },
+//                 onPrepareForm: (me, data) => {
+//                     console.log(1234321,data);
+
+//                     me.fileData = null;
+//                     me.fileBase64 = null;
+//                     me.ext = null;
+//                     me.controls.documents.value = "";
+
+//                     if (data?.original_file_name) {
+//                         const displayName = data.original_file_name;
+
+//                         me.controls.documents.value = displayName;
+//                         me.controls.documents.classList.remove("d-none");
+//                     }
+
+//                 },
+
+//                 buttons: [
+//                     {
+//                         label: '<span vslang="buttons.Cancel"></span>',
+//                         cssClass: "btn btn-secondary",
+//                         click: (me) => me.hide(false),
+//                     },
+//                     {
+//                         label: '<span vslang="buttons.Save"></span>',
+//                         cssClass: "btn btn-primary",
+//                         click: (me, btn) => {
+//                             if (!me.fileData && !(me.dataOptions?.id > 0)) {
+//                                 cv_interact.error("select_file");
+//                                 return;
+//                             }
+
+//                             const allowExt = ["jpg", "jpeg", "png", "pdf"];
+//                             if (
+//                                 me.fileData &&
+//                                 allowExt.indexOf(me.fileData.ext) === -1
+//                             ) {
+//                                 cv_interact.error(
+//                                     "select_valid_file",
+//                                 );
+//                                 return;
+//                             }
+//                             // const nameWithoutExt = me.fileData.fileName.replace(
+//                             //     /\.[^/.]+$/,
+//                             //     "",
+//                             // );
+
+//                             const nameWithoutExt = me.fileData
+//                                 ? me.fileData.fileName.replace(/\.[^/.]+$/, "")
+//                                 : me.controls?.original_file_name?.value || "";
+
+//                             const p = {
+//                                 id: me.dataOptions.bill_id || null,
+//                                 tenant_id: me.dataOptions.tenant_id,
+//                                 ext: me.fileData
+//                                     ? me.fileData.ext
+//                                     : me.controls?.file_ext?.value,
+//                                 data: me.fileData ? me.fileData.dataUrl : null,
+
+//                                 original_file_name: nameWithoutExt,
+//                             };
+//                             vsapi
+//                                 .call(
+//                                     [
+//                                         main_view.base_url,
+//                                         "/prm/bill/upload-attachment",
+//                                     ].join(""),
+//                                     p,
+//                                     btn,
+//                                     null,
+//                                 )
+
+//                                 .then((res) => {
+//                                     if (res.status_code === 200) {
+//                                         console.log(445,res);
+
+//                                         const newAttachmentId =
+//                                             res.data?.id || null;
+//                                         me.hide(true, p, newAttachmentId);
+
+//                                            cv_interact.success("Bill record has been uploaded.");
+//                                     } else {
+//                                         cv_interact.error(res.error_message);
+//                                         // me.fileData = null;
+
+//                                         if (me.controls?.documents) {
+//                                             me.controls.documents.value = "";
+//                                             me.controls.documents.classList.add(
+//                                                 "d-none",
+//                                             );
+//                                         }
+//                                     }
+//                                 });
+//                         },
+//                     },
+//                 ],
+//             });
+
+//         dialog.show(op);
+//     };
+
+//     return self;
+// })();
