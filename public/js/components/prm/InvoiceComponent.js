@@ -719,7 +719,7 @@ var InvoiceComponent = (() => {
 
                     const settings = localSetting || {};
                     const global = globalSetting || {};
-                    const company = companyProfile || {}; 
+                    const company = companyProfile || {};
 
                     console.log(34, company);
 

@@ -395,4 +395,223 @@
         max-width: 100%;
     }
 }
+
+/* ── Contract detail / renew-record modal ── */
+.contract-detail-modal {
+    --contract-navy: #1A1647;
+    --contract-blue: #0C447C;
+    --contract-muted: #8b95a5;
+    --contract-border: #e8ecf2;
+    --contract-surface: #f6f8fb;
+}
+
+.contract-detail-modal .modal-header {
+    background: linear-gradient(135deg, #1A1647 0%, #25206a 100%);
+    padding: 12px 18px;
+}
+
+.contract-detail-modal .modal-title {
+    color: #fff !important;
+    font-size: 0.92rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.01em;
+}
+
+.contract-detail-modal .modal-content .modal-header .btn-close {
+    filter: brightness(0) invert(1);
+    opacity: 0.65;
+}
+
+.contract-detail-modal .modal-content .modal-header .btn-close:hover {
+    opacity: 1;
+}
+
+.contract-detail-modal .modal-body {
+    padding: 14px 16px 12px;
+}
+
+.contract-detail-modal .modal-footer {
+    padding: 10px 16px;
+    background: #fff;
+    box-shadow: inset 0 1px 0 var(--contract-border);
+}
+
+.contract-detail-modal .modal-footer .btn-contract-detail-close {
+    color: var(--contract-navy) !important;
+    background-color: #fff !important;
+    border: 1px solid var(--contract-border) !important;
+    box-shadow: none;
+    min-height: 32px;
+    padding: 0.35rem 1.1rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.contract-detail-modal .modal-footer .btn-contract-detail-close:hover {
+    background-color: var(--contract-surface) !important;
+    border-color: #d0d7e2 !important;
+}
+
+.contract-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.contract-detail__hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 12px;
+    background: var(--contract-surface);
+    border: 1px solid var(--contract-border);
+    border-radius: 8px;
+}
+
+.contract-detail__hero-main {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.contract-detail__hero-kicker {
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--contract-muted);
+    line-height: 1.2;
+}
+
+.contract-detail__hero-unit {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--contract-navy);
+    line-height: 1.3;
+}
+
+.contract-detail__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 16px;
+}
+
+.contract-detail__cell {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.contract-detail__cell--end {
+    text-align: right;
+    align-items: flex-end;
+}
+
+.contract-detail__label {
+    font-size: 0.58rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--contract-muted);
+    line-height: 1.2;
+}
+
+.contract-detail__value {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--contract-navy);
+    line-height: 1.3;
+    word-break: break-word;
+}
+
+.contract-detail__value--accent {
+    color: var(--contract-blue);
+}
+
+.contract-detail__value--price {
+    font-size: 0.88rem;
+}
+
+.contract-detail__value small {
+    font-size: 0.72em;
+    font-weight: 600;
+    color: var(--contract-muted);
+}
+
+.contract-detail__sub {
+    font-size: 0.68rem;
+    font-weight: 500;
+    color: var(--contract-muted);
+    line-height: 1.2;
+}
+
+.contract-detail__comment {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    background: #fff;
+    border: 1px solid var(--contract-border);
+    color: #5f6b7a;
+    font-size: 0.74rem;
+    line-height: 1.4;
+}
+
+.contract-detail__comment i {
+    color: var(--contract-blue);
+    font-size: 0.78rem;
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.contract-detail__comment strong {
+    color: var(--contract-navy);
+    font-weight: 600;
+}
+
+.contract-renewal-panel {
+    margin: -2px 0 0;
+}
+
+.contract-renewal-panel .table {
+    font-size: 0.8rem;
+    margin-bottom: 0;
+}
+
+.contract-renewal-panel .table th {
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--contract-muted);
+    border-bottom-color: var(--contract-border);
+    padding: 8px 10px;
+    white-space: nowrap;
+}
+
+.contract-renewal-panel .table td {
+    color: var(--contract-navy);
+    padding: 8px 10px;
+    border-bottom-color: var(--contract-border);
+    vertical-align: middle;
+}
+
+.contract-renewal-panel .table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+@media (max-width: 479.98px) {
+    .contract-detail__grid {
+        grid-template-columns: 1fr;
+    }
+
+    .contract-detail__cell--end {
+        text-align: left;
+        align-items: flex-start;
+    }
+}
 </style>

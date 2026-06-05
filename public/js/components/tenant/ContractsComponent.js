@@ -370,75 +370,82 @@ var ContractsComponent = new (function () {
             data.deposit,
             data.currency_code ?? "USD",
         );
+        const price = VSMoney.formatAmount(
+            data.price,
+            data.currency_code ?? "USD",
+        );
         const statusDot = status.showDot
             ? '<span class="contract-card__status-dot"></span>'
             : "";
+        const priceLine =
+            data.price_type === "total"
+                ? `${price}<small>/mon</small>`
+                : `${price}<small>/m²</small>`;
+        const priceSub =
+            data.price_type === "total"
+                ? "Whole Room"
+                : `${mThis.escapeHtml(data.sqm_size ?? "—")} m²`;
 
         return `
-            <div class="contract-detail-view">
-                <div class="d-flex align-items-center flex-wrap gap-2 mb-4">
-                    <span class="contract-card__unit-pill">${mThis.escapeHtml(data.space_code ?? "—")}</span>
+            <div class="contract-detail">
+                <div class="contract-detail__hero">
+                    <div class="contract-detail__hero-main">
+                        <span class="contract-detail__hero-kicker">Lease Application</span>
+                        <span class="contract-detail__hero-unit">Unit <span class="contract-card__unit-pill">${mThis.escapeHtml(data.space_code ?? "—")}</span></span>
+                    </div>
                     <span class="${status.cls}">${statusDot}${mThis.escapeHtml(status.label)}</span>
                 </div>
-                <div class="contract-card__meta mb-3">
-                    <div class="contract-card__meta-item">
-                        <div class="contract-card__label">Business Type</div>
-                        <div class="contract-card__business">${mThis.escapeHtml(data.business_type ?? "—")}</div>
+                <div class="contract-detail__grid">
+                    <div class="contract-detail__cell">
+                        <span class="contract-detail__label">Business Type</span>
+                        <span class="contract-detail__value contract-detail__value--accent">${mThis.escapeHtml(data.business_type ?? "—")}</span>
                     </div>
-                    <div class="contract-card__meta-item contract-card__meta-item--end">
-                        <div class="contract-card__label">Type</div>
-                        <div class="contract-card__type">${mThis.escapeHtml(data.space_type ?? "—")}</div>
+                    <div class="contract-detail__cell contract-detail__cell--end">
+                        <span class="contract-detail__label">Space Type</span>
+                        <span class="contract-detail__value">${mThis.escapeHtml(data.space_type ?? "—")}</span>
                     </div>
-                </div>
-                <div class="row g-3 mb-3">
-                    <div class="col-md-6">
-                        <div class="contract-card__date-box">
-                            <span class="contract-card__date-icon-wrap"><i class="fa-regular fa-calendar"></i></span>
-                            <div>
-                                <div class="contract-card__label">Start Date</div>
-                                <div class="contract-card__date-value">${mThis.escapeHtml(data.start_date ?? "—")}</div>
-                            </div>
-                        </div>
+                    <div class="contract-detail__cell">
+                        <span class="contract-detail__label">Start Date</span>
+                        <span class="contract-detail__value"><i class="fa-regular fa-calendar me-1 text-muted"></i>${mThis.escapeHtml(data.start_date ?? "—")}</span>
                     </div>
-                    <div class="col-md-6">
-                        <div class="contract-card__date-box">
-                            <span class="contract-card__date-icon-wrap"><i class="fa-regular fa-calendar"></i></span>
-                            <div>
-                                <div class="contract-card__label">End Date</div>
-                                <div class="contract-card__date-value">${mThis.escapeHtml(data.end_date ?? "—")}</div>
-                            </div>
-                        </div>
+                    <div class="contract-detail__cell contract-detail__cell--end">
+                        <span class="contract-detail__label">End Date</span>
+                        <span class="contract-detail__value"><i class="fa-regular fa-calendar me-1 text-muted"></i>${mThis.escapeHtml(data.end_date ?? "—")}</span>
+                    </div>
+                    <div class="contract-detail__cell">
+                        <span class="contract-detail__label">Price</span>
+                        <span class="contract-detail__value contract-detail__value--price">${priceLine}</span>
+                        <span class="contract-detail__sub">${priceSub}</span>
+                    </div>
+                    <div class="contract-detail__cell contract-detail__cell--end">
+                        <span class="contract-detail__label">Deposit</span>
+                        <span class="contract-detail__value contract-detail__value--price">${deposit}</span>
                     </div>
                 </div>
-                <div class="contract-card__finance mb-3">
-                    <div class="contract-card__finance-item">
-                        <div class="contract-card__label">Price</div>
-                        ${mThis.formatPriceBlock(data)}
-                    </div>
-                    <div class="contract-card__finance-item contract-card__finance-item--end">
-                        <div class="contract-card__label">Deposit</div>
-                        <div class="contract-card__deposit">${deposit}</div>
-                    </div>
-                </div>
-                <div class="contract-card__comment mb-0">
-                    <span class="contract-card__comment-icon"><i class="fa-regular fa-comment-dots"></i></span>
-                    <span class="contract-card__comment-text"><strong>Comment:</strong> ${mThis.escapeHtml(data.remarks ?? "—")}</span>
+                <div class="contract-detail__comment">
+                    <i class="fa-regular fa-comment-dots"></i>
+                    <span><strong>Comment:</strong> ${mThis.escapeHtml(data.remarks ?? "—")}</span>
                 </div>
             </div>`;
     };
 
     mThis.showContractDetailDialog = (id) => {
         const data = mThis.contractItemsMap[id];
+        const unitCode = data?.space_code ?? "—";
         ContractViewDialog.show({
-            title: "Contract Detail",
+            title: `Unit ${unitCode} — Contract Detail`,
             contentHtml: mThis.buildContractDetailHtml(data),
+            dialogClass: "contract-detail-modal",
         });
     };
 
     mThis.showRenewRecordDialog = (id) => {
+        const data = mThis.contractItemsMap[id];
+        const unitCode = data?.space_code ?? "—";
         ContractViewDialog.show({
-            title: "Renew Record",
-            contentHtml: `<div id="_contract_renewal_panel" class="py-2"></div>`,
+            title: `Unit ${unitCode} — Renew Record`,
+            contentHtml: `<div id="_contract_renewal_panel" class="contract-renewal-panel"></div>`,
+            dialogClass: "contract-detail-modal",
             onReady: (panel) => {
                 mThis.loadRenewalHistory(panel, id);
             },
@@ -622,8 +629,10 @@ const ContractViewDialog = (() => {
     const self = {};
 
     self.show = (op) => {
+        const dialogClass = op.dialogClass || "contract-detail-modal";
         const dialog = new GeneralDialog({
-            cssClass: "modal-lg vs-modal",
+            title: op.title || "Contract Detail",
+            cssClass: `modal-md vs-modal vs-modal--compact ${dialogClass}`,
             backdrop: "static",
             keyboard: true,
             createContent: () => op.contentHtml || "",
@@ -638,15 +647,12 @@ const ContractViewDialog = (() => {
             buttons: [
                 {
                     label: "<span>Close</span>",
-                    cssClass: "btn btn-secondary",
+                    cssClass: "btn btn-contract-detail-close",
                     click: (me) => me.hide(false),
                 },
             ],
         });
-        dialog.show({
-            ...op,
-            title: op.title || "Contract",
-        });
+        dialog.show(op);
     };
 
     return self;
