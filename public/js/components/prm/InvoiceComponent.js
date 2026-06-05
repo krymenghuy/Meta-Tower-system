@@ -721,7 +721,7 @@ var InvoiceComponent = (() => {
                     const global = globalSetting || {};
                     const company = companyProfile || {}; 
 
-                    console.log(34, company);
+                    console.log(34, global);
 
 
                     if (settings.show_balance !== null) {
@@ -729,11 +729,15 @@ var InvoiceComponent = (() => {
                         settings.build_representative = global.build_representative;
                         settings.representative_phone = global.representative_phone;
                         settings.representative_address = global.representative_address;
+                        settings.QR_file = global.QR_file;
+                        settings.QR_file_name = global.QR_file_name;
                         params.setting = settings;
                         // params.company = company;
                         // params.representative = representative;
                     } else {
                         params.setting = global;
+                        settings.QR_file = global.QR_file;
+                        settings.QR_file_name = global.QR_file_name;
                         // params.company = company;
                         // params.representative = representative;
                     }

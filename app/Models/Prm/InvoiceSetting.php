@@ -10,10 +10,10 @@ use Vsd\Vsloquent\VSModel;
 
 class InvoiceSetting extends VSModel
 {
-    // Keeping this plural as verified by your database structure screenshot
     protected $table    = 'invoice_settings';
     protected $userInfo = null;
     protected static $img_dir = 'invoice_settings';
+    protected static $allowed_image_extensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
 
     public function __construct($id = null, $userInfo = null)
     {
@@ -31,7 +31,6 @@ class InvoiceSetting extends VSModel
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
 
-        // Default to 'en' (English) if the session or language is STILL missing
         $lang = ($ss && isset($ss->lang)) ? $ss->lang : 'en';
 
         $v_rule = [
@@ -60,42 +59,44 @@ class InvoiceSetting extends VSModel
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
 
-        // Default to 'en' (English) if the session or language is STILL missing
-        $lang = ($ss && isset($ss->lang)) ? $ss->lang : 'en';
-
-        // 1. Fetch the data record as a clean database row object
-        $setting = DB::table($this->table)
-            ->where('id', 1)
-            ->first();
+        $setting = DB::table($this->table)->where('id', 1)->first();
 
         if (!$setting) {
             return DV::error('Invoice settings not found!');
         }
 
-        $resData = array(
+        return [
             'exchange_rate' => $setting->exchange_rate ?? '0.00',
-        );
-        return $resData;
+        ];
     }
 
-      public function getInvoiceSetting($id = null, $ss = null)
+    public function getInvoiceSetting($id = null, $ss = null)
     {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
 
-        // Default to 'en' (English) if the session or language is STILL missing
-        $lang = ($ss && isset($ss->lang)) ? $ss->lang : 'en';
+        $mimeTypes = [
+            'pdf'  => 'application/pdf',
+            'png'  => 'image/png',
+            'jpg'  => 'image/jpeg',
+            'jpeg' => 'image/jpeg',
+            'gif'  => 'image/gif',
+            'webp' => 'image/webp',
+        ];
 
-        // 1. Fetch the data record as a clean database row object
-        $setting = DB::table($this->table)
-            ->where('id', 1)
-            ->first();
+        $setting = DB::table($this->table)->where('id', 1)->first();
 
         if (!$setting) {
             return DV::error('Invoice settings not found!');
         }
 
-        $resData = array(
+        $file = XPublicStorage::getUrl(['subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 'image') . $setting->QR_file_name;
+        $cleanPath = str_replace('\\', '/', $file);
+
+        $extension = strtolower(pathinfo($setting->QR_file_name, PATHINFO_EXTENSION));
+        $file_type = $mimeTypes[$extension] ?? null;
+
+        return [
             'show_balance' => $setting->show_balance,
             'show_comm_tax' => $setting->show_comm_tax,
             'show_pay_status' => $setting->show_pay_status,
@@ -103,56 +104,42 @@ class InvoiceSetting extends VSModel
             'exchange_rate' => $setting->exchange_rate ?? '0.00',
             'build_representative' => $setting->build_representative,
             'representative_phone' => $setting->representative_phone,
-            'representative_address' => $setting->representative_address
-        );
-        return $resData;
+            'representative_address' => $setting->representative_address,
+            'QR_file_name'           => $setting->QR_file_name,
+            'QR_file_type'              => $file_type,
+            'QR_file'              => $cleanPath,
+        ];
     }
 
-
-   public function updateToglleButton($arr = [], $ss = null)
+    public function updateToglleButton($arr = [], $ss = null)
     {
-        // Keep it as an array to read data safely or handle objects
         $d = (array) $arr;
         $id = (int) ($d['id'] ?? 1);
-
-        // Convert inputs to a clean array for Laravel's query builder
         $inputs = $d;
 
-        // Remove 'id' from the update payload so it doesn't cause SQL update errors
         unset($inputs['id']);
-
-        \Log::info(json_encode($inputs));
 
         if ($id <= 0) {
             return DV::error('Invalid invoice setting.');
         }
 
         DB::beginTransaction();
-
         try {
-            // 1. Verify the invoice exists
             $InvocieSetting = DB::table('invoice_settings')->where('id', $id)->first();
             if (!$InvocieSetting) {
                 throw new \Exception('Invoice setting not found.');
             }
 
-            // 2. Update database records (Passing the clean array now)
-            DB::table('invoice_settings')
-                ->where('id', $id)
-                ->update($inputs);
-
+            DB::table('invoice_settings')->where('id', $id)->update($inputs);
             DB::commit();
 
-            // 3. FIX: Cast or format directly to a raw array so your JDV wrapper doesn't serialize framework properties
             return [
                 'id' => $id,
                 'show_balance' =>  $inputs['show_balance'] ?? $InvocieSetting->show_balance,
                 'show_comm_tax' => $inputs['show_comm_tax'] ?? $InvocieSetting->show_comm_tax,
                 'show_pay_status' => $inputs['show_pay_status'] ?? $InvocieSetting->show_pay_status,
                 'show_amount_paid' => $inputs['show_amount_paid'] ?? $InvocieSetting->show_amount_paid,
-                
             ];
-
         } catch (\Exception $e) {
             DB::rollBack();
             return DV::error('Failed to update invoice display settings: ' . $e->getMessage());
@@ -162,24 +149,17 @@ class InvoiceSetting extends VSModel
     public function getToglleButton($arr, $ss)
     {
         $d = (array) $arr;
-        
-        // Default to 1 if no id is provided in the payload
         $id = (int) ($d['id'] ?? 1);
 
         if ($id <= 0) {
             return DV::error('Invalid invoice ID.');
         }
 
-        // FIX: Use the dynamic $id variable instead of hardcoded 1
-        $setting = DB::table($this->table)
-            ->where('id', $id)
-            ->first();
-
+        $setting = DB::table($this->table)->where('id', $id)->first();
         if (!$setting) {
             return DV::error('Invoice settings not found!');
         }
 
-        // Return a clean raw array to feed nicely into your JDV controller wrapper
         return [
             'show_balance'      => (int) $setting->show_balance,
             'show_comm_tax'    => (int) $setting->show_comm_tax,
@@ -197,7 +177,6 @@ class InvoiceSetting extends VSModel
 
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
-
         $lang = ($ss && isset($ss->lang)) ? $ss->lang : 'en';
 
         $v_rule = [
@@ -205,15 +184,13 @@ class InvoiceSetting extends VSModel
             'representative_phone' => '0|string|1-20',
             'representative_address' => '0|string|1-200',
         ];
-         $address_char = ['@', ',', '.', '#'];
-        $res = DBX::validateObject($arr, $v_rule, 1, ['representative_address' => $address_char,], $lang, 0, null);
+        $address_char = ['@', ',', '.', '#'];
+        $res = DBX::validateObject($arr, $v_rule, 1, ['representative_address' => $address_char], $lang, 0, null);
         if ($res->error) {
             return DV::error($res->error);
         }
 
         $inputs = $res->values;
-
-        
 
         $resSave = DBX::saveData($ss, $this->table, ['id' => 1], $inputs, [], 1);
         if (!$resSave) {
@@ -221,25 +198,19 @@ class InvoiceSetting extends VSModel
         }
         return [
             'id' => $id,
-            'build_representative' =>  $inputs['build_representative'] ?? $inputs['build_representative'],
-            'representative_phone' =>  $inputs['representative_phone'] ?? $inputs['representative_phone'],
-            'representative_address' =>  $inputs['representative_address'] ?? $inputs['representative_address']
+            'build_representative' =>  $inputs['build_representative'] ?? null,
+            'representative_phone' =>  $inputs['representative_phone'] ?? null,
+            'representative_address' =>  $inputs['representative_address'] ?? null
         ];
-    }   
+    }
 
     public function getInvoiceBuildingInfo($arr = [], $ss = null)
     {
         $d = (array) $arr;
-        
-        // Resolve target ID from explicit payload array or class fallback assignment
         $id = (int) ($d['id'] ?? $this->id ?? 1);
 
-        // 1. Attempt to fetch the requested building setting record
-        $info = DB::table('invoice_setting_info')
-            ->where('id', $id)
-            ->first();
+        $info = DB::table('invoice_setting_info')->where('id', $id)->first();
 
-        // 2. Fallback to baseline setup row (id = 1) if targeted row fails
         if (!$info && $id !== 1) {
             $info = DB::table('invoice_setting_info')->where('id', 1)->first();
         }
@@ -249,86 +220,133 @@ class InvoiceSetting extends VSModel
             'build_name'          => $info->build_name ?? '',
             'build_email'         => $info->build_email ?? '',
             'build_phone'         => $info->build_phone ?? '',
-            'build_address'       => $info->build_address ?? '',
-            'build_representative'=> $info->build_representative ?? '',
+            'build_address'         => $info->build_address ?? '',
+            'build_representative' => $info->build_representative ?? '',
             'build_title_type'    => $info->build_title_type ?? '',
         ];
     }
 
+    
 
-public function saveQR($arr = [], $id = null, $ss = null)
-{
-    // Handle position swapping safety if arguments get mixed up
-    if (is_object($id) && is_null($ss)) {
-        $ss = $id;
-        $id = null;
+
+    public function saveQR($arr = [], $id = null, $ss = null)
+    {
+        $id = $id ?? $arr['id'] ?? $this->id ?? 1;
+        $ss = $ss ?? $this->userInfo;
+
+        $lang = ($ss && isset($ss->lang)) ? $ss->lang : 'en';
+
+        $v_rule = [
+            'id'           => '0|number',
+            'QR_file_name' => '0|string',
+            'ext'          => '0|string',
+            'data'         => '0|string',
+        ];
+
+        $res = DBX::validateObject($arr, $v_rule, true, ['data' => GeneralSettings::$image_chars], $lang, false, null);
+        if ($res->error) {
+            return DV::error($res->error);
+        }
+
+        $inputs   = $res->values;
+
+
+        \Log::info('saveQR input: ' . json_encode([
+            "id" => $id,
+            "ext" => $inputs['ext'],
+            'QR_file_name' => $arr['QR_file_name'] ?? 'MISSING',
+        ]));
+
+
+        if ($inputs['data']) {
+            $ext = $inputs['ext'];
+            // ✅ Allow both images AND pdf
+            $allAllowed = array_merge(self::$allowed_image_extensions, ['pdf']);
+            if (!in_array($ext, $allAllowed, true)) {
+                return DV::error('Invalid file type. Allowed: ' . implode(', ', $allAllowed));
+            }
+
+            $base64 = preg_replace('#^data:.*;base64,#', '', $inputs['data']);
+
+
+            $resFile = XPublicStorage::savefile(
+                ['subs_id' => $ss->subs_id ?? null, 'dir' => self::$img_dir],
+                $ext,       // 2nd: extension
+                $base64,      // 3rd: base64 data
+                'image',
+                $inputs['QR_file_name']   // 5th: original file name
+            );
+
+            if ($resFile->status === 'Error') {
+                return DV::error($resFile->error_message);
+            }
+
+            $inputs['QR_file_name'] = $resFile->file_name;
+        } else {
+            // ✅ No new file uploaded — preserve existing DB values
+            $existingRow = DB::table($this->table)->where('id', $id)->first();
+            $inputs['QR_file_name'] = $arr['QR_file_name'] ?? $existingRow->QR_file_name ?? null;
+        }
+
+        unset($inputs['data'], $inputs['id'], $inputs['ext']);
+
+        $savedId = DBX::saveData($ss, $this->table, ['id' => $id], $inputs, [], 1);
+
+        return DV::depends($savedId, [$this->table => $inputs, 'id' => $savedId]);
     }
 
-    $id = $id ?? $this->id ?? 1; 
-    $ss = $ss ?? $this->userInfo;
-    $lang = ($ss && isset($ss->lang)) ? $ss->lang : 'en';
+    public function deleteQR($id = null, $ss = null)
+    {
+        $id = $id ?? $this->id ?? 1;
+        $ss = $ss ?? $this->userInfo;
 
-    $v_rule = [
-        'QR_file_name' => '0|string',
-        'QR_file_path' => '0|string',
-        'data'          => '0|string',
-    ];
+        \Log::info('deleteQR called: ' . json_encode([
+            'id'      => $id,
+            'subs_id' => $ss->subs_id ?? 'MISSING',
+        ]));
 
-    $res = DBX::validateObject($arr, $v_rule, true, ['data' => GeneralSettings::$image_chars ?? []], $lang, false, null);
-    if ($res->error) {
-        return DV::error($res->error);
+        $setting = DB::table($this->table)->where('id', $id)->first();
+
+        if (!$setting) {
+            return DV::error('Invoice setting not found.');
+        }
+
+        if (empty($setting->QR_file_name)) {
+            return DV::error('No QR file to delete.');
+        }
+
+        $file_name = $setting->QR_file_name;
+        $ext       = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+        $category  = ($ext === 'pdf') ? 'document' : 'image';
+
+        \Log::info('deleteQR file: ' . json_encode([
+            'file_name' => $file_name,
+            'ext'       => $ext,
+            'category'  => $category,
+        ]));
+
+        try {
+            $res = XPublicStorage::delete(
+                ['subs_id' => $ss->subs_id, 'dir' => self::$img_dir],
+                $category,
+                $file_name
+            );
+            \Log::info('deleteQR storage res: ' . json_encode($res));
+        } catch (\Throwable $e) {
+            \Log::error('deleteQR XPublicStorage::delete failed: ' . $e->getMessage());
+            return DV::error('Storage delete failed: ' . $e->getMessage());
+        }
+
+        if ($res === "File not found for deleting") {
+            return DV::error('Physical file not found for deleting.');
+        }
+
+        // ✅ Only clear QR fields — do NOT delete the entire row
+        DB::table($this->table)->where('id', $id)->update([
+            'QR_file_name' => null,
+            'QR_file_path' => null,
+        ]);
+
+        return DV::depends(1, ['action' => 'deleted', 'id' => $id]);
     }
-
-    // Force fallback to raw request data if validation strips fields due to base64 characters
-    $inputs = $res->values;
-    $fileName = !empty($inputs['QR_file_name']) ? $inputs['QR_file_name'] : ($arr['QR_file_name'] ?? null);
-    $raw_data = !empty($inputs['data']) ? $inputs['data'] : ($arr['data'] ?? null);
-
-    // Clean up base64 payload strings safely
-    $cleaned_data = preg_replace('#^data:.*;base64,#', '', $raw_data);
-
-    // SOLID GUARD: If filename is missing, too long, or contains base64 markers, overwrite it with a safe default.
-    if (empty($fileName) || str_contains($fileName, ';base64') || strlen($fileName) > 200) {
-        $fileName = 'qr_code_' . time() . '.png';
-    }
-
-    // Call storage engine with clean parameters
-    $resFile = XPublicStorage::savefile(
-        ['subs_id' => $ss->subs_id ?? null, 'dir' => self::$img_dir],
-        $cleaned_data,
-        $fileName
-    );
-    
-    if (isset($resFile->status) && $resFile->status === 'Error') {
-        return DV::error($resFile->error_message ?? 'Storage error');
-    }
-    
-    $mimeTypes = [
-        'pdf'  => 'application/pdf',
-        'png'  => 'image/png',
-        'jpg'  => 'image/jpeg',
-        'jpeg' => 'image/jpeg',
-        'gif'  => 'image/gif',
-        'webp' => 'image/webp',
-    ];
-    
-    $ext = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
-    $mimeType = $mimeTypes[$ext] ?? 'application/octet-stream';
-
-    // Map database table fields securely
-    $dbInputs = [];
-    $dbInputs['QR_file_path'] = $resFile->file_path ?? null;
-    $dbInputs['QR_file_name'] = $fileName;
-    
-    // Save to the database (excluding 'data' to prevent 'Column not found' errors)
-    $dbResult = DBX::saveData($ss, $this->table, ['id' => $id], $dbInputs, [], 1);
-
-    // Return full data output block to the API client
-    return [
-        'QR_file_path' => $resFile->file_path ?? null,
-        'QR_file_name' => $fileName,
-        'data'         => $cleaned_data,
-        'mime_type'    => $mimeType,
-    ];
-}
 }

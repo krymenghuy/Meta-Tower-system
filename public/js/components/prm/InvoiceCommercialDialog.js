@@ -69,9 +69,11 @@ const InvoiceCommercialDialog = (() => {
         const balance       = parseFloat(invoice.due_amount     || 0);
 
         const showPayStatus  = setting.show_pay_status;
-        const showBaland     = setting.show_balance;
+        const showBalance     = setting.show_balance;
         const showAmountPaid = setting.show_amount_paid;
         const showCommTax    = setting.show_comm_tax;
+        const QR_file        = setting.QR_file;
+        const QR_file_name      = setting.QR_file_name;
 
         const buildRepresentation  = setting.build_representative ;
         const representativePhone  = setting.representative_phone;
@@ -167,7 +169,7 @@ const InvoiceCommercialDialog = (() => {
                 }
             </style>
 
-            <div class="pi-root" id="pi-invoice-content">
+            <!--<div class="pi-root" id="pi-invoice-content">
 
                 <div style="padding:0px 32px 16px 32px;border-bottom:2px solid #E5E9F5;display:flex;justify-content:space-between;align-items:center;">
                     <div style="display:flex;align-items:center;gap:14px;">
@@ -192,7 +194,44 @@ const InvoiceCommercialDialog = (() => {
                             ${statusLabel}
                         </div>
                     </div>
-                </div>
+                </div> -->
+
+                <div class="pi-root" id="pi-invoice-content">
+
+                    <div style="background:linear-gradient(135deg,#0F2060 0%,#1A3D91 55%,#2254C5 100%);padding:10px;display:flex;justify-content:space-between;align-items:flex-start;gap:20px;position:relative;overflow:hidden;">
+                        <div style="position:absolute;right:-40px;top:-40px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,0.04);pointer-events:none;"></div>
+                        <div style="position:absolute;right:60px;top:20px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,0.05);pointer-events:none;"></div>
+
+                        <div style="display:flex;gap:18px;align-items:flex-start;position:relative;">
+                            
+                            <div>
+                                <div style="font-family:'Inter',serif;font-size:22px;font-weight:900;color:#FFFFFF;letter-spacing:0.5px;line-height:1.1;">Commercial Invoice</div>
+                                <div style="margin-top:6px;display:flex;flex-direction:column;gap:3px;">
+                                    <div style="font-size:11px;color:rgba(255,255,255,0.65);display:flex;align-items:center;gap:5px;">
+                                         ${buildRepresentation}
+                                    </div>
+                                    <div style="font-size:11px;color:rgba(255,255,255,0.65);display:flex;align-items:center;gap:5px;">
+                                        ${representativePhone}
+                                    </div>
+                                    <div style="font-size:11px;color:rgba(255,255,255,0.65);display:flex;align-items:center;gap:5px;">
+                                        ${representativeAddress}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="text-align:right;position:relative;">
+                            <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:6px;letter-spacing:0.5px;text-transform:uppercase;">Invoice Number</div>
+                            <div style="font-size:16px;font-weight:700;color:#FDE68A;margin-top:2px;letter-spacing:0.3px;">${invoice.code || "—"}</div>
+                            
+                            ${showPayStatus ? `
+                            <div style="display:inline-block;margin-top:6px;padding:4px 12px;border-radius:20px;background:${statusBg};color:${statusColor};font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;">
+                                ${statusLabel}
+                            </div>
+                            ` : ''}
+                        </div>
+                    </div>
+
 
                 <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:14px 32px;border-bottom:1px solid #E8E8E8;background:#FAFBFF;">
                     <div>
@@ -225,45 +264,51 @@ const InvoiceCommercialDialog = (() => {
                     </table>
                 </div>
 
-                <div style="display:flex;justify-content:flex-end;padding:24px 0px;">
-                    <div style="min-width:300px;border:1px solid #E5E9F5;border-radius:12px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.03);">
-                        <table style="width:100%;border-collapse:collapse;">
-                            <tr class="pi-totals-row">
-                                <td style="padding:12px 16px;color:#666;">Sub Total</td>
-                                <td style="padding:12px 16px;text-align:right;font-weight:600;">${currency}${fmt(subTotal)}</td>
-                            </tr>
-                            <tr class="pi-totals-row">
-                                <td style="padding:12px 16px;color:#DC2626;">
-                                    Discount ${totalDiscount > 0 ? `(${discDisplay})` : ''}
-                                </td>
-                                <td style="padding:12px 16px;text-align:right;font-weight:600;color:#DC2626;">
-                                     ${currency}${fmt(subTotal - netTotal)}
-                                </td>
-                            </tr>
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:24px 0px;gap:16px;">
 
-                            ${invoice.payment_status_id === 2 || !showAmountPaid ? `
-                                <tr style="background:linear-gradient(135deg,#0F2060,#1A3D91);">
-                                    <td style="padding:14px 16px;color:#fff;font-weight:700;">Total (Net)</td>
-                                    <td  style="padding:14px 16px;text-align:right;font-weight:800;color:#FDE68A;font-size:16px;">${currency}${fmt(netTotal)}</td>
-                                </tr>` : `
-                                 <tr class="pi-totals-row" style="background:#F8FAFF;border-top:2px solid #E5E9F5;">
+                        ${QR_file_name != null && QR_file
+                            ? `<div style="width:100px;height:100px;border:1px solid #E5E9F5;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.03);flex-shrink:0;">
+                                    <img src="${QR_file}" alt="QR Code" style="width:100px;height:100px;object-fit:contain;" />
+                            </div>`
+                            : ''
+                        }
+
+                        <div style="flex:1;"></div>
+
+                        <div style="width:340px;flex-shrink:0;border:1px solid #E5E9F5;border-radius:12px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.03);">
+                            <table style="width:100%;border-collapse:collapse;">
+                                <tr class="pi-totals-row">
+                                    <td style="padding:12px 16px;color:#666;">Sub Total</td>
+                                    <td style="padding:12px 16px;text-align:right;font-weight:600;">${currency}${fmt(subTotal)}</td>
+                                </tr>
+                                <tr class="pi-totals-row">
+                                    <td style="padding:12px 16px;color:#DC2626;">
+                                        Discount ${totalDiscount > 0 ? `(${discDisplay})` : ''}
+                                    </td>
+                                    <td style="padding:12px 16px;text-align:right;font-weight:600;color:#DC2626;">
+                                        ${currency}${fmt(subTotal - netTotal)}
+                                    </td>
+                                </tr>
+                                <tr class="pi-totals-row" style="background:#F8FAFF;border-top:2px solid #E5E9F5;">
                                     <td style="padding:12px 16px;color:#111;font-weight:700;">Total (Net)</td>
                                     <td style="padding:12px 16px;text-align:right;font-weight:700;color:#111;font-size:14px;">${currency}${fmt(netTotal)}</td>
                                 </tr>
-                                `}
-                                ${invoice.payment_status_id === 2 || !showAmountPaid ? '' : `
-                                <tr class="pi-totals-row" style="${showAmountPaid ? '' : 'display:none;'}">
+                                ${showAmountPaid ? `
+                                <tr class="pi-totals-row">
                                     <td style="padding:12px 16px;color:#059669;">Amount Paid</td>
                                     <td style="padding:12px 16px;text-align:right;font-weight:600;color:#059669;">${currency}${fmt(paid)}</td>
                                 </tr>
-                                <tr style="${showBaland ? '' : 'display:none;'} background:linear-gradient(135deg,#0F2060,#1A3D91);">
+                                ` : ''}
+                                ${showBalance ? `
+                                <tr style="background:linear-gradient(135deg,#0F2060,#1A3D91);">
                                     <td style="padding:14px 16px;color:#fff;font-weight:700;">Balance Due</td>
                                     <td style="padding:14px 16px;text-align:right;font-weight:800;color:#FDE68A;font-size:16px;">${currency}${fmt(balance)}</td>
-                                </tr>`}
-                           
-                        </table>
+                                </tr>
+                                ` : ''}
+                            </table>
+                        </div>
+
                     </div>
-                </div>
 
                 ${invoice.general_remark ? `
                 <div style="margin:8px 0px 16px;padding:12px 16px;background:#FFFBEB;border-left:3px solid #F59E0B;border-radius:0 8px 8px 0;">
