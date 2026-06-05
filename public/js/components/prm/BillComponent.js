@@ -304,25 +304,25 @@ var BillComponent = (() => {
                     name: "delete_bill",
                 },
                 {
-                    html: '<span class="ps-2">Pay Now</span>',
+                    html: '<span class="ps-2" vslang="titles.Pay now"></span>',
                     icon: `<i class="fa-solid fa-circle-dollar-to-slot fs-5 text-primary"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "bill_payment",
                 },
                 {
-                    html: '<span class="ps-2" vslang="titles.Upload Photo">Upload Attachment</span>',
+                    html: '<span class="ps-2" vslang="titles.Upload Photo"></span>',
                     icon: `<i class="fa-solid fa-cloud-arrow-up" style="color: rgb(63, 96, 159);"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "upload_attachment",
                 },
                 {
-                    html: '<span class="ps-2">View Photo</span>',
+                    html: '<span class="ps-2" vslang="titles.View Photo"></span>',
                     icon: `<i class="fa-solid fa-panorama" style="color: rgb(59, 125, 74);"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "view_attachment",
                 },
                 {
-                    html: '<span class="ps-2">Delete Photo</span>',
+                    html: '<span class="ps-2" vslang="titles.Delete Photo"></span>',
                     icon: `<i class="fa-regular fa-rectangle-xmark" style="color: rgb(209, 23, 54);"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "delete_attachment",
@@ -739,7 +739,7 @@ const BillDialog = (() => {
                             <div class="col-6">
                                 <div class="vs-material-field">
                                     <input name="phone_number" class="data-input form-control" data-field="phone_number" placeholder=" " disabled />
-                                    <label>Phone Number</label >
+                                    <label vslang="labels.Phone Number"></label >
                                 </div>
                             </div>
                             <div class="col-3">
@@ -757,42 +757,42 @@ const BillDialog = (() => {
                             <div class="col-3">
                                 <div class="vs-material-field">
                                     <input type="text" name="ref_no" class="data-input form-control" data-field="ref_no" placeholder=" "></input>
-                                    <label>Reference No.</label>
+                                    <label vslang="labels.Reference No."></label>
                                 </div>
                             </div>
                             <div class="col-3">
                                 <div class="vs-material-field">
                                     <input type="text" inputmode="decimal" name="total_amount" type="number" class="data-input form-control" data-field="total_amount" placeholder=" "></input>
-                                    <label>Total Amount</label>
+                                    <label vslang="labels.Total Amount"></label>
                                 </div>
                             </div>
                             <div class="col-3">
                                 <div class="vs-material-field">
                                     <input data-type="date" name="bill_date" class="data-input form-control form_input" data-field="bill_date" placeholder=" "/>
-                                    <label>Issue Date</label>
+                                    <label vslang="labels.Issue Date"></label>
                                 </div>
                             </div>
                             <div class="col-3">
                                 <div class="vs-material-field">
                                     <input data-type="date" name="due_date" class="data-input form-control form_input" data-field="due_date" placeholder=" "/>
-                                    <label>Due Date</label>
+                                    <label vslang="labels.Due Date"></label>
                                 </div>
                             </div>
                             <div class="col-4">
                                 <div class="vs-material-field">
                                     <input type="text" name="documents" class=" form-control " accept=".png,.jpg,.jpeg" /disabled>
-                                    <label>File</label>
+                                    <label>File</labe>
                                 </div>
                             </div>
                             <div class="col-2">
                                 <div class="vs-material-field d-flex">
-                                    <button name ="btn_chooseFile"  class="btn btn-block" style="background-color: #e1e5f2; padding: 0.5rem 0.75rem !important;">Choose File </button>
+                                    <button name ="btn_chooseFile"  class="btn btn-block" style="background-color: #e1e5f2; padding: 0.5rem 0.75rem !important;" vslang="buttons.Choose File"></button>
                                 </div>
                             </div>
                             <div class="col-12 ">
                                 <div class="vs-material-field">
                                     <textarea name="remark" class="data-input form-control" data-field="remark" placeholder=" "></textarea>
-                                    <label>Remark</label>
+                                    <label vslang="labels.Remark"></label>
                                 </div>
                             </div>
                             <div class="col-6">

@@ -368,7 +368,20 @@ return [
         'Ordered Qty' => 'ចំនួនទំនិញ',
         'Received Qty' => 'ចំនួនទទួល',
         'Accept' => 'យល់ព្រម',
-        'Sub Total' => 'យល់ព្រម',
+        'Sub Total' => 'សរុបរង',
+
+        'Pay now' => 'បង់ប្រាក់',
+        'View Photo' => 'មើលរូបភាព',
+        'Delete Photo' => 'លុបរូបភាព',
+        'Upload Photo' => 'បញ្ជូលរូបភាព',
+        'Bill Payment Voucher' => 'ប័ណ្ណទូទាត់វិក្កយបត្រ',
+        'Pay Bill' => 'ទូទាត់វិក្កយបត្រ',
+
+        'Cancel Payment' => 'បោះបង់ការទូទាត់',
+        'Delete Payment' => 'លុបការទូទាត់',
+
+
+
     ],
     'menus' => [
         'Dashboard' => 'ព័ត៌មានសង្ខេប',
@@ -381,7 +394,7 @@ return [
         'Amenities' => 'សេវាកម្ម',
         'Service Prices' => 'តំលៃសេវាកម្ម',
         'Service Requests' => 'សំណើសេវាកម្ម',
-        'Purchase Orders' => 'បញ្ចី&ទិញទំនិញ',
+        'Purchase Orders' => 'បញ្ចី និង ទិញទំនិញ',
         'Invoices' => 'វិក័យប័ត្រ',
         'Receipts' => 'បង្កាន់ដៃ',
         'Reservations' => 'ការកក់',
@@ -498,6 +511,7 @@ return [
         'Create Tenant' => 'បង្កើតអ្នកជួល',
         'Create Reservation' => 'បង្កើតការកក់',
         'Create Maintenance' => 'បង្កើតការថែទាំ',
+        'Generate New Bill' =>'បង្កើតវិក័យប័ត្រចំណាយ',
 
         'Create Contract' => 'បង្កើតកិច្ចសន្យា',
         'Renew Contract' => 'បន្តកិច្ចសន្យា',
@@ -566,6 +580,12 @@ return [
         'New Role' => 'បង្កើតតួនាទីថ្មី',
         'Add Campus' => 'បង្កើតសាខា',
         'Add Location' => 'បង្កើតទីតាំង',
+
+        'Confirm Button' => 'បញ្ជាក់ការទូទាត់',
+
+
+       
+        
 
 
 
@@ -651,7 +671,21 @@ return [
         'Item' => 'មុខទំនិញ',
         'Unit Type' => 'ឯកតា',
         'Unit Price' => 'តម្លៃ',
+        
 
+        'Reference No.' => 'លេខយោង',
+        'Total Amount' => 'ចំនួនសរុប',
+        'Issue Date' => 'កាលបរិច្ឆេទចេញវិក្កយបត្រ',
+        'Due Date' => 'កាលបរិច្ឆេទផុតកំណត់',
+        'Amount' => 'ចំនួនទឹកប្រាក់',
+        'Payment Date' => 'កាលបរិច្ឆេទទូទាត់',
+        'Cheque No.' => 'លេខមូលប្បទានប័ត្រ',
+        'Payer' => 'អ្នកបង់ប្រាក់',
+        'Cash' => 'ចំនួនសាច់ប្រាក់ ',
+        'Pay To' => 'អ្នកទទួលប្រាក់ ',
+        'Pay To' => 'អ្នកទទួលប្រាក់ ',
+
+        
 
         
 
