@@ -1,4 +1,4 @@
-o<?php
+<?php
 
 namespace App\Http\Controllers\Tenant;
 
@@ -71,7 +71,6 @@ class ReservationsController extends Controller
             return JDV::error('Reservation not found.');
         }
 
-        // ✅ Prevent tenants from viewing another tenant's reservation
         if (isset($ss->tenant_id) && $ss->tenant_id && $row->tenant_id != $ss->tenant_id) {
             return JDV::error('Access denied.');
         }
@@ -101,7 +100,6 @@ class ReservationsController extends Controller
             return JDV::error('Invalid or missing ID');
         }
 
-        // ✅ Verify ownership before deleting
         if (isset($ss->tenant_id) && $ss->tenant_id) {
             $owner = DB::table('reservations')->where('id', $id)->value('tenant_id');
             if ($owner != $ss->tenant_id) {

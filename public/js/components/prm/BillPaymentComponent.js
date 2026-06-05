@@ -199,7 +199,7 @@ var BillPaymentComponent = (() => {
             cssClass: "bg-white shadow",
             menus: [
                 {
-                    html: '<span class="ps-2">Cancel Payment</span>',
+                    html: '<span class="ps-2"  vslang="titles.Cancel Payment"></span>',
                     icon: `<i class="fa-solid fa-circle-xmark" style="color: rgb(209, 23, 54);"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "cancel_payment",
@@ -511,25 +511,25 @@ const BillPaymentDialog = (() => {
                         <div class="col-md-6">
                             <div class="vs-material-field">
                                 <input name="vendor" class="data-input form-control" data-field="vendor_name" placeholder=" " readonly>
-                                <label>Pay To</label>
+                                <label vslang="labels.Pay To"></label>
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="vs-material-field">
                                 <input type="text" data-type="date" name="payment_date" class="data-input form-control" data-field="payment_date" /disabled>
-                                <label>Payment Date</label>
+                                <label vslang="labels.Payment Date"></label>
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="vs-material-field">
                                 <input type="text" name="payer" class="data-input form-control" data-field="payer" placeholder=" " > 
-                                <label>Payer</label>
+                                <label vslang="labels.Payer"></label>
                             </div>
                         </div>
                         <div class="col-md-12">
                             <div class="vs-material-field">
                                 <input name="cash" type="text" class="form-control data-input" data-field="cash" min="0" step="0.01" placeholder=" "/>
-                                <label>Cash</label>
+                                <label vslang="labels.Cash"></label>
                             </div>
                         </div>
                         <div class="col-4">
@@ -540,13 +540,13 @@ const BillPaymentDialog = (() => {
                         <div class="col-4">
                             <div class="vs-material-field">
                                 <input name="bank_amount" type="text" class="form-control data-input" data-field="bank_amount" min="0" step="0.01" placeholder=" "/>
-                                <label>Amount</label>
+                                <label vslang="labels.Amount"></label>
                             </div>
                         </div>
                         <div class="col-4">
                             <div class="vs-material-field">
                                 <input name="bank_ref_number" type="text" class="form-control data-input" data-field="bank_ref_number" placeholder=" "/>
-                                <label>Ref Number</label>
+                                <label vslang="labels.Reference No."></label>
                             </div>
                         </div>
                         <div class="col-4">
@@ -557,13 +557,13 @@ const BillPaymentDialog = (() => {
                         <div class="col-4">
                             <div class="vs-material-field">
                                 <input name="cheque_amount" type="text" class="form-control data-input" data-field="cheque_amount" min="0" step="0.01" placeholder=" "/>
-                                <label>Amount</label>
+                                <label vslang="labels.Amount"></label>
                             </div>
                         </div>
                         <div class="col-4">
                             <div class="vs-material-field">
                                 <input name="cheque_number" type="text" class="form-control data-input" data-field="cheque_number" placeholder=" "/>
-                                <label>Cheque Number</label>
+                                <label vslang="labels.Cheque No."></label>
                             </div>
                         </div>
                         <input name="vendorid" class="d-none data-input" data-field="vendor_id">
@@ -588,7 +588,7 @@ const BillPaymentDialog = (() => {
                         <div class="col-12">
                             <div class="vs-material-field">
                                 <textarea name="remark" class="form-control data-input" data-field="remarks" rows="2" style="height:55px;" placeholder=" "></textarea>
-                                <label>Remark</label>
+                                <label vslang="labels.Remark"></label>
                             </div>
                         </div>
                     </div>
@@ -721,8 +721,8 @@ const BillPaymentDialog = (() => {
                 },
 
                 prepareFormOptions: {
-                    createTitle: "Bill Payment Voucher",
-                    modifyTitle: "Pay Bill",
+                    createTitle: "vslang:titles.Bill Payment Voucher",
+                    modifyTitle: "vslang:titles.Pay Bill",
                     targetProp: "bill",
                     api: {
                         endpoint: `${main_view.base_url}/prm/bill-payment/form-options`,
