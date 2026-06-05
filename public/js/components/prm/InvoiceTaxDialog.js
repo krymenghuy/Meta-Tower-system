@@ -362,7 +362,7 @@ const InvoiceTaxDialog = (() => {
                     <style>@keyframes pi-spin{to{transform:rotate(360deg)}}</style>
                 </div>`,
             contentCreated: (me) => {
-                console.log(121212,op);
+                // console.log(121212,op);
                 
                 const container = me.divModal.querySelector('[name="pi_container"]');
                 container.innerHTML = buildInvoiceHTML(op.invoice, op.setting, op.company);
