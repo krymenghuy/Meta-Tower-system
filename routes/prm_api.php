@@ -36,6 +36,7 @@ use App\Http\Controllers\Prm\InvoiceSettingController;
 use App\Http\Controllers\Tenant\TenantProfileController;
 use App\Http\Controllers\Tenant\ReservationsController;
 use App\Http\Controllers\Tenant\RequestServiceController;
+use App\Http\Controllers\Tenant\InvoiceController as TenantInvoiceController;
 
 
 
@@ -394,11 +395,10 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant/contra
 });
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant/invoice')->group(function () {
-    Route::post('/list-paginate', [InvoiceController::class, 'getListPaginate']);
-    Route::post('/details', [InvoiceController::class, 'invoiceDetails']);
-    Route::post('/form-options', [InvoiceController::class, 'getFormOptions']);
-    Route::post('/receive', [InvoiceController::class, 'receive']);
-    Route::post('/delete', [InvoiceController::class, 'deleteInvoice']);
+    Route::post('/list-paginate', [TenantInvoiceController::class, 'getListPaginate']);
+    Route::post('/details', [TenantInvoiceController::class, 'invoiceDetails']);
+    Route::post('/form-options', [TenantInvoiceController::class, 'getFormOptions']);
+    Route::post('/receive', [TenantInvoiceController::class, 'receive']);
 });
 
 
