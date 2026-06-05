@@ -55,8 +55,69 @@
                     'required_start_time' => 'Start time is required.',
                     'required_end_time' => 'End time is required.',
 
-                    'select_tenant' => 'Please select a tenant.',   
+                    'select_tenant' => 'Please select a tenant.', 
+                    
+                    'please_select_a_valid_category' => 'Please select a valid category.',
+                    'please_select_a_valid_unit' => 'Please select a valid unit.',
+                    
+                    'contact_person_required' => 'Contact person is required.',
+                    'contact_phone_required' => 'Contact phone is required.',
 
+                    'not_found' => 'Data not found.',
+                    'create_failed' => 'Failed to create data. Please try again.',
+                    'update_failed' => 'Failed to update data. Please try again.',
+
+                    'building_exists' => 'A building with this name already exists.',
+                    'building_prefix_exists' => 'A building with this prefix already exists.',
+                    'another_building_already_uses_this_prefix' => 'Another building already uses this prefix.',
+                    'cannot_delete_building_has_spaces' => 'Cannot delete building because it has associated spaces.',
+
+
+                    'delete_top_floor' => 'Please delete the top floor first.',
+                    'cannot_delete_floor_has_associated_spaces' => 'Cannot delete this floor because it has associated spaces.',
+                    'total_floors_limit' => 'Total floors must be less than or equal to 50.',
+                    'total_floors_greater_than_zero' => 'Total floors must be greater than zero.',
+                    'total_area_greater_than_zero' => 'Total area must be greater than zero.',
+
+                    
+                    'unit_code_exists' => 'Unit code already exists.',
+                    'invalid_floor' => 'Invalid floor selected.',
+                    'error_saving_building_space' => 'Error saving Building Space ...!',
+                    'transaction_failed' => 'Transaction failed. Please try again.',
+                    'price_greater_than_zero' => 'Price must be greater than zero.',
+                    'size_greater_than_zero' => 'Size must be greater than zero.',
+                    'floor_number_required' => 'Floor number is required.',
+                    'floor_number_exceeds_total' => 'Floor number cannot exceed total',
+                    'floor_name_must_be' => 'Floor name must be',
+
+                    
+                    'valid_email' => 'Invalid email format.',
+                    'email_contain' => 'Email must contain @ character.',
+                    'booking_date_must' => 'Booking date must be today.',
+                    'expired_date_min_14_days' => 'Expired date must be at least 14 days.',
+                    'expired_date_cannot_in_past' => 'Expired date cannot be in the past.',
+                    'booking_duration_max_3_months' => 'Booking duration cannot exceed 3 months.',
+                    
+                    'start_date_cannot_in_past' => 'Start date cannot be in the past.',
+                    'end_date_cannot_in_past' => 'End date cannot be in the past.',
+                    'end_after_start' => 'End date/time must be after start date/time.',
+                    'start_time_cannot_in_past' => 'Start time cannot be in the past.',
+                    'end_time_cannot_in_past' => 'End time cannot be in the past.',
+
+                    'tenant_must_be_18' => 'Tenant must be 18 years or older.',
+                    'invalid_date_of_birth_age' => 'Invalid date of birth age.',
+                    'passport_number_required' => 'Passport number is required for foreign nationality.',
+                    'date_of_birth_cannot_be_in_the_future' => 'Date of birth cannot be in the future.',             
+                    'national_id_required' => 'National ID is required for Khmer nationality.',
+                    'select_document_type' => 'Please select a document type.',
+                    'select_file' => 'Please select a file.',
+                    'select_valid_file' => 'Please select a valid file.',
+                    'remarks_max_255' => 'Remarks must not exceed 255 characters.',
+                    'tenant_national_id' => 'A tenant with national ID',
+                    'exists_in_system' => 'already exists in the system1.',
+
+                    'item_name_already_exists' => 'Item name already exists!',
+                    
 
 
             ],
@@ -88,57 +149,7 @@
                 'confirm_finish' => 'Are you sure you want to mark this as finished?',
                 'finished' => 'Marked as finished successfully.',
                 'confirm_delete' => 'Are you sure you want to delete this data?',
-                'not_found' => 'Data not found.',
-                'create_failed' => 'Failed to create data. Please try again.',
-                'update_failed' => 'Failed to update data. Please try again.',
-
-                'building_exists' => 'A building with this name already exists.',
-                'building_prefix_exists' => 'A building with this prefix already exists.',
-                'cannot_delete_building_has_spaces' => 'Cannot delete building because it has associated spaces.',
-
-
-                'delete_top_floor' => 'Please delete the top floor first.',
-                'cannot_delete_floor_has_associated_spaces' => 'Cannot delete this floor because it has associated spaces.',
-                'total_floors_limit' => 'Total floors must be less than or equal to 50.',
-                'total_floors_greater_than_zero' => 'Total floors must be greater than zero.',
-                'total_area_greater_than_zero' => 'Total area must be greater than zero.',
-
                 
-                'unit_code_exists' => 'Unit code already exists.',
-                'invalid_floor' => 'Invalid floor selected.',
-                'error_saving_building_space' => 'Error saving Building Space ...!',
-                'transaction_failed' => 'Transaction failed. Please try again.',
-                'price_greater_than_zero' => 'Price must be greater than zero.',
-                'size_greater_than_zero' => 'Size must be greater than zero.',
-                'floor_number_required' => 'Floor number is required.',
-                'floor_number_exceeds_total' => 'Floor number cannot exceed total',
-                'floor_name_must_be' => 'Floor name must be',
-
-                
-                'valid_email' => 'Invalid email format.',
-                'email_contain' => 'Email must contain @ character.',
-                'booking_date_must' => 'Booking date must be today.',
-                'expired_date_min_14_days' => 'Expired date must be at least 14 days.',
-                'expired_date_cannot_in_past' => 'Expired date cannot be in the past.',
-                'booking_duration_max_3_months' => 'Booking duration cannot exceed 3 months.',
-                
-                'start_date_cannot_in_past' => 'Start date cannot be in the past.',
-                'end_date_cannot_in_past' => 'End date cannot be in the past.',
-                'end_after_start' => 'End date/time must be after start date/time.',
-                'start_time_cannot_in_past' => 'Start time cannot be in the past.',
-                'end_time_cannot_in_past' => 'End time cannot be in the past.',
-
-                'tenant_must_be_18' => 'Tenant must be 18 years or older.',
-                'invalid_date_of_birth_age' => 'Invalid date of birth age.',
-                'passport_number_required' => 'Passport number is required for foreign nationality.',
-                'date_of_birth_cannot_be_in_the_future' => 'Date of birth cannot be in the future.',             
-                'national_id_required' => 'National ID is required for Khmer nationality.',
-                'select_document_type' => 'Please select a document type.',
-                'select_file' => 'Please select a file.',
-                'select_valid_file' => 'Please select a valid file.',
-                'remarks_max_255' => 'Remarks must not exceed 255 characters.',
-                'tenant_national_id' => 'A tenant with national ID',
-                'exists_in_system' => 'already exists in the system1.',
                 
 
 
