@@ -662,6 +662,8 @@ const ContractDialog = (() => {
     // };
 
     self.show = (op) => {
+        console.log(6666,op);
+        
         dialog = dialog || new GeneralDialog({
             cssClass: "modal-lg vs-modal",
             backdrop: "static",
@@ -669,7 +671,7 @@ const ContractDialog = (() => {
             createContent: () => {
                 return [
                     `<div class="row g-3 justify-content-start">
-                 <div class="">
+                <div class="">
                     <div class="row g-3">
                         <div class="col-6">
                             <div class="vs-material-field">

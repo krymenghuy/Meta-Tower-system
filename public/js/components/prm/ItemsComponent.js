@@ -196,13 +196,15 @@ var ItemsComponent = (() => {
                 mThis.ItemListView.showPage(mThis.getFilterData());
             },
         };
-        if (!AuthManager.allowed(242)) return;
+        // if (!AuthManager.allowed(242)) return;
         cv_interact.confirm(
-            "Delete this Item??",
+            "confirm_delete",
             {
-                transTitle: "Delete Item",
-                context: "delete",
-                confirmButtonText: "Delete",
+                'langSection': "message_box_default",
+                'translate':true,
+                'title':"deleted",
+                'context': "delete",
+                'confirmButtonText': "Delete",
             },
             function (e) {
                 if (e) {
@@ -216,9 +218,7 @@ var ItemsComponent = (() => {
                         )
                         .then((res) => {
                             if (res.status_code == 200) {
-                                cv_interact.success(
-                                    "Item deleted successfully",
-                                );
+                                cv_interact.success('deleted');
                                 mThis.ItemListView.showPage(
                                     mThis.getFilterData(),
                                 );
@@ -277,13 +277,19 @@ const CreateItemsDialog = (() => {
                 cssClass: "modal-md vs-modal",
                 backdrop: "static",
                 keyboard: true,
+                title: (me) => {
+                    const title = me.dataOptions.id ? "Modify Item" : "Create Item";
+                    if (title) {
+                       return  `<h4 class="text-prm-custom text-start fw-bold">${LocaleManager.trans(title,'titles')}</h4>`;
+                    }
+                },
                 createContent: () => {
                     return [
                         `<div class="row g-3 justify-content-center">
                            <div class="col-12">
                                 <div class="vs-material-field">
                                     <input type="text" name="name" class="data-input form-control" data-field="name" placeholder=" " />
-                                    <label>Name</label>
+                                    <label vslang="labels.Name"></label>
                                 </div>
                             </div>
                             <div class="col-8">
@@ -322,8 +328,8 @@ const CreateItemsDialog = (() => {
                     },
                 ],
                 prepareFormOptions: {
-                    createTitle: "Create Item",
-                    modifyTitle: "Modify Item",
+                    // createTitle: "vslang.titles.Create Item",
+                    // modifyTitle: "vslang.titles.Modify Item",
                     targetProp: "item_details",
                     api: {
                         endpoint: [
@@ -369,13 +375,9 @@ const CreateItemsDialog = (() => {
                                     if (res.status_code === 200) {
                                         me.hide(true, op);
                                         if (me.dataOptions.id > 0) {
-                                            cv_interact.success(
-                                                "Item has been updated successfully",
-                                            );
+                                            cv_interact.success('updated');
                                         } else {
-                                            cv_interact.success(
-                                                "New item has been added successfully",
-                                            );
+                                            cv_interact.success('created');
                                         }
                                     } else {
                                         cv_interact.error(res.error_message);

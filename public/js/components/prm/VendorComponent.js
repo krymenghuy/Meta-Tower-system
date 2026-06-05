@@ -308,8 +308,6 @@ var VendorComponent = (() => {
     mThis.changeStatus = (id, link) => {
         const tr = link.closest("tr");
         const status_id = tr?.dataset.statusid || "";
-        console.log(123, status_id);
-
         const inputOptions = {
             context: "success",
             title: "Change Status",
@@ -334,9 +332,7 @@ var VendorComponent = (() => {
                     .then((res) => {
                         if (res.status_code === 200) {
                             me.close();
-                            cv_interact.success(
-                                "Vendor status has been updated",
-                            );
+                            cv_interact.success("success");
                             mThis.VendorListView.showPage(
                                 mThis.getFilterData(),
                             );
@@ -371,11 +367,13 @@ var VendorComponent = (() => {
         };
         if (!AuthManager.allowed(242)) return;
         cv_interact.confirm(
-            "Delete this Vendor?",
+            "confirm_delete",
             {
-                transTitle: "Delete Vendor",
-                context: "delete",
-                confirmButtonText: "Delete",
+                'langSection': "message_box_default",
+                'translate': true,
+                'title': "deleted",
+                'context': "delete",
+                'confirmButtonText': "Delete",
             },
             function (e) {
                 if (e) {
@@ -389,7 +387,7 @@ var VendorComponent = (() => {
                         )
                         .then((res) => {
                             if (res.status_code == 200) {
-                                cv_interact.success("Vendor has been deleted");
+                                cv_interact.success("deleted");
                                 mThis.VendorListView.showPage();
                             } else {
                                 cv_interact.error(res.error_message);
@@ -470,25 +468,25 @@ const CreateVendorDialog = (() => {
                             <div class="col-12 col-md-6">
                                 <div class="vs-material-field">
                                     <input type="text" name="name" class="data-input form-control" data-field="name" placeholder=" " />
-                                    <label>Name</label>
+                                    <label vslang="labels.Name"></label>
                                 </div>
                             </div>
                              <div class="col-12 col-md-6">
                                 <div class="vs-material-field">
                                     <input type="number" name="phone_number" class="data-input form-control" data-field="phone_number" placeholder=" " />
-                                    <label vslang="titles.Phone Number"></label>
+                                    <label vslang="labels.Phone Number"></label>
                                 </div>
                             </div>
                              <div class="col-12 col-md-6">
                                 <div class="vs-material-field">
                                     <input type="email" name="email" class="data-input form-control" data-field="email" placeholder=" " />
-                                    <label>Email (optional)</label>
+                                    <label vslang="labels.Email (optional)"></label>
                                 </div>
                             </div>
                              <div class="col-12 col-md-6">
                                 <div class="vs-material-field">
                                     <input type="text" name="tax_number" class="data-input form-control" data-field="tax_number" placeholder=" " />
-                                    <label>Tax Number (optional)</label>
+                                    <label vslang="labels.Tax Number (optional)"></label>
                                 </div>
                             </div>
                             <div class="col-12 col-md-6">
@@ -508,19 +506,19 @@ const CreateVendorDialog = (() => {
                             <div class="col-12 col-md-6">
                                 <div class="vs-material-field">
                                     <input type="text" name="contact_person" class="data-input form-control" data-field="contact_person" placeholder=" " />
-                                    <label>Contact Person</label>
+                                    <label vslang="labels.Contact Person">Contact Person</label>
                                 </div>
                             </div>
                             <div class="col-12 col-md-6">
                                 <div class="vs-material-field">
                                     <input type="number" name="contact_phone" class="data-input form-control" data-field="contact_phone" placeholder=" " />
-                                    <label>Contact Person Phone</label>
+                                    <label vslang="labels.Contact Person Phone"></label>
                                 </div>
                             </div>
                             <div class="col-12">
                                 <div class="vs-material-field">
                                     <textarea name="address" class="data-input form-control" data-field="address" placeholder=" "></textarea>
-                                    <label>Address</label>
+                                    <label vslang="labels.Address"></label>
                                 </div>
                             </div>
                          </div>
@@ -598,13 +596,9 @@ const CreateVendorDialog = (() => {
                                     if (res.status_code === 200) {
                                         me.hide(true, op);
                                         if (me.dataOptions.id > 0) {
-                                            cv_interact.success(
-                                                "Vendor has been updated successfully",
-                                            );
+                                            cv_interact.success('updated');
                                         } else {
-                                            cv_interact.success(
-                                                "New vendor has been added successfully",
-                                            );
+                                            cv_interact.success('created');
                                         }
                                     } else {
                                         cv_interact.error(res.error_message);

@@ -171,9 +171,6 @@ class PurchaseOrder extends VSModel
             $po_date = $today;
         }
 
-        // if ($po_date < $today && !$id) return DV::error('PO date cannot be in the past');
-        // if ($po_date > $today) return DV::error('PO date cannot be later than today');
-
         $inputs['po_date'] = $po_date;
         $inputs['building_id'] = $inputs['building_id'] ?? null;
         $inputs['sub_total'] = $totals['subtotal'] ?? 0;
@@ -229,7 +226,9 @@ class PurchaseOrder extends VSModel
             }
 
             $success_count = 0;
-
+            if (empty($valid_items)) {
+                return DV::error('Please select at least one item before saving the purchase order.');
+            }
             foreach ($valid_items as $item) {
 
                 $trx_id = $item->id ?? null;
@@ -242,7 +241,7 @@ class PurchaseOrder extends VSModel
                     'total_price' => $item->total_price,
                     'po_id' => $po_id
                 ];
-
+                
                 $saved = self::savePoItem($ss, $input_item, $po_id);
 
                 if ($saved) {
