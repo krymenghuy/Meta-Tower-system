@@ -441,10 +441,20 @@ class Bill
             // strip base64 header
             $data = preg_replace('#^data:.*;base64,#', '', $data);
 
+            if (in_array($ext, self::$allowed_image_extensions)) {
+                $category = 'image';
+            } elseif (in_array($ext, self::$allowed_doc_extensions)) {
+                $category = 'document';
+            } else {
+                DB::rollBack();
+                return DV::error('Invalid file type.');
+            }
+
             $file = XPublicStorage::savefile(
                 ['subs_id' => $ss->subs_id, 'dir' => self::$img_dir],
                 $ext,
                 $data,
+                $category,
                 $originalFileName
             );
 
@@ -468,7 +478,7 @@ class Bill
             DB::table('bills')->where('id', $id)->update($updateData);
 
             DB::commit();
-            return DV::depends(1, ['id' => $id, 'file_name' => $file->file_name, "message"=>'1234567890']);
+            return DV::depends(1, ['id' => $id, 'file_name' => $file->file_name, "message" => '1234567890']);
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Bill::uploadAttachment Error: ' . $e->getMessage());
@@ -497,7 +507,7 @@ class Bill
             $category
         ) . $bill->file_image;
 
-        \Log::info($fileUrl);
+        // \Log::info($fileUrl);
 
         $mimeTypes = [
             'gif'  => 'image/gif',

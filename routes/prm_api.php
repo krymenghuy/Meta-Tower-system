@@ -36,7 +36,6 @@ use App\Http\Controllers\Prm\InvoiceSettingController;
 use App\Http\Controllers\Tenant\TenantProfileController;
 use App\Http\Controllers\Tenant\ReservationsController;
 use App\Http\Controllers\Tenant\RequestServiceController;
-use App\Http\Controllers\Tenant\InvoiceController as TenantInvoiceController;
 
 
 
@@ -82,6 +81,8 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant')->gro
     Route::post('/profile/photo/delete',[TenantController::class,'deleteProfilePhoto']);
     Route::post('/profile/photo/create',[TenantController::class,'createProfilePhoto']);
     Route::post('/list-paginate', [TenantController::class, 'getListPaginate']);
+    Route::post('/list', [TenantController::class, 'getList']);
+
     Route::post('/details', [TenantController::class, 'getDetails']);
     Route::post('/form-options', [TenantController::class, 'getFormOptions']);
     Route::post('/delete', [TenantController::class, 'delete']);
@@ -305,7 +306,6 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('bill')->group
     Route::post('/update-status', [BillController::class, 'updateBillStatus']);
     Route::post('/view-attachment', [BillController::class, 'viewBillAttachment']);
     Route::post('/delete-attachment', [BillController::class, 'deleteAttachment']);
-    Route::post('/upload-attachment', [BillController::class, 'uploadAttachment']);
 });
 
 
@@ -398,10 +398,11 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant/contra
 });
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant/invoice')->group(function () {
-    Route::post('/list-paginate', [TenantInvoiceController::class, 'getListPaginate']);
-    Route::post('/details', [TenantInvoiceController::class, 'invoiceDetails']);
-    Route::post('/form-options', [TenantInvoiceController::class, 'getFormOptions']);
-    Route::post('/receive', [TenantInvoiceController::class, 'receive']);
+    Route::post('/list-paginate', [InvoiceController::class, 'getListPaginate']);
+    Route::post('/details', [InvoiceController::class, 'invoiceDetails']);
+    Route::post('/form-options', [InvoiceController::class, 'getFormOptions']);
+    Route::post('/receive', [InvoiceController::class, 'receive']);
+    Route::post('/delete', [InvoiceController::class, 'deleteInvoice']);
 });
 
 

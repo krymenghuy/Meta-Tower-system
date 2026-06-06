@@ -198,10 +198,7 @@ var InvoiceComponent = (() => {
                 // }
 
                 return `<div class="d-flex justify-content-center">
-                    <a href="javascript:void(0)" class="btn--Options btn_leave_action"
-                        data-id="${
-                            data.id
-                        }" data-statusid="${data.payment_status_id || ""}">
+                    <a href="javascript:void(0)" class="btn--Options btn_leave_action" data-id="${data.id}" data-statusid="${data.payment_status_id || ""}" style="padding: 0 10px;">
                         <i class="fa-solid fa-ellipsis-vertical text-black fs-5"></i>
                     </a>
                 </div>`;
@@ -719,7 +716,7 @@ var InvoiceComponent = (() => {
 
                     const settings = localSetting || {};
                     const global = globalSetting || {};
-                    const company = companyProfile || {}; 
+                    const company = companyProfile || {};
 
                     console.log(34, global);
 

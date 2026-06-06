@@ -27,7 +27,14 @@
                         </label>
                     </div>
                 </div>
-                <div class="ms-md-auto text-md-end col-12 col-md-auto">
+                <div class="col-12 col-md-6 col-lg-2">
+                    <button type="button" class="w-100 w-md-auto btn-print" id="_tenant_btn_pdf">
+                        <i class="fa fa-print text-white me-2"></i>
+                        <span class="text-white" vslang="buttons.Print Tenant"></span>
+                    </button>
+                </div>
+                
+                <div class="col-12 col-md-6 col-lg-2 text-end">
                     <button type="button" class="w-100 w-md-auto btnAddNewPrm" id="_btnAddTenant">
                         <i class="me-2 fa fa-user-plus"></i>
                         <span vslang="buttons.Create Tenant">Create Tenant</span>

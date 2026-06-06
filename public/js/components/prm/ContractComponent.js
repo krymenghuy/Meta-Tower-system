@@ -398,6 +398,12 @@ var ContractComponent = new (function () {
                     cssClass: "border-bottom pb-2",
                     name: "edit_contract"
                 },
+                 {
+                    html: '<span class="ps-2" vslang="titles.Print Contract">Print Contract</span>',
+                    icon: `<i class="fa-solid text-success fa-print fs-5"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "print_contract",
+                },
                 {
                     html: '<span class="ps-2 " vslang="titles.Renew Contract"></span>',
                     icon: `<i class="fa-solid fa-arrow-up-right-from-square fs-5 text-prm-custom"></i>`,
@@ -449,6 +455,10 @@ var ContractComponent = new (function () {
                         mThis.editContract(id, menuLink);
                         break;
                     }
+                    case 'print_contract': {
+                        mThis.printContract(id, menuLink);
+                        break;
+                    }
                     case 'renew_contract': {
                         mThis.renewContract(id, menuLink);
                         break;
@@ -480,6 +490,191 @@ var ContractComponent = new (function () {
             }
         };
         ContractDialog.show(op);
+    }
+    mThis.printContract = (id,menulink)=>{
+        let op = {
+            id: id,
+            btn:menulink,
+            onClose: () => {
+                mThis.ContractListView.showPage(mThis.getFilterData())
+            }
+        };
+        console.log(55,op);
+
+    //    if(!AuthManager.allowed(359)) return;
+       let html = `
+                <div id="full_elbody" style="zoom:95%">
+                <style>
+                    @media print {
+                        body {
+                            font-family: "Khmer OS Battambang", Arial, sans-serif !important;
+                            font-size: 12px;
+                            color: #000;
+                        }
+                    }
+
+                    #full_elbody{
+                        font-family: "Khmer OS Battambang", Arial, sans-serif;
+                    }
+
+                    .report-nation {
+                        font-family: "Khmer OS Muol Light", Arial, sans-serif;
+                        line-height: 1.5;
+                    }
+
+                    .kh-title {
+                        font-size: 14px;
+                        font-weight: normal;
+                    }
+
+                    .kh-subtitle {
+                        display: flex;
+                        justify-content: center;
+                        gap: 14px;
+                        font-size: 14px;
+                        letter-spacing: 0.6px;
+                        font-family: "Khmer OS Battambang", Arial, sans-serif;
+                    }
+
+                    .en-title {
+                        font-size: 12px;
+                        font-weight: bold;
+                        letter-spacing: 0.5px;
+                    }
+                    .en-subtitle {
+                        display: flex;
+                        justify-content: center;
+                        gap: 16px;
+                        font-size: 12px;
+                        font-weight: bold;
+                        letter-spacing: 0.6px;
+                    }
+
+                    .center-title {
+                        margin-top: 6rem !important;
+                    }
+
+
+                    .report-title p {
+                        margin: 0;
+                    }
+
+                    .table-report {
+                        width: 100%;
+                        border-collapse: collapse;
+                    }
+
+                    .table-report th,
+                    .table-report td {
+                        border: 1px solid #000;
+                        padding: 4px 6px;
+                        vertical-align: middle;
+                    }
+
+                    .table-report thead th {
+                        background: #ffff99;
+                        text-align: center;
+                        font-weight: bold;
+                    }
+
+                    .text-center {
+                        text-align: center;
+                    }
+                </style>
+
+                <div class="page">
+                    <div class="row">
+                        <div class="col-3">
+                            <div class="d-flex align-items-to">
+                                <div class=" position-relative" style="max-width: 120px;">
+                                    <img src="${main_view.base_url}/assets/images/meta/Meta_logo.png"alt="Company Logo"class="img-fluid">
+                                </div>
+                            </div>
+                            
+                        </div>
+                        <div class="col-5 center-title">
+                            <h5 class="fw-bold text-center mb-1 ps-4 ">List All Tenants</h5>
+                        </div>
+
+                        <div class="col-4 ms-auto report-nation">
+                            <div class="kh-title text-center">ព្រះរាជាណាចក្រកម្ពុជា</div>
+                            <div class="kh-subtitle text-center">
+                                <span>ជាតិ</span>
+                                <span>សាសនា</span>
+                                <span>ព្រះមហាក្សត្រ</span>
+                            </div>
+                            <div class="en-title text-center">KINGDOM OF CAMBODIA</div>
+                            <div class="en-subtitle text-center">
+                                <span>NATION</span>
+                                <span>RELIGION</span>
+                                <span>KING</span>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <table class="table-report">
+                        <thead>
+                            <tr>
+                                <th>N°</th>
+                                <th>Code</th>
+                                <th>Name</th>
+                                <th>Sex</th>
+                                <th>Legal Name</th>
+                                <th>Date Of Birth</th>
+                                <th>National ID</th>
+                                <th>Passport</th>
+                                <th>Phone Number</th>
+                                <th>Email</th>
+                                <th style="width: 200px;">Address</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                // console.log(JSON.stringify(op, null, 2));
+
+
+                vsapi.call(`${main_view.base_url}/prm/tenant/list`, op, false, null, null)
+                    .then(res => {
+                        if (res.status_code === 200) {
+
+                            const d = res.data.list;
+                            let i = 1;
+
+                            d.forEach(data => {
+                                html += `
+                                    <tr>
+                                       <td class="text-center">${i++}</td>
+                                        <td class="text-center">${data.code ?? ""}</td>
+                                        <td>${data.name ?? ""}</td>
+                                        <td class="text-center">${data.sex ?? ""}</td>
+                                        <td>${data.legal_name ?? ""}</td>
+                                        <td>${data.date_of_birth ?? ""}</td>
+                                        <td>${data.national_id ?? ""}</td>
+                                        <td>${data.passport_number ?? ""}</td>
+                                        <td>${data.phone_number ?? ""}</td>
+                                        <td>${data.email ?? ""}</td>
+                                        <td>${data.address ?? ""}</td>
+                                    </tr>
+                                `;
+                            });
+
+                            html += `
+                                </tbody>
+                            </table>
+
+                            <div style="text-align:right; margin-top:10px;">
+                                Date : ${new Date().toLocaleDateString('en-GB')}
+                            </div>
+                        </div>
+                        </div>
+                    `;
+
+                            htmlToTable('Other Requested', html);
+                        }
+                    });
+
+                return;
     }
     mThis.renewContract = (id, menulink) => {
         if (!id) return;
@@ -662,6 +857,8 @@ const ContractDialog = (() => {
     // };
 
     self.show = (op) => {
+        console.log(6666,op);
+        
         dialog = dialog || new GeneralDialog({
             cssClass: "modal-lg vs-modal",
             backdrop: "static",
@@ -669,7 +866,7 @@ const ContractDialog = (() => {
             createContent: () => {
                 return [
                     `<div class="row g-3 justify-content-start">
-                 <div class="">
+                <div class="">
                     <div class="row g-3">
                         <div class="col-6">
                             <div class="vs-material-field">

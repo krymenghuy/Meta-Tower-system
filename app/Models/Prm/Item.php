@@ -29,9 +29,9 @@ class Item //extends Model
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
         $v_rule = [
-            'name' => '1|string|1-150|text=Name is required.',
-            'category_id' => '1|number|exists=item_categories.id|text=Please select a valid category.',
-            'unit' => '1|string|0-30|text=Please Select a valid unit.'
+            'name' => '1|string|1-150|text=name_required',
+            'category_id' => '1|number|exists=item_categories.id|text=please_select_a_valid_category',
+            'unit' => '1|string|0-30|text=please_select_a_valid_unit'
         ];
         $name_char = ['&', '.', '/','-'];
         $res = DBX::validateObject($arr, $v_rule, 1, ['name' => $name_char], $ss->lang, 0, null);
@@ -46,7 +46,7 @@ class Item //extends Model
             })
             ->exists();
         if ($exist) {
-            return DV::error('Item name already exists!');
+            return DV::error('item_name_already_exists');
         }
         $created = !$id;
         $id = DBX::saveData($ss, 'items', ['id' => $id], $inputs, [], 1);

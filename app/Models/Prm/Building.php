@@ -83,7 +83,7 @@ class Building //extends Model
                 return DV::error(
                     $isCreate
                         ? 'building_prefix_exists'
-                        : 'Another building already uses this prefix.'
+                        : 'another_building_already_uses_this_prefix'
                 );
             }
         }
