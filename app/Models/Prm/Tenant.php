@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 use DBX;
 use XPublicStorage;
+use XBranch;
 
 class Tenant
 {
@@ -304,7 +305,7 @@ class Tenant
             ->leftJoin('building_spaces as bs', 'bs.id', '=', 'c.space_id')
             ->join('tenant_statuses as ts', 'ts.id', '=', 't.status_id')
             ->where('t.id', $id)
-            ->selectRaw("t.id,t.name,t.code,t.national_id,passport_number,$date_of_birth,t.nationality_id,t.photo_file_name,t.sex,t.tenant_type,t.status_id,ts.name as status,t.legal_name,t.phone_number,t.email,t.address,c.price,c.price_type,c.sqm_size,$start_date,$end_date,bs.code as space_code ")
+            ->selectRaw("t.id,t.branch_id,t.name,t.code,t.national_id,passport_number,$date_of_birth,t.nationality_id,t.photo_file_name,t.sex,t.tenant_type,t.status_id,ts.name as status,t.legal_name,t.phone_number,t.email,t.address,c.price,c.price_type,c.sqm_size,$start_date,$end_date,bs.code as space_code ")
             ->first();
         if ($row) {
             $img = self::profilePicture($id, $ss);
@@ -708,4 +709,34 @@ class Tenant
             'company_profile' => Report::getCompanyInfo($ss),
         ];
     }
+    static function contractFormOptions($id, $director_id = 0, $ss)
+    {
+        $tenant = null;
+
+        if ($id) {
+            $tenant = Tenant::getDetails($id, $ss);
+        }else return DV::error('Branch Can not be Empty!');
+
+        $branch = XBranch::details($tenant->branch_id ?? null,$ss);
+
+        if ($branch){
+            $tenant->branch_name = $branch->name ?? '(Branch not found)';
+            $tenant->branch_address = $branch->address_kh ?? '(address not available)';
+            $tenant->com_rep_name =null;
+            $tenant->com_rep_sex =  null;
+            $tenant->com_rep_nid = null;
+            $tenant->com_rep_phone =null;
+            $tenant->emp_name = null;
+            $tenant->emp_phone = $tenant->phone_number;
+            $tenant->emp_nid = null;
+            $tenant->emp_position = null;
+            $tenant->emp_sex = $tenant->sex;
+            $tenant->emp_address = $tenant->address;
+        }
+        return (object)[
+            'contractInfo' => $tenant,
+        ];
+    }
+   
+  
 }
