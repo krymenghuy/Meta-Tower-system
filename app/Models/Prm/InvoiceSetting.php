@@ -99,7 +99,7 @@ class InvoiceSetting extends VSModel
         return [
             'show_balance' => $setting->show_balance,
             'show_comm_tax' => $setting->show_comm_tax,
-            'show_pay_status' => $setting->show_pay_status,
+            'show_pmt_status' => $setting->show_pmt_status,
             'show_amount_paid' => $setting->show_amount_paid,
             'exchange_rate' => $setting->exchange_rate ?? '0.00',
             'build_representative' => $setting->build_representative,
@@ -135,10 +135,11 @@ class InvoiceSetting extends VSModel
 
             return [
                 'id' => $id,
-                'show_balance' =>  $inputs['show_balance'] ?? $InvocieSetting->show_balance,
-                'show_comm_tax' => $inputs['show_comm_tax'] ?? $InvocieSetting->show_comm_tax,
-                'show_pay_status' => $inputs['show_pay_status'] ?? $InvocieSetting->show_pay_status,
-                'show_amount_paid' => $inputs['show_amount_paid'] ?? $InvocieSetting->show_amount_paid,
+                'show_balance'     =>  $inputs['show_balance'] ?? $InvocieSetting->show_balance,
+                'show_comm_tax'    =>  $inputs['show_comm_tax'] ?? $InvocieSetting->show_comm_tax,
+                'show_pmt_status'  =>  $inputs['show_pmt_status'] ?? $InvocieSetting->show_pmt_status,
+                'show_amount_paid' =>  $inputs['show_amount_paid'] ?? $InvocieSetting->show_amount_paid,
+                'show_sign'        =>  $inputs['show_sign'] ?? $InvocieSetting->show_sign,
             ];
         } catch (\Exception $e) {
             DB::rollBack();
@@ -161,10 +162,11 @@ class InvoiceSetting extends VSModel
         }
 
         return [
-            'show_balance'      => (int) $setting->show_balance,
+            'show_balance'     => (int) $setting->show_balance,
             'show_comm_tax'    => (int) $setting->show_comm_tax,
-            'show_pay_status'  => (int) $setting->show_pay_status,
+            'show_pmt_status'  => (int) $setting->show_pmt_status,
             'show_amount_paid' => (int) $setting->show_amount_paid,
+            'show_sign'        => (int) $setting->show_sign,
         ];
     }
 

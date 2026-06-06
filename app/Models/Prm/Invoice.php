@@ -35,7 +35,7 @@ class Invoice extends VSModel
             'issue_date'        => '1|date|text=Please enter valid issue date',
             'payment_status_id' => '0|integer|exists:payment_statuses,id|default=2',
             'items'             => '1|array|min:1',
-            'general_remark'    => '0|string|0-350|',
+            'general_remark'    => '0|string|0-500|',
             'invoice_type'      => '1|choice|1,2,3',
             'discount_type'     => '0|string',
             'discount_value'    => '0|numeric',
@@ -412,8 +412,9 @@ class Invoice extends VSModel
                 $updateData = [
                     'show_balance'      => isset($d->show_balance)      ? (int) $d->show_balance      : $invoice->show_balance,
                     'show_comm_tax'    => isset($d->show_comm_tax)    ? (int) $d->show_comm_tax    : $invoice->show_comm_tax,
-                    'show_pay_status'  => isset($d->show_pay_status)  ? (int) $d->show_pay_status  : $invoice->show_pay_status,
+                    'show_pmt_status'  => isset($d->show_pmt_status)  ? (int) $d->show_pmt_status  : $invoice->show_pmt_status,
                     'show_amount_paid' => isset($d->show_amount_paid) ? (int) $d->show_amount_paid : $invoice->show_amount_paid, // Fixed DB key here
+                    'show_sign'        => isset($d->show_sign)        ? (int) $d->show_sign        : $invoice->show_sign,
                     'updated_at'       => now(),
                 ];
 
@@ -430,8 +431,9 @@ class Invoice extends VSModel
                     'settings' => [
                         'show_balance'      => (int) $updateData['show_balance'],
                         'show_comm_tax'    => (int) $updateData['show_comm_tax'],
-                        'show_pay_status'  => (int) $updateData['show_pay_status'],
-                        'show_amount_paid' => (int) $updateData['show_amount_paid'], // Maps internal '_piad' back to clean '_paid' for your frontend
+                        'show_pmt_status'  => (int) $updateData['show_pmt_status'],
+                        'show_amount_paid' => (int) $updateData['show_amount_paid'],
+                        'show_sign'        => (int) $updateData['show_sign'],
                     ]
                 ]);
 
@@ -463,8 +465,9 @@ class Invoice extends VSModel
                     'settings' => [
                         'show_balance'      => (int) $invoice->show_balance,
                         'show_comm_tax'    => (int) $invoice->show_comm_tax,
-                        'show_pay_status'  => (int) $invoice->show_pay_status,
+                        'show_pmt_status'  => (int) $invoice->show_pmt_status,
                         'show_amount_paid' => (int) $invoice->show_amount_paid,
+                        'show_sign'        => (int) $invoice->show_sign,
                     ]
                 ]);
 
@@ -496,7 +499,7 @@ class Invoice extends VSModel
                     DB::table('invoices')->where('id', $id)->update([
                         'show_balance'      => null,
                         'show_comm_tax'    => null,
-                        'show_pay_status'  => null,
+                        'show_pmt_status'  => null,
                         'show_amount_paid' => null,
                     ]);
 
@@ -508,7 +511,7 @@ class Invoice extends VSModel
                         'settings' => [
                             'show_balance'      => 0,
                             'show_comm_tax'    => 0,
-                            'show_pay_status'  => 0,
+                            'show_pmt_status'  => 0,
                             'show_amount_paid' => 0,
                         ]
                     ]);
@@ -714,7 +717,7 @@ class Invoice extends VSModel
                     DB::raw("JSON_OBJECT(
                         'show_balance', COALESCE(i.show_balance),
                         'show_comm_tax', COALESCE(i.show_comm_tax),
-                        'show_pay_status', COALESCE(i.show_pay_status),
+                        'show_pmt_status', COALESCE(i.show_pmt_status),
                         'show_amount_paid', COALESCE(i.show_amount_paid)
                     ) as settings")
                 )

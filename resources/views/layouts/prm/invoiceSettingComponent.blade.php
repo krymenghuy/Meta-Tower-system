@@ -71,7 +71,7 @@
                         Show Payment Status
                     </span>
                     <div class="form-check form-switch">
-                        <input class="form-check-input toggle-setting" type="checkbox" data-field="show_pay_status" id="_is_show_pay_status">
+                        <input class="form-check-input toggle-setting" type="checkbox" data-field="show_pmt_status" id="_is_show_pmt_status">
                     </div>
                 </div>
 
@@ -92,6 +92,15 @@
                     </span>
                     <div class="form-check form-switch">
                         <input class="form-check-input toggle-setting" type="checkbox" data-field="show_amount_paid" id="_is_amount_paid">
+                    </div>
+                </div>
+                <div class="is-row">
+                    <span class="is-row-label">
+                        <i class="fa-solid fa-signature"></i>
+                        Show Signature
+                    </span>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input toggle-setting" type="checkbox" data-field="show_sign" id="_is_show_sign">
                     </div>
                 </div>
             </div>

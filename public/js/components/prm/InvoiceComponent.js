@@ -3546,7 +3546,7 @@ const InvoiceSettingDialog = (() => {
                             Show Payment Status
                         </span>
                         <div class="form-check form-switch">
-                            <input class="form-check-input toggle-setting" type="checkbox" data-field="show_pay_status" id="_is_show_pay_status">
+                            <input class="form-check-input toggle-setting" type="checkbox" data-field="show_pmt_status" id="_is_show_pmt_status">
                         </div>
                     </div>
 
@@ -3569,6 +3569,16 @@ const InvoiceSettingDialog = (() => {
                             <input class="form-check-input toggle-setting" type="checkbox" data-field="show_amount_paid" id="_is_show_amount_paid">
                         </div>
                     </div>
+
+                    <div class="is-row d-flex justify-content-between align-items-center mb-3">
+                        <span class="is-row-label">
+                            <i class="fa-solid fa-pen-to-square me-2"></i>
+                            Show Sign
+                        </span>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input toggle-setting" type="checkbox" data-field="show_sign" id="_is_show_sign">
+                        </div>
+                    </div>
                 </div>
             `,
 
@@ -3579,12 +3589,13 @@ const InvoiceSettingDialog = (() => {
 
                 const normalizedData = {
                     show_comm_tax: dataSource.show_comm_tax,
-                    show_pay_status: dataSource.show_pay_status,
+                    show_pmt_status: dataSource.show_pmt_status,
                     show_balance: dataSource.show_balance,
                     show_amount_paid:
                         dataSource.show_amount_paid !== undefined
                             ? dataSource.show_amount_paid
-                            : dataSource.show_amount_piad
+                            : dataSource.show_amount_piad,
+                    show_sign: dataSource.show_sign,
                 };
 
                 // Fix: Safely locate checkboxes inside document context if framework wrappers fail
@@ -3610,12 +3621,13 @@ const InvoiceSettingDialog = (() => {
 
                             const normalizedData = {
                                 show_comm_tax: settingsData.show_comm_tax,
-                                show_pay_status: settingsData.show_pay_status,
+                                show_pmt_status: settingsData.show_pmt_status,
                                 show_balance: settingsData.show_balance,
                                 show_amount_paid:
                                     settingsData.show_amount_paid !== undefined
                                         ? settingsData.show_amount_paid
-                                        : settingsData.show_amount_piad
+                                        : settingsData.show_amount_piad,
+                                show_sign: settingsData.show_sign,
                             };
 
                             // 3. Select container context and map checkbox statuses dynamically
