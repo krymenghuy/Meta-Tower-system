@@ -240,7 +240,7 @@ var ReservationComponent = (() => {
                     name: "edit_reservation",
                 },
                 {
-                    html: '<span class="ps-2">Cancel</span>',
+                    html: '<span class="ps-2" vslang="titles.Cancel"</span>',
                     icon: `<i class="fa-solid fa-square-xmark fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "cancel_reservation",
@@ -526,8 +526,8 @@ const CreateReservationDialog = (() => {
                 ],
 
                 prepareFormOptions: {
-                    createTitle: "Create Reservation",
-                    modifyTitle: "Modify Reservation",
+                    createTitle: "vslang:titles.Create Reservation",
+                    modifyTitle: "vslang:titles.Modify Reservation",
                     targetProp: "reservation_details",
                     api: {
                         endpoint: [

@@ -253,6 +253,9 @@ return [
         'Create Maintenance' => 'បង្កើតការថែទាំ',
         'Modify Maintenance' => 'កែប្រែការថែទាំ',
 
+        'Create Reservation' => 'បង្កើតការកក់',
+        'Modify Reservation' => 'កែប្រែការកក់',
+
         'Authorize'=>'អនុម័ត',
         'Reset'=>'ត្រឡប់វិញ',
         'Reverse'=>'ត្រឡប់ប្រតិបត្តការណ៍ទូទាត់ប្រាក់',
