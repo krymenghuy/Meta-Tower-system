@@ -379,6 +379,8 @@ return [
 
         'Cancel Payment' => 'បោះបង់ការទូទាត់',
         'Delete Payment' => 'លុបការទូទាត់',
+        'Cancel Receipt' => 'បោះបង់បង្កាន់ដៃ',
+        'Delete Receipt' => 'លុបបង្កាន់ដៃ',
 
 
 
@@ -581,7 +583,7 @@ return [
         'Add Campus' => 'បង្កើតសាខា',
         'Add Location' => 'បង្កើតទីតាំង',
 
-        'Confirm Button' => 'បញ្ជាក់ការទូទាត់',
+        'Confirm Payment' => 'បញ្ជាក់ការទូទាត់',
 
 
        

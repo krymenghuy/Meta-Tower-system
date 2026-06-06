@@ -1029,7 +1029,7 @@ const BuildingSpaceDialog = (() => {
                                     if (res.status_code === 200) {
                                         me.hide(true, op);
                                         if (me.dataOptions.id > 0) {
-                                           cv_interact.success("updated");
+                                            cv_interact.success("updated");
                                         } else {
                                             cv_interact.success("created");
                                         }

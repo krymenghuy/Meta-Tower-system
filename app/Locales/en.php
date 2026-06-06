@@ -139,7 +139,6 @@
              ],
 
             'message_box_default' => [
-
                 'required' => 'Please enter this information.',
                 'created' => 'Data has been created successfully.',
                 'updated' => 'Data has been updated successfully.',
@@ -149,11 +148,6 @@
                 'confirm_finish' => 'Are you sure you want to mark this as finished?',
                 'finished' => 'Marked as finished successfully.',
                 'confirm_delete' => 'Are you sure you want to delete this data?',
-                
-                
-
-
-
 
                 'delete_maintenance' => 'Delete Maintenance',
                 'confirm_delete_maintenance' => 'Are you sure you want to delete this maintenance?',

@@ -625,11 +625,11 @@ const CreateReservationDialog = (() => {
                                         me._selectedTenantId = null;
                                         if (me.dataOptions.id > 0) {
                                             cv_interact.success(
-                                                "Reservation has been updated successfully.",
-                                            );
+                                                "updated",
+                                            );has
                                         } else {
                                             cv_interact.success(
-                                                "New reservation has been added successfully.",
+                                                "created",
                                             );
                                         }
                                     } else {
