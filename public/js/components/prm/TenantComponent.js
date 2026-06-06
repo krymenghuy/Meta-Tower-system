@@ -290,7 +290,11 @@ var TenantComponent = new (function () {
                                     <img src="${main_view.base_url}/assets/images/meta/Meta_logo.png"alt="Company Logo"class="img-fluid">
                                 </div>
                             </div>
-                            
+                            <div class="d-flex flex-wrap mb-1">
+                                <p class="fw-bold text-capitalize" style="white-space: normal; word-break: break-word;">
+                                    #S8 01-02 Financial, Sangkat Veal Vong, Khan 7Makara, Phnom Penh.
+                                </p>
+                            </div>
                         </div>
                         <div class="col-5 center-title">
                             <h5 class="fw-bold text-center mb-1 ps-4 ">List All Tenants</h5>
@@ -370,7 +374,7 @@ var TenantComponent = new (function () {
                         </div>
                     `;
 
-                            htmlToTable('Other Requested', html);
+                            htmlToTable('Tenant List', html);
                         }
                     });
 
