@@ -16,12 +16,7 @@ class ReportController extends Controller
         //$branch_id = $ss->branch_id;
         return JDV::result(Report::list($ss));
     }
-    function getTenantReportList(Request $req){
-        $ss = XAuthService::verifyAuth($req,278);
-        if($ss->status_code != 200) return $ss;
-        $report = new Report();
-        return JDV::result($report->getTenantReportList($req->all(),$ss));
-    }
+  
 
     function getTotalPaymentHistory(Request $req){
         $ss = XAuthService::verifyAuth($req,290);

@@ -195,7 +195,7 @@ class Report //extends Model
                 });
             })
             ->whereRaw($str_between_date)
-            ->selectRaw("t.id,t.name,t.code,t.national_id,t.passport_number,{$date_of_birth},t.nationality_id,t.photo_file_name,t.sex,t.tenant_type,t.status_id,ts.name AS status,t.legal_name,t.phone_number,t.email,t.address")->get();
+            ->selectRaw("t.id,t.name,t.code,t.national_id,t.passport_number,{$date_of_birth},t.nationality_id,t.photo_file_name,t.sex,t.tenant_type,t.status_id,ts.name AS status,t.legal_name,t.phone_number,t.email,t.address,bs.code as unit,b.name as building")->get();
         foreach ($rows as $row) {
             $row->image_url = '';
             if (!empty($row->photo_file_name)) {
@@ -224,6 +224,7 @@ class Report //extends Model
             'company_profile' => self::getCompanyInfo($ss),
         ];
     }
+    
     function getTotalPaymentHistory($arr, $ss)
 {
     $d = (object) $arr;

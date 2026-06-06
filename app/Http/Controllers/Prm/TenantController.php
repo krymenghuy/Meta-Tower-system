@@ -146,5 +146,11 @@ class TenantController extends Controller
         $result = $tenantModel->getTenantWithSpacesAndMonths();
         return JDV::result($result);
     }
+      function getList(Request $req){
+        $ss = XAuthService::verifyAuth($req,278);
+        if($ss->status_code != 200) return $ss;
+        $list = new Tenant();
+        return JDV::result($list->getList($req->all(),$ss));
+    }
 
 }
