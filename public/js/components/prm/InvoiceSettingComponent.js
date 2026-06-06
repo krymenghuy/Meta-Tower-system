@@ -100,7 +100,7 @@ var InvoiceSettingComponent = (() => {
 
             if (data) {
                 const qrPath = data.QR_file   ?? null;
-                const qrName = data.QR_file_name ?? '';
+                const qrName = data.qr_file_name ?? '';
                 const isPdf  = qrName.toLowerCase().endsWith('.pdf');
 
                 if (qrName) {
@@ -167,7 +167,7 @@ var InvoiceSettingComponent = (() => {
   
 
                 const payload = {
-                    QR_file_name: d.fileName,
+                    qr_file_name: d.fileName,
                     ext: d.fileType,
                     data: d.base64
                 };

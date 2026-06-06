@@ -74,7 +74,8 @@ const InvoiceTaxDialog = (() => {
         const showBalance     = setting.show_balance;
         const showAmountPaid = setting.show_amount_paid;
         const QR_file        = setting.QR_file;
-        const QR_file_name      = setting.QR_file_name;
+        const qr_file_name      = setting.qr_file_name;
+        const showSign        = setting.show_sign;
 
         const companyLogo  = company.logo_url;
         const email    = company.email ;
@@ -91,7 +92,6 @@ const InvoiceTaxDialog = (() => {
                 ${isAmountDisc ? currency : ''}${fmt(totalDiscount)}${!isAmountDisc ? '%' : ''}
             </span>`;
         }
-
         const today = new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
 
         const statusColor = balance <= 0 ? "#059669" : (paid > 0 ? "#D97706" : "#DC2626");
@@ -266,7 +266,7 @@ const InvoiceTaxDialog = (() => {
 
                     <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:24px 0px;gap:16px;">
 
-                        ${QR_file_name != null && QR_file
+                        ${qr_file_name != null && QR_file
                             ? `<div style="width:100px;height:100px;border:1px solid #E5E9F5;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.03);flex-shrink:0;">
                                     <img src="${QR_file}" alt="QR Code" style="width:100px;height:100px;object-fit:contain;" />
                             </div>`
@@ -316,16 +316,20 @@ const InvoiceTaxDialog = (() => {
                         <div style="font-size:12px;color:#78350F;line-height:1.5;">${invoice.general_remark}</div>
                     </div>` : ""}
 
-                    <div style="display:flex;justify-content:space-between;margin-top:10px; padding:24px 60px 16px;gap:120px; border-top:1px solid #E5E9F5">
-                        <div style="flex:1;text-align:center;">
-                            <div style="font-size:11px;color:#6B7280;margin-bottom:36px;">Customer's Signature </div>
-                            <div style="border-bottom:1px dashed #E5E9F5;"></div>
-                        </div>
-                        <div style="flex:1;text-align:center;">
-                            <div style="font-size:11px;color:#6B7280;margin-bottom:36px;">Authorized Signature</div>
-                            <div style="border-bottom:1px dashed #E5E9F5;"></div>
-                        </div>
-                    </div>
+                    ${showSign ? `
+                                <div style="display:flex;justify-content:space-between;margin-top:10px; padding:24px 60px 16px;gap:120px; border-top:1px solid #E5E9F5">
+                                <div style="flex:1;text-align:center;">
+                                    <div style="font-size:11px;color:#6B7280;margin-bottom:36px;">Customer's Signature </div>
+                                    <div style="border-bottom:1px dashed #E5E9F5;"></div>
+                                </div>
+                                <div style="flex:1;text-align:center;">
+                                    <div style="font-size:11px;color:#6B7280;margin-bottom:36px;">Authorized Signature</div>
+                                    <div style="border-bottom:1px dashed #E5E9F5;"></div>
+                                </div>
+                            </div>
+                            ` : ''}
+
+                  
 
                     <div style="display:flex;justify-content:space-between;align-items:flex-end;padding:14px 24px;background:#F8FAFF;border-top:1px solid #E5E9F5;flex-wrap:wrap;gap:12px;">
                         <div>

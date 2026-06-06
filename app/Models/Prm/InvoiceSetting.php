@@ -90,10 +90,10 @@ class InvoiceSetting extends VSModel
             return DV::error('Invoice settings not found!');
         }
 
-        $file = XPublicStorage::getUrl(['subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 'image') . $setting->QR_file_name;
+        $file = XPublicStorage::getUrl(['subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 'image') . $setting->qr_file_name;
         $cleanPath = str_replace('\\', '/', $file);
 
-        $extension = strtolower(pathinfo($setting->QR_file_name, PATHINFO_EXTENSION));
+        $extension = strtolower(pathinfo($setting->qr_file_name, PATHINFO_EXTENSION));
         $file_type = $mimeTypes[$extension] ?? null;
 
         return [
@@ -105,9 +105,10 @@ class InvoiceSetting extends VSModel
             'build_representative' => $setting->build_representative,
             'representative_phone' => $setting->representative_phone,
             'representative_address' => $setting->representative_address,
-            'QR_file_name'           => $setting->QR_file_name,
+            'qr_file_name'           => $setting->qr_file_name,
             'QR_file_type'              => $file_type,
             'QR_file'              => $cleanPath,
+            'show_sign'        => (int) $setting->show_sign,
         ];
     }
 
@@ -240,7 +241,7 @@ class InvoiceSetting extends VSModel
 
         $v_rule = [
             'id'           => '0|number',
-            'QR_file_name' => '0|string',
+            'qr_file_name' => '0|string',
             'ext'          => '0|string',
             'data'         => '0|string',
         ];
@@ -256,7 +257,7 @@ class InvoiceSetting extends VSModel
         \Log::info('saveQR input: ' . json_encode([
             "id" => $id,
             "ext" => $inputs['ext'],
-            'QR_file_name' => $arr['QR_file_name'] ?? 'MISSING',
+            'qr_file_name' => $arr['qr_file_name'] ?? 'MISSING',
         ]));
 
 
@@ -276,18 +277,18 @@ class InvoiceSetting extends VSModel
                 $ext,       // 2nd: extension
                 $base64,      // 3rd: base64 data
                 'image',
-                $inputs['QR_file_name']   // 5th: original file name
+                $inputs['qr_file_name']   // 5th: original file name
             );
 
             if ($resFile->status === 'Error') {
                 return DV::error($resFile->error_message);
             }
 
-            $inputs['QR_file_name'] = $resFile->file_name;
+            $inputs['qr_file_name'] = $resFile->file_name;
         } else {
             // ✅ No new file uploaded — preserve existing DB values
             $existingRow = DB::table($this->table)->where('id', $id)->first();
-            $inputs['QR_file_name'] = $arr['QR_file_name'] ?? $existingRow->QR_file_name ?? null;
+            $inputs['qr_file_name'] = $arr['qr_file_name'] ?? $existingRow->qr_file_name ?? null;
         }
 
         unset($inputs['data'], $inputs['id'], $inputs['ext']);
@@ -313,11 +314,11 @@ class InvoiceSetting extends VSModel
             return DV::error('Invoice setting not found.');
         }
 
-        if (empty($setting->QR_file_name)) {
+        if (empty($setting->qr_file_name)) {
             return DV::error('No QR file to delete.');
         }
 
-        $file_name = $setting->QR_file_name;
+        $file_name = $setting->qr_file_name;
         $ext       = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
         $category  = ($ext === 'pdf') ? 'document' : 'image';
 
@@ -345,8 +346,8 @@ class InvoiceSetting extends VSModel
 
         // ✅ Only clear QR fields — do NOT delete the entire row
         DB::table($this->table)->where('id', $id)->update([
-            'QR_file_name' => null,
-            'QR_file_path' => null,
+            'qr_file_name' => null,
+            'qr_file_path' => null,
         ]);
 
         return DV::depends(1, ['action' => 'deleted', 'id' => $id]);

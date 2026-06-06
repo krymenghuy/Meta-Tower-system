@@ -718,7 +718,8 @@ class Invoice extends VSModel
                         'show_balance', COALESCE(i.show_balance),
                         'show_comm_tax', COALESCE(i.show_comm_tax),
                         'show_pmt_status', COALESCE(i.show_pmt_status),
-                        'show_amount_paid', COALESCE(i.show_amount_paid)
+                        'show_amount_paid', COALESCE(i.show_amount_paid),
+                        'show_sign', COALESCE(i.show_sign)
                     ) as settings")
                 )
                 ->first();

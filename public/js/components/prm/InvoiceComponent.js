@@ -727,14 +727,14 @@ var InvoiceComponent = (() => {
                         settings.representative_phone = global.representative_phone;
                         settings.representative_address = global.representative_address;
                         settings.QR_file = global.QR_file;
-                        settings.QR_file_name = global.QR_file_name;
+                        settings.qr_file_name = global.qr_file_name;
                         params.setting = settings;
                         // params.company = company;
                         // params.representative = representative;
                     } else {
                         params.setting = global;
                         settings.QR_file = global.QR_file;
-                        settings.QR_file_name = global.QR_file_name;
+                        settings.qr_file_name = global.qr_file_name;
                         // params.company = company;
                         // params.representative = representative;
                     }

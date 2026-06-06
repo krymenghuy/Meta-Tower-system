@@ -115,7 +115,7 @@
                     <div class="cpn-logo-box" id="_logo_box">
                         <img id="com_imgLogo" 
                              class="data-input thumbnail"
-                             data-field="QR_file_path"
+                             data-field="qr_file_path"
                              alt="Company Logo"
                              style="display: none; width:100%; height:100%; object-fit: cover; border-radius:10px;" />
 
