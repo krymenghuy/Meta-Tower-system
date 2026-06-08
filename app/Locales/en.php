@@ -135,6 +135,8 @@ return [
         'settings' => 'Settings',
 
         'logout' => 'Log Out',
+                   'logout'=> 'Log Out',
+                   'Transaction' => 'Transaction',
 
     ],
 

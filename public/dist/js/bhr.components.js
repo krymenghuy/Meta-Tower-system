@@ -1,4 +1,4 @@
-'use strict';
+﻿'use strict';
 var main_view = (()=>{
     const mThis = {};
     mThis.apiCluster = 'menus';
@@ -100,11 +100,11 @@ mThis.init_vsapi = async () => {
     //cacheTTL: 3000,
 
     // online: () => {
-    //   console.log('🟢 Back online');
+    //   console.log('ðŸŸ¢ Back online');
     // },
 
     // offline: () => {
-    //   console.warn('🔴 Connection lost');
+    //   console.warn('ðŸ”´ Connection lost');
     // }
     // You can later add: resolveAuthHeaders, or switch authType to 'custom' etc.
   });
@@ -1691,7 +1691,7 @@ var TenantProfileComponent = new (function () {
                                                         Lease Expiry
                                                     </span>
                                                     <small class="text-muted">
-                                                        ${d.end_date || d.start_date || "—"}
+                                                        ${d.end_date || d.start_date || "â€”"}
                                                     </small>
                                                 </div>
                                             `
@@ -2084,7 +2084,7 @@ var TenantProfileComponent = new (function () {
             .replace(/"/g, "&quot;");
     };
     mThis._fmtMoney = (n) => {
-        if (n == null || n === "") return "—";
+        if (n == null || n === "") return "â€”";
         const x = Number(n);
         if (Number.isNaN(x)) return String(n);
         return x.toLocaleString(undefined, {
@@ -2092,7 +2092,7 @@ var TenantProfileComponent = new (function () {
             maximumFractionDigits: 2,
         });
     };
-    mThis._getUnitCode = (row, fallback = "—") => {
+    mThis._getUnitCode = (row, fallback = "â€”") => {
         if (!row) return fallback;
         const value =
             row.unit_code ??
@@ -2159,18 +2159,18 @@ var TenantProfileComponent = new (function () {
 
                 headerBadgeHtml = `<span class="badge text-uppercase rounded-4 text-white ms-1" style="background-color:#dc3545;">TERMINATED</span>`;
             } else {
-                headerBadgeHtml = `<span class="badge text-uppercase rounded-4 ms-1" style="color:#4a4a4a;background-color:#f6f4ee;border:1px solid #e5dfd1;">${mThis._escapeHtml(contractStatusName || "—")}</span>`;
+                headerBadgeHtml = `<span class="badge text-uppercase rounded-4 ms-1" style="color:#4a4a4a;background-color:#f6f4ee;border:1px solid #e5dfd1;">${mThis._escapeHtml(contractStatusName || "â€”")}</span>`;
             }
 
             const start = mThis._escapeHtml(first.contract_start_date ?? "");
             const end = mThis._escapeHtml(first.contract_end_date ?? "");
-            const title = `Contract: ${start} — ${end}`;
+            const title = `Contract: ${start} â€” ${end}`;
 
-            const unitPart = mThis._escapeHtml(mThis._getUnitCode(first, "—"));
+            const unitPart = mThis._escapeHtml(mThis._getUnitCode(first, "â€”"));
             const sqmPart =
                 first.sqm_size != null && first.sqm_size !== ""
-                    ? `${mThis._fmtMoney(first.sqm_size)} m²`
-                    : "—";
+                    ? `${mThis._fmtMoney(first.sqm_size)} mÂ²`
+                    : "â€”";
             const bldg = first.building_name
                 ? mThis._escapeHtml(first.building_name)
                 : "";
@@ -2193,14 +2193,14 @@ var TenantProfileComponent = new (function () {
             const priceLine =
                 totalPriceNum != null && !Number.isNaN(totalPriceNum)
                     ? `${VSMoney.formatAmount(totalPriceNum, "USD")}`
-                    : "—";
+                    : "â€”";
             const depositSmallHtml =
                 first.deposit != null && first.deposit !== ""
                     ? `Deposit ${VSMoney.formatAmount(first.deposit, "USD")}`
                     : "";
             if (first.deposit_remarks) {
                 depositSmallHtml = dep
-                    ? `${depositSmallHtml} <span class="text-muted">• ${mThis._escapeHtml(first.deposit_remarks)}</span>`
+                    ? `${depositSmallHtml} <span class="text-muted">â€¢ ${mThis._escapeHtml(first.deposit_remarks)}</span>`
                     : `<span class="text-muted">${mThis._escapeHtml(first.deposit_remarks)}</span>`;
             }
             const depositBadgeHtml = depositSmallHtml
@@ -2214,15 +2214,15 @@ var TenantProfileComponent = new (function () {
                         ? mThis._escapeHtml(r.renewal_date)
                         : isInitial
                           ? "Initial"
-                          : "—";
+                          : "â€”";
 
                     const rowStart = mThis._escapeHtml(
-                        r.renewal_start_date ?? "—",
+                        r.renewal_start_date ?? "â€”",
                     );
-                    const rowEnd = mThis._escapeHtml(r.renewal_end_date ?? "—");
+                    const rowEnd = mThis._escapeHtml(r.renewal_end_date ?? "â€”");
 
                     const rowUnitCode = mThis._escapeHtml(
-                        mThis._getUnitCode(first, "—"),
+                        mThis._getUnitCode(first, "â€”"),
                     );
                     const currentBadgeHtml = r.is_current
                         ? `<span class="badge text-uppercase rounded-4 text-white ms-1" style="background-color:#0f49bd;">Current</span>`
@@ -2231,11 +2231,11 @@ var TenantProfileComponent = new (function () {
                     const remarks =
                         r.remarks != null && r.remarks !== ""
                             ? mThis._escapeHtml(r.remarks)
-                            : "—";
+                            : "â€”";
 
                     const updatedBy = r.update_user
-                        ? `${mThis._escapeHtml(r.update_user)}${r.updated_at ? ` • ${mThis._escapeHtml(r.updated_at)}` : ""}`
-                        : "—";
+                        ? `${mThis._escapeHtml(r.update_user)}${r.updated_at ? ` â€¢ ${mThis._escapeHtml(r.updated_at)}` : ""}`
+                        : "â€”";
 
                     return `<tr class="${r.is_current ? "table-prm-current-row" : ""}">
                         <td class="text-nowrap">${renewalDate}</td>
@@ -2373,19 +2373,19 @@ var TenantProfileComponent = new (function () {
                             <div class="d-flex align-items-center">
                                 <div>
                                     <div class="text-dark">
-                                        ${doc.document_type || doc.document_type_id || "—"}
+                                        ${doc.document_type || doc.document_type_id || "â€”"}
                                     </div>
                                 </div>
                             </div>
                         </td>
                         <td style="width: 20%; height: 55px; vertical-align: middle;">
                             <div class="text-dark">
-                                ${doc.original_file_name || "—"}
+                                ${doc.original_file_name || "â€”"}
                             </div>
                         </td>
                         <td style="width: 12%; height: 55px; vertical-align: middle;">
                             <div class="text-dark">
-                                ${doc.ext ? doc.ext.toUpperCase() : "—"}
+                                ${doc.ext ? doc.ext.toUpperCase() : "â€”"}
                             </div>
                         </td>
                         <td style="width: 30%; height: 65px; vertical-align: middle;">
@@ -2725,9 +2725,9 @@ var ContractsComponent = new (function () {
                 return `
                     <span class="text-nowrap text-primary-custom">
                             ${price}
-                        <small class="text-nowrap text-muted"> /m²</small>
+                        <small class="text-nowrap text-muted"> /mÂ²</small>
                     </span>
-                    <span class="d-block text-primary" style="font-size:12px;">${data.sqm_size ?? '-'} m²</span>
+                    <span class="d-block text-primary" style="font-size:12px;">${data.sqm_size ?? '-'} mÂ²</span>
                 `;
             }
         },
@@ -2772,7 +2772,7 @@ var ContractsComponent = new (function () {
                     terminated: 'bg-danger-subtle text-danger border border-danger',
                 };
                 const m = map[statusId] || null;
-                const label = m?.text || (statusKey === 'terminated' ? 'Terminated' : (data.status ?? '—'));
+                const label = m?.text || (statusKey === 'terminated' ? 'Terminated' : (data.status ?? 'â€”'));
                 const cls = m?.cls || byName[statusKey] || 'bg-light text-muted';
                 return `<span class="badge ${cls}" style="min-width: 100px;" data-status_id="${data.status_id}">${label}</span>`;
             },
@@ -2956,8 +2956,8 @@ var ContractsComponent = new (function () {
     mThis.renderContractDetail = (container, d, contractId, renewals) => {
         // const cur = (d.cur_symbol != null) ? d.cur_symbol : '$';
         // const priceLabel = (d.price_type === 'total') ? 'Whole Room' : 'Per sqm';
-        // const priceVal = d.price != null ? Number(d.price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : 'â€”';
-        // const depositVal = (d.deposit != null && d.deposit !== '') ? Number(d.deposit).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : 'â€”';
+        // const priceVal = d.price != null ? Number(d.price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : 'Ã¢â‚¬â€';
+        // const depositVal = (d.deposit != null && d.deposit !== '') ? Number(d.deposit).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : 'Ã¢â‚¬â€';
 
         const renewalsList = Array.isArray(renewals) ? renewals : [];
         const escapeHtml = (str) => {
@@ -3339,7 +3339,7 @@ const ContractDialog = (() => {
                             <div class="col-6">
                                 <div class="vs-material-field">
                                     <input type="number" name="sqm_size" class="data-input form-control" data-field="sqm_size" disabled />
-                                    <label>Size (m²)</label>
+                                    <label>Size (mÂ²)</label>
                                 </div>
                             </div>
                             <div class="col-6">
@@ -3530,7 +3530,7 @@ const ContractDialog = (() => {
                     if (me.controls.price_type && me.controls.price_type_label) {
                         me.controls.price_type.value = selected.price_type ?? '';
 
-                        me.controls.price_type_label.value = selected.price_type === 'sqm' ? 'm²' : selected.price_type === 'total' ? 'Unit' : '';
+                        me.controls.price_type_label.value = selected.price_type === 'sqm' ? 'mÂ²' : selected.price_type === 'total' ? 'Unit' : '';
                     }
                     if (me.controls.price) me.controls.price.value = selected.price ?? '';
                 };
@@ -3865,7 +3865,7 @@ const RenewDialog = (() => {
                     // if (me.controls.price_type) me.controls.price_type.value = unitData.price_type ?? '';
                     if (me.controls.price_type) {
                         me.controls.price_type.value = unitData.price_type ?? '';
-                        me.controls.price_type.value = unitData.price_type === 'sqm' ? 'm²' : unitData.price_type === 'total' ? 'Unit' : '';
+                        me.controls.price_type.value = unitData.price_type === 'sqm' ? 'mÂ²' : unitData.price_type === 'total' ? 'Unit' : '';
                     }
                     if (me.controls.price) me.controls.price.value = unitData.price ?? '';
                     applyContractPriceFields();
@@ -4114,7 +4114,7 @@ var InvoicesComponent = (() => {
                 }
                 return `
                     <span class="badge ${cls} text-capitalize d-inline-flex align-items-center justify-content-center px-3 py-2 gap-1" style="min-width:110px">
-                        ${data.payment_status_name || "—"}
+                        ${data.payment_status_name || "â€”"}
                     </span>`;
             },
         },
@@ -4138,9 +4138,9 @@ var InvoicesComponent = (() => {
         //     data: (data) => `
         //         <div class="d-flex flex-column">
         //             <span class="text-capitalize text-prm-custom">${
-        //                 data.update_user || "—"
+        //                 data.update_user || "â€”"
         //             }</span>
-        //             <small class="text-muted">${data.updated_at || "—"}</small>
+        //             <small class="text-muted">${data.updated_at || "â€”"}</small>
         //         </div>`,
         // },
         {
@@ -4167,7 +4167,7 @@ var InvoicesComponent = (() => {
         if (mThis.initAlready) return;
 
         mThis.InvoiceListView = new ListView("_invoices_list", {
-            fetchApi: `${main_view.base_url}/prm/invoice/list-paginate`,
+            fetchApi: `${main_view.base_url}/prm/tenant/invoice/list-paginate`,
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
@@ -4247,7 +4247,7 @@ var InvoicesComponent = (() => {
     mThis.displayInvoiceDetail = (container, id) => {
         container.innerHTML = `<div class="text-center py-3"><div class="spinner-border text-primary" role="status"></div></div>`;
         vsapi
-            .call(`${main_view.base_url}/prm/invoice/details`, { id })
+            .call(`${main_view.base_url}/prm/tenant/invoice/details`, { id })
             .then((res) => {
                 if (res.status_code !== 200) {
                     container.innerHTML = `<div class="alert alert-danger m-3">Failed to load invoice details</div>`;
@@ -4272,7 +4272,7 @@ var InvoicesComponent = (() => {
         );
 
         const formatDate = (dateStr) => {
-            if (!dateStr) return "—";
+            if (!dateStr) return "â€”";
             const date = new Date(dateStr);
             if (isNaN(date.getTime())) return dateStr;
             return date.toLocaleDateString("en-GB", {
@@ -4314,7 +4314,7 @@ var InvoicesComponent = (() => {
 
                 return `
                 <tr>
-                    <td class="fw-medium">${item.remarks || "—"}
+                    <td class="fw-medium">${item.remarks || "â€”"}
                     </td>
                     <td class="text-center small">${formatDate(
                         item.start_date,
@@ -4343,7 +4343,7 @@ var InvoicesComponent = (() => {
             })
             .join("");
 
-        // ✅ Footer totals calculation
+        // âœ… Footer totals calculation
         const foot = validItems.reduce(
             (acc, item) => {
                 const total = parseFloat(item.total || item.amount || 0);
@@ -4527,7 +4527,7 @@ var InvoicesComponent = (() => {
 
                 vsapi
                     .call(
-                        `${main_view.base_url}/prm/invoice/delete`,
+                        `${main_view.base_url}/prm/tenant/invoice/delete`,
                         { id },
                         menuLink,
                     )
@@ -4573,7 +4573,7 @@ var InvoicesComponent = (() => {
             );
 
             vsapi
-                .call(`${main_view.base_url}/prm/invoice/details`, { id: id })
+                .call(`${main_view.base_url}/prm/tenant/invoice/details`, { id: id })
                 .then((res) => {
                     if (res.status_code === 200) {
                         mThis.printInvoice(id, res.data.invoice_type, menulink);
@@ -4598,7 +4598,7 @@ var InvoicesComponent = (() => {
 
     mThis.prepareFormOptions = (onFinish) => {
         vsapi
-            .call(`${main_view.base_url}/prm/invoice/form-options`)
+            .call(`${main_view.base_url}/prm/tenant/invoice/form-options`)
             .then((res) => {
                 const d = res.status_code === 200 ? res.data : {};
                 VSUtil.setComboItems(
@@ -5114,7 +5114,7 @@ const InvoiceDialog = (() => {
                                 );
                             }
 
-                            const roomCode = matchedSpace.space_code || "—";
+                            const roomCode = matchedSpace.space_code || "â€”";
                             const finalPrice = Number(
                                 data.price || matchedSpace.effective_price || 0,
                             );
@@ -5515,12 +5515,12 @@ const InvoiceDialog = (() => {
                                                 : "";
                                         const calcStr =
                                             units > 0 && ppu > 0
-                                                ? ` — ${units.toFixed(
+                                                ? ` â€” ${units.toFixed(
                                                       2,
-                                                  )} kWh × $${ppu.toFixed(2)}`
+                                                  )} kWh Ã— $${ppu.toFixed(2)}`
                                                 : mode === "reading"
-                                                  ? " — Reading Setup"
-                                                  : " — Manual Entry";
+                                                  ? " â€” Reading Setup"
+                                                  : " â€” Manual Entry";
 
                                         elRemark.value = `Electric${period}${calcStr}`;
                                     }
@@ -5899,7 +5899,7 @@ const InvoiceDialog = (() => {
 
                                     if (elUnitType)
                                         elUnitType.value =
-                                            selected.charge_as || "—";
+                                            selected.charge_as || "â€”";
                                     if (elPrice)
                                         elPrice.value = Number(
                                             selected.price || 0,
@@ -6603,7 +6603,7 @@ const InvoiceDialog = (() => {
                                 me.itemsView.setCellValue(
                                     tr,
                                     "unit_type",
-                                    selectedService.unit_type || "—",
+                                    selectedService.unit_type || "â€”",
                                 );
                                 me.itemsView.setCellValue(tr, "qty", 1);
                                 me.itemsView.setCellValue(
@@ -6611,7 +6611,7 @@ const InvoiceDialog = (() => {
                                     "remarks",
                                     selectedService.service ||
                                         selectedService.name ||
-                                        "—",
+                                        "â€”",
                                 );
                                 me.itemsView.setCellValue(
                                     tr,
@@ -6629,7 +6629,7 @@ const InvoiceDialog = (() => {
                                     rentPrice,
                                 );
                                 me.itemsView.setCellValue(tr, "type", "rent");
-                                me.itemsView.setCellValue(tr, "unit_type", "—");
+                                me.itemsView.setCellValue(tr, "unit_type", "â€”");
                             }
                         }
                     },
@@ -6731,7 +6731,7 @@ const InvoiceDialog = (() => {
                                 type: item.type || "service",
                                 qty: parseFloat(item.qty || 1),
                                 price: parseFloat(item.price || 0),
-                                unit_type: item.unit_type || "—",
+                                unit_type: item.unit_type || "â€”",
                                 remarks: item.remarks || item.description || "",
                                 start_date: item.start_date,
                                 end_date: item.end_date,
@@ -6797,7 +6797,7 @@ const InvoiceDialog = (() => {
 
                 if (me.dataOptions.id) {
                     vsapi
-                        .call(`${main_view.base_url}/prm/invoice/details`, {
+                        .call(`${main_view.base_url}/prm/tenant/invoice/details`, {
                             id: me.dataOptions.id,
                         })
                         .then((res) => {
@@ -6856,7 +6856,7 @@ const InvoiceDialog = (() => {
                                                 me.controls.space.value =
                                                     String(detail.space_id);
 
-                                                // ✅ Verify — if Choices.js overrides, force via option.selected
+                                                // âœ… Verify â€” if Choices.js overrides, force via option.selected
                                                 if (
                                                     me.controls.space.value !==
                                                     String(detail.space_id)
@@ -6927,7 +6927,7 @@ const InvoiceDialog = (() => {
                 createTitle: "Create Invoice",
                 targetProp: "invoice_details",
                 api: {
-                    endpoint: `${main_view.base_url}/prm/invoice/form-options`,
+                    endpoint: `${main_view.base_url}/prm/tenant/invoice/form-options`,
                     params: (op) => {
                         console.log("API params op:", op);
                         return { id: op.id };
@@ -6967,7 +6967,7 @@ const InvoiceDialog = (() => {
 
                         vsapi
                             .call(
-                                `${main_view.base_url}/prm/invoice/save`,
+                                `${main_view.base_url}/prm/tenant/invoice/save`,
                                 formData,
                                 btn,
                             )
@@ -7030,7 +7030,7 @@ const ReceiveDialog = (() => {
                             <div class="d-flex align-items-center gap-2 mb-3">
                                 <span class="payment-badge" style="color:#0C447C;">Cash</span>
                                 <div style="flex:1;height:1px;background:#dee2e6;"></div>
-                                <span style="font-size:11px;color:#0C447C;">Entered: <strong id="c_e" style="color:#212529;">—</strong></span>
+                                <span style="font-size:11px;color:#0C447C;">Entered: <strong id="c_e" style="color:#212529;">â€”</strong></span>
                             </div>
                             <div style="display:flex;flex-direction:row;gap:8px;flex-wrap:wrap;margin-bottom: 0.5rem;">
                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
@@ -7045,7 +7045,7 @@ const ReceiveDialog = (() => {
                             <div class="d-flex align-items-center gap-2 mb-3">
                                 <span class="payment-badge" style="color:#0C447C;">Bank Transfer</span>
                                 <div style="flex:1;height:1px;background:#dee2e6;"></div>
-                                <span style="font-size:11px;color:#0C447C;">Entered: <strong id="b_e" style="color:#212529;">—</strong></span>
+                                <span style="font-size:11px;color:#0C447C;">Entered: <strong id="b_e" style="color:#212529;">â€”</strong></span>
                             </div>
                             <div style="display:flex;flex-direction:row;gap:8px;flex-wrap:wrap;margin-bottom: 0.5rem;">
                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
@@ -7067,7 +7067,7 @@ const ReceiveDialog = (() => {
                             <div class="d-flex align-items-center gap-2 mb-3">
                                 <span class="payment-badge" style="color:#0C447C;">Card</span>
                                 <div style="flex:1;height:1px;background:#dee2e6;"></div>
-                                <span style="font-size:11px;color:#0C447C;">Entered: <strong id="ca_e" style="color:#212529;">—</strong></span>
+                                <span style="font-size:11px;color:#0C447C;">Entered: <strong id="ca_e" style="color:#212529;">â€”</strong></span>
                             </div>
                             <div style="display:flex;flex-direction:row;gap:8px;flex-wrap:wrap;margin-bottom: 0.5rem;">
                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
@@ -7093,7 +7093,7 @@ const ReceiveDialog = (() => {
                             <div class="d-flex align-items-center gap-2 mb-3">
                                 <span class="payment-badge" style="color:#0C447C;">Cheque</span>
                                 <div style="flex:1;height:1px;background:#dee2e6;"></div>
-                                <span style="font-size:11px;color:#0C447C;">Entered: <strong id="ch_e" style="color:#212529;">—</strong></span>
+                                <span style="font-size:11px;color:#0C447C;">Entered: <strong id="ch_e" style="color:#212529;">â€”</strong></span>
                             </div>
                             <div style="display:flex;flex-direction:row;gap:8px;flex-wrap:wrap;margin-bottom: 0.5rem;">
                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
@@ -7169,13 +7169,13 @@ const ReceiveDialog = (() => {
 
                     // --- Update Badge Displays ---
                     me.divModal.querySelector("#c_e").textContent =
-                        cash > 0 ? fmt(cash) : "—";
+                        cash > 0 ? fmt(cash) : "â€”";
                     me.divModal.querySelector("#b_e").textContent =
-                        bank > 0 ? fmt(bank) : "—";
+                        bank > 0 ? fmt(bank) : "â€”";
                     me.divModal.querySelector("#ca_e").textContent =
-                        card > 0 ? fmt(card) : "—";
+                        card > 0 ? fmt(card) : "â€”";
                     me.divModal.querySelector("#ch_e").textContent =
-                        cheque > 0 ? fmt(cheque) : "—";
+                        cheque > 0 ? fmt(cheque) : "â€”";
 
                     // --- REMOVED AUTO REMARKS SYNC LOGIC TO ALLOW MANUAL INPUT ---
                 };
@@ -7257,7 +7257,7 @@ const ReceiveDialog = (() => {
                 const opts = me.dataOptions || {};
                 if (opts.invoice_id) {
                     vsapi
-                        .call(`${main_view.base_url}/prm/invoice/details`, {
+                        .call(`${main_view.base_url}/prm/tenant/invoice/details`, {
                             id: opts.invoice_id,
                         })
                         .then((res) => {
@@ -7278,7 +7278,7 @@ const ReceiveDialog = (() => {
                 }
 
                 vsapi
-                    .call(`${main_view.base_url}/prm/invoice/form-options`)
+                    .call(`${main_view.base_url}/prm/tenant/invoice/form-options`)
                     .then((res) => {
                         const banks = res?.data?.banks || [];
                         if (me.controls.bank_transfer_bank_id) {
@@ -7288,7 +7288,7 @@ const ReceiveDialog = (() => {
                                 "id",
                                 "name",
                                 true,
-                                "— Select Bank —",
+                                "â€” Select Bank â€”",
                             );
                         }
                         if (me.controls.cheque_bank_id) {
@@ -7298,7 +7298,7 @@ const ReceiveDialog = (() => {
                                 "id",
                                 "name",
                                 true,
-                                "— Select Bank —",
+                                "â€” Select Bank â€”",
                             );
                         }
                     });
@@ -7329,7 +7329,7 @@ const ReceiveDialog = (() => {
 
                         vsapi
                             .call(
-                                `${main_view.base_url}/prm/invoice/receive`,
+                                `${main_view.base_url}/prm/tenant/invoice/receive`,
                                 payload,
                                 btn,
                             )
@@ -8413,7 +8413,7 @@ var TenantProfileComponent = new (function () {
                                                         Lease Expiry
                                                     </span>
                                                     <small class="text-muted">
-                                                        ${d.end_date || d.start_date || "—"}
+                                                        ${d.end_date || d.start_date || "â€”"}
                                                     </small>
                                                 </div>
                                             `
@@ -8806,7 +8806,7 @@ var TenantProfileComponent = new (function () {
             .replace(/"/g, "&quot;");
     };
     mThis._fmtMoney = (n) => {
-        if (n == null || n === "") return "—";
+        if (n == null || n === "") return "â€”";
         const x = Number(n);
         if (Number.isNaN(x)) return String(n);
         return x.toLocaleString(undefined, {
@@ -8814,7 +8814,7 @@ var TenantProfileComponent = new (function () {
             maximumFractionDigits: 2,
         });
     };
-    mThis._getUnitCode = (row, fallback = "—") => {
+    mThis._getUnitCode = (row, fallback = "â€”") => {
         if (!row) return fallback;
         const value =
             row.unit_code ??
@@ -8881,18 +8881,18 @@ var TenantProfileComponent = new (function () {
 
                 headerBadgeHtml = `<span class="badge text-uppercase rounded-4 text-white ms-1" style="background-color:#dc3545;">TERMINATED</span>`;
             } else {
-                headerBadgeHtml = `<span class="badge text-uppercase rounded-4 ms-1" style="color:#4a4a4a;background-color:#f6f4ee;border:1px solid #e5dfd1;">${mThis._escapeHtml(contractStatusName || "—")}</span>`;
+                headerBadgeHtml = `<span class="badge text-uppercase rounded-4 ms-1" style="color:#4a4a4a;background-color:#f6f4ee;border:1px solid #e5dfd1;">${mThis._escapeHtml(contractStatusName || "â€”")}</span>`;
             }
 
             const start = mThis._escapeHtml(first.contract_start_date ?? "");
             const end = mThis._escapeHtml(first.contract_end_date ?? "");
-            const title = `Contract: ${start} — ${end}`;
+            const title = `Contract: ${start} â€” ${end}`;
 
-            const unitPart = mThis._escapeHtml(mThis._getUnitCode(first, "—"));
+            const unitPart = mThis._escapeHtml(mThis._getUnitCode(first, "â€”"));
             const sqmPart =
                 first.sqm_size != null && first.sqm_size !== ""
-                    ? `${mThis._fmtMoney(first.sqm_size)} m²`
-                    : "—";
+                    ? `${mThis._fmtMoney(first.sqm_size)} mÂ²`
+                    : "â€”";
             const bldg = first.building_name
                 ? mThis._escapeHtml(first.building_name)
                 : "";
@@ -8915,14 +8915,14 @@ var TenantProfileComponent = new (function () {
             const priceLine =
                 totalPriceNum != null && !Number.isNaN(totalPriceNum)
                     ? `${VSMoney.formatAmount(totalPriceNum, "USD")}`
-                    : "—";
+                    : "â€”";
             const depositSmallHtml =
                 first.deposit != null && first.deposit !== ""
                     ? `Deposit ${VSMoney.formatAmount(first.deposit, "USD")}`
                     : "";
             if (first.deposit_remarks) {
                 depositSmallHtml = dep
-                    ? `${depositSmallHtml} <span class="text-muted">• ${mThis._escapeHtml(first.deposit_remarks)}</span>`
+                    ? `${depositSmallHtml} <span class="text-muted">â€¢ ${mThis._escapeHtml(first.deposit_remarks)}</span>`
                     : `<span class="text-muted">${mThis._escapeHtml(first.deposit_remarks)}</span>`;
             }
             const depositBadgeHtml = depositSmallHtml
@@ -8936,15 +8936,15 @@ var TenantProfileComponent = new (function () {
                         ? mThis._escapeHtml(r.renewal_date)
                         : isInitial
                           ? "Initial"
-                          : "—";
+                          : "â€”";
 
                     const rowStart = mThis._escapeHtml(
-                        r.renewal_start_date ?? "—",
+                        r.renewal_start_date ?? "â€”",
                     );
-                    const rowEnd = mThis._escapeHtml(r.renewal_end_date ?? "—");
+                    const rowEnd = mThis._escapeHtml(r.renewal_end_date ?? "â€”");
 
                     const rowUnitCode = mThis._escapeHtml(
-                        mThis._getUnitCode(first, "—"),
+                        mThis._getUnitCode(first, "â€”"),
                     );
                     const currentBadgeHtml = r.is_current
                         ? `<span class="badge text-uppercase rounded-4 text-white ms-1" style="background-color:#0f49bd;">Current</span>`
@@ -8953,11 +8953,11 @@ var TenantProfileComponent = new (function () {
                     const remarks =
                         r.remarks != null && r.remarks !== ""
                             ? mThis._escapeHtml(r.remarks)
-                            : "—";
+                            : "â€”";
 
                     const updatedBy = r.update_user
-                        ? `${mThis._escapeHtml(r.update_user)}${r.updated_at ? ` • ${mThis._escapeHtml(r.updated_at)}` : ""}`
-                        : "—";
+                        ? `${mThis._escapeHtml(r.update_user)}${r.updated_at ? ` â€¢ ${mThis._escapeHtml(r.updated_at)}` : ""}`
+                        : "â€”";
 
                     return `<tr class="${r.is_current ? "table-prm-current-row" : ""}">
                         <td class="text-nowrap">${renewalDate}</td>
@@ -9095,19 +9095,19 @@ var TenantProfileComponent = new (function () {
                             <div class="d-flex align-items-center">
                                 <div>
                                     <div class="text-dark">
-                                        ${doc.document_type || doc.document_type_id || "—"}
+                                        ${doc.document_type || doc.document_type_id || "â€”"}
                                     </div>
                                 </div>
                             </div>
                         </td>
                         <td style="width: 20%; height: 55px; vertical-align: middle;">
                             <div class="text-dark">
-                                ${doc.original_file_name || "—"}
+                                ${doc.original_file_name || "â€”"}
                             </div>
                         </td>
                         <td style="width: 12%; height: 55px; vertical-align: middle;">
                             <div class="text-dark">
-                                ${doc.ext ? doc.ext.toUpperCase() : "—"}
+                                ${doc.ext ? doc.ext.toUpperCase() : "â€”"}
                             </div>
                         </td>
                         <td style="width: 30%; height: 65px; vertical-align: middle;">
@@ -9361,3 +9361,289 @@ var TenantProfileComponent = new (function () {
     return mThis;
 })();
 
+"use strict";
+"use strict";
+"use strict";
+"use strict";
+var ReceiptsComponent = new (function () {
+    const mThis = this;
+    mThis.title_prop = "Transaction";
+    mThis.currency_symbol = "$";
+
+    mThis.bindDom = () => {
+        if (mThis.self) return true;
+        if (!main_view?.VSAppContent) return false;
+
+        mThis.base_url = main_view.base_url;
+        mThis.self = main_view.VSAppContent.querySelector(
+            "#_main_receipts_component"
+        );
+        if (!mThis.self) return false;
+
+        mThis.elStatus = mThis.self.querySelector("#_receipts_status");
+        mThis.divFilter = mThis.self.querySelector("#_divFilter_receipts");
+        mThis.elSearch = mThis.self.querySelector("#_search_receipts");
+        return true;
+    };
+
+    mThis.cols = [
+        { transTitle: "", className: "align-middle" },
+        {
+            transTitle: "titles.Receipt No",
+            className: "align-middle text-nowrap",
+            data: (data) => {
+                const code = data.code
+                    ? `<span class="text-prm-custom">${data.code}</span>`
+                    : `<span class="text-muted fst-italic">N/A</span>`;
+
+                return `
+                    <div class="d-flex flex-column">
+                        ${code}
+                    </div>
+                `;
+            },
+        },
+        {
+            transTitle: "titles.Invoice No",
+            className: "align-middle text-nowrap",
+            data: (data) => {
+                const code = data.invoice_code
+                    ? `<span class="text-prm-custom ">${data.invoice_code}</span>`
+                    : `<span class="text-muted fst-italic">N/A</span>`;
+                return `
+                    <div class="d-flex flex-column ">
+                        ${code}
+                    </div>
+                `;
+            },
+        },
+        {
+            transTitle: "titles.Payment Date",
+            className: "align-middle text-nowrap",
+            data: (data) => {
+                const date = data.receipt_date;
+                return `
+                    <div class="d-flex flex-column">
+                        ${date}
+                    </div>
+                `;
+            },
+        },
+        {
+            transTitle: "titles.Unit",
+            className: "align-middle text-nowrap",
+            data: (data) => {
+                return ` <div class="d-flex text-warning align-items-center gap-2">
+                <div>
+                    <span class="d-block text-prm-custom ">
+                        ${data.space_code ?? ""}
+                    </span>
+                </div>
+            </div>`;
+            },
+        },
+        {
+            transTitle: "titles.Mode of Payment",
+            className: "align-middle text-nowrap",
+            data: (data) => {
+                return `
+                    <div class="text-primary-custom" style="width:200px;">
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.payment_methods}</span>
+                    </div>`;
+            },
+        },
+        {
+            transTitle: "titles.Amount",
+            className: "align-middle text-nowrap",
+            data: (data) => {
+                const val = parseFloat(data.total_received || 0).toFixed(2);
+                return `<span class="text-primary fw-bold">$ ${val}</span>`;
+            },
+        },
+        {
+            transTitle: "titles.Status",
+            className: "align-middle text-nowrap text-center",
+            data: (data) => {
+                const statusId = parseInt(data.receipt_status_id) || 1;
+
+                const statusClasses = {
+                    1: "badge text-success bg-success-subtle border border-success",
+                    2: "badge text-danger bg-danger-subtle border border-danger",
+                };
+
+                const cls =
+                    statusClasses[statusId] ??
+                    "badge text-dark bg-light border";
+
+                return `
+                    <span
+                        data-id="${data.id}"
+                        class="${cls} text-capitalize d-inline-block text-center"
+                        style="min-width:70px;">
+                        ${data.receipt_status_name ??
+                            (statusId === 1 ? "Active" : "Canceled")}
+                    </span>
+                `;
+            },
+        },
+        {
+            transTitle: "titles.Remark",
+            className: "align-middle text-nowrap",
+            data: (data) => {
+                return `
+                    <div class="text-primary-custom" style="width:200px;">
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ??
+                            "-"}</span>
+                    </div>
+                `;
+            },
+        },
+        {
+            transTitle: "titles.Action",
+            className: "col_action align-middle text-center text-nowrap",
+            data: (data) => `
+                <a href="javascript:void(0)" class="btn_receipts_action" data-id="${data.id}" data-statusid="${data.receipt_status_id}" style="padding: 0 10px;">
+                    <i class="fa-solid fa-ellipsis-vertical text-primary-custom fs-5"></i>
+                </a>`,
+        },
+    ];
+
+    mThis.init = () => {
+        if (mThis.initAlready) return;
+        if (!mThis.bindDom()) return;
+
+        mThis.ReceiptListView = new ListView("_receipts_list", {
+            fetchApi: `${main_view.base_url}/prm/tenant/receipt/list-paginate`,
+            perPage: 10,
+            apiCluster: main_view.apiCluster,
+            columns: mThis.cols,
+            tableClass:
+                "table table--white rounded-2 overflow-hidden header-uppercase mb-0",
+            rowCreated: (data, index, tr) => {
+                tr.classList.add("receipt", "cursor-pointer");
+                tr.id = `receipt_id_${data.id}`;
+                tr.dataset.statusId = data.receipt_status_id;
+            },
+        });
+        mThis.listContainer = mThis.ReceiptListView.getListContainer();
+        const sh_parent = mThis.listContainer.parentElement;
+        sh_parent.style.maxHeight = window.innerHeight - 220 + "px";
+        sh_parent.classList.add("overflow-y-auto");
+        window.onresize = () => {
+            sh_parent.style.maxHeight = window.innerHeight - 220 + "px";
+        };
+
+        mThis.tblReceipt = mThis.ReceiptListView.getTable();
+
+        mThis.initDropdownMenus(mThis.tblReceipt);
+
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
+            el.onchange = () =>
+                mThis.ReceiptListView.showPage(mThis.getFilterData());
+        });
+
+        mThis.elSearch.addEventListener("keyup", () => {
+            clearTimeout(mThis.search_timeout);
+            mThis.search_timeout = setTimeout(() => {
+                mThis.ReceiptListView.showPage(mThis.getFilterData());
+            }, 300);
+        });
+
+        mThis.initAlready = true;
+    };
+
+    mThis.getFilterData = () => {
+        let p = {
+            search_value: mThis.elSearch?.value ?? "",
+            status_id: mThis.elStatus?.value ?? "",
+        };
+        mThis.divFilter?.querySelectorAll(".filter-field").forEach((el) => {
+            if (el.dataset.field) {
+                p[el.dataset.field] = el.value;
+            }
+        });
+        return p;
+    };
+
+    mThis.initDropdownMenus = (table) => {
+        new VSDropdownMenu({
+            containerElement: table,
+            actionButtonClass: "btn_receipts_action",
+            cssClass: "bg-white shadow",
+            menus: [
+                {
+                    html: '<span class="ps-2" vslang="titles.Print Receipt"></span>',
+                    icon: `<i class="fa-solid fa-receipt text-primary fs-5"></i>`,
+                    name: "print_receipt",
+                    cssClass: "border-bottom pb-2",
+                },
+            ],
+            onClick: (menuLink, id, name) => {
+                if (name === "print_receipt") {
+                    mThis.printReceipt(id, menuLink);
+                }
+            },
+        });
+    };
+
+    mThis.printReceipt = (id, menuLink) => {
+        PrintReceiptDialog.show({
+            receipt_id: id,
+            btn: menuLink,
+            detailsUrl: `${mThis.base_url}/prm/tenant/receipt/details`,
+            invoiceDetailsUrl: `${mThis.base_url}/prm/tenant/invoice/details`,
+        });
+    };
+
+    mThis.prepareFormOptions = (onFinish) => {
+        vsapi
+            .call(
+                `${main_view.base_url}/prm/tenant/receipt/form-options`,
+                {},
+                null,
+                null,
+                null
+            )
+            .then((res) => {
+                const d = res.status_code == 200 ? res.data : {};
+                if (mThis.elStatus) {
+                    VSUtil.setComboItems(
+                        mThis.elStatus,
+                        d.receipt_statuses,
+                        "id",
+                        "name",
+                        "",
+                        "All Statuses",
+                        ""
+                    );
+                }
+            })
+            .catch((err) => {
+                console.error("ReceiptsComponent: form-options failed", err);
+            })
+            .finally(() => {
+                if (typeof onFinish === "function") onFinish();
+            });
+    };
+
+    mThis.show = (options) => {
+        if (!mThis.bindDom()) {
+            console.error("ReceiptsComponent: #_main_receipts_component not found.");
+            return;
+        }
+
+        mThis.options = options;
+        main_view.setContentView(mThis.self, mThis.title_prop);
+        mThis.init();
+
+        mThis.prepareFormOptions(() => {
+            if (mThis.ReceiptListView) {
+                mThis.ReceiptListView.showPage(mThis.getFilterData());
+            }
+        });
+    };
+
+    return mThis;
+})();
+
+window.ReceiptsComponent = ReceiptsComponent;
