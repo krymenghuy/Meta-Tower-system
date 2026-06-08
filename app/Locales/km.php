@@ -397,6 +397,7 @@ return [
         'Purchase Orders' => 'បញ្ចី និង ទិញទំនិញ',
         'Invoices' => 'វិក័យប័ត្រ',
         'Receipts' => 'បង្កាន់ដៃ',
+        'Transaction' => 'ប្រតិបត្តិការ',
         'Reservations' => 'ការកក់',
         'Bill Payments' => 'ទូទាត់វិក្កយបត្រ',
         'Service Price' => 'តំលៃសេវាកម្ម',

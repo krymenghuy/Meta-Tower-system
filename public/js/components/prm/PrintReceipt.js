@@ -447,6 +447,9 @@ const PrintReceiptDialog = (() => {
             return;
         }
 
+        const detailsUrl = op.detailsUrl || `${main_view.base_url}/prm/receipts/details`;
+        const invoiceDetailsUrl = op.invoiceDetailsUrl || `${main_view.base_url}/prm/invoice/details`;
+
         const dlg = new GeneralDialog({
             title: "Print Receipt",
             cssClass: "modal-xl vs-modal",
@@ -463,7 +466,7 @@ const PrintReceiptDialog = (() => {
             contentCreated: (me) => {
                 const container = me.divModal.querySelector('[name="pi_container"]');
 
-                vsapi.call(`${main_view.base_url}/prm/receipts/details`, { id: op.receipt_id })
+                vsapi.call(detailsUrl, { id: op.receipt_id })
                     .then((res) => {
                         if (res.status_code !== 200) {
                             container.innerHTML = `<div class="alert alert-danger m-4">Error loading receipt.</div>`;
@@ -473,7 +476,7 @@ const PrintReceiptDialog = (() => {
                         const invoiceId = receiptData.invoice_id || op.invoice_id;
 
                         if (invoiceId) {
-                            vsapi.call(`${main_view.base_url}/prm/invoice/details`, { id: invoiceId })
+                            vsapi.call(invoiceDetailsUrl, { id: invoiceId })
                                 .then((invRes) => {
                                     const invoiceData = (invRes.status_code === 200) ? invRes.data : null;
                                     container.innerHTML = buildReceiptHTML(receiptData, invoiceData);

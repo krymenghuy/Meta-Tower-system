@@ -135,6 +135,7 @@
                    'settings' => 'Settings',
 
                    'logout'=> 'Log Out',
+                   'Transaction' => 'Transaction',
 
              ],
 
