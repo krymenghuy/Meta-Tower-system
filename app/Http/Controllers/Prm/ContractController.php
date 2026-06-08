@@ -17,6 +17,19 @@ class ContractController extends Controller
     {
         $this->contracts = new Contract();
     }
+     public function createContract($qString)
+    {
+        $user = XAuthService::user();
+        if (!$user) {
+            return JDV::raw(['error' => 'You are not logged in'], 401);
+        }
+    
+        $p = processQueryString($qString);
+        $id = $p->id;
+        $res = Contract::createContract($id, $user);
+    
+        return JDV::raw($res);
+    }
     public function saveContract(Request $req)
     {
         $ss = XAuthService::verifyAuth($req, -1);

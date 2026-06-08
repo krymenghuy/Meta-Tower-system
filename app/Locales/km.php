@@ -176,7 +176,7 @@ return [
         'Contracts' => 'កិច្ចសន្យា',
         'Service' => 'សេវាកម្ម',
         'Space Management' => 'ការគ្រប់គ្រងបន្ទប់',
-        'Amenity Management' => 'ការគ្រប់គ្រងសេវាសម្ភារៈ',
+        'Amenity Management' => 'ការគ្រប់គ្រងបរិក្ខារ',
         'Receipts' => 'បង្កាន់ដៃ',
         'Bill Management' => 'ការគ្រប់គ្រងវិក្កយបត្រ',
         'Bill Payments' => 'ការទូទាត់វិក្កយបត្រ',
@@ -230,6 +230,8 @@ return [
         'Delete Space' => 'លុបបន្ទប់',
         'Create New Tenant' => 'បង្កើតអ្នកជួលថ្មី',
         'Modify Tenant' => 'កែប្រែអ្នកជួល',
+        'Print Invoice' => 'បោះពុម្ពវិក្កយបត្រ',
+        'Clear Setting' => 'លុបការកំណត់',
         
         'View Details' => 'ព័ត៌មានលម្អិត',
         'Upload Document' => 'ផ្ទុកឯកសារ',
@@ -253,8 +255,11 @@ return [
         'Create Maintenance' => 'បង្កើតការថែទាំ',
         'Modify Maintenance' => 'កែប្រែការថែទាំ',
 
+        'Create Reservation' => 'បង្កើតការកក់',
+        'Modify Reservation' => 'កែប្រែការកក់',
+
         'Authorize'=>'អនុម័ត',
-        'Reset'=>'ត្រឡប់វិញ',
+        'Reset'=>'កំណត់ឡើងវិញ',
         'Reverse'=>'ត្រឡប់ប្រតិបត្តការណ៍ទូទាត់ប្រាក់',
         'Disburse'=>'បើកប្រាក់',
         'Staff Movement' => 'កាផ្លាស់ប្ដូរ​របស់បុគ្គលិក',
@@ -369,6 +374,7 @@ return [
         'Received Qty' => 'ចំនួនទទួល',
         'Accept' => 'យល់ព្រម',
         'Sub Total' => 'សរុបរង',
+        'Reject' => 'បដិសេធ',
 
         'Pay now' => 'បង់ប្រាក់',
         'View Photo' => 'មើលរូបភាព',
@@ -379,7 +385,13 @@ return [
 
         'Cancel Payment' => 'បោះបង់ការទូទាត់',
         'Delete Payment' => 'លុបការទូទាត់',
+        'Cancel Receipt' => 'បោះបង់បង្កាន់ដៃ',
+        'Delete Receipt' => 'លុបបង្កាន់ដៃ',
 
+        'Create Service Request' => 'បង្កើតសំណើសេវាកម្ម',
+        'QTY' => 'ចំនួន',
+        'Receive Payment' => 'ទទួលការបង់ប្រាក់',
+        
 
 
     ],
@@ -574,7 +586,15 @@ return [
         'Create Item' => 'បង្កើតមុខទំនិញ',
         'Add Item' => 'បន្ថែមទំនិញ',
 
+        'Create Amenity' => 'បង្កើតបរិក្ខារ',
+        'Accept' => 'យល់ព្រម',
 
+        'Rent'=> 'ថ្លៃជួល',
+        'Service' => 'សេវាកម្ម',
+        'Request' => 'តម្លៃសេវាកម្ម',
+        'Electricity Utility' => 'ថ្លៃអគ្គិសនី',
+
+        'Reset' => 'កំណត់ឡើងវិញ',
 
 
         'New User' => 'បង្កើតអ្នកប្រើប្រាស់ថ្មី',
@@ -582,8 +602,9 @@ return [
         'Add Campus' => 'បង្កើតសាខា',
         'Add Location' => 'បង្កើតទីតាំង',
 
-        'Confirm Button' => 'បញ្ជាក់ការទូទាត់',
+        'Confirm Payment' => 'បញ្ជាក់ការទូទាត់',
 
+       
 
        
         
@@ -593,7 +614,7 @@ return [
     ],
     'filters' =>[
         'Start Date :' => 'ថ្ងៃចាប់ផ្ដើម :',
-        'End Date :' => 'ថ្ងៃបញ្ជប់ :',
+        'End Date :' => 'ថ្ងៃបញ្ចប់ :',
 
     ],
     'transaction' => [
@@ -643,9 +664,9 @@ return [
         'ID' => 'លេខសម្គាល់',
         'Unit' => 'បន្ទប់',
         'Start Date' => 'ថ្ងៃចាប់ផ្ដើម',
-        'End Date' => 'ថ្ងៃបញ្ជប់',
+        'End Date' => 'ថ្ងៃបញ្ចប់',
         'Start Time' => 'ម៉ោងចាប់ផ្ដើម',
-        'End Time' => 'ម៉ោងបញ្ជប់',
+        'End Time' => 'ម៉ោងបញ្ចប់',
         'Lease Terms' => 'លក្ខខណ្ឌជួល',
         'Monthly' => 'តម្លៃជួលប្រចាំខែ',
         'Deposit' => 'ប្រាក់កក់',
@@ -684,11 +705,25 @@ return [
         'Payer' => 'អ្នកបង់ប្រាក់',
         'Cash' => 'ចំនួនសាច់ប្រាក់ ',
         'Pay To' => 'អ្នកទទួលប្រាក់ ',
-        'Pay To' => 'អ្នកទទួលប្រាក់ ',
 
+        'Check-in Time' => 'ម៉ោងចូល',
+        'Check-out Time' => 'ម៉ោងចេញ',
+
+        'Capacity' => 'ចំនួនអតិបរមា',
+        'Code (Optional)' => 'លេខកូដបន្ទប់ (Optional)',
+        'Scheduled Date' => 'កាលបរិច្ឆេទ',
+
+        'Unit Code' => 'លេខកូដបន្ទប់',
+        'Amount ($)' => 'ចំនួនទឹកប្រាក់($)',
+        'Card Number' => 'លេខកាត',
+        'Balance Due' => 'ប្រាក់នៅសល់ត្រូវបង់',
+        'Remaining' => 'ចំនួនទឹកប្រាក់នៅសល់',
+        'Total Paid' => 'ចំនួនទឹកប្រាក់ដែលបានបង់',
         
 
-        
+
+
+    
 
      
 
@@ -701,8 +736,11 @@ return [
 
         'required' => 'សូមបញ្ចូលព័ត៌មាននេះ។',
         'created'  => 'ទិន្នន័យត្រូវបានបង្កើតដោយជោគជ័យ។',
-        'updated'  => 'ទិន្នន័យត្រូវបានកែប្រែដោយជោគជ័យ។',
-        'deleted'  => 'ទិន្នន័យត្រូវបានលុបដោយជោគជ័យ។',
+        'update_success_tenant' => 'ព័ត៌មានភ្ញៀវត្រូវបានកែប្រែដោយជោគជ័យ',
+        'delete_success_tenant' => 'ព័ត៌មានភ្ញៀវរូវបានលុបដោយជោគជ័យ',
+        'create_success_tenant'=>'ព័ត៌មានភ្ញៀវត្រូវបានបង្កើត',
+        'updated'  => 'ទិន្នន័យត្រូវបានកែប្រែដោយជោគជ័យ',
+        'deleted'  => 'ទិន្នន័យត្រូវបានលុបដោយជោគជ័យ',
         'success' => 'ប្រតិបត្តិការបានជោគជ័យ។',
         'terminated'  => 'ទិន្នន័យត្រូវបានបញ្ឈប់ដោយជោគជ័យ។',
         'cancelled' => 'បានបោះបង់ដោយជោគជ័យ។',
@@ -711,6 +749,7 @@ return [
         'confirm_terminate' => 'តើអ្នកពិតជាចង់បញ្ឈប់ទិន្នន័យនេះមែនទេ?',
         'confirm_cancel' => 'តើអ្នកពិតជាចង់បោះបង់នេះមែនទេ?',
         'confirm_finish' => 'តើអ្នកពិតជាចង់បញ្ចប់ការងារនេះមែនទេ?',
+        'confirm_accept' => 'តើអ្នកពិតជាចង់ទទួលយកការស្នើសុំនេះមែនទេ?',
         
 
         'delete_maintenance' => 'លុបការថែទាំ',
@@ -740,6 +779,9 @@ return [
         "Terminate" => "បញ្ឈប់",
         'Save' => 'រក្សារទុក',
         'Change Status' => 'ប្ដូរស្ថានភាព',
+        'Accept' => 'យល់ព្រម',
+        
 
     ],
 ];
+
