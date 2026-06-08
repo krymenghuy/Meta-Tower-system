@@ -1333,7 +1333,7 @@ class Contract
             'tenant_dob' => getKhmerDate($tenant->date_of_birth ?? null),
             'signature_date' => getKhmerDate(null),
         ];
-        dd($data);
+        // dd($data);
 
         // Define the template path
         $templatePath = base_path('/storage/doc_templates/staff_contract_unlimited.docx');
