@@ -578,7 +578,7 @@ const AmenityDialog = (() => {
                         <div class="col-12">
                             <div class="vs-material-field">
                                 <input type="text" name="amenity" required class="data-input form-control" data-field="name" placeholder=" " />
-                                <label>Name</label>
+                                <label vslang="labels.Name">Name</label>
                             </div>
                         </div>
                         <div class="col-6">
@@ -592,7 +592,7 @@ const AmenityDialog = (() => {
                         <div class="col-6">
                             <div class="vs-material-field">
                                 <input type="text" name="code" class="data-input form-control" data-field="code" placeholder=" " />
-                                <label>Code (Optional)</label>
+                                <label vslang="labels.Code (Optional)"></label>
                             </div>
                         </div>
                         <div class="col-6">
@@ -612,13 +612,13 @@ const AmenityDialog = (() => {
                         <div class="col-6">
                             <div class="vs-material-field">
                                 <input type="text" name="capacity" required class="data-input form-control" data-field="max_capacity" min="0" value="0 " placeholder=" " />
-                                <label>Capacity</label>
+                                <label vslang="labels.Capacity"></label>
                             </div>
                         </div>
                         <div class="col-12">
                             <div class="vs-material-field">
                                 <textarea name="description" class="data-input form-control" data-field="description" placeholder=" "></textarea>
-                                <label>Remark</label>
+                                <label vslang="labels.Remark">Remark</label>
                             </div>
                         </div>
                     </div>`,

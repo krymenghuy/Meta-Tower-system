@@ -514,13 +514,13 @@ const CreateServiceRequestDialog = (() => {
                         <div class="col-md-3">
                             <div class="vs-material-field">
                                 <input data-type="date" name="scheduled_date" class="form-control data-input" data-field="scheduled_date" required />
-                                <label>Scheduled Date</label>
+                                <label vslang="labels.Scheduled Date">Scheduled Date</label>
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="vs-material-field">
                                 <input type="time" name="start_time" class="form-control data-input" data-field="start_time" placeholder=" " />
-                                <label>Start Time</label>
+                                <label vslang="labels.Start Time">Start Time</label>
                             </div>
                         </div>
                     </div>
@@ -548,7 +548,7 @@ const CreateServiceRequestDialog = (() => {
                         <div class="col-12">
                             <div class="vs-material-field">
                                 <textarea name="remarks" class="data-input form-control" data-field="remarks" placeholder=" "></textarea>
-                                <label>Remarks</label>
+                                <label vslang="labels.Remark">Remark</label>
                             </div>
                         </div>
                     </div>

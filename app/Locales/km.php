@@ -176,7 +176,7 @@ return [
         'Contracts' => 'កិច្ចសន្យា',
         'Service' => 'សេវាកម្ម',
         'Space Management' => 'ការគ្រប់គ្រងបន្ទប់',
-        'Amenity Management' => 'ការគ្រប់គ្រងសេវាសម្ភារៈ',
+        'Amenity Management' => 'ការគ្រប់គ្រងបរិក្ខារ',
         'Receipts' => 'បង្កាន់ដៃ',
         'Bill Management' => 'ការគ្រប់គ្រងវិក្កយបត្រ',
         'Bill Payments' => 'ការទូទាត់វិក្កយបត្រ',
@@ -385,6 +385,7 @@ return [
         'Cancel Receipt' => 'បោះបង់បង្កាន់ដៃ',
         'Delete Receipt' => 'លុបបង្កាន់ដៃ',
 
+        '' => '',
 
 
     ],
@@ -578,6 +579,8 @@ return [
         'Create Item' => 'បង្កើតមុខទំនិញ',
         'Add Item' => 'បន្ថែមទំនិញ',
 
+        'Create Amenity' => 'បង្កើតបរិក្ខារ',
+
 
 
 
@@ -597,7 +600,7 @@ return [
     ],
     'filters' =>[
         'Start Date :' => 'ថ្ងៃចាប់ផ្ដើម :',
-        'End Date :' => 'ថ្ងៃបញ្ជប់ :',
+        'End Date :' => 'ថ្ងៃបញ្ចប់ :',
 
     ],
     'transaction' => [
@@ -647,9 +650,9 @@ return [
         'ID' => 'លេខសម្គាល់',
         'Unit' => 'បន្ទប់',
         'Start Date' => 'ថ្ងៃចាប់ផ្ដើម',
-        'End Date' => 'ថ្ងៃបញ្ជប់',
+        'End Date' => 'ថ្ងៃបញ្ចប់',
         'Start Time' => 'ម៉ោងចាប់ផ្ដើម',
-        'End Time' => 'ម៉ោងបញ្ជប់',
+        'End Time' => 'ម៉ោងបញ្ចប់',
         'Lease Terms' => 'លក្ខខណ្ឌជួល',
         'Monthly' => 'តម្លៃជួលប្រចាំខែ',
         'Deposit' => 'ប្រាក់កក់',
@@ -688,11 +691,13 @@ return [
         'Payer' => 'អ្នកបង់ប្រាក់',
         'Cash' => 'ចំនួនសាច់ប្រាក់ ',
         'Pay To' => 'អ្នកទទួលប្រាក់ ',
-        'Pay To' => 'អ្នកទទួលប្រាក់ ',
 
-        
+        'Check-in Time' => 'ម៉ោងចូល',
+        'Check-out Time' => 'ម៉ោងចេញ',
 
-        
+        'Capacity' => 'ចំនួនអតិបរមា',
+
+    
 
      
 
