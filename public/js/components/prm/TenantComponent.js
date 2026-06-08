@@ -617,7 +617,7 @@ var TenantComponent = new (function () {
                         .then((res) => {
                             if (res.status_code == 200) {
                                 mThis.renderView();
-                                cv_interact.success("deleted");
+                                cv_interact.success("delete_success_tenant");
                             } else {
                                 cv_interact.error(res.error_message);
                             }
@@ -2120,12 +2120,12 @@ const CreateTenantDialog = (() => {
                                             res.data?.id || null;
                                         me.hide(true, op, newTenantId);
                                         if (me.dataOptions.id > 0) {
-                                            cv_interact.success("updated");
+                                            cv_interact.success("update_success_tenant");
                                             me.previewZone.classList.add(
                                                 "d-none",
                                             );
                                         } else {
-                                           cv_interact.success("created");
+                                           cv_interact.success("create_success_tenant");
                                             me.previewZone.classList.add(
                                                 "d-none",
                                             );

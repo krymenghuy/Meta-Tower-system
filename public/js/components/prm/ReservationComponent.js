@@ -240,7 +240,7 @@ var ReservationComponent = (() => {
                     name: "edit_reservation",
                 },
                 {
-                    html: '<span class="ps-2">Cancel</span>',
+                    html: '<span class="ps-2" vslang="titles.Cancel"</span>',
                     icon: `<i class="fa-solid fa-square-xmark fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "cancel_reservation",
@@ -427,13 +427,13 @@ const CreateReservationDialog = (() => {
                             <div class="col-6">
                                 <div class="vs-material-field">
                                     <input name="tenant" class="data-input form-control" data-field="tenant_name" placeholder="Tenant" autocomplete="off">
-                                    <label vslang.labels="Tenant">Tenant</label>
+                                    <label vslang="labels.Tenant">Tenant</label>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="vs-material-field">
                                     <input name="phone_number" class="data-input form-control" data-field="phone_number" disabled placeholder=" "></input>
-                                    <label vslang.labels="Phone Number">Phone Number</label>
+                                    <label vslang="labels.Phone Number">Phone Number</label>
                                 </div>
                             </div>
                             <div class="col-6">
@@ -444,32 +444,32 @@ const CreateReservationDialog = (() => {
                             <div class="col-6">
                                 <div class="vs-material-field">
                                     <input type="text" class="data-input form-control" data-field="amenity_code" placeholder=" " disabled />
-                                    <label vslang.labels="Amenity Code">Amenity Code</label>
+                                    <label vslang="labels.Amenity Code">Amenity Code</label>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="vs-material-field">
                                     <input type="text" data-type="date" name="booking_date" required class="data-input form-control form_input" data-field="booking_date" />
-                                    <label vslang.labels="Booking Date">Booking Date</label>
+                                    <label vslang="labels.Booking Date">Booking Date</label>
                                 </div>
                             </div>
                             <div class="col-3">
                                 <div class="vs-material-field">
                                     <input type="time" name="start_time" class="data-input form-control form_input" data-field="start_time" placeholder=" " />
-                                    <label vslang.labels="Check-in Time">Check-in Time</label>
+                                    <label vslang="labels.Check-in Time">Check-in Time</label>
                                 </div>
                             </div>
                             <div class="col-3">
                                 <div class="vs-material-field">
                                     <input type="time" name="end_time" required class="data-input form-control form_input" data-field="end_time" placeholder=" " />
-                                    <label vslang.labels="Check-out Time">Check-out Time</label>
+                                    <label vslang="labels.Check-out Time">Check-out Time</label>
                                 </div>
                             </div>
 
                             <div class="col-12">
                                 <div class="vs-material-field">
                                     <textarea name="remarks" class="data-input form-control" data-field="remarks" placeholder=" "></textarea>
-                                    <label vslang.labels="Remark">Remark</label>
+                                    <label vslang="labels.Remark">Remark</label>
                                 </div>
                             </div>
                         </div>`,
@@ -526,8 +526,8 @@ const CreateReservationDialog = (() => {
                 ],
 
                 prepareFormOptions: {
-                    createTitle: "Create Reservation",
-                    modifyTitle: "Modify Reservation",
+                    createTitle: "vslang:titles.Create Reservation",
+                    modifyTitle: "vslang:titles.Modify Reservation",
                     targetProp: "reservation_details",
                     api: {
                         endpoint: [
@@ -625,11 +625,11 @@ const CreateReservationDialog = (() => {
                                         me._selectedTenantId = null;
                                         if (me.dataOptions.id > 0) {
                                             cv_interact.success(
-                                                "Reservation has been updated successfully.",
-                                            );
+                                                "updated",
+                                            );has
                                         } else {
                                             cv_interact.success(
-                                                "New reservation has been added successfully.",
+                                                "created",
                                             );
                                         }
                                     } else {

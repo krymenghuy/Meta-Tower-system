@@ -961,8 +961,8 @@ const BillDialog = (() => {
                     }
                 },
                 prepareFormOptions: {
-                    createTitle: "Generate New Bill",
-                    modifyTitle: "Modify Bill",
+                    createTitle: "vslang:titles.Generate New Bill",
+                    modifyTitle: "vslang:titles.Modify Bill",
                     targetProp: "bill_details",
                     api: {
                         endpoint: [
@@ -1140,11 +1140,11 @@ const BillDialog = (() => {
 
                                         if (me.dataOptions.id > 0) {
                                             cv_interact.success(
-                                                "Bill has been updated successfully.",
+                                                "updated",
                                             );
                                         } else {
                                             cv_interact.success(
-                                                "New bill has been added successfully.",
+                                                "created",
                                             );
                                         }
                                     } else {

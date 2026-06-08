@@ -494,15 +494,15 @@ const BillPaymentDialog = (() => {
                 <div class="container-fluid px-0">
                     <div class="row g-0" style="border-radius:8px;overflow:hidden;margin-bottom:1.5rem;">
                         <div class="col-4" style="padding:0.75rem 1.25rem;border-right:1px solid white; background:#e1e5f2;">
-                            <div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#1a1647;margin-bottom:4px;">Balance Due</div>
+                            <div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#1a1647;margin-bottom:4px;" vslang="labels.Balance Due"></div>
                             <div style="font-size:17px;font-weight:600;color:#5665E1;" id="f_due">$0.00</div>
                         </div>
                         <div class="col-4" style="padding:0.75rem 1.25rem;border-right:1px solid white; text-align:center;background:#e1e5f2;">
-                            <div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#1a1647;margin-bottom:4px;">Paying Now</div>
+                            <div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#1a1647;margin-bottom:4px;" vslang="labels.Total Paid"></div>
                             <div style="font-size:17px;font-weight:600;color:#19BF9B;" id="f_tot">$0.00</div>
                         </div>
                         <div class="col-4" style="padding:0.75rem 1.25rem;text-align:right;background:#e1e5f2;">
-                            <div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#1a1647;margin-bottom:4px;">Remaining</div>
+                            <div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#1a1647;margin-bottom:4px;"vslang="labels.Remaining"></div>
                             <div style="font-size:17px;font-weight:600;color:#FAB31C;" id="f_bal">$0.00</div>
                         </div>
                     </div>

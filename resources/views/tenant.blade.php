@@ -101,7 +101,7 @@
     ScriptManager::render('primary', 1, 13);
     ScriptManager::render('primary-defer', 1, 37);
 
-    ScriptManager::render('tenant-components', 1, 242);
+    ScriptManager::render('tenant-components', 1, 248);
     //ScriptManager::render('pdfmake', 1);
     ?>
 </head>
@@ -313,6 +313,7 @@
                             @include('layouts.tenant.staffComponent')
                             @include('layouts.tenant.contractsComponent')
                             @include('layouts.tenant.invoicesComponent')
+                            @include('layouts.tenant.receiptsComponent')
                             @include('layouts.tenant.requestServiceComponent')
                             @include('layouts.tenant.announcementComponent')
                             @include('layouts.tenant.reservationComponent')

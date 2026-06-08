@@ -68,7 +68,7 @@ return [
 
                 'https://cdn.vectoraclouds.com/frontcore/utils/validator.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/cv_interact.js',
-                //'/assets/js/date.js',
+ 
                 'https://cdn.vectoraclouds.com/frontcore/utils/DateHelper.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/DateTimePicker/DateTimePicker.js',
                 //'/assets/js/jquery.datepicker2.js',
@@ -186,6 +186,7 @@ return [
                 '/js/components/tenant/StaffComponent.js',
                 '/js/components/tenant/ContractsComponent.js',
                 '/js/components/tenant/InvoicesComponent.js',
+                '/js/components/tenant/ReceiptsComponent.js',
                 '/js/components/tenant/RequestServiceComponent.js',
                 '/js/components/tenant/AnnouncementComponent.js',
                 '/js/components/tenant/ReservationComponent.js',

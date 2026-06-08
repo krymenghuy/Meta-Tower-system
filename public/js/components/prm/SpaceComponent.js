@@ -148,7 +148,7 @@ var SpaceComponent = new (function () {
 
         html += `</div>`;
         mThis.divSummary.innerHTML = html;
-        LocaleManager.translateZone(mThis.divSummary,'titles');
+        LocaleManager.translateZone(mThis.divSummary, "titles");
     };
 
     mThis.getFilterData = () => {
@@ -208,7 +208,6 @@ var SpaceComponent = new (function () {
             cssClass: "bg-white shadow",
             //menuItemClass:"",
             menus: [
-               
                 {
                     html: '<span class="ps-2" vslang="titles.Modify Space"></span>',
                     icon: `<i class="fa-regular fa-pen-to-square fs-5 text-warning"></i>`,
@@ -700,7 +699,10 @@ var SpaceComponent = new (function () {
                         )
                         .then((res) => {
                             if (res.status_code == 200) {
-                               cv_interact.success = (message,title=null,position='center');
+                                cv_interact.success =
+                                    (message,
+                                    (title = null),
+                                    (position = "center"));
                                 mThis.applyListFilters();
                             } else {
                                 cv_interact.error(res.error_message);
@@ -885,9 +887,11 @@ const BuildingSpaceDialog = (() => {
                 cssClass: "modal-md vs-modal",
                 backdrop: "static",
                 keyboard: true,
-                title: (me)=>{
-                    const title = me.dataOptions.id ? "Modify Space" : "Create Space";
-                    return  `<h4 class="text-prm-custom text-start fw-bold">${LocaleManager.trans(title,'titles')}</h4>`;
+                title: (me) => {
+                    const title = me.dataOptions.id
+                        ? "Modify Space"
+                        : "Create Space";
+                    return `<h4 class="text-prm-custom text-start fw-bold">${LocaleManager.trans(title, "titles")}</h4>`;
                     // return me.dataOptions.id ? `<h4 class="text-prm-custom text-start fw-bold" vslang="titles.Modify Space"></h4>` : `<h4 class="text-prm-custom text-start fw-bold" vslang="titles.Create Space"></h4>`;
                 },
                 createContent: () => {
@@ -976,7 +980,7 @@ const BuildingSpaceDialog = (() => {
                         valueField: "id",
                     },
                 ],
-            
+
                 prepareFormOptions: {
                     // createTitle: "vslang:titles.Create Space",
                     // modifyTitle: "vslang:titles.Modify Space",
@@ -1029,9 +1033,13 @@ const BuildingSpaceDialog = (() => {
                                     if (res.status_code === 200) {
                                         me.hide(true, op);
                                         if (me.dataOptions.id > 0) {
-                                           cv_interact.success("updated");
+                                            cv_interact.success(
+                                                LocaleManager.trans("updated", "message_box_default"),
+                                            );
                                         } else {
-                                            cv_interact.success("created");
+                                            cv_interact.success(
+                                                LocaleManager.trans("created", "message_box_default"),
+                                            );
                                         }
                                     } else {
                                         cv_interact.error(res.error_message);
@@ -1058,9 +1066,11 @@ const CreateBookingDialog = (() => {
                 cssClass: "modal-md vs-modal",
                 backdrop: "static",
                 keyboard: true,
-                title: (me)=>{
-                    const title = me.dataOptions.id ? "Edit Booking" : "Create Booking";
-                    return  `<h4 class="text-prm-custom text-start fw-bold">${LocaleManager.trans(title,'titles')}</h4>`;
+                title: (me) => {
+                    const title = me.dataOptions.id
+                        ? "Edit Booking"
+                        : "Create Booking";
+                    return `<h4 class="text-prm-custom text-start fw-bold">${LocaleManager.trans(title, "titles")}</h4>`;
                     // return me.dataOptions.id ? `<h4 class="text-prm-custom text-start fw-bold" vslang="titles.Modify Space"></h4>` : `<h4 class="text-prm-custom text-start fw-bold" vslang="titles.Create Space"></h4>`;
                 },
                 createContent: () => {
@@ -1240,9 +1250,9 @@ const CreateBookingDialog = (() => {
                                 .then((res) => {
                                     if (res.status_code === 200) {
                                         me.hide(true, op);
-                                        if(me.dataOptions.id > 0){
+                                        if (me.dataOptions.id > 0) {
                                             cv_interact.success("updated");
-                                        }else {
+                                        } else {
                                             cv_interact.success("created");
                                         }
                                     } else {
@@ -1399,6 +1409,7 @@ const ViewBookingDialog = (() => {
 
     return self;
 })();
+
 
 
 

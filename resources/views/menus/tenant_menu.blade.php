@@ -197,6 +197,15 @@ function v_display($mod_id, $module_ids = null)
                     </a>
                 </li>
 
+                <li class="kt-menu__item" aria-haspopup="true" <?php v_display(307); ?>>
+                    <a href="ReceiptsComponent" modid="307" class="menu-item kt-menu__link">
+                        <span class="kt-menu__link-icon">
+                            <img class="opacity-icons icons" src="{{ asset('assets/images/icons/receipt.png') }}" />
+                        </span>
+                        <span class="font-color kt-menu__link-text" vslang="menus.Transaction">Transaction</span>
+                    </a>
+                </li>
+
                 <li class="kt-menu__item" aria-haspopup="true" <?php v_display(309); ?>>
                     <a href="RequestServiceComponent" modid="309" class="menu-item kt-menu__link">
                         <span class="kt-menu__link-icon">

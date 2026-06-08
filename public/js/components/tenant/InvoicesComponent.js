@@ -216,7 +216,7 @@ var InvoicesComponent = (() => {
         if (mThis.initAlready) return;
 
         mThis.InvoiceListView = new ListView("_invoices_list", {
-            fetchApi: `${main_view.base_url}/prm/invoice/list-paginate`,
+            fetchApi: `${main_view.base_url}/prm/tenant/invoice/list-paginate`,
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
@@ -296,7 +296,7 @@ var InvoicesComponent = (() => {
     mThis.displayInvoiceDetail = (container, id) => {
         container.innerHTML = `<div class="text-center py-3"><div class="spinner-border text-primary" role="status"></div></div>`;
         vsapi
-            .call(`${main_view.base_url}/prm/invoice/details`, { id })
+            .call(`${main_view.base_url}/prm/tenant/invoice/details`, { id })
             .then((res) => {
                 if (res.status_code !== 200) {
                     container.innerHTML = `<div class="alert alert-danger m-3">Failed to load invoice details</div>`;
@@ -576,7 +576,7 @@ var InvoicesComponent = (() => {
 
                 vsapi
                     .call(
-                        `${main_view.base_url}/prm/invoice/delete`,
+                        `${main_view.base_url}/prm/tenant/invoice/delete`,
                         { id },
                         menuLink,
                     )
@@ -622,7 +622,7 @@ var InvoicesComponent = (() => {
             );
 
             vsapi
-                .call(`${main_view.base_url}/prm/invoice/details`, { id: id })
+                .call(`${main_view.base_url}/prm/tenant/invoice/details`, { id: id })
                 .then((res) => {
                     if (res.status_code === 200) {
                         mThis.printInvoice(id, res.data.invoice_type, menulink);
@@ -647,7 +647,7 @@ var InvoicesComponent = (() => {
 
     mThis.prepareFormOptions = (onFinish) => {
         vsapi
-            .call(`${main_view.base_url}/prm/invoice/form-options`)
+            .call(`${main_view.base_url}/prm/tenant/invoice/form-options`)
             .then((res) => {
                 const d = res.status_code === 200 ? res.data : {};
                 VSUtil.setComboItems(
@@ -2846,7 +2846,7 @@ const InvoiceDialog = (() => {
 
                 if (me.dataOptions.id) {
                     vsapi
-                        .call(`${main_view.base_url}/prm/invoice/details`, {
+                        .call(`${main_view.base_url}/prm/tenant/invoice/details`, {
                             id: me.dataOptions.id,
                         })
                         .then((res) => {
@@ -2976,7 +2976,7 @@ const InvoiceDialog = (() => {
                 createTitle: "Create Invoice",
                 targetProp: "invoice_details",
                 api: {
-                    endpoint: `${main_view.base_url}/prm/invoice/form-options`,
+                    endpoint: `${main_view.base_url}/prm/tenant/invoice/form-options`,
                     params: (op) => {
                         console.log("API params op:", op);
                         return { id: op.id };
@@ -3016,7 +3016,7 @@ const InvoiceDialog = (() => {
 
                         vsapi
                             .call(
-                                `${main_view.base_url}/prm/invoice/save`,
+                                `${main_view.base_url}/prm/tenant/invoice/save`,
                                 formData,
                                 btn,
                             )
@@ -3306,7 +3306,7 @@ const ReceiveDialog = (() => {
                 const opts = me.dataOptions || {};
                 if (opts.invoice_id) {
                     vsapi
-                        .call(`${main_view.base_url}/prm/invoice/details`, {
+                        .call(`${main_view.base_url}/prm/tenant/invoice/details`, {
                             id: opts.invoice_id,
                         })
                         .then((res) => {
@@ -3327,7 +3327,7 @@ const ReceiveDialog = (() => {
                 }
 
                 vsapi
-                    .call(`${main_view.base_url}/prm/invoice/form-options`)
+                    .call(`${main_view.base_url}/prm/tenant/invoice/form-options`)
                     .then((res) => {
                         const banks = res?.data?.banks || [];
                         if (me.controls.bank_transfer_bank_id) {
@@ -3378,7 +3378,7 @@ const ReceiveDialog = (() => {
 
                         vsapi
                             .call(
-                                `${main_view.base_url}/prm/invoice/receive`,
+                                `${main_view.base_url}/prm/tenant/invoice/receive`,
                                 payload,
                                 btn,
                             )
