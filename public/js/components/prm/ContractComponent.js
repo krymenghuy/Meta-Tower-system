@@ -150,7 +150,7 @@ var ContractComponent = new (function () {
             className: 'col_action align-middle',
             data: (data) => `
                 <div class="d-flex justify-content-center align-items-end">
-                    <a href="javascript:void(0)" class="btn_contract_action" data-id="${data.id}" data-statusid="${data.status_id}" data-status="${data.status ?? ''}" data-end-date="${data.end_date ?? ''}" aria-haspopup="true" aria-expanded="false" style="padding: 0 10px;">
+                    <a href="javascript:void(0)" class="btn_contract_action" data-id="${data.id}" data-tenantid="${data.tenant_id}" data-statusid="${data.status_id}" data-status="${data.status ?? ''}" data-end-date="${data.end_date ?? ''}" aria-haspopup="true" aria-expanded="false" style="padding: 0 10px;">
                        <span>
                             <i class="fa-solid fa-ellipsis-vertical text-prm-custom fs-5"></i>
                        </span>
@@ -170,6 +170,7 @@ var ContractComponent = new (function () {
             tableClass: 'table table--white rounded-2 header-uppercase',
             rowCreated: (data, index, tr) => {
                 tr.dataset.statusid = data.status_id;
+                tr.dataset.tenantid = data.tenant_id;
                 tr.dataset.status = data.status ?? '';
                 tr.dataset.endDate = data.end_date ?? '';
                 tr.classList.add('contract');
@@ -485,14 +486,18 @@ var ContractComponent = new (function () {
         ContractDialog.show(op);
     }
     mThis.printContract = (id,menulink)=>{
+        const tr = menulink.closest('tr');
+        const tenant_id = tr?.dataset.tenantid;
         let op = {
             id: id,
+            tenant_id: tenant_id,
             btn:menulink,
             onClose: () => {
                 mThis.ContractListView.showPage(mThis.getFilterData())
             }
         };
-        // alert(9999);
+        console.log(6666,op);
+        
         CreateContractDialog.show(op);
     }
     mThis.renewContract = (id, menulink) => {
