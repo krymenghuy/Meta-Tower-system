@@ -3,6 +3,7 @@
 namespace App\Models\Prm;
 
 use App\Models\Prm\GeneralSettings;
+use App\Models\CompanyProfile;
 use DV;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -11,7 +12,8 @@ use XPublicStorage;
 use PhpOffice\PhpWord\TemplateProcessor;
 use Carbon\Carbon;
 use XBranch;
-
+use XSubscriber;
+use XSubscription;
 
 class Contract
 {
@@ -1261,65 +1263,74 @@ class Contract
     static function createContract($id, $ss)
     {
 
-           $tenant = DB::table('tenants as t')
+        $tenant = DB::table('tenants as t')
+            ->join('contracts as c','c.tenant_id','=','t.id')
+            ->join('building_spaces as bs','bs.id','=','c.space_id')
+            ->join('buildings as b','b.id','=','bs.building_id')
             ->where('t.id', $id)
-
-            ->selectRaw("t.id,t.branch_id,t.name,t.code,t.national_id,t.passport_number,t.date_of_birth,t.nationality_id,t.sex,t.tenant_type,t.status_id,t.legal_name,t.phone_number,t.email,t.address")
+            ->selectRaw("t.id,t.branch_id,t.name,t.code,t.national_id,t.passport_number,t.date_of_birth,t.nationality_id,t.sex,t.tenant_type,t.status_id,t.legal_name,t.phone_number,t.email,t.address,c.start_date,c.end_date,bs.code as unit_code,bs.floor_id,b.name as building")
             ->first();
-
         if (!$tenant) {
             return DV::error("Tenant ID {$id} does not exist.");
         }
 
-        $branch = XBranch::details($tenant->branch_id ?? null,$ss);
-        if (!$branch) {
-            return DV::error('Branch not found.');
-        }
+        $x = new CompanyProfile($ss);
+        $p = (object) $x->getDetails($ss);
 
-        // Ensure $branch->director is an object before accessing properties
-        $director = $branch->director ?? null;
-        $com_rep_branch = $branch->name?? null;
-        $com_rep_name = $director->name ?? '<Director Name>';
-        $com_rep_nid = $director->nid ?? '(ID Card Number Not Found)';
-        $com_rep_sex = $director->sex ?? '(Sex)';
-        $com_rep_phone = $director->phone_number ?? '';
-        $com_address = $branch->address_kh ?? '';
+        $p->branches = [
+            (object) ['address_kh' => $p->address_kh ?? '', 'address' => $p->address ?? '', 'phone_number' => $p->phone_number ?? '', 'email' => $p->email ?? ''],
+            (object) ['address_kh' => 'ផ្ទះលេខ១២ ផ្លូវ៤៥៤ សង្កាត់ទួលទំពូងទី១ ខណ្ឌចំការមន រាជធានីភ្នំពេញ', 'address' => '#16, St.454, Sangkat Toul Tum Poung 1, Khan Chamkarmon, Phnom Penh', 'phone_number' => $p->phone_number ?? '', 'email' => $p->email ?? ''],
+        ];
 
-        $emp_branch = $branch->branch_name ?? '';
-        $emp_name = $emp->name_kh ?? '(Khmer Name)';
-        $emp_sex = $emp->sex ?? '(Sex)';
-        $emp_position = $emp->position ?? '';
-        $emp_salary = $emp->salary ?? '';
-        $emp_nid = $emp->nid ?? '';
-        $emp_phone = $emp->phone_number ?? '';
-        $emp_address = $emp->address ?? '';
+        $com_rep_name = $p->first_cp_name ?? 'CP Name';
+        $com_rep_nid = $p->first_cp_nid ?? '(ID Card)';
+        $com_rep_sex = $p->first_cp_sex ?? 'Sex';
+        $com_rep_dob = $p->first_cp_dob ?? '';
+        $com_rep_nid_issue_date = $p->first_cp_nid_issue_date ?? '';
+        $com_address = $p->billing_address ?? '';
 
-        $joiningDate = $emp->joining_date ?? null;
-        return $data = [
+        $tenant_name = $tenant->name;
+        $tenant_sex = $tenant->sex ?? '(Sex)';
+        $tenant_nid = $tenant->national_id ?? '';
+        $tenant_phone = $tenant->phone_number ?? '';
+        $tenant_address = $tenant->address ?? '';
+        $start_date = $tenant->start_date ?? '';
+        $end_date = $tenant->end_date ?? '';
+        $unit = $tenant->unit ?? '';
+        $floor = $tenant->floor_id ?? '';
+        $building = $tenant->building ?? '';
+
+        $data = [
+            'issue_date' => getKhmerDate(null),
             'com_address' => $com_address,
-            'com_city' => $branch->city ?? '(City)',
-            'com_rep_branch' => $com_rep_branch,
             'com_rep_name' => $com_rep_name,
             'com_rep_sex' => self::getSex($com_rep_sex),
-            'com_rep_dob' => getKhmerDate($director->date_of_birth ?? '(Date of Birth)'),
+            'com_rep_dob' => getKhmerDate($com_rep_dob),
             'com_rep_nid' => $com_rep_nid,
-            'com_rep_phone' => $com_rep_phone,
-            'emp_name' => $emp_name,
-            'emp_code' => $emp->code ?? '(ID)',
-            'emp_sex' => self::getSex($emp_sex),
-            'emp_phone' => $emp_phone,
-            'emp_nid' => $emp_nid,
-            'start_date' => $joiningDate ? getKhmerDate($joiningDate) : '',
-            'end_date' => $joiningDate ? getKhmerDate(self::calculateEndDate($joiningDate)) : '',
-            'position' => $emp_position,
-            'salary_level' => $emp_salary,
-            'khr_amount' => $emp_salary,
-            'khr_amount_in_word' => self::convertToKhmerWords($emp_salary),
-            'khr_salary' => $emp_salary,
-            'khr_salary_in_word' => self::convertToKhmerWords($emp_salary),
-            'emp_address' => $emp_address,
-            'branch' => $emp_branch,
-            'emp_dob' => getKhmerDate($emp->date_of_birth ?? null),
+            'com_rep_nid_issue_date' => getKhmerDate($com_rep_nid_issue_date),
+
+            'tenant_name' => $tenant_name,
+            'tenant_code' => $tenant->code ?? '(ID)',
+            'tenant_sex' => self::getSex($tenant_sex),
+            'tenant_phone' => $tenant_phone,
+            'tenant_nid' => $tenant_nid,
+            'tenant_nid_issue_date' => getKhmerDate($com_rep_nid_issue_date),
+
+            'building' => $building,
+            'unit' => $unit,
+            'floor' => $floor,
+            'start_date' => $start_date ? getKhmerDate($start_date) : '',
+            'end_date' => $end_date ? getKhmerDate(self::calculateEndDate($end_date)) : '',
+
+
+            // 'position' => $emp_position,
+            // 'salary_level' => $emp_salary,
+            // 'khr_amount' => $emp_salary,
+            // 'khr_amount_in_word' => self::convertToKhmerWords($emp_salary),
+            // 'khr_salary' => $emp_salary,
+            // 'khr_salary_in_word' => self::convertToKhmerWords($emp_salary),
+            'tenant_address' => $tenant_address,
+            'tenant_dob' => getKhmerDate($tenant->date_of_birth ?? null),
             'signature_date' => getKhmerDate(null),
         ];
         dd($data);
@@ -1344,7 +1355,7 @@ class Contract
         $templateProcessor->saveAs($tempFile);
 
         // Set headers for force download
-        $fileName = 'contract_' . $data['emp_code'] . '.docx';
+        $fileName = 'contract_' . $data['tenant_code'] . '.docx';
         header('Content-Description: File Transfer');
         header('Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document');
         header('Content-Disposition: attachment; filename="' . $fileName . '"');
@@ -1406,4 +1417,6 @@ class Contract
 
         return trim($integerInWords);
     }
+
+   
 }

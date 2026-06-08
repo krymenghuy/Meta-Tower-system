@@ -114,7 +114,7 @@ class CompanyProfile //extends Model
     $customer_id = $ss->subscriber_id;
     if (!$customer_id) return null;
     $col_customer_id = DBX::getHEX('id', 'id');
-    $row = XSubscriber::firstBy(['_raw_'=>DBX::whereBinary('id',$customer_id)],$col_customer_id . ',name,name_kh,address, address_kh, phone_number,email,first_cp_name,second_cp_name,first_cp_phone,second_cp_phone,website');
+    $row = XSubscriber::firstBy(['_raw_'=>DBX::whereBinary('id',$customer_id)],$col_customer_id . ',name,name_kh,address, address_kh, phone_number,email,first_cp_name,second_cp_name,first_cp_phone,second_cp_phone,website,billing_address,first_cp_sex,first_cp_dob,first_cp_nid,first_cp_nid_issue_date');
     //$row = DB::table('um_customers')->whereRaw(DBX::whereBinary('id',$customer_id))->selectRaw($col_customer_id . ',name,name_kh,address, address_kh, phone_number,email,first_cp_name,second_cp_name,first_cp_phone,second_cp_phone,website')->first();
     if (!$row)
       return null;

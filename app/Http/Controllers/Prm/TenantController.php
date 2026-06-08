@@ -152,17 +152,16 @@ class TenantController extends Controller
         $list = new Tenant();
         return JDV::result($list->getList($req->all(),$ss));
     }
-       public function contractFormOptions(Request $req)
+       public function contractFormOption(Request $req)
     {
         $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        $id = $req->id;
-        $director_id = $req->director_id;
+        $id = $req->tenant_id;
         $data = new Tenant();
 
-        return JDV::result($data->contractFormOptions($id, $director_id, $ss));
+        return JDV::result($data->contractFormOption($id, $ss));
     }
 
 }
