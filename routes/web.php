@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 //use app\Http\Middleware\CustomRateLimiter;
 use App\Http\Controllers\Bhr\ExcelReportController;
-use App\Http\Controllers\Bhr\ContractController;
+use App\Http\Controllers\Prm\ContractController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Register\RegisterController; 
 

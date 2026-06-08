@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 use DBX;
 use XPublicStorage;
+use PhpOffice\PhpWord\TemplateProcessor;
+use Carbon\Carbon;
+use XBranch;
 
 
 class Contract
@@ -1254,5 +1257,153 @@ class Contract
         }
 
         return $months;
+    }
+    static function createContract($id, $ss)
+    {
+
+           $tenant = DB::table('tenants as t')
+            ->where('t.id', $id)
+
+            ->selectRaw("t.id,t.branch_id,t.name,t.code,t.national_id,t.passport_number,t.date_of_birth,t.nationality_id,t.sex,t.tenant_type,t.status_id,t.legal_name,t.phone_number,t.email,t.address")
+            ->first();
+
+        if (!$tenant) {
+            return DV::error("Tenant ID {$id} does not exist.");
+        }
+
+        $branch = XBranch::details($tenant->branch_id ?? null,$ss);
+        if (!$branch) {
+            return DV::error('Branch not found.');
+        }
+
+        // Ensure $branch->director is an object before accessing properties
+        $director = $branch->director ?? null;
+        $com_rep_branch = $branch->name?? null;
+        $com_rep_name = $director->name ?? '<Director Name>';
+        $com_rep_nid = $director->nid ?? '(ID Card Number Not Found)';
+        $com_rep_sex = $director->sex ?? '(Sex)';
+        $com_rep_phone = $director->phone_number ?? '';
+        $com_address = $branch->address_kh ?? '';
+
+        $emp_branch = $branch->branch_name ?? '';
+        $emp_name = $emp->name_kh ?? '(Khmer Name)';
+        $emp_sex = $emp->sex ?? '(Sex)';
+        $emp_position = $emp->position ?? '';
+        $emp_salary = $emp->salary ?? '';
+        $emp_nid = $emp->nid ?? '';
+        $emp_phone = $emp->phone_number ?? '';
+        $emp_address = $emp->address ?? '';
+
+        $joiningDate = $emp->joining_date ?? null;
+        return $data = [
+            'com_address' => $com_address,
+            'com_city' => $branch->city ?? '(City)',
+            'com_rep_branch' => $com_rep_branch,
+            'com_rep_name' => $com_rep_name,
+            'com_rep_sex' => self::getSex($com_rep_sex),
+            'com_rep_dob' => getKhmerDate($director->date_of_birth ?? '(Date of Birth)'),
+            'com_rep_nid' => $com_rep_nid,
+            'com_rep_phone' => $com_rep_phone,
+            'emp_name' => $emp_name,
+            'emp_code' => $emp->code ?? '(ID)',
+            'emp_sex' => self::getSex($emp_sex),
+            'emp_phone' => $emp_phone,
+            'emp_nid' => $emp_nid,
+            'start_date' => $joiningDate ? getKhmerDate($joiningDate) : '',
+            'end_date' => $joiningDate ? getKhmerDate(self::calculateEndDate($joiningDate)) : '',
+            'position' => $emp_position,
+            'salary_level' => $emp_salary,
+            'khr_amount' => $emp_salary,
+            'khr_amount_in_word' => self::convertToKhmerWords($emp_salary),
+            'khr_salary' => $emp_salary,
+            'khr_salary_in_word' => self::convertToKhmerWords($emp_salary),
+            'emp_address' => $emp_address,
+            'branch' => $emp_branch,
+            'emp_dob' => getKhmerDate($emp->date_of_birth ?? null),
+            'signature_date' => getKhmerDate(null),
+        ];
+        dd($data);
+
+        // Define the template path
+        $templatePath = base_path('/storage/doc_templates/staff_contract_unlimited.docx');
+        if (!file_exists($templatePath)) {
+            \Log::error("Contract Template file not found at {$templatePath}");
+            return DV::error('Contract template not found.');
+        }
+
+        // Load the template
+        $templateProcessor = new TemplateProcessor($templatePath);
+
+        // Replace placeholders with actual values
+        foreach ($data as $key => $value) {
+            $templateProcessor->setValue($key, $value);
+        }
+
+        // Create a temporary file in memory
+        $tempFile = tempnam(sys_get_temp_dir(), 'contract');
+        $templateProcessor->saveAs($tempFile);
+
+        // Set headers for force download
+        $fileName = 'contract_' . $data['emp_code'] . '.docx';
+        header('Content-Description: File Transfer');
+        header('Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+        header('Content-Disposition: attachment; filename="' . $fileName . '"');
+        header('Expires: 0');
+        header('Cache-Control: must-revalidate');
+        header('Pragma: public');
+        header('Content-Length: ' . filesize($tempFile));
+
+        // Prevent buffer issues
+        ob_clean();
+        flush();
+        readfile($tempFile);
+
+        // Delete temporary file
+        unlink($tempFile);
+        exit;
+    }
+     static function getSex($sex){
+       if($sex ==='M') return 'ប្រុស';
+       else if ($sex ==='F') return 'ស្រី';
+       else 'មិនប្រាប់';
+    }
+    static function calculateEndDate($startDate)
+    {
+        if (!$startDate) {
+            return null;
+        }
+        return Carbon::parse($startDate)->addMonths(3)->format('Y-m-d');
+    }
+    static function convertToKhmerWords($number) {
+        $khmerDigits = ['0' => 'សូន្យ', '1' => 'មួយ', '2' => 'ពីរ', '3' => 'បី', '4' => 'បួន', '5' => 'ប្រាំ', '6' => 'ប្រាំមួយ', '7' => 'ប្រាំពីរ', '8' => 'ប្រាំបី', '9' => 'ប្រាំបួន'];
+        $khmerUnits = ['', 'ម៉ឺន', 'សែន', 'លាន', 'កោដិ'];
+
+        // Convert the number to an integer if it ends with .00
+        if (strpos($number, '.') !== false) {
+            $number = rtrim(rtrim($number, '0'), '.'); // Remove trailing .00 or .0
+        }
+
+        // Split the number into integer and decimal parts
+        $parts = explode('.', strval($number));
+        $integerPart = $parts[0];
+
+        // Convert the integer part
+        $integerInWords = '';
+        $length = strlen($integerPart);
+
+        for ($i = 0; $i < $length; $i++) {
+            $digit = $integerPart[$i];
+            $position = $length - $i - 1;
+
+            if ($digit !== '0') {
+                $integerInWords .= $khmerDigits[$digit] . ' ' . ($khmerUnits[$position % 4] ?? '') . ' ';
+            }
+
+            if ($position % 4 === 0 && $position !== 0) {
+                $integerInWords .= 'លាន ';
+            }
+        }
+
+        return trim($integerInWords);
     }
 }

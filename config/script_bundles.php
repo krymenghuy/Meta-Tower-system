@@ -146,8 +146,9 @@ return [
                 'js/components/prm/ReservationComponent.js',
                 'js/components/prm/AmenityComponent.js',
                 'js/components/prm/ItemsComponent.js',
-                'js/components/prm/InvoiceSettingComponent.js'
-
+                'js/components/prm/InvoiceSettingComponent.js',
+                'js/components/prm/PrintContractDialog.js',
+                
 
 
             ]
