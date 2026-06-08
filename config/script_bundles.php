@@ -68,7 +68,7 @@ return [
 
                 'https://cdn.vectoraclouds.com/frontcore/utils/validator.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/cv_interact.js',
-                //'/assets/js/date.js',
+ 
                 'https://cdn.vectoraclouds.com/frontcore/utils/DateHelper.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/DateTimePicker/DateTimePicker.js',
                 //'/assets/js/jquery.datepicker2.js',

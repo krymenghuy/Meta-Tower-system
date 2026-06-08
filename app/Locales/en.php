@@ -139,22 +139,19 @@
              ],
 
             'message_box_default' => [
-
                 'required' => 'Please enter this information.',
                 'created' => 'Data has been created successfully.',
-                'updated' => 'Data has been updated successfully.',
-                'deleted' => 'Data has been deleted successfully.',
+                'updated' => 'The update is successful',
+                'deleted' => 'The delete is successful',
+                'update_success_tenant' => 'Tenant has been updated successfully.',
+                'delete_success_tenant' => 'Tenant has been deleted successfully.',
+                'create_success_tenant'=>'Tenant is created',
                 'confirm_cancel' => 'Are you sure you want to cancel this?',
                 'cancelled' => 'Cancelled successfully.',
                 'confirm_finish' => 'Are you sure you want to mark this as finished?',
                 'finished' => 'Marked as finished successfully.',
                 'confirm_delete' => 'Are you sure you want to delete this data?',
-                
-                
-
-
-
-
+                  
                 'delete_maintenance' => 'Delete Maintenance',
                 'confirm_delete_maintenance' => 'Are you sure you want to delete this maintenance?',
                 'maintenance_deleted' => 'Maintenance has been deleted successfully.',
