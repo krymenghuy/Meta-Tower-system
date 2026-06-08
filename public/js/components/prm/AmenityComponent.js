@@ -578,7 +578,7 @@ const AmenityDialog = (() => {
                         <div class="col-12">
                             <div class="vs-material-field">
                                 <input type="text" name="amenity" required class="data-input form-control" data-field="name" placeholder=" " />
-                                <label vslang="labels.Name">Name</label>
+                                <label vslang="labels.Name"></label>
                             </div>
                         </div>
                         <div class="col-6">
@@ -693,8 +693,8 @@ const AmenityDialog = (() => {
                 ],
 
                 prepareFormOptions: {
-                    createTitle: "Create Amenity",
-                    modifyTitle: "Modify Amenity",
+                    createTitle: "vslang:titles.Create Amenity",
+                    modifyTitle: "vslang:titles.Modify Amenity",
                     targetProp: "amenity_details",
                     api: {
                         endpoint: [

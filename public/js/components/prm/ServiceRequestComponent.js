@@ -267,31 +267,31 @@ var ServiceRequestComponent = (function () {
             cssClass: "bg-white shadow",
             menus: [
                     {
-                        html: '<span class="ps-2" vslang="title.Accept"></span>',
+                        html: '<span class="ps-2" vslang="titles.Accept"></span>',
                         icon: `<i class="fa-regular fa-square-check fs-5 text-primary"></i>`,
                         name: "accept_request",
                         cssClass: "border-bottom pb-2"
                     },
                     {
-                        html: '<span class="ps-2" vslang="title.Complete"></span>',
+                        html: '<span class="ps-2" vslang="titles.Complete"></span>',
                         icon: `<i class="fa-solid fa-circle-check fs-5 text-success"></i>`,
                         name: "complete_request",
                         cssClass: "border-bottom pb-2"
                     },
                     {
-                        html: '<span class="ps-2" vslang="title.Reject"></span>',
+                        html: '<span class="ps-2" vslang="titles.Reject"></span>',
                         icon: `<i class="fa-regular fa-rectangle-xmark fs-5 text-danger-emphasis"></i>`,
                         name: "reject_request",
                         cssClass: "border-bottom pb-2"
                     },
                     {
-                        html: '<span class="ps-2" vslang="title.Modify"></span>',
+                        html: '<span class="ps-2" vslang="titles.Modify"></span>',
                         icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                         name: "edit_request",
                         cssClass: "border-bottom pb-2"
                     },
                     {
-                        html: '<span class="ps-2" vslang="title.Delete"></span>',
+                        html: '<span class="ps-2" vslang="titles.Delete"></span>',
                         icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                         name: "delete_request",
                         cssClass: "border-bottom pb-2"
@@ -351,11 +351,14 @@ var ServiceRequestComponent = (function () {
     
     mThis.acceptRequest = (id, menuLink) => {
         cv_interact.confirm(
-            'Are you sure you want to accept this service request?',
+            "confirm_accept",
+
             {
-                title: 'Accept Service Request',
-                context: 'update',
-                confirmButtonText: 'Accept'
+                'langSection' : "message_box_default",
+                'translate': true,
+                // 'title': "accepted",
+                'context': 'update',
+                'confirmButtonText': "Accept"
             },
             (e) => {
                 if (!e) return;
@@ -379,11 +382,13 @@ var ServiceRequestComponent = (function () {
             }
         );
     };
-     mThis.completeRequest = (id, menuLink) => {
+    mThis.completeRequest = (id, menuLink) => {
         cv_interact.confirm(
-            'Are you sure you want to complete this service request?',
+            "confirm_complete",
             {
-                title: 'Complete Service Request',
+                'langSection' : "message_box_default",
+                
+                'title': 'Complete Service Request',
                 context: 'update',
                 confirmButtonText: 'Complete'
             },
@@ -514,7 +519,7 @@ const CreateServiceRequestDialog = (() => {
                         <div class="col-md-3">
                             <div class="vs-material-field">
                                 <input data-type="date" name="scheduled_date" class="form-control data-input" data-field="scheduled_date" required />
-                                <label vslang="labels.Scheduled Date">Scheduled Date</label>
+                                <label vslang="labels.Scheduled Date"></label>
                             </div>
                         </div>
                         <div class="col-md-3">
@@ -729,8 +734,8 @@ const CreateServiceRequestDialog = (() => {
             },
 
             prepareFormOptions: {
-                createTitle: "Create Service Request",
-                modifyTitle: "Modify Service Request",
+                createTitle: "vslang:titles.Create Service Request",
+                modifyTitle: "vslang:titles.Modify Service Request",
                 targetProp: "request_details",
                 api: {
                     endpoint: `${main_view.base_url}/prm/service-request/form-options`,
@@ -747,7 +752,7 @@ const CreateServiceRequestDialog = (() => {
                     },
                 },
                 {
-                    label: '<span vslang="buttons.Submit"></span>',
+                    label: '<span vslang="buttons.Save"></span>',
                     cssClass: 'btn btn-primary',
                     click: (me, btn) => {
                         const data = me.getData();
