@@ -48,16 +48,41 @@ const CreateContractDialog = (()=>{
                                         <label vslang="labels.National ID"></label>
                                     </div>
                                 </div>
-                                 <div class="col-6">
+                                <div class="col-6">
+                                    <div class="vs-material-field">
+                                        <input type="text" name="lease_term" class="data-input form-control form_input" data-field="lease_term" disabled placeholder=" " />
+                                        <label vslang="labels.Duration">Duration</label>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-3">
                                     <div class="vs-material-field">
                                         <input type="text" data-type="date" name="start_date" class="data-input form-control form_input" data-field="start_date" disabled placeholder=" " />
                                         <label vslang="labels.Start Date">Start Date</label>
                                     </div>
                                 </div>
-                                <div class="col-6">
+                                <div class="col-3">
                                     <div class="vs-material-field">
                                         <input type="text" data-type="date" name="end_date" class="data-input form-control form_input" data-field="end_date" disabled placeholder=" " />
                                         <label vslang="labels.End Date">End Date</label>
+                                    </div>
+                                </div>
+                                 <div class="col-6">
+                                    <div class="vs-material-field">
+                                        <input type="text" name="space_code" class="data-input form-control form_input" data-field="space_code" disabled placeholder=" " />
+                                        <label vslang="labels.Space Code">Space Code</label>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="vs-material-field">
+                                        <input type="text" name="monthly_price" class="data-input form-control form_input" data-field="monthly_price" disabled placeholder=" " />
+                                        <label vslang="labels.Monthly Price">Monthly Price</label>
+                                    </div>
+                                </div>
+                                 <div class="col-3">
+                                    <div class="vs-material-field">
+                                        <input type="text" name="deposit" class="data-input form-control form_input" data-field="deposit" disabled placeholder=" " />
+                                        <label vslang="labels.Deposit">Deposit</label>
                                     </div>
                                 </div>
                                 
@@ -146,8 +171,7 @@ const CreateContractDialog = (()=>{
                 main_view.getEncryptData(queryString,d=>{
                     const url = `${main_view.base_url}/create-contract/${d}`;
                     window.open(url, '_blank', 'noopener,noreferrer');
-                    me.modal.hide(true, op);
-
+                     me.hide(true, op);
                 });
 
 

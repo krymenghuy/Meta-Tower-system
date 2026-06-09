@@ -26,7 +26,7 @@ class ContractController extends Controller
     
         $p = processQueryString($qString);
         $id = $p->id;
-        $res = Contract::createContract($id, $user);
+        $res = Contract::createContract($p, $user);
     
         return JDV::raw($res);
     }
