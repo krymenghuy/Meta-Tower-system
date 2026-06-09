@@ -1069,16 +1069,16 @@ var TenantComponent = new (function () {
                                 <i class="fa fa-user me-2 text-primary"></i> <span vslang="titles.Personal Information">Personal Information</span> 
                             </h5>
                             <div class="row g-4 mb-5">
-                                <div class="col-md-4"><small class="text-muted" vslang="titles.Name"></small><div class="text-capitalize">${data.name ?? "_"}</div></div>
-                                <div class="col-md-4"><small class="text-muted" vslang="titles.Gender"></small><div class="">${data.sex == "M" ? "Male" : data.sex == "F" ? "Female" : "_"}</div></div>
-                                <div class="col-md-4"><small class="text-muted" vslang="titles.Date of Birth"></small><div class="">${data.date_of_birth ?? "_"}</div></div>
-                                <div class="col-md-4"><small class="text-muted" vslang="labels.Legal Name"></small><div class="">${data.legal_name ?? "_"}</div></div>
-                                <div class="col-md-4"><small class="text-muted" vslang="labels.National ID"></small><div class="">${data.national_id ?? "_"}</div></div>
-                                <div class="col-md-4"><small class="text-muted" vslang="labels.Passport Number"></small><div class="">${data.passport_number ?? "_"}</div></div>
-                                <div class="col-md-4"><small class="text-muted" vslang="titles.Phone Number"></small><div class=" text-primary">${data.phone_number ?? "_"}</div></div>
-                                <div class="col-md-4"><small class="text-muted" vslang="titles.Email"></small><div class=" text-primary">${data.email ?? "_"}</div></div>
-                                <div class="col-md-4"><small class="text-muted" vslang="titles.Relationship"></small><div class="">Partner</div></div>
-                                <div class="col-12"><small class="text-muted" vslang="titles.Address"></small><div class="text-prm-custom text-capitalize">${data.address ?? "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Name</small><div class="text-capitalize">${data.name ?? "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Gender</small><div class="">${data.sex == "M" ? "Male" : data.sex == "F" ? "Female" : "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Date of Birth</small><div class="">${data.date_of_birth ?? "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Legal Name</small><div class="">${data.legal_name ?? "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">National ID</small><div class="">${data.national_id ?? "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Passport Number</small><div class="">${data.passport_number ?? "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Phone</small><div class=" text-primary">${data.phone_number ?? "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Email</small><div class=" text-primary">${data.email ?? "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Relationship</small><div class="">Partner</div></div>
+                                <div class="col-12"><small class="text-muted">Address</small><div class="text-prm-custom text-capitalize">${data.address ?? "_"}</div></div>
                             </div>
                             
 
@@ -1864,7 +1864,7 @@ const CreateTenantDialog = (() => {
                             .split("/")
                             .pop();
 
-
+                        console.log(3, src);
 
                         // if (
                         //     me.dataOptions.id == null ||
@@ -1904,6 +1904,7 @@ const CreateTenantDialog = (() => {
                             me.dataOptions.id == null &&
                             !me.fileBase64
                         ) {
+                            console.log(4, "start else if 1");
 
                             me.uploadZone.classList.remove("d-none");
                             me.previewZone.classList.add("d-none");
@@ -1915,6 +1916,7 @@ const CreateTenantDialog = (() => {
                             !me.fileBase64 &&
                             src == "placeholder.svg"
                         ) {
+                            console.log(4, "start else if 2");
 
                             me.uploadZone.classList.remove("d-none");
                             me.previewZone.classList.add("d-none");
@@ -1922,6 +1924,7 @@ const CreateTenantDialog = (() => {
                             if (me.displayInput) me.displayInput.value = "";
                             if (me.previewImg) me.previewImg.src = "";
                         } else {
+                            console.log(4, "start else");
 
                             me.uploadZone.classList.add("d-none");
                             me.previewZone.classList.remove("d-none");
