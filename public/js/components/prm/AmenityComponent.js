@@ -851,7 +851,7 @@ const ActiveReservationDialog = (() => {
                         <table class="table table-sm table--white rounded-2 overflow-hidden">
                             <thead class="header-uppercase" >
                                 <tr>
-                                    <th class="text-start" style="width:100px;">Tenant</th>
+                                    <th class="text-start" style="width:100px;" vslang="titles.Tenant></th>
                                     <th class="text-start" style="width: 150px;">Schedule Date</th>
                                     <th class="text-center" style="width:80px;">Status</th>
                                     <th class="text-start" style="width:260px;">Remark</th>

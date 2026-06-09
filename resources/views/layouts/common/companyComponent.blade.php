@@ -1,6 +1,6 @@
 
 <div id="_main_companyComponent" class="m-3" style="display:none;">
-    <div class="cpn-wrapper d-flex gap-3 p-3 mt-4">
+    <div class="d-flex gap-3 mt-4 p-3 cpn-wrapper">
  
         <!-- ═══ LEFT PANEL ═══ -->
         <div class="cpn-left d-flex flex-column gap-3">
@@ -24,46 +24,46 @@
                         </div>
                     </div>
                     <input type="file" id="_logo_file_input" accept="image/*" style="display:none" />
-                    <button id="com_btnChooseLogo" class="cpn-btn-upload w-100">
-                        <i class="fa fa-upload me-2"></i> Upload Photo
+                    <button id="com_btnChooseLogo" class="w-100 cpn-btn-upload">
+                        <i class="me-2 fa fa-upload"></i> Upload Photo
                     </button>
-                    <button id="com_btnDeleteLogo" class="cpn-btn-delete w-100">
-                        <i class="fa-regular fa-trash-can me-2"></i> Delete Logo
+                    <button id="com_btnDeleteLogo" class="w-100 cpn-btn-delete">
+                        <i class="me-2 fa-regular fa-trash-can"></i> Delete Logo
                     </button>
                 </div>
             </div>
 
             <!-- Password -->
             <div class="d-none cpn-card">
-                <p class="cpn-section-title">Website and Fackbook </p>
-                <div class=" mb-3">
+                <p class="cpn-section-title">Website and Facebook </p>
+                <div class="mb-3">
                     <label class="cpn-field-label">Old Password</label>
                     <input type="password" class="cpn-input" id="_old_password" placeholder="••••••••" />
                 </div>
-                <div class=" mb-3">
+                <div class="mb-3">
                     <label class="cpn-field-label">New Password</label>
                     <input type="password" class="cpn-input" id="_new_password" placeholder="••••••••" />
                 </div>
-                <button class="cpn-btn-upload w-100" id="_btn_change_password">Change Password</button>
+                <button class="w-100 cpn-btn-upload" id="_btn_change_password">Change Password</button>
             </div>
  
         </div>
  
         <!-- ═══ RIGHT PANEL ═══ -->
-        <div class="cpn-right cpn-card flex-fill" id="_div_cpn_scroll">
+        <div class="cpn-right flex-fill cpn-card" id="_div_cpn_scroll">
  
             <!-- Profile Information -->
-            <p class="cpn-section-title">Profile Information</p>
-            <div class="row g-3 mb-3">
+            <p class="cpn-section-title" vslang="title.Profile Information"></p>
+            <div class="mb-3 row g-3">
                 <div class="col-lg-6 material-input outlined">
-                    <input type="text" class="data-input form-control bg-light " data-field="name_kh"
+                    <input type="text" class="bg-light data-input form-control" data-field="name_kh"
                     placeholder=" " />
-                    <label >Association Name (Khmer)</label>
+                    <label vslang="titles.Association Name (Khmer)></label>
                 </div>
                 <div class="col-lg-6 material-input outlined">
-                    <input type="text" class="data-input form-control bg-light " data-field="name"
+                    <input type="text" class="bg-light data-input form-control" data-field="name"
                     placeholder=" " />
-                    <label >Association Name (English)</label>
+                    <label vslang="titles.Association Name (English)></label>
                 </div>
             </div>
  
@@ -72,28 +72,28 @@
            <div class="d-flex flex-column gap-3 mb-3">
                 <div class="d-flex gap-3">
                     <div class="flex-fill material-input outlined">
-                        <input type="text" class="data-input form-control bg-light " data-field="email"
+                        <input type="text" class="bg-light data-input form-control" data-field="email"
                         placeholder=" " />
                         <label >Email</label>
                     </div>
-                    <div class="flex-fill material-input outlined">
-                        <input type="text" class="data-input form-control bg-light " data-field="phone_number"
+                    <div class="filter-field material-input outlined">
+                        <input type="text" class="bg-light data-input form-control" data-field="phone_number"
                         placeholder=" " />
-                        <label >Phone Number</label>
+                        <label vslang="labels.Phone Number"></label>
                     </div>
                 </div>
 
                 <!-- Row 2: Address KH & Address Latin -->
                 <div class="d-flex gap-3">
                     <div class="flex-fill material-input outlined">
-                        <textarea class="data-input form-control bg-light" data-field="address_kh" rows="3"
+                        <textarea class="bg-light data-input form-control" data-field="address_kh" rows="3"
                                 placeholder=" "></textarea>
                         <label >Address (Khmer)</label>
                     </div>
                     <div class="flex-fill material-input outlined">
-                        <textarea class="data-input form-control bg-light" data-field="address" rows="3"
+                        <textarea class="bg-light data-input form-control" data-field="address" rows="3"
                                 placeholder=" "></textarea>
-                        <label>Address (Latin)</label>
+                        <label vslang="labels.">Address (Latin)</label>
                     </div>
                 </div>
 
@@ -102,62 +102,62 @@
  
             <!-- Contact Persons -->
             <div class="d-flex align-items-center justify-content-between mb-3">
-                <p class="cpn-section-title mb-0">Contact Persons</p>
-                <span class="cpn-count-label" id="_cp_count_label">2 persons</span>
+                <p class="mb-0 cpn-section-title" vslang="titles.Contact Persons">Contact Persons</p>
+                <span class="cpn-count-label" id="_cp_count_label" vslang="titles.2 persons"></span>
             </div>
  
             <div id="_cp_list">
  
                 <!-- Contact Person 1 (Primary) -->
-                <div class="cpn-cp-card mb-2" data-cp="1">
-                    <p class="cpn-section-title mb-3">Primary Contact</p>
-                    <div class="row g-3 ">
+                <div class="mb-2 cpn-cp-card" data-cp="1">
+                    <p class="mb-3 cpn-section-title" vslang="titles.Secondary Contact"></p>
+                    <div class="row g-3">
                         <div class="col-lg-6 material-input outlined">
-                            <input type="text" class="data-input form-control bg-light " data-field="first_cp_name"
+                            <input type="text" class="bg-light data-input form-control" data-field="first_cp_name"
                                 placeholder=" " />
-                            <label>Full Name</label>
+                            <label vslang="labels.Full Name"></label>
                         </div>
                         <div class="col-lg-6 material-input outlined">
-                            <input type="text" class="data-input form-control bg-light " data-field="first_cp_phone"
+                            <input type="text" class="bg-light data-input form-control" data-field="first_cp_phone"
                                 placeholder=" " />
-                            <label>Phone</label>
+                            <label vslang="labels.Phone Number"></label>
                         </div>
                         <div class="col-lg-6 material-input outlined">
-                            <input type="email" class="data-input form-control bg-light " data-field="first_cp_email"
+                            <input type="email" class="bg-light data-input form-control" data-field="first_cp_email"
                                 placeholder=" " />
-                            <label>Email</label>
+                            <label vslang="labels.Email"></label>
                         </div>
                         <div class="col-lg-6 material-input outlined">
-                            <input type="text" class="data-input form-control bg-light " data-field="first_cp_position"
+                            <input type="text" class="bg-light data-input form-control" data-field="first_cp_position"
                                 placeholder=" " />
-                            <label>Position</label>
+                            <label vslang="labels.Position"></label>
                         </div>
                     </div>
                 </div>
  
                 <!-- Contact Person 2 -->
-                <div class="cpn-cp-card mb-2" data-cp="2">
-                    <p class="cpn-section-title mb-3">Secondary Contact</p>
-                    <div class="row g-3 ">
+                <div class="mb-2 cpn-cp-card" data-cp="2">
+                    <p class="mb-3 cpn-section-title" vslang="titles.Secondary Contact"></p>
+                    <div class="row g-3">
                         <div class="col-lg-6 material-input outlined">
-                            <input type="text" class="data-input form-control bg-light " data-field="second_cp_name"
+                            <input type="text" class="bg-light data-input form-control" data-field="second_cp_name"
                                 placeholder=" " />
-                            <label>Full Name</label>
+                            <label vslang="labels.Full Name"></label>
                         </div>
                         <div class="col-lg-6 material-input outlined">
-                            <input type="text" class="data-input form-control bg-light " data-field="second_cp_phone"
+                            <input type="text" class="bg-light data-input form-control" data-field="second_cp_phone"
                                 placeholder=" " />
-                            <label>Phone</label>
+                            <label vslang="labels.Phone Number"></label>
                         </div>
                         <div class="col-lg-6 material-input outlined">
-                            <input type="email" class="data-input form-control bg-light " data-field="second_cp_email"
+                            <input type="email" class="bg-light data-input form-control" data-field="second_cp_email"
                                 placeholder=" " />
-                            <label >Email</label>
+                            <label vslang="labels.Email"></label>
                         </div>
                         <div class="col-lg-6 material-input outlined">
-                            <input type="text" class="data-input form-control bg-light " data-field="second_cp_position"
+                            <input type="text" class="bg-light data-input form-control" data-field="second_cp_position"
                                 placeholder=" " />
-                            <label>Position</label>
+                            <label vslang="labels.Position"></label>
                         </div>
                     </div>
                 </div>
@@ -168,7 +168,7 @@
             <!-- Save -->
             <div class="d-flex align-items-center mt-4">
                 <button id="_main_comp_btnSaveProfile" type="button" class="cpn-btn-save">
-                    <i class="la la-save fs-5 me-1"></i> Save Changes
+                    <i class="me-1 la la-save fs-5"></i> Save Change
                 </button>
             </div>
  

@@ -299,7 +299,7 @@ return [
         'Grave List' => 'បញ្ជីកន្លែងសព',
         'Association Structure' => 'រចនាសម្ព័ន្ធនៃសមាគម',
         'Association Policy' => 'មាត្រនិងបទបញ្ញាត្តិផ្ទៃក្នុងរបស់សមាគម',
-        'Company Profile'=> 'អំពីសមាគម',
+        'Company Profile'=> 'អំពីក្រុមហ៊ុន',
         'Locations' => 'ទីតាំង និង តំបន់',
         'Location Management' => 'ទីតាំង និង តំបន់',
         'User and Roles' => 'អ្នកប្រើប្រាស់និងតួនាទី',
@@ -325,14 +325,14 @@ return [
         'Authorized' => 'អនុម័តដោយ',
         'Received' => 'បានទទួល',
         'Ref No' => 'លេខយោង',
-        'Issue Date' => 'កាលបរិច្ឆេទថ្ងៃចេញ',
-        'Due' => 'កាលបរិច្ឆេទថ្ងៃត្រូវបង់',
+        'Issue Date' => 'កាលបរិច្ឆេទចេញ',
+        'Due' => 'ចំនួនទឹកប្រាក់ត្រូវបង់',
         'Payable' => 'នៅសល់ត្រូវបង់',
         'Payment Method' => 'វិធីសាស្ត្រទូទាត់ប្រាក់',
         'Amount' => 'ចំនួនទឹកប្រាក់',
         'Payment Date' => 'កាលបរិច្ឆេទទូទាត់ប្រាក់',
         'Contact Person' => 'បុគ្គលទំនាក់ទំនង',
-        'Address' => 'អាស័យដ្ឋាន',
+        'Address' => 'អាសយដ្ឋាន',
         'Contact Info' => 'ព័ត៌មានទំនាក់ទំនង',
         'Amenity' => 'ឈ្មោះសេវាកម្ម',
         'Reservation Date' => 'កាលបរិច្ឆេទកក់',
@@ -391,7 +391,12 @@ return [
         'Create Service Request' => 'បង្កើតសំណើសេវាកម្ម',
         'QTY' => 'ចំនួន',
         'Receive Payment' => 'ទទួលការបង់ប្រាក់',
-        
+        'Relationship' => 'ទំនាក់ទំនង',
+        'Email' => 'អ៊ីមែល',
+        'Gender' => 'ភេទ',
+        'Legal Name' => 'ឈ្មោះស្របច្បាប់',
+        'Passport' => 'លិខិតឆ្លងដែន',
+        'National ID' => ''
 
 
     ],
@@ -780,6 +785,7 @@ return [
         'Save' => 'រក្សារទុក',
         'Change Status' => 'ប្ដូរស្ថានភាព',
         'Accept' => 'យល់ព្រម',
+        'View Reservation' => 'មើលព័ត៌មានការកក់',
         
 
     ],
