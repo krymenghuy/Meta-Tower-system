@@ -3540,7 +3540,7 @@ const InvoiceSettingDialog = (() => {
                     <div class="is-row d-flex justify-content-between align-items-center mb-3">
                         <span class="is-row-label">
                             <i class="fa-solid fa-receipt me-2"></i>
-                            Show Commission Tax
+                            Show Commercial Tax
                         </span>
                         <div class="form-check form-switch">
                             <input class="form-check-input toggle-setting" type="checkbox" data-field="show_comm_tax" id="_is_show_comm_tax">

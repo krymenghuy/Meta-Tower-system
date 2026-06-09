@@ -61,7 +61,7 @@ const InvoiceCommercialDialog = (() => {
         };
     };
 
-    const buildInvoiceHTML = (invoice, setting) => {
+    const buildInvoiceHTML = (invoice, setting, company) => {
         const subTotal      = parseFloat(invoice.amount         || 0);
         const totalDiscount = parseFloat(invoice.discount_value || 0);
         const netTotal      = parseFloat(invoice.amount_payable || 0);
@@ -76,9 +76,11 @@ const InvoiceCommercialDialog = (() => {
         const qr_file_name      = setting.qr_file_name;
         const showSign        = setting.show_sign;
 
-        const buildRepresentation  = setting.build_representative ;
-        const representativePhone  = setting.representative_phone;
-        const representativeAddress  = setting.representative_address;
+        const companyContactPersion = company.first_cp_name;
+        const companyContactEmail = company.first_cp_email;
+        const companyContactPhone = company.first_cp_phone;
+        const companyAddress = company.address;
+        const companyLogo  = company.logo_url;
 
         const discType = (invoice.discount_type || "percent").toLowerCase();
         const isAmountDisc = (discType === "amount" || discType === "$");
@@ -170,52 +172,37 @@ const InvoiceCommercialDialog = (() => {
                 }
             </style>
 
-            <!--<div class="pi-root" id="pi-invoice-content">
-
-                <div style="padding:0px 32px 16px 32px;border-bottom:2px solid #E5E9F5;display:flex;justify-content:space-between;align-items:center;">
-                    <div style="display:flex;align-items:center;gap:14px;">
-                        <div style="display:flex;flex-direction:column;gap:2px;">
-                            <div style="font-size:30px;font-weight:800;letter-spacing:-1px;line-height:1;color:#1A3D91;font-family:'Inter',sans-serif;">Commercial Invoice</div>
-                            <div style="font-size:14px;font-weight:700;color:#1A3D91;letter-spacing:0.2px;font-family:'Inter',sans-serif;">
-                                ${buildRepresentation}
-                            </div>
-                             <div style="font-size:11px;color:#666;font-family:'Inter',sans-serif;">
-                                ${representativePhone}
-                            </div>
-                             <div style="font-size:11px;color:#666;font-family:'Inter',sans-serif;">
-                                ${representativeAddress}
-                            </div>
-                            
-                        </div>
-                    </div>
-                    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
-                        <div style="font-size:11px;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.8px;font-family:'Inter',sans-serif;">Invoice No.</div>
-                        <div style="font-size:18px;font-weight:800;color:#0F2060;font-family:'Inter',sans-serif;">${invoice.code || "—"}</div>
-                        <div style="${showPmtStatus ? 'display: block;' : 'display: none;'} padding:4px 14px;border-radius:99px;background:${statusBg};color:${statusColor};font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;font-family:'Inter',sans-serif;">
-                            ${statusLabel}
-                        </div>
-                    </div>
-                </div> -->
-
                 <div class="pi-root" id="pi-invoice-content">
 
-                    <div style="background:linear-gradient(135deg,#0F2060 0%,#1A3D91 55%,#2254C5 100%);padding:10px;display:flex;justify-content:space-between;align-items:flex-start;gap:20px;position:relative;overflow:hidden;">
+                   <div style="background:linear-gradient(135deg,#0F2060 0%,#1A3D91 55%,#2254C5 100%);padding:10px;display:flex;justify-content:space-between;align-items:flex-start;gap:20px;position:relative;overflow:hidden;">
                         <div style="position:absolute;right:-40px;top:-40px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,0.04);pointer-events:none;"></div>
                         <div style="position:absolute;right:60px;top:20px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,0.05);pointer-events:none;"></div>
 
+                        <div style="position:absolute;top:30%;left:50%;transform:translate(-50%,-50%);pointer-events:none;z-index:1;">
+                            <div style="font-family:'Inter',serif;font-size:32px;font-weight:900;color:#FFFFFF;letter-spacing:-0.5px;line-height:1;white-space:nowrap;">
+                                Commercial Invoice
+                            </div>
+                        </div>
+
                         <div style="display:flex;gap:18px;align-items:flex-start;position:relative;">
-                            
+                                <div style="width:70px;height:76px;background:rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;">
+                                    <img src="${companyLogo}" alt="Logo"
+                                        style="width:60px;height:63px;object-fit:contain;"
+                                        onerror="this.parentElement.innerHTML='<span style=\'font-size:22px;font-weight:900;color:#fff;font-family:Inter,serif;\'>M</span>'">
+                                </div>
                             <div>
-                                <div style="font-family:'Inter',serif;font-size:22px;font-weight:900;color:#FFFFFF;letter-spacing:0.5px;line-height:1.1;">Commercial Invoice</div>
                                 <div style="margin-top:6px;display:flex;flex-direction:column;gap:3px;">
                                     <div style="font-size:11px;color:rgba(255,255,255,0.65);display:flex;align-items:center;gap:5px;">
-                                         ${buildRepresentation}
+                                        ${companyContactPersion}
                                     </div>
                                     <div style="font-size:11px;color:rgba(255,255,255,0.65);display:flex;align-items:center;gap:5px;">
-                                        ${representativePhone}
+                                        ${companyContactPhone}
                                     </div>
                                     <div style="font-size:11px;color:rgba(255,255,255,0.65);display:flex;align-items:center;gap:5px;">
-                                        ${representativeAddress}
+                                        ${companyContactEmail}
+                                    </div>
+                                    <div style="font-size:11px;color:rgba(255,255,255,0.65);display:flex;align-items:center;gap:5px;">
+                                        ${companyAddress}
                                     </div>
                                 </div>
                             </div>
@@ -392,7 +379,7 @@ const InvoiceCommercialDialog = (() => {
                 </div>`,
             contentCreated: (me) => {
                 const container = me.divModal.querySelector('[name="pi_container"]');
-                container.innerHTML = buildInvoiceHTML(op.invoice, op.setting);
+                container.innerHTML = buildInvoiceHTML(op.invoice, op.setting, op.company);
                 
                 // FIX: Wire up the button action listeners here so print/download clicks execute!
                 wireButtons(container);
