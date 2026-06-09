@@ -1260,15 +1260,16 @@ class Contract
 
         return $months;
     }
-    static function createContract($id, $ss)
+    static function createContract($d, $ss)
     {
-
+        $id = $d->id;
+        $tenant_address = $d->address ?? null;
         $tenant = DB::table('tenants as t')
             ->join('contracts as c','c.tenant_id','=','t.id')
             ->join('building_spaces as bs','bs.id','=','c.space_id')
             ->join('buildings as b','b.id','=','bs.building_id')
             ->where('t.id', $id)
-            ->selectRaw("t.id,t.branch_id,t.name,t.code,t.national_id,t.passport_number,t.date_of_birth,t.nationality_id,t.sex,t.tenant_type,t.status_id,t.legal_name,t.phone_number,t.email,t.address,c.start_date,c.end_date,bs.code as unit_code,bs.floor_id,b.name as building")
+            ->selectRaw("t.id,t.branch_id,t.name,t.code,t.national_id,t.passport_number,t.date_of_birth,t.nationality_id,t.sex,t.tenant_type,t.status_id,t.legal_name,t.phone_number,t.email,t.address,c.start_date,c.end_date,bs.code as unit_code,bs.floor_id,b.name as building,c.sqm_size,c.price,c.price_type,c.deposit")
             ->first();
         if (!$tenant) {
             return DV::error("Tenant ID {$id} does not exist.");
@@ -1287,27 +1288,38 @@ class Contract
         $com_rep_sex = $p->first_cp_sex ?? 'Sex';
         $com_rep_dob = $p->first_cp_dob ?? '';
         $com_rep_nid_issue_date = $p->first_cp_nid_issue_date ?? '';
+        $com_rep_address = $p->first_cp_address ?? '';
         $com_address = $p->billing_address ?? '';
 
         $tenant_name = $tenant->name;
         $tenant_sex = $tenant->sex ?? '(Sex)';
         $tenant_nid = $tenant->national_id ?? '';
         $tenant_phone = $tenant->phone_number ?? '';
-        $tenant_address = $tenant->address ?? '';
+        $tenant_address = $tenant_address ?? $tenant->address;
         $start_date = $tenant->start_date ?? '';
         $end_date = $tenant->end_date ?? '';
-        $unit = $tenant->unit ?? '';
+        $lease_term = Carbon::parse($start_date)
+            ->diffInMonths(Carbon::parse($end_date));
+        $unit = $tenant->unit_code ?? '';
         $floor = $tenant->floor_id ?? '';
         $building = $tenant->building ?? '';
+        $monthly_price = $tenant->price_type === 'sqm'
+            ? $tenant->sqm_size * $tenant->price
+            : $tenant->price;
+        $deposit = $tenant->deposit;
+
+        $price_text = number_format($monthly_price, 2);
 
         $data = [
             'issue_date' => getKhmerDate(null),
+            'kh_issue_date' => self::getKhmerLunarDate(null),
             'com_address' => $com_address,
             'com_rep_name' => $com_rep_name,
             'com_rep_sex' => self::getSex($com_rep_sex),
             'com_rep_dob' => getKhmerDate($com_rep_dob),
             'com_rep_nid' => $com_rep_nid,
             'com_rep_nid_issue_date' => getKhmerDate($com_rep_nid_issue_date),
+            'com_rep_address' => $com_rep_address,
 
             'tenant_name' => $tenant_name,
             'tenant_code' => $tenant->code ?? '(ID)',
@@ -1318,17 +1330,19 @@ class Contract
 
             'building' => $building,
             'unit' => $unit,
-            'floor' => $floor,
+            'floor' => $floor == 0 ? 'ជាន់ផ្ទាល់ដី' : 'ជាន់ទី ' . convertToKhmerNumerals($floor),
             'start_date' => $start_date ? getKhmerDate($start_date) : '',
             'end_date' => $end_date ? getKhmerDate(self::calculateEndDate($end_date)) : '',
-
+            'lease_term' => $lease_term . ' ខែ',
 
             // 'position' => $emp_position,
             // 'salary_level' => $emp_salary,
             // 'khr_amount' => $emp_salary,
             // 'khr_amount_in_word' => self::convertToKhmerWords($emp_salary),
-            // 'khr_salary' => $emp_salary,
-            // 'khr_salary_in_word' => self::convertToKhmerWords($emp_salary),
+            'monthly_price' => '$' .$monthly_price,
+            'deposit' => '$' .$deposit,
+            'deposit_in_word' => self::convertToKhmerWords($deposit) . 'ដុល្លារសហរដ្ឋអាមេរិក',
+            'monthly_in_word' => self::convertToKhmerWords($monthly_price) . 'ដុល្លារសហរដ្ឋអាមេរិក',
             'tenant_address' => $tenant_address,
             'tenant_dob' => getKhmerDate($tenant->date_of_birth ?? null),
             'signature_date' => getKhmerDate(null),
@@ -1385,38 +1399,173 @@ class Contract
         }
         return Carbon::parse($startDate)->addMonths(3)->format('Y-m-d');
     }
-    static function convertToKhmerWords($number) {
-        $khmerDigits = ['0' => 'សូន្យ', '1' => 'មួយ', '2' => 'ពីរ', '3' => 'បី', '4' => 'បួន', '5' => 'ប្រាំ', '6' => 'ប្រាំមួយ', '7' => 'ប្រាំពីរ', '8' => 'ប្រាំបី', '9' => 'ប្រាំបួន'];
-        $khmerUnits = ['', 'ម៉ឺន', 'សែន', 'លាន', 'កោដិ'];
+   public static function convertToKhmerWords($number)
+    {
+        $ones = [
+            '', 'មួយ', 'ពីរ', 'បី', 'បួន',
+            'ប្រាំ', 'ប្រាំមួយ', 'ប្រាំពីរ',
+            'ប្រាំបី', 'ប្រាំបួន'
+        ];
 
-        // Convert the number to an integer if it ends with .00
-        if (strpos($number, '.') !== false) {
-            $number = rtrim(rtrim($number, '0'), '.'); // Remove trailing .00 or .0
+        if ($number == 0) {
+            return 'សូន្យ';
         }
 
-        // Split the number into integer and decimal parts
-        $parts = explode('.', strval($number));
-        $integerPart = $parts[0];
+        $number = (int) str_replace(',', '', $number);
 
-        // Convert the integer part
-        $integerInWords = '';
-        $length = strlen($integerPart);
+        $result = '';
 
-        for ($i = 0; $i < $length; $i++) {
-            $digit = $integerPart[$i];
-            $position = $length - $i - 1;
-
-            if ($digit !== '0') {
-                $integerInWords .= $khmerDigits[$digit] . ' ' . ($khmerUnits[$position % 4] ?? '') . ' ';
-            }
-
-            if ($position % 4 === 0 && $position !== 0) {
-                $integerInWords .= 'លាន ';
-            }
+        $millions = floor($number / 1000000);
+        if ($millions > 0) {
+            $result .= self::convertToKhmerWords($millions) . 'លាន';
+            $number %= 1000000;
         }
 
-        return trim($integerInWords);
+        $thousands = floor($number / 1000);
+        if ($thousands > 0) {
+            $result .= self::convertToKhmerWordsBelow1000($thousands) . 'ពាន់';
+            $number %= 1000;
+        }
+
+        if ($number > 0) {
+            $result .= self::convertToKhmerWordsBelow1000($number);
+        }
+
+        return trim($result);
     }
+    // static function convertToKhmerWords($number) {
+    //     $khmerDigits = ['0' => 'សូន្យ', '1' => 'មួយ', '2' => 'ពីរ', '3' => 'បី', '4' => 'បួន', '5' => 'ប្រាំ', '6' => 'ប្រាំមួយ', '7' => 'ប្រាំពីរ', '8' => 'ប្រាំបី', '9' => 'ប្រាំបួន'];
+    //     $khmerUnits = ['', 'ម៉ឺន', 'សែន', 'លាន', 'កោដិ'];
 
+    //     // Convert the number to an integer if it ends with .00
+    //     if (strpos($number, '.') !== false) {
+    //         $number = rtrim(rtrim($number, '0'), '.'); // Remove trailing .00 or .0
+    //     }
+
+    //     // Split the number into integer and decimal parts
+    //     $parts = explode('.', strval($number));
+    //     $integerPart = $parts[0];
+
+    //     // Convert the integer part
+    //     $integerInWords = '';
+    //     $length = strlen($integerPart);
+
+    //     for ($i = 0; $i < $length; $i++) {
+    //         $digit = $integerPart[$i];
+    //         $position = $length - $i - 1;
+
+    //         if ($digit !== '0') {
+    //             $integerInWords .= $khmerDigits[$digit] . ' ' . ($khmerUnits[$position % 4] ?? '') . ' ';
+    //         }
+
+    //         if ($position % 4 === 0 && $position !== 0) {
+    //             $integerInWords .= 'លាន ';
+    //         }
+    //     }
+
+    //     return trim($integerInWords);
+    // }
+
+    private static function convertToKhmerWordsBelow1000($number)
+    {
+        $ones = [
+            '', 'មួយ', 'ពីរ', 'បី', 'បួន',
+            'ប្រាំ', 'ប្រាំមួយ', 'ប្រាំពីរ',
+            'ប្រាំបី', 'ប្រាំបួន'
+        ];
+
+        $result = '';
+
+        $hundreds = floor($number / 100);
+        if ($hundreds > 0) {
+            $result .= $ones[$hundreds] . 'រយ';
+            $number %= 100;
+        }
+
+        $tens = floor($number / 10);
+        if ($tens > 0) {
+            if ($tens == 1) {
+                $result .= 'ដប់';
+            } else {
+                $result .= $ones[$tens] . 'សិប';
+            }
+            $number %= 10;
+        }
+
+        if ($number > 0) {
+            $result .= $ones[$number];
+        }
+
+        return $result;
+    }
+    public static function getKhmerLunarDate($date = null)
+    {
+        $date = $date ? Carbon::parse($date) : Carbon::now();
+
+        // Week days
+        $weekDays = [
+            'Sunday' => 'ថ្ងៃអាទិត្យ',
+            'Monday' => 'ថ្ងៃចន្ទ',
+            'Tuesday' => 'ថ្ងៃអង្គារ',
+            'Wednesday' => 'ថ្ងៃពុធ',
+            'Thursday' => 'ថ្ងៃព្រហស្បតិ៍',
+            'Friday' => 'ថ្ងៃសុក្រ',
+            'Saturday' => 'ថ្ងៃសៅរ៍',
+        ];
+
+        // Lunar days (simplified mapping example)
+        $lunarDays = [
+            1 => '១កើត', 2 => '២កើត', 3 => '៣កើត', 4 => '៤កើត', 5 => '៥កើត',
+            6 => '៦កើត', 7 => '៧កើត', 8 => '៨កើត', 9 => '៩កើត', 10 => '១០កើត',
+            11 => '១១កើត', 12 => '១២កើត', 13 => '១៣កើត', 14 => '១៤កើត', 15 => '១៥កើត',
+            16 => '១រោច', 17 => '២រោច', 18 => '៣រោច', 19 => '៤រោច', 20 => '៥រោច',
+            21 => '៦រោច', 22 => '៧រោច', 23 => '៨រោច', 24 => '៩រោច', 25 => '១០រោច',
+            26 => '១១រោច', 27 => '១២រោច', 28 => '១៣រោច', 29 => '១៤រោច', 30 => '១៥រោច',
+        ];
+
+        // Khmer months (example)
+        $months = [
+            1 => 'មករា', 2 => 'កុម្ភៈ', 3 => 'មិនា', 4 => 'មេសា',
+            5 => 'ឧសភា', 6 => 'មិថុនា', 7 => 'កក្កដា', 8 => 'សីហា',
+            9 => 'កញ្ញា', 10 => 'តុលា', 11 => 'វិច្ឆិកា', 12 => 'ធ្នូ',
+        ];
+
+        // Zodiac years (cycle example)
+        $zodiac = [
+            'Rat' => 'ឆ្នាំជូត',
+            'Ox' => 'ឆ្នាំឆ្លូវ',
+            'Tiger' => 'ឆ្នាំខាល',
+            'Rabbit' => 'ឆ្នាំថោះ',
+            'Dragon' => 'ឆ្នាំរោង',
+            'Snake' => 'ឆ្នាំម្សាញ់',
+            'Horse' => 'ឆ្នាំមមី',
+            'Goat' => 'ឆ្នាំមមែ',
+            'Monkey' => 'ឆ្នាំវក',
+            'Rooster' => 'ឆ្នាំរកា',
+            'Dog' => 'ឆ្នាំច',
+            'Pig' => 'ឆ្នាំកុរ',
+        ];
+
+        $dayName = $weekDays[$date->format('l')];
+
+        $day = (int) $date->format('j');
+        $lunarDay = $lunarDays[$day] ?? '';
+
+        $month = $months[(int) $date->format('n')];
+
+        // Simple zodiac calculation (not fully astronomically exact)
+        $zodiacKeys = array_values($zodiac);
+        $zodiacIndex = ($date->year - 4) % 12;
+        $yearZodiac = $zodiacKeys[$zodiacIndex] ?? '';
+
+        $buddhistYear = self::toKhmerNumber($date->year + 543);
+        return "{$dayName} {$lunarDay} ខែ{$month} {$yearZodiac} សប្តស័ក ព.ស. {$buddhistYear}";
+    }
+    public static function toKhmerNumber($number)
+    {
+        $map = ['0'=>'០','1'=>'១','2'=>'២','3'=>'៣','4'=>'៤','5'=>'៥','6'=>'៦','7'=>'៧','8'=>'៨','9'=>'៩'];
+
+        return strtr($number, $map);
+    }
    
 }

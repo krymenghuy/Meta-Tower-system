@@ -8,6 +8,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use DBX;
 use XPublicStorage;
 use XBranch;
+use Carbon\Carbon;
 use App\Models\CompanyProfile;
 
 class Tenant
@@ -308,12 +309,18 @@ class Tenant
             ->leftJoin('building_spaces as bs', 'bs.id', '=', 'c.space_id')
             ->join('tenant_statuses as ts', 'ts.id', '=', 't.status_id')
             ->where('t.id', $id)
-            ->selectRaw("t.id,t.branch_id,t.name,t.code,t.national_id,passport_number,$date_of_birth,$nid_issue_date,t.nationality_id,t.photo_file_name,t.sex,t.tenant_type,t.status_id,ts.name as status,t.legal_name,t.phone_number,t.email,t.address,c.price,c.price_type,c.sqm_size,$start_date,$end_date,bs.code as space_code")
+            ->selectRaw("t.id,t.branch_id,t.name,t.code,t.national_id,passport_number,$date_of_birth,$nid_issue_date,t.nationality_id,t.photo_file_name,t.sex,t.tenant_type,t.status_id,ts.name as status,t.legal_name,t.phone_number,t.email,t.address,c.price,c.price_type,c.sqm_size,c.deposit,$start_date,$end_date,bs.code as space_code")
             ->first();
         if ($row) {
             $img = self::profilePicture($id, $ss);
             $row->image_url = $img;
             $row->photo = $img;
+            $row->monthly_price = $row->price_type === 'sqm'
+            ? $row->sqm_size * $row->price
+            : $row->price;
+            $row->monthly_price = number_format($row->monthly_price, 2);
+           $row->lease_term = Carbon::parse($row->start_date)
+                ->diffInMonths(Carbon::parse($row->end_date)) . ' ខែ';
         } else $row = null;
         return $row;
     }
@@ -728,7 +735,7 @@ class Tenant
             $tenant->com_rep_sex =  $p->first_cp_sex;
             $tenant->com_rep_nid = $p->first_cp_nid;
             $tenant->com_rep_dob =$p->first_cp_dob;
-            $tenant->com_address = $p->billing_address;
+            $tenant->com_rep_address = $p->first_cp_address;
         }
         return (object)[
             'contractInfo' => $tenant,
