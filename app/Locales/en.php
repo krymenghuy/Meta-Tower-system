@@ -150,11 +150,6 @@
                 'finished' => 'Marked as finished successfully.',
                 'confirm_delete' => 'Are you sure you want to delete this data?',
                 
-                
-
-
-
-
                 'delete_maintenance' => 'Delete Maintenance',
                 'confirm_delete_maintenance' => 'Are you sure you want to delete this maintenance?',
                 'maintenance_deleted' => 'Maintenance has been deleted successfully.',

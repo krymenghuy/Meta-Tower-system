@@ -168,7 +168,7 @@ var InvoiceComponent = (() => {
         },
         {
             transTitle: "titles.Remark",
-            className: "align-middle text-nowrap text-center",
+            className: "align-middle text-nowrap text-start",
             data: data => {
                 return `
                     <div class="text-primary-custom" style="width:200px;">
@@ -723,9 +723,9 @@ var InvoiceComponent = (() => {
 
                     if (settings.show_balance !== null) {
 
-                        settings.build_representative = global.build_representative;
-                        settings.representative_phone = global.representative_phone;
-                        settings.representative_address = global.representative_address;
+                        // settings.build_representative = global.build_representative;
+                        // settings.representative_phone = global.representative_phone;
+                        // settings.representative_address = global.representative_address;
                         settings.QR_file = global.QR_file;
                         settings.qr_file_name = global.qr_file_name;
                         params.setting = settings;
@@ -744,8 +744,10 @@ var InvoiceComponent = (() => {
                         params.company = company;
                         InvoiceTaxDialog.show(params);
                     } else if (invType === 2) {
+                         params.company = company;
                         InvoiceNoTaxDialog.show(params);
                     } else if (invType === 3) {
+                         params.company = company;
                         InvoiceCommercialDialog.show(params);
                     }
                 } else {

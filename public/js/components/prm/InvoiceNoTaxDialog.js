@@ -93,7 +93,7 @@ const InvoiceNoTaxDialog = (() => {
         };
     };
 
-    const buildInvoiceHTML = (invoice, setting) => {
+    const buildInvoiceHTML = (invoice, setting,company) => {
         const subTotal      = parseFloat(invoice.amount         || 0);
         const totalDiscount = parseFloat(invoice.discount_value || 0);
         const netTotal      = parseFloat(invoice.amount_payable || 0);
@@ -108,9 +108,14 @@ const InvoiceNoTaxDialog = (() => {
         const qr_file_name      = setting.qr_file_name;
         const showSign        = setting.show_sign;
 
-        const buildRepresentation  = setting.build_representative ;
-        const representativePhone  = setting.representative_phone;
-        const representativeAddress  = setting.representative_address;
+        // const buildRepresentation  = setting.build_representative ;
+        // const representativePhone  = setting.representative_phone;
+        // const representativeAddress  = setting.representative_address;
+
+        const companyContactPersion = company.first_cp_name;
+        const companyContactEmail = company.first_cp_email;
+        const companyContactPhone = company.first_cp_phone;
+        const companyAddress = company.address;
 
         const discType     = (invoice.discount_type || "percent").toLowerCase();
         const isAmountDisc = (discType === "amount" || discType === "$");
@@ -225,13 +230,13 @@ const InvoiceNoTaxDialog = (() => {
                         <div style="display:flex;flex-direction:column;gap:2px;">
                             <div style="font-size:30px;font-weight:800;letter-spacing:-1px;line-height:1;color:#1A3D91;font-family:'Inter',sans-serif;">INVOICE</div>
                             <div style="font-size:14px;font-weight:700;color:#1A3D91;letter-spacing:0.2px;font-family:'Inter',sans-serif;">
-                                ${buildRepresentation}
+                                ${companyContactPersion}
                             </div>
                              <div style="font-size:11px;color:#666;font-family:'Inter',sans-serif;">
-                                ${representativePhone}
+                                ${companyContactPhone}
                             </div>
                              <div style="font-size:11px;color:#666;font-family:'Inter',sans-serif;">
-                                ${representativeAddress}
+                                ${companyAddress}
                             </div>
                         </div>
                     </div>
@@ -257,14 +262,17 @@ const InvoiceNoTaxDialog = (() => {
                                 <div style="font-family:'Inter',serif;font-size:22px;font-weight:900;color:#FFFFFF;letter-spacing:0.5px;line-height:1.1;">Invoice</div>
                                 <div style="margin-top:6px;display:flex;flex-direction:column;gap:3px;">
                                     <div style="font-size:11px;color:rgba(255,255,255,0.65);display:flex;align-items:center;gap:5px;">
-                                         ${buildRepresentation}
+                                         ${companyContactPersion}
                                     </div>
                                     <div style="font-size:11px;color:rgba(255,255,255,0.65);display:flex;align-items:center;gap:5px;">
-                                        ${representativePhone}
+                                        ${companyContactPhone}
                                     </div>
                                     <div style="font-size:11px;color:rgba(255,255,255,0.65);display:flex;align-items:center;gap:5px;">
-                                        ${representativeAddress}
-                                    </div>
+                                        ${companyContactEmail}
+                                    </div> 
+                                    <div style="font-size:11px;color:rgba(255,255,255,0.65);display:flex;align-items:center;gap:5px;">
+                                        ${companyAddress}
+                                    </div>  
                                 </div>
                             </div>
                         </div>
@@ -439,7 +447,7 @@ const InvoiceNoTaxDialog = (() => {
                 </div>`,
             contentCreated: (me) => {
                 const container = me.divModal.querySelector('[name="pi_container"]');
-                container.innerHTML = buildInvoiceHTML(op.invoice, op.setting);
+                container.innerHTML = buildInvoiceHTML(op.invoice, op.setting, op.company);
                 wireButtons(container);
             },
             buttons: [{ label: "Close", cssClass: "btn btn-secondary", click: (me) => me.hide() }]
