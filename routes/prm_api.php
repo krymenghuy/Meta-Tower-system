@@ -352,8 +352,10 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('invoice_setti
     Route::post('/save', [InvoiceSettingController::class, 'saveInvoiceSetting']);
     Route::post('/update-toggle-button', [InvoiceSettingController::class, 'updateToglleButton']);
     Route::post('/get-toggle-button', [InvoiceSettingController::class, 'getToglleButton']);
-    Route::post('/get-invoice-building-info', [InvoiceSettingController::class, 'getInvoiceBuildingInfo']);
+    // Route::post('/get-invoice-building-info', [InvoiceSettingController::class, 'getInvoiceBuildingInfo']);
+    Route::post('/save-invoice-representative', [InvoiceSettingController::class, 'saveInvoiceSettingRepresentative']);
     Route::post('/save-QR', [InvoiceSettingController::class, 'saveQR']);
+    Route::post('/delete-QR', [InvoiceSettingController::class, 'deleteQR']);
 });
 
 

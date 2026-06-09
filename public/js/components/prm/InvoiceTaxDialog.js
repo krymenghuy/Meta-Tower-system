@@ -70,9 +70,12 @@ const InvoiceTaxDialog = (() => {
         const balance       = parseFloat(invoice.due_amount     || 0);
 
         // Visibility Flags (Normalized values checking integer conversion status)
-        const showPayStatus  = setting.show_pay_status;
-        const showBaland     = setting.show_balance;
+        const showPmtStatus  = setting.show_pmt_status;
+        const showBalance     = setting.show_balance;
         const showAmountPaid = setting.show_amount_paid;
+        const QR_file        = setting.QR_file;
+        const qr_file_name      = setting.qr_file_name;
+        const showSign        = setting.show_sign;
 
         const companyLogo  = company.logo_url;
         const email    = company.email ;
@@ -89,7 +92,6 @@ const InvoiceTaxDialog = (() => {
                 ${isAmountDisc ? currency : ''}${fmt(totalDiscount)}${!isAmountDisc ? '%' : ''}
             </span>`;
         }
-
         const today = new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
 
         const statusColor = balance <= 0 ? "#059669" : (paid > 0 ? "#D97706" : "#DC2626");
@@ -196,10 +198,10 @@ const InvoiceTaxDialog = (() => {
                             <div style="width:70px;height:76px;background:rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;">
                                 <img src="${companyLogo}" alt="Logo"
                                     style="width:60px;height:63px;object-fit:contain;"
-                                    onerror="this.parentElement.innerHTML='<span style=\'font-size:22px;font-weight:900;color:#fff;font-family:Playfair Display,serif;\'>M</span>'">
+                                    onerror="this.parentElement.innerHTML='<span style=\'font-size:22px;font-weight:900;color:#fff;font-family:Inter,serif;\'>M</span>'">
                             </div>
                             <div>
-                                <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:#FFFFFF;letter-spacing:0.5px;line-height:1.1;">${companyName}</div>
+                                <div style="font-family:'Inter',serif;font-size:22px;font-weight:900;color:#FFFFFF;letter-spacing:0.5px;line-height:1.1;">${companyName}</div>
                                 <div style="margin-top:6px;display:flex;flex-direction:column;gap:3px;">
                                     <div style="font-size:11px;color:rgba(255,255,255,0.65);display:flex;align-items:center;gap:5px;">
                                          ${email}
@@ -215,11 +217,11 @@ const InvoiceTaxDialog = (() => {
                         </div>
 
                         <div style="text-align:right;position:relative;">
-                            <div style="font-family:'Playfair Display',serif;font-size:32px;font-weight:900;color:#FFFFFF;letter-spacing:-0.5px;line-height:1;">INVOICE</div>
+                            <div style="font-family:'Inter',serif;font-size:32px;font-weight:900;color:#FFFFFF;letter-spacing:-0.5px;line-height:1;">INVOICE</div>
                             <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:6px;letter-spacing:0.5px;text-transform:uppercase;">Invoice Number</div>
                             <div style="font-size:16px;font-weight:700;color:#FDE68A;margin-top:2px;letter-spacing:0.3px;">${invoice.code || "—"}</div>
                             
-                            ${showPayStatus ? `
+                            ${showPmtStatus ? `
                             <div style="display:inline-block;margin-top:6px;padding:4px 12px;border-radius:20px;background:${statusBg};color:${statusColor};font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;">
                                 ${statusLabel}
                             </div>
@@ -262,8 +264,18 @@ const InvoiceTaxDialog = (() => {
                         </table>
                     </div>
 
-                    <div style="display:flex;justify-content:flex-end;padding:24px 0px;">
-                        <div style="min-width:300px;border:1px solid #E5E9F5;border-radius:12px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.03);">
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:24px 0px;gap:16px;">
+
+                        ${qr_file_name != null && QR_file
+                            ? `<div style="width:100px;height:100px;border:1px solid #E5E9F5;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.03);flex-shrink:0;">
+                                    <img src="${QR_file}" alt="QR Code" style="width:100px;height:100px;object-fit:contain;" />
+                            </div>`
+                            : ''
+                        }
+
+                        <div style="flex:1;"></div>
+
+                        <div style="width:340px;flex-shrink:0;border:1px solid #E5E9F5;border-radius:12px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.03);">
                             <table style="width:100%;border-collapse:collapse;">
                                 <tr class="pi-totals-row">
                                     <td style="padding:12px 16px;color:#666;">Sub Total</td>
@@ -277,20 +289,17 @@ const InvoiceTaxDialog = (() => {
                                         ${currency}${fmt(subTotal - netTotal)}
                                     </td>
                                 </tr>
-
                                 <tr class="pi-totals-row" style="background:#F8FAFF;border-top:2px solid #E5E9F5;">
                                     <td style="padding:12px 16px;color:#111;font-weight:700;">Total (Net)</td>
                                     <td style="padding:12px 16px;text-align:right;font-weight:700;color:#111;font-size:14px;">${currency}${fmt(netTotal)}</td>
                                 </tr>
-
                                 ${showAmountPaid ? `
                                 <tr class="pi-totals-row">
                                     <td style="padding:12px 16px;color:#059669;">Amount Paid</td>
                                     <td style="padding:12px 16px;text-align:right;font-weight:600;color:#059669;">${currency}${fmt(paid)}</td>
                                 </tr>
                                 ` : ''}
-
-                                ${showBaland ? `
+                                ${showBalance ? `
                                 <tr style="background:linear-gradient(135deg,#0F2060,#1A3D91);">
                                     <td style="padding:14px 16px;color:#fff;font-weight:700;">Balance Due</td>
                                     <td style="padding:14px 16px;text-align:right;font-weight:800;color:#FDE68A;font-size:16px;">${currency}${fmt(balance)}</td>
@@ -298,6 +307,7 @@ const InvoiceTaxDialog = (() => {
                                 ` : ''}
                             </table>
                         </div>
+
                     </div>
 
                     ${invoice.general_remark ? `
@@ -306,10 +316,30 @@ const InvoiceTaxDialog = (() => {
                         <div style="font-size:12px;color:#78350F;line-height:1.5;">${invoice.general_remark}</div>
                     </div>` : ""}
 
+                    ${showSign ? `
+                                <div style="display:flex;justify-content:space-between;margin-top:10px; padding:24px 60px 16px;gap:120px; border-top:1px solid #E5E9F5">
+                                <div style="flex:1;text-align:center;">
+                                    <div style="font-size:11px;color:#6B7280;margin-bottom:36px;">Customer's Signature </div>
+                                    <div style="border-bottom:1px dashed #E5E9F5;"></div>
+                                </div>
+                                <div style="flex:1;text-align:center;">
+                                    <div style="font-size:11px;color:#6B7280;margin-bottom:36px;">Authorized Signature</div>
+                                    <div style="border-bottom:1px dashed #E5E9F5;"></div>
+                                </div>
+                            </div>
+                            ` : ''}
+
+                  
+
                     <div style="display:flex;justify-content:space-between;align-items:flex-end;padding:14px 24px;background:#F8FAFF;border-top:1px solid #E5E9F5;flex-wrap:wrap;gap:12px;">
                         <div>
                             <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#1A3D91;margin-bottom:4px;">Terms &amp; Conditions</div>
-                            <div style="font-size:10px;color:#9CA3AF;line-height:1.6;">Payment is due by the date shown above.<br>Late payments may incur additional charges.</div>
+                            <div style="font-size:10px;color:#9CA3AF;line-height:1.6;">
+                                1. This invoice is for the monthly office rental fee.<br>
+                                2. Payment is due by 05th every month.<br>
+                                3. Late payments may incur 2% per day as outlined in the lease agreement.<br>
+                                4. The security deposit is held separately and will only be refunded after lease termination.
+                            </div>
                         </div>
                         <div style="text-align:right;">
                             <div style="font-size:10px;color:#9CA3AF;">Generated by Property Manager</div>
@@ -346,7 +376,7 @@ const InvoiceTaxDialog = (() => {
         if (!op || !op.invoice_id) {
             cv_interact?.error("Invoice ID is missing");
             return;
-        }
+    }
 
         const dlg = new GeneralDialog({
             title: "Tax Invoice",

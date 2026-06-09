@@ -114,7 +114,20 @@ class InvoiceSettingController extends Controller
         // FIXED: Passing 'null' explicitly for $id so $ss aligns with the 3rd parameter
         $res = $invoiceSetting->saveQR($req->all(), null, $ss);
 
-        return JDV::result($res);
+        return JDV::raw($res);
     }
+        public function deleteQR(Request $req)
+        {
+            $ss = XAuthService::verifyAuth($req, -1);
+            if ($ss->status_code !== 200) {
+                return JDV::raw($ss);
+            }
 
+            $invoiceSetting = new InvoiceSetting();
+
+            // ✅ id=1 is always the settings row, $ss passed correctly
+            $res = $invoiceSetting->deleteQR(1, $ss);
+
+            return JDV::raw($res);
+        }
 }
