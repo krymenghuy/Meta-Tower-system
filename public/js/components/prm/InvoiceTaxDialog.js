@@ -194,6 +194,13 @@ const InvoiceTaxDialog = (() => {
                         <div style="position:absolute;right:-40px;top:-40px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,0.04);pointer-events:none;"></div>
                         <div style="position:absolute;right:60px;top:20px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,0.05);pointer-events:none;"></div>
 
+                        <!-- ✅ INVOICE text absolutely centered -->
+                        <div style="position:absolute;top:30%;left:50%;transform:translate(-50%,-50%);pointer-events:none;z-index:1;">
+                            <div style="font-family:'Inter',serif;font-size:32px;font-weight:900;color:#FFFFFF;letter-spacing:-0.5px;line-height:1;white-space:nowrap;">
+                                INVOICE
+                            </div>
+                        </div>
+
                         <div style="display:flex;gap:18px;align-items:flex-start;position:relative;">
                             <div style="width:70px;height:76px;background:rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;">
                                 <img src="${companyLogo}" alt="Logo"
@@ -204,7 +211,7 @@ const InvoiceTaxDialog = (() => {
                                 <div style="font-family:'Inter',serif;font-size:22px;font-weight:900;color:#FFFFFF;letter-spacing:0.5px;line-height:1.1;">${companyName}</div>
                                 <div style="margin-top:6px;display:flex;flex-direction:column;gap:3px;">
                                     <div style="font-size:11px;color:rgba(255,255,255,0.65);display:flex;align-items:center;gap:5px;">
-                                         ${email}
+                                        ${email}
                                     </div>
                                     <div style="font-size:11px;color:rgba(255,255,255,0.65);display:flex;align-items:center;gap:5px;">
                                         ${phone}
@@ -217,7 +224,7 @@ const InvoiceTaxDialog = (() => {
                         </div>
 
                         <div style="text-align:right;position:relative;">
-                            <div style="font-family:'Inter',serif;font-size:32px;font-weight:900;color:#FFFFFF;letter-spacing:-0.5px;line-height:1;">INVOICE</div>
+                            <!-- INVOICE text removed from here -->
                             <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:6px;letter-spacing:0.5px;text-transform:uppercase;">Invoice Number</div>
                             <div style="font-size:16px;font-weight:700;color:#FDE68A;margin-top:2px;letter-spacing:0.3px;">${invoice.code || "—"}</div>
                             
