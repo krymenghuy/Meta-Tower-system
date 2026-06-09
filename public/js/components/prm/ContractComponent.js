@@ -430,7 +430,7 @@ var ContractComponent = new (function () {
                               // show renew only when status is active and end date is within next 3 months (not for pending)
                               const showRenew = isActive && endDate && mThis.isWithinNextThreeMonths(endDate);
                 const canModify = !isExpired && !isTerminated;
-
+                 menu.print_contract.style.display = statusId !== 2 ? 'none' : 'block';
                 menu.edit_contract.style.display = canModify ? 'block' : 'none';
                 menu.renew_contract.style.display = showRenew ? 'block' : 'none';
                 if (menu.terminate_contract) {
