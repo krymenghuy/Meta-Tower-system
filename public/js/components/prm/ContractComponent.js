@@ -150,7 +150,7 @@ var ContractComponent = new (function () {
             className: 'col_action align-middle',
             data: (data) => `
                 <div class="d-flex justify-content-center align-items-end">
-                    <a href="javascript:void(0)" class="btn_contract_action" data-id="${data.id}" data-statusid="${data.status_id}" data-status="${data.status ?? ''}" data-end-date="${data.end_date ?? ''}" aria-haspopup="true" aria-expanded="false" style="padding: 0 10px;">
+                    <a href="javascript:void(0)" class="btn_contract_action" data-id="${data.id}" data-tenantid="${data.tenant_id}" data-statusid="${data.status_id}" data-status="${data.status ?? ''}" data-end-date="${data.end_date ?? ''}" aria-haspopup="true" aria-expanded="false" style="padding: 0 10px;">
                        <span>
                             <i class="fa-solid fa-ellipsis-vertical text-prm-custom fs-5"></i>
                        </span>
@@ -170,6 +170,7 @@ var ContractComponent = new (function () {
             tableClass: 'table table--white rounded-2 header-uppercase',
             rowCreated: (data, index, tr) => {
                 tr.dataset.statusid = data.status_id;
+                tr.dataset.tenantid = data.tenant_id;
                 tr.dataset.status = data.status ?? '';
                 tr.dataset.endDate = data.end_date ?? '';
                 tr.classList.add('contract');
@@ -218,10 +219,9 @@ var ContractComponent = new (function () {
                 mThis.ContractListView.showPage(mThis.getFilterData());
 
                 // Re-initialize tooltips after filter
-                setTimeout(() => {
-                    // $('[data-bs-toggle="tooltip"]').tooltip('dispose');
-                    $('[data-bs-toggle="tooltip"]').tooltip();
-                }, 500);
+                // setTimeout(() => {
+                //     $('[data-bs-toggle="tooltip"]').tooltip();
+                // }, 500);
             }
         });
 
@@ -231,13 +231,7 @@ var ContractComponent = new (function () {
             clearTimeout(mThis.search_timeout);
             mThis.search_timeout = setTimeout(() => {
                 mThis.ContractListView.showPage(mThis.getFilterData());
-
-                // Re-initialize tooltips after search
-                setTimeout(() => {
-                    // $('[data-bs-toggle="tooltip"]').tooltip('dispose');
-                    $('[data-bs-toggle="tooltip"]').tooltip();
-                }, 500);
-            }, 250);
+            }, 500);
         });
 
         mThis.initAlready = true;
@@ -492,189 +486,19 @@ var ContractComponent = new (function () {
         ContractDialog.show(op);
     }
     mThis.printContract = (id,menulink)=>{
+        const tr = menulink.closest('tr');
+        const tenant_id = tr?.dataset.tenantid;
         let op = {
             id: id,
+            tenant_id: tenant_id,
             btn:menulink,
             onClose: () => {
                 mThis.ContractListView.showPage(mThis.getFilterData())
             }
         };
-        console.log(55,op);
-
-    //    if(!AuthManager.allowed(359)) return;
-       let html = `
-                <div id="full_elbody" style="zoom:95%">
-                <style>
-                    @media print {
-                        body {
-                            font-family: "Khmer OS Battambang", Arial, sans-serif !important;
-                            font-size: 12px;
-                            color: #000;
-                        }
-                    }
-
-                    #full_elbody{
-                        font-family: "Khmer OS Battambang", Arial, sans-serif;
-                    }
-
-                    .report-nation {
-                        font-family: "Khmer OS Muol Light", Arial, sans-serif;
-                        line-height: 1.5;
-                    }
-
-                    .kh-title {
-                        font-size: 14px;
-                        font-weight: normal;
-                    }
-
-                    .kh-subtitle {
-                        display: flex;
-                        justify-content: center;
-                        gap: 14px;
-                        font-size: 14px;
-                        letter-spacing: 0.6px;
-                        font-family: "Khmer OS Battambang", Arial, sans-serif;
-                    }
-
-                    .en-title {
-                        font-size: 12px;
-                        font-weight: bold;
-                        letter-spacing: 0.5px;
-                    }
-                    .en-subtitle {
-                        display: flex;
-                        justify-content: center;
-                        gap: 16px;
-                        font-size: 12px;
-                        font-weight: bold;
-                        letter-spacing: 0.6px;
-                    }
-
-                    .center-title {
-                        margin-top: 6rem !important;
-                    }
-
-
-                    .report-title p {
-                        margin: 0;
-                    }
-
-                    .table-report {
-                        width: 100%;
-                        border-collapse: collapse;
-                    }
-
-                    .table-report th,
-                    .table-report td {
-                        border: 1px solid #000;
-                        padding: 4px 6px;
-                        vertical-align: middle;
-                    }
-
-                    .table-report thead th {
-                        background: #ffff99;
-                        text-align: center;
-                        font-weight: bold;
-                    }
-
-                    .text-center {
-                        text-align: center;
-                    }
-                </style>
-
-                <div class="page">
-                    <div class="row">
-                        <div class="col-3">
-                            <div class="d-flex align-items-to">
-                                <div class=" position-relative" style="max-width: 120px;">
-                                    <img src="${main_view.base_url}/assets/images/meta/Meta_logo.png"alt="Company Logo"class="img-fluid">
-                                </div>
-                            </div>
-                            
-                        </div>
-                        <div class="col-5 center-title">
-                            <h5 class="fw-bold text-center mb-1 ps-4 ">List All Tenants</h5>
-                        </div>
-
-                        <div class="col-4 ms-auto report-nation">
-                            <div class="kh-title text-center">ព្រះរាជាណាចក្រកម្ពុជា</div>
-                            <div class="kh-subtitle text-center">
-                                <span>ជាតិ</span>
-                                <span>សាសនា</span>
-                                <span>ព្រះមហាក្សត្រ</span>
-                            </div>
-                            <div class="en-title text-center">KINGDOM OF CAMBODIA</div>
-                            <div class="en-subtitle text-center">
-                                <span>NATION</span>
-                                <span>RELIGION</span>
-                                <span>KING</span>
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <table class="table-report">
-                        <thead>
-                            <tr>
-                                <th>N°</th>
-                                <th>Code</th>
-                                <th>Name</th>
-                                <th>Sex</th>
-                                <th>Legal Name</th>
-                                <th>Date Of Birth</th>
-                                <th>National ID</th>
-                                <th>Passport</th>
-                                <th>Phone Number</th>
-                                <th>Email</th>
-                                <th style="width: 200px;">Address</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                `;
-                // console.log(JSON.stringify(op, null, 2));
-
-
-                vsapi.call(`${main_view.base_url}/prm/tenant/list`, op, false, null, null)
-                    .then(res => {
-                        if (res.status_code === 200) {
-
-                            const d = res.data.list;
-                            let i = 1;
-
-                            d.forEach(data => {
-                                html += `
-                                    <tr>
-                                       <td class="text-center">${i++}</td>
-                                        <td class="text-center">${data.code ?? ""}</td>
-                                        <td>${data.name ?? ""}</td>
-                                        <td class="text-center">${data.sex ?? ""}</td>
-                                        <td>${data.legal_name ?? ""}</td>
-                                        <td>${data.date_of_birth ?? ""}</td>
-                                        <td>${data.national_id ?? ""}</td>
-                                        <td>${data.passport_number ?? ""}</td>
-                                        <td>${data.phone_number ?? ""}</td>
-                                        <td>${data.email ?? ""}</td>
-                                        <td>${data.address ?? ""}</td>
-                                    </tr>
-                                `;
-                            });
-
-                            html += `
-                                </tbody>
-                            </table>
-
-                            <div style="text-align:right; margin-top:10px;">
-                                Date : ${new Date().toLocaleDateString('en-GB')}
-                            </div>
-                        </div>
-                        </div>
-                    `;
-
-                            htmlToTable('Other Requested', html);
-                        }
-                    });
-
-                return;
+        console.log(6666,op);
+        
+        CreateContractDialog.show(op);
     }
     mThis.renewContract = (id, menulink) => {
         if (!id) return;
@@ -782,10 +606,9 @@ var ContractComponent = new (function () {
             mThis.ContractListView.showPage(mThis.getFilterData());
 
             // Initialize tooltips after table loads
-            setTimeout(() => {
-                $('[data-bs-toggle="tooltip"]').tooltip();
-                // console.log('Tooltips initialized');
-            }, 800);
+            // setTimeout(() => {
+            //     $('[data-bs-toggle="tooltip"]').tooltip();
+            // }, 800);
 
             // Auto-refresh every hour to update contract statuses
             if (!mThis.autoRefreshInterval) {
@@ -794,10 +617,10 @@ var ContractComponent = new (function () {
                     mThis.ContractListView.showPage(mThis.getFilterData());
 
                     // Re-initialize tooltips after refresh
-                    setTimeout(() => {
-                        $('[data-bs-toggle="tooltip"]').tooltip('dispose');
-                        $('[data-bs-toggle="tooltip"]').tooltip();
-                    }, 800);
+                    // setTimeout(() => {
+                    //     $('[data-bs-toggle="tooltip"]').tooltip('dispose');
+                    //     $('[data-bs-toggle="tooltip"]').tooltip();
+                    // }, 800);
                 }, 3600000); // 1 hour = 3600000ms
             }
         });

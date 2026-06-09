@@ -3,12 +3,17 @@
 namespace App\Models\Prm;
 
 use App\Models\Prm\GeneralSettings;
+use App\Models\CompanyProfile;
 use DV;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 use DBX;
 use XPublicStorage;
-
+use PhpOffice\PhpWord\TemplateProcessor;
+use Carbon\Carbon;
+use XBranch;
+use XSubscriber;
+use XSubscription;
 
 class Contract
 {
@@ -1255,4 +1260,163 @@ class Contract
 
         return $months;
     }
+    static function createContract($id, $ss)
+    {
+
+        $tenant = DB::table('tenants as t')
+            ->join('contracts as c','c.tenant_id','=','t.id')
+            ->join('building_spaces as bs','bs.id','=','c.space_id')
+            ->join('buildings as b','b.id','=','bs.building_id')
+            ->where('t.id', $id)
+            ->selectRaw("t.id,t.branch_id,t.name,t.code,t.national_id,t.passport_number,t.date_of_birth,t.nationality_id,t.sex,t.tenant_type,t.status_id,t.legal_name,t.phone_number,t.email,t.address,c.start_date,c.end_date,bs.code as unit_code,bs.floor_id,b.name as building")
+            ->first();
+        if (!$tenant) {
+            return DV::error("Tenant ID {$id} does not exist.");
+        }
+
+        $x = new CompanyProfile($ss);
+        $p = (object) $x->getDetails($ss);
+
+        $p->branches = [
+            (object) ['address_kh' => $p->address_kh ?? '', 'address' => $p->address ?? '', 'phone_number' => $p->phone_number ?? '', 'email' => $p->email ?? ''],
+            (object) ['address_kh' => 'ផ្ទះលេខ១២ ផ្លូវ៤៥៤ សង្កាត់ទួលទំពូងទី១ ខណ្ឌចំការមន រាជធានីភ្នំពេញ', 'address' => '#16, St.454, Sangkat Toul Tum Poung 1, Khan Chamkarmon, Phnom Penh', 'phone_number' => $p->phone_number ?? '', 'email' => $p->email ?? ''],
+        ];
+
+        $com_rep_name = $p->first_cp_name ?? 'CP Name';
+        $com_rep_nid = $p->first_cp_nid ?? '(ID Card)';
+        $com_rep_sex = $p->first_cp_sex ?? 'Sex';
+        $com_rep_dob = $p->first_cp_dob ?? '';
+        $com_rep_nid_issue_date = $p->first_cp_nid_issue_date ?? '';
+        $com_address = $p->billing_address ?? '';
+
+        $tenant_name = $tenant->name;
+        $tenant_sex = $tenant->sex ?? '(Sex)';
+        $tenant_nid = $tenant->national_id ?? '';
+        $tenant_phone = $tenant->phone_number ?? '';
+        $tenant_address = $tenant->address ?? '';
+        $start_date = $tenant->start_date ?? '';
+        $end_date = $tenant->end_date ?? '';
+        $unit = $tenant->unit ?? '';
+        $floor = $tenant->floor_id ?? '';
+        $building = $tenant->building ?? '';
+
+        $data = [
+            'issue_date' => getKhmerDate(null),
+            'com_address' => $com_address,
+            'com_rep_name' => $com_rep_name,
+            'com_rep_sex' => self::getSex($com_rep_sex),
+            'com_rep_dob' => getKhmerDate($com_rep_dob),
+            'com_rep_nid' => $com_rep_nid,
+            'com_rep_nid_issue_date' => getKhmerDate($com_rep_nid_issue_date),
+
+            'tenant_name' => $tenant_name,
+            'tenant_code' => $tenant->code ?? '(ID)',
+            'tenant_sex' => self::getSex($tenant_sex),
+            'tenant_phone' => $tenant_phone,
+            'tenant_nid' => $tenant_nid,
+            'tenant_nid_issue_date' => getKhmerDate($com_rep_nid_issue_date),
+
+            'building' => $building,
+            'unit' => $unit,
+            'floor' => $floor,
+            'start_date' => $start_date ? getKhmerDate($start_date) : '',
+            'end_date' => $end_date ? getKhmerDate(self::calculateEndDate($end_date)) : '',
+
+
+            // 'position' => $emp_position,
+            // 'salary_level' => $emp_salary,
+            // 'khr_amount' => $emp_salary,
+            // 'khr_amount_in_word' => self::convertToKhmerWords($emp_salary),
+            // 'khr_salary' => $emp_salary,
+            // 'khr_salary_in_word' => self::convertToKhmerWords($emp_salary),
+            'tenant_address' => $tenant_address,
+            'tenant_dob' => getKhmerDate($tenant->date_of_birth ?? null),
+            'signature_date' => getKhmerDate(null),
+        ];
+        // dd($data);
+
+        // Define the template path
+        $templatePath = base_path('/storage/doc_templates/staff_contract_unlimited.docx');
+        if (!file_exists($templatePath)) {
+            \Log::error("Contract Template file not found at {$templatePath}");
+            return DV::error('Contract template not found.');
+        }
+
+        // Load the template
+        $templateProcessor = new TemplateProcessor($templatePath);
+
+        // Replace placeholders with actual values
+        foreach ($data as $key => $value) {
+            $templateProcessor->setValue($key, $value);
+        }
+
+        // Create a temporary file in memory
+        $tempFile = tempnam(sys_get_temp_dir(), 'contract');
+        $templateProcessor->saveAs($tempFile);
+
+        // Set headers for force download
+        $fileName = 'contract_' . $data['tenant_code'] . '.docx';
+        header('Content-Description: File Transfer');
+        header('Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+        header('Content-Disposition: attachment; filename="' . $fileName . '"');
+        header('Expires: 0');
+        header('Cache-Control: must-revalidate');
+        header('Pragma: public');
+        header('Content-Length: ' . filesize($tempFile));
+
+        // Prevent buffer issues
+        ob_clean();
+        flush();
+        readfile($tempFile);
+
+        // Delete temporary file
+        unlink($tempFile);
+        exit;
+    }
+     static function getSex($sex){
+       if($sex ==='M') return 'ប្រុស';
+       else if ($sex ==='F') return 'ស្រី';
+       else 'មិនប្រាប់';
+    }
+    static function calculateEndDate($startDate)
+    {
+        if (!$startDate) {
+            return null;
+        }
+        return Carbon::parse($startDate)->addMonths(3)->format('Y-m-d');
+    }
+    static function convertToKhmerWords($number) {
+        $khmerDigits = ['0' => 'សូន្យ', '1' => 'មួយ', '2' => 'ពីរ', '3' => 'បី', '4' => 'បួន', '5' => 'ប្រាំ', '6' => 'ប្រាំមួយ', '7' => 'ប្រាំពីរ', '8' => 'ប្រាំបី', '9' => 'ប្រាំបួន'];
+        $khmerUnits = ['', 'ម៉ឺន', 'សែន', 'លាន', 'កោដិ'];
+
+        // Convert the number to an integer if it ends with .00
+        if (strpos($number, '.') !== false) {
+            $number = rtrim(rtrim($number, '0'), '.'); // Remove trailing .00 or .0
+        }
+
+        // Split the number into integer and decimal parts
+        $parts = explode('.', strval($number));
+        $integerPart = $parts[0];
+
+        // Convert the integer part
+        $integerInWords = '';
+        $length = strlen($integerPart);
+
+        for ($i = 0; $i < $length; $i++) {
+            $digit = $integerPart[$i];
+            $position = $length - $i - 1;
+
+            if ($digit !== '0') {
+                $integerInWords .= $khmerDigits[$digit] . ' ' . ($khmerUnits[$position % 4] ?? '') . ' ';
+            }
+
+            if ($position % 4 === 0 && $position !== 0) {
+                $integerInWords .= 'លាន ';
+            }
+        }
+
+        return trim($integerInWords);
+    }
+
+   
 }

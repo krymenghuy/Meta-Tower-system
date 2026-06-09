@@ -8,7 +8,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 use DBX;
 use XPublicStorage;
-
+use App\Models\CompanyProfile;
+use App\Models\Prm\Tenant;
 class Contracts  //extends Model
 {
     protected $id = null;
@@ -382,4 +383,5 @@ class Contracts  //extends Model
         }
         return DV::error('Error delete contract...!!');
     }
+    
 }

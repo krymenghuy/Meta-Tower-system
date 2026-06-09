@@ -17,119 +17,162 @@ var ReservationComponent = (() => {
     mThis.autoRefreshTimer = null;
     mThis.autoRefreshStartTimeout = null;
 
-    mThis.cols = [
-        {
-            title: "",
-            className: "align-middle text-capitalize",
-        },
-        // {
-        //     transTitle: "titles.Tenant",
-        //     className: "align-middle",
-        //     data: (data) => {
-        //         return `<span class="text-primary-custom text-capitalize">${data.tenant_name ?? "_"}</span>
-        //                 <span class="d-block text-primary"style="font-size:12px;">${data.phone_number ?? "_"}</span>`;
-        //     },
-        // },
-        {
-            transTitle: "titles.Amenity",
-            className: "align-middle",
-            data: (data) => {
-                return `<span class="text-primary-custom text-capitalize">${data.amenity_name ?? "_"}</span>`;
-            },
-        },
-        {
-            transTitle: "titles.Date",
-            className: "align-middle",
-            data: (data) => {
-                return `<span class="d-block text-prm-custom">${data.booking_date ?? ""}</span>`;
-            },
-        },
-        {
-            transTitle: "titles.Time",
-            className: "align-middle",
-            data: (data) => {
-                const to12h = (hhmm) => {
-                    if (!hhmm) return "";
-                    const [h, m] = String(hhmm).trim().split(":").map(Number);
-                    const hour = isNaN(h) ? 0 : h % 24;
-                    const min = isNaN(m) ? 0 : m;
-                    const ampm = hour < 12 ? "AM" : "PM";
-                    const h12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
-                    
-                    return `${h12}:${String(min).padStart(2, "0")} ${ampm}`;
-                };
-                const start12 = to12h((data.start_time ?? "").substring(0, 5));
-                const end12 = to12h((data.end_time ?? "").substring(0, 5));
-                return `<span class="d-block">${start12} - ${end12}</span>`;
-            },
-        },
-        {
-            transTitle: "titles.Remark",
-            className: "align-middle",
-            data: (data, index, tr) => {
-                return `
-                    <div class="text-primary-custom" style="width:250px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ?? "_"}</span>
-                    </div>
-                `;
-            },
-        },
-        {
-            transTitle: "titles.Status",
-            className: "align-middle text-center",
-            data: (data) => {
-                const status = (data.status ?? "").toLowerCase();
-                let cls =
-                    "badge border border-secondary text-secondary bg-secondary-subtle";
-                let label = "Upcoming";
-                if (status === "upcoming") {
-                    cls = "badge border border-info text-info bg-info-subtle";
-                    label = "Upcoming";
-                } else if (status === "in-progress") {
-                    cls =
-                        "badge border border-warning text-warning bg-warning-subtle";
-                    label = "In-Progress";
-                } else if (status === "completed") {
-                    cls =
-                        "badge border border-success text-success bg-success-subtle";
-                    label = "Completed";
-                } else if (status === "cancelled") {
-                    cls =
-                        "badge border border-danger text-danger bg-danger-subtle";
-                    label = "Cancelled";
-                }
-                return `
-                    <span class="${cls} px-3 d-inline-flex align-items-center" style="min-width:90px">
-                        ${label}
-                    </span>
-                `;
-            },
-        },
-        // {
-        //     transTitle: "titles.Last Updated",
-        //     className: "align-middle",
-        //     data: (data, index, tr) => {
-        //         return `<div class="d-flex flex-column">
-        //                     <span class="text-muted">${data.updated_at ?? ""}</span>
-        //                 </div>`;
-        //     },
-        //     <span class="text-capitalize text-start text-prm-custom"><span>${data.update_user ?? ""}</span></span>
-        // },
-        {
-            transTitle: "titles.Action",
-            className: "col_action align-middle",
-            data: (data) => {
-                // console.log(444, data.status_id);
+    mThis.escapeHtml = (str) => {
+        if (str == null || str === "") return "";
+        const div = document.createElement("div");
+        div.textContent = String(str);
+        return div.innerHTML;
+    };
 
-                if (data.status_id == 2) return "";
-                return `<div class="d-flex justify-content-center align-items-end">
-                    <a href="javascript:void(0)" class="btn--Options btn_reservation_action" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
-                       <i class="fa-solid fa-ellipsis-vertical text-black fs-5"></i>
-                    </a>
-                </div>`;
+    mThis.to12h = (hhmm) => {
+        if (!hhmm) return "";
+        const [h, m] = String(hhmm).trim().split(":").map(Number);
+        const hour = isNaN(h) ? 0 : h % 24;
+        const min = isNaN(m) ? 0 : m;
+        const ampm = hour < 12 ? "AM" : "PM";
+        const h12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+        return `${h12}:${String(min).padStart(2, "0")} ${ampm}`;
+    };
+
+    mThis.getStatusMeta = (data) => {
+        const status = (data.status ?? "").toLowerCase();
+        const statusId = parseInt(data.status_id, 10);
+        const map = {
+            upcoming: {
+                label: "Upcoming",
+                rowCls: "reservation-row--upcoming",
+                badgeCls: "reservation-row__status-badge reservation-row__status-badge--upcoming",
             },
-        },
-    ];
+            "in-progress": {
+                label: "In-Progress",
+                rowCls: "reservation-row--in-progress",
+                badgeCls: "reservation-row__status-badge reservation-row__status-badge--in-progress",
+            },
+            completed: {
+                label: "Completed",
+                rowCls: "reservation-row--completed",
+                badgeCls: "reservation-row__status-badge reservation-row__status-badge--completed",
+            },
+            cancelled: {
+                label: "Cancelled",
+                rowCls: "reservation-row--cancelled",
+                badgeCls: "reservation-row__status-badge reservation-row__status-badge--cancelled",
+            },
+        };
+        const meta = map[status] || null;
+        if (meta) return meta;
+        if (statusId === 1) return map.upcoming;
+        if (statusId === 2) return map["in-progress"];
+        if (statusId === 3) return map.completed;
+        if (statusId === 4) return map.cancelled;
+        return {
+            label: data.status ?? "—",
+            rowCls: "",
+            badgeCls: "reservation-row__status-badge",
+        };
+    };
+
+    mThis.renderReservationAction = (data) => {
+        if (data.status_id == 2) return "";
+        return `<a href="javascript:void(0)" class="btn_reservation_action reservation-row__menu-btn"
+            data-id="${data.id}"
+            data-statusid="${data.status_id ?? ""}"
+            aria-haspopup="true" aria-expanded="false"
+            title="More options">
+            <i class="fa-solid fa-ellipsis-vertical"></i>
+        </a>`;
+    };
+
+    mThis.renderReservationList = (container, items) => {
+        items = items ?? [];
+        container.innerHTML = "";
+
+        if (!items.length) {
+            container.innerHTML = `
+                <div class="reservation-list-empty text-center py-5 px-3">
+                    <span class="reservation-list-empty__icon d-inline-flex align-items-center justify-content-center mb-3">
+                        <i class="fa-regular fa-calendar-check"></i>
+                    </span>
+                    <p class="mb-1 fw-semibold text-prm-custom">No reservations found</p>
+                    <small class="text-muted">Try adjusting your search or filters.</small>
+                </div>`;
+            return;
+        }
+
+        let rowsHtml = "";
+        items.forEach((data) => {
+            const status = mThis.getStatusMeta(data);
+            const amenityName = mThis.escapeHtml(data.amenity_name ?? "—");
+            const bookingDate = mThis.escapeHtml(data.booking_date ?? "—");
+            const start12 = mThis.to12h((data.start_time ?? "").substring(0, 5));
+            const end12 = mThis.to12h((data.end_time ?? "").substring(0, 5));
+            const remarksRaw = (data.remarks ?? "").trim();
+            const remarks = remarksRaw
+                ? mThis.escapeHtml(remarksRaw)
+                : "—";
+            const rowCls = status.rowCls ? ` ${status.rowCls}` : "";
+
+            rowsHtml += `
+            <div class="reservation-row${rowCls} reservation" id="reservation_id${data.id}" data-statusid="${data.status_id ?? ""}">
+                <div class="reservation-row__accent"></div>
+                <div class="reservation-row__grid">
+                    <div class="reservation-row__cell reservation-row__cell--amenity">
+                        <span class="reservation-row__amenity">${amenityName}</span>
+                    </div>
+                    <div class="reservation-row__cell reservation-row__cell--date">
+                        <i class="fa-regular fa-calendar reservation-row__icon"></i>
+                        <span>${bookingDate}</span>
+                    </div>
+                    <div class="reservation-row__cell reservation-row__cell--time">
+                        <i class="fa-regular fa-clock reservation-row__icon"></i>
+                        <span>${start12} - ${end12}</span>
+                    </div>
+                    <div class="reservation-row__cell reservation-row__cell--notes">
+                        <span class="reservation-row__notes-pill">${remarks}</span>
+                    </div>
+                    <div class="reservation-row__cell reservation-row__cell--status">
+                        <span class="${status.badgeCls}">${mThis.escapeHtml(status.label)}</span>
+                    </div>
+                </div>
+                <div class="reservation-row__action">
+                    ${mThis.renderReservationAction(data)}
+                </div>
+            </div>`;
+        });
+
+        container.innerHTML = `
+            <div class="reservation-list">
+                <div class="reservation-list__header">
+                    <div class="reservation-list__header-accent"></div>
+                    <div class="reservation-list__header-grid">
+                        <div class="reservation-list__header-cell reservation-list__header-cell--amenity">
+                            <span class="reservation-list__header-km">ឈ្មោះសេវាកម្ម</span>
+                            <span class="reservation-list__header-en">Amenity</span>
+                        </div>
+                        <div class="reservation-list__header-cell reservation-list__header-cell--date">
+                            <span class="reservation-list__header-km">កាលបរិច្ឆេទ</span>
+                            <span class="reservation-list__header-en">Date</span>
+                        </div>
+                        <div class="reservation-list__header-cell reservation-list__header-cell--time">
+                            <span class="reservation-list__header-km">ម៉ោង</span>
+                            <span class="reservation-list__header-en">Time Detail</span>
+                        </div>
+                        <div class="reservation-list__header-cell reservation-list__header-cell--notes">
+                            <span class="reservation-list__header-km">កំណត់ចំណាំ</span>
+                            <span class="reservation-list__header-en">Administrative Notes</span>
+                        </div>
+                        <div class="reservation-list__header-cell reservation-list__header-cell--status">
+                            <span class="reservation-list__header-km">ស្ថានភាព</span>
+                            <span class="reservation-list__header-en">Status</span>
+                        </div>
+                    </div>
+                    <div class="reservation-list__header-action"></div>
+                </div>
+                <div class="reservation-list__rows">
+                    ${rowsHtml}
+                </div>
+            </div>`;
+    };
 
     mThis.init = () => {
         if (mThis.initAlready) return;
@@ -142,15 +185,9 @@ var ReservationComponent = (() => {
         mThis.ReservationListView = new ListView("_reservation_list", {
             fetchApi: `${main_view.base_url}/prm/tenant/reservation/list-paginate`,
             perPage: 8,
-            // rememberCurrentPage: false,
             apiCluster: main_view.apiCluster,
-            columns: mThis.cols,
-            tableClass:
-                "table table--white rounded-2 overflow-hidden header-uppercase",
-            rowCreated: (data, index, tr) => {
-                tr.dataset.statusid = data.status_id;
-                tr.classList.add("reservation");
-                tr.setAttribute("id", `reservation_id${data.id}`);
+            renderItems: (items, container) => {
+                mThis.renderReservationList(container, items);
             },
             listContainerClass: null,
         });
@@ -176,9 +213,7 @@ var ReservationComponent = (() => {
         window.onresize = () => {
             sh_parent.style.maxHeight = window.innerHeight - 200 + "px";
         };
-        mThis.tblReservation = mThis.ReservationListView.getTable();
-
-        mThis.initDropdownMenus(mThis.tblReservation);
+        mThis.initDropdownMenus(mThis.pr_tbl);
 
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             el.onchange = (e) => {
@@ -238,7 +273,7 @@ var ReservationComponent = (() => {
         const menuOptions = {
             containerElement: table,
             actionButtonClass: "btn_reservation_action",
-            cssClass: "bg-white shadow",
+            cssClass: "reservation-row__dropdown shadow-sm",
             menus: [
                 {
                     html: '<span class="ps-2" vslang="titles.Modify"></span>',

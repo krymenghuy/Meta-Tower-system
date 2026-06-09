@@ -30,6 +30,7 @@ public function getListPaginate($arr = [], $ss = null, $id = null)
     $statusId    = $d->status_id ?? null;
     $dateFrom    = $d->date_from ?? null;
     $dateTo      = $d->date_to ?? null;
+    $tenantId    = $d->tenant_id ?? null;
 
     $currentPage = max(1, (int)($d->current_page ?? 1));
     $perPage     = max(1, (int)($d->per_page ?? 10));
@@ -51,7 +52,8 @@ public function getListPaginate($arr = [], $ss = null, $id = null)
         $statusId,
         $fromDateTime,
         $toDateTime,
-        $id
+        $id,
+        $tenantId
     ) {
         if ($searchValue !== '' && $withSearchJoins) {
             $query->where(function ($q) use ($searchValue) {
@@ -75,6 +77,10 @@ public function getListPaginate($arr = [], $ss = null, $id = null)
 
         if (!empty($id)) {
             $query->where('r.id', $id);
+        }
+
+        if (!empty($tenantId)) {
+            $query->where('r.tenant_id', (int)$tenantId);
         }
     };
 

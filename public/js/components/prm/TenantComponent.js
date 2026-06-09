@@ -290,7 +290,11 @@ var TenantComponent = new (function () {
                                     <img src="${main_view.base_url}/assets/images/meta/Meta_logo.png"alt="Company Logo"class="img-fluid">
                                 </div>
                             </div>
-                            
+                            <div class="d-flex flex-wrap mb-1">
+                                <p class="fw-bold text-capitalize" style="white-space: normal; word-break: break-word;">
+                                    #S8 01-02 Financial, Sangkat Veal Vong, Khan 7Makara, Phnom Penh.
+                                </p>
+                            </div>
                         </div>
                         <div class="col-5 center-title">
                             <h5 class="fw-bold text-center mb-1 ps-4 ">List All Tenants</h5>
@@ -370,7 +374,7 @@ var TenantComponent = new (function () {
                         </div>
                     `;
 
-                            htmlToTable('Other Requested', html);
+                            htmlToTable('Tenant List', html);
                         }
                     });
 
@@ -613,7 +617,7 @@ var TenantComponent = new (function () {
                         .then((res) => {
                             if (res.status_code == 200) {
                                 mThis.renderView();
-                                cv_interact.success("deleted");
+                                cv_interact.success("delete_success_tenant");
                             } else {
                                 cv_interact.error(res.error_message);
                             }
@@ -1787,10 +1791,16 @@ const CreateTenantDialog = (() => {
                             </div>
                     </div>
                     <div class="col-12 row g-2">
-                        <div class="col-12 col-md-6">
+                        <div class="col-12 col-md-3">
                             <div class="vs-material-field">
                                 <input type="text" name="national_id" class="data-input form-control" data-field="national_id" placeholder=" " />
                                 <label vslang="labels.National ID">National ID</label>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-3">
+                            <div class="vs-material-field">
+                                <input type="text" data-type="date" name="nid_issue_date" class="data-input form-control form_input" data-field="nid_issue_date" placeholder=" " />
+                                <label vslang="labels.Issue Date">Issue Date</label>
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
@@ -2110,12 +2120,12 @@ const CreateTenantDialog = (() => {
                                             res.data?.id || null;
                                         me.hide(true, op, newTenantId);
                                         if (me.dataOptions.id > 0) {
-                                            cv_interact.success("updated");
+                                            cv_interact.success("update_success_tenant");
                                             me.previewZone.classList.add(
                                                 "d-none",
                                             );
                                         } else {
-                                           cv_interact.success("created");
+                                           cv_interact.success("create_success_tenant");
                                             me.previewZone.classList.add(
                                                 "d-none",
                                             );

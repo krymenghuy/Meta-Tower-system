@@ -95,7 +95,7 @@ var ContractsComponent = new (function () {
                 : "";
 
             html += `
-            <div class="col-12 col-md-6 col-xl-4">
+            <div class="col-12 col-sm-6 col-lg-3">
                 <div class="contract-card h-100" data-contract-id="${data.id}">
                     <div class="contract-card__header">
                         <div class="contract-card__header-main">
@@ -168,7 +168,7 @@ var ContractsComponent = new (function () {
 
         mThis.ContractListView = new ListView('_contract_list', {
             fetchApi: `${main_view.base_url}/prm/tenant/contract/list-paginate`,
-            perPage: 9,
+            perPage: 8,
             apiCluster: main_view.apiCluster,
             renderItems: (items, container) => {
                 mThis.renderContractCards(container, items);

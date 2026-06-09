@@ -91,4 +91,5 @@ class TenantDocumentController extends Controller
         $tenant_document = new TenantDocument($req->id, $ss);
         return JDV::raw($this->tenant_documents->downloadTenantDocument($req->id, $ss));
     }
+    
 }

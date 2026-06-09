@@ -53,19 +53,20 @@ var InvoiceComponent = (() => {
         {
             transTitle: "titles.Tenant",
             className: "align-middle text-nowrap",
-            data: data => {
+            data: (data) => {
                 return `
                         <div class="d-flex flex-column">
                             <span>${data.tenant_name ?? ""}</span>
-                            <span class="d-block text-primary"style="font-size:12px;">${data.tenant_phone ??
-                                ""}</span>
+                            <span class="d-block text-primary"style="font-size:12px;">${
+                                data.tenant_phone ?? ""
+                            }</span>
                         </div>`;
-            }
+            },
         },
         {
             transTitle: "titles.Unit",
             className: "align-middle text-nowrap",
-            data: data => {
+            data: (data) => {
                 return ` <div class="d-flex text-warning align-items-center gap-2">
                 <div>
                     <span class="d-block text-prm-custom ">
@@ -73,74 +74,76 @@ var InvoiceComponent = (() => {
                     </span>
                 </div>
             </div>`;
-            }
+            },
         },
         {
             transTitle: "titles.Issue Date",
             className: "align-middle text-nowrap text-center",
-            data: data => {
+            data: (data) => {
                 return `
                     <div class="d-flex flex-column align-items-center">
-                        <span class="text-prm-custom text-nowrap">${data.issue_date ??
-                            ""}
+                        <span class="text-prm-custom text-nowrap">${
+                            data.issue_date ?? ""
+                        }
                     </div>
                 `;
-            }
+            },
         },
         {
             transTitle: "titles.Due Date",
             className: "align-middle text-nowrap text-center",
-            data: data => {
+            data: (data) => {
                 const statusId = Number(data.payment_status_id || 0);
                 return `
                     <div class="d-flex flex-column align-items-center ">
-                        <span class="text-prm-custom text-nowrap">${data.due_date ??
-                            ""}
+                        <span class="text-prm-custom text-nowrap">${
+                            data.due_date ?? ""
+                        }
                     </div>
                 `;
-            }
+            },
         },
         {
             transTitle: "titles.Amount",
             className: "align-middle text-nowrap text-primary",
-            data: data => {
+            data: (data) => {
                 const amt = data.amount_payable
                     ? Number(data.amount_payable).toLocaleString("en-US", {
-                          minimumFractionDigits: 2
+                          minimumFractionDigits: 2,
                       })
                     : "0.00";
                 return `<span class="d-block text-primary fw-semibold">${mThis.currency_symbol}${amt}</span>`;
-            }
+            },
         },
         {
             transTitle: "titles.Paid",
             className: "align-middle text-success  text-nowrap",
-            data: data => {
+            data: (data) => {
                 const amt = data.paid_amount
                     ? Number(data.paid_amount).toLocaleString("en-US", {
-                          minimumFractionDigits: 2
+                          minimumFractionDigits: 2,
                       })
                     : "0.00";
                 return `<span class="d-block  fw-semibold">${mThis.currency_symbol}${amt}</span>`;
-            }
+            },
         },
         {
             transTitle: "titles.Balance",
             className: "align-middle text-danger  text-nowrap",
-            data: data => {
+            data: (data) => {
                 const amt = data.due_amount
                     ? Number(data.due_amount).toLocaleString("en-US", {
-                          minimumFractionDigits: 2
+                          minimumFractionDigits: 2,
                       })
                     : "0.00";
                 return `<span class="d-block  fw-semibold">${mThis.currency_symbol}${amt}</span>`;
-            }
+            },
         },
 
         {
             transTitle: "titles.Status",
             className: "align-middle text-center text-nowrap",
-            data: data => {
+            data: (data) => {
                 const statusId = Number(data.payment_status_id || 0);
                 let cls = "bg-secondary";
                 let icon = "bi bi-question-circle";
@@ -164,35 +167,37 @@ var InvoiceComponent = (() => {
                     <span class="badge ${cls} text-capitalize d-inline-flex align-items-center justify-content-center px-3 py-2 gap-1" style="min-width:110px">
                         ${data.payment_status_name || "—"}
                     </span>`;
-            }
+            },
         },
         {
             transTitle: "titles.Remark",
-            className: "align-middle text-nowrap text-start",
-            data: data => {
+            className: "align-middle text-nowrap text-center",
+            data: (data) => {
                 return `
                     <div class="text-primary-custom" style="width:200px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.general_remark ??
-                            "_"}</span>
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${
+                            data.general_remark ?? "_"
+                        }</span>
                     </div>
                 `;
-            }
+            },
         },
 
         {
             transTitle: "titles.Last Updated",
             className: "align-middle text-nowrap",
-            data: data => `
+            data: (data) => `
                 <div class="d-flex flex-column">
-                    <span class="text-capitalize text-prm-custom">${data.update_user ||
-                        "—"}</span>
+                    <span class="text-capitalize text-prm-custom">${
+                        data.update_user || "—"
+                    }</span>
                     <small class="text-muted">${data.updated_at || "—"}</small>
-                </div>`
+                </div>`,
         },
         {
             transTitle: "titles.Action",
             className: "col_action align-middle text-center text-nowrap",
-            data: data => {
+            data: (data) => {
                 // if (data.payment_status_id === 4) {
                 //     return "";
                 // }
@@ -202,8 +207,8 @@ var InvoiceComponent = (() => {
                         <i class="fa-solid fa-ellipsis-vertical text-black fs-5"></i>
                     </a>
                 </div>`;
-            }
-        }
+            },
+        },
     ];
 
     mThis.init = () => {
@@ -222,16 +227,16 @@ var InvoiceComponent = (() => {
                 tr.dataset.statusid = data.payment_status_id || 0;
                 tr.dataset.canceled = 0;
             },
-            listContainerClass: null
+            listContainerClass: null,
         });
 
-        mThis.btnAdd.onclick = e => {
+        mThis.btnAdd.onclick = (e) => {
             e.preventDefault();
             InvoiceDialog.show({
                 id: null,
                 btn: e.target,
                 onClose: () =>
-                    mThis.InvoiceListView.showPage(mThis.getFilterData())
+                    mThis.InvoiceListView.showPage(mThis.getFilterData()),
             });
         };
 
@@ -258,13 +263,13 @@ var InvoiceComponent = (() => {
 
         mThis.initDropdownMenus(mThis.tblInvoice);
 
-        mThis.divFilter.querySelectorAll(".filter-field").forEach(el => {
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             el.onchange = () =>
                 mThis.InvoiceListView.showPage(mThis.getFilterData());
         });
 
         let timeOut = null;
-        mThis.elSearch.onkeyup = function(e) {
+        mThis.elSearch.onkeyup = function (e) {
             e.preventDefault();
             clearTimeout(timeOut);
             timeOut = setTimeout(() => {
@@ -277,7 +282,7 @@ var InvoiceComponent = (() => {
             onOpen: (container, detail_tr, parent_tr) => {
                 const id = parent_tr.id.replace("invoice_id_", "");
                 if (id && !isNaN(id)) mThis.displayInvoiceDetail(container, id);
-            }
+            },
         });
 
         mThis.initAlready = true;
@@ -287,7 +292,7 @@ var InvoiceComponent = (() => {
         container.innerHTML = `<div class="text-center py-3"><div class="spinner-border text-primary" role="status"></div></div>`;
         vsapi
             .call(`${main_view.base_url}/prm/invoice/details`, { id })
-            .then(res => {
+            .then((res) => {
                 if (res.status_code !== 200) {
                     container.innerHTML = `<div class="alert alert-danger m-3">Failed to load invoice details</div>`;
                     return;
@@ -302,23 +307,23 @@ var InvoiceComponent = (() => {
     mThis.renderInvoiceDetail = (container, invoice) => {
         const currency = mThis.currency_symbol || "$";
         const validItems = (invoice.items || []).filter(
-            item =>
+            (item) =>
                 parseFloat(item.price || 0) > 0 ||
                 parseFloat(item.total || 0) > 0 ||
-                parseFloat(item.amount || 0) > 0
+                parseFloat(item.amount || 0) > 0,
         );
 
-        const formatDate = dateStr => {
+        const formatDate = (dateStr) => {
             if (!dateStr) return "—";
             const date = new Date(dateStr);
             if (isNaN(date.getTime())) return dateStr;
             return date.toLocaleDateString("en-GB", {
                 day: "2-digit",
                 month: "short",
-                year: "numeric"
+                year: "numeric",
             });
         };
-        const getDiscountDisplay = item => {
+        const getDiscountDisplay = (item) => {
             const value = parseFloat(item.discount || 0);
             const type = (item.discount_type || "percent").toLowerCase().trim();
 
@@ -340,7 +345,7 @@ var InvoiceComponent = (() => {
             }
         };
         const itemsHtml = validItems
-            .map(item => {
+            .map((item) => {
                 const qty = parseFloat(item.qty || 1);
                 const price = parseFloat(item.price || 0);
 
@@ -354,27 +359,27 @@ var InvoiceComponent = (() => {
                     <td class="fw-medium">${item.remarks || "—"}
                     </td>
                     <td class="text-center small">${formatDate(
-                        item.start_date
+                        item.start_date,
                     )}</td>
                     <td class="text-center small">${formatDate(
-                        item.end_date
+                        item.end_date,
                     )}</td>
                     <td class="text-center small">${qty} ${unit_type}</td>
                     <td class="text-end">${currency}${price.toLocaleString(
-                    "en-US",
-                    {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2
-                    }
-                )}</td>
+                        "en-US",
+                        {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                        },
+                    )}</td>
                     <td class="text-end text-danger">${getDiscountDisplay(
-                        item
+                        item,
                     )}</td>
                     <td class="text-center text-info">${taxAmount}%</td>
                     <td class="text-end fw-bold">${currency}${total.toLocaleString(
-                    "en-US",
-                    { minimumFractionDigits: 2, maximumFractionDigits: 2 }
-                )}</td>
+                        "en-US",
+                        { minimumFractionDigits: 2, maximumFractionDigits: 2 },
+                    )}</td>
 
                 </tr>`;
             })
@@ -387,10 +392,10 @@ var InvoiceComponent = (() => {
                 acc.total += total;
                 return acc;
             },
-            { discount: 0, tax: 0, total: 0 }
+            { discount: 0, tax: 0, total: 0 },
         );
 
-        const fmt = n =>
+        const fmt = (n) =>
             n.toLocaleString("en-US", { minimumFractionDigits: 2 });
         container.innerHTML = `
             <div class="bg-white rounded shadow-sm">
@@ -398,28 +403,30 @@ var InvoiceComponent = (() => {
                     <table class="table table-sm table-bordered mb-0">
                         <thead style="background:#e1e5f2;">
                             <tr style= background-color:#E1E5F2;" >
-                                <th class="text-center" >Item Description </th>
-                                <th class="text-center" >Start Date</th>
-                                <th class="text-center" >End Date</th>
-                                <th class="text-center" >Qty</th>
-                                <th class="text-end" >Price</th>
-                                <th class="text-end" >Discount</th>
-                                <th class="text-center" >Tax %</th>
-                                <th class="text-end" >Total</th>
+                                <th class="text-center" vslang="titles.Item Description"> </th>
+                                <th class="text-center" vslang="titles.tart Date">S</th>
+                                <th class="text-center" vslang="titles.End Date"></th>
+                                <th class="text-center" vslang="titles.Qty"></th>
+                                <th class="text-end" vslang="titles.Price"></th>
+                                <th class="text-end" vslang="titles.Discount" ></th>
+                                <th class="text-center" vslang="titles.Tax %"></th>
+                                <th class="text-end" vslang="titles.Total">Total</th>
                             </tr>
                         </thead>
                         <tbody>
-                            ${itemsHtml ||
-                                '<tr><td colspan="8" class="text-center py-4 text-muted">No items found</td></tr>'}
+                            ${
+                                itemsHtml ||
+                                '<tr><td colspan="8" class="text-center py-4 text-muted">No items found</td></tr>'
+                            }
                         </tbody>
                         <tfoot class="table-light fw-bold">
                                 <!-- Displaying Net Total -->
                             <tr>
-                                <td colspan="7" class="text-end  ">Sub Total</td>
+                                <td colspan="7" class="text-end  " vslang="titles.SubTotal"></td>
                                 <td colspan="1" class="text-end  fs-6">
                                     ${currency}${fmt(
-            parseFloat(invoice.amount || 0)
-        )}
+                                        parseFloat(invoice.amount || 0),
+                                    )}
                                 </td>
                             </tr>
                             <tr>
@@ -427,7 +434,7 @@ var InvoiceComponent = (() => {
                                 <td colspan="1" class="text-end text-danger fs-6">
                                     ${(() => {
                                         const discVal = parseFloat(
-                                            invoice.discount_value || 0
+                                            invoice.discount_value || 0,
                                         );
                                         const discType = (
                                             invoice.discount_type || ""
@@ -449,8 +456,8 @@ var InvoiceComponent = (() => {
                                 <td colspan="7" class="text-end  text-primary">Grand (Net)</td>
                                 <td colspan="1" class="text-end text-success fs-6">
                                     ${currency}${fmt(
-            parseFloat(invoice.amount_payable || 0)
-        )}
+                                        parseFloat(invoice.amount_payable || 0),
+                                    )}
                                 </td>
                             </tr>
                         </tfoot>
@@ -472,9 +479,9 @@ var InvoiceComponent = (() => {
     mThis.getFilterData = () => {
         const params = {
             payment_status_id: mThis.elFilter_status.value,
-            search_value: mThis.elSearch.value.trim()
+            search_value: mThis.elSearch.value.trim(),
         };
-        mThis.divFilter.querySelectorAll(".filter-field").forEach(el => {
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             if (el.value && el.dataset.field) {
                 params[el.dataset.field] = el.value.trim();
             }
@@ -482,55 +489,49 @@ var InvoiceComponent = (() => {
         return params;
     };
 
-    mThis.initDropdownMenus = container => {
+    mThis.initDropdownMenus = (container) => {
         const menuOptions = {
             containerElement: container,
             actionButtonClass: "btn_leave_action",
             cssClass: "bg-white box-shadow ",
             menus: [
                 {
-                    html:
-                        '<span class="ps-2" vslang="titles.Receive Payment"></span>',
+                    html: '<span class="ps-2" vslang="titles.Receive Payment"></span>',
                     icon: `<i class="fa-solid fa-hand-holding-dollar text-success fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "receive_invoice"
+                    name: "receive_invoice",
                 },
 
                 {
-                    html:
-                        '<span class="ps-2" vslang="titles.Modify Invoice"></span>',
+                    html: '<span class="ps-2" vslang="titles.Modify Invoice"></span>',
                     icon: `<i class="fa-solid fa-edit text-primary fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "modify_invoice"
+                    name: "modify_invoice",
                 },
                 {
-                    html:
-                        '<span class="ps-2" vslang="titles.Print Invoice"></span>',
+                    html: '<span class="ps-2" vslang="titles.Print Invoice"></span>',
                     icon: `<i class="fa-solid fa-receipt text-primary fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "print_invoice"
+                    name: "print_invoice",
                 },
                 {
-                    html:
-                        '<span class="ps-2" vslang="titles.Delete Invoice"></span>',
+                    html: '<span class="ps-2" vslang="titles.Delete Invoice"></span>',
                     icon: `<i class="fa-regular fa-trash-can text-danger fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "delete_invoice"
+                    name: "delete_invoice",
                 },
                 {
-                    html:
-                        '<span class="ps-2" vslang="titles.Invoice Setting "></span>',
+                    html: '<span class="ps-2" vslang="titles.Invoice Setting"></span>',
                     icon: `<i class="fa-solid fa-file-invoice-dollar text-warning-emphasis fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "invoice_setting"
+                    name: "invoice_setting",
                 },
                 {
-                    html:
-                        '<span class="ps-2" vslang="titles.Clear Setting"></span>',
+                    html: '<span class="ps-2" vslang="titles.Clear Setting"></span>',
                     icon: `<i class="fa-solid fa-trash-can-arrow-up fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "reset_invoice_setting"
-                }
+                    name: "reset_invoice_setting",
+                },
             ],
             onShow: (me, menuContainer) => {
                 const menu = me.getActiveMenus(menuContainer);
@@ -564,7 +565,7 @@ var InvoiceComponent = (() => {
                 } else if (name === "reset_invoice_setting") {
                     mThis.btnResetInvoiceSetting(id, menulink);
                 }
-            }
+            },
         };
 
         new VSDropdownMenu(menuOptions);
@@ -578,30 +579,30 @@ var InvoiceComponent = (() => {
             {
                 transTitle: "Delete Invoice",
                 confirmButtonText: "Delete",
-                context: "danger"
+                context: "danger",
             },
-            confirmed => {
+            (confirmed) => {
                 if (!confirmed) return;
 
                 vsapi
                     .call(
                         `${main_view.base_url}/prm/invoice/delete`,
                         { id },
-                        menuLink
+                        menuLink,
                     )
-                    .then(res => {
+                    .then((res) => {
                         if (res.status_code === 200) {
                             mThis.InvoiceListView.showPage(
-                                mThis.getFilterData()
+                                mThis.getFilterData(),
                             );
                             cv_interact.success("Invoice deleted successfully");
                         } else {
                             cv_interact.error(
-                                res.error_message || "Failed to delete."
+                                res.error_message || "Failed to delete.",
                             );
                         }
                     });
-            }
+            },
         );
     };
 
@@ -609,8 +610,9 @@ var InvoiceComponent = (() => {
         InvoiceSettingDialog.show({
             invoice_id: id,
             btn: menulink,
-            setting : mThis.invoiceSetting,
-            onClose: () => mThis.InvoiceListView.showPage(mThis.getFilterData())
+            setting: mThis.invoiceSetting,
+            onClose: () =>
+                mThis.InvoiceListView.showPage(mThis.getFilterData()),
         });
     };
 
@@ -622,34 +624,35 @@ var InvoiceComponent = (() => {
             {
                 transTitle: "Reset Invoice Settings",
                 confirmButtonText: "Reset",
-                context: "danger"
+                context: "danger",
             },
-            confirmed => {
+            (confirmed) => {
                 if (!confirmed) return;
 
                 vsapi
                     .call(
                         `${main_view.base_url}/prm/invoice/reset-setting`,
                         { id },
-                        menulink // Fixed typo: changed menuLink to menulink to match parameters
+                        menulink, // Fixed typo: changed menuLink to menulink to match parameters
                     )
-                    .then(res => {
+                    .then((res) => {
                         if (res.status_code === 200) {
                             // Refresh the data view to display updated status states
                             mThis.InvoiceListView.showPage(
-                                mThis.getFilterData()
+                                mThis.getFilterData(),
                             );
                             // Cleaned up messages so it describes a reset, not a deletion
                             cv_interact.success(
-                                "Invoice settings reset successfully."
+                                "Invoice settings reset successfully.",
                             );
                         } else {
                             cv_interact.error(
-                                res.error_message || "Failed to reset settings."
+                                res.error_message ||
+                                    "Failed to reset settings.",
                             );
                         }
                     });
-            }
+            },
         );
     };
 
@@ -658,7 +661,8 @@ var InvoiceComponent = (() => {
         InvoiceDialog.show({
             id: id,
             btn: menulink,
-            onClose: () => mThis.InvoiceListView.showPage(mThis.getFilterData())
+            onClose: () =>
+                mThis.InvoiceListView.showPage(mThis.getFilterData()),
         });
     };
 
@@ -666,7 +670,8 @@ var InvoiceComponent = (() => {
         ReceiveDialog.show({
             invoice_id: id,
             btn: menulink,
-            onClose: () => mThis.InvoiceListView.showPage(mThis.getFilterData())
+            onClose: () =>
+                mThis.InvoiceListView.showPage(mThis.getFilterData()),
         });
     };
 
@@ -676,42 +681,37 @@ var InvoiceComponent = (() => {
         let localSetting = null;
         let companyProfile = null;
 
-
+        vsapi.call(`${main_view.base_url}/api/company/details`).then((res) => {
+            if (res.status_code === 200) {
+                companyProfile = res.data;
+            } else {
+                cv_interact.error("Could not get company profile.");
+            }
+        });
         vsapi
-            .call(`${main_view.base_url}/api/company/details`,)
-            .then(res => {
+            .call(`${main_view.base_url}/prm/invoice_setting/get`)
+            .then((res) => {
                 if (res.status_code === 200) {
-                 companyProfile = res.data;
+                    globalSetting = res.data;
                 } else {
-                    cv_interact.error("Could not get company profile.");
+                    cv_interact.error("Could not determine invoice type.");
                 }
             });
-            vsapi
-                .call(`${main_view.base_url}/prm/invoice_setting/get`)
-                .then(res => {
-                    if (res.status_code === 200) {
-                        globalSetting = res.data;
-                    } else {
-                        cv_interact.error("Could not determine invoice type.");
-                    }
-                });
 
         vsapi
             .call(`${main_view.base_url}/prm/invoice/details`, { id: id })
-            .then(res => {
+            .then((res) => {
                 if (res.status_code === 200) {
                     localSetting = res.data.settings;
 
                     invoice = res.data;
-
 
                     const invType = invoice.invoice_type;
                     const params = {
                         invoice_id: id,
                         btn: menulink,
                         invoice: invoice,
-                        global: mThis.globalSetting
-
+                        global: mThis.globalSetting,
                     };
 
                     const settings = localSetting || {};
@@ -739,7 +739,6 @@ var InvoiceComponent = (() => {
                         // params.representative = representative;
                     }
 
-
                     if (invType === 1) {
                         params.company = company;
                         InvoiceTaxDialog.show(params);
@@ -756,13 +755,10 @@ var InvoiceComponent = (() => {
             });
     };
 
-
-
-
-    mThis.prepareFormOptions = onFinish => {
+    mThis.prepareFormOptions = (onFinish) => {
         vsapi
             .call(`${main_view.base_url}/prm/invoice/form-options`)
-            .then(res => {
+            .then((res) => {
                 const d = res.status_code === 200 ? res.data : {};
                 VSUtil.setComboItems(
                     mThis.elFilter_status,
@@ -771,14 +767,14 @@ var InvoiceComponent = (() => {
                     "payment_status",
                     "",
                     "All Statuses",
-                    ""
+                    "",
                 );
 
                 // Populate Invoice Type filter
                 const typeOptions = [
                     { id: 1, name: "Tax" },
                     { id: 2, name: "No Tax" },
-                    { id: 3, name: "Commercial" }
+                    { id: 3, name: "Commercial" },
                 ];
                 VSUtil.setComboItems(
                     mThis.elFilter_invoice_type,
@@ -787,7 +783,7 @@ var InvoiceComponent = (() => {
                     "name",
                     "",
                     "All Types",
-                    ""
+                    "",
                 );
 
                 if (typeof onFinish === "function") onFinish();
@@ -815,7 +811,7 @@ const InvoiceDialog = (() => {
     let globalSetting = null;
     let exchangeRate = null;
 
-    self.show = op => {
+    self.show = (op) => {
         dialog = new GeneralDialog({
             cssClass: "modal-xl vs-modal",
             backdrop: "static",
@@ -829,22 +825,22 @@ const InvoiceDialog = (() => {
                                     <!-- LEFT: Tenant Info -->
                                     <div>
                                         <div class="field-row">
-                                            <label class="field-label fw-semibold">Tenant Name  </label>
+                                            <label class="field-label fw-semibold" vslang="labels.Tenant Name">  </label>
                                             <span class="field-sep">:</span>
                                             <input name="tenant" class="data-input form-control field-input" data-field="tenant_id" placeholder=" " autocomplete="off">
                                         </div>
                                         <div class="field-row">
-                                            <label class="field-label fw-semibold">Phone Number</label>
+                                            <label class="field-label fw-semibold" vslang="labels.Phone Number"></label>
                                             <span class="field-sep">:</span>
                                             <input name="phone_number" class="data-input form-control field-input bg-light"  placeholder=" ">
                                         </div>
                                         <div class="field-row">
-                                            <label class="field-label fw-semibold">Email Address</label>
+                                            <label class="field-label fw-semibold" vslang="labels.Email"></label>
                                             <span class="field-sep">:</span>
                                             <input name="email" class="data-input form-control field-input " placeholder=" ">
                                         </div>
                                         <div class="field-row ">
-                                            <label class="field-label fw-semibold">Space / Room</label>
+                                            <label class="field-label fw-semibold" vslang="labels.Space / Room"></label>
                                             <span class="field-sep">:</span>
                                                 <select name="space"  data-style="material" class="data-input form-control" data-field="space_id" required placeholder=" ">
                                                 </select>
@@ -854,7 +850,7 @@ const InvoiceDialog = (() => {
                                     <!-- RIGHT: Space / Button -->
                                     <div>
                                         <div class="field-row ">
-                                            <label class="field-label fw-semibold">Invoice Type</label>
+                                            <label class="field-label fw-semibold" vslang="labels.Invoice Type"></label>
                                             <span class="field-sep">:</span>
                                                 <select name="invoice_type"  data-style="material" class="data-input form-control" data-field="invoice_type" required placeholder=" ">
                                                     <option value="1">Tax</option>
@@ -863,12 +859,12 @@ const InvoiceDialog = (() => {
                                                 </select>
                                         </div>
                                         <div class="field-row ">
-                                            <label class="field-label fw-semibold">Issue Date </label>
+                                            <label class="field-label fw-semibold" vslang="labels.Issue Date"> </label>
                                             <span class="field-sep">:</span>
                                             <input type="text" data-type="date" name="issue_date" data-field="issue_date" class="form-control data-input field-input" required placeholder=" ">
                                         </div>
                                         <div class="field-row ">
-                                            <label class="field-label fw-semibold">Due Date </label>
+                                            <label class="field-label fw-semibold" vslang="labels.Due Date"> </label>
                                             <span class="field-sep">:</span>
                                             <input type="text" data-type="date" name="due_date" data-field="due_date" class="form-control data-input field-input" required placeholder=" ">
                                         </div>
@@ -876,10 +872,10 @@ const InvoiceDialog = (() => {
 
                                         <div class="field-row w-100 justify-content-end">
                                             <div class="d-flex flex-wrap gap-2 justify-content-end ">
-                                                <button name="btnRent" class="custom-button">Rent</button>
-                                                <button name="btnService" class="custom-button">Service</button>
-                                                <button name="btnRequest" class="custom-button">Request</button>
-                                                <button name="btnElectric" class="custom-button">Electric</button>
+                                                <button name="btnRent" class="custom-button" vslang="buttons.Rent"></button>
+                                                <button name="btnService" class="custom-button" vslang="buttons.Service"></button>
+                                                <button name="btnRequest" class="custom-button" vslang="buttons.Request"></button>
+                                                <button name="btnElectric" class="custom-button" vslang="buttons.Electric"></button>
                                             </div>
                                         </div>
                                     </div>
@@ -892,7 +888,7 @@ const InvoiceDialog = (() => {
 
                                 <div class="material-input outlined">
                                     <textarea class="data-input form-control" data-field="general_remark" name="general_remark" rows="1" placeholder=" "></textarea>
-                                    <label style="color:#777;">Remark</label>
+                                    <label style="color:#777;" vslang="labels.Remark"></label>
                                 </div>
 
 
@@ -988,23 +984,23 @@ const InvoiceDialog = (() => {
 
                     `,
 
-            contentCreated: me => {
+            contentCreated: (me) => {
                 me.controls = me.controls || {};
                 const btn_close = me.divModal.querySelector(".close");
                 if (btn_close) btn_close.classList.add("d-none");
                 const allInputs = me.divModal.querySelectorAll(
-                    ".data-input, input, select, textarea"
+                    ".data-input, input, select, textarea",
                 );
-                allInputs.forEach(el => {
+                allInputs.forEach((el) => {
                     const key = el.dataset.field || el.name;
                     if (key) me.controls[key] = el;
                 });
                 me.controls.divItemsView = me.divModal.querySelector(
-                    '[name="divItemsView"]'
+                    '[name="divItemsView"]',
                 );
 
                 me.controls.div_invoice_summary = me.divModal.querySelector(
-                    '[name="div_invoice_summary"]'
+                    '[name="div_invoice_summary"]',
                 );
 
                 me.controls.btnRent.onclick = () => {
@@ -1034,21 +1030,22 @@ const InvoiceDialog = (() => {
 
                     const matchedSpace =
                         spaces.find(
-                            s => String(s.space_id) === String(selectedSpaceId)
+                            (s) =>
+                                String(s.space_id) === String(selectedSpaceId),
                         ) || spaces[0];
 
                     if (!matchedSpace) {
                         return cv_interact.error("No space/contract found.");
                     }
                     const availableMonths = months.filter(
-                        m =>
+                        (m) =>
                             String(m.contract_id) ===
-                            String(matchedSpace.contract_id)
+                            String(matchedSpace.contract_id),
                     );
 
                     if (!availableMonths || availableMonths.length === 0) {
                         return cv_interact.error(
-                            "Rent has already reached the final month of the contract."
+                            "Rent has already reached the final month of the contract.",
                         );
                     }
 
@@ -1075,11 +1072,11 @@ const InvoiceDialog = (() => {
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
                         <div class="material-input outlined" style="margin-bottom: 1rem;">
                             <input class="data-input form-control bg-light cursor-blocked" data-field="contract_id" name="contract_id" type="text" readonly>
-                            <label style="color:#777;">Unit Code / Room</label>
+                            <label style="color:#777;" vslang="labels.Unit Code"></label>
                         </div>
                         <div class="material-input outlined" style="margin-bottom: 1rem;">
                             <input class="data-input form-control bg-light cursor-blocked" data-field="monthly" name="monthly" type="text" readonly>
-                            <label style="color:#777;">Monthly</label>
+                            <label style="color:#777;" vslang="labels.Monthly"></label>
                         </div>
                     </div>
                 </div>
@@ -1096,7 +1093,7 @@ const InvoiceDialog = (() => {
                         </div>
                         <div class="material-input outlined" style="margin-bottom: 1rem;">
                             <input class="data-input form-control bg-light cursor-blocked" data-field="end_date" name="end_date" type="text" readonly placeholder="d-m-y">
-                            <label style="color:#777;">End Date</label>
+                            <label style="color:#777;" >End Date</label>
                         </div>
                     </div>
                 </div>
@@ -1113,7 +1110,7 @@ const InvoiceDialog = (() => {
                                 : ""
                         }">
                             <input class="data-input form-control bg-light cursor-blocked" data-field="price" name="price" type="text" readonly style=" color:#0c447c;">
-                            <label style="color:#777;">Effective Price ($)</label>
+                            <label style="color:#777;" vslang="labels.Effective Price ($)"></label>
                         </div>
                         ${
                             Number(invoiceType) === 2
@@ -1141,7 +1138,7 @@ const InvoiceDialog = (() => {
 
                 <div class="material-input outlined" style="margin-bottom: 1rem; display:none;">
                     <textarea class="data-input form-control" data-field="remark" name="remark" rows="2" placeholder=" "></textarea>
-                    <label style="color:#777;">Remark</label>
+                    <label style="color:#777;" >Remark</label>
                 </div>
             `;
                             return div;
@@ -1149,22 +1146,22 @@ const InvoiceDialog = (() => {
 
                         onOpen(ibMe) {
                             const elContract = rentDiv.querySelector(
-                                '[data-field="contract_id"]'
+                                '[data-field="contract_id"]',
                             );
                             const elMonthly = rentDiv.querySelector(
-                                '[data-field="monthly"]'
+                                '[data-field="monthly"]',
                             );
                             const elPrice = rentDiv.querySelector(
-                                '[data-field="price"]'
+                                '[data-field="price"]',
                             );
                             const elStartDate = rentDiv.querySelector(
-                                '[data-field="start_date"]'
+                                '[data-field="start_date"]',
                             );
                             const elEndDate = rentDiv.querySelector(
-                                '[data-field="end_date"]'
+                                '[data-field="end_date"]',
                             );
                             const elDiscountType = rentDiv.querySelector(
-                                '[data-field="discount_type"]'
+                                '[data-field="discount_type"]',
                             );
 
                             if (!elContract || !elMonthly || !elPrice) return;
@@ -1172,19 +1169,19 @@ const InvoiceDialog = (() => {
                             elContract.value =
                                 matchedSpace.space_code || "(No code)";
                             elContract.dataset.contractId = String(
-                                matchedSpace.contract_id
+                                matchedSpace.contract_id,
                             );
 
                             const effectivePrice = Number(
-                                matchedSpace.effective_price || 0
+                                matchedSpace.effective_price || 0,
                             );
                             elPrice.value = effectivePrice.toFixed(2);
 
                             const matchedMonth =
                                 months.find(
-                                    m =>
+                                    (m) =>
                                         String(m.contract_id) ===
-                                        String(matchedSpace.contract_id)
+                                        String(matchedSpace.contract_id),
                                 ) || {};
 
                             elMonthly.value = matchedMonth.month || "";
@@ -1202,16 +1199,18 @@ const InvoiceDialog = (() => {
 
                             const numericInputs = [
                                 rentDiv.querySelector(
-                                    '[data-field="discount"]'
+                                    '[data-field="discount"]',
                                 ),
-                                rentDiv.querySelector('[data-field="tax_rate"]')
-                            ].filter(input => input !== null);
+                                rentDiv.querySelector(
+                                    '[data-field="tax_rate"]',
+                                ),
+                            ].filter((input) => input !== null);
 
-                            numericInputs.forEach(input => {
-                                input.addEventListener("input", e => {
+                            numericInputs.forEach((input) => {
+                                input.addEventListener("input", (e) => {
                                     let v = e.target.value.replace(
                                         /[^0-9.]/g,
-                                        ""
+                                        "",
                                     );
                                     const parts = v.split(".");
                                     if (parts.length > 2) {
@@ -1226,7 +1225,7 @@ const InvoiceDialog = (() => {
                                     e.target.value = v;
                                 });
 
-                                input.addEventListener("blur", e => {
+                                input.addEventListener("blur", (e) => {
                                     let v = parseFloat(e.target.value);
                                     if (isNaN(v) || v < 0) {
                                         e.target.value = "";
@@ -1240,7 +1239,7 @@ const InvoiceDialog = (() => {
                         onConfirm(data, btn, ibMe) {
                             // 1. Check if Tax field exists in the DOM layout tree (Invoice Type !== 2)
                             const elTaxRate = document.querySelector(
-                                '[data-field="tax_rate"]'
+                                '[data-field="tax_rate"]',
                             );
 
                             if (elTaxRate) {
@@ -1251,20 +1250,20 @@ const InvoiceDialog = (() => {
                                     String(data.tax_rate).trim() === ""
                                 ) {
                                     return ibMe.setError(
-                                        "Tax % is required for this invoice type."
+                                        "Tax % is required for this invoice type.",
                                     );
                                 }
 
                                 const taxValue = Number(data.tax_rate);
                                 if (isNaN(taxValue) || taxValue < 0) {
                                     return ibMe.setError(
-                                        "Please enter a valid Tax % value."
+                                        "Please enter a valid Tax % value.",
                                     );
                                 }
                             }
 
                             const elContract = document.querySelector(
-                                '[data-field="contract_id"]'
+                                '[data-field="contract_id"]',
                             );
                             const realContractId =
                                 elContract?.dataset.contractId ||
@@ -1272,13 +1271,13 @@ const InvoiceDialog = (() => {
 
                             if (!realContractId) {
                                 return ibMe.setError(
-                                    "Unit Code / Room is missing."
+                                    "Unit Code / Room is missing.",
                                 );
                             }
 
                             const roomCode = matchedSpace.space_code || "—";
                             const finalPrice = Number(
-                                data.price || matchedSpace.effective_price || 0
+                                data.price || matchedSpace.effective_price || 0,
                             );
 
                             const dataToAdd = {
@@ -1286,8 +1285,9 @@ const InvoiceDialog = (() => {
                                 type: "rent",
                                 price: finalPrice,
                                 qty: 1,
-                                remarks: `Rent - ${roomCode} (${data.monthly ||
-                                    "N/A"})`,
+                                remarks: `Rent - ${roomCode} (${
+                                    data.monthly || "N/A"
+                                })`,
                                 contract_id: realContractId,
                                 start_date: data.start_date || "",
                                 end_date: data.end_date || "",
@@ -1295,36 +1295,37 @@ const InvoiceDialog = (() => {
                                 discount: Number(data.discount) || 0,
                                 discount_type: data.discount_type || "percent",
                                 tax_rate: Number(data.tax_rate) || 0,
-                                unit_type: `monthly`
+                                unit_type: `monthly`,
                             };
 
                             const existingIds = me.itemsView.rows
                                 .map(
-                                    row =>
-                                        row.meta?.item_id || row.data?.item_id
+                                    (row) =>
+                                        row.meta?.item_id || row.data?.item_id,
                                 )
                                 .filter(
-                                    id =>
+                                    (id) =>
                                         id !== undefined &&
                                         id !== "" &&
-                                        id !== null
+                                        id !== null,
                                 );
 
                             const isDuplicate = existingIds.some(
-                                id => String(id) === String(dataToAdd.item_id)
+                                (id) =>
+                                    String(id) === String(dataToAdd.item_id),
                             );
                             if (isDuplicate) {
                                 return ibMe.setError(
-                                    `Rent is already in the list.`
+                                    `Rent is already in the list.`,
                                 );
                             }
 
                             me.itemsView.addRow(dataToAdd, 0);
                             cv_interact.success(
-                                `Rent for ${roomCode} added successfully.`
+                                `Rent for ${roomCode} added successfully.`,
                             );
                             ibMe.close();
-                        }
+                        },
                     });
                 };
 
@@ -1456,77 +1457,85 @@ const InvoiceDialog = (() => {
                             onOpen(ibMe) {
                                 // Target elements using structural selectors
                                 const elOld = electricDiv.querySelector(
-                                    '[data-field="old_electric"]'
+                                    '[data-field="old_electric"]',
                                 );
                                 const elNew = electricDiv.querySelector(
-                                    '[data-field="new_electric"]'
+                                    '[data-field="new_electric"]',
                                 );
                                 const elUnits = electricDiv.querySelector(
-                                    '[data-field="units_used"]'
+                                    '[data-field="units_used"]',
                                 );
-                                const elUnitsReadonly = electricDiv.querySelector(
-                                    "#units_used_readonly"
-                                );
+                                const elUnitsReadonly =
+                                    electricDiv.querySelector(
+                                        "#units_used_readonly",
+                                    );
 
-                                const elExchangeRate = electricDiv.querySelector(
-                                    '[data-field="exchange_rate"]'
-                                );
+                                const elExchangeRate =
+                                    electricDiv.querySelector(
+                                        '[data-field="exchange_rate"]',
+                                    );
                                 const elPriceKHR = electricDiv.querySelector(
-                                    '[data-field="price_khr"]'
+                                    '[data-field="price_khr"]',
                                 );
                                 const elPriceUSD = electricDiv.querySelector(
-                                    '[data-field="price_usd"]'
+                                    '[data-field="price_usd"]',
                                 );
 
                                 const elStartDate = electricDiv.querySelector(
-                                    '[data-field="start_date"]'
+                                    '[data-field="start_date"]',
                                 );
                                 const elEndDate = electricDiv.querySelector(
-                                    '[data-field="end_date"]'
+                                    '[data-field="end_date"]',
                                 );
                                 const elTotal = electricDiv.querySelector(
-                                    '[data-field="total_amount"]'
+                                    '[data-field="total_amount"]',
                                 );
                                 const elRemark = electricDiv.querySelector(
-                                    '[data-field="remark"]'
+                                    '[data-field="remark"]',
                                 );
                                 const elMode = electricDiv.querySelector(
-                                    '[data-field="entry_mode"]'
+                                    '[data-field="entry_mode"]',
                                 );
 
                                 // Structural layout layout control nodes
-                                const btnTabReading = electricDiv.querySelector(
-                                    "#btn_tab_reading"
-                                );
-                                const btnTabManual = electricDiv.querySelector(
-                                    "#btn_tab_manual"
-                                );
-                                const txtConsumptionHeader = electricDiv.querySelector(
-                                    "#consumption_header"
-                                );
-                                const rowReadingFields = electricDiv.querySelector(
-                                    "#row_reading_fields"
-                                );
-                                const rowManualFields = electricDiv.querySelector(
-                                    "#row_manual_fields"
-                                );
-                                const wrapperUnitsReadonly = electricDiv.querySelector(
-                                    "#wrapper_units_readonly"
-                                );
+                                const btnTabReading =
+                                    electricDiv.querySelector(
+                                        "#btn_tab_reading",
+                                    );
+                                const btnTabManual =
+                                    electricDiv.querySelector(
+                                        "#btn_tab_manual",
+                                    );
+                                const txtConsumptionHeader =
+                                    electricDiv.querySelector(
+                                        "#consumption_header",
+                                    );
+                                const rowReadingFields =
+                                    electricDiv.querySelector(
+                                        "#row_reading_fields",
+                                    );
+                                const rowManualFields =
+                                    electricDiv.querySelector(
+                                        "#row_manual_fields",
+                                    );
+                                const wrapperUnitsReadonly =
+                                    electricDiv.querySelector(
+                                        "#wrapper_units_readonly",
+                                    );
 
                                 elExchangeRate.value = exchangeRate
-                                    ? exchangeRate.exchange_rate ?? ""
+                                    ? (exchangeRate.exchange_rate ?? "")
                                     : "";
 
                                 console.log(
                                     "InvoiceSetting.exchange_rate",
                                     exchangeRate
                                         ? exchangeRate.exchange_rate
-                                        : null
+                                        : null,
                                 );
 
                                 // Currency conversion handlers
-                                elPriceKHR.addEventListener("input", e => {
+                                elPriceKHR.addEventListener("input", (e) => {
                                     const rate =
                                         parseFloat(elExchangeRate.value) ||
                                         4000;
@@ -1539,7 +1548,7 @@ const InvoiceDialog = (() => {
                                     recalc();
                                 });
 
-                                elPriceUSD.addEventListener("input", e => {
+                                elPriceUSD.addEventListener("input", (e) => {
                                     const rate =
                                         parseFloat(elExchangeRate.value) ||
                                         4000;
@@ -1560,7 +1569,7 @@ const InvoiceDialog = (() => {
                                         parseFloat(elPriceUSD.value) || 0;
                                     if (usdVal > 0) {
                                         elPriceKHR.value = Math.round(
-                                            usdVal * rate
+                                            usdVal * rate,
                                         );
                                     } else {
                                         const khrVal =
@@ -1576,12 +1585,13 @@ const InvoiceDialog = (() => {
                                 // UI Tab switcher
 
                                 // New structural nodes for 3-in-1 row switching
-                                const rowCalculationFields = electricDiv.querySelector(
-                                    "#row_calculation_fields"
-                                );
+                                const rowCalculationFields =
+                                    electricDiv.querySelector(
+                                        "#row_calculation_fields",
+                                    );
 
                                 // UI Tab switcher
-                                const switchTab = mode => {
+                                const switchTab = (mode) => {
                                     elMode.value = mode;
                                     if (mode === "reading") {
                                         // Form structure configuration
@@ -1644,9 +1654,8 @@ const InvoiceDialog = (() => {
                                             elUnitsReadonly.value = "0.00";
                                             elUnitsReadonly.style.color = "red";
                                         } else {
-                                            elUnitsReadonly.value = units.toFixed(
-                                                2
-                                            );
+                                            elUnitsReadonly.value =
+                                                units.toFixed(2);
                                             elUnitsReadonly.style.color =
                                                 "#212529";
                                         }
@@ -1671,11 +1680,11 @@ const InvoiceDialog = (() => {
                                         const calcStr =
                                             units > 0 && ppu > 0
                                                 ? ` — ${units.toFixed(
-                                                      2
+                                                      2,
                                                   )} kWh × $${ppu.toFixed(2)}`
                                                 : mode === "reading"
-                                                ? " — Reading Setup"
-                                                : " — Manual Entry";
+                                                  ? " — Reading Setup"
+                                                  : " — Manual Entry";
 
                                         elRemark.value = `Electric${period}${calcStr}`;
                                     }
@@ -1689,8 +1698,8 @@ const InvoiceDialog = (() => {
                                     elPriceUSD,
                                     elExchangeRate,
                                     elStartDate,
-                                    elEndDate
-                                ].forEach(el => {
+                                    elEndDate,
+                                ].forEach((el) => {
                                     if (!el) return;
                                     el.addEventListener("input", recalc);
                                     if (el.dataset.type === "date") {
@@ -1698,11 +1707,11 @@ const InvoiceDialog = (() => {
                                     }
 
                                     // Block non-numeric characters while tying
-                                    el.addEventListener("input", e => {
+                                    el.addEventListener("input", (e) => {
                                         if (el.dataset.type === "date") return;
                                         let v = e.target.value.replace(
                                             /[^0-9.]/g,
-                                            ""
+                                            "",
                                         );
                                         const parts = v.split(".");
                                         if (parts.length > 2)
@@ -1716,7 +1725,7 @@ const InvoiceDialog = (() => {
                                     });
 
                                     // Enforce proper floats on losing input focus
-                                    el.addEventListener("blur", e => {
+                                    el.addEventListener("blur", (e) => {
                                         if (el.dataset.type === "date") return;
                                         let v = parseFloat(e.target.value);
                                         if (isNaN(v) || v < 0) {
@@ -1744,37 +1753,38 @@ const InvoiceDialog = (() => {
 
                                     if (newReading <= 0)
                                         return ibMe.setError(
-                                            "New reading is required."
+                                            "New reading is required.",
                                         );
                                     if (newReading <= oldReading)
                                         return ibMe.setError(
-                                            "New reading must be greater than old reading."
+                                            "New reading must be greater than old reading.",
                                         );
                                     remarks = `Electricity ${oldReading}kWh - ${newReading}kWh`;
                                 } else {
                                     units = parseFloat(data.units_used) || 0;
                                     if (units <= 0)
                                         return ibMe.setError(
-                                            "Units Used field is required and must be greater than 0."
+                                            "Units Used field is required and must be greater than 0.",
                                         );
-                                    remarks = `Electric Utility - ${data.start_date ||
-                                        ""} to ${data.end_date || ""}`;
+                                    remarks = `Electric Utility - ${
+                                        data.start_date || ""
+                                    } to ${data.end_date || ""}`;
                                 }
 
                                 if (ppu <= 0)
                                     return ibMe.setError(
-                                        "Price per kWh (USD) is required."
+                                        "Price per kWh (USD) is required.",
                                     );
                                 if (!data.start_date || !data.end_date)
                                     return ibMe.setError(
-                                        "Start and End dates are required."
+                                        "Start and End dates are required.",
                                     );
                                 if (
                                     new Date(data.end_date) <
                                     new Date(data.start_date)
                                 ) {
                                     return ibMe.setError(
-                                        "End date cannot be before Start date."
+                                        "End date cannot be before Start date.",
                                     );
                                 }
 
@@ -1788,21 +1798,23 @@ const InvoiceDialog = (() => {
                                         // remarks: remarks,
                                         remarks:
                                             mode === "reading"
-                                                ? `Electricity ${data.old_electric ||
-                                                      0}KWh - ${data.new_electric ||
-                                                      0}KWh`
+                                                ? `Electricity ${
+                                                      data.old_electric || 0
+                                                  }KWh - ${
+                                                      data.new_electric || 0
+                                                  }KWh`
                                                 : `Electricity ${units}KWh`,
                                         unit_type: "KWh",
                                         old_reading:
                                             mode === "reading"
                                                 ? parseFloat(
-                                                      data.old_electric
+                                                      data.old_electric,
                                                   ) || 0
                                                 : 0,
                                         new_reading:
                                             mode === "reading"
                                                 ? parseFloat(
-                                                      data.new_electric
+                                                      data.new_electric,
                                                   ) || 0
                                                 : 0,
                                         units_used: units,
@@ -1810,14 +1822,14 @@ const InvoiceDialog = (() => {
                                         start_date: data.start_date,
                                         end_date: data.end_date,
                                         discount: 0,
-                                        discount_type: "percent"
+                                        discount_type: "percent",
                                     },
-                                    0
+                                    0,
                                 );
 
                                 cv_interact.success("Electric item added.");
                                 ibMe.close();
-                            }
+                            },
                         });
                     }; // end openElectricPopup
 
@@ -1843,10 +1855,10 @@ const InvoiceDialog = (() => {
 
                     const serviceOptions = services
                         .map(
-                            s =>
-                                `<option value="${s.id}">${s.service ||
-                                    s.name ||
-                                    `Service #${s.id}`}</option>`
+                            (s) =>
+                                `<option value="${s.id}">${
+                                    s.service || s.name || `Service #${s.id}`
+                                }</option>`,
                         )
                         .join("");
 
@@ -1949,41 +1961,40 @@ const InvoiceDialog = (() => {
                         },
                         onOpen(ibMe) {
                             const elBillingCont = serviceDiv.querySelector(
-                                "#billing_period_container"
+                                "#billing_period_container",
                             );
-                            const elPriceWrapper = serviceDiv.querySelector(
-                                "#price_wrapper"
-                            );
+                            const elPriceWrapper =
+                                serviceDiv.querySelector("#price_wrapper");
 
                             const elService = serviceDiv.querySelector(
-                                '[data-field="service_id"]'
+                                '[data-field="service_id"]',
                             );
                             const elUnitType = serviceDiv.querySelector(
-                                '[data-field="charge_as"]'
+                                '[data-field="charge_as"]',
                             );
                             const elPrice = serviceDiv.querySelector(
-                                '[data-field="price"]'
+                                '[data-field="price"]',
                             );
                             const elDuration = serviceDiv.querySelector(
-                                '[data-field="duration_months"]'
+                                '[data-field="duration_months"]',
                             );
                             const elDurationCont = serviceDiv.querySelector(
-                                "#duration_container"
+                                "#duration_container",
                             );
                             const elStartDate = serviceDiv.querySelector(
-                                '[data-field="start_date"]'
+                                '[data-field="start_date"]',
                             );
                             const elEndDate = serviceDiv.querySelector(
-                                '[data-field="end_date"]'
+                                '[data-field="end_date"]',
                             );
                             const elDiscount = serviceDiv.querySelector(
-                                '[data-field="discount"]'
+                                '[data-field="discount"]',
                             );
                             const elDiscountType = serviceDiv.querySelector(
-                                '[data-field="discount_type"]'
+                                '[data-field="discount_type"]',
                             );
                             const elTotalAmount = serviceDiv.querySelector(
-                                '[data-field="total_amount"]'
+                                '[data-field="total_amount"]',
                             );
 
                             // --- Calculation Engine ---
@@ -2017,9 +2028,9 @@ const InvoiceDialog = (() => {
                                 }
                             };
 
-                            const fillFields = serviceId => {
+                            const fillFields = (serviceId) => {
                                 const selected = services.find(
-                                    s => String(s.id) === String(serviceId)
+                                    (s) => String(s.id) === String(serviceId),
                                 );
                                 if (selected) {
                                     const unit = (
@@ -2031,7 +2042,7 @@ const InvoiceDialog = (() => {
                                             selected.charge_as || "—";
                                     if (elPrice)
                                         elPrice.value = Number(
-                                            selected.price || 0
+                                            selected.price || 0,
                                         ).toFixed(2);
 
                                     if (unit === "month") {
@@ -2066,7 +2077,7 @@ const InvoiceDialog = (() => {
                                     end.setMonth(end.getMonth() + months);
                                     end.setDate(end.getDate() - 1);
 
-                                    const formatDate = date => {
+                                    const formatDate = (date) => {
                                         const monthsArr = [
                                             "Jan",
                                             "Feb",
@@ -2079,10 +2090,10 @@ const InvoiceDialog = (() => {
                                             "Sep",
                                             "Oct",
                                             "Nov",
-                                            "Dec"
+                                            "Dec",
                                         ];
                                         const day = String(
-                                            date.getDate()
+                                            date.getDate(),
                                         ).padStart(2, "0");
                                         const month =
                                             monthsArr[date.getMonth()];
@@ -2099,13 +2110,13 @@ const InvoiceDialog = (() => {
 
                             if (elService) {
                                 fillFields(elService.value);
-                                elService.addEventListener("change", e =>
-                                    fillFields(e.target.value)
+                                elService.addEventListener("change", (e) =>
+                                    fillFields(e.target.value),
                                 );
                             }
 
                             // Recalculate dates AND totals on configuration inputs
-                            [elDuration, elStartDate].forEach(el => {
+                            [elDuration, elStartDate].forEach((el) => {
                                 el?.addEventListener("change", () => {
                                     recalcDates();
                                     calculateTotalAmount();
@@ -2116,15 +2127,15 @@ const InvoiceDialog = (() => {
                             if (elDiscountType) {
                                 elDiscountType.addEventListener(
                                     "change",
-                                    calculateTotalAmount
+                                    calculateTotalAmount,
                                 );
                             }
 
                             if (elDiscount) {
-                                elDiscount.addEventListener("input", e => {
+                                elDiscount.addEventListener("input", (e) => {
                                     let v = e.target.value.replace(
                                         /[^0-9.]/g,
-                                        ""
+                                        "",
                                     );
                                     const parts = v.split(".");
                                     if (parts.length > 2)
@@ -2134,7 +2145,7 @@ const InvoiceDialog = (() => {
                                     calculateTotalAmount(); // Live recalculation as you type
                                 });
 
-                                elDiscount.addEventListener("blur", e => {
+                                elDiscount.addEventListener("blur", (e) => {
                                     let v = parseFloat(e.target.value);
                                     e.target.value =
                                         isNaN(v) || v < 0 ? "" : v.toFixed(2);
@@ -2145,12 +2156,12 @@ const InvoiceDialog = (() => {
                         onConfirm(data, btn, ibMe) {
                             if (!data.service_id) {
                                 return ibMe.setError(
-                                    "Please select a Service."
+                                    "Please select a Service.",
                                 );
                             }
 
                             const selectedService = services.find(
-                                s => String(s.id) === String(data.service_id)
+                                (s) => String(s.id) === String(data.service_id),
                             );
                             if (!selectedService) return;
 
@@ -2166,12 +2177,12 @@ const InvoiceDialog = (() => {
                             if (unit === "month") {
                                 if (!data.duration_months) {
                                     return ibMe.setError(
-                                        "Please input Duration."
+                                        "Please input Duration.",
                                     );
                                 }
                                 if (!data.start_date || !data.end_date) {
                                     return ibMe.setError(
-                                        "Please input Start and End Date."
+                                        "Please input Start and End Date.",
                                     );
                                 }
                             }
@@ -2190,7 +2201,7 @@ const InvoiceDialog = (() => {
 
                             // Read the dynamically computed total amount from input
                             const totalAmountInput = serviceDiv.querySelector(
-                                '[data-field="total_amount"]'
+                                '[data-field="total_amount"]',
                             );
                             const calculatedTotal = totalAmountInput
                                 ? parseFloat(totalAmountInput.value)
@@ -2198,22 +2209,22 @@ const InvoiceDialog = (() => {
 
                             const existingIds = me.itemsView.rows
                                 .map(
-                                    row =>
-                                        row.meta?.item_id || row.data?.item_id
+                                    (row) =>
+                                        row.meta?.item_id || row.data?.item_id,
                                 )
                                 .filter(
-                                    id =>
+                                    (id) =>
                                         id !== undefined &&
                                         id !== "" &&
-                                        id !== null
+                                        id !== null,
                                 );
 
                             const isDuplicate = existingIds.some(
-                                id => String(id) === String(data.service_id)
+                                (id) => String(id) === String(data.service_id),
                             );
                             if (isDuplicate) {
                                 return ibMe.setError(
-                                    `Service is already in the list.`
+                                    `Service is already in the list.`,
                                 );
                             }
 
@@ -2232,21 +2243,21 @@ const InvoiceDialog = (() => {
                                     end_date: data.end_date || "",
                                     discount_type:
                                         data.discount_type || "percent",
-                                    total_amount: calculatedTotal
+                                    total_amount: calculatedTotal,
                                 },
-                                0
+                                0,
                             );
 
                             cv_interact.success(
                                 `Service added for ${qtyMonths} ${
                                     unit === "month" ? "month(s)" : "unit"
-                                }`
+                                }`,
                             );
                             ibMe.close();
                         },
                         onCancel(ibMe) {
                             ibMe.close();
-                        }
+                        },
                     });
                 };
 
@@ -2266,19 +2277,19 @@ const InvoiceDialog = (() => {
                     console.log("All Requests", requests);
 
                     const filteredRequests = requests.filter(
-                        r => String(r.space_id) === String(selectedSpaceId)
+                        (r) => String(r.space_id) === String(selectedSpaceId),
                     );
 
                     if (filteredRequests.length === 0) {
                         return cv_interact.error(
-                            "No Requests relate to this space."
+                            "No Requests relate to this space.",
                         );
                     }
 
                     const serviceRequestOption = filteredRequests
                         .map(
-                            sr =>
-                                `<option value="${sr.request_id}">${sr.code} (${sr.space_code})</option>`
+                            (sr) =>
+                                `<option value="${sr.request_id}">${sr.code} (${sr.space_code})</option>`,
                         )
                         .join("");
 
@@ -2362,37 +2373,37 @@ const InvoiceDialog = (() => {
 
                         onOpen(ibMe) {
                             const elPriceWrapperR = requestDiv.querySelector(
-                                "#price_wrapper_requested"
+                                "#price_wrapper_requested",
                             );
                             const elRequest = requestDiv.querySelector(
-                                '[data-field="request_id"]'
+                                '[data-field="request_id"]',
                             );
                             const elDuration = requestDiv.querySelector(
-                                '[data-field="duration_hours"]'
+                                '[data-field="duration_hours"]',
                             );
                             const elPrice = requestDiv.querySelector(
-                                '[data-field="price"]'
+                                '[data-field="price"]',
                             );
                             const elServiceName = requestDiv.querySelector(
-                                '[data-field="service_name"]'
+                                '[data-field="service_name"]',
                             );
                             const elUnitType = requestDiv.querySelector(
-                                '[data-field="unit_type"]'
+                                '[data-field="unit_type"]',
                             );
                             const elRemark = requestDiv.querySelector(
-                                '[data-field="remark"]'
+                                '[data-field="remark"]',
                             );
                             const elDurationWrapper = requestDiv.querySelector(
-                                '[data-wrapper="duration"]'
+                                '[data-wrapper="duration"]',
                             );
                             const elDiscount = requestDiv.querySelector(
-                                '[data-field="discount"]'
+                                '[data-field="discount"]',
                             );
                             const elDiscountType = requestDiv.querySelector(
-                                '[data-field="discount_type"]'
+                                '[data-field="discount_type"]',
                             );
                             const elTotalAmount = requestDiv.querySelector(
-                                '[data-field="total_amount"]'
+                                '[data-field="total_amount"]',
                             );
 
                             if (elPriceWrapperR)
@@ -2432,11 +2443,11 @@ const InvoiceDialog = (() => {
                                 elTotalAmount.value = finalTotal.toFixed(2);
                             };
 
-                            const fillRequestData = selectedId => {
+                            const fillRequestData = (selectedId) => {
                                 const matched = filteredRequests.find(
-                                    r =>
+                                    (r) =>
                                         String(r.request_id) ===
-                                        String(selectedId)
+                                        String(selectedId),
                                 );
 
                                 if (matched) {
@@ -2446,7 +2457,7 @@ const InvoiceDialog = (() => {
                                     elDuration.value =
                                         matched.duration_hours || "0";
                                     elPrice.value = Number(
-                                        matched.price
+                                        matched.price,
                                     ).toFixed(2);
                                     elRemark.value = matched.remarks || "";
 
@@ -2468,22 +2479,22 @@ const InvoiceDialog = (() => {
                                 elDiscountType.value = "percent";
                                 elDiscountType.addEventListener(
                                     "change",
-                                    calculateTotalAmount
+                                    calculateTotalAmount,
                                 );
                             }
 
                             if (elRequest) {
                                 fillRequestData(elRequest.value);
-                                elRequest.addEventListener("change", e => {
+                                elRequest.addEventListener("change", (e) => {
                                     fillRequestData(e.target.value);
                                 });
                             }
 
                             if (elDiscount) {
-                                elDiscount.addEventListener("input", e => {
+                                elDiscount.addEventListener("input", (e) => {
                                     let v = e.target.value.replace(
                                         /[^0-9.]/g,
-                                        ""
+                                        "",
                                     );
                                     const parts = v.split(".");
                                     if (parts.length > 2)
@@ -2498,7 +2509,7 @@ const InvoiceDialog = (() => {
                                     calculateTotalAmount(); // Recalculate on keystroke
                                 });
 
-                                elDiscount.addEventListener("blur", e => {
+                                elDiscount.addEventListener("blur", (e) => {
                                     const v = parseFloat(e.target.value);
                                     e.target.value =
                                         isNaN(v) || v < 0 ? "" : v.toFixed(2);
@@ -2510,14 +2521,14 @@ const InvoiceDialog = (() => {
 
                         onConfirm(data, btn, ibMe) {
                             const selectedRequest = filteredRequests.find(
-                                r =>
+                                (r) =>
                                     String(r.request_id) ===
-                                    String(data.request_id)
+                                    String(data.request_id),
                             );
 
                             if (!selectedRequest) {
                                 return cv_interact.error(
-                                    "Please select a service request."
+                                    "Please select a service request.",
                                 );
                             }
 
@@ -2527,24 +2538,24 @@ const InvoiceDialog = (() => {
 
                             const existingIds = me.itemsView.rows
                                 .map(
-                                    row =>
-                                        row.meta?.item_id || row.data?.item_id
+                                    (row) =>
+                                        row.meta?.item_id || row.data?.item_id,
                                 )
                                 .filter(
-                                    id =>
+                                    (id) =>
                                         id !== undefined &&
                                         id !== "" &&
-                                        id !== null
+                                        id !== null,
                                 );
 
                             const isDuplicate = existingIds.some(
-                                id =>
+                                (id) =>
                                     String(id) ===
-                                    String(selectedRequest.request_id)
+                                    String(selectedRequest.request_id),
                             );
                             if (isDuplicate) {
                                 return ibMe.setError(
-                                    "Service Request is already in the list."
+                                    "Service Request is already in the list.",
                                 );
                             }
 
@@ -2562,15 +2573,15 @@ const InvoiceDialog = (() => {
                                 space_code: selectedRequest.space_code,
                                 discount: Number(data.discount) || 0,
                                 discount_type: data.discount_type || "percent",
-                                request_id: selectedRequest.request_id
+                                request_id: selectedRequest.request_id,
                             };
 
                             me.itemsView.addRow(dataToAdd, 0);
                             cv_interact.success(
-                                "Service request added to invoice"
+                                "Service request added to invoice",
                             );
                             ibMe.close();
-                        }
+                        },
                     });
                 };
 
@@ -2591,7 +2602,7 @@ const InvoiceDialog = (() => {
                             dataType: "string",
                             readOnly: true,
                             className: "small col-item-name",
-                            width: "230px"
+                            width: "230px",
                             // html: '<input type="checkbox" class="check_accept">',
                         },
 
@@ -2601,7 +2612,7 @@ const InvoiceDialog = (() => {
                             dataType: "text",
                             readOnly: true,
                             defaultValue: "-",
-                            width: "130px"
+                            width: "130px",
                         },
                         {
                             name: "end_date",
@@ -2609,7 +2620,7 @@ const InvoiceDialog = (() => {
                             dataType: "text",
                             readOnly: true,
                             defaultValue: "-",
-                            width: "130px"
+                            width: "130px",
                         },
                         {
                             name: "qty",
@@ -2617,7 +2628,7 @@ const InvoiceDialog = (() => {
                             dataType: "number",
                             readOnly: true,
                             className: "text-start",
-                            width: "70px"
+                            width: "70px",
                         },
 
                         {
@@ -2626,7 +2637,7 @@ const InvoiceDialog = (() => {
                             dataType: "text",
                             readOnly: true,
                             defaultValue: "-",
-                            width: "110px"
+                            width: "110px",
                         },
                         {
                             name: "price",
@@ -2634,7 +2645,7 @@ const InvoiceDialog = (() => {
                             readOnly: true,
                             isNumeric: true,
                             dataType: "money",
-                            width: "150px"
+                            width: "150px",
                         },
                         {
                             name: "discount",
@@ -2644,13 +2655,13 @@ const InvoiceDialog = (() => {
                             defaultDiscountType: "percent",
                             discountBeforeTax: true,
                             readOnly: true,
-                            width: "100px"
+                            width: "100px",
                         },
                         {
                             name: "tax_rate",
                             transTitle: "titles.Tax",
                             dataType: "percent",
-                            readOnly: true
+                            readOnly: true,
                         },
                         {
                             name: "total",
@@ -2658,8 +2669,8 @@ const InvoiceDialog = (() => {
                             dataType: "money",
                             readOnly: true,
                             isNumeric: true,
-                            width: "150px"
-                        }
+                            width: "150px",
+                        },
                     ],
                     calc: {
                         mode: "auto",
@@ -2667,14 +2678,14 @@ const InvoiceDialog = (() => {
                         priceField: "price",
                         totalField: "total",
                         taxField: "tax_rate",
-                        currencyPrecision: 2
+                        currencyPrecision: 2,
                     },
 
                     totalSummary: {
                         container: me.controls.div_invoice_summary,
                         showTax: false,
                         allowDiscount: true,
-                        discountBeforeTax: true
+                        discountBeforeTax: true,
                         // currencyConversion: {
                         //     currency_code: "KHR",
                         //     rate: 4100
@@ -2693,7 +2704,7 @@ const InvoiceDialog = (() => {
                     validateColumns: {
                         item_id: "positive",
                         qty: "positive",
-                        price: "positive"
+                        price: "positive",
                     },
 
                     itemRendered(item, ctx) {
@@ -2705,7 +2716,7 @@ const InvoiceDialog = (() => {
                         item.setRowMeta(tr, {
                             item_id: item_id,
                             type: type,
-                            unit_type: unit_type
+                            unit_type: unit_type,
                         });
 
                         if (item.rows.length >= 2) {
@@ -2713,7 +2724,7 @@ const InvoiceDialog = (() => {
                             me.setReadOnly(true, [
                                 "tenant_id",
                                 "space_id",
-                                "invoice_type"
+                                "invoice_type",
                             ]);
                         }
                     },
@@ -2721,18 +2732,18 @@ const InvoiceDialog = (() => {
                     onItemChange: (rowId, item, fieldName, td, tr) => {
                         if (fieldName === "item_id") {
                             const selectedService = availableItem.find(
-                                s => String(s.id) === String(item.item_id)
+                                (s) => String(s.id) === String(item.item_id),
                             );
                             if (selectedService) {
                                 me.itemsView.setCellValue(
                                     tr,
                                     "price",
-                                    Number(selectedService.price) || 0
+                                    Number(selectedService.price) || 0,
                                 );
                                 me.itemsView.setCellValue(
                                     tr,
                                     "unit_type",
-                                    selectedService.unit_type || "—"
+                                    selectedService.unit_type || "—",
                                 );
                                 me.itemsView.setCellValue(tr, "qty", 1);
                                 me.itemsView.setCellValue(
@@ -2740,28 +2751,28 @@ const InvoiceDialog = (() => {
                                     "remarks",
                                     selectedService.service ||
                                         selectedService.name ||
-                                        "—"
+                                        "—",
                                 );
                                 me.itemsView.setCellValue(
                                     tr,
                                     "type",
-                                    "service"
+                                    "service",
                                 );
                             } else if (item.contract_id || item.space_price) {
                                 const rentPrice =
                                     parseFloat(
-                                        item.space_price || item.price
+                                        item.space_price || item.price,
                                     ) || 0;
                                 me.itemsView.setCellValue(
                                     tr,
                                     "price",
-                                    rentPrice
+                                    rentPrice,
                                 );
                                 me.itemsView.setCellValue(tr, "type", "rent");
                                 me.itemsView.setCellValue(tr, "unit_type", "—");
                             }
                         }
-                    }
+                    },
                 });
 
                 me.searchTenant = VSSearchInput.init(me.controls.tenant, {
@@ -2775,25 +2786,25 @@ const InvoiceDialog = (() => {
                             "name",
                             "legal_name",
                             "email",
-                            "phone_number"
+                            "phone_number",
                         ],
                         searchFields: {
                             name: "LIKE",
                             legal_name: "like",
                             email: "=",
-                            phone: "="
-                        }
+                            phone: "=",
+                        },
                     },
                     columns: { name: "Name", phone_number: "Phone" },
-                    onSelect: tenant => {
+                    onSelect: (tenant) => {
                         me._selectedTenantId = tenant.id;
                         vsapi
                             .post(
                                 `${main_view.base_url}/prm/tenant/option-tenant-with-contract`,
                                 { tenant_id: tenant.id },
-                                {}
+                                {},
                             )
-                            .then(res => {
+                            .then((res) => {
                                 const d = res.data || {};
 
                                 me.controls.phone_number.value =
@@ -2813,10 +2824,10 @@ const InvoiceDialog = (() => {
                                     "space_code",
                                     "",
                                     "Select Space",
-                                    ""
+                                    "",
                                 );
                             });
-                    }
+                    },
                 });
 
                 me.searchTenant.reset("");
@@ -2824,7 +2835,7 @@ const InvoiceDialog = (() => {
                 me.saveData = () => {
                     let header = me.getData();
                     const items = me.itemsView.getItems({
-                        metaKeys: ["item_id", "type", "remark", "unit_type"]
+                        metaKeys: ["item_id", "type", "remark", "unit_type"],
                     }); // Retrieves all row data
 
                     console.log("Items", items);
@@ -2838,7 +2849,7 @@ const InvoiceDialog = (() => {
                         header.id = me.dataOptions.id;
                     }
 
-                    const toMySQLDate = dateStr => {
+                    const toMySQLDate = (dateStr) => {
                         if (!dateStr) return null;
                         const d = new Date(dateStr);
                         return isNaN(d.getTime())
@@ -2848,12 +2859,12 @@ const InvoiceDialog = (() => {
 
                     const mappedItems = items
                         .filter(
-                            item =>
+                            (item) =>
                                 parseFloat(item.price || 0) > 0 ||
-                                parseFloat(item.qty || 0) > 0
+                                parseFloat(item.qty || 0) > 0,
                         )
 
-                        .map(item => {
+                        .map((item) => {
                             return {
                                 ...item,
                                 item_id: item.item_id || null,
@@ -2866,7 +2877,7 @@ const InvoiceDialog = (() => {
                                 end_date: item.end_date,
                                 discount: parseFloat(item.discount || 0),
                                 tax_rate: parseFloat(item.tax_rate || 0),
-                                amount: parseFloat(item.total || 0)
+                                amount: parseFloat(item.total || 0),
                             };
                         });
 
@@ -2876,14 +2887,14 @@ const InvoiceDialog = (() => {
                         discount_value: totals.discount_value || 0,
                         discount_type: totals.discount_type || "percent",
                         amount: totals.subtotal, // Total for the invoice header
-                        amount_payable: totals.grand_total
+                        amount_payable: totals.grand_total,
                     };
                 };
             },
 
             onPrepareForm: (me, data) => {
                 availableItem = (data.services || []).filter(
-                    s => s.type_id == 2
+                    (s) => s.type_id == 2,
                 );
 
                 const isReadOnly = me.dataOptions.id > 0;
@@ -2891,7 +2902,7 @@ const InvoiceDialog = (() => {
                 me.setReadOnly(isReadOnly, [
                     "tenant_id",
                     "space_id",
-                    "invoice_type"
+                    "invoice_type",
                 ]);
 
                 // me.set;
@@ -2903,7 +2914,7 @@ const InvoiceDialog = (() => {
 
                 // Clear all inputs
                 if (me.controls) {
-                    Object.values(me.controls).forEach(el => {
+                    Object.values(me.controls).forEach((el) => {
                         if (
                             el &&
                             (el.tagName === "INPUT" ||
@@ -2917,7 +2928,7 @@ const InvoiceDialog = (() => {
                             '<option value="">-- Select Room / Space --</option>';
                         me.controls.space.value = "";
                         me.controls.space.dispatchEvent(
-                            new Event("change", { bubbles: true })
+                            new Event("change", { bubbles: true }),
                         );
                     }
                 }
@@ -2927,12 +2938,12 @@ const InvoiceDialog = (() => {
                 if (me.dataOptions.id) {
                     vsapi
                         .call(`${main_view.base_url}/prm/invoice/details`, {
-                            id: me.dataOptions.id
+                            id: me.dataOptions.id,
                         })
-                        .then(res => {
+                        .then((res) => {
                             if (res.status_code !== 200) {
                                 cv_interact.error(
-                                    "Failed to load invoice details."
+                                    "Failed to load invoice details.",
                                 );
                                 return;
                             }
@@ -2962,9 +2973,9 @@ const InvoiceDialog = (() => {
                                     .post(
                                         `${main_view.base_url}/prm/tenant/option-tenant-with-contract`,
                                         { tenant_id: detail.tenant_id },
-                                        {}
+                                        {},
                                     )
-                                    .then(res => {
+                                    .then((res) => {
                                         const d = res.data || {};
                                         me._tenantSpaces = d.spaces || [];
                                         me._tenantMonths = d.months || [];
@@ -2978,13 +2989,12 @@ const InvoiceDialog = (() => {
                                             "space_code",
                                             "",
                                             "Select Space",
-                                            ""
+                                            "",
                                         );
                                         setTimeout(() => {
                                             if (detail.space_id) {
-                                                me.controls.space.value = String(
-                                                    detail.space_id
-                                                );
+                                                me.controls.space.value =
+                                                    String(detail.space_id);
 
                                                 // ✅ Verify — if Choices.js overrides, force via option.selected
                                                 if (
@@ -2993,13 +3003,13 @@ const InvoiceDialog = (() => {
                                                 ) {
                                                     const opt = Array.from(
                                                         me.controls.space
-                                                            .options
+                                                            .options,
                                                     ).find(
-                                                        o =>
+                                                        (o) =>
                                                             String(o.value) ===
                                                             String(
-                                                                detail.space_id
-                                                            )
+                                                                detail.space_id,
+                                                            ),
                                                     );
                                                     if (opt) {
                                                         opt.selected = true;
@@ -3007,24 +3017,24 @@ const InvoiceDialog = (() => {
                                                             new Event(
                                                                 "change",
                                                                 {
-                                                                    bubbles: true
-                                                                }
-                                                            )
+                                                                    bubbles: true,
+                                                                },
+                                                            ),
                                                         );
                                                         console.log(
                                                             "space restored via option.selected:",
-                                                            opt.text
+                                                            opt.text,
                                                         );
                                                     } else {
                                                         console.warn(
                                                             "space option not found for id:",
-                                                            detail.space_id
+                                                            detail.space_id,
                                                         );
                                                     }
                                                 } else {
                                                     console.log(
                                                         "space restored:",
-                                                        me.controls.space.value
+                                                        me.controls.space.value,
                                                     );
                                                 }
                                             }
@@ -3036,13 +3046,13 @@ const InvoiceDialog = (() => {
 
                             console.log(
                                 "Invoice items loaded into view:",
-                                detail.items
+                                detail.items,
                             );
                         });
                 }
             },
 
-            onShow: me => {
+            onShow: (me) => {
                 const title = me.divModal.querySelector(".modal-title");
                 if (title) {
                     const isModify = !!me.dataOptions?.id;
@@ -3052,19 +3062,20 @@ const InvoiceDialog = (() => {
                 }
 
                 vsapi
-                    .call(`${main_view.base_url}/prm/invoice_setting/get-exchange-rate`, {})
-                    .then(res => {
+                    .call(
+                        `${main_view.base_url}/prm/invoice_setting/get-exchange-rate`,
+                        {},
+                    )
+                    .then((res) => {
                         if (res.status_code !== 200) {
                             cv_interact.error(
-                                "Failed to load invoice details."
+                                "Failed to load invoice details.",
                             );
                             return;
                         }
                         console.log("Global Setting", res);
 
                         exchangeRate = res.data;
-
-
                     });
             },
 
@@ -3074,14 +3085,14 @@ const InvoiceDialog = (() => {
                 targetProp: "invoice_details",
                 api: {
                     endpoint: `${main_view.base_url}/prm/invoice/form-options`,
-                    params: op => {
+                    params: (op) => {
                         console.log("API params op:", op);
                         return { id: op.id };
-                    }
-                }
+                    },
+                },
             },
 
-            onClose: me => {
+            onClose: (me) => {
                 if (me.controls && me.controls.space) {
                     me.controls.space.innerHTML =
                         '<option value="">-- Select Room / Space --</option>';
@@ -3094,9 +3105,9 @@ const InvoiceDialog = (() => {
                 {
                     label: '<span vslang="buttons.Cancel"></span>',
                     cssClass: "btn btn-secondary",
-                    click: me => {
+                    click: (me) => {
                         me.hide(false);
-                    }
+                    },
                 },
                 {
                     label: '<span vslang="buttons.Save"></span>',
@@ -3115,25 +3126,25 @@ const InvoiceDialog = (() => {
                             .call(
                                 `${main_view.base_url}/prm/invoice/save`,
                                 formData,
-                                btn
+                                btn,
                             )
-                            .then(res => {
+                            .then((res) => {
                                 if (res.status_code === 200) {
                                     cv_interact.success(
                                         formData.id
                                             ? "Invoice has been updated."
-                                            : "Invoice has been successfully created."
+                                            : "Invoice has been successfully created.",
                                     );
                                     me.hide(true);
                                 } else {
                                     cv_interact.error(
-                                        res.error_message || "Save failed."
+                                        res.error_message || "Save failed.",
                                     );
                                 }
                             });
-                    }
-                }
-            ]
+                    },
+                },
+            ],
         });
 
         dialog.show(op);
@@ -3145,10 +3156,9 @@ const ReceiveDialog = (() => {
     const self = {};
     let dialog = null;
 
-    self.show = op => {
-
+    self.show = (op) => {
         dialog = new GeneralDialog({
-            title: "Receive Payment",
+            title: " vslang:titles.Receive Payment",
             cssClass: "modal-lg vs-modal",
             backdrop: "static",
             keyboard: true,
@@ -3157,15 +3167,15 @@ const ReceiveDialog = (() => {
                 <div class="container-fluid px-0">
                     <div class="row g-0" style="border-radius:8px;overflow:hidden;margin-bottom:1.5rem;">
                         <div class="col-4" style="padding:0.75rem 1.25rem;border-right:1px solid white; background:#e1e5f2;">
-                            <div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#1a1647;margin-bottom:4px;">Balance Due</div>
+                            <div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#1a1647;margin-bottom:4px;" vslang="labels.Balance Due"></div>
                             <div style="font-size:17px;font-weight:600;color:#5665E1;" id="f_due">$0.00</div>
                         </div>
                         <div class="col-4" style="padding:0.75rem 1.25rem;border-right:1px solid white; text-align:center;background:#e1e5f2;">
-                            <div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#1a1647;margin-bottom:4px;">Total Paid</div>
+                            <div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#1a1647;margin-bottom:4px;" vslang="labels.Total Paid"></div>
                             <div style="font-size:17px;font-weight:600;color:#19BF9B;" id="f_tot">$0.00</div>
                         </div>
                         <div class="col-4" style="padding:0.75rem 1.25rem;text-align:right;background:#e1e5f2;">
-                            <div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#1a1647;margin-bottom:4px;">Remaining</div>
+                            <div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#1a1647;margin-bottom:4px;" vslang="labels.Remaining"></div>
                             <div style="font-size:17px;font-weight:600;color:#FAB31C;" id="f_bal">$0.00</div>
                         </div>
                     </div>
@@ -3182,7 +3192,7 @@ const ReceiveDialog = (() => {
                             <div style="display:flex;flex-direction:row;gap:8px;flex-wrap:wrap;margin-bottom: 0.5rem;">
                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
                                     <input name="cash" type="text" class="form-control data-input" data-field="cash" min="0" step="0.01" placeholder=" "/>
-                                    <label style="padding-left:6px;color:#777777;">Amount ($)</label>
+                                    <label style="padding-left:6px;color:#777777;" vslang="labels.Amount ($)"></label>
                                 </div>
                             </div>
                         </div>
@@ -3200,11 +3210,11 @@ const ReceiveDialog = (() => {
                                 </div>
                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
                                     <input name="transfer_amount" type="text" class="form-control data-input" data-field="transfer_amount" min="0" step="0.01" placeholder=" "/>
-                                    <label style="padding-left:6px;color:#777777;">Amount ($)</label>
+                                    <label style="padding-left:6px;color:#777777;" vslang="labels.Amount ($)"></label>
                                 </div>
                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
                                     <input name="bank_ref_number" type="text" class="form-control data-input" data-field="bank_ref_number" placeholder=" "/>
-                                    <label style="padding-left:6px;color:#777777;">Ref Number</label>
+                                    <label style="padding-left:6px;color:#777777;" vslang="labels.Reference No."></label>
                                 </div>
                             </div>
                         </div>
@@ -3226,11 +3236,11 @@ const ReceiveDialog = (() => {
                                 </div>
                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
                                     <input name="card_amount" type="text" class="form-control data-input" data-field="card_amount" min="0" step="0.01" placeholder=" "/>
-                                    <label style="padding-left:6px;color:#777777;">Amount ($)</label>
+                                    <label style="padding-left:6px;color:#777777;" vslang="labels.Amount ($)"></label>
                                 </div>
                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
                                     <input name="card_number" type="text" class="form-control data-input" data-field="card_number" placeholder=" "/>
-                                    <label style="padding-left:6px;color:#777777;">Card Number</label>
+                                    <label style="padding-left:6px;color:#777777;" vslang="labels.Card Number"></label>
                                 </div>
                             </div>
                         </div>
@@ -3248,11 +3258,11 @@ const ReceiveDialog = (() => {
                                 </div>
                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
                                     <input name="cheque_amount" type="text" class="form-control data-input" data-field="cheque_amount" min="0" step="0.01" placeholder=" "/>
-                                    <label style="padding-left:6px;color:#777777;">Amount ($)</label>
+                                    <label style="padding-left:6px;color:#777777;" vslang="labels.Amount ($)"></label>
                                 </div>
                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
                                     <input name="cheque_number" type="text" class="form-control data-input" data-field="cheque_number" placeholder=" "/>
-                                    <label style="padding-left:6px;color:#777777;">Cheque Number</label>
+                                    <label style="padding-left:6px;color:#777777;" vslang="labels.Cheque No."></label>
                                 </div>
                             </div>
                         </div>
@@ -3261,23 +3271,23 @@ const ReceiveDialog = (() => {
                         <div>
                             <div class="material-input outlined" style="margin:0;">
                                 <textarea name="remarks" class="form-control data-input" data-field="remarks" rows="2" style="height:55px;" placeholder=" "></textarea>
-                                <label style="padding-left:6px;color:#777777;">Remarks</label>
+                                <label style="padding-left:6px;color:#777777;" vslang="labels.Remark"></label>
                             </div>
                         </div>
 
                     </div>
                 </div>`,
 
-            contentCreated: me => {
+            contentCreated: (me) => {
                 const updateTotals = () => {
-                    const getValue = name => {
+                    const getValue = (name) => {
                         const el = me.divModal.querySelector(
-                            `[name="${name}"]`
+                            `[name="${name}"]`,
                         );
                         return el ? parseFloat(el.value) || 0 : 0;
                     };
 
-                    const fmt = n => "$" + Number(n).toFixed(2);
+                    const fmt = (n) => "$" + Number(n).toFixed(2);
 
                     const cash = getValue("cash");
                     const bank = getValue("transfer_amount");
@@ -3291,16 +3301,15 @@ const ReceiveDialog = (() => {
                     if (dueEl) {
                         due =
                             parseFloat(
-                                dueEl.textContent.replace(/[^0-9.-]+/g, "")
+                                dueEl.textContent.replace(/[^0-9.-]+/g, ""),
                             ) || 0;
                     }
 
                     const remaining = due - totalPaid;
 
                     // --- Update Summary Header ---
-                    me.divModal.querySelector("#f_tot").textContent = fmt(
-                        totalPaid
-                    );
+                    me.divModal.querySelector("#f_tot").textContent =
+                        fmt(totalPaid);
 
                     const balEl = me.divModal.querySelector("#f_bal");
                     if (balEl) {
@@ -3332,9 +3341,9 @@ const ReceiveDialog = (() => {
                     "cash",
                     "transfer_amount",
                     "card_amount",
-                    "cheque_amount"
+                    "cheque_amount",
                 ];
-                amountFields.forEach(name => {
+                amountFields.forEach((name) => {
                     const input = me.divModal.querySelector(`[name="${name}"]`);
                     if (input) {
                         input.addEventListener("input", updateTotals);
@@ -3342,8 +3351,8 @@ const ReceiveDialog = (() => {
                     }
                 });
 
-                me.convertPayment = data => {
-                    const parseAmt = v =>
+                me.convertPayment = (data) => {
+                    const parseAmt = (v) =>
                         isNaN(parseFloat(v)) ? 0 : parseFloat(v);
                     const breakdowns = [];
 
@@ -3351,7 +3360,7 @@ const ReceiveDialog = (() => {
                         breakdowns.push({
                             method: "Cash",
                             amount: parseAmt(data.cash),
-                            currency_code: "USD"
+                            currency_code: "USD",
                         });
                     }
                     if (parseAmt(data.transfer_amount) > 0) {
@@ -3364,7 +3373,7 @@ const ReceiveDialog = (() => {
                             bank_name: me.getSelectText
                                 ? me.getSelectText("bank_transfer_bank_id")
                                 : null,
-                            bank_ref_number: data.bank_ref_number || null
+                            bank_ref_number: data.bank_ref_number || null,
                         });
                     }
                     if (parseAmt(data.card_amount) > 0) {
@@ -3373,7 +3382,7 @@ const ReceiveDialog = (() => {
                             amount: parseAmt(data.card_amount),
                             currency_code: "USD",
                             card_type: data.card_type || null,
-                            card_number: data.card_number || null
+                            card_number: data.card_number || null,
                         });
                     }
                     if (parseAmt(data.cheque_amount) > 0) {
@@ -3385,13 +3394,13 @@ const ReceiveDialog = (() => {
                             cheque_bank_name: me.getSelectText
                                 ? me.getSelectText("cheque_bank_id")
                                 : null,
-                            cheque_number: data.cheque_number || null
+                            cheque_number: data.cheque_number || null,
                         });
                     }
                     return {
                         invoice_id: me.dataOptions?.invoice_id || null,
                         remarks: (data.remarks || "").trim(), // Correctly picks up manual entry
-                        pmt_breakdowns: breakdowns
+                        pmt_breakdowns: breakdowns,
                     };
                 };
 
@@ -3401,20 +3410,20 @@ const ReceiveDialog = (() => {
                 applyNumberInput(me.controls.transfer_amount);
             },
 
-            onPrepareForm: me => {
+            onPrepareForm: (me) => {
                 const opts = me.dataOptions || {};
                 if (opts.invoice_id) {
                     vsapi
                         .call(`${main_view.base_url}/prm/invoice/details`, {
-                            id: opts.invoice_id
+                            id: opts.invoice_id,
                         })
-                        .then(res => {
+                        .then((res) => {
                             if (res.status_code === 200) {
                                 const d = res.data || {};
                                 const bal = Number(d.balance || 0).toFixed(2);
                                 const set = (id, val) => {
                                     const el = me.divModal.querySelector(
-                                        "#" + id
+                                        "#" + id,
                                     );
                                     if (el) el.textContent = val;
                                 };
@@ -3427,7 +3436,7 @@ const ReceiveDialog = (() => {
 
                 vsapi
                     .call(`${main_view.base_url}/prm/invoice/form-options`)
-                    .then(res => {
+                    .then((res) => {
                         const banks = res?.data?.banks || [];
                         if (me.controls.bank_transfer_bank_id) {
                             VSUtil.setComboItems(
@@ -3436,7 +3445,7 @@ const ReceiveDialog = (() => {
                                 "id",
                                 "name",
                                 true,
-                                "— Select Bank —"
+                                "— Select Bank —",
                             );
                         }
                         if (me.controls.cheque_bank_id) {
@@ -3446,7 +3455,7 @@ const ReceiveDialog = (() => {
                                 "id",
                                 "name",
                                 true,
-                                "— Select Bank —"
+                                "— Select Bank —",
                             );
                         }
                     });
@@ -3456,7 +3465,7 @@ const ReceiveDialog = (() => {
                 {
                     label: "Cancel",
                     cssClass: "btn btn-secondary",
-                    click: me => me.hide(false)
+                    click: (me) => me.hide(false),
                 },
                 {
                     label: "Receive",
@@ -3466,12 +3475,12 @@ const ReceiveDialog = (() => {
                         const payload = me.convertPayment(rawData);
                         const totalInput = payload.pmt_breakdowns.reduce(
                             (sum, item) => sum + item.amount,
-                            0
+                            0,
                         );
 
                         if (totalInput <= 0) {
                             return cv_interact.error(
-                                "Please enter a payment amount."
+                                "Please enter a payment amount.",
                             );
                         }
 
@@ -3479,27 +3488,27 @@ const ReceiveDialog = (() => {
                             .call(
                                 `${main_view.base_url}/prm/invoice/receive`,
                                 payload,
-                                btn
+                                btn,
                             )
-                            .then(res => {
+                            .then((res) => {
                                 if (res.status_code === 200) {
                                     cv_interact.success(
-                                        "Payment Received Successfully."
+                                        "Payment Received Successfully.",
                                     );
                                     me.hide(true);
                                 } else {
                                     cv_interact.error(
-                                        res.error_message || "Save failed."
+                                        res.error_message || "Save failed.",
                                     );
                                 }
                             })
-                            .catch(err => {
+                            .catch((err) => {
                                 console.error(err);
                                 cv_interact.error("Network error occurred.");
                             });
-                    }
-                }
-            ]
+                    },
+                },
+            ],
         });
 
         dialog.show(op);
@@ -3512,12 +3521,11 @@ const InvoiceSettingDialog = (() => {
     const self = {};
     let dialog = null;
 
-    self.show = op => {
-        console.log(12,op);
+    self.show = (op) => {
+        console.log(12, op);
 
         const currentData = op || {};
         const invoiceId = currentData.id || currentData.invoice_id || 0;
-
 
         dialog = new GeneralDialog({
             title: "Invoice Setting",
@@ -3581,7 +3589,7 @@ const InvoiceSettingDialog = (() => {
                 </div>
             `,
 
-            contentCreated: me => {
+            contentCreated: (me) => {
                 const dataSource = currentData.settings
                     ? currentData.settings
                     : currentData;
@@ -3599,24 +3607,28 @@ const InvoiceSettingDialog = (() => {
 
                 // Fix: Safely locate checkboxes inside document context if framework wrappers fail
                 const container = me.divModal || document;
-                container.querySelectorAll(".toggle-setting").forEach(input => {
-                    const field = input.getAttribute("data-field");
-                    if (field && normalizedData[field] !== undefined) {
-                        input.checked = parseInt(normalizedData[field]) === 1;
-                    }
-                });
+                container
+                    .querySelectorAll(".toggle-setting")
+                    .forEach((input) => {
+                        const field = input.getAttribute("data-field");
+                        if (field && normalizedData[field] !== undefined) {
+                            input.checked =
+                                parseInt(normalizedData[field]) === 1;
+                        }
+                    });
             },
 
-            onPrepareForm: me => {
+            onPrepareForm: (me) => {
                 vsapi
-                    .call(`${main_view.base_url}/prm/invoice/get-setting`, {id: invoiceId})
-                    .then(res => {
+                    .call(`${main_view.base_url}/prm/invoice/get-setting`, {
+                        id: invoiceId,
+                    })
+                    .then((res) => {
                         if (res && res.data) {
                             const settingsData = res.data.settings || {};
 
-                            console.log(13,settingsData);
-                            console.log(14,res);
-
+                            console.log(13, settingsData);
+                            console.log(14, res);
 
                             const normalizedData = {
                                 show_comm_tax: settingsData.show_comm_tax,
@@ -3633,10 +3645,9 @@ const InvoiceSettingDialog = (() => {
                             const container = me.divModal || document;
                             container
                                 .querySelectorAll(".toggle-setting")
-                                .forEach(input => {
-                                    const field = input.getAttribute(
-                                        "data-field"
-                                    );
+                                .forEach((input) => {
+                                    const field =
+                                        input.getAttribute("data-field");
                                     if (
                                         field &&
                                         normalizedData[field] !== undefined
@@ -3649,11 +3660,11 @@ const InvoiceSettingDialog = (() => {
                         } else {
                             console.error(
                                 "Failed to map configurations:",
-                                res.error_message
+                                res.error_message,
                             );
                         }
                     })
-                    .catch(err => {
+                    .catch((err) => {
                         console.error("AJAX Gateway Exception:", err);
                     });
             },
@@ -3664,7 +3675,7 @@ const InvoiceSettingDialog = (() => {
                     cssClass: "btn btn-secondary",
                     click: (me, btn) => {
                         me.hide(false);
-                    }
+                    },
                 },
                 {
                     label: '<span vslang="buttons.Save"></span>',
@@ -3676,7 +3687,7 @@ const InvoiceSettingDialog = (() => {
                         const container = me.divModal || document;
                         container
                             .querySelectorAll(".toggle-setting")
-                            .forEach(input => {
+                            .forEach((input) => {
                                 const field = input.getAttribute("data-field");
                                 if (field) {
                                     payload[field] = input.checked ? 1 : 0;
@@ -3686,20 +3697,20 @@ const InvoiceSettingDialog = (() => {
                         // Verify this log shows fields like "show_comm_tax: 1" in your dev console!
                         console.log(
                             "Invoice Setting Payload gathered:",
-                            payload
+                            payload,
                         );
 
                         vsapi
                             .call(
                                 `${main_view.base_url}/prm/invoice/setting`,
                                 payload,
-                                btn
+                                btn,
                             )
-                            .then(res => {
+                            .then((res) => {
                                 if (res.status_code === 200) {
                                     me.hide(true, res);
                                     cv_interact.success(
-                                        "Settings updated successfully."
+                                        "Settings updated successfully.",
                                     );
 
                                     if (
@@ -3719,13 +3730,13 @@ const InvoiceSettingDialog = (() => {
                                 } else {
                                     cv_interact.error(
                                         res.error_message ||
-                                            "An error occurred while saving."
+                                            "An error occurred while saving.",
                                     );
                                 }
                             });
-                    }
-                }
-            ]
+                    },
+                },
+            ],
         });
 
         dialog.show(op);

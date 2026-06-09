@@ -36,6 +36,8 @@ use App\Http\Controllers\Prm\InvoiceSettingController;
 use App\Http\Controllers\Tenant\TenantProfileController;
 use App\Http\Controllers\Tenant\ReservationsController;
 use App\Http\Controllers\Tenant\RequestServiceController;
+use App\Http\Controllers\Tenant\ReceiptController as TenantReceiptController;
+use App\Http\Controllers\Tenant\InvoiceController as TenantInvoiceController;
 
 
 
@@ -92,6 +94,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant')->gro
     Route::post('/options-tenant-info', [TenantController::class, 'option_select_all_tenant_info']);
     Route::post('/option-tenant-with-contract', [TenantController::class, 'getTenantOptionsWithSpacesAndMonths']);
     Route::post('/option-tenant-with-service', [TenantController::class, 'option_select_all_tenant_info_service']);
+    Route::post('/contract-form-option', [TenantController::class,'contractFormOption']);
 
     Route::post('document/save', [TenantDocumentController::class, 'saveTenantDocument']);
     Route::post('document/list', [TenantDocumentController::class, 'getListDocument']);
@@ -99,6 +102,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant')->gro
     Route::post('document/delete', [TenantDocumentController::class, 'deleteTenantDocument']);
     Route::post('document/form-options', [TenantDocumentController::class, 'getFormOptions']);
     Route::post('document/download', [TenantDocumentController::class, 'downloadDocument']);
+
 });
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('building-space')->group(function () {
@@ -245,6 +249,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('contracts')->
     Route::post('/details', [ContractsController::class, 'contractsDetails']);
     Route::post('/form-options', [ContractsController::class, 'getFormOptions']);
     Route::post('/delete', [ContractsController::class, 'deleteContracts']);
+
 });
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('payments')->group(function () {
@@ -398,11 +403,18 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant/contra
 });
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant/invoice')->group(function () {
-    Route::post('/list-paginate', [InvoiceController::class, 'getListPaginate']);
-    Route::post('/details', [InvoiceController::class, 'invoiceDetails']);
-    Route::post('/form-options', [InvoiceController::class, 'getFormOptions']);
-    Route::post('/receive', [InvoiceController::class, 'receive']);
-    Route::post('/delete', [InvoiceController::class, 'deleteInvoice']);
+    Route::post('/list-paginate', [TenantInvoiceController::class, 'getListPaginate']);
+    Route::post('/details', [TenantInvoiceController::class, 'invoiceDetails']);
+    Route::post('/form-options', [TenantInvoiceController::class, 'getFormOptions']);
+    Route::post('/save', [TenantInvoiceController::class, 'saveInvoice']);
+    Route::post('/receive', [TenantInvoiceController::class, 'receive']);
+    Route::post('/delete', [TenantInvoiceController::class, 'deleteInvoice']);
+});
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant/receipt')->group(function () {
+    Route::post('/list-paginate', [TenantReceiptController::class, 'getListPaginate']);
+    Route::post('/details', [TenantReceiptController::class, 'receiptDetails']);
+    Route::post('/form-options', [TenantReceiptController::class, 'getFormOptions']);
 });
 
 
