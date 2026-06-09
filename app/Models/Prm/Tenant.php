@@ -8,6 +8,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use DBX;
 use XPublicStorage;
 use XBranch;
+use App\Models\CompanyProfile;
 
 class Tenant
 {
@@ -78,7 +79,8 @@ class Tenant
             'legal_name'      => '1|string|0-30|text=legal_name_required',
             'nationality_id'  => '1|number|text=nationality_required',
             'national_id'     => '0|string|0-20',
-            'passport_number' => '0|string|0-20',
+            'nid_issue_date'   => '1|date|text=Issue date is required',
+            'passport_number' => '|string|0-20',
             'phone_number'    => '1|string|1-20|text=phone_number_required',
             'email'           => '0|email|1-30',
             'address'         => '0|string|0-255',
@@ -213,7 +215,7 @@ class Tenant
             ->whereRaw($str_moreWhere)
             ->selectRaw("
                 t.id,t.name,t.sex,t.tenant_type,t.date_of_birth,t.nationality_id,
-                t.legal_name,t.code,t.photo_file_name,t.national_id,
+                t.legal_name,t.code,t.photo_file_name,t.national_id,t.nid_issue_date,
                 t.passport_number,t.phone_number,t.email,t.address,
                 t.status_id,ts.name as status,
                 bt.name as business_type,
@@ -296,6 +298,7 @@ class Tenant
         $start_date = DBX::formatDate("c.start_date", 'start_date');
         $end_date = DBX::formatDate("c.end_date", 'end_date');
         $date_of_birth = DBX::formatDate("t.date_of_birth", 'date_of_birth');
+        $nid_issue_date = DBX::formatDate("t.nid_issue_date", 'nid_issue_date');
         $lastContract = self::liveContractSubquery();
         $row = DB::table('tenants as t')
             ->leftJoinSub($lastContract, 'lc', function ($join) {
@@ -305,7 +308,7 @@ class Tenant
             ->leftJoin('building_spaces as bs', 'bs.id', '=', 'c.space_id')
             ->join('tenant_statuses as ts', 'ts.id', '=', 't.status_id')
             ->where('t.id', $id)
-            ->selectRaw("t.id,t.branch_id,t.name,t.code,t.national_id,passport_number,$date_of_birth,t.nationality_id,t.photo_file_name,t.sex,t.tenant_type,t.status_id,ts.name as status,t.legal_name,t.phone_number,t.email,t.address,c.price,c.price_type,c.sqm_size,$start_date,$end_date,bs.code as space_code ")
+            ->selectRaw("t.id,t.branch_id,t.name,t.code,t.national_id,passport_number,$date_of_birth,$nid_issue_date,t.nationality_id,t.photo_file_name,t.sex,t.tenant_type,t.status_id,ts.name as status,t.legal_name,t.phone_number,t.email,t.address,c.price,c.price_type,c.sqm_size,$start_date,$end_date,bs.code as space_code")
             ->first();
         if ($row) {
             $img = self::profilePicture($id, $ss);
@@ -709,32 +712,27 @@ class Tenant
             'company_profile' => Report::getCompanyInfo($ss),
         ];
     }
-    static function contractFormOptions($id, $director_id = 0, $ss)
+     static function contractFormOption($id,$ss)
     {
         $tenant = null;
-
         if ($id) {
-            $tenant = Tenant::getDetails($id, $ss);
+             $tenant = Tenant::getDetails($id, $ss);
         }else return DV::error('Branch Can not be Empty!');
 
-        $branch = XBranch::details($tenant->branch_id ?? null,$ss);
+        $x = new CompanyProfile($ss);
+        $p = (object) $x->getDetails($ss);
 
-        if ($branch){
-            $tenant->branch_name = $branch->name ?? '(Branch not found)';
-            $tenant->branch_address = $branch->address_kh ?? '(address not available)';
-            $tenant->com_rep_name =null;
-            $tenant->com_rep_sex =  null;
-            $tenant->com_rep_nid = null;
-            $tenant->com_rep_phone =null;
-            $tenant->emp_name = null;
-            $tenant->emp_phone = $tenant->phone_number;
-            $tenant->emp_nid = null;
-            $tenant->emp_position = null;
-            $tenant->emp_sex = $tenant->sex;
-            $tenant->emp_address = $tenant->address;
+        if ($p){
+            $tenant->issue_date = date('d-M-Y');
+            $tenant->com_rep_name = $p->first_cp_name;
+            $tenant->com_rep_sex =  $p->first_cp_sex;
+            $tenant->com_rep_nid = $p->first_cp_nid;
+            $tenant->com_rep_dob =$p->first_cp_dob;
+            $tenant->com_address = $p->billing_address;
         }
         return (object)[
             'contractInfo' => $tenant,
+            'nationalities' => GeneralSettings::options_nationality($ss),
         ];
     }
    

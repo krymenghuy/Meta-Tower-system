@@ -1612,122 +1612,122 @@ function createUUIDV1()
             }
         }
 
-        function getSQLParts_months($input, $month_col_expression = null, $year_col_expression=null) {
-            $month_col_expression = $month_col_expression ?? 'c.op_month';
-            $year_col_expression = $year_col_expression ?? 'c.op_year';
-            if(!$input){
-                return (object)[
-                    'sql'=>'7=7',
-                    'years'=>[],
-                    'months'=>[],
-                    'last_month_info'=>(object)['month'=>0,'year'=>0],
-                    'error'=>''
-                ];
-            }
-
-            $months = [
-                "Jan" => 1, "Feb" => 2, "Mar" => 3, "Apr" => 4, "May" => 5, "Jun" => 6,
-                "Jul" => 7, "Aug" => 8, "Sep" => 9,"Sept" => 9, "Oct" => 10, "Nov" => 11, "Dec" => 12,
-                "1" => 1, "2" => 2, "3" => 3, "4" => 4, "5" => 5, "6" => 6,
-                "7" => 7, "8" => 8, "9" => 9, "10" => 10, "11" => 11, "12" => 12
-            ];
-            $current_month_num = date('m');
-            $current_year = date('Y');
-            $def_start_month = ($current_month_num -6 <1? 1: $current_month_num -6 ).' '.$current_year;
-
-            $sts = explode(' to ',$input);
-            $start_point = $sts[0];
-            $end_point = isset($sts[1])?$sts[1]: $def_start_month;
-            $start_point  =  $start_point ?? $start_point;
-
-            $ps = explode(' ',$start_point);
-            if($ps[0] =='all'){
-                return (object)[
-                    'sql'=>'5=5',
-                    'years'=>[],
-                    'months'=>[],
-                    'last_month_info'=>(object)['month'=>0,'year'=>0],
-                    'error'=>''
-                ];
-            }
-            $start_month = isset($months[$ps[0]])?$months[$ps[0]]:date('m');
-            $start_year = isset($ps[1])? $ps[1] : date('Y');
-
-            $start_months= [];
-            $start_months[$start_year] = $start_month;
-
-            $ps = explode(' ',$end_point);
-            if($ps[0] =='all'){
-                return (object)[
-                    'sql'=>'5=5',
-                    'years'=>[],
-                    'months'=>[],
-                    'last_month_info'=>(object)['month'=>0,'year'=>0],
-                    'error'=>''
-                ];
-            }
-
-            $end_month = isset($months[$ps[0]])?$months[$ps[0]]:date('m');
-            $end_year = isset($ps[1])?$ps[1] : date('Y');
-
-            if (!$end_month || !$end_year){
-                return (object)[
-                    'sql'=>'2=3',
-                    'years'=>[],
-                    'months'=>[],
-                    'last_month_info'=>(object)['month'=>0,'year'=>0],
-                    'error'=>'The ending month and ending year are not correct!'
-                ];
-            }
-            if($end_year < $start_year){
-                return (object)[
-                    'sql'=>'1=2',
-                    'years'=>[],
-                    'months'=>[],
-                    'last_month_info'=>(object)['month'=>0,'year'=>0],
-                    'error'=>'The starting year must be earlier than the ending year'
-                ];
-            }
-            else if($end_month < $start_month && $start_year == $end_year){
-                return (object)[
-                    'sql'=>'2=3',
-                    'years'=>[],
-                    'months'=>[],
-                    'last_month_info'=>(object)['month'=>0,'year'=>0],
-                    'error'=>'The starting month must be earlier than the ending month'
-                ];
-            }
-
-            $end_months = [];
-            $end_months[$end_year] = $end_month;
-
-            $years = [];
-            $tmp_year = floatval($start_year);
-            do{
-
-                $years[] = $tmp_year;
-                    $m = isset($start_months[$tmp_year])? $start_months[$tmp_year]:1;
-                    for($i=$m;$i<=12;$i++){
-                        if($tmp_year == $end_year){
-                             if($i <= $end_month) $q_months[$tmp_year][]= $i;
-                        }else $q_months[$tmp_year][]= $i;
-
-                    }
-
-                $tmp_year++;
-            } while($tmp_year <= $end_year);
-
-            $str_months = '';
-            foreach($years as $year){
-              $str_months = $str_months.($str_months? ' OR ': '') . ' (' .$year_col_expression.' = '.$year.' AND '.$month_col_expression.' IN ('.implode(',',$q_months[$year]).'))';
-            }
+    function getSQLParts_months($input, $month_col_expression = null, $year_col_expression=null) {
+        $month_col_expression = $month_col_expression ?? 'c.op_month';
+        $year_col_expression = $year_col_expression ?? 'c.op_year';
+        if(!$input){
             return (object)[
-                'sql'=>'('.$str_months.')',
-                'years'=>$years,
-                'months'=>$q_months,
-                'last_month_info'=>(object)['month'=>$end_month,'year'=>$end_year],
-                'error'=>null
+                'sql'=>'7=7',
+                'years'=>[],
+                'months'=>[],
+                'last_month_info'=>(object)['month'=>0,'year'=>0],
+                'error'=>''
             ];
         }
 
+        $months = [
+            "Jan" => 1, "Feb" => 2, "Mar" => 3, "Apr" => 4, "May" => 5, "Jun" => 6,
+            "Jul" => 7, "Aug" => 8, "Sep" => 9,"Sept" => 9, "Oct" => 10, "Nov" => 11, "Dec" => 12,
+            "1" => 1, "2" => 2, "3" => 3, "4" => 4, "5" => 5, "6" => 6,
+            "7" => 7, "8" => 8, "9" => 9, "10" => 10, "11" => 11, "12" => 12
+        ];
+        $current_month_num = date('m');
+        $current_year = date('Y');
+        $def_start_month = ($current_month_num -6 <1? 1: $current_month_num -6 ).' '.$current_year;
+
+        $sts = explode(' to ',$input);
+        $start_point = $sts[0];
+        $end_point = isset($sts[1])?$sts[1]: $def_start_month;
+        $start_point  =  $start_point ?? $start_point;
+
+        $ps = explode(' ',$start_point);
+        if($ps[0] =='all'){
+            return (object)[
+                'sql'=>'5=5',
+                'years'=>[],
+                'months'=>[],
+                'last_month_info'=>(object)['month'=>0,'year'=>0],
+                'error'=>''
+            ];
+        }
+        $start_month = isset($months[$ps[0]])?$months[$ps[0]]:date('m');
+        $start_year = isset($ps[1])? $ps[1] : date('Y');
+
+        $start_months= [];
+        $start_months[$start_year] = $start_month;
+
+        $ps = explode(' ',$end_point);
+        if($ps[0] =='all'){
+            return (object)[
+                'sql'=>'5=5',
+                'years'=>[],
+                'months'=>[],
+                'last_month_info'=>(object)['month'=>0,'year'=>0],
+                'error'=>''
+            ];
+        }
+
+        $end_month = isset($months[$ps[0]])?$months[$ps[0]]:date('m');
+        $end_year = isset($ps[1])?$ps[1] : date('Y');
+
+        if (!$end_month || !$end_year){
+            return (object)[
+                'sql'=>'2=3',
+                'years'=>[],
+                'months'=>[],
+                'last_month_info'=>(object)['month'=>0,'year'=>0],
+                'error'=>'The ending month and ending year are not correct!'
+            ];
+        }
+        if($end_year < $start_year){
+            return (object)[
+                'sql'=>'1=2',
+                'years'=>[],
+                'months'=>[],
+                'last_month_info'=>(object)['month'=>0,'year'=>0],
+                'error'=>'The starting year must be earlier than the ending year'
+            ];
+        }
+        else if($end_month < $start_month && $start_year == $end_year){
+            return (object)[
+                'sql'=>'2=3',
+                'years'=>[],
+                'months'=>[],
+                'last_month_info'=>(object)['month'=>0,'year'=>0],
+                'error'=>'The starting month must be earlier than the ending month'
+            ];
+        }
+
+        $end_months = [];
+        $end_months[$end_year] = $end_month;
+
+        $years = [];
+        $tmp_year = floatval($start_year);
+        do{
+
+            $years[] = $tmp_year;
+                $m = isset($start_months[$tmp_year])? $start_months[$tmp_year]:1;
+                for($i=$m;$i<=12;$i++){
+                    if($tmp_year == $end_year){
+                            if($i <= $end_month) $q_months[$tmp_year][]= $i;
+                    }else $q_months[$tmp_year][]= $i;
+
+                }
+
+            $tmp_year++;
+        } while($tmp_year <= $end_year);
+
+        $str_months = '';
+        foreach($years as $year){
+            $str_months = $str_months.($str_months? ' OR ': '') . ' (' .$year_col_expression.' = '.$year.' AND '.$month_col_expression.' IN ('.implode(',',$q_months[$year]).'))';
+        }
+        return (object)[
+            'sql'=>'('.$str_months.')',
+            'years'=>$years,
+            'months'=>$q_months,
+            'last_month_info'=>(object)['month'=>$end_month,'year'=>$end_year],
+            'error'=>null
+        ];
+    }
+    
     ?>

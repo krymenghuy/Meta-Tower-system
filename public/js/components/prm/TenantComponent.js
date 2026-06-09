@@ -1791,10 +1791,16 @@ const CreateTenantDialog = (() => {
                             </div>
                     </div>
                     <div class="col-12 row g-2">
-                        <div class="col-12 col-md-6">
+                        <div class="col-12 col-md-3">
                             <div class="vs-material-field">
                                 <input type="text" name="national_id" class="data-input form-control" data-field="national_id" placeholder=" " />
                                 <label vslang="labels.National ID">National ID</label>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-3">
+                            <div class="vs-material-field">
+                                <input type="text" data-type="date" name="nid_issue_date" class="data-input form-control form_input" data-field="nid_issue_date" placeholder=" " />
+                                <label vslang="labels.Issue Date">Issue Date</label>
                             </div>
                         </div>
                         <div class="col-12 col-md-6">

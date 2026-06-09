@@ -94,7 +94,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant')->gro
     Route::post('/options-tenant-info', [TenantController::class, 'option_select_all_tenant_info']);
     Route::post('/option-tenant-with-contract', [TenantController::class, 'getTenantOptionsWithSpacesAndMonths']);
     Route::post('/option-tenant-with-service', [TenantController::class, 'option_select_all_tenant_info_service']);
-    Route::post('/contract-form-option',[TenantController::class,'contractFormOptions']);
+    Route::post('/contract-form-option', [TenantController::class,'contractFormOption']);
 
     Route::post('document/save', [TenantDocumentController::class, 'saveTenantDocument']);
     Route::post('document/list', [TenantDocumentController::class, 'getListDocument']);
@@ -249,6 +249,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('contracts')->
     Route::post('/details', [ContractsController::class, 'contractsDetails']);
     Route::post('/form-options', [ContractsController::class, 'getFormOptions']);
     Route::post('/delete', [ContractsController::class, 'deleteContracts']);
+
 });
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('payments')->group(function () {
@@ -351,8 +352,10 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('invoice_setti
     Route::post('/save', [InvoiceSettingController::class, 'saveInvoiceSetting']);
     Route::post('/update-toggle-button', [InvoiceSettingController::class, 'updateToglleButton']);
     Route::post('/get-toggle-button', [InvoiceSettingController::class, 'getToglleButton']);
-    Route::post('/get-invoice-building-info', [InvoiceSettingController::class, 'getInvoiceBuildingInfo']);
+    // Route::post('/get-invoice-building-info', [InvoiceSettingController::class, 'getInvoiceBuildingInfo']);
+    Route::post('/save-invoice-representative', [InvoiceSettingController::class, 'saveInvoiceSettingRepresentative']);
     Route::post('/save-QR', [InvoiceSettingController::class, 'saveQR']);
+    Route::post('/delete-QR', [InvoiceSettingController::class, 'deleteQR']);
 });
 
 
