@@ -113,6 +113,16 @@ class RequestServiceController extends Controller
         }
         return JDV::raw($this->request_service->rejectRequest($req->all(), $ss));
     }
+
+    function cancelRequest(Request $req)
+    {
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        return JDV::raw($this->request_service->cancelRequest($req->all(), $ss));
+    }
+
     function completeRequest(Request $req)
     {
         $ss = XAuthService::verifyAuth($req, -1);

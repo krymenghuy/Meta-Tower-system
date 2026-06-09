@@ -58,7 +58,7 @@
                 <div class="is-row">
                     <span class="is-row-label">
                         <i class="fa-solid fa-receipt"></i>
-                        Show Commission Tax
+                        Show Commercial Tax
                     </span>
                     <div class="form-check form-switch">
                         <input class="form-check-input toggle-setting" type="checkbox" data-field="show_comm_tax" id="_is_show_comm_tax">

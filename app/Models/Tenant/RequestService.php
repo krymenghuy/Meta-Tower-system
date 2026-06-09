@@ -316,7 +316,7 @@ class RequestService extends VSModel
             return DV::error('You already accepted this request.');
         }
 
-        if (in_array($req->status_id, [3, 4, 5])) {
+        if (in_array($req->status_id, [3, 4, 5, 6])) {
             return DV::error('Request already processed.');
         }
 
@@ -374,6 +374,48 @@ class RequestService extends VSModel
 
         return DV::depends($reject, ['action' => 'reject']);
     }
+
+    function cancelRequest($arr = [], $ss = null)
+    {
+        $ss = $ss ?? $this->userInfo;
+        $d = (object) $arr;
+        $id = $d->id ?? null;
+
+        if (empty($id)) {
+            return DV::error('ID is required.');
+        }
+
+        $req = DB::table('service_requests')
+            ->select('id', 'status_id', 'tenant_id')
+            ->where('id', $id)
+            ->first();
+
+        if (!$req) {
+            return DV::error('Service request not found.');
+        }
+
+        if (!empty($ss->official_id) && (int) $req->tenant_id !== (int) $ss->official_id) {
+            return DV::error('You are not allowed to cancel this request.');
+        }
+
+        if ((int) $req->status_id !== 1) {
+            return DV::error('Only pending requests can be cancelled.');
+        }
+
+        $cancelled = DB::table('service_requests')
+            ->where('id', $id)
+            ->update([
+                'status_id' => 6,
+                'update_user' => $ss->full_name ?? '',
+                'update_uid' => $ss->id ?? null,
+                'updated_at' => getNowTime(),
+            ]);
+
+        return $cancelled
+            ? DV::success(['message' => 'Service request cancelled successfully.'])
+            : DV::error('Failed to cancel service request.');
+    }
+
     function completeRequest($arr = [], $ss = null)
     {
         $ss = $ss ?? $this->userInfo;

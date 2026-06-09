@@ -14,148 +14,203 @@ var RequestServiceComponent = (function () {
     mThis.elSearch = mThis.self.querySelector("#_search_service_request");
     mThis.elBtnCreate = mThis.self.querySelector("#_btnServiceRequest");
 
-    mThis.columns = [
-        { title: "", className: "align-middle text-capitalize" },
-        {
-            transTitle: "titles.Request No",
-            className: "align-middle text-nowrap text-start",
-            data: (data) => {
-                const code = data.code
-                    ? `<span class="text-prm-custom">${data.code}</span>`
-                    : `<span class="text-muted fst-italic">N/A</span>`;
-                return `<div class="d-flex flex-column">${code}</div>`;
+    mThis.escapeHtml = (str) => {
+        if (str == null || str === "") return "";
+        const div = document.createElement("div");
+        div.textContent = String(str);
+        return div.innerHTML;
+    };
+
+    mThis.to12h = (time) => {
+        if (!time) return "";
+        const parts = String(time).split(":");
+        const hour = parseInt(parts[0], 10);
+        const minute = (parts[1] ?? "00").padStart(2, "0");
+        if (isNaN(hour)) return "";
+        const ampm = hour >= 12 ? "PM" : "AM";
+        const h12 = hour % 12 || 12;
+        return `${h12}:${minute} ${ampm}`;
+    };
+
+    mThis.formatDuration = (hours) => {
+        const h = parseFloat(hours);
+        if (!hours || isNaN(h)) return "—";
+        const val = h % 1 === 0 ? h.toFixed(0) : String(h);
+        return `${val} Hour${parseFloat(val) === 1 ? "" : "s"}`;
+    };
+
+    mThis.formatSchedule = (data) => {
+        const date = (data.scheduled_date ?? "").trim();
+        const time = mThis.to12h(data.start_time);
+        if (!date && !time) return "—";
+        if (date && time) return `${date} (${time})`;
+        return date || time;
+    };
+
+    mThis.getStatusMeta = (data) => {
+        const status = (data.status_name ?? "").toLowerCase();
+        const map = {
+            pending: {
+                label: "Pending",
+                cardCls: "sr-card--pending",
+                badgeCls:
+                    "sr-card__status-badge sr-card__status-badge--pending",
             },
-        },
-        // {
-        //     transTitle: "titles.Tenant",
-        //     className: "align-middle",
-        //     data: (data) => `
-        //         <div class="d-flex text-nowrap align-items-center gap-2">
-        //             <div>
-        //                 <span class="text-prm-custom d-block text-capitalize">${data.tenant_name ?? ""}</span>
-        //                 <small class="d-block text-primary">${data.space_code ?? ""}</small>
-        //             </div>
-        //         </div>`,
-        // },
-        {
-            transTitle: "titles.Request Category",
-            className: "align-middle text-nowrap",
-            data: (data) =>
-                `<span class="d-block text-prm-custom text-nowrap">${data.service_category ?? ""}</span>
-                 <small class="d-block text-primary text-nowrap">${data.service_name ?? ""}</small>`,
-        },
-        {
-            transTitle: "titles.Duration",
-            className: "align-middle",
-            data: (data) => {
-                const hours = parseFloat(data.duration_hours);
-                if (!data.duration_hours || isNaN(hours))
-                    return `<span class="text-nowrap">_</span>`;
-                const display = `${hours % 1 === 0 ? hours.toFixed(0) : hours} H`;
-                return `<span class="text-nowrap">${display}</span>`;
+            accepted: {
+                label: "Accepted",
+                cardCls: "sr-card--accepted",
+                badgeCls:
+                    "sr-card__status-badge sr-card__status-badge--accepted",
             },
-        },
-        {
-            transTitle: "titles.Amount",
-            className: "align-middle text-nowrap text-end",
-            data: (data) => {
-                const service_price = VSMoney.formatAmount(
-                    data.total_price,
-                    data.currency_code ?? "USD",
-                );
-                const cls_color =
-                    data.total_price > 0 ? "text-prm-custom" : "text-danger";
-                return `<span class="d-block ${cls_color}">${service_price}</span>`;
+            completed: {
+                label: "Completed",
+                cardCls: "sr-card--completed",
+                badgeCls:
+                    "sr-card__status-badge sr-card__status-badge--completed",
             },
-        },
-        {
-            transTitle: "titles.Schedule Date",
-            className: "align-middle text-nowrap text-center",
-            data: (data) => {
-                const formatTime = (time) => {
-                    if (!time) return "";
-                    let parts = time.split(":");
-                    let hour = parseInt(parts[0], 10);
-                    let minute = parts[1] ?? "00";
-                    if (isNaN(hour)) return "";
-                    const ampm = hour >= 12 ? "PM" : "AM";
-                    hour = hour % 12 || 12;
-                    minute = minute.padStart(2, "0");
-                    return `${hour}:${minute} ${ampm}`;
-                };
-                return `
-                    <div class="d-flex flex-column align-items-start">
-                        <span class="text-prm-custom text-nowrap">${data.scheduled_date ?? ""}</span>
-                        <small class="text-primary text-nowrap">Start Time: ${formatTime(data.start_time)}</small>
-                    </div>`;
+            rejected: {
+                label: "Rejected",
+                cardCls: "sr-card--rejected",
+                badgeCls:
+                    "sr-card__status-badge sr-card__status-badge--rejected",
             },
-        },
-        {
-            transTitle: "titles.Remark",
-            className: "align-middle",
-            data: (data) => `
-                <div class="text-primary-custom text-capitalize" style="width:200px;">
-                    <span class="text-wrap text-break" style="word-break:break-word;">${data.remarks ?? "_"}</span>
-                </div>`,
-        },
-        {
-            transTitle: "titles.Status",
-            className: "align-middle text-nowrap",
-            data: (data) => {
-                const status = (data.status_name ?? "").toLowerCase();
-                const statusId = Number(data.status_id) || 0;
-                const statusClasses = {
-                    pending:
-                        "badge text-warning bg-warning-subtle border border-warning",
-                    accepted:
-                        "badge text-primary bg-primary-subtle border border-primary",
-                    completed:
-                        "badge text-success bg-success-subtle border border-success",
-                    rejected:
-                        "badge text-danger bg-danger-subtle border border-danger",
-                    expired:
-                        "badge text-dark bg-secondary-subtle border border-secondary",
-                };
-                const cls =
-                    statusClasses[status] ?? "badge text-dark bg-light border";
-                const isEditable = status === "pending";
-                return `
-                    <span
-                        data-id="${data.id}"
-                        data-statusid="${data.status_id}"
-                        data-current-status="${statusId}"
-                        class="${cls} text-capitalize d-inline-block text-center"
-                        style="min-width:70px;"
-                        title="${isEditable ? "Click to change status" : "This status cannot be changed"}">
-                        ${data.status_name ?? ""}
-                    </span>`;
+            expired: {
+                label: "Expired",
+                cardCls: "sr-card--expired",
+                badgeCls: "sr-card__status-badge sr-card__status-badge--expired",
             },
-        },
-        // {
-        //     transTitle: "titles.Updated By",
-        //     className: "align-middle text-nowrap",
-        //     data: (data) => `
-        //         <div class="d-flex flex-column">
-        //             <span class="text-capitalize text-primary-custom">${data.update_user ?? ""}</span>
-        //             <span class="text-muted small">${data.updated_at ?? ""}</span>
-        //         </div>`,
-        // },
-        {
-            transTitle: "titles.Action",
-            className: "col_action align-middle text-nowrap",
-            data: (data) => `
-                <div class="d-flex justify-content-center align-items-end">
-                    <a href="javascript:void(0)"
-                        class="btn--Options ${data.action_id > 1 ? "d-none" : "btn_service_request_action"} bg-second pointer p-4"
-                        data-id="${data.id}"
-                        data-statusid="${data.status_id}"
-                        data-status-id="${data.request_status_id}"
-                        aria-haspopup="true" aria-expanded="false">
-                        <i class="fa-solid fa-ellipsis-vertical fs-5 text-prm-custom"></i>
-                    </a>
-                </div>`,
-        },
-    ];
+            cancelled: {
+                label: "Cancelled",
+                cardCls: "sr-card--cancelled",
+                badgeCls:
+                    "sr-card__status-badge sr-card__status-badge--cancelled",
+            },
+        };
+        return (
+            map[status] ?? {
+                label: data.status_name ?? "—",
+                cardCls: "",
+                badgeCls: "sr-card__status-badge",
+            }
+        );
+    };
+
+    mThis.renderServiceRequestAction = (data) => {
+        if (data.action_id > 1) return "";
+        if (Number(data.status_id) !== 1) return "";
+        return `<a href="javascript:void(0)"
+            class="btn_service_request_action sr-card__menu-btn ${data.action_id > 1 ? "d-none" : ""}"
+            data-id="${data.id}"
+            data-statusid="${data.status_id ?? ""}"
+            data-status-id="${data.request_status_id ?? ""}"
+            aria-haspopup="true"
+            aria-expanded="false"
+            title="More options">
+            <i class="fa-solid fa-ellipsis-vertical"></i>
+        </a>`;
+    };
+
+    mThis.renderServiceRequestList = (container, items) => {
+        items = items ?? [];
+        container.innerHTML = "";
+
+        if (!items.length) {
+            container.innerHTML = `
+                <div class="sr-list-empty text-center py-5 px-3">
+                    <span class="sr-list-empty__icon d-inline-flex align-items-center justify-content-center mb-3">
+                        <i class="fa-regular fa-clipboard"></i>
+                    </span>
+                    <p class="mb-1 fw-semibold text-prm-custom">No service requests found</p>
+                    <small class="text-muted">Try adjusting your search or filters.</small>
+                </div>`;
+            return;
+        }
+
+        let rowsHtml = "";
+        items.forEach((data) => {
+            const status = mThis.getStatusMeta(data);
+            const rowCls = status.cardCls ? ` ${status.cardCls}` : "";
+            const category = mThis.escapeHtml(
+                data.service_category ?? "Service",
+            );
+            const serviceName = mThis.escapeHtml(data.service_name ?? "—");
+            const code = mThis.escapeHtml(data.code ?? "N/A");
+            const duration = mThis.escapeHtml(
+                mThis.formatDuration(data.duration_hours),
+            );
+            const schedule = mThis.escapeHtml(mThis.formatSchedule(data));
+            const remarksRaw = (data.remarks ?? "").trim();
+            const remarks = remarksRaw
+                ? mThis.escapeHtml(remarksRaw)
+                : "No additional notes added";
+            const totalFee = VSMoney.formatAmount(
+                data.total_price,
+                data.currency_code ?? "USD",
+            );
+            const statusLabel = mThis.escapeHtml(status.label);
+
+            rowsHtml += `
+            <div class="sr-card${rowCls} service-request" id="service_request_id_${data.id}" data-statusid="${data.status_id ?? ""}">
+                <div class="sr-card__accent"></div>
+                <div class="sr-card__body">
+                    <div class="sr-card__main">
+                        <div class="sr-card__header">
+                            <div>
+                                <h3 class="sr-card__title">${category}</h3>
+                                <p class="sr-card__subtitle">${serviceName}</p>
+                            </div>
+                            <span class="sr-card__code">${code}</span>
+                        </div>
+                        <div class="sr-card__divider"></div>
+                        <div class="sr-card__meta">
+                            <div class="sr-card__meta-item">
+                                <span class="sr-card__meta-icon-wrap">
+                                    <i class="fa-regular fa-clock sr-card__meta-icon"></i>
+                                </span>
+                                <div class="sr-card__meta-content">
+                                    <span class="sr-card__meta-label">Duration</span>
+                                    <span class="sr-card__meta-value">${duration}</span>
+                                </div>
+                            </div>
+                            <div class="sr-card__meta-item">
+                                <span class="sr-card__meta-icon-wrap">
+                                    <i class="fa-regular fa-calendar sr-card__meta-icon"></i>
+                                </span>
+                                <div class="sr-card__meta-content">
+                                    <span class="sr-card__meta-label">Target Schedule</span>
+                                    <span class="sr-card__meta-value">${schedule}</span>
+                                </div>
+                            </div>
+                            <div class="sr-card__meta-item">
+                                <span class="sr-card__meta-icon-wrap">
+                                    <i class="fa-regular fa-comment sr-card__meta-icon"></i>
+                                </span>
+                                <div class="sr-card__meta-content">
+                                    <span class="sr-card__meta-label">Remarks</span>
+                                    <span class="sr-card__meta-value">${remarks}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sr-card__stub">
+                        <div class="sr-card__stub-top">
+                            <div class="sr-card__fee-wrap">
+                                <span class="sr-card__fee-label">Total Fee</span>
+                                <span class="sr-card__fee-value">${totalFee}</span>
+                            </div>
+                            ${mThis.renderServiceRequestAction(data)}
+                        </div>
+                        <span class="${status.badgeCls}">
+                            <span class="sr-card__status-dot"></span>
+                            ${statusLabel}
+                        </span>
+                    </div>
+                </div>
+            </div>`;
+        });
+
+        container.innerHTML = `<div class="sr-list"><div class="sr-list__rows">${rowsHtml}</div></div>`;
+    };
 
     mThis.init = () => {
         if (mThis.initAlready) return;
@@ -171,26 +226,25 @@ var RequestServiceComponent = (function () {
             },
             perPage: 10,
             apiCluster: main_view.apiCluster,
-            columns: mThis.columns,
-            tableClass: "table table--white rounded-2 header-uppercase",
-            rowCreated: (data, index, tr) => {
-                tr.dataset.statusId = data.status_id;
-                tr.classList.add("service-request");
-                tr.setAttribute("id", `service_request_id_${data.id}`);
+            renderItems: (items, container) => {
+                mThis.renderServiceRequestList(container, items);
             },
+            listContainerClass: null,
         });
 
-        mThis.elBtnCreate.onclick = (e) => {
-            e.preventDefault();
-            CreateServiceRequestDialog.show({
-                id: null,
-                btn: e.target,
-                onClose: () =>
-                    mThis.ServiceRequestListView.showPage(
-                        mThis.getFilterData(),
-                    ),
-            });
-        };
+        if (mThis.elBtnCreate) {
+            mThis.elBtnCreate.onclick = (e) => {
+                e.preventDefault();
+                CreateServiceRequestDialog.show({
+                    id: null,
+                    btn: e.target,
+                    onClose: () =>
+                        mThis.ServiceRequestListView.showPage(
+                            mThis.getFilterData(),
+                        ),
+                });
+            };
+        }
 
         mThis.listContainer = mThis.ServiceRequestListView.getListContainer();
         const sh_parent = mThis.listContainer.parentElement;
@@ -200,7 +254,7 @@ var RequestServiceComponent = (function () {
             sh_parent.style.maxHeight = window.innerHeight - 220 + "px";
         };
 
-        mThis.tblServiceRequest = mThis.ServiceRequestListView.getTable();
+        mThis.tblServiceRequest = mThis.ServiceRequestListView.getListContainer();
 
         let timeOut = null;
         mThis.elSearch.onkeyup = function (e) {
@@ -241,7 +295,7 @@ var RequestServiceComponent = (function () {
         new VSDropdownMenu({
             containerElement: table,
             actionButtonClass: "btn_service_request_action",
-            cssClass: "bg-white shadow",
+            cssClass: "sr-card__dropdown bg-white shadow",
             menus: [
                 // {
                 //     html: '<span class="ps-2" vslang="title.Accept"></span>',
@@ -267,24 +321,25 @@ var RequestServiceComponent = (function () {
                     name: "edit_request",
                     cssClass: "border-bottom pb-2",
                 },
-                // {
-                //     html: '<span class="ps-2" vslang="title.Delete"></span>',
-                //     icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
-                //     name: "delete_request",
-                //     cssClass: "border-bottom pb-2",
-                // },
+                {
+                    html: '<span class="ps-2">Cancel</span>',
+                    icon: `<i class="fa-solid fa-square-xmark fs-5 text-danger"></i>`,
+                    name: "cancel_request",
+                    cssClass: "border-bottom pb-2",
+                },
             ],
             onShow: (me, container) => {
                 const menu = me.getActiveMenus(container);
-                const status_id = container.dataset.statusid;
-                menu.edit_request.style.display =
-                    status_id >= 2 ? "none" : "block";
-                menu.accept_request.style.display =
-                    status_id >= 2 ? "none" : "block";
-                menu.complete_request.style.display =
-                    status_id == 2 ? "block" : "none";
-                menu.reject_request.style.display =
-                    status_id >= 2 ? "none" : "block";
+                const status_id = Number(container.dataset.statusid);
+                const isPending = status_id === 1;
+                if (menu.edit_request) {
+                    menu.edit_request.style.display = isPending ? "block" : "none";
+                }
+                if (menu.cancel_request) {
+                    menu.cancel_request.style.display = isPending
+                        ? "block"
+                        : "none";
+                }
             },
             onClick: (menuLink, id, name) => {
                 if (name === "accept_request")
@@ -295,6 +350,8 @@ var RequestServiceComponent = (function () {
                     mThis.rejectRequest(id, menuLink);
                 if (name === "edit_request")
                     mThis.editServiceRequest(id, menuLink);
+                if (name === "cancel_request")
+                    mThis.cancelRequest(id, menuLink);
                 if (name === "delete_request")
                     mThis.deleteRequest(id, menuLink);
             },
@@ -410,6 +467,43 @@ var RequestServiceComponent = (function () {
             onClose: () =>
                 mThis.ServiceRequestListView.showPage(mThis.getFilterData()),
         });
+    };
+
+    mThis.cancelRequest = (id, menuLink) => {
+        cv_interact.confirm(
+            "Are you sure you want to cancel this service request?",
+            {
+                title: "Cancel Service Request",
+                context: "delete",
+                confirmButtonText: "Cancel Request",
+            },
+            (confirmed) => {
+                if (!confirmed) return;
+                vsapi
+                    .call(
+                        `${main_view.base_url}/prm/tenant/request-service/cancel`,
+                        { id },
+                        menuLink,
+                        false,
+                        false,
+                    )
+                    .then((res) => {
+                        if (res.status_code === 200) {
+                            cv_interact.success(
+                                "Service request has been cancelled.",
+                            );
+                            mThis.ServiceRequestListView.showPage(
+                                mThis.getFilterData(),
+                            );
+                        } else {
+                            cv_interact.error(
+                                res.error_message || "Cancel failed",
+                            );
+                        }
+                    })
+                    .catch(() => cv_interact.error("Network error"));
+            },
+        );
     };
 
     mThis.deleteRequest = (id, menuLink) => {
