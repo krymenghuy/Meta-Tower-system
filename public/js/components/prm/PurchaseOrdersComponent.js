@@ -926,12 +926,13 @@ var PurchaseOrdersComponent = (() => {
                     me.purchaseItemsView.setData(po);
 
                    
-                } else {
-                    me.clear();
-                    if (me.searchVendor && typeof me.searchVendor.reset === 'function') {
-                        me.searchVendor.reset();
-                    }
-                }
+                } 
+                // else {
+                //     me.clear();
+                //     if (me.searchVendor && typeof me.searchVendor.reset === 'function') {
+                //         me.searchVendor.reset();
+                //     }
+                // }
             },
         
             configSelect: [
