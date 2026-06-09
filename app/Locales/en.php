@@ -139,6 +139,14 @@ return [
                    'Transaction' => 'Transaction',
 
     ],
+    'labels' => [
+
+        'service_unit_type' => 'Unit Type',
+
+
+
+
+    ],
 
     'message_box_default' => [
         'required' => 'Please enter this information.',

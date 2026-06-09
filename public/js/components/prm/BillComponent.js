@@ -955,9 +955,9 @@ const BillDialog = (() => {
                     const title = me.divModal.querySelector(".modal-title");
                     if (title) {
                         const isModify = !!me.dataOptions?.id;
-                        title.innerHTML = isModify
-                            ? '<h4 class="text-prm-custom text-start fw-bold">Modify Bill</h4>'
-                            : '<h4 class="text-prm-custom text-start fw-bold">Generate New Bill</h4>';
+                        // title.innerHTML = isModify
+                            // ? '<h4 class="text-prm-custom text-start fw-bold">Modify Bill</h4>'
+                            // : '<h4 class="text-prm-custom text-start fw-bold">Generate New Bill</h4>';
                     }
                 },
                 prepareFormOptions: {
