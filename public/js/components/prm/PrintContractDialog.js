@@ -95,7 +95,7 @@ const CreateContractDialog = (()=>{
                             </div>
                         </div>
                         <div class="p-3 bg-white border rounded shadow-sm">
-                            <h6 class="mb-3 text-golden" vslang="labels.Represented by Meta Tower">Represented by Meta Tower</h6>
+                            <h6 class="mb-3 text-golden" vslang="labels.Meta Tower">Meta Tower</h6>
                             <div class="row g-3">
                                 <div class="col-6">
                                     <div class="vs-material-field">
