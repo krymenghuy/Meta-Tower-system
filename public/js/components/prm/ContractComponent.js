@@ -804,30 +804,6 @@ const ContractDialog = (() => {
                     }
                 });
                 applyNumberInput(me.controls.deposit);
-
-                // me.controls.deposit.addEventListener('input', (e) => {
-                //     let v = e.target.value;
-                //     v = v.replace(/[^0-9.]/g, '');
-
-                //     const parts = v.split('.');
-                //     if (parts.length > 2) {
-                //         v = parts[0] + '.' + parts[1];
-                //     }
-                //     if (parts[1] !== undefined) {
-                //         v = parts[0] + '.' + parts[1].slice(0, 2);
-                //     }
-
-                //     e.target.value = v;
-                // });
-                // me.controls.deposit.addEventListener('blur', (e) => {
-                //     let v = parseFloat(e.target.value);
-
-                //     if (isNaN(v) || v <= 0) {
-                //         e.target.value = '';
-                //         return;
-                //     }
-                //     e.target.value = v;
-                // });
             },
 
             configSelect: [
@@ -867,10 +843,11 @@ const ContractDialog = (() => {
             },
 
             onPrepareForm: (me, data) => {
-                console.log(888,data);
-                
                 const isModify = me.dataOptions?.id > 0;
                 me.setReadOnly(isModify, ['code', 'start_date', 'end_date']);
+                const space_id = me.dataOptions.space_id > 0;
+                me.setReadOnly(space_id, ['code']);
+
                 const tenantLocked = isModify || !!data?.prefill_tenant_id;
                 me.controls.tenant.disabled = tenantLocked;
                
@@ -961,7 +938,8 @@ const ContractDialog = (() => {
                     if (defaultSpaceId) {
                         unitSelect.value = defaultSpaceId;
                         applyUnitData(defaultSpaceId);
-                    } else if (unitSelect.value) {
+                    } 
+                    else if (unitSelect.value) {
                         applyUnitData(unitSelect.value);
                     }
                 }
