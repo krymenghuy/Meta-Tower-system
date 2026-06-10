@@ -50,6 +50,7 @@ var main_view = (() => {
     mThis.DEF_TO_WAREHOUSE_ID = 1;
     mThis.DEF_WAREHOUSE_ID = 1;
 
+    mThis.mnuChangePassword =mThis.top_right_menus.querySelector('#_main_mnu_changepwd');
     mThis.mnuLogout = mThis.top_right_menus.querySelector("#_main_mnu_logout");
     console.log(123,mThis.mnuLogout);
     
@@ -203,6 +204,14 @@ var main_view = (() => {
                 },
             );
         };
+         mThis.mnuChangePassword.addEventListener('click',e => {
+            const user = AuthManager?.user ?? null;
+            if(!user){
+                cv_interact.error('Authentication failed!');
+                return;
+            }
+            ChangePasswordDialog.show({login_name:user.login_name,user_id:user.id});
+        });
 
         mThis.mnuLogout.addEventListener("click", (e) => {
             cv_interact.confirm(

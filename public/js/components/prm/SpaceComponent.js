@@ -699,10 +699,7 @@ var SpaceComponent = new (function () {
                         )
                         .then((res) => {
                             if (res.status_code == 200) {
-                                cv_interact.success =
-                                    (message,
-                                    (title = null),
-                                    (position = "center"));
+                               cv_interact.success("deleted");
                                 mThis.applyListFilters();
                             } else {
                                 cv_interact.error(res.error_message);

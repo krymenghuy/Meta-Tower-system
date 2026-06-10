@@ -1801,7 +1801,7 @@ this.ReportPanel = new function(){
            cssClass:"modal-md",
            createContent:()=>{
              return [
-             '<div class="row">',
+             '<div class="row g-2">',
               `<div class="col-md-6">`,
               `<label style="color:#0f6694; font-size:11px;" vslang="titles.Application">Application</label>`,
               `<div class="material-input outlined">`,
@@ -1879,17 +1879,7 @@ this.ReportPanel = new function(){
     
     },
       contentCreated:(me)=>{
-                    const header = me.divModal.querySelector('.modal-header');
-                    const headerTitle = header.querySelector('.modal-title');
-                    header.classList.add('bg-yp-custom', 'modal-header-custom');
-                    header.parentElement.classList.add('overflow-hidden');
-                    header.parentElement.style = 'border-radius: 20px !important;';
-                    const headerWrapper = document.createElement('div');
-                    headerWrapper.classList.add('d-flex', 'flex-column', 'align-items-center', 'w-100');
-                    headerTitle.classList.add('text-white', 'text-center', 'w-100');
-                    headerWrapper.appendChild(headerTitle);
-                    header.innerHTML = '';
-                    header.appendChild(headerWrapper);
+                   
   
             },
            showCancelButton:true,
@@ -1959,6 +1949,9 @@ this.ReportPanel = new function(){
                           endpoint:`${main_view.base_url}/api/module/list`,
                           params: (me,dataOption,controls)=>{
                               return {"app_id": controls.app.value};
+                          },
+                            onResponse:(me,res)=>{
+                               console.log(111,res.data);
                           }
                       }
   
