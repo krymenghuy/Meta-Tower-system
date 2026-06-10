@@ -109,7 +109,7 @@ return [
         'passport_number_required' => 'Passport number is required for foreign nationality.',
         'date_of_birth_cannot_be_in_the_future' => 'Date of birth cannot be in the future.',
         'national_id_required' => 'National ID is required for Khmer nationality.',
-        'select_document_type' => 'Please select a document type.',
+        'select_document_type' => 'Please select a document type.', 
         'select_file' => 'Please select a file.',
         'select_valid_file' => 'Please select a valid file.',
         'remarks_max_255' => 'Remarks must not exceed 255 characters.',
@@ -172,6 +172,23 @@ return [
         'maintenance_finished' => 'Maintenance has been finished successfully.',
 
 
+        'update_success_tenant' => 'Tenant Updated Successfully.',
+        'create_success_tenant' => 'Tenant Created Successfully.',
+        'delete_success_tenant' => 'Tenant Deleted Successfully.',
+        'delete_profile_success' => 'Profile photo was deleted.',
+        
+        'update_success_document' => 'Document Updated Successfully.',
+        'create_success_document' => 'Document Created Successfully.',
+        'delete_success_document' => 'Document Deleted Successfully.',
+        'select_document_type' => 'Please select a document type.',
+        'select_file' => 'Please select a file.',
+        'select_valid_file' => 'Please select a valid file.',
+        'remarks_max_255' => 'Remarks must not exceed 255 characters.',
+
+
+        
+        
+        
         "Confirm" => 'Confirm',
         "Log Out" => "Log Out",
         "Cancel" => "Cancel",
@@ -186,4 +203,5 @@ return [
         "Finish" => "Finish",
     ],
 ];
+
 
