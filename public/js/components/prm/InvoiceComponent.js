@@ -1054,9 +1054,11 @@ const InvoiceDialog = (() => {
                     InputBox.resetInstance("rentPopUp");
 
                     InputBox.show({
-                        title: "Rent Detail",
+                        title: `${LocaleManager.trans('Rental Details', "titles")}`,
+                        // title: "Rental Details",
                         instanceKey: "rentPopUp",
-                        confirmButtonText: "Save",
+                        confirmButtonText: `${LocaleManager.trans('Save', "buttons")}`,
+                        cancelButtonText: `${LocaleManager.trans('Close', "buttons")}`,
                         createContent() {
                             const div = document.createElement("div");
                             rentDiv = div;
@@ -1067,7 +1069,7 @@ const InvoiceDialog = (() => {
                             div.innerHTML = `
                 <div>
                     <div class="d-flex align-items-center mb-3">
-                        <span style=" color:#0C447C; font-size:13px;">Contract Details</span>
+                        <span style=" color:#0C447C; font-size:13px;" vslang="titles.Contract Details"></span>
                         <div style="flex:1; height:1px; background:#e0e0e0;"></div>
                     </div>
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
@@ -1084,7 +1086,7 @@ const InvoiceDialog = (() => {
 
                 <div>
                     <div class="d-flex align-items-center mb-3">
-                        <span style=" color:#0C447C; font-size:13px;">Billing Period</span>
+                        <span style=" color:#0C447C; font-size:13px;" vslang="titles.Billing Period"></span>
                         <div style="flex:1; height:1px; background:#e0e0e0;"></div>
                     </div>
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
@@ -1101,7 +1103,7 @@ const InvoiceDialog = (() => {
 
                 <div>
                     <div class="d-flex align-items-center mb-3">
-                        <span style=" color:#0C447C; font-size:13px;">Financials</span>
+                        <span style=" color:#0C447C; font-size:13px;" vslang="titles.Financial Info"></span>
                         <div style="flex:1; height:1px; background:#e0e0e0;"></div>
                     </div>
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
@@ -1350,10 +1352,12 @@ const InvoiceDialog = (() => {
                         let electricDiv = null;
                         InputBox.resetInstance("electricPopUp");
                         InputBox.show({
-                            title: "Electricity Utility",
+                            title: `${LocaleManager.trans('Electricity Utility', "titles")}`,
+                            // title: "vslang:titles.Electricity Utility",
+                            // title: LocaleManager.translate("titles.Electricity Utility"),
                             instanceKey: "electricPopUp",
-                            confirmButtonText: "Save",
-
+                            confirmButtonText: `${LocaleManager.trans('Save', "buttons")}`,
+                            cancelButtonText: `${LocaleManager.trans('Close', "buttons")}`,
                             createContent() {
                                 const div = document.createElement("div");
                                 electricDiv = div;
@@ -1363,13 +1367,13 @@ const InvoiceDialog = (() => {
                                 div.innerHTML = `
                                 <!-- Tabs Container -->
                                 <div class="d-flex mb-3" style="border-bottom:1px solid #eee; gap:16px;">
-                                    <div id="btn_tab_reading" style="cursor:pointer; padding:8px 12px; border-bottom:2px solid #0C447C; color:#0C447C; font-weight:600;">By Reading</div>
-                                    <div id="btn_tab_manual" style="cursor:pointer; padding:8px 12px; color:#777;">Manual Entry</div>
+                                    <div id="btn_tab_reading" style="cursor:pointer; padding:8px 12px; border-bottom:2px solid #0C447C; color:#0C447C; font-weight:600;" vslang="titles.By Reading"></div>
+                                    <div id="btn_tab_manual" style="cursor:pointer; padding:8px 12px; color:#777;" vslang="titles.Manual Entry"></div>
                                 </div>
 
                                 <!-- Section: Core Consumption Inputs -->
                                 <div class="d-flex align-items-center mb-3">
-                                    <span id="consumption_header" style="color:#0C447C; font-size:13px;">Readings</span>
+                                    <span id="consumption_header" style="color:#0C447C; font-size:13px;" vslang="titles.Readings"></span>
                                     <div style="flex:1; height:1px; background:#e0e0e0; margin-left:8px;"></div>
                                 </div>
 
@@ -1393,7 +1397,7 @@ const InvoiceDialog = (() => {
 
                                <!-- Section: Unified Calculations -->
                                 <div class="d-flex align-items-center mb-3">
-                                    <span style="color:#0C447C; font-size:13px;">Calculation</span>
+                                    <span style="color:#0C447C; font-size:13px;" vslang="titles.Calculation"></span>
                                     <div style="flex:1; height:1px; background:#e0e0e0; margin-left:8px;"></div>
                                 </div>
 
@@ -1426,7 +1430,7 @@ const InvoiceDialog = (() => {
 
                                 <!-- Section: Unified Period -->
                                 <div class="d-flex align-items-center mb-3">
-                                    <span style="color:#0C447C; font-size:13px;">Period</span>
+                                    <span style="color:#0C447C; font-size:13px;" vslang="titles.Period"></span>
                                     <div style="flex:1; height:1px; background:#e0e0e0; margin-left:8px;"></div>
                                 </div>
                                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
@@ -1600,8 +1604,7 @@ const InvoiceDialog = (() => {
                                         // Form structure configuration
                                         rowReadingFields.style.display = "grid";
                                         rowManualFields.style.display = "none";
-                                        txtConsumptionHeader.textContent =
-                                            "Readings";
+                                        txtConsumptionHeader.textContent ="Readings";
 
                                         // Calculation Row: Standard 2x2 layout look
                                         rowCalculationFields.style.gridTemplateColumns =
@@ -1834,6 +1837,7 @@ const InvoiceDialog = (() => {
                                 ibMe.close();
                             },
                         });
+
                     }; // end openElectricPopup
 
                     openElectricPopup();
@@ -1870,9 +1874,11 @@ const InvoiceDialog = (() => {
                     InputBox.resetInstance("servicePopUp");
 
                     InputBox.show({
-                        title: "Add Service",
+                        title: `${LocaleManager.trans('Add Service', "titles")}`,
+                        // title: "Add Service",
                         instanceKey: "servicePopUp",
-                        confirmButtonText: "Save",
+                        confirmButtonText: `${LocaleManager.trans('Save', "buttons")}`,
+                        cancelButtonText: `${LocaleManager.trans('Close', "buttons")}`,
                         createContent() {
                             const div = document.createElement("div");
                             serviceDiv = div;
@@ -1882,7 +1888,7 @@ const InvoiceDialog = (() => {
                             div.innerHTML = `
                                 <div>
                                     <div class="d-flex align-items-center mb-3">
-                                        <span style="color:#0C447C; font-size:13px;">Service Selection</span>
+                                        <span style="color:#0C447C; font-size:13px;" vslang="titles.Service Selection"></span>
                                         <div style="flex:1; height:1px; background:#e0e0e0;"></div>
                                     </div>
                                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
@@ -1912,7 +1918,7 @@ const InvoiceDialog = (() => {
 
                                 <div id="billing_period_container" style="display:none;">
                                     <div class="d-flex align-items-center  mb-3">
-                                        <span style=" color:#0C447C; font-size:13px;">Billing Period</span>
+                                        <span style=" color:#0C447C; font-size:13px;" vslang="titles.Billing Period"></span>
                                         <div style="flex:1; height:1px; background:#e0e0e0;"></div>
                                     </div>
                                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
@@ -1929,7 +1935,7 @@ const InvoiceDialog = (() => {
 
                                 <div>
                                     <div class="d-flex align-items-center mb-3">
-                                        <span style="color:#0C447C; font-size:13px;">Financials</span>
+                                        <span style="color:#0C447C; font-size:13px;" vslang="titles.Financial Info"></span>
                                         <div style="flex:1; height:1px; background:#e0e0e0;"></div>
                                     </div>
 
@@ -2301,9 +2307,11 @@ const InvoiceDialog = (() => {
                     InputBox.resetInstance("requestPopUp");
 
                     InputBox.show({
-                        title: "Service Request",
+                        // title: "Service Request",
+                        title: `${LocaleManager.trans('Service Request', "titles")}`,
                         instanceKey: "requestPopUp",
-                        confirmButtonText: "Save",
+                        confirmButtonText: `${LocaleManager.trans('Save', "buttons")}`,
+                        cancelButtonText: `${LocaleManager.trans('Close', "buttons")}`,
                         createContent() {
                             const div = document.createElement("div");
                             requestDiv = div;
@@ -2313,7 +2321,7 @@ const InvoiceDialog = (() => {
                             div.innerHTML = `
                                 <div>
                                     <div class="d-flex align-items-center mb-3">
-                                        <span style="color:#0C447C; font-size:13px;">Request Info</span>
+                                        <span style="color:#0C447C; font-size:13px;" vslang="titles.Request Info"></span>
                                         <div style="flex:1; height:1px; background:#e0e0e0;"></div>
                                     </div>
                                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
@@ -2328,7 +2336,7 @@ const InvoiceDialog = (() => {
                                         </div>
                                         <div class="material-input outlined" style="margin-bottom: 1rem;">
                                             <input class="data-input form-control" data-field="unit_type" name="unit_type" type="text" readonly placeholder=" ">
-                                            <label style="color:#777;" vslang="labels.service_unit_type"></label>
+                                            <label style="color:#777;" vslang="labels.Unit Type"></label>
                                         </div>
                                         <div class="material-input outlined" data-wrapper="duration" style="margin-bottom: 1rem;">
                                             <input class="data-input form-control cursor-blocked" data-field="duration_hours" name="duration_hours" type="text" readonly placeholder=" ">
@@ -2343,14 +2351,14 @@ const InvoiceDialog = (() => {
 
                                 <div>
                                     <div class="d-flex align-items-center mb-3">
-                                        <span style="color:#0C447C; font-size:13px;">Financials</span>
+                                        <span style="color:#0C447C; font-size:13px;" vslang="titles.Financial Info"></span>
                                         <div style="flex:1; height:1px; background:#e0e0e0;"></div>
                                     </div>
                                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
                                         <div class="material-input outlined" style="display:flex; gap:8px; align-items:flex-end; grid-column: span 2;">
                                             <div style="flex:1;">
                                                 <input class="data-input form-control" data-field="discount" name="discount" type="text" inputmode="decimal" placeholder="0">
-                                                <label style="color:#777;">Discount</label>
+                                                <label style="color:#777;" vslang="labels.Discount"></label>
                                             </div>
                                             <div style="width:80px;">
                                                 <select class="data-input form-control" data-field="discount_type" name="discount_type">
@@ -2363,13 +2371,13 @@ const InvoiceDialog = (() => {
                                         <div class="material-input outlined" style="grid-column: span 2; margin-top: 0.5rem;">
                                             <input class="data-input form-control cursor-blocked" data-field="total_amount" name="total_amount" type="text" readonly
                                                 style="background-color: #f0f7ff; border-color: #0c447c; color: #0c447c; font-weight: bold; font-size: 1.1em;" placeholder=" ">
-                                            <label style="color:#0c447c;">Total Amount ($)</label>
+                                            <label style="color:#0c447c;" vslang="labels.Total Amount ($)"></label>
                                         </div>
                                     </div>
                                 </div>
                                 <div class=" material-input outlined" style="display:none;">
                                     <textarea class="data-input form-control" data-field="remark" name="remark" rows="2" placeholder=" "></textarea>
-                                    <label style="color:#777;">Remark</label>
+                                    <label style="color:#777;" vslang="labels.Remark"></label>
                                 </div>
                             `;
                             LocaleManager.translateZone(div);
@@ -2590,6 +2598,11 @@ const InvoiceDialog = (() => {
                     });
                 };
 
+                const subLabel = LocaleManager.trans('Sub Total', "titles")
+
+                console.log(11111, subLabel);
+                
+
                 me.itemsView = new ItemsView(me.controls.divItemsView, {
                     currencyCode: "USD",
                     columns: [
@@ -2691,6 +2704,11 @@ const InvoiceDialog = (() => {
                         showTax: false,
                         allowDiscount: true,
                         discountBeforeTax: true,
+                        labels:{
+                            subtotal:LocaleManager.trans('Sub Total', "titles"),
+                            discount:LocaleManager.trans('Discount', "titles"),
+                            total:LocaleManager.trans('Total', "titles"),
+                        }
                         // currencyConversion: {
                         //     currency_code: "KHR",
                         //     rate: 4100
@@ -3472,12 +3490,12 @@ const ReceiveDialog = (() => {
 
             buttons: [
                 {
-                    label: "Cancel",
+                    label: '<span vslang="buttons.Cancel"></span>',
                     cssClass: "btn btn-secondary",
                     click: (me) => me.hide(false),
                 },
                 {
-                    label: "Receive",
+                    label: '<span vslang="buttons.Receive"></span>',
                     cssClass: "btn btn-primary",
                     click: (me, btn) => {
                         const rawData = me.getData();
