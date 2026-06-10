@@ -376,7 +376,12 @@
                                                         About Meta Estate
                                                     </a>
                                                 </span>
-                                                <div class="dropdown-divider"></div>
+                                                <span class="user-menu-item">
+                                                    <a id="_main_mnu_changepwd" class="dropdown-item" href="javascript:void(0)">
+                                                        <i class="fas fa-key m-2"></i>
+                                                        Change password
+                                                    </a>
+                                                </span>
                                                 <span class="user-menu-item">
                                                     <a id="_main_mnu_logout" class="dropdown-item"
                                                         href="javascript:void(0)">
