@@ -502,12 +502,6 @@ var InvoicesComponent = (() => {
             actionButtonClass: "btn_leave_action",
             cssClass: "bg-white box-shadow",
             menus: [
-                {
-                    html: '<span class="ps-2" vslang="titles.Pay"></span>',
-                    icon: `<i class="fa-solid fa-hand-holding-dollar text-success fs-5"></i>`,
-                    cssClass: "border-bottom pb-2",
-                    name: "receive_invoice",
-                },
                 // {
                 //     html: '<span class="ps-2" vslang="titles.Modify"></span>',
                 //     icon: `<i class="fa-solid fa-edit text-primary fs-5"></i>`,
@@ -535,11 +529,6 @@ var InvoicesComponent = (() => {
                 //     statusId === 1 || statusId === 3 || statusId === 2
                 //         ? "block"
                 //         : "none";
-                menu.receive_invoice.style.display =
-                    statusId === 2 || statusId === 3 || statusId === 4
-                        ? "block"
-                        : "none";
-                statusId === 2 || statusId === 3 ? "block" : "none";
                 menu.delete_invoice.style.display =
                     statusId === 2 ? "block" : "none";
                 menu.modify_invoice.style.display =
@@ -550,8 +539,6 @@ var InvoicesComponent = (() => {
                     mThis.deleteInvoice(id);
                 } else if (name === "print_invoice") {
                     mThis.printInvoice(id);
-                } else if (name === "receive_invoice") {
-                    mThis.receiveInvoice(id);
                 } else if (name === "modify_invoice") {
                     mThis.editInvoice(id, menulink);
                 }
