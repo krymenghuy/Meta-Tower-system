@@ -832,7 +832,7 @@ const InvoiceDialog = (() => {
                                         <div class="field-row">
                                             <label class="field-label fw-semibold" vslang="labels.Phone Number"></label>
                                             <span class="field-sep">:</span>
-                                            <input name="phone_number" class="data-input form-control field-input bg-light"  placeholder=" ">
+                                            <input name="phone_number" class="data-input form-control field-input "  placeholder=" ">
                                         </div>
                                         <div class="field-row">
                                             <label class="field-label fw-semibold" vslang="labels.Email"></label>
@@ -1054,53 +1054,56 @@ const InvoiceDialog = (() => {
                     InputBox.resetInstance("rentPopUp");
 
                     InputBox.show({
-                        title: "Rent Detail",
+                        title: `${LocaleManager.trans('Rental Details', "titles")}`,
+                        // title: "Rental Details",
                         instanceKey: "rentPopUp",
-                        confirmButtonText: "Save",
+                        confirmButtonText: `${LocaleManager.trans('Save', "buttons")}`,
+                        cancelButtonText: `${LocaleManager.trans('Close', "buttons")}`,
                         createContent() {
                             const div = document.createElement("div");
                             rentDiv = div;
                             div.style.cssText =
                                 "display:flex; flex-direction:column;";
+                                
 
                             div.innerHTML = `
                 <div>
                     <div class="d-flex align-items-center mb-3">
-                        <span style=" color:#0C447C; font-size:13px;">Contract Details</span>
+                        <span style=" color:#0C447C; font-size:13px;" vslang="titles.Contract Details"></span>
                         <div style="flex:1; height:1px; background:#e0e0e0;"></div>
                     </div>
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                        <div class="material-input outlined" style="margin-bottom: 1rem;">
-                            <input class="data-input form-control bg-light cursor-blocked" data-field="contract_id" name="contract_id" type="text" readonly>
-                            <label style="color:#777;" vslang="labels.Unit Code"></label>
+                        <div class="vs-material-field" style="margin-bottom: 1rem;">
+                            <input class="data-input form-control cursor-blocked" data-field="contract_id" name="contract_id" type="text" readonly>
+                            <label vslang="labels.Unit Code">Unit Code</label>
                         </div>
-                        <div class="material-input outlined" style="margin-bottom: 1rem;">
-                            <input class="data-input form-control bg-light cursor-blocked" data-field="monthly" name="monthly" type="text" readonly>
-                            <label style="color:#777;" vslang="labels.Monthly"></label>
+                        <div class="vs-material-field" style="margin-bottom: 1rem;">
+                            <input class="data-input form-control cursor-blocked" data-field="monthly" name="monthly" type="text" readonly>
+                            <label vslang="labels.Monthly">Monthly</label>
                         </div>
                     </div>
                 </div>
 
                 <div>
                     <div class="d-flex align-items-center mb-3">
-                        <span style=" color:#0C447C; font-size:13px;">Billing Period</span>
+                        <span style=" color:#0C447C; font-size:13px;" vslang="titles.Billing Period"></span>
                         <div style="flex:1; height:1px; background:#e0e0e0;"></div>
                     </div>
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
                         <div class="material-input outlined" style="margin-bottom: 1rem;">
-                            <input class="data-input form-control bg-light cursor-blocked" data-field="start_date" name="start_date" type="text" readonly placeholder="d-m-y">
-                            <label style="color:#777;">Start Date</label>
+                            <input class="data-input form-control cursor-blocked" data-field="start_date" name="start_date" type="text" readonly placeholder="d-m-y">
+                            <label style="color:#777;" vslang="labels.Start Date">/label>
                         </div>
                         <div class="material-input outlined" style="margin-bottom: 1rem;">
-                            <input class="data-input form-control bg-light cursor-blocked" data-field="end_date" name="end_date" type="text" readonly placeholder="d-m-y">
-                            <label style="color:#777;" >End Date</label>
+                            <input class="data-input form-control cursor-blocked" data-field="end_date" name="end_date" type="text" readonly placeholder="d-m-y">
+                            <label style="color:#777;"vslang="labels.End Date"></label>
                         </div>
                     </div>
                 </div>
 
                 <div>
                     <div class="d-flex align-items-center mb-3">
-                        <span style=" color:#0C447C; font-size:13px;">Financials</span>
+                        <span style=" color:#0C447C; font-size:13px;" vslang="titles.Financial Info"></span>
                         <div style="flex:1; height:1px; background:#e0e0e0;"></div>
                     </div>
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
@@ -1109,8 +1112,8 @@ const InvoiceDialog = (() => {
                                 ? "grid-column: span 2;"
                                 : ""
                         }">
-                            <input class="data-input form-control bg-light cursor-blocked" data-field="price" name="price" type="text" readonly style=" color:#0c447c;">
-                            <label style="color:#777;" vslang="labels.Effective Price ($)"></label>
+                            <input class="data-input form-control cursor-blocked" data-field="price" name="price" type="text" readonly style=" color:#0c447c;">
+                            <label style="color:#777;" vslang="labels.Total Price ($)"></label>
                         </div>
                         ${
                             Number(invoiceType) === 2
@@ -1118,13 +1121,13 @@ const InvoiceDialog = (() => {
                                 : `
                             <div class="material-input outlined" style="margin-bottom: 1rem;">
                                 <input class="data-input form-control" data-field="tax_rate" name="tax_rate" type="text" inputmode="decimal" placeholder="0" required>
-                                <label style="color:#777;">Tax % </label>
+                                <label style="color:#777;" vslang="labels.Tax %"></label>
                             </div>`
                         }
                         <div class="material-input outlined" style="display:flex; gap:8px; align-items:flex-end; grid-column: span 2;">
                             <div style="flex:1">
                                 <input class="data-input form-control" data-field="discount" name="discount" type="text" inputmode="decimal" placeholder="0">
-                                <label style="color:#777;">Discount</label>
+                                <label style="color:#777;" vslang="labels.Discount"></label>
                             </div>
                             <div style="width:100px;">
                                 <select class="data-input form-control" data-field="discount_type" name="discount_type">
@@ -1138,9 +1141,10 @@ const InvoiceDialog = (() => {
 
                 <div class="material-input outlined" style="margin-bottom: 1rem; display:none;">
                     <textarea class="data-input form-control" data-field="remark" name="remark" rows="2" placeholder=" "></textarea>
-                    <label style="color:#777;" >Remark</label>
+                    <label style="color:#777;" vslang="labels.Remark"></label>
                 </div>
             `;
+            LocaleManager.translateZone(div);
                             return div;
                         },
 
@@ -1348,10 +1352,12 @@ const InvoiceDialog = (() => {
                         let electricDiv = null;
                         InputBox.resetInstance("electricPopUp");
                         InputBox.show({
-                            title: "Electricity Utility",
+                            title: `${LocaleManager.trans('Electricity Utility', "titles")}`,
+                            // title: "vslang:titles.Electricity Utility",
+                            // title: LocaleManager.translate("titles.Electricity Utility"),
                             instanceKey: "electricPopUp",
-                            confirmButtonText: "Save",
-
+                            confirmButtonText: `${LocaleManager.trans('Save', "buttons")}`,
+                            cancelButtonText: `${LocaleManager.trans('Close', "buttons")}`,
                             createContent() {
                                 const div = document.createElement("div");
                                 electricDiv = div;
@@ -1361,13 +1367,13 @@ const InvoiceDialog = (() => {
                                 div.innerHTML = `
                                 <!-- Tabs Container -->
                                 <div class="d-flex mb-3" style="border-bottom:1px solid #eee; gap:16px;">
-                                    <div id="btn_tab_reading" style="cursor:pointer; padding:8px 12px; border-bottom:2px solid #0C447C; color:#0C447C; font-weight:600;">By Reading</div>
-                                    <div id="btn_tab_manual" style="cursor:pointer; padding:8px 12px; color:#777;">Manual Entry</div>
+                                    <div id="btn_tab_reading" style="cursor:pointer; padding:8px 12px; border-bottom:2px solid #0C447C; color:#0C447C; font-weight:600;" vslang="titles.By Reading"></div>
+                                    <div id="btn_tab_manual" style="cursor:pointer; padding:8px 12px; color:#777;" vslang="titles.Manual Entry"></div>
                                 </div>
 
                                 <!-- Section: Core Consumption Inputs -->
                                 <div class="d-flex align-items-center mb-3">
-                                    <span id="consumption_header" style="color:#0C447C; font-size:13px;">Readings</span>
+                                    <span id="consumption_header" style="color:#0C447C; font-size:13px;" vslang="titles.Readings"></span>
                                     <div style="flex:1; height:1px; background:#e0e0e0; margin-left:8px;"></div>
                                 </div>
 
@@ -1375,23 +1381,23 @@ const InvoiceDialog = (() => {
                                 <div id="row_reading_fields" style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
                                     <div class="material-input outlined" style="margin-bottom: 1rem;">
                                         <input class="data-input form-control" data-field="old_electric" name="old_electric" type="text" inputmode="decimal" placeholder="0">
-                                        <label style="color:#777;">Old Reading (kWh)</label>
+                                        <label style="color:#777;" vslang="labels.Old Reading (kWh)"></label>
                                     </div>
                                     <div class="material-input outlined" style="margin-bottom: 1rem;">
                                         <input class="data-input form-control" data-field="new_electric" name="new_electric" type="text" inputmode="decimal" placeholder="0">
-                                        <label style="color:#777;">New Reading (kWh)</label>
+                                        <label style="color:#777;" vslang="labels.New Reading (kWh)"></label>
                                     </div>
                                 </div>
 
                                 <!-- Shared Units Field (ReadOnly on Reading tab, Editable on Manual tab) -->
                                 <div id="row_manual_fields" class="material-input outlined" style="margin-bottom: 1rem; display:none;">
                                     <input class="data-input form-control" data-field="units_used" name="units_used" type="text" inputmode="decimal" placeholder="0.00">
-                                    <label style="color:#777;">Units Used (kWh)</label>
+                                    <label style="color:#777;" vslang="labels.Units Used (kWh)"></label>
                                 </div>
 
                                <!-- Section: Unified Calculations -->
                                 <div class="d-flex align-items-center mb-3">
-                                    <span style="color:#0C447C; font-size:13px;">Calculation</span>
+                                    <span style="color:#0C447C; font-size:13px;" vslang="titles.Calculation"></span>
                                     <div style="flex:1; height:1px; background:#e0e0e0; margin-left:8px;"></div>
                                 </div>
 
@@ -1401,56 +1407,57 @@ const InvoiceDialog = (() => {
                                     <!-- Only visible in Reading Tab -->
                                     <div id="wrapper_units_readonly" class="material-input outlined" style="margin-bottom: 1rem;">
                                         <input id="units_used_readonly" class="form-control bg-light cursor-blocked" type="text" readonly placeholder="0.00">
-                                        <label style="color:#777;">Calculated Units (kWh)</label>
+                                        <label style="color:#777;" vslang="labels.Calculated Units (kWh)"></label>
                                     </div>
 
                                     <!-- Shared Field: Changes grid position dynamically -->
                                     <div id="wrapper_exchange_rate" class="material-input outlined" style="margin-bottom: 1rem;">
                                         <input class="data-input form-control" data-field="exchange_rate" name="exchange_rate" type="text" inputmode="decimal" placeholder="0.00" value="4025">
-                                        <label style="color:#777;">Exchange Rate (KHR)</label>
+                                        <label style="color:#777;" vslang="labels.Exchange Rate (KHR)"></label>
                                     </div>
 
                                     <!-- Hidden on Reading Init, part of the 3-column row in Manual -->
                                     <div id="wrapper_price_khr" class="material-input outlined" style="margin-bottom: 1rem;">
                                         <input class="data-input form-control" data-field="price_khr" name="price_khr" type="text" inputmode="decimal" placeholder="0.00">
-                                        <label style="color:#777;">Price per kWh (KHR)</label>
+                                        <label style="color:#777;" vslang="labels.Price per kWh (KHR)"></label>
                                     </div>
 
                                     <div id="wrapper_price_usd" class="material-input outlined" style="margin-bottom: 1rem;">
                                         <input class="data-input form-control" data-field="price_usd" name="price_usd" type="text" inputmode="decimal" placeholder="0.00">
-                                        <label style="color:#777;">Price per kWh (USD)</label>
+                                        <label style="color:#777;" vslang="labels.Price per kWh (USD)"></label>
                                     </div>
                                 </div>
 
                                 <!-- Section: Unified Period -->
                                 <div class="d-flex align-items-center mb-3">
-                                    <span style="color:#0C447C; font-size:13px;">Period</span>
+                                    <span style="color:#0C447C; font-size:13px;" vslang="titles.Period"></span>
                                     <div style="flex:1; height:1px; background:#e0e0e0; margin-left:8px;"></div>
                                 </div>
                                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
                                     <div class="material-input outlined" style="margin-bottom: 1rem;">
                                         <input class="data-input form-control" data-field="start_date" name="start_date" type="text" data-type="date" placeholder=" ">
-                                        <label style="color:#777;">Start Date</label>
+                                        <label style="color:#777;" vslang="labels.Start Date"></label>
                                     </div>
                                     <div class="material-input outlined" style="margin-bottom: 1rem;">
                                         <input class="data-input form-control" data-field="end_date" name="end_date" type="text" data-type="date" placeholder=" ">
-                                        <label style="color:#777;">End Date</label>
+                                        <label style="color:#777;"vslang="labels.End Date"></label>
                                     </div>
                                 </div>
 
                                 <!-- Unified Total Amount Footer Display -->
                                 <div class="material-input outlined">
                                     <input class="data-input form-control cursor-blocked" data-field="total_amount" name="total_amount" type="text" readonly
-                                        style="background-color: #f0f7ff; border-color: #0c447c; color: #0c447c; font-weight: bold; font-size: 1.1em;">
-                                    <label style="color:#0c447c;">Total Amount ($)</label>
+                                        style="background-color: #f0f7ff; border-color: #0c447c; font-weight: bold; font-size: 1.1em;">
+                                    <label vslang="labels.Total Amount ($)"></label>
                                 </div>
 
                                 <div class="material-input outlined" style="display:none;">
                                     <textarea class="data-input form-control" data-field="remark" name="remark" rows="2" placeholder=" "></textarea>
-                                    <label style="color:#777;">Remark</label>
+                                    <label style="color:#777;" vslang="labels.Remark"></label>
                                 </div>
                                 <input class="data-input" type="text" data-field="entry_mode" value="reading" style="display:none;">
                             `;
+                            LocaleManager.translateZone(div);
                                 return div;
                             },
 
@@ -1597,8 +1604,7 @@ const InvoiceDialog = (() => {
                                         // Form structure configuration
                                         rowReadingFields.style.display = "grid";
                                         rowManualFields.style.display = "none";
-                                        txtConsumptionHeader.textContent =
-                                            "Readings";
+                                        txtConsumptionHeader.textContent ="Readings";
 
                                         // Calculation Row: Standard 2x2 layout look
                                         rowCalculationFields.style.gridTemplateColumns =
@@ -1831,6 +1837,7 @@ const InvoiceDialog = (() => {
                                 ibMe.close();
                             },
                         });
+
                     }; // end openElectricPopup
 
                     openElectricPopup();
@@ -1867,9 +1874,11 @@ const InvoiceDialog = (() => {
                     InputBox.resetInstance("servicePopUp");
 
                     InputBox.show({
-                        title: "Add Service",
+                        title: `${LocaleManager.trans('Add Service', "titles")}`,
+                        // title: "Add Service",
                         instanceKey: "servicePopUp",
-                        confirmButtonText: "Save",
+                        confirmButtonText: `${LocaleManager.trans('Save', "buttons")}`,
+                        cancelButtonText: `${LocaleManager.trans('Close', "buttons")}`,
                         createContent() {
                             const div = document.createElement("div");
                             serviceDiv = div;
@@ -1879,7 +1888,7 @@ const InvoiceDialog = (() => {
                             div.innerHTML = `
                                 <div>
                                     <div class="d-flex align-items-center mb-3">
-                                        <span style="color:#0C447C; font-size:13px;">Service Selection</span>
+                                        <span style="color:#0C447C; font-size:13px;" vslang="titles.Service Selection"></span>
                                         <div style="flex:1; height:1px; background:#e0e0e0;"></div>
                                     </div>
                                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
@@ -1890,11 +1899,11 @@ const InvoiceDialog = (() => {
                                         </div>
                                         <div class="material-input outlined" style="margin-bottom: 1rem;">
                                             <input class="data-input form-control bg-light" data-field="charge_as" name="charge_as" type="text" readonly placeholder=" ">
-                                            <label style="color:#777;">Charge As</label>
+                                            <label style="color:#777;" vslang="labels.Charge As"></label>
                                         </div>
                                         <div id="price_wrapper" class="material-input outlined" style="margin-bottom: 1rem; grid-column: span 2;">
                                             <input class="data-input form-control bg-light" data-field="price" name="price" type="text" readonly placeholder=" ">
-                                            <label style="color:#777;">Unit Price ($)</label>
+                                            <label style="color:#777;" vslang="labels.Unit Price ($)"></label>
                                         </div>
                                         <div id="duration_container" style="display:none; margin-bottom: 1rem;" class="material-input outlined" >
                                             <select class="data-input form-control" data-style="material" data-field="duration_months" name="duration_months" placeholder="Duration (Qty)">
@@ -1909,24 +1918,24 @@ const InvoiceDialog = (() => {
 
                                 <div id="billing_period_container" style="display:none;">
                                     <div class="d-flex align-items-center  mb-3">
-                                        <span style=" color:#0C447C; font-size:13px;">Billing Period</span>
+                                        <span style=" color:#0C447C; font-size:13px;" vslang="titles.Billing Period"></span>
                                         <div style="flex:1; height:1px; background:#e0e0e0;"></div>
                                     </div>
                                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
                                         <div class="material-input outlined" style="margin-bottom: 1rem;">
                                             <input class="data-input form-control" data-field="start_date" name="start_date" type="text" data-type="date" placeholder=" ">
-                                            <label style="color:#777;">Start Date</label>
+                                            <label style="color:#777;" vslang="labels.Start Date"></label>
                                         </div>
                                         <div class="material-input outlined" style="margin-bottom: 1rem;">
                                             <input class="data-input form-control" data-field="end_date" name="end_date" type="text" data-type="date" placeholder=" ">
-                                            <label style="color:#777;">End Date</label>
+                                            <label style="color:#777;" vslang="labels.End Date"></label>
                                         </div>
                                     </div>
                                 </div>
 
                                 <div>
                                     <div class="d-flex align-items-center mb-3">
-                                        <span style="color:#0C447C; font-size:13px;">Financials</span>
+                                        <span style="color:#0C447C; font-size:13px;" vslang="titles.Financial Info"></span>
                                         <div style="flex:1; height:1px; background:#e0e0e0;"></div>
                                     </div>
 
@@ -1934,7 +1943,7 @@ const InvoiceDialog = (() => {
                                         <div class="material-input outlined" style="display:flex; gap:8px; align-items:flex-end; grid-column: span 2;">
                                             <div style="flex:1;">
                                                 <input class="data-input form-control" data-field="discount" name="discount" type="text" inputmode="decimal" placeholder="0">
-                                                <label style="color:#777;">Discount</label>
+                                                <label style="color:#777;" vslang="labels.Discount"></label>
                                             </div>
                                             <div style="width:80px;">
                                                 <select class="data-input form-control" data-field="discount_type" name="discount_type">
@@ -1949,14 +1958,15 @@ const InvoiceDialog = (() => {
                                 <div class="material-input outlined mt-2">
                                     <input class="data-input form-control cursor-blocked" data-field="total_amount" name="total_amount" type="text" readonly
                                         style="background-color: #f0f7ff; border-color: #0c447c; color: #0c447c; font-weight: bold; font-size: 1.1em;">
-                                    <label style="color:#0c447c;">Total Amount ($)</label>
+                                    <label style="color:#0c447c;" vslang="labels.Total Amount ($)"></label>
                                 </div>
 
                                 <div class="material-input outlined mt-3" style="display:none;">
                                     <textarea class="data-input form-control" data-field="remark" name="remark" rows="2" placeholder=" "></textarea>
-                                    <label style="color:#777;">Remark</label>
+                                    <label style="color:#777;" vslang="labels.Remark"></label>
                                 </div>
                             `;
+                            LocaleManager.translateZone(div);
                             return div;
                         },
                         onOpen(ibMe) {
@@ -2297,9 +2307,11 @@ const InvoiceDialog = (() => {
                     InputBox.resetInstance("requestPopUp");
 
                     InputBox.show({
-                        title: "Service Request",
+                        // title: "Service Request",
+                        title: `${LocaleManager.trans('Service Request', "titles")}`,
                         instanceKey: "requestPopUp",
-                        confirmButtonText: "Save",
+                        confirmButtonText: `${LocaleManager.trans('Save', "buttons")}`,
+                        cancelButtonText: `${LocaleManager.trans('Close', "buttons")}`,
                         createContent() {
                             const div = document.createElement("div");
                             requestDiv = div;
@@ -2309,7 +2321,7 @@ const InvoiceDialog = (() => {
                             div.innerHTML = `
                                 <div>
                                     <div class="d-flex align-items-center mb-3">
-                                        <span style="color:#0C447C; font-size:13px;">Request Info</span>
+                                        <span style="color:#0C447C; font-size:13px;" vslang="titles.Request Info"></span>
                                         <div style="flex:1; height:1px; background:#e0e0e0;"></div>
                                     </div>
                                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
@@ -2319,34 +2331,34 @@ const InvoiceDialog = (() => {
                                             </select>
                                         </div>
                                         <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                            <input class="data-input form-control bg-light cursor-blocked" data-field="service_name" name="service_name" type="text" readonly placeholder=" ">
-                                            <label style="color:#777;">Service Name</label>
+                                            <input class="data-input form-control cursor-blocked" data-field="service_name" name="service_name" type="text" readonly placeholder=" ">
+                                            <label style="color:#777;" vslang="labels.Service Name"></label>
                                         </div>
                                         <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                            <input class="data-input form-control bg-light" data-field="unit_type" name="unit_type" type="text" readonly placeholder=" ">
-                                            <label style="color:#777;">Unit Type</label>
+                                            <input class="data-input form-control" data-field="unit_type" name="unit_type" type="text" readonly placeholder=" ">
+                                            <label style="color:#777;" vslang="labels.Unit Type"></label>
                                         </div>
                                         <div class="material-input outlined" data-wrapper="duration" style="margin-bottom: 1rem;">
-                                            <input class="data-input form-control bg-light cursor-blocked" data-field="duration_hours" name="duration_hours" type="text" readonly placeholder=" ">
-                                            <label style="color:#777;">Duration (Hours)</label>
+                                            <input class="data-input form-control cursor-blocked" data-field="duration_hours" name="duration_hours" type="text" readonly placeholder=" ">
+                                            <label style="color:#777;" vslang="labels.Duration (Hours)"></label>
                                         </div>
                                         <div id="price_wrapper_requested" class="material-input outlined" style="margin-bottom: 1rem;">
-                                            <input class="data-input form-control bg-light cursor-blocked" data-field="price" name="price" type="text" readonly placeholder=" ">
-                                            <label style="color:#777;">Original Price ($)</label>
+                                            <input class="data-input form-control cursor-blocked" data-field="price" name="price" type="text" readonly placeholder=" ">
+                                            <label style="color:#777;" vslang="labels.Original Price ($)"></label>
                                         </div>
                                     </div>
                                 </div>
 
                                 <div>
                                     <div class="d-flex align-items-center mb-3">
-                                        <span style="color:#0C447C; font-size:13px;">Financials</span>
+                                        <span style="color:#0C447C; font-size:13px;" vslang="titles.Financial Info"></span>
                                         <div style="flex:1; height:1px; background:#e0e0e0;"></div>
                                     </div>
                                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
                                         <div class="material-input outlined" style="display:flex; gap:8px; align-items:flex-end; grid-column: span 2;">
                                             <div style="flex:1;">
                                                 <input class="data-input form-control" data-field="discount" name="discount" type="text" inputmode="decimal" placeholder="0">
-                                                <label style="color:#777;">Discount</label>
+                                                <label style="color:#777;" vslang="labels.Discount"></label>
                                             </div>
                                             <div style="width:80px;">
                                                 <select class="data-input form-control" data-field="discount_type" name="discount_type">
@@ -2359,15 +2371,16 @@ const InvoiceDialog = (() => {
                                         <div class="material-input outlined" style="grid-column: span 2; margin-top: 0.5rem;">
                                             <input class="data-input form-control cursor-blocked" data-field="total_amount" name="total_amount" type="text" readonly
                                                 style="background-color: #f0f7ff; border-color: #0c447c; color: #0c447c; font-weight: bold; font-size: 1.1em;" placeholder=" ">
-                                            <label style="color:#0c447c;">Total Amount ($)</label>
+                                            <label style="color:#0c447c;" vslang="labels.Total Amount ($)"></label>
                                         </div>
                                     </div>
                                 </div>
                                 <div class=" material-input outlined" style="display:none;">
                                     <textarea class="data-input form-control" data-field="remark" name="remark" rows="2" placeholder=" "></textarea>
-                                    <label style="color:#777;">Remark</label>
+                                    <label style="color:#777;" vslang="labels.Remark"></label>
                                 </div>
                             `;
+                            LocaleManager.translateZone(div);
                             return div;
                         },
 
@@ -2585,6 +2598,11 @@ const InvoiceDialog = (() => {
                     });
                 };
 
+                const subLabel = LocaleManager.trans('Sub Total', "titles")
+
+                console.log(11111, subLabel);
+                
+
                 me.itemsView = new ItemsView(me.controls.divItemsView, {
                     currencyCode: "USD",
                     columns: [
@@ -2686,6 +2704,11 @@ const InvoiceDialog = (() => {
                         showTax: false,
                         allowDiscount: true,
                         discountBeforeTax: true,
+                        labels:{
+                            subtotal:LocaleManager.trans('Sub Total', "titles"),
+                            discount:LocaleManager.trans('Discount', "titles"),
+                            total:LocaleManager.trans('Total', "titles"),
+                        }
                         // currencyConversion: {
                         //     currency_code: "KHR",
                         //     rate: 4100
@@ -3056,9 +3079,9 @@ const InvoiceDialog = (() => {
                 const title = me.divModal.querySelector(".modal-title");
                 if (title) {
                     const isModify = !!me.dataOptions?.id;
-                    title.innerHTML = isModify
-                        ? '<h4 class="text-prm-custom text-start fw-bold">Modify Invoice</h4>'
-                        : '<h4 class="text-prm-custom text-start fw-bold">Create Invoice</h4>';
+                    // title.innerHTML = isModify
+                    //     ? '<h4 class="text-prm-custom text-start fw-bold" vslang="titles.Modify Invoice">Modify Invoice</h4>'
+                    //     : '<h4 class="text-prm-custom text-start fw-bold" vslang="titles.Create Invoice">Create Invoice</h4>';
                 }
 
                 vsapi
@@ -3080,13 +3103,13 @@ const InvoiceDialog = (() => {
             },
 
             prepareFormOptions: {
-                modifyTitle: "Modify Invoice",
-                createTitle: "Create Invoice",
+                modifyTitle: "vslang:titles.Modify Invoice",
+                createTitle: "vslang:titles.Create Invoice",
                 targetProp: "invoice_details",
                 api: {
                     endpoint: `${main_view.base_url}/prm/invoice/form-options`,
                     params: (op) => {
-                        console.log("API params op:", op);
+                        // console.log("API params op:", op);
                         return { id: op.id };
                     },
                 },
@@ -3158,10 +3181,14 @@ const ReceiveDialog = (() => {
 
     self.show = (op) => {
         dialog = new GeneralDialog({
-            title: " vslang:titles.Receive Payment",
+            
             cssClass: "modal-lg vs-modal",
-            backdrop: "static",
-            keyboard: true,
+            title: (me) => {
+                    const title = me.dataOptions.id ? "Receive Payment" : "Create";
+                    if (title) {
+                       return  `<h4 class="text-prm-custom text-start fw-bold">${LocaleManager.trans(title,'titles')}</h4>`;
+                    }
+            },
 
             createContent: () => `
                 <div class="container-fluid px-0">
@@ -3463,12 +3490,12 @@ const ReceiveDialog = (() => {
 
             buttons: [
                 {
-                    label: "Cancel",
+                    label: '<span vslang="buttons.Cancel"></span>',
                     cssClass: "btn btn-secondary",
                     click: (me) => me.hide(false),
                 },
                 {
-                    label: "Receive",
+                    label: '<span vslang="buttons.Receive"></span>',
                     cssClass: "btn btn-primary",
                     click: (me, btn) => {
                         const rawData = me.getData();

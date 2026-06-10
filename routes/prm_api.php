@@ -312,6 +312,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('bill')->group
     Route::post('/update-status', [BillController::class, 'updateBillStatus']);
     Route::post('/view-attachment', [BillController::class, 'viewBillAttachment']);
     Route::post('/delete-attachment', [BillController::class, 'deleteAttachment']);
+    Route::post('/upload-attachment', [BillController::class, 'uploadAttachment']);
 });
 
 
@@ -390,6 +391,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant/reques
     Route::post('/form-options',[RequestServiceController::class,'getFormOptions']);
     Route::post('/accept',[RequestServiceController::class,'acceptRequest']);
     Route::post('/reject',[RequestServiceController::class,'rejectRequest']);
+    Route::post('/cancel',[RequestServiceController::class,'cancelRequest']);
     Route::post('/complete',[RequestServiceController::class,'completeRequest']);
 
 

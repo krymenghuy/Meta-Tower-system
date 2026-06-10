@@ -325,14 +325,14 @@ return [
         'Authorized' => 'អនុម័តដោយ',
         'Received' => 'បានទទួល',
         'Ref No' => 'លេខយោង',
-        'Issue Date' => 'កាលបរិច្ឆេទថ្ងៃចេញ',
-        'Due' => 'កាលបរិច្ឆេទថ្ងៃត្រូវបង់',
+        'Issue Date' => 'កាលបរិច្ឆេទចេញ',
+        'Due' => 'ចំនួនទឹកប្រាក់ត្រូវបង់',
         'Payable' => 'នៅសល់ត្រូវបង់',
         'Payment Method' => 'វិធីសាស្ត្រទូទាត់ប្រាក់',
         'Amount' => 'ចំនួនទឹកប្រាក់',
         'Payment Date' => 'កាលបរិច្ឆេទទូទាត់ប្រាក់',
         'Contact Person' => 'បុគ្គលទំនាក់ទំនង',
-        'Address' => 'អាស័យដ្ឋាន',
+        'Address' => 'អាសយដ្ឋាន',
         'Contact Info' => 'ព័ត៌មានទំនាក់ទំនង',
         'Amenity' => 'ឈ្មោះសេវាកម្ម',
         'Reservation Date' => 'កាលបរិច្ឆេទកក់',
@@ -391,7 +391,40 @@ return [
         'Create Service Request' => 'បង្កើតសំណើសេវាកម្ម',
         'QTY' => 'ចំនួន',
         'Receive Payment' => 'ទទួលការបង់ប្រាក់',
+        'Finish' => 'បញ្ចប់',
+        'Relationship' => 'ទំនាក់ទំនង',
+        'Email' => 'អ៊ីមែល',
+        'Gender' => 'ភេទ',
+        'Legal Name' => 'ឈ្មោះស្របច្បាប់',
+
+
+        'Create Invoice' => 'បង្កើតវិក្កយបត្រ',
+        'Modify Invoice' => 'កែប្រែវិក្កយបត្រ',
+        'Generate New Bill' =>'បង្កើតវិក័យប័ត្រចំណាយ',
+        'Modify Bill' =>'កែប្រែវិក័យប័ត្រចំណាយ',
+        'Delete Invoice' => 'លុបវិក្កយបត្រ',
+        'Electricity Utility' => 'ថ្លៃអគ្គិសនី',
+        'Contract Details' => 'ព័ត៌មានកិច្ចសន្យា',
+        'Billing Period' => 'រយៈពេលវិក្កយបត្រ',
+        'Financial Info' => 'ព័ត៌មានហិរញ្ញវត្ថុ',
+        'Service Selection' => 'ការជ្រើសរើសសេវាកម្ម',
+        'Request Info' => 'ព័ត៌មានសំណើ',
+        'Readings' => 'លេខអំណាន',
+        'Calculation' => 'ការគណនា',
+        'Period' => 'រយៈពេល',
+        'Manual Entry' => 'បញ្ចូលដោយដៃ',
+        'By Reading' => 'គណនាតាមលេខអំណាន',
+        'Rental Details' => 'ព័ត៌មានអំពីការជួល',
+        'Add Service' => 'បន្ថែមសេវាកម្ម',
+        '' => '',
+        '' => '',
+        '' => '',
+        '' => '',
         
+
+
+
+
 
 
     ],
@@ -592,7 +625,7 @@ return [
         'Rent'=> 'ថ្លៃជួល',
         'Service' => 'សេវាកម្ម',
         'Request' => 'តម្លៃសេវាកម្ម',
-        'Electricity Utility' => 'ថ្លៃអគ្គិសនី',
+        'Electric' => 'ថ្លៃអគ្គិសនី',
 
         'Reset' => 'កំណត់ឡើងវិញ',
 
@@ -658,7 +691,7 @@ return [
         'Date of Birth' => 'ថ្ងៃខែឆ្នាំកំណើត',
         'National ID' => 'អត្តសញ្ញាណប័ណ្ណ',
         'Passport' => 'លិខិតឆ្លងដែន',
-        'Phone Number' => 'លេខទូរសព្ទ',
+        'Phone Number' => 'លេខទូរស័ព្ទ',
         'Address' => 'អាសយដ្ឋាន',
 
         'ID' => 'លេខសម្គាល់',
@@ -691,7 +724,7 @@ return [
         'Received Qty' => 'ចំនួនទទួល',
         'Receiver' => 'អ្នកទទួល',
         'Item' => 'មុខទំនិញ',
-        'Unit Type' => 'ឯកតា',
+        'UnitType' => 'ឯកតា',
         'Unit Price' => 'តម្លៃ',
         
 
@@ -719,6 +752,31 @@ return [
         'Balance Due' => 'ប្រាក់នៅសល់ត្រូវបង់',
         'Remaining' => 'ចំនួនទឹកប្រាក់នៅសល់',
         'Total Paid' => 'ចំនួនទឹកប្រាក់ដែលបានបង់',
+
+        'Total Price ($)' => 'តម្លៃសរុប ($)',
+        'Discount' => 'បញ្ចុះតម្លៃ',
+        'Tax %' => 'ពន្ធ្ %',
+
+        'Old Reading (kWh)' => 'លេខអំណានចាស់ (kWh)',
+        'New Reading (kWh)' => 'លេខអំណានថ្មី (kWh)',
+        'Units Used (kWh)' => 'ចំនួនប្រើប្រាស់ (kWh)',
+        'Calculated Units (kWh)' => 'ចំនួនគណនា (kWh)',
+        'Exchange Rate (KHR)' => 'អត្រាប្តូរប្រាក់ (KHR)',
+        'Price per kWh (USD)' => 'តម្លៃក្នុង ១ kWh (USD)',
+        'Price per kWh (KHR)' => 'តម្លៃក្នុង ១ kWh (KHR)',
+        'Total Amount ($)' => 'តម្លៃសរុប ($)',
+        'Unit Price ($)' => 'តម្លៃឯកតា ($)',
+        'Duration (Hours)' => 'រយៈពេល (ម៉ោង)',
+        'Original Price ($)' => 'តម្លៃដើម ($)',
+        'Service Name' => 'ឈ្មោះសេវាកម្ម',
+        'Unit Type' => 'ប្រភេទឯកតា',
+        '' => '',
+
+
+
+
+
+
         
 
 
@@ -780,6 +838,8 @@ return [
         'Save' => 'រក្សារទុក',
         'Change Status' => 'ប្ដូរស្ថានភាព',
         'Accept' => 'យល់ព្រម',
+        'View Reservation' => 'មើលព័ត៌មានការកក់',
+
         
 
     ],
