@@ -28,16 +28,17 @@ use App\Http\Controllers\Prm\BillController;
 use App\Http\Controllers\Prm\BillPaymentController;
 use App\Http\Controllers\Prm\ReceiptController;
 use App\Http\Controllers\Prm\ReportController;
+use App\Http\Controllers\Prm\InvoiceSettingController;
 
 use App\Http\Controllers\tenant\AccountStaffController;
 use App\Http\Controllers\tenant\ZoneController;
 use App\Http\Controllers\Tenant\ContractsController;
-use App\Http\Controllers\Prm\InvoiceSettingController;
 use App\Http\Controllers\Tenant\TenantProfileController;
 use App\Http\Controllers\Tenant\ReservationsController;
 use App\Http\Controllers\Tenant\RequestServiceController;
 use App\Http\Controllers\Tenant\ReceiptController as TenantReceiptController;
 use App\Http\Controllers\Tenant\InvoiceController as TenantInvoiceController;
+use App\Http\Controllers\Tenant\StaffController;
 
 
 
@@ -416,5 +417,11 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant/receip
     Route::post('/details', [TenantReceiptController::class, 'receiptDetails']);
     Route::post('/form-options', [TenantReceiptController::class, 'getFormOptions']);
 });
-
+    
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant/staff')->group(function () {
+    Route::post('/save', [StaffController::class, 'saveStaff']);
+    Route::post('/list-paginate', [StaffController::class, 'getListStaff']);
+    Route::post('/details', [StaffController::class, 'staffDetails']);
+    Route::post('/form-options', [StaffController::class, 'getFormOptions']);
+});
 
