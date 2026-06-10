@@ -195,7 +195,7 @@ class PurchaseOrder extends VSModel
                 return DV::error('Cannot save purchase order');
             }
 
-            self::setPONumber($ss->branch_id, $po_id, 'PO', $inputs['po_date'], 5, 'PO');
+            self::setPONumber($ss->branch_id, $po_id, 'PO', $inputs['po_date'], 4, 'PO');
 
             $items = array_map(fn($i) => (object) $i, $items);
 
@@ -814,7 +814,7 @@ class PurchaseOrder extends VSModel
         return DV::success(['data' => ['success_count' => $success_count, 'count' => $i]]);
     }
 
-    public static function setPONumber($branch_id,$po_id,$doc_class = 'PO',$po_date = null,$len = 5,$prefix = 'PO',$onSuccess = null) {
+    public static function setPONumber($branch_id,$po_id,$doc_class = 'PO',$po_date = null,$len = 4,$prefix = 'PO',$onSuccess = null) {
     if (!$po_id) return null;
     $year = date('Y', strtotime($po_date ?? now()));
     return DB::transaction(function () use (
@@ -854,7 +854,7 @@ class PurchaseOrder extends VSModel
             ]);
         }
 
-        $new_code = $prefix . '-' . substr($year, -2) . '-' . str_pad($next_num, $len, '0', STR_PAD_LEFT);
+        $new_code = $prefix . '-' . substr($year, -2) . str_pad($next_num, $len, '0', STR_PAD_LEFT);
 
         DB::table('purchase_orders')
             ->where('id', $po_id)

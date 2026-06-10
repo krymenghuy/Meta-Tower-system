@@ -803,16 +803,18 @@ const ActiveReservationDialog = (() => {
                 (r) => `
             <tr>              
                 <td class="align-middle">
-                    <span class="d-block text-prm-custom text-capitalize">${r.tenant_name ?? ""}</span>
-                    <small class="text-muted">${r.phone_number ?? ""}</small>
+                    <span class="d-block text-prm-custom text-nowrap text-capitalize">${r.tenant_name ?? ""}</span>
+                    <small class="text-muted text-nowrap">${r.phone_number ?? ""}</small>
                 </td>
                 <td class="align-middle">
-                    <span class="d-block text-prm-custom">${r.booking_date ?? ""}</span>
-                    <small class="text-primary">${to12h(r.start_time)} – ${to12h(r.end_time)}</span>
+                    <span class="d-block text-prm-custom text-nowrap">${r.booking_date ?? ""}</span>
+                    <small class="text-primary text-nowrap">${to12h(r.start_time)} – ${to12h(r.end_time)}</span>
                 </td>
                 <td class="align-middle" style="min-width:70px">${statusBadge(r.status_id, r.status)}</td>
                 <td class="align-middle">
-                    <span class="text-muted">${r.remarks ?? "—"}</span>
+                    <div class="text-primary-prm text-capitalize" style="width:200px;">
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${r.remarks ?? '_'}</span>
+                    </div>
                 </td>
             </tr>
         `,
@@ -854,7 +856,7 @@ const ActiveReservationDialog = (() => {
                                     <th class="text-start" style="width:100px;">Tenant</th>
                                     <th class="text-start" style="width: 150px;">Schedule Date</th>
                                     <th class="text-center" style="width:80px;">Status</th>
-                                    <th class="text-start" style="width:260px;">Remark</th>
+                                    <th class="text-start" style="width:160px;">Remark</th>
                                 </tr>
                             </thead>
                             <tbody id="_arv_tbody"></tbody>

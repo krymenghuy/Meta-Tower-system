@@ -784,53 +784,62 @@ var PurchaseOrdersComponent = (() => {
                     showColumnHeaders: true,
                     showAddLineButton: false,
                     addLineButtonText: 'Add Item',
-                   itemRendered: (iMe, ctx) => {
+                    itemRendered: (iMe, ctx) => {
 
                         const tr = ctx.tr;
-                        const data = ctx.data;
+                        const data = ctx.data || {};
 
                         const checkbox = tr.querySelector(".check_accept");
-                        const receivedQtyInput = tr.querySelector("[data-name='received_qty']");
-                        
+                        const cell = tr.querySelector("[data-name='received_qty']");
+                        const input = cell?.querySelector("input");
 
                         const receivedQty = Number(data.received_qty || 0);
-                        const qty = Number(data.qty || 0);
-
-                        const isFullyReceived = receivedQty > 0;
+                        const isReceived = receivedQty > 0;
 
                         if (checkbox) {
-                            checkbox.checked = isFullyReceived;
-                            checkbox.disabled = isFullyReceived;
+                            checkbox.checked = isReceived;
+                            checkbox.disabled = isReceived;
                         }
-
-                        if (receivedQtyInput) {
-                            receivedQtyInput.readOnly = isFullyReceived;
-                            receivedQtyInput.disabled = isFullyReceived;
+                        if (input) {
+                            input.readOnly = isReceived;
+                            input.disabled = isReceived;
+                        } else if (cell) {
+                            if (isReceived) {
+                                cell.classList.add("cell-disabled");
+                            } else {
+                                cell.classList.remove("cell-disabled");
+                            }
                         }
 
                         iMe.setRowMeta(tr, {
                             received_qty: receivedQty,
-                            checked: isFullyReceived
+                            checked: isReceived
                         });
                     },
-                    onItemChange: async (iMe,ctx) => {
-                        const fieldName = ctx.fieldName;
+                    onItemChange: (iMe, ctx) => {
+
                         const tr = ctx.tr;
-                        const item = ctx.item;
-
-                        if (fieldName === "received_qty") {
+                        const item = ctx.item || {};
+                        if (ctx.fieldName === "received_qty") {
                             const checkbox = tr.querySelector(".check_accept");
-                            
+                            const cell = tr.querySelector("[data-name='received_qty']");
+                            const input = cell?.querySelector("input");
                             const receivedQty = Number(item.received_qty || 0);
-                            const qty = Number(item.qty || 0);
-                            const isFullyReceived = receivedQty > 0;
-
+                            const isReceived = receivedQty > 0;
                             if (checkbox) {
-                                checkbox.checked = isFullyReceived;
-                                checkbox.disabled = isFullyReceived;
+                                checkbox.checked = isReceived;
+                                checkbox.disabled = isReceived;
                             }
+                            if (input) {
+                                input.readOnly = isReceived;
+                                input.disabled = isReceived;
+                            }
+                            iMe.setRowMeta(tr, {
+                                received_qty: receivedQty,
+                                checked: isReceived
+                            });
                         }
-                    }
+                    },
                 });
 
                 me.saveData = (onFinish) => {
