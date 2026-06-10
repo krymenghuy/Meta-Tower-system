@@ -639,11 +639,14 @@ public function updateBooking($arr = [], $ss = null)
     $d = (object) $inputs;
     $phone = trim($d->booker_phone);
 
+    $checkExistPhone = DB::table('space_bookings')
+        ->where('booker_phone', $phone)
+        ->where('id', '!=', $d->booking_id)
+        ->first();
 
-    $checkExistPhone = DB::table('tenants')->where('phone_number', $phone)->first();
     if ($checkExistPhone) {
         return DV::error(
-            "This phone number is already used by {$checkExistPhone->name}."
+            "This phone number is already used by {$checkExistPhone->booker_name}."
         );
     }
     $booker_email = $d->booker_email ?? null;
