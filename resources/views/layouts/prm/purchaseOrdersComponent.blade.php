@@ -23,3 +23,8 @@
     </div>
     <div id="_purchases_list" class="table-responsive mt-3  rounded-2"></div>
 </div>
+<style>
+    .cell-disabled {
+        pointer-events: none;
+        }
+</style>
