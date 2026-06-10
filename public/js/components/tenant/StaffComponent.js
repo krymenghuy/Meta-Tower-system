@@ -251,7 +251,7 @@ var StaffComponent = (() => {
             //     left: -300
             // },
 
-            onClick: (menuLink, id, name) => {
+            onClick: (menuLink, id, name) => {;
                 switch (name) {
                     case "change_status": {
                         mThis.changeStatus(id, menuLink);
@@ -439,16 +439,16 @@ const AccStaffDialog = (() => {
                                     <label>Khmer Name</label>
                                 </div>
                             </div>
-                            
-                            
-                            <div class="col-12">    
+
+
+                            <div class="col-12">
                                 <div class="material-input outlined">
                                     <input type="tel" name="phone_number" required class="data-input form-control" data-field="phone_number" placeholder=" " />
                                     <label>Phone Number</label>
                                 </div>
                             </div>
-                            
-                            
+
+
                             <div class="col-12">
                                 <div class="material-input outlined">
                                     <textarea class="data-input form-control" data-field="address" placeholder=" "></textarea>
