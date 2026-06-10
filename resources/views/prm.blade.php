@@ -28,7 +28,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
     <?php
-    StyleManager::render('prm-style', 1, 54);
+    StyleManager::render('prm-style', 1, 55);
     ?>
     <style>
         /* Custom animations for the modal like Materialize css effect */
@@ -99,7 +99,7 @@
     ScriptManager::render('priority-one', 1, 14);
     ScriptManager::render('primary', 1, 18);
     ScriptManager::render('primary-defer', 1, 42);
-    ScriptManager::render('prm-components', 1, 254);
+    ScriptManager::render('prm-components', 1, 255);
     //ScriptManager::render('pdfmake', 1);
     ?>
 </head>
@@ -376,7 +376,12 @@
                                                         About Meta Estate
                                                     </a>
                                                 </span>
-                                                <div class="dropdown-divider"></div>
+                                                <span class="user-menu-item">
+                                                    <a id="_main_mnu_changepwd" class="dropdown-item" href="javascript:void(0)">
+                                                        <i class="fas fa-key m-2"></i>
+                                                        Change password
+                                                    </a>
+                                                </span>
                                                 <span class="user-menu-item">
                                                     <a id="_main_mnu_logout" class="dropdown-item"
                                                         href="javascript:void(0)">

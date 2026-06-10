@@ -94,6 +94,8 @@ return [
             'single_file' => 1,
             'output_file' => '/dist/js/bhr.components.js',
             'files' => [
+                '/js/components/umt/ChangePasswordDialog.js',
+
                 'https://cdn.vectoraclouds.com/beta-frontcore/components/SearchInput/VSSearchInput.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/SearchInput/VSSearchInputHelper.js',
 
