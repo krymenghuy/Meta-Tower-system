@@ -404,10 +404,24 @@ return [
         'Modify Bill' =>'កែប្រែវិក័យប័ត្រចំណាយ',
         'Delete Invoice' => 'លុបវិក្កយបត្រ',
         'Electricity Utility' => 'ថ្លៃអគ្គិសនី',
+        'Contract Details' => 'ព័ត៌មានកិច្ចសន្យា',
+        'Billing Period' => 'រយៈពេលវិក្កយបត្រ',
+        'Financial Info' => 'ព័ត៌មានហិរញ្ញវត្ថុ',
+        'Service Selection' => 'ការជ្រើសរើសសេវាកម្ម',
+        'Request Info' => 'ព័ត៌មានសំណើ',
+        'Readings' => 'លេខអំណាន',
+        'Calculation' => 'ការគណនា',
+        'Period' => 'រយៈពេល',
+        'Manual Entry' => 'បញ្ចូលដោយដៃ',
+        'By Reading' => 'គណនាតាមលេខអំណាន',
+        'Rental Details' => 'ព័ត៌មានអំពីការជួល',
+        'Add Service' => 'បន្ថែមសេវាកម្ម',
         '' => '',
         '' => '',
         '' => '',
         '' => '',
+        
+
 
 
 
@@ -677,7 +691,7 @@ return [
         'Date of Birth' => 'ថ្ងៃខែឆ្នាំកំណើត',
         'National ID' => 'អត្តសញ្ញាណប័ណ្ណ',
         'Passport' => 'លិខិតឆ្លងដែន',
-        'Phone Number' => 'លេខទូរសព្ទ',
+        'Phone Number' => 'លេខទូរស័ព្ទ',
         'Address' => 'អាសយដ្ឋាន',
 
         'ID' => 'លេខសម្គាល់',
@@ -712,7 +726,6 @@ return [
         'Item' => 'មុខទំនិញ',
         'UnitType' => 'ឯកតា',
         'Unit Price' => 'តម្លៃ',
-        'service_unit_type' => 'Unit Type',
         
 
         'Reference No.' => 'លេខយោង',
@@ -753,10 +766,10 @@ return [
         'Price per kWh (KHR)' => 'តម្លៃក្នុង ១ kWh (KHR)',
         'Total Amount ($)' => 'តម្លៃសរុប ($)',
         'Unit Price ($)' => 'តម្លៃឯកតា ($)',
-        '' => '',
-        '' => '',
-        '' => '',
-        '' => '',
+        'Duration (Hours)' => 'រយៈពេល (ម៉ោង)',
+        'Original Price ($)' => 'តម្លៃដើម ($)',
+        'Service Name' => 'ឈ្មោះសេវាកម្ម',
+        'Unit Type' => 'ប្រភេទឯកតា',
         '' => '',
 
 
