@@ -467,7 +467,7 @@ class BuildingSpace
 
     //     }
     // }
-
+ 
     public function createBooking($arr = [], $id = null, $ss = null)
     {
         $id = $id ?? $this->id;
@@ -490,6 +490,16 @@ class BuildingSpace
 
         $inputs = $res->values;
         $d = (object) $inputs;
+        $phone = $d->booker_phone;
+        $phone = trim($d->booker_phone);
+
+        $checkExistPhone = DB::table('tenants')->where('phone_number', $phone)->first();
+        if ($checkExistPhone) {
+            return DV::error(
+                "This phone number is already used by {$checkExistPhone->name}."
+            );
+        }
+        
         $booker_email = $d->booker_email ?? null;
         if ($booker_email !== null && $booker_email !== '') {
 
@@ -627,6 +637,12 @@ public function updateBooking($arr = [], $ss = null)
     if ($res->error) return DV::error($res->error);
     $inputs = $res->values;
     $d = (object) $inputs;
+    $phone = $d->booker_phone;
+
+    $check_exist_phone = DB::table('tenants')->where('phone_number',$phone)->first();
+    if($check_exist_phone){
+        return DV::error('This Phone number already taken by '.$check_exist_phone->name);
+    }
     $booker_email = $d->booker_email ?? null;
     if ($booker_email !== null && $booker_email !== '') {
         if (!filter_var($booker_email, FILTER_VALIDATE_EMAIL)) {
