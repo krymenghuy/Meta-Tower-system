@@ -75,6 +75,7 @@ class Tenant
         $branch_id = $ss->branch_id;
         $v_rule = [
             'name'            => '1|string|0-30|text=name_required',
+            'name_kh'            => '1|string|0-30|text=name_required',
             'sex'             => '1|choice|F,M|text=select_gender',
             'date_of_birth'   => '1|date|text=date_of_birth_required',
             'legal_name'      => '1|string|0-30|text=legal_name_required',
@@ -215,7 +216,7 @@ class Tenant
             ->whereRaw($str_search)
             ->whereRaw($str_moreWhere)
             ->selectRaw("
-                t.id,t.name,t.sex,t.tenant_type,t.date_of_birth,t.nationality_id,
+                t.id,t.name,t.name_kh,t.sex,t.tenant_type,t.date_of_birth,t.nationality_id,
                 t.legal_name,t.code,t.photo_file_name,t.national_id,t.nid_issue_date,
                 t.passport_number,t.phone_number,t.email,t.address,
                 t.status_id,ts.name as status,
@@ -309,7 +310,7 @@ class Tenant
             ->leftJoin('building_spaces as bs', 'bs.id', '=', 'c.space_id')
             ->join('tenant_statuses as ts', 'ts.id', '=', 't.status_id')
             ->where('t.id', $id)
-            ->selectRaw("t.id,t.branch_id,t.name,t.code,t.national_id,passport_number,$date_of_birth,$nid_issue_date,t.nationality_id,t.photo_file_name,t.sex,t.tenant_type,t.status_id,ts.name as status,t.legal_name,t.phone_number,t.email,t.address,c.price,c.price_type,c.sqm_size,c.deposit,$start_date,$end_date,bs.code as space_code")
+            ->selectRaw("t.id,t.branch_id,t.name,t.name_kh,t.code,t.national_id,passport_number,$date_of_birth,$nid_issue_date,t.nationality_id,t.photo_file_name,t.sex,t.tenant_type,t.status_id,ts.name as status,t.legal_name,t.phone_number,t.email,t.address,c.price,c.price_type,c.sqm_size,c.deposit,$start_date,$end_date,bs.code as space_code")
             ->first();
         if ($row) {
             $img = self::profilePicture($id, $ss);
@@ -550,7 +551,7 @@ class Tenant
         $ss = $ss ?? $this->userInfo;
         $tenant = DB::table('tenants')
             ->where('id', $id)
-            ->select('id', 'name', 'legal_name', 'email', 'phone_number')->first();
+            ->select('id', 'name','name_kh', 'legal_name', 'email', 'phone_number')->first();
         $spaces = $this->getActiveSpaces($id, $ss);
         return (object)[
             'tenant' => $tenant,
@@ -565,7 +566,7 @@ class Tenant
 
         $tenant = DB::table('tenants')
             ->where('id', $id)
-            ->select('id', 'name', 'legal_name', 'email', 'phone_number')
+            ->select('id', 'name', 'name_kh', 'legal_name', 'email', 'phone_number')
             ->first();
 
         // by status, with a date guard for contracts whose status auto-update lags.
@@ -603,7 +604,7 @@ class Tenant
 
         $tenant = DB::table('tenants')
             ->where('id', $id)
-            ->select('id', 'name', 'legal_name', 'email', 'phone_number')
+            ->select('id', 'name', 'name_kh', 'legal_name', 'email', 'phone_number')
             ->first();
 
         // 1. Fetch Service Requests with status_id = 2 (Approved/Completed)
@@ -709,7 +710,7 @@ class Tenant
         }
         $rows = DB::table('tenants as t')
         ->whereRaw($str_search)
-            ->selectRaw("t.id,t.name,t.code,t.national_id,t.passport_number,t.date_of_birth,t.nationality_id,t.sex,t.tenant_type,t.status_id,t.legal_name,t.phone_number,t.email,t.address")->get();
+            ->selectRaw("t.id,t.name,t.name_kh,t.code,t.national_id,t.passport_number,t.date_of_birth,t.nationality_id,t.sex,t.tenant_type,t.status_id,t.legal_name,t.phone_number,t.email,t.address")->get();
             foreach($rows as $row){
                 setOfficialDates($row, ['start_date', 'date_of_birth' ,'end_date'], [''], []);
 
