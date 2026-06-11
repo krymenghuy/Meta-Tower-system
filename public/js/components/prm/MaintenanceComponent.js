@@ -278,7 +278,7 @@ var MaintenanceComponent = (() => {
                         if (e) {
                             vsapi.call(`${main_view.base_url}/prm/maintenance/set-status`, { id: id, status_id: 4 }, menuLink, null).then(res => {
                                 if (res.status_code === 200) {
-                                    cv_interact.success("cancelled");
+                                    cv_interact.success("maintenance_cancelled");
                                     mThis.MaintenanceListView.showPage(mThis.getFilterData());
                                 } else {
                                     cv_interact.error(res.error_message);
@@ -298,7 +298,7 @@ var MaintenanceComponent = (() => {
                         if (e) {
                             vsapi.call(`${main_view.base_url}/prm/maintenance/delete`, { id: id }, false, false, false).then(res => {
                                 if (res.status_code === 200) {
-                                    cv_interact.success("deleted");
+                                    cv_interact.success("delete_success_maintenance");
                                     mThis.MaintenanceListView.showPage(mThis.getFilterData());
                                 } else {
                                     cv_interact.error(res.error_message);
@@ -626,7 +626,7 @@ const CreateMaintenanceDialog = (() => {
                             .then(res => {
                                 if (res.status_code === 200) {
                                     me.hide(true, op);
-                                    cv_interact.success(op.id ? "updated" : "created");
+                                    cv_interact.success(op.id ? "update_success_maintenance" : "create_success_maintenance");
                                     if (op && typeof op.onClose === "function") op.onClose();
                                 } else {
                                     cv_interact.error(res.error_message);

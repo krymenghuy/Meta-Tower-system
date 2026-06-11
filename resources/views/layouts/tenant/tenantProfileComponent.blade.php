@@ -59,12 +59,12 @@
                     {{-- <li class="text-muted breadcrumb-item active fw-semibold" aria-current="page">
                         Personal Information
                     </li>
-                </ol> --}} 
+                </ol> --}}
             </nav>
         </div>
     </div>
 
-    <div class="mt-3 mb-5" style="max-height: 600px;" id="sub_view_profile">
+    <div class="mt-3 mb-5" id="sub_view_profile">
         <div id="profile_info_tenant"></div>
     </div>
 </div>
@@ -186,5 +186,101 @@
         font-weight: bold;
         line-height: 1;
         margin-top: -2px;
+    }
+
+    /* Tenant profile view */
+    .tenant-profile-layout .profile-sidebar-card {
+        border: none;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 4px 24px rgba(26, 22, 71, 0.08);
+    }
+
+    .tenant-profile-layout .profile-sidebar-banner {
+        height: 88px;
+        background: linear-gradient(135deg, #0c399e 0%, #1a1647 100%);
+    }
+
+    .tenant-profile-layout .profile-avatar-wrap {
+        margin-top: -56px;
+    }
+
+    .tenant-profile-layout .profile-avatar {
+        width: 112px;
+        height: 112px;
+        object-fit: cover;
+        object-position: center;
+        border: 4px solid #fff;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    }
+
+    .tenant-profile-layout .profile-quick-actions .btn {
+        border-radius: 10px;
+        font-size: 0.8125rem;
+        font-weight: 500;
+    }
+
+    .tenant-profile-layout .profile-detail-card {
+        border: none;
+        border-radius: 16px;
+        box-shadow: 0 4px 24px rgba(26, 22, 71, 0.08);
+    }
+
+    .tenant-profile-layout .profile-section-title {
+        font-size: 0.9375rem;
+        font-weight: 600;
+        color: #1a1647;
+        padding-bottom: 0.75rem;
+        margin-bottom: 1rem;
+        border-bottom: 2px solid #f0f2f5;
+    }
+
+    .tenant-profile-layout .profile-field-box {
+        background: #f8f9fb;
+        border: 1px solid #eef0f4;
+        border-radius: 12px;
+        padding: 0.875rem 1rem;
+        height: 100%;
+        transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .tenant-profile-layout .profile-field-box:hover {
+        border-color: #d8deea;
+        box-shadow: 0 2px 8px rgba(26, 22, 71, 0.04);
+    }
+
+    .tenant-profile-layout .profile-field-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.875rem;
+        flex-shrink: 0;
+    }
+
+    .tenant-profile-layout .profile-field-label {
+        font-size: 0.75rem;
+        color: #8b8b8b;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        margin-bottom: 0.25rem;
+    }
+
+    .tenant-profile-layout .profile-field-value {
+        font-size: 0.9375rem;
+        font-weight: 500;
+        color: #38373a;
+        word-break: break-word;
+    }
+
+    .tenant-profile-layout .profile-field-value a {
+        color: #0c399e;
+        text-decoration: none;
+    }
+
+    .tenant-profile-layout .profile-field-value a:hover {
+        text-decoration: underline;
     }
 </style>

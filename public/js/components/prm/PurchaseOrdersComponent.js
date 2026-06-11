@@ -366,7 +366,7 @@ var PurchaseOrdersComponent = (() => {
                 vsapi.call(`${main_view.base_url}/prm/purchase/order/delete`, { id: id }, false)
                     .then(res => {
                         if (res.status_code == 200) {
-                            cv_interact.success('deleted');
+                            cv_interact.success('delete_success_order');
                             mThis.PoListView.showPage(mThis.getFilterData());
                         } else {
                             cv_interact.error(res.error_message);
@@ -624,7 +624,7 @@ var PurchaseOrdersComponent = (() => {
 
                         me.saveData((res) => {
                             if (res?.status_code === 200) {
-                                cv_interact.success(isUpdate ? "updated"  : "created");
+                                cv_interact.success(isUpdate ? "update_success_order"  : "create_success_order");
                                 me.hide(true);
                                 mThis.PoListView.showPage(mThis.getFilterData());
                             } else {

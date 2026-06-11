@@ -326,13 +326,13 @@ var ReservationComponent = (() => {
                     )
                     .then((res) => {
                         if (res.status_code === 200) {
-                            cv_interact.success("Reservation cancelled.");
+                            cv_interact.success("cancel_success_reservation");
                             mThis.ReservationListView.showPage(
                                 mThis.getFilterData(),
                             );
                         } else {
                             cv_interact.error(
-                                res.error_message || "Cancel failed",
+                                res.error_message || "cancel_failed",
                             );
                         }
                     });
@@ -361,13 +361,13 @@ var ReservationComponent = (() => {
                     )
                     .then((res) => {
                         if (res.status_code === 200) {
-                            cv_interact.success("Reservation deleted.");
+                            cv_interact.success("delete_success_reservation");
                             mThis.ReservationListView.showPage(
                                 mThis.getFilterData(),
                             );
                         } else {
                             cv_interact.error(
-                                res.error_message || "Delete failed",
+                                res.error_message || "delete_failed",
                             );
                         }
                     });
@@ -626,11 +626,11 @@ const CreateReservationDialog = (() => {
                                         me._selectedTenantId = null;
                                         if (me.dataOptions.id > 0) {
                                             cv_interact.success(
-                                                "updated",
+                                                "update_success_reservation",
                                             );has
                                         } else {
                                             cv_interact.success(
-                                                "created",
+                                                "create_success_reservation",
                                             );
                                         }
                                     } else {
