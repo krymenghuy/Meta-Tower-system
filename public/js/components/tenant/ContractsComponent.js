@@ -323,7 +323,6 @@ var ContractsComponent = new (function () {
                     <td class="align-middle text-nowrap">${(r.end_date ?? '').trim() }</td>
                     <td class="align-middle text-nowrap">${unitCell}</td>
                     <td class="text-break align-middle" style="width: 300px;">${escapeHtml((r.remarks ?? '_').trim())}</td>
-                    // <td class="align-middle text-nowrap"><div class="d-flex flex-column"><span class="text-capitalize">${escapeHtml((r.update_user ?? '').trim()) || '_'}</span><small class="text-muted">${(r.updated_at ?? '').trim() || ''}</small></div></td>
                 </tr>`;
             }).join('');
             renewalTableHtml = `
@@ -338,7 +337,6 @@ var ContractsComponent = new (function () {
                                             <th class="text-nowrap  py-2 px-3">End date</th>
                                             <th class="text-nowrap  py-2 px-3">Unit</th>
                                             <th class="text-nowrap  py-2 px-3">Remark</th>
-                                            // <th class="text-nowrap  py-2 px-3">Last Updated</th>
                                         </tr>
                                     </thead>
                                     <tbody class="border-top">${rows}</tbody>
