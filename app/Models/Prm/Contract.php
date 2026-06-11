@@ -1269,7 +1269,7 @@ class Contract
             ->join('building_spaces as bs','bs.id','=','c.space_id')
             ->join('buildings as b','b.id','=','bs.building_id')
             ->where('t.id', $id)
-            ->selectRaw("t.id,t.branch_id,t.name,t.code,t.national_id,t.passport_number,t.date_of_birth,t.nationality_id,t.sex,t.tenant_type,t.status_id,t.legal_name,t.phone_number,t.email,t.address,c.start_date,c.end_date,bs.code as unit_code,bs.floor_id,b.name as building,c.sqm_size,c.price,c.price_type,c.deposit")
+            ->selectRaw("t.id,t.branch_id,t.name,t.name_kh,t.code,t.national_id,t.passport_number,t.date_of_birth,t.nationality_id,t.sex,t.tenant_type,t.status_id,t.legal_name,t.phone_number,t.email,t.address,c.start_date,c.end_date,bs.code as unit_code,bs.floor_id,b.name as building,c.sqm_size,c.price,c.price_type,c.deposit")
             ->first();
         if (!$tenant) {
             return DV::error("Tenant ID {$id} does not exist.");
@@ -1286,13 +1286,25 @@ class Contract
         $com_rep_name = $p->first_cp_name ?? 'CP Name';
         $com_rep_nid = $p->first_cp_nid ?? '(ID Card)';
         $com_rep_sex = $p->first_cp_sex ?? 'Sex';
+        $com_rep_title = match ($com_rep_sex) {
+            'M' => 'លោក',
+            'F' => 'កញ្ញា',
+            default => '',
+        };
+        $com_rep_full_name = $com_rep_title . ' ' . ($com_rep_name ?? '');
         $com_rep_dob = $p->first_cp_dob ?? '';
         $com_rep_nid_issue_date = $p->first_cp_nid_issue_date ?? '';
         $com_rep_address = $p->first_cp_address ?? '';
         $com_address = $p->billing_address ?? '';
 
-        $tenant_name = $tenant->name;
+        $tenant_name = $tenant->name_kh;
         $tenant_sex = $tenant->sex ?? '(Sex)';
+        $tenant_title = match ($tenant_sex) {
+            'M' => 'លោក',
+            'F' => 'កញ្ញា',
+            default => '',
+        };
+        $tenant_full_name = $tenant_title . ' ' . ($tenant_name ?? '');
         $tenant_nid = $tenant->national_id ?? '';
         $tenant_phone = $tenant->phone_number ?? '';
         $tenant_address = $tenant_address ?? $tenant->address;
@@ -1307,6 +1319,7 @@ class Contract
             ? $tenant->sqm_size * $tenant->price
             : $tenant->price;
         $deposit = $tenant->deposit;
+        
 
         $price_text = number_format($monthly_price, 2);
 
@@ -1314,6 +1327,7 @@ class Contract
             'issue_date' => getKhmerDate(null),
             'kh_issue_date' => self::getKhmerLunarDate(null),
             'com_address' => $com_address,
+            'com_rep_full_name' => $com_rep_full_name,
             'com_rep_name' => $com_rep_name,
             'com_rep_sex' => self::getSex($com_rep_sex),
             'com_rep_dob' => getKhmerDate($com_rep_dob),
@@ -1321,9 +1335,12 @@ class Contract
             'com_rep_nid_issue_date' => getKhmerDate($com_rep_nid_issue_date),
             'com_rep_address' => $com_rep_address,
 
+            'tenant_full_name' => $tenant_full_name,
             'tenant_name' => $tenant_name,
             'tenant_code' => $tenant->code ?? '(ID)',
             'tenant_sex' => self::getSex($tenant_sex),
+            
+
             'tenant_phone' => $tenant_phone,
             'tenant_nid' => $tenant_nid,
             'tenant_nid_issue_date' => getKhmerDate($com_rep_nid_issue_date),

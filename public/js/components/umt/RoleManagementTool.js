@@ -1587,19 +1587,31 @@ this.PermissionPanel = new function(){
   
                   valueField:"id",
                   textField:"name",
-                  depends:{
-                      triggerBy:"app",
-                      api:{
-                          endpoint:`${main_view.base_url}/api/module/list`,
-                          params: (me,dataOptions,controls)=>{
-                              return {"app_id": controls.app.value};
-                          },
-                        //   onResponse:(me,res)=>{
-                        //        console.log(111,res.data);
-                        //   }
-                      }
+                //   depends:{
+                //       triggerBy:"app",
+                //       api:{
+                //           endpoint:`${main_view.base_url}/api/module/list`,
+                //           params: (me,dataOptions,controls)=>{
+                //               return {"app_id": controls.app.value};
+                //           },
+                      
+                //       }
   
-                  }
+                //   }
+                depends: {
+                        parents: ['app'],
+                        api: {
+                            endpoint: `${main_view.base_url}/api/module/list`,
+                            method: "POST",
+                            // onResponse:(res,me)=>{
+                            //     console.log('mm:: ',res);
+                            //     return res;
+                            // },
+                            // params: (me,op) => ({
+                            //   program_id: mThis.elFilter_program.value
+                            // })
+                        }
+                }
               }
            ],
            prepareFormOptions:{
@@ -1886,14 +1898,14 @@ this.ReportPanel = new function(){
            buttons:[
               {
                   label:"<span>Cancel</span>",
-                  cssClass:"btn btn-sm text-white btn-warning",
+                  cssClass:"btn-vs-cancel",
                   click:(me,btn)=>{
                      me.hide(false);
                   }
                 },
                 {
                   label:"<span>Save</span>",
-                  cssClass:"btn btn-sm btn-yp-custom",
+                  cssClass:"btn-vs-save",
                   click:(me,btn,divModal)=>{
                       let p = me.getData();
                       //report_id is primary key of table "reports", while "id" is, in fact, the permission's ID 
@@ -1943,19 +1955,33 @@ this.ReportPanel = new function(){
   
                   valueField:"id",
                   textField:"name",
-                  depends:{
-                      triggerBy:"app",
-                      api:{
-                          endpoint:`${main_view.base_url}/api/module/list`,
-                          params: (me,dataOption,controls)=>{
-                              return {"app_id": controls.app.value};
-                          },
-                            onResponse:(me,res)=>{
-                               console.log(111,res.data);
-                          }
-                      }
+                //   depends:{
+                //       triggerBy:"app",
+                //       api:{
+                //           endpoint:`${main_view.base_url}/api/module/list`,
+                //           params: (me,dataOption,controls)=>{
+                //               return {"app_id": controls.app.value};
+                //           },
+                //             onResponse:(me,res)=>{
+                //                console.log(111,res.data);
+                //           }
+                //       }
   
-                  }
+                //   }
+                depends: {
+                            parents: ['app'],
+                            api: {
+                                endpoint: `${main_view.base_url}/api/module/list`,
+                                method: "POST",
+                                // onResponse:(res,me)=>{
+                                //     console.log('mm:: ',res);
+                                //     return res;
+                                // },
+                                // params: (me,op) => ({
+                                //   program_id: mThis.elFilter_program.value
+                                // })
+                            }
+                    }
               }
            ],
            extendMethod:{

@@ -1756,10 +1756,16 @@ const CreateTenantDialog = (() => {
                     </div>
 
                     <div class="col-md-9 row align-content-between flex-wrap" > 
-                            <div class="col-12 ">
+                            <div class="col-6">
                                 <div class="vs-material-field">
                                     <input type="text" name="name" class="data-input form-control" data-field="name" placeholder="" />
                                     <label vslang="labels.Full Name">Full Name</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="vs-material-field">
+                                    <input type="text" name="name_kh" class="data-input form-control" data-field="name_kh" placeholder="" />
+                                    <label vslang="labels.Name KH">Name KH</label>
                                 </div>
                             </div>
                             <div class="col-12 col-md-6">
@@ -1786,7 +1792,7 @@ const CreateTenantDialog = (() => {
                                     <label vslang="labels.Legal Name">Legal Name</label>
                                 </div>
                             </div>
-                            <div class="col-12 col-md-6" >
+                            <div class="col-12 col-md-6">
                                 <select data-style="material" name="nationality_id" class="data-input form-control" data-field="nationality_id" placeholder="Nationality"></select>
                             </div>
                     </div>
@@ -1797,13 +1803,13 @@ const CreateTenantDialog = (() => {
                                 <label vslang="labels.National ID">National ID</label>
                             </div>
                         </div>
-                        <div class="col-12 col-md-3">
+                        <div class="col-12 col-md-4">
                             <div class="vs-material-field">
                                 <input type="text" data-type="date" name="nid_issue_date" class="data-input form-control form_input" data-field="nid_issue_date" placeholder=" " />
-                                <label vslang="labels.Issue Date">Issue Date</label>
+                                <label vslang="labels.National ID Issue Date">National ID Issue Date</label>
                             </div>
                         </div>
-                        <div class="col-12 col-md-6">
+                        <div class="col-12 col-md-5">
                             <div class="vs-material-field">
                                 <input type="text" name="passport_number" class="data-input form-control" data-field="passport_number" placeholder=" " />
                                 <label vslang="labels.Passport">Passport Number</label>
@@ -1815,6 +1821,8 @@ const CreateTenantDialog = (() => {
                                 <label vslang="labels.Phone Number">Phone Number</label>
                             </div>
                         </div>
+                      
+                       
                         <div class="col-12 col-md-6 pt-2">
                             <div class="vs-material-field">
                                 <input type="email" name="email" class="data-input form-control" data-field="email" placeholder=" " />
