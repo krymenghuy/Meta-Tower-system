@@ -232,6 +232,7 @@ var InvoiceComponent = (() => {
 
         mThis.btnAdd.onclick = (e) => {
             e.preventDefault();
+            if (!AuthManager.allowed(234,false)) return;
             InvoiceDialog.show({
                 id: null,
                 btn: e.target,
@@ -572,8 +573,7 @@ var InvoiceComponent = (() => {
     };
 
     mThis.deleteInvoice = (id, menuLink) => {
-        if (!AuthManager.allowed(242)) return;
-
+        if (!AuthManager.allowed(237)) return;
         cv_interact.confirm(
             "Are you sure you want to delete this invoice?",
             {
@@ -607,6 +607,7 @@ var InvoiceComponent = (() => {
     };
 
     mThis.btnInvoiceSetting = (id, menulink) => {
+        if (!AuthManager.allowed(240)) return;
         InvoiceSettingDialog.show({
             invoice_id: id,
             btn: menulink,
@@ -617,8 +618,7 @@ var InvoiceComponent = (() => {
     };
 
     mThis.btnResetInvoiceSetting = (id, menulink) => {
-        if (!AuthManager.allowed(242)) return;
-
+        if (!AuthManager.allowed(239)) return;
         cv_interact.confirm(
             "Are you sure you want to reset this invoice settings?",
             {
@@ -657,7 +657,7 @@ var InvoiceComponent = (() => {
     };
 
     mThis.editInvoice = (id, menulink) => {
-        console.log("editInvoice id:", id);
+        if(!AuthManager.allowed(236,false)) return;
         InvoiceDialog.show({
             id: id,
             btn: menulink,
@@ -667,6 +667,7 @@ var InvoiceComponent = (() => {
     };
 
     mThis.receiveInvoice = (id, menulink) => {
+        if(!AuthManager.allowed(235,false)) return;
         ReceiveDialog.show({
             invoice_id: id,
             btn: menulink,
@@ -680,7 +681,7 @@ var InvoiceComponent = (() => {
         let globalSetting = null;
         let localSetting = null;
         let companyProfile = null;
-
+        if(!AuthManager.allowed(238,false)) return;
         vsapi.call(`${main_view.base_url}/api/company/details`).then((res) => {
             if (res.status_code === 200) {
                 companyProfile = res.data;

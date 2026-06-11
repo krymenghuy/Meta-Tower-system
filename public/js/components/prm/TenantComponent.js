@@ -187,20 +187,14 @@ var TenantComponent = new (function () {
                     mThis.tenantListView.showPage(mThis.getFilterData());
                 },
             };
+
+            if(!AuthManager.allowed(218,false)) return;
             CreateTenantDialog.show(op);
         };
          mThis.btnPDF.onclick = function (e) {
             e.preventDefault();
+            if (!AuthManager.allowed(233,false)) return;
             let op = mThis.getFilterData();
-            // const op = {
-            //     id: null,
-            //     btn: e.target,
-            //     onClose: () => {
-            //         mThis.renderView();
-            //         mThis.tenantListView.showPage(mThis.getFilterData());
-            //     },
-            // };
-            console.log(9090,op);
             
             let html = `
                 <div id="full_elbody" style="zoom:95%">
@@ -534,6 +528,7 @@ var TenantComponent = new (function () {
                 mThis.renderView();
             },
         };
+        if (!AuthManager.allowed(220,false)) return;
         CreateTenantDialog.show(op);
     };
     mThis.serviceRequest = (id, menuLink) => {
@@ -555,6 +550,7 @@ var TenantComponent = new (function () {
                 mThis.renderView();
             },
         };
+        if (!AuthManager.allowed(227,false)) return;
         ContractDialog.show(op);
     };
     mThis.uploadDocument = (id, menuLink) => {
@@ -566,8 +562,7 @@ var TenantComponent = new (function () {
                 mThis.renderView();
             },
         };
-        // console.log(111, op);
-
+        if (!AuthManager.allowed(222,false)) return;
         TenantDocumentDialog.show(op);
     };
     mThis.modifyDocument = (id, menuLink) => {
@@ -596,7 +591,7 @@ var TenantComponent = new (function () {
                 mThis.renderView();
             },
         };
-        // if (!AuthManager.allowed(242)) return;
+        if (!AuthManager.allowed(221,false)) return;
         cv_interact.confirm(
             "confirm_delete",
             {
@@ -780,6 +775,7 @@ var TenantComponent = new (function () {
             link.addEventListener("click", (e) => {
                 const tenantId = e.currentTarget.dataset.id;
                 mThis.tenant_id = tenantId;
+                if (!AuthManager.allowed(219,false)) return;
                 mThis.showPage("profile_view", tenantId);
                 //const employeeData = data.find((emp) => emp.id == employeeId);
                 // if (employeeData) {
@@ -819,6 +815,7 @@ var TenantComponent = new (function () {
                         mThis.renderView();
                     },
                 };
+                if (!AuthManager.allowed(227,false)) return;
                 ContractDialog.show(op);
             });
         });
@@ -957,6 +954,7 @@ var TenantComponent = new (function () {
                     null,
                 );
                 const data = res.data || {};
+                if (!AuthManager.allowed(219,false)) return;
                 mThis.renderProfile(data);
                 break;
             }
@@ -1561,6 +1559,7 @@ var TenantComponent = new (function () {
                     const btnDocument = div.querySelector("#_btnDocument");
                     if (btnDocument) {
                         btnDocument.onclick = () => {
+                            if (!AuthManager.allowed(222,false)) return;
                             TenantDocumentDialog.show({
                                 id: null,
                                 tenant_id: data.id,
@@ -1574,11 +1573,13 @@ var TenantComponent = new (function () {
                     div.querySelectorAll(".view-doc").forEach((btn) => {
                         btn.addEventListener("click", async (e) => {
                             const id = e.currentTarget.dataset.id;
+                            if (!AuthManager.allowed(223,false)) return;
                             mThis.openTenantDocument(id, "view");
                         });
                     });
                     div.querySelectorAll(".download-doc").forEach((btn) => {
                         btn.addEventListener("click", (e) => {
+                            if (!AuthManager.allowed(225,false)) return;
                             const id = e.currentTarget.dataset.id;
                             mThis.openTenantDocument(id, "download");
                         });
@@ -1598,6 +1599,7 @@ var TenantComponent = new (function () {
                                     );
                                 },
                             };
+                            if (!AuthManager.allowed(224,false)) return;
                             TenantDocumentDialog.show(op);
                         });
                     });
@@ -1606,6 +1608,7 @@ var TenantComponent = new (function () {
                         .querySelectorAll(".delete-doc-btn")
                         .forEach((btn) => {
                             btn.addEventListener("click", async function (e) {
+                                if (!AuthManager.allowed(226,false)) return;
                                 const docId = this.dataset.id;
 
                                 const confirmed = await cv_interact.confirm(

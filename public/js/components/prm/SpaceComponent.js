@@ -61,6 +61,7 @@ var SpaceComponent = new (function () {
                     mThis.applyListFilters();
                 },
             };
+            if (!AuthManager.allowed(206,false)) return;
             BuildingSpaceDialog.show(op);
         };
         mThis.pr_tbl = mThis.SpaceListView.getListContainer();
@@ -523,6 +524,8 @@ var SpaceComponent = new (function () {
     };
 
     mThis.createContract = (id, menulink) => {
+        if (!AuthManager.allowed(227,false)) return;
+
         vsapi
             .call(
                 `${main_view.base_url}/prm/contract/form-options`,
@@ -610,7 +613,7 @@ var SpaceComponent = new (function () {
                 mThis.applyListFilters();
             },
         };
-
+        if (!AuthManager.allowed(207,false)) return;
         BuildingSpaceDialog.show(op);
     };
     mThis.setMaintenance = (id, menulink) => {
@@ -622,11 +625,13 @@ var SpaceComponent = new (function () {
                 mThis.applyListFilters();
             },
         };
+        if (!AuthManager.allowed(213,false)) return;
         if (typeof CreateMaintenanceDialog !== "undefined") {
             CreateMaintenanceDialog.show(op);
         }
     };
     mThis.finishMaintenance = (id, menulink) => {
+        if (!AuthManager.allowed(216,false)) return;
         cv_interact.confirm(
             "Finish this maintenance?",
             {
@@ -668,7 +673,7 @@ var SpaceComponent = new (function () {
                 mThis.applyListFilters();
             },
         };
-
+        if (!AuthManager.allowed(209,false)) return;
         CreateBookingDialog.show(op);
     };
     mThis.deleteSpace = (id, menulink) => {
@@ -679,7 +684,7 @@ var SpaceComponent = new (function () {
                 mThis.applyListFilters();
             },
         };
-        // if (!AuthManager.allowed(242)) return;
+         if (!AuthManager.allowed(208,false)) return;
         cv_interact.confirm(
             "confirm_delete",
             {
@@ -716,6 +721,7 @@ var SpaceComponent = new (function () {
                 mThis.applyListFilters();
             },
         };
+        if (!AuthManager.allowed(210,false)) return;
         ViewBookingDialog.show(op);
     };
     mThis.editBooking = (id, menuLink) => {
@@ -733,6 +739,7 @@ var SpaceComponent = new (function () {
                     );
                     return;
                 }
+                if (!AuthManager.allowed(211,false)) return;
                 CreateBookingDialog.show({
                     space_id: id,
                     booking: res.data,
@@ -746,6 +753,7 @@ var SpaceComponent = new (function () {
             });
     };
     mThis.cancelBooking = (id, menuLink) => {
+        if (!AuthManager.allowed(212,false)) return;
         cv_interact.confirm(
             "Cancel this booking ?",
             {

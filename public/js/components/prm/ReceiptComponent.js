@@ -262,6 +262,7 @@ var ReceiptComponent = new (function() {
     };
 
     mThis.printReceipt = (id, menuLink) => {
+        if (!AuthManager.allowed(241)) return;
         PrintReceiptDialog.show({
             receipt_id: id,
             btn: menuLink
@@ -269,6 +270,7 @@ var ReceiptComponent = new (function() {
     };
 
     mThis.cancelReceipt = id => {
+        if (!AuthManager.allowed(242)) return;
         Swal.fire({
             title: "Cancel Receipt?",
             text: "This will restore the due balance on the invoice.",

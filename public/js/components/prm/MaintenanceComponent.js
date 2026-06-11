@@ -140,6 +140,7 @@ var MaintenanceComponent = (() => {
 
         mThis.btnAdd.onclick = function (e) {
             e.preventDefault();
+            if (!AuthManager.allowed(213,false)) return;
             CreateMaintenanceDialog.show({
                 id: null,
                 btn: e.target,
@@ -235,12 +236,14 @@ var MaintenanceComponent = (() => {
             },
             onClick: (menuLink, id, name) => {
                 if (name === "modify") {
+                    if (!AuthManager.allowed(214,false)) return;
                     CreateMaintenanceDialog.show({
                         id: parseInt(id, 10),
                         btn: menuLink,
                         onClose: () => mThis.MaintenanceListView.showPage(mThis.getFilterData())
                     });
                 } else if (name === "finish_maintenance") {
+                    if (!AuthManager.allowed(216,false)) return;
                     cv_interact.confirm(
                         "confirm_finish",
                         {
@@ -270,6 +273,7 @@ var MaintenanceComponent = (() => {
                         }
                     );
                 } else if (name === "cancel_maintenance") {
+                     if (!AuthManager.allowed(217,false)) return;
                     cv_interact.confirm("confirm_cancel", { langSection: "message_box_default",translate:true, context: "update", confirmButtonText: "Cancel" }, (e) => {
                         if (e) {
                             vsapi.call(`${main_view.base_url}/prm/maintenance/set-status`, { id: id, status_id: 4 }, menuLink, null).then(res => {
@@ -283,6 +287,7 @@ var MaintenanceComponent = (() => {
                         }
                     });
                 } else if (name === "delete") {
+                    if (!AuthManager.allowed(215,false)) return;
                     cv_interact.confirm("confirm_delete", {
                         langSection: 'message_box_default',
                         translate: true,

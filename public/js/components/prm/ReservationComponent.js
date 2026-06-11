@@ -157,7 +157,7 @@ var ReservationComponent = (() => {
                     mThis.ReservationListView.showPage(mThis.getFilterData());
                 },
             };
-            // if (!AuthManager.allowed(240)) return;
+            if (!AuthManager.allowed(248,false)) return;
             CreateReservationDialog.show(op);
         };
 
@@ -301,11 +301,12 @@ var ReservationComponent = (() => {
                 mThis.ReservationListView.showPage(mThis.getFilterData());
             },
         };
+        if (!AuthManager.allowed(249)) return;
         CreateReservationDialog.show(op);
     };
 
     mThis.cancelReservation = (id, menuLink) => {
-        if (!AuthManager.allowed(242)) return;
+        if (!AuthManager.allowed(250)) return;
         cv_interact.confirm(
             "Cancel this reservation ?",
             {
@@ -340,7 +341,7 @@ var ReservationComponent = (() => {
     };
 
     mThis.deleteReservation = (id, menuLink) => {
-        if (!AuthManager.allowed(242)) return;
+        if (!AuthManager.allowed(251)) return;
         cv_interact.confirm(
             "Delete this reservation?",
             {
