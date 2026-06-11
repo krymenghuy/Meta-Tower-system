@@ -646,7 +646,7 @@ var SpaceComponent = new (function () {
                         .then((res) => {
                             if (res.status_code === 200) {
                                 cv_interact.success(
-                                    "Maintenance has been completed.",
+                                    "finish_maintenance_success",
                                 );
                                 mThis.applyListFilters();
                             } else {
@@ -699,7 +699,7 @@ var SpaceComponent = new (function () {
                         )
                         .then((res) => {
                             if (res.status_code == 200) {
-                               cv_interact.success("deleted");
+                               cv_interact.success("delete_success_space");
                                 mThis.applyListFilters();
                             } else {
                                 cv_interact.error(res.error_message);
@@ -764,7 +764,7 @@ var SpaceComponent = new (function () {
                     )
                     .then((res) => {
                         if (res.status_code === 200) {
-                            cv_interact.success("Booking has been cancelled.");
+                            cv_interact.success("cancel_success_booking");
                             mThis.applyListFilters();
                         } else {
                             cv_interact.error(res.error_message || "Failed.");
@@ -1031,11 +1031,11 @@ const BuildingSpaceDialog = (() => {
                                         me.hide(true, op);
                                         if (me.dataOptions.id > 0) {
                                             cv_interact.success(
-                                                LocaleManager.trans("updated", "message_box_default"),
+                                                LocaleManager.trans("update_success_space", "message_box_default"),
                                             );
                                         } else {
                                             cv_interact.success(
-                                                LocaleManager.trans("created", "message_box_default"),
+                                                LocaleManager.trans("create_success_space", "message_box_default"),
                                             );
                                         }
                                     } else {
@@ -1248,9 +1248,9 @@ const CreateBookingDialog = (() => {
                                     if (res.status_code === 200) {
                                         me.hide(true, op);
                                         if (me.dataOptions.id > 0) {
-                                            cv_interact.success("updated");
+                                            cv_interact.success("update_success_booking");
                                         } else {
-                                            cv_interact.success("created");
+                                            cv_interact.success("create_success_booking");
                                         }
                                     } else {
                                         cv_interact.error(res.error_message);

@@ -595,10 +595,10 @@ var InvoiceComponent = (() => {
                             mThis.InvoiceListView.showPage(
                                 mThis.getFilterData(),
                             );
-                            cv_interact.success("Invoice deleted successfully");
+                            cv_interact.success("delete_success_invoice");
                         } else {
                             cv_interact.error(
-                                res.error_message || "Failed to delete.",
+                                res.error_message || "delete_failed",
                             );
                         }
                     });
@@ -643,12 +643,12 @@ var InvoiceComponent = (() => {
                             );
                             // Cleaned up messages so it describes a reset, not a deletion
                             cv_interact.success(
-                                "Invoice settings reset successfully.",
+                                "reset_success_invoice",
                             );
                         } else {
                             cv_interact.error(
                                 res.error_message ||
-                                    "Failed to reset settings.",
+                                    "reset_failed",
                             );
                         }
                     });
@@ -685,7 +685,7 @@ var InvoiceComponent = (() => {
             if (res.status_code === 200) {
                 companyProfile = res.data;
             } else {
-                cv_interact.error("Could not get company profile.");
+                cv_interact.error(res.message);
             }
         });
         vsapi
@@ -694,7 +694,7 @@ var InvoiceComponent = (() => {
                 if (res.status_code === 200) {
                     globalSetting = res.data;
                 } else {
-                    cv_interact.error("Could not determine invoice type.");
+                    cv_interact.error(res.message);
                 }
             });
 
@@ -1005,13 +1005,13 @@ const InvoiceDialog = (() => {
 
                 me.controls.btnRent.onclick = () => {
                     if (!me._selectedTenantId) {
-                        return cv_interact.error("Please select Tenant first.");
+                        return cv_interact.error("select_tenant");
                     }
                     if (
                         !me.controls.space.value ||
                         me.controls.space.value === ""
                     ) {
-                        return cv_interact.error("Please select Space.");
+                        return cv_interact.error("select_space");
                     }
 
                     if (
@@ -1254,14 +1254,14 @@ const InvoiceDialog = (() => {
                                     String(data.tax_rate).trim() === ""
                                 ) {
                                     return ibMe.setError(
-                                        "Tax % is required for this invoice type.",
+                                        LocaleManager.trans("tax_required", "message_box_default")
                                     );
                                 }
 
                                 const taxValue = Number(data.tax_rate);
                                 if (isNaN(taxValue) || taxValue < 0) {
                                     return ibMe.setError(
-                                        "Please enter a valid Tax % value.",
+                                        LocaleManager.trans("enter_tax", "message_box_default")
                                     );
                                 }
                             }
@@ -1275,7 +1275,7 @@ const InvoiceDialog = (() => {
 
                             if (!realContractId) {
                                 return ibMe.setError(
-                                    "Unit Code / Room is missing.",
+                                    LocaleManager.trans("missing_unit", "message_box_default")
                                 );
                             }
 
@@ -1336,13 +1336,13 @@ const InvoiceDialog = (() => {
                 me.controls.btnElectric.onclick = () => {
                     console.log("Global Setting", globalSetting);
                     if (!me._selectedTenantId) {
-                        return cv_interact.error("Please select Tenant first.");
+                        return cv_interact.error("select_tenant");
                     }
                     if (
                         !me.controls.space.value ||
                         me.controls.space.value === ""
                     ) {
-                        return cv_interact.error("Please select Space.");
+                        return cv_interact.error("select_space");
                     }
                     // const exchangeRate = me.exchangeRate;
                     // console.log(1111111111111111111,exchangeRate);
@@ -1846,13 +1846,13 @@ const InvoiceDialog = (() => {
                 // =====================Service ===================
                 me.controls.btnService.onclick = () => {
                     if (!me._selectedTenantId) {
-                        return cv_interact.error("Please select Tenant first.");
+                        return cv_interact.error("select_tenant");
                     }
                     if (
                         !me.controls.space.value ||
                         me.controls.space.value === ""
                     ) {
-                        return cv_interact.error("Please select Space.");
+                        return cv_interact.error("select_space");
                     }
 
                     const services = availableItem || [];
@@ -2166,7 +2166,7 @@ const InvoiceDialog = (() => {
                         onConfirm(data, btn, ibMe) {
                             if (!data.service_id) {
                                 return ibMe.setError(
-                                    "Please select a Service.",
+                                    LocaleManager.trans("select_service", "message_box_default")
                                 );
                             }
 
@@ -2187,12 +2187,12 @@ const InvoiceDialog = (() => {
                             if (unit === "month") {
                                 if (!data.duration_months) {
                                     return ibMe.setError(
-                                        "Please input Duration.",
+                                        LocaleManager.trans("input_time", "message_box_default")     
                                     );
                                 }
                                 if (!data.start_date || !data.end_date) {
                                     return ibMe.setError(
-                                        "Please input Start and End Date.",
+                                        LocaleManager.trans("input_date", "message_box_default")
                                     );
                                 }
                             }
@@ -2234,7 +2234,7 @@ const InvoiceDialog = (() => {
                             );
                             if (isDuplicate) {
                                 return ibMe.setError(
-                                    `Service is already in the list.`,
+                                    LocaleManager.trans("service_exist", "message_box_default")
                                 );
                             }
 
@@ -2260,8 +2260,9 @@ const InvoiceDialog = (() => {
 
                             cv_interact.success(
                                 `Service added for ${qtyMonths} ${
-                                    unit === "month" ? "month(s)" : "unit"
-                                }`,
+                                    unit === "month" ? qtyMonths === 1 
+                                    ? "month" : "months": "unit"
+                                }`
                             );
                             ibMe.close();
                         },
@@ -2274,17 +2275,17 @@ const InvoiceDialog = (() => {
                 // ==================Service Request=========
                 me.controls.btnRequest.onclick = () => {
                     if (!me._selectedTenantId) {
-                        return cv_interact.error("Please select Tenant first.");
+                        return cv_interact.error("select_tenant");
                     }
 
                     const selectedSpaceId =
                         me.controls.space?.value || me.controls.space_id?.value;
                     if (!selectedSpaceId || selectedSpaceId === "") {
-                        return cv_interact.error("Please select Space.");
+                        return cv_interact.error("select_space");
                     }
 
                     const requests = me._requestedServices || [];
-                    console.log("All Requests", requests);
+                    // console.log("All Requests", requests);
 
                     const filteredRequests = requests.filter(
                         (r) => String(r.space_id) === String(selectedSpaceId),
@@ -2292,7 +2293,7 @@ const InvoiceDialog = (() => {
 
                     if (filteredRequests.length === 0) {
                         return cv_interact.error(
-                            "No Requests relate to this space.",
+                            LocaleManager.trans("no_request", "message_box_default")
                         );
                     }
 
@@ -2541,7 +2542,7 @@ const InvoiceDialog = (() => {
 
                             if (!selectedRequest) {
                                 return cv_interact.error(
-                                    "Please select a service request.",
+                                    LocaleManager.trans("service_request", "message_box_default")
                                 );
                             }
 
@@ -2568,7 +2569,7 @@ const InvoiceDialog = (() => {
                             );
                             if (isDuplicate) {
                                 return ibMe.setError(
-                                    "Service Request is already in the list.",
+                                    LocaleManager.trans("request_exist", "message_box_default")
                                 );
                             }
 
@@ -2591,7 +2592,7 @@ const InvoiceDialog = (() => {
 
                             me.itemsView.addRow(dataToAdd, 0);
                             cv_interact.success(
-                                "Service request added to invoice",
+                                LocaleManager.trans("request_invoice", "message_box_default")
                             );
                             ibMe.close();
                         },
@@ -2599,9 +2600,6 @@ const InvoiceDialog = (() => {
                 };
 
                 const subLabel = LocaleManager.trans('Sub Total', "titles")
-
-                console.log(11111, subLabel);
-                
 
                 me.itemsView = new ItemsView(me.controls.divItemsView, {
                     currencyCode: "USD",
@@ -2948,7 +2946,7 @@ const InvoiceDialog = (() => {
                     });
                     if (me.controls.space) {
                         me.controls.space.innerHTML =
-                            '<option value="">-- Select Room / Space --</option>';
+                            '<option value="">Select Unit</option>';
                         me.controls.space.value = "";
                         me.controls.space.dispatchEvent(
                             new Event("change", { bubbles: true }),
@@ -2966,12 +2964,11 @@ const InvoiceDialog = (() => {
                         .then((res) => {
                             if (res.status_code !== 200) {
                                 cv_interact.error(
-                                    "Failed to load invoice details.",
+                                    LocaleManager.trans("failed_load_invoice", "message_box_default")
                                 );
                                 return;
                             }
                             const detail = res.data || {};
-                            console.log("invoice detail:", detail);
 
                             me.controls.due_date.value = detail.due_date;
                             me.controls.issue_date.value = detail.issue_date;
@@ -3019,7 +3016,6 @@ const InvoiceDialog = (() => {
                                                 me.controls.space.value =
                                                     String(detail.space_id);
 
-                                                // ✅ Verify — if Choices.js overrides, force via option.selected
                                                 if (
                                                     me.controls.space.value !==
                                                     String(detail.space_id)
@@ -3092,7 +3088,7 @@ const InvoiceDialog = (() => {
                     .then((res) => {
                         if (res.status_code !== 200) {
                             cv_interact.error(
-                                "Failed to load invoice details.",
+                                LocaleManager.trans("failed_load_invoice", "message_box_default")
                             );
                             return;
                         }
@@ -3118,7 +3114,7 @@ const InvoiceDialog = (() => {
             onClose: (me) => {
                 if (me.controls && me.controls.space) {
                     me.controls.space.innerHTML =
-                        '<option value="">-- Select Room / Space --</option>';
+                        '<option value="">Select Unit</option>';
                 }
                 if (me.searchTenant) me.searchTenant.reset("");
                 if (me.itemsView) me.itemsView.setData([]);
@@ -3141,7 +3137,7 @@ const InvoiceDialog = (() => {
                         if (!formData) return;
 
                         if (!formData.items || formData.items.length === 0) {
-                            return cv_interact.error("Add at least one item.");
+                            return cv_interact.error("add_item");
                         }
                         formData.id = me.dataOptions.id;
 
@@ -3155,13 +3151,13 @@ const InvoiceDialog = (() => {
                                 if (res.status_code === 200) {
                                     cv_interact.success(
                                         formData.id
-                                            ? "Invoice has been updated."
-                                            : "Invoice has been successfully created.",
+                                            ? "update_success_invoice"
+                                            : "create_success_invoice",
                                     );
                                     me.hide(true);
                                 } else {
                                     cv_interact.error(
-                                        res.error_message || "Save failed.",
+                                        res.error_message || "save_failed",
                                     );
                                 }
                             });
@@ -3184,10 +3180,7 @@ const ReceiveDialog = (() => {
             
             cssClass: "modal-lg vs-modal",
             title: (me) => {
-                    const title = me.dataOptions.id ? "Receive Payment" : "Create";
-                    if (title) {
-                       return  `<h4 class="text-prm-custom text-start fw-bold">${LocaleManager.trans(title,'titles')}</h4>`;
-                    }
+                return `<h4 class="text-prm-custom text-start fw-bold">${LocaleManager.trans("Receive Payment", 'titles')}</h4>`;
             },
 
             createContent: () => `
@@ -3507,7 +3500,8 @@ const ReceiveDialog = (() => {
 
                         if (totalInput <= 0) {
                             return cv_interact.error(
-                                "Please enter a payment amount.",
+                                LocaleManager.trans("payment_amount", "message_box_default")
+
                             );
                         }
 
@@ -3520,12 +3514,12 @@ const ReceiveDialog = (() => {
                             .then((res) => {
                                 if (res.status_code === 200) {
                                     cv_interact.success(
-                                        "Payment Received Successfully.",
+                                       LocaleManager.trans("receive_success_payment", "message_box_default")
                                     );
                                     me.hide(true);
                                 } else {
                                     cv_interact.error(
-                                        res.error_message || "Save failed.",
+                                        res.error_message || "save_failed",
                                     );
                                 }
                             })
@@ -3737,7 +3731,8 @@ const InvoiceSettingDialog = (() => {
                                 if (res.status_code === 200) {
                                     me.hide(true, res);
                                     cv_interact.success(
-                                        "Settings updated successfully.",
+                                        LocaleManager.trans("update_success_setting", "message_box_default")
+
                                     );
 
                                     if (
@@ -3757,7 +3752,7 @@ const InvoiceSettingDialog = (() => {
                                 } else {
                                     cv_interact.error(
                                         res.error_message ||
-                                            "An error occurred while saving.",
+                                            "save_failed",
                                     );
                                 }
                             });
