@@ -188,6 +188,7 @@ var ContractComponent = new (function () {
                     mThis.ContractListView.showPage(mThis.getFilterData());
                 }
             };
+            if (!AuthManager.allowed(227,false)) return;
             ContractDialog.show(op);
         };
 
@@ -483,6 +484,8 @@ var ContractComponent = new (function () {
                 mThis.ContractListView.showPage(mThis.getFilterData());
             }
         };
+
+        if (!AuthManager.allowed(228,false)) return;
         ContractDialog.show(op);
     }
     mThis.printContract = (id,menulink)=>{
@@ -496,8 +499,7 @@ var ContractComponent = new (function () {
                 mThis.ContractListView.showPage(mThis.getFilterData())
             }
         };
-        console.log(6666,op);
-        
+        if (!AuthManager.allowed(229,false)) return;
         CreateContractDialog.show(op);
     }
     mThis.renewContract = (id, menulink) => {
@@ -511,7 +513,7 @@ var ContractComponent = new (function () {
                 mThis.ContractListView.showPage(mThis.getFilterData());
             }
         };
-
+        if (!AuthManager.allowed(230,false)) return;
         RenewDialog.show(op);
     };
 
@@ -522,7 +524,7 @@ var ContractComponent = new (function () {
             id: id,
             btn: menuLink,
         };
-
+        if (!AuthManager.allowed(231,false)) return;
         cv_interact.confirm(
             "confirm_terminate",
             {
@@ -554,7 +556,7 @@ var ContractComponent = new (function () {
     };
     mThis.deleteContract = (id, menuLink) => {
         if (!id) return;
-
+        if (!AuthManager.allowed(232,false)) return;
         cv_interact.confirm(
             "confirm_delete",
             {

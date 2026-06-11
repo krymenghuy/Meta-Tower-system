@@ -169,6 +169,7 @@ var AmenityComponent = (() => {
                 onClose: () =>
                     mThis.AmenityListView.showPage(mThis.getFilterData()),
             };
+            if (!AuthManager.allowed(243)) return;
             AmenityDialog.show(op);
         };
 
@@ -329,13 +330,14 @@ var AmenityComponent = (() => {
             onClose: () =>
                 mThis.AmenityListView.showPage(mThis.getFilterData()),
         };
-
+        if (!AuthManager.allowed(244)) return;
         AmenityDialog.show(op);
     };
 
     mThis.setMaintenance = async (id, menuLink) => {
         const tr = menuLink?.closest("tr");
         const buildingId = tr?.dataset?.buildingid || null;
+        if (!AuthManager.allowed(213,false)) return;
 
         const op = {
             amenity_id: id,
@@ -350,6 +352,7 @@ var AmenityComponent = (() => {
     };
 
     mThis.finishMaintenance = (id, menuLink) => {
+        if (!AuthManager.allowed(216,false)) return;
         cv_interact.confirm(
             "Finish this maintenance?",
             {
@@ -390,7 +393,7 @@ var AmenityComponent = (() => {
             onClose: () =>
                 mThis.AmenityListView.showPage(mThis.getFilterData()),
         };
-
+        if (!AuthManager.allowed(245)) return;
         cv_interact.confirm(
             "Delete this Amenity?",
             {
@@ -429,6 +432,8 @@ var AmenityComponent = (() => {
     };
 
     mThis.changeStatus = (id, link) => {
+        if (!AuthManager.allowed(246)) return;
+
         const tr = link.closest("tr");
         const status_id = tr?.dataset.statusid || "";
 
@@ -489,6 +494,7 @@ var AmenityComponent = (() => {
 
     mThis.viewReservation = (id, menuLink) => {
         const tr = menuLink?.closest("tr");
+        if (!AuthManager.allowed(247)) return;
         ActiveReservationDialog.show({
             amenity_id: id,
             amenity_name:
