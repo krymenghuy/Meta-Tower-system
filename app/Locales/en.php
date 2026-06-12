@@ -157,6 +157,8 @@ return [
         'save_failed' => 'Save failed.',
         'confirm_complete' => 'Complete Service Request?',
         'update_success_status' => 'Status updated successfully.',
+        'update_failed_status' => 'Unable to update status',
+        'upload_failed_photo' => 'Upload failed. Please try again.',
 
         'delete_maintenance' => 'Delete Maintenance',
         'confirm_delete_maintenance' => 'Are you sure you want to delete this maintenance?',
@@ -247,9 +249,52 @@ return [
         'create_success_order' => 'Purchase Order created successfully.',
         'delete_success_order' => 'Purchase Order deleted successfully.',
         'update_success_order' => 'Purchase Order updated successfully.',
+        'receive_success_order' => 'Purchase Order received successfully.',
+        'reject_success_order' => 'Purchase Order rejected successfully.',
+        'authorized_purchase' => 'Purchase Order has been authorized!',
+        
+
+        'delete_bill_success' => 'Bill record has been deleted."',
+        'update_bill_success' => 'Bill updated successfully.',
+        'create_success_bill' => 'Bill created successfully.',
+        'delete_bill_photo' => 'Photo deleted successfully.',
+        'upload_bill_photo' => 'Bill photo has been uploaded.',
+
+        'delete_payment_success' => 'Payment deleted successfully.',
+        'update_payment_success' => 'Payment updated successfully.',
+        'create_payment_success' => 'Payment created successfully.',
+        'cancel_payment_success' => 'Payment has been canceled.',
+        'no_photo' => 'No Photo Found.',
+
+        'delete_success_building' => 'Building deleted successfully.',
+        'delete_floor' => 'Floor deleted successfully.',
+        'create_success_building' => 'Building created successfully.',
+        'update_success_building' => 'Building updated successfully.',
+        'create_floor' => 'Floor created successfully.',
+        'update_floor' => 'Floor updated successfully.',
+
+        'create_success_amenity' => 'New Amenity has been added successfully.',
+        'update_success_amenity' => 'Amenity updated successfully.',
+        'delete_success_amenity' => 'Amenity deleted successfully.',
+
+        'update_success_service' => 'Service updated successfully.',
+        'create_success_service' => 'Service created successfully.',
+        'delete_success_service' => 'Service deleted successfully.',
+
+        'update_success_item' => 'Item updated successfully.',
+        'create_success_item' => 'Item created successfully.',
+        'delete_success_item' => 'Item deleted successfully.',
+
         '' => '',
         '' => '',
         '' => '',
+        '' => '',
+        '' => '',
+        '' => '',
+
+
+
+
 
 
 

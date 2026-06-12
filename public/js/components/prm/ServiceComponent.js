@@ -341,11 +341,12 @@ var ServiceComponent = (() => {
         const status_id = tr?.dataset.statusid || "";
         const inputOptions = {
             context: "success",
-            title: "Change Status",
+            title: `${LocaleManager.trans('Change Status', "titles")}`,
             label: "Service Status",
             valueKey: "status_id",
             labelKey: "name",
-            confirmButtonText: "Save",
+            confirmButtonText: `${LocaleManager.trans('Save', "buttons")}`,
+            cancelButtonText: `${LocaleManager.trans('Close', "buttons")}`,
             requiredMessage: "Please select a status",
             data: [
                 { status_id: "1", name: "Active" },
@@ -364,14 +365,14 @@ var ServiceComponent = (() => {
                         if (res.status_code === 200) {
                             me.close();
                             cv_interact.success(
-                                "Service status has been updated",
+                                "update_success_status",
                             );
                             mThis.ServiceListView.showPage(
                                 mThis.getFilterData(),
                             );
                         } else {
                             me.setError(
-                                res.error_message || "Unable to update status",
+                                res.error_message || "update_failed_status",
                             );
                         }
                     });
@@ -418,7 +419,7 @@ var ServiceComponent = (() => {
                         .then((res) => {
                             if (res.status_code == 200) {
                                 cv_interact.success(
-                                    "Service deleted successfully",
+                                    "delete_success_service",
                                 );
                                 mThis.ServiceListView.showPage(
                                     mThis.getFilterData(),
@@ -426,7 +427,7 @@ var ServiceComponent = (() => {
                             } else {
                                 cv_interact.error(
                                     res.error_message ||
-                                        "Failed to delete service",
+                                        "delete_failed",
                                 );
                             }
                         });
@@ -641,11 +642,11 @@ const CreateServicePriceDialog = (() => {
                                         me.hide(true, op);
                                         if (me.dataOptions.id > 0) {
                                             cv_interact.success(
-                                                "Service has been updated successfully.",
+                                                "update_success_service",
                                             );
                                         } else {
                                             cv_interact.success(
-                                                "New service has been added successfully.",
+                                                "create_success_service",
                                             );
                                         }
                                     } else {
