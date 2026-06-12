@@ -92,7 +92,7 @@ var ItemsComponent = (() => {
                     mThis.ItemListView.showPage(mThis.getFilterData());
                 },
             };
-            // if (!AuthManager.allowed(240)) return;
+            if (!AuthManager.allowed(262,false)) return;
             CreateItemsDialog.show(op);
         };
 
@@ -185,7 +185,7 @@ var ItemsComponent = (() => {
                 mThis.ItemListView.showPage(mThis.getFilterData());
             },
         };
-
+        if (!AuthManager.allowed(263,false)) return;
         CreateItemsDialog.show(op);
     };
     mThis.deleteItem = (id, menuLink) => {
@@ -196,7 +196,7 @@ var ItemsComponent = (() => {
                 mThis.ItemListView.showPage(mThis.getFilterData());
             },
         };
-        // if (!AuthManager.allowed(242)) return;
+        if (!AuthManager.allowed(264,false)) return;
         cv_interact.confirm(
             "confirm_delete",
             {
@@ -218,7 +218,7 @@ var ItemsComponent = (() => {
                         )
                         .then((res) => {
                             if (res.status_code == 200) {
-                                cv_interact.success('deleted');
+                                cv_interact.success('delete_success_item');
                                 mThis.ItemListView.showPage(
                                     mThis.getFilterData(),
                                 );
@@ -375,9 +375,9 @@ const CreateItemsDialog = (() => {
                                     if (res.status_code === 200) {
                                         me.hide(true, op);
                                         if (me.dataOptions.id > 0) {
-                                            cv_interact.success('updated');
+                                            cv_interact.success('update_success_item');
                                         } else {
-                                            cv_interact.success('created');
+                                            cv_interact.success('create_success_item');
                                         }
                                     } else {
                                         cv_interact.error(res.error_message);

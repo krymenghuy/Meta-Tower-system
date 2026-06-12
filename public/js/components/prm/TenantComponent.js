@@ -1762,13 +1762,13 @@ const CreateTenantDialog = (() => {
                             <div class="col-6">
                                 <div class="vs-material-field">
                                     <input type="text" name="name" class="data-input form-control" data-field="name" placeholder="" />
-                                    <label vslang="labels.Full Name">Full Name</label>
+                                    <label vslang="labels.Full Name (EN)"></label>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="vs-material-field">
                                     <input type="text" name="name_kh" class="data-input form-control" data-field="name_kh" placeholder="" />
-                                    <label vslang="labels.Name KH">Name KH</label>
+                                    <label vslang="labels.Full Name (KH)"></label>
                                 </div>
                             </div>
                             <div class="col-12 col-md-6">

@@ -46,7 +46,7 @@ var UserManagementComponent = new function(){
             //     cv_interact.warning('Please select a role and a branch, under which to create the new user');
             //     return;
             // }
-            if(!AuthManager.allowed(100)) return;
+            if(!AuthManager.allowed(100,false)) return;
             CreateLoginDialog.show(op); 
 
         };
@@ -116,7 +116,7 @@ var UserManagementComponent = new function(){
                         mThis.userListView.showPage(mThis.getFilterData(), mThis.userListView.current_page);
                     }
                 };
-                if(!AuthManager.allowed(112)) return;
+                if(!AuthManager.allowed(102,false)) return;
                 
                 if(op.user_id && op.user_id !== 'undefined') EditUserDialog.show(op);
                 else return cv_interact.error('Unknown user id!');
@@ -124,7 +124,7 @@ var UserManagementComponent = new function(){
     }
 
     this.deleteUser = (user_id, lnk =null)=>{
-            if(!AuthManager.allowed(101)) return;
+            if(!AuthManager.allowed(101,false)) return;
             cv_interact.confirm('Delete this user?',{
                 title: 'Delete User',
                 context: 'delete'
@@ -202,7 +202,7 @@ var UserManagementComponent = new function(){
                             break;
                         }
                         case 'change_password':{
-                            if (!AuthManager.allowed(109)) return;
+                            if (!AuthManager.allowed(104,false)) return;
                             let login_name = menuLink.dataset.loginname;
                             let op = {
                                user_id: id, 
@@ -223,7 +223,7 @@ var UserManagementComponent = new function(){
                                   return;
                                }
                             };
-                            if (!AuthManager.allowed(110)) return;
+                            if (!AuthManager.allowed(103,false)) return;
                             ChangeLoginNameDialog.show(op);
                             break;
                         }
@@ -890,7 +890,7 @@ var UserManagementComponent = new function(){
                     action: btn.dataset.lock,
                     status_code:btn.dataset.lock
                 };
-                if(!AuthManager.allowed(113)) return;
+                if(!AuthManager.allowed(107,false)) return;
                 const action =(op.action || '').toLowerCase().replace(/\b\w/g, s => s.toUpperCase());
                 cv_interact.confirm(['Do you want to ',op.action || '',' user ',op.user_name.replace(/^\w/, (c) => c.toUpperCase()),'?'].join(''),{
                     title: `${op.action || ''} User`,
@@ -928,7 +928,7 @@ var UserManagementComponent = new function(){
                         mThis.userListView.showPage(mThis.getFilterData());
                     }
                 };
-                if(!AuthManager.allowed(109)) return;
+                if(!AuthManager.allowed(104,false)) return;
                 if(op.user_id && op.user_id !== 'undefined')
                     // AddUserDialog.show(op);
                     SetPasswordDialog.show(op);
@@ -945,7 +945,7 @@ var UserManagementComponent = new function(){
                 };
                
                // console.log(123,op);
-                if (!AuthManager.allowed(118)) return;
+                if (!AuthManager.allowed(108,false)) return;
                 if(op.id && op.id !== 'undefined')
                     mThis.ChangeRoleDialog = mThis.ChangeRoleDialog || new GeneralDialog({
                     title:"Change User Role", 
@@ -1035,7 +1035,7 @@ var UserManagementComponent = new function(){
                 };
                 
                 // mThis.changeUserLoginName(op);
-                if (!AuthManager.allowed(110)) return;
+                if (!AuthManager.allowed(103,false)) return;
                 ChangeLoginNameDialog.show(op);
               return;   
             }
@@ -1108,7 +1108,7 @@ var UserManagementComponent = new function(){
                     open: 'reports'
                 };
                 if(op.id && op.id !== 'undefined')
-                    if(!AuthManager.allowed(117)) return;
+                    if(!AuthManager.allowed(106,false)) return;
                     ReportDialog.show(op);
                 return;
             }

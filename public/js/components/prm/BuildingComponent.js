@@ -425,7 +425,7 @@ var BuildingComponent = (() => {
                         if (res.status_code === 200) {
                             
                             if (typeof onDone === "function") onDone();
-                            cv_interact.success('deleted');
+                            cv_interact.success('delete_floor');
                         } else {
                             cv_interact.error(res.error_message);
                         }
@@ -530,7 +530,7 @@ var BuildingComponent = (() => {
                         .then((res) => {
                             if (res.status_code == 200) {
                                 mThis.BuildingListView.showPage();
-                               cv_interact.success('deleted');
+                               cv_interact.success('delete_success_building');
                             } else {
                                 cv_interact.error(res.error_message);
                             }
@@ -722,9 +722,9 @@ const BuildingDialog = (() => {
                                 if (res.status_code === 200) {
                                     me.hide(true, op);
                                     if(me.dataOptions.id > 0){
-                                        cv_interact.success('updated');
+                                        cv_interact.success('update_success_building');
                                     }else {
-                                        cv_interact.success('created');
+                                        cv_interact.success('create_success_building');
                                     }
                                     
                                 } else {
@@ -842,9 +842,9 @@ const CreateFloorDialog = (() => {
                                     }
                                     me.hide(true, op);
                                     if (me.dataOptions.id > 0) {
-                                        cv_interact.success('updated');
+                                        cv_interact.success('update_floor');
                                     } else {
-                                        cv_interact.success('created');
+                                        cv_interact.success('create_floor');
                                     }
                                 } else {
                                     cv_interact.error(res.error_message);
