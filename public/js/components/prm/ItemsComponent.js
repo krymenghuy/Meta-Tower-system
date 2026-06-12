@@ -92,7 +92,7 @@ var ItemsComponent = (() => {
                     mThis.ItemListView.showPage(mThis.getFilterData());
                 },
             };
-            // if (!AuthManager.allowed(240)) return;
+            if (!AuthManager.allowed(262,false)) return;
             CreateItemsDialog.show(op);
         };
 
@@ -185,7 +185,7 @@ var ItemsComponent = (() => {
                 mThis.ItemListView.showPage(mThis.getFilterData());
             },
         };
-
+        if (!AuthManager.allowed(263,false)) return;
         CreateItemsDialog.show(op);
     };
     mThis.deleteItem = (id, menuLink) => {
@@ -196,7 +196,7 @@ var ItemsComponent = (() => {
                 mThis.ItemListView.showPage(mThis.getFilterData());
             },
         };
-        // if (!AuthManager.allowed(242)) return;
+        if (!AuthManager.allowed(264,false)) return;
         cv_interact.confirm(
             "confirm_delete",
             {

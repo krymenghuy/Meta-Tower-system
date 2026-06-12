@@ -222,6 +222,7 @@ var BillComponent = (() => {
                     mThis.BillListView.showPage(mThis.getFilterData());
                 },
             };
+            if (!AuthManager.allowed(274,false)) return;
             BillDialog.show(op);
         };
 
@@ -399,9 +400,11 @@ var BillComponent = (() => {
                 mThis.BillListView.showPage(mThis.getFilterData());
             },
         };
+        if (!AuthManager.allowed(275,false)) return;
         BillDialog.show(op);
     };
     mThis.deleteBill = (id, menuLink) => {
+        if (!AuthManager.allowed(276,false)) return;
         cv_interact.confirm(
             "Delete this Bill Record?",
             {
@@ -458,12 +461,14 @@ var BillComponent = (() => {
                     mThis.displayBillDetail(expandedContainer, id);
             },
         };
+        if (!AuthManager.allowed(277,false)) return;
         BillPaymentDialog.show(op);
     };
     mThis.uploadAttachment = (id, menuLink) => {
         const tr = menuLink.closest("tr");
         const fileUrl = tr?.dataset.fileurl || null;
         const vendor_id = tr?.dataset.vendorId || null;
+        if (!AuthManager.allowed(278,false)) return;
 
         FileChooser.chooseFile(
             {
@@ -529,6 +534,8 @@ var BillComponent = (() => {
         );
     };
     mThis.viewAttachment = (id, menuLink) => {
+        if (!AuthManager.allowed(279,false)) return;
+
         vsapi
             .call(
                 `${main_view.base_url}/prm/bill/view-attachment`,
@@ -617,6 +624,7 @@ var BillComponent = (() => {
             });
     };
     mThis.deleteAttachment = (id, menuLink) => {
+        if (!AuthManager.allowed(280,false)) return;
         cv_interact.confirm(
             "Delete this attachment?",
             {
