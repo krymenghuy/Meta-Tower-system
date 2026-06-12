@@ -218,7 +218,7 @@ var ItemsComponent = (() => {
                         )
                         .then((res) => {
                             if (res.status_code == 200) {
-                                cv_interact.success('deleted');
+                                cv_interact.success('delete_success_item');
                                 mThis.ItemListView.showPage(
                                     mThis.getFilterData(),
                                 );
@@ -375,9 +375,9 @@ const CreateItemsDialog = (() => {
                                     if (res.status_code === 200) {
                                         me.hide(true, op);
                                         if (me.dataOptions.id > 0) {
-                                            cv_interact.success('updated');
+                                            cv_interact.success('update_success_item');
                                         } else {
-                                            cv_interact.success('created');
+                                            cv_interact.success('create_success_item');
                                         }
                                     } else {
                                         cv_interact.error(res.error_message);

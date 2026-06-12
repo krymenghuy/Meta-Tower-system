@@ -683,7 +683,7 @@ const ContractDialog = (() => {
 
     self.show = (op) => {
         console.log(6666,op);
-        
+
         dialog = dialog || new GeneralDialog({
             cssClass: "modal-lg vs-modal",
             backdrop: "static",
@@ -846,13 +846,24 @@ const ContractDialog = (() => {
 
             onPrepareForm: (me, data) => {
                 const isModify = me.dataOptions?.id > 0;
-                me.setReadOnly(isModify, ['code', 'start_date', 'end_date']);
-                const space_id = me.dataOptions.space_id > 0;
-                me.setReadOnly(space_id, ['code']);
+                const det = data?.contract_details || {};
+                const statusId = Number(det.status_id);
+                const statusText = String(det.status ?? '').trim().toLowerCase();
+                const isActive = statusText === 'active' || statusId === 2;
+
+                if (isModify) {
+                    me.setReadOnly(true, ['start_date', 'end_date']);
+                    if (isActive) {
+                        me.setReadOnly(true, ['code']);
+                    }
+                } else {
+                    const hasPrefillSpace = me.dataOptions.space_id > 0;
+                    me.setReadOnly(hasPrefillSpace, ['code']);
+                }
 
                 const tenantLocked = isModify || !!data?.prefill_tenant_id;
                 me.controls.tenant.disabled = tenantLocked;
-               
+
 
                 const prepareOpts = me.options?.prepareFormOptions;
                 if (isModify && me.elTitle && prepareOpts?.modifyTitle) {
@@ -940,7 +951,7 @@ const ContractDialog = (() => {
                     if (defaultSpaceId) {
                         unitSelect.value = defaultSpaceId;
                         applyUnitData(defaultSpaceId);
-                    } 
+                    }
                     else if (unitSelect.value) {
                         applyUnitData(unitSelect.value);
                     }

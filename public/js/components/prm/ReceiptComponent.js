@@ -20,7 +20,7 @@ var ReceiptComponent = new (function() {
             data: data => {
                 const code = data.code
                     ? `<span class="text-prm-custom">${data.code}</span>`
-                    : `<span class="text-muted fst-italic">N/A</span>`;
+                    : `<span class="text-muted fst-italic">_</span>`;
 
                 return `
                     <div class="d-flex flex-column">
@@ -35,7 +35,7 @@ var ReceiptComponent = new (function() {
             data: data => {
                 const code = data.invoice_code
                     ? `<span class="text-prm-custom ">${data.invoice_code}</span>`
-                    : `<span class="text-muted fst-italic">N/A</span>`;
+                    : `<span class="text-muted fst-italic">_</span>`;
                 return `
                     <div class="d-flex flex-column ">
                         ${code}
