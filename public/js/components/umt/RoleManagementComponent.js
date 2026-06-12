@@ -878,7 +878,7 @@ const RoleTabView = new function(){
                 // });
             }
         }
-        // if(!AuthManager.allowed(111,false)) return;
+        if(!AuthManager.allowed(114,false)) return;
         PrintDialog.show(op);
     });
 
