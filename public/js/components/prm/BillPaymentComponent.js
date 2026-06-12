@@ -275,7 +275,7 @@ var BillPaymentComponent = (() => {
                             if (res.status_code == 200) {
                                 cv_interact.success(
                                     res.message ||
-                                        "Bill record has been deleted.",
+                                        "delete_payment_success",
                                 );
                                 mThis.BillPaymentListView.showPage(
                                     mThis.getFilterData(),
@@ -283,7 +283,7 @@ var BillPaymentComponent = (() => {
                             } else {
                                 cv_interact.error(
                                     res.error_message ||
-                                        "Failed to delete bill record.",
+                                        "delete_failed",
                                 );
                             }
                         });
@@ -352,7 +352,7 @@ var BillPaymentComponent = (() => {
             allowOutsideClick: () => !Swal.isLoading(),
         }).then((request) => {
             if (request.isConfirmed) {
-                cv_interact.success("Payment has been canceled.");
+                cv_interact.success("cancel_payment_success");
                 mThis.BillPaymentListView.showPage(mThis.getFilterData());
             }
         });
@@ -370,7 +370,7 @@ var BillPaymentComponent = (() => {
             .then((res) => {
                 if (res.status_code !== 200) {
                     cv_interact.error(
-                        res.error_message || "No attachment found.",
+                        res.error_message || "no_photo",
                     );
                     return;
                 }
@@ -851,7 +851,7 @@ const BillPaymentDialog = (() => {
                             } else {
                                 cv_interact.error(
                                     res.error_message ||
-                                        "Failed to cancel bill payment.",
+                                        "cancel_failed",
                                 );
                             }
                         });
@@ -896,12 +896,12 @@ const BillPaymentDialog = (() => {
                                     if (res.status_code === 200) {
                                         me.hide(true, op);
                                         cv_interact.success(
-                                            "Payment recorded successfully.",
+                                            "create_payment_success",
                                         );
                                     } else {
                                         cv_interact.error(
                                             res.error_message ||
-                                                "Failed to record payment.",
+                                                "save_failed",
                                         );
                                     }
                                 })

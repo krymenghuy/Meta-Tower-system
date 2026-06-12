@@ -426,7 +426,7 @@ var BillComponent = (() => {
                             if (res.status_code == 200) {
                                 cv_interact.success(
                                     res.message ||
-                                        "Bill record has been deleted.",
+                                        "delete_bill_success",
                                 );
                                 mThis.BillListView.showPage(
                                     mThis.getFilterData(),
@@ -434,7 +434,7 @@ var BillComponent = (() => {
                             } else {
                                 cv_interact.error(
                                     res.error_message ||
-                                        "Failed to delete bill record.",
+                                        "delete_failed",
                                 );
                             }
                         });
@@ -512,7 +512,7 @@ var BillComponent = (() => {
                             // me.hide(true, p, newAttachmentId);
 
                             cv_interact.success(
-                                "Bill record has been uploaded.",
+                                "upload_bill_photo",
                             );
                             mThis.BillListView.showPage(
                                 mThis.getFilterData(),
@@ -645,13 +645,13 @@ var BillComponent = (() => {
                     .then((res) => {
                         if (res.status_code === 200) {
                             cv_interact.success(
-                                "Attachment deleted successfully.",
+                                "delete_bill_photo",
                             );
                             mThis.BillListView.showPage(mThis.getFilterData());
                         } else {
                             cv_interact.error(
                                 res.error_message ||
-                                    "Failed to delete attachment.",
+                                    "delete_failed",
                             );
                         }
                     })
@@ -1102,7 +1102,7 @@ const BillDialog = (() => {
 
                                 if (!allowExt.includes(fileExt)) {
                                     cv_interact.error(
-                                        "Please select a valid file.",
+                                        "select_valid_file",
                                     );
                                     return;
                                 }
@@ -1148,11 +1148,11 @@ const BillDialog = (() => {
 
                                         if (me.dataOptions.id > 0) {
                                             cv_interact.success(
-                                                "updated",
+                                                "update_bill_success",
                                             );
                                         } else {
                                             cv_interact.success(
-                                                "created",
+                                                "create_success_bill",
                                             );
                                         }
                                     } else {

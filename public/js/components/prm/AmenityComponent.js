@@ -371,7 +371,7 @@ var AmenityComponent = (() => {
                         )
                         .then((res) => {
                             if (res.status_code === 200) {
-                                cv_interact.success("Maintenance finished.");
+                                cv_interact.success("maintenance_finished");
                                 mThis.AmenityListView.showPage(
                                     mThis.getFilterData(),
                                 );
@@ -414,7 +414,7 @@ var AmenityComponent = (() => {
                         .then((res) => {
                             if (res.status_code === 200) {
                                 cv_interact.success(
-                                    "Amenity deleted successfully",
+                                    "delete_success_amenity",
                                 );
                                 mThis.AmenityListView.showPage(
                                     mThis.getFilterData(),
@@ -422,7 +422,7 @@ var AmenityComponent = (() => {
                             } else {
                                 cv_interact.error(
                                     res.error_message ||
-                                        "Failed to delete amenity",
+                                        "delete_failed",
                                 );
                             }
                         });
@@ -439,11 +439,12 @@ var AmenityComponent = (() => {
 
         const inputOptions = {
             context: "success",
-            title: "Change Status",
+            title: `${LocaleManager.trans('Change Status', "titles")}`,
             label: "Amenity Status",
             valueKey: "status_id",
             labelKey: "name",
-            confirmButtonText: "Save",
+            confirmButtonText: `${LocaleManager.trans('Save', "buttons")}`,
+            cancelButtonText: `${LocaleManager.trans('Close', "buttons")}`,
             requiredMessage: "Please select a status",
             data: [
                 { status_id: "1", name: "Active" },
@@ -463,14 +464,14 @@ var AmenityComponent = (() => {
                         if (res.status_code === 200) {
                             me.close();
                             cv_interact.success(
-                                "Amenity status has been updated",
+                                "update_success_status",
                             );
                             mThis.AmenityListView.showPage(
                                 mThis.getFilterData(),
                             );
                         } else {
                             me.setError(
-                                res.error_message || "Unable to update status",
+                                res.error_message || "update_failed_status",
                             );
                         }
                     });
@@ -750,11 +751,11 @@ const AmenityDialog = (() => {
                                         me.hide(true, op);
                                         if (me.dataOptions.id > 0) {
                                             cv_interact.success(
-                                                "Amenity has been updated successfully.",
+                                                "update_success_amenity",
                                             );
                                         } else {
                                             cv_interact.success(
-                                                "New Amenity has been added successfully.",
+                                                "create_success_amenity",
                                             );
                                         }
                                     } else {

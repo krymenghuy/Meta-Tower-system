@@ -307,7 +307,7 @@ var PurchaseOrdersComponent = (() => {
                     vsapi.call(`${main_view.base_url}/prm/purchase/order/reject`,op,null).then((res) => {
                         if(res.status_code === 200)
                         {
-                            cv_interact.success('Purchase Order has been Rejected.');
+                            cv_interact.success('reject_success_order');
                             mThis.PoListView.showPage(mThis.getFilterData());
                         }
                         else
@@ -340,7 +340,7 @@ var PurchaseOrdersComponent = (() => {
                     .then(res => {
                         if (res.status_code === 200) {
                             mThis.PoListView.showPage(mThis.getFilterData());
-                            cv_interact.success('Purchase Order has been authorized!');
+                            cv_interact.success('authorized_purchase');
                         } else {
                             cv_interact.error(res.error_message);
                         }
@@ -380,7 +380,7 @@ var PurchaseOrdersComponent = (() => {
             }
         });
     };
-
+    
     const showPurchaseOrderDialog = (op) => {
         PurchaseOrderDialog = PurchaseOrderDialog || new GeneralDialog({
             cssClass: "modal-xl vs-modal",
@@ -539,11 +539,10 @@ var PurchaseOrdersComponent = (() => {
                         const d = res.data ?? {};
                         me.purchaseItemsView.setCellValue(tr, 'unit', d.unit || '');
 
-                        
                     },
-                  
+
                 });
-                
+
 
                 me.saveData = (onFinish) => {
                     
@@ -887,7 +886,7 @@ var PurchaseOrdersComponent = (() => {
                     click: (me) => {
                         me.saveData(res => {
                             if (res.status_code == 200) {
-                                cv_interact.success("success");
+                                cv_interact.success("receive_success_order");
                                 me.hide(true);
                                 mThis.PoListView.showPage(mThis.getFilterData());
                             } else {
