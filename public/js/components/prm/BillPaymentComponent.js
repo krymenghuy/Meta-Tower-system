@@ -257,6 +257,7 @@ var BillPaymentComponent = (() => {
             onClose: () =>
                 mThis.BillPaymentListView.showPage(mThis.getFilterData()),
         };
+        if (!AuthManager.allowed(282,false)) return;
         cv_interact.confirm(
             "Delete this Payment?",
             { context: "delete", confirmButtonText: "Delete" },
@@ -317,6 +318,7 @@ var BillPaymentComponent = (() => {
     // };
 
     mThis.cancelPayment = (id) => {
+        if (!AuthManager.allowed(281,false)) return;
         Swal.fire({
             title: "Cancel Payment?",
             text: "This will restore the due balance on the bill.",

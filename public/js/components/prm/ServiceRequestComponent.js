@@ -214,6 +214,7 @@ var ServiceRequestComponent = (function () {
 
         mThis.elBtnCreate.onclick = (e) => {
             e.preventDefault();
+            if (!AuthManager.allowed(256,false)) return;
             CreateServiceRequestDialog.show({
                 id: null,
                 btn: e.target,
@@ -320,6 +321,7 @@ var ServiceRequestComponent = (function () {
         let op ={
             id:id
         }
+        if (!AuthManager.allowed(259,false)) return;
         Swal.fire({
             input: "textarea",
             inputLabel: " ",
@@ -332,8 +334,6 @@ var ServiceRequestComponent = (function () {
                 else
                 {
                     op.remarks = value;
-                    console.log(44,op);
-
                     vsapi.call(`${main_view.base_url}/prm/service-request/reject`,op,null).then((res) => {
                         if(res.status_code === 200)
                         {
@@ -350,6 +350,7 @@ var ServiceRequestComponent = (function () {
     };
     
     mThis.acceptRequest = (id, menuLink) => {
+        if (!AuthManager.allowed(260,false)) return;
         cv_interact.confirm(
             "confirm_accept",
 
@@ -383,6 +384,7 @@ var ServiceRequestComponent = (function () {
         );
     };
     mThis.completeRequest = (id, menuLink) => {
+        if (!AuthManager.allowed(261,false)) return;
         cv_interact.confirm(
             "confirm_complete",
             {   
@@ -413,6 +415,7 @@ var ServiceRequestComponent = (function () {
         );
     };
     mThis.editServiceRequest = (id, menuLink) => {
+        if (!AuthManager.allowed(257,false)) return;
         CreateServiceRequestDialog.show({
             id: id,
             btn: menuLink,
@@ -420,7 +423,7 @@ var ServiceRequestComponent = (function () {
         });
     };
     mThis.deleteRequest = (id, menuLink) => {
-        if (!AuthManager.allowed(242)) return;
+        if (!AuthManager.allowed(258,false)) return;
         cv_interact.confirm('Delete this Service Request?', {
             transTitle: 'Delete Service Request',
             confirmButtonText: "Delete"
