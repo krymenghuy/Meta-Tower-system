@@ -175,6 +175,7 @@ var PurchaseOrdersComponent = (() => {
 
         mThis.btnAdd.onclick = (e) => {
             e.preventDefault();
+            if (!AuthManager.allowed(269,false)) return;
             showPurchaseOrderDialog({
                 id: null,
                 btn: e.target,
@@ -204,7 +205,7 @@ var PurchaseOrdersComponent = (() => {
         });
 
         new ExpandableRowConfig(tblPo.id, {
-            dontExpandByClickingOn: ['dropdown-menu', 'btn_dropdown_purchase_action'],
+            dontExpandByClickingOn: ['dropdown-menu','authorized-po', 'btn_dropdown_purchase_action'],
             onOpen: (container, detail_tr, parent_tr) => {
                 renderPurchaseOrderItems({ po_id: parent_tr.dataset.id }, detail_tr.querySelector(".expandable-row-container"));
             },
@@ -289,6 +290,7 @@ var PurchaseOrdersComponent = (() => {
         let op ={
             po_id:id
         }
+        if (!AuthManager.allowed(272,false)) return;
         Swal.fire({
             input: "textarea",
             inputLabel: " ",
@@ -323,6 +325,7 @@ var PurchaseOrdersComponent = (() => {
     };
 
     mThis.authorizedPurchaseOrder = (id, btn) => {
+        if (!AuthManager.allowed(273,false)) return;
         if (btn.dataset.authorized == 2) {
             cv_interact.warning('You already authorized this Purchase order.');
             return;
@@ -347,6 +350,7 @@ var PurchaseOrdersComponent = (() => {
     };
 
     mThis.editPurchaseOrder = (id, menuLink) => {
+        if (!AuthManager.allowed(270,false)) return;
         showPurchaseOrderDialog({
             id: id,
             btn: menuLink,
@@ -355,6 +359,7 @@ var PurchaseOrdersComponent = (() => {
     };
 
     mThis.deletePurchaseOrder = (id, menuLink) => {
+        if (!AuthManager.allowed(271,false)) return;
         cv_interact.confirm('confirm_delete', {
             'langSection':"message_box_default",
             'translate': true,

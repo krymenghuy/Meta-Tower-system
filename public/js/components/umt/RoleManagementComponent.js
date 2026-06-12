@@ -467,7 +467,7 @@ mThis.formatChoice_app = (apps = []) =>
             let lnk = VSUtil.closestLimited(e.target,'a.lnk-delete-role');
             if(lnk){
                let role_id = lnk.dataset.roleid;
-                if(!AuthManager.allowed(104)) return;
+                if(!AuthManager.allowed(112)) return;
 
                cv_interact.confirm(['Delete ', (RoleTabView.selected_role? `role ${RoleTabView.selected_role.name}`: 'this role') ,' permanently?'].join(''),{context:"delete","title":"Delete Role",confirmButtonText:"Delete"}, e=>{
                     if(e){
@@ -495,7 +495,7 @@ mThis.formatChoice_app = (apps = []) =>
                         });
                   }
                 };
-                if(!AuthManager.allowed(103)) return;
+                if(!AuthManager.allowed(111)) return;
                 RoleDialog.show(op);
                 return;
             }
@@ -516,7 +516,7 @@ mThis.formatChoice_app = (apps = []) =>
                     });
                 }
             }
-            if(!AuthManager.allowed(102)) return;
+            if(!AuthManager.allowed(109,false)) return;
             RoleDialog.show(op);
         });
 
@@ -534,7 +534,7 @@ mThis.formatChoice_app = (apps = []) =>
                     // });
                 }
             }
-            if(!AuthManager.allowed(105)) return;
+            if(!AuthManager.allowed(110,false)) return;
             PrintDialog.show(op);
         });
 
@@ -819,6 +819,7 @@ const RoleTabView = new function(){
 
     this.deleteUser = (user_id)=>{
        let p = {"id":user_id}
+       if(!AuthManager.allowed(101,false)) return;
       cv_interact.confirm('Delete this user permanently?',{context:"delete",title:"Delete User"}, e=>{
          if(e){
              vsapi.post(`${main_view.base_url}/api/user/delete`,p,{loader:false}).then(res =>{
@@ -877,7 +878,7 @@ const RoleTabView = new function(){
                 // });
             }
         }
-        // if(!AuthManager.allowed(119)) return;
+        // if(!AuthManager.allowed(111,false)) return;
         PrintDialog.show(op);
     });
 
@@ -895,7 +896,7 @@ const RoleTabView = new function(){
             }
         }
 
-        if(!AuthManager.allowed(107)) return;
+        if(!AuthManager.allowed(100,false)) return;
         CreateLoginDialog.show(op);
     }
 
@@ -1324,12 +1325,13 @@ this.ReportPanel = new function(){
                                 }
                             };
 
+                            if (!AuthManager.allowed(103,false)) return;
                             ChangeLoginNameDialog.show(op);
                             break;
                        }
                        case 'reset_password':{
                         let oldLoginName = '';
-                        if (!AuthManager.allowed(109)) return;
+                        if (!AuthManager.allowed(104)) return;
                          oldLoginName = lnk.dataset.loginname;
                          let op = {
                             login_name: oldLoginName,
@@ -1338,6 +1340,7 @@ this.ReportPanel = new function(){
                                 return;
                             }
                          };
+                         if (!AuthManager.allowed(104,false)) return;
                          SetPasswordDialog.show(op);
                          break;
                        }
@@ -1383,6 +1386,7 @@ this.ReportPanel = new function(){
               //Click on Remove User
                let lnk = VSUtil.closestLimited(e.target,'.lnk-remove-user');
                if (lnk){
+                if(!AuthManager.allowed(113,false)) return;
                  cv_interact.confirm(['Are you sure to remove the selected user from ',mThis.selected_role.name || 'the role', '?'].join(''),{"title":"Remove User","context":'delete', "confirmButtonText":"Remove"},e =>{
                      if(e){
                          let user_id = lnk.dataset.id || lnk.dataset.userid;
@@ -1400,7 +1404,7 @@ this.ReportPanel = new function(){
                //Click on reset password
                lnk = VSUtil.closestLimited(e.target,'.lnk-reset-password');
                if(lnk){
-                    if(!AuthManager.allowed(109)) return;
+                    if(!AuthManager.allowed(104)) return;
                     let op = {
                         login_name: lnk.dataset.loginname,
                         id: lnk.dataset.id || lnk.dataset.userid,
@@ -1408,6 +1412,7 @@ this.ReportPanel = new function(){
                             return;
                         }
                     };
+                    if (!AuthManager.allowed(104,false)) return;
                    SetPasswordDialog.show(op);
                }
 
@@ -1428,7 +1433,7 @@ this.ReportPanel = new function(){
              //Click on lock user
              lnk = VSUtil.closestLimited(e.target,'.lnk-lock-user');
              if(lnk){
-                if(!AuthManager.allowed(113)) return;
+                if(!AuthManager.allowed(107,false)) return;
                     let user_id = lnk.dataset.id || lnk.dataset.userid;
                     let tr = VSUtil.closestLimited(e.target,'tr');
                     let user_name = tr.dataset.fullname;

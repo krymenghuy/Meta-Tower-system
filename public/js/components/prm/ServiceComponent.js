@@ -169,7 +169,7 @@ var ServiceComponent = (() => {
                     mThis.ServiceListView.showPage(mThis.getFilterData());
                 },
             };
-            // if (!AuthManager.allowed(240)) return;
+            if (!AuthManager.allowed(252,false)) return;
             CreateServicePriceDialog.show(op);
         };
 
@@ -339,6 +339,7 @@ var ServiceComponent = (() => {
     mThis.changeServiceStatus = (id, link) => {
         const tr = link.closest("tr");
         const status_id = tr?.dataset.statusid || "";
+        if (!AuthManager.allowed(254,false)) return;
         const inputOptions = {
             context: "success",
             title: "Change Status",
@@ -387,7 +388,7 @@ var ServiceComponent = (() => {
                 mThis.ServiceListView.showPage(mThis.getFilterData());
             },
         };
-
+        if (!AuthManager.allowed(253,false)) return;
         CreateServicePriceDialog.show(op);
     };
     mThis.deleteService = (id, menuLink) => {
@@ -398,6 +399,7 @@ var ServiceComponent = (() => {
                 mThis.ServiceListView.showPage(mThis.getFilterData());
             },
         };
+        if (!AuthManager.allowed(255,false)) return;
         cv_interact.confirm(
             "Delete this Service?",
             {

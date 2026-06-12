@@ -182,7 +182,7 @@ var VendorComponent = (() => {
                     mThis.VendorListView.showPage(mThis.getFilterData());
                 },
             };
-            // if (!AuthManager.allowed(240)) return;
+            if (!AuthManager.allowed(265,false)) return;
             CreateVendorDialog.show(op);
         };
 
@@ -308,6 +308,7 @@ var VendorComponent = (() => {
     mThis.changeStatus = (id, link) => {
         const tr = link.closest("tr");
         const status_id = tr?.dataset.statusid || "";
+        if (!AuthManager.allowed(268,false)) return;
         const inputOptions = {
             context: "success",
             title: "Change Status",
@@ -354,7 +355,7 @@ var VendorComponent = (() => {
                 mThis.VendorListView.showPage(mThis.getFilterData());
             },
         };
-
+        if (!AuthManager.allowed(266,false)) return;
         CreateVendorDialog.show(op);
     };
     mThis.deleteVendor = (id, menuLink) => {
@@ -365,7 +366,7 @@ var VendorComponent = (() => {
                 mThis.VendorListView.showPage(mThis.getFilterData());
             },
         };
-        if (!AuthManager.allowed(242)) return;
+        if (!AuthManager.allowed(267,false)) return;
         cv_interact.confirm(
             "confirm_delete",
             {
