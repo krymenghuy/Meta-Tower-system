@@ -311,11 +311,12 @@ var VendorComponent = (() => {
         if (!AuthManager.allowed(268,false)) return;
         const inputOptions = {
             context: "success",
-            title: "Change Status",
+            title: `${LocaleManager.trans('Change Status', "titles")}`,
             label: "Vendor Status",
             valueKey: "status_id",
             labelKey: "name",
-            confirmButtonText: "Save",
+            confirmButtonText: `${LocaleManager.trans('Save', "buttons")}`,
+            cancelButtonText: `${LocaleManager.trans('Close', "buttons")}`,
             requiredMessage: "Please select a status",
             data: [
                 { status_id: "1", name: "Active" },
