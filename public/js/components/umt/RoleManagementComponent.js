@@ -936,6 +936,22 @@ mThis.ModulePanel = new function(){
         );
     }, 300);
   };
+//   VSUtil.bindSearchInput(
+//     that.elSearchMod,
+//     {
+//         delay: 300,
+//         minLength: 0,
+//         triggerEnter: true,
+
+//         onSearch(keyword) {
+//             that.displayModules(
+//                 mThis.selected_role.role_id,
+//                 that.def_app_id,
+//                 keyword || null
+//             );
+//         }
+//     }
+// );
   
 
     //loadAppOptions
