@@ -55,7 +55,9 @@ class ReportCenterController extends Controller
         //$str_app_id = DBX::whereBinary('app_id', $req->app_id);
         
         $access_reports = XUser::getReports($user_id,$app_id,null);
-        $rows = XReport::getData(['hidden' =>0],'id,permission_id,name as name,code,category,params,module_id,display_order,hidden',[],3,null,[['display_order','Asc']],null);
+        // $rows = XReport::getData(['hidden' =>0],'id,permission_id,name as name,code,category,params,module_id,display_order,hidden',[],3,null,[['display_order','Asc']],null);
+        $rows = XReport::getData(['hidden' =>0],'id,permission_id,name as name,code,category,params,module_id,display_order,hidden',[],3,'auth_db',[['display_order','Asc']],null);
+
         //$rows = DB::table('reports as rpt')->whereRaw($str_app_id)->selectRaw('rpt.id,rpt.permission_id,rpt.name as name,rpt.code,rpt.category,rpt.params,rpt.module_id,rpt.display_order,rpt.hidden')->orderByRaw('display_order ASC')->get();
  
         $reports = [];
