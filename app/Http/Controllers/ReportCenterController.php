@@ -7,7 +7,7 @@ use JDV;
 use XUser;
 use XAuthservice;
 use DB;
-
+use Illuminate\Support\Facades\Cache;
 use XApplication;
 use XReport;
 use AuthDBX;
@@ -56,7 +56,29 @@ class ReportCenterController extends Controller
         
         $access_reports = XUser::getReports($user_id,$app_id,null);
         // $rows = XReport::getData(['hidden' =>0],'id,permission_id,name as name,code,category,params,module_id,display_order,hidden',[],3,null,[['display_order','Asc']],null);
-        $rows = XReport::getData(['hidden' =>0],'id,permission_id,name as name,code,category,params,module_id,display_order,hidden',[],3,'auth_db',[['display_order','Asc']],null);
+        $rows = Cache::remember(
+            'reports_list',
+            3,
+            function () {
+                return XReport::query()
+                    ->alias('r')
+                    ->selectRaw(
+                        'id,
+                        permission_id,
+                        name as name,
+                        code,
+                        category,
+                        params,
+                        module_id,
+                        display_order,
+                        hidden'
+                    )
+                    ->where('hidden', 0)
+                    ->orderBy('r.display_order', 'ASC')
+                    ->get();
+            }
+        );
+
 
         //$rows = DB::table('reports as rpt')->whereRaw($str_app_id)->selectRaw('rpt.id,rpt.permission_id,rpt.name as name,rpt.code,rpt.category,rpt.params,rpt.module_id,rpt.display_order,rpt.hidden')->orderByRaw('display_order ASC')->get();
  
