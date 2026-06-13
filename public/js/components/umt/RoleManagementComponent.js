@@ -926,6 +926,7 @@ mThis.ModulePanel = new function(){
     }
 
     that.elSearchMod.onkeyup = e => {
+        e.preventDefault();
     clearTimeout(searchModTimer);
     searchModTimer = setTimeout(() => {
         that.displayModules(
@@ -935,6 +936,7 @@ mThis.ModulePanel = new function(){
         );
     }, 300);
   };
+  
 
     //loadAppOptions
     this.loadAppChoices = async ()=>{
