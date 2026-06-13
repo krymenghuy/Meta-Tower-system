@@ -171,6 +171,7 @@ return [
         'finish_maintenance' => 'Finish Maintenance',
         'confirm_finish_maintenance' => 'Are you sure you want to finish this maintenance?',
         'maintenance_finished' => 'Maintenance has been finished successfully.',
+        'confirm_authorize' => 'Are you sure you want to authorize this purchase order?',
 
         'update_success_tenant' => 'Tenant updated successfully.',
         'create_success_tenant' => 'Tenant created successfully.',
@@ -212,6 +213,7 @@ return [
         'delete_success_reservation' => 'Reservation deleted successfully.',
         'cancel_success_reservation' => 'Reservation cancelled successfully.',
 
+        'confirm_reset_invoice' => 'Are you sure you want to reset this invoice setting?',
         'delete_success_invoice' => 'Invoice deleted successfully.',
         'reset_success_invoice' => 'Invoice setting reset successfully.',
         'update_success_setting' => 'Settings updated successfully.',

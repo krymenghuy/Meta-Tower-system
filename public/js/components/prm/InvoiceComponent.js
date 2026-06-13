@@ -575,7 +575,7 @@ var InvoiceComponent = (() => {
     mThis.deleteInvoice = (id, menuLink) => {
         if (!AuthManager.allowed(237)) return;
         cv_interact.confirm(
-            "Are you sure you want to delete this invoice?",
+            "confirm_delete",
             {
                 transTitle: "Delete Invoice",
                 confirmButtonText: "Delete",
@@ -620,7 +620,7 @@ var InvoiceComponent = (() => {
     mThis.btnResetInvoiceSetting = (id, menulink) => {
         if (!AuthManager.allowed(239)) return;
         cv_interact.confirm(
-            "Are you sure you want to reset this invoice settings?",
+            "confirm_reset_invoice",
             {
                 transTitle: "Reset Invoice Settings",
                 confirmButtonText: "Reset",

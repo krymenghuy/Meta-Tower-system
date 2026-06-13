@@ -308,7 +308,7 @@ var ReservationComponent = (() => {
     mThis.cancelReservation = (id, menuLink) => {
         if (!AuthManager.allowed(250)) return;
         cv_interact.confirm(
-            "Cancel this reservation ?",
+            "confirm_cancel",
             {
                 transTitle: "Cancel Reservation",
                 context: "delete",
@@ -343,7 +343,7 @@ var ReservationComponent = (() => {
     mThis.deleteReservation = (id, menuLink) => {
         if (!AuthManager.allowed(251)) return;
         cv_interact.confirm(
-            "Delete this reservation?",
+            "confirm_delete",
             {
                 transTitle: "Delete Reservation",
                 context: "delete",

@@ -774,25 +774,25 @@ const BillDialog = (() => {
                                     <label vslang="labels.Total Amount"></label>
                                 </div>
                             </div>
-                            <div class="col-3">
+                            <div class="col-6">
                                 <div class="vs-material-field">
                                     <input data-type="date" name="bill_date" class="data-input form-control form_input" data-field="bill_date" placeholder=" "/>
                                     <label vslang="labels.Issue Date"></label>
                                 </div>
                             </div>
-                            <div class="col-3">
+                            <div class="col-6">
                                 <div class="vs-material-field">
                                     <input data-type="date" name="due_date" class="data-input form-control form_input" data-field="due_date" placeholder=" "/>
                                     <label vslang="labels.Due Date"></label>
                                 </div>
                             </div>
-                            <div class="col-4">
+                            <div class="col-8">
                                 <div class="vs-material-field">
                                     <input type="text" name="documents" class=" form-control " accept=".png,.jpg,.jpeg" /disabled>
-                                    <label>File</labe>
+                                    <label vslang="labels.File">File</labe>
                                 </div>
                             </div>
-                            <div class="col-2">
+                            <div class="col-4">
                                 <div class="vs-material-field d-flex">
                                     <button name ="btn_chooseFile"  class="btn btn-block" style="background-color: #e1e5f2; padding: 0.5rem 0.75rem !important;" vslang="buttons.Choose File"></button>
                                 </div>
