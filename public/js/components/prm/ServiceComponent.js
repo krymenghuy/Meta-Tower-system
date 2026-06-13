@@ -118,7 +118,7 @@ var ServiceComponent = (() => {
             },
         },
         {
-            transTitle: "titles.Updated By",
+            transTitle: "titles.Last Updated",
             className: "align-middle",
             data: (data, index, tr) => {
                 return `<div class="d-flex flex-column">
@@ -169,7 +169,7 @@ var ServiceComponent = (() => {
                     mThis.ServiceListView.showPage(mThis.getFilterData());
                 },
             };
-            if (!AuthManager.allowed(252,false)) return;
+            if (!AuthManager.allowed(252, false)) return;
             CreateServicePriceDialog.show(op);
         };
 
@@ -303,7 +303,7 @@ var ServiceComponent = (() => {
                     name: "delete_service",
                 },
                 {
-                    html: '<span class="ps-2 " vslang="titles.Change Status"></span>',
+                    html: '<span class="ps-2 " vslang="titles.Change Status"></span>',  
                     icon: `<i class="fa-solid fa-bolt fs-5 text-primary"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "change_service_status",
@@ -339,19 +339,25 @@ var ServiceComponent = (() => {
     mThis.changeServiceStatus = (id, link) => {
         const tr = link.closest("tr");
         const status_id = tr?.dataset.statusid || "";
-        if (!AuthManager.allowed(254,false)) return;
+        if (!AuthManager.allowed(254, false)) return;
         const inputOptions = {
             context: "success",
-            title: `${LocaleManager.trans('Change Status', "titles")}`,
+            title: `${LocaleManager.trans("Change Status", "titles")}`,
             label: "Service Status",
             valueKey: "status_id",
             labelKey: "name",
-            confirmButtonText: `${LocaleManager.trans('Save', "buttons")}`,
-            cancelButtonText: `${LocaleManager.trans('Close', "buttons")}`,
+            confirmButtonText: `${LocaleManager.trans("Save", "buttons")}`,
+            cancelButtonText: `${LocaleManager.trans("Close", "buttons")}`,
             requiredMessage: "Please select a status",
             data: [
-                { status_id: "1", name: "Active" },
-                { status_id: "2", name: "Inactive" },
+                {
+                    status_id: "1",
+                    name: LocaleManager.trans("Active", "titles"),
+                },
+                {
+                    status_id: "2",
+                    name: LocaleManager.trans("Inactive", "titles"),
+                },
             ],
             defaultValue: status_id,
             onConfirm: (status, btn, me) => {
@@ -365,9 +371,7 @@ var ServiceComponent = (() => {
                     .then((res) => {
                         if (res.status_code === 200) {
                             me.close();
-                            cv_interact.success(
-                                "update_success_status",
-                            );
+                            cv_interact.success("update_success_status");
                             mThis.ServiceListView.showPage(
                                 mThis.getFilterData(),
                             );
@@ -389,7 +393,7 @@ var ServiceComponent = (() => {
                 mThis.ServiceListView.showPage(mThis.getFilterData());
             },
         };
-        if (!AuthManager.allowed(253,false)) return;
+        if (!AuthManager.allowed(253, false)) return;
         CreateServicePriceDialog.show(op);
     };
     mThis.deleteService = (id, menuLink) => {
@@ -400,9 +404,9 @@ var ServiceComponent = (() => {
                 mThis.ServiceListView.showPage(mThis.getFilterData());
             },
         };
-        if (!AuthManager.allowed(255,false)) return;
+        if (!AuthManager.allowed(255, false)) return;
         cv_interact.confirm(
-            "Delete this Service?",
+            "confirm_delete",
             {
                 transTitle: "Delete Service",
                 context: "delete",
@@ -420,16 +424,13 @@ var ServiceComponent = (() => {
                         )
                         .then((res) => {
                             if (res.status_code == 200) {
-                                cv_interact.success(
-                                    "delete_success_service",
-                                );
+                                cv_interact.success("delete_success_service");
                                 mThis.ServiceListView.showPage(
                                     mThis.getFilterData(),
                                 );
                             } else {
                                 cv_interact.error(
-                                    res.error_message ||
-                                        "delete_failed",
+                                    res.error_message || "delete_failed",
                                 );
                             }
                         });

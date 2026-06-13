@@ -432,7 +432,8 @@ table.header-uppercase>thead>tr>th {
 
   /* font-family: 'Inter', 'Noto Sans Khmer', sans-serif !important;
   font-family: inherit; */
-   font-family: 'Battambang', sans-serif;
+      font-family: 'Battambang', 'Khmer OS Battambang', sans-serif;
+
 }
 
 

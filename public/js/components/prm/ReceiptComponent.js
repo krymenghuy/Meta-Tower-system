@@ -150,7 +150,7 @@ var ReceiptComponent = new (function() {
             }
         },
         {
-            transTitle: "titles.Updated By",
+            transTitle: "titles.Last Updated",
             className: "align-middle text-nowrap",
             data: data => `
             <div class="d-flex flex-column">
