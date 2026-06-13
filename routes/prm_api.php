@@ -423,7 +423,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant/receip
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant/staff')->group(function () {
     Route::post('/save', [StaffController::class, 'saveStaff']);
     Route::post('/list-paginate', [StaffController::class, 'getListStaff']);
-    Route::post('/details', [StaffController::class, 'staffDetails']);
+    Route::post('/details', [StaffController::class, 'getDetails']);
     Route::post('/form-options', [StaffController::class, 'getFormOptions']);
 });
 

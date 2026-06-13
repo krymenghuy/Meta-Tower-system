@@ -37,13 +37,15 @@ class StaffController extends Controller
         return JDV::result($this->staffs->getListPaginate($req->all(),$ss));
     }
 
-    public function accountStaffDetails(Request $req){
+    public function getDetails(Request $req){
         $ss = XAuthService::verifyAuth($req, -1);
-        if($ss->status_code !==200){
+        if($ss->status_code !== 200){
             return JDV::raw($ss);
         }
-        $acc_staff = new AccountStaff();
-        return JDV::result($acc_staff->accountStaffDetails($req->id,$ss));
+        if(!isset($req->id) || !is_numeric($req->id)){
+            return JDV::error('Invalid ID');
+        }
+        return JDV::result($this->staffs->getDetails($req->id));
     }
     public function getFormOptions(Request $req){
         $ss = XAuthService::verifyAuth($req, -1);
