@@ -329,7 +329,7 @@ function getPaymentReport($arr, $ss)
             'form' => 'payments',
             'vendor_info' => $vendor,
             'list' => $rows,
-            'title' => 'Vendor Payment Report',
+            'title' => 'Vendor Payment',
             'sub_title' => '',
             
             'company_profile' => self::getCompanyInfo($ss)
