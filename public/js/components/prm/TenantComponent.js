@@ -1520,7 +1520,7 @@ var TenantComponent = new (function () {
                         rows = `
                     <tr>
                         <td colspan="5" class="text-center py-4 text-muted">
-                            No data to display
+                            ${LocaleManager.trans("No data to display", "titles")}
                         </td>
                     </tr>`;
                     }

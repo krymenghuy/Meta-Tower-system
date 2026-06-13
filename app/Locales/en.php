@@ -179,7 +179,7 @@ return [
         'select_document_type' => 'Please select a document type.',
         'select_file' => 'Please select a file.',
         'select_valid_file' => 'Please select a valid file.',
-        'remarks_max_255' => 'Remarks must not exceed 255 characters.',   
+        'remarks_max_255' => 'Remarks must not exceed 255 characters.',
         'update_success_document' => 'Document updated successfully.',
         'create_success_document' => 'Document created successfully.',
         'delete_success_document' => 'Document deleted successfully.',

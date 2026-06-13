@@ -157,6 +157,7 @@ return [
         'Delete' => 'លុបចោល',
         'Modify' => 'កែប្រែ',
         'Cancel' => 'បោះបង់',
+        'No data to display' => "មិនមានទិន្នន័យបង្ហាញ",
 
 
         'Create Service Price' => 'បង្កើតតម្លៃសេវាកម្ម',
@@ -416,7 +417,8 @@ return [
         'By Reading' => 'គណនាតាមលេខអំណាន',
         'Rental Details' => 'ព័ត៌មានអំពីការជួល',
         'Add Service' => 'បន្ថែមសេវាកម្ម',
-        '' => '',
+        'Reservation Details' => 'ព័ត៌មានអំពីការកក់',
+        'View Reservation' => 'មើលព័ត៌មានការកក់',
         '' => '',
         '' => '',
         '' => '',
