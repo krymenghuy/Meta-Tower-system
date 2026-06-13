@@ -633,7 +633,7 @@ var SpaceComponent = new (function () {
     mThis.finishMaintenance = (id, menulink) => {
         if (!AuthManager.allowed(216,false)) return;
         cv_interact.confirm(
-            "Finish this maintenance?",
+            "confirm_finish_maintenance",
             {
                 transTitle: "Finish Maintenance",
                 context: "confirm",
@@ -755,7 +755,7 @@ var SpaceComponent = new (function () {
     mThis.cancelBooking = (id, menuLink) => {
         if (!AuthManager.allowed(212,false)) return;
         cv_interact.confirm(
-            "Cancel this booking ?",
+            "confirm_cancel",
             {
                 title: "Cancel Booking",
                 context: "delete",
