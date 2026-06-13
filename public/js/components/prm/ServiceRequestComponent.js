@@ -214,6 +214,7 @@ var ServiceRequestComponent = (function () {
 
         mThis.elBtnCreate.onclick = (e) => {
             e.preventDefault();
+            if (!AuthManager.allowed(256,false)) return;
             CreateServiceRequestDialog.show({
                 id: null,
                 btn: e.target,
@@ -320,6 +321,7 @@ var ServiceRequestComponent = (function () {
         let op ={
             id:id
         }
+        if (!AuthManager.allowed(259,false)) return;
         Swal.fire({
             input: "textarea",
             inputLabel: " ",
@@ -332,8 +334,6 @@ var ServiceRequestComponent = (function () {
                 else
                 {
                     op.remarks = value;
-                    console.log(44,op);
-
                     vsapi.call(`${main_view.base_url}/prm/service-request/reject`,op,null).then((res) => {
                         if(res.status_code === 200)
                         {
@@ -350,6 +350,7 @@ var ServiceRequestComponent = (function () {
     };
     
     mThis.acceptRequest = (id, menuLink) => {
+        if (!AuthManager.allowed(260,false)) return;
         cv_interact.confirm(
             "confirm_accept",
 
@@ -383,12 +384,11 @@ var ServiceRequestComponent = (function () {
         );
     };
     mThis.completeRequest = (id, menuLink) => {
+        if (!AuthManager.allowed(261,false)) return;
         cv_interact.confirm(
             "confirm_complete",
-            {
-                'langSection' : "message_box_default",
-                
-                'title': 'Complete Service Request',
+            {   
+                title: 'completed',
                 context: 'update',
                 confirmButtonText: 'Complete'
             },
@@ -403,7 +403,7 @@ var ServiceRequestComponent = (function () {
                 .then(res => {
                     if (res.status_code === 200) {
                         mThis.ServiceRequestListView.showPage(mThis.getFilterData());
-                        cv_interact.success('Service Request has been completed!');
+                        cv_interact.success('complete_success_request');
                     } else {
                         cv_interact.error(res.error_message || 'Something went wrong');
                     }
@@ -415,6 +415,7 @@ var ServiceRequestComponent = (function () {
         );
     };
     mThis.editServiceRequest = (id, menuLink) => {
+        if (!AuthManager.allowed(257,false)) return;
         CreateServiceRequestDialog.show({
             id: id,
             btn: menuLink,
@@ -422,7 +423,7 @@ var ServiceRequestComponent = (function () {
         });
     };
     mThis.deleteRequest = (id, menuLink) => {
-        if (!AuthManager.allowed(242)) return;
+        if (!AuthManager.allowed(258,false)) return;
         cv_interact.confirm('Delete this Service Request?', {
             transTitle: 'Delete Service Request',
             confirmButtonText: "Delete"
@@ -431,7 +432,7 @@ var ServiceRequestComponent = (function () {
                 vsapi.call(`${main_view.base_url}/prm/service-request/delete`, { id }, false, false, false)
                     .then(res => {
                         if (res.status_code === 200) {
-                            cv_interact.success('Service request deleted.');
+                            cv_interact.success('delete_success_request');
                             mThis.ServiceRequestListView.showPage();
                         } else {
                             cv_interact.error(res.error_message);
@@ -757,14 +758,14 @@ const CreateServiceRequestDialog = (() => {
                     click: (me, btn) => {
                         const data = me.getData();
                         data.id = op?.id || null;
-                        const saveFailedMessage = 'Failed to save service request.';
+                        // const saveFailedMessage = 'Failed to save service request.';
                         vsapi.call([main_view.base_url, "/prm/service-request/save",].join(""), data, btn, null)
                             .then((res) => {
                                 if (res.status_code === 200) {
                                     me.hide(true, data);
-                                    cv_interact.success(data.id ? "Service Request has been updated!" : "Service Request has been created.");
+                                    cv_interact.success(data.id ? "update_success_request" : "create_success_request");
                                 } else {
-                                    cv_interact.error(res.error_message || saveFailedMessage);
+                                    cv_interact.error(res.error_message || "save_failed");
                                 }
                             })
                             .catch(() => {

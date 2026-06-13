@@ -3331,6 +3331,12 @@ function windowPrint(html=null, style) {
                     .set-min-size-container-title {
                         min-height: 100px;
                     }
+                        .table tbody>tr>td {
+                        max-height: 150px;
+                        max-width: 300px;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                    }
 
                 </style>
 

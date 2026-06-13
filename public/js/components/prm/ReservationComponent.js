@@ -157,7 +157,7 @@ var ReservationComponent = (() => {
                     mThis.ReservationListView.showPage(mThis.getFilterData());
                 },
             };
-            // if (!AuthManager.allowed(240)) return;
+            if (!AuthManager.allowed(248,false)) return;
             CreateReservationDialog.show(op);
         };
 
@@ -301,11 +301,12 @@ var ReservationComponent = (() => {
                 mThis.ReservationListView.showPage(mThis.getFilterData());
             },
         };
+        if (!AuthManager.allowed(249)) return;
         CreateReservationDialog.show(op);
     };
 
     mThis.cancelReservation = (id, menuLink) => {
-        if (!AuthManager.allowed(242)) return;
+        if (!AuthManager.allowed(250)) return;
         cv_interact.confirm(
             "Cancel this reservation ?",
             {
@@ -325,13 +326,13 @@ var ReservationComponent = (() => {
                     )
                     .then((res) => {
                         if (res.status_code === 200) {
-                            cv_interact.success("Reservation cancelled.");
+                            cv_interact.success("cancel_success_reservation");
                             mThis.ReservationListView.showPage(
                                 mThis.getFilterData(),
                             );
                         } else {
                             cv_interact.error(
-                                res.error_message || "Cancel failed",
+                                res.error_message || "cancel_failed",
                             );
                         }
                     });
@@ -340,7 +341,7 @@ var ReservationComponent = (() => {
     };
 
     mThis.deleteReservation = (id, menuLink) => {
-        if (!AuthManager.allowed(242)) return;
+        if (!AuthManager.allowed(251)) return;
         cv_interact.confirm(
             "Delete this reservation?",
             {
@@ -360,13 +361,13 @@ var ReservationComponent = (() => {
                     )
                     .then((res) => {
                         if (res.status_code === 200) {
-                            cv_interact.success("Reservation deleted.");
+                            cv_interact.success("delete_success_reservation");
                             mThis.ReservationListView.showPage(
                                 mThis.getFilterData(),
                             );
                         } else {
                             cv_interact.error(
-                                res.error_message || "Delete failed",
+                                res.error_message || "delete_failed",
                             );
                         }
                     });
@@ -625,11 +626,11 @@ const CreateReservationDialog = (() => {
                                         me._selectedTenantId = null;
                                         if (me.dataOptions.id > 0) {
                                             cv_interact.success(
-                                                "updated",
+                                                "update_success_reservation",
                                             );has
                                         } else {
                                             cv_interact.success(
-                                                "created",
+                                                "create_success_reservation",
                                             );
                                         }
                                     } else {

@@ -140,6 +140,7 @@ var MaintenanceComponent = (() => {
 
         mThis.btnAdd.onclick = function (e) {
             e.preventDefault();
+            if (!AuthManager.allowed(213,false)) return;
             CreateMaintenanceDialog.show({
                 id: null,
                 btn: e.target,
@@ -235,12 +236,14 @@ var MaintenanceComponent = (() => {
             },
             onClick: (menuLink, id, name) => {
                 if (name === "modify") {
+                    if (!AuthManager.allowed(214,false)) return;
                     CreateMaintenanceDialog.show({
                         id: parseInt(id, 10),
                         btn: menuLink,
                         onClose: () => mThis.MaintenanceListView.showPage(mThis.getFilterData())
                     });
                 } else if (name === "finish_maintenance") {
+                    if (!AuthManager.allowed(216,false)) return;
                     cv_interact.confirm(
                         "confirm_finish",
                         {
@@ -270,11 +273,12 @@ var MaintenanceComponent = (() => {
                         }
                     );
                 } else if (name === "cancel_maintenance") {
+                     if (!AuthManager.allowed(217,false)) return;
                     cv_interact.confirm("confirm_cancel", { langSection: "message_box_default",translate:true, context: "update", confirmButtonText: "Cancel" }, (e) => {
                         if (e) {
                             vsapi.call(`${main_view.base_url}/prm/maintenance/set-status`, { id: id, status_id: 4 }, menuLink, null).then(res => {
                                 if (res.status_code === 200) {
-                                    cv_interact.success("cancelled");
+                                    cv_interact.success("maintenance_cancelled");
                                     mThis.MaintenanceListView.showPage(mThis.getFilterData());
                                 } else {
                                     cv_interact.error(res.error_message);
@@ -283,6 +287,7 @@ var MaintenanceComponent = (() => {
                         }
                     });
                 } else if (name === "delete") {
+                    if (!AuthManager.allowed(215,false)) return;
                     cv_interact.confirm("confirm_delete", {
                         langSection: 'message_box_default',
                         translate: true,
@@ -293,7 +298,7 @@ var MaintenanceComponent = (() => {
                         if (e) {
                             vsapi.call(`${main_view.base_url}/prm/maintenance/delete`, { id: id }, false, false, false).then(res => {
                                 if (res.status_code === 200) {
-                                    cv_interact.success("deleted");
+                                    cv_interact.success("delete_success_maintenance");
                                     mThis.MaintenanceListView.showPage(mThis.getFilterData());
                                 } else {
                                     cv_interact.error(res.error_message);
@@ -615,13 +620,13 @@ const CreateMaintenanceDialog = (() => {
                         if (op.end_date && op.end_time) op.end_date = op.end_date + " " + op.end_time;
                         delete op.start_time;
                         delete op.end_time;
-                        console.log(123456,op);
+                        // console.log(123456,op);
 
                         vsapi.call(`${main_view.base_url}/prm/maintenance/save`, op, btn, null)
                             .then(res => {
                                 if (res.status_code === 200) {
                                     me.hide(true, op);
-                                    cv_interact.success(op.id ? "updated" : "created");
+                                    cv_interact.success(op.id ? "update_success_maintenance" : "create_success_maintenance");
                                     if (op && typeof op.onClose === "function") op.onClose();
                                 } else {
                                     cv_interact.error(res.error_message);

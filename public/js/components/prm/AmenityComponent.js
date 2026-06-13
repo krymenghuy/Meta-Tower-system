@@ -169,6 +169,7 @@ var AmenityComponent = (() => {
                 onClose: () =>
                     mThis.AmenityListView.showPage(mThis.getFilterData()),
             };
+            if (!AuthManager.allowed(243)) return;
             AmenityDialog.show(op);
         };
 
@@ -329,13 +330,14 @@ var AmenityComponent = (() => {
             onClose: () =>
                 mThis.AmenityListView.showPage(mThis.getFilterData()),
         };
-
+        if (!AuthManager.allowed(244)) return;
         AmenityDialog.show(op);
     };
 
     mThis.setMaintenance = async (id, menuLink) => {
         const tr = menuLink?.closest("tr");
         const buildingId = tr?.dataset?.buildingid || null;
+        if (!AuthManager.allowed(213, false)) return;
 
         const op = {
             amenity_id: id,
@@ -350,6 +352,7 @@ var AmenityComponent = (() => {
     };
 
     mThis.finishMaintenance = (id, menuLink) => {
+        if (!AuthManager.allowed(216, false)) return;
         cv_interact.confirm(
             "Finish this maintenance?",
             {
@@ -368,7 +371,7 @@ var AmenityComponent = (() => {
                         )
                         .then((res) => {
                             if (res.status_code === 200) {
-                                cv_interact.success("Maintenance finished.");
+                                cv_interact.success("maintenance_finished");
                                 mThis.AmenityListView.showPage(
                                     mThis.getFilterData(),
                                 );
@@ -390,7 +393,7 @@ var AmenityComponent = (() => {
             onClose: () =>
                 mThis.AmenityListView.showPage(mThis.getFilterData()),
         };
-
+        if (!AuthManager.allowed(245)) return;
         cv_interact.confirm(
             "Delete this Amenity?",
             {
@@ -410,16 +413,13 @@ var AmenityComponent = (() => {
                         )
                         .then((res) => {
                             if (res.status_code === 200) {
-                                cv_interact.success(
-                                    "Amenity deleted successfully",
-                                );
+                                cv_interact.success("delete_success_amenity");
                                 mThis.AmenityListView.showPage(
                                     mThis.getFilterData(),
                                 );
                             } else {
                                 cv_interact.error(
-                                    res.error_message ||
-                                        "Failed to delete amenity",
+                                    res.error_message || "delete_failed",
                                 );
                             }
                         });
@@ -429,16 +429,19 @@ var AmenityComponent = (() => {
     };
 
     mThis.changeStatus = (id, link) => {
+        if (!AuthManager.allowed(246)) return;
+
         const tr = link.closest("tr");
         const status_id = tr?.dataset.statusid || "";
 
         const inputOptions = {
             context: "success",
-            title: "Change Status",
+            title: `${LocaleManager.trans("Change Status", "titles")}`,
             label: "Amenity Status",
             valueKey: "status_id",
             labelKey: "name",
-            confirmButtonText: "Save",
+            confirmButtonText: `${LocaleManager.trans("Save", "buttons")}`,
+            cancelButtonText: `${LocaleManager.trans("Close", "buttons")}`,
             requiredMessage: "Please select a status",
             data: [
                 { status_id: "1", name: "Active" },
@@ -457,15 +460,13 @@ var AmenityComponent = (() => {
                     .then((res) => {
                         if (res.status_code === 200) {
                             me.close();
-                            cv_interact.success(
-                                "Amenity status has been updated",
-                            );
+                            cv_interact.success("update_success_status");
                             mThis.AmenityListView.showPage(
                                 mThis.getFilterData(),
                             );
                         } else {
                             me.setError(
-                                res.error_message || "Unable to update status",
+                                res.error_message || "update_failed_status",
                             );
                         }
                     });
@@ -489,6 +490,7 @@ var AmenityComponent = (() => {
 
     mThis.viewReservation = (id, menuLink) => {
         const tr = menuLink?.closest("tr");
+        if (!AuthManager.allowed(247)) return;
         ActiveReservationDialog.show({
             amenity_id: id,
             amenity_name:
@@ -744,11 +746,11 @@ const AmenityDialog = (() => {
                                         me.hide(true, op);
                                         if (me.dataOptions.id > 0) {
                                             cv_interact.success(
-                                                "Amenity has been updated successfully.",
+                                                "update_success_amenity",
                                             );
                                         } else {
                                             cv_interact.success(
-                                                "New Amenity has been added successfully.",
+                                                "create_success_amenity",
                                             );
                                         }
                                     } else {
@@ -793,8 +795,8 @@ const ActiveReservationDialog = (() => {
             tbody.innerHTML = `
                 <tr>
                     <td colspan="4" class="text-center text-muted py-4">
-                        No data to display
-                    </td>
+            ${LocaleManager.trans("No data to display", "titles")}
+        </td>
                 </tr>`;
             return;
         }
@@ -813,7 +815,7 @@ const ActiveReservationDialog = (() => {
                 <td class="align-middle" style="min-width:70px">${statusBadge(r.status_id, r.status)}</td>
                 <td class="align-middle">
                     <div class="text-primary-prm text-capitalize" style="width:200px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${r.remarks ?? '_'}</span>
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${r.remarks ?? "_"}</span>
                     </div>
                 </td>
             </tr>
@@ -826,13 +828,13 @@ const ActiveReservationDialog = (() => {
         InputBox.resetInstance("activeReservationView");
 
         InputBox.show({
-            title: "Reservation Details",
+            title: `${LocaleManager.trans("Reservation Details", "titles")}`,
             instanceKey: "activeReservationView",
             context: "info",
             size: "md",
             confirmButtonText: null,
             showconfirmButtonText: false,
-            cancelButtonText: "Close",
+            cancelButtonText: `${LocaleManager.trans("Close", "buttons")}`,
 
             createContent() {
                 const div = document.createElement("div");
@@ -853,16 +855,17 @@ const ActiveReservationDialog = (() => {
                         <table class="table table-sm table--white rounded-2 overflow-hidden">
                             <thead class="header-uppercase" >
                                 <tr>
-                                    <th class="text-start" style="width:100px;">Tenant</th>
-                                    <th class="text-start" style="width: 150px;">Schedule Date</th>
-                                    <th class="text-center" style="width:80px;">Status</th>
-                                    <th class="text-start" style="width:160px;">Remark</th>
+                                    <th class="text-start" style="width:100px;" vslang="titles.Tenant"></th>
+                                    <th class="text-start" style="width: 150px;" vslang="titles.Schedule Date"></th>
+                                    <th class="text-center" style="width:80px;" vslang="titles.Status"></th>
+                                    <th class="text-start" style="width:160px;" vslang="titles.Remark"></th>
                                 </tr>
                             </thead>
                             <tbody id="_arv_tbody"></tbody>
                         </table>
                     </div>
                 `;
+                LocaleManager.translateZone(div);
                 return div;
             },
 

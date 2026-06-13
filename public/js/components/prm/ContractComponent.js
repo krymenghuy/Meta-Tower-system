@@ -188,6 +188,7 @@ var ContractComponent = new (function () {
                     mThis.ContractListView.showPage(mThis.getFilterData());
                 }
             };
+            if (!AuthManager.allowed(227,false)) return;
             ContractDialog.show(op);
         };
 
@@ -483,6 +484,8 @@ var ContractComponent = new (function () {
                 mThis.ContractListView.showPage(mThis.getFilterData());
             }
         };
+
+        if (!AuthManager.allowed(228,false)) return;
         ContractDialog.show(op);
     }
     mThis.printContract = (id,menulink)=>{
@@ -496,8 +499,7 @@ var ContractComponent = new (function () {
                 mThis.ContractListView.showPage(mThis.getFilterData())
             }
         };
-        console.log(6666,op);
-        
+        if (!AuthManager.allowed(229,false)) return;
         CreateContractDialog.show(op);
     }
     mThis.renewContract = (id, menulink) => {
@@ -511,7 +513,7 @@ var ContractComponent = new (function () {
                 mThis.ContractListView.showPage(mThis.getFilterData());
             }
         };
-
+        if (!AuthManager.allowed(230,false)) return;
         RenewDialog.show(op);
     };
 
@@ -522,7 +524,7 @@ var ContractComponent = new (function () {
             id: id,
             btn: menuLink,
         };
-
+        if (!AuthManager.allowed(231,false)) return;
         cv_interact.confirm(
             "confirm_terminate",
             {
@@ -541,7 +543,7 @@ var ContractComponent = new (function () {
                     )
                     .then((res) => {
                         if (res.status_code === 200) {
-                            cv_interact.success("terminated");
+                            cv_interact.success("contract_terminated");
                             if (mThis.ContractListView) {
                                 mThis.ContractListView.showPage(mThis.getFilterData());
                             }
@@ -554,7 +556,7 @@ var ContractComponent = new (function () {
     };
     mThis.deleteContract = (id, menuLink) => {
         if (!id) return;
-
+        if (!AuthManager.allowed(232,false)) return;
         cv_interact.confirm(
             "confirm_delete",
             {
@@ -573,7 +575,7 @@ var ContractComponent = new (function () {
                     )
                     .then((res) => {
                         if (res.status_code === 200) {
-                            cv_interact.success("deleted");
+                            cv_interact.success("delete_success_contract");
                             if (mThis.ContractListView) {
                                 mThis.ContractListView.showPage(mThis.getFilterData());
                             }
@@ -681,7 +683,7 @@ const ContractDialog = (() => {
 
     self.show = (op) => {
         console.log(6666,op);
-        
+
         dialog = dialog || new GeneralDialog({
             cssClass: "modal-lg vs-modal",
             backdrop: "static",
@@ -749,8 +751,8 @@ const ContractDialog = (() => {
                             </div>
                             <div class="col-6">
                                 <div class="vs-material-field">
-                                    <input type="hidden" name="price_type" class="data-input" data-field="price_type" />
-                                    <input type="text" name="price_type_label" class="data-input form-control" disabled />
+                                    <input type="hidden" name="price_type" class="data-input form-control" data-field="price_type" disabled />
+                                    <input type="text" name="price_type_label" class="data-input form-control" data-field="price_type" disabled />
                                     <label vslang="labels.Charge As">Charge As</label>
                                 </div>
                             </div>
@@ -804,30 +806,6 @@ const ContractDialog = (() => {
                     }
                 });
                 applyNumberInput(me.controls.deposit);
-
-                // me.controls.deposit.addEventListener('input', (e) => {
-                //     let v = e.target.value;
-                //     v = v.replace(/[^0-9.]/g, '');
-
-                //     const parts = v.split('.');
-                //     if (parts.length > 2) {
-                //         v = parts[0] + '.' + parts[1];
-                //     }
-                //     if (parts[1] !== undefined) {
-                //         v = parts[0] + '.' + parts[1].slice(0, 2);
-                //     }
-
-                //     e.target.value = v;
-                // });
-                // me.controls.deposit.addEventListener('blur', (e) => {
-                //     let v = parseFloat(e.target.value);
-
-                //     if (isNaN(v) || v <= 0) {
-                //         e.target.value = '';
-                //         return;
-                //     }
-                //     e.target.value = v;
-                // });
             },
 
             configSelect: [
@@ -867,13 +845,25 @@ const ContractDialog = (() => {
             },
 
             onPrepareForm: (me, data) => {
-                console.log(888,data);
-                
                 const isModify = me.dataOptions?.id > 0;
-                me.setReadOnly(isModify, ['code', 'start_date', 'end_date']);
+                const det = data?.contract_details || {};
+                const statusId = Number(det.status_id);
+                const statusText = String(det.status ?? '').trim().toLowerCase();
+                const isActive = statusText === 'active' || statusId === 2;
+
+                if (isModify) {
+                    me.setReadOnly(true, ['start_date', 'end_date']);
+                    if (isActive) {
+                        me.setReadOnly(true, ['code']);
+                    }
+                } else {
+                    const hasPrefillSpace = me.dataOptions.space_id > 0;
+                    me.setReadOnly(hasPrefillSpace, ['code']);
+                }
+
                 const tenantLocked = isModify || !!data?.prefill_tenant_id;
                 me.controls.tenant.disabled = tenantLocked;
-               
+
 
                 const prepareOpts = me.options?.prepareFormOptions;
                 if (isModify && me.elTitle && prepareOpts?.modifyTitle) {
@@ -961,7 +951,8 @@ const ContractDialog = (() => {
                     if (defaultSpaceId) {
                         unitSelect.value = defaultSpaceId;
                         applyUnitData(defaultSpaceId);
-                    } else if (unitSelect.value) {
+                    }
+                    else if (unitSelect.value) {
                         applyUnitData(unitSelect.value);
                     }
                 }
@@ -1018,9 +1009,9 @@ const ContractDialog = (() => {
                             if (res.status_code === 200) {
                                 me.hide(true, op);
                                 if (me.dataOptions.id > 0) {
-                                    cv_interact.success("updated");
+                                    cv_interact.success("update_success_contract");
                                 } else {
-                                    cv_interact.success("created");
+                                    cv_interact.success("create_success_contract");
                                 }
                             } else {
                                 cv_interact.error(res.error_message);

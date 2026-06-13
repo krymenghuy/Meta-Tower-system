@@ -2,9 +2,9 @@
 
 <?php
 return [
-    'name'=>'ខ្មែរ',
-    'code'=>'km',
-    'validation'=>[
+    'name' => 'ខ្មែរ',
+    'code' => 'km',
+    'validation' => [
         'required' => 'សូមបញ្ចូល ??.',
 
         'numeric' => 'សូមបញ្ចូលលេខត្រឹមត្រូវសម្រាប់ ??.',
@@ -40,7 +40,7 @@ return [
         'default' => '?? មិនត្រឹមត្រូវ។',
 
         'name_required' => 'សូមបញ្ចូលឈ្មោះ។',
-        'prefix_required' => 'សូមបញ្ចូលអក្សរកាត់។',  
+        'prefix_required' => 'សូមបញ្ចូលអក្សរកាត់។',
         'total_floor_required' => 'សូមបញ្ចូលចំនួនជាន់សរុប។',
         'total_area_required' => 'សូមបញ្ចូលចំនួនក្រឡាផ្ទៃសរុប។',
         'address_required' => 'សូមបញ្ចូលអាសយដ្ឋាន។',
@@ -52,7 +52,7 @@ return [
         'invalid_price' => 'សូមបញ្ចូលតម្លៃឱ្យបានត្រឹមត្រូវ។',
         'select_price_type' => 'សូមជ្រើសរើសប្រភេទតម្លៃ។',
 
-        
+
         'select_gender' => 'សូមជ្រើសរើសភេទ។',
         'date_of_birth_required' => 'សូមបញ្ចូលថ្ងៃខែឆ្នាំកំណើត។',
         'legal_name_required' => 'សូមបញ្ចូលឈ្មោះស្របច្បាប់។',
@@ -66,7 +66,7 @@ return [
         'booking_fee_required' => 'សូមបញ្ចូលចំនួនទឺកប្រាក់កក់។',
 
         'select_space' => 'សូមជ្រើសរើសបន្ទប់។',
-        'select_amenity' => 'សូមជ្រើសរើសបន្ទប់។',
+        'select_amenity' => 'សូមជ្រើសរើសទីតាំង។',
         'select_type' => 'សូមជ្រើសរើសប្រភេទ។',
         'required_start_date' => 'ថ្ងៃចាប់ផ្តើមត្រូវតែបញ្ចូល។',
         'required_end_date' => 'ថ្ងៃបញ្ចប់ត្រូវតែបញ្ចូល។',
@@ -80,7 +80,7 @@ return [
 
         'please_select_a_valid_category' => 'សូមជ្រើសរើសប្រភេទដែលត្រឹមត្រូវ។',
         'please_select_a_valid_unit' => 'សូមជ្រើសរើសបន្ទប់ដែលត្រឹមត្រូវ។',
-       
+
 
         'not_found' => 'រកមិនឃើញទិន្នន័យ។',
         'create_failed' => 'មានកំហុសក្នុងការបង្កើតទិន្នន័យ។ សូមព្យាយាមម្តងទៀត។',
@@ -99,7 +99,7 @@ return [
         'total_floors_greater_than_zero' => 'ចំនួនជាន់សរុបត្រូវតែធំជាងសូន្យ។',
         'total_area_greater_than_zero' => 'ក្រឡាផ្ទៃសរុបត្រូវតែធំជាងសូន្យ។',
 
-       
+
         'unit_code_exists' => 'លេខកូដបន្ទប់នេះមានរួចហើយ។ សូមជ្រើសរើសលេខកូដផ្សេងទៀត។',
         'invalid_floor'    => 'ជាន់ដែលបានជ្រើសរើសមិនត្រឹមត្រូវ។ សូមជ្រើសរើសជាន់ដែលស្ថិតនៅក្នុងអគារដែលបានជ្រើសរើស។',
         'error_saving_building_space' => 'មានកំហុសក្នុងការរក្សាទុកព័ត៌មានបន្ទប់។ សូមព្យាយាមម្តងទៀត។',
@@ -110,22 +110,22 @@ return [
         'floor_number_exceeds_total' => 'លេខជាន់ត្រូវតែតិចជាងឬស្មើ',
         'floor_name_must_be' => 'ឈ្មោះជាន់ត្រូវតែ',
 
-        
+
         'valid_email' => 'ទម្រង់អ៊ីមែលមិនត្រឹមត្រូវ។',
         'email_contain' => 'អ៊ីមែលត្រូវមានសញ្ញា @។',
         'booking_date_must' => 'ថ្ងៃកក់ត្រូវតែជាថ្ងៃនេះ។',
         'expired_date_min_14_days' => 'ថ្ងៃផុតកំណត់ត្រូវតែយ៉ាងហោចណាស់ 14 ថ្ងៃ។',
         'expired_date_cannot_in_past' => 'ថ្ងៃផុតកំណត់មិនអាចនៅក្នុងពេលអតីតកាលបានទេ។',
         'booking_duration_max_3_months' => 'រយៈពេលកក់មិនអាចលើស 3 ខែបានទេ។',
-        
+
         'start_date_cannot_in_past' => 'ថ្ងៃចាប់ផ្តើមមិនអាចនៅក្នុងពេលអតីតកាលបានទេ។',
         'end_date_cannot_in_past' => 'ថ្ងៃបញ្ចប់មិនអាចនៅក្នុងពេលអតីតកាលបានទេ។',
         'end_after_start' => 'ថ្ងៃ/ម៉ោងបញ្ចប់ត្រូវតែធំជាងថ្ងៃ/ម៉ោងចាប់ផ្តើម។',
         'start_time_cannot_in_past' => 'ម៉ោងចាប់ផ្តើមមិនអាចនៅក្នុងពេលអតីតកាលបានទេ។',
         'end_time_cannot_in_past'   => 'ម៉ោងបញ្ចប់មិនអាចនៅក្នុងពេលអតីតកាលបានទេ។',
 
-        
-        
+
+
         'tenant_must_be_18' => 'អ្នកជួលត្រូវមានអាយុចាប់ពី 18 ឆ្នាំឡើងទៅ។',
         'invalid_date_of_birth_age' => 'អាយុគណនាពីថ្ងៃខែឆ្នាំកំណើតមិនត្រឹមត្រូវ។',
         'passport_number_required' => 'សូមបញ្ចូលលេខលិខិតឆ្លងដែន សម្រាប់ជនបរទេស។',
@@ -140,13 +140,13 @@ return [
         'item_name_already_exists' => 'ឈ្មោះមុខទំនិញនេះត្រូវបានប្រើរួចហើយ។',
         'vendor_name_already_exists' => 'ឈ្មោះអ្នកផ្គត់ផ្គង់នេះមានរួចហើយ។',
 
-        
+
     ],
     'titles' => [
         'Create Building' => 'បង្កើតអគារ',
         'Modify Building' => 'កែប្រែអគារ',
         'Create Floor' => 'បង្កើតជាន់ថ្មី',
-        'Modify Floor' => 'កែប្រែជាន់',
+        'Modify Floor' => 'កែប្រែជាន់', 
         'Floor' => 'ជាន់',
         'Floor Number' => 'លេខជាន់',
         'Total Space' => 'បន្ទប់សរុប',
@@ -157,12 +157,13 @@ return [
         'Delete' => 'លុបចោល',
         'Modify' => 'កែប្រែ',
         'Cancel' => 'បោះបង់',
+        'No data to display' => "មិនមានទិន្នន័យបង្ហាញ",
 
 
         'Create Service Price' => 'បង្កើតតម្លៃសេវាកម្ម',
         'Modify Service Price' => 'កែប្រែតម្លៃសេវាកម្ម',
 
-        'Invoice Num'=>'ចំនួនវិក័យប័ត្រ',
+        'Invoice Num' => 'ចំនួនវិក័យប័ត្រ',
         'Tenant' => 'អ្នកជួល',
         'Building' => 'អគារ',
         'Space Code' => 'លេខកូដបន្ទប់',
@@ -193,11 +194,11 @@ return [
         'Modify Purchase Orders' => 'កែប្រែការបញ្ជាទិញទំនិញ',
         'Receive Purchase Order' => 'ទទួលទំនិញ',
         'Reservation' => 'ការកក់',
-        'Service Prices' => 'តម្លៃសេវាកម្ម',
+        'Service' => 'សេវាកម្ម',
         'Service Request' => 'សំណើសេវាកម្ម',
-        'Vendors' => 'អ្នកលក់',
-        'Create Vendor' => 'បង្កើតអ្នកលក់',
-        'Modify Vendor' => 'កែប្រែអ្នកលក់',
+        'Vendors' => 'អ្នកផ្គត់ផ្គង់',
+        'Create Vendor' => 'បង្កើតអ្នកផ្គត់ផ្គង់',
+        'Modify Vendor' => 'កែប្រែអ្នកផ្គត់ផ្គង់',
         'Phone Number' => 'លេខទូរស័ព្ទ',
 
         'Payments' => 'ការទូទាត់',
@@ -212,8 +213,8 @@ return [
         'Unit' => 'បន្ទប់',
         'Type' => 'ប្រភេទ',
         'Remark' => 'កំណត់សម្គាល់',
-        'Category' => 'ប្រភេទសេវាកម្ម',
-        
+        'Category' => 'ប្រភេទអ្នកផ្គត់ផ្គង់',
+
         'Space' => 'បន្ទប់',
         'Invoice No' => 'លេខវិក្កយបត្រ',
         'Expiration Date' => 'កាលបរិច្ឆេទផុតកំណត់',
@@ -232,7 +233,7 @@ return [
         'Modify Tenant' => 'កែប្រែអ្នកជួល',
         'Print Invoice' => 'បោះពុម្ពវិក្កយបត្រ',
         'Clear Setting' => 'លុបការកំណត់',
-        
+
         'View Details' => 'ព័ត៌មានលម្អិត',
         'Upload Document' => 'ផ្ទុកឯកសារ',
         'Modify Document' => 'កែប្រែឯកសារ',
@@ -250,7 +251,7 @@ return [
         'Document' => 'ឯកសារ',
         'Create Space' => 'បង្កើតបន្ទប់',
         'Identity Documents' => 'ឯកសារសម្គាល់',
-        
+
         // Mantenance
         'Create Maintenance' => 'បង្កើតការថែទាំ',
         'Modify Maintenance' => 'កែប្រែការថែទាំ',
@@ -258,10 +259,10 @@ return [
         'Create Reservation' => 'បង្កើតការកក់',
         'Modify Reservation' => 'កែប្រែការកក់',
 
-        'Authorize'=>'អនុម័ត',
-        'Reset'=>'កំណត់ឡើងវិញ',
-        'Reverse'=>'ត្រឡប់ប្រតិបត្តការណ៍ទូទាត់ប្រាក់',
-        'Disburse'=>'បើកប្រាក់',
+        'Authorize' => 'អនុម័ត',
+        'Reset' => 'កំណត់ឡើងវិញ',
+        'Reverse' => 'ត្រឡប់ប្រតិបត្តការណ៍ទូទាត់ប្រាក់',
+        'Disburse' => 'បើកប្រាក់',
         'Staff Movement' => 'កាផ្លាស់ប្ដូរ​របស់បុគ្គលិក',
         'Staff Attendance' => 'អវត្តមាន​របស់បុគ្គលិក',
         'Attendance' => 'វត្តមាន',
@@ -299,7 +300,7 @@ return [
         'Grave List' => 'បញ្ជីកន្លែងសព',
         'Association Structure' => 'រចនាសម្ព័ន្ធនៃសមាគម',
         'Association Policy' => 'មាត្រនិងបទបញ្ញាត្តិផ្ទៃក្នុងរបស់សមាគម',
-        'Company Profile'=> 'អំពីសមាគម',
+        'Company Profile' => 'អំពីសមាគម',
         'Locations' => 'ទីតាំង និង តំបន់',
         'Location Management' => 'ទីតាំង និង តំបន់',
         'User and Roles' => 'អ្នកប្រើប្រាស់និងតួនាទី',
@@ -317,7 +318,7 @@ return [
         'Charge As' => 'គិតជា',
         'Duration' => 'រយៈពេល',
         'Po Number' => 'លេខការបញ្ជាទិញ',
-        'Vendor' => 'អ្នកលក់',
+        'Vendor' => 'អ្នកផ្គត់ផ្គង់',
         'Po Date' => 'កាលបរិច្ឆេទការបញ្ជាទិញ',
         'Subtotal' => 'សរុបមុនបញ្ចុះតម្លៃ',
         'Discount' => 'បញ្ចុះតម្លៃ',
@@ -334,7 +335,7 @@ return [
         'Contact Person' => 'បុគ្គលទំនាក់ទំនង',
         'Address' => 'អាសយដ្ឋាន',
         'Contact Info' => 'ព័ត៌មានទំនាក់ទំនង',
-        'Amenity' => 'ឈ្មោះសេវាកម្ម',
+        'Amenity' => 'ឈ្មោះបរិកា្ខរសេវាកម្ម',
         'Reservation Date' => 'កាលបរិច្ឆេទកក់',
         'Total Areas' => 'ក្រឡាផ្ទៃសរុប',
         'Total Floors' => 'ចំនួនជាន់សរុប',
@@ -400,8 +401,8 @@ return [
 
         'Create Invoice' => 'បង្កើតវិក្កយបត្រ',
         'Modify Invoice' => 'កែប្រែវិក្កយបត្រ',
-        'Generate New Bill' =>'បង្កើតវិក័យប័ត្រចំណាយ',
-        'Modify Bill' =>'កែប្រែវិក័យប័ត្រចំណាយ',
+        'Generate New Bill' => 'បង្កើតវិក័យប័ត្រចំណាយ',
+        'Modify Bill' => 'កែប្រែវិក័យប័ត្រចំណាយ',
         'Delete Invoice' => 'លុបវិក្កយបត្រ',
         'Electricity Utility' => 'ថ្លៃអគ្គិសនី',
         'Contract Details' => 'ព័ត៌មានកិច្ចសន្យា',
@@ -416,11 +417,12 @@ return [
         'By Reading' => 'គណនាតាមលេខអំណាន',
         'Rental Details' => 'ព័ត៌មានអំពីការជួល',
         'Add Service' => 'បន្ថែមសេវាកម្ម',
+        'Reservation Details' => 'ព័ត៌មានអំពីការកក់',
+        'View Reservation' => 'មើលព័ត៌មានការកក់',
         '' => '',
         '' => '',
         '' => '',
-        '' => '',
-        
+
 
 
 
@@ -436,7 +438,7 @@ return [
         // 'Receipts' => 'វិក្កយបត្រ',
         'Contracts' => 'កិច្ចសន្យា',
         'Services' => 'សេវាកម្ម',
-        'Amenities' => 'សេវាកម្ម',
+        'Amenities' => 'បរិកា្ខរសេវាកម្ម',
         'Service Prices' => 'តំលៃសេវាកម្ម',
         'Service Requests' => 'សំណើសេវាកម្ម',
         'Purchase Orders' => 'បញ្ចី និង ទិញទំនិញ',
@@ -446,7 +448,7 @@ return [
         'Reservations' => 'ការកក់',
         'Bill Payments' => 'ទូទាត់វិក្កយបត្រ',
         'Service Price' => 'តំលៃសេវាកម្ម',
-        'Vendors' => 'អ្នកលក់',
+        'Vendors' => 'អ្នកផ្គត់ផ្គង់',
 
         'Bills' => 'វិក្កយបត្រចំណាយ',
         'Bill Payment' => 'ការទូទាត់វិក័យប័ត្រ',
@@ -460,7 +462,7 @@ return [
         'Association Structure' => 'រចនាសម្ព័ន្ធនៃសមាគម',
         'Association Policy' => 'មាត្រនិងបទបញ្ញាត្តិ',
         'Admin & Settings' => 'ការគ្រប់គ្រង និងការកំណត់',
-        'Association Profile'=> 'អំពីសមាគម',
+        'Association Profile' => 'អំពីសមាគម',
         'Pickup Center' => 'ការប្រម៉ូលកញ្ចប់ទំនិញ',
         'Order Images' => 'រូបភាពកញ្ចប់ទំនិញ',
         'Package Trail' => 'កញ្ចប់ទំនិញ',
@@ -518,8 +520,8 @@ return [
         'Uninformed Leaves' => 'បញ្ជីអវត្តមានគ្មានច្បាប់',
         'Daily Attendance' => 'បញ្ជីវត្តមាន',
         'Shift Management' => 'ការគ្រប់គ្រងវេនធ្វើការ',
-        'Shift List'=> 'វេនធ្វើការ',
-        'Attendance Tracking'=> 'ម៉ោងស្កេន',
+        'Shift List' => 'វេនធ្វើការ',
+        'Attendance Tracking' => 'ម៉ោងស្កេន',
         'Employee Movement' => 'ចលនាបុគ្គលិក',
         'Employee Benefits' => 'ការគ្រប់គ្រងអត្ថប្រយោជន៍បុគ្គលិក',
         'Benefit List' => 'បញ្ជីអត្ថប្រយោជន៍',
@@ -557,19 +559,19 @@ return [
         'Create Tenant' => 'បង្កើតអ្នកជួល',
         'Create Reservation' => 'បង្កើតការកក់',
         'Create Maintenance' => 'បង្កើតការថែទាំ',
-        'Generate New Bill' =>'បង្កើតវិក័យប័ត្រចំណាយ',
+        'Generate New Bill' => 'បង្កើតវិក័យប័ត្រចំណាយ',
 
         'Create Contract' => 'បង្កើតកិច្ចសន្យា',
         'Renew Contract' => 'បន្តកិច្ចសន្យា',
-        
+
         'Create New Expense' => 'បង្កើតចំណាយថ្មី',
         'Generate Invoice' => 'បង្កើតវិក័យប័ត្រ',
         'Payment' => 'បង្កើតការបង់ប្រាក់',
         'Create Service' => 'បង្កើតសេវាកម្ម',
         'Create New Request' => 'បង្កើតការស្នើសុំសេវាកម្ម',
-        
+
         'Upload Document' => 'ផ្ទុកឯកសារ',
-        
+
         'Purchase Orders' => 'បញ្ជាទិញទំនិញ',
         'Quick Order' => 'បញ្ជាលឿន',
         'Cancel' => 'បោះបង់',
@@ -594,7 +596,7 @@ return [
         'View Profile' => 'Profile',
         'Take Out' => 'ដកចេញ',
         'Takeout' => 'ដកចេញ',
-        'Add Payroll'=>'បន្ថែមបញ្ជីប្រាក់បៀវត្សរ៍',
+        'Add Payroll' => 'បន្ថែមបញ្ជីប្រាក់បៀវត្សរ៍',
         'Back' => 'ត្រឡប់ក្រោយ',
         'Import Staff List' => 'នាំចូលបញ្ជីបុគ្គលិក',
         'Calculate' => 'គណនា',
@@ -610,7 +612,7 @@ return [
         'Choose Report' => 'ជ្រើសរើសរបាយការណ៍',
         'Export' => 'នាំចេញ',
         'New Floor' => 'បង្កើតជាន់ថ្មី',
-        'Add New Vendor' => 'បង្កើតអ្នកលក់ថ្មី',
+        'Add New Vendor' => 'បង្កើតអ្នកផ្គត់ផ្គង់ថ្មី',
         'View Document' => 'មើលឯកសារ',
         'Modify Document' => 'កែប្រែឯកសារ',
         'Download Document' => 'ទាញយកឯកសារ',
@@ -622,7 +624,7 @@ return [
         'Create Amenity' => 'បង្កើតបរិក្ខារ',
         'Accept' => 'យល់ព្រម',
 
-        'Rent'=> 'ថ្លៃជួល',
+        'Rent' => 'ថ្លៃជួល',
         'Service' => 'សេវាកម្ម',
         'Request' => 'តម្លៃសេវាកម្ម',
         'Electric' => 'ថ្លៃអគ្គិសនី',
@@ -637,15 +639,15 @@ return [
 
         'Confirm Payment' => 'បញ្ជាក់ការទូទាត់',
 
-       
 
-       
-        
+
+
+
 
 
 
     ],
-    'filters' =>[
+    'filters' => [
         'Start Date :' => 'ថ្ងៃចាប់ផ្ដើម :',
         'End Date :' => 'ថ្ងៃបញ្ចប់ :',
 
@@ -662,7 +664,8 @@ return [
         'Payee' => 'Payee'
     ],
     'labels' => [
-        'Name' => 'ឈ្មោះ',
+        'Full Name (EN)' => 'ឈ្មោះពេញ (អង់គ្លេស)',
+        'Full Name (KH)' => 'ឈ្មោះពេញ (ខ្មែរ)',
         'Shortcut' => 'អក្សរកាត់',
         'Total Floors' => 'ចំនួនជាន់សរុប',
         'Total Units' => 'ចំនួនបន្ទប់សរុប',
@@ -676,7 +679,7 @@ return [
         'Price' => 'តម្លៃ',
         'Charge As' => 'គិតជា',
         'Unit Details' => 'ព័ត៌មានបន្ទប់',
-        
+
         'Booker Name' => 'ឈ្មោះអ្នកកក់',
         'Booker Phone' => 'លេខទូរសព្ទអ្នកកក់',
         'Email (Optional)' => 'អ៊ីមែល (Optional)',
@@ -693,6 +696,7 @@ return [
         'Passport' => 'លិខិតឆ្លងដែន',
         'Phone Number' => 'លេខទូរស័ព្ទ',
         'Address' => 'អាសយដ្ឋាន',
+        'National ID Issue Date' => 'ថ្ងៃចេញអត្តសញ្ញាណប័ណ្ណ',
 
         'ID' => 'លេខសម្គាល់',
         'Unit' => 'បន្ទប់',
@@ -703,7 +707,7 @@ return [
         'Lease Terms' => 'លក្ខខណ្ឌជួល',
         'Monthly' => 'តម្លៃជួលប្រចាំខែ',
         'Deposit' => 'ប្រាក់កក់',
-        
+
         'Type' => 'ប្រភេទឯកសារ',
         'File Name' => 'ឈ្មោះឯកសារ',
         'File Type' => 'ទម្រង់ឯកសារ',
@@ -716,7 +720,7 @@ return [
         'Contact Person' => 'អ្នកទំនាក់ទំនង',
         'Contact Person Phone' => 'លេខទូរស័ព្ទអ្នកទំនាក់ទំនង',
         'Phone' => 'លេខទូរស័ព្ទ',
-        'Vendor' => 'អ្នកលក់',
+        'Vendor' => 'អ្នកផ្គត់ផ្គង់',
         'Building' => 'អគារ',
         'PO Date' => 'កាលបរិច្ឆេទ',
         'Order Qty' => 'ចំនួនទិញ',
@@ -726,7 +730,7 @@ return [
         'Item' => 'មុខទំនិញ',
         'UnitType' => 'ឯកតា',
         'Unit Price' => 'តម្លៃ',
-        
+
 
         'Reference No.' => 'លេខយោង',
         'Total Amount' => 'ចំនួនសរុប',
@@ -770,6 +774,7 @@ return [
         'Original Price ($)' => 'តម្លៃដើម ($)',
         'Service Name' => 'ឈ្មោះសេវាកម្ម',
         'Unit Type' => 'ប្រភេទឯកតា',
+        'Name' => 'ឈ្មោះ',
         '' => '',
 
 
@@ -777,55 +782,219 @@ return [
 
 
 
-        
 
 
 
-    
 
-     
 
-       
+
+
+
+
 
 
     ],
 
-    'message_box_default' => [
+    // 'message_box_default' => [
 
+    //     'required' => 'សូមបញ្ចូលព័ត៌មាននេះ។',
+    //     'created'  => 'ទិន្នន័យត្រូវបានបង្កើតដោយជោគជ័យ។',
+    //     'update_success_tenant' => 'ព័ត៌មានភ្ញៀវត្រូវបានកែប្រែដោយជោគជ័យ',
+    //     'delete_success_tenant' => 'ព័ត៌មានភ្ញៀវរូវបានលុបដោយជោគជ័យ',
+    //     'create_success_tenant'=>'ព័ត៌មានភ្ញៀវត្រូវបានបង្កើត',
+    //     'updated'  => 'ទិន្នន័យត្រូវបានកែប្រែដោយជោគជ័យ',
+    //     'deleted'  => 'ទិន្នន័យត្រូវបានលុបដោយជោគជ័យ',
+    //     'success' => 'ប្រតិបត្តិការបានជោគជ័យ។',
+    //     'terminated'  => 'ទិន្នន័យត្រូវបានបញ្ឈប់ដោយជោគជ័យ។',
+    //     'cancelled' => 'បានបោះបង់ដោយជោគជ័យ។',
+    //     'finished'         => 'បានបញ្ចប់ដោយជោគជ័យ។',
+    //     'confirm_delete' => 'តើអ្នកពិតជាចង់លុបទិន្នន័យនេះមែនទេ?',
+    //     'confirm_terminate' => 'តើអ្នកពិតជាចង់បញ្ឈប់ទិន្នន័យនេះមែនទេ?',
+    //     'confirm_cancel' => 'តើអ្នកពិតជាចង់បោះបង់នេះមែនទេ?',
+    //     'confirm_finish' => 'តើអ្នកពិតជាចង់បញ្ចប់ការងារនេះមែនទេ?',
+    //     'confirm_accept' => 'តើអ្នកពិតជាចង់ទទួលយកការស្នើសុំនេះមែនទេ?',
+
+
+    //     'delete_maintenance' => 'លុបការថែទាំ',
+    //     'confirm_delete_maintenance' => 'តើអ្នកពិតជាចង់លុបការថែទាំនេះមែនទេ?',
+    //     'maintenance_deleted' => 'ការថែទាំត្រូវបានលុបដោយជោគជ័យ។',
+
+    //     'cancel_maintenance' => 'បោះបង់ការថែទាំ',
+    //     'confirm_cancel_maintenance' => 'តើអ្នកពិតជាចង់បោះបង់ការថែទាំនេះមែនទេ?',
+    //     'maintenance_cancelled' => 'ការថែទាំត្រូវបានបោះបង់ដោយជោគជ័យ។',
+
+    //     'finish_maintenance' => 'បញ្ចប់ការថែទាំ',
+    //     'confirm_finish_maintenance' => 'តើអ្នកពិតជាចង់បញ្ចប់ការថែទាំនេះមែនទេ?',
+    //     'maintenance_finished' => 'ការថែទាំត្រូវបានបញ្ចប់ដោយជោគជ័យ។',
+
+    //     "Confirm" => 'បញ្ជាក់',
+    //     "Log Out" => "ចាកចេញ",
+    //     "Cancel" => "បោះបង់",
+    //     "OK" => "បាទ",
+    //     "Remove" => "លុប",
+    //     "Delete" => "លុប",
+    //     "Dont Delete" => "មិនលុប",
+    //     "Dont Remove" => "មិនលុប",
+    //     "Create" => "បង្កើត",
+    //     "Yes" => "បាទ",
+    //     "No" => "ទេ",
+    //     "Finish" => "បញ្ចប់",
+    //     "Terminate" => "បញ្ឈប់",
+    //     'Save' => 'រក្សារទុក',
+    //     'Change Status' => 'ប្ដូរស្ថានភាព',
+    //     'Accept' => 'យល់ព្រម',
+    //     'View Reservation' => 'មើលព័ត៌មានការកក់',
+
+
+
+    // ],
+
+    'message_box_default' => [
         'required' => 'សូមបញ្ចូលព័ត៌មាននេះ។',
-        'created'  => 'ទិន្នន័យត្រូវបានបង្កើតដោយជោគជ័យ។',
-        'update_success_tenant' => 'ព័ត៌មានភ្ញៀវត្រូវបានកែប្រែដោយជោគជ័យ',
-        'delete_success_tenant' => 'ព័ត៌មានភ្ញៀវរូវបានលុបដោយជោគជ័យ',
-        'create_success_tenant'=>'ព័ត៌មានភ្ញៀវត្រូវបានបង្កើត',
-        'updated'  => 'ទិន្នន័យត្រូវបានកែប្រែដោយជោគជ័យ',
-        'deleted'  => 'ទិន្នន័យត្រូវបានលុបដោយជោគជ័យ',
-        'success' => 'ប្រតិបត្តិការបានជោគជ័យ។',
-        'terminated'  => 'ទិន្នន័យត្រូវបានបញ្ឈប់ដោយជោគជ័យ។',
+        'created' => 'ទិន្នន័យត្រូវបានបង្កើតដោយជោគជ័យ។',
+        'updated' => 'ទិន្នន័យត្រូវបានកែប្រែដោយជោគជ័យ។',
+        'deleted' => 'ទិន្នន័យត្រូវបានលុបដោយជោគជ័យ។',
+        'confirm_cancel' => 'តើអ្នកប្រាកដថាចង់បោះបង់នេះមែនទេ?',
         'cancelled' => 'បានបោះបង់ដោយជោគជ័យ។',
-        'finished'         => 'បានបញ្ចប់ដោយជោគជ័យ។',
-        'confirm_delete' => 'តើអ្នកពិតជាចង់លុបទិន្នន័យនេះមែនទេ?',
-        'confirm_terminate' => 'តើអ្នកពិតជាចង់បញ្ឈប់ទិន្នន័យនេះមែនទេ?',
-        'confirm_cancel' => 'តើអ្នកពិតជាចង់បោះបង់នេះមែនទេ?',
-        'confirm_finish' => 'តើអ្នកពិតជាចង់បញ្ចប់ការងារនេះមែនទេ?',
-        'confirm_accept' => 'តើអ្នកពិតជាចង់ទទួលយកការស្នើសុំនេះមែនទេ?',
-        
+        'confirm_finish' => 'តើអ្នកប្រាកដថាចង់សម្គាល់ថាបានបញ្ចប់មែនទេ?',
+        'finished' => 'បានសម្គាល់ថាបញ្ចប់ដោយជោគជ័យ។',
+        'confirm_delete' => 'តើអ្នកប្រាកដថាចង់លុបទិន្នន័យនេះមែនទេ?',
+        'cancel_failed' => 'ការបោះបង់បានបរាជ័យ។',
+        'delete_failed' => 'ការលុបបានបរាជ័យ។',
+        'save_failed' => 'ការរក្សាទុកបានបរាជ័យ។',
+        'confirm_complete' => 'បញ្ចប់សំណើសេវាកម្ម?',
+        'update_success_status' => 'ស្ថានភាពត្រូវបានកែប្រែដោយជោគជ័យ។',
+        'update_failed_status' => 'មិនអាចកែប្រែស្ថានភាពបានទេ។',
+        'upload_failed_photo' => 'ការផ្ទុករូបភាពឡើងបានបរាជ័យ។ សូមព្យាយាមម្តងទៀត។',
 
         'delete_maintenance' => 'លុបការថែទាំ',
-        'confirm_delete_maintenance' => 'តើអ្នកពិតជាចង់លុបការថែទាំនេះមែនទេ?',
+        'confirm_delete_maintenance' => 'តើអ្នកប្រាកដថាចង់លុបការថែទាំនេះមែនទេ?',
         'maintenance_deleted' => 'ការថែទាំត្រូវបានលុបដោយជោគជ័យ។',
 
         'cancel_maintenance' => 'បោះបង់ការថែទាំ',
-        'confirm_cancel_maintenance' => 'តើអ្នកពិតជាចង់បោះបង់ការថែទាំនេះមែនទេ?',
+        'confirm_cancel_maintenance' => 'តើអ្នកប្រាកដថាចង់បោះបង់ការថែទាំនេះមែនទេ?',
         'maintenance_cancelled' => 'ការថែទាំត្រូវបានបោះបង់ដោយជោគជ័យ។',
 
         'finish_maintenance' => 'បញ្ចប់ការថែទាំ',
-        'confirm_finish_maintenance' => 'តើអ្នកពិតជាចង់បញ្ចប់ការថែទាំនេះមែនទេ?',
+        'confirm_finish_maintenance' => 'តើអ្នកប្រាកដថាចង់បញ្ចប់ការថែទាំនេះមែនទេ?',
         'maintenance_finished' => 'ការថែទាំត្រូវបានបញ្ចប់ដោយជោគជ័យ។',
 
-        "Confirm" => 'បញ្ជាក់',
+        'update_success_tenant' => 'អ្នកជួលត្រូវបានកែប្រែដោយជោគជ័យ។',
+        'create_success_tenant' => 'អ្នកជួលត្រូវបានបង្កើតដោយជោគជ័យ។',
+        'delete_success_tenant' => 'អ្នកជួលត្រូវបានលុបដោយជោគជ័យ។',
+
+        'select_document_type' => 'សូមជ្រើសរើសប្រភេទឯកសារ។',
+        'select_file' => 'សូមជ្រើសរើសឯកសារ។',
+        'select_valid_file' => 'សូមជ្រើសរើសឯកសារដែលត្រឹមត្រូវ។',
+        'remarks_max_255' => 'ចំណាំមិនអាចលើសពី 255 តួអក្សរបានទេ។',
+        'update_success_document' => 'ឯកសារត្រូវបានកែប្រែដោយជោគជ័យ។',
+        'create_success_document' => 'ឯកសារត្រូវបានបង្កើតដោយជោគជ័យ។',
+        'delete_success_document' => 'ឯកសារត្រូវបានលុបដោយជោគជ័យ។',
+
+        'delete_success_space' => 'បន្ទប់ត្រូវបានលុបដោយជោគជ័យ។',
+        'update_success_space' => 'បន្ទប់ត្រូវបានកែប្រែដោយជោគជ័យ។',
+        'create_success_space' => 'បន្ទប់ត្រូវបានបង្កើតដោយជោគជ័យ។',
+
+        'create_success_booking' => 'ការកក់ត្រូវបានបង្កើតដោយជោគជ័យ។',
+        'update_success_booking' => 'ការកក់ត្រូវបានកែប្រែដោយជោគជ័យ។',
+        'cancel_success_booking' => 'ការកក់ត្រូវបានបោះបង់។',
+
+        'finish_maintenance_success' => 'ការថែទាំត្រូវបានបញ្ចប់។',
+        'delete_success_maintenance' => 'ការថែទាំត្រូវបានលុបដោយជោគជ័យ។',
+        'select_building' => 'សូមជ្រើសរើសអគារ។',
+        'select_type' => 'សូមជ្រើសរើសប្រភេទ។',
+        'select_space' => 'សូមជ្រើសរើសបន្ទប់។',
+        'select_amenity' => 'សូមជ្រើសរើសសេវាកម្មបន្ថែម។',
+        'create_success_maintenance' => 'ការថែទាំត្រូវបានបង្កើតដោយជោគជ័យ។',
+        'update_success_maintenance' => 'ការថែទាំត្រូវបានកែប្រែដោយជោគជ័យ។',
+
+        'create_success_contract' => 'កិច្ចសន្យាត្រូវបានបង្កើតដោយជោគជ័យ។',
+        'update_success_contract' => 'កិច្ចសន្យាត្រូវបានកែប្រែដោយជោគជ័យ។',
+        'delete_success_contract' => 'កិច្ចសន្យាត្រូវបានលុបដោយជោគជ័យ។',
+        'confirm_terminate' => 'តើអ្នកប្រាកដថាចង់បញ្ចប់កិច្ចសន្យានេះមែនទេ?',
+        'contract_terminated' => 'កិច្ចសន្យាត្រូវបានបញ្ចប់ដោយជោគជ័យ។',
+
+        'update_success_reservation' => 'ការកក់ទុកត្រូវបានកែប្រែដោយជោគជ័យ។',
+        'create_success_reservation' => 'ការកក់ទុកត្រូវបានបង្កើតដោយជោគជ័យ។',
+        'delete_success_reservation' => 'ការកក់ទុកត្រូវបានលុបដោយជោគជ័យ។',
+        'cancel_success_reservation' => 'ការកក់ទុកត្រូវបានបោះបង់ដោយជោគជ័យ។',
+
+        'delete_success_invoice' => 'វិក្កយបត្រត្រូវបានលុបដោយជោគជ័យ។',
+        'reset_success_invoice' => 'ការកំណត់វិក្កយបត្រត្រូវបានកំណត់ឡើងវិញដោយជោគជ័យ។',
+        'update_success_setting' => 'ការកំណត់ត្រូវបានកែប្រែដោយជោគជ័យ។',
+        'reset_failed' => 'បរាជ័យក្នុងការកំណត់ឡើងវិញ។',
+        'select_tenant' => 'សូមជ្រើសរើសអ្នកជួលជាមុនសិន។',
+        'update_success_invoice' => 'វិក្កយបត្រត្រូវបានកែប្រែដោយជោគជ័យ។',
+        'create_success_invoice' => 'វិក្កយបត្រត្រូវបានបង្កើតដោយជោគជ័យ។',
+        'cancel_success_invoice' => 'វិក្កយបត្រត្រូវបានបោះបង់ដោយជោគជ័យ។',
+        'add_item' => 'សូមបន្ថែមយ៉ាងហោចណាស់មួយមុខទំនិញ។',
+        'tax_required' => 'ភាគរយពន្ធត្រូវបានទាមទារសម្រាប់ប្រភេទវិក្កយបត្រនេះ។',
+        'enter_tax' => 'សូមបញ្ចូលតម្លៃភាគរយពន្ធដែលត្រឹមត្រូវ។',
+        'missing_unit' => 'បាត់លេខកូដបន្ទប់។',
+        'select_service' => 'សូមជ្រើសរើសសេវាកម្ម។',
+        'input_date' => 'សូមបញ្ចូលថ្ងៃចាប់ផ្តើម និងថ្ងៃបញ្ចប់។',
+        'input_time' => 'សូមបញ្ចូលរយៈពេល។',
+        'service_exist' => 'សេវាកម្មមានរួចហើយក្នុងបញ្ជី។',
+        'service_request' => 'សូមជ្រើសរើសសំណើសេវាកម្ម។',
+        'request_exist' => 'សំណើមានរួចហើយក្នុងបញ្ជី។',
+        'request_invoice' => 'សំណើសេវាកម្មត្រូវបានបន្ថែមទៅវិក្កយបត្រ។',
+        'failed_load_invoice' => 'បរាជ័យក្នុងការផ្ទុកព័ត៌មានវិក្កយបត្រ។',
+        'no_request' => 'មិនមានសំណើដែលពាក់ព័ន្ធនឹងកន្លែងនេះទេ។',
+        'receive_success_payment' => 'ទទួលការទូទាត់ដោយជោគជ័យ។',
+        'payment_amount' => 'សូមបញ្ចូលចំនួនទឹកប្រាក់ទូទាត់។',
+
+        'cancel_receipt' => 'បង្កាន់ដៃត្រូវបានបោះបង់។',
+        'complete_success_request' => 'សំណើសេវាកម្មត្រូវបានបញ្ចប់!',
+        'delete_success_request' => 'សំណើសេវាកម្មត្រូវបានលុបដោយជោគជ័យ។',
+        'update_success_request' => 'សំណើសេវាកម្មត្រូវបានកែប្រែដោយជោគជ័យ!',
+        'create_success_request' => 'សំណើសេវាកម្មត្រូវបានបង្កើត។',
+
+        'delete_success_vendor' => 'អ្នកផ្គត់ផ្គង់ត្រូវបានលុបដោយជោគជ័យ។',
+        'update_success_vendor' => 'អ្នកផ្គត់ផ្គង់ត្រូវបានកែប្រែដោយជោគជ័យ។',
+        'create_success_vendor' => 'អ្នកផ្គត់ផ្គង់ត្រូវបានបង្កើតដោយជោគជ័យ។',
+
+        'create_success_order' => 'ការបញ្ជាទិញត្រូវបានបង្កើតដោយជោគជ័យ។',
+        'delete_success_order' => 'ការបញ្ជាទិញត្រូវបានលុបដោយជោគជ័យ។',
+        'update_success_order' => 'ការបញ្ជាទិញត្រូវបានកែប្រែដោយជោគជ័យ។',
+        'receive_success_order' => 'ការបញ្ជាទិញត្រូវបានទទួលដោយជោគជ័យ។',
+        'reject_success_order' => 'ការបញ្ជាទិញត្រូវបានបដិសេធដោយជោគជ័យ។',
+        'authorized_purchase' => 'ការបញ្ជាទិញត្រូវបានអនុម័ត!',
+
+        'delete_bill_success' => 'កំណត់ត្រាវិក័យប័ត្រត្រូវបានលុប។',
+        'update_bill_success' => 'វិក្កយបត្រត្រូវបានកែប្រែដោយជោគជ័យ។',
+        'create_success_bill' => 'វិក្កយបត្រត្រូវបានបង្កើតដោយជោគជ័យ។',
+        'delete_bill_photo' => 'រូបភាពត្រូវបានលុបដោយជោគជ័យ។',
+        'upload_bill_photo' => 'រូបភាពវិក្កយបត្រត្រូវបានផ្ទុកឡើង។',
+
+        'delete_payment_success' => 'ការទូទាត់ត្រូវបានលុបដោយជោគជ័យ។',
+        'update_payment_success' => 'ការទូទាត់ត្រូវបានកែប្រែដោយជោគជ័យ។',
+        'create_payment_success' => 'ការទូទាត់ត្រូវបានបង្កើតដោយជោគជ័យ។',
+        'cancel_payment_success' => 'ការទូទាត់ត្រូវបានបោះបង់។',
+        'no_photo' => 'មិនមានរូបភាពទេ។',
+
+        'delete_success_building' => 'អគារត្រូវបានលុបដោយជោគជ័យ។',
+        'delete_floor' => 'ជាន់ត្រូវបានលុបដោយជោគជ័យ។',
+        'create_success_building' => 'អគារត្រូវបានបង្កើតដោយជោគជ័យ។',
+        'update_success_building' => 'អគារត្រូវបានកែប្រែដោយជោគជ័យ។',
+        'create_floor' => 'ជាន់ត្រូវបានបង្កើតដោយជោគជ័យ។',
+        'update_floor' => 'ជាន់ត្រូវបានកែប្រែដោយជោគជ័យ។',
+
+        'create_success_amenity' => 'បរិកា្ខរនិងសេវាកម្មបន្ថែមថ្មីត្រូវបានបន្ថែមដោយជោគជ័យ។',
+        'update_success_amenity' => 'បរិកា្ខរនិងសេវាកម្មបន្ថែមត្រូវបានកែប្រែដោយជោគជ័យ។',
+        'delete_success_amenity' => 'បរិកា្ខរនិងសេវាកម្មបន្ថែមត្រូវបានលុបដោយជោគជ័យ។',
+
+        'update_success_service' => 'សេវាកម្មត្រូវបានកែប្រែដោយជោគជ័យ។',
+        'create_success_service' => 'សេវាកម្មត្រូវបានបង្កើតដោយជោគជ័យ។',
+        'delete_success_service' => 'សេវាកម្មត្រូវបានលុបដោយជោគជ័យ។',
+
+        'update_success_item' => 'ទំនិញត្រូវបានកែប្រែដោយជោគជ័យ។',
+        'create_success_item' => 'ទំនិញត្រូវបានបង្កើតដោយជោគជ័យ។',
+        'delete_success_item' => 'ទំនិញត្រូវបានលុបដោយជោគជ័យ។',
+
+        "Confirm" => 'យល់ព្រម',
         "Log Out" => "ចាកចេញ",
         "Cancel" => "បោះបង់",
-        "OK" => "បាទ",
+        "OK" => "យល់ព្រម",
         "Remove" => "លុប",
         "Delete" => "លុប",
         "Dont Delete" => "មិនលុប",
@@ -839,9 +1008,5 @@ return [
         'Change Status' => 'ប្ដូរស្ថានភាព',
         'Accept' => 'យល់ព្រម',
         'View Reservation' => 'មើលព័ត៌មានការកក់',
-
-        
-
     ],
 ];
-

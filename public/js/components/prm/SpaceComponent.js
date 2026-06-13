@@ -61,6 +61,7 @@ var SpaceComponent = new (function () {
                     mThis.applyListFilters();
                 },
             };
+            if (!AuthManager.allowed(206,false)) return;
             BuildingSpaceDialog.show(op);
         };
         mThis.pr_tbl = mThis.SpaceListView.getListContainer();
@@ -523,6 +524,8 @@ var SpaceComponent = new (function () {
     };
 
     mThis.createContract = (id, menulink) => {
+        if (!AuthManager.allowed(227,false)) return;
+
         vsapi
             .call(
                 `${main_view.base_url}/prm/contract/form-options`,
@@ -610,7 +613,7 @@ var SpaceComponent = new (function () {
                 mThis.applyListFilters();
             },
         };
-
+        if (!AuthManager.allowed(207,false)) return;
         BuildingSpaceDialog.show(op);
     };
     mThis.setMaintenance = (id, menulink) => {
@@ -622,11 +625,13 @@ var SpaceComponent = new (function () {
                 mThis.applyListFilters();
             },
         };
+        if (!AuthManager.allowed(213,false)) return;
         if (typeof CreateMaintenanceDialog !== "undefined") {
             CreateMaintenanceDialog.show(op);
         }
     };
     mThis.finishMaintenance = (id, menulink) => {
+        if (!AuthManager.allowed(216,false)) return;
         cv_interact.confirm(
             "Finish this maintenance?",
             {
@@ -646,7 +651,7 @@ var SpaceComponent = new (function () {
                         .then((res) => {
                             if (res.status_code === 200) {
                                 cv_interact.success(
-                                    "Maintenance has been completed.",
+                                    "finish_maintenance_success",
                                 );
                                 mThis.applyListFilters();
                             } else {
@@ -668,7 +673,7 @@ var SpaceComponent = new (function () {
                 mThis.applyListFilters();
             },
         };
-
+        if (!AuthManager.allowed(209,false)) return;
         CreateBookingDialog.show(op);
     };
     mThis.deleteSpace = (id, menulink) => {
@@ -679,7 +684,7 @@ var SpaceComponent = new (function () {
                 mThis.applyListFilters();
             },
         };
-        // if (!AuthManager.allowed(242)) return;
+         if (!AuthManager.allowed(208,false)) return;
         cv_interact.confirm(
             "confirm_delete",
             {
@@ -699,10 +704,7 @@ var SpaceComponent = new (function () {
                         )
                         .then((res) => {
                             if (res.status_code == 200) {
-                                cv_interact.success =
-                                    (message,
-                                    (title = null),
-                                    (position = "center"));
+                               cv_interact.success("delete_success_space");
                                 mThis.applyListFilters();
                             } else {
                                 cv_interact.error(res.error_message);
@@ -719,6 +721,7 @@ var SpaceComponent = new (function () {
                 mThis.applyListFilters();
             },
         };
+        if (!AuthManager.allowed(210,false)) return;
         ViewBookingDialog.show(op);
     };
     mThis.editBooking = (id, menuLink) => {
@@ -736,6 +739,7 @@ var SpaceComponent = new (function () {
                     );
                     return;
                 }
+                if (!AuthManager.allowed(211,false)) return;
                 CreateBookingDialog.show({
                     space_id: id,
                     booking: res.data,
@@ -749,6 +753,7 @@ var SpaceComponent = new (function () {
             });
     };
     mThis.cancelBooking = (id, menuLink) => {
+        if (!AuthManager.allowed(212,false)) return;
         cv_interact.confirm(
             "Cancel this booking ?",
             {
@@ -767,7 +772,7 @@ var SpaceComponent = new (function () {
                     )
                     .then((res) => {
                         if (res.status_code === 200) {
-                            cv_interact.success("Booking has been cancelled.");
+                            cv_interact.success("cancel_success_booking");
                             mThis.applyListFilters();
                         } else {
                             cv_interact.error(res.error_message || "Failed.");
@@ -1034,11 +1039,11 @@ const BuildingSpaceDialog = (() => {
                                         me.hide(true, op);
                                         if (me.dataOptions.id > 0) {
                                             cv_interact.success(
-                                                LocaleManager.trans("updated", "message_box_default"),
+                                                LocaleManager.trans("update_success_space", "message_box_default"),
                                             );
                                         } else {
                                             cv_interact.success(
-                                                LocaleManager.trans("created", "message_box_default"),
+                                                LocaleManager.trans("create_success_space", "message_box_default"),
                                             );
                                         }
                                     } else {
@@ -1251,9 +1256,9 @@ const CreateBookingDialog = (() => {
                                     if (res.status_code === 200) {
                                         me.hide(true, op);
                                         if (me.dataOptions.id > 0) {
-                                            cv_interact.success("updated");
+                                            cv_interact.success("update_success_booking");
                                         } else {
-                                            cv_interact.success("created");
+                                            cv_interact.success("create_success_booking");
                                         }
                                     } else {
                                         cv_interact.error(res.error_message);
@@ -1409,6 +1414,8 @@ const ViewBookingDialog = (() => {
 
     return self;
 })();
+
+
 
 
 

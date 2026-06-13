@@ -20,7 +20,7 @@ var ReceiptComponent = new (function() {
             data: data => {
                 const code = data.code
                     ? `<span class="text-prm-custom">${data.code}</span>`
-                    : `<span class="text-muted fst-italic">N/A</span>`;
+                    : `<span class="text-muted fst-italic">_</span>`;
 
                 return `
                     <div class="d-flex flex-column">
@@ -35,7 +35,7 @@ var ReceiptComponent = new (function() {
             data: data => {
                 const code = data.invoice_code
                     ? `<span class="text-prm-custom ">${data.invoice_code}</span>`
-                    : `<span class="text-muted fst-italic">N/A</span>`;
+                    : `<span class="text-muted fst-italic">_</span>`;
                 return `
                     <div class="d-flex flex-column ">
                         ${code}
@@ -262,6 +262,7 @@ var ReceiptComponent = new (function() {
     };
 
     mThis.printReceipt = (id, menuLink) => {
+        if (!AuthManager.allowed(241)) return;
         PrintReceiptDialog.show({
             receipt_id: id,
             btn: menuLink
@@ -269,15 +270,16 @@ var ReceiptComponent = new (function() {
     };
 
     mThis.cancelReceipt = id => {
+        if (!AuthManager.allowed(242)) return;
         Swal.fire({
-            title: "Cancel Receipt?",
+            title: `${LocaleManager.trans('Cancel Receipt?', "titles")}`,
             text: "This will restore the due balance on the invoice.",
             icon: "warning",
             input: "textarea",
             inputPlaceholder: "Reason for cancellation (required)...",
             showCancelButton: true,
             confirmButtonColor: "#d33",
-            confirmButtonText: "Yes, Cancel it!",
+            confirmButtonText: `${LocaleManager.trans('Yes, Cancel it!', "buttons")}`,
             reverseButtons: true,
             inputValidator: value => {
                 if (!value) return "You must provide a reason!";
@@ -290,7 +292,7 @@ var ReceiptComponent = new (function() {
                     .then(res => {
                         if (res.status_code !== 200) {
                             throw new Error(
-                                res.error_message || "Failed to cancel"
+                                res.error_message || "cancel_failed"
                             );
                         }
                         return res;
@@ -302,7 +304,7 @@ var ReceiptComponent = new (function() {
             allowOutsideClick: () => !Swal.isLoading()
         }).then(result => {
             if (result.isConfirmed) {
-                cv_interact.success("Receipt has been canceled.");
+                cv_interact.success("cancel_receipt");
                 mThis.ReceiptListView.showPage(mThis.getFilterData());
             }
         });

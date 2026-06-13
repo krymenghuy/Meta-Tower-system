@@ -47,7 +47,7 @@ return [
         'expired_booking_date_required' => 'Expired booking date is required.',
         'booking_fee_required' => 'Booking fee is required.',
 
-        'select_space' => 'Please select a space.',
+        'select_space' => 'Please select a unit.',
         'select_amenity' => 'Please select a amenity.',
         'select_type' => 'Please select a type.',
         'required_start_date' => 'Start date is required.',
@@ -117,6 +117,8 @@ return [
         'exists_in_system' => 'already exists in the system1.',
 
         'item_name_already_exists' => 'Item name already exists!',
+        'end_time_must' => 'End time must be greater than start time.',
+
 
 
 
@@ -135,16 +137,8 @@ return [
         'settings' => 'Settings',
 
         'logout' => 'Log Out',
-                   'logout'=> 'Log Out',
-                   'Transaction' => 'Transaction',
-
-    ],
-    'labels' => [
-
-        'service_unit_type' => 'Unit Type',
-
-
-
+        // 'logout'=> 'Log Out',
+        'Transaction' => 'Transaction',
 
     ],
 
@@ -158,6 +152,13 @@ return [
         'confirm_finish' => 'Are you sure you want to mark this as finished?',
         'finished' => 'Marked as finished successfully.',
         'confirm_delete' => 'Are you sure you want to delete this data?',
+        'cancel_failed' => 'Cancel failed.',
+        'delete_failed' => 'Delete failed.',
+        'save_failed' => 'Save failed.',
+        'confirm_complete' => 'Complete Service Request?',
+        'update_success_status' => 'Status updated successfully.',
+        'update_failed_status' => 'Unable to update status',
+        'upload_failed_photo' => 'Upload failed. Please try again.',
 
         'delete_maintenance' => 'Delete Maintenance',
         'confirm_delete_maintenance' => 'Are you sure you want to delete this maintenance?',
@@ -171,6 +172,143 @@ return [
         'confirm_finish_maintenance' => 'Are you sure you want to finish this maintenance?',
         'maintenance_finished' => 'Maintenance has been finished successfully.',
 
+        'update_success_tenant' => 'Tenant updated successfully.',
+        'create_success_tenant' => 'Tenant created successfully.',
+        'delete_success_tenant' => 'Tenant deleted successfully.',
+
+        'select_document_type' => 'Please select a document type.',
+        'select_file' => 'Please select a file.',
+        'select_valid_file' => 'Please select a valid file.',
+        'remarks_max_255' => 'Remarks must not exceed 255 characters.',
+        'update_success_document' => 'Document updated successfully.',
+        'create_success_document' => 'Document created successfully.',
+        'delete_success_document' => 'Document deleted successfully.',
+
+        'delete_success_space' => 'Space deleted successfully.',
+        'update_success_space' => 'Space updated successfully.',
+        'create_success_space' => 'Space created successfully.',
+
+        'create_success_booking' => 'Booking created successfully.',
+        'update_success_booking' => 'Booking updated successfully.',
+        'cancel_success_booking' => 'Booking has been cancelled.',
+
+        'finish_maintenance_success' => 'Maintenance has been completed.',
+        'delete_success_maintenance' => 'Maintenance deleted successfully.',
+        'select_building' => 'Please select a building.',
+        'select_type' => 'Please select a type.',
+        'select_space' => 'Please select a unit.',
+        'select_amenity' => 'Please select a amenity.',
+        'create_success_maintenance' => 'Maintenance created successfully.',
+        'update_success_maintenance' => 'Maintenance updated successfully.',
+        
+        'create_success_contract' => 'Contract created successfully.',
+        'update_success_contract' => 'Contract updated successfully.',
+        'delete_success_contract' => 'Contract deleted successfully.',
+        'confirm_terminate' => 'Are you sure you want to terminate this contract?',
+        'contract_terminated' => 'Contract terminated successfully.',
+
+        'update_success_reservation' => 'Reservation updated successfully.',
+        'create_success_reservation' => 'Reservation created successfully.',
+        'delete_success_reservation' => 'Reservation deleted successfully.',
+        'cancel_success_reservation' => 'Reservation cancelled successfully.',
+
+        'delete_success_invoice' => 'Invoice deleted successfully.',
+        'reset_success_invoice' => 'Invoice setting reset successfully.',
+        'update_success_setting' => 'Settings updated successfully.',
+        'reset_failed' => 'Failed to reset setting.',
+        'select_tenant' => 'Please select tenant first.',
+        'update_success_invoice' => 'Invoice updated successfully.',
+        'create_success_invoice' => 'Invoice created successfully.',
+        'cancel_success_invoice' => 'Invoice cancelled successfully.',  
+        'add_item' => 'Please add at least one item.',
+        'tax_required' => 'Tax % is required for this invoice type.',
+        'enter_tax' => 'Please enter a valid Tax % value.',
+        'missing_unit' => 'Unit Code is missing.',
+        'select_service' => 'Please select a service.',
+        'input_date' => 'Please input Start and End Date.',
+        'input_time' => 'Please input Duration.',
+        'service_exist' => 'Service is already in the list.',
+        'service_request' => 'Please select a service request.',
+        'request_exist' => 'Request is already in the list.',
+        'request_invoice' => 'Service request added to invoice',
+        'failed_load_invoice' => 'Failed to load invoice details.',
+        'no_request' => 'No Requests relate to this space.',
+        'receive_success_payment' => 'Payment Received Successfully.',
+        'payment_amount' => 'Please enter a payment amount',
+
+        'cancel_receipt' => 'Receipt has been canceled.',
+        'complete_success_request' => 'Service Request has been completed!',
+        'delete_success_request' => 'Service request deleted successfully.',
+        'update_success_request' => 'Service request updated successfully!',
+        'create_success_request' => 'Service Request has been created.',
+
+        'delete_success_vendor' => 'Vendor deleted successfully.',
+        'update_success_vendor' => 'Vendor updated successfully.',
+        'create_success_vendor' => 'Vendor created successfully.',
+
+        'create_success_order' => 'Purchase Order created successfully.',
+        'delete_success_order' => 'Purchase Order deleted successfully.',
+        'update_success_order' => 'Purchase Order updated successfully.',
+        'receive_success_order' => 'Purchase Order received successfully.',
+        'reject_success_order' => 'Purchase Order rejected successfully.',
+        'authorized_purchase' => 'Purchase Order has been authorized!',
+        
+
+        'delete_bill_success' => 'Bill record has been deleted."',
+        'update_bill_success' => 'Bill updated successfully.',
+        'create_success_bill' => 'Bill created successfully.',
+        'delete_bill_photo' => 'Photo deleted successfully.',
+        'upload_bill_photo' => 'Bill photo has been uploaded.',
+
+        'delete_payment_success' => 'Payment deleted successfully.',
+        'update_payment_success' => 'Payment updated successfully.',
+        'create_payment_success' => 'Payment created successfully.',
+        'cancel_payment_success' => 'Payment has been canceled.',
+        'no_photo' => 'No Photo Found.',
+
+        'delete_success_building' => 'Building deleted successfully.',
+        'delete_floor' => 'Floor deleted successfully.',
+        'create_success_building' => 'Building created successfully.',
+        'update_success_building' => 'Building updated successfully.',
+        'create_floor' => 'Floor created successfully.',
+        'update_floor' => 'Floor updated successfully.',
+
+        'create_success_amenity' => 'New Amenity has been added successfully.',
+        'update_success_amenity' => 'Amenity updated successfully.',
+        'delete_success_amenity' => 'Amenity deleted successfully.',
+
+        'update_success_service' => 'Service updated successfully.',
+        'create_success_service' => 'Service created successfully.',
+        'delete_success_service' => 'Service deleted successfully.',
+
+        'update_success_item' => 'Item updated successfully.',
+        'create_success_item' => 'Item created successfully.',
+        'delete_success_item' => 'Item deleted successfully.',
+
+        '' => '',
+        '' => '',
+        '' => '',
+        '' => '',
+        '' => '',
+        '' => '',
+
+
+
+
+
+
+
+        
+
+
+
+
+
+        
+
+
+        
+        
 
         "Confirm" => 'Confirm',
         "Log Out" => "Log Out",

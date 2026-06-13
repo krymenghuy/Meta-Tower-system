@@ -187,20 +187,14 @@ var TenantComponent = new (function () {
                     mThis.tenantListView.showPage(mThis.getFilterData());
                 },
             };
+
+            if(!AuthManager.allowed(218,false)) return;
             CreateTenantDialog.show(op);
         };
          mThis.btnPDF.onclick = function (e) {
             e.preventDefault();
+            if (!AuthManager.allowed(233,false)) return;
             let op = mThis.getFilterData();
-            // const op = {
-            //     id: null,
-            //     btn: e.target,
-            //     onClose: () => {
-            //         mThis.renderView();
-            //         mThis.tenantListView.showPage(mThis.getFilterData());
-            //     },
-            // };
-            console.log(9090,op);
             
             let html = `
                 <div id="full_elbody" style="zoom:95%">
@@ -534,6 +528,7 @@ var TenantComponent = new (function () {
                 mThis.renderView();
             },
         };
+        if (!AuthManager.allowed(220,false)) return;
         CreateTenantDialog.show(op);
     };
     mThis.serviceRequest = (id, menuLink) => {
@@ -555,6 +550,7 @@ var TenantComponent = new (function () {
                 mThis.renderView();
             },
         };
+        if (!AuthManager.allowed(227,false)) return;
         ContractDialog.show(op);
     };
     mThis.uploadDocument = (id, menuLink) => {
@@ -566,8 +562,7 @@ var TenantComponent = new (function () {
                 mThis.renderView();
             },
         };
-        // console.log(111, op);
-
+        if (!AuthManager.allowed(222,false)) return;
         TenantDocumentDialog.show(op);
     };
     mThis.modifyDocument = (id, menuLink) => {
@@ -596,7 +591,7 @@ var TenantComponent = new (function () {
                 mThis.renderView();
             },
         };
-        // if (!AuthManager.allowed(242)) return;
+        if (!AuthManager.allowed(221,false)) return;
         cv_interact.confirm(
             "confirm_delete",
             {
@@ -780,6 +775,7 @@ var TenantComponent = new (function () {
             link.addEventListener("click", (e) => {
                 const tenantId = e.currentTarget.dataset.id;
                 mThis.tenant_id = tenantId;
+                if (!AuthManager.allowed(219,false)) return;
                 mThis.showPage("profile_view", tenantId);
                 //const employeeData = data.find((emp) => emp.id == employeeId);
                 // if (employeeData) {
@@ -819,6 +815,7 @@ var TenantComponent = new (function () {
                         mThis.renderView();
                     },
                 };
+                if (!AuthManager.allowed(227,false)) return;
                 ContractDialog.show(op);
             });
         });
@@ -957,6 +954,7 @@ var TenantComponent = new (function () {
                     null,
                 );
                 const data = res.data || {};
+                if (!AuthManager.allowed(219,false)) return;
                 mThis.renderProfile(data);
                 break;
             }
@@ -1522,7 +1520,7 @@ var TenantComponent = new (function () {
                         rows = `
                     <tr>
                         <td colspan="5" class="text-center py-4 text-muted">
-                            No data to display
+                            ${LocaleManager.trans("No data to display", "titles")}
                         </td>
                     </tr>`;
                     }
@@ -1561,6 +1559,7 @@ var TenantComponent = new (function () {
                     const btnDocument = div.querySelector("#_btnDocument");
                     if (btnDocument) {
                         btnDocument.onclick = () => {
+                            if (!AuthManager.allowed(222,false)) return;
                             TenantDocumentDialog.show({
                                 id: null,
                                 tenant_id: data.id,
@@ -1574,11 +1573,13 @@ var TenantComponent = new (function () {
                     div.querySelectorAll(".view-doc").forEach((btn) => {
                         btn.addEventListener("click", async (e) => {
                             const id = e.currentTarget.dataset.id;
+                            if (!AuthManager.allowed(223,false)) return;
                             mThis.openTenantDocument(id, "view");
                         });
                     });
                     div.querySelectorAll(".download-doc").forEach((btn) => {
                         btn.addEventListener("click", (e) => {
+                            if (!AuthManager.allowed(225,false)) return;
                             const id = e.currentTarget.dataset.id;
                             mThis.openTenantDocument(id, "download");
                         });
@@ -1598,6 +1599,7 @@ var TenantComponent = new (function () {
                                     );
                                 },
                             };
+                            if (!AuthManager.allowed(224,false)) return;
                             TenantDocumentDialog.show(op);
                         });
                     });
@@ -1606,6 +1608,7 @@ var TenantComponent = new (function () {
                         .querySelectorAll(".delete-doc-btn")
                         .forEach((btn) => {
                             btn.addEventListener("click", async function (e) {
+                                if (!AuthManager.allowed(226,false)) return;
                                 const docId = this.dataset.id;
 
                                 const confirmed = await cv_interact.confirm(
@@ -1632,7 +1635,7 @@ var TenantComponent = new (function () {
                                         )
                                         .then((res) => {
                                             if (res.status_code === 200) {
-                                                cv_interact.success("deleted");
+                                                cv_interact.success("delete_success_document");
                                                 mThis.renderOverView(
                                                     div,
                                                     target,
@@ -1756,10 +1759,16 @@ const CreateTenantDialog = (() => {
                     </div>
 
                     <div class="col-md-9 row align-content-between flex-wrap" > 
-                            <div class="col-12 ">
+                            <div class="col-6">
                                 <div class="vs-material-field">
                                     <input type="text" name="name" class="data-input form-control" data-field="name" placeholder="" />
-                                    <label vslang="labels.Full Name">Full Name</label>
+                                    <label vslang="labels.Full Name (EN)"></label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="vs-material-field">
+                                    <input type="text" name="name_kh" class="data-input form-control" data-field="name_kh" placeholder="" />
+                                    <label vslang="labels.Full Name (KH)"></label>
                                 </div>
                             </div>
                             <div class="col-12 col-md-6">
@@ -1786,7 +1795,7 @@ const CreateTenantDialog = (() => {
                                     <label vslang="labels.Legal Name">Legal Name</label>
                                 </div>
                             </div>
-                            <div class="col-12 col-md-6" >
+                            <div class="col-12 col-md-6">
                                 <select data-style="material" name="nationality_id" class="data-input form-control" data-field="nationality_id" placeholder="Nationality"></select>
                             </div>
                     </div>
@@ -1797,13 +1806,13 @@ const CreateTenantDialog = (() => {
                                 <label vslang="labels.National ID">National ID</label>
                             </div>
                         </div>
-                        <div class="col-12 col-md-3">
+                        <div class="col-12 col-md-4">
                             <div class="vs-material-field">
                                 <input type="text" data-type="date" name="nid_issue_date" class="data-input form-control form_input" data-field="nid_issue_date" placeholder=" " />
-                                <label vslang="labels.Issue Date">Issue Date</label>
+                                <label vslang="labels.National ID Issue Date">National ID Issue Date</label>
                             </div>
                         </div>
-                        <div class="col-12 col-md-6">
+                        <div class="col-12 col-md-5">
                             <div class="vs-material-field">
                                 <input type="text" name="passport_number" class="data-input form-control" data-field="passport_number" placeholder=" " />
                                 <label vslang="labels.Passport">Passport Number</label>
@@ -1815,6 +1824,8 @@ const CreateTenantDialog = (() => {
                                 <label vslang="labels.Phone Number">Phone Number</label>
                             </div>
                         </div>
+                      
+                       
                         <div class="col-12 col-md-6 pt-2">
                             <div class="vs-material-field">
                                 <input type="email" name="email" class="data-input form-control" data-field="email" placeholder=" " />
@@ -2273,7 +2284,7 @@ const TenantDocumentDialog = (() => {
                             )
                             .then((res) => {
                                 if (res.status_code === 200) {
-                                    cv_interact.success("deleted");
+                                    cv_interact.success("delete_success_document");
                                     if (
                                         typeof me.loadTenantDocuments ===
                                         "function"
@@ -2410,9 +2421,9 @@ const TenantDocumentDialog = (() => {
                                             res.dataOptions?.id || null;
                                         me.hide(true, p, newDocumentId);
                                         if (me.dataOptions.id > 0) {
-                                           cv_interact.success("updated");
+                                           cv_interact.success("update_success_document");
                                         } else {
-                                            cv_interact.success("created");
+                                            cv_interact.success("create_success_document");
                                         }
                                     } else {
                                         cv_interact.error(res.error_message);

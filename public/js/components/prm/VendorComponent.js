@@ -182,7 +182,7 @@ var VendorComponent = (() => {
                     mThis.VendorListView.showPage(mThis.getFilterData());
                 },
             };
-            // if (!AuthManager.allowed(240)) return;
+            if (!AuthManager.allowed(265,false)) return;
             CreateVendorDialog.show(op);
         };
 
@@ -308,13 +308,15 @@ var VendorComponent = (() => {
     mThis.changeStatus = (id, link) => {
         const tr = link.closest("tr");
         const status_id = tr?.dataset.statusid || "";
+        if (!AuthManager.allowed(268,false)) return;
         const inputOptions = {
             context: "success",
-            title: "Change Status",
+            title: `${LocaleManager.trans('Change Status', "titles")}`,
             label: "Vendor Status",
             valueKey: "status_id",
             labelKey: "name",
-            confirmButtonText: "Save",
+            confirmButtonText: `${LocaleManager.trans('Save', "buttons")}`,
+            cancelButtonText: `${LocaleManager.trans('Close', "buttons")}`,
             requiredMessage: "Please select a status",
             data: [
                 { status_id: "1", name: "Active" },
@@ -332,7 +334,7 @@ var VendorComponent = (() => {
                     .then((res) => {
                         if (res.status_code === 200) {
                             me.close();
-                            cv_interact.success("success");
+                            cv_interact.success("update_success_status");
                             mThis.VendorListView.showPage(
                                 mThis.getFilterData(),
                             );
@@ -354,7 +356,7 @@ var VendorComponent = (() => {
                 mThis.VendorListView.showPage(mThis.getFilterData());
             },
         };
-
+        if (!AuthManager.allowed(266,false)) return;
         CreateVendorDialog.show(op);
     };
     mThis.deleteVendor = (id, menuLink) => {
@@ -365,7 +367,7 @@ var VendorComponent = (() => {
                 mThis.VendorListView.showPage(mThis.getFilterData());
             },
         };
-        if (!AuthManager.allowed(242)) return;
+        if (!AuthManager.allowed(267,false)) return;
         cv_interact.confirm(
             "confirm_delete",
             {
@@ -387,7 +389,7 @@ var VendorComponent = (() => {
                         )
                         .then((res) => {
                             if (res.status_code == 200) {
-                                cv_interact.success("deleted");
+                                cv_interact.success("delete_success_vendor");
                                 mThis.VendorListView.showPage();
                             } else {
                                 cv_interact.error(res.error_message);
@@ -596,9 +598,9 @@ const CreateVendorDialog = (() => {
                                     if (res.status_code === 200) {
                                         me.hide(true, op);
                                         if (me.dataOptions.id > 0) {
-                                            cv_interact.success('updated');
+                                            cv_interact.success('update_success_vendor');
                                         } else {
-                                            cv_interact.success('created');
+                                            cv_interact.success('create_success_vendor');
                                         }
                                     } else {
                                         cv_interact.error(res.error_message);

@@ -231,7 +231,7 @@ var StaffComponent = new (function () {
             onShow: (me, container) => {
             },
 
-            onClick: (menuLink, id, name) => {
+            onClick: (menuLink, id, name) => {;
                 switch (name) {
                     case "view_profile": {
                         mThis.showPage("profile_view", { tenant_id: id });
