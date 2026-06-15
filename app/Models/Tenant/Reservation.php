@@ -185,7 +185,7 @@
 
             $tenant_id = $ss->official_id;
 
-            \Log::info(print_r($ss, true));
+            // \Log::info(print_r($ss, true));
 
 
             if($search_value){

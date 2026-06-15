@@ -233,7 +233,7 @@ var ReceiptComponent = new (function() {
             menus: [
                 {
                     html:
-                        '<span class="ps-2" vslang="title.Cancel Receipt"></span>',
+                        '<span class="ps-2" vslang="titles.Cancel Receipt"></span>',
                     icon: `<i class="fa-regular fa-rectangle-xmark fs-5 text-danger-emphasis"></i>`,
                     name: "cancel_receipt",
                     cssClass: "border-bottom pb-2"
