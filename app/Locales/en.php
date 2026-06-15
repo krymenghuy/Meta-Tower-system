@@ -22,7 +22,7 @@ return [
         'file_size_between' => 'File size must be between ??KB and ??KB.',
         'default' => 'Invalid ??.',
 
-        'name_required' => 'Name is required.',
+        'name_required' => '?? is required and must be at most ?? characters. Given value: ??',
         'prefix_required' => 'Prefix is required.',
         'total_floor_required' => 'Total floor is required.',
         'total_area_required' => 'Total area is required.',
@@ -36,7 +36,7 @@ return [
         'select_price_type' => 'Please select the Charge As.',
 
         'select_gender' => 'Please select a gender.',
-        'date_of_birth_required' => 'Please select a valid date of birth',
+        'date_of_birth_required' => 'Please select a valid date of birth.',
         'legal_name_required' => 'Please enter the legal name.',
         'nationality_required' => 'Please select a nationality.',
         'phone_number_required' => 'Please enter the phone number.',
@@ -118,10 +118,15 @@ return [
 
         'item_name_already_exists' => 'Item name already exists!',
         'end_time_must' => 'End time must be greater than start time.',
+        'nid_issue_date' => 'Please Select National ID Issue Date.',
 
 
 
 
+    ],
+    'api_body_keys' =>[
+        'name' => 'Name',
+        'building_id' => 'Building',
     ],
     'titles' => [
         'dashboard' => 'Dashboard - Meta Tower'
