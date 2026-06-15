@@ -718,13 +718,13 @@ var ReportComponent = (() => {
 
         div.querySelector('.btn-print')?.addEventListener('click', e => {
             e.preventDefault();
-            // if (!AuthManager.allowed(`${mThis.permissionID}.Print`)) return;
+            if (!AuthManager.allowed(`${mThis.permissionID}.Print`)) return;
             windowPrint();
         });
 
         div.querySelector('.btn-excel')?.addEventListener('click', e => {
             e.preventDefault();
-            // if (!AuthManager.allowed(`${mThis.permissionID}.Excel`)) return;
+            if (!AuthManager.allowed(`${mThis.permissionID}.Excel`)) return;
             exportToExcel();
         });
 

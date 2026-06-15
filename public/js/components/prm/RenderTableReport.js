@@ -1122,12 +1122,11 @@ function tenantList(div, data) {
                 <tr>
                     <th class="text-center">No</th>
                     <th class="text-center">Name</th>
-                    <th class="text-center">Legal Name</th>
-                    <th class="text-center">National ID</th>
-                    <th class="text-center">Passport</th>
                     <th class="text-center">Sex</th>
                     <th class="text-center">Phone</th>
                     <th class="text-center">Email</th>
+                    <th class="text-center">National ID</th>
+                    <th class="text-center">Passport</th>
                     <th class="text-center">Status</th>
                     <th class="text-center">Address</th>
                 </tr>
@@ -1145,15 +1144,6 @@ function tenantList(div, data) {
                     <td class="align-middle">
                         ${st.name ?? 'N/A'}
                     </td>
-                    <td class="align-middle">
-                        ${st.legal_name ?? 'N/A'}
-                    </td>
-                    <td class="text-center align-middle">
-                        ${st.national_id ?? 'N/A'}
-                    </td>
-                    <td class="text-center align-middle">
-                        ${st.passport_number ?? 'N/A'}
-                    </td>
                     <td class="text-center align-middle">
                         ${
                             st.sex === 'M'
@@ -1168,6 +1158,12 @@ function tenantList(div, data) {
                     </td>
                     <td class="align-middle">
                         ${st.email ?? 'N/A'}
+                    </td>
+                    <td class="text-center align-middle">
+                        ${st.national_id ?? 'N/A'}
+                    </td>
+                    <td class="text-center align-middle">
+                        ${st.passport_number ?? 'N/A'}
                     </td>
                     <td class="text-center align-middle">
                         ${st.status ?? 'N/A'}

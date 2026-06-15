@@ -586,6 +586,7 @@ return [
         'OK' => 'បាទ',
         'Finish' => 'បាទ',
         'Print' => 'បោះពុម្ព',
+        'PDF' => 'ទាញយក',
         'Close' => 'បិទ',
         'Continue' => 'បន្តរ',
         'Continue Now' => 'បន្តរ',
