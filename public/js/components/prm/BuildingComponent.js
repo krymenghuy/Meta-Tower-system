@@ -695,7 +695,8 @@ const BuildingDialog = (() => {
                 onPrepareForm: (me, data) => {
                     const isReadOnly = me.dataOptions.id > 0;
                     me.setReadOnly(isReadOnly, ["total_floor"]);
-                    const hasUnit = data.building_details.total_space > 0;
+                    const total_space = Number(data.building_details?.total_space || 0);
+                    const hasUnit = total_space > 0;
                     me.controls.prefix.disabled = hasUnit;
                 },
                 buttons: [

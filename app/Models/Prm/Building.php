@@ -34,7 +34,7 @@ class Building //extends Model
             'total_area' => '1|number|min=0|text=total_area_required',
             'total_space' => '0|number',
             'occupancy' => '0|number',
-            'address' => '1|string|0-255|text=address_required',
+            'address' => '1|string|text=address_required::@key;@max;@value',
         ];
 
         $allowSign = ['$', '#', '@', '!', '.', '-', ',', '_', '=', '?'];

@@ -170,7 +170,6 @@ var TenantComponent = new (function () {
             tableClass:
                 "table table--white rounded-2 overflow-hidden header-uppercase text-nowrap",
             rowCreated: (data, index, tr) => {
-
                 tr.dataset.id = data.id;
                 tr.dataset.statusid = data.status_id;
                 mThis.initDropdownMenus(tr);
@@ -971,7 +970,6 @@ var TenantComponent = new (function () {
         targetPage.style.display = "block";
     };
     mThis.renderProfile = (data) => {
-
         let cls_class = "";
         if (data && data.status) {
             switch (data.status) {
@@ -1657,7 +1655,6 @@ var TenantComponent = new (function () {
     };
 
     mThis.setActionsProfileInfo = (divProfile) => {
-
         divProfile.addEventListener("click", (e) => {
             // let btn = VSUtil.closestLimited(e.target, ".edit_tenant_profile_info ");
             // if (btn) {
@@ -1863,18 +1860,13 @@ const CreateTenantDialog = (() => {
                     me.ext = null;
 
                     me.renderTenantImage = () => {
-                        
-                        const hasNoId = me.dataOptions.id == null;
-                        const src = new URL(me.previewImg.src).pathname
-                            .split("/")
-                            .pop();
-                        const isPlaceholder = src === "placeholder.svg";
+                        let src = "";
+                        if (me.previewImg && me.previewImg.src) {
+                            src = me.previewImg.src.split("/").pop();
+                        }
+                        const isPlaceholder = src === "placeholder.svg" || src === "";
 
-                        if (
-                            (hasNoId && !me.fileBase64) ||
-                            (!hasNoId && isPlaceholder)
-                        ) {
-
+                        if (!me.fileBase64 || isPlaceholder) {
                             me.uploadZone.classList.remove("d-none");
                             me.previewZone.classList.add("d-none");
                             me.uploadInput.value = "";
@@ -1882,7 +1874,6 @@ const CreateTenantDialog = (() => {
                             if (me.displayInput) me.displayInput.value = "";
                             if (me.previewImg) me.previewImg.src = "";
                         } else {
-
                             me.uploadZone.classList.add("d-none");
                             me.previewZone.classList.remove("d-none");
                         }
@@ -2024,6 +2015,13 @@ const CreateTenantDialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
+                    if (!me.dataOptions.id) {
+                        me.fileBase64 = null;
+                        me.ext = null;
+                        if (me.previewImg) me.previewImg.src = "";
+                        if (me.displayInput) me.displayInput.value = "";
+                        if (me.uploadInput) me.uploadInput.value = "";
+                    }
                     me.renderTenantImage();
                     if (me.dataOptions.phone_number) {
                         me.controls.name.value = me.dataOptions.name;
@@ -2039,9 +2037,15 @@ const CreateTenantDialog = (() => {
                             if (data && data.image_url) {
                                 me.previewImg.src = data.image_url;
                                 me.fileBase64 = data.image_url;
+                            } else {
+                                me.previewImg.src = "";
+                                me.fileBase64 = null;
                             }
+                        } else {
+                            me.previewImg.src = "";
+                            me.fileBase64 = null;
                         }
-                        // me.renderTenantImage();
+                        me.renderTenantImage();
                     },
                 },
                 buttons: [

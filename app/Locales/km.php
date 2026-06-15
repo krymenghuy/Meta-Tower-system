@@ -123,6 +123,7 @@ return [
         'end_after_start' => 'ថ្ងៃ/ម៉ោងបញ្ចប់ត្រូវតែធំជាងថ្ងៃ/ម៉ោងចាប់ផ្តើម។',
         'start_time_cannot_in_past' => 'ម៉ោងចាប់ផ្តើមមិនអាចនៅក្នុងពេលអតីតកាលបានទេ។',
         'end_time_cannot_in_past'   => 'ម៉ោងបញ្ចប់មិនអាចនៅក្នុងពេលអតីតកាលបានទេ។',
+        'nid_issue_date' => 'សូមជ្រើសរើសថ្ងៃចេញអត្តសញ្ញាណប័ណ្ណ',
 
 
 
@@ -150,7 +151,7 @@ return [
         'Create Building' => 'បង្កើតអគារ',
         'Modify Building' => 'កែប្រែអគារ',
         'Create Floor' => 'បង្កើតជាន់ថ្មី',
-        'Modify Floor' => 'កែប្រែជាន់', 
+        'Modify Floor' => 'កែប្រែជាន់',
         'Floor' => 'ជាន់',
         'Floor Number' => 'លេខជាន់',
         'Total Space' => 'បន្ទប់សរុប',

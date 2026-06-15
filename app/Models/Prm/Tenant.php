@@ -74,18 +74,18 @@ class Tenant
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
         $v_rule = [
-            'name'            => '1|string|0-30|text=name_required',
-            'name_kh'            => '1|string|0-30|text=name_required',
+            'name'            => '1|string|0-150|text=name_required::@key;@max;@value',
+            'name_kh'         => '1|string|0-150|text=name_required::@key;@max;@value',
             'sex'             => '1|choice|F,M|text=select_gender',
             'date_of_birth'   => '1|date|text=date_of_birth_required',
-            'legal_name'      => '1|string|0-30|text=legal_name_required',
+            'legal_name'      => '1|string|0-150|text=legal_name_required',
             'nationality_id'  => '1|number|text=nationality_required',
             'national_id'     => '0|string|0-20',
-            'nid_issue_date'   => '1|date|text=Issue date is required',
+            'nid_issue_date'   => '1|date|text=nid_issue_date',
             'passport_number' => '|string|0-20',
             'phone_number'    => '1|string|1-20|text=phone_number_required',
             'email'           => '0|email|1-30',
-            'address'         => '0|string|0-255',
+            'address'         => '0|string',
             'photo'           => '0|image'
         ];
         $email_char = ['@', '.'];
