@@ -22,7 +22,7 @@ return [
         'file_size_between' => 'File size must be between ??KB and ??KB.',
         'default' => 'Invalid ??.',
 
-        'name_required' => '?? is required and is at most ??. Given value ??',
+        'name_required' => '?? is required and must be at most ?? characters. Given value: ??',
         'prefix_required' => 'Prefix is required.',
         'total_floor_required' => 'Total floor is required.',
         'total_area_required' => 'Total area is required.',
