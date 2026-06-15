@@ -22,7 +22,7 @@ return [
         'file_size_between' => 'File size must be between ??KB and ??KB.',
         'default' => 'Invalid ??.',
 
-        'name_required' => 'Name is required.',
+        'name_required' => '?? is required and is at most ??. Given value ??',
         'prefix_required' => 'Prefix is required.',
         'total_floor_required' => 'Total floor is required.',
         'total_area_required' => 'Total area is required.',
@@ -122,6 +122,10 @@ return [
 
 
 
+    ],
+    'api_body_keys' =>[
+        'name' => 'Name',
+        'building_id' => 'Building',
     ],
     'titles' => [
         'dashboard' => 'Dashboard - Meta Tower'

@@ -30,7 +30,7 @@
                 <div class="col-12 col-md-6 col-lg-4 ms-md-auto">
                     <div class="row g-2 justify-content-end">
                         <div class="col-12 col-md-auto">
-                            <button type="button" class="btn-print w-100" id="_tenant_btn_pdf">
+                            <button type="button" class="btnAddNewPrm w-100" id="_tenant_btn_pdf">
                                 <i class="fa fa-print text-white me-2"></i>
                                 <span class="text-white" vslang="buttons.PDF"></span>
                             </button>
