@@ -637,8 +637,9 @@ class Tenant
 
         $spaces = DB::table('contracts as c')
             ->join('building_spaces as bs', 'bs.id', '=', 'c.space_id')
+            ->leftJoin('buildings as b', 'b.id', '=', 'bs.building_id')
             ->where('c.tenant_id', $id)
-            ->where('c.status_id',2)
+            ->where('c.status_id', '=', Contract::getActiveStatusId())
             ->select(
                 'c.id as contract_id',
                 'bs.id as space_id',
@@ -648,7 +649,9 @@ class Tenant
                 'c.price',
                 'c.sqm_size',
                 'c.start_date',
-                'c.end_date'
+                'c.end_date',
+                'c.deposit',
+                'b.name as building_name'
             )
             ->orderByDesc('c.start_date')
             ->get()
@@ -686,6 +689,8 @@ class Tenant
                     'effective_price' => $effective_price,
                     'start_date'  => $contract->start_date,
                     'end_date'    => $contract->end_date,
+                    'deposit'     => $contract->deposit,
+                    'building_name'=> $contract->building_name,
                 ];
             })
             ->values();

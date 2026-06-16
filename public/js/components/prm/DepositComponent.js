@@ -1,138 +1,110 @@
 "use strict";
+
 var DepositComponent = (() => {
     const mThis = {};
-    mThis.title_prop = "Deposits";
+    mThis.title_prop = "Deposit Management";
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector(
         "#_main_deposit_component",
     );
-    mThis.btnAdd = mThis.self.querySelector("#_btnDeposit");
-    mThis.divFilter = mThis.self.querySelector("#_divFilter_service");
-    mThis.elFilter_category = mThis.self.querySelector("#_service_category_id");
-    mThis.elFilter_type = mThis.self.querySelector("#_service_type_id");
-    mThis.elFilter_status = mThis.self.querySelector("#_status_id");
-    mThis.elFilter_charge_as = mThis.self.querySelector("#_charge_as");
-    mThis.elSearch = mThis.self.querySelector("#_search_service");
+    mThis.btnAdd = mThis.self.querySelector("#_btnBill");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter_deposit");
+    mThis.elFilter_building = mThis.self.querySelector("#_bill_building_id");
+    mThis.elFilter_vendor = mThis.self.querySelector("#_bill_vendor_id");
+    mThis.elFilter_status = mThis.self.querySelector("#_bill_status_id");
+    mThis.elFilter_category = mThis.self.querySelector(
+        "#_bill_expense_type_id",
+    );
+    mThis.elSearch = mThis.self.querySelector("#_search_bill");
 
     mThis.cols = [
         {
             transTitle: "",
-            className: "align-middle text-capitalize",
-        },
-        {
-            transTitle: "titles.Name",
             className: "align-middle",
-            data: (data) => {
-                return `<div class="d-flex flex-column">
-                    <span class="text-primary-custom">${data.name ?? ""}</span>
-                    <small class=" text-muted">${data.service_level ?? ""}</small>
-                </div>`;
-            },
         },
         {
-            transTitle: "titles.Category",
-            className: "align-middle",
-            data: (data) => {
-                return `<span class="text-primary-custom">${data.service_category ?? ""}</span>`;
-            },
+            transTitle: "titles.Building",
+            className: "align-middle text-nowrap",
+            data: (data) =>
+                `<span class="d-block text-nowrap fw-semibold">${data.building_name ?? "_"}</span>
+                 <span class="d-block text-muted small">${data.space_code ?? "_"}</span>`,
         },
         {
-            transTitle: "titles.Type",
-            className: "align-middle",
-            data: (data) => {
-                return `<span class="text-capitalize text-prm-custom">${data.service_type ?? ""}</span>`;
-            },
+            transTitle: "titles.Tenant",
+            className: "align-middle text-nowrap",
+            data: (data) =>
+                `<span class="d-block fw-semibold text-capitalize">${data.tenant_name ?? "_"}</span>
+                 <span class="d-block text-primary small">${data.phone_number ?? "_"}</span>`,
         },
         {
-            transTitle: "titles.Charge As",
+            transTitle: "titles.Contract Period",
+            className: "align-middle text-nowrap",
+            data: (data) =>
+                `<span class="d-block text-prm-custom small">${data.start_date ?? "_"} to ${data.end_date ?? "_"}</span>`,
+        },
+        {
+            transTitle: "titles.Deposit Date",
+            className: "align-middle text-nowrap",
+            data: (data) =>
+                `<span class="d-block text-prm-custom">${data.deposit_date ?? "_"}</span>`,
+        },
+        {
+            transTitle: "titles.Amount",
             className: "align-middle text-nowrap",
             data: (data) => {
-                const unitMap = {
-                    per_unit: "Unit",
-                    one_time: "Once",
-                    hour: "Hourly",
-                    month: "Monthly",
-                };
-
-                const label = unitMap[data.charge_as] || "-";
-
-                return `<span class="badge text-info bg-info-subtle border border-info text-nowrap" style="min-width:90px;">${label}</span>`;
+                return `<span class="d-block fw-semibold text-primary">${VSMoney.formatAmount(data.total_amount, "USD")}</span>`;
             },
         },
+
         {
-            transTitle: "titles.Price",
-            className: "align-middle",
+            transTitle: "titles.Remark",
+            className: "align-middle text-nowrap",
             data: (data) => {
-                const currency = data.currency_code ?? "USD";
-
-                const unitMap = {
-                    per_unit: "Unit",
-                    one_time: "Once",
-                    hour: "Hourly",
-                    month: "Monthly",
-                };
-
-                // const unit = unitMap[data.charge_as] || '';
-                const formattedPrice = VSMoney.formatAmount(
-                    data.price,
-                    currency,
-                );
-
                 return `
-                    <span class="text-nowrap" style="color: #0C447C">
-                        ${formattedPrice}
-                    </span>
+                    <div class="text-primary-custom" style="width:200px;">
+                        <span class="text-wrap text-break" style="word-break:break-word;">${data.remark ?? "_"}</span>
+                    </div>
                 `;
             },
         },
-        // {
-        //     transTitle: "titles.Remark",
-        //     className: "align-middle",
-        //     data: (data, index, tr) => {
-        //         return `
-        //             <div class="text-primary-custom" style="width:120px;">
-        //                 <span class="text-wrap text-break" style ="word-break:break-word;">${data.description ?? ''}</span>
-        //             </div>
-        //         `;
-        //     }
-        // },
         {
             transTitle: "titles.Status",
-            className: "align-middle text-center",
+            className: "align-middle text-nowrap text-center",
             data: (data) => {
-                const status = (data.status ?? "").toLowerCase();
-                let cls =
-                    "badge text-dark bg-warning-subtle border border-warning";
-                if (status === "active") {
-                    cls =
-                        "badge text-success bg-success-subtle border border-success";
-                } else if (status === "inactive") {
-                    cls =
-                        "badge text-danger bg-danger-subtle border border-danger";
-                }
+                const status = (data.status ?? "pending").toLowerCase();
+                const statusConfig = {
+                    pending:
+                        "border border-danger text-danger bg-danger-subtle",
+                    paid: "border border-success text-success bg-success-subtle",
+                    refunded:
+                        "border border-warning text-warning bg-warning-subtle",
+                };
+                const cls = statusConfig[status] ?? "bg-secondary text-white";
                 return `
-                    <span class="${cls} text-capitalize d-inline-block text-center" style="min-width:70px">
-                        ${data.status ?? ""}
-                    </span>
-                `;
+                    <span class="badge ${cls} text-capitalize d-inline-flex align-items-center justify-content-center px-3 py-2 gap-2" style="min-width:100px; font-size:12px;">
+                        ${status}
+                    </span>`;
             },
         },
         {
             transTitle: "titles.Last Updated",
-            className: "align-middle",
-            data: (data, index, tr) => {
+            className: "align-middle text-nowrap",
+            data: (data) => {
                 return `<div class="d-flex flex-column">
-                    <span class="text-capitalize text-start text-prm-custom"><span>${data.update_user ?? ""}</span></span>
-                    <span class="text-muted small">${data.updated_at ?? ""}</span>
+                    <span class="text-capitalize text-start text-prm-custom"><span>${data.update_user ?? "_"}</span></span>
+                    <span class="text-muted small">${data.updated_at ?? "_"}</span>
                 </div>`;
             },
         },
         {
             transTitle: "titles.Action",
-            className: "col_action align-middle",
+            className: "col_action align-middle text-nowrap",
             data: (data) => `
                 <div class="d-flex justify-content-center align-items-end">
-                    <a href="javascript:void(0)" class="btn--Options ${data.action_id > 1 ? "d-none" : "btn_service_action"}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false" style="padding: 0 10px;">
+                    <a href="javascript:void(0)" class="btn--Options btn_dropdown_bill_action"
+                        data-id="${data.id}"
+                        data-status="${data.status}"
+                        aria-haspopup="true" aria-expanded="false" style="padding: 0 10px;">
                         <i class="fa-solid fa-ellipsis-vertical text-prm-custom fs-5"></i>
                     </a>
                 </div>`,
@@ -142,21 +114,22 @@ var DepositComponent = (() => {
     mThis.init = () => {
         if (mThis.initAlready) return;
 
-        mThis.DepositListView = new ListView("_deposit_list", {
-            fetchApi: `${main_view.base_url}/prm/service/list-paginate`,
-            perPage: 8,
-            // rememberCurrentPage: false,
+        mThis.BillListView = new ListView("_deposit_list", {
+            fetchApi: `${main_view.base_url}/prm/deposit/list-paginate`,
+            perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
-            tableClass:
-                "table table--white rounded-2 overflow-hidden header-uppercase",
+            tableClass: "table table--white rounded-2 header-uppercase",
             rowCreated: (data, index, tr) => {
-                tr.dataset.statusid = data.status_id;
-                tr.classList.add("service", "cursor-pointer");
-
-                tr.setAttribute("id", ["service_id", data.id].join(""));
-                tr.__serviceDescription = data.description ?? "";
+                tr.dataset.id = data.id;
+                tr.dataset.status = data.status;
+                tr.dataset.tenantId = data.tenant_id;
+                tr.dataset.buildingId = data.building_id;
+                tr.dataset.contractId = data.contract_id;
+                tr.classList.add("deposit");
+                tr.setAttribute("id", `deposit_payment_id${data.id}`);
             },
+
             listContainerClass: null,
         });
 
@@ -166,48 +139,27 @@ var DepositComponent = (() => {
                 id: null,
                 btn: e.target,
                 onClose: () => {
-                    mThis.DepositListView.showPage(mThis.getFilterData());
+                    mThis.BillListView.showPage(mThis.getFilterData());
                 },
             };
-            if (!AuthManager.allowed(252, false)) return;
+            if (!AuthManager.allowed(274, false)) return;
             DepositDialog.show(op);
         };
 
-        mThis.pr_tbl = mThis.DepositListView.getListContainer();
+        mThis.pr_tbl = mThis.BillListView.getListContainer();
         const sh_parent = mThis.pr_tbl.parentElement;
         sh_parent.style.maxHeight = window.innerHeight - 200 + "px";
         sh_parent.classList.add("overflow-y-auto");
-        sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
             sh_parent.style.maxHeight = window.innerHeight - 200 + "px";
         };
-        mThis.tblService = mThis.DepositListView.getTable();
-
-        mThis.initDropdownMenus(mThis.tblService);
-
-        if (!mThis.tblService.id) {
-            mThis.tblService.id = "_service_list_table";
-        }
-        new ExpandableRowConfig(mThis.tblService.id, {
-            dontExpandByClickingOn: ["btn_service_action", "btn--Options"],
-            // showExpandSignal: false,
-            onOpen: (container, detail_tr, parent_tr) => {
-                const qtr = parent_tr;
-                console.log(2222, qtr.dataset);
-
-                let op = {
-                    service_id: qtr.dataset.id,
-                    description: qtr.__serviceDescription,
-                };
-                if (op.service_id > 0)
-                    mThis.displayServiceDescription(container, op);
-            },
-        });
-
+        const tblBill = mThis.BillListView.getTable();
+        if (!tblBill.id) tblBill.id = "_bill_list_table";
+        mThis.initDropdownMenus(tblBill);
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             el.onchange = (e) => {
                 e.preventDefault();
-                mThis.DepositListView.showPage(mThis.getFilterData());
+                mThis.BillListView.showPage(mThis.getFilterData());
             };
         });
 
@@ -215,7 +167,7 @@ var DepositComponent = (() => {
             e.preventDefault();
             clearTimeout(mThis.search_timeout);
             mThis.search_timeout = setTimeout(() => {
-                mThis.DepositListView.showPage(mThis.getFilterData());
+                mThis.BillListView.showPage(mThis.getFilterData());
             }, 250);
         });
 
@@ -224,10 +176,9 @@ var DepositComponent = (() => {
 
     mThis.getFilterData = () => {
         let p = {
-            category_id: mThis.elFilter_category.value,
-            type_id: mThis.elFilter_category.value,
+            building_id: mThis.elFilter_building.value,
+            tenant_id: mThis.elFilter_vendor.value,
             status_id: mThis.elFilter_status.value,
-            charge_as: mThis.elFilter_charge_as.value,
             search_value: mThis.elSearch.value,
         };
 
@@ -239,93 +190,56 @@ var DepositComponent = (() => {
         return p;
     };
 
-    mThis.displayServiceDescription = (container, op) => {
-        const raw = op?.description ?? "";
-
-        const hasData =
-            raw !== null &&
-            raw !== undefined &&
-            String(raw).trim() !== "" &&
-            String(raw).toLowerCase() !== "null" &&
-            String(raw).toLowerCase() !== "undefined";
-        if (!hasData) {
-            container.innerHTML = `
-        <div class="card shadow-sm border-0 rounded-0 mx-0 bg-body-tertiary">
-            <div class="card-body py-3 px-4">
-
-                <div class="text-uppercase small text-muted mb-2 fw-semibold">
-                    <span vslang="labels.Description"></span>
-                </div>
-                <div class="text-primary-custom text-break;">_</div>
-            </div>
-        </div>
-    `;
-            return;
-        }
-        const escapeHtml = (str) => {
-            const div = document.createElement("div");
-            div.textContent = str;
-            return div.innerHTML;
-        };
-        container.innerHTML = `
-        <div class="card shadow-sm border-0 rounded-0 mx-0 bg-body-tertiary">
-            <div class="card-body py-3 px-4">
-
-                <div class="text-uppercase small text-muted mb-2 fw-semibold">
-                    <span vslang="labels.Description"></span>
-                </div>
-
-                <div class="text-primary-custom text-break;">
-                    ${escapeHtml(raw)}
-                </div>
-
-            </div>
-        </div>
-    `;
-    };
-
     mThis.initDropdownMenus = (table) => {
         const menuOptions = {
             containerElement: table,
-            actionButtonClass: "btn_service_action",
+            actionButtonClass: "btn_dropdown_bill_action",
             cssClass: "bg-white shadow",
             menus: [
                 {
-                    html: '<span class="ps-2 " vslang="titles.Modify"></span>',
+                    html: '<span class="ps-2" vslang="titles.Modify"></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "edit_service",
+                    name: "modify_deposit",
                 },
                 {
-                    html: '<span class="ps-2  " vslang="titles.Delete"></span>',
+                    html: '<span class="ps-2" vslang="titles.Delete"></span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "delete_service",
+                    name: "delete_deposit",
                 },
                 {
-                    html: '<span class="ps-2 " vslang="titles.Change Status"></span>',  
-                    icon: `<i class="fa-solid fa-bolt fs-5 text-primary"></i>`,
+                    html: '<span class="ps-2">Refund</span>',
+                    icon: `<i class="fa-solid fa-circle-dollar-to-slot fs-5 text-primary"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "change_service_status",
+                    name: "refund_deposit",
                 },
             ],
+
             onShow: (me, container) => {
                 const menu = me.getActiveMenus(container);
-                // menu.change_service_status.style.display =  'none';
+                const status = (container.dataset.status || "").toLowerCase();
+
+                menu.modify_deposit.style.display =
+                    status === "pending" ? "block" : "none";
+                menu.delete_deposit.style.display =
+                    status === "pending" ? "block" : "none";
+                menu.refund_deposit.style.display =
+                    status === "paid" ? "block" : "none";
             },
 
             onClick: (menuLink, id, name) => {
                 switch (name) {
-                    case "change_service_status": {
-                        mThis.changeServiceStatus(id, menuLink);
+                    case "modify_deposit": {
+                        mThis.editDeposit(id, menuLink);
                         break;
                     }
-                    case "edit_service": {
-                        mThis.editService(id, menuLink);
+                    case "delete_deposit": {
+                        mThis.deleteDeposit(id, menuLink);
                         break;
                     }
-                    case "delete_service": {
-                        mThis.deleteService(id, menuLink);
+                    case "refund_deposit": {
+                        mThis.refundDeposit(id, menuLink);
                         break;
                     }
                     default: {
@@ -336,79 +250,26 @@ var DepositComponent = (() => {
         };
         new VSDropdownMenu(menuOptions);
     };
-    mThis.changeServiceStatus = (id, link) => {
-        const tr = link.closest("tr");
-        const status_id = tr?.dataset.statusid || "";
-        if (!AuthManager.allowed(254, false)) return;
-        const inputOptions = {
-            context: "success",
-            title: `${LocaleManager.trans("Change Status", "titles")}`,
-            label: "Service Status",
-            valueKey: "status_id",
-            labelKey: "name",
-            confirmButtonText: `${LocaleManager.trans("Save", "buttons")}`,
-            cancelButtonText: `${LocaleManager.trans("Close", "buttons")}`,
-            requiredMessage: "Please select a status",
-            data: [
-                {
-                    status_id: "1",
-                    name: LocaleManager.trans("Active", "titles"),
-                },
-                {
-                    status_id: "2",
-                    name: LocaleManager.trans("Inactive", "titles"),
-                },
-            ],
-            defaultValue: status_id,
-            onConfirm: (status, btn, me) => {
-                const payload = { id, status_id: status.status_id };
-                vsapi
-                    .post(
-                        `${mThis.base_url}/prm/service/update-status`,
-                        payload,
-                        { loader: false, agent: btn },
-                    )
-                    .then((res) => {
-                        if (res.status_code === 200) {
-                            me.close();
-                            cv_interact.success("update_success_status");
-                            mThis.DepositListView.showPage(
-                                mThis.getFilterData(),
-                            );
-                        } else {
-                            me.setError(
-                                res.error_message || "update_failed_status",
-                            );
-                        }
-                    });
-            },
-        };
-        InputBox.show(inputOptions);
-    };
-    mThis.editService = (id, menulink) => {
-        let op = {
-            id: id,
-            btn: menulink,
-            onClose: () => {
-                mThis.DepositListView.showPage(mThis.getFilterData());
-            },
-        };
-        if (!AuthManager.allowed(253, false)) return;
-        DepositDialog.show(op);
-    };
-    mThis.deleteService = (id, menuLink) => {
-        let op = {
-            id: id,
+
+    mThis.editDeposit = (id, menuLink) => {
+        const tr = menuLink.closest("tr");
+        const op = {
+            id: parseInt(id, 10),
             btn: menuLink,
             onClose: () => {
-                mThis.DepositListView.showPage(mThis.getFilterData());
+                mThis.BillListView.showPage(mThis.getFilterData());
             },
         };
-        if (!AuthManager.allowed(255, false)) return;
+        if (!AuthManager.allowed(275, false)) return;
+        DepositDialog.show(op);
+    };
+
+    mThis.deleteDeposit = (id, menuLink) => {
+        if (!AuthManager.allowed(276, false)) return;
         cv_interact.confirm(
-            "confirm_delete",
+            "Delete this Deposit Record?",
             {
-                transTitle: "Delete Service",
+                transTitle: "Delete Deposit Record",
                 context: "delete",
                 confirmButtonText: "Delete",
             },
@@ -416,16 +277,16 @@ var DepositComponent = (() => {
                 if (e) {
                     vsapi
                         .call(
-                            `${main_view.base_url}/prm/service/delete`,
-                            op,
+                            `${mThis.base_url}/prm/deposit/delete`,
+                            { id: id },
                             false,
                             false,
                             false,
                         )
                         .then((res) => {
                             if (res.status_code == 200) {
-                                cv_interact.success("delete_success_service");
-                                mThis.DepositListView.showPage(
+                                cv_interact.success("delete_success");
+                                mThis.BillListView.showPage(
                                     mThis.getFilterData(),
                                 );
                             } else {
@@ -439,10 +300,51 @@ var DepositComponent = (() => {
         );
     };
 
+    mThis.refundDeposit = (id, menuLink) => {
+        if (!AuthManager.allowed(277, false)) return;
+        cv_interact.confirm(
+            "Refund this deposit? Status will be updated to 'refunded'.",
+            {
+                transTitle: "Refund Deposit",
+                context: "delete",
+                confirmButtonText: "Refund",
+            },
+            function (confirmed) {
+                if (!confirmed) return;
+                vsapi
+                    .call(
+                        `${mThis.base_url}/prm/deposit/update-status`,
+                        { id: id, status_id: "refunded" },
+                        false,
+                        false,
+                        false,
+                    )
+                    .then((res) => {
+                        if (res.status_code === 200) {
+                            cv_interact.success(
+                                "Refund processed successfully.",
+                            );
+                            mThis.BillListView.showPage(mThis.getFilterData());
+                        } else {
+                            cv_interact.error(
+                                res.error_message ||
+                                    "Failed to process refund.",
+                            );
+                        }
+                    })
+                    .catch(() => {
+                        cv_interact.error(
+                            "Network error while processing refund.",
+                        );
+                    });
+            },
+        );
+    };
+
     mThis.prepareFormOptions = (onFinish) => {
         vsapi
             .call(
-                `${main_view.base_url}/prm/service/form-options`,
+                `${mThis.base_url}/prm/deposit/form-options`,
                 null,
                 null,
                 null,
@@ -450,42 +352,32 @@ var DepositComponent = (() => {
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
                 VSUtil.setComboItems(
-                    mThis.elFilter_category,
-                    d.service_categories,
+                    mThis.elFilter_building,
+                    d.buildings,
                     "id",
-                    "service_category",
+                    "building",
                     "",
-                    "All Categories ",
+                    "All Buildings",
                     "",
                 );
                 VSUtil.setComboItems(
-                    mThis.elFilter_type,
-                    d.service_types,
+                    mThis.elFilter_vendor,
+                    d.tenants,
                     "id",
-                    "service_type",
+                    "tenant",
                     "",
-                    "All Types",
+                    "All Tenants",
                     "",
                 );
                 VSUtil.setComboItems(
                     mThis.elFilter_status,
-                    d.statuses,
+                    d.deposit_statuses,
                     "id",
-                    "status_name",
+                    "name",
                     "",
                     "All Statuses",
                     "",
                 );
-                VSUtil.setComboItems(
-                    mThis.elFilter_charge_as,
-                    d.charge_as,
-                    "id",
-                    "name",
-                    "",
-                    "All Charges",
-                    "",
-                );
-
                 if (typeof onFinish === "function") onFinish();
             });
     };
@@ -495,7 +387,7 @@ var DepositComponent = (() => {
         mThis.options = options;
         mThis.prepareFormOptions(() => {
             main_view.setContentView(mThis.self, mThis.title_prop);
-            mThis.DepositListView.showPage(mThis.getFilterData());
+            mThis.BillListView.showPage(mThis.getFilterData());
         });
     };
     return mThis;
@@ -504,104 +396,211 @@ var DepositComponent = (() => {
 const DepositDialog = (() => {
     const self = {};
     let dialog = null;
-
     self.show = (op) => {
         dialog =
             dialog ||
             new GeneralDialog({
-                cssClass: "modal-md vs-modal",
+                cssClass: "modal-lg vs-modal",
                 backdrop: "static",
                 keyboard: true,
                 createContent: () => {
                     return [
-                        `<div class="row g-3 justify-content-center">
+                        `<div class="row g-3">
+                            <input name="tenant_id" class="d-none data-input form-control" data-field="tenant_id">
+                            <input name="contract_id" class="d-none data-input form-control" data-field="contract_id">
+                            
                             <div class="col-6">
                                 <div class="vs-material-field">
-                                    <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder="" />
-                                    <label vslang="labels.Name"></label>
+                                    <input name="tenant_name" class="data-input form-control" data-field="tenant_name" placeholder="Search Tenant..." autocomplete="off">
+                                    <label>Tenant</label>
                                 </div>
                             </div>
-                            <div class="col-6">
-                                <select data-style="material" name="service_type" class="data-input form-control" data-field="type_id" placeholder=" Type">
-                                </select>
-                            </div>
-                            <div class="col-6">
-                                <select data-style="material" name="service_category" class="data-input form-control" data-field="category_id" placeholder="Category">
-                                </select>
-                            </div>
-                            <div class="col-6">
-                                    <select data-style="material" name="charge_as" class="data-input form-control" data-field="charge_as" placeholder="Charge As">
-                                    <option value="per_unit">Unit</option>
-                                    <option value="one_time">Once</option>
-                                    <option value="hour">Hourly</option>
-                                    <option value="month">Monthly</option>
-                                    </select>
-                            </div>
-                            <div class="col-6">
-                                <select data-style="material" name="level" class="data-input form-control" data-field="level" placeholder="Level">
-                                    <option value="1" selected >Standard</option>
-                                    <option value="2">Premium</option>
-                                </select>
-                            </div>
+                            
                             <div class="col-6">
                                 <div class="vs-material-field">
-                                    <input data-type="money" name="price" class="data-input inputbox-input form-control" data-field="price" placeholder="" />
-                                    <label vslang="labels.Price"></label>
+                                    <input name="phone_number" class="data-input form-control" data-field="phone_number" placeholder=" " disabled />
+                                    <label vslang="labels.Phone Number">Phone Number</label>
                                 </div>
                             </div>
+                            
+                            <div class="col-4">
+                                <div class="vs-material-field">
+                                    <input name="building" class="data-input form-control" data-field="building" placeholder=" " disabled />
+                                    <label vslang="labels.Building"></label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-4">
+                                <div class="vs-material-field">
+                                    <input name="space_code" class="data-input form-control" data-field="space_code" placeholder=" " disabled />
+                                    <label vslang="labels.Unit Code">Unit Code</label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-4">
+                                <div class="vs-material-field">
+                                    <input name="amount" class="data-input form-control" data-field="amount" placeholder=" " disabled />
+                                    <label>Deposit Owed ($)</label>
+                                </div>
+                            </div>
+
+                            <div class="col-6">
+                                <div class="vs-material-field">
+                                    <input data-type="date" name="deposit_date" class="data-input form-control form_input" data-field="deposit_date" placeholder=" "/>
+                                    <label vslang="labels.Payment Date"></label>
+                                </div>
+                            </div>
+
+                            <div class="col-6">
+                                <select name="payment_method" data-style="material" class="data-input form-control" data-field="payment_method" placeholder="Payment Method">
+                                    <option value="Cash">Cash</option>
+                                    <option value="Bank Transfer">Bank Transfer</option>
+                                    <option value="Cheque">Cheque</option>
+                                </select>
+                            </div>
+                            <!-- 8. Payment Amount (User enters this) -->
+                            <div class="col-6">
+                                <div class="vs-material-field">
+                                    <input type="text" inputmode="decimal" name="payment_amount" class="data-input form-control" data-field="payment_amount" placeholder=" ">
+                                    <label>Payment Amount ($)</label>
+                                </div>
+                            </div>
+                            <!-- 9. Reference / Transaction No. -->
+                            <div class="col-6">
+                                <div class="vs-material-field">
+                                    <input type="text" name="ref_no" class="data-input form-control" data-field="ref_no" placeholder=" ">
+                                    <label>Reference No.</label>
+                                </div>
+                            </div>
+
                             <div class="col-12">
                                 <div class="vs-material-field">
-                                    <textarea name="description" class="data-input form-control" data-field="description" placeholder=" "></textarea>
-                                    <label vslang="labels.Description"></label>
+                                    <textarea name="remarks" class="data-input form-control" data-field="remarks" placeholder=" "></textarea>
+                                    <label>Remark</label>
                                 </div>
                             </div>
-                        </div>`,
+                        </div>
+                        `,
                     ].join("");
                 },
 
                 contentCreated: (me) => {
-                    console.log(123, me.controls.level);
+                    const fillContractInfo = (tenantId) => {
+                        me._selectedTenantId = tenantId || "";
+                        if (me.controls.tenant_id)
+                            me.controls.tenant_id.value = tenantId || "";
+                        if (!tenantId) {
+                            if (me.controls.phone_number)
+                                me.controls.phone_number.value = "";
+                            if (me.controls.building)
+                                me.controls.building.value = "";
+                            if (me.controls.space_code)
+                                me.controls.space_code.value = "";
+                            if (me.controls.amount)
+                                me.controls.amount.value = "";
+                            return;
+                        }
+                        vsapi
+                            .post(
+                                `${main_view.base_url}/prm/tenant/option-tenant-with-contract`,
+                                { tenant_id: tenantId },
+                                {},
+                            )
+                            .then((res) => {
+                                const d = res.data || {};
+                                const tenant = d.tenant || {};
+                                const activeSpaces = d.spaces || [];
 
-                    const updateChargeAs = () => {
-                        const isSubscription =
-                            me.controls.service_type.value == 2;
+                                if (me.controls.phone_number)
+                                    me.controls.phone_number.value =
+                                        tenant.phone_number || "";
 
-                        me.controls.charge_as.value = isSubscription
-                            ? "month"
-                            : "";
-                        me.controls.charge_as.disabled = isSubscription;
+                                if (activeSpaces.length > 0) {
+                                    const space = activeSpaces[0];
+                                    if (me.controls.contract_id)
+                                        me.controls.contract_id.value =
+                                            space.contract_id || "";
+                                    if (me.controls.building)
+                                        me.controls.building.value =
+                                            space.building_name || "";
+                                    if (me.controls.space_code)
+                                        me.controls.space_code.value =
+                                            space.space_code || "";
+                                    if (me.controls.amount)
+                                        me.controls.amount.value =
+                                            space.deposit || "0.00";
+                                }
+                            })
+                            .catch(() => {});
                     };
 
-                    me.controls.service_type?.addEventListener(
-                        "change",
-                        updateChargeAs,
-                    );
+                    if (me.controls.tenant_name) {
+                        me.searchTenant = VSSearchInput.init(
+                            me.controls.tenant_name,
+                            {
+                                type: "select",
+                                prefetch: true,
+                                minChars: 0,
+                                api: {
+                                    endpoint: `${main_view.base_url}/prm/deposit/form-options`,
+                                },
+                                processResponse: (res) => {
+                                    const tenants = res?.data?.tenants || [];
+                                    return (
+                                        Array.isArray(tenants) ? tenants : []
+                                    ).map((t) => ({
+                                        ...t,
+                                        tenant_name: t.tenant || t.name || "",
+                                        phone_number: t.phone_number || "",
+                                    }));
+                                },
+                                columns: {
+                                    tenant_name: "TENANT",
+                                    phone_number: "PHONE",
+                                },
+                                showColumnHeader: true,
+                                placeholder: "Search tenant",
+                                onSelect: (tenant) => {
+                                    const id = tenant?.id || "";
+                                    me.controls.tenant_name.value =
+                                        tenant?.tenant_name || "";
+                                    fillContractInfo(id);
+                                },
+                            },
+                        );
+                    }
 
-                    updateChargeAs();
+                    applyNumberInput(me.controls.paid_amount);
                 },
-                configSelect: [
-                    {
-                        name: "service_category",
-                        data: "service_categories",
-                        textField: "service_category",
-                        valueField: "id",
-                    },
-                    {
-                        name: "service_type",
-                        data: "service_types",
-                        textField: "service_type",
-                        valueField: "id",
-                    },
-                ],
+
+                configSelect: [],
+                onShow: (me) => {
+                    const title = me.divModal.querySelector(".modal-title");
+                    if (title) {
+                        const isModify = !!me.dataOptions?.id;
+                        title.innerHTML = isModify
+                            ? '<h4 class="text-prm-custom text-start fw-bold">Modify Deposit</h4>'
+                            : '<h4 class="text-prm-custom text-start fw-bold">Receive Deposit</h4>';
+                    }
+                    if (!me.dataOptions?.id) {
+                        setTimeout(() => {
+                            if (
+                                me.controls.deposit_date &&
+                                !me.controls.deposit_date.value
+                            ) {
+                                me.controls.deposit_date.value = new Date()
+                                    .toISOString()
+                                    .split("T")[0];
+                            }
+                        }, 100);
+                    }
+                },
                 prepareFormOptions: {
-                    createTitle: "vslang:titles.Create Service Price",
-                    modifyTitle: "vslang:titles.Modify Service Price",
-                    targetProp: "service_details",
+                    createTitle: "Receive Deposit",
+                    modifyTitle: "Modify Deposit",
+                    targetProp: "deposit_details",
                     api: {
-                        endpoint: [
-                            main_view.base_url,
-                            "/prm/service/form-options",
-                        ].join(""),
+                        endpoint: `${main_view.base_url}/prm/deposit/form-options`,
                         params: (op) => {
                             return { id: op.id };
                         },
@@ -609,9 +608,59 @@ const DepositDialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
-                    // console.log(123,data.service_details);
-                    // me.controls.charge_as.value = data.service_details.charge_as;
-                    // me.controls.type.value = data.service_details.type;
+                    const details = data?.deposit_details;
+                    if (details) {
+                        me.controls.tenant_id.value = details.tenant_id || "";
+                        me.controls.contract_id.value =
+                            details.contract_id || "";
+                        if (me.controls.tenant_name)
+                            me.controls.tenant_name.value =
+                                details.tenant_name || "";
+                        if (me.controls.phone_number)
+                            me.controls.phone_number.value =
+                                details.phone_number || "";
+                        if (me.controls.building)
+                            me.controls.building.value =
+                                details.building_name || "";
+                        if (me.controls.space_code)
+                            me.controls.space_code.value =
+                                details.space_code || "";
+                        if (me.controls.amount)
+                            me.controls.amount.value =
+                                details.total_amount || "";
+                        if (me.controls.deposit_date)
+                            me.controls.deposit_date.value =
+                                details.deposit_date || "";
+                        if (me.controls.paid_amount)
+                            me.controls.paid_amount.value =
+                                details.paid_amount || "";
+                        if (me.controls.remarks)
+                            me.controls.remarks.value = details.remark || "";
+                    } else {
+                        if (
+                            me.searchTenant &&
+                            typeof me.searchTenant.reset === "function"
+                        ) {
+                            me.searchTenant.reset();
+                        }
+                        me._selectedTenantId = null;
+                        if (me.controls.tenant_id)
+                            me.controls.tenant_id.value = "";
+                        if (me.controls.contract_id)
+                            me.controls.contract_id.value = "";
+                        if (me.controls.phone_number)
+                            me.controls.phone_number.value = "";
+                        if (me.controls.building)
+                            me.controls.building.value = "";
+                        if (me.controls.space_code)
+                            me.controls.space_code.value = "";
+                        if (me.controls.amount) me.controls.amount.value = "";
+                        if (me.controls.deposit_date)
+                            me.controls.deposit_date.value = "";
+                        if (me.controls.paid_amount)
+                            me.controls.paid_amount.value = "";
+                        if (me.controls.remarks) me.controls.remarks.value = "";
+                    }
                 },
 
                 buttons: [
@@ -620,6 +669,7 @@ const DepositDialog = (() => {
                         cssClass: "btn btn-secondary",
                         click: (me, btn) => {
                             me.hide(false);
+                            me._selectedTenantId = null;
                         },
                     },
                     {
@@ -628,14 +678,17 @@ const DepositDialog = (() => {
                         click: (me, btn) => {
                             const op = me.getData();
                             op.id = me.dataOptions.id;
-                            console.log(666, op);
+
+                            if (me._selectedTenantId != null) {
+                                op.tenant_id = me._selectedTenantId;
+                            }
+
+                            op.amount = me.controls.amount.value;
+                            op.contract_id = me.controls.contract_id.value;
 
                             vsapi
                                 .call(
-                                    [
-                                        main_view.base_url,
-                                        "/prm/service/save",
-                                    ].join(""),
+                                    `${main_view.base_url}/prm/deposit/save`,
                                     op,
                                     btn,
                                     null,
@@ -643,18 +696,20 @@ const DepositDialog = (() => {
                                 .then((res) => {
                                     if (res.status_code === 200) {
                                         me.hide(true, op);
-                                        if (me.dataOptions.id > 0) {
-                                            cv_interact.success(
-                                                "update_success_service",
-                                            );
-                                        } else {
-                                            cv_interact.success(
-                                                "create_success_service",
-                                            );
-                                        }
+                                        me._selectedTenantId = null;
+                                        cv_interact.success(
+                                            me.dataOptions.id > 0
+                                                ? "Deposit updated successfully."
+                                                : "Deposit recorded successfully.",
+                                        );
                                     } else {
                                         cv_interact.error(res.error_message);
                                     }
+                                })
+                                .catch(() => {
+                                    cv_interact.error(
+                                        "Network error while saving deposit.",
+                                    );
                                 });
                         },
                     },
@@ -664,3 +719,4 @@ const DepositDialog = (() => {
     };
     return self;
 })();
+window.DepositDialog = DepositDialog;
