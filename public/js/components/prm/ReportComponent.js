@@ -393,6 +393,9 @@ var ReportComponent = (() => {
                     case 'tenant_list':
                         tenantList(containerTable,d);
                         break;
+                    case 'deposit_list':
+                        depositList(containerTable,d);
+                        break;
                     case 'school_fee':
                     case 'non_tuition':
                         nonTuitionFeeTable(containerTable,d);
