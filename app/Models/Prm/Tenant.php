@@ -82,10 +82,10 @@ class Tenant
             'nationality_id'  => '1|number|text=nationality_required',
             'national_id'     => '0|string|0-20',
             'nid_issue_date'   => '1|date|text=nid_issue_date',
-            'passport_number' => '|string|0-20',
+            'passport_number' => '0|string|0-20',
             'phone_number'    => '1|string|1-20|text=phone_number_required',
             'email'           => '0|email|1-30',
-            'address'         => '0|string',
+            'address'         => '1|string',
             'photo'           => '0|image'
         ];
         $email_char = ['@', '.'];
