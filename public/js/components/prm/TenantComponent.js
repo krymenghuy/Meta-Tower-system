@@ -1848,8 +1848,7 @@ const CreateTenantDialog = (() => {
                     me.previewImg = me.divModal.querySelector(
                         "#tenant-preview-img",
                     );
-                    me.displayInput =
-                        me.divModal.querySelector("#documents_display");
+                    me.displayInput = me.divModal.querySelector("#documents_display");
 
                     me.controls.btn_chooseFile =
                         me.divModal.querySelector("#btn_chooseFile");

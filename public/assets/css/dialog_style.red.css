@@ -1,0 +1,702 @@
+/*==========================================================
+    DIALOG STYLE
+    Delivery Management System
+    Corporate Theme : Red + White + Grey
+==========================================================*/
+
+
+/*==========================================================
+    VARIABLES
+==========================================================*/
+
+:root{
+
+    --dlg-primary:#e31b23;
+    --dlg-primary-dark:#bc0d16;
+    --dlg-primary-light:#ff734d;
+
+    --dlg-white:#ffffff;
+
+    --dlg-bg:#fafafa;
+
+    --dlg-border:#ececec;
+
+    --dlg-border-soft:#f4f4f4;
+
+    --dlg-text:#2d3441;
+
+    --dlg-muted:#8b93a2;
+
+    --dlg-shadow:
+
+        0 8px 20px rgba(0,0,0,.04),
+
+        0 20px 60px rgba(0,0,0,.10);
+}
+
+
+
+/*==========================================================
+    MODAL WRAPPER
+==========================================================*/
+
+.vs-modal{
+
+    border:none !important;
+
+    border-radius:15px;
+
+    overflow:hidden;
+
+    background:#fff;
+
+    box-shadow:var(--dlg-shadow);
+}
+
+
+.vs-modal .modal-content{
+
+    border:none !important;
+
+    border-radius:inherit;
+
+    overflow:hidden;
+
+    background:#fff;
+}
+
+
+
+/*==========================================================
+    HEADER
+==========================================================*/
+
+.vs-modal .modal-header{
+
+    position:relative;
+
+    padding:18px 28px;
+
+    border:none;
+
+    background:
+
+        linear-gradient(
+            135deg,
+            #b90912 0%,
+            #dc1d29 55%,
+            #ff7048 100%
+        );
+
+    overflow:hidden;
+}
+
+
+/* Decorative tech pattern */
+ /* ==========================================================
+   PREMIUM WEALTH PATTERN
+========================================================== */
+
+.vs-modal .modal-header::after {
+
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+
+    right: 0;
+
+    width: 340px;
+
+    height: 100%;
+
+    pointer-events: none;
+
+    opacity: .38;
+
+    background:
+
+        /* nodes */
+
+        radial-gradient(
+            circle at 88% 22%,
+            rgba(255,245,225,.55) 0,
+            rgba(255,245,225,.55) 2px,
+            transparent 3px
+        ),
+
+        radial-gradient(
+            circle at 76% 46%,
+            rgba(255,245,225,.42) 0,
+            rgba(255,245,225,.42) 2px,
+            transparent 3px
+        ),
+
+        radial-gradient(
+            circle at 94% 62%,
+            rgba(255,245,225,.38) 0,
+            rgba(255,245,225,.38) 2px,
+            transparent 3px
+        ),
+
+        /* wealth lines */
+
+        linear-gradient(
+            135deg,
+            transparent 48%,
+            rgba(255,245,225,.45) 49%,
+            transparent 50%
+        ),
+
+        linear-gradient(
+            135deg,
+            transparent 62%,
+            rgba(255,245,225,.35) 63%,
+            transparent 64%
+        ),
+
+        linear-gradient(
+            135deg,
+            transparent 76%,
+            rgba(255,245,225,.25) 77%,
+            transparent 78%
+        );
+
+    background-size:
+
+        100% 100%,
+
+        100% 100%,
+
+        100% 100%,
+
+        85px 85px,
+
+        115px 115px,
+
+        160px 160px;
+}
+
+/* Smooth accent line */
+
+ /* Elegant signature line */
+.vs-modal .modal-header::before {
+
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    bottom: 0;
+
+    width: 100%;
+
+    height: 2px;
+
+    background:
+
+        linear-gradient(
+            90deg,
+
+            rgba(255,180,180,.95) 0%,
+
+            rgba(255,140,130,.92) 15%,
+
+            rgba(255,115,100,.88) 35%,
+
+            rgba(255,155,120,.70) 55%,
+
+            rgba(255,190,150,.45) 80%,
+
+            rgba(255,255,255,0) 100%
+        );
+
+    box-shadow:
+
+        0 0 6px rgba(255,130,110,.20);
+}
+ 
+/*==========================================================
+    TITLE
+==========================================================*/
+
+.vs-modal .modal-title{
+
+    color:#fff !important;
+
+    font-size:24px;
+
+    font-weight:700;
+
+    letter-spacing:-.02em;
+}
+
+
+.vs-modal .modal-subtitle{
+
+    margin-top:2px;
+
+    color:rgba(255,255,255,.8);
+
+    font-size:14px;
+}
+
+
+
+/*==========================================================
+    CLOSE BUTTON
+==========================================================*/
+ .vs-modal .btn-close{
+
+    width:24px;
+
+    height:24px;
+
+    border-radius:50%;
+
+    background:
+
+        rgba(255,255,255,.08);
+
+    border:
+
+        1px solid rgba(255,255,255,.18);
+
+    box-shadow:
+
+        inset 0 1px 0 rgba(255,255,255,.22);
+
+    transition:.18s;
+}
+
+.vs-modal .btn-close:hover{
+
+    background:
+
+        rgba(255,255,255,.18);
+
+    transform:
+
+        rotate(90deg);
+
+    opacity:1;
+}
+
+/*==========================================================
+    BODY
+==========================================================*/
+
+.vs-modal .modal-body{
+
+    background:#fff;
+
+    padding:28px;
+}
+
+
+
+/*==========================================================
+    LABELS
+==========================================================*/
+
+.vs-modal label{
+
+    display:block;
+
+    margin-bottom:6px;
+
+    color:var(--dlg-muted);
+
+    font-size:12px;
+
+    font-weight:700;
+
+    letter-spacing:.05em;
+}
+ 
+/*==========================================================
+    INPUTS
+==========================================================*/
+
+.vs-modal .form-control,
+.vs-modal .form-select{
+
+    height:44px;
+
+    border-radius:5px;
+
+    border:1px solid var(--dlg-border);
+
+    background:#fff;
+
+    color:var(--dlg-text);
+
+    font-size:14px;
+
+    padding:0 15px;
+
+    transition:
+
+        border-color .15s,
+
+        box-shadow .15s;
+}
+
+
+
+.vs-modal .form-control:hover,
+.vs-modal .form-select:hover{
+
+    border-color:#dadada;
+}
+
+
+
+.vs-modal .form-control:focus,
+.vs-modal .form-select:focus{
+
+    border-color:#ff9488;
+
+    box-shadow:
+
+        0 0 0 4px rgba(255,90,70,.10);
+
+    outline:none;
+}
+
+
+.vs-modal .form-control::placeholder{
+
+    color:#9da6b5;
+}
+
+
+
+/*==========================================================
+    TEXTAREA
+==========================================================*/
+
+.vs-modal textarea.form-control{
+
+    min-height:110px;
+
+    padding-top:14px;
+
+    resize:vertical;
+}
+
+
+
+/*==========================================================
+    SECTION CARD
+==========================================================*/
+
+.vs-section{
+
+    background:
+
+        linear-gradient(
+            180deg,
+            #fffdfd,
+            #ffffff
+        );
+
+    border:1px solid #ffe3e3;
+
+    border-radius:15px;
+
+    padding:22px;
+
+    box-shadow:
+
+        inset 0 1px 0 rgba(255,255,255,.7);
+}
+
+
+
+.vs-section-title{
+
+    color:var(--dlg-primary);
+
+    font-size:20px;
+
+    font-weight:700;
+
+    margin-bottom:16px;
+}
+
+
+
+/*==========================================================
+    CHOICES.JS
+==========================================================*/
+
+.vs-modal .choices{
+    margin-bottom:0;
+
+}
+ 
+.vs-modal .choices__inner{
+  width:100%;
+  height: 100%;
+}
+ 
+.vs-modal .choices.is-focused .choices__inner{
+
+    border-color:#ff9488;
+
+    box-shadow:
+
+        0 0 0 4px rgba(255,90,70,.10);
+}
+
+
+
+/*==========================================================
+    DROPDOWN
+==========================================================*/
+
+.vs-modal .dropdown-menu,
+.choices__list--dropdown{
+
+    border:none;
+
+    border-radius:10px;
+
+    overflow:hidden;
+
+    box-shadow:
+
+        0 14px 40px rgba(0,0,0,.12);
+}
+
+
+
+/*==========================================================
+    FOOTER
+==========================================================*/
+
+.vs-modal .modal-footer{
+
+    position:relative;
+
+    padding:18px 26px;
+
+    border-top:1px solid #f1f1f1;
+
+    background:#fff;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:flex-end;
+
+    gap:16px;
+}
+
+
+
+/*==========================================================
+    FOOTER NOTCH
+==========================================================*/
+.vs-modal .modal-header .close{
+    color: #fff !important; 
+}
+.vs-modal .modal-footer::before{
+
+    content:"";
+
+    position:absolute;
+
+    left:50%;
+
+    top:0;
+
+    width:180px;
+
+    height:34px;
+
+    transform: translate(-50%,-50%);
+
+    background:#fff;
+
+    border:1px solid #ededed;
+
+    border-top:none;
+
+    border-radius: 0 0 32px 32px;
+}
+
+
+
+/*==========================================================
+    SHIELD ICON
+==========================================================*/
+
+.vs-footer-icon{
+
+    position:absolute;
+
+    left:50%;
+
+    top:0;
+
+    transform:
+
+        translate(-50%,-50%);
+
+    width:46px;
+
+    height:46px;
+
+    background:#fff;
+
+    border-radius:50%;
+
+    box-shadow:
+
+        0 4px 14px rgba(227,27,35,.15);
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    color:var(--dlg-primary);
+}
+
+
+
+/*==========================================================
+    BUTTON BASE
+==========================================================*/
+
+.btn-vs-save,
+.btn-vs-cancel{
+
+    width:180px;
+
+    height:50px;
+
+    border-radius:14px;
+
+    font-size:15px;
+
+    font-weight:600;
+
+    transition:all .18s;
+}
+
+
+
+/*==========================================================
+    SAVE BUTTON
+==========================================================*/
+
+.btn-vs-save{
+
+    border:none;
+
+    color:#fff;
+
+    background:
+
+        linear-gradient(
+            135deg,
+            #d90d1f,
+            #ff603e
+        );
+
+    box-shadow:
+
+        0 10px 25px rgba(227,27,35,.25);
+}
+
+
+.btn-vs-save:hover{
+
+    transform:translateY(-2px);
+
+    box-shadow:
+
+        0 14px 32px rgba(227,27,35,.35);
+}
+
+
+
+/*==========================================================
+    CANCEL BUTTON
+==========================================================*/
+
+.btn-vs-cancel{
+
+    background:#fff;
+
+    color:var(--dlg-primary);
+
+    border:2px solid #ff9388;
+}
+
+
+.btn-vs-cancel:hover{
+
+    background:#fff5f4;
+
+    transform:translateY(-2px);
+}
+
+
+
+/*==========================================================
+    COMPACT DIALOG
+==========================================================*/
+
+.vs-modal.vs-modal--compact .modal-body{
+
+    padding:20px;
+}
+
+
+.vs-modal.vs-modal--compact .modal-header{
+
+    padding:14px 22px;
+}
+
+
+.vs-modal.vs-modal--compact .modal-footer{
+
+    padding:14px 20px;
+}
+
+
+
+/*==========================================================
+    MOBILE
+==========================================================*/
+
+@media(max-width:768px){
+
+    .vs-modal{
+        border-radius:15px;
+    }
+ 
+    .vs-modal .modal-body{
+
+        padding:20px;
+    }
+
+    .vs-modal .modal-footer{
+
+        flex-direction:column;
+    }
+
+    .btn-vs-save,
+    .btn-vs-cancel{
+
+        width:100%;
+    }
+
+}

@@ -19,7 +19,7 @@ class StyleProvider
                  'assets/css/vs_select.base.css',
                  'assets/css/vs_select.material.css',
                 'assets/css/vs_input.material.css',
-                'assets/css/dialog_style.css',
+                'assets/css/dialog_style.blue.css',
                 'assets/css/vs_loader.css',
 
                 'https://cdn.vectoraclouds.com/frontcore/components/DateTimePicker/DateTimePicker.css',
@@ -91,7 +91,7 @@ class StyleProvider
                 'assets/css/ksm_style.css', /** Must be placed below all.min.css **/
                 'assets/css/vs-page-title.wave.css',
                 'assets/css/menu_style.css',
-                'assets/css/dialog_style.css',
+                'assets/css/dialog_style.blue.css',
                 'assets/css/vs_loader.css',
                 'assets/css/vsa_dropdown_button.css',
                 'assets/css/no_data.css',
@@ -121,7 +121,7 @@ class StyleProvider
                  'assets/css/vs_select.material.css',
                    'assets/css/vs_input.material.css',
 
-                'assets/css/dialog_style.css',
+               'assets/css/dialog_style.blue.css',
                 'assets/css/vs_loader.css',
 
                 'https://cdn.vectoraclouds.com/frontcore/components/DateTimePicker/DateTimePicker.css',
