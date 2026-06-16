@@ -24,6 +24,8 @@ use App\Http\Controllers\Prm\ReservationController;
 use App\Http\Controllers\Prm\AmenityController;
 use App\Http\Controllers\Prm\ItemController;
 use App\Http\Controllers\Prm\MaintenanceController;
+use App\Http\Controllers\Prm\DashboardController;
+
 use App\Http\Controllers\Prm\BillController;
 use App\Http\Controllers\Prm\BillPaymentController;
 use App\Http\Controllers\Prm\ReceiptController;
@@ -66,10 +68,13 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('company')->gr
     Route::post('/info', [CompanyProfileController::class, 'getCompanyInfo']);
 });
 //end::CompanyProfileController
-// Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('dashboard')->group(function () {
-//     Route::post('/data', [DashboardController::class, 'getDashboardData']);
-//     Route::post('/overview-data', [DashboardController::class, 'getOverviewData']);
-// });
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('dashboard')->group(function () {
+    Route::post('/summary', [DashboardController::class, 'summarizeDashboard']);
+    Route::post('/charts', [DashboardController::class, 'getCharts']);
+    Route::post('/activities', [DashboardController::class, 'getActivities']);
+    Route::post('/lease-expiry', [DashboardController::class, 'getLeaseExpiry']);
+});
+
 
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->group( function (){
