@@ -455,7 +455,7 @@ static function options_maintenance_amenity($ss)
     }
     static function options_tenant($ss)
     {
-        return DB::table('tenants')->selectRaw('id,name AS tenant')->get();
+        return DB::table('tenants')->selectRaw('id,name AS tenant,phone_number')->get();
     }
     static function options_tenant_status($ss)
     {
