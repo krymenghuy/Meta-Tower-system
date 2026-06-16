@@ -23,7 +23,7 @@ class Service
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $v_rule = [
-            'name'            => '1|string|0-50',
+            'name'            => '1|string|0-150|text=name_required::@key;@max;@value',
             'type_id'         => '1|number|exists=service_types.id|text=Please select a valid type.',
             'category_id'     => '1|number|exists=service_categories.id|text=Please select a valid category.',
             'charge_as'       => '1|string|0-50|text=Please select a valid charge as.',

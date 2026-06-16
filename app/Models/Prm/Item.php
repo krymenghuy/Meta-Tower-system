@@ -29,7 +29,7 @@ class Item //extends Model
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
         $v_rule = [
-            'name' => '1|string|1-150|text=name_required',
+            'name' => '1|string|1-150|text=name_required::@key;@max;@value',
             'category_id' => '1|number|exists=item_categories.id|text=please_select_a_valid_category',
             'unit' => '1|string|0-30|text=please_select_a_valid_unit'
         ];

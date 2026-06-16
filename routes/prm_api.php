@@ -30,6 +30,7 @@ use App\Http\Controllers\Prm\BillController;
 use App\Http\Controllers\Prm\BillPaymentController;
 use App\Http\Controllers\Prm\ReceiptController;
 use App\Http\Controllers\Prm\ReportController;
+use App\Http\Controllers\Prm\DepositController;
 
 use App\Http\Controllers\tenant\AccountStaffController;
 use App\Http\Controllers\tenant\ZoneController;
@@ -363,6 +364,18 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('invoice_setti
     Route::post('/save-invoice-representative', [InvoiceSettingController::class, 'saveInvoiceSettingRepresentative']);
     Route::post('/save-QR', [InvoiceSettingController::class, 'saveQR']);
     Route::post('/delete-QR', [InvoiceSettingController::class, 'deleteQR']);
+});
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('deposit')->group(function () {
+    Route::post('/save', [DepositController::class, 'saveDeposit']);
+    Route::post('/list-paginate', [DepositController::class, 'getListDeposit']);
+    Route::post('/details', [DepositController::class, 'depositDetails']);
+    Route::post('/form-options', [DepositController::class, 'getFormOptions']);
+    Route::post('/delete', [DepositController::class, 'deleteDeposit']);
+    Route::post('/update-status', [DepositController::class, 'updateDepositStatus']);
+    // Route::post('/view-attachment', [DepositController::class, 'viewDepositAttachment']);
+    // Route::post('/delete-attachment', [DepositController::class, 'deleteDepositAttachment']);
+    // Route::post('/upload-attachment', [DepositController::class, 'uploadDepositAttachment']);
 });
 
 
