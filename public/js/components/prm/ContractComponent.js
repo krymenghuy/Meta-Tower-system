@@ -1,7 +1,7 @@
 "use strict";
 
-var ContractComponent = new (function () {
-    const mThis = this;
+var ContractComponent = (()=> {
+    const mThis = {};
     mThis.title_prop = "Contract Management";
     mThis.self = main_view.VSAppContent.querySelector("#_main_contract_component");
     mThis.btnAdd = mThis.self.querySelector("#_btnAddContract");
