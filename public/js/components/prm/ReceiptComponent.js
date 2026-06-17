@@ -25,6 +25,8 @@ var ReceiptComponent = new (function() {
                 return `
                     <div class="d-flex flex-column">
                         ${code}
+
+                        ${data.deposit_id ? `<span class="d-block text-primary"style="font-size:12px;">Deposit</span>` : ''}
                     </div>
                 `;
             }
