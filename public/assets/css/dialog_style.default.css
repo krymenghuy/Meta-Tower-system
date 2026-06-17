@@ -1,0 +1,523 @@
+/* ==========================================================
+   META TOWER - DIALOG STYLE
+   Enterprise Property Management UI
+========================================================== */
+
+:root {
+
+    --vs-primary: #1A1647;
+    --vs-primary-2: #2E2A72;
+
+    --vs-success: #10B981;
+    --vs-warning: #F59E0B;
+    --vs-danger: #EF4444;
+
+    --vs-text: #1E293B;
+    --vs-muted: #64748B;
+
+    --vs-border: #D9E0EA;
+
+    --vs-bg: #F8FAFC;
+
+    --vs-hover: #F1F5F9;
+
+    --vs-focus: #2563EB;
+
+}
+
+
+/* ==========================================================
+   MODAL
+========================================================== */
+
+.vs-modal {
+
+    border: none !important;
+    outline: none !important;
+
+    border-radius: 16px;
+
+    overflow: hidden;
+
+    background: #fff;
+
+    box-shadow:
+
+        0 8px 24px rgba(15,23,42,.08),
+
+        0 2px 8px rgba(15,23,42,.04);
+}
+
+.vs-modal .modal-content {
+
+    border: none !important;
+
+    border-radius: inherit;
+
+    background: transparent;
+}
+
+
+/* ==========================================================
+   HEADER
+========================================================== */
+
+.vs-modal .modal-header {
+
+    background: #fff;
+
+    border: none;
+
+    border-bottom: 1px solid #EAEFF5;
+
+    padding: 20px 24px;
+
+    align-items: center;
+}
+
+.vs-modal .modal-title {
+
+    flex: 1;
+
+    color: var(--vs-primary);
+
+    font-size: 18px;
+
+    font-weight: 700;
+
+    letter-spacing: -.01em;
+}
+
+.vs-modal .btn-close {
+
+    opacity: .5;
+
+    transition: .15s;
+}
+
+.vs-modal .btn-close:hover {
+
+    opacity: 1;
+
+    transform: rotate(90deg);
+}
+
+.modal .modal-content .modal-header .close {
+
+    display: none;
+}
+
+
+/* ==========================================================
+   BODY
+========================================================== */
+
+.vs-modal .modal-body {
+
+    background: #fff;
+
+    padding: 24px;
+}
+
+
+/* ==========================================================
+   FOOTER
+========================================================== */
+
+.vs-modal .modal-footer {
+
+    background: #fff;
+
+    border: none;
+
+    border-top: 1px solid #EAEFF5;
+
+    padding: 16px 24px;
+
+    display: flex;
+
+    gap: 12px;
+
+    justify-content: flex-end;
+}
+
+
+/* ==========================================================
+   LABELS
+========================================================== */
+
+.vs-modal label {
+
+    display: block;
+
+    margin-bottom: 6px;
+
+    color: #475569;
+
+    font-size: 13px;
+
+    font-weight: 600;
+}
+
+
+/* ==========================================================
+   INPUTS
+========================================================== */
+
+.vs-modal .form-control,
+.vs-modal .form-select {
+
+    width: 100%;
+
+    height: 44px;
+
+    padding: 0 14px;
+
+    border-radius: 10px;
+
+    border: 1px solid var(--vs-border);
+
+    background: #fff;
+
+    color: var(--vs-text);
+
+    font-size: 14px;
+
+    transition:
+
+        border-color .15s,
+
+        box-shadow .15s;
+}
+
+.vs-modal .form-control:hover,
+.vs-modal .form-select:hover {
+
+    border-color: #CBD5E1;
+}
+
+.vs-modal .form-control:focus,
+.vs-modal .form-select:focus {
+
+    border-color: var(--vs-focus);
+
+    box-shadow:
+
+        0 0 0 3px rgba(37,99,235,.10);
+
+    outline: none;
+}
+
+.vs-modal .form-control::placeholder {
+
+    color: #94A3B8;
+}
+
+
+/* ==========================================================
+   TEXTAREA
+========================================================== */
+
+.vs-modal textarea.form-control {
+
+    min-height: 110px;
+
+    padding-top: 14px;
+
+    resize: vertical;
+}
+
+
+/* ==========================================================
+   FIELDSETS / SECTION CARDS
+========================================================== */
+
+.vs-modal fieldset,
+.vs-modal .vs-section-card {
+
+    background: #FBFCFE;
+
+    border: 1px solid #EAEFF5;
+
+    border-radius: 14px;
+
+    padding: 20px;
+
+    box-shadow:
+
+        0 2px 8px rgba(15,23,42,.03);
+}
+
+.vs-modal legend {
+
+    padding: 0 6px;
+
+    color: var(--vs-primary);
+
+    font-size: 16px;
+
+    font-weight: 700;
+}
+
+
+/* ==========================================================
+   CHOICES.JS
+========================================================== */
+
+.vs-modal .choices {
+
+    margin-bottom: 0;
+}
+
+.vs-modal .choices__inner {
+
+    min-height: 44px !important;
+
+    border-radius: 10px !important;
+
+    border: 1px solid var(--vs-border);
+
+    background: #fff;
+
+    padding: 7px 14px !important;
+
+    font-size: 14px;
+}
+
+.vs-modal .choices.is-focused .choices__inner {
+
+    border-color: var(--vs-focus);
+
+    box-shadow:
+
+        0 0 0 3px rgba(37,99,235,.10);
+}
+
+
+/* ==========================================================
+   DROPDOWNS
+========================================================== */
+
+.vs-modal .dropdown-menu,
+.choices__list--dropdown {
+
+    border: 1px solid var(--vs-border);
+
+    border-radius: 12px;
+
+    overflow: hidden;
+
+    box-shadow:
+
+        0 10px 30px rgba(15,23,42,.10);
+
+    padding: 4px;
+}
+
+
+/* ==========================================================
+   SCROLLABLE PANELS
+========================================================== */
+
+.vs-modal .dropdown-menu,
+.vs-modal .choices__list--dropdown .choices__list,
+.vs-modal .ts-dropdown .ts-dropdown-content,
+.vs-modal .select2-results__options,
+.select2-dropdown .select2-results__options {
+
+    max-height: 240px !important;
+
+    overflow-y: auto !important;
+
+    overflow-x: hidden;
+}
+
+
+/* ==========================================================
+   SCROLLBAR
+========================================================== */
+
+::-webkit-scrollbar {
+
+    width: 5px;
+}
+
+::-webkit-scrollbar-track {
+
+    background: #F1F5F9;
+}
+
+::-webkit-scrollbar-thumb {
+
+    background: #CBD5E1;
+
+    border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+
+    background: #94A3B8;
+}
+
+
+/* ==========================================================
+   BUTTONS
+========================================================== */
+
+.vs-modal .modal-footer .btn,
+.btn-vs-save,
+.btn-vs-cancel {
+
+    min-width: 120px;
+
+    height: 44px;
+
+    border-radius: 10px;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    transition:
+
+        .15s;
+}
+
+.vs-modal .modal-footer .btn:hover,
+.btn-vs-save:hover,
+.btn-vs-cancel:hover {
+
+    transform: translateY(-1px);
+}
+
+
+/* ==========================================================
+   SAVE BUTTON
+========================================================== */
+
+.vs-modal .btn-primary,
+.vs-modal .btn-submit,
+.btn-vs-save {
+
+    color: #fff;
+
+    border: none;
+
+    background:
+
+        linear-gradient(
+            135deg,
+            #1A1647,
+            #2E2A72
+        );
+
+    box-shadow:
+
+        0 6px 18px rgba(26,22,71,.18);
+}
+
+.vs-modal .btn-primary:hover,
+.btn-vs-save:hover {
+
+    color: #fff;
+
+    box-shadow:
+
+        0 12px 24px rgba(26,22,71,.25);
+}
+
+
+/* ==========================================================
+   CANCEL BUTTON
+========================================================== */
+
+.vs-modal .btn-secondary,
+.vs-modal .btn-cancel,
+.btn-vs-cancel {
+
+    background: #fff;
+
+    color: #64748B;
+
+    border: 1px solid var(--vs-border);
+}
+
+.vs-modal .btn-secondary:hover,
+.btn-vs-cancel:hover {
+
+    background: #F8FAFC;
+
+    border-color: #CBD5E1;
+
+    color: var(--vs-text);
+}
+
+
+/* ==========================================================
+   DANGER BUTTON
+========================================================== */
+
+.btn-vs-danger {
+
+    background: var(--vs-danger);
+
+    color: #fff;
+
+    border: none;
+}
+
+
+/* ==========================================================
+   COMPACT DIALOG
+========================================================== */
+
+.modal-md .modal-dialog {
+
+    max-width: 560px;
+}
+
+.vs-modal.vs-modal--compact .modal-header {
+
+    padding: 16px 20px;
+}
+
+.vs-modal.vs-modal--compact .modal-body {
+
+    padding: 18px 20px;
+}
+
+.vs-modal.vs-modal--compact .modal-footer {
+
+    padding: 14px 20px;
+}
+
+
+/* ==========================================================
+   MOBILE
+========================================================== */
+
+@media (max-width:768px) {
+
+    .vs-modal {
+
+        border-radius: 14px;
+    }
+
+    .vs-modal .modal-header,
+    .vs-modal .modal-body,
+    .vs-modal .modal-footer {
+
+        padding-left: 18px;
+        padding-right: 18px;
+    }
+
+    .vs-modal .modal-footer {
+
+        flex-direction: column;
+    }
+
+    .vs-modal .modal-footer .btn {
+
+        width: 100%;
+    }
+}

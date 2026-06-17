@@ -93,7 +93,7 @@ var BillPaymentComponent = (() => {
             },
         },
         {
-            transTitle: "titles.Updated By",
+            transTitle: "titles.Last Updated",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
                 return `<div class="d-flex flex-column">
@@ -259,7 +259,7 @@ var BillPaymentComponent = (() => {
         };
         if (!AuthManager.allowed(282,false)) return;
         cv_interact.confirm(
-            "Delete this Payment?",
+            "confirm_delete",
             { context: "delete", confirmButtonText: "Delete" },
             function (e) {
                 if (e) {

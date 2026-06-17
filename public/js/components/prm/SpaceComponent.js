@@ -1,7 +1,7 @@
 "use strict";
 
-var SpaceComponent = new (function () {
-    const mThis = this;
+var SpaceComponent =  (function () {
+    const mThis = {};
     mThis.title_prop = "Space Management";
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_space_component");
@@ -633,7 +633,7 @@ var SpaceComponent = new (function () {
     mThis.finishMaintenance = (id, menulink) => {
         if (!AuthManager.allowed(216,false)) return;
         cv_interact.confirm(
-            "Finish this maintenance?",
+            "confirm_finish_maintenance",
             {
                 transTitle: "Finish Maintenance",
                 context: "confirm",
@@ -755,7 +755,7 @@ var SpaceComponent = new (function () {
     mThis.cancelBooking = (id, menuLink) => {
         if (!AuthManager.allowed(212,false)) return;
         cv_interact.confirm(
-            "Cancel this booking ?",
+            "confirm_cancel",
             {
                 title: "Cancel Booking",
                 context: "delete",
@@ -896,7 +896,7 @@ const BuildingSpaceDialog = (() => {
                     const title = me.dataOptions.id
                         ? "Modify Space"
                         : "Create Space";
-                    return `<h4 class="text-prm-custom text-start fw-bold">${LocaleManager.trans(title, "titles")}</h4>`;
+                    return LocaleManager.trans(title, "titles");
                     // return me.dataOptions.id ? `<h4 class="text-prm-custom text-start fw-bold" vslang="titles.Modify Space"></h4>` : `<h4 class="text-prm-custom text-start fw-bold" vslang="titles.Create Space"></h4>`;
                 },
                 createContent: () => {

@@ -1094,13 +1094,10 @@ function jsonToTable(div, d) {
         </div>`,
     ].join("");
 
-    div.html(html);
-    togglePanelTable(div);
+    div.innerHTML = html;
+    // togglePanelTable(div);
     HtmlString = html;
 }
-
-
-
 function tenantList(div, data) {
      const d = data?.list ?? [];
      const company_info = data.company_profile ?? {};
@@ -1122,12 +1119,11 @@ function tenantList(div, data) {
                 <tr>
                     <th class="text-center">No</th>
                     <th class="text-center">Name</th>
-                    <th class="text-center">Legal Name</th>
-                    <th class="text-center">National ID</th>
-                    <th class="text-center">Passport</th>
                     <th class="text-center">Sex</th>
                     <th class="text-center">Phone</th>
                     <th class="text-center">Email</th>
+                    <th class="text-center">National ID</th>
+                    <th class="text-center">Passport</th>
                     <th class="text-center">Status</th>
                     <th class="text-center">Address</th>
                 </tr>
@@ -1145,15 +1141,6 @@ function tenantList(div, data) {
                     <td class="align-middle">
                         ${st.name ?? 'N/A'}
                     </td>
-                    <td class="align-middle">
-                        ${st.legal_name ?? 'N/A'}
-                    </td>
-                    <td class="text-center align-middle">
-                        ${st.national_id ?? 'N/A'}
-                    </td>
-                    <td class="text-center align-middle">
-                        ${st.passport_number ?? 'N/A'}
-                    </td>
                     <td class="text-center align-middle">
                         ${
                             st.sex === 'M'
@@ -1168,6 +1155,12 @@ function tenantList(div, data) {
                     </td>
                     <td class="align-middle">
                         ${st.email ?? 'N/A'}
+                    </td>
+                    <td class="text-center align-middle">
+                        ${st.national_id ?? 'N/A'}
+                    </td>
+                    <td class="text-center align-middle">
+                        ${st.passport_number ?? 'N/A'}
                     </td>
                     <td class="text-center align-middle">
                         ${st.status ?? 'N/A'}
@@ -1196,6 +1189,82 @@ function tenantList(div, data) {
 
     div.innerHTML = html;
     // togglePanelTable(div);
+    HtmlString = html;
+}
+
+
+function depositList(div, data) {
+    const d = data?.list ?? [];
+    const company_info = data?.company_profile ?? {};
+
+    let html = `
+    <div class="d-block position-relative">
+        <div class="height-logo-report position-absolute overflow-hidden">
+            <img style="max-width:100px;max-height:100px;"
+                 class="object-fit-scale set-min-size-logo"
+                 src="${company_info.logo_url || ''}"
+                 alt="">
+        </div>
+        <div class="d-flex flex-column gap-2 justify-content-center align-items-center set-min-size-container-title">
+            <h4 class="text-center text-uppercase">${data.title ?? ''}</h4>
+            <p class="text-center w-100 fs-5 pb-0 mb-0">
+                ${data.sub_title ?? ''}
+            </p>
+            <p class="text-center w-100 fs-6 pb-0 mb-0">
+                ${data.sub_title_2 ?? ''}
+            </p>
+        </div>
+    </div>
+
+    <div class="table-responsive mt-3 pt-3 pb-3 bg-white overflow-x-hover-auto">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th class="text-center">No</th>
+                    <th class="text-center">Tenant Name</th>
+                    <th class="text-center">Tenant ID</th>
+                    <th class="text-center">Deposit Date</th>
+                    <th class="text-center">Payment Date</th>
+                    <th class="text-center">Deposit</th>
+                    <th class="text-center">Valid Date</th>
+                    <th class="text-center">Remarks</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    if (d.length) {
+        d.forEach((st, index) => {
+            html += `
+                <tr>
+                    <td class="text-center">${index + 1}</td>
+                    <td>${st.tenant_name ?? ''}</td>
+                    <td class="text-center">${st.tenant_id ?? ''}</td>
+                    <td class="text-center">${st.deposit_date ?? ''}</td>
+                    <td class="text-center">${st.payment_date ?? ''}</td>
+                    <td class="text-end">${st.deposit ?? '0.00'}</td>
+                    <td class="text-center">${st.valid_date ?? ''}</td>
+                    <td>${st.remarks ?? ''}</td>
+                </tr>
+            `;
+        });
+    } else {
+        html += `
+            <tr>
+                <td colspan="8" class="text-center">
+                    No data found
+                </td>
+            </tr>
+        `;
+    }
+
+    html += `
+            </tbody>
+        </table>
+    </div>
+    `;
+
+    div.innerHTML = html;
     HtmlString = html;
 }
 function totalPaymentHistory(div, data) {

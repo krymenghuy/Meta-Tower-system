@@ -607,7 +607,7 @@ var ContractsComponent = new (function () {
             // Auto-refresh every hour to update contract statuses
             if (!mThis.autoRefreshInterval) {
                 mThis.autoRefreshInterval = setInterval(() => {
-                    console.log('Auto-refreshing contracts...');
+                    // console.log('Auto-refreshing contracts...');
                     mThis.ContractListView.showPage(mThis.getFilterData());
 
                     // Re-initialize tooltips after refresh

@@ -28,13 +28,13 @@ class Building //extends Model
         $subs_id = $ss->subs_id ?? getCurrentSubsId(true);
 
         $v_rule = [
-            'name' => '1|string|0-50|text=name_required',
+            'name' => '1|string|0-150|text=name_required::@key;@max;@value',
             'prefix' => '1|string|0-20|text=prefix_required',
             'total_floor' => '1|number|text=total_floor_required',
             'total_area' => '1|number|min=0|text=total_area_required',
             'total_space' => '0|number',
             'occupancy' => '0|number',
-            'address' => '1|string|0-255|text=address_required',
+            'address' => '1|string|text=address_required',
         ];
 
         $allowSign = ['$', '#', '@', '!', '.', '-', ',', '_', '=', '?'];

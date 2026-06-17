@@ -150,6 +150,7 @@ return [
                 'js/components/prm/ItemsComponent.js',
                 'js/components/prm/InvoiceSettingComponent.js',
                 'js/components/prm/PrintContractDialog.js',
+                'js/components/prm/DepositComponent.js',
                 
 
 

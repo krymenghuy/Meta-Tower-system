@@ -330,7 +330,7 @@ var PurchaseOrdersComponent = (() => {
             cv_interact.warning('You already authorized this Purchase order.');
             return;
         }
-        cv_interact.confirm('Are you sure you want to authorize this purchase order?', {
+        cv_interact.confirm('confirm_authorize', {
             title: 'Authorize Purchase order',
             context: 'update',
             confirmButtonText: 'Authorize'

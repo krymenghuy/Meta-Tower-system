@@ -28,7 +28,7 @@ class Vendor //extends Model
         $ss = $ss ?? $this->userInfo;
 
         $v_rule = [
-            'name' => '1|string|1-150|text=name_required',
+            'name' => '1|string|1-150|text=name_required::@key;@max;@value',
             'phone_number' => '1|string|0-50|text=phone_number_required',
             'email' => '0|string|0-100',
             'tax_number' => '0|string|0-30',
@@ -36,7 +36,7 @@ class Vendor //extends Model
             'category_id' => '1|number|exists=vendor_categories.id|text=please_select_a_valid_category',
             'contact_person' => '1|string|0-100|text=contact_person_required',
             'contact_phone' => '1|string|0-25|text=contact_phone_required',
-            'address' => '1|string|0-255|text=address_required',
+            'address' => '1|string|text=address_required',
 
         ];
 

@@ -39,7 +39,7 @@ return [
 
         'default' => '?? មិនត្រឹមត្រូវ។',
 
-        'name_required' => 'សូមបញ្ចូលឈ្មោះ។',
+        'name_required' => 'តម្រូវឱ្យបញ្ចូល ?? ហើយមិនអាចលើសពី ?? តួអក្សរបានទេ។ តម្លៃដែលបានបញ្ចូល៖ ??',
         'prefix_required' => 'សូមបញ្ចូលអក្សរកាត់។',
         'total_floor_required' => 'សូមបញ្ចូលចំនួនជាន់សរុប។',
         'total_area_required' => 'សូមបញ្ចូលចំនួនក្រឡាផ្ទៃសរុប។',
@@ -123,6 +123,7 @@ return [
         'end_after_start' => 'ថ្ងៃ/ម៉ោងបញ្ចប់ត្រូវតែធំជាងថ្ងៃ/ម៉ោងចាប់ផ្តើម។',
         'start_time_cannot_in_past' => 'ម៉ោងចាប់ផ្តើមមិនអាចនៅក្នុងពេលអតីតកាលបានទេ។',
         'end_time_cannot_in_past'   => 'ម៉ោងបញ្ចប់មិនអាចនៅក្នុងពេលអតីតកាលបានទេ។',
+        'nid_issue_date' => 'សូមជ្រើសរើសថ្ងៃចេញអត្តសញ្ញាណប័ណ្ណ',
 
 
 
@@ -142,11 +143,15 @@ return [
 
 
     ],
+    'api_body_keys' =>[
+        'name' => 'ឈ្មោះ',
+        'building_id' => 'អគារ',
+    ],
     'titles' => [
         'Create Building' => 'បង្កើតអគារ',
         'Modify Building' => 'កែប្រែអគារ',
         'Create Floor' => 'បង្កើតជាន់ថ្មី',
-        'Modify Floor' => 'កែប្រែជាន់', 
+        'Modify Floor' => 'កែប្រែជាន់',
         'Floor' => 'ជាន់',
         'Floor Number' => 'លេខជាន់',
         'Total Space' => 'បន្ទប់សរុប',
@@ -362,10 +367,12 @@ return [
 
         'Purchase Items' => 'មុខទំនិញ',
         'Create Item' => 'បង្កើតមុខទំនិញ',
+        'Modify Item' => 'កែប្រែមុខទំនិញ',
         'Modify PO' => 'កែប្រែការបញ្ជាទិញ',
         'Reject PO' => 'បដិសេធការបញ្ជាទិញ',
         'Delete PO' => 'លុបការបញ្ជាទិញ',
         'Authorized PO' => 'អនុម័តការបញ្ជាទិញ',
+        'Receive PO' => 'ទទួលការបញ្ជាទិញ',
 
         'Order Qty' => 'បរិមាណ',
         'Item' => 'មុខទំនិញ',
@@ -419,9 +426,13 @@ return [
         'Add Service' => 'បន្ថែមសេវាកម្ម',
         'Reservation Details' => 'ព័ត៌មានអំពីការកក់',
         'View Reservation' => 'មើលព័ត៌មានការកក់',
-        '' => '',
-        '' => '',
-        '' => '',
+        'Create Amenity' => 'បង្កើតបរិកា្ខរសេវាកម្ម',
+        'Modify Amenity' => 'កែប្រែបរិកា្ខរសេវាកម្ម',
+
+        'Active' => 'សកម្ម',
+        'Inactive' => 'អសកម្ម',
+        'Service Prices' => 'តំលៃសេវាកម្ម',
+        
 
 
 
@@ -580,6 +591,7 @@ return [
         'OK' => 'បាទ',
         'Finish' => 'បាទ',
         'Print' => 'បោះពុម្ព',
+        'PDF' => 'ទាញយក',
         'Close' => 'បិទ',
         'Continue' => 'បន្តរ',
         'Continue Now' => 'បន្តរ',
@@ -742,6 +754,7 @@ return [
         'Payer' => 'អ្នកបង់ប្រាក់',
         'Cash' => 'ចំនួនសាច់ប្រាក់ ',
         'Pay To' => 'អ្នកទទួលប្រាក់ ',
+        'File' => 'ឯកសារ',
 
         'Check-in Time' => 'ម៉ោងចូល',
         'Check-out Time' => 'ម៉ោងចេញ',
@@ -990,6 +1003,8 @@ return [
         'update_success_item' => 'ទំនិញត្រូវបានកែប្រែដោយជោគជ័យ។',
         'create_success_item' => 'ទំនិញត្រូវបានបង្កើតដោយជោគជ័យ។',
         'delete_success_item' => 'ទំនិញត្រូវបានលុបដោយជោគជ័យ។',
+
+        'No contract recorded for this tenant' => 'មិនមានកិច្ចសន្យាសម្រាប់អ្នកជួលនេះទេ។',
 
         "Confirm" => 'យល់ព្រម',
         "Log Out" => "ចាកចេញ",

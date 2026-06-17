@@ -1,5 +1,5 @@
 "use strict";
-var ReceiptComponent = new (function() {
+var ReceiptComponent = (() => {
     const mThis = this;
     mThis.title_prop = "Receipts";
     mThis.base_url = main_view.base_url;
@@ -150,7 +150,7 @@ var ReceiptComponent = new (function() {
             }
         },
         {
-            transTitle: "titles.Updated By",
+            transTitle: "titles.Last Updated",
             className: "align-middle text-nowrap",
             data: data => `
             <div class="d-flex flex-column">
@@ -233,7 +233,7 @@ var ReceiptComponent = new (function() {
             menus: [
                 {
                     html:
-                        '<span class="ps-2" vslang="title.Cancel Receipt"></span>',
+                        '<span class="ps-2" vslang="titles.Cancel Receipt"></span>',
                     icon: `<i class="fa-regular fa-rectangle-xmark fs-5 text-danger-emphasis"></i>`,
                     name: "cancel_receipt",
                     cssClass: "border-bottom pb-2"

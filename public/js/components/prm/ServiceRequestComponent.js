@@ -161,7 +161,7 @@ var ServiceRequestComponent = (function () {
             },
         },
         {
-            transTitle: "titles.Updated By",
+            transTitle: "titles.Last Updated",
             className: 'align-middle text-nowrap',
             data: (data) => `
             <div class="d-flex flex-column">
@@ -424,7 +424,7 @@ var ServiceRequestComponent = (function () {
     };
     mThis.deleteRequest = (id, menuLink) => {
         if (!AuthManager.allowed(258,false)) return;
-        cv_interact.confirm('Delete this Service Request?', {
+        cv_interact.confirm('confirm_delete', {
             transTitle: 'Delete Service Request',
             confirmButtonText: "Delete"
         }, (confirmed) => {

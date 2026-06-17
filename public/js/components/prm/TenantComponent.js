@@ -1,9 +1,9 @@
 "use strict";
 
-var TenantComponent = new (function () {
-    const mThis = this;
+var TenantComponent = (function () {
+    const mThis = {};
     mThis.title_prop = "Tenant Management";
-    this.defaultPage = "tenant_list";
+    mThis.defaultPage = "tenant_list";
     mThis.self = main_view.VSAppContent.querySelector(
         "#_main_tenant_component",
     );
@@ -24,11 +24,11 @@ var TenantComponent = new (function () {
     mThis.paginationContainer = mThis.self.querySelector(
         "#tenant_card_container_pagination",
     );
-    this.pages = {
-        tenant_list: this.divTenantListContainer,
-        profile_view: this.divProfileView,
+    mThis.pages = {
+        tenant_list: mThis.divTenantListContainer,
+        profile_view: mThis.divProfileView,
     };
-    mThis.profile_info_tenant = this.divProfileView.querySelector(
+    mThis.profile_info_tenant = mThis.divProfileView.querySelector(
         "#profile_info_tenant",
     );
     mThis.cols = [
@@ -170,8 +170,6 @@ var TenantComponent = new (function () {
             tableClass:
                 "table table--white rounded-2 overflow-hidden header-uppercase text-nowrap",
             rowCreated: (data, index, tr) => {
-                // console.log(9090,tr);
-
                 tr.dataset.id = data.id;
                 tr.dataset.statusid = data.status_id;
                 mThis.initDropdownMenus(tr);
@@ -188,14 +186,14 @@ var TenantComponent = new (function () {
                 },
             };
 
-            if(!AuthManager.allowed(218,false)) return;
+            if (!AuthManager.allowed(218, false)) return;
             CreateTenantDialog.show(op);
         };
-         mThis.btnPDF.onclick = function (e) {
+        mThis.btnPDF.onclick = function (e) {
             e.preventDefault();
-            if (!AuthManager.allowed(233,false)) return;
+            if (!AuthManager.allowed(233, false)) return;
             let op = mThis.getFilterData();
-            
+
             let html = `
                 <div id="full_elbody" style="zoom:95%">
                 <style>
@@ -329,18 +327,22 @@ var TenantComponent = new (function () {
                         </thead>
                         <tbody>
                 `;
-                // console.log(JSON.stringify(op, null, 2));
 
+            vsapi
+                .call(
+                    `${main_view.base_url}/prm/tenant/list`,
+                    op,
+                    false,
+                    null,
+                    null,
+                )
+                .then((res) => {
+                    if (res.status_code === 200) {
+                        const d = res.data.list;
+                        let i = 1;
 
-                vsapi.call(`${main_view.base_url}/prm/tenant/list`, op, false, null, null)
-                    .then(res => {
-                        if (res.status_code === 200) {
-
-                            const d = res.data.list;
-                            let i = 1;
-
-                            d.forEach(data => {
-                                html += `
+                        d.forEach((data) => {
+                            html += `
                                     <tr>
                                        <td class="text-center">${i++}</td>
                                         <td class="text-center">${data.code ?? ""}</td>
@@ -355,27 +357,25 @@ var TenantComponent = new (function () {
                                         <td>${data.address ?? ""}</td>
                                     </tr>
                                 `;
-                            });
+                        });
 
-                            html += `
+                        html += `
                                 </tbody>
                             </table>
 
                             <div style="text-align:right; margin-top:10px;">
-                                Date : ${new Date().toLocaleDateString('en-GB')}
+                                Date : ${new Date().toLocaleDateString("en-GB")}
                             </div>
                         </div>
                         </div>
                     `;
 
-                            htmlToTable('Tenant List', html);
-                        }
-                    });
+                        htmlToTable("Tenant List", html);
+                    }
+                });
 
-                return;
+            return;
         };
-
-
 
         mThis.btnBack.onclick = function (e) {
             e.preventDefault();
@@ -469,7 +469,6 @@ var TenantComponent = new (function () {
             onShow: (me, container) => {
                 const menu = me.getActiveMenus(container);
                 const status_id = container.dataset.statusid;
-                // console.log(123456, status_id);
 
                 // menu.edit_student.style.display = enroll_finalized == 1 ? 'none' : 'block';
                 menu.create_contract.style.display =
@@ -528,7 +527,7 @@ var TenantComponent = new (function () {
                 mThis.renderView();
             },
         };
-        if (!AuthManager.allowed(220,false)) return;
+        if (!AuthManager.allowed(220, false)) return;
         CreateTenantDialog.show(op);
     };
     mThis.serviceRequest = (id, menuLink) => {
@@ -550,7 +549,7 @@ var TenantComponent = new (function () {
                 mThis.renderView();
             },
         };
-        if (!AuthManager.allowed(227,false)) return;
+        if (!AuthManager.allowed(227, false)) return;
         ContractDialog.show(op);
     };
     mThis.uploadDocument = (id, menuLink) => {
@@ -562,7 +561,7 @@ var TenantComponent = new (function () {
                 mThis.renderView();
             },
         };
-        if (!AuthManager.allowed(222,false)) return;
+        if (!AuthManager.allowed(222, false)) return;
         TenantDocumentDialog.show(op);
     };
     mThis.modifyDocument = (id, menuLink) => {
@@ -591,7 +590,7 @@ var TenantComponent = new (function () {
                 mThis.renderView();
             },
         };
-        if (!AuthManager.allowed(221,false)) return;
+        if (!AuthManager.allowed(221, false)) return;
         cv_interact.confirm(
             "confirm_delete",
             {
@@ -632,12 +631,10 @@ var TenantComponent = new (function () {
         });
     };
     mThis.renderCard = (container, data) => {
-        // console.log(8888, data);
         container.innerHTML = "";
         let html = `<div class="row g-3">`;
         if (Array.isArray(data) && data.length > 0) {
             data.forEach((d) => {
-                /** Backend: status_id 2 means tenant has a currently active contract. */
                 const hasContractAlready = Number(d.status_id) === 2;
                 const currentUnitCode =
                     hasContractAlready && d.space_code ? d.space_code : "Unit";
@@ -775,7 +772,7 @@ var TenantComponent = new (function () {
             link.addEventListener("click", (e) => {
                 const tenantId = e.currentTarget.dataset.id;
                 mThis.tenant_id = tenantId;
-                if (!AuthManager.allowed(219,false)) return;
+                if (!AuthManager.allowed(219, false)) return;
                 mThis.showPage("profile_view", tenantId);
                 //const employeeData = data.find((emp) => emp.id == employeeId);
                 // if (employeeData) {
@@ -815,7 +812,7 @@ var TenantComponent = new (function () {
                         mThis.renderView();
                     },
                 };
-                if (!AuthManager.allowed(227,false)) return;
+                if (!AuthManager.allowed(227, false)) return;
                 ContractDialog.show(op);
             });
         });
@@ -934,8 +931,8 @@ var TenantComponent = new (function () {
         document.body.appendChild(overlay);
     };
     mThis.showPage = async (pageName, op = {}) => {
-        if (this.self.style.display !== "block") {
-            main_view.setContentView(this.self, this.title_prop);
+        if (mThis.self.style.display !== "block") {
+            main_view.setContentView(mThis.self, mThis.title_prop);
         }
         switch (pageName) {
             case "tenant_list": {
@@ -954,7 +951,7 @@ var TenantComponent = new (function () {
                     null,
                 );
                 const data = res.data || {};
-                if (!AuthManager.allowed(219,false)) return;
+                if (!AuthManager.allowed(219, false)) return;
                 mThis.renderProfile(data);
                 break;
             }
@@ -973,8 +970,6 @@ var TenantComponent = new (function () {
         targetPage.style.display = "block";
     };
     mThis.renderProfile = (data) => {
-        // console.log(123, data);
-
         let cls_class = "";
         if (data && data.status) {
             switch (data.status) {
@@ -1559,7 +1554,7 @@ var TenantComponent = new (function () {
                     const btnDocument = div.querySelector("#_btnDocument");
                     if (btnDocument) {
                         btnDocument.onclick = () => {
-                            if (!AuthManager.allowed(222,false)) return;
+                            if (!AuthManager.allowed(222, false)) return;
                             TenantDocumentDialog.show({
                                 id: null,
                                 tenant_id: data.id,
@@ -1573,13 +1568,13 @@ var TenantComponent = new (function () {
                     div.querySelectorAll(".view-doc").forEach((btn) => {
                         btn.addEventListener("click", async (e) => {
                             const id = e.currentTarget.dataset.id;
-                            if (!AuthManager.allowed(223,false)) return;
+                            if (!AuthManager.allowed(223, false)) return;
                             mThis.openTenantDocument(id, "view");
                         });
                     });
                     div.querySelectorAll(".download-doc").forEach((btn) => {
                         btn.addEventListener("click", (e) => {
-                            if (!AuthManager.allowed(225,false)) return;
+                            if (!AuthManager.allowed(225, false)) return;
                             const id = e.currentTarget.dataset.id;
                             mThis.openTenantDocument(id, "download");
                         });
@@ -1599,7 +1594,7 @@ var TenantComponent = new (function () {
                                     );
                                 },
                             };
-                            if (!AuthManager.allowed(224,false)) return;
+                            if (!AuthManager.allowed(224, false)) return;
                             TenantDocumentDialog.show(op);
                         });
                     });
@@ -1608,7 +1603,7 @@ var TenantComponent = new (function () {
                         .querySelectorAll(".delete-doc-btn")
                         .forEach((btn) => {
                             btn.addEventListener("click", async function (e) {
-                                if (!AuthManager.allowed(226,false)) return;
+                                if (!AuthManager.allowed(226, false)) return;
                                 const docId = this.dataset.id;
 
                                 const confirmed = await cv_interact.confirm(
@@ -1617,7 +1612,6 @@ var TenantComponent = new (function () {
                                         title: "deleted",
                                         context: "delete",
                                         confirmButtonText: "Delete",
-
                                     },
                                 );
 
@@ -1635,7 +1629,9 @@ var TenantComponent = new (function () {
                                         )
                                         .then((res) => {
                                             if (res.status_code === 200) {
-                                                cv_interact.success("delete_success_document");
+                                                cv_interact.success(
+                                                    "delete_success_document",
+                                                );
                                                 mThis.renderOverView(
                                                     div,
                                                     target,
@@ -1659,8 +1655,6 @@ var TenantComponent = new (function () {
     };
 
     mThis.setActionsProfileInfo = (divProfile) => {
-        // console.log(33, divProfile);
-
         divProfile.addEventListener("click", (e) => {
             // let btn = VSUtil.closestLimited(e.target, ".edit_tenant_profile_info ");
             // if (btn) {
@@ -1758,7 +1752,7 @@ const CreateTenantDialog = (() => {
                         </div>
                     </div>
 
-                    <div class="col-md-9 row align-content-between flex-wrap" > 
+                    <div class="col-md-9 row align-content-between flex-wrap" >
                             <div class="col-6">
                                 <div class="vs-material-field">
                                     <input type="text" name="name" class="data-input form-control" data-field="name" placeholder="" />
@@ -1824,8 +1818,6 @@ const CreateTenantDialog = (() => {
                                 <label vslang="labels.Phone Number">Phone Number</label>
                             </div>
                         </div>
-                      
-                       
                         <div class="col-12 col-md-6 pt-2">
                             <div class="vs-material-field">
                                 <input type="email" name="email" class="data-input form-control" data-field="email" placeholder=" " />
@@ -1868,75 +1860,20 @@ const CreateTenantDialog = (() => {
                     me.ext = null;
 
                     me.renderTenantImage = () => {
-                        console.log(1, me.dataOptions.id);
-                        console.log(2, me.fileBase64);
+                        let src = "";
+                        if (me.previewImg && me.previewImg.src) {
+                            src = me.previewImg.src.split("/").pop();
+                        }
+                        const isPlaceholder = src === "placeholder.svg" || src === "";
 
-                        const src = new URL(me.previewImg.src).pathname
-                            .split("/")
-                            .pop();
-
-                        console.log(3, src);
-
-                        // if (
-                        //     me.dataOptions.id == null ||
-                        //     !me.fileBase64
-                        // ) {
-                        // console.log(4, "start if");
-
-                        //     me.uploadZone.classList.remove("d-none");
-                        //     me.previewZone.classList.add("d-none");
-                        //     me.uploadInput.value = "";
-                        //     if (me.displayInput) me.displayInput.value = "";
-                        //     if (me.previewImg) me.previewImg.src = "";
-                        // } else if (me.dataOptions.id > 0 &&
-                        //     me.fileBase64 &&
-                        //     src == "placeholder.svg"
-                        // ) {
-                        // console.log(4, "start else if "  );
-
-                        //     me.uploadZone.classList.remove("d-none");
-                        //     me.previewZone.classList.add("d-none");
-                        //     me.uploadInput.value = "";
-                        //     if (me.displayInput) me.displayInput.value = "";
-                        //     if (me.previewImg) me.previewImg.src = "";
-                        // } else {
-                        // console.log(4, "start else");
-
-                        //     me.uploadZone.classList.add("d-none");
-                        //     me.previewZone.classList.remove("d-none");
-                        // }
-
-                        if (me.dataOptions.id == null && me.fileBase64) {
-                            console.log(4, "start if");
-
-                            me.uploadZone.classList.add("d-none");
-                            me.previewZone.classList.remove("d-none");
-                        } else if (
-                            me.dataOptions.id == null &&
-                            !me.fileBase64
-                        ) {
-                            console.log(4, "start else if 1");
-
+                        if (!me.fileBase64 || isPlaceholder) {
                             me.uploadZone.classList.remove("d-none");
                             me.previewZone.classList.add("d-none");
                             me.uploadInput.value = "";
-                            if (me.displayInput) me.displayInput.value = "";
-                            if (me.previewImg) me.previewImg.src = "";
-                        } else if (
-                            me.dataOptions.id > 0 &&
-                            !me.fileBase64 &&
-                            src == "placeholder.svg"
-                        ) {
-                            console.log(4, "start else if 2");
 
-                            me.uploadZone.classList.remove("d-none");
-                            me.previewZone.classList.add("d-none");
-                            me.uploadInput.value = "";
                             if (me.displayInput) me.displayInput.value = "";
                             if (me.previewImg) me.previewImg.src = "";
                         } else {
-                            console.log(4, "start else");
-
                             me.uploadZone.classList.add("d-none");
                             me.previewZone.classList.remove("d-none");
                         }
@@ -1997,7 +1934,7 @@ const CreateTenantDialog = (() => {
                     me.controls.btn_removeFile.onclick = async () => {
                         if (me.dataOptions.id > 0) {
                             const yes = await cv_interact.confirm(
-                                "Are you sure to delete this profile photo?",
+                                "confirm_delete",
                                 { title: "Delete Photo", context: "delete" },
                             );
                             if (yes) {
@@ -2078,8 +2015,14 @@ const CreateTenantDialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
+                    if (!me.dataOptions.id) {
+                        me.fileBase64 = null;
+                        me.ext = null;
+                        if (me.previewImg) me.previewImg.src = "";
+                        if (me.displayInput) me.displayInput.value = "";
+                        if (me.uploadInput) me.uploadInput.value = "";
+                    }
                     me.renderTenantImage();
-                    // console.log(6666666, me);
                     if (me.dataOptions.phone_number) {
                         me.controls.name.value = me.dataOptions.name;
                         me.controls.phone_number.value =
@@ -2094,9 +2037,15 @@ const CreateTenantDialog = (() => {
                             if (data && data.image_url) {
                                 me.previewImg.src = data.image_url;
                                 me.fileBase64 = data.image_url;
+                            } else {
+                                me.previewImg.src = "";
+                                me.fileBase64 = null;
                             }
+                        } else {
+                            me.previewImg.src = "";
+                            me.fileBase64 = null;
                         }
-                        // me.renderTenantImage();
+                        me.renderTenantImage();
                     },
                 },
                 buttons: [
@@ -2131,12 +2080,16 @@ const CreateTenantDialog = (() => {
                                             res.data?.id || null;
                                         me.hide(true, op, newTenantId);
                                         if (me.dataOptions.id > 0) {
-                                            cv_interact.success("update_success_tenant");
+                                            cv_interact.success(
+                                                "update_success_tenant",
+                                            );
                                             me.previewZone.classList.add(
                                                 "d-none",
                                             );
                                         } else {
-                                           cv_interact.success("create_success_tenant");
+                                            cv_interact.success(
+                                                "create_success_tenant",
+                                            );
                                             me.previewZone.classList.add(
                                                 "d-none",
                                             );
@@ -2266,7 +2219,6 @@ const TenantDocumentDialog = (() => {
                                 title: "deleted",
                                 context: "delete",
                                 confirmButtonText: "Delete",
-
                             },
                         );
 
@@ -2284,7 +2236,9 @@ const TenantDocumentDialog = (() => {
                             )
                             .then((res) => {
                                 if (res.status_code === 200) {
-                                    cv_interact.success("delete_success_document");
+                                    cv_interact.success(
+                                        "delete_success_document",
+                                    );
                                     if (
                                         typeof me.loadTenantDocuments ===
                                         "function"
@@ -2357,9 +2311,7 @@ const TenantDocumentDialog = (() => {
                         cssClass: "btn btn-primary",
                         click: (me, btn) => {
                             if (!me.controls.document_type.value) {
-                                cv_interact.error(
-                                    "select_document_type",
-                                );
+                                cv_interact.error("select_document_type");
                                 return;
                             }
                             if (!me.fileData && !(me.dataOptions?.id > 0)) {
@@ -2368,9 +2320,7 @@ const TenantDocumentDialog = (() => {
                             }
                             const remarks = me.controls.remarks.value || "";
                             if (remarks.length > 255) {
-                                cv_interact.error(
-                                    "remarks_max_255",
-                                );
+                                cv_interact.error("remarks_max_255");
                                 return;
                             }
 
@@ -2379,9 +2329,7 @@ const TenantDocumentDialog = (() => {
                                 me.fileData &&
                                 allowExt.indexOf(me.fileData.ext) === -1
                             ) {
-                                cv_interact.error(
-                                    "select_valid_file",
-                                );
+                                cv_interact.error("select_valid_file");
                                 return;
                             }
                             // const nameWithoutExt = me.fileData.fileName.replace(
@@ -2421,9 +2369,13 @@ const TenantDocumentDialog = (() => {
                                             res.dataOptions?.id || null;
                                         me.hide(true, p, newDocumentId);
                                         if (me.dataOptions.id > 0) {
-                                           cv_interact.success("update_success_document");
+                                            cv_interact.success(
+                                                "update_success_document",
+                                            );
                                         } else {
-                                            cv_interact.success("create_success_document");
+                                            cv_interact.success(
+                                                "create_success_document",
+                                            );
                                         }
                                     } else {
                                         cv_interact.error(res.error_message);

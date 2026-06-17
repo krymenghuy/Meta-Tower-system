@@ -354,7 +354,7 @@ var AmenityComponent = (() => {
     mThis.finishMaintenance = (id, menuLink) => {
         if (!AuthManager.allowed(216, false)) return;
         cv_interact.confirm(
-            "Finish this maintenance?",
+            "confirm_finish",
             {
                 transTitle: "Finish Maintenance",
                 context: "confirm",
@@ -395,7 +395,7 @@ var AmenityComponent = (() => {
         };
         if (!AuthManager.allowed(245)) return;
         cv_interact.confirm(
-            "Delete this Amenity?",
+            "confirm_delete",
             {
                 title: "Delete Amenity",
                 context: "delete",
