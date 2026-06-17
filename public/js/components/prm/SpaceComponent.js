@@ -1075,7 +1075,7 @@ const CreateBookingDialog = (() => {
                     const title = me.dataOptions.id
                         ? "Edit Booking"
                         : "Create Booking";
-                    return `<h4 class="text-prm-custom text-start fw-bold">${LocaleManager.trans(title, "titles")}</h4>`;
+                    return `<h4 class="text-start fw-bold">${LocaleManager.trans(title, "titles")}</h4>`;
                     // return me.dataOptions.id ? `<h4 class="text-prm-custom text-start fw-bold" vslang="titles.Modify Space"></h4>` : `<h4 class="text-prm-custom text-start fw-bold" vslang="titles.Create Space"></h4>`;
                 },
                 createContent: () => {

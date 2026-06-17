@@ -35,9 +35,19 @@ class Dashboard extends VSModel
             ->count();
 
         $vacantSpaces = max($totalSpaces - $occupiedSpaces, 0);
+        $avgLeaseMonths = DB::table('contracts')
+            // ->where('building_id', $building_id)
+            ->whereNotNull('start_date')
+            ->whereNotNull('end_date')
+            ->selectRaw('AVG(TIMESTAMPDIFF(MONTH, start_date, end_date)) as avg_months')
+            ->value('avg_months');
+
+        $avgLeaseMonths = $avgLeaseMonths ? round($avgLeaseMonths) : 0;
+        $avgLeaseTerm = $avgLeaseMonths . ' months';
+       
 
         $activeTenants = DB::table('tenants')
-            ->where('status_id', 1)
+            ->where('status_id', 2)
             ->count();
 
         $newTenants = DB::table('tenants')
@@ -110,14 +120,14 @@ class Dashboard extends VSModel
         $result->mini_stats = [
             (object)[
                 'label' => 'Average Lease Term',
-                'value' => '2.8 yrs'
+                'value' => $avgLeaseTerm
             ],
             (object)[
                 'label' => 'Revenue / Tenant',
                 'value' => '$' . ($activeTenants > 0 ? round($monthlyRevenue / $activeTenants, 2) : 0)
             ],
             (object)[
-                'label' => 'Vacant Spaces',
+                'label' => 'Available Units',
                 'value' => $vacantSpaces
             ],
             (object)[
@@ -131,57 +141,68 @@ class Dashboard extends VSModel
         ========================== */
 
         $result->kpis = [
-            (object)[
-                'key' => 'occupancy',
-                'title' => 'Occupancy Rate',
-                'value' => $occupancyRate . '%',
-                'note' => "$occupiedSpaces / $totalSpaces spaces occupied",
-                'trend' => '',
-                'icon' => '🏢'
-            ],
-            (object)[
-                'key' => 'tenants',
-                'title' => 'Active Tenants',
-                'value' => $activeTenants,
-                'note' => 'Registered tenants',
-                'trend' => "+$newTenants new tenants",
-                'icon' => '👥'
-            ],
-            (object)[
-                'key' => 'revenue',
-                'title' => 'Monthly Revenue',
-                'value' => '$' . number_format($monthlyRevenue, 2),
-                'note' => 'Rent + utilities + service fees',
-                'trend' => $revenueGrowth . '% vs last month',
-                'icon' => '💳'
-            ],
-            (object)[
-                'key' => 'receivables',
-                'title' => 'Outstanding Receivables',
-                'value' => '$' . number_format($outstandingAmount, 2),
-                'note' => "$overdueInvoices overdue invoices",
-                'trend' => 'Collection follow-up required',
-                'icon' => '⚠'
-            ]
-        ];
 
+    (object)[
+        'key' => 'occupancy',
+        'title' => 'Occupancy Rate',
+        'value' => $occupancyRate . '%',
+        'note' => "$occupiedSpaces / $totalSpaces spaces occupied",
+        'trend' => '↑ +2% this month',
+        'icon' => '🏢',
+        'color' => '#4F46E5',          // violet
+        'soft'  => 'rgba(79,70,229,.11)'
+    ],
+
+    (object)[
+        'key' => 'tenants',
+        'title' => 'Active Tenants',
+        'value' => $activeTenants,
+        'note' => 'Registered companies',
+        'trend' => "+$newTenants new tenants",
+        'icon' => '👥',
+        'color' => '#10B981',          // green
+        'soft'  => 'rgba(16,185,129,.12)'
+    ],
+
+    (object)[
+        'key' => 'revenue',
+        'title' => 'Monthly Revenue',
+        'value' => '$' . number_format($monthlyRevenue, 2),
+        'note' => 'Rent + utilities + service fees',
+        'trend' => "↑ {$revenueGrowth}% vs last month",
+        'icon' => '💳',
+        'color' => '#0EA5E9',          // blue
+        'soft'  => 'rgba(14,165,233,.12)'
+    ],
+
+    (object)[
+        'key' => 'receivables',
+        'title' => 'Outstanding',
+        'value' => '$' . number_format($outstandingAmount, 2),
+        'note' => "$overdueInvoices overdue invoices",
+        'trend' => 'Requires follow-up',
+        'icon' => '⚠',
+        'color' => '#EF4444',          // red
+        'soft'  => 'rgba(239,68,68,.12)'
+    ]
+];
             return $result;
         }
-    public static function getCharts($building_id, $ss)
-{
+    public static function getCharts($building_id, $ss){
     $result = new \stdClass();
 
     $result->occupancy_by_floor = DB::table('building_spaces')
-    ->selectRaw("
-        CONCAT('Floor ', floor_id) as floor,
-        SUM(CASE WHEN status_id = 3 THEN 1 ELSE 0 END) as occupied,
-        SUM(CASE WHEN status_id = 1 THEN 1 ELSE 0 END) as available,
-        SUM(CASE WHEN status_id = 2 THEN 1 ELSE 0 END) as booked
-    ")
-    ->where('building_id', $building_id)
-    ->groupBy('floor_id')
-    ->orderBy('floor_id')
-    ->get();
+        ->selectRaw("
+            CONCAT('Floor ', floor_id) as floor,
+            COUNT(*) as total,
+            ROUND(SUM(CASE WHEN status_id = 3 THEN 1 ELSE 0 END) / COUNT(*) * 100, 1) as occupied,
+            ROUND(SUM(CASE WHEN status_id = 2 THEN 1 ELSE 0 END) / COUNT(*) * 100, 1) as booked,
+            ROUND(SUM(CASE WHEN status_id = 1 THEN 1 ELSE 0 END) / COUNT(*) * 100, 1) as available
+        ")
+        ->where('building_id', $building_id)
+        ->groupBy('floor_id')
+        ->orderBy('floor_id')
+        ->get();
 
     $result->revenue_trend = (object)[
         'labels' => ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],

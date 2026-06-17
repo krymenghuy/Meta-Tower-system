@@ -889,8 +889,8 @@ var DashboardComponent =  new (function () {
                     <div class="col-12 col-xl-6">
                         ${mThis.renderChartCard({
                             title: "Occupancy by Floor",
-                            subtitle: "Occupied vs available office spaces",
-                            pill: "Office Tower",
+                            subtitle: "Occupied vs available units",
+                            pill: "Meta Tower",
                             canvasId: "chartOccupancy"
                         })}
                     </div>
@@ -1300,13 +1300,13 @@ mThis.initCharts = function (data) {
                 {
                     label: "Occupied",
                     data: rows.map(r => r.occupied),
-                    backgroundColor: "rgba(26,22,71,.90)",
+                    backgroundColor: "rgb(253 57 122)",
                     borderRadius: 8
                 },
                 {
                     label: "Booked",
                     data: rows.map(r => r.booked),
-                    backgroundColor: "rgba(246,214,115,.92)",
+                    backgroundColor: "rgb(85 120 214)",
                     borderRadius: 8
                 },
                 {
@@ -1327,8 +1327,11 @@ mThis.initCharts = function (data) {
                 },
                 y: {
                     stacked: true,
+                    max: 100,
                     beginAtZero: true,
-                    grid: { color: "#EEF2F7" }
+                    ticks: {
+                        callback: value => value + "%"
+                    }
                 }
             },
             plugins: {
