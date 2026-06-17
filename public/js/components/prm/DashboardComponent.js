@@ -1300,7 +1300,7 @@ mThis.initCharts = function (data) {
                 {
                     label: "Occupied",
                     data: rows.map(r => r.occupied),
-                    backgroundColor: "rgb(253 57 122)",
+                    backgroundColor: "rgb(48 45 89)",
                     borderRadius: 8
                 },
                 {
@@ -1312,7 +1312,7 @@ mThis.initCharts = function (data) {
                 {
                     label: "Available",
                     data: rows.map(r => r.available),
-                    backgroundColor: "rgba(34,197,94,.75)",
+                    backgroundColor: "rgb(247 217 126)",
                     borderRadius: 8
                 }
             ]

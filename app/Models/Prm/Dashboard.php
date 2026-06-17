@@ -224,7 +224,9 @@ class Dashboard extends VSModel
     $result->collection_kpis = [
         (object)[
             'title' => 'Rent Collection',
-            'value' => 96
+            'value' => 96,
+            'color' => '#4F46E5',
+        'soft' => '#818CF8'
         ],
         (object)[
             'title' => 'Electricity Collection',
