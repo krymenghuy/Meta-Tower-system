@@ -1,7 +1,7 @@
 "use strict";
 
-var SpaceComponent = new (function () {
-    const mThis = this;
+var SpaceComponent =  (function () {
+    const mThis = {};
     mThis.title_prop = "Space Management";
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_space_component");
