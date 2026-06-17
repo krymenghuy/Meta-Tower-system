@@ -571,7 +571,6 @@ var DashboardComponent =  new (function () {
 
     mThis.data = {
         period: "June 2026",
-
         summary: {
             occupancy_rate: 92,
             occupied_spaces: 128,
@@ -1516,6 +1515,12 @@ var DashboardComponent =  new (function () {
 
         mThis.renderDashboard();
     };
+    this.loadDashboardData = (filter,onFinish) => {
+        vsapi.call(`${main_view.base_url}/api/dashboard/summaries`, filter, main_view.apiCluster).then(res => {
+        const data = res.status_code === 200 ? StringSanitizer.sanitizeObject(res.data) : {};
+        if(typeof onFinish === 'function')onFinish(data);
+        });
+    }
 
     mThis.show = function () {
         mThis.init();
