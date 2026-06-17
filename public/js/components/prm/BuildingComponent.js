@@ -580,7 +580,7 @@ const BuildingDialog = (() => {
                 title: (me) => {
                     const title = me.dataOptions.id ? "Modify Building" : "Create Building";
                     if (title) {
-                       return  `<h4 class="text-prm-custom text-start fw-bold">${LocaleManager.trans(title,'titles')}</h4>`;
+                       return  `<h4 class="text-start fw-bold">${LocaleManager.trans(title,'titles')}</h4>`;
                     }
                 },
                 createContent: () => {
@@ -755,7 +755,7 @@ const CreateFloorDialog = (() => {
                 title: (me) => {
                     const title = me.dataOptions.id ? "Modify Floor" : "Create Floor";
                     if (title) {
-                       return  `<h4 class="text-prm-custom text-start fw-bold">${LocaleManager.trans(title,'titles')}</h4>`;
+                       return  `<h4 class="text-start fw-bold">${LocaleManager.trans(title,'titles')}</h4>`;
                     }
                 },
                 createContent: () => `
