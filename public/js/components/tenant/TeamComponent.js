@@ -1,28 +1,28 @@
 "use strict";
 
-var StaffComponent = new (function () {
+var TeamComponent = new (function () {
     const mThis = this;
-    mThis.title_prop = "Staff Management";
-    this.defaultPage = "staff_list";
+    mThis.title_prop = "Team Management";
+    this.defaultPage = "team_list";
     mThis.self = main_view.VSAppContent.querySelector(
-        "#_main_staff_component",
+        "#_main_team_component",
     );
-    mThis.btnAdd = mThis.self.querySelector("#_btnAddStaff");
-    mThis.divFilter = mThis.self.querySelector("#_divFilter_staff");
-    mThis.elSearch = mThis.self.querySelector("#_search_staff");
-    mThis.elStatus = mThis.self.querySelector("#_el_staff_status");
-    mThis.btnBack = document.querySelector("#_btn_back_staff");
+    mThis.btnAdd = mThis.self.querySelector("#_btnAddTeam");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter_team");
+    mThis.elSearch = mThis.self.querySelector("#_search_team");
+    mThis.elStatus = mThis.self.querySelector("#_el_team_status");
+    mThis.btnBack = document.querySelector("#_btn_back_team");
     mThis.divTenantListContainer = mThis.self.querySelector(
-        "#_staff_list_container",
+        "#_team_list_container",
     );
-    mThis.divProfileView = document.querySelector("#_staff_profile_view");
-    mThis.listViewContainer = mThis.self.querySelector("#_staff_list_view");
+    mThis.divProfileView = document.querySelector("#_team_profile_view");
+    mThis.listViewContainer = mThis.self.querySelector("#_team_list_view");
     this.pages = {
-        staff_list: this.divTenantListContainer,
+        team_list: this.divTenantListContainer,
         profile_view: this.divProfileView,
     };
     mThis.profile_info_tenant = this.divProfileView.querySelector(
-        "#profile_info_staff",
+        "#profile_info_team",
     );
     mThis.cols = [
         {
@@ -141,7 +141,7 @@ var StaffComponent = new (function () {
     mThis.init = () => {
         if (mThis.initAlready) return;
         mThis.staffListView = new ListView(mThis.listViewContainer, {
-            fetchApi: `${main_view.base_url}/prm/tenant/staff/list-paginate`,
+            fetchApi: `${main_view.base_url}/prm/tenant/team/list-paginate`,
             perPage: 8,
             columns: mThis.cols,
             apiCluster: main_view.apiCluster,
@@ -165,12 +165,24 @@ var StaffComponent = new (function () {
                     mThis.staffListView.showPage(mThis.getFilterData());
                 },
             };
-            CreateStaffDialog.show(op);
+            CreateTeamDialog.show(op);
         };
+        // mThis.btnAdd.onclick = function (e) {
+        //     e.preventDefault();
+        //     const op = {
+        //         id: null,
+        //         btn: e.target,
+        //         onClose: () => {
+        //             mThis.renderView();
+        //             mThis.staffListView.showPage(mThis.getFilterData());
+        //         },
+        //     };
+        //     CreateTeamDialog.show(op);
+        // };
 
         mThis.btnBack.onclick = function (e) {
             e.preventDefault();
-            mThis.showPage("staff_list", mThis.getFilterData());
+            mThis.showPage("team_list", mThis.getFilterData());
         };
 
         mThis.pr_tbl = mThis.staffListView.getListContainer();
@@ -254,16 +266,16 @@ var StaffComponent = new (function () {
         };
         new VSDropdownMenu(menuOptions);
     };
-    mThis.editTenant = (id, menuLink) => {
-        let op = {
-            id: id,
-            btn: menuLink,
-            onClose: () => {
-                mThis.renderView();
-            },
-        };
-        CreateStaffDialog.show(op);
-    };
+    // mThis.editTenant = (id, menuLink) => {
+    //     let op = {
+    //         id: id,
+    //         btn: menuLink,
+    //         onClose: () => {
+    //             mThis.renderView();
+    //         },
+    //     };
+    //     CreateTeamDialog.show(op);
+    // };
 
     mThis.deleteTenant = (id, menuLink) => {
         let op = {
@@ -285,7 +297,7 @@ var StaffComponent = new (function () {
                 if (e) {
                     vsapi
                         .call(
-                            `${main_view.base_url}/prm/tenant/delete`,
+                            `${main_view.base_url}/prm/tenant/team/delete`,
                             op,
                             false,
                             false,
@@ -497,8 +509,8 @@ var StaffComponent = new (function () {
             main_view.setContentView(this.self, this.title_prop);
         }
         switch (pageName) {
-            case "staff_list": {
-                mThis.currentPage = "staff_list";
+            case "team_list": {
+                mThis.currentPage = "team_list";
                 mThis.renderView();
                 break;
             }
@@ -507,7 +519,7 @@ var StaffComponent = new (function () {
                 const tenant_id = op.tenant_id || op.id || op;
                 const p = { id: tenant_id };
                 const res = await vsapi.call(
-                    [main_view.base_url, "/prm/tenant/details"].join(""),
+                    [main_view.base_url, "/prm/tenant/team/details"].join(""),
                     p,
                     false,
                     null,
@@ -929,7 +941,7 @@ var StaffComponent = new (function () {
     mThis.prepareFormOptions = (onFinish) => {
         vsapi
             .call(
-                `${main_view.base_url}/prm/tenant/form-options`,
+                `${main_view.base_url}/prm/tenant/team/form-options`,
                 null,
                 null,
                 null,
@@ -960,7 +972,113 @@ var StaffComponent = new (function () {
 
     return mThis;
 })();
-const CreateStaffDialog = (() => {
+
+const CreateTeamDialog = (() => {
+    const self = {};
+    let dialog = null;
+
+    self.show = (op) => {
+        dialog = dialog || new GeneralDialog({
+            cssClass: "modal-lg vs-modal",
+            backdrop: "static",
+            keyboard: true,
+
+            createContent: () => {
+                return `
+                    <div class="row g-3">
+                        <div class="col-12 col-md-8">
+                            <div class="vs-material-field">
+                                <input type="text" 
+                                       name="team_name" 
+                                       class="data-input form-control" 
+                                       data-field="team_name" 
+                                       placeholder=" " 
+                                       required />
+                                <label vslang="labels.Team Name">Team Name</label>
+                            </div>
+                        </div>
+                        
+                        <div class="col-12 col-md-4">
+                            <div class="vs-material-field">
+                                <input type="number" 
+                                       name="member_count" 
+                                       class="data-input form-control" 
+                                       data-field="member_count" 
+                                       placeholder=" " 
+                                       min="1" />
+                                <label vslang="labels.Member Count">Member Count</label>
+                            </div>
+                        </div>         
+                        <input type="hidden" name="space_id" data-field="space_id" class="data-input" />
+                    </div>
+                `;
+            },
+
+            prepareFormOptions: {
+                createTitle: "vslang:titles.Create New Team",
+                modifyTitle: "vslang:titles.Modify Team",
+                targetProp: "team",
+                api: {
+                    endpoint: `${main_view.base_url}/prm/tenant/team/form-options`,
+                    params: (op) => ({ id: op.id })
+                }
+            },
+
+            onPrepareForm: (me, data) => {
+                // Pre-fill hidden fields if passed from parent
+                if (op.tenant_id) {
+                    me.controls.tenant_id.value = op.tenant_id;
+                }
+                
+            },
+
+
+            buttons: [
+                {
+                    label: '<span vslang="buttons.Cancel"></span>',
+                    cssClass: "btn btn-secondary",
+                    click: (me) => {
+                        me.hide(false);
+                    }
+                },
+                {
+                    label: '<span vslang="buttons.Save"></span>',
+                    cssClass: "btn btn-primary",
+                    click: (me, btn) => {
+                        const formData = me.getData();
+                        
+                        vsapi.call(
+                            `${main_view.base_url}/prm/tenant/team/save`,
+                            formData,
+                            btn,
+                            null
+                        ).then((res) => {
+                            if (res.status_code === 200) {
+                                const newTeamId = res.data?.id || null;
+                                me.hide(true, formData, newTeamId);
+
+                                if (formData.id > 0) {
+                                    cv_interact.success("update_success_team");
+                                } else {
+                                    cv_interact.success("create_success_team");
+                                }
+                            } else {
+                                cv_interact.error(res.error_message || "Failed to save team");
+                            }
+                        });
+                    }
+                }
+            ]
+        });
+
+        dialog.show(op);
+    };
+
+    return self;
+})();
+
+
+const CreateTeamMemberDialog = (() => {
     const self = {};
     let dialog = null;
 
@@ -1240,7 +1358,7 @@ const CreateStaffDialog = (() => {
                             .call(
                                 [
                                     main_view.base_url,
-                                    "/prm/tenant/profile/photo/delete",
+                                    "/prm/tenant/team/profile/photo/delete",
                                 ].join(""),
                                 p,
                                 false,
@@ -1264,7 +1382,7 @@ const CreateStaffDialog = (() => {
                             .call(
                                 [
                                     main_view.base_url,
-                                    "/prm/tenant/profile/photo/save",
+                                    "/prm/tenant/team/profile/photo/save",
                                 ].join(""),
                                 p,
                                 false,
@@ -1293,7 +1411,7 @@ const CreateStaffDialog = (() => {
                     api: {
                         endpoint: [
                             main_view.base_url,
-                            "/prm/tenant/form-options",
+                            "/prm/tenant/team/form-options",
                         ].join(""),
                         params: (op) => {
                             return { id: op.id };
@@ -1356,7 +1474,7 @@ const CreateStaffDialog = (() => {
                                 .call(
                                     [
                                         main_view.base_url,
-                                        "/prm/tenant/staff/save",
+                                        "/prm/tenant/team/create",
                                     ].join(""),
                                     op,
                                     btn,

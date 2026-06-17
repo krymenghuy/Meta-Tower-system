@@ -38,7 +38,7 @@ use App\Http\Controllers\Tenant\ReservationsController;
 use App\Http\Controllers\Tenant\RequestServiceController;
 use App\Http\Controllers\Tenant\ReceiptController as TenantReceiptController;
 use App\Http\Controllers\Tenant\InvoiceController as TenantInvoiceController;
-use App\Http\Controllers\Tenant\StaffController;
+use App\Http\Controllers\Tenant\TeamController;
 
 
 
@@ -420,10 +420,17 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant/receip
     Route::post('/form-options', [TenantReceiptController::class, 'getFormOptions']);
 });
     
-Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant/staff')->group(function () {
-    Route::post('/save', [StaffController::class, 'saveStaff']);
-    Route::post('/list-paginate', [StaffController::class, 'getListStaff']);
-    Route::post('/details', [StaffController::class, 'getDetails']);
-    Route::post('/form-options', [StaffController::class, 'getFormOptions']);
+
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant/team')->group(function () {
+    Route::post('/save', [TeamController::class, 'saveTeamTenant']);
+    Route::post('/create', [TeamController::class, 'saveTeam']);
+    Route::post('/list-paginate', [TeamController::class, 'getListTeam']);
+    Route::post('/details', [TeamController::class, 'getDetails']);
+    Route::post('/form-options', [TeamController::class, 'getFormOptions']);
+    Route::post('/delete', [TeamController::class, 'deleteTeam']);
+    Route::post('/profile/photo/delete', [TeamController::class, 'deleteProfilePhoto']);
+    Route::post('/profile/photo/save', [TeamController::class, 'saveProfilePhoto']);
+    Route::post('/update-status', [TeamController::class, 'updateTeamStatus']);
 });
 

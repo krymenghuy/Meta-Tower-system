@@ -8,15 +8,16 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use DBX;
 use XPublicStorage;
 use Carbon\Carbon;
-class Staff //extends Model
+
+class Team // Changed from Staff to Team to resolve the "Class not found" error
 {
     protected $id = null;
     protected $userInfo = null;
-    protected static $img_dir = 'tenant_team';
+    protected static $img_dir = 'teams';
+
     public function __construct($id = null, $userInfo = null){
         $this->id = $id;
         $this->userInfo = $userInfo;
-
     }
 
     function checkUniqueStaffByNID($nid, $id = null)
@@ -25,7 +26,7 @@ class Staff //extends Model
         $str_id = '1=1';
         if ($id > 0) $str_id = "s.id <> $id";
         
-        $x = DB::table('tenant_team as s')
+        $x = DB::table('teams as s')
             ->where('s.national_id', $nid)
             ->whereRaw($str_id)
             ->select('id')
@@ -42,7 +43,7 @@ class Staff //extends Model
         $str_id = '1=1';
         if ($id > 0) $str_id = "s.id <> $id";
 
-        $x = DB::table('tenant_team as s')
+        $x = DB::table('teams as s')
             ->where('s.passport_number', $passport)
             ->whereRaw($str_id)
             ->select('id')
@@ -59,7 +60,7 @@ class Staff //extends Model
             return 'Phone number cannot be empty.';
         }
         
-        $query = DB::table('tenant_team')->where('phone_number', $phone_number);
+        $query = DB::table('teams')->where('phone_number', $phone_number);
         if ($id) {
             $query->where('id', '<>', $id);
         }
@@ -76,7 +77,7 @@ class Staff //extends Model
             return 'Email cannot be empty.';
         }
 
-        $query = DB::table('tenant_team')->where('email', $email);
+        $query = DB::table('teams')->where('email', $email);
         if ($id) {
             $query->where('id', '<>', $id);
         }
@@ -87,20 +88,46 @@ class Staff //extends Model
         return null;
     }
 
-    public function createTeam($arr = [], $ss = null){
+    /**
+     * Creates or Updates a tenant team entity (saves to tenant_team table)
+     */
+    public function createTeam($arr = [], $id = null, $ss = null){
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id ?? null;
         
         $v_rule = [
-            'team_name' => '1|string|0-30|text=name_required',
+            'space_id'   => '1|integer',
+            'team_name'  => '1|string|0-30|text=name_required',
         ];
+        
         $res = DBX::validateObject($arr, $v_rule, 0, $ss->lang);
+        if ($res->error) return DV::error($res->error);
+
         $inputs = $res->values;
         $d = (object) $inputs;
 
-   
+        $inputs['tenant_id'] = $ss->official_id;
+        $inputs['member_count'] = $d->member_count ?? 0;
+
+        $id = DBX::saveData($ss, 'tenant_team', ['id' => $id], $inputs, [], 1);
+        if (!$id) {
+            return DV::error('create_failed');
+        }
+
+        return DV::depends(1, ['tenant_team' => $inputs, 'id' => $id]);
     }
+
+    /**
+     * Alias method to keep TeamController standalone execution intact
+     */
+    public function saveTeam($arr = [], $id = null, $ss = null) {
+        return $this->saveStaff($arr, $id, $ss);
+    }
+
+    /**
+     * Saves individual member components (saves to teams table)
+     */
     public function saveStaff($arr = [], $id = null, $ss = null) {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
@@ -218,7 +245,7 @@ class Staff //extends Model
         $photo = $d->photo ?? null;
         unset($inputs['photo']); // Clean payload before DB injection
         
-        // Check if old image needs deleting (if update and new photo uploaded or deleted)
+        // Check if old image needs deleting
         $delete_prev_image = ($id > 0 && (!$photo || isImage($photo)));
         $created = !$id;
 
@@ -231,7 +258,7 @@ class Staff //extends Model
             unset($inputs['password']); 
         }
 
-        // 7. Normalize date fields to Y-m-d for MySQL (picker may send e.g. "01-May-2026")
+        // 7. Normalize date fields to Y-m-d for MySQL
         foreach (['date_of_birth', 'nid_issue_date', 'start_date'] as $dateField) {
             if (!empty($inputs[$dateField])) {
                 $parsed = date_create($inputs[$dateField]);
@@ -246,38 +273,34 @@ class Staff //extends Model
         $inputs['tenant_id'] = $ss->official_id;
 
         // 7. Save Database Data Operation
-        $id = DBX::saveData($ss, 'tenant_team', ['id' => $id], $inputs, [], 1);
+        $id = DBX::saveData($ss, 'teams', ['id' => $id], $inputs, [], 1);
         if (!$id) {
             return DV::error('create_failed');
         }
 
         // 8. Auto Code Generator Hook
         if ($created) {
-            setOfficialCode($branch_id, 'staff_code_control', 'tenant_team', ['id' => $id], 'S', 4, null);
+            setOfficialCode($branch_id, 'staff_code_control', 'teams', ['id' => $id], 'S', 4, null);
         }
 
-        // --- Photo Storage Execution (Matches Tenant Logic) ---
+        // --- Photo Storage Execution ---
         if ($delete_prev_image) {
-            $file_name = DB::table('tenant_team')
+            $file_name = DB::table('teams')
                 ->where('id', $id)
                 ->value('photo_file_name');
             if ($file_name) {
                 XPublicStorage::delete(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 'images', $file_name);
             }
-            DB::table('tenant_team')->where('id', $id)->update(['photo_file_name' => null]);
+            DB::table('teams')->where('id', $id)->update(['photo_file_name' => null]);
         }
 
-        // Save new image and map file name directly to tenant_team table field 'photo_file_name'
-        XPublicStorage::saveImage(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], null, $photo, null, ['id' => $id, 'store' => 'tenant_team.photo_file_name']);
+        XPublicStorage::saveImage(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], null, $photo, null, ['id' => $id, 'store' => 'teams.photo_file_name']);
 
-        return DV::depends(1, ['tenant_team' => $inputs, 'id' => $id]);
+        return DV::depends(1, ['teams' => $inputs, 'id' => $id]);
     }
-
-
 
     public function getListPaginate($arr, $ss = null)
     {
-
         $d = (object) $arr;
         $branch_id = $ss->branch_id;
         $status_id = $d->status_id ?? null;
@@ -293,21 +316,20 @@ class Staff //extends Model
         if ($search_value) {
             $skip_rows = 0;
             $search_value = escape_like_str($search_value);
-            $str_search = "(t.name LIKE '%" . $search_value . "%' OR t.phone_number LIKE '%" . $search_value . "%' OR t.legal_name LIKE '%" . $search_value . "%' OR t.code LIKE '%" . $search_value . "%')";
+            $str_search = "(s.name LIKE '%" . $search_value . "%' OR s.phone_number LIKE '%" . $search_value . "%' OR s.code LIKE '%" . $search_value . "%')";
         }
         if ($status_id) {
-            $str_moreWhere .= ' AND t.status_id =' . $status_id;
+            $str_moreWhere .= ' AND s.status_id =' . $status_id;
         }
 
-        $query = DB::table('tenant_team as s')
+        $query = DB::table('teams as s')
             ->join('staff_statuses as ss', 'ss.id', '=', 's.status_id')
-
             ->whereRaw($str_search)
             ->whereRaw($str_moreWhere)
             ->where('s.tenant_id',$ss->official_id)
             ->selectRaw("
             s.id,s.name,s.sex,s.date_of_birth,s.nationality_id,
-            s.legal_name,s.code,s.national_id, s.photo_file_name, s.position,s.start_date,
+            s.code,s.national_id, s.photo_file_name, s.position,s.start_date,
             s.passport_number,s.phone_number,s.email,s.address,
             s.status_id,ss.name as status,
             s.updated_at,s.update_user
@@ -315,12 +337,10 @@ class Staff //extends Model
             ->orderBy('s.status_id', 'asc')
             ->orderBy('s.created_at', 'desc');
 
-        // ->orderBy('t.id','DESC');
         $clone_query = clone $query;
         $count = $clone_query->count('s.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
         foreach ($rows as $row) {
-
             $row->image_url = '';
             if ($row->photo_file_name) {
                 $row->image_url = self::profilePicture($row->id, $ss);
@@ -331,12 +351,10 @@ class Staff //extends Model
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
-
-
     static function profilePicture($id, $ss)
     {
         $col_subs_id = DBX::getHex('s.subs_id', 'subs_id');
-        $row = DB::table('tenant_team as s')->where('s.id', $id)->selectRaw($col_subs_id . ',s.branch_id,s.photo_file_name')->first();
+        $row = DB::table('teams as s')->where('s.id', $id)->selectRaw($col_subs_id . ',s.branch_id,s.photo_file_name')->first();
         $def_image = self::defaultPhoto($row ? $row->subs_id : null);
         $url = '';
         if ($row) {
@@ -350,43 +368,76 @@ class Staff //extends Model
         return url('') . '/assets/images/default/placeholder.svg';
     }
 
-
     public static function getFormOptions($id, $ss)
     {
-        $details = $id ? self::getDetails($id) : null;
+        $details = $id ? self::getDetails($id, $ss) : null;
         return (object) [
-            'tenant_team' => $details,
+            'teams' => $details,
             'nationalities' => GeneralSettings::options_nationality($ss),
             'statuses' => GeneralSettings::options_tenant_status($ss),
-            'spaces'  =>GeneralSettings::options_building_space($ss)
-
+            'spaces'  => GeneralSettings::options_building_space($ss)
         ];
     }
 
     public static function getDetails($id, $ss = null)
     {
-        $date_of_birth = DBX::formatDate("t.date_of_birth", 'date_of_birth');
-        $nid_issue_date = DBX::formatDate("t.nid_issue_date", 'nid_issue_date');
-        $row = DB::table('tenant_team as s')
+        $date_of_birth = DBX::formatDate("s.date_of_birth", 'date_of_birth');
+        $nid_issue_date = DBX::formatDate("s.nid_issue_date", 'nid_issue_date');
+        
+        $row = DB::table('teams as s')
             ->join('staff_statuses as ss', 'ss.id', '=', 's.status_id')
             ->where('s.id', $id)
-            ->selectRaw("s.id,s.branch_id,s.name,s.code,s.national_id,passport_number,$date_of_birth,$nid_issue_date,s.nationality_id,s.photo_file_name,s.sex,s.status_id,ss.name as status,s.legal_name,s.phone_number,s.email,s.address,bs.code as space_code")
+            ->selectRaw("s.id,s.branch_id,s.name,s.code,s.national_id,s.passport_number,$date_of_birth,$nid_issue_date,s.nationality_id,s.photo_file_name,s.sex,s.status_id,ss.name as status,s.phone_number,s.email,s.address")
             ->first();
+            
         if ($row) {
             $img = self::profilePicture($id, $ss);
             $row->image_url = $img;
             $row->photo = $img;
-            $row->monthly_price = $row->price_type === 'sqm'
-            ? $row->sqm_size * $row->price
-            : $row->price;
-            $row->monthly_price = number_format($row->monthly_price, 2);
-           $row->lease_term = Carbon::parse($row->start_date)
-                ->diffInMonths(Carbon::parse($row->end_date)) . ' ខែ';
-        } else $row = null;
+        } else {
+            $row = null;
+        }
         return $row;
     }
 
+    public function deleteTeam($id)
+    {
+        $id = $id ?? $this->id;
+        $deleted = DB::table('teams')->where('id', $id)->delete();
+        if ($deleted) {
+            return DV::depends(1, ['id' => $id]);
+        }
+        return DV::error('Error deleting team member!');
+    }
 
+    public static function createProfilePicture($photo_data, $file_type = null, $id = null, $ss = null)
+    {
+        $id = $id ?? $id;
+        $ss = $ss ?? $ss;
+        $col_subs_id = DBX::getHEX('s.subs_id', 'subs_id');
+        $team = DB::table('teams as s')->where('s.id', $id)->selectRaw($col_subs_id . ',s.id,s.branch_id,s.photo_file_name')->first();
+        $delete_image = (!$photo_data || isImage($photo_data));
+        if (!$team) {
+            return DV::error('Team member identify is not correct!');
+        }
+        if ($delete_image) {
+            XPublicStorage::delete(['subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 'image', $team->photo_file_name);
+            DB::table('teams')->where('id', $id)->update(['photo_file_name' => null]);
+        }
+        $res = XPublicStorage::saveImage(['subs_id' => $ss->subs_id, 'dir' => self::$img_dir], null, $photo_data, null, ['id' => $id, 'store' => 'teams.photo_file_name']);
+        if ($res->status === 'Error') return $res;
+        $img = self::profilePicture($id, $ss);
+        return DV::depends(1, ['image_url' => $img]);
+    }
 
-
+    public function deleteProfilePicture($id = null, $ss = null)
+    {
+        $id = $id ?? $this->id;
+        $ss = $ss ?? $this->userInfo;
+        $team = DB::table('teams as s')->where('id', $id)->selectRaw('id,photo_file_name')->first();
+        if (!$team) return DV::error('Team member identify is not correct!');
+        XPublicStorage::delete(['subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 'image', $team->photo_file_name);
+        DB::table('teams')->where('id', $id)->update(['photo_file_name' => null]);
+        return DV::success();
+    }
 }
