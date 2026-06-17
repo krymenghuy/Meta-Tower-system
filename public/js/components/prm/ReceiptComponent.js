@@ -1,5 +1,5 @@
 "use strict";
-var ReceiptComponent = new (function() {
+var ReceiptComponent = (() => {
     const mThis = this;
     mThis.title_prop = "Receipts";
     mThis.base_url = main_view.base_url;

@@ -1,9 +1,9 @@
 "use strict";
 
-var TenantComponent = new (function () {
-    const mThis = this;
+var TenantComponent = (function () {
+    const mThis = {};
     mThis.title_prop = "Tenant Management";
-    this.defaultPage = "tenant_list";
+    mThis.defaultPage = "tenant_list";
     mThis.self = main_view.VSAppContent.querySelector(
         "#_main_tenant_component",
     );
@@ -24,11 +24,11 @@ var TenantComponent = new (function () {
     mThis.paginationContainer = mThis.self.querySelector(
         "#tenant_card_container_pagination",
     );
-    this.pages = {
-        tenant_list: this.divTenantListContainer,
-        profile_view: this.divProfileView,
+    mThis.pages = {
+        tenant_list: mThis.divTenantListContainer,
+        profile_view: mThis.divProfileView,
     };
-    mThis.profile_info_tenant = this.divProfileView.querySelector(
+    mThis.profile_info_tenant = mThis.divProfileView.querySelector(
         "#profile_info_tenant",
     );
     mThis.cols = [
@@ -931,8 +931,8 @@ var TenantComponent = new (function () {
         document.body.appendChild(overlay);
     };
     mThis.showPage = async (pageName, op = {}) => {
-        if (this.self.style.display !== "block") {
-            main_view.setContentView(this.self, this.title_prop);
+        if (mThis.self.style.display !== "block") {
+            main_view.setContentView(mThis.self, mThis.title_prop);
         }
         switch (pageName) {
             case "tenant_list": {
@@ -1848,7 +1848,8 @@ const CreateTenantDialog = (() => {
                     me.previewImg = me.divModal.querySelector(
                         "#tenant-preview-img",
                     );
-                    me.displayInput = me.divModal.querySelector("#documents_display");
+                    me.displayInput =
+                        me.divModal.querySelector("#documents_display");
 
                     me.controls.btn_chooseFile =
                         me.divModal.querySelector("#btn_chooseFile");
