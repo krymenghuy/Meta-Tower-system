@@ -55,37 +55,133 @@ class Deposit
             'amount'                => '1|number|min=0|text=Amount is required.',
             'paid_amount'           => '0|number|min=0',
             'deposit_date'          => '1|date|text=Deposit date is required.',
+            'status_id'             => '0|integer',
             'status'                => '0|string',
             'remarks'               => '0|string|0-255',
-            // 'payment_method'        => '1|string|text=Payment method is required.',
-            // 'ref_no'                => '0|string|0-50',
-            // 'remark'                => '0|string|0-255',
-            // 'data'                  => '0|string',
-            // 'ext'                   => '0|string',
-            // 'mime_type'             => '0|string',
-            // 'original_file_name'    => '0|string|0-255',
+            'payment_method'        => '0|string',
+            'ref_no'                => '0|string|0-50',
         ];
 
         $res = DBX::validateObject($arr, $v_rule, 1, [], $ss->lang);
         if ($res->error) return DV::error($res->error);
         $inputs = $res->values;
 
+        $statusInput = $inputs['status_id'] ?? $inputs['status'] ?? null;
+        $status_id = null;
+        if ($statusInput !== null && $statusInput !== '') {
+            if (is_numeric($statusInput)) {
+                $status_id = intval($statusInput);
+            } else {
+                $statusRow = DB::table('deposit_statuses')->where('status_code', $statusInput)->first();
+                if ($statusRow) {
+                    $status_id = $statusRow->id;
+                }
+            }
+        }
+
+        if (empty($status_id) || $status_id == 1 || $status_id == 2) {
+            $amount = floatval($inputs['amount']);
+            $paidAmount = floatval($inputs['paid_amount'] ?? 0.00);
+            if ($paidAmount >= $amount && $amount > 0) {
+                $status_id = 2; 
+            } else {
+                $status_id = 1; 
+            }
+        }
+
         $saveData = [
             'contract_id'  => $inputs['contract_id'],
             'tenant_id'    => $inputs['tenant_id'],
             'amount'       => $inputs['amount'],
             'paid_amount'  => $inputs['paid_amount'] ?? 0.00,
-            'deposit_date' => $inputs['deposit_date'],
-            'status'       => $inputs['status'] ?? 'pending',
+            'deposit_date' => convertDate($inputs['deposit_date']),
+            'status_id'    => $status_id,
             'remarks'      => $inputs['remarks'] ?? null,
         ];
 
-        $savedId = DBX::saveData($ss, 'deposits', ['id' => $id], $saveData, [], 1);
-        if (!$savedId) {
-            return DV::error('Error saving deposit.');
-        }
+        DB::beginTransaction();
+        try {
+            $existing = null;
+            if ($id) {
+                $existing = DB::table('deposits')->where('id', $id)->first();
+            }
 
-        return DV::depends($savedId, ['deposits' => $saveData, 'id' => $savedId]);
+            $savedId = DBX::saveData($ss, 'deposits', ['id' => $id], $saveData, [], 1);
+            if (!$savedId) {
+                throw new \Exception('Error saving deposit.');
+            }
+
+            // Create receipt if transitioned to paid
+            $wasPaid = $existing && intval($existing->status_id) === 2;
+            $isPaidNow = intval($status_id) === 2;
+
+            if ($isPaidNow && !$wasPaid) {
+                // Create receipt
+                $space_id = DB::table('contracts')->where('id', $saveData['contract_id'])->value('space_id');
+
+                $receiptData = [
+                    'receipt_date'      => convertDate($inputs['deposit_date']) ?? now()->toDateString(),
+                    'invoice_id'        => null,
+                    'deposit_id'        => $savedId,
+                    'tenant_id'         => $saveData['tenant_id'],
+                    'space_id'          => $space_id,
+                    'branch_id'         => $ss->branch_id ?? 1,
+                    'total_received'    => $saveData['paid_amount'],
+                    'remarks'           => $saveData['remarks'] ?? 'Deposit Payment',
+                    'create_user'       => $ss->full_name ?? $ss->name ?? 'Admin',
+                    'create_uid'        => $ss->user_id ?? $ss->uid ?? $ss->id ?? 1,
+                    'receipt_status_id' => 1, // Active/Paid
+                    'created_at'        => now(),
+                    'updated_at'        => now(),
+                ];
+
+                $receipt_id = DBX::saveData($ss, 'receipts', [], $receiptData, [], 1);
+                if (!$receipt_id) {
+                    throw new \Exception('Failed to create receipt.');
+                }
+
+                // Generate receipt code
+                setOfficialCode(
+                    $receiptData['branch_id'],
+                    'receipt_code_control',
+                    'receipts',
+                    ['id' => $receipt_id],
+                    'R-',
+                    5,
+                    null
+                );
+
+                // Insert receipt breakdown
+                $method = $inputs['payment_method'] ?? 'Cash';
+                $methodMap = [
+                    'cash'          => 'Cash',
+                    'bank transfer' => 'Bank',
+                    'bank'          => 'Bank',
+                    'card'          => 'Card',
+                    'cheque'        => 'Cheque'
+                ];
+                $mappedMethod = $methodMap[strtolower(trim($method))] ?? 'Cash';
+
+                $breakdown = [
+                    'receipt_id'      => $receipt_id,
+                    'method'          => $mappedMethod,
+                    'amount'          => floatval($saveData['paid_amount']),
+                    'currency_code'   => 'USD',
+                    'bank_ref_number' => $inputs['ref_no'] ?? null,
+                    'remarks'         => $saveData['remarks'] ?? 'Deposit Payment',
+                    'created_at'      => now(),
+                ];
+
+                DB::table('receipt_breakdowns')->insert($breakdown);
+            }
+
+            DB::commit();
+            return DV::depends($savedId, ['deposits' => $saveData, 'id' => $savedId]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error("Save deposit and receipt failed: " . $e->getMessage());
+            return DV::error('Failed to save deposit: ' . $e->getMessage());
+        }
     }
 
     public function getListDeposit($arr = [], $ss = null)
@@ -131,7 +227,14 @@ class Deposit
             }
 
             if ($status_id) {
-                $str_moreWhere .= " AND d.status = '" . escape_like_str($status_id) . "'";
+                if (is_numeric($status_id)) {
+                    $str_moreWhere .= ' AND d.status_id = ' . intval($status_id);
+                } else {
+                    $resolvedId = DB::table('deposit_statuses')->where('status_code', $status_id)->value('id');
+                    if ($resolvedId) {
+                        $str_moreWhere .= ' AND d.status_id = ' . intval($resolvedId);
+                    }
+                }
             }
         }
 
@@ -140,6 +243,7 @@ class Deposit
             ->join('tenants as t', 't.id', 'd.tenant_id')
             ->join('building_spaces as bs', 'bs.id', 'c.space_id')
             ->leftJoin('buildings as b', 'b.id', 'bs.building_id')
+            ->leftJoin('deposit_statuses as ds', 'ds.id', 'd.status_id')
             ->whereRaw($str_search)
             ->whereRaw($str_moreWhere)
             ->selectRaw("   d.id, d.contract_id, d.tenant_id, t.name as tenant_name, t.phone_number,
@@ -148,7 +252,9 @@ class Deposit
                            d.amount as total_amount, 
                            d.paid_amount,
                            d.deposit_date,
-                           d.status,
+                           (CASE WHEN d.status_id = 2 THEN d.deposit_date ELSE NULL END) as paid_date,
+                           d.status_id,
+                           ds.status_code as status,
                            d.remarks as remark,
                            d.update_user, d.updated_at
                        ")
@@ -158,7 +264,7 @@ class Deposit
         $rows  = $query->skip($skip_rows)->take($per_page)->get();
 
         foreach ($rows as $row) {
-            setOfficialDates($row, ['start_date', 'end_date', 'deposit_date'], ['updated_at'], []);
+            setOfficialDates($row, ['start_date', 'end_date', 'deposit_date', 'paid_date'], ['updated_at'], []);
             $row->total_amount = floatval($row->total_amount);
             $row->paid_amount = floatval($row->paid_amount);
             $row->balance = max(0, $row->total_amount - $row->paid_amount);
@@ -175,6 +281,7 @@ class Deposit
             ->join('tenants as t', 't.id', 'd.tenant_id')
             ->join('building_spaces as bs', 'bs.id', 'c.space_id')
             ->leftJoin('buildings as b', 'b.id', 'bs.building_id')
+            ->leftJoin('deposit_statuses as ds', 'ds.id', 'd.status_id')
             ->where('d.id', $id)
             ->selectRaw("   d.id, d.contract_id, d.tenant_id, t.name as tenant_name, t.phone_number,
                            b.name as building_name, bs.code as space_code,
@@ -182,13 +289,15 @@ class Deposit
                            d.amount as total_amount, 
                            d.paid_amount,
                            d.deposit_date,
-                           d.status,
+                           (CASE WHEN d.status_id = 2 THEN d.deposit_date ELSE NULL END) as paid_date,
+                           d.status_id,
+                           ds.status_code as status,
                            d.remarks as remark,
                            d.update_user, d.updated_at
                        ")
             ->first();
         if ($row) {
-            setOfficialDates($row, ['start_date', 'end_date', 'deposit_date'], ['updated_at'], []);
+            setOfficialDates($row, ['start_date', 'end_date', 'deposit_date', 'paid_date'], ['updated_at'], []);
             $row->total_amount = floatval($row->total_amount);
             $row->paid_amount = floatval($row->paid_amount);
             $row->balance = max(0, $row->total_amount - $row->paid_amount);
@@ -200,15 +309,16 @@ class Deposit
     {
         $deposit_details = $id ? self::depositDetails($id, $ss) : null;
 
+        $statuses = DB::table('deposit_statuses')
+            ->select('id', 'name')
+            ->get();
+
         return (object) [
             'deposit_details' => $deposit_details,
             'tenants'         => GeneralSettings::options_tenant($ss),
             'buildings'       => GeneralSettings::options_building($ss),
-            'deposit_statuses' => [
-                ['id' => 'pending', 'name' => 'pending'],
-                ['id' => 'paid', 'name' => 'paid'],
-                ['id' => 'refunded', 'name' => 'refunded'],
-            ],
+            'deposit_statuses' => $statuses,
+            
         ];
     }
 
@@ -235,16 +345,25 @@ class Deposit
     {
         $ss = $ss ?? $this->userInfo;
 
-        $currentStatus = DB::table('deposits')->where('id', $id)->value('status');
-        if ($currentStatus == $status_id) return DV::error('It is the same current status.');
+        if (!is_numeric($status_id)) {
+            $statusRow = DB::table('deposit_statuses')->where('status_code', $status_id)->first();
+            if ($statusRow) {
+                $status_id = $statusRow->id;
+            } else {
+                return DV::error('Invalid status.');
+            }
+        }
+
+        $currentStatusId = DB::table('deposits')->where('id', $id)->value('status_id');
+        if ($currentStatusId == $status_id) return DV::error('It is the same current status.');
 
         $update = [
-            'status'      => $status_id,
+            'status_id'   => $status_id,
             'update_user' => $ss->full_name,
             'updated_at'  => getNowTime(),
         ];
 
-        if ($status_id === 'paid') {
+        if ($status_id == 2) { // 2 = paid
             $amount = DB::table('deposits')->where('id', $id)->value('amount');
             $update['paid_amount'] = $amount;
         }
