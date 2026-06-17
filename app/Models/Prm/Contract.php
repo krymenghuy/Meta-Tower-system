@@ -118,6 +118,8 @@ class Contract
             return DV::error('Update failed.');
         }
 
+        self::autoSaveDeposit($id, $existing->tenant_id, $res->values['deposit'], $existing->start_date, $res->values['remarks'] ?? $existing->remarks, $ss);
+
         return DV::depends(1, ['contracts' => $update, 'id' => $id]);
     }
 
@@ -234,10 +236,12 @@ class Contract
     $id = DBX::saveData($ss, 'contracts', ['id' => $id], $inputs, [], 1);
     if ($id) {
         // Only Active contracts occupy the unit; Pending (future start) leaves space Available.
-        if ($space_id && ($inputs['status_id'] ?? 0) ===  self::getActiveStatusId()) {
+        if ($space_id && (int) ($inputs['status_id'] ?? 0) === (int) self::getActiveStatusId()) {
             self::syncBuildingSpaceOccupiedForSpaceIds([$space_id]);
         }
         self::syncTenantStatusForTenantIds([$tenant_id]);
+
+        self::autoSaveDeposit($id, $tenant_id, $inputs['deposit'], $inputs['start_date'], $inputs['remarks'] ?? null, $ss);
     }
     if ($id > 0) {
         return DV::depends(1, ['contracts' => $inputs, 'id' => $id]);
@@ -1584,5 +1588,28 @@ class Contract
 
         return strtr($number, $map);
     }
+
+    public static function autoSaveDeposit($contractId, $tenantId, $amount, $startDate, $remarks, $ss)
+    {
+        $existing = DB::table('deposits')->where('contract_id', $contractId)->first();
+
+        $saveData = [
+            'contract_id'  => $contractId,
+            'tenant_id'    => $tenantId,
+            'amount'       => $amount,
+            'deposit_date' => $startDate,
+            'remarks'      => $remarks,
+        ];
+
+        if (!$existing) {
+            $saveData['status_id']   = 1; 
+            $saveData['paid_amount'] = 0.00;
+        }
+
+        $where = $existing ? ['id' => $existing->id] : [];
+        DBX::saveData($ss, 'deposits', $where, $saveData, [], 1);
+    }
+
+
    
 }

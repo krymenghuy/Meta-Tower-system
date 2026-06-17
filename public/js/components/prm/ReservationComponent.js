@@ -627,7 +627,7 @@ const CreateReservationDialog = (() => {
                                         if (me.dataOptions.id > 0) {
                                             cv_interact.success(
                                                 "update_success_reservation",
-                                            );has
+                                            );
                                         } else {
                                             cv_interact.success(
                                                 "create_success_reservation",
