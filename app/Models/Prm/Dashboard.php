@@ -16,28 +16,22 @@ class Dashboard extends VSModel
 
     public static function summarizeDashboardCards($building_id, $ss)
     {
-          $subs_id = $ss->subs_id;
+        $subs_id = $ss->subs_id;
         $bin_subs_id = hex2bin($subs_id);
-
-        $building_id = (int)($building_id ?? 0);
-
+        \Log::info($building_id);
+        $building_id = (int)($building_id ?? 1);
+        
         $result = new \stdClass();
-
         $today = Carbon::today();
         $currentMonth = $today->month;
         $currentYear = $today->year;
-
-        /* =========================
-        BASIC BUILDING DATA
-        ========================== */
-
         $totalSpaces = DB::table('building_spaces')
             ->where('building_id', $building_id)
             ->count();
 
         $occupiedSpaces = DB::table('building_spaces')
             ->where('building_id', $building_id)
-            ->where('status_id', 1)
+            ->where('status_id', 3)
             ->count();
 
         $vacantSpaces = max($totalSpaces - $occupiedSpaces, 0);
@@ -60,22 +54,22 @@ class Dashboard extends VSModel
         ========================== */
 
         $monthlyRevenue = DB::table('invoices')
-            ->whereMonth('invoice_date', $currentMonth)
-            ->whereYear('invoice_date', $currentYear)
-            ->sum('total_amount');
+            ->whereMonth('issue_date', $currentMonth)
+            ->whereYear('issue_date', $currentYear)
+            ->sum('amount');
 
         $outstandingAmount = DB::table('invoices')
             ->where('payment_status_id', 0)
-            ->sum('balance');
+            ->sum('due_amount');
 
         $overdueInvoices = DB::table('invoices')
-            ->where('payment_status', 0)
+            ->where('payment_status_id', 4)
             ->whereDate('due_date', '<', $today)
             ->count();
 
         $previousRevenue = DB::table('invoices')
-            ->whereMonth('invoice_date', $today->copy()->subMonth()->month)
-            ->whereYear('invoice_date', $today->copy()->subMonth()->year)
+            ->whereMonth('issue_date', $today->copy()->subMonth()->month)
+            ->whereYear('issue_date', $today->copy()->subMonth()->year)
             ->sum('amount');
 
         $revenueGrowth = $previousRevenue > 0
@@ -178,15 +172,16 @@ class Dashboard extends VSModel
     $result = new \stdClass();
 
     $result->occupancy_by_floor = DB::table('building_spaces')
-        ->selectRaw("
-            CONCAT('Floor ', floor_id) as floor,
-            SUM(CASE WHEN status_id = 1 THEN 1 ELSE 0 END) as occupied,
-            SUM(CASE WHEN status_id <> 1 THEN 1 ELSE 0 END) as available
-        ")
-        ->where('building_id', $building_id)
-        ->groupBy('floor_id')
-        ->orderBy('floor_id')
-        ->get();
+    ->selectRaw("
+        CONCAT('Floor ', floor_id) as floor,
+        SUM(CASE WHEN status_id = 3 THEN 1 ELSE 0 END) as occupied,
+        SUM(CASE WHEN status_id = 1 THEN 1 ELSE 0 END) as available,
+        SUM(CASE WHEN status_id = 2 THEN 1 ELSE 0 END) as booked
+    ")
+    ->where('building_id', $building_id)
+    ->groupBy('floor_id')
+    ->orderBy('floor_id')
+    ->get();
 
     $result->revenue_trend = (object)[
         'labels' => ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
@@ -326,5 +321,15 @@ public static function getLeaseExpiry($building_id, $ss)
 
     return $result;
 }
+
+ static function getFilterOptions($arr,$ss)
+    {
+
+        $d = (object)$arr;
+        $building_id = $d->building_id ?? null;
+        return (object) [
+            'buildings' => GeneralSettings::options_building($ss),
+        ];
+    }
 
 }
