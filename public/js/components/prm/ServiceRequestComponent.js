@@ -768,9 +768,7 @@ const CreateServiceRequestDialog = (() => {
                                     cv_interact.error(res.error_message || "save_failed");
                                 }
                             })
-                            .catch(() => {
-                                cv_interact.error(saveFailedMessage);
-                            });
+                            
                     }
                 }
             ]

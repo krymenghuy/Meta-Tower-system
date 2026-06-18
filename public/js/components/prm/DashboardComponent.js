@@ -889,7 +889,7 @@ var DashboardComponent =  new (function () {
                     <div class="col-12 col-xl-6">
                         ${mThis.renderChartCard({
                             title: "Occupancy by Floor",
-                            subtitle: "Occupied vs available units",
+                            subtitle: "Occupied, Booked and Available Units",
                             pill: "Meta Tower",
                             canvasId: "chartOccupancy"
                         })}
@@ -1053,6 +1053,8 @@ var DashboardComponent =  new (function () {
     };
 
     mThis.renderChartCard = function (config) {
+        console.log(33333,config.canvasId);
+        
         const h = mThis.escapeHtml;
 
         return `
@@ -1301,19 +1303,26 @@ mThis.initCharts = function (data) {
                     label: "Occupied",
                     data: rows.map(r => r.occupied),
                     backgroundColor: "rgb(48 45 89)",
-                    borderRadius: 8
+                    borderRadius: 8,
+                    categoryPercentage: 0.5,
+                    barPercentage: 0.7
+                    
                 },
                 {
                     label: "Booked",
                     data: rows.map(r => r.booked),
                     backgroundColor: "rgb(85 120 214)",
-                    borderRadius: 8
+                    borderRadius: 8,
+                    categoryPercentage: 0.5,
+                    barPercentage: 0.7
                 },
                 {
                     label: "Available",
                     data: rows.map(r => r.available),
-                    backgroundColor: "rgb(247 217 126)",
-                    borderRadius: 8
+                    backgroundColor: "rgb(10 187 135)",
+                    borderRadius: 8,
+                    categoryPercentage: 0.5,
+                    barPercentage: 0.7
                 }
             ]
         },
@@ -1370,7 +1379,7 @@ mThis.initCharts = function (data) {
                 },
                 {
                     label: "Electricity",
-                    data: trend.electricity || [],
+                    data: trend.utility || [],
                     borderColor: COLORS.info,
                     backgroundColor: "rgba(14,165,233,.07)",
                     fill: true,
@@ -1382,6 +1391,17 @@ mThis.initCharts = function (data) {
                 {
                     label: "Service Fee",
                     data: trend.service_fee || [],
+                    borderColor: COLORS.success,
+                    backgroundColor: "rgba(16,185,129,.07)",
+                    fill: true,
+                    tension: .42,
+                    pointRadius: 0,
+                    pointHoverRadius: 5,
+                    borderWidth: 3
+                },
+                {
+                    label: "Service Request",
+                    data: trend.service_request || [],
                     borderColor: COLORS.success,
                     backgroundColor: "rgba(16,185,129,.07)",
                     fill: true,
@@ -1443,9 +1463,10 @@ mThis.initCharts = function (data) {
                 {
                     data: chartData.values || [],
                     backgroundColor: [
-                        COLORS.success,
-                        COLORS.warning,
-                        COLORS.danger
+                        COLORS.success,   // Paid
+                        COLORS.warning,   // Pending
+                        COLORS.info,      // Partially Paid
+                        COLORS.danger     // Overdue
                     ],
                     borderColor: "#fff",
                     borderWidth: 5,
