@@ -73,7 +73,8 @@ return [
  
                 'https://cdn.vectoraclouds.com/frontcore/utils/DateHelper.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/DateTimePicker/DateTimePicker.js',
-                //'/assets/js/jquery.datepicker2.js',
+                'https://cdn.vectoraclouds.com/frontcore/components/QuickToast/QuickToast.js',
+
                 '/assets/js/toastr.min.js',
                 '/assets/js/init.toastr.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/layout.js',
@@ -227,6 +228,7 @@ return [
                 'https://cdn.vectoraclouds.com/frontcore/utils/DateHelper.js',
 
                  'https://cdn.vectoraclouds.com/frontcore/components/DateTimePicker/DateTimePicker.js',
+                   'https://cdn.vectoraclouds.com/frontcore/components/QuickToast/QuickToast.js',
                 'https://cdn.jsdelivr.net/npm/fuse.js@7.1.0',
                 'assets/js/choices.11.2.js',
                 'https://cdn.vectoraclouds.com/beta-frontcore/components/vs_choices.js',
