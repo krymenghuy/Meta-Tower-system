@@ -44,7 +44,9 @@ return [
             'files' => [
                 'https://cdn.vectoraclouds.com/frontcore/sanitizer/sanitizer.js',
                 'https://cdn.vectoraclouds.com/beta-frontcore/utils/vsutils.v2.js',
-                'https://cdn.vectoraclouds.com/beta-frontcore/components/FilterPanel.js',
+                // 'https://cdn.vectoraclouds.com/beta-frontcore/components/FilterPanel.js',
+                'https://cdn.vectoraclouds.com/frontcore/components/FilterPanel.v2.js',
+
                 '/assets/js/sweetalert2.all.min.js',
                 '/assets/js/sweetalert2.toast.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/ExpandableTableRow.v2.js',
@@ -71,7 +73,8 @@ return [
  
                 'https://cdn.vectoraclouds.com/frontcore/utils/DateHelper.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/DateTimePicker/DateTimePicker.js',
-                //'/assets/js/jquery.datepicker2.js',
+                'https://cdn.vectoraclouds.com/frontcore/components/QuickToast/QuickToast.js',
+
                 '/assets/js/toastr.min.js',
                 '/assets/js/init.toastr.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/layout.js',
@@ -225,6 +228,7 @@ return [
                 'https://cdn.vectoraclouds.com/frontcore/utils/DateHelper.js',
 
                  'https://cdn.vectoraclouds.com/frontcore/components/DateTimePicker/DateTimePicker.js',
+                   'https://cdn.vectoraclouds.com/frontcore/components/QuickToast/QuickToast.js',
                 'https://cdn.jsdelivr.net/npm/fuse.js@7.1.0',
                 'assets/js/choices.11.2.js',
                 'https://cdn.vectoraclouds.com/beta-frontcore/components/vs_choices.js',
