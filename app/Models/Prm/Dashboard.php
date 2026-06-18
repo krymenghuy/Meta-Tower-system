@@ -87,7 +87,7 @@ class Dashboard extends VSModel
         $monthlyRevenue = DB::table('invoices')
             ->whereMonth('issue_date', $currentMonth)
             ->whereYear('issue_date', $currentYear)
-            ->sum('amount');
+            ->sum('paid_amount');
 
         $outstandingAmount = DB::table('invoices')
             ->where('payment_status_id', 0)
@@ -612,6 +612,7 @@ public static function getLeaseExpiry($building_id, $ss)
         $building_id = $d->building_id ?? null;
         return (object) [
             'buildings' => GeneralSettings::options_building($ss),
+            'period' => GeneralSettings::options_period($ss),
         ];
     }
 
