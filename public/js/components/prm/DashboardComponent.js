@@ -1,7 +1,7 @@
 "use strict";
 
-var DashboardComponent =  new (function () {
-    const mThis = this;
+var DashboardComponent =  (() =>{
+    const mThis = {};
 
     const STYLE_ID = "meta-tower-dashboard-style-v2";
 
@@ -559,14 +559,15 @@ var DashboardComponent =  new (function () {
     mThis.self =
         main_view.VSAppContent.querySelector("#_main_dashboardComponent") ||
         main_view.VSAppContent.querySelector("#_main_dashboard_component");
-
+   
+    
     mThis.state = {
         initialized: false,
         stylesInjected: false,
         resizeBound: false,
         rendered: false
     };
-
+   
     mThis.charts = Object.create(null);
 
     // mThis.data = {
@@ -793,12 +794,12 @@ var DashboardComponent =  new (function () {
 
     mThis.init = function () {
         if (mThis.state.initialized) return;
-
         mThis.state.initialized = true;
 
         mThis.injectStyles();
         mThis.bindResize();
     };
+   
 
     mThis.injectStyles = function () {
         if (mThis.state.stylesInjected) return;
@@ -870,11 +871,7 @@ var DashboardComponent =  new (function () {
             console.error("Dashboard root element was not found.");
             return;
         }
-
-        // const data = mThis.data;
-        console.log(90,data);
-        
-
+      
         mThis.self.innerHTML = `
             <div class="meta-dashboard">
                 ${mThis.renderHero(data)}
@@ -957,7 +954,71 @@ var DashboardComponent =  new (function () {
         mThis.updateHeight();
         mThis.initCharts(data);
     };
+    mThis.initFilterForm = ()=>{
+         if (mThis.filterConfig) return;
 
+    mThis.lnkFilterButton = document.getElementById("dashboard_filter_btn");
+        mThis.filterConfig = mThis.filterConfig || new FilterPanel({
+            cssClass:null,
+            triggerButton: mThis.lnkFilterButton,
+            fields:[
+                {
+                    "firstOption":{value:'',label:'(All Period)'},
+                    "name":"period",
+                    "label":"Period",
+                    "valueField":"department_id",
+                    "textField":"academic_year",
+                    "data":"academic_years",
+                },
+                {
+                    "firstOption":{value:'',label:'(All Building)'},
+                    "name":"building_id",
+                    "label":"Building",
+                    "valueField":"id",
+                    "textField":"building",
+                    "data":"buildings",
+
+                },
+                
+            ],
+            onShow: (me, apiData) => {
+                vsapi.call(`${main_view.base_url}/prm/dashboard/filter-options`, {}, null, { loader: false }).then(res => {
+                    if (res.status_code === 200) {
+                        const d = res.data;
+                        VSUtil.setComboItems(me.controls.period, d.period, 'value', 'label',null,null,null);
+                        VSUtil.setComboItems(me.controls.building_id, d.buildings, 'id', 'building', '', 'All Building', null);
+                    } 
+                });
+
+                // me.controls.department_id.addEventListener("change", (e) => {
+                //     e.preventDefault();
+
+                //     vsapi.call(`${main_view.base_url}/api/settings/options-program`, {
+                //     department_id: e.target.value
+                //     }, null, { loader: false }).then(res => {
+
+                //     if (res.status_code === 200) {
+                //         const programs = res.data;
+                //         VSUtil.setComboItems(me.controls.program_id, programs, 'id', 'program_name', '', 'All Program', null);
+                //     } else {
+                //         cv_interact.error("Failed to load program.");
+                //     }
+                //     });
+                // });
+            },
+
+            onSelect:(me, data)=>{
+               console.log(89,data);
+               
+               mThis.currentFilterProps = {
+                    building_id: data.building_id || null,
+                    period: data.period || null
+                };
+
+                mThis.loadDashboard(mThis.currentFilterProps);
+            },
+        });
+    };
     mThis.renderHero = function (data) {
         const h = mThis.escapeHtml;
         const summary = data.summary;
@@ -967,7 +1028,7 @@ var DashboardComponent =  new (function () {
                 <div class="md-hero-inner">
                     <div>
                         <div class="md-hero-eyebrow">
-                            Executive Review · ${h(data.period)}
+                           <span>Executive Review · ${h(data.period)}</span><i class="fa-solid fa-filter ps-2 fs-6 ms-auto cursor-pointer" id="_db_filter_prm_data"></i>
                         </div>
 
                         <h1 class="md-hero-title">
@@ -1053,8 +1114,6 @@ var DashboardComponent =  new (function () {
     };
 
     mThis.renderChartCard = function (config) {
-        console.log(33333,config.canvasId);
-        
         const h = mThis.escapeHtml;
 
         return `
@@ -1259,28 +1318,29 @@ mThis.initCharts = function (data) {
     mThis.createRevenueBreakdownChart(data.revenue_breakdown || {});
 };
 
-    mThis.chartOptions = function () {
-        return {
-            responsive: true,
-            maintainAspectRatio: false,
-            resizeDelay: 120,
-            plugins: {
-                legend: {
-                    position: "bottom",
-                    labels: {
-                        usePointStyle: true,
-                        boxWidth: 8,
-                        padding: 18,
-                        color: COLORS.muted,
-                        font: {
-                            size: 12,
-                            weight: "700"
-                        }
+
+mThis.chartOptions = function () {
+    return {
+        responsive: true,
+        maintainAspectRatio: false,
+        resizeDelay: 120,
+        plugins: {
+            legend: {
+                position: "bottom",
+                labels: {
+                    usePointStyle: true,
+                    boxWidth: 8,
+                    padding: 18,
+                    color: COLORS.muted,
+                    font: {
+                        size: 12,
+                        weight: "700"
                     }
                 }
             }
-        };
+        }
     };
+};
 
    mThis.createOccupancyChart = function (data) {
 
@@ -1540,18 +1600,39 @@ mThis.initCharts = function (data) {
 
     //     mThis.renderDashboard();
     // };
-    mThis.loadDashboard = async function () {
+//     mThis.loadDashboard = async function () {
 
-    const filter = {
-        building_id: mThis.building_id,
-        period:mThis.period
+//     const filter = {
+//         building_id: mThis.building_id,
+//         period:mThis.period
+//     };
+
+//     const [summary, charts, activities, leaseExpiry] = await Promise.all([
+//         vsapi.call(`${main_view.base_url}/prm/dashboard/summary`, filter),
+//         vsapi.call(`${main_view.base_url}/prm/dashboard/charts`, filter),
+//         vsapi.call(`${main_view.base_url}/prm/dashboard/activities`, filter),
+//         vsapi.call(`${main_view.base_url}/prm/dashboard/lease-expiry`, filter)
+//     ]);
+
+//     mThis.renderDashboard({
+//         ...(summary.data || {}),
+//         ...(charts.data || {}),
+//         ...(activities.data || {}),
+//         ...(leaseExpiry.data || {})
+//     });
+// };
+mThis.loadDashboard = async function (filter = {}) {
+
+    const payload = {
+        building_id: filter.building_id || null,
+        period: filter.period || null
     };
 
     const [summary, charts, activities, leaseExpiry] = await Promise.all([
-        vsapi.call(`${main_view.base_url}/prm/dashboard/summary`, filter),
-        vsapi.call(`${main_view.base_url}/prm/dashboard/charts`, filter),
-        vsapi.call(`${main_view.base_url}/prm/dashboard/activities`, filter),
-        vsapi.call(`${main_view.base_url}/prm/dashboard/lease-expiry`, filter)
+        vsapi.call(`${main_view.base_url}/prm/dashboard/summary`, payload),
+        vsapi.call(`${main_view.base_url}/prm/dashboard/charts`, payload),
+        vsapi.call(`${main_view.base_url}/prm/dashboard/activities`, payload),
+        vsapi.call(`${main_view.base_url}/prm/dashboard/lease-expiry`, payload)
     ]);
 
     mThis.renderDashboard({
@@ -1561,20 +1642,37 @@ mThis.initCharts = function (data) {
         ...(leaseExpiry.data || {})
     });
 };
-   mThis.loadDefaultFilter = function () {
+mThis.loadDefaultFilter = function () {
 
     vsapi.call(`${main_view.base_url}/prm/dashboard/filter-options`, {}, null, { loader: false })
         .then(res => {
 
             if (res.status_code !== 200) return;
 
-            mThis.db_filter = {
-                building_id: mThis.building_id
+            const d = res.data;
+
+            mThis.currentFilterProps = {
+                building_id: d.buildings?.[0]?.id || null,
+                period: d.period?.[0]?.value || null
             };
 
-            mThis.loadDashboard(mThis.db_filter);
+            mThis.loadDashboard(mThis.currentFilterProps);
         });
 };
+//    mThis.loadDefaultFilter = function () {
+
+//     vsapi.call(`${main_view.base_url}/prm/dashboard/filter-options`, {}, null, { loader: false })
+//         .then(res => {
+
+//             if (res.status_code !== 200) return;
+
+//             mThis.db_filter = {
+//                 building_id: mThis.building_id
+//             };
+
+//             mThis.loadDashboard(mThis.db_filter);
+//         });
+// };
    mThis.show = function () {
 
     mThis.init();
@@ -1585,6 +1683,7 @@ mThis.initCharts = function (data) {
     }
 
     main_view.setContentView(mThis.self, mThis.title_prop);
+        mThis.initFilterForm();
 
     mThis.loadDefaultFilter();
 };

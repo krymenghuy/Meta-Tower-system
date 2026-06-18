@@ -3,7 +3,7 @@
 namespace App\Models\Prm;
 //use Illuminate\Database\Eloquent\Factories\HasFactory;
 //use Illuminate\Database\Eloquent\Model;
-//use Carbon\Carbon;
+use Carbon\Carbon;
 //use Session;
 use DBX;
 use Illuminate\Support\Facades\DB;
@@ -700,5 +700,21 @@ static function options_maintenance_amenity($ss)
     {
         return DB::table('expense_statuses')->selectRaw('id,name as expense_status')->get();
     }
+   public static function options_period($ss)
+    {
+        $months = [];
 
+        $year = Carbon::today()->year;
+
+        for ($m = 1; $m <= 12; $m++) {
+            $date = Carbon::createFromDate($year, $m, 1);
+
+            $months[] = [
+                'value' => $date->format('Y-m'),
+                'label' => $date->format('M Y')
+            ];
+        }
+
+        return $months;
+    }
 }

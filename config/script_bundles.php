@@ -44,7 +44,9 @@ return [
             'files' => [
                 'https://cdn.vectoraclouds.com/frontcore/sanitizer/sanitizer.js',
                 'https://cdn.vectoraclouds.com/beta-frontcore/utils/vsutils.v2.js',
-                'https://cdn.vectoraclouds.com/beta-frontcore/components/FilterPanel.js',
+                // 'https://cdn.vectoraclouds.com/beta-frontcore/components/FilterPanel.js',
+                'https://cdn.vectoraclouds.com/frontcore/components/FilterPanel.v2.js',
+
                 '/assets/js/sweetalert2.all.min.js',
                 '/assets/js/sweetalert2.toast.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/ExpandableTableRow.v2.js',
