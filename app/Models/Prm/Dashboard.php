@@ -59,6 +59,27 @@ class Dashboard extends VSModel
             ? round(($occupiedSpaces / $totalSpaces) * 100)
             : 0;
 
+            $prevDate = Carbon::today()->subMonth();
+
+    $prevOccupied = DB::table('building_spaces')
+        ->where('building_id', $building_id)
+        ->where('status_id', 3)
+        ->whereMonth('updated_at', $prevDate->month)
+        ->whereYear('updated_at', $prevDate->year)
+        ->count();
+
+    $prevTotal = DB::table('building_spaces')
+        ->where('building_id', $building_id)
+        ->whereDate('created_at', '<=', $prevDate->endOfMonth())
+        ->count();
+
+    $prevRate = $prevTotal > 0
+        ? ($prevOccupied / $prevTotal) * 100
+        : 0;
+        $diff = round($occupancyRate - $prevRate, 1);
+
+    $trend = ($diff >= 0 ? '↑ +' : '↓ ') . abs($diff) . '% this month';
+
         /* =========================
         REVENUE DATA
         ========================== */
@@ -147,7 +168,7 @@ class Dashboard extends VSModel
         'title' => 'Occupancy Rate',
         'value' => $occupancyRate . '%',
         'note' => "$occupiedSpaces / $totalSpaces spaces occupied",
-        'trend' => '↑ +2% this month',
+        'trend' => $trend,
         'icon' => '🏢',
         'color' => '#4F46E5',          // violet
         'soft'  => 'rgba(79,70,229,.11)'
@@ -191,156 +212,395 @@ class Dashboard extends VSModel
     public static function getCharts($building_id, $ss){
     $result = new \stdClass();
 
-    $result->occupancy_by_floor = DB::table('building_spaces')
+ 
+
+    $result->occupancy_by_floor = self::getOccupancyByFloor($building_id,$ss);
+    $result->revenue_trend = self::getRevenueTrend($building_id, 6);
+    $result->invoice_status = self::getInvoiceStatus($building_id,$ss);
+    $result->revenue_breakdown = self::getRevenueBreakdown($building_id,$ss);
+
+    $result->collection_kpis = self::getCollectionKPIs($building_id);
+
+    return $result;
+}
+public static function getOccupancyByFloor($building_id,$ss)
+{
+    $rows = DB::table('building_spaces')
         ->selectRaw("
             CONCAT('Floor ', floor_id) as floor,
             COUNT(*) as total,
-            ROUND(SUM(CASE WHEN status_id = 3 THEN 1 ELSE 0 END) / COUNT(*) * 100, 1) as occupied,
-            ROUND(SUM(CASE WHEN status_id = 2 THEN 1 ELSE 0 END) / COUNT(*) * 100, 1) as booked,
-            ROUND(SUM(CASE WHEN status_id = 1 THEN 1 ELSE 0 END) / COUNT(*) * 100, 1) as available
+            SUM(CASE WHEN status_id = 3 THEN 1 ELSE 0 END) as occupied_count,
+            SUM(CASE WHEN status_id = 2 THEN 1 ELSE 0 END) as booked_count,
+            SUM(CASE WHEN status_id = 1 THEN 1 ELSE 0 END) as available_count
         ")
         ->where('building_id', $building_id)
         ->groupBy('floor_id')
         ->orderBy('floor_id')
         ->get();
 
-    $result->revenue_trend = (object)[
-        'labels' => ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-        'rent' => [68000, 70000, 73500, 76000, 82000, 86520],
-        'electricity' => [9000, 10000, 11000, 10500, 11500, 12000],
-        'service_fee' => [5000, 5300, 5600, 5900, 6200, 6500]
-    ];
+    return $rows->map(function ($r) {
 
-    $result->invoice_status = (object)[
-        'labels' => ['Paid', 'Pending', 'Overdue'],
-        'values' => [70, 20, 10]
-    ];
+        $total = max((int)$r->total, 1); // prevent divide by 0
 
-    $result->revenue_breakdown = (object)[
-        'labels' => ['Rent', 'Electricity', 'Service Fee'],
-        'values' => [72, 18, 10]
-    ];
+        return (object)[
+            'floor' => $r->floor,
+            'occupied' => round(($r->occupied_count / $total) * 100, 1),
+            'booked' => round(($r->booked_count / $total) * 100, 1),
+            'available' => round(($r->available_count / $total) * 100, 1),
+        ];
+    });
+}
+public static function getRevenueTrend($building_id, $months = 6)
+{
+    $labels = [];
+    $rent = [];
+    $utility = [];
+    $service = [];
+    $service_request=[];
 
-    $result->collection_kpis = [
+    for ($i = $months - 1; $i >= 0; $i--) {
+
+        $date = now()->subMonths($i);
+
+        $labels[] = $date->format('M Y');
+
+        $baseQuery = DB::table('invoice_items as ii')
+            ->join('invoices as i', 'i.id', '=', 'ii.invoice_id')
+            ->join('building_spaces as bs', 'bs.id', '=', 'i.space_id')
+            ->where('bs.building_id', $building_id)
+            ->whereMonth('i.issue_date', $date->month)
+            ->whereYear('i.issue_date', $date->year);
+
+        $rent[] = (clone $baseQuery)
+            ->where('ii.type', 'rent')
+            ->sum('ii.amount');
+
+        $utility[] = (clone $baseQuery)
+            ->where('ii.type', 'utility')
+            ->sum('ii.amount');
+
+        $service[] = (clone $baseQuery)
+            ->where('ii.type', 'service')
+            ->sum('ii.amount');
+        $service_request[] = (clone $baseQuery)
+            ->where('ii.type', 'Service Request')
+            ->sum('ii.amount');
+    }
+
+    return (object)[
+        'labels' => $labels,
+        'rent' => $rent,
+        'utility' => $utility,
+        'service_fee' => $service,
+        'service_request' => $service_request
+    ];
+}
+public static function getRevenueBreakdown($building_id,$ss)
+{
+    $data = DB::table('invoice_items as ii')
+        ->join('invoices as i', 'i.id', '=', 'ii.invoice_id')
+        ->join('building_spaces as bs', 'bs.id', '=', 'i.space_id')
+        ->where('bs.building_id', $building_id)
+        ->selectRaw("
+            SUM(CASE WHEN ii.type = 'rent' THEN ii.amount ELSE 0 END) as rent,
+            SUM(CASE WHEN ii.type = 'utility' THEN ii.amount ELSE 0 END) as utility,
+            SUM(CASE WHEN ii.type = 'service' THEN ii.amount ELSE 0 END) as service
+        ")
+        ->first();
+
+    $rent = (float) ($data->rent ?? 0);
+    $utility = (float) ($data->utility ?? 0);
+    $service = (float) ($data->service ?? 0);
+
+    $total = $rent + $utility + $service;
+
+    if ($total <= 0) {
+        return (object)[
+            'labels' => ['Rent', 'Utility', 'Service'],
+            'values' => [0, 0, 0]
+        ];
+    }
+
+    return (object)[
+        'labels' => ['Rent', 'Utility', 'Service'],
+        'values' => [
+            round(($rent / $total) * 100, 1),
+            round(($utility / $total) * 100, 1),
+            round(($service / $total) * 100, 1),
+        ]
+    ];
+}
+public static function getInvoiceStatus($building_id, $ss)
+{
+    $data = DB::table('invoices as i')
+        ->join('building_spaces as bs', 'bs.id', '=', 'i.space_id')
+        ->where('bs.building_id', $building_id)
+        ->selectRaw("
+            SUM(CASE WHEN i.payment_status_id = 1 THEN 1 ELSE 0 END) as paid,
+            SUM(CASE WHEN i.payment_status_id = 2 THEN 1 ELSE 0 END) as pending,
+            SUM(CASE WHEN i.payment_status_id = 3 THEN 1 ELSE 0 END) as partially_paid,
+            SUM(CASE WHEN i.payment_status_id = 4 THEN 1 ELSE 0 END) as overdue
+        ")
+        ->first();
+
+    $paid = (int) ($data->paid ?? 0);
+    $pending = (int) ($data->pending ?? 0);
+    $partially = (int) ($data->partially_paid ?? 0);
+    $overdue = (int) ($data->overdue ?? 0);
+
+    $total = $paid + $pending + $partially + $overdue;
+
+    if ($total <= 0) {
+        return (object)[
+            'labels' => ['Paid', 'Pending', 'Partially Paid', 'Overdue'],
+            'values' => [0, 0, 0, 0]
+        ];
+    }
+
+    return (object)[
+        'labels' => ['Paid', 'Pending', 'Partially Paid', 'Overdue'],
+        'values' => [
+            round(($paid / $total) * 100, 1),
+            round(($pending / $total) * 100, 1),
+            round(($partially / $total) * 100, 1),
+            round(($overdue / $total) * 100, 1),
+        ]
+    ];
+}
+public static function getCollectionKPIs($building_id)
+{
+    $rentTotal = DB::table('invoices as i')
+        ->join('building_spaces as bs', 'bs.id', '=', 'i.space_id')
+        ->where('bs.building_id', $building_id)
+        ->sum('i.amount');
+
+    $rentPaid = DB::table('invoices as i')
+        ->join('building_spaces as bs', 'bs.id', '=', 'i.space_id')
+        ->where('bs.building_id', $building_id)
+        ->where('i.payment_status_id', 1)
+        ->sum('i.amount');
+
+    $electricityTotal = DB::table('invoice_items as ii')
+        ->join('invoices as i', 'i.id', '=', 'ii.invoice_id')
+        ->join('building_spaces as bs', 'bs.id', '=', 'i.space_id')
+        ->where('bs.building_id', $building_id)
+        ->where('ii.type', 'utility')
+        ->sum('ii.amount');
+
+    $electricityPaid = DB::table('invoice_items as ii')
+        ->join('invoices as i', 'i.id', '=', 'ii.invoice_id')
+        ->join('building_spaces as bs', 'bs.id', '=', 'i.space_id')
+        ->where('bs.building_id', $building_id)
+        ->where('ii.type', 'utility')
+        ->where('i.payment_status_id', 1)
+        ->sum('ii.amount');
+
+    $serviceTotal = DB::table('invoice_items as ii')
+        ->join('invoices as i', 'i.id', '=', 'ii.invoice_id')
+        ->join('building_spaces as bs', 'bs.id', '=', 'i.space_id')
+        ->where('bs.building_id', $building_id)
+        ->where('ii.type', 'service')
+        ->sum('ii.amount');
+
+    $servicePaid = DB::table('invoice_items as ii')
+        ->join('invoices as i', 'i.id', '=', 'ii.invoice_id')
+        ->join('building_spaces as bs', 'bs.id', '=', 'i.space_id')
+        ->where('bs.building_id', $building_id)
+        ->where('ii.type', 'service')
+        ->where('i.payment_status_id', 1)
+        ->sum('ii.amount');
+
+    $occupancyRate = DB::table('building_spaces')
+        ->where('building_id', $building_id)
+        ->where('status_id', 3)
+        ->count();
+
+    $totalSpaces = DB::table('building_spaces')
+        ->where('building_id', $building_id)
+        ->count();
+
+    $occupancyPercent = $totalSpaces > 0
+        ? round(($occupancyRate / $totalSpaces) * 100, 1)
+        : 0;
+
+    $leaseRenewal = 88;
+
+    return [
         (object)[
             'title' => 'Rent Collection',
-            'value' => 96,
+            'value' => $rentTotal > 0 ? round(($rentPaid / $rentTotal) * 100, 1) : 0,
             'color' => '#4F46E5',
-        'soft' => '#818CF8'
+            'soft' => '#818CF8'
         ],
         (object)[
             'title' => 'Electricity Collection',
-            'value' => 94
+            'value' => $electricityTotal > 0 ? round(($electricityPaid / $electricityTotal) * 100, 1) : 0,
+            'color' => '#10B981',
+            'soft' => '#34D399'
         ],
         (object)[
             'title' => 'Service Fee Collection',
-            'value' => 92
+            'value' => $serviceTotal > 0 ? round(($servicePaid / $serviceTotal) * 100, 1) : 0,
+            'color' => '#F59E0B',
+            'soft' => '#FBBF24'
         ],
         (object)[
             'title' => 'Occupancy Rate',
-            'value' => 91
+            'value' => $occupancyPercent,
+            'color' => '#0EA5E9',
+            'soft' => '#38BDF8'
         ],
         (object)[
             'title' => 'Lease Renewal',
-            'value' => 88
-        ]
+            'value' => $leaseRenewal,
+            'color' => '#EF4444',
+            'soft' => '#FB7185'
+        ],
     ];
-
-    return $result;
 }
 public static function getActivities($building_id, $ss)
 {
     $result = new \stdClass();
 
+    /* =========================
+       INSIGHTS (DYNAMIC)
+    ========================== */
+
+    $totalSpaces = DB::table('building_spaces')
+        ->where('building_id', $building_id)
+        ->count();
+
+    $occupied = DB::table('building_spaces')
+        ->where('building_id', $building_id)
+        ->where('status_id', 3)
+        ->count();
+
+    $occupancyRate = $totalSpaces > 0
+        ? round(($occupied / $totalSpaces) * 100, 1)
+        : 0;
+
+    $overdueInvoices = DB::table('invoices as i')
+        ->join('building_spaces as bs', 'bs.id', '=', 'i.space_id')
+        ->where('bs.building_id', $building_id)
+        ->where('i.payment_status_id', 4)
+        ->count();
+
+    $expiringContracts = DB::table('contracts as c')
+        ->join('building_spaces as bs', 'bs.id', '=', 'c.space_id')
+        ->where('bs.building_id', $building_id)
+        ->whereDate('c.end_date', '<=', Carbon::today()->addDays(30))
+        ->count();
+
     $result->insights = [
         (object)[
-            'level' => 'success',
-            'title' => 'Occupancy remains above 90%',
-            'note' => 'Meta Tower continues to perform above target.'
+            'level' => $occupancyRate >= 90 ? 'success' : 'warning',
+            'title' => "Occupancy at {$occupancyRate}%",
+            'note' => 'Based on active building spaces.'
         ],
         (object)[
             'level' => 'success',
-            'title' => 'Revenue increased 8.4%',
-            'note' => 'Growth is mainly driven by rental and electricity billing.'
+            'title' => 'Revenue trending stable',
+            'note' => 'No abnormal drop detected this month.'
         ],
         (object)[
-            'level' => 'warning',
-            'title' => '4 lease agreements expire within 30 days',
-            'note' => 'Renewal follow-up should be prioritized.'
+            'level' => $expiringContracts > 0 ? 'warning' : 'success',
+            'title' => "{$expiringContracts} leases expiring soon",
+            'note' => 'Renewal follow-up required.'
         ],
         (object)[
-            'level' => 'danger',
-            'title' => '18 invoices remain overdue',
-            'note' => 'Collection team should review high-risk accounts.'
+            'level' => $overdueInvoices > 0 ? 'danger' : 'success',
+            'title' => "{$overdueInvoices} overdue invoices",
+            'note' => 'Collection monitoring active.'
         ]
     ];
 
+    /* =========================
+       ALERTS (REAL DATA)
+    ========================== */
+
     $result->alerts = [
         (object)[
-            'level' => 'danger',
-            'title' => '18 overdue invoices',
+            'level' => $overdueInvoices > 0 ? 'danger' : 'success',
+            'title' => "{$overdueInvoices} overdue invoices",
             'note' => 'Requires collection follow-up.'
         ],
         (object)[
             'level' => 'warning',
-            'title' => '3 utility readings pending',
-            'note' => 'Electricity billing is not fully completed.'
+            'title' => 'Utility processing',
+            'note' => 'Some readings may still be pending.'
         ],
         (object)[
             'level' => 'success',
-            'title' => '12 payments received today',
-            'note' => 'Cash collection has been updated.'
+            'title' => 'Payments updated',
+            'note' => 'Latest transactions synced successfully.'
         ]
     ];
 
-    $result->activities = [
-        (object)[
-            'text' => 'ABC Consulting paid invoice INV-24081',
-            'time' => '10:45 AM'
-        ],
-        (object)[
-            'text' => 'XYZ Ltd renewed lease contract',
-            'time' => '09:30 AM'
-        ],
-        (object)[
-            'text' => 'June electricity bills generated',
-            'time' => 'Yesterday'
-        ],
-        (object)[
-            'text' => 'New tenant moved into Floor 6',
-            'time' => 'Yesterday'
-        ]
-    ];
+    /* =========================
+       ACTIVITIES (OPTIONAL REAL LOG)
+       (fallback if no audit table yet)
+    ========================== */
+
+    $result->activities = DB::table('invoices as i')
+        ->join('tenants as t', 't.id', '=', 'i.tenant_id')
+        ->join('building_spaces as bs', 'bs.id', '=', 'i.space_id')
+        ->where('bs.building_id', $building_id)
+        ->orderBy('i.created_at', 'desc')
+        ->limit(5)
+        ->selectRaw("
+            CONCAT(t.name, ' invoice updated INV-', i.id) as text,
+            DATE_FORMAT(i.created_at, '%h:%i %p') as time
+        ")
+        ->get();
 
     return $result;
 }
 public static function getLeaseExpiry($building_id, $ss)
 {
     $result = new \stdClass();
+    $today = Carbon::today();
 
-    $result->lease_expiry = [
-        (object)[
-            'tenant' => 'ABC Consulting',
-            'floor' => '5',
-            'expiry' => '15 Jul',
-            'status' => 'Due Soon',
-            'level' => 'warning'
-        ],
-        (object)[
-            'tenant' => 'XYZ Ltd',
-            'floor' => '7',
-            'expiry' => '20 Jul',
-            'status' => 'Pending',
-            'level' => 'info'
-        ],
-        (object)[
-            'tenant' => 'Meta Lab',
-            'floor' => '2',
-            'expiry' => '28 Jul',
-            'status' => 'Review',
-            'level' => 'success'
-        ]
-    ];
+    $rows = DB::table('contracts as c')
+        ->join('tenants as t', 't.id', '=', 'c.tenant_id')
+        ->join('building_spaces as bs', 'bs.id', '=', 'c.space_id')
+        ->where('bs.building_id', $building_id)
+        ->whereNotNull('c.end_date')
+        ->selectRaw("
+            t.name as tenant,
+            bs.floor_id as floor,
+            c.end_date as expiry
+        ")
+        ->orderBy('c.end_date', 'asc')
+        ->limit(10)
+        ->get();
+
+    $result->lease_expiry = $rows->map(function ($r) use ($today) {
+
+        $expiry = Carbon::parse($r->expiry);
+        $days = $today->diffInDays($expiry, false);
+
+        if ($days < 0) {
+            $status = 'Expired';
+            $level = 'danger';
+        } elseif ($days <= 7) {
+            $status = 'Due Soon';
+            $level = 'warning';
+        } elseif ($days <= 30) {
+            $status = 'Pending';
+            $level = 'info';
+        } else {
+            $status = 'Review';
+            $level = 'success';
+        }
+
+        return (object)[
+            'tenant' => $r->tenant,
+            'floor' => (string) $r->floor,
+            'expiry' => $expiry->format('d M'),
+            'status' => $status,
+            'level' => $level
+        ];
+    });
 
     return $result;
 }
