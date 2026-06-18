@@ -62,13 +62,13 @@ var DepositComponent = (() => {
         //         return `<span class="d-block fw-semibold text-success">${VSMoney.formatAmount(data.paid_amount, "USD")}</span>`;
         //     },
         // },
-        {
-            transTitle: "titles.Payment Date",
-            className: "align-middle text-nowrap",
-            data: (data) => {
-                return `<span class="d-block text-prm-custom">${data.deposit_date ?? "_"}</span>`;
-            },
-        },
+        // {
+        //     transTitle: "titles.Payment Date",
+        //     className: "align-middle text-nowrap",
+        //     data: (data) => {
+        //         return `<span class="d-block text-prm-custom">${data.deposit_date ?? "_"}</span>`;
+        //     },
+        // },
 
         {
             transTitle: "titles.Remark",
@@ -89,8 +89,8 @@ var DepositComponent = (() => {
                 const statusConfig = {
                     unpaid: "border border-danger text-danger bg-danger-subtle",
                     paid: "border border-success text-success bg-success-subtle",
-                    refunded:
-                        "border border-warning text-warning bg-warning-subtle",
+                    refunded: "border border-warning text-warning bg-warning-subtle",
+                    terminated: "border border-dark text-dark bg-dark-subtle",
                 };
                 const cls = statusConfig[status] ?? "bg-secondary text-white";
                 return `
@@ -478,7 +478,6 @@ const DepositDialog = (() => {
                                     <label>Payment Amount ($)</label>
                                 </div>
                             </div>
-                            <!-- 9. Reference / Transaction No. -->
                             <div class="col-6">
                                 <div class="vs-material-field">
                                     <input type="text" name="ref_no" class="data-input form-control" data-field="ref_no" placeholder=" ">

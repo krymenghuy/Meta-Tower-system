@@ -962,6 +962,31 @@ class Contract
                 self::syncTenantStatusForTenantIds([$tenant_id]);
             }
 
+            // Update associated deposits to Terminated status
+            $terminatedDepositStatusId = DB::table('deposit_statuses')
+                ->where(function ($q) {
+                    $q->whereRaw('LOWER(TRIM(name)) = ?', ['terminated'])
+                        ->orWhereRaw('LOWER(TRIM(status_code)) = ?', ['terminated']);
+                })
+                ->value('id');
+
+            if (!$terminatedDepositStatusId) {
+                $terminatedDepositStatusId = DB::table('deposit_statuses')->insertGetId([
+                    'name' => 'Terminated',
+                    'status_code' => 'terminated',
+                ]);
+            }
+
+            if ($terminatedDepositStatusId) {
+                DB::table('deposits')
+                    ->where('contract_id', $id)
+                    ->update([
+                        'status_id' => $terminatedDepositStatusId,
+                        'update_user' => $ss->full_name ?? 'Admin',
+                        'updated_at' => getNowTime(),
+                    ]);
+            }
+
             DB::commit();
             return DV::depends(1, ['id' => $id]);
         } catch (\Throwable $e) {
@@ -1227,7 +1252,7 @@ class Contract
             $start = \Carbon\Carbon::parse($start_date)->startOfDay();
             $end   = \Carbon\Carbon::parse($end_date)->endOfDay();
         } catch (\Exception $e) {
-            \Log::error("Date parsing failed", ['error' => $e->getMessage()]);
+            // \Log::error("Date parsing failed", ['error' => $e->getMessage()]);
             return [];
         }
 
