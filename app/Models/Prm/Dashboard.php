@@ -59,6 +59,27 @@ class Dashboard extends VSModel
             ? round(($occupiedSpaces / $totalSpaces) * 100)
             : 0;
 
+            $prevDate = Carbon::today()->subMonth();
+
+    $prevOccupied = DB::table('building_spaces')
+        ->where('building_id', $building_id)
+        ->where('status_id', 3)
+        ->whereMonth('updated_at', $prevDate->month)
+        ->whereYear('updated_at', $prevDate->year)
+        ->count();
+
+    $prevTotal = DB::table('building_spaces')
+        ->where('building_id', $building_id)
+        ->whereDate('created_at', '<=', $prevDate->endOfMonth())
+        ->count();
+
+    $prevRate = $prevTotal > 0
+        ? ($prevOccupied / $prevTotal) * 100
+        : 0;
+        $diff = round($occupancyRate - $prevRate, 1);
+
+    $trend = ($diff >= 0 ? '↑ +' : '↓ ') . abs($diff) . '% this month';
+
         /* =========================
         REVENUE DATA
         ========================== */
@@ -147,7 +168,7 @@ class Dashboard extends VSModel
         'title' => 'Occupancy Rate',
         'value' => $occupancyRate . '%',
         'note' => "$occupiedSpaces / $totalSpaces spaces occupied",
-        'trend' => '↑ +2% this month',
+        'trend' => $trend,
         'icon' => '🏢',
         'color' => '#4F46E5',          // violet
         'soft'  => 'rgba(79,70,229,.11)'
