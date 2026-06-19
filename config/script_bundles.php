@@ -44,8 +44,8 @@ return [
             'files' => [
                 'https://cdn.vectoraclouds.com/frontcore/sanitizer/sanitizer.js',
                 'https://cdn.vectoraclouds.com/beta-frontcore/utils/vsutils.v2.js',
-                // 'https://cdn.vectoraclouds.com/beta-frontcore/components/FilterPanel.js',
-                'https://cdn.vectoraclouds.com/frontcore/components/FilterPanel.v2.js',
+                'https://cdn.vectoraclouds.com/beta-frontcore/components/FilterPanel.v2.js',
+                // 'https://cdn.vectoraclouds.com/frontcore/components/FilterPanel.v2.js',
 
                 '/assets/js/sweetalert2.all.min.js',
                 '/assets/js/sweetalert2.toast.js',
@@ -54,6 +54,7 @@ return [
                 'https://cdn.vectoraclouds.com/frontcore/components/VSDropdownMenu.js',
 
                 'https://cdn.vectoraclouds.com/beta-vfc/vfc.utils.configSelect.js',
+                 'https://cdn.vectoraclouds.com/beta-vfc/VSInteractBoundary.js',
                 'https://cdn.vectoraclouds.com/vfc/vfc.utils.inputFormat.js',
                 'https://cdn.vectoraclouds.com/beta-vfc/vfc.form.js',
                 'https://cdn.vectoraclouds.com/beta-vfc/vfc.material.js',
