@@ -14,34 +14,12 @@ class Deposit
 {
     protected $id = null;
     protected $userInfo = null;
-    // Commented out: not related to database table
-    /*
-    protected static $img_dir = 'deposits';
-    protected static $allowed_image_extensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-    protected static $allowed_doc_extensions = ['pdf', 'doc', 'docx'];
-    */
 
     public function __construct($id = null, $userInfo = null)
     {
         $this->id = $id;
         $this->userInfo = $userInfo;
     }
-
-    // Commented out: not related to database table
-    /*
-    public static function getDepositImageUrl($filename, $ss)
-    {
-        if (!$filename) return null;
-
-        $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
-        $category = in_array($ext, self::$allowed_image_extensions) ? 'image' : 'document';
-
-        return XPublicStorage::getUrl(
-            ['subs_id' => $ss->subs_id, 'dir' => self::$img_dir],
-            $category
-        ) . $filename;
-    }
-    */
 
     public function saveDeposit($arr = [], $id = null, $ss = null)
     {
@@ -179,7 +157,7 @@ class Deposit
             return DV::depends($savedId, ['deposits' => $saveData, 'id' => $savedId]);
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::error("Save deposit and receipt failed: " . $e->getMessage());
+            // \Log::error("Save deposit and receipt failed: " . $e->getMessage());
             return DV::error('Failed to save deposit: ' . $e->getMessage());
         }
     }
@@ -370,176 +348,75 @@ class Deposit
 
         $x = DB::table('deposits')->where('id', $id)->update($update);
 
+        if ($x) {
+            $refundedStatusId = DB::table('deposit_statuses')
+                ->where(function ($q) {
+                    $q->whereRaw('LOWER(TRIM(name)) = ?', ['refunded'])
+                      ->orWhereRaw('LOWER(TRIM(status_code)) = ?', ['refunded']);
+                })
+                ->value('id') ?? 3;
+
+            if ($status_id == $refundedStatusId) {
+                $contractId = DB::table('deposits')->where('id', $id)->value('contract_id');
+                if ($contractId) {
+                    DB::table('deposit_refunds')
+                        ->where('contract_id', $contractId)
+                        ->update([
+                            'status' => 'refunded',
+                            'updated_at' => now(),
+                        ]);
+                }
+            }
+        }
+
         return DV::depends($x, ['Deposit status', 'updated']);
     }
 
-    /*
-    public function uploadAttachment($arr = [], $id = null, $ss = null)
+    public function updateRefundStatus($contract_id, $status, $ss = null)
     {
-        $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
-
-        if (!$id) return DV::error('Contract not found.');
-
-        $contract = DB::table('contracts')
-            ->where('id', $id)
-            ->select('id', 'deposit_file_image')
-            ->first();
-
-        if (!$contract) return DV::error('Contract not found.');
-
-        $v_rule = [
-            'id'                 => '1|integer|exists:contracts,id',
-            'data'               => '1|string',
-            'ext'                => '1|string',
-            'mime_type'          => '0|string',
-            'original_file_name' => '0|string|0-255',
-            'remark'             => '0|string|0-255',
-        ];
-
-        $res = DBX::validateObject($arr, $v_rule, 1, [], $ss->lang);
-        if ($res->error) return DV::error($res->error);
-        $inputs = $res->values;
-
-        $data             = $inputs['data']               ?? null;
-        $ext              = strtolower($inputs['ext']     ?? '');
-        $originalFileName = $inputs['original_file_name'] ?? null;
-        $remark           = $inputs['remark']             ?? null;
-
-        if (!$data || !$ext) return DV::error('File is required.');
-
-        $allowedExt = array_merge(self::$allowed_image_extensions, self::$allowed_doc_extensions);
-        if (!in_array($ext, $allowedExt)) {
-            return DV::error('Invalid file type.');
+        $validStatuses = ['pending', 'approved', 'refunded', 'completed', 'rejected'];
+        $status = strtolower(trim($status));
+        if (!in_array($status, $validStatuses)) {
+            return DV::error('Invalid refund status.');
         }
 
         DB::beginTransaction();
         try {
-            if ($contract->deposit_file_image) {
-                XPublicStorage::delete(
-                    ['subs_id' => $ss->subs_id, 'dir' => self::$img_dir],
-                    'image',
-                    $contract->deposit_file_image
-                );
+            $updated = DB::table('deposit_refunds')
+                ->where('contract_id', $contract_id)
+                ->update([
+                    'status' => $status,
+                    'updated_at' => now()
+                ]);
+
+            if ($updated) {
+                // If status is 'refunded' or 'completed', sync to the deposits table
+                if ($status === 'refunded' || $status === 'completed') {
+                    $refundedStatusId = DB::table('deposit_statuses')
+                        ->where(function ($q) {
+                            $q->whereRaw('LOWER(TRIM(name)) = ?', ['refunded'])
+                              ->orWhereRaw('LOWER(TRIM(status_code)) = ?', ['refunded']);
+                        })
+                        ->value('id') ?? 3;
+
+                    DB::table('deposits')
+                        ->where('contract_id', $contract_id)
+                        ->update([
+                            'status_id' => $refundedStatusId,
+                            'update_user' => $ss->full_name ?? 'Admin',
+                            'updated_at' => getNowTime()
+                        ]);
+                }
             }
-
-            $data = preg_replace('#^data:.*;base64,#', '', $data);
-            $category = in_array($ext, self::$allowed_image_extensions) ? 'image' : 'document';
-
-            $file = XPublicStorage::savefile(
-                ['subs_id' => $ss->subs_id, 'dir' => self::$img_dir],
-                $ext,
-                $data,
-                $category,
-                $originalFileName
-            );
-
-            if ($file->status === 'Error') {
-                DB::rollBack();
-                return DV::error($file->error_message);
-            }
-
-            $updateData = [
-                'deposit_file_image'         => $file->file_name,
-                'deposit_file_ext'           => $ext,
-                'deposit_file_original_name' => $originalFileName ?? $file->file_name,
-                'update_user'                => $ss->full_name ?? 'Admin',
-                'updated_at'                 => getNowTime(),
-            ];
-
-            if (!is_null($remark)) {
-                $updateData['deposit_paid_remarks'] = $remark;
-            }
-
-            DB::table('contracts')->where('id', $id)->update($updateData);
 
             DB::commit();
-            return DV::depends(1, ['id' => $id, 'file_name' => $file->file_name]);
+            return DV::depends(1, ['Refund status', 'updated']);
         } catch (\Exception $e) {
             DB::rollBack();
-            return DV::error($e->getMessage());
+            return DV::error('Failed to update refund status: ' . $e->getMessage());
         }
     }
 
-    public function viewDepositAttachment($id = null, $ss = null)
-    {
-        $id = $id ?? $this->id;
-        $ss = $ss ?? $this->userInfo;
-
-        $contract = DB::table('contracts')
-            ->where('id', $id)
-            ->select('id', 'deposit_file_image', 'deposit_file_ext')
-            ->first();
-
-        if (!$contract) return DV::error('Contract not found.');
-        if (!$contract->deposit_file_image) return DV::error('No attachment found.');
-
-        $ext = strtolower($contract->deposit_file_ext ?? pathinfo($contract->deposit_file_image, PATHINFO_EXTENSION));
-        $category = in_array($ext, self::$allowed_image_extensions) ? 'image' : 'document';
-
-        $fileUrl = XPublicStorage::getUrl(
-            ['subs_id' => $ss->subs_id, 'dir' => self::$img_dir],
-            $category
-        ) . $contract->deposit_file_image;
-
-        $mimeTypes = [
-            'gif'  => 'image/gif',
-            'png'  => 'image/png',
-            'jpg'  => 'image/jpeg',
-            'jpeg' => 'image/jpeg',
-            'pdf'  => 'application/pdf',
-            'doc'  => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-            'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        ];
-
-        $mimeType = $mimeTypes[$ext] ?? 'application/octet-stream';
-
-        return DV::depends(1, [
-            'data_url'  => $fileUrl,
-            'file_name' => $contract->deposit_file_image,
-            'ext'       => $ext,
-            'mime_type' => $mimeType,
-        ]);
-    }
-
-    public function deleteAttachment($id = null, $ss = null)
-    {
-        $id = $id ?? $this->id;
-        $ss = $ss ?? $this->userInfo;
-
-        $contract = DB::table('contracts')
-            ->where('id', $id)
-            ->select('id', 'deposit_file_image')
-            ->first();
-
-        if (!$contract)     return DV::error('Contract not found.');
-        if (!$contract->deposit_file_image) return DV::error('No attachment found.');
-
-        $ext = strtolower(pathinfo($contract->deposit_file_image, PATHINFO_EXTENSION));
-        $category = in_array($ext, self::$allowed_image_extensions) ? 'image' : 'document';
-
-        DB::beginTransaction();
-        try {
-            XPublicStorage::delete(
-                ['subs_id' => $ss->subs_id, 'dir' => self::$img_dir],
-                $category,
-                $contract->deposit_file_image
-            );
-
-            DB::table('contracts')->where('id', $id)->update([
-                'deposit_file_image'  => null,
-                'deposit_file_ext'    => null,
-                'deposit_file_original_name' => null,
-                'update_user' => $ss->full_name ?? 'Admin',
-                'updated_at'  => getNowTime(),
-            ]);
-
-            DB::commit();
-            return DV::depends(1, ['action' => 'attachment_deleted', 'id' => $id]);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return DV::error('Failed to delete attachment.');
-        }
-    }
-    */
+    
 }

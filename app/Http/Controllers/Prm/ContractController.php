@@ -27,7 +27,7 @@ class ContractController extends Controller
         $p = processQueryString($qString);
         $id = $p->id;
         $res = Contract::createContract($p, $user);
-    
+        
         return JDV::raw($res);
     }
     public function saveContract(Request $req)
@@ -131,7 +131,7 @@ class ContractController extends Controller
             return JDV::error('Invalid ID');
         }
 
-        $res = $this->contracts->terminateContract($req->id, $ss);
+        $res = $this->contracts->terminateContract($req->id, $ss, $req->all());
 
         return JDV::raw($res);
     }
