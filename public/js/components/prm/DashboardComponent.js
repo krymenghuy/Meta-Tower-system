@@ -957,7 +957,7 @@ var DashboardComponent =  (() =>{
     mThis.initFilterForm = ()=>{
          if (mThis.filterConfig) return;
 
-    mThis.lnkFilterButton = document.getElementById("dashboard_filter_btn");
+        mThis.lnkFilterButton = document.getElementById("_db_filter_prm_data");
         mThis.filterConfig = mThis.filterConfig || new FilterPanel({
             cssClass:null,
             triggerButton: mThis.lnkFilterButton,
@@ -1008,7 +1008,7 @@ var DashboardComponent =  (() =>{
             },
 
             onSelect:(me, data)=>{
-               console.log(89,data);
+            //    console.log(89,data);
                
                mThis.currentFilterProps = {
                     building_id: data.building_id || null,
