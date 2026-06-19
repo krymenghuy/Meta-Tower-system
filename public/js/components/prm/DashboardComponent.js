@@ -971,7 +971,7 @@ var DashboardComponent =  (() =>{
                     .then(res => {
                         if (res.status_code !== 200) return;
                         const d = res.data;
-                        VSUtil.setComboItems(me.controls.period, d.period, 'value', 'label', '', '', null);
+                        VSUtil.setComboItems(me.controls.period, d.period, 'value', 'label', null, null, null);
                         VSUtil.setComboItems(me.controls.building_id, d.buildings, 'id', 'building', '', 'All Building', null);
                     });
             },
