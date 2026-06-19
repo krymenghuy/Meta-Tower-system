@@ -794,10 +794,14 @@ var DashboardComponent =  (() =>{
 
     mThis.init = function () {
         if (mThis.state.initialized) return;
+        mThis.initFilterForm();
+
         mThis.state.initialized = true;
 
         mThis.injectStyles();
         mThis.bindResize();
+        
+
     };
    
 
@@ -956,8 +960,9 @@ var DashboardComponent =  (() =>{
     };
     mThis.initFilterForm = ()=>{
          if (mThis.filterConfig) return;
-
-        mThis.lnkFilterButton = document.getElementById("_db_filter_prm_data");
+        mThis.lnkFilterButton = document.querySelector("#_db_filter_prm_data");
+        console.log(990,mThis.lnkFilterButton);
+        
         mThis.filterConfig = mThis.filterConfig || new FilterPanel({
             cssClass:null,
             triggerButton: mThis.lnkFilterButton,
@@ -1641,6 +1646,7 @@ mThis.loadDashboard = async function (filter = {}) {
         ...(activities.data || {}),
         ...(leaseExpiry.data || {})
     });
+
 };
 mThis.loadDefaultFilter = function () {
 
@@ -1657,6 +1663,7 @@ mThis.loadDefaultFilter = function () {
             };
 
             mThis.loadDashboard(mThis.currentFilterProps);
+
         });
 };
 //    mThis.loadDefaultFilter = function () {
@@ -1683,8 +1690,6 @@ mThis.loadDefaultFilter = function () {
     }
 
     main_view.setContentView(mThis.self, mThis.title_prop);
-        mThis.initFilterForm();
-
     mThis.loadDefaultFilter();
 };
 
