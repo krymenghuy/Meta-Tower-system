@@ -348,7 +348,74 @@ class Deposit
 
         $x = DB::table('deposits')->where('id', $id)->update($update);
 
+        if ($x) {
+            $refundedStatusId = DB::table('deposit_statuses')
+                ->where(function ($q) {
+                    $q->whereRaw('LOWER(TRIM(name)) = ?', ['refunded'])
+                      ->orWhereRaw('LOWER(TRIM(status_code)) = ?', ['refunded']);
+                })
+                ->value('id') ?? 3;
+
+            if ($status_id == $refundedStatusId) {
+                $contractId = DB::table('deposits')->where('id', $id)->value('contract_id');
+                if ($contractId) {
+                    DB::table('deposit_refunds')
+                        ->where('contract_id', $contractId)
+                        ->update([
+                            'status' => 'refunded',
+                            'updated_at' => now(),
+                        ]);
+                }
+            }
+        }
+
         return DV::depends($x, ['Deposit status', 'updated']);
+    }
+
+    public function updateRefundStatus($contract_id, $status, $ss = null)
+    {
+        $ss = $ss ?? $this->userInfo;
+        $validStatuses = ['pending', 'approved', 'refunded', 'completed', 'rejected'];
+        $status = strtolower(trim($status));
+        if (!in_array($status, $validStatuses)) {
+            return DV::error('Invalid refund status.');
+        }
+
+        DB::beginTransaction();
+        try {
+            $updated = DB::table('deposit_refunds')
+                ->where('contract_id', $contract_id)
+                ->update([
+                    'status' => $status,
+                    'updated_at' => now()
+                ]);
+
+            if ($updated) {
+                // If status is 'refunded' or 'completed', sync to the deposits table
+                if ($status === 'refunded' || $status === 'completed') {
+                    $refundedStatusId = DB::table('deposit_statuses')
+                        ->where(function ($q) {
+                            $q->whereRaw('LOWER(TRIM(name)) = ?', ['refunded'])
+                              ->orWhereRaw('LOWER(TRIM(status_code)) = ?', ['refunded']);
+                        })
+                        ->value('id') ?? 3;
+
+                    DB::table('deposits')
+                        ->where('contract_id', $contract_id)
+                        ->update([
+                            'status_id' => $refundedStatusId,
+                            'update_user' => $ss->full_name ?? 'Admin',
+                            'updated_at' => getNowTime()
+                        ]);
+                }
+            }
+
+            DB::commit();
+            return DV::depends(1, ['Refund status', 'updated']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return DV::error('Failed to update refund status: ' . $e->getMessage());
+        }
     }
 
     

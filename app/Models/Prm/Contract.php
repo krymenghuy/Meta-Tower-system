@@ -124,130 +124,130 @@ class Contract
     }
 
     public function saveContract($arr = [], $id = null, $ss = null)
-{
-    $id = $id ?? $this->id;
-    $ss = $ss ?? $this->userInfo;
-    $subs_id = $ss->subs_id ?? getCurrentSubsId(true);
+    {
+        $id = $id ?? $this->id;
+        $ss = $ss ?? $this->userInfo;
+        $subs_id = $ss->subs_id ?? getCurrentSubsId(true);
 
-    if ($id) {
-        return $this->updateContractAllowedFields($arr, $id, $ss);
-    }
-
-    $orderError = self::validateSaveContractFieldOrder($arr);
-    if ($orderError !== null) {
-        return $orderError;
-    }
-
-    $v_rule = [
-        'tenant_id'        => '1|number|exists=tenants.id|text=select_tenant',
-        'legal_name'       => '0|string|0-100',
-        'business_type_id' => '1|number|exists=business_types.id|text=Please select a business type.',
-        'space_id'         => '1|number|exists=building_spaces.id|text=Please select a valid unit code',
-        'deposit'          => '1|number|text=Deposit is required',
-        'start_date'       => '1|date|text=Please enter a valid contract start date.',
-        'end_date'         => '1|date|text=Please enter a valid contract end date.',
-        'space_type_id'    => '1|number|exists=space_types.id',
-        'status_id'        => '1|number|default = 1',
-        'sqm_size'         => '0|number',
-        'price'            => '0|number',
-        'price_type'       => '0|string|default=sqm',
-        'deposit_remarks'  => '0|string|0-255',
-        'remarks'          => '0|string|0-255',
-    ];
-    $legal_name_char = ['@', ',', '.', '#'];
-    $res = DBX::validateObject($arr, $v_rule, 1, ['legal_name' => $legal_name_char], $ss->lang, 0, null);
-    if ($res->error) return DV::error($res->error);
-    $inputs = $res->values;
-
-    // Date rules only after required fields (tenant, business, unit, deposit, start, end) pass validation.
-    $start = !empty($inputs['start_date']) ? strtotime($inputs['start_date']) : false;
-    $end   = !empty($inputs['end_date']) ? strtotime($inputs['end_date']) : false;
-    if ($start === false) {
-        return DV::error('Please enter a valid contract start date.');
-    }
-    if ($end === false) {
-        return DV::error('Please enter a valid contract end date.');
-    }
-    if ($end <= $start) {
-        return DV::error('End date must be after start date.');
-    }
-    $todayStr = date('Y-m-d');
-    $endInput = $inputs['end_date'] ?? '';
-    if ($endInput !== '' && $endInput < $todayStr) {
         if ($id) {
-            $prevEnd = DB::table('contracts')->where('id', $id)->value('end_date');
-            $prevEndStr = $prevEnd ? date('Y-m-d', strtotime((string) $prevEnd)) : '';
-            if ($prevEndStr !== $endInput) {
+            return $this->updateContractAllowedFields($arr, $id, $ss);
+        }
+
+        $orderError = self::validateSaveContractFieldOrder($arr);
+        if ($orderError !== null) {
+            return $orderError;
+        }
+
+        $v_rule = [
+            'tenant_id'        => '1|number|exists=tenants.id|text=select_tenant',
+            'legal_name'       => '0|string|0-100',
+            'business_type_id' => '1|number|exists=business_types.id|text=Please select a business type.',
+            'space_id'         => '1|number|exists=building_spaces.id|text=Please select a valid unit code',
+            'deposit'          => '1|number|text=Deposit is required',
+            'start_date'       => '1|date|text=Please enter a valid contract start date.',
+            'end_date'         => '1|date|text=Please enter a valid contract end date.',
+            'space_type_id'    => '1|number|exists=space_types.id',
+            'status_id'        => '1|number|default = 1',
+            'sqm_size'         => '0|number',
+            'price'            => '0|number',
+            'price_type'       => '0|string|default=sqm',
+            'deposit_remarks'  => '0|string|0-255',
+            'remarks'          => '0|string|0-255',
+        ];
+        $legal_name_char = ['@', ',', '.', '#'];
+        $res = DBX::validateObject($arr, $v_rule, 1, ['legal_name' => $legal_name_char], $ss->lang, 0, null);
+        if ($res->error) return DV::error($res->error);
+        $inputs = $res->values;
+
+        // Date rules only after required fields (tenant, business, unit, deposit, start, end) pass validation.
+        $start = !empty($inputs['start_date']) ? strtotime($inputs['start_date']) : false;
+        $end   = !empty($inputs['end_date']) ? strtotime($inputs['end_date']) : false;
+        if ($start === false) {
+            return DV::error('Please enter a valid contract start date.');
+        }
+        if ($end === false) {
+            return DV::error('Please enter a valid contract end date.');
+        }
+        if ($end <= $start) {
+            return DV::error('End date must be after start date.');
+        }
+        $todayStr = date('Y-m-d');
+        $endInput = $inputs['end_date'] ?? '';
+        if ($endInput !== '' && $endInput < $todayStr) {
+            if ($id) {
+                $prevEnd = DB::table('contracts')->where('id', $id)->value('end_date');
+                $prevEndStr = $prevEnd ? date('Y-m-d', strtotime((string) $prevEnd)) : '';
+                if ($prevEndStr !== $endInput) {
+                    return DV::error('End date cannot be in the past.');
+                }
+            } else {
                 return DV::error('End date cannot be in the past.');
             }
-        } else {
-            return DV::error('End date cannot be in the past.');
         }
-    }
-    $minEnd = strtotime('-1 day', strtotime('+1 month', $start));
-    $startDay = date('d', $start);
-    $calcDay  = date('d', strtotime('+1 month', $start));
-    if ($startDay != $calcDay) {
-        $minEnd = strtotime('-1 day', strtotime(date('Y-m-t', strtotime('+1 month', $start))));
-    }
-    if ($end < $minEnd) {
-        return DV::error('Contract validity​​​ must be at least 1 month.');
-    }
-    $space_id  = $inputs['space_id'] ?? null;
-    $tenant_id = $inputs['tenant_id'] ?? null;
-    $bookingPhoneValidation = self::validateBookingTenantPhone($space_id, $tenant_id, true);
-    if (!($bookingPhoneValidation->status ?? false)) {
-        return DV::error($bookingPhoneValidation->message ?? 'Please create tenant before creating contract.');
-    }
-    $dup_id = self::checkDuplicateContract($space_id, $id);
-    if ($dup_id) {
-        return DV::error('This space already has a contract.');
-    }
-    $created = !$id;
-    if ($created && $space_id && !empty($inputs['start_date']) && !empty($inputs['end_date'])) {
-        $latestRenewal = DB::table('contract_renewals')
-            ->where('space_id', $space_id)
-            ->orderByDesc('start_date')
-            ->select('start_date', 'end_date')
-            ->first();
+        $minEnd = strtotime('-1 day', strtotime('+1 month', $start));
+        $startDay = date('d', $start);
+        $calcDay  = date('d', strtotime('+1 month', $start));
+        if ($startDay != $calcDay) {
+            $minEnd = strtotime('-1 day', strtotime(date('Y-m-t', strtotime('+1 month', $start))));
+        }
+        if ($end < $minEnd) {
+            return DV::error('Contract validity​​​ must be at least 1 month.');
+        }
+        $space_id  = $inputs['space_id'] ?? null;
+        $tenant_id = $inputs['tenant_id'] ?? null;
+        $bookingPhoneValidation = self::validateBookingTenantPhone($space_id, $tenant_id, true);
+        if (!($bookingPhoneValidation->status ?? false)) {
+            return DV::error($bookingPhoneValidation->message ?? 'Please create tenant before creating contract.');
+        }
+        $dup_id = self::checkDuplicateContract($space_id, $id);
+        if ($dup_id) {
+            return DV::error('This space already has a contract.');
+        }
+        $created = !$id;
+        if ($created && $space_id && !empty($inputs['start_date']) && !empty($inputs['end_date'])) {
+            $latestRenewal = DB::table('contract_renewals')
+                ->where('space_id', $space_id)
+                ->orderByDesc('start_date')
+                ->select('start_date', 'end_date')
+                ->first();
 
-        if (!empty($latestRenewal?->start_date)) {
-            $newStart = $inputs['start_date'];
-            $newEnd = $inputs['end_date'];
-            $renewStart = $latestRenewal->start_date;
-            $renewEnd = $latestRenewal->end_date ?: $latestRenewal->start_date;
-            $isOverlapRenewal = $newStart <= $renewEnd && $newEnd >= $renewStart;
+            if (!empty($latestRenewal?->start_date)) {
+                $newStart = $inputs['start_date'];
+                $newEnd = $inputs['end_date'];
+                $renewStart = $latestRenewal->start_date;
+                $renewEnd = $latestRenewal->end_date ?: $latestRenewal->start_date;
+                $isOverlapRenewal = $newStart <= $renewEnd && $newEnd >= $renewStart;
 
-            if ($newStart > $renewStart) {
-                return DV::error('Start date must be on or before the last renewal start.');
-            }
-            if ($isOverlapRenewal) {
-                return DV::error('Dates overlap the last renewal for this unit.');
+                if ($newStart > $renewStart) {
+                    return DV::error('Start date must be on or before the last renewal start.');
+                }
+                if ($isOverlapRenewal) {
+                    return DV::error('Dates overlap the last renewal for this unit.');
+                }
             }
         }
-    }
-    if ($created) {
-        $today = date('Y-m-d');
-        $isActiveNow = !empty($inputs['start_date']) && $inputs['start_date'] <= $today;
-        $inputs['status_id'] = $isActiveNow
-            ? self::getActiveStatusId()
-            : self::getPendingStatusId();
-    }
-    $id = DBX::saveData($ss, 'contracts', ['id' => $id], $inputs, [], 1);
-    if ($id) {
-        // Only Active contracts occupy the unit; Pending (future start) leaves space Available.
-        if ($space_id && (int) ($inputs['status_id'] ?? 0) === (int) self::getActiveStatusId()) {
-            self::syncBuildingSpaceOccupiedForSpaceIds([$space_id]);
+        if ($created) {
+            $today = date('Y-m-d');
+            $isActiveNow = !empty($inputs['start_date']) && $inputs['start_date'] <= $today;
+            $inputs['status_id'] = $isActiveNow
+                ? self::getActiveStatusId()
+                : self::getPendingStatusId();
         }
-        self::syncTenantStatusForTenantIds([$tenant_id]);
+        $id = DBX::saveData($ss, 'contracts', ['id' => $id], $inputs, [], 1);
+        if ($id) {
+            // Only Active contracts occupy the unit; Pending (future start) leaves space Available.
+            if ($space_id && (int) ($inputs['status_id'] ?? 0) === (int) self::getActiveStatusId()) {
+                self::syncBuildingSpaceOccupiedForSpaceIds([$space_id]);
+            }
+            self::syncTenantStatusForTenantIds([$tenant_id]);
 
-        self::autoSaveDeposit($id, $tenant_id, $inputs['deposit'], $inputs['start_date'], $inputs['remarks'] ?? null, $ss);
+            self::autoSaveDeposit($id, $tenant_id, $inputs['deposit'], $inputs['start_date'], $inputs['remarks'] ?? null, $ss);
+        }
+        if ($id > 0) {
+            return DV::depends(1, ['contracts' => $inputs, 'id' => $id]);
+        }
+        return DV::error($created ? 'Create failed.' : 'Update failed.');
     }
-    if ($id > 0) {
-        return DV::depends(1, ['contracts' => $inputs, 'id' => $id]);
-    }
-    return DV::error($created ? 'Create failed.' : 'Update failed.');
-}
 
 
     public static function getPendingStatusId()
@@ -355,7 +355,7 @@ class Contract
         }
         $startA = date('Y-m-d', strtotime($startA));
         $endA = date('Y-m-d', strtotime($endA));
-        $startB = date('Y-m-d', strtotime( $startB));
+        $startB = date('Y-m-d', strtotime($startB));
         $endB = date('Y-m-d', strtotime($endB));
 
         return $startA <= $endB && $endA >= $startB;
@@ -373,7 +373,7 @@ class Contract
         }
 
         $startDate = date('Y-m-d', strtotime($startDate));
-        $endDate = date('Y-m-d', strtotime( $endDate));
+        $endDate = date('Y-m-d', strtotime($endDate));
 
         return DB::table('contract_renewals as cr')
             ->join('building_spaces as bs', 'bs.id', '=', 'cr.space_id')
@@ -385,7 +385,7 @@ class Contract
             ->first();
     }
 
-//  Set building_spaces to Available when no Active/Pending contract remains on that space.
+    //  Set building_spaces to Available when no Active/Pending contract remains on that space.
     public static function syncBuildingSpaceAvailabilityForSpaceIds($spaceIds): void
     {
         $availableId = self::getSpaceAvailableStatusId();
@@ -667,22 +667,26 @@ class Contract
                             st.name as space_name
                             ')
             ->first();
-            if ($row) {
-                $renewalSpaceId = $latestRenewal->space_id ?? null;
-                if (!empty($renewalSpaceId) && $renewalSpaceId > 0) {
-                    $renewalSpaceCode = DB::table('building_spaces')
-                        ->where('id',  $renewalSpaceId)
-                        ->value('code');
-                    if (!empty($renewalSpaceCode)) {
-                        $row->space_id = $renewalSpaceId;
-                        $row->space_code = $renewalSpaceCode;
-                    }
+        if ($row) {
+            $renewalSpaceId = $latestRenewal->space_id ?? null;
+            if (!empty($renewalSpaceId) && $renewalSpaceId > 0) {
+                $renewalSpaceCode = DB::table('building_spaces')
+                    ->where('id',  $renewalSpaceId)
+                    ->value('code');
+                if (!empty($renewalSpaceCode)) {
+                    $row->space_id = $renewalSpaceId;
+                    $row->space_code = $renewalSpaceCode;
                 }
-                $endTs = strtotime($row->end_date);
-                $row->renew_start_date = date('Y-m-d', strtotime('+1 day', $endTs));
-                setOfficialDates($row, ['start_date', 'end_date','renew_start_date'], [], []);
-
             }
+            $endTs = strtotime($row->end_date);
+            $row->renew_start_date = date('Y-m-d', strtotime('+1 day', $endTs));
+            setOfficialDates($row, ['start_date', 'end_date', 'renew_start_date'], [], []);
+
+            $row->refund_details = DB::table('deposit_refunds')
+                ->where('contract_id', $id)
+                ->orderBy('id', 'desc')
+                ->first();
+        }
         return $row;
     }
 
@@ -691,14 +695,14 @@ class Contract
         $contract_details = $id ? self::contractDetails($id) : null;
         $current_space_id = $contract_details->space_id ?? $space_id;
         $normalizedIncludeIds = [];
-        foreach ( $include_space_ids as $sid) {
+        foreach ($include_space_ids as $sid) {
             $sid = $sid;
             if ($sid > 0) {
                 $normalizedIncludeIds[$sid] = true;
             }
         }
         if (!empty($current_space_id)) {
-            $normalizedIncludeIds[ $current_space_id] = true;
+            $normalizedIncludeIds[$current_space_id] = true;
         }
         if ($restrict_to_include_spaces && !empty($normalizedIncludeIds)) {
             $building_spaces = GeneralSettings::options_building_space_rows_by_ids(array_keys($normalizedIncludeIds));
@@ -741,9 +745,9 @@ class Contract
 
         $sid = $contract->status_id;
         $canDelete = in_array($sid, [
-             self::getPendingStatusId(),
-             self::getExpiredStatusId(),
-             self::getTerminatedStatusId(),
+            self::getPendingStatusId(),
+            self::getExpiredStatusId(),
+            self::getTerminatedStatusId(),
         ], true);
         if (!$canDelete) {
             return DV::error('Only pending, expired, or terminated contracts can be deleted.');
@@ -928,7 +932,7 @@ class Contract
     /**
      * Set contract status to Terminated (only when Active). Frees the building space and updates tenant status.
      */
-    public function terminateContract($id, $ss = null)
+    public function terminateContract($id, $ss = null, $data = [])
     {
         $terminatedStatusId = self::getTerminatedStatusId();
         $activeStatusId = self::getActiveStatusId();
@@ -962,6 +966,31 @@ class Contract
                 self::syncTenantStatusForTenantIds([$tenant_id]);
             }
 
+            // Parse and validate refund details
+            $depositAmount = isset($data['deposit_amount']) ? floatval($data['deposit_amount']) : 0;
+            $deductAmount = isset($data['deduct_amount']) ? floatval($data['deduct_amount']) : 0;
+            $refundAmount = isset($data['refund_amount']) ? floatval($data['refund_amount']) : ($depositAmount - $deductAmount);
+            if ($refundAmount < 0) {
+                $refundAmount = 0;
+            }
+            $remarks = $data['remarks'] ?? null;
+
+            if ($deductAmount > $depositAmount) {
+                DB::rollBack();
+                return DV::error('Deduction cannot exceed deposit amount.');
+            }
+
+            // Save deposit refund details
+            DB::table('deposit_refunds')->insert([
+                'contract_id' => $id,
+                'deposit_amount' => $depositAmount,
+                'deduct_amount' => $deductAmount,
+                'refund_amount' => $refundAmount,
+                'remarks' => $remarks,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
             // Update associated deposits to Terminated status
             $terminatedDepositStatusId = DB::table('deposit_statuses')
                 ->where(function ($q) {
@@ -991,7 +1020,7 @@ class Contract
             return DV::depends(1, ['id' => $id]);
         } catch (\Throwable $e) {
             DB::rollBack();
-            return DV::error('Failed to terminate contract.');
+            return DV::error('Failed to terminate contract: ' . $e->getMessage());
         }
     }
     public function renewContract($arr = [], $id = null, $ss = null)
@@ -1069,10 +1098,10 @@ class Contract
                 . ($unitCode !== '' ? $unitCode : 'this unit')
                 . '.';
             $conflictStart = $overlapRenewal->start_date
-                ? date('d-M-Y', strtotime( $overlapRenewal->start_date))
+                ? date('d-M-Y', strtotime($overlapRenewal->start_date))
                 : '';
             $conflictEnd = $overlapRenewal->end_date
-                ? date('d-M-Y', strtotime( $overlapRenewal->end_date))
+                ? date('d-M-Y', strtotime($overlapRenewal->end_date))
                 : $conflictStart;
             if ($conflictStart !== '' && $conflictEnd !== '') {
                 $msg .= ' (' . $conflictStart . ' – ' . $conflictEnd . ')';
@@ -1294,9 +1323,9 @@ class Contract
         $id = $d->id;
         $tenant_address = $d->address ?? null;
         $tenant = DB::table('tenants as t')
-            ->join('contracts as c','c.tenant_id','=','t.id')
-            ->join('building_spaces as bs','bs.id','=','c.space_id')
-            ->join('buildings as b','b.id','=','bs.building_id')
+            ->join('contracts as c', 'c.tenant_id', '=', 't.id')
+            ->join('building_spaces as bs', 'bs.id', '=', 'c.space_id')
+            ->join('buildings as b', 'b.id', '=', 'bs.building_id')
             ->where('t.id', $id)
             ->selectRaw("t.id,t.branch_id,t.name,t.name_kh,t.code,t.national_id,t.passport_number,t.date_of_birth,t.nationality_id,t.sex,t.tenant_type,t.status_id,t.legal_name,t.phone_number,t.email,t.address,c.start_date,c.end_date,bs.code as unit_code,bs.floor_id,b.name as building,c.sqm_size,c.price,c.price_type,c.deposit")
             ->first();
@@ -1348,7 +1377,7 @@ class Contract
             ? $tenant->sqm_size * $tenant->price
             : $tenant->price;
         $deposit = $tenant->deposit;
-        
+
 
         $price_text = number_format($monthly_price, 2);
 
@@ -1368,7 +1397,7 @@ class Contract
             'tenant_name' => $tenant_name,
             'tenant_code' => $tenant->code ?? '(ID)',
             'tenant_sex' => self::getSex($tenant_sex),
-            
+
 
             'tenant_phone' => $tenant_phone,
             'tenant_nid' => $tenant_nid,
@@ -1385,8 +1414,8 @@ class Contract
             // 'salary_level' => $emp_salary,
             // 'khr_amount' => $emp_salary,
             // 'khr_amount_in_word' => self::convertToKhmerWords($emp_salary),
-            'monthly_price' => '$' .$monthly_price,
-            'deposit' => '$' .$deposit,
+            'monthly_price' => '$' . $monthly_price,
+            'deposit' => '$' . $deposit,
             'deposit_in_word' => self::convertToKhmerWords($deposit) . 'ដុល្លារសហរដ្ឋអាមេរិក',
             'monthly_in_word' => self::convertToKhmerWords($monthly_price) . 'ដុល្លារសហរដ្ឋអាមេរិក',
             'tenant_address' => $tenant_address,
@@ -1433,10 +1462,11 @@ class Contract
         unlink($tempFile);
         exit;
     }
-     static function getSex($sex){
-       if($sex ==='M') return 'ប្រុស';
-       else if ($sex ==='F') return 'ស្រី';
-       else 'មិនប្រាប់';
+    static function getSex($sex)
+    {
+        if ($sex === 'M') return 'ប្រុស';
+        else if ($sex === 'F') return 'ស្រី';
+        else 'មិនប្រាប់';
     }
     static function calculateEndDate($startDate)
     {
@@ -1445,12 +1475,19 @@ class Contract
         }
         return Carbon::parse($startDate)->addMonths(3)->format('Y-m-d');
     }
-   public static function convertToKhmerWords($number)
+    public static function convertToKhmerWords($number)
     {
         $ones = [
-            '', 'មួយ', 'ពីរ', 'បី', 'បួន',
-            'ប្រាំ', 'ប្រាំមួយ', 'ប្រាំពីរ',
-            'ប្រាំបី', 'ប្រាំបួន'
+            '',
+            'មួយ',
+            'ពីរ',
+            'បី',
+            'បួន',
+            'ប្រាំ',
+            'ប្រាំមួយ',
+            'ប្រាំពីរ',
+            'ប្រាំបី',
+            'ប្រាំបួន'
         ];
 
         if ($number == 0) {
@@ -1515,9 +1552,16 @@ class Contract
     private static function convertToKhmerWordsBelow1000($number)
     {
         $ones = [
-            '', 'មួយ', 'ពីរ', 'បី', 'បួន',
-            'ប្រាំ', 'ប្រាំមួយ', 'ប្រាំពីរ',
-            'ប្រាំបី', 'ប្រាំបួន'
+            '',
+            'មួយ',
+            'ពីរ',
+            'បី',
+            'បួន',
+            'ប្រាំ',
+            'ប្រាំមួយ',
+            'ប្រាំពីរ',
+            'ប្រាំបី',
+            'ប្រាំបួន'
         ];
 
         $result = '';
@@ -1561,19 +1605,52 @@ class Contract
 
         // Lunar days (simplified mapping example)
         $lunarDays = [
-            1 => '១កើត', 2 => '២កើត', 3 => '៣កើត', 4 => '៤កើត', 5 => '៥កើត',
-            6 => '៦កើត', 7 => '៧កើត', 8 => '៨កើត', 9 => '៩កើត', 10 => '១០កើត',
-            11 => '១១កើត', 12 => '១២កើត', 13 => '១៣កើត', 14 => '១៤កើត', 15 => '១៥កើត',
-            16 => '១រោច', 17 => '២រោច', 18 => '៣រោច', 19 => '៤រោច', 20 => '៥រោច',
-            21 => '៦រោច', 22 => '៧រោច', 23 => '៨រោច', 24 => '៩រោច', 25 => '១០រោច',
-            26 => '១១រោច', 27 => '១២រោច', 28 => '១៣រោច', 29 => '១៤រោច', 30 => '១៥រោច',
+            1 => '១កើត',
+            2 => '២កើត',
+            3 => '៣កើត',
+            4 => '៤កើត',
+            5 => '៥កើត',
+            6 => '៦កើត',
+            7 => '៧កើត',
+            8 => '៨កើត',
+            9 => '៩កើត',
+            10 => '១០កើត',
+            11 => '១១កើត',
+            12 => '១២កើត',
+            13 => '១៣កើត',
+            14 => '១៤កើត',
+            15 => '១៥កើត',
+            16 => '១រោច',
+            17 => '២រោច',
+            18 => '៣រោច',
+            19 => '៤រោច',
+            20 => '៥រោច',
+            21 => '៦រោច',
+            22 => '៧រោច',
+            23 => '៨រោច',
+            24 => '៩រោច',
+            25 => '១០រោច',
+            26 => '១១រោច',
+            27 => '១២រោច',
+            28 => '១៣រោច',
+            29 => '១៤រោច',
+            30 => '១៥រោច',
         ];
 
         // Khmer months (example)
         $months = [
-            1 => 'មករា', 2 => 'កុម្ភៈ', 3 => 'មិនា', 4 => 'មេសា',
-            5 => 'ឧសភា', 6 => 'មិថុនា', 7 => 'កក្កដា', 8 => 'សីហា',
-            9 => 'កញ្ញា', 10 => 'តុលា', 11 => 'វិច្ឆិកា', 12 => 'ធ្នូ',
+            1 => 'មករា',
+            2 => 'កុម្ភៈ',
+            3 => 'មិនា',
+            4 => 'មេសា',
+            5 => 'ឧសភា',
+            6 => 'មិថុនា',
+            7 => 'កក្កដា',
+            8 => 'សីហា',
+            9 => 'កញ្ញា',
+            10 => 'តុលា',
+            11 => 'វិច្ឆិកា',
+            12 => 'ធ្នូ',
         ];
 
         // Zodiac years (cycle example)
@@ -1609,7 +1686,7 @@ class Contract
     }
     public static function toKhmerNumber($number)
     {
-        $map = ['0'=>'០','1'=>'១','2'=>'២','3'=>'៣','4'=>'៤','5'=>'៥','6'=>'៦','7'=>'៧','8'=>'៨','9'=>'៩'];
+        $map = ['0' => '០', '1' => '១', '2' => '២', '3' => '៣', '4' => '៤', '5' => '៥', '6' => '៦', '7' => '៧', '8' => '៨', '9' => '៩'];
 
         return strtr($number, $map);
     }
@@ -1627,14 +1704,11 @@ class Contract
         ];
 
         if (!$existing) {
-            $saveData['status_id']   = 1; 
+            $saveData['status_id']   = 1;
             $saveData['paid_amount'] = 0.00;
         }
 
         $where = $existing ? ['id' => $existing->id] : [];
         DBX::saveData($ss, 'deposits', $where, $saveData, [], 1);
     }
-
-
-   
 }
