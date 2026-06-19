@@ -854,8 +854,6 @@ var DashboardComponent =  (() =>{
     };
 
     mThis.renderDashboard = function (data) {
-        console.log(456,data);
-        
         const div = mThis.self;
         if (!div) {
             console.error("Dashboard root element was not found.");
@@ -986,8 +984,6 @@ var DashboardComponent =  (() =>{
         });
     };
     mThis.renderHero = function (data) {
-        console.log(45,data);
-        
         return `
             <section class="md-hero">
                 <div class="md-hero-inner">
