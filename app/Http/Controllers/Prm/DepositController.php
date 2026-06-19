@@ -82,6 +82,20 @@ class DepositController extends Controller
         return JDV::raw($this->deposits->updateDepositStatus($req->status_id, $id, $ss));
     }
 
+    public function updateRefundStatus(Request $req)
+    {
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        $contract_id = $req->contract_id ?? null;
+        $status = $req->status ?? null;
+        if (!$contract_id || !$status) {
+            return JDV::error('Missing parameters');
+        }
+        return JDV::raw($this->deposits->updateRefundStatus($contract_id, $status, $ss));
+    }
+
     /*
     public function uploadDepositAttachment(Request $req)
     {
