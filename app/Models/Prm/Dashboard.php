@@ -14,12 +14,89 @@ class Dashboard extends VSModel
         $this->userInfo = $userInfo;
     }
 
-    public static function summarizeDashboardCards($building_id, $ss)
+    public static function getDataDashboard($arr, $ss=null){
+       $ss =$ss ?? $ss->userInfo;
+       $d = (object)$arr;
+       $building_id = (int)($d->building_id ?? 1);
+       $card_top = self::summarizeDashboardCardTop($arr,$ss);
+       $cards = self::summarizeDashboardCards($arr,$ss);
+       $activities = self::getActivities($building_id,$ss);
+       $lease_expiry = self::getLeaseExpiry($building_id,$ss);
+
+       return (object)[
+        'card_top'=>$card_top,
+        'cards'=>$cards,
+        'activities'=>$activities,
+        'lease_expiry'=>$lease_expiry,
+        'occupancy_by_floor'=>self::getOccupancyByFloor($building_id,$ss),
+        'revenue_trend'=>self::getRevenueTrend($building_id,6),
+        'invoice_status'=>self::getInvoiceStatus($building_id,$ss),
+        'revenue_breakdown'=>self::getRevenueBreakdown($building_id,$ss),
+        'collection_kpis'=>self::getCollectionKPIs($building_id,$ss),
+       ];
+    }
+
+    public static function summarizeDashboardCardTop($arr, $ss)
     {
         $subs_id = $ss->subs_id;
         $bin_subs_id = hex2bin($subs_id);
-        \Log::info($building_id);
-        $building_id = (int)($building_id ?? 1);
+        $d = (object)$arr;
+        $building_id = (int)($d->building_id ?? 1);
+        
+        $result = new \stdClass();
+        $today = Carbon::today();
+        $currentMonth = $today->month;
+        $currentYear = $today->year;
+        $totalSpaces = DB::table('building_spaces')
+            ->where('building_id', $building_id)
+            ->count();
+
+        $occupiedSpaces = DB::table('building_spaces')
+            ->where('building_id', $building_id)
+            ->where('status_id', 3)
+            ->count();
+
+        $avgLeaseMonths = DB::table('contracts')
+            // ->where('building_id', $building_id)
+            ->whereNotNull('start_date')
+            ->whereNotNull('end_date')
+            ->selectRaw('AVG(TIMESTAMPDIFF(MONTH, start_date, end_date)) as avg_months')
+            ->value('avg_months');
+
+        $avgLeaseMonths = $avgLeaseMonths ? round($avgLeaseMonths) : 0;
+     
+        $occupancyRate = $totalSpaces > 0
+            ? round(($occupiedSpaces / $totalSpaces) * 100)
+            : 0;
+
+          
+        $monthlyRevenue = DB::table('invoices')
+            ->whereMonth('issue_date', $currentMonth)
+            ->whereYear('issue_date', $currentYear)
+            ->sum('paid_amount');
+
+        $outstandingAmount = DB::table('invoices')
+            ->where('payment_status_id', 0)
+            ->sum('due_amount');
+
+        $collectionRate = ($monthlyRevenue + $outstandingAmount) > 0
+            ? round(($monthlyRevenue / ($monthlyRevenue + $outstandingAmount)) * 100)
+            : 0;
+        $period = $today->format('F Y');
+        return (object)[
+            'period' => $period,
+            'occupancy_rate' => $occupancyRate,
+            'monthly_revenue' => round($monthlyRevenue, 2),
+            'collection_rate' => $collectionRate
+        ];
+       
+    }
+    public static function summarizeDashboardCards($arr, $ss)
+    {
+        $subs_id = $ss->subs_id;
+        $bin_subs_id = hex2bin($subs_id);
+        $d = (object)$arr;
+        $building_id = (int)($d->building_id ?? 1);
         
         $result = new \stdClass();
         $today = Carbon::today();
@@ -219,7 +296,7 @@ class Dashboard extends VSModel
     $result->invoice_status = self::getInvoiceStatus($building_id,$ss);
     $result->revenue_breakdown = self::getRevenueBreakdown($building_id,$ss);
 
-    $result->collection_kpis = self::getCollectionKPIs($building_id);
+    $result->collection_kpis = self::getCollectionKPIs($building_id,$ss);
 
     return $result;
 }
@@ -367,7 +444,7 @@ public static function getInvoiceStatus($building_id, $ss)
         ]
     ];
 }
-public static function getCollectionKPIs($building_id)
+public static function getCollectionKPIs($building_id,$ss)
 {
     $rentTotal = DB::table('invoices as i')
         ->join('building_spaces as bs', 'bs.id', '=', 'i.space_id')

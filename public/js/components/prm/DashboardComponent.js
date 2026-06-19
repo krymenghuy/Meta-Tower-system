@@ -2,9 +2,7 @@
 
 var DashboardComponent =  (() =>{
     const mThis = {};
-
     const STYLE_ID = "meta-tower-dashboard-style-v2";
-
     const COLORS = {
         primary: "#1A1647",
         primary2: "#2E2A72",
@@ -19,7 +17,6 @@ var DashboardComponent =  (() =>{
         bg: "#F7F8FC",
         text: "#0F172A"
     };
-
     const ALERT_MAP = {
         danger: {
             color: COLORS.danger,
@@ -794,17 +791,10 @@ var DashboardComponent =  (() =>{
 
     mThis.init = function () {
         if (mThis.state.initialized) return;
-        mThis.initFilterForm();
-
         mThis.state.initialized = true;
-
         mThis.injectStyles();
         mThis.bindResize();
-        
-
     };
-   
-
     mThis.injectStyles = function () {
         if (mThis.state.stylesInjected) return;
 
@@ -819,7 +809,6 @@ var DashboardComponent =  (() =>{
 
         document.head.appendChild(style);
     };
-
     mThis.bindResize = function () {
         if (mThis.state.resizeBound) return;
 
@@ -829,7 +818,6 @@ var DashboardComponent =  (() =>{
             passive: true
         });
     };
-
     mThis.updateHeight = function () {
         if (!mThis.self) return;
 
@@ -839,7 +827,6 @@ var DashboardComponent =  (() =>{
             overflowX: "hidden"
         });
     };
-
     mThis.escapeHtml = function (value) {
         return String(value ?? "")
             .replace(/&/g, "&amp;")
@@ -848,19 +835,15 @@ var DashboardComponent =  (() =>{
             .replace(/"/g, "&quot;")
             .replace(/'/g, "&#039;");
     };
-
     mThis.money = function (value) {
         return "$" + Number(value || 0).toLocaleString();
     };
-
     mThis.percent = function (value) {
         return `${Number(value || 0)}%`;
     };
-
     mThis.getAlertStyle = function (level) {
         return ALERT_MAP[level] || ALERT_MAP.info;
     };
-
     mThis.getStatusStyle = function (level) {
         const item = mThis.getAlertStyle(level);
 
@@ -871,22 +854,21 @@ var DashboardComponent =  (() =>{
     };
 
     mThis.renderDashboard = function (data) {
-        if (!mThis.self) {
+        console.log(456,data);
+        
+        const div = mThis.self;
+        if (!div) {
             console.error("Dashboard root element was not found.");
             return;
         }
-      
-        mThis.self.innerHTML = `
-            <div class="meta-dashboard">
-                ${mThis.renderHero(data)}
-
-                ${mThis.renderMiniStats(data.mini_stats)}
-
-                <div class="row g-3">
-                    ${mThis.renderKpis(data.kpis)}
-                </div>
-
-                <div class="row g-3 mt-1">
+        const html = [
+            `<div class="meta-dashboard">`,
+                mThis.renderHero(data.card_top),
+                mThis.renderMiniStats(data.cards),
+                `<div class="row g-3">
+                    ${mThis.renderKpis(data.cards.kpis)}
+                </div>`,
+                `<div class="row g-3 mt-1">
                     <div class="col-12 col-xl-6">
                         ${mThis.renderChartCard({
                             title: "Occupancy by Floor",
@@ -899,18 +881,18 @@ var DashboardComponent =  (() =>{
                     <div class="col-12 col-xl-6">
                         ${mThis.renderChartCard({
                             title: "Revenue Trend",
-                            subtitle: "Rent, electricity, and service fee revenue",
+                            subtitle: "Rent, Electricity, Service Fee Revenue",
                             pill: "Monthly",
                             canvasId: "chartRevenue"
                         })}
                     </div>
-                </div>
+                </div>`,
 
-                <div class="row g-3 mt-1">
+                `<div class="row g-3 mt-1">
                     <div class="col-12 col-xl-6">
                         ${mThis.renderChartCard({
                             title: "Invoice Status",
-                            subtitle: "Paid, pending, and overdue invoice distribution",
+                            subtitle: "Paid, Pending, Partially Paid and Overdue",
                             pill: "Billing",
                             canvasId: "chartInvoiceStatus"
                         })}
@@ -919,29 +901,29 @@ var DashboardComponent =  (() =>{
                     <div class="col-12 col-xl-6">
                         ${mThis.renderChartCard({
                             title: "Revenue Breakdown",
-                            subtitle: "Contribution by rental and utility streams",
+                            subtitle: "Contribution by Rental and Utility Streams",
                             pill: "Revenue Mix",
                             canvasId: "chartRevenueBreakdown"
                         })}
                     </div>
-                </div>
+                </div>`,
 
-                <div class="row g-3 mt-1">
+                `<div class="row g-3 mt-1">
                     <div class="col-12 col-xl-6">
-                        ${mThis.renderCollectionPerformance(data.collection_kpis)}
+                        ${mThis.renderCollectionPerformance(data)}
                     </div>
 
                     <div class="col-12 col-xl-6">
                         ${mThis.renderInsightList({
                             title: "Executive Insights",
-                            subtitle: "Management-level interpretation of current performance",
+                            subtitle: "Management-level Interpretation of Current Performance",
                             pill: "AI Style",
-                            items: data.insights
+                            items: data.activities.insights
                         })}
                     </div>
-                </div>
+                </div>`,
 
-                <div class="row g-3 mt-1 pb-3">
+                `<div class="row g-3 mt-1 pb-3">
                     <div class="col-12 col-xl-6">
                         ${mThis.renderTimeline(data.activities)}
                     </div>
@@ -949,91 +931,76 @@ var DashboardComponent =  (() =>{
                     <div class="col-12 col-xl-6">
                         ${mThis.renderLeaseExpiry(data.lease_expiry)}
                     </div>
-                </div>
-            </div>
-        `;
-
+                </div>`, 
+            `</div>`
+        ].join("");
+        div.innerHTML = html;
         mThis.state.rendered = true;
-
         mThis.updateHeight();
+        mThis.lnkFilterButton = div.querySelector('.js-dashboard-filter');
+        mThis.initFilterForm();
         mThis.initCharts(data);
     };
-    mThis.initFilterForm = ()=>{
-         if (mThis.filterConfig) return;
-        mThis.lnkFilterButton = document.querySelector("#_db_filter_prm_data");
-        console.log(990,mThis.lnkFilterButton);
-        
-        mThis.filterConfig = mThis.filterConfig || new FilterPanel({
-            cssClass:null,
+    mThis.initFilterForm = () => {
+        if (mThis.filterConfig) {
+            mThis.filterConfig.destroy?.();
+            mThis.filterConfig = null;
+        }
+        mThis.filterConfig = new FilterPanel({
             triggerButton: mThis.lnkFilterButton,
-            fields:[
+            cssClass: null,
+            fields: [
                 {
-                    "firstOption":{value:'',label:'(All Period)'},
-                    "name":"period",
-                    "label":"Period",
-                    "valueField":"department_id",
-                    "textField":"academic_year",
-                    "data":"academic_years",
+                    firstOption: { value: '', label: '(All Period)' },
+                    name: "period",
+                    label: "Period",
+                    valueField: "value",
+                    textField: "label",
+                    data: "period"
                 },
                 {
-                    "firstOption":{value:'',label:'(All Building)'},
-                    "name":"building_id",
-                    "label":"Building",
-                    "valueField":"id",
-                    "textField":"building",
-                    "data":"buildings",
-
-                },
-                
+                    firstOption: { value: '', label: '(All Building)' },
+                    name: "building_id",
+                    label: "Building",
+                    valueField: "id",
+                    textField: "building",
+                    data: "buildings"
+                }
             ],
-            onShow: (me, apiData) => {
-                vsapi.call(`${main_view.base_url}/prm/dashboard/filter-options`, {}, null, { loader: false }).then(res => {
-                    if (res.status_code === 200) {
+
+            onShow: (me) => {
+                vsapi.call(`${main_view.base_url}/prm/dashboard/filter-options`, {}, null, { loader: false })
+                    .then(res => {
+                        if (res.status_code !== 200) return;
                         const d = res.data;
-                        VSUtil.setComboItems(me.controls.period, d.period, 'value', 'label',null,null,null);
+                        VSUtil.setComboItems(me.controls.period, d.period, 'value', 'label', '', '', null);
                         VSUtil.setComboItems(me.controls.building_id, d.buildings, 'id', 'building', '', 'All Building', null);
-                    } 
-                });
-
-                // me.controls.department_id.addEventListener("change", (e) => {
-                //     e.preventDefault();
-
-                //     vsapi.call(`${main_view.base_url}/api/settings/options-program`, {
-                //     department_id: e.target.value
-                //     }, null, { loader: false }).then(res => {
-
-                //     if (res.status_code === 200) {
-                //         const programs = res.data;
-                //         VSUtil.setComboItems(me.controls.program_id, programs, 'id', 'program_name', '', 'All Program', null);
-                //     } else {
-                //         cv_interact.error("Failed to load program.");
-                //     }
-                //     });
-                // });
+                    });
             },
-
-            onSelect:(me, data)=>{
-            //    console.log(89,data);
-               
-               mThis.currentFilterProps = {
-                    building_id: data.building_id || null,
-                    period: data.period || null
-                };
-
-                mThis.loadDashboard(mThis.currentFilterProps);
-            },
+            onSelect: (me, data) => {
+                mThis.db_filter = data;
+                mThis.loadDashBoardData(mThis.db_filter, (d) => {
+                            // mThis.renderDashboard(d);
+                        });
+            }
         });
     };
     mThis.renderHero = function (data) {
-        const h = mThis.escapeHtml;
-        const summary = data.summary;
-
+        console.log(45,data);
+        
         return `
             <section class="md-hero">
                 <div class="md-hero-inner">
                     <div>
                         <div class="md-hero-eyebrow">
-                           <span>Executive Review · ${h(data.period)}</span><i class="fa-solid fa-filter ps-2 fs-6 ms-auto cursor-pointer" id="_db_filter_prm_data"></i>
+                           <span>Executive Review · ${data.period}</span>
+                           <a href="javascript:void(0)"
+                                class="btn-filter-summery-db js-dashboard-filter">
+                                <img
+                                    class="ms-2 svg-white"
+                                    style="height:16px;"
+                                    src="${main_view.base_url}/assets/images/icons/filter-circle.svg">
+                            </a>
                         </div>
 
                         <h1 class="md-hero-title">
@@ -1049,7 +1016,7 @@ var DashboardComponent =  (() =>{
                     <div class="md-hero-stats">
                         <div class="md-hero-stat">
                             <div class="md-hero-stat-value">
-                                ${h(summary.occupancy_rate)}%
+                                ${data.occupancy_rate}%
                             </div>
                             <div class="md-hero-stat-label">
                                 Occupancy
@@ -1058,7 +1025,7 @@ var DashboardComponent =  (() =>{
 
                         <div class="md-hero-stat">
                             <div class="md-hero-stat-value">
-                                ${mThis.money(summary.monthly_revenue)}
+                                ${mThis.money(data.monthly_revenue)}
                             </div>
                             <div class="md-hero-stat-label">
                                 Monthly Revenue
@@ -1067,7 +1034,7 @@ var DashboardComponent =  (() =>{
 
                         <div class="md-hero-stat">
                             <div class="md-hero-stat-value">
-                                ${h(summary.collection_rate)}%
+                                ${data.collection_rate}%
                             </div>
                             <div class="md-hero-stat-label">
                                 Collection Rate
@@ -1077,17 +1044,17 @@ var DashboardComponent =  (() =>{
                 </div>
             </section>
         `;
+
     };
 
-    mThis.renderMiniStats = function (items) {
-        const h = mThis.escapeHtml;
-
+    mThis.renderMiniStats = function (data) {
+        const items = data.mini_stats;
         return `
             <div class="md-mini-grid">
                 ${items.map(item => `
                     <div class="md-mini-stat">
-                        <div class="md-mini-value">${h(item.value)}</div>
-                        <div class="md-mini-label">${h(item.label)}</div>
+                        <div class="md-mini-value">${item.value}</div>
+                        <div class="md-mini-label">${item.label}</div>
                     </div>
                 `).join("")}
             </div>
@@ -1095,8 +1062,6 @@ var DashboardComponent =  (() =>{
     };
 
     mThis.renderKpis = function (items) {
-        const h = mThis.escapeHtml;
-
         return items.map(item => `
             <div class="col-12 col-md-6 col-xl-3">
                 <article
@@ -1105,13 +1070,13 @@ var DashboardComponent =  (() =>{
                 >
                     <div class="md-kpi-top">
                         <div>
-                            <div class="md-kpi-title">${h(item.title)}</div>
-                            <div class="md-kpi-value">${h(item.value)}</div>
-                            <div class="md-kpi-note">${h(item.note)}</div>
-                            <div class="md-kpi-trend">${h(item.trend)}</div>
+                            <div class="md-kpi-title">${item.title}</div>
+                            <div class="md-kpi-value">${item.value}</div>
+                            <div class="md-kpi-note">${item.note}</div>
+                            <div class="md-kpi-trend">${item.trend}</div>
                         </div>
 
-                        <div class="md-kpi-icon">${h(item.icon)}</div>
+                        <div class="md-kpi-icon">${item.icon}</div>
                     </div>
                 </article>
             </div>
@@ -1139,9 +1104,10 @@ var DashboardComponent =  (() =>{
         `;
     };
 
-    mThis.renderCollectionPerformance = function (items) {
+    mThis.renderCollectionPerformance = function (data) {
+        
         const h = mThis.escapeHtml;
-
+        const items = data.collection_kpis;
         return `
             <section class="md-card md-section-card">
                 <div class="md-section-header">
@@ -1182,7 +1148,6 @@ var DashboardComponent =  (() =>{
 
     mThis.renderInsightList = function (config) {
         const h = mThis.escapeHtml;
-
         return `
             <section class="md-card md-section-card">
                 <div class="md-section-header">
@@ -1217,9 +1182,9 @@ var DashboardComponent =  (() =>{
         `;
     };
 
-    mThis.renderTimeline = function (items) {
+    mThis.renderTimeline = function (data) {
         const h = mThis.escapeHtml;
-
+        const items = data.activities;
         return `
             <section class="md-card md-section-card">
                 <div class="md-section-header">
@@ -1245,9 +1210,9 @@ var DashboardComponent =  (() =>{
         `;
     };
 
-    mThis.renderLeaseExpiry = function (rows) {
+    mThis.renderLeaseExpiry = function (data) {
         const h = mThis.escapeHtml;
-
+        const rows = data.lease_expiry;
         return `
             <section class="md-card md-section-card">
                 <div class="md-section-header">
@@ -1313,111 +1278,113 @@ var DashboardComponent =  (() =>{
         });
     };
 
-mThis.initCharts = function (data) {
-
-    mThis.destroyCharts();
-
-    mThis.createOccupancyChart(data.occupancy_by_floor || []);
-    mThis.createRevenueChart(data.revenue_trend || {});
-    mThis.createInvoiceStatusChart(data.invoice_status || {});
-    mThis.createRevenueBreakdownChart(data.revenue_breakdown || {});
-};
+    mThis.initCharts = function (data) {
 
 
-mThis.chartOptions = function () {
-    return {
-        responsive: true,
-        maintainAspectRatio: false,
-        resizeDelay: 120,
-        plugins: {
-            legend: {
-                position: "bottom",
-                labels: {
-                    usePointStyle: true,
-                    boxWidth: 8,
-                    padding: 18,
-                    color: COLORS.muted,
-                    font: {
-                        size: 12,
-                        weight: "700"
-                    }
-                }
-            }
-        }
+
+        mThis.destroyCharts();
+
+        mThis.createOccupancyChart(data.occupancy_by_floor || []);
+        mThis.createRevenueChart(data.revenue_trend || {});
+        mThis.createInvoiceStatusChart(data.invoice_status || {});
+        mThis.createRevenueBreakdownChart(data.revenue_breakdown || {});
     };
-};
 
-   mThis.createOccupancyChart = function (data) {
 
-    const canvas = document.getElementById("chartOccupancy");
-    if (!canvas) return;
-
-    const rows = (data || []).map(r => ({
-        floor: r.floor,
-        occupied: Number(r.occupied || 0),
-        available: Number(r.available || 0),
-        booked: Number(r.booked || 0)
-    }));
-
-    mThis.charts.occupancy = new Chart(canvas, {
-        type: "bar",
-        data: {
-            labels: rows.map(r => r.floor),
-            datasets: [
-                {
-                    label: "Occupied",
-                    data: rows.map(r => r.occupied),
-                    backgroundColor: "rgb(48 45 89)",
-                    borderRadius: 8,
-                    categoryPercentage: 0.5,
-                    barPercentage: 0.7
-                    
-                },
-                {
-                    label: "Booked",
-                    data: rows.map(r => r.booked),
-                    backgroundColor: "rgb(85 120 214)",
-                    borderRadius: 8,
-                    categoryPercentage: 0.5,
-                    barPercentage: 0.7
-                },
-                {
-                    label: "Available",
-                    data: rows.map(r => r.available),
-                    backgroundColor: "rgb(10 187 135)",
-                    borderRadius: 8,
-                    categoryPercentage: 0.5,
-                    barPercentage: 0.7
-                }
-            ]
-        },
-        options: {
-            ...mThis.chartOptions(),
+    mThis.chartOptions = function () {
+        return {
             responsive: true,
-            scales: {
-                x: {
-                    stacked: true,
-                    grid: { display: false }
-                },
-                y: {
-                    stacked: true,
-                    max: 100,
-                    beginAtZero: true,
-                    ticks: {
-                        callback: value => value + "%"
-                    }
-                }
-            },
+            maintainAspectRatio: false,
+            resizeDelay: 120,
             plugins: {
-                tooltip: {
-                    callbacks: {
-                        label: ctx => `${ctx.dataset.label}: ${ctx.raw}`
+                legend: {
+                    position: "bottom",
+                    labels: {
+                        usePointStyle: true,
+                        boxWidth: 8,
+                        padding: 18,
+                        color: COLORS.muted,
+                        font: {
+                            size: 12,
+                            weight: "700"
+                        }
                     }
                 }
             }
-        }
-    });
-};
+        };
+    };
+
+    mThis.createOccupancyChart = function (data) {
+
+        const canvas = document.getElementById("chartOccupancy");
+        if (!canvas) return;
+
+        const rows = (data || []).map(r => ({
+            floor: r.floor,
+            occupied: Number(r.occupied || 0),
+            available: Number(r.available || 0),
+            booked: Number(r.booked || 0)
+        }));
+
+        mThis.charts.occupancy = new Chart(canvas, {
+            type: "bar",
+            data: {
+                labels: rows.map(r => r.floor),
+                datasets: [
+                    {
+                        label: "Occupied",
+                        data: rows.map(r => r.occupied),
+                        backgroundColor: "rgb(48 45 89)",
+                        borderRadius: 8,
+                        categoryPercentage: 0.5,
+                        barPercentage: 0.7
+                        
+                    },
+                    {
+                        label: "Booked",
+                        data: rows.map(r => r.booked),
+                        backgroundColor: "rgb(85 120 214)",
+                        borderRadius: 8,
+                        categoryPercentage: 0.5,
+                        barPercentage: 0.7
+                    },
+                    {
+                        label: "Available",
+                        data: rows.map(r => r.available),
+                        backgroundColor: "rgb(10 187 135)",
+                        borderRadius: 8,
+                        categoryPercentage: 0.5,
+                        barPercentage: 0.7
+                    }
+                ]
+            },
+            options: {
+                ...mThis.chartOptions(),
+                responsive: true,
+                scales: {
+                    x: {
+                        stacked: true,
+                        grid: { display: false }
+                    },
+                    y: {
+                        stacked: true,
+                        max: 100,
+                        beginAtZero: true,
+                        ticks: {
+                            callback: value => value + "%"
+                        }
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: ctx => `${ctx.dataset.label}: ${ctx.raw}`
+                        }
+                    }
+                }
+            }
+        });
+    };
 
    mThis.createRevenueChart = function (data = {}) {
 
@@ -1595,91 +1562,31 @@ mThis.chartOptions = function () {
         }
     });
 };
-    // mThis.refresh = function (data) {
-    //     if (data && typeof data === "object") {
-    //         mThis.data = {
-    //             ...mThis.data,
-    //             ...data
-    //         };
-    //     }
 
-    //     mThis.renderDashboard();
-    // };
-//     mThis.loadDashboard = async function () {
-
-//     const filter = {
-//         building_id: mThis.building_id,
-//         period:mThis.period
-//     };
-
-//     const [summary, charts, activities, leaseExpiry] = await Promise.all([
-//         vsapi.call(`${main_view.base_url}/prm/dashboard/summary`, filter),
-//         vsapi.call(`${main_view.base_url}/prm/dashboard/charts`, filter),
-//         vsapi.call(`${main_view.base_url}/prm/dashboard/activities`, filter),
-//         vsapi.call(`${main_view.base_url}/prm/dashboard/lease-expiry`, filter)
-//     ]);
-
-//     mThis.renderDashboard({
-//         ...(summary.data || {}),
-//         ...(charts.data || {}),
-//         ...(activities.data || {}),
-//         ...(leaseExpiry.data || {})
-//     });
-// };
-mThis.loadDashboard = async function (filter = {}) {
-
-    const payload = {
-        building_id: filter.building_id || null,
-        period: filter.period || null
-    };
-
-    const [summary, charts, activities, leaseExpiry] = await Promise.all([
-        vsapi.call(`${main_view.base_url}/prm/dashboard/summary`, payload),
-        vsapi.call(`${main_view.base_url}/prm/dashboard/charts`, payload),
-        vsapi.call(`${main_view.base_url}/prm/dashboard/activities`, payload),
-        vsapi.call(`${main_view.base_url}/prm/dashboard/lease-expiry`, payload)
-    ]);
-
-    mThis.renderDashboard({
-        ...(summary.data || {}),
-        ...(charts.data || {}),
-        ...(activities.data || {}),
-        ...(leaseExpiry.data || {})
-    });
-
+mThis.loadDashBoardData = (filter , onFinish) => {
+    vsapi.call(`${main_view.base_url}/prm/dashboard/data`, filter).then(res => {
+        const data = res.status_code === 200 ? (res.data) : {};
+        if(typeof onFinish === 'function')onFinish(data);
+        });
 };
 mThis.loadDefaultFilter = function () {
 
     vsapi.call(`${main_view.base_url}/prm/dashboard/filter-options`, {}, null, { loader: false })
         .then(res => {
-
             if (res.status_code !== 200) return;
-
             const d = res.data;
-
-            mThis.currentFilterProps = {
+            mThis.db_filter = {
                 building_id: d.buildings?.[0]?.id || null,
-                period: d.period?.[0]?.value || null
+                period: d.period?.[5]?.value || null
             };
-
-            mThis.loadDashboard(mThis.currentFilterProps);
+           mThis.loadDashBoardData(mThis.db_filter, (data) => {
+                mThis.renderDashboard(data);
+            });
+            
 
         });
+        
 };
-//    mThis.loadDefaultFilter = function () {
-
-//     vsapi.call(`${main_view.base_url}/prm/dashboard/filter-options`, {}, null, { loader: false })
-//         .then(res => {
-
-//             if (res.status_code !== 200) return;
-
-//             mThis.db_filter = {
-//                 building_id: mThis.building_id
-//             };
-
-//             mThis.loadDashboard(mThis.db_filter);
-//         });
-// };
    mThis.show = function () {
 
     mThis.init();
@@ -1690,7 +1597,8 @@ mThis.loadDefaultFilter = function () {
     }
 
     main_view.setContentView(mThis.self, mThis.title_prop);
-    mThis.loadDefaultFilter();
+    
+        mThis.loadDefaultFilter();
 };
 
     return mThis;
