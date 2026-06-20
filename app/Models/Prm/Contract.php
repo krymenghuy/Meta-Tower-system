@@ -663,6 +663,8 @@ class Contract
                             c.remarks,
                             bs.code as space_code,
                             t.name as tenant_name,
+                            t.phone_number,
+                            t.email,
                             bt.name as business_name,
                             st.name as space_name
                             ')
@@ -756,6 +758,8 @@ class Contract
         DB::beginTransaction();
         try {
             DB::table('contract_renewals')->where('contract_id', $id)->delete();
+            DB::table('deposits')->where('contract_id', $id)->delete();
+            DB::table('deposit_refunds')->where('contract_id', $id)->delete();
 
             $deleted = DB::table('contracts')->where('id', $id)->delete();
             if (!$deleted) {
@@ -991,30 +995,21 @@ class Contract
                 'updated_at' => now(),
             ]);
 
-            // Update associated deposits to Terminated status
-            $terminatedDepositStatusId = DB::table('deposit_statuses')
+            // Update associated deposits to Refunded status
+            $refundedDepositStatusId = DB::table('deposit_statuses')
                 ->where(function ($q) {
-                    $q->whereRaw('LOWER(TRIM(name)) = ?', ['terminated'])
-                        ->orWhereRaw('LOWER(TRIM(status_code)) = ?', ['terminated']);
+                    $q->whereRaw('LOWER(TRIM(name)) = ?', ['refunded'])
+                        ->orWhereRaw('LOWER(TRIM(status_code)) = ?', ['refunded']);
                 })
-                ->value('id');
+                ->value('id') ?? 3;
 
-            if (!$terminatedDepositStatusId) {
-                $terminatedDepositStatusId = DB::table('deposit_statuses')->insertGetId([
-                    'name' => 'Terminated',
-                    'status_code' => 'terminated',
+            DB::table('deposits')
+                ->where('contract_id', $id)
+                ->update([
+                    'status_id' => $refundedDepositStatusId,
+                    'update_user' => $ss->full_name ?? 'Admin',
+                    'updated_at' => getNowTime(),
                 ]);
-            }
-
-            if ($terminatedDepositStatusId) {
-                DB::table('deposits')
-                    ->where('contract_id', $id)
-                    ->update([
-                        'status_id' => $terminatedDepositStatusId,
-                        'update_user' => $ss->full_name ?? 'Admin',
-                        'updated_at' => getNowTime(),
-                    ]);
-            }
 
             DB::commit();
             return DV::depends(1, ['id' => $id]);
