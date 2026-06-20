@@ -940,49 +940,83 @@ var DashboardComponent =  (() =>{
         mThis.initCharts(data);
     };
     mThis.initFilterForm = () => {
-        if (mThis.filterConfig) {
-            mThis.filterConfig.destroy?.();
-            mThis.filterConfig = null;
-        }
-        mThis.filterConfig = new FilterPanel({
-            triggerButton: mThis.lnkFilterButton,
-            cssClass: null,
-            fields: [
-                {
-                    firstOption: { value: '', label: '(All Period)' },
-                    name: "period",
-                    label: "Period",
-                    valueField: "value",
-                    textField: "label",
-                    data: "period"
-                },
-                {
-                    firstOption: { value: '', label: '(All Building)' },
-                    name: "building_id",
-                    label: "Building",
-                    valueField: "id",
-                    textField: "building",
-                    data: "buildings"
-                }
-            ],
 
-            onShow: (me) => {
-                vsapi.call(`${main_view.base_url}/prm/dashboard/filter-options`, {}, null, { loader: false })
-                    .then(res => {
-                        if (res.status_code !== 200) return;
-                        const d = res.data;
-                        VSUtil.setComboItems(me.controls.period, d.period, 'value', 'label', null, null, null);
-                        VSUtil.setComboItems(me.controls.building_id, d.buildings, 'id', 'building', '', 'All Building', null);
-                    });
+    if (mThis.filterConfig) {
+        mThis.filterConfig.destroy?.();
+        mThis.filterConfig = null;
+    }
+
+    mThis.filterConfig = new FilterPanel({
+        triggerButton: mThis.lnkFilterButton,
+        cssClass: null,
+
+        fields: [
+            {
+                firstOption: { value: '', label: '(All Years)' },
+                name: "year",
+                label: "Year",
+                valueField: "value",
+                textField: "label",
+                data: "years"
             },
-            onSelect: (me, data) => {
-                mThis.db_filter = data;
-                mThis.loadDashBoardData(mThis.db_filter, (d) => {
-                            // mThis.renderDashboard(d);
-                        });
+            {
+                firstOption: { value: '', label: '(All Months)' },
+                name: "month",
+                label: "Month",
+                valueField: "value",
+                textField: "label",
+                data: "months"
+            },
+            {
+                firstOption: { value: '', label: '(All Buildings)' },
+                name: "building_id",
+                label: "Building",
+                valueField: "id",
+                textField: "building",
+                data: "buildings"
             }
-        });
-    };
+        ],
+
+        onShow: (me) => {
+
+            vsapi.call(`${main_view.base_url}/prm/dashboard/filter-options`, {}, null, { loader: false })
+                .then(res => {
+                    if (res.status_code !== 200) return;
+
+                    const d = res.data;
+
+                    VSUtil.setComboItems(me.controls.year, d.years, 'year', 'year');
+                    VSUtil.setComboItems(me.controls.month, d.months, 'month', 'month_name');
+                    VSUtil.setComboItems(me.controls.building_id, d.buildings, 'id', 'building');
+
+                    
+                    const today = new Date();
+                    const currentYear = today.getFullYear();
+                    const currentMonth = today.getMonth() + 1;
+
+                    if (me.controls.year) {
+                        me.controls.year.value = currentYear;
+                    }
+
+                    if (me.controls.month) {
+                        me.controls.month.value = currentMonth;
+                    }
+
+                    if (d.buildings && d.buildings.length > 0) {
+                        me.controls.building_id.value = d.buildings[0].id;
+                    }
+                });
+        },
+
+        onSelect: (me, data) => {
+            mThis.db_filter = data;
+
+            mThis.loadDashBoardData(data, (d) => {
+                // mThis.renderDashboard(d);
+            });
+        }
+    });
+};
     mThis.renderHero = function (data) {
         return `
             <section class="md-hero">
@@ -1388,6 +1422,8 @@ var DashboardComponent =  (() =>{
     if (!canvas) return;
 
     const trend = data || {};
+    console.log(333,trend.rent);
+    
 
     mThis.charts.revenue = new Chart(canvas, {
         type: "line",
@@ -1560,28 +1596,39 @@ var DashboardComponent =  (() =>{
 };
 
 mThis.loadDashBoardData = (filter , onFinish) => {
+    console.log(3333,filter);
+    
     vsapi.call(`${main_view.base_url}/prm/dashboard/data`, filter).then(res => {
         const data = res.status_code === 200 ? (res.data) : {};
         if(typeof onFinish === 'function')onFinish(data);
         });
 };
 mThis.loadDefaultFilter = function () {
-
     vsapi.call(`${main_view.base_url}/prm/dashboard/filter-options`, {}, null, { loader: false })
         .then(res => {
             if (res.status_code !== 200) return;
             const d = res.data;
+            const today = new Date();
+            const currentYear = today.getFullYear();
+            const currentMonth = today.getMonth() + 1;
+            const firstBuilding = d.buildings?.length > 0
+                ? d.buildings[0].id
+                : null;
+
             mThis.db_filter = {
-                building_id: d.buildings?.[0]?.id || null,
-                period: d.period?.[5]?.value || null
+                building_id: firstBuilding,
+                year: currentYear,
+                month: currentMonth
             };
-           mThis.loadDashBoardData(mThis.db_filter, (data) => {
+
+            console.log('Default Filter:', mThis.db_filter);
+
+            mThis.loadDashBoardData(mThis.db_filter, (data) => {
                 mThis.renderDashboard(data);
             });
-            
 
         });
-        
+
 };
    mThis.show = function () {
 
@@ -1593,8 +1640,9 @@ mThis.loadDefaultFilter = function () {
     }
 
     main_view.setContentView(mThis.self, mThis.title_prop);
-    
-        mThis.loadDefaultFilter();
+    mThis.db_filter = null;
+
+    mThis.loadDefaultFilter();
 };
 
     return mThis;
