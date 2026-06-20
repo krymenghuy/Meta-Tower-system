@@ -12,6 +12,7 @@ var DepositComponent = (() => {
     mThis.elFilter_building = mThis.self.querySelector("#_deposit_building_id");
     mThis.elFilter_vendor = mThis.self.querySelector("#_deposit_vendor_id");
     mThis.elFilter_status = mThis.self.querySelector("#_deposit_status_id");
+
     mThis.elFilter_category = mThis.self.querySelector(
         "#_deposit_expense_type_id",
     );
@@ -55,20 +56,19 @@ var DepositComponent = (() => {
                 return `<span class="d-block fw-semibold text-primary">${VSMoney.formatAmount(data.total_amount, "USD")}</span>`;
             },
         },
-        // {
-        //     transTitle: "titles.Paid Amount",
-        //     className: "align-middle text-nowrap",
-        //     data: (data) => {
-        //         return `<span class="d-block fw-semibold text-success">${VSMoney.formatAmount(data.paid_amount, "USD")}</span>`;
-        //     },
-        // },
-        // {
-        //     transTitle: "titles.Payment Date",
-        //     className: "align-middle text-nowrap",
-        //     data: (data) => {
-        //         return `<span class="d-block text-prm-custom">${data.deposit_date ?? "_"}</span>`;
-        //     },
-        // },
+        {
+            transTitle: "titles.Refund Amount",
+            className: "align-middle",
+            data: (data) => {
+                const refund_amount = VSMoney.formatAmount(
+                    data.refund_amount,
+                    data.currency_code ?? "USD",
+                );
+                return `<div class="text-primary-prm text-capitalize" style="width:90px;">
+                        <span class="text-prm-custom" >${refund_amount || "_"}</span>
+                    </div>`;
+            },
+        },
 
         {
             transTitle: "titles.Remark",
@@ -85,12 +85,13 @@ var DepositComponent = (() => {
             transTitle: "titles.Status",
             className: "align-middle text-nowrap text-center",
             data: (data) => {
-                const status = (data.status ?? "unpaid").toLowerCase();
+                const status = (data.status ?? "pending").toLowerCase();
                 const statusConfig = {
-                    unpaid: "border border-danger text-danger bg-danger-subtle",
+                    pending:
+                        "border border-danger text-danger bg-danger-subtle",
                     paid: "border border-success text-success bg-success-subtle",
-                    refunded: "border border-warning text-warning bg-warning-subtle",
-                    terminated: "border border-dark text-dark bg-dark-subtle",
+                    refunded:
+                        "border border-warning text-warning bg-warning-subtle",
                 };
                 const cls = statusConfig[status] ?? "bg-secondary text-white";
                 return `
@@ -227,19 +228,25 @@ var DepositComponent = (() => {
                     cssClass: "border-bottom pb-2",
                     name: "refund_deposit",
                 },
+                {
+                    html: '<span class="ps-2" vslang="titles.View Refund"></span>',
+                    icon: `<i class="fa-solid fa-eye fs-5 text-primary"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "view_refund",
+                },
             ],
-
             onShow: (me, container) => {
                 const menu = me.getActiveMenus(container);
                 const status = (container.dataset.status || "").toLowerCase();
-                const row = container.closest("tr");
-                const contractId = Number(container.dataset.contractId ?? row?.dataset?.contractId ?? 0);
 
                 menu.receive_deposit.style.display =
-                    status === "unpaid" ? "block" : "none";
+                    status === "pending" ? "block" : "none";
                 menu.delete_deposit.style.display =
-                    status === "unpaid" ? "block" : "none";
-                
+                    status === "pending" ? "block" : "none";
+                menu.refund_deposit.style.display =
+                    status === "paid" ? "block" : "none";
+                menu.view_refund.style.display =
+                    status === "refunded" ? "block" : "none";
             },
 
             onClick: (menuLink, id, name) => {
@@ -252,11 +259,15 @@ var DepositComponent = (() => {
                         mThis.deleteDeposit(id, menuLink);
                         break;
                     }
-                    case "refund_deposit": {
-                        mThis.refundDeposit(id, menuLink);
+                    // case "refund_deposit": {
+                    //     mThis.refundDeposit(id, menuLink);
+                    //     break;
+                    // }
+                    case "view_refund": {
+                        mThis.viewRefund(id, menuLink);
                         break;
                     }
-                    
+
                     default: {
                         break;
                     }
@@ -266,12 +277,18 @@ var DepositComponent = (() => {
         new VSDropdownMenu(menuOptions);
     };
 
-    mThis.viewRefund = (contractId) => {
+    mThis.viewRefund = (id, menuLink) => {
+        const tr = menuLink?.closest("tr");
+        const contractId = Number(tr?.dataset?.contractId ?? 0);
+        if (!contractId) {
+            cv_interact.error("No contract found for this deposit.");
+            return;
+        }
         RefundDetailsDialog.show({
             contract_id: contractId,
             onSuccess: () => {
                 mThis.DepositListView.showPage(mThis.getFilterData());
-            }
+            },
         });
     };
 
@@ -324,46 +341,48 @@ var DepositComponent = (() => {
         );
     };
 
-    mThis.refundDeposit = (id, menuLink) => {
-        if (!AuthManager.allowed(277, false)) return;
-        cv_interact.confirm(
-            "Refund this deposit? Status will be updated to 'refunded'.",
-            {
-                transTitle: "Refund Deposit",
-                context: "delete",
-                confirmButtonText: "Refund",
-            },
-            function (confirmed) {
-                if (!confirmed) return;
-                vsapi
-                    .call(
-                        `${mThis.base_url}/prm/deposit/update-status`,
-                        { id: id, status_id: "refunded" },
-                        false,
-                        false,
-                        false,
-                    )
-                    .then((res) => {
-                        if (res.status_code === 200) {
-                            cv_interact.success(
-                                "Refund processed successfully.",
-                            );
-                            mThis.DepositListView.showPage(mThis.getFilterData());
-                        } else {
-                            cv_interact.error(
-                                res.error_message ||
-                                    "Failed to process refund.",
-                            );
-                        }
-                    })
-                    .catch(() => {
-                        cv_interact.error(
-                            "Network error while processing refund.",
-                        );
-                    });
-            },
-        );
-    };
+    // mThis.refundDeposit = (id, menuLink) => {
+    //     if (!AuthManager.allowed(277, false)) return;
+    //     cv_interact.confirm(
+    //         "Refund this deposit? Status will be updated to 'refunded'.",
+    //         {
+    //             transTitle: "Refund Deposit",
+    //             context: "delete",
+    //             confirmButtonText: "Refund",
+    //         },
+    //         function (confirmed) {
+    //             if (!confirmed) return;
+    //             vsapi
+    //                 .call(
+    //                     `${mThis.base_url}/prm/deposit/update-status`,
+    //                     { id: id, status_id: "refunded" },
+    //                     false,
+    //                     false,
+    //                     false,
+    //                 )
+    //                 .then((res) => {
+    //                     if (res.status_code === 200) {
+    //                         cv_interact.success(
+    //                             "Refund processed successfully.",
+    //                         );
+    //                         mThis.DepositListView.showPage(
+    //                             mThis.getFilterData(),
+    //                         );
+    //                     } else {
+    //                         cv_interact.error(
+    //                             res.error_message ||
+    //                                 "Failed to process refund.",
+    //                         );
+    //                     }
+    //                 })
+    //                 .catch(() => {
+    //                     cv_interact.error(
+    //                         "Network error while processing refund.",
+    //                     );
+    //                 });
+    //         },
+    //     );
+    // };
 
     mThis.prepareFormOptions = (onFinish) => {
         vsapi
@@ -402,11 +421,10 @@ var DepositComponent = (() => {
                     "All Statuses",
                     "",
                 );
-
                 if (typeof onFinish === "function") onFinish();
             });
     };
- 
+
     mThis.show = (options) => {
         mThis.init();
         mThis.options = options;
@@ -606,7 +624,7 @@ const DepositDialog = (() => {
                     if (title) {
                         const isModify = !!me.dataOptions?.id;
                         title.innerHTML = isModify
-                            ? '<h4 class="text-start ">Receive Deposit</h4>'
+                            ? '<h4 class="text-start ">Modify Deposit</h4>'
                             : '<h4 class="text-start ">Receive Deposit</h4>';
                     }
                     if (!me.dataOptions?.id) {
@@ -630,7 +648,10 @@ const DepositDialog = (() => {
                                     "Nov",
                                     "Dec",
                                 ];
-                                const day = String(now.getDate()).padStart(2, "0");
+                                const day = String(now.getDate()).padStart(
+                                    2,
+                                    "0",
+                                );
                                 const month = months[now.getMonth()];
                                 const year = now.getFullYear();
                                 me.controls.deposit_date.value = `${day}-${month}-${year}`;
@@ -656,6 +677,8 @@ const DepositDialog = (() => {
                         me.controls.tenant_id.value = details.tenant_id || "";
                         me.controls.contract_id.value =
                             details.contract_id || "";
+
+                        me._selectedTenantId = details.tenant_id || null;
                         if (me.controls.tenant_name)
                             me.controls.tenant_name.value =
                                 details.tenant_name || "";
@@ -676,7 +699,9 @@ const DepositDialog = (() => {
                                 details.deposit_date || "";
                         if (me.controls.paid_amount)
                             me.controls.paid_amount.value =
-                                details.total_amount || details.paid_amount || "";
+                                details.total_amount ||
+                                details.paid_amount ||
+                                "";
                         if (me.controls.remarks)
                             me.controls.remarks.value = details.remark || "";
                     } else {
@@ -771,57 +796,63 @@ const RefundDetailsDialog = (() => {
         InputBox.resetInstance("refundDetailsView");
 
         InputBox.show({
-            title: `Refund Details`,
+            title: `${LocaleManager.trans("Refund Details", "titles")}`,
             instanceKey: "refundDetailsView",
             context: "info",
-            size: "md",
+            size: "lg",
             confirmButtonText: null,
             showconfirmButtonText: false,
             cancelButtonText: `Close`,
 
             createContent() {
                 const div = document.createElement("div");
-                div.innerHTML = `
+                div.innerHTML = `   
+
                     <div id="_rdv_loader" class="text-center py-4">
                         <div class="spinner-border spinner-border-sm text-primary"></div>
                         <span class="ms-2 text-muted small">Loading...</span>
                     </div>
 
                     <div id="_rdv_content" class="d-none">
+                        <div class="d-flex align-items-center mb-3">
+                            <span id="_rdv_unit_header_badge" class="badge text-primary border border-primary bg-primary-subtle px-3 py-1 fs-6">
+                            </span>
+                            <div style="flex:1; height:1px; background:#e0e0e0; margin-left:10px;"></div>
+                        </div>
                         <div class="card shadow-sm border border-danger-subtle overflow-hidden">
-                            <div class="card-header bg-danger-subtle text-danger-emphasis py-2 px-3">
-                                <h6 class="mb-0 fs-6 fw-semibold"><i class="fa-solid fa-circle-info me-2"></i>Termination Refund Details</h6>
-                            </div>
-                            <div class="card-body py-3 px-3 d-flex flex-column justify-content-between">
-                                <div>
-                                    <div class="d-flex justify-content-between mb-2">
-                                        <span class="text-muted">Original Deposit:</span>
-                                        <strong id="_rdv_deposit" class="text-dark"></strong>
-                                    </div>
-                                    <div class="d-flex justify-content-between mb-2">
-                                        <span class="text-muted">Deducted Amount:</span>
-                                        <strong id="_rdv_deduct" class="text-danger"></strong>
-                                    </div>
-                                    <hr class="my-2 border-dashed">
-                                    <div class="d-flex justify-content-between mb-2">
-                                        <span class="text-muted fw-bold">Refund Amount:</span>
-                                        <strong id="_rdv_refund" class="text-success fs-5"></strong>
-                                    </div>
-                                    
-                                    <div class="mt-3">
-                                        <span class="text-muted d-block mb-1">Remarks:</span>
-                                        <div id="_rdv_remarks" class="p-2 bg-light rounded text-break text-secondary" style="font-size: 13px; min-height: 50px;">
-                                        </div>
-                                    </div>
-                                    
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-sm table--white mb-0 align-middle">
+                                        <thead class="header-uppercase table-light">
+                                            <tr>
+                                                <th class="text-start ps-3" style="width:100px;" vslang="titles.Tenant">Tenant</th>
+                                                <th class="text-start" style="width:100px;" vslang="labels.Deposit Amount">Deposit Amount</th>
+                                                <th class="text-start" style="width:100px;" vslang="labels.Deduct Amount">Deduct Amount</th>
+                                                <th class="text-start" style="width:100px;" vslang="labels.Refund Amount">Refund Amount</th>
+                                                <th class="text-start pe-3" style="width:100px;" vslang="labels.Remark">Remark</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td class="align-middle ps-3 py-3" id="_rdv_tenant_cell"></td>
+                                                <td class="align-middle text-start text-dark fw-semibold py-3" id="_rdv_deposit"></td>
+                                                <td class="align-middle text-start text-danger fw-semibold py-3" id="_rdv_deduct"></td>
+                                                <td class="align-middle text-start text-success fs-6 fw-bold py-3" id="_rdv_refund"></td>
+                                                <td class="align-middle pe-3 py-3">
+                                                    <div id="_rdv_remarks" class="text-prm-custom text-wrap text-break" style="font-size: 13px; max-width: 250px; word-break: break-word;"></div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
                                 </div>
-                                <div class="mt-4 text-end">
-                                    <div id="_rdv_date"></div>
+                                <div class="p-3 border-top bg-light d-flex justify-content-end align-items-center flex-wrap gap-2 ">
+                                    <div id="_rdv_date" class="text-end "></div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 `;
+                LocaleManager.translateZone(div);
                 return div;
             },
 
@@ -848,125 +879,77 @@ const RefundDetailsDialog = (() => {
                 const depositEl = document.getElementById("_rdv_deposit");
                 const deductEl = document.getElementById("_rdv_deduct");
                 const refundEl = document.getElementById("_rdv_refund");
-                const badgeEl = document.getElementById("_rdv_status_badge");
                 const remarksEl = document.getElementById("_rdv_remarks");
                 const dateEl = document.getElementById("_rdv_date");
 
-                const updateRefundStatus = (status) => {
-                    const actionText = status === "refunded" ? "process this refund" : "reject this refund";
-                    cv_interact.confirm(
-                        `Are you sure you want to ${actionText}?`,
-                        {
-                            transTitle: "Update Refund Status",
-                            context: "delete",
-                            confirmButtonText: status === "refunded" ? "Process" : "Reject",
-                        },
-                        (confirmed) => {
-                            if (!confirmed) return;
-                            vsapi.call(
-                                `${main_view.base_url}/prm/deposit/update-refund-status`,
-                                { contract_id, status },
-                                null,
-                                null,
-                            )
-                            .then((res) => {
-                                if (res.status_code === 200) {
-                                    cv_interact.success("Refund status updated successfully.");
-                                    ibMe.hide(true);
-                                    if (onSuccess) onSuccess();
-                                } else {
-                                    cv_interact.error(res.error_message || "Failed to update refund status.");
-                                }
-                            })
-                            .catch(() => {
-                                cv_interact.error("Network error while updating refund status.");
-                            });
+                vsapi
+                    .call(
+                        `${main_view.base_url}/prm/contract/details`,
+                        { id: contract_id },
+                        null,
+                        null,
+                    )
+                    .then((res) => {
+                        loader.classList.add("d-none");
+                        content.classList.remove("d-none");
+
+                        if (
+                            res.status_code !== 200 ||
+                            !res.data ||
+                            !res.data.refund_details
+                        ) {
+                            content.innerHTML = `<div class="alert alert-danger mb-0">No refund details found for this contract.</div>`;
+                            return;
                         }
-                    );
-                };
 
-                vsapi.call(
-                    `${main_view.base_url}/prm/contract/details`,
-                    { id: contract_id },
-                    null,
-                    null,
-                )
-                .then((res) => {
-                    loader.classList.add("d-none");
-                    content.classList.remove("d-none");
+                        const details = res.data;
+                        const refund = details.refund_details;
+                        const currency = details.currency_code ?? "USD";
 
-                    if (res.status_code !== 200 || !res.data || !res.data.refund_details) {
-                        content.innerHTML = `<div class="alert alert-danger mb-0">No refund details found for this contract.</div>`;
-                        return;
-                    }
+                        const tenantInfo = `
+                        <span class="d-block text-prm-custom text-nowrap text-capitalize fw-semibold">${details.tenant_name ?? ""}</span>
+                        <small class="d-block text-muted text-nowrap">${details.phone_number ?? ""}</small>
+                        <small class="d-block text-muted text-nowrap" style="font-size: 11px;">${details.email ?? ""}</small>
+                    `;
+                        const unitInfo = `
+                        <span class="d-block text-prm-custom text-nowrap fw-semibold">${details.space_code ?? ""}</span>
+                        <small class="d-block text-muted text-nowrap">${details.space_name ?? ""}</small>
+                    `;
 
-                    const details = res.data;
-                    const refund = details.refund_details;
-                    const currency = details.currency_code ?? "USD";
-
-                    depositEl.textContent = VSMoney.formatAmount(refund.deposit_amount, currency);
-                    deductEl.textContent = VSMoney.formatAmount(refund.deduct_amount, currency);
-                    refundEl.textContent = VSMoney.formatAmount(refund.refund_amount, currency);
-                    remarksEl.textContent = refund.remarks || "No remarks provided.";
-                    
-                    const statusKey = String(refund.status).toLowerCase();
-                    let dateHtml = `<small class="text-muted d-block" style="font-size: 11px;">Terminated on: ${refund.created_at ?? ""}</small>`;
-                    if (statusKey === "refunded" || statusKey === "completed") {
-                        dateHtml += `<small class="text-success d-block mt-1" style="font-size: 11px;">Refunded on: ${refund.updated_at ?? ""}</small>`;
-                    } else if (statusKey === "rejected") {
-                        dateHtml += `<small class="text-danger d-block mt-1" style="font-size: 11px;">Rejected on: ${refund.updated_at ?? ""}</small>`;
-                    }
-                    dateEl.innerHTML = dateHtml;
-
-                    const statusColors = {
-                        pending: "bg-warning-subtle text-warning border border-warning",
-                        approved: "bg-success-subtle text-success border border-success",
-                        refunded: "bg-success-subtle text-success border border-success",
-                        completed: "bg-success-subtle text-success border border-success",
-                        rejected: "bg-danger-subtle text-danger border border-danger",
-                    };
-                    if (badgeEl) {
-                        badgeEl.className = `badge text-capitalize ${statusColors[statusKey] || "bg-secondary-subtle text-secondary border border-secondary"}`;
-                        badgeEl.textContent = refund.status;
-                    }
-
-                    if (statusKey === "pending" || statusKey === "approved") {
-                        actionsEl.classList.remove("d-none");
-                        const btnProcess = document.getElementById("_btn_process_refund");
-                        const btnReject = document.getElementById("_btn_reject_refund");
-
-                        if (btnProcess) {
-                            btnProcess.onclick = (e) => {
-                                e.preventDefault();
-                                updateRefundStatus("refunded");
-                            };
+                        document.getElementById("_rdv_tenant_cell").innerHTML =
+                            tenantInfo;
+                        const headerBadge = document.getElementById("_rdv_unit_header_badge");
+                        if (headerBadge) {
+                            headerBadge.textContent = details.space_code ? `Unit: ${details.space_code}` : "Unit Details";
                         }
-                        if (btnReject) {
-                            if (statusKey === "approved") {
-                                btnReject.classList.add("d-none");
-                            } else {
-                                btnReject.onclick = (e) => {
-                                    e.preventDefault();
-                                    updateRefundStatus("rejected");
-                                };
-                            }
-                        }
-                    }
-                })
-                .catch(() => {
-                    loader.classList.add("d-none");
-                    content.classList.remove("d-none");
-                    content.innerHTML = `<div class="alert alert-danger mb-0">Failed to load refund details.</div>`;
-                });
+
+                        depositEl.textContent = VSMoney.formatAmount(
+                            refund.deposit_amount,
+                            currency,
+                        );
+                        deductEl.textContent = VSMoney.formatAmount(
+                            refund.deduct_amount,
+                            currency,
+                        );
+                        refundEl.textContent = VSMoney.formatAmount(
+                            refund.refund_amount,
+                            currency,
+                        );
+                        remarksEl.textContent =
+                            refund.remarks || "_";
+
+                        const statusKey = String(refund.status).toLowerCase();
+                        let dateHtml = `<small class="text-prm-custom d-block" style="font-size: 11px; ">Refunded on: ${refund.updated_at ?? ""}</small>`;
+                        dateEl.innerHTML = dateHtml;
+                    })
+                    .catch(() => {
+                        loader.classList.add("d-none");
+                        content.classList.remove("d-none");
+                        content.innerHTML = `<div class="alert alert-danger mb-0">Failed to load refund details.</div>`;
+                    });
             },
         });
     };
 
     return self;
 })();
-
-// window.DepositDialog = DepositDialog;
-
-
-
-// window.DepositDialog = DepositDialog;

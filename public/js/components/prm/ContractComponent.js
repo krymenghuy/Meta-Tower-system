@@ -1820,7 +1820,7 @@ window.RefundDetailsDialog =
                 title: `Refund Details`,
                 instanceKey: "refundDetailsView",
                 context: "info",
-                size: "md",
+                size: "lg",
                 confirmButtonText: null,
                 showconfirmButtonText: false,
                 cancelButtonText: `Close`,
@@ -1828,43 +1828,51 @@ window.RefundDetailsDialog =
                 createContent() {
                     const div = document.createElement("div");
                     div.innerHTML = `
-                    <div id="_rdv_loader" class="text-center py-4">
-                        <div class="spinner-border spinner-border-sm text-primary"></div>
-                        <span class="ms-2 text-muted small">Loading...</span>
-                    </div>
+                        <div id="_rdv_loader" class="text-center py-4">
+                            <div class="spinner-border spinner-border-sm text-primary"></div>
+                            <span class="ms-2 text-muted small">Loading...</span>
+                        </div>
 
-                    <div id="_rdv_content" class="d-none">
-                        <div class="card shadow-sm border border-danger-subtle overflow-hidden">
-                            <div class="card-header bg-danger-subtle text-danger-emphasis py-2 px-3">
-                                <h6 class="mb-0 fs-6 fw-semibold"><i class="fa-solid fa-circle-info me-2"></i>Termination Refund Details</h6>
+                        <div id="_rdv_content" class="d-none">
+                            <div class="d-flex align-items-center mb-3">
+                                <span id="_rdv_unit_header_badge" class="badge text-primary border border-primary bg-primary-subtle px-3 py-1 fs-6">
+                                </span>
+                                <div style="flex:1; height:1px; background:#e0e0e0; margin-left:10px;"></div>
                             </div>
-                            <div class="card-body py-3 px-3 d-flex flex-column justify-content-between">
-                                <div>
-                                    <div class="d-flex justify-content-between mb-2">
-                                        <span class="text-muted">Original Deposit:</span>
-                                        <strong id="_rdv_deposit" class="text-dark"></strong>
+                            <div class="card shadow-sm border border-danger-subtle overflow-hidden">
+                                <div class="card-body p-0">
+                                    <div class="table-responsive">
+                                        <table class="table table-sm table--white mb-0 align-middle">
+                                            <thead class="header-uppercase table-light">
+                                                <tr>
+                                                    <th class="text-start ps-3" style="width:100px;" vslang="titles.Tenant">Tenant</th>
+                                                    <th class="text-start" style="width:100px;" vslang="labels.Deposit Amount">Deposit Amount</th>
+                                                    <th class="text-start" style="width:100px;" vslang="labels.Deduct Amount">Deduct Amount</th>
+                                                    <th class="text-start" style="width:100px;" vslang="labels.Refund Amount">Refund Amount</th>
+                                                    <th class="text-start pe-3" style="width:100px;" vslang="labels.Remark">Remark</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td class="align-middle ps-3 py-3" id="_rdv_tenant_cell"></td>
+                                                    <td class="align-middle text-start text-dark fw-semibold py-3" id="_rdv_deposit"></td>
+                                                    <td class="align-middle text-start text-danger fw-semibold py-3" id="_rdv_deduct"></td>
+                                                    <td class="align-middle text-start text-success fs-6 fw-bold py-3" id="_rdv_refund"></td>
+                                                    <td class="align-middle pe-3 py-3">
+                                                        <div id="_rdv_remarks" class="text-prm-custom text-wrap text-break" style="font-size: 13px; max-width: 250px; word-break: break-word;"></div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
                                     </div>
-                                    <div class="d-flex justify-content-between mb-2">
-                                        <span class="text-muted">Deducted Amount:</span>
-                                        <strong id="_rdv_deduct" class="text-danger"></strong>
+                                    <div class="p-3 border-top bg-light d-flex justify-content-end align-items-center flex-wrap gap-2">
+                                        <div id="_rdv_date" class="text-end"></div>
                                     </div>
-                                    <hr class="my-2 border-dashed">
-                                    <div class="d-flex justify-content-between mb-2">
-                                        <span class="text-muted fw-bold">Refund Amount:</span>
-                                        <strong id="_rdv_refund" class="text-success fs-5"></strong>
-                                    </div>
-                                    <div class="mt-3">
-                                        <span class="text-muted d-block mb-1">Remarks:</span>
-                                        <div id="_rdv_remarks" class="p-2 bg-light rounded text-break text-secondary" style="font-size: 13px; min-height: 50px;">
-                                        </div>
-                                    </div>
-                                   
                                 </div>
-                               
                             </div>
                         </div>
-                    </div>
-                `;
+                    `;
+                    LocaleManager.translateZone(div);
                     return div;
                 },
 
@@ -1898,7 +1906,9 @@ window.RefundDetailsDialog =
                     const depositEl = document.getElementById("_rdv_deposit");
                     const deductEl = document.getElementById("_rdv_deduct");
                     const refundEl = document.getElementById("_rdv_refund");
-                             
+                    const remarksEl = document.getElementById("_rdv_remarks");
+                    const dateEl = document.getElementById("_rdv_date");
+
                     vsapi
                         .call(
                             `${main_view.base_url}/prm/contract/details`,
@@ -1923,6 +1933,25 @@ window.RefundDetailsDialog =
                             const refund = details.refund_details;
                             const currency = details.currency_code ?? "USD";
 
+                            const tenantInfo = `
+                                <span class="d-block text-prm-custom text-nowrap text-capitalize fw-semibold">${details.tenant_name ?? ""}</span>
+                                <small class="d-block text-muted text-nowrap">${details.phone_number ?? ""}</small>
+                                <small class="d-block text-muted text-nowrap" style="font-size: 11px;">${details.email ?? ""}</small>
+                            `;
+
+                            document.getElementById(
+                                "_rdv_tenant_cell",
+                            ).innerHTML = tenantInfo;
+
+                            const headerBadge = document.getElementById(
+                                "_rdv_unit_header_badge",
+                            );
+                            if (headerBadge) {
+                                headerBadge.textContent = details.space_code
+                                    ? `Unit: ${details.space_code}`
+                                    : "Unit Details";
+                            }
+
                             depositEl.textContent = VSMoney.formatAmount(
                                 refund.deposit_amount,
                                 currency,
@@ -1935,8 +1964,21 @@ window.RefundDetailsDialog =
                                 refund.refund_amount,
                                 currency,
                             );
-                            remarksEl.textContent =
-                                refund.remarks || "No remarks provided.";
+                            remarksEl.textContent = refund.remarks || "_";
+
+                            const statusKey = String(
+                                refund.status,
+                            ).toLowerCase();
+                            let dateHtml = `<small class="text-muted d-block" style="font-size: 11px;">Refunded on: ${refund.created_at ?? ""}</small>`;
+                            if (
+                                statusKey === "refunded" ||
+                                statusKey === "completed"
+                            ) {
+                                dateHtml += `<small class="text-success d-block mt-1" style="font-size: 11px;">Refunded on: ${refund.updated_at ?? ""}</small>`;
+                            } else if (statusKey === "rejected") {
+                                dateHtml += `<small class="text-danger d-block mt-1" style="font-size: 11px;">Rejected on: ${refund.updated_at ?? ""}</small>`;
+                            }
+                            dateEl.innerHTML = dateHtml;
                         })
                         .catch(() => {
                             loader.classList.add("d-none");
