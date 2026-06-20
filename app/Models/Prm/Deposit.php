@@ -222,6 +222,7 @@ class Deposit
             ->join('building_spaces as bs', 'bs.id', 'c.space_id')
             ->leftJoin('buildings as b', 'b.id', 'bs.building_id')
             ->leftJoin('deposit_statuses as ds', 'ds.id', 'd.status_id')
+            ->leftJoin('deposit_refunds as dr', 'dr.contract_id', '=', 'd.contract_id')
             ->whereRaw($str_search)
             ->whereRaw($str_moreWhere)
             ->selectRaw("   d.id, d.contract_id, d.tenant_id, t.name as tenant_name, t.phone_number,
@@ -229,6 +230,7 @@ class Deposit
                            c.start_date, c.end_date,
                            d.amount as total_amount, 
                            d.paid_amount,
+                           dr.refund_amount,
                            d.deposit_date,
                            (CASE WHEN d.status_id = 2 THEN d.deposit_date ELSE NULL END) as paid_date,
                            d.status_id,
@@ -245,6 +247,7 @@ class Deposit
             setOfficialDates($row, ['start_date', 'end_date', 'deposit_date', 'paid_date'], ['updated_at'], []);
             $row->total_amount = floatval($row->total_amount);
             $row->paid_amount = floatval($row->paid_amount);
+            $row->refund_amount = $row->refund_amount !== null ? floatval($row->refund_amount) : null;
             $row->balance = max(0, $row->total_amount - $row->paid_amount);
         }
         unset($row);
@@ -260,14 +263,15 @@ class Deposit
             ->join('building_spaces as bs', 'bs.id', 'c.space_id')
             ->leftJoin('buildings as b', 'b.id', 'bs.building_id')
             ->leftJoin('deposit_statuses as ds', 'ds.id', 'd.status_id')
+            ->leftJoin('deposit_refunds as dr', 'dr.contract_id', '=', 'd.contract_id')
             ->where('d.id', $id)
             ->selectRaw("   d.id, d.contract_id, d.tenant_id, t.name as tenant_name, t.phone_number,
                            b.name as building_name, bs.code as space_code,
                            c.start_date, c.end_date,
                            d.amount as total_amount, 
                            d.paid_amount,
+                           dr.refund_amount,
                            d.deposit_date,
-                           (CASE WHEN d.status_id = 2 THEN d.deposit_date ELSE NULL END) as paid_date,
                            d.status_id,
                            ds.status_code as status,
                            d.remarks as remark,
@@ -278,6 +282,7 @@ class Deposit
             setOfficialDates($row, ['start_date', 'end_date', 'deposit_date', 'paid_date'], ['updated_at'], []);
             $row->total_amount = floatval($row->total_amount);
             $row->paid_amount = floatval($row->paid_amount);
+            $row->refund_amount = $row->refund_amount !== null ? floatval($row->refund_amount) : null;
             $row->balance = max(0, $row->total_amount - $row->paid_amount);
         }
         return $row;
@@ -328,7 +333,20 @@ class Deposit
             if ($statusRow) {
                 $status_id = $statusRow->id;
             } else {
-                return DV::error('Invalid status.');
+                $knownStatuses = [
+                    'unpaid' => 'Unpaid',
+                    'paid' => 'Paid',
+                    'refunded' => 'Refunded',
+                ];
+                $statusCode = strtolower(trim($status_id));
+                if (isset($knownStatuses[$statusCode])) {
+                    $status_id = DB::table('deposit_statuses')->insertGetId([
+                        'name' => $knownStatuses[$statusCode],
+                        'status_code' => $statusCode,
+                    ]);
+                } else {
+                    return DV::error('Invalid status.');
+                }
             }
         }
 
@@ -372,51 +390,51 @@ class Deposit
         return DV::depends($x, ['Deposit status', 'updated']);
     }
 
-    public function updateRefundStatus($contract_id, $status, $ss = null)
-    {
-        $ss = $ss ?? $this->userInfo;
-        $validStatuses = ['pending', 'approved', 'refunded', 'completed', 'rejected'];
-        $status = strtolower(trim($status));
-        if (!in_array($status, $validStatuses)) {
-            return DV::error('Invalid refund status.');
-        }
+    // public function updateRefundStatus($contract_id, $status, $ss = null)
+    // {
+    //     $ss = $ss ?? $this->userInfo;
+    //     $validStatuses = ['pending', 'approved', 'refunded', 'completed', 'rejected'];
+    //     $status = strtolower(trim($status));
+    //     if (!in_array($status, $validStatuses)) {
+    //         return DV::error('Invalid refund status.');
+    //     }
 
-        DB::beginTransaction();
-        try {
-            $updated = DB::table('deposit_refunds')
-                ->where('contract_id', $contract_id)
-                ->update([
-                    'status' => $status,
-                    'updated_at' => now()
-                ]);
+    //     DB::beginTransaction();
+    //     try {
+    //         $updated = DB::table('deposit_refunds')
+    //             ->where('contract_id', $contract_id)
+    //             ->update([
+    //                 'status' => $status,
+    //                 'updated_at' => now()
+    //             ]);
 
-            if ($updated) {
-                // If status is 'refunded' or 'completed', sync to the deposits table
-                if ($status === 'refunded' || $status === 'completed') {
-                    $refundedStatusId = DB::table('deposit_statuses')
-                        ->where(function ($q) {
-                            $q->whereRaw('LOWER(TRIM(name)) = ?', ['refunded'])
-                              ->orWhereRaw('LOWER(TRIM(status_code)) = ?', ['refunded']);
-                        })
-                        ->value('id') ?? 3;
+    //         if ($updated) {
+    //             // If status is 'refunded' or 'completed', sync to the deposits table
+    //             if ($status === 'refunded' || $status === 'completed') {
+    //                 $refundedStatusId = DB::table('deposit_statuses')
+    //                     ->where(function ($q) {
+    //                         $q->whereRaw('LOWER(TRIM(name)) = ?', ['refunded'])
+    //                           ->orWhereRaw('LOWER(TRIM(status_code)) = ?', ['refunded']);
+    //                     })
+    //                     ->value('id') ?? 3;
 
-                    DB::table('deposits')
-                        ->where('contract_id', $contract_id)
-                        ->update([
-                            'status_id' => $refundedStatusId,
-                            'update_user' => $ss->full_name ?? 'Admin',
-                            'updated_at' => getNowTime()
-                        ]);
-                }
-            }
+    //                 DB::table('deposits')
+    //                     ->where('contract_id', $contract_id)
+    //                     ->update([
+    //                         'status_id' => $refundedStatusId,
+    //                         'update_user' => $ss->full_name ?? 'Admin',
+    //                         'updated_at' => getNowTime()
+    //                     ]);
+    //             }
+    //         }
 
-            DB::commit();
-            return DV::depends(1, ['Refund status', 'updated']);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return DV::error('Failed to update refund status: ' . $e->getMessage());
-        }
-    }
+    //         DB::commit();
+    //         return DV::depends(1, ['Refund status', 'updated']);
+    //     } catch (\Exception $e) {
+    //         DB::rollBack();
+    //         return DV::error('Failed to update refund status: ' . $e->getMessage());
+    //     }
+    // }
 
     
 }
