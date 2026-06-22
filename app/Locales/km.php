@@ -428,10 +428,32 @@ return [
         'View Reservation' => 'មើលព័ត៌មានការកក់',
         'Create Amenity' => 'បង្កើតបរិកា្ខរសេវាកម្ម',
         'Modify Amenity' => 'កែប្រែបរិកា្ខរសេវាកម្ម',
+        'Item Description' => 'បញ្ជីរាយមុខទំនិញ',
+        'Qty' => 'ចំនួន',
+        'Tax %' => 'ពន្ធ %',
+        'SubTotal' => 'សរុបរង',
+        'Tax Amount' => 'តម្លៃពន្ធ',
+        'Total Amount' => 'តម្លៃសរុប',
+        'Total Discount' => 'បញ្ចុះតម្លៃសរុប',
+        'Grand (Net)' => 'សរុប',
+
 
         'Active' => 'សកម្ម',
         'Inactive' => 'អសកម្ម',
         'Service Prices' => 'តំលៃសេវាកម្ម',
+
+        'Deposit Management' => 'ការគ្រប់គ្រងប្រាក់កក់',
+        'Contract Period' => 'រយៈពេលកិច្ចសន្យា',
+        'Deposit Date' => 'ថ្ងៃខែប្រាក់កក់',
+        'Refund Amount' => 'ចំនួនសងវិញ',
+        'Refund Details' => 'ព័ត៌មានលម្អិតអំពីការសងប្រាក់វិញ',
+        'View Refund' => 'មើលការសងប្រាក់',
+        'Refund On' => 'ថ្ងៃខែសងប្រាក់',
+        'Receive Deposit' => 'ទទួលប្រាក់កក់',
+        'Delete Deposit' => 'លុបប្រាក់កក់',
+        '' => '',
+
+
         
 
 
@@ -460,6 +482,7 @@ return [
         'Bill Payments' => 'ទូទាត់វិក្កយបត្រ',
         'Service Price' => 'តំលៃសេវាកម្ម',
         'Vendors' => 'អ្នកផ្គត់ផ្គង់',
+        'Deposits' => 'ប្រាក់កក់',
 
         'Bills' => 'វិក្កយបត្រចំណាយ',
         'Bill Payment' => 'ការទូទាត់វិក័យប័ត្រ',
@@ -650,6 +673,8 @@ return [
         'Add Location' => 'បង្កើតទីតាំង',
 
         'Confirm Payment' => 'បញ្ជាក់ការទូទាត់',
+        'Terminate' => 'បញ្ចប់កិច្ចសន្យា',
+        'Terminate Contract' => 'បញ្ចប់កិច្ចសន្យា',
 
 
 
@@ -698,6 +723,7 @@ return [
         'Booking Date' => 'ថ្ងៃកក់',
         'Expired Date' => 'ថ្ងៃផុតកំណត់',
         'Booking Amount' => 'ចំនួនទឹកប្រាក់កក់',
+        'Amenity Code' => 'លេខកូដបន្ទប់',
 
         'Full Name' => 'ឈ្មោះពេញ',
         'Email' => 'អ៊ីមែល',
@@ -788,7 +814,16 @@ return [
         'Service Name' => 'ឈ្មោះសេវាកម្ម',
         'Unit Type' => 'ប្រភេទឯកតា',
         'Name' => 'ឈ្មោះ',
-        '' => '',
+
+
+        'Deposit Amount' => 'ចំនួនប្រាក់កក់',
+        'Deduct Amount' => 'ចំនួនប្រាក់ដែលត្រូវកាត់ចេញ',
+        'Refund Amount' => 'ចំនួនទឹកប្រាក់សងវិញ',
+        'Refunded on' => 'ថ្ងៃខែសងប្រាក់កក់',
+        'Payment Amount ($)' => 'ចំនួនទឹកប្រាក់ត្រូវបង់ ($)',
+        'Deposit Owed ($)' => 'ចំនួនប្រាក់កក់ ($)',
+
+
 
 
 

@@ -688,6 +688,13 @@ class Contract
                 ->where('contract_id', $id)
                 ->orderBy('id', 'desc')
                 ->first();
+
+            $deposit = DB::table('deposits as d')
+                ->leftJoin('deposit_statuses as ds', 'ds.id', '=', 'd.status_id')
+                ->where('d.contract_id', $id)
+                ->select('ds.status_code')
+                ->first();
+            $row->deposit_status = $deposit->status_code ?? 'pending';
         }
         return $row;
     }
@@ -950,6 +957,19 @@ class Contract
         }
         if ($contract->status_id !==  $activeStatusId) {
             return DV::error('Only active contracts can be terminated');
+        }
+
+        $hasPendingDeposit = DB::table('deposits as d')
+            ->leftJoin('deposit_statuses as ds', 'ds.id', '=', 'd.status_id')
+            ->where('d.contract_id', $id)
+            ->where(function ($q) {
+                $q->whereIn(DB::raw('LOWER(TRIM(ds.status_code))'), ['pending', 'unpaid'])
+                  ->orWhereNull('d.status_id');
+            })
+            ->exists();
+
+        if ($hasPendingDeposit) {
+            return DV::error('Cannot terminate contract because the deposit is still pending/unpaid.');
         }
 
         DB::beginTransaction();
