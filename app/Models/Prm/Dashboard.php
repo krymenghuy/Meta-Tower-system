@@ -13,212 +13,171 @@ class Dashboard extends VSModel
         $this->id = $id;
         $this->userInfo = $userInfo;
     }
-
-public static function getDataDashboard($arr, $ss = null)
-{
-
-    $d = (object)$arr;
-    $building_id = (int)($d->building_id ?? 1);
-    $month = $d->month ?? date('m');
-    $year = $d->year ?? date('Y');
-
-    return (object)[
-
-        'card_top' => self::summarizeDashboardCardTop($arr, $ss),
-
-        'cards' => self::summarizeDashboardCards($arr, $ss),
-
-        'activities' => self::getActivities($building_id, $ss),
-
-        'lease_expiry' => self::getLeaseExpiry($building_id, $ss),
-
-        'occupancy_by_floor' => self::getOccupancyByFloor($building_id, $ss),
-
-        'revenue_trend' => self::getRevenueTrend($arr, $month, $year),
-
-        'invoice_status' => self::getInvoiceStatus($building_id, $ss),
-
-        'revenue_breakdown' => self::getRevenueBreakdown($building_id, $ss),
-
-        'collection_kpis' => self::getCollectionKPIs($building_id, $ss),
-    ];
-}
-
-    public static function summarizeDashboardCardTop($arr, $ss)
+    private static function parseFilter($arr)
     {
         $d = (object)$arr;
+
+        return (object)[
+            'building_id' => (int)($d->building_id ?? 1),
+            'month' => (int)($d->month ?? date('m')),
+            'year' => (int)($d->year ?? date('Y')),
+        ];
+    }
+
+    public static function getDataDashboard($arr, $ss = null)
+    {
+        $f = self::parseFilter($arr);
+
+        return (object)[
+            'card_top' => self::summarizeDashboardCardTop($f, $ss),
+            'cards' => self::summarizeDashboardCards($f, $ss),
+            'activities' => self::getActivities($f, $ss),
+            'lease_expiry' => self::getLeaseExpiry($f, $ss),
+            'occupancy_by_floor' => self::getOccupancyByFloor($f, $ss),
+            'revenue_trend' => self::getRevenueTrend($f, $f->month, $f->year),
+            'invoice_status' => self::getInvoiceStatus($f->building_id, $f->month, $f->year),
+            'revenue_breakdown' => self::getRevenueBreakdown($f, $ss),
+            'collection_kpis' => self::getCollectionKPIs($f->building_id, $f->month, $f->year),
+        ];
+    }
+
+    public static function summarizeDashboardCardTop($f, $ss)
+    {
+        $d = (object)$f;
+
         $building_id = $d->building_id ?? null;
-        $today = Carbon::today();
-        $currentMonth = $today->month;
-        $currentYear = $today->year;
+        $month = (int)($d->month ?? date('m'));
+        $year  = (int)($d->year ?? date('Y'));
+
+        $periodDate = Carbon::createFromDate($year, $month, 1);
         $totalSpaces = DB::table('building_spaces')
             ->where('building_id', $building_id)
             ->count();
-
         $occupiedSpaces = DB::table('building_spaces')
             ->where('building_id', $building_id)
             ->where('status_id', 3)
             ->count();
-
         $avgLeaseMonths = DB::table('contracts')
-            // ->where('building_id', $building_id)
             ->whereNotNull('start_date')
             ->whereNotNull('end_date')
             ->selectRaw('AVG(TIMESTAMPDIFF(MONTH, start_date, end_date)) as avg_months')
             ->value('avg_months');
 
         $avgLeaseMonths = $avgLeaseMonths ? round($avgLeaseMonths) : 0;
-     
         $occupancyRate = $totalSpaces > 0
             ? round(($occupiedSpaces / $totalSpaces) * 100)
             : 0;
-
-          
-        $monthlyRevenue = DB::table('invoices')
-            ->whereMonth('issue_date', $currentMonth)
-            ->whereYear('issue_date', $currentYear)
-            ->sum('paid_amount');
-
-        $outstandingAmount = DB::table('invoices')
-            ->where('payment_status_id', 0)
-            ->sum('due_amount');
-
+        $monthlyRevenue = DB::table('invoices as i')
+            ->join('building_spaces as bs', 'bs.id', '=', 'i.space_id')
+            ->where('bs.building_id', $building_id)
+            ->whereMonth('i.issue_date', $month)
+            ->whereYear('i.issue_date', $year)
+            ->sum('i.paid_amount');
+        $outstandingAmount = DB::table('invoices as i')
+            ->join('building_spaces as bs', 'bs.id', '=', 'i.space_id')
+            ->where('bs.building_id', $building_id)
+            ->where('i.payment_status_id', 0)
+            ->whereMonth('i.issue_date', $month)
+            ->whereYear('i.issue_date', $year)
+            ->sum('i.due_amount');
         $collectionRate = ($monthlyRevenue + $outstandingAmount) > 0
             ? round(($monthlyRevenue / ($monthlyRevenue + $outstandingAmount)) * 100)
             : 0;
-        $period = $today->format('F Y');
+
         return (object)[
-            'period' => $period,
+            'period' => $periodDate->format('F Y'),
             'occupancy_rate' => $occupancyRate,
             'monthly_revenue' => round($monthlyRevenue, 2),
             'collection_rate' => $collectionRate
         ];
-       
     }
-    public static function summarizeDashboardCards($arr, $ss)
+   public static function summarizeDashboardCards($f, $ss)
     {
-        $subs_id = $ss->subs_id;
-        $bin_subs_id = hex2bin($subs_id);
-        $d = (object)$arr;
+        $d = (object)$f;
+
         $building_id = (int)($d->building_id ?? 1);
-        
+        $month = (int)($d->month ?? date('m'));
+        $year  = (int)($d->year ?? date('Y'));
         $result = new \stdClass();
-        $today = Carbon::today();
-        $currentMonth = $today->month;
-        $currentYear = $today->year;
         $totalSpaces = DB::table('building_spaces')
             ->where('building_id', $building_id)
             ->count();
-
         $occupiedSpaces = DB::table('building_spaces')
             ->where('building_id', $building_id)
             ->where('status_id', 3)
             ->count();
-
         $vacantSpaces = max($totalSpaces - $occupiedSpaces, 0);
         $avgLeaseMonths = DB::table('contracts')
-            // ->where('building_id', $building_id)
             ->whereNotNull('start_date')
             ->whereNotNull('end_date')
             ->selectRaw('AVG(TIMESTAMPDIFF(MONTH, start_date, end_date)) as avg_months')
             ->value('avg_months');
-
         $avgLeaseMonths = $avgLeaseMonths ? round($avgLeaseMonths) : 0;
         $avgLeaseTerm = $avgLeaseMonths . ' months';
-       
-
         $activeTenants = DB::table('tenants')
             ->where('status_id', 2)
             ->count();
-
         $newTenants = DB::table('tenants')
-            ->whereMonth('created_at', $currentMonth)
-            ->whereYear('created_at', $currentYear)
+            ->whereMonth('created_at', $month)
+            ->whereYear('created_at', $year)
             ->count();
-
         $occupancyRate = $totalSpaces > 0
             ? round(($occupiedSpaces / $totalSpaces) * 100)
             : 0;
-
-            $prevDate = Carbon::today()->subMonth();
-
-    $prevOccupied = DB::table('building_spaces')
-        ->where('building_id', $building_id)
-        ->where('status_id', 3)
-        ->whereMonth('updated_at', $prevDate->month)
-        ->whereYear('updated_at', $prevDate->year)
-        ->count();
-
-    $prevTotal = DB::table('building_spaces')
-        ->where('building_id', $building_id)
-        ->whereDate('created_at', '<=', $prevDate->endOfMonth())
-        ->count();
-
-    $prevRate = $prevTotal > 0
-        ? ($prevOccupied / $prevTotal) * 100
-        : 0;
-        $diff = round($occupancyRate - $prevRate, 1);
-
-    $trend = ($diff >= 0 ? '↑ +' : '↓ ') . abs($diff) . '% this month';
-
-        /* =========================
-        REVENUE DATA
-        ========================== */
-
-        $monthlyRevenue = DB::table('invoices')
-            ->whereMonth('issue_date', $currentMonth)
-            ->whereYear('issue_date', $currentYear)
-            ->sum('paid_amount');
-
-        $outstandingAmount = DB::table('invoices')
-            ->where('payment_status_id', 0)
-            ->sum('due_amount');
-
-        $overdueInvoices = DB::table('invoices')
-            ->where('payment_status_id', 4)
-            ->whereDate('due_date', '<', $today)
+        $prevDate = Carbon::create($year, $month, 1)->subMonth();
+        $prevOccupied = DB::table('building_spaces')
+            ->where('building_id', $building_id)
+            ->where('status_id', 3)
+            ->whereMonth('updated_at', $prevDate->month)
+            ->whereYear('updated_at', $prevDate->year)
             ->count();
-
-        $previousRevenue = DB::table('invoices')
-            ->whereMonth('issue_date', $today->copy()->subMonth()->month)
-            ->whereYear('issue_date', $today->copy()->subMonth()->year)
-            ->sum('amount');
-
+        $prevTotal = DB::table('building_spaces')
+            ->where('building_id', $building_id)
+            ->whereDate('created_at', '<=', $prevDate->endOfMonth())
+            ->count();
+        $prevRate = $prevTotal > 0
+            ? ($prevOccupied / $prevTotal) * 100
+            : 0;
+        $diff = round($occupancyRate - $prevRate, 1);
+        $trend = ($diff >= 0 ? '↑ +' : '↓ ') . abs($diff) . '% this month';
+        $monthlyRevenue = DB::table('invoices as i')
+            ->join('building_spaces as bs', 'bs.id', '=', 'i.space_id')
+            ->where('bs.building_id', $building_id)
+            ->whereMonth('i.issue_date', $month)
+            ->whereYear('i.issue_date', $year)
+            ->sum('i.paid_amount');
+        $outstandingAmount = DB::table('invoices as i')
+            ->join('building_spaces as bs', 'bs.id', '=', 'i.space_id')
+            ->where('bs.building_id', $building_id)
+            ->where('i.payment_status_id', 0)
+            ->whereMonth('i.issue_date', $month)
+            ->whereYear('i.issue_date', $year)
+            ->sum('i.due_amount');
+        $overdueInvoices = DB::table('invoices as i')
+            ->join('building_spaces as bs', 'bs.id', '=', 'i.space_id')
+            ->where('bs.building_id', $building_id)
+            ->where('i.payment_status_id', 4)
+            ->whereMonth('i.issue_date', $month)
+            ->whereYear('i.issue_date', $year)
+            ->count();
+        $previousRevenue = DB::table('invoices as i')
+            ->join('building_spaces as bs', 'bs.id', '=', 'i.space_id')
+            ->where('bs.building_id', $building_id)
+            ->whereMonth('i.issue_date', $prevDate->month)
+            ->whereYear('i.issue_date', $prevDate->year)
+            ->sum('i.paid_amount');
         $revenueGrowth = $previousRevenue > 0
             ? round((($monthlyRevenue - $previousRevenue) / $previousRevenue) * 100, 1)
             : 0;
-
-        $collectionRate = ($monthlyRevenue + $outstandingAmount) > 0
-            ? round(($monthlyRevenue / ($monthlyRevenue + $outstandingAmount)) * 100)
-            : 0;
-
-        /* =========================
-        PERIOD
-        ========================== */
-
-        $result->period = $today->format('F Y');
-
-        /* =========================
-        SUMMARY (TOP CARDS)
-        ========================== */
-
         $result->summary = (object)[
-            'occupancy_rate' => $occupancyRate,
             'occupied_spaces' => $occupiedSpaces,
             'total_spaces' => $totalSpaces,
             'active_tenants' => $activeTenants,
             'new_tenants' => $newTenants,
-            'monthly_revenue' => round($monthlyRevenue, 2),
             'revenue_growth' => $revenueGrowth,
             'outstanding_amount' => round($outstandingAmount, 2),
             'overdue_invoices' => $overdueInvoices,
-            'collection_rate' => $collectionRate
         ];
-
-        /* =========================
-        MINI STATS
-        ========================== */
-
         $result->mini_stats = [
             (object)[
                 'label' => 'Average Lease Term',
@@ -237,78 +196,74 @@ public static function getDataDashboard($arr, $ss = null)
                 'value' => $overdueInvoices
             ]
         ];
-
-        /* =========================
-        KPI CARDS
-        ========================== */
-
         $result->kpis = [
-
-    (object)[
-        'key' => 'occupancy',
-        'title' => 'Occupancy Rate',
-        'value' => $occupancyRate . '%',
-        'note' => "$occupiedSpaces / $totalSpaces spaces occupied",
-        'trend' => $trend,
-        'icon' => '🏢',
-        'color' => '#4F46E5',          // violet
-        'soft'  => 'rgba(79,70,229,.11)'
-    ],
-
-    (object)[
-        'key' => 'tenants',
-        'title' => 'Active Tenants',
-        'value' => $activeTenants,
-        'note' => 'Registered companies',
-        'trend' => "+$newTenants new tenants",
-        'icon' => '👥',
-        'color' => '#10B981',          // green
-        'soft'  => 'rgba(16,185,129,.12)'
-    ],
-
-    (object)[
-        'key' => 'revenue',
-        'title' => 'Monthly Revenue',
-        'value' => '$' . number_format($monthlyRevenue, 2),
-        'note' => 'Rent + utilities + service fees',
-        'trend' => "↑ {$revenueGrowth}% vs last month",
-        'icon' => '💳',
-        'color' => '#0EA5E9',          // blue
-        'soft'  => 'rgba(14,165,233,.12)'
-    ],
-
-    (object)[
-        'key' => 'receivables',
-        'title' => 'Outstanding',
-        'value' => '$' . number_format($outstandingAmount, 2),
-        'note' => "$overdueInvoices overdue invoices",
-        'trend' => 'Requires follow-up',
-        'icon' => '⚠',
-        'color' => '#EF4444',          // red
-        'soft'  => 'rgba(239,68,68,.12)'
-    ]
-];
-            return $result;
-        }
-    public static function getCharts($building_id, $ss){
-        $result = new \stdClass();
-
-    
-
-        $result->occupancy_by_floor = self::getOccupancyByFloor($building_id,$ss);
-        $result->revenue_trend = self::getRevenueTrend($building_id, 6);
-        $result->invoice_status = self::getInvoiceStatus($building_id,$ss);
-        $result->revenue_breakdown = self::getRevenueBreakdown($building_id,$ss);
-
-        $result->collection_kpis = self::getCollectionKPIs($building_id,$ss);
+            (object)[
+                'key' => 'occupancy',
+                'title' => 'Occupancy Rate',
+                'value' => $occupancyRate . '%',
+                'note' => "$occupiedSpaces / $totalSpaces spaces occupied",
+                'trend' => $trend,
+                'icon' => '🏢',
+                'color' => "COLORS.violet",
+                'soft' => "rgba(79,70,229,.11)"
+            ],
+            (object)[
+                'key' => 'tenants',
+                'title' => 'Active Tenants',
+                'value' => $activeTenants,
+                'note' => 'Registered companies',
+                'trend' => "+$newTenants new tenants",
+                'icon' => '👥',
+                'color' => "COLORS.success",
+                'soft' => "rgba(16,185,129,.12)"
+            ],
+            (object)[
+                'key' => 'revenue',
+                'title' => 'Monthly Revenue',
+                'value' => '$' . number_format($monthlyRevenue, 2),
+                'note' => 'Rent + utilities + service fees',
+                'trend' => "↑ {$revenueGrowth}%",
+                'icon' => '💳',
+                'color' => "COLORS.info",
+                'soft' => "rgba(14,165,233,.12)"
+            ],
+            (object)[
+                'key' => 'receivables',
+                'title' => 'Outstanding',
+                'value' => '$' . number_format($outstandingAmount, 2),
+                'note' => "$overdueInvoices overdue invoices",
+                'trend' => 'Requires follow-up',
+                'icon' => '⚠','color' => "COLORS.danger",
+                'soft' => "rgba(239,68,68,.12)"
+            ]
+        ];
 
         return $result;
     }
-    public static function getOccupancyByFloor($building_id,$ss)
+    public static function getCharts($f, $ss)
     {
+        $result = new \stdClass();
+
+        $building_id = $f->building_id;
+        $month = $f->month;
+        $year  = $f->year;
+
+        $result->occupancy_by_floor = self::getOccupancyByFloor($building_id, $ss);
+        $result->revenue_trend = self::getRevenueTrend($f, $month, $year);
+        $result->invoice_status = self::getInvoiceStatus($building_id, $month, $year);
+        $result->revenue_breakdown = self::getRevenueBreakdown($f, $ss);
+        $result->collection_kpis = self::getCollectionKPIs($building_id, $month, $year);
+        return $result;
+    }
+     public static function getOccupancyByFloor($f, $ss)
+    {
+        $d = (object)$f;
+
+        $building_id = $d->building_id ?? null;
+
         $rows = DB::table('building_spaces')
             ->selectRaw("
-                CONCAT('Floor ', floor_id) as floor,
+                floor_id,
                 COUNT(*) as total,
                 SUM(CASE WHEN status_id = 3 THEN 1 ELSE 0 END) as occupied_count,
                 SUM(CASE WHEN status_id = 2 THEN 1 ELSE 0 END) as booked_count,
@@ -321,79 +276,72 @@ public static function getDataDashboard($arr, $ss = null)
 
         return $rows->map(function ($r) {
 
-            $total = max((int)$r->total, 1); // prevent divide by 0
+            $total = max((int)$r->total, 1);
 
             return (object)[
-                'floor' => $r->floor,
-                'occupied' => round(($r->occupied_count / $total) * 100, 1),
-                'booked' => round(($r->booked_count / $total) * 100, 1),
-                'available' => round(($r->available_count / $total) * 100, 1),
+                'floor' => 'Floor ' . $r->floor_id,
+                'occupied' => round(((int)$r->occupied_count / $total) * 100, 1),
+                'booked' => round(((int)$r->booked_count / $total) * 100, 1),
+                'available' => round(((int)$r->available_count / $total) * 100, 1),
             ];
         });
     }
-    public static function getRevenueTrend($arr = [], $month, $year)
+    public static function getRevenueTrend($f, $months = 6,$year=null)
     {
+        $building_id = $f->building_id;
+
         $labels = [];
         $rent = [];
         $utility = [];
         $service = [];
-        $service_request = [];
 
-        $d = (object)$arr;
-        $building_id = $d->building_id ?? null;
+        for ($i = $months - 1; $i >= 0; $i--) {
 
-        $baseQuery = DB::table('invoice_items as i')
-            ->join('invoices as v', 'v.id', '=', 'i.invoice_id')
-            ->join('building_spaces as bs', 'bs.id', '=', 'v.space_id')
-            ->whereMonth('v.issue_date', $month)
-            ->whereYear('v.issue_date', $year);
+            $date = now()->subMonths($i);
+            $month = $date->month;
+            $year = $date->year;
 
-        if ($building_id) {
-            $baseQuery->where('bs.building_id', $building_id);
+            $labels[] = $date->format('M Y');
+
+            $base = DB::table('invoice_items as ii')
+                ->join('invoices as i', 'i.id', '=', 'ii.invoice_id')
+                ->join('building_spaces as bs', 'bs.id', '=', 'i.space_id')
+                ->where('bs.building_id', $building_id)
+                ->whereMonth('i.issue_date', $month)
+                ->whereYear('i.issue_date', $year);
+
+            $rent[] = (clone $base)->where('ii.type', 'rent')->sum('ii.amount');
+            $utility[] = (clone $base)->where('ii.type', 'utility')->sum('ii.amount');
+            $service[] = (clone $base)->where('ii.type', 'service')->sum('ii.amount');
         }
-
-        $month = (int) (is_array($month) ? ($month[0] ?? date('m')) : $month);
-        $year  = (int) (is_array($year) ? ($year[0] ?? date('Y')) : $year);
-
-        $date = Carbon::createFromDate($year ?: date('Y'), $month ?: date('m'), 1);
-        $labels[] = $date->format('M Y');
-
-        $rent[] = (clone $baseQuery)
-            ->where('i.type', 'rent')
-            ->sum('i.amount');
-
-        $utility[] = (clone $baseQuery)
-            ->where('i.type', 'utility')
-            ->sum('i.amount');
-
-        $service[] = (clone $baseQuery)
-            ->where('i.type', 'service')
-            ->sum('i.amount');
-
-        $service_request[] = (clone $baseQuery)
-            ->where('i.type', 'Service Request')
-            ->sum('i.amount');
 
         return (object)[
             'labels' => $labels,
             'rent' => $rent,
             'utility' => $utility,
-            'service_fee' => $service,
-            'service_request' => $service_request
+            'service_fee' => $service
         ];
     }
-    public static function getRevenueBreakdown($building_id,$ss)
+    public static function getRevenueBreakdown($f, $ss)
     {
-        $data = DB::table('invoice_items as ii')
+        $d = (object)$f;
+
+        $building_id = $d->building_id ?? null;
+        $month = $d->month ?? date('m');
+        $year  = $d->year ?? date('Y');
+
+        $query = DB::table('invoice_items as ii')
             ->join('invoices as i', 'i.id', '=', 'ii.invoice_id')
             ->join('building_spaces as bs', 'bs.id', '=', 'i.space_id')
             ->where('bs.building_id', $building_id)
-            ->selectRaw("
-                SUM(CASE WHEN ii.type = 'rent' THEN ii.amount ELSE 0 END) as rent,
-                SUM(CASE WHEN ii.type = 'utility' THEN ii.amount ELSE 0 END) as utility,
-                SUM(CASE WHEN ii.type = 'service' THEN ii.amount ELSE 0 END) as service
-            ")
-            ->first();
+            ->whereMonth('i.issue_date', $month)
+            ->whereYear('i.issue_date', $year);
+
+        $data = (clone $query)->selectRaw("
+            SUM(CASE WHEN ii.type = 'rent' THEN ii.amount ELSE 0 END) as rent,
+            SUM(CASE WHEN ii.type = 'utility' THEN ii.amount ELSE 0 END) as utility,
+            SUM(CASE WHEN ii.type = 'service' THEN ii.amount ELSE 0 END) as service
+        ")->first();
 
         $rent = (float) ($data->rent ?? 0);
         $utility = (float) ($data->utility ?? 0);
@@ -401,27 +349,27 @@ public static function getDataDashboard($arr, $ss = null)
 
         $total = $rent + $utility + $service;
 
-        if ($total <= 0) {
-            return (object)[
-                'labels' => ['Rent', 'Utility', 'Service'],
-                'values' => [0, 0, 0]
-            ];
-        }
-
         return (object)[
             'labels' => ['Rent', 'Utility', 'Service'],
-            'values' => [
-                round(($rent / $total) * 100, 1),
-                round(($utility / $total) * 100, 1),
-                round(($service / $total) * 100, 1),
-            ]
+            'values' => $total > 0
+                ? [
+                    round(($rent / $total) * 100, 1),
+                    round(($utility / $total) * 100, 1),
+                    round(($service / $total) * 100, 1),
+                ]
+                : [0, 0, 0]
         ];
     }
-    public static function getInvoiceStatus($building_id, $ss)
+    public static function getInvoiceStatus($building_id, $month = null, $year = null)
     {
+        $month = (int)($month ?? date('m'));
+        $year  = (int)($year ?? date('Y'));
+
         $data = DB::table('invoices as i')
             ->join('building_spaces as bs', 'bs.id', '=', 'i.space_id')
             ->where('bs.building_id', $building_id)
+            ->whereMonth('i.issue_date', $month)
+            ->whereYear('i.issue_date', $year)
             ->selectRaw("
                 SUM(CASE WHEN i.payment_status_id = 1 THEN 1 ELSE 0 END) as paid,
                 SUM(CASE WHEN i.payment_status_id = 2 THEN 1 ELSE 0 END) as pending,
@@ -440,7 +388,13 @@ public static function getDataDashboard($arr, $ss = null)
         if ($total <= 0) {
             return (object)[
                 'labels' => ['Paid', 'Pending', 'Partially Paid', 'Overdue'],
-                'values' => [0, 0, 0, 0]
+                'values' => [0, 0, 0, 0],
+                'raw' => (object)[
+                    'paid' => 0,
+                    'pending' => 0,
+                    'partially_paid' => 0,
+                    'overdue' => 0
+                ]
             ];
         }
 
@@ -451,67 +405,55 @@ public static function getDataDashboard($arr, $ss = null)
                 round(($pending / $total) * 100, 1),
                 round(($partially / $total) * 100, 1),
                 round(($overdue / $total) * 100, 1),
+            ],
+            'raw' => (object)[
+                'paid' => $paid,
+                'pending' => $pending,
+                'partially_paid' => $partially,
+                'overdue' => $overdue
             ]
         ];
     }
-    public static function getCollectionKPIs($building_id,$ss)
+    public static function getCollectionKPIs($building_id, $month = null, $year = null)
     {
-        $rentTotal = DB::table('invoices as i')
-            ->join('building_spaces as bs', 'bs.id', '=', 'i.space_id')
-            ->where('bs.building_id', $building_id)
-            ->sum('i.amount');
+        $month = (int)($month ?? date('m'));
+        $year  = (int)($year ?? date('Y'));
 
-        $rentPaid = DB::table('invoices as i')
-            ->join('building_spaces as bs', 'bs.id', '=', 'i.space_id')
-            ->where('bs.building_id', $building_id)
-            ->where('i.payment_status_id', 1)
-            ->sum('i.amount');
-
-        $electricityTotal = DB::table('invoice_items as ii')
+        $base = DB::table('invoice_items as ii')
             ->join('invoices as i', 'i.id', '=', 'ii.invoice_id')
             ->join('building_spaces as bs', 'bs.id', '=', 'i.space_id')
             ->where('bs.building_id', $building_id)
-            ->where('ii.type', 'utility')
-            ->sum('ii.amount');
+            ->whereMonth('i.issue_date', $month)
+            ->whereYear('i.issue_date', $year);
 
-        $electricityPaid = DB::table('invoice_items as ii')
-            ->join('invoices as i', 'i.id', '=', 'ii.invoice_id')
-            ->join('building_spaces as bs', 'bs.id', '=', 'i.space_id')
-            ->where('bs.building_id', $building_id)
-            ->where('ii.type', 'utility')
-            ->where('i.payment_status_id', 1)
-            ->sum('ii.amount');
+        $rentTotal = (clone $base)->sum('i.amount');
+        $rentPaid = (clone $base)->where('i.payment_status_id', 1)->sum('i.amount');
 
-        $serviceTotal = DB::table('invoice_items as ii')
-            ->join('invoices as i', 'i.id', '=', 'ii.invoice_id')
-            ->join('building_spaces as bs', 'bs.id', '=', 'i.space_id')
-            ->where('bs.building_id', $building_id)
-            ->where('ii.type', 'service')
-            ->sum('ii.amount');
+        $electricityTotal = (clone $base)->where('ii.type', 'utility')->sum('ii.amount');
+        $electricityPaid = (clone $base)->where('ii.type', 'utility')
+            ->where('i.payment_status_id', 1)->sum('ii.amount');
 
-        $servicePaid = DB::table('invoice_items as ii')
-            ->join('invoices as i', 'i.id', '=', 'ii.invoice_id')
-            ->join('building_spaces as bs', 'bs.id', '=', 'i.space_id')
-            ->where('bs.building_id', $building_id)
-            ->where('ii.type', 'service')
-            ->where('i.payment_status_id', 1)
-            ->sum('ii.amount');
-
-        $occupancyRate = DB::table('building_spaces')
+        $serviceTotal = (clone $base)->where('ii.type', 'service')->sum('ii.amount');
+        $servicePaid = (clone $base)->where('ii.type', 'service')
+            ->where('i.payment_status_id', 1)->sum('ii.amount');
+        $occupied = DB::table('building_spaces')
             ->where('building_id', $building_id)
             ->where('status_id', 3)
             ->count();
-
         $totalSpaces = DB::table('building_spaces')
             ->where('building_id', $building_id)
             ->count();
-
         $occupancyPercent = $totalSpaces > 0
-            ? round(($occupancyRate / $totalSpaces) * 100, 1)
+            ? round(($occupied / $totalSpaces) * 100, 1)
             : 0;
-
-        $leaseRenewal = 88;
-
+        $leaseRenewal = DB::table('contracts as c')
+            ->join('building_spaces as bs', 'bs.id', '=', 'c.space_id')
+            ->where('bs.building_id', $building_id)
+            ->whereBetween('c.end_date', [
+                now(),
+                now()->addDays(30)
+            ])
+            ->count();
         return [
             (object)[
                 'title' => 'Rent Collection',
@@ -545,39 +487,39 @@ public static function getDataDashboard($arr, $ss = null)
             ],
         ];
     }
-    public static function getActivities($building_id, $ss)
+    public static function getActivities($f, $ss)
     {
+        $d = (object)$f;
+
+        $building_id = $d->building_id ?? null;
+        $month = (int)($d->month ?? date('m'));
+        $year  = (int)($d->year ?? date('Y'));
         $result = new \stdClass();
-
-        /* =========================
-        INSIGHTS (DYNAMIC)
-        ========================== */
-
         $totalSpaces = DB::table('building_spaces')
             ->where('building_id', $building_id)
             ->count();
-
         $occupied = DB::table('building_spaces')
             ->where('building_id', $building_id)
             ->where('status_id', 3)
             ->count();
-
         $occupancyRate = $totalSpaces > 0
             ? round(($occupied / $totalSpaces) * 100, 1)
             : 0;
-
         $overdueInvoices = DB::table('invoices as i')
             ->join('building_spaces as bs', 'bs.id', '=', 'i.space_id')
             ->where('bs.building_id', $building_id)
             ->where('i.payment_status_id', 4)
+            ->whereMonth('i.issue_date', $month)
+            ->whereYear('i.issue_date', $year)
             ->count();
-
         $expiringContracts = DB::table('contracts as c')
             ->join('building_spaces as bs', 'bs.id', '=', 'c.space_id')
             ->where('bs.building_id', $building_id)
-            ->whereDate('c.end_date', '<=', Carbon::today()->addDays(30))
+            ->whereBetween('c.end_date', [
+                Carbon::create($year, $month, 1),
+                Carbon::create($year, $month, 1)->addMonth()->endOfMonth()
+            ])
             ->count();
-
         $result->insights = [
             (object)[
                 'level' => $occupancyRate >= 90 ? 'success' : 'warning',
@@ -587,7 +529,7 @@ public static function getDataDashboard($arr, $ss = null)
             (object)[
                 'level' => 'success',
                 'title' => 'Revenue trending stable',
-                'note' => 'No abnormal drop detected this month.'
+                'note' => 'No abnormal drop detected this period.'
             ],
             (object)[
                 'level' => $expiringContracts > 0 ? 'warning' : 'success',
@@ -600,11 +542,6 @@ public static function getDataDashboard($arr, $ss = null)
                 'note' => 'Collection monitoring active.'
             ]
         ];
-
-        /* =========================
-        ALERTS (REAL DATA)
-        ========================== */
-
         $result->alerts = [
             (object)[
                 'level' => $overdueInvoices > 0 ? 'danger' : 'success',
@@ -614,24 +551,20 @@ public static function getDataDashboard($arr, $ss = null)
             (object)[
                 'level' => 'warning',
                 'title' => 'Utility processing',
-                'note' => 'Some readings may still be pending.'
+                'note' => 'Pending meter updates for this period.'
             ],
             (object)[
                 'level' => 'success',
-                'title' => 'Payments updated',
-                'note' => 'Latest transactions synced successfully.'
+                'title' => 'System synced',
+                'note' => 'Latest data successfully updated.'
             ]
         ];
-
-        /* =========================
-        ACTIVITIES (OPTIONAL REAL LOG)
-        (fallback if no audit table yet)
-        ========================== */
-
         $result->activities = DB::table('invoices as i')
             ->join('tenants as t', 't.id', '=', 'i.tenant_id')
             ->join('building_spaces as bs', 'bs.id', '=', 'i.space_id')
             ->where('bs.building_id', $building_id)
+            ->whereMonth('i.created_at', $month)
+            ->whereYear('i.created_at', $year)
             ->orderBy('i.created_at', 'desc')
             ->limit(5)
             ->selectRaw("
@@ -639,14 +572,13 @@ public static function getDataDashboard($arr, $ss = null)
                 DATE_FORMAT(i.created_at, '%h:%i %p') as time
             ")
             ->get();
-
         return $result;
     }
-    public static function getLeaseExpiry($building_id, $ss)
-    {
-        $result = new \stdClass();
+   public static function getLeaseExpiry($f, $ss)
+   {
+        $d = (object)$f;
+        $building_id = $d->building_id ?? null;
         $today = Carbon::today();
-
         $rows = DB::table('contracts as c')
             ->join('tenants as t', 't.id', '=', 'c.tenant_id')
             ->join('building_spaces as bs', 'bs.id', '=', 'c.space_id')
@@ -660,38 +592,34 @@ public static function getDataDashboard($arr, $ss = null)
             ->orderBy('c.end_date', 'asc')
             ->limit(10)
             ->get();
-
+        $result = new \stdClass();
         $result->lease_expiry = $rows->map(function ($r) use ($today) {
-
             $expiry = Carbon::parse($r->expiry);
             $days = $today->diffInDays($expiry, false);
-
             if ($days < 0) {
                 $status = 'Expired';
                 $level = 'danger';
             } elseif ($days <= 7) {
-                $status = 'Due Soon';
+                $status = 'Expiring Soon';
                 $level = 'warning';
             } elseif ($days <= 30) {
-                $status = 'Pending';
+                $status = 'Upcoming';
                 $level = 'info';
             } else {
-                $status = 'Review';
+                $status = 'Active';
                 $level = 'success';
             }
-
             return (object)[
                 'tenant' => $r->tenant,
-                'floor' => (string) $r->floor,
-                'expiry' => $expiry->format('d M'),
+                'floor' => 'Floor ' . $r->floor,
+                'expiry' => $expiry->format('d M Y'),
                 'status' => $status,
-                'level' => $level
+                'level' => $level,
+                'days_left' => $days
             ];
         });
-
         return $result;
     }
-
     static function getFilterOptions($arr,$ss)
     {
 

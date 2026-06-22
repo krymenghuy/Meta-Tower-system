@@ -978,45 +978,77 @@ var DashboardComponent =  (() =>{
         ],
 
         onShow: (me) => {
+            vsapi.call(
+                `${main_view.base_url}/prm/dashboard/filter-options`,
+                {},
+                null,
+                { loader: false }
+            ).then(res => {
+                if (res.status_code !== 200) return;
 
-            vsapi.call(`${main_view.base_url}/prm/dashboard/filter-options`, {}, null, { loader: false })
-                .then(res => {
-                    if (res.status_code !== 200) return;
+                const d = res.data;
 
-                    const d = res.data;
+                VSUtil.setComboItems(
+                    me.controls.year,
+                    d.years,
+                    'year',
+                    'year'
+                );
 
-                    VSUtil.setComboItems(me.controls.year, d.years, 'year', 'year');
-                    VSUtil.setComboItems(me.controls.month, d.months, 'month', 'month_name');
-                    VSUtil.setComboItems(me.controls.building_id, d.buildings, 'id', 'building');
+                VSUtil.setComboItems(
+                    me.controls.month,
+                    d.months,
+                    'month',
+                    'month_name'
+                );
 
-                    
+                VSUtil.setComboItems(
+                    me.controls.building_id,
+                    d.buildings,
+                    'id',
+                    'building'
+                );
+
+                // Default values only once
+                        console.log(443333,!mThis.db_filter);
+
+                if (!mThis.db_filter) {
                     const today = new Date();
-                    const currentYear = today.getFullYear();
-                    const currentMonth = today.getMonth() + 1;
 
-                    if (me.controls.year) {
-                        me.controls.year.value = currentYear;
-                    }
+                    mThis.db_filter = {
+                        year: d.years?.find(x => x.year === today.getFullYear())?.year
+                            || d.years?.[0]?.year,
 
-                    if (me.controls.month) {
-                        me.controls.month.value = currentMonth;
-                    }
+                        month: d.months?.find(x => x.month === today.getMonth() + 1)?.month
+                            || d.months?.[0]?.month,
 
-                    if (d.buildings && d.buildings.length > 0) {
-                        me.controls.building_id.value = d.buildings[0].id;
-                    }
-                });
+                        building_id: d.buildings?.[0]?.id || null
+                    };
+
+                }
+
+                me.controls.year.value = mThis.db_filter.year ?? '';
+
+                console.log(2,mThis.db_filter);
+
+                me.controls.month.value = mThis.db_filter.month ?? '';
+                me.controls.building_id.value =
+                    mThis.db_filter.building_id ?? '';
+            });
         },
 
-        onSelect: (me, data) => {
-            mThis.db_filter = data;
+       onSelect: (me, data) => {
 
-            mThis.loadDashBoardData(data, (d) => {
-                // mThis.renderDashboard(d);
-            });
+            mThis.db_filter = {
+                year: data.year?.raw?.year,
+                month: data.month?.raw?.month,
+                building_id: data.building_id?.raw?.id
+            };
+
+            mThis.loadDashBoardData(mThis.db_filter, d => mThis.renderDashboard(d));
         }
-    });
-};
+            });
+        };
     mThis.renderHero = function (data) {
         return `
             <section class="md-hero">
@@ -1422,8 +1454,6 @@ var DashboardComponent =  (() =>{
     if (!canvas) return;
 
     const trend = data || {};
-    console.log(333,trend.rent);
-    
 
     mThis.charts.revenue = new Chart(canvas, {
         type: "line",
@@ -1596,54 +1626,57 @@ var DashboardComponent =  (() =>{
 };
 
 mThis.loadDashBoardData = (filter , onFinish) => {
-    console.log(3333,filter);
-    
     vsapi.call(`${main_view.base_url}/prm/dashboard/data`, filter).then(res => {
         const data = res.status_code === 200 ? (res.data) : {};
         if(typeof onFinish === 'function')onFinish(data);
         });
 };
 mThis.loadDefaultFilter = function () {
-    vsapi.call(`${main_view.base_url}/prm/dashboard/filter-options`, {}, null, { loader: false })
-        .then(res => {
-            if (res.status_code !== 200) return;
-            const d = res.data;
-            const today = new Date();
-            const currentYear = today.getFullYear();
-            const currentMonth = today.getMonth() + 1;
-            const firstBuilding = d.buildings?.length > 0
-                ? d.buildings[0].id
-                : null;
+    vsapi.call(
+        `${main_view.base_url}/prm/dashboard/filter-options`,
+        {},
+        null,
+        { loader: false }
+    ).then(res => {
 
-            mThis.db_filter = {
-                building_id: firstBuilding,
-                year: currentYear,
-                month: currentMonth
-            };
+        if (res.status_code !== 200) return;
 
-            console.log('Default Filter:', mThis.db_filter);
+        const d = res.data;
+        const today = new Date();
 
-            mThis.loadDashBoardData(mThis.db_filter, (data) => {
+        mThis.db_filter = {
+            building_id: d.buildings?.[0]?.id || null,
+            year: d.years?.find(
+                x => x.year === today.getFullYear()
+            )?.year || d.years?.[0]?.year,
+
+            month: d.months?.find(
+                x => x.month === today.getMonth() + 1
+            )?.month || d.months?.[0]?.month
+        };
+
+        mThis.loadDashBoardData(
+            mThis.db_filter,
+            data => {
                 mThis.renderDashboard(data);
-            });
-
-        });
-
+            }
+        );
+    });
 };
-   mThis.show = function () {
-
+mThis.show =  (options) =>{
     mThis.init();
-
-    if (!mThis.self) {
-        console.error("Dashboard root element was not found.");
-        return;
+    if (!options) options = {};
+    main_view.setContentView(mThis.self,mThis.title_prop);
+    if (!mThis.db_filter) {
+        mThis.loadDefaultFilter();
+    } else {
+        mThis.loadDashBoardData(
+            mThis.db_filter,
+            data => {
+                mThis.renderDashboard(data);
+            }
+        );
     }
-
-    main_view.setContentView(mThis.self, mThis.title_prop);
-    mThis.db_filter = null;
-
-    mThis.loadDefaultFilter();
 };
-
-    return mThis;
+return mThis;
 })();

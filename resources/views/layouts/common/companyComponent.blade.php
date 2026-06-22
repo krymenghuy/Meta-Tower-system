@@ -35,7 +35,7 @@
 
             <!-- Password -->
             <div class="d-none cpn-card">
-                <p class="cpn-section-title">Website and Fackbook </p>
+                <p class="cpn-section-title">Website and Facebook </p>
                 <div class=" mb-3">
                     <label class="cpn-field-label">Old Password</label>
                     <input type="password" class="cpn-input" id="_old_password" placeholder="••••••••" />
@@ -54,83 +54,79 @@
  
             <!-- Profile Information -->
             <p class="cpn-section-title">Profile Information</p>
-            <div class="row g-3 mb-3">
-                <div class="col-lg-6 material-input outlined">
-                    <input type="text" class="data-input form-control bg-light " data-field="name_kh"
-                    placeholder=" " />
-                    <label >Association Name (Khmer)</label>
+            <div class="row g-4 mb-3">
+                <div class="col-lg-6">
+                    <div class="vs-material-field">
+                        <input class="data-input form-control" data-field="name_kh" placeholder=" " autocomplete="off">
+                        <label>Association Name (Khmer)</label>
+                    </div>
                 </div>
-                <div class="col-lg-6 material-input outlined">
-                    <input type="text" class="data-input form-control bg-light " data-field="name"
-                    placeholder=" " />
-                    <label >Association Name (English)</label>
+                <div class="col-lg-6">
+                    <div class="vs-material-field">
+                        <input class="data-input form-control" data-field="name" placeholder=" " autocomplete="off">
+                        <label>Association Name (English)</label>
+                    </div>
                 </div>
             </div>
- 
-            <!-- Contact Info -->
-            <p class="cpn-section-title">Contact Info</p>
-           <div class="d-flex flex-column gap-3 mb-3">
-                <div class="d-flex gap-3">
-                    <div class="flex-fill material-input outlined">
-                        <input type="text" class="data-input form-control bg-light " data-field="email"
-                        placeholder=" " />
-                        <label >Email</label>
-                    </div>
-                    <div class="flex-fill material-input outlined">
-                        <input type="text" class="data-input form-control bg-light " data-field="phone_number"
-                        placeholder=" " />
-                        <label >Phone Number</label>
+            <div class="row g-3 mb-3">
+                <div class="col-lg-6">
+                    <div class="vs-material-field">
+                        <input class="data-input form-control" data-field="email" placeholder=" " autocomplete="off">
+                        <label>Email</label>
                     </div>
                 </div>
-
-                <!-- Row 2: Address KH & Address Latin -->
-                <div class="d-flex gap-3">
-                    <div class="flex-fill material-input outlined">
-                        <textarea class="data-input form-control bg-light" data-field="address_kh" rows="3"
-                                placeholder=" "></textarea>
-                        <label >Address (Khmer)</label>
+                <div class="col-lg-6">
+                    <div class="vs-material-field">
+                        <input class="data-input form-control" data-field="phone_number" placeholder=" " autocomplete="off">
+                        <label>Phone Number</label>
                     </div>
-                    <div class="flex-fill material-input outlined">
-                        <textarea class="data-input form-control bg-light" data-field="address" rows="3"
-                                placeholder=" "></textarea>
+                </div>
+                <div class="col-lg-6">
+                    <div class="vs-material-field">
+                        <textarea class="data-input form-control" data-field="address_kh" placeholder=" "></textarea>
+                        <label>Address (Khmer)</label>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="vs-material-field">
+                        <textarea class="data-input form-control" data-field="address" placeholder=" "></textarea>
                         <label>Address (Latin)</label>
                     </div>
                 </div>
-
             </div>
- 
- 
             <!-- Contact Persons -->
-            <div class="d-flex align-items-center justify-content-between mb-3">
+            <!-- <div class="d-flex align-items-center justify-content-between mb-3">
                 <p class="cpn-section-title mb-0">Contact Persons</p>
                 <span class="cpn-count-label" id="_cp_count_label">2 persons</span>
-            </div>
- 
+            </div> -->
             <div id="_cp_list">
- 
                 <!-- Contact Person 1 (Primary) -->
                 <div class="cpn-cp-card mb-2" data-cp="1">
                     <p class="cpn-section-title mb-3">Primary Contact</p>
                     <div class="row g-3 ">
-                        <div class="col-lg-6 material-input outlined">
-                            <input type="text" class="data-input form-control bg-light " data-field="first_cp_name"
-                                placeholder=" " />
-                            <label>Full Name</label>
+                        <div class="col-lg-6">
+                            <div class="vs-material-field">
+                                <input class="data-input form-control" data-field="first_cp_name" placeholder=" " />
+                                <label>Full Name</label>
+                            </div>
                         </div>
-                        <div class="col-lg-6 material-input outlined">
-                            <input type="text" class="data-input form-control bg-light " data-field="first_cp_phone"
-                                placeholder=" " />
-                            <label>Phone</label>
+                        <div class="col-lg-6">
+                            <div class="vs-material-field">
+                                <input class="data-input form-control" data-field="first_cp_phone" placeholder=" " />
+                                <label>Phone</label>
+                            </div>
                         </div>
-                        <div class="col-lg-6 material-input outlined">
-                            <input type="email" class="data-input form-control bg-light " data-field="first_cp_email"
-                                placeholder=" " />
-                            <label>Email</label>
+                        <div class="col-lg-6">
+                            <div class="vs-material-field">
+                                <input class="data-input form-control" data-field="first_cp_email" placeholder=" " />
+                                <label>Email</label>
+                            </div>
                         </div>
-                        <div class="col-lg-6 material-input outlined">
-                            <input type="text" class="data-input form-control bg-light " data-field="first_cp_position"
-                                placeholder=" " />
-                            <label>Position</label>
+                        <div class="col-lg-6">
+                            <div class="vs-material-field">
+                                <input class="data-input form-control" data-field="first_cp_position" placeholder=" " />
+                                <label>Position</label>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -139,25 +135,29 @@
                 <div class="cpn-cp-card mb-2" data-cp="2">
                     <p class="cpn-section-title mb-3">Secondary Contact</p>
                     <div class="row g-3 ">
-                        <div class="col-lg-6 material-input outlined">
-                            <input type="text" class="data-input form-control bg-light " data-field="second_cp_name"
-                                placeholder=" " />
-                            <label>Full Name</label>
+                        <div class="col-lg-6">
+                            <div class="vs-material-field">
+                                <input class="data-input form-control" data-field="second_cp_name" placeholder=" " />
+                                <label>Full Name</label>
+                            </div>
                         </div>
-                        <div class="col-lg-6 material-input outlined">
-                            <input type="text" class="data-input form-control bg-light " data-field="second_cp_phone"
-                                placeholder=" " />
-                            <label>Phone</label>
+                        <div class="col-lg-6">
+                            <div class="vs-material-field">
+                                <input class="data-input form-control" data-field="second_cp_phone" placeholder=" " />
+                                <label>Phone</label>
+                            </div>
                         </div>
-                        <div class="col-lg-6 material-input outlined">
-                            <input type="email" class="data-input form-control bg-light " data-field="second_cp_email"
-                                placeholder=" " />
-                            <label >Email</label>
+                        <div class="col-lg-6">
+                            <div class="vs-material-field">
+                                <input class="data-input form-control" data-field="second_cp_email" placeholder=" " />
+                                <label>Email</label>
+                            </div>
                         </div>
-                        <div class="col-lg-6 material-input outlined">
-                            <input type="text" class="data-input form-control bg-light " data-field="second_cp_position"
-                                placeholder=" " />
-                            <label>Position</label>
+                        <div class="col-lg-6">
+                            <div class="vs-material-field">
+                                <input class="data-input form-control" data-field="second_cp_position" placeholder=" " />
+                                <label>Position</label>
+                            </div>
                         </div>
                     </div>
                 </div>
