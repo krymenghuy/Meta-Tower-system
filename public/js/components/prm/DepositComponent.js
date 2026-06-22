@@ -112,16 +112,16 @@ var DepositComponent = (() => {
         },
         {
             transTitle: "titles.Action",
-            className: "col_action align-middle text-nowrap",
-            data: (data) => `
-                <div class="d-flex justify-content-center align-items-end">
-                    <a href="javascript:void(0)" class="btn--Options btn_dropdown_deposit_action"
-                        data-id="${data.id}"
-                        data-status="${data.status}"
-                        aria-haspopup="true" aria-expanded="false" style="padding: 0 10px;">
+            className: "col_action align-middle",
+            data: (data) => {
+
+                if (data.status_id == 2) return "";
+                return `<div class="d-flex justify-content-center align-items-end">
+                    <a href="javascript:void(0)" class="btn--Options btn_dropdown_deposit_action" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false" style="padding: 0 10px;">
                         <i class="fa-solid fa-ellipsis-vertical text-prm-custom fs-5"></i>
                     </a>
-                </div>`,
+                </div>`;
+            },
         },
     ];
 
@@ -212,7 +212,7 @@ var DepositComponent = (() => {
             menus: [
                 {
                     html: '<span class="ps-2" vslang="titles.Receive Deposit"></span>',
-                    icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
+                    icon: `<i class="fa-solid fa-hand-holding-dollar fa-lg" style="color: rgb(137, 185, 137);"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "receive_deposit",
                 },
@@ -231,16 +231,21 @@ var DepositComponent = (() => {
             ],
             onShow: (me, container) => {
                 const menu = me.getActiveMenus(container);
-                const status = (container.dataset.status || "").toLowerCase();
+                const status_id = parseInt(container.dataset.statusid);
 
-                menu.receive_deposit.style.display =
-                    status === "pending" ? "block" : "none";
-                menu.delete_deposit.style.display =
-                    status === "pending" ? "block" : "none";
-                // menu.refund_deposit.style.display =
-                //     status === "paid" ? "block" : "none";
-                menu.view_refund.style.display =
-                    status === "refunded" ? "block" : "none";
+                menu.receive_deposit.style.display = "none";
+                menu.delete_deposit.style.display = "none";
+                menu.view_refund.style.display = "none";
+
+                if (status_id === 1) {
+                    menu.receive_deposit.style.display = "block";
+                }
+
+                else if (status_id === 3) {
+                    menu.delete_deposit.style.display = "block";
+                    menu.view_refund.style.display = "block";
+                }
+
             },
 
             onClick: (menuLink, id, name) => {
@@ -477,7 +482,7 @@ const DepositDialog = (() => {
                             <div class="col-4">
                                 <div class="vs-material-field">
                                     <input name="amount" class="data-input form-control" data-field="amount" placeholder=" " disabled />
-                                    <label>Deposit Owed ($)</label>
+                                    <label vslang="labels.Deposit Owed ($)"></label>
                                 </div>
                             </div>
 
@@ -498,20 +503,20 @@ const DepositDialog = (() => {
                             <div class="col-6">
                                 <div class="vs-material-field">
                                     <input type="text" inputmode="decimal" name="paid_amount" class="data-input form-control" data-field="paid_amount" placeholder=" " disabled>
-                                    <label>Payment Amount ($)</label>
+                                    <label vslang="labels.Payment Amount ($)"></label>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="vs-material-field">
                                     <input type="text" name="ref_no" class="data-input form-control" data-field="ref_no" placeholder=" ">
-                                    <label>Reference No.</label>
+                                    <label vslang="labels.Reference No."></label>
                                 </div>
                             </div>
 
                             <div class="col-12">
                                 <div class="vs-material-field">
                                     <textarea name="remarks" class="data-input form-control" data-field="remarks" placeholder=" "></textarea>
-                                    <label>Remark</label>
+                                    <label vslang="labels.Remark"></label>
                                 </div>
                             </div>
                         </div>
@@ -616,11 +621,10 @@ const DepositDialog = (() => {
                 onShow: (me) => {
                     const title = me.divModal.querySelector(".modal-title");
                     if (title) {
-                        const isModify = !!me.dataOptions?.id;
-                        title.innerHTML = isModify
-                            ? '<h4 class="text-start ">Modify Deposit</h4>'
-                            : '<h4 class="text-start ">Receive Deposit</h4>';
+                        title.innerHTML =
+                            '<h4 class="text-start text-white fw-light" vslang="titles.Receive Deposit">Receive Deposit</h4>';
                     }
+                    LocaleManager.translateZone(me.divModal);
                     if (!me.dataOptions?.id) {
                         setTimeout(() => {
                             if (
@@ -655,7 +659,6 @@ const DepositDialog = (() => {
                 },
                 prepareFormOptions: {
                     createTitle: "Receive Deposit",
-                    modifyTitle: "Modify Deposit",
                     targetProp: "deposit_details",
                     api: {
                         endpoint: `${main_view.base_url}/prm/deposit/form-options`,
@@ -798,7 +801,6 @@ const RefundDetailsDialog = (() => {
             showconfirmButtonText: false,
             cancelButtonText: `${LocaleManager.trans("Close", "buttons")}`,
 
-
             createContent() {
                 const div = document.createElement("div");
                 div.innerHTML = `   
@@ -911,9 +913,13 @@ const RefundDetailsDialog = (() => {
 
                         document.getElementById("_rdv_tenant").innerHTML =
                             tenantInfo;
-                        const headerBadge = document.getElementById("_rdv_unit_header_badge");
+                        const headerBadge = document.getElementById(
+                            "_rdv_unit_header_badge",
+                        );
                         if (headerBadge) {
-                            headerBadge.textContent = details.space_code ? `Unit: ${details.space_code}` : "Unit Details";
+                            headerBadge.textContent = details.space_code
+                                ? `${LocaleManager.trans("Unit", "labels")}: ${details.space_code}`
+                                : LocaleManager.trans("Unit Details", "labels");
                         }
 
                         depositEl.textContent = VSMoney.formatAmount(
@@ -928,11 +934,14 @@ const RefundDetailsDialog = (() => {
                             refund.refund_amount,
                             currency,
                         );
-                        remarksEl.textContent =
-                            refund.remarks || "_";
+                        remarksEl.textContent = refund.remarks || "_";
 
                         const statusKey = String(refund.status).toLowerCase();
-                        let dateHtml = `<small class="text-prm-custom d-block" style="font-size: 11px; ">Refunded on: ${refund.updated_at ?? ""}</small>`;
+                        let dateHtml = `
+                            <small class="text-prm-custom d-block" style="font-size: 11px;">
+                                ${LocaleManager.trans("Refunded on", "labels")}: ${refund.updated_at ?? ""}
+                            </small>
+                        `;
                         dateEl.innerHTML = dateHtml;
                     })
                     .catch(() => {

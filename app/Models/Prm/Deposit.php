@@ -36,7 +36,7 @@ class Deposit
             'status_id'             => '0|integer',
             'status'                => '0|string',
             'remarks'               => '0|string|0-255',
-            'payment_method'        => '0|string',
+            'payment_method'        => '1|string',
             'ref_no'                => '0|string|0-50',
         ];
 
