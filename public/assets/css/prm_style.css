@@ -4,7 +4,7 @@
     box-sizing: border-box;
     -webkit-user-drag: none;
     font-family: 'Battambang', 'Khmer OS Battambang', sans-serif;
-    font-family: 'Inter', sans-serif;
+    /* font-family: 'Inter', sans-serif; */
     /* Improved default settings */
     font-size: 0.95rem;
     /* line-height: 1.5; */

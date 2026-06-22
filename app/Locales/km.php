@@ -52,7 +52,6 @@ return [
         'invalid_price' => 'សូមបញ្ចូលតម្លៃឱ្យបានត្រឹមត្រូវ។',
         'select_price_type' => 'សូមជ្រើសរើសប្រភេទតម្លៃ។',
 
-
         'select_gender' => 'សូមជ្រើសរើសភេទ។',
         'date_of_birth_required' => 'សូមបញ្ចូលថ្ងៃខែឆ្នាំកំណើត។',
         'legal_name_required' => 'សូមបញ្ចូលឈ្មោះស្របច្បាប់។',
@@ -145,6 +144,7 @@ return [
     ],
     'api_body_keys' =>[
         'name' => 'ឈ្មោះ',
+        'name_kh' => 'ឈ្មោះភាសាខ្មែរ',
         'building_id' => 'អគារ',
     ],
     'titles' => [
