@@ -1,0 +1,361 @@
+/* =========================
+   MODAL WRAPPER
+========================= */
+.vs-modal {
+    border: none !important;
+    outline: none !important;
+    border-radius: 20px;
+    overflow: visible;
+    background: #ffffff;
+    box-shadow:
+        0 24px 48px rgba(26, 22, 71, 0.14),
+        0 8px 20px rgba(26, 22, 71, 0.08);
+}
+
+/* ✅ Remove Bootstrap's default border on modal-content */
+.vs-modal .modal-content {
+    border: none !important;
+    border-radius: 10px;
+    overflow: visible;
+}
+
+/* =========================
+   HEADER
+========================= */
+.vs-modal .modal-header {
+    /* background: #c4c4c7; */
+    background: #dfe7f4;
+    padding: 18px 24px;
+    border: none;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.vs-modal .modal-header::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+}
+
+.vs-modal .modal-title {
+    color: #1a1647 !important;
+    font-weight: 700 !important;
+    font-size: 17px;
+    letter-spacing: 0.2px;
+    text-align: left !important;
+    flex: 1;
+}
+
+.vs-modal .modal-content .modal-header .btn-close {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    filter: none;
+    opacity: 0.4;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+    margin: 0;
+}
+
+.vs-modal .modal-content .modal-header .btn-close:hover {
+    opacity: 1;
+    transform: translateY(-50%) rotate(90deg);
+}
+.modal .modal-content .modal-header .close{
+    display: none;
+}
+
+/* =========================
+   BODY
+========================= */
+.vs-modal .modal-body {
+    padding: 28px 26px;
+    background: #ffffff;
+}
+
+/* =========================
+   FOOTER
+========================= */
+.vs-modal .modal-footer {
+    background: #f6f7fb;
+    padding: 16px 24px;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.05);
+}
+
+/* =========================
+   LABELS
+========================= */
+.vs-modal label {
+    font-weight: 500;
+    margin-bottom: 6px;
+    color: #2b2f3a;
+    font-size: 13.5px;
+    display: block;
+}
+
+/* =========================
+   INPUTS
+========================= */
+.vs-modal .form-control,
+.vs-modal .form-select {
+    height: calc(1.5em + 1.15rem + 2px);
+    border-radius: 6px;
+    /* border: 1.5px solid #e2e5ef; */
+    padding: 11px 14px;
+    /* background: #f8f9fd; */
+    font-size: 14px;
+    color: #1a1647;
+    transition: all 0.18s ease;
+    width: 100%;
+}
+
+.vs-modal .form-control:hover,
+.vs-modal .form-select:hover {
+    border-color: #c9cde0;
+    background: #fff;
+}
+
+.vs-modal .form-control:focus,
+.vs-modal .form-select:focus {
+    background: #fff;
+    /* border-color: #7c6af5; */
+    border-color: #3b82f6;
+    /* box-shadow: 0 0 0 3.5px rgba(124, 106, 245, 0.12); */
+    outline: none;
+}
+
+.vs-modal textarea.form-control {
+    resize: vertical;
+    min-height: 90px;
+}
+
+.vs-modal .form-control::placeholder,
+.vs-modal .form-select::placeholder {
+    color: #b0b5c8;
+    font-size: 13.5px;
+}
+
+/* =========================
+   SELECT / DROPDOWN SCROLL FIX
+========================= */
+
+/* Native <select> with multiple or size attribute */
+.vs-modal .form-select[multiple],
+.vs-modal .form-select[size] {
+    max-height: 200px;
+    overflow-y: auto;
+    padding: 6px 4px;
+}
+
+/* Bootstrap / custom dropdown menu panel */
+.vs-modal .dropdown-menu {
+    max-height: 220px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+    border-radius: 12px;
+    border: 1.5px solid #e2e5ef;
+    box-shadow: 0 8px 24px rgba(26, 22, 71, 0.12);
+    padding: 6px 4px;
+}
+
+/* Select2 dropdown results */
+.vs-modal .select2-results__options,
+.select2-dropdown .select2-results__options {
+    max-height: 220px !important;
+    overflow-y: auto !important;
+    scroll-behavior: smooth;
+}
+
+/* Choices.js dropdown list */
+.vs-modal .choices__list--dropdown .choices__list {
+    max-height: 220px !important;
+    overflow-y: auto !important;
+    scroll-behavior: smooth;
+}
+
+/* Tom Select dropdown */
+.vs-modal .ts-dropdown .ts-dropdown-content {
+    max-height: 220px !important;
+    overflow-y: auto !important;
+    scroll-behavior: smooth;
+}
+
+/* ── Scrollbar styling (all dropdown types) ── */
+.vs-modal .dropdown-menu::-webkit-scrollbar,
+.vs-modal .form-select::-webkit-scrollbar,
+.vs-modal .select2-results__options::-webkit-scrollbar,
+.vs-modal .choices__list--dropdown .choices__list::-webkit-scrollbar,
+.vs-modal .ts-dropdown .ts-dropdown-content::-webkit-scrollbar,
+.select2-dropdown .select2-results__options::-webkit-scrollbar {
+    width: 6px;
+}
+
+.vs-modal .dropdown-menu::-webkit-scrollbar-track,
+.vs-modal .form-select::-webkit-scrollbar-track,
+.vs-modal .select2-results__options::-webkit-scrollbar-track,
+.vs-modal .choices__list--dropdown .choices__list::-webkit-scrollbar-track,
+.vs-modal .ts-dropdown .ts-dropdown-content::-webkit-scrollbar-track,
+.select2-dropdown .select2-results__options::-webkit-scrollbar-track {
+    background: #f1f3fb;
+    border-radius: 10px;
+}
+
+.vs-modal .dropdown-menu::-webkit-scrollbar-thumb,
+.vs-modal .form-select::-webkit-scrollbar-thumb,
+.vs-modal .select2-results__options::-webkit-scrollbar-thumb,
+.vs-modal .choices__list--dropdown .choices__list::-webkit-scrollbar-thumb,
+.vs-modal .ts-dropdown .ts-dropdown-content::-webkit-scrollbar-thumb,
+.select2-dropdown .select2-results__options::-webkit-scrollbar-thumb {
+    background: #7c6af5;
+    border-radius: 10px;
+    border: 1px solid #f1f3fb;
+}
+
+.vs-modal .dropdown-menu::-webkit-scrollbar-thumb:hover,
+.vs-modal .form-select::-webkit-scrollbar-thumb:hover,
+.vs-modal .select2-results__options::-webkit-scrollbar-thumb:hover,
+.vs-modal .choices__list--dropdown .choices__list::-webkit-scrollbar-thumb:hover,
+.vs-modal .ts-dropdown .ts-dropdown-content::-webkit-scrollbar-thumb:hover,
+.select2-dropdown .select2-results__options::-webkit-scrollbar-thumb:hover {
+    background: #5a48d4;
+}
+
+/* Firefox scrollbar */
+.vs-modal .dropdown-menu,
+.vs-modal .form-select,
+.vs-modal .select2-results__options,
+.select2-dropdown .select2-results__options {
+    scrollbar-width: thin;
+    scrollbar-color: #7c6af5 #f1f3fb;
+}
+
+/* =========================
+   BUTTONS — BASE
+========================= */
+.vs-modal .modal-footer .btn {
+    position: relative;
+    overflow: visible;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 13.5px;
+    min-height: 36px;
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+    padding: 0.45rem 1.4rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: transform 0.2s ease-in-out;
+    z-index: 1;
+}
+
+.vs-modal .modal-footer .btn:active {
+    transform: scale(0.96);
+}
+
+.vs-modal .modal-footer .btn:before,
+.vs-modal .modal-footer .btn:after {
+    position: absolute;
+    content: "";
+    width: 150%;
+    left: 50%;
+    height: 100%;
+    transform: translateX(-50%);
+    z-index: -1;
+    background-repeat: no-repeat;
+    pointer-events: none;
+}
+
+/* =========================
+   SUBMIT BUTTON — rainbow
+========================= */
+.vs-modal .modal-footer .btn-primary,
+.vs-modal .modal-footer .btn-submit {
+    color: #ffffff !important;
+    background-color: #2b3991;
+    border: 1px solid #0F2554 !important;
+}
+
+
+
+/* =========================
+   CANCEL BUTTON — red
+========================= */
+.vs-modal .modal-footer .btn-secondary,
+.vs-modal .modal-footer .btn-cancel {
+    color: #e60d23;
+    background-color: rgba(178, 34, 34, 0.1);
+    border: 1px solid #fd397a;
+}
+
+
+.vs-modal .choices__inner{
+    /* border-radius: 4px !important; */
+    height:44.4 !important;
+    min-height: 44.4 !important;
+}
+/* Compact maintenance (and similar) dialogs: smaller width, less padding */
+.modal-md .modal-dialog {
+    max-width: 560px;
+}
+.vs-modal.vs-modal--compact .modal-body {
+    padding: 14px 18px;
+}
+.vs-modal.vs-modal--compact .modal-header {
+    padding: 12px 18px;
+}
+.vs-modal.vs-modal--compact .modal-footer {
+    padding: 10px 18px;
+}
+.btn-vs-cancel,
+.btn-vs-save {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 14px;
+    line-height: 1.5;
+    width: 120px;
+    color: #ffffff;
+    cursor: pointer;
+    transition: background-color 0.3s, border-color 0.3s, transform 0.3s;
+}
+
+.btn-vs-cancel {
+    background-color: #dc3545;
+    border: 1px solid #dc3545;
+}
+
+.btn-vs-cancel:hover {
+    background-color: #c82333;
+    border-color: #c82333;
+    color: #fff;
+    transform: scale(1.05);
+}
+
+.btn-vs-save {
+    background-color: #194075;
+    border: 1px solid #194075;
+}
+
+.btn-vs-save:hover {
+    background-color: #163866;
+    border-color: #163866;
+    color: #fff;
+    transform: scale(1.05);
+}

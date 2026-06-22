@@ -11,7 +11,6 @@ use Illuminate\Http\Request;
 class InvoiceController extends Controller
 {
     protected $invoices;
-
     public function __construct()
     {
         $this->invoices = new Invoice();

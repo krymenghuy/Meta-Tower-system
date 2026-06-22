@@ -30,17 +30,18 @@ use App\Http\Controllers\Prm\BillController;
 use App\Http\Controllers\Prm\BillPaymentController;
 use App\Http\Controllers\Prm\ReceiptController;
 use App\Http\Controllers\Prm\ReportController;
+use App\Http\Controllers\Prm\InvoiceSettingController;
 use App\Http\Controllers\Prm\DepositController;
 
 use App\Http\Controllers\tenant\AccountStaffController;
 use App\Http\Controllers\tenant\ZoneController;
 use App\Http\Controllers\Tenant\ContractsController;
-use App\Http\Controllers\Prm\InvoiceSettingController;
 use App\Http\Controllers\Tenant\TenantProfileController;
 use App\Http\Controllers\Tenant\ReservationsController;
 use App\Http\Controllers\Tenant\RequestServiceController;
 use App\Http\Controllers\Tenant\ReceiptController as TenantReceiptController;
 use App\Http\Controllers\Tenant\InvoiceController as TenantInvoiceController;
+use App\Http\Controllers\Tenant\TeamController;
 
 
 
@@ -440,5 +441,18 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant/receip
     Route::post('/details', [TenantReceiptController::class, 'receiptDetails']);
     Route::post('/form-options', [TenantReceiptController::class, 'getFormOptions']);
 });
+    
 
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant/team')->group(function () {
+    Route::post('/save', [TeamController::class, 'saveTeamTenant']);
+    Route::post('/create', [TeamController::class, 'saveTeam']);
+    Route::post('/list-paginate', [TeamController::class, 'getListTeam']);
+    Route::post('/details', [TeamController::class, 'getDetails']);
+    Route::post('/form-options', [TeamController::class, 'getFormOptions']);
+    Route::post('/delete', [TeamController::class, 'deleteTeam']);
+    Route::post('/profile/photo/delete', [TeamController::class, 'deleteProfilePhoto']);
+    Route::post('/profile/photo/save', [TeamController::class, 'saveProfilePhoto']);
+    Route::post('/update-status', [TeamController::class, 'updateTeamStatus']);
+});
 
