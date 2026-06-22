@@ -14,34 +14,12 @@ class Deposit
 {
     protected $id = null;
     protected $userInfo = null;
-    // Commented out: not related to database table
-    /*
-    protected static $img_dir = 'deposits';
-    protected static $allowed_image_extensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-    protected static $allowed_doc_extensions = ['pdf', 'doc', 'docx'];
-    */
 
     public function __construct($id = null, $userInfo = null)
     {
         $this->id = $id;
         $this->userInfo = $userInfo;
     }
-
-    // Commented out: not related to database table
-    /*
-    public static function getDepositImageUrl($filename, $ss)
-    {
-        if (!$filename) return null;
-
-        $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
-        $category = in_array($ext, self::$allowed_image_extensions) ? 'image' : 'document';
-
-        return XPublicStorage::getUrl(
-            ['subs_id' => $ss->subs_id, 'dir' => self::$img_dir],
-            $category
-        ) . $filename;
-    }
-    */
 
     public function saveDeposit($arr = [], $id = null, $ss = null)
     {
@@ -55,37 +33,133 @@ class Deposit
             'amount'                => '1|number|min=0|text=Amount is required.',
             'paid_amount'           => '0|number|min=0',
             'deposit_date'          => '1|date|text=Deposit date is required.',
+            'status_id'             => '0|integer',
             'status'                => '0|string',
             'remarks'               => '0|string|0-255',
-            // 'payment_method'        => '1|string|text=Payment method is required.',
-            // 'ref_no'                => '0|string|0-50',
-            // 'remark'                => '0|string|0-255',
-            // 'data'                  => '0|string',
-            // 'ext'                   => '0|string',
-            // 'mime_type'             => '0|string',
-            // 'original_file_name'    => '0|string|0-255',
+            'payment_method'        => '0|string',
+            'ref_no'                => '0|string|0-50',
         ];
 
         $res = DBX::validateObject($arr, $v_rule, 1, [], $ss->lang);
         if ($res->error) return DV::error($res->error);
         $inputs = $res->values;
 
+        $statusInput = $inputs['status_id'] ?? $inputs['status'] ?? null;
+        $status_id = null;
+        if ($statusInput !== null && $statusInput !== '') {
+            if (is_numeric($statusInput)) {
+                $status_id = intval($statusInput);
+            } else {
+                $statusRow = DB::table('deposit_statuses')->where('status_code', $statusInput)->first();
+                if ($statusRow) {
+                    $status_id = $statusRow->id;
+                }
+            }
+        }
+
+        if (empty($status_id) || $status_id == 1 || $status_id == 2) {
+            $amount = floatval($inputs['amount']);
+            $paidAmount = floatval($inputs['paid_amount'] ?? 0.00);
+            if ($paidAmount >= $amount && $amount > 0) {
+                $status_id = 2; 
+            } else {
+                $status_id = 1; 
+            }
+        }
+
         $saveData = [
             'contract_id'  => $inputs['contract_id'],
             'tenant_id'    => $inputs['tenant_id'],
             'amount'       => $inputs['amount'],
             'paid_amount'  => $inputs['paid_amount'] ?? 0.00,
-            'deposit_date' => $inputs['deposit_date'],
-            'status'       => $inputs['status'] ?? 'pending',
+            'deposit_date' => convertDate($inputs['deposit_date']),
+            'status_id'    => $status_id,
             'remarks'      => $inputs['remarks'] ?? null,
         ];
 
-        $savedId = DBX::saveData($ss, 'deposits', ['id' => $id], $saveData, [], 1);
-        if (!$savedId) {
-            return DV::error('Error saving deposit.');
-        }
+        DB::beginTransaction();
+        try {
+            $existing = null;
+            if ($id) {
+                $existing = DB::table('deposits')->where('id', $id)->first();
+            }
 
-        return DV::depends($savedId, ['deposits' => $saveData, 'id' => $savedId]);
+            $savedId = DBX::saveData($ss, 'deposits', ['id' => $id], $saveData, [], 1);
+            if (!$savedId) {
+                throw new \Exception('Error saving deposit.');
+            }
+
+            // Create receipt if transitioned to paid
+            $wasPaid = $existing && intval($existing->status_id) === 2;
+            $isPaidNow = intval($status_id) === 2;
+
+            if ($isPaidNow && !$wasPaid) {
+                // Create receipt
+                $space_id = DB::table('contracts')->where('id', $saveData['contract_id'])->value('space_id');
+
+                $receiptData = [
+                    'receipt_date'      => convertDate($inputs['deposit_date']) ?? now()->toDateString(),
+                    'invoice_id'        => null,
+                    'deposit_id'        => $savedId,
+                    'tenant_id'         => $saveData['tenant_id'],
+                    'space_id'          => $space_id,
+                    'branch_id'         => $ss->branch_id ?? 1,
+                    'total_received'    => $saveData['paid_amount'],
+                    'remarks'           => $saveData['remarks'] ?? 'Deposit Payment',
+                    'create_user'       => $ss->full_name ?? $ss->name ?? 'Admin',
+                    'create_uid'        => $ss->user_id ?? $ss->uid ?? $ss->id ?? 1,
+                    'receipt_status_id' => 1, // Active/Paid
+                    'created_at'        => now(),
+                    'updated_at'        => now(),
+                ];
+
+                $receipt_id = DBX::saveData($ss, 'receipts', [], $receiptData, [], 1);
+                if (!$receipt_id) {
+                    throw new \Exception('Failed to create receipt.');
+                }
+
+                // Generate receipt code
+                setOfficialCode(
+                    $receiptData['branch_id'],
+                    'receipt_code_control',
+                    'receipts',
+                    ['id' => $receipt_id],
+                    'R-',
+                    5,
+                    null
+                );
+
+                // Insert receipt breakdown
+                $method = $inputs['payment_method'] ?? 'Cash';
+                $methodMap = [
+                    'cash'          => 'Cash',
+                    'bank transfer' => 'Bank',
+                    'bank'          => 'Bank',
+                    'card'          => 'Card',
+                    'cheque'        => 'Cheque'
+                ];
+                $mappedMethod = $methodMap[strtolower(trim($method))] ?? 'Cash';
+
+                $breakdown = [
+                    'receipt_id'      => $receipt_id,
+                    'method'          => $mappedMethod,
+                    'amount'          => floatval($saveData['paid_amount']),
+                    'currency_code'   => 'USD',
+                    'bank_ref_number' => $inputs['ref_no'] ?? null,
+                    'remarks'         => $saveData['remarks'] ?? 'Deposit Payment',
+                    'created_at'      => now(),
+                ];
+
+                DB::table('receipt_breakdowns')->insert($breakdown);
+            }
+
+            DB::commit();
+            return DV::depends($savedId, ['deposits' => $saveData, 'id' => $savedId]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            // \Log::error("Save deposit and receipt failed: " . $e->getMessage());
+            return DV::error('Failed to save deposit: ' . $e->getMessage());
+        }
     }
 
     public function getListDeposit($arr = [], $ss = null)
@@ -131,7 +205,14 @@ class Deposit
             }
 
             if ($status_id) {
-                $str_moreWhere .= " AND d.status = '" . escape_like_str($status_id) . "'";
+                if (is_numeric($status_id)) {
+                    $str_moreWhere .= ' AND d.status_id = ' . intval($status_id);
+                } else {
+                    $resolvedId = DB::table('deposit_statuses')->where('status_code', $status_id)->value('id');
+                    if ($resolvedId) {
+                        $str_moreWhere .= ' AND d.status_id = ' . intval($resolvedId);
+                    }
+                }
             }
         }
 
@@ -140,6 +221,8 @@ class Deposit
             ->join('tenants as t', 't.id', 'd.tenant_id')
             ->join('building_spaces as bs', 'bs.id', 'c.space_id')
             ->leftJoin('buildings as b', 'b.id', 'bs.building_id')
+            ->leftJoin('deposit_statuses as ds', 'ds.id', 'd.status_id')
+            ->leftJoin('deposit_refunds as dr', 'dr.contract_id', '=', 'd.contract_id')
             ->whereRaw($str_search)
             ->whereRaw($str_moreWhere)
             ->selectRaw("   d.id, d.contract_id, d.tenant_id, t.name as tenant_name, t.phone_number,
@@ -147,8 +230,11 @@ class Deposit
                            c.start_date, c.end_date,
                            d.amount as total_amount, 
                            d.paid_amount,
+                           dr.refund_amount,
                            d.deposit_date,
-                           d.status,
+                           (CASE WHEN d.status_id = 2 THEN d.deposit_date ELSE NULL END) as paid_date,
+                           d.status_id,
+                           ds.status_code as status,
                            d.remarks as remark,
                            d.update_user, d.updated_at
                        ")
@@ -158,9 +244,10 @@ class Deposit
         $rows  = $query->skip($skip_rows)->take($per_page)->get();
 
         foreach ($rows as $row) {
-            setOfficialDates($row, ['start_date', 'end_date', 'deposit_date'], ['updated_at'], []);
+            setOfficialDates($row, ['start_date', 'end_date', 'deposit_date', 'paid_date'], ['updated_at'], []);
             $row->total_amount = floatval($row->total_amount);
             $row->paid_amount = floatval($row->paid_amount);
+            $row->refund_amount = $row->refund_amount !== null ? floatval($row->refund_amount) : null;
             $row->balance = max(0, $row->total_amount - $row->paid_amount);
         }
         unset($row);
@@ -175,22 +262,27 @@ class Deposit
             ->join('tenants as t', 't.id', 'd.tenant_id')
             ->join('building_spaces as bs', 'bs.id', 'c.space_id')
             ->leftJoin('buildings as b', 'b.id', 'bs.building_id')
+            ->leftJoin('deposit_statuses as ds', 'ds.id', 'd.status_id')
+            ->leftJoin('deposit_refunds as dr', 'dr.contract_id', '=', 'd.contract_id')
             ->where('d.id', $id)
             ->selectRaw("   d.id, d.contract_id, d.tenant_id, t.name as tenant_name, t.phone_number,
                            b.name as building_name, bs.code as space_code,
                            c.start_date, c.end_date,
                            d.amount as total_amount, 
                            d.paid_amount,
+                           dr.refund_amount,
                            d.deposit_date,
-                           d.status,
+                           d.status_id,
+                           ds.status_code as status,
                            d.remarks as remark,
                            d.update_user, d.updated_at
                        ")
             ->first();
         if ($row) {
-            setOfficialDates($row, ['start_date', 'end_date', 'deposit_date'], ['updated_at'], []);
+            setOfficialDates($row, ['start_date', 'end_date', 'deposit_date', 'paid_date'], ['updated_at'], []);
             $row->total_amount = floatval($row->total_amount);
             $row->paid_amount = floatval($row->paid_amount);
+            $row->refund_amount = $row->refund_amount !== null ? floatval($row->refund_amount) : null;
             $row->balance = max(0, $row->total_amount - $row->paid_amount);
         }
         return $row;
@@ -200,15 +292,16 @@ class Deposit
     {
         $deposit_details = $id ? self::depositDetails($id, $ss) : null;
 
+        $statuses = DB::table('deposit_statuses')
+            ->select('id', 'name')
+            ->get();
+
         return (object) [
             'deposit_details' => $deposit_details,
             'tenants'         => GeneralSettings::options_tenant($ss),
             'buildings'       => GeneralSettings::options_building($ss),
-            'deposit_statuses' => [
-                ['id' => 'pending', 'name' => 'pending'],
-                ['id' => 'paid', 'name' => 'paid'],
-                ['id' => 'refunded', 'name' => 'refunded'],
-            ],
+            'deposit_statuses' => $statuses,
+            
         ];
     }
 
@@ -235,192 +328,113 @@ class Deposit
     {
         $ss = $ss ?? $this->userInfo;
 
-        $currentStatus = DB::table('deposits')->where('id', $id)->value('status');
-        if ($currentStatus == $status_id) return DV::error('It is the same current status.');
+        if (!is_numeric($status_id)) {
+            $statusRow = DB::table('deposit_statuses')->where('status_code', $status_id)->first();
+            if ($statusRow) {
+                $status_id = $statusRow->id;
+            } else {
+                $knownStatuses = [
+                    'unpaid' => 'Unpaid',
+                    'paid' => 'Paid',
+                    'refunded' => 'Refunded',
+                ];
+                $statusCode = strtolower(trim($status_id));
+                if (isset($knownStatuses[$statusCode])) {
+                    $status_id = DB::table('deposit_statuses')->insertGetId([
+                        'name' => $knownStatuses[$statusCode],
+                        'status_code' => $statusCode,
+                    ]);
+                } else {
+                    return DV::error('Invalid status.');
+                }
+            }
+        }
+
+        $currentStatusId = DB::table('deposits')->where('id', $id)->value('status_id');
+        if ($currentStatusId == $status_id) return DV::error('It is the same current status.');
 
         $update = [
-            'status'      => $status_id,
+            'status_id'   => $status_id,
             'update_user' => $ss->full_name,
             'updated_at'  => getNowTime(),
         ];
 
-        if ($status_id === 'paid') {
+        if ($status_id == 2) { // 2 = paid
             $amount = DB::table('deposits')->where('id', $id)->value('amount');
             $update['paid_amount'] = $amount;
         }
 
         $x = DB::table('deposits')->where('id', $id)->update($update);
 
+        if ($x) {
+            $refundedStatusId = DB::table('deposit_statuses')
+                ->where(function ($q) {
+                    $q->whereRaw('LOWER(TRIM(name)) = ?', ['refunded'])
+                      ->orWhereRaw('LOWER(TRIM(status_code)) = ?', ['refunded']);
+                })
+                ->value('id') ?? 3;
+
+            if ($status_id == $refundedStatusId) {
+                $contractId = DB::table('deposits')->where('id', $id)->value('contract_id');
+                if ($contractId) {
+                    DB::table('deposit_refunds')
+                        ->where('contract_id', $contractId)
+                        ->update([
+                            'status' => 'refunded',
+                            'updated_at' => now(),
+                        ]);
+                }
+            }
+        }
+
         return DV::depends($x, ['Deposit status', 'updated']);
     }
 
-    /*
-    public function uploadAttachment($arr = [], $id = null, $ss = null)
-    {
-        $id = $id ?? $this->id;
-        $ss = $ss ?? $this->userInfo;
+    // public function updateRefundStatus($contract_id, $status, $ss = null)
+    // {
+    //     $ss = $ss ?? $this->userInfo;
+    //     $validStatuses = ['pending', 'approved', 'refunded', 'completed', 'rejected'];
+    //     $status = strtolower(trim($status));
+    //     if (!in_array($status, $validStatuses)) {
+    //         return DV::error('Invalid refund status.');
+    //     }
 
-        if (!$id) return DV::error('Contract not found.');
+    //     DB::beginTransaction();
+    //     try {
+    //         $updated = DB::table('deposit_refunds')
+    //             ->where('contract_id', $contract_id)
+    //             ->update([
+    //                 'status' => $status,
+    //                 'updated_at' => now()
+    //             ]);
 
-        $contract = DB::table('contracts')
-            ->where('id', $id)
-            ->select('id', 'deposit_file_image')
-            ->first();
+    //         if ($updated) {
+    //             // If status is 'refunded' or 'completed', sync to the deposits table
+    //             if ($status === 'refunded' || $status === 'completed') {
+    //                 $refundedStatusId = DB::table('deposit_statuses')
+    //                     ->where(function ($q) {
+    //                         $q->whereRaw('LOWER(TRIM(name)) = ?', ['refunded'])
+    //                           ->orWhereRaw('LOWER(TRIM(status_code)) = ?', ['refunded']);
+    //                     })
+    //                     ->value('id') ?? 3;
 
-        if (!$contract) return DV::error('Contract not found.');
+    //                 DB::table('deposits')
+    //                     ->where('contract_id', $contract_id)
+    //                     ->update([
+    //                         'status_id' => $refundedStatusId,
+    //                         'update_user' => $ss->full_name ?? 'Admin',
+    //                         'updated_at' => getNowTime()
+    //                     ]);
+    //             }
+    //         }
 
-        $v_rule = [
-            'id'                 => '1|integer|exists:contracts,id',
-            'data'               => '1|string',
-            'ext'                => '1|string',
-            'mime_type'          => '0|string',
-            'original_file_name' => '0|string|0-255',
-            'remark'             => '0|string|0-255',
-        ];
+    //         DB::commit();
+    //         return DV::depends(1, ['Refund status', 'updated']);
+    //     } catch (\Exception $e) {
+    //         DB::rollBack();
+    //         return DV::error('Failed to update refund status: ' . $e->getMessage());
+    //     }
+    // }
 
-        $res = DBX::validateObject($arr, $v_rule, 1, [], $ss->lang);
-        if ($res->error) return DV::error($res->error);
-        $inputs = $res->values;
-
-        $data             = $inputs['data']               ?? null;
-        $ext              = strtolower($inputs['ext']     ?? '');
-        $originalFileName = $inputs['original_file_name'] ?? null;
-        $remark           = $inputs['remark']             ?? null;
-
-        if (!$data || !$ext) return DV::error('File is required.');
-
-        $allowedExt = array_merge(self::$allowed_image_extensions, self::$allowed_doc_extensions);
-        if (!in_array($ext, $allowedExt)) {
-            return DV::error('Invalid file type.');
-        }
-
-        DB::beginTransaction();
-        try {
-            if ($contract->deposit_file_image) {
-                XPublicStorage::delete(
-                    ['subs_id' => $ss->subs_id, 'dir' => self::$img_dir],
-                    'image',
-                    $contract->deposit_file_image
-                );
-            }
-
-            $data = preg_replace('#^data:.*;base64,#', '', $data);
-            $category = in_array($ext, self::$allowed_image_extensions) ? 'image' : 'document';
-
-            $file = XPublicStorage::savefile(
-                ['subs_id' => $ss->subs_id, 'dir' => self::$img_dir],
-                $ext,
-                $data,
-                $category,
-                $originalFileName
-            );
-
-            if ($file->status === 'Error') {
-                DB::rollBack();
-                return DV::error($file->error_message);
-            }
-
-            $updateData = [
-                'deposit_file_image'         => $file->file_name,
-                'deposit_file_ext'           => $ext,
-                'deposit_file_original_name' => $originalFileName ?? $file->file_name,
-                'update_user'                => $ss->full_name ?? 'Admin',
-                'updated_at'                 => getNowTime(),
-            ];
-
-            if (!is_null($remark)) {
-                $updateData['deposit_paid_remarks'] = $remark;
-            }
-
-            DB::table('contracts')->where('id', $id)->update($updateData);
-
-            DB::commit();
-            return DV::depends(1, ['id' => $id, 'file_name' => $file->file_name]);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return DV::error($e->getMessage());
-        }
-    }
-
-    public function viewDepositAttachment($id = null, $ss = null)
-    {
-        $id = $id ?? $this->id;
-        $ss = $ss ?? $this->userInfo;
-
-        $contract = DB::table('contracts')
-            ->where('id', $id)
-            ->select('id', 'deposit_file_image', 'deposit_file_ext')
-            ->first();
-
-        if (!$contract) return DV::error('Contract not found.');
-        if (!$contract->deposit_file_image) return DV::error('No attachment found.');
-
-        $ext = strtolower($contract->deposit_file_ext ?? pathinfo($contract->deposit_file_image, PATHINFO_EXTENSION));
-        $category = in_array($ext, self::$allowed_image_extensions) ? 'image' : 'document';
-
-        $fileUrl = XPublicStorage::getUrl(
-            ['subs_id' => $ss->subs_id, 'dir' => self::$img_dir],
-            $category
-        ) . $contract->deposit_file_image;
-
-        $mimeTypes = [
-            'gif'  => 'image/gif',
-            'png'  => 'image/png',
-            'jpg'  => 'image/jpeg',
-            'jpeg' => 'image/jpeg',
-            'pdf'  => 'application/pdf',
-            'doc'  => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-            'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        ];
-
-        $mimeType = $mimeTypes[$ext] ?? 'application/octet-stream';
-
-        return DV::depends(1, [
-            'data_url'  => $fileUrl,
-            'file_name' => $contract->deposit_file_image,
-            'ext'       => $ext,
-            'mime_type' => $mimeType,
-        ]);
-    }
-
-    public function deleteAttachment($id = null, $ss = null)
-    {
-        $id = $id ?? $this->id;
-        $ss = $ss ?? $this->userInfo;
-
-        $contract = DB::table('contracts')
-            ->where('id', $id)
-            ->select('id', 'deposit_file_image')
-            ->first();
-
-        if (!$contract)     return DV::error('Contract not found.');
-        if (!$contract->deposit_file_image) return DV::error('No attachment found.');
-
-        $ext = strtolower(pathinfo($contract->deposit_file_image, PATHINFO_EXTENSION));
-        $category = in_array($ext, self::$allowed_image_extensions) ? 'image' : 'document';
-
-        DB::beginTransaction();
-        try {
-            XPublicStorage::delete(
-                ['subs_id' => $ss->subs_id, 'dir' => self::$img_dir],
-                $category,
-                $contract->deposit_file_image
-            );
-
-            DB::table('contracts')->where('id', $id)->update([
-                'deposit_file_image'  => null,
-                'deposit_file_ext'    => null,
-                'deposit_file_original_name' => null,
-                'update_user' => $ss->full_name ?? 'Admin',
-                'updated_at'  => getNowTime(),
-            ]);
-
-            DB::commit();
-            return DV::depends(1, ['action' => 'attachment_deleted', 'id' => $id]);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return DV::error('Failed to delete attachment.');
-        }
-    }
-    */
+    
 }

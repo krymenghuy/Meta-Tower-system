@@ -186,7 +186,7 @@ var main_view = (() => {
         // });
 
         mThis.lnkLogout = mThis.side_menus.querySelector("#_main_lnkLogout");
-        console.log(1233, mThis.side_menus);
+        // console.log(1233, mThis.side_menus);
         mThis.lnkLogout.onclick = (e) => {
             cv_interact.confirm(
                 "Do you want to log out?",

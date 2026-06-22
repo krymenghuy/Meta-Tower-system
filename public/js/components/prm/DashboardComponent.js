@@ -1,10 +1,8 @@
 "use strict";
 
-var DashboardComponent =  new (function () {
-    const mThis = this;
-
+var DashboardComponent =  (() =>{
+    const mThis = {};
     const STYLE_ID = "meta-tower-dashboard-style-v2";
-
     const COLORS = {
         primary: "#1A1647",
         primary2: "#2E2A72",
@@ -19,7 +17,6 @@ var DashboardComponent =  new (function () {
         bg: "#F7F8FC",
         text: "#0F172A"
     };
-
     const ALERT_MAP = {
         danger: {
             color: COLORS.danger,
@@ -559,247 +556,245 @@ var DashboardComponent =  new (function () {
     mThis.self =
         main_view.VSAppContent.querySelector("#_main_dashboardComponent") ||
         main_view.VSAppContent.querySelector("#_main_dashboard_component");
-
+   
+    
     mThis.state = {
         initialized: false,
         stylesInjected: false,
         resizeBound: false,
         rendered: false
     };
-
+   
     mThis.charts = Object.create(null);
 
-    mThis.data = {
-        period: "June 2026",
-        summary: {
-            occupancy_rate: 92,
-            occupied_spaces: 128,
-            total_spaces: 139,
-            active_tenants: 54,
-            new_tenants: 3,
-            monthly_revenue: 86520,
-            revenue_growth: 8.4,
-            outstanding_amount: 23480,
-            overdue_invoices: 18,
-            collection_rate: 96
-        },
+    // mThis.data = {
+    //     period: "June 2026",
+    //     summary: {
+    //         occupancy_rate: 92,
+    //         occupied_spaces: 128,
+    //         total_spaces: 139,
+    //         active_tenants: 54,
+    //         new_tenants: 3,
+    //         monthly_revenue: 86520,
+    //         revenue_growth: 8.4,
+    //         outstanding_amount: 23480,
+    //         overdue_invoices: 18,
+    //         collection_rate: 96
+    //     },
 
-        mini_stats: [
-            {
-                label: "Average Lease Term",
-                value: "2.8 yrs"
-            },
-            {
-                label: "Revenue / Tenant",
-                value: "$1,602"
-            },
-            {
-                label: "Vacant Spaces",
-                value: "11"
-            },
-            {
-                label: "Payments Today",
-                value: "12"
-            }
-        ],
+    //     mini_stats: [
+    //         {
+    //             label: "Average Lease Term",
+    //             value: "2.8 yrs"
+    //         },
+    //         {
+    //             label: "Revenue / Tenant",
+    //             value: "$1,602"
+    //         },
+    //         {
+    //             label: "Vacant Spaces",
+    //             value: "11"
+    //         },
+    //         {
+    //             label: "Payments Today",
+    //             value: "12"
+    //         }
+    //     ],
 
-        kpis: [
-            {
-                key: "occupancy",
-                title: "Occupancy Rate",
-                value: "92%",
-                note: "128 / 139 spaces occupied",
-                trend: "↑ +2% this month",
-                icon: "🏢",
-                color: COLORS.violet,
-                soft: "rgba(79,70,229,.11)"
-            },
-            {
-                key: "tenants",
-                title: "Active Tenants",
-                value: "54",
-                note: "Registered companies",
-                trend: "+3 new tenants",
-                icon: "👥",
-                color: COLORS.success,
-                soft: "rgba(16,185,129,.12)"
-            },
-            {
-                key: "revenue",
-                title: "Monthly Revenue",
-                value: "$86,520",
-                note: "Rent + utilities + service fees",
-                trend: "↑ 8.4% vs last month",
-                icon: "💳",
-                color: COLORS.info,
-                soft: "rgba(14,165,233,.12)"
-            },
-            {
-                key: "receivables",
-                title: "Outstanding Receivables",
-                value: "$23,480",
-                note: "18 overdue invoices",
-                trend: "Collection follow-up required",
-                icon: "⚠",
-                color: COLORS.danger,
-                soft: "rgba(239,68,68,.12)"
-            }
-        ],
+    //     kpis: [
+    //         {
+    //             key: "occupancy",
+    //             title: "Occupancy Rate",
+    //             value: "92%",
+    //             note: "128 / 139 spaces occupied",
+    //             trend: "↑ +2% this month",
+    //             icon: "🏢",
+    //             color: COLORS.violet,
+    //             soft: "rgba(79,70,229,.11)"
+    //         },
+    //         {
+    //             key: "tenants",
+    //             title: "Active Tenants",
+    //             value: "54",
+    //             note: "Registered companies",
+    //             trend: "+3 new tenants",
+    //             icon: "👥",
+    //             color: COLORS.success,
+    //             soft: "rgba(16,185,129,.12)"
+    //         },
+    //         {
+    //             key: "revenue",
+    //             title: "Monthly Revenue",
+    //             value: "$86,520",
+    //             note: "Rent + utilities + service fees",
+    //             trend: "↑ 8.4% vs last month",
+    //             icon: "💳",
+    //             color: COLORS.info,
+    //             soft: "rgba(14,165,233,.12)"
+    //         },
+    //         {
+    //             key: "receivables",
+    //             title: "Outstanding Receivables",
+    //             value: "$23,480",
+    //             note: "18 overdue invoices",
+    //             trend: "Collection follow-up required",
+    //             icon: "⚠",
+    //             color: COLORS.danger,
+    //             soft: "rgba(239,68,68,.12)"
+    //         }
+    //     ],
 
-        occupancy_by_floor: [
-            { floor: "Floor 1", occupied: 95, available: 5 },
-            { floor: "Floor 2", occupied: 87, available: 13 },
-            { floor: "Floor 3", occupied: 100, available: 0 },
-            { floor: "Floor 4", occupied: 91, available: 9 },
-            { floor: "Floor 5", occupied: 84, available: 16 },
-            { floor: "Floor 6", occupied: 97, available: 3 },
-            { floor: "Floor 7", occupied: 89, available: 11 }
-        ],
+    //     occupancy_by_floor: [
+    //         { floor: "Floor 1", occupied: 95, available: 5 },
+    //         { floor: "Floor 2", occupied: 87, available: 13 },
+    //         { floor: "Floor 3", occupied: 100, available: 0 },
+    //         { floor: "Floor 4", occupied: 91, available: 9 },
+    //         { floor: "Floor 5", occupied: 84, available: 16 },
+    //         { floor: "Floor 6", occupied: 97, available: 3 },
+    //         { floor: "Floor 7", occupied: 89, available: 11 }
+    //     ],
 
-        revenue_trend: {
-            labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
-            rent: [68000, 70000, 73500, 76000, 82000, 86520],
-            electricity: [9000, 10000, 11000, 10500, 11500, 12000],
-            service_fee: [5000, 5300, 5600, 5900, 6200, 6500]
-        },
+    //     revenue_trend: {
+    //         labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+    //         rent: [68000, 70000, 73500, 76000, 82000, 86520],
+    //         electricity: [9000, 10000, 11000, 10500, 11500, 12000],
+    //         service_fee: [5000, 5300, 5600, 5900, 6200, 6500]
+    //     },
 
-        invoice_status: {
-            labels: ["Paid", "Pending", "Overdue"],
-            values: [72, 18, 10]
-        },
+    //     invoice_status: {
+    //         labels: ["Paid", "Pending", "Overdue"],
+    //         values: [72, 18, 10]
+    //     },
 
-        revenue_breakdown: {
-            labels: ["Rent", "Electricity", "Service Fee"],
-            values: [72, 18, 10]
-        },
+    //     revenue_breakdown: {
+    //         labels: ["Rent", "Electricity", "Service Fee"],
+    //         values: [72, 18, 10]
+    //     },
 
-        collection_kpis: [
-            {
-                title: "Rent Collection",
-                value: 96,
-                color: COLORS.violet,
-                soft: "#818CF8"
-            },
-            {
-                title: "Electricity Collection",
-                value: 94,
-                color: COLORS.success,
-                soft: "#34D399"
-            },
-            {
-                title: "Service Fee Collection",
-                value: 92,
-                color: COLORS.warning,
-                soft: "#FBBF24"
-            },
-            {
-                title: "Occupancy Rate",
-                value: 91,
-                color: COLORS.info,
-                soft: "#38BDF8"
-            },
-            {
-                title: "Lease Renewal",
-                value: 88,
-                color: COLORS.danger,
-                soft: "#FB7185"
-            }
-        ],
+    //     collection_kpis: [
+    //         {
+    //             title: "Rent Collection",
+    //             value: 96,
+    //             color: COLORS.violet,
+    //             soft: "#818CF8"
+    //         },
+    //         {
+    //             title: "Electricity Collection",
+    //             value: 94,
+    //             color: COLORS.success,
+    //             soft: "#34D399"
+    //         },
+    //         {
+    //             title: "Service Fee Collection",
+    //             value: 92,
+    //             color: COLORS.warning,
+    //             soft: "#FBBF24"
+    //         },
+    //         {
+    //             title: "Occupancy Rate",
+    //             value: 91,
+    //             color: COLORS.info,
+    //             soft: "#38BDF8"
+    //         },
+    //         {
+    //             title: "Lease Renewal",
+    //             value: 88,
+    //             color: COLORS.danger,
+    //             soft: "#FB7185"
+    //         }
+    //     ],
 
-        insights: [
-            {
-                level: "success",
-                title: "Occupancy remains above 90%",
-                note: "Meta Tower continues to perform above target."
-            },
-            {
-                level: "success",
-                title: "Revenue increased 8.4%",
-                note: "Growth is mainly driven by rental and electricity billing."
-            },
-            {
-                level: "warning",
-                title: "4 lease agreements expire within 30 days",
-                note: "Renewal follow-up should be prioritized."
-            },
-            {
-                level: "danger",
-                title: "18 invoices remain overdue",
-                note: "Collection team should review high-risk accounts."
-            }
-        ],
+    //     insights: [
+    //         {
+    //             level: "success",
+    //             title: "Occupancy remains above 90%",
+    //             note: "Meta Tower continues to perform above target."
+    //         },
+    //         {
+    //             level: "success",
+    //             title: "Revenue increased 8.4%",
+    //             note: "Growth is mainly driven by rental and electricity billing."
+    //         },
+    //         {
+    //             level: "warning",
+    //             title: "4 lease agreements expire within 30 days",
+    //             note: "Renewal follow-up should be prioritized."
+    //         },
+    //         {
+    //             level: "danger",
+    //             title: "18 invoices remain overdue",
+    //             note: "Collection team should review high-risk accounts."
+    //         }
+    //     ],
 
-        alerts: [
-            {
-                level: "danger",
-                title: "18 overdue invoices",
-                note: "Requires collection follow-up."
-            },
-            {
-                level: "warning",
-                title: "3 utility readings pending",
-                note: "Electricity billing is not fully completed."
-            },
-            {
-                level: "success",
-                title: "12 payments received today",
-                note: "Cash collection has been updated."
-            }
-        ],
+    //     alerts: [
+    //         {
+    //             level: "danger",
+    //             title: "18 overdue invoices",
+    //             note: "Requires collection follow-up."
+    //         },
+    //         {
+    //             level: "warning",
+    //             title: "3 utility readings pending",
+    //             note: "Electricity billing is not fully completed."
+    //         },
+    //         {
+    //             level: "success",
+    //             title: "12 payments received today",
+    //             note: "Cash collection has been updated."
+    //         }
+    //     ],
 
-        activities: [
-            {
-                text: "ABC Consulting paid invoice INV-24081",
-                time: "10:45 AM"
-            },
-            {
-                text: "XYZ Ltd renewed lease contract",
-                time: "09:30 AM"
-            },
-            {
-                text: "June electricity bills generated",
-                time: "Yesterday"
-            },
-            {
-                text: "New tenant moved into Floor 6",
-                time: "Yesterday"
-            }
-        ],
+    //     activities: [
+    //         {
+    //             text: "ABC Consulting paid invoice INV-24081",
+    //             time: "10:45 AM"
+    //         },
+    //         {
+    //             text: "XYZ Ltd renewed lease contract",
+    //             time: "09:30 AM"
+    //         },
+    //         {
+    //             text: "June electricity bills generated",
+    //             time: "Yesterday"
+    //         },
+    //         {
+    //             text: "New tenant moved into Floor 6",
+    //             time: "Yesterday"
+    //         }
+    //     ],
 
-        lease_expiry: [
-            {
-                tenant: "ABC Consulting",
-                floor: "5",
-                expiry: "15 Jul",
-                status: "Due Soon",
-                level: "warning"
-            },
-            {
-                tenant: "XYZ Ltd",
-                floor: "7",
-                expiry: "20 Jul",
-                status: "Pending",
-                level: "info"
-            },
-            {
-                tenant: "Meta Lab",
-                floor: "2",
-                expiry: "28 Jul",
-                status: "Review",
-                level: "success"
-            }
-        ]
-    };
+    //     lease_expiry: [
+    //         {
+    //             tenant: "ABC Consulting",
+    //             floor: "5",
+    //             expiry: "15 Jul",
+    //             status: "Due Soon",
+    //             level: "warning"
+    //         },
+    //         {
+    //             tenant: "XYZ Ltd",
+    //             floor: "7",
+    //             expiry: "20 Jul",
+    //             status: "Pending",
+    //             level: "info"
+    //         },
+    //         {
+    //             tenant: "Meta Lab",
+    //             floor: "2",
+    //             expiry: "28 Jul",
+    //             status: "Review",
+    //             level: "success"
+    //         }
+    //     ]
+    // };
 
     mThis.init = function () {
         if (mThis.state.initialized) return;
-
         mThis.state.initialized = true;
-
         mThis.injectStyles();
         mThis.bindResize();
     };
-
     mThis.injectStyles = function () {
         if (mThis.state.stylesInjected) return;
 
@@ -814,7 +809,6 @@ var DashboardComponent =  new (function () {
 
         document.head.appendChild(style);
     };
-
     mThis.bindResize = function () {
         if (mThis.state.resizeBound) return;
 
@@ -824,7 +818,6 @@ var DashboardComponent =  new (function () {
             passive: true
         });
     };
-
     mThis.updateHeight = function () {
         if (!mThis.self) return;
 
@@ -834,7 +827,6 @@ var DashboardComponent =  new (function () {
             overflowX: "hidden"
         });
     };
-
     mThis.escapeHtml = function (value) {
         return String(value ?? "")
             .replace(/&/g, "&amp;")
@@ -843,19 +835,15 @@ var DashboardComponent =  new (function () {
             .replace(/"/g, "&quot;")
             .replace(/'/g, "&#039;");
     };
-
     mThis.money = function (value) {
         return "$" + Number(value || 0).toLocaleString();
     };
-
     mThis.percent = function (value) {
         return `${Number(value || 0)}%`;
     };
-
     mThis.getAlertStyle = function (level) {
         return ALERT_MAP[level] || ALERT_MAP.info;
     };
-
     mThis.getStatusStyle = function (level) {
         const item = mThis.getAlertStyle(level);
 
@@ -865,30 +853,25 @@ var DashboardComponent =  new (function () {
         };
     };
 
-    mThis.renderDashboard = function () {
-        if (!mThis.self) {
+    mThis.renderDashboard = function (data) {
+        const div = mThis.self;
+        if (!div) {
             console.error("Dashboard root element was not found.");
             return;
         }
-
-        const data = mThis.data;
-
-        mThis.self.innerHTML = `
-            <div class="meta-dashboard">
-                ${mThis.renderHero(data)}
-
-                ${mThis.renderMiniStats(data.mini_stats)}
-
-                <div class="row g-3">
-                    ${mThis.renderKpis(data.kpis)}
-                </div>
-
-                <div class="row g-3 mt-1">
+        const html = [
+            `<div class="meta-dashboard">`,
+                mThis.renderHero(data.card_top),
+                mThis.renderMiniStats(data.cards),
+                `<div class="row g-3">
+                    ${mThis.renderKpis(data.cards.kpis)}
+                </div>`,
+                `<div class="row g-3 mt-1">
                     <div class="col-12 col-xl-6">
                         ${mThis.renderChartCard({
                             title: "Occupancy by Floor",
-                            subtitle: "Occupied vs available office spaces",
-                            pill: "Office Tower",
+                            subtitle: "Occupied, Booked and Available Units",
+                            pill: "Meta Tower",
                             canvasId: "chartOccupancy"
                         })}
                     </div>
@@ -896,18 +879,18 @@ var DashboardComponent =  new (function () {
                     <div class="col-12 col-xl-6">
                         ${mThis.renderChartCard({
                             title: "Revenue Trend",
-                            subtitle: "Rent, electricity, and service fee revenue",
+                            subtitle: "Rent, Electricity, Service Fee Revenue",
                             pill: "Monthly",
                             canvasId: "chartRevenue"
                         })}
                     </div>
-                </div>
+                </div>`,
 
-                <div class="row g-3 mt-1">
+                `<div class="row g-3 mt-1">
                     <div class="col-12 col-xl-6">
                         ${mThis.renderChartCard({
                             title: "Invoice Status",
-                            subtitle: "Paid, pending, and overdue invoice distribution",
+                            subtitle: "Paid, Pending, Partially Paid and Overdue",
                             pill: "Billing",
                             canvasId: "chartInvoiceStatus"
                         })}
@@ -916,29 +899,29 @@ var DashboardComponent =  new (function () {
                     <div class="col-12 col-xl-6">
                         ${mThis.renderChartCard({
                             title: "Revenue Breakdown",
-                            subtitle: "Contribution by rental and utility streams",
+                            subtitle: "Contribution by Rental and Utility Streams",
                             pill: "Revenue Mix",
                             canvasId: "chartRevenueBreakdown"
                         })}
                     </div>
-                </div>
+                </div>`,
 
-                <div class="row g-3 mt-1">
+                `<div class="row g-3 mt-1">
                     <div class="col-12 col-xl-6">
-                        ${mThis.renderCollectionPerformance(data.collection_kpis)}
+                        ${mThis.renderCollectionPerformance(data)}
                     </div>
 
                     <div class="col-12 col-xl-6">
                         ${mThis.renderInsightList({
                             title: "Executive Insights",
-                            subtitle: "Management-level interpretation of current performance",
+                            subtitle: "Management-level Interpretation of Current Performance",
                             pill: "AI Style",
-                            items: data.insights
+                            items: data.activities.insights
                         })}
                     </div>
-                </div>
+                </div>`,
 
-                <div class="row g-3 mt-1 pb-3">
+                `<div class="row g-3 mt-1 pb-3">
                     <div class="col-12 col-xl-6">
                         ${mThis.renderTimeline(data.activities)}
                     </div>
@@ -946,26 +929,108 @@ var DashboardComponent =  new (function () {
                     <div class="col-12 col-xl-6">
                         ${mThis.renderLeaseExpiry(data.lease_expiry)}
                     </div>
-                </div>
-            </div>
-        `;
-
+                </div>`, 
+            `</div>`
+        ].join("");
+        div.innerHTML = html;
         mThis.state.rendered = true;
-
         mThis.updateHeight();
-        mThis.initCharts();
+        mThis.lnkFilterButton = div.querySelector('.js-dashboard-filter');
+        mThis.initFilterForm();
+        mThis.initCharts(data);
     };
+    mThis.initFilterForm = () => {
 
+    if (mThis.filterConfig) {
+        mThis.filterConfig.destroy?.();
+        mThis.filterConfig = null;
+    }
+
+    mThis.filterConfig = new FilterPanel({
+        triggerButton: mThis.lnkFilterButton,
+        cssClass: null,
+
+        fields: [
+            {
+                firstOption: { value: '', label: '(All Years)' },
+                name: "year",
+                label: "Year",
+                valueField: "value",
+                textField: "label",
+                data: "years"
+            },
+            {
+                firstOption: { value: '', label: '(All Months)' },
+                name: "month",
+                label: "Month",
+                valueField: "value",
+                textField: "label",
+                data: "months"
+            },
+            {
+                firstOption: { value: '', label: '(All Buildings)' },
+                name: "building_id",
+                label: "Building",
+                valueField: "id",
+                textField: "building",
+                data: "buildings"
+            }
+        ],
+
+        onShow: (me) => {
+
+            vsapi.call(`${main_view.base_url}/prm/dashboard/filter-options`, {}, null, { loader: false })
+                .then(res => {
+                    if (res.status_code !== 200) return;
+
+                    const d = res.data;
+
+                    VSUtil.setComboItems(me.controls.year, d.years, 'year', 'year');
+                    VSUtil.setComboItems(me.controls.month, d.months, 'month', 'month_name');
+                    VSUtil.setComboItems(me.controls.building_id, d.buildings, 'id', 'building');
+
+                    
+                    const today = new Date();
+                    const currentYear = today.getFullYear();
+                    const currentMonth = today.getMonth() + 1;
+
+                    if (me.controls.year) {
+                        me.controls.year.value = currentYear;
+                    }
+
+                    if (me.controls.month) {
+                        me.controls.month.value = currentMonth;
+                    }
+
+                    if (d.buildings && d.buildings.length > 0) {
+                        me.controls.building_id.value = d.buildings[0].id;
+                    }
+                });
+        },
+
+        onSelect: (me, data) => {
+            mThis.db_filter = data;
+
+            mThis.loadDashBoardData(data, (d) => {
+                // mThis.renderDashboard(d);
+            });
+        }
+    });
+};
     mThis.renderHero = function (data) {
-        const h = mThis.escapeHtml;
-        const summary = data.summary;
-
         return `
             <section class="md-hero">
                 <div class="md-hero-inner">
                     <div>
                         <div class="md-hero-eyebrow">
-                            Executive Review · ${h(data.period)}
+                           <span>Executive Review · ${data.period}</span>
+                           <a href="javascript:void(0)"
+                                class="btn-filter-summery-db js-dashboard-filter">
+                                <img
+                                    class="ms-2 svg-white"
+                                    style="height:16px;"
+                                    src="${main_view.base_url}/assets/images/icons/filter-circle.svg">
+                            </a>
                         </div>
 
                         <h1 class="md-hero-title">
@@ -981,7 +1046,7 @@ var DashboardComponent =  new (function () {
                     <div class="md-hero-stats">
                         <div class="md-hero-stat">
                             <div class="md-hero-stat-value">
-                                ${h(summary.occupancy_rate)}%
+                                ${data.occupancy_rate}%
                             </div>
                             <div class="md-hero-stat-label">
                                 Occupancy
@@ -990,7 +1055,7 @@ var DashboardComponent =  new (function () {
 
                         <div class="md-hero-stat">
                             <div class="md-hero-stat-value">
-                                ${mThis.money(summary.monthly_revenue)}
+                                ${mThis.money(data.monthly_revenue)}
                             </div>
                             <div class="md-hero-stat-label">
                                 Monthly Revenue
@@ -999,7 +1064,7 @@ var DashboardComponent =  new (function () {
 
                         <div class="md-hero-stat">
                             <div class="md-hero-stat-value">
-                                ${h(summary.collection_rate)}%
+                                ${data.collection_rate}%
                             </div>
                             <div class="md-hero-stat-label">
                                 Collection Rate
@@ -1009,17 +1074,17 @@ var DashboardComponent =  new (function () {
                 </div>
             </section>
         `;
+
     };
 
-    mThis.renderMiniStats = function (items) {
-        const h = mThis.escapeHtml;
-
+    mThis.renderMiniStats = function (data) {
+        const items = data.mini_stats;
         return `
             <div class="md-mini-grid">
                 ${items.map(item => `
                     <div class="md-mini-stat">
-                        <div class="md-mini-value">${h(item.value)}</div>
-                        <div class="md-mini-label">${h(item.label)}</div>
+                        <div class="md-mini-value">${item.value}</div>
+                        <div class="md-mini-label">${item.label}</div>
                     </div>
                 `).join("")}
             </div>
@@ -1027,8 +1092,6 @@ var DashboardComponent =  new (function () {
     };
 
     mThis.renderKpis = function (items) {
-        const h = mThis.escapeHtml;
-
         return items.map(item => `
             <div class="col-12 col-md-6 col-xl-3">
                 <article
@@ -1037,13 +1100,13 @@ var DashboardComponent =  new (function () {
                 >
                     <div class="md-kpi-top">
                         <div>
-                            <div class="md-kpi-title">${h(item.title)}</div>
-                            <div class="md-kpi-value">${h(item.value)}</div>
-                            <div class="md-kpi-note">${h(item.note)}</div>
-                            <div class="md-kpi-trend">${h(item.trend)}</div>
+                            <div class="md-kpi-title">${item.title}</div>
+                            <div class="md-kpi-value">${item.value}</div>
+                            <div class="md-kpi-note">${item.note}</div>
+                            <div class="md-kpi-trend">${item.trend}</div>
                         </div>
 
-                        <div class="md-kpi-icon">${h(item.icon)}</div>
+                        <div class="md-kpi-icon">${item.icon}</div>
                     </div>
                 </article>
             </div>
@@ -1071,9 +1134,10 @@ var DashboardComponent =  new (function () {
         `;
     };
 
-    mThis.renderCollectionPerformance = function (items) {
+    mThis.renderCollectionPerformance = function (data) {
+        
         const h = mThis.escapeHtml;
-
+        const items = data.collection_kpis;
         return `
             <section class="md-card md-section-card">
                 <div class="md-section-header">
@@ -1114,7 +1178,6 @@ var DashboardComponent =  new (function () {
 
     mThis.renderInsightList = function (config) {
         const h = mThis.escapeHtml;
-
         return `
             <section class="md-card md-section-card">
                 <div class="md-section-header">
@@ -1149,9 +1212,9 @@ var DashboardComponent =  new (function () {
         `;
     };
 
-    mThis.renderTimeline = function (items) {
+    mThis.renderTimeline = function (data) {
         const h = mThis.escapeHtml;
-
+        const items = data.activities;
         return `
             <section class="md-card md-section-card">
                 <div class="md-section-header">
@@ -1177,9 +1240,9 @@ var DashboardComponent =  new (function () {
         `;
     };
 
-    mThis.renderLeaseExpiry = function (rows) {
+    mThis.renderLeaseExpiry = function (data) {
         const h = mThis.escapeHtml;
-
+        const rows = data.lease_expiry;
         return `
             <section class="md-card md-section-card">
                 <div class="md-section-header">
@@ -1245,16 +1308,18 @@ var DashboardComponent =  new (function () {
         });
     };
 
-    mThis.initCharts = function () {
-        if (typeof Chart === "undefined") return;
+    mThis.initCharts = function (data) {
+
+
 
         mThis.destroyCharts();
 
-        mThis.createOccupancyChart();
-        mThis.createRevenueChart();
-        mThis.createInvoiceStatusChart();
-        mThis.createRevenueBreakdownChart();
+        mThis.createOccupancyChart(data.occupancy_by_floor || []);
+        mThis.createRevenueChart(data.revenue_trend || {});
+        mThis.createInvoiceStatusChart(data.invoice_status || {});
+        mThis.createRevenueBreakdownChart(data.revenue_breakdown || {});
     };
+
 
     mThis.chartOptions = function () {
         return {
@@ -1279,186 +1344,71 @@ var DashboardComponent =  new (function () {
         };
     };
 
-    mThis.createOccupancyChart = function () {
+    mThis.createOccupancyChart = function (data) {
+
         const canvas = document.getElementById("chartOccupancy");
         if (!canvas) return;
 
-        const rows = mThis.data.occupancy_by_floor;
+        const rows = (data || []).map(r => ({
+            floor: r.floor,
+            occupied: Number(r.occupied || 0),
+            available: Number(r.available || 0),
+            booked: Number(r.booked || 0)
+        }));
 
         mThis.charts.occupancy = new Chart(canvas, {
             type: "bar",
             data: {
-                labels: rows.map(row => row.floor),
+                labels: rows.map(r => r.floor),
                 datasets: [
                     {
                         label: "Occupied",
-                        data: rows.map(row => row.occupied),
-                        backgroundColor: "rgba(26,22,71,.90)",
-                        borderRadius: 9,
-                        maxBarThickness: 24
+                        data: rows.map(r => r.occupied),
+                        backgroundColor: "rgb(48 45 89)",
+                        borderRadius: 8,
+                        categoryPercentage: 0.5,
+                        barPercentage: 0.7
+                        
+                    },
+                    {
+                        label: "Booked",
+                        data: rows.map(r => r.booked),
+                        backgroundColor: "rgb(85 120 214)",
+                        borderRadius: 8,
+                        categoryPercentage: 0.5,
+                        barPercentage: 0.7
                     },
                     {
                         label: "Available",
-                        data: rows.map(row => row.available),
-                        backgroundColor: "rgba(246,214,115,.92)",
-                        borderRadius: 9,
-                        maxBarThickness: 24
+                        data: rows.map(r => r.available),
+                        backgroundColor: "rgb(10 187 135)",
+                        borderRadius: 8,
+                        categoryPercentage: 0.5,
+                        barPercentage: 0.7
                     }
                 ]
             },
             options: {
                 ...mThis.chartOptions(),
-                plugins: {
-                    ...mThis.chartOptions().plugins,
-                    tooltip: {
-                        callbacks: {
-                            label: ctx => `${ctx.dataset.label}: ${ctx.raw}%`
-                        }
-                    }
-                },
+                responsive: true,
                 scales: {
                     x: {
                         stacked: true,
-                        grid: {
-                            display: false
-                        },
-                        ticks: {
-                            color: COLORS.muted
-                        }
+                        grid: { display: false }
                     },
                     y: {
                         stacked: true,
-                        beginAtZero: true,
                         max: 100,
-                        grid: {
-                            color: "#EEF2F7"
-                        },
-                        ticks: {
-                            color: COLORS.muted,
-                            callback: value => `${value}%`
-                        }
-                    }
-                }
-            }
-        });
-    };
-
-    mThis.createRevenueChart = function () {
-        const canvas = document.getElementById("chartRevenue");
-        if (!canvas) return;
-
-        const trend = mThis.data.revenue_trend;
-
-        mThis.charts.revenue = new Chart(canvas, {
-            type: "line",
-            data: {
-                labels: trend.labels,
-                datasets: [
-                    {
-                        label: "Rent",
-                        data: trend.rent,
-                        borderColor: COLORS.violet,
-                        backgroundColor: "rgba(79,70,229,.08)",
-                        fill: true,
-                        tension: .42,
-                        pointRadius: 0,
-                        pointHoverRadius: 5,
-                        borderWidth: 3
-                    },
-                    {
-                        label: "Electricity",
-                        data: trend.electricity,
-                        borderColor: COLORS.info,
-                        backgroundColor: "rgba(14,165,233,.07)",
-                        fill: true,
-                        tension: .42,
-                        pointRadius: 0,
-                        pointHoverRadius: 5,
-                        borderWidth: 3
-                    },
-                    {
-                        label: "Service Fee",
-                        data: trend.service_fee,
-                        borderColor: COLORS.success,
-                        backgroundColor: "rgba(16,185,129,.07)",
-                        fill: true,
-                        tension: .42,
-                        pointRadius: 0,
-                        pointHoverRadius: 5,
-                        borderWidth: 3
-                    }
-                ]
-            },
-            options: {
-                ...mThis.chartOptions(),
-                interaction: {
-                    mode: "index",
-                    intersect: false
-                },
-                plugins: {
-                    ...mThis.chartOptions().plugins,
-                    tooltip: {
-                        callbacks: {
-                            label: ctx => `${ctx.dataset.label}: ${mThis.money(ctx.raw)}`
-                        }
-                    }
-                },
-                scales: {
-                    x: {
-                        grid: {
-                            display: false
-                        },
-                        ticks: {
-                            color: COLORS.muted
-                        }
-                    },
-                    y: {
                         beginAtZero: true,
-                        grid: {
-                            color: "#EEF2F7"
-                        },
                         ticks: {
-                            color: COLORS.muted,
-                            callback: value => "$" + Number(value).toLocaleString()
+                            callback: value => value + "%"
                         }
                     }
-                }
-            }
-        });
-    };
-
-    mThis.createInvoiceStatusChart = function () {
-        const canvas = document.getElementById("chartInvoiceStatus");
-        if (!canvas) return;
-
-        const data = mThis.data.invoice_status;
-
-        mThis.charts.invoiceStatus = new Chart(canvas, {
-            type: "doughnut",
-            data: {
-                labels: data.labels,
-                datasets: [
-                    {
-                        data: data.values,
-                        backgroundColor: [
-                            COLORS.success,
-                            COLORS.warning,
-                            COLORS.danger
-                        ],
-                        borderColor: "#fff",
-                        borderWidth: 5,
-                        hoverOffset: 8
-                    }
-                ]
-            },
-            options: {
-                ...mThis.chartOptions(),
-                cutout: "68%",
+                },
                 plugins: {
-                    ...mThis.chartOptions().plugins,
                     tooltip: {
                         callbacks: {
-                            label: ctx => `${ctx.label}: ${ctx.raw}%`
+                            label: ctx => `${ctx.dataset.label}: ${ctx.raw}`
                         }
                     }
                 }
@@ -1466,74 +1416,234 @@ var DashboardComponent =  new (function () {
         });
     };
 
-    mThis.createRevenueBreakdownChart = function () {
-        const canvas = document.getElementById("chartRevenueBreakdown");
-        if (!canvas) return;
+   mThis.createRevenueChart = function (data = {}) {
 
-        const data = mThis.data.revenue_breakdown;
+    const canvas = document.getElementById("chartRevenue");
+    if (!canvas) return;
 
-        mThis.charts.revenueBreakdown = new Chart(canvas, {
-            type: "doughnut",
-            data: {
-                labels: data.labels,
-                datasets: [
-                    {
-                        data: data.values,
-                        backgroundColor: [
-                            COLORS.violet,
-                            COLORS.info,
-                            COLORS.success
-                        ],
-                        borderColor: "#fff",
-                        borderWidth: 5,
-                        hoverOffset: 8
-                    }
-                ]
+    const trend = data || {};
+    console.log(333,trend.rent);
+    
+
+    mThis.charts.revenue = new Chart(canvas, {
+        type: "line",
+        data: {
+            labels: trend.labels || [],
+            datasets: [
+                {
+                    label: "Rent",
+                    data: trend.rent || [],
+                    borderColor: COLORS.violet,
+                    backgroundColor: "rgba(79,70,229,.08)",
+                    fill: true,
+                    tension: .42,
+                    pointRadius: 0,
+                    pointHoverRadius: 5,
+                    borderWidth: 3
+                },
+                {
+                    label: "Electricity",
+                    data: trend.utility || [],
+                    borderColor: COLORS.info,
+                    backgroundColor: "rgba(14,165,233,.07)",
+                    fill: true,
+                    tension: .42,
+                    pointRadius: 0,
+                    pointHoverRadius: 5,
+                    borderWidth: 3
+                },
+                {
+                    label: "Service Fee",
+                    data: trend.service_fee || [],
+                    borderColor: COLORS.success,
+                    backgroundColor: "rgba(16,185,129,.07)",
+                    fill: true,
+                    tension: .42,
+                    pointRadius: 0,
+                    pointHoverRadius: 5,
+                    borderWidth: 3
+                },
+                {
+                    label: "Service Request",
+                    data: trend.service_request || [],
+                    borderColor: COLORS.success,
+                    backgroundColor: "rgba(16,185,129,.07)",
+                    fill: true,
+                    tension: .42,
+                    pointRadius: 0,
+                    pointHoverRadius: 5,
+                    borderWidth: 3
+                }
+            ]
+        },
+        options: {
+            ...mThis.chartOptions(),
+
+            interaction: {
+                mode: "index",
+                intersect: false
             },
-            options: {
-                ...mThis.chartOptions(),
-                cutout: "68%",
-                plugins: {
-                    ...mThis.chartOptions().plugins,
-                    tooltip: {
-                        callbacks: {
-                            label: ctx => `${ctx.label}: ${ctx.raw}%`
-                        }
+
+            plugins: {
+                ...mThis.chartOptions().plugins,
+                tooltip: {
+                    callbacks: {
+                        label: ctx =>
+                            `${ctx.dataset.label}: ${mThis.money(ctx.raw)}`
+                    }
+                }
+            },
+
+            scales: {
+                x: {
+                    grid: { display: false },
+                    ticks: { color: COLORS.muted }
+                },
+                y: {
+                    beginAtZero: true,
+                    grid: { color: "#EEF2F7" },
+                    ticks: {
+                        color: COLORS.muted,
+                        callback: value => "$" + Number(value).toLocaleString()
                     }
                 }
             }
-        });
-    };
-
-    mThis.refresh = function (data) {
-        if (data && typeof data === "object") {
-            mThis.data = {
-                ...mThis.data,
-                ...data
-            };
         }
+    });
+};
 
-        mThis.renderDashboard();
-    };
-    this.loadDashboardData = (filter,onFinish) => {
-        vsapi.call(`${main_view.base_url}/api/dashboard/summaries`, filter, main_view.apiCluster).then(res => {
-        const data = res.status_code === 200 ? StringSanitizer.sanitizeObject(res.data) : {};
+   mThis.createInvoiceStatusChart = function (data = {}) {
+
+    const canvas = document.getElementById("chartInvoiceStatus");
+    if (!canvas) return;
+
+    const chartData = data || { labels: [], values: [] };
+
+    mThis.charts.invoiceStatus = new Chart(canvas, {
+        type: "doughnut",
+        data: {
+            labels: chartData.labels || [],
+            datasets: [
+                {
+                    data: chartData.values || [],
+                    backgroundColor: [
+                        COLORS.success,   // Paid
+                        COLORS.warning,   // Pending
+                        COLORS.info,      // Partially Paid
+                        COLORS.danger     // Overdue
+                    ],
+                    borderColor: "#fff",
+                    borderWidth: 5,
+                    hoverOffset: 8
+                }
+            ]
+        },
+        options: {
+            ...mThis.chartOptions(),
+            cutout: "68%",
+
+            plugins: {
+                ...mThis.chartOptions().plugins,
+                tooltip: {
+                    callbacks: {
+                        label: ctx => `${ctx.label}: ${ctx.raw}%`
+                    }
+                }
+            }
+        }
+    });
+};
+
+  mThis.createRevenueBreakdownChart = function (data = {}) {
+
+    const canvas = document.getElementById("chartRevenueBreakdown");
+    if (!canvas) return;
+
+    const chartData = data || { labels: [], values: [] };
+
+    mThis.charts.revenueBreakdown = new Chart(canvas, {
+        type: "doughnut",
+        data: {
+            labels: chartData.labels || [],
+            datasets: [
+                {
+                    data: chartData.values || [],
+                    backgroundColor: [
+                        COLORS.violet,
+                        COLORS.info,
+                        COLORS.success
+                    ],
+                    borderColor: "#fff",
+                    borderWidth: 5,
+                    hoverOffset: 8
+                }
+            ]
+        },
+        options: {
+            ...mThis.chartOptions(),
+            cutout: "68%",
+
+            plugins: {
+                ...mThis.chartOptions().plugins,
+                tooltip: {
+                    callbacks: {
+                        label: ctx => `${ctx.label}: ${ctx.raw}%`
+                    }
+                }
+            }
+        }
+    });
+};
+
+mThis.loadDashBoardData = (filter , onFinish) => {
+    console.log(3333,filter);
+    
+    vsapi.call(`${main_view.base_url}/prm/dashboard/data`, filter).then(res => {
+        const data = res.status_code === 200 ? (res.data) : {};
         if(typeof onFinish === 'function')onFinish(data);
         });
+};
+mThis.loadDefaultFilter = function () {
+    vsapi.call(`${main_view.base_url}/prm/dashboard/filter-options`, {}, null, { loader: false })
+        .then(res => {
+            if (res.status_code !== 200) return;
+            const d = res.data;
+            const today = new Date();
+            const currentYear = today.getFullYear();
+            const currentMonth = today.getMonth() + 1;
+            const firstBuilding = d.buildings?.length > 0
+                ? d.buildings[0].id
+                : null;
+
+            mThis.db_filter = {
+                building_id: firstBuilding,
+                year: currentYear,
+                month: currentMonth
+            };
+
+            console.log('Default Filter:', mThis.db_filter);
+
+            mThis.loadDashBoardData(mThis.db_filter, (data) => {
+                mThis.renderDashboard(data);
+            });
+
+        });
+
+};
+   mThis.show = function () {
+
+    mThis.init();
+
+    if (!mThis.self) {
+        console.error("Dashboard root element was not found.");
+        return;
     }
 
-    mThis.show = function () {
-        mThis.init();
+    main_view.setContentView(mThis.self, mThis.title_prop);
+    mThis.db_filter = null;
 
-        if (!mThis.self) {
-            console.error("Dashboard root element was not found.");
-            return;
-        }
-
-        main_view.setContentView(mThis.self, mThis.title_prop);
-
-        mThis.renderDashboard();
-    };
+    mThis.loadDefaultFilter();
+};
 
     return mThis;
 })();

@@ -22,199 +22,196 @@ class Receipt extends Model
     }
 
 
-public function getListPaginate($arr = [], $ss = null, $id = null)
-{
-    $d = (object)$arr;
+    public function getListPaginate($arr = [], $ss = null, $id = null)
+    {
+        $d = (object)$arr;
 
-    $searchValue = trim((string)($d->search_value ?? ''));
-    $statusId    = $d->status_id ?? null;
-    $dateFrom    = $d->date_from ?? null;
-    $dateTo      = $d->date_to ?? null;
-    $tenantId    = $d->tenant_id ?? null;
+        $searchValue = trim((string)($d->search_value ?? ''));
+        $statusId    = $d->status_id ?? null;
+        $dateFrom    = $d->date_from ?? null;
+        $dateTo      = $d->date_to ?? null;
+        $tenantId    = $d->tenant_id ?? null;
 
-    $currentPage = max(1, (int)($d->current_page ?? 1));
-    $perPage     = max(1, (int)($d->per_page ?? 10));
+        $currentPage = max(1, (int)($d->current_page ?? 1));
+        $perPage     = max(1, (int)($d->per_page ?? 10));
 
-    $fromDateTime = null;
-    $toDateTime   = null;
+        $fromDateTime = null;
+        $toDateTime   = null;
 
-    if (!empty($dateFrom) && strtotime($dateFrom) !== false) {
-        $fromDateTime = date('Y-m-d 00:00:00', strtotime($dateFrom));
-    }
-
-    if (!empty($dateTo) && strtotime($dateTo) !== false) {
-        $toDateTime = date('Y-m-d 23:59:59', strtotime($dateTo));
-    }
-
-
-    $applyFilters = function ($query, bool $withSearchJoins = true) use (
-        $searchValue,
-        $statusId,
-        $fromDateTime,
-        $toDateTime,
-        $id,
-        $tenantId
-    ) {
-        if ($searchValue !== '' && $withSearchJoins) {
-            $query->where(function ($q) use ($searchValue) {
-                $q->whereRaw(DBX::whereLowerCase('r.code', "%{$searchValue}%", 'LIKE'))
-                  ->orWhereRaw(DBX::whereLowerCase('t.name', "%{$searchValue}%", 'LIKE'))
-                  ->orWhereRaw(DBX::whereLowerCase('i.code', "%{$searchValue}%", 'LIKE'));
-            });
+        if (!empty($dateFrom) && strtotime($dateFrom) !== false) {
+            $fromDateTime = date('Y-m-d 00:00:00', strtotime($dateFrom));
         }
 
-        if (!empty($statusId)) {
-            $query->where('r.receipt_status_id', (int)$statusId);
+        if (!empty($dateTo) && strtotime($dateTo) !== false) {
+            $toDateTime = date('Y-m-d 23:59:59', strtotime($dateTo));
         }
 
-        if ($fromDateTime !== null) {
-            $query->where('r.receipt_date', '>=', $fromDateTime);
-        }
 
-        if ($toDateTime !== null) {
-            $query->where('r.receipt_date', '<=', $toDateTime);
-        }
+        $applyFilters = function ($query, bool $withSearchJoins = true) use (
+            $searchValue,
+            $statusId,
+            $fromDateTime,
+            $toDateTime,
+            $id,
+            $tenantId
+        ) {
+            if ($searchValue !== '' && $withSearchJoins) {
+                $query->where(function ($q) use ($searchValue) {
+                    $q->whereRaw(DBX::whereLowerCase('r.code', "%{$searchValue}%", 'LIKE'))
+                        ->orWhereRaw(DBX::whereLowerCase('t.name', "%{$searchValue}%", 'LIKE'))
+                        ->orWhereRaw(DBX::whereLowerCase('i.code', "%{$searchValue}%", 'LIKE'));
+                });
+            }
 
-        if (!empty($id)) {
-            $query->where('r.id', $id);
-        }
+            if (!empty($statusId)) {
+                $query->where('r.receipt_status_id', (int)$statusId);
+            }
 
-        if (!empty($tenantId)) {
-            $query->where('r.tenant_id', (int)$tenantId);
-        }
-    };
+            if ($fromDateTime !== null) {
+                $query->where('r.receipt_date', '>=', $fromDateTime);
+            }
 
-    /*
+            if ($toDateTime !== null) {
+                $query->where('r.receipt_date', '<=', $toDateTime);
+            }
+
+            if (!empty($id)) {
+                $query->where('r.id', $id);
+            }
+
+            if (!empty($tenantId)) {
+                $query->where('r.tenant_id', (int)$tenantId);
+            }
+        };
+
+        /*
     |--------------------------------------------------------------------------
     | Fast count query
     |--------------------------------------------------------------------------
     */
-    $countQuery = DB::table('receipts as r');
+        $countQuery = DB::table('receipts as r');
 
-    if ($searchValue !== '') {
-        $countQuery
-            ->leftJoin('tenants as t', 't.id', '=', 'r.tenant_id')
-            ->leftJoin('invoices as i', 'i.id', '=', 'r.invoice_id');
-    }
+        if ($searchValue !== '') {
+            $countQuery
+                ->leftJoin('tenants as t', 't.id', '=', 'r.tenant_id')
+                ->leftJoin('invoices as i', 'i.id', '=', 'r.invoice_id');
+        }
 
-    $applyFilters($countQuery, true);
+        $applyFilters($countQuery, true);
 
-    $total = $countQuery->count();
+        $total = $countQuery->count();
 
-    /*
+        /*
     |--------------------------------------------------------------------------
     | Main query
     |--------------------------------------------------------------------------
     */
-    $query = DB::table('receipts as r')
-        ->leftJoin('tenants as t', 't.id', '=', 'r.tenant_id')
-        ->leftJoin('invoices as i', 'i.id', '=', 'r.invoice_id')
-        ->leftJoin('building_spaces as bs', 'bs.id', '=', 'i.space_id')
-        ->leftJoin('receipt_statuses as rs', 'rs.id', '=', 'r.receipt_status_id')
-        ->select([
-            'r.id',
-            'r.code',
-            'r.receipt_date',
-            'r.total_received',
-            'r.total_paid',
-            'r.remarks',
-            'r.updated_at',
-            'r.update_user',
-            'r.receipt_status_id',
+        $query = DB::table('receipts as r')
+            ->leftJoin('tenants as t', 't.id', '=', 'r.tenant_id')
+            ->leftJoin('invoices as i', 'i.id', '=', 'r.invoice_id')
+            ->leftJoin('building_spaces as receipt_bs', 'receipt_bs.id', '=', 'r.space_id')
+            ->leftJoin('building_spaces as invoice_bs', 'invoice_bs.id', '=', 'i.space_id')
+            ->leftJoin('receipt_statuses as rs', 'rs.id', '=', 'r.receipt_status_id')
+            ->select([
+                'r.id',
+                'r.code',
+                'r.receipt_date',
+                'r.total_received',
+                'r.total_paid',
+                'r.remarks',
+                'r.updated_at',
+                'r.update_user',
+                'r.receipt_status_id',
+                'r.deposit_id',
+                't.name as tenant_name',
+                't.phone_number as tenant_phone',
+                'i.code as invoice_code',
+                'i.amount as invoice_total',
+                'i.issue_date',
+                DB::raw('COALESCE(receipt_bs.code, invoice_bs.code) as space_code'),
+                'rs.name as receipt_status_name',
+            ]);
+        $applyFilters($query, true);
 
-            't.name as tenant_name',
-            't.phone_number as tenant_phone',
+        $rows = $query
+            ->orderByDesc('r.id')
+            ->forPage($currentPage, $perPage)
+            ->get();
 
-            'i.code as invoice_code',
-            'i.amount as invoice_total',
-            'i.issue_date',
-
-            'bs.code as space_code',
-
-            'rs.name as receipt_status_name',
-        ]);
-
-    $applyFilters($query, true);
-
-    $rows = $query
-        ->orderByDesc('r.id')
-        ->forPage($currentPage, $perPage)
-        ->get();
-
-    /*
+        /*
     |--------------------------------------------------------------------------
     | Receipt breakdown enrichment
     |--------------------------------------------------------------------------
     */
-    if ($rows->isNotEmpty()) {
-        $receiptIds = $rows->pluck('id')->all();
+        if ($rows->isNotEmpty()) {
+            $receiptIds = $rows->pluck('id')->all();
 
-        $breakdowns = DB::table('receipt_breakdowns')
-            ->select([
-                'receipt_id',
-                'method',
-                'bank_name',
-                'cheque_bank_name',
-                'card_type',
-                'amount',
-            ])
-            ->whereIn('receipt_id', $receiptIds)
-            ->orderBy('id')
-            ->get()
-            ->groupBy('receipt_id');
+            $breakdowns = DB::table('receipt_breakdowns')
+                ->select([
+                    'receipt_id',
+                    'method',
+                    'bank_name',
+                    'cheque_bank_name',
+                    'card_type',
+                    'amount',
+                ])
+                ->whereIn('receipt_id', $receiptIds)
+                ->orderBy('id')
+                ->get()
+                ->groupBy('receipt_id');
 
-        foreach ($rows as $row) {
-            $items = $breakdowns->get($row->id, collect());
+            foreach ($rows as $row) {
+                $items = $breakdowns->get($row->id, collect());
 
-            $first = $items->first();
-            $row->method = $first->method ?? null;
+                $first = $items->first();
+                $row->method = $first->method ?? null;
 
-            $parts = [];
+                $parts = [];
 
-            foreach ($items as $item) {
-                $method = trim((string)($item->method ?? ''));
+                foreach ($items as $item) {
+                    $method = trim((string)($item->method ?? ''));
 
-                if ($method === '') {
-                    continue;
+                    if ($method === '') {
+                        continue;
+                    }
+
+                    $label = $method;
+
+                    if (!empty($item->bank_name)) {
+                        $label .= ' (' . trim($item->bank_name) . ')';
+                    }
+
+                    if (!empty($item->cheque_bank_name)) {
+                        $label .= ' - ' . trim($item->cheque_bank_name);
+                    }
+
+                    if (!empty($item->card_type)) {
+                        $label .= ' ' . trim($item->card_type);
+                    }
+
+                    $label .= ' : $' . number_format((float)$item->amount, 2);
+
+                    $parts[] = $label;
                 }
 
-                $label = $method;
+                $row->payment_methods = implode(' , ', $parts);
 
-                if (!empty($item->bank_name)) {
-                    $label .= ' (' . trim($item->bank_name) . ')';
-                }
-
-                if (!empty($item->cheque_bank_name)) {
-                    $label .= ' - ' . trim($item->cheque_bank_name);
-                }
-
-                if (!empty($item->card_type)) {
-                    $label .= ' ' . trim($item->card_type);
-                }
-
-                $label .= ' : $' . number_format((float)$item->amount, 2);
-
-                $parts[] = $label;
+                setOfficialDates(
+                    $row,
+                    ['receipt_date', 'issue_date'],
+                    ['updated_at'],
+                    []
+                );
             }
-
-            $row->payment_methods = implode(' , ', $parts);
-
-            setOfficialDates(
-                $row,
-                ['receipt_date', 'issue_date'],
-                ['updated_at'],
-                []
-            );
         }
-    }
 
-    return new LengthAwarePaginator(
-        $rows,
-        $total,
-        $perPage,
-        $currentPage
-    );
-}
+        return new LengthAwarePaginator(
+            $rows,
+            $total,
+            $perPage,
+            $currentPage
+        );
+    }
     // public static function getReceiptDetails($id)
     // {
     //     $header = DB::table('receipts as r')
@@ -274,6 +271,7 @@ public function getListPaginate($arr = [], $ss = null, $id = null)
                 'r.total_received',
                 'r.remarks',
                 'r.invoice_id',
+                'r.space_id',
                 'r.total_paid',
                 'i.code as invoice_code',
                 't.name as tenant_name',
@@ -283,6 +281,37 @@ public function getListPaginate($arr = [], $ss = null, $id = null)
 
         if (!$header) {
             return null;
+        }
+
+        if (!$header->invoice_id) {
+            $spaceInfo = DB::table('building_spaces as bs')
+                ->leftJoin('buildings as b', 'b.id', '=', 'bs.building_id')
+                ->where('bs.id', $header->space_id)
+                ->select('bs.code as space_code', 'b.name as building_name')
+                ->first();
+
+            $spaceCodeStr = $spaceInfo ? " (Unit {$spaceInfo->space_code})" : "";
+            $header->space_code = $spaceInfo ? $spaceInfo->space_code : null;
+            $header->building_name = $spaceInfo ? $spaceInfo->building_name : null;
+
+            $header->items = [
+                (object)[
+                    'remarks' => $header->remarks ?: 'Deposit Payment',
+                    'item_name' => ($header->remarks ?: 'Deposit Payment') . $spaceCodeStr,
+                    'qty' => 1,
+                    'start_date' => null,
+                    'end_date' => null,
+                    'price' => $header->total_received,
+                    'discount' => 0,
+                    'tax_rate' => 0,
+                    'total' => $header->total_received,
+                    'unit_type' => 'Unit'
+                ]
+            ];
+            $header->amount = $header->total_received;
+            $header->discount_value = 0;
+            $header->amount_payable = $header->total_received;
+            $header->due_amount = 0;
         }
 
         // Fetch the payment methods used for this receipt
@@ -306,7 +335,7 @@ public function getListPaginate($arr = [], $ss = null, $id = null)
         return $header;
     }
 
-public function cancelReceipt($arr, $ss = null)
+    public function cancelReceipt($arr, $ss = null)
     {
         $ss = $ss ?? $this->userInfo;
         $id = $arr['id'] ?? null;
@@ -326,6 +355,30 @@ public function cancelReceipt($arr, $ss = null)
             $old_status_id = (int)$receipt->receipt_status_id;
             if ($old_status_id === $new_status_id) {
                 return DV::error('Receipt is already canceled');
+            }
+            if($receipt->deposit_id){
+                $updated = DB::table('receipts')
+                ->where('id', $id)
+                ->update([
+                    'receipt_status_id' => $new_status_id,
+                    'remarks'           => $remarks,
+                    'update_user'       => $ss->full_name ?? $ss->name ?? 'System',
+                    'update_uid'        => $ss->id ?? $ss->uid ?? null,
+                    'updated_at'        => now(),
+                ]);
+
+                $updated_deposit = DB::table('deposits')
+                ->where('id', $receipt->deposit_id)
+                ->update([
+                    'status_id' => 1, 
+                    'paid_amount' => 0,
+                    'update_user'       => $ss->full_name ?? $ss->name ?? 'System',
+                    'update_uid'        => $ss->id ?? $ss->uid ?? null,
+                    'updated_at'        => now(),
+                ]);
+
+                return DV::success(['message' => 'Receipt canceled and invoice balance restored successfully']);
+                
             }
             $updated = DB::table('receipts')
                 ->where('id', $id)
@@ -372,15 +425,14 @@ public function cancelReceipt($arr, $ss = null)
     }
 
 
-    public function getFormOptions($arr = [], $ss = null){
+    public function getFormOptions($arr = [], $ss = null)
+    {
         $ss = $ss ? $ss : $this->userInfo;
         $d = (object)$arr;
         $id = $d->id ?? $this->id;
-        return(object)[
+        return (object)[
             'receipt_statuses'  => GeneralSettings::options_receipt_status($ss)
 
         ];
     }
-
-
 }
