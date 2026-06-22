@@ -834,12 +834,12 @@ const InvoiceDialog = (() => {
                                         <div class="field-row">
                                             <label class="field-label fw-semibold" vslang="labels.Phone Number"></label>
                                             <span class="field-sep">:</span>
-                                            <input name="phone_number" class="data-input form-control field-input "  placeholder=" ">
+                                            <input name="phone_number" class="data-input form-control field-input"  placeholder=" " disabled>
                                         </div>
                                         <div class="field-row">
                                             <label class="field-label fw-semibold" vslang="labels.Email"></label>
                                             <span class="field-sep">:</span>
-                                            <input name="email" class="data-input form-control field-input " placeholder=" ">
+                                            <input name="email" class="data-input form-control field-input" placeholder=" " disabled>
                                         </div>
                                         <div class="field-row ">
                                             <label class="field-label fw-semibold" vslang="labels.Space / Room"></label>
