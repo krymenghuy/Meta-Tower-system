@@ -431,7 +431,7 @@ var InvoiceComponent = (() => {
                                 </td>
                             </tr>
                             <tr>
-                                <td colspan="7" class="text-end text-danger">Total Discount</td>
+                                <td colspan="7" class="text-end text-danger" vslang="titles.Total Discount"></td>
                                 <td colspan="1" class="text-end text-danger fs-6">
                                     ${(() => {
                                         const discVal = parseFloat(
@@ -454,7 +454,7 @@ var InvoiceComponent = (() => {
 
                             <!-- Displaying Net Total -->
                             <tr>
-                                <td colspan="7" class="text-end  text-primary">Grand (Net)</td>
+                                <td colspan="7" class="text-end  text-primary" vslang="titles.Grand (Net)"></td>
                                 <td colspan="1" class="text-end text-success fs-6">
                                     ${currency}${fmt(
                                         parseFloat(invoice.amount_payable || 0),

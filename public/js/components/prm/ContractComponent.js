@@ -476,7 +476,7 @@ var ContractComponent = (() => {
                     name: "delete_contract",
                 },
                 {
-                    html: '<span class="ps-2">View Refund</span>',
+                    html: '<span class="ps-2" vslang="titles.View Refund"></span>',
                     icon: `<i class="fa-regular fa-eye fs-5 text-info"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "view_refund",
@@ -621,13 +621,35 @@ var ContractComponent = (() => {
 
         if (!AuthManager.allowed(231, false)) return;
 
-        TerminateContractDialog.show({
-            id: id,
-            btn: menuLink,
-            onClose: () => {
-                mThis.ContractListView.showPage(mThis.getFilterData());
-            },
-        });
+        vsapi
+            .call(
+                `${main_view.base_url}/prm/contract/details`,
+                { id: id },
+                menuLink,
+                null,
+            )
+            .then((res) => {
+                if (res.status_code !== 200) {
+                    cv_interact.error(res.error_message || "Failed to load contract details.");
+                    return;
+                }
+
+                const data = res.data || {};
+                const depStatus = (data.deposit_status || "").toLowerCase();
+                if (depStatus === "pending" || depStatus === "unpaid") {
+                    cv_interact.error("Cannot terminate contract because the deposit payment is still unpaid.");
+                    return;
+                }
+
+                TerminateContractDialog.show({
+                    id: id,
+                    btn: menuLink,
+                    preloadedData: data,
+                    onClose: () => {
+                        mThis.ContractListView.showPage(mThis.getFilterData());
+                    },
+                });
+            });
     };
 
     // mThis.terminateContract = (id, menuLink) => {
@@ -1671,28 +1693,28 @@ const TerminateContractDialog = (() => {
                     <div class="col-6">
                         <div class="vs-material-field">
                             <input  name="deposit_amount" placeholder=" " class="data-input form-control" data-field="deposit_amount" readonly />
-                            <label>Deposit Amount</label>
+                            <label vslang="labels.Deposit Amount"></label>
                         </div>
                     </div>
 
                     <div class="col-6">
                         <div class="vs-material-field">
                             <input name="deduct_amount" placeholder=" " class="data-input form-control" data-field="deduct_amount" />
-                            <label>Deduct Amount</label>
+                            <label vslang="labels.Deduct Amount"></label>
                         </div>
                     </div>
 
                     <div class="col-12">
                         <div class="vs-material-field">
                             <input name="refund_amount" placeholder=" " class="data-input form-control" data-field="refund_amount" readonly />
-                            <label>Refund Amount</label>
+                            <label vslang="labels.Refund Amount"></label>
                         </div>
                     </div>
 
                     <div class="col-12">
                         <div class="vs-material-field">
                             <textarea name="remarks" placeholder=" " class="data-input form-control" data-field="remarks"></textarea>
-                            <label>Remark</label>
+                            <label vslang="labels.Remarks"></label>
                         </div>
                     </div>
 
@@ -1731,6 +1753,14 @@ const TerminateContractDialog = (() => {
                     me.controls.refund_amount.value = "";
                     if (me.controls.remarks) me.controls.remarks.value = "";
 
+                    if (me.dataOptions.preloadedData) {
+                        const data = me.dataOptions.preloadedData;
+                        me.controls.deposit_amount.value = data.deposit || 0;
+                        me.controls.deduct_amount.value = 0;
+                        me.calculateRefund();
+                        return;
+                    }
+
                     vsapi
                         .call(
                             `${main_view.base_url}/prm/contract/details`,
@@ -1739,9 +1769,18 @@ const TerminateContractDialog = (() => {
                             null,
                         )
                         .then((res) => {
-                            if (res.status_code !== 200) return;
+                            if (res.status_code !== 200) {
+                                me.hide(false);
+                                return;
+                            }
 
                             const data = res.data || {};
+                            const depStatus = (data.deposit_status || "").toLowerCase();
+                            if (depStatus === "pending") {
+                                me.hide(false);
+                                cv_interact.error("Cannot terminate contract because the deposit payment is still pending/unpaid.");
+                                return;
+                            }
 
                             me.controls.deposit_amount.value =
                                 data.deposit || 0;
@@ -1754,14 +1793,14 @@ const TerminateContractDialog = (() => {
 
                 buttons: [
                     {
-                        label: "Cancel",
+                        label: '<span vslang="buttons.Cancel"></span>',
                         cssClass: "btn btn-secondary",
                         click: (me) => {
                             me.hide(false);
                         },
                     },
                     {
-                        label: "Terminate",
+                        label: '<span vslang="buttons.Terminate"></span>',
                         cssClass: "btn btn-danger",
                         click: (me, btn) => {
                             const opSave = me.getData();

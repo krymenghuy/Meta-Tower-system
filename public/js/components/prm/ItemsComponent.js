@@ -280,7 +280,7 @@ const CreateItemsDialog = (() => {
                 title: (me) => {
                     const title = me.dataOptions.id ? "Modify Item" : "Create Item";
                     if (title) {
-                       return  `<h4 class="text-prm-custom text-start fw-bold">${LocaleManager.trans(title,'titles')}</h4>`;
+                       return  `<h4 class="text-white text-start fw-light">${LocaleManager.trans(title,'titles')}</h4>`;
                     }
                 },
                 createContent: () => {
