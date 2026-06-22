@@ -123,7 +123,7 @@
     }
     .tenant-profile-container{
         width:150px;
-        height: 140px;
+        height: 160px;
         display: flex;
         justify-content: center;
         align-items: center;
