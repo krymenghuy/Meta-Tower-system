@@ -3182,7 +3182,7 @@ const ReceiveDialog = (() => {
             
             cssClass: "modal-lg vs-modal",
             title: (me) => {
-                return `<h4 class="text-prm-custom text-start fw-bold">${LocaleManager.trans("Receive Payment", 'titles')}</h4>`;
+                return `<h4 class="text-white text-start ">${LocaleManager.trans("Receive Payment", 'titles')}</h4>`;
             },
 
             createContent: () => `

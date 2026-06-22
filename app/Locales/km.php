@@ -141,6 +141,8 @@ return [
         'item_name_already_exists' => 'ឈ្មោះមុខទំនិញនេះត្រូវបានប្រើរួចហើយ។',
         'vendor_name_already_exists' => 'ឈ្មោះអ្នកផ្គត់ផ្គង់នេះមានរួចហើយ។',
 
+        
+
 
     ],
     'api_body_keys' =>[
@@ -305,7 +307,7 @@ return [
         'Grave List' => 'បញ្ជីកន្លែងសព',
         'Association Structure' => 'រចនាសម្ព័ន្ធនៃសមាគម',
         'Association Policy' => 'មាត្រនិងបទបញ្ញាត្តិផ្ទៃក្នុងរបស់សមាគម',
-        'Company Profile' => 'អំពីសមាគម',
+        'Company Profile' => 'ព័ត៌មានក្រុមហ៊ុន',
         'Locations' => 'ទីតាំង និង តំបន់',
         'Location Management' => 'ទីតាំង និង តំបន់',
         'User and Roles' => 'អ្នកប្រើប្រាស់និងតួនាទី',
@@ -437,6 +439,9 @@ return [
         'Total Discount' => 'បញ្ចុះតម្លៃសរុប',
         'Grand (Net)' => 'សរុប',
 
+        'Building Information' => 'ព័ត៌មានអគារ',
+
+
 
         'Active' => 'សកម្ម',
         'Inactive' => 'អសកម្ម',
@@ -444,13 +449,17 @@ return [
 
         'Deposit Management' => 'ការគ្រប់គ្រងប្រាក់កក់',
         'Contract Period' => 'រយៈពេលកិច្ចសន្យា',
-        'Deposit Date' => 'ថ្ងៃខែប្រាក់កក់',
+        'Deposit Date' => 'ថ្ងៃខែកក់ប្រាក់',
         'Refund Amount' => 'ចំនួនសងវិញ',
         'Refund Details' => 'ព័ត៌មានលម្អិតអំពីការសងប្រាក់វិញ',
         'View Refund' => 'មើលការសងប្រាក់',
         'Refund On' => 'ថ្ងៃខែសងប្រាក់',
         'Receive Deposit' => 'ទទួលប្រាក់កក់',
         'Delete Deposit' => 'លុបប្រាក់កក់',
+
+        'Primary Contact' => 'អ្នកទំនាក់ទំនងទី១',
+        'Secondary Contact' =>'អ្នកទំនាក់ទំនងទី២',
+        
         '' => '',
 
 
@@ -676,6 +685,9 @@ return [
         'Terminate' => 'បញ្ចប់កិច្ចសន្យា',
         'Terminate Contract' => 'បញ្ចប់កិច្ចសន្យា',
 
+        'Save Change' => 'រក្សាទុក',
+        
+
 
 
 
@@ -823,6 +835,14 @@ return [
         'Payment Amount ($)' => 'ចំនួនទឹកប្រាក់ត្រូវបង់ ($)',
         'Deposit Owed ($)' => 'ចំនួនប្រាក់កក់ ($)',
 
+        'Association Name (Khmer)' => 'ឈ្មោះសហការី(ខ្មែរ)',
+        'Association Name (English)' => 'ឈ្មោះសហការី (អង់គ្លេស)',
+        'Address (Khmer)' => 'អាស័យដ្ឋាន (ខ្មែរ)',
+        'Address (English)' => 'អាស័យដ្ឋាន (អង់គ្លេស)',
+        'phone_number' => 'លេខទូរស័ព្ទ',
+        'email' => 'អ៊ីមែល',
+        'Position' => 'តំណែង',
+        
 
 
 
@@ -914,6 +934,7 @@ return [
         'update_success_status' => 'ស្ថានភាពត្រូវបានកែប្រែដោយជោគជ័យ។',
         'update_failed_status' => 'មិនអាចកែប្រែស្ថានភាពបានទេ។',
         'upload_failed_photo' => 'ការផ្ទុករូបភាពឡើងបានបរាជ័យ។ សូមព្យាយាមម្តងទៀត។',
+        'confirm_accept' => 'តើអ្នកពិតជាចង់ទទួលយកការស្នើសុំនេះមែនទេ?',
 
         'delete_maintenance' => 'លុបការថែទាំ',
         'confirm_delete_maintenance' => 'តើអ្នកប្រាកដថាចង់លុបការថែទាំនេះមែនទេ?',
