@@ -1726,10 +1726,15 @@ const TerminateContractDialog = (() => {
                 },
 
                 onPrepareForm: (me) => {
+                    me.controls.deposit_amount.value = "";
+                    me.controls.deduct_amount.value = "";
+                    me.controls.refund_amount.value = "";
+                    if (me.controls.remarks) me.controls.remarks.value = "";
+
                     vsapi
                         .call(
                             `${main_view.base_url}/prm/contract/details`,
-                            { id: op.id },
+                            { id: me.dataOptions.id },
                             null,
                             null,
                         )
@@ -1777,7 +1782,7 @@ const TerminateContractDialog = (() => {
                                 return;
                             }
 
-                            opSave.id = op.id;
+                            opSave.id = me.dataOptions.id;
 
                             vsapi
                                 .call(
@@ -1841,30 +1846,28 @@ window.RefundDetailsDialog =
                             </div>
                             <div class="card shadow-sm border border-danger-subtle overflow-hidden">
                                 <div class="card-body p-0">
-                                    <div class="table-responsive">
-                                        <table class="table table-sm table--white mb-0 align-middle">
-                                            <thead class="header-uppercase table-light">
-                                                <tr>
-                                                    <th class="text-start ps-3" style="width:100px;" vslang="titles.Tenant">Tenant</th>
-                                                    <th class="text-start" style="width:100px;" vslang="labels.Deposit Amount">Deposit Amount</th>
-                                                    <th class="text-start" style="width:100px;" vslang="labels.Deduct Amount">Deduct Amount</th>
-                                                    <th class="text-start" style="width:100px;" vslang="labels.Refund Amount">Refund Amount</th>
-                                                    <th class="text-start pe-3" style="width:100px;" vslang="labels.Remark">Remark</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td class="align-middle ps-3 py-3" id="_rdv_tenant_cell"></td>
-                                                    <td class="align-middle text-start text-dark fw-semibold py-3" id="_rdv_deposit"></td>
-                                                    <td class="align-middle text-start text-danger fw-semibold py-3" id="_rdv_deduct"></td>
-                                                    <td class="align-middle text-start text-success fs-6 fw-bold py-3" id="_rdv_refund"></td>
-                                                    <td class="align-middle pe-3 py-3">
-                                                        <div id="_rdv_remarks" class="text-prm-custom text-wrap text-break" style="font-size: 13px; max-width: 250px; word-break: break-word;"></div>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
+                                    <table class="table table-sm table--white mb-0 align-middle w-100">
+                                        <thead class="header-uppercase table-light">
+                                            <tr>
+                                                <th class="text-start ps-3" vslang="titles.Tenant">Tenant</th>
+                                                <th class="text-start" vslang="labels.Deposit Amount">Deposit Amount</th>
+                                                <th class="text-start" vslang="labels.Deduct Amount">Deduct Amount</th>
+                                                <th class="text-start" vslang="labels.Refund Amount">Refund Amount</th>
+                                                <th class="text-start pe-3" vslang="labels.Remark">Remark</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td class="align-middle ps-3 py-3" id="_rdv_tenant_cell"></td>
+                                                <td class="align-middle text-start text-dark fw-semibold py-3" id="_rdv_deposit"></td>
+                                                <td class="align-middle text-start text-danger fw-semibold py-3" id="_rdv_deduct"></td>
+                                                <td class="align-middle text-start text-success fs-6 fw-bold py-3" id="_rdv_refund"></td>
+                                                <td class="align-middle pe-3 py-3">
+                                                    <div id="_rdv_remarks" class="text-prm-custom text-wrap text-break" style="font-size: 13px; max-width: 250px; word-break: break-word;"></div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
                                     <div class="p-3 border-top bg-light d-flex justify-content-end align-items-center flex-wrap gap-2">
                                         <div id="_rdv_date" class="text-end"></div>
                                     </div>
