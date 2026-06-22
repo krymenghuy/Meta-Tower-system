@@ -405,7 +405,7 @@ var InvoiceComponent = (() => {
                         <thead style="background:#e1e5f2;">
                             <tr style= background-color:#E1E5F2;" >
                                 <th class="text-center" vslang="titles.Item Description"> </th>
-                                <th class="text-center" vslang="titles.tart Date">S</th>
+                                <th class="text-center" vslang="titles.Start Date"></th>
                                 <th class="text-center" vslang="titles.End Date"></th>
                                 <th class="text-center" vslang="titles.Qty"></th>
                                 <th class="text-end" vslang="titles.Price"></th>
@@ -475,6 +475,7 @@ var InvoiceComponent = (() => {
                             : ""
                     }
                 </div>`;
+                LocaleManager.translateZone(container);
     };
 
     mThis.getFilterData = () => {

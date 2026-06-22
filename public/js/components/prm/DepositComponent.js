@@ -223,12 +223,6 @@ var DepositComponent = (() => {
                     name: "delete_deposit",
                 },
                 {
-                    html: '<span class="ps-2" vslang="titles.Refund Deposit"></span>',
-                    icon: `<i class="fa-solid fa-arrow-rotate-left" style="color: rgb(74, 72, 107);"></i>`,
-                    cssClass: "border-bottom pb-2",
-                    name: "refund_deposit",
-                },
-                {
                     html: '<span class="ps-2" vslang="titles.View Refund"></span>',
                     icon: `<i class="fa-solid fa-eye fs-5 text-primary"></i>`,
                     cssClass: "border-bottom pb-2",
@@ -243,8 +237,8 @@ var DepositComponent = (() => {
                     status === "pending" ? "block" : "none";
                 menu.delete_deposit.style.display =
                     status === "pending" ? "block" : "none";
-                menu.refund_deposit.style.display =
-                    status === "paid" ? "block" : "none";
+                // menu.refund_deposit.style.display =
+                //     status === "paid" ? "block" : "none";
                 menu.view_refund.style.display =
                     status === "refunded" ? "block" : "none";
             },
@@ -802,7 +796,8 @@ const RefundDetailsDialog = (() => {
             size: "lg",
             confirmButtonText: null,
             showconfirmButtonText: false,
-            cancelButtonText: `Close`,
+            cancelButtonText: `${LocaleManager.trans("Close", "buttons")}`,
+
 
             createContent() {
                 const div = document.createElement("div");
@@ -821,32 +816,30 @@ const RefundDetailsDialog = (() => {
                         </div>
                         <div class="card shadow-sm border border-danger-subtle overflow-hidden">
                             <div class="card-body p-0">
-                                <div class="table-responsive">
-                                    <table class="table table-sm table--white mb-0 align-middle">
-                                        <thead class="header-uppercase table-light">
-                                            <tr>
-                                                <th class="text-start ps-3" style="width:100px;" vslang="titles.Tenant">Tenant</th>
-                                                <th class="text-start" style="width:100px;" vslang="labels.Deposit Amount">Deposit Amount</th>
-                                                <th class="text-start" style="width:100px;" vslang="labels.Deduct Amount">Deduct Amount</th>
-                                                <th class="text-start" style="width:100px;" vslang="labels.Refund Amount">Refund Amount</th>
-                                                <th class="text-start pe-3" style="width:100px;" vslang="labels.Remark">Remark</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td class="align-middle ps-3 py-3" id="_rdv_tenant_cell"></td>
-                                                <td class="align-middle text-start text-dark fw-semibold py-3" id="_rdv_deposit"></td>
-                                                <td class="align-middle text-start text-danger fw-semibold py-3" id="_rdv_deduct"></td>
-                                                <td class="align-middle text-start text-success fs-6 fw-bold py-3" id="_rdv_refund"></td>
-                                                <td class="align-middle pe-3 py-3">
-                                                    <div id="_rdv_remarks" class="text-prm-custom text-wrap text-break" style="font-size: 13px; max-width: 250px; word-break: break-word;"></div>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
+                                <table class="table table-sm table--white mb-0 align-middle w-100">
+                                    <thead class="header-uppercase table-light">
+                                        <tr>
+                                            <th class="text-start ps-3" vslang="titles.Tenant">Tenant</th>
+                                            <th class="text-start" vslang="labels.Deposit Amount">Deposit Amount</th>
+                                            <th class="text-start" vslang="labels.Deduct Amount">Deduct Amount</th>
+                                            <th class="text-start" vslang="labels.Refund Amount">Refund Amount</th>
+                                            <th class="text-start pe-3" vslang="labels.Remark">Remark</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="align-middle ps-3 py-3" id="_rdv_tenant"></td>
+                                            <td class="align-middle text-start text-dark fw-semibold py-3" id="_rdv_deposit"></td>
+                                            <td class="align-middle text-start text-danger fw-semibold py-3" id="_rdv_deduct"></td>
+                                            <td class="align-middle text-start text-success fs-6 fw-bold py-3" id="_rdv_refund"></td>
+                                            <td class="align-middle pe-3 py-3">
+                                                <div id="_rdv_remarks" class="text-prm-custom text-wrap text-break" style="font-size: 13px; max-width: 250px; word-break: break-word;"></div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                                 <div class="p-3 border-top bg-light d-flex justify-content-end align-items-center flex-wrap gap-2 ">
-                                    <div id="_rdv_date" class="text-end "></div>
+                                    <div id="_rdv_date" class="text-end"></div>
                                 </div>
                             </div>
                         </div>
@@ -916,7 +909,7 @@ const RefundDetailsDialog = (() => {
                         <small class="d-block text-muted text-nowrap">${details.space_name ?? ""}</small>
                     `;
 
-                        document.getElementById("_rdv_tenant_cell").innerHTML =
+                        document.getElementById("_rdv_tenant").innerHTML =
                             tenantInfo;
                         const headerBadge = document.getElementById("_rdv_unit_header_badge");
                         if (headerBadge) {
