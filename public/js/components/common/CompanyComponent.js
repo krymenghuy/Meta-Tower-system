@@ -16,15 +16,11 @@ var CompanyComponent = (function() {
     mThis.fields = [];
 
     mThis.showLogo = function() {
-        console.log(222);
-
         mThis.imgLogo.style.display = "block";
         mThis.logoPlaceholder.style.display = "none";
     };
 
     mThis.hideLogo = function() {
-        console.log(111);
-
         mThis.imgLogo.style.display = "none";
         mThis.imgLogo.src = "";
         mThis.logoPlaceholder.style.display = "flex";
@@ -83,33 +79,33 @@ var CompanyComponent = (function() {
     // };
 
     mThis.setData = function(com) {
-    let i = 0, c;
+        let i = 0, c;
 
-    do {
-        c = mThis.fields[i];
-        if (!c) break;
+        do {
+            c = mThis.fields[i];
+            if (!c) break;
 
-        const el    = c.element;
-        const value = com[c.dataMember] ?? '';
+            const el    = c.element;
+            const value = com[c.dataMember] ?? '';
 
-        if (el.tagName === 'IMG') {
-            const logoUrl = com.logo_url ?? null;
-            if (logoUrl) {
-                el.src = logoUrl;
-                mThis.showLogo();
+            if (el.tagName === 'IMG') {
+                const logoUrl = com.logo_url ?? null;
+                if (logoUrl) {
+                    el.src = logoUrl;
+                    mThis.showLogo();
+                } else {
+                    mThis.hideLogo();
+                }
+            } else if (el.tagName === 'SELECT') {
+                el.value = value;
+                el.dispatchEvent(new Event('change'));
             } else {
-                mThis.hideLogo();
+                el.value = value;
             }
-        } else if (el.tagName === 'SELECT') {
-            el.value = value;
-            el.dispatchEvent(new Event('change'));
-        } else {
-            el.value = value;
-        }
 
-        i++;
-    } while (c);
-};
+            i++;
+        } while (c);
+    };
 
     // ─── getData ──────────────────────────────────────────────────────────────
     mThis.getData = function() {
