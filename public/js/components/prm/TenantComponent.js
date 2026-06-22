@@ -1752,7 +1752,7 @@ const CreateTenantDialog = (() => {
                         </div>
                     </div>
 
-                    <div class="col-md-9 row align-content-between flex-wrap" >
+                    <div class="col-md-9 row g-2 align-content-between flex-wrap" >
                             <div class="col-6">
                                 <div class="vs-material-field">
                                     <input type="text" name="name" class="data-input form-control" data-field="name" placeholder="" />

@@ -126,6 +126,7 @@ return [
     ],
     'api_body_keys' =>[
         'name' => 'Name',
+        'name_kh' => 'Name Khmer',
         'building_id' => 'Building',
     ],
     'titles' => [
