@@ -88,10 +88,10 @@ var DepositComponent = (() => {
                 const status = (data.status ?? "pending").toLowerCase();
                 const statusConfig = {
                     pending:
-                        "border border-danger text-danger bg-danger-subtle",
+                        "border border-warning text-warning bg-warning-subtle",
                     paid: "border border-success text-success bg-success-subtle",
                     refunded:
-                        "border border-warning text-warning bg-warning-subtle",
+                        "border border-danger text-danger bg-danger-subtle",
                 };
                 const cls = statusConfig[status] ?? "bg-secondary text-white";
                 return `

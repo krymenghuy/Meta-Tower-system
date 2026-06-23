@@ -333,7 +333,7 @@ var PurchaseOrdersComponent = (() => {
         cv_interact.confirm('confirm_authorize', {
             title: 'Authorize Purchase order',
             context: 'update',
-            confirmButtonText: 'Authorize'
+            confirmButtonText: LocaleManager.trans('Authorize', 'buttons')
         }, (e) => {
             if (e) {
                 vsapi.call(`${main_view.base_url}/prm/purchase/order/authorized`, { po_id: id }, false)
@@ -365,7 +365,7 @@ var PurchaseOrdersComponent = (() => {
             'translate': true,
             'title': 'deleted',
             'context': 'delete',
-            'confirmButtonText': "Delete"
+            'confirmButtonText': LocaleManager.trans('Delete', 'buttons')
         }, (e) => {
             if (e) {
                 vsapi.call(`${main_view.base_url}/prm/purchase/order/delete`, { id: id }, false)
@@ -787,7 +787,7 @@ var PurchaseOrdersComponent = (() => {
                     tableClass: 'table',
                     showColumnHeaders: true,
                     showAddLineButton: false,
-                    addLineButtonText: 'Add Item',
+                    addLineButtonText: LocaleManager.trans('Add Item', 'buttons'),
                     itemRendered: (iMe, ctx) => {
 
                         const tr = ctx.tr;

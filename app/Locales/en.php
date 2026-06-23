@@ -120,6 +120,23 @@ return [
         'end_time_must' => 'End time must be greater than start time.',
         'nid_issue_date' => 'Please Select National ID Issue Date.',
 
+        'cannot_delete_po_received' => 'This purchase order cannot be deleted because it has been fully received.',
+        'cannot_delete_po_partial_received' => 'This purchase order cannot be deleted because it has been partially received.',
+        'cannot_delete_po_ordered' => 'This purchase order cannot be deleted because it has already been ordered.',
+        'po_already_rejected' => 'Purchase Order is already rejected.',
+        'cannot_reject_completed_or_cancelled' => 'Completed or cancelled Purchase Orders cannot be rejected.',
+        'po_not_found' => 'Purchase Order not found.',
+        'cannot_save_po' => 'Cannot save purchase order.',
+        'duplicate_po_items' => 'Duplicate items are not allowed in a single purchase order.',
+        'po_item_required' => 'Please select at least one item before saving the purchase order.',
+
+        'amenity_already_booked' => 'This amenity is already booked for this time slot.',
+        'cannot_cancel_in_30min' => 'Reservations cannot be canceled less than 30 minutes before start time.',
+         'schedule_cannot_past' => 'Schedule cannot be in the past.',
+
+
+
+
 
 
 
@@ -238,6 +255,7 @@ return [
         'service_exist' => 'Service is already in the list.',
         'service_request' => 'Please select a service request.',
         'request_exist' => 'Request is already in the list.',
+        'rent_exist' => 'Rent is already in the list.',
         'request_invoice' => 'Service request added to invoice',
         'failed_load_invoice' => 'Failed to load invoice details.',
         'no_request' => 'No Requests relate to this space.',

@@ -192,7 +192,7 @@ class PurchaseOrder extends VSModel
 
             if (!$po_id) {
                 DB::rollBack();
-                return DV::error('Cannot save purchase order');
+                return DV::error('cannot_save_po');
             }
 
             self::setPONumber($ss->branch_id, $po_id, 'PO', $inputs['po_date'], 4, 'PO');
@@ -204,7 +204,7 @@ class PurchaseOrder extends VSModel
             $itemIds = array_column($valid_items, 'item_id');
 
             if (count($itemIds) !== count(array_unique($itemIds))) {
-                return DV::error('Duplicate items are not allowed in a single purchase order.');
+                return DV::error('duplicate_po_items');
             }
             // 🔥 STEP 1: collect incoming IDs first
             $incoming_ids = [];
@@ -227,7 +227,7 @@ class PurchaseOrder extends VSModel
 
             $success_count = 0;
             if (empty($valid_items)) {
-                return DV::error('Please select at least one item before saving the purchase order.');
+                return DV::error('po_item_required');
             }
             foreach ($valid_items as $item) {
 
@@ -385,19 +385,19 @@ class PurchaseOrder extends VSModel
             ->first();
 
         if (!$po) {
-            return DV::error('Purchase order not found.');
+            return DV::error('po_not_found');
         }
 
         if ($po->status_id == 3) {
-            return DV::error('This purchase order cannot be deleted because it has already been ordered.');
+            return DV::error('cannot_delete_po_ordered');
         }
 
         if ($po->status_id == 4) {
-            return DV::error('This purchase order cannot be deleted because it has been partially received.');
+            return DV::error('cannot_delete_po_partial_received');
         }
 
         if ($po->status_id == 5) {
-            return DV::error('This purchase order cannot be deleted because it has already been received.');
+            return DV::error('cannot_delete_po_received');
         }
 
         DB::beginTransaction();
@@ -498,15 +498,15 @@ class PurchaseOrder extends VSModel
             ->first();
 
         if (!$po) {
-            return DV::error('Purchase Order not found.');
+            return DV::error('po_not_found');
         }
 
         if ($po->status_id == 7) {
-            return DV::error('Purchase Order is already rejected.');
+            return DV::error('po_already_rejected');
         }
 
         if (in_array($po->status_id, [5, 6])) {
-            return DV::error('Completed or cancelled Purchase Orders cannot be rejected.');
+            return DV::error('cannot_reject_completed_or_cancelled');
         }
 
         $reject = DB::table('purchase_orders')
@@ -529,7 +529,7 @@ class PurchaseOrder extends VSModel
         }
         $po = DB::table('purchase_orders')->select('id', 'status_id')->where('id', $po_id)->first();
         if (!$po) {
-            return DV::error('Purchase order not found.');
+            return DV::error('po_not_found');
         }
         if ($po->status_id == 7) {
             return DV::error('Rejected purchase orders cannot be authorized.');

@@ -72,13 +72,13 @@
                 <div class="col-lg-6">
                     <div class="vs-material-field">
                         <input class="data-input form-control" data-field="email" placeholder=" " autocomplete="off">
-                        <label vslang="labels.email"></label>
+                        <label vslang="labels.Email"></label>
                     </div>
                 </div>
                 <div class="col-lg-6">
                     <div class="vs-material-field">
                         <input class="data-input form-control" data-field="phone_number" placeholder=" " autocomplete="off">
-                        <label vslang="labels.phone_number"></label>
+                        <label vslang="labels.Phone Number"></label>
                     </div>
                 </div>
                 <div class="col-lg-6">
@@ -113,13 +113,13 @@
                         <div class="col-lg-6">
                             <div class="vs-material-field">
                                 <input class="data-input form-control" data-field="first_cp_phone" placeholder=" " />
-                                <label vslang="labels.phone_number"></label>
+                                <label vslang="labels.Phone Number"></label>
                             </div>
                         </div>
                         <div class="col-lg-6">
                             <div class="vs-material-field">
                                 <input class="data-input form-control" data-field="first_cp_email" placeholder=" " />
-                                <label vslang="labels.email"></label>
+                                <label vslang="labels.Email"></label>
                             </div>
                         </div>
                         <div class="col-lg-6">
@@ -144,13 +144,13 @@
                         <div class="col-lg-6">
                             <div class="vs-material-field">
                                 <input class="data-input form-control" data-field="second_cp_phone" placeholder=" " />
-                                <label vslang="labels.phone_number"></label>
+                                <label vslang="labels.Phone Number"></label>
                             </div>
                         </div>
                         <div class="col-lg-6">
                             <div class="vs-material-field">
                                 <input class="data-input form-control" data-field="second_cp_email" placeholder=" " />
-                                <label vslang="labels.email"></label>
+                                <label vslang="labels.Email"></label>
                             </div>
                         </div>
                         <div class="col-lg-6">

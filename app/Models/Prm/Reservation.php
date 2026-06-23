@@ -110,7 +110,7 @@ class Reservation extends VSModel
             ->exists();
 
         if ($exists) {
-            return DV::error('This amenity is already booked for this time slot.');
+            return DV::error('amenity_already_booked');
         }
     }
 
@@ -322,7 +322,7 @@ class Reservation extends VSModel
         $now = time();
 
         if (($bookingStart - $now) < (30 * 60)) {
-            return DV::error('Reservations cannot be canceled less than 30 minutes before start time.');
+            return DV::error('cannot_cancel_in_30min');
         }
 
         $cancelled = DB::table('reservations')->where('id', $id)->update([
