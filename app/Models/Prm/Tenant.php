@@ -612,7 +612,7 @@ class Tenant
             ->leftJoin('building_spaces as bs', 'bs.id', '=', 'sr.space_id')
             ->leftJoin('services as s', 's.id', '=', 'sr.service_id')
             ->where('sr.tenant_id', $id)
-            ->where('sr.status_id', 2)
+            ->whereIn('sr.status_id', [2,4])
             ->select(
                 'sr.id as request_id',
                 'sr.code',
