@@ -719,7 +719,7 @@ var PurchaseOrdersComponent = (() => {
             title: (me) => {
                     const title = me.dataOptions.id ? "Receive Purchase Order" : "Purchase Orders";
                     if (title) {
-                       return  `<h4 class="text-white text-start fw-bold">${LocaleManager.trans(title,'titles')}</h4>`;
+                       return  `<h4 class="text-white text-start">${LocaleManager.trans(title,'titles')}</h4>`;
                     }
             },
                     
