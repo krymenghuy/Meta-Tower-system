@@ -405,7 +405,7 @@ const PrintReceiptDialog = (() => {
             <div style="border-bottom:1px dashed #6B7280;"></div>
         </div>
         <div style="flex:1;text-align:center;">
-            <div style="font-size:12px;color:#374151;margin-bottom:2px;">ហត្ថលេខា និងឈ្មោះបេញ្ចូរ</div>
+            <div style="font-size:12px;color:#374151;margin-bottom:2px;">ហត្ថលេខា និងឈ្មោះបេឡា</div>
             <div style="font-size:11px;color:#6B7280;margin-bottom:36px;">Issued By</div>
             <div style="border-bottom:1px dashed #6B7280;"></div>
         </div>
