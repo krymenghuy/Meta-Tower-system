@@ -867,10 +867,10 @@ const ContractDialog = (() => {
                         </div>
 
                         <div class="col-6">
-                            <select data-style="material" placeholder="Business Type" name="business_type_id" class="data-input form-control" data-field="business_type_id"> </select>
+                            <select data-style="material" placeholder="${LocaleManager.trans('Business Type', 'labels')}" name="business_type_id" class="data-input form-control" data-field="business_type_id"> </select>
                         </div>
                         <div class="col-3">
-                            <select data-style="material" placeholder="Unit Code" name="code" class="data-input form-control" data-field="space_id"> </select>
+                            <select data-style="material" placeholder="${LocaleManager.trans('Unit Code', 'labels')}" name="code" class="data-input form-control" data-field="space_id"> </select>
                         </div>
                         <div class="col-3">
                             <div class="vs-material-field">
