@@ -112,7 +112,6 @@ var ReservationComponent = (() => {
             transTitle: "titles.Action",
             className: "col_action align-middle",
             data: (data) => {
-                // console.log(444, data.status_id);
 
                 if (data.status_id == 2) return "";
                 return `<div class="d-flex justify-content-center align-items-end">
