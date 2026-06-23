@@ -605,7 +605,15 @@ class PurchaseOrder extends VSModel
                 return DV::error('PO item not found');
             }
 
-            $receiveQty = $item['received_qty'] ?? 0;
+            if (!isset($item['received_qty']) || $item['received_qty'] === '' || $item['received_qty'] === null) {
+                return DV::error('Received quantity is required.');
+            }
+
+            $receiveQty = (float) $item['received_qty'];
+
+            if ($receiveQty <= 0) {
+                return DV::error('Invalid receive quantity.');
+            }
 
             if ($receiveQty > $poItem->qty) {
                 return DV::error('Receive quantity exceeds ordered quantity.');
