@@ -144,7 +144,7 @@ class Team // Changed from Staff to Team to resolve the "Class not found" error
             'password'        => '0|string|0-255', 
             'address'         => '0|string|0-350',
             'nationality_id'  => '1|number|text=nationality_required',
-            'nid_issue_date'   => '1|date|text=Issue date is required',
+            'nid_issue_date'  => '0|date|text=nid_issue_date',
             'national_id'     => '0|string|0-20',
             'passport_number' => '0|string|0-20',
             'start_date'      => '0|date|text=start_date_required',
@@ -214,10 +214,14 @@ class Team // Changed from Staff to Team to resolve the "Class not found" error
             if (empty($national_id)) {
                 return DV::error('national_id_required');
             }
+            if (empty($d->nid_issue_date)) {
+                return DV::error('nid_issue_date');
+            }
         } else {
             if (empty($passport)) {
                 return DV::error('passport_number_required');
             }
+            $inputs['nid_issue_date'] = null;
         }
 
         if (!empty($national_id)) {
