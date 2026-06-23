@@ -842,8 +842,6 @@ const ContractDialog = (() => {
     // };
 
     self.show = (op) => {
-        console.log(6666, op);
-
         dialog =
             dialog ||
             new GeneralDialog({

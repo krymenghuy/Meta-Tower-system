@@ -52,7 +52,7 @@ var main_view = (() => {
 
     mThis.mnuChangePassword =mThis.top_right_menus.querySelector('#_main_mnu_changepwd');
     mThis.mnuLogout = mThis.top_right_menus.querySelector("#_main_mnu_logout");
-    console.log(123,mThis.mnuLogout);
+    // console.log(123,mThis.mnuLogout);
     
     mThis.mnuAbout1 = mThis.top_right_menus.querySelector("#_main_mnu_about");
 
