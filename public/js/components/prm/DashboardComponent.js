@@ -890,7 +890,7 @@ var DashboardComponent =  (() =>{
                     <div class="col-12 col-xl-6">
                         ${mThis.renderChartCard({
                             title: "Invoice Status",
-                            subtitle: "Paid, Pending, Partially Paid and Overdue",
+                            subtitle: "Paid, Unpaid, Partially Paid and Overdue",
                             pill: "Billing",
                             canvasId: "chartInvoiceStatus"
                         })}

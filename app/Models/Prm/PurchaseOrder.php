@@ -592,8 +592,6 @@ class PurchaseOrder extends VSModel
     DB::beginTransaction();
 
     try {
-        $allFullyReceived = true;
-
         foreach ($items as $item) {
 
             $poItem = DB::table('purchase_order_items')
@@ -610,9 +608,8 @@ class PurchaseOrder extends VSModel
             if ($receiveQty > $poItem->qty) {
                 return DV::error('Receive quantity exceeds ordered quantity.');
             }
-
-            $statusId = $receiveQty > 0 ? 5 : 4;
-
+           
+            $statusId = ($receiveQty == 0) ? 3 : 5;
             DB::table('purchase_order_items')
                 ->where('id', $poItem->id)
                 ->update([
@@ -623,22 +620,30 @@ class PurchaseOrder extends VSModel
                     'received_user' => $ss->login_name ?? null,
                     'status_id' => $statusId,
                 ]);
+        }
+        $count_total_item = DB::table('purchase_order_items')->where('po_id',$id)->count();
+        $total_receive_item = DB::table('purchase_order_items')->where('po_id',$id)->where('status_id',5)->count();
+        $po_status = null;
 
-            if ($receiveQty <= 0) {
-                $allFullyReceived = false;
-            }
+        if ($count_total_item > 0 && $total_receive_item == $count_total_item) {
+            $po_status = 5;
+        } elseif ($total_receive_item > 0) {
+            $po_status = 4;
+        } else {
+            $po_status = 3;
         }
 
         DB::table('purchase_orders')
             ->where('id', $id)
             ->update([
-                'status_id' => $allFullyReceived ? 5 : 4,
+                'status_id' => $po_status,
                 'update_uid' => $ss->user_id ?? null,
                 'update_user' => $ss->login_name ?? null,
                 'updated_at' => now(),
             ]);
 
         DB::commit();
+        if($po_status == 3) return DV::error('Invalid receive quantity.');
 
         return DV::success(['message' => 'Purchase order received successfully.']);
 

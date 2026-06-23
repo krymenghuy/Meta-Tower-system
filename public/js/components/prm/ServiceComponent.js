@@ -560,22 +560,15 @@ const CreateServicePriceDialog = (() => {
                 },
 
                 contentCreated: (me) => {
-                    console.log(123, me.controls.level);
-
                     const updateChargeAs = () => {
-                        const isSubscription =
-                            me.controls.service_type.value == 2;
-
-                        me.controls.charge_as.value = isSubscription
-                            ? "month"
-                            : "";
+                        const isSubscription = me.controls.service_type.value == 2;
+                        me.controls.charge_as.value = isSubscription ? "month" : "";
+                        console.log(4444,isSubscription);
+                        
                         me.controls.charge_as.disabled = isSubscription;
                     };
 
-                    me.controls.service_type?.addEventListener(
-                        "change",
-                        updateChargeAs,
-                    );
+                    me.controls.service_type?.addEventListener("change",updateChargeAs);
 
                     updateChargeAs();
                 },

@@ -1192,62 +1192,119 @@ function tenantList(div, data) {
     HtmlString = html;
 }
 
-
 function depositList(div, data) {
-    const d = data?.list ?? [];
-    const company_info = data?.company_profile ?? {};
+    console.log(123,data);
+
+    const rows = data?.list ?? [];
+    
+    const company = data?.company_profile ?? {};
+
+    let totalDeposit = 0;
 
     let html = `
     <div class="d-block position-relative">
         <div class="height-logo-report position-absolute overflow-hidden">
-            <img style="max-width:100px;max-height:100px;"
-                 class="object-fit-scale set-min-size-logo"
-                 src="${company_info.logo_url || ''}"
-                 alt="">
+            <img
+                style="max-width:100px;max-height:100px;"
+                class="object-fit-scale set-min-size-logo"
+                src="${company.logo_url || ''}"
+                alt="">
         </div>
+
         <div class="d-flex flex-column gap-2 justify-content-center align-items-center set-min-size-container-title">
-            <h4 class="text-center text-uppercase">${data.title ?? ''}</h4>
-            <p class="text-center w-100 fs-5 pb-0 mb-0">
+            <h4 class="text-center text-uppercase mb-0">
+                ${data.title ?? ''}
+            </h4>
+
+            <p class="text-center fs-5 mb-0">
                 ${data.sub_title ?? ''}
             </p>
-            <p class="text-center w-100 fs-6 pb-0 mb-0">
+
+            <p class="text-center fs-6 mb-0">
                 ${data.sub_title_2 ?? ''}
             </p>
         </div>
     </div>
 
-    <div class="table-responsive mt-3 pt-3 pb-3 bg-white overflow-x-hover-auto">
-        <table class="table table-bordered">
-            <thead>
+    <div class="table-responsive mt-3">
+        <table class="table table-bordered table-sm">
+            <thead class="table-light">
                 <tr>
-                    <th class="text-center">No</th>
-                    <th class="text-center">Tenant Name</th>
-                    <th class="text-center">Tenant ID</th>
-                    <th class="text-center">Deposit Date</th>
-                    <th class="text-center">Payment Date</th>
-                    <th class="text-center">Deposit</th>
-                    <th class="text-center">Valid Date</th>
-                    <th class="text-center">Remarks</th>
+                    <th width="50" class="text-center">No</th>
+                    <th>Tenant Name</th>
+                    <th width="120" class="text-center">Tenant ID</th>
+                    <th width="120" class="text-center">Deposit Date</th>
+                    <th width="120" class="text-center">Payment Date</th>
+                    <th width="130" class="text-end">Deposit</th>
+                    <th width="120" class="text-center">Valid Date</th>
+                    <th>Remarks</th>
                 </tr>
             </thead>
             <tbody>
     `;
 
-    if (d.length) {
-        d.forEach((st, index) => {
+    if (rows.length > 0) {
+
+        rows.forEach((row, index) => {
+
+            const deposit = parseFloat(row.deposit || 0);
+
+            totalDeposit += deposit;
+
             html += `
                 <tr>
-                    <td class="text-center">${index + 1}</td>
-                    <td>${st.tenant_name ?? ''}</td>
-                    <td class="text-center">${st.tenant_id ?? ''}</td>
-                    <td class="text-center">${st.deposit_date ?? ''}</td>
-                    <td class="text-center">${st.payment_date ?? ''}</td>
-                    <td class="text-end">${st.deposit ?? '0.00'}</td>
-                    <td class="text-center">${st.valid_date ?? ''}</td>
-                    <td>${st.remarks ?? ''}</td>
+                    <td class="text-center">
+                        ${index + 1}
+                    </td>
+
+                    <td>
+                        ${row.tenant_name ?? ''}
+                    </td>
+
+                    <td class="text-center">
+                        ${row.tenant_id ?? ''}
+                    </td>
+
+                    <td class="text-center">
+                        ${VSUtil.formatDate?.(row.deposit_date) || row.deposit_date || ''}
+                    </td>
+
+                    <td class="text-center">
+                        ${VSUtil.formatDate?.(row.payment_date) || row.payment_date || ''}
+                    </td>
+
+                    <td class="text-end">
+                        ${deposit.toLocaleString(undefined, {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2
+                        })}
+                    </td>
+
+                    <td class="text-center">
+                        ${VSUtil.formatDate?.(row.valid_date) || row.valid_date || ''}
+                    </td>
+
+                    <td>
+                        ${row.remarks ?? ''}
+                    </td>
                 </tr>
             `;
         });
+
+        html += `
+            <tr class="fw-bold">
+                <td colspan="5" class="text-end">
+                    Total Deposit
+                </td>
+                <td class="text-end">
+                    ${totalDeposit.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    })}
+                </td>
+                <td colspan="2"></td>
+            </tr>
+        `;
     } else {
         html += `
             <tr>
@@ -1267,6 +1324,7 @@ function depositList(div, data) {
     div.innerHTML = html;
     HtmlString = html;
 }
+
 function totalPaymentHistory(div, data) {
     let html = `
         <div class="d-flex position-relative w-100">

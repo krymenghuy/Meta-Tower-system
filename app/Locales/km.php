@@ -155,6 +155,34 @@ return [
         'amenity_already_booked' => 'សេវាកម្មនេះត្រូវបានកក់រួចហើយសម្រាប់ម៉ោងនេះ។',
         'cannot_cancel_in_30min' => 'មិនអាចលុបចោលការកក់បានទេ ប្រសិនបើនៅសល់តិចជាង ៣០ នាទីមុនពេលចាប់ផ្តើម។',
         'schedule_cannot_past' => 'កាលវិ.',
+        'required_select_tenant' => 'សូមជ្រើសរើសអ្នកជួល។',
+        'select_amenity'=>'សូមជ្រើសរើសទីតាំងដែលត្រឹមត្រូវ។',
+        'select_booking_date'=>'សូមជ្រើសរើសថ្ងៃកក់ដែលត្រឹមត្រូវ។',
+        'select_start_time'=>'សូមជ្រើសរើសម៉ោងចូលដែលត្រឹមត្រូវ។',
+        'select_end_time'=>'សូមជ្រើសរើសម៉ោងចេញដែលត្រឹមត្រូវ។',
+        'select_remarks' => 'សូមបញ្ចូលកំណត់សម្គាល់ដែលត្រឹមត្រូវ។',
+        'select_reference_code' => 'សូមបញ្ចូលលេខកូដដែលត្រឹមត្រូវ។',
+        'select_business_type' => 'សូមជ្រើសរើសប្រភេទអាជីវកម្មដែលត្រឹមត្រូវ។',
+        'select_unit_code' => 'សូមជ្រើសរើសលេខបន្ទប់ដែលត្រឹមត្រូវ។',
+        'select_deposit' => 'សូមជ្រើសរើសតម្លៃកក់។',
+        'select_start_date' => 'សូមជ្រើសរើសថ្ងៃចាប់ផ្ដើម។',
+        'select_end_date' => 'សូមជ្រើសរើសថ្ងៃបញ្ចប់។',
+        'contract_not_found.' => 'កិច្ចសន្យាមិនមានទេ.',
+        'end_date_must_be_after_start_date' => 'ថ្ងៃបញ្ចប់ត្រូវតែក្រោយថ្ងៃចាប់ផ្ដើម។',
+        "end_date_cannot_be_in_the_past" => "ថ្ងៃបញ្ចប់មិនអាចនៅក្នុងអតីតកាលបានទេ។",
+        "end_date_must_be_at_least_one_month_after_start_date" => "ថ្ងៃបញ្ចប់ត្រូវតែយ៉ាងតិចមួយខែក្រោយថ្ងៃចាប់ផ្ដើម។",
+        "select_tenant_before_create_contract" => "សូមបង្កើតអ្នកជួលមុនពេលបង្កើតកិច្ចសន្យា។",
+        "this_space_already_has_a_contract" => "ទីតាំងនេះមានកិច្ចសន្យារួចហើយ។",
+        "start_date_must_be_on_or_before_the_last_renewal_start" => "ថ្ងៃចាប់ផ្ដើមត្រូវតែនៅលើឬមុនការចាប់ផ្ដើមបន្ត។",
+        "dates_overlap_the_last_renewal_for_this_unit" => "កាលបរិច្ឆេទមានការត្រួតស៊ីគ្នានឹងការបន្តកិច្ចសន្យា។",
+        "only_pending_expired_or_terminated_contracts_can_be_deleted" => "មានតែសេចក្តីព្រាងកិច្ចសន្យា កិច្ចសន្យាដែលហួសកំណត់ ឬកិច្ចសន្យាដែលត្រូវបានបញ្ចប់ប៉ុណ្ណោះ ទើបអាចលុបបាន។" 
+
+
+      
+
+
+        
+        
         
 
 
@@ -163,6 +191,7 @@ return [
         'name' => 'ឈ្មោះ',
         'name_kh' => 'ឈ្មោះភាសាខ្មែរ',
         'building_id' => 'អគារ',
+        'tenant_id' => 'អ្នកជួល'
     ],
     'titles' => [
         'Create Building' => 'បង្កើតអគារ',
