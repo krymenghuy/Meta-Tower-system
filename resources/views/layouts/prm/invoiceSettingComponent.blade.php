@@ -1,10 +1,12 @@
 <div id="_main_invoiceSetting_component" class="mobile-padding p-3" style="display:none;">
     
-    <div class="row g-3 mb-3">
-        <div class="col-md-6 d-flex">
+    <div class="row g-3">
+        <!-- Column 1: Exchange Rate and Invoice Display Options -->
+        <div class="col-md-6 d-flex flex-column gap-3">
+            <!-- Exchange Rate Card -->
             <div class="is-card w-100">
                 {{-- Exchange Rate row --}}
-                <div class="is-card-row border-bottom pb-3 mb-3">
+                <div class="is-card-row">
                     <div class="is-icon-wrap">
                         <i class="fa-solid fa-dollar-sign"></i>
                     </div>
@@ -17,41 +19,9 @@
                         Edit
                     </button>
                 </div>
-
-                {{-- Representative Info --}}
-                <div class="d-flex flex-column gap-3">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div class="d-flex align-items-center gap-2">
-                            <div class="is-icon-wrap">
-                                <i class="fa-solid fa-user"></i>
-                            </div>
-                            <p class="is-section-title mb-0">Representative Info</p>
-                        </div>
-                        <button type="button" class="is-edit-btn" id="_btnEditRepresentative">
-                            <i class="fa-regular fa-pen-to-square"></i>
-                            Edit
-                        </button>
-                    </div>
-
-                    <div class="d-flex flex-column gap-3">
-                        <div class="is-card-info">
-                            <p class="is-label">Name</p>
-                            <p class="is-value fs-6" id="_is_representative">—</p>
-                        </div>
-                        <div class="is-card-info">
-                            <p class="is-label">Phone</p>
-                            <p class="is-value fs-6" id="_is_representative_phone">—</p>
-                        </div>
-                        <div class="is-card-info">
-                            <p class="is-label">Address</p>
-                            <p class="is-value fs-6" id="_is_representative_address">—</p>
-                        </div>
-                    </div>
-                </div>
             </div>
-        </div>
 
-        <div class="col-md-6 d-flex">
+            <!-- Invoice Display Options Card -->
             <div class="is-card w-100">
                 <p class="is-section-title">Invoice Display Options</p>
 
@@ -105,11 +75,10 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="row g-3">
+        <!-- Column 2: Upload QR Code -->
         <div class="col-md-6 d-flex">
-            <div class="is-card w-50">
+            <div class="is-card w-100">
                 <p class="is-section-title">Upload QR code </p>
                 <div class="d-flex flex-column align-items-center gap-3 w-100 flex-grow-1 justify-content-center">
                     <div class="cpn-logo-box" id="_logo_box">
@@ -126,7 +95,7 @@
                     </div>
                     <input type="file" id="_logo_file_input" accept="image/*" style="display:none" />
                     
-                    <div class="w-100 mt-2">
+                    <div class="w-100 mt-2 d-flex flex-column align-items-center" style="max-width: 250px;">
                         <button id="com_btnChooseLogo" class="cpn-btn-upload w-100 mb-2">
                             <i class="fa fa-upload me-2"></i> Upload file
                         </button>
@@ -137,12 +106,10 @@
                 </div>
             </div>
         </div>
-
-        <div class="col-md-6">
-            </div>
     </div>
 
 </div>
+
 
 <style>
 #_main_invoiceSetting_component {

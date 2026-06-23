@@ -240,6 +240,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('invoice')->gr
     Route::post('/setting', [InvoiceController::class, 'invoiceSetting']);
     Route::post('/get-setting', [InvoiceController::class, 'getInvoiceSetting']);
     Route::post('/reset-setting', [InvoiceController::class, 'resetInvoiceSetting']);
+    Route::post('/print', [InvoiceController::class, 'getPrintInvoice']);
 
 });
 
