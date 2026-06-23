@@ -340,18 +340,15 @@ function getPaymentReport($arr, $ss)
 public static function getTenantDepositList($arr, $ss)
 {
     $d = (object)$arr;
+    $is_paid = isset($d->status_id) ? (int)$d->status_id : null;
 
-    $status_id = isset($d->status_id)
-        ? (int)$d->status_id
-        : null;
+    $start_date = isset($d->start_date) ? convertDate($d->start_date) : date('Y-m-01');
+    $end_date = isset($d->end_date) ? convertDate($d->end_date) : date('Y-m-t');
+    $str_date = "DATE(d.deposit_date) >= '$start_date' AND DATE(d.deposit_date) <= '$end_date'";
+    $sub_title = 'Deposit Date From: ' . date('d-M-Y', strtotime($start_date)) . ' To ' . date('d-M-Y', strtotime($end_date));
 
-    $start_date = !empty($d->start_date)
-        ? convertDate($d->start_date)
-        : date('Y-m-01');
-
-    $end_date = !empty($d->end_date)
-        ? convertDate($d->end_date)
-        : date('Y-m-t');
+    $str_search = '1=1';
+    if ($is_paid !== null) $str_search .= ' AND d.status_id = ' . $is_paid;
 
     $query = DB::table('deposits as d')
         ->join('tenants as t', 'd.tenant_id', '=', 't.id')
@@ -366,38 +363,29 @@ public static function getTenantDepositList($arr, $ss)
             d.created_at as payment_date,
             d.updated_at as updated_date
         ")
-        ->whereDate('d.deposit_date', '>=', $start_date)
-        ->whereDate('d.deposit_date', '<=', $end_date);
-
-    if ($status_id) {
-        $query->where('d.status_id', $status_id);
-    }
-
-    $rows = $query
-        ->orderBy('d.deposit_date')
+        ->whereRaw($str_search)
+        ->whereRaw($str_date)
         ->get();
 
-    $title_status = '(All)';
+    
+    $statusLabel = '(All)';
 
-    switch ($status_id) {
+    switch ($is_paid) {
         case 1:
-            $title_status = '(Pending)';
+            $statusLabel = '(Pending)';
             break;
-
         case 2:
-            $title_status = '(Paid)';
+            $statusLabel = '(Paid)';
             break;
-
         case 3:
-            $title_status = '(Refunded)';
+            $statusLabel = '(Refunded)';
             break;
     }
-
-    $title = $title_status . ' Tenant Deposit Report';
+    $title = $statusLabel . ' Tenant Deposit Report';
 
     $startDate = date('d-M-Y', strtotime($start_date));
     $endDate = date('d-M-Y', strtotime($end_date));
-
+    $sub_title_2 = $startDate . ' To ' . $endDate;
     $date_rank = (object)[
         'start_date' => $startDate,
         'end_date' => $endDate
@@ -407,10 +395,10 @@ public static function getTenantDepositList($arr, $ss)
 
     return (object)[
         'title' => $title,
-        'sub_title' => 'Deposit Report',
-        'sub_title_2' => $startDate . ' To ' . $endDate,
+        'sub_title' => $sub_title,
+        'sub_title_2' =>$sub_title_2,
         'date_rank' => $date_rank,
-        'list' => $rows,
+        'list' => $query,
         'form' => 'deposit_list',
         'company_profile' => $company_profile
     ];
