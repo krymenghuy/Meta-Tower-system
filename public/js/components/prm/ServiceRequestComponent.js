@@ -302,7 +302,7 @@ var ServiceRequestComponent = (function () {
                 const menu = me.getActiveMenus(container);
                 const status_id = container.dataset.statusid;
                menu.edit_request.style.display = (status_id >= 2) ? 'none' : 'block';
-            //    menu.delete_request.style.display = (status_id >= 2) ? 'none' : 'block';
+               menu.delete_request.style.display = (status_id == 3 || status_id == 4) ? 'block' : 'none';
                menu.accept_request.style.display = (status_id >= 2) ? 'none' : 'block';
                menu.complete_request.style.display = (status_id == 2) ? 'block' : 'none';
                menu.reject_request.style.display = (status_id >= 2) ? 'none' : 'block';

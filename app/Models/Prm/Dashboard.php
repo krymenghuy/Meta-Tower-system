@@ -372,26 +372,26 @@ class Dashboard extends VSModel
             ->whereYear('i.issue_date', $year)
             ->selectRaw("
                 SUM(CASE WHEN i.payment_status_id = 1 THEN 1 ELSE 0 END) as paid,
-                SUM(CASE WHEN i.payment_status_id = 2 THEN 1 ELSE 0 END) as pending,
+                SUM(CASE WHEN i.payment_status_id = 2 THEN 1 ELSE 0 END) as unpaid,
                 SUM(CASE WHEN i.payment_status_id = 3 THEN 1 ELSE 0 END) as partially_paid,
                 SUM(CASE WHEN i.payment_status_id = 4 THEN 1 ELSE 0 END) as overdue
             ")
             ->first();
 
         $paid = (int) ($data->paid ?? 0);
-        $pending = (int) ($data->pending ?? 0);
+        $unpaid = (int) ($data->unpaid ?? 0);
         $partially = (int) ($data->partially_paid ?? 0);
         $overdue = (int) ($data->overdue ?? 0);
 
-        $total = $paid + $pending + $partially + $overdue;
+        $total = $paid + $unpaid + $partially + $overdue;
 
         if ($total <= 0) {
             return (object)[
-                'labels' => ['Paid', 'Pending', 'Partially Paid', 'Overdue'],
+                'labels' => ['Paid', 'Unpaid', 'Partially Paid', 'Overdue'],
                 'values' => [0, 0, 0, 0],
                 'raw' => (object)[
                     'paid' => 0,
-                    'pending' => 0,
+                    'unpaid' => 0,
                     'partially_paid' => 0,
                     'overdue' => 0
                 ]
@@ -399,16 +399,16 @@ class Dashboard extends VSModel
         }
 
         return (object)[
-            'labels' => ['Paid', 'Pending', 'Partially Paid', 'Overdue'],
+            'labels' => ['Paid', 'Unpaid', 'Partially Paid', 'Overdue'],
             'values' => [
                 round(($paid / $total) * 100, 1),
-                round(($pending / $total) * 100, 1),
+                round(($unpaid / $total) * 100, 1),
                 round(($partially / $total) * 100, 1),
                 round(($overdue / $total) * 100, 1),
             ],
             'raw' => (object)[
                 'paid' => $paid,
-                'pending' => $pending,
+                'unpaid' => $unpaid,
                 'partially_paid' => $partially,
                 'overdue' => $overdue
             ]
