@@ -82,13 +82,4 @@ class CompanyProfile extends VSModel //extends Model
 
         return DV::depends($customer_id, null, 'Failed to update company information');
     }
-
-
-
- 
-
-
-   
-
-
 }

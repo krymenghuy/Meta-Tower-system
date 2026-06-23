@@ -842,8 +842,6 @@ const ContractDialog = (() => {
     // };
 
     self.show = (op) => {
-        console.log(6666, op);
-
         dialog =
             dialog ||
             new GeneralDialog({
@@ -1457,6 +1455,8 @@ const RenewDialog = (() => {
                 onPrepareForm: (me, data) => {
                     LocaleManager.translateZone(me.divModal);
                     const det = data.contract_details || {};
+                    console.log(33,det);
+                    
                     // const oldStartIso = normalizeContractDateToIso(det.start_date);
                     // const oldEndIso = normalizeContractDateToIso(det.end_date);
                     if (me.controls.old_contract_start) {
@@ -1517,12 +1517,12 @@ const RenewDialog = (() => {
                     const applyContractPriceFields = () => {
                         if (me.controls.price_type) {
                             me.controls.price_type.value = det.price_type ?? "";
-                            me.controls.price_type.value =
-                                det.price_type == "sqm"
-                                    ? "m²"
-                                    : det.price_type === "total"
-                                      ? "Unit"
-                                      : "";
+                            // me.controls.price_type.value =
+                            //     det.price_type == "sqm"
+                            //         ? "m²"
+                            //         : det.price_type === "total"
+                            //           ? "Unit"
+                            //           : "";
                         }
                         if (me.controls.price) {
                             me.controls.price.value =
@@ -1545,9 +1545,6 @@ const RenewDialog = (() => {
                         if (me.controls.price_type) {
                             me.controls.price_type.value =
                                 unitData.price_type ?? "";
-
-                            console.log(3333, unitData.price_type);
-
                             me.controls.price_type.value =
                                 unitData.price_type === "sqm"
                                     ? "m²"

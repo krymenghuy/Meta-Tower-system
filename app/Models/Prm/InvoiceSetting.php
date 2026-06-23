@@ -70,7 +70,7 @@ class InvoiceSetting extends VSModel
         ];
     }
 
-    public function getInvoiceSetting($id = null, $ss = null)
+    public function  getInvoiceSetting($id = null, $ss = null)
     {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
@@ -102,9 +102,6 @@ class InvoiceSetting extends VSModel
             'show_pmt_status' => $setting->show_pmt_status,
             'show_amount_paid' => $setting->show_amount_paid,
             'exchange_rate' => $setting->exchange_rate ?? '0.00',
-            // 'build_representative' => $setting->build_representative,
-            // 'representative_phone' => $setting->representative_phone,
-            // 'representative_address' => $setting->representative_address,
             'qr_file_name'           => $setting->qr_file_name,
             'QR_file_type'              => $file_type,
             'QR_file'              => $cleanPath,

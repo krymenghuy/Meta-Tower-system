@@ -677,85 +677,129 @@ var InvoiceComponent = (() => {
         });
     };
 
-    mThis.printInvoice = (id, menulink) => {
-        let invoice = null;
-        let globalSetting = null;
-        let localSetting = null;
-        let companyProfile = null;
-        if(!AuthManager.allowed(238,false)) return;
-        vsapi.call(`${main_view.base_url}/api/company/details`).then((res) => {
+    // mThis.printInvoice = (id, menulink) => {
+    //     let invoice = null;
+    //     let globalSetting = null;
+    //     let localSetting = null;
+    //     let companyProfile = null;
+    //     if(!AuthManager.allowed(238,false)) return;
+    //     // vsapi.call(`${main_view.base_url}/api/company/details`).then((res) => {
+    //     //     if (res.status_code === 200) {
+    //     //         companyProfile = res.data;
+    //     //     } else {
+    //     //         cv_interact.error(res.message);
+    //     //     }
+    //     // });
+    //     // vsapi
+    //     //     .call(`${main_view.base_url}/prm/invoice_setting/get`)
+    //     //     .then((res) => {
+    //     //         if (res.status_code === 200) {
+    //     //             globalSetting = res.data;
+    //     //         } else {
+    //     //             cv_interact.error(res.message);
+    //     //         }
+    //     //     });
+
+    //     vsapi
+    //         .call(`${main_view.base_url}/prm/invoice/print`, { id: id })
+    //         .then((res) => {
+    //             if (res.status_code === 200) {
+    //                 // localSetting = res.data.settings;
+
+
+    //                 // invoice = res.data;
+    //                 let invoiceDetails = res.data?.invoice_details;
+    //                 let invoiceSetting = res.data?.invoice_setting;
+    //                 let companyProfile = res.data?.company_info;
+
+    //                 const invType = invoiceDetails?.invoice_type;
+    //                 const params = {
+    //                     invoice_id: id,
+    //                     btn: menulink,
+    //                     invoice: invoiceDetails,
+    //                     global: mThis.globalSetting,
+    //                 };
+
+    //                 const settings = invoiceSetting || {};
+    //                 const global = globalSetting || {};
+    //                 const company = companyProfile || {};
+
+    //                 console.log(34, global);
+
+
+    //                 if (settings.show_balance !== null) {
+
+    //                     // settings.build_representative = global.build_representative;
+    //                     // settings.representative_phone = global.representative_phone;
+    //                     // settings.representative_address = global.representative_address;
+    //                     settings.QR_file = global.QR_file;
+    //                     settings.qr_file_name = global.qr_file_name;
+    //                     params.setting = settings;
+    //                     // params.company = company;
+    //                     // params.representative = representative;
+    //                 } else {
+    //                     params.setting = global;
+    //                     settings.QR_file = global.QR_file;
+    //                     settings.qr_file_name = global.qr_file_name;
+    //                 }
+
+    //                 if (invType === 1) {
+    //                     params.company = company;
+    //                     InvoiceTaxDialog.show(params);
+    //                 } else if (invType === 2) {
+    //                      params.company = company;
+    //                     InvoiceNoTaxDialog.show(params);
+    //                 } else if (invType === 3) {
+    //                      params.company = company;
+    //                     InvoiceCommercialDialog.show(params);
+    //                 }
+    //             } else {
+    //                 cv_interact.error("Could not determine invoice type.");
+    //             }
+    //         });
+    // };
+
+
+
+   mThis.printInvoice = (id, menulink) => {
+    if (!AuthManager.allowed(238, false)) return;
+
+    vsapi
+        .call(`${main_view.base_url}/prm/invoice/print`, { id: id })
+        .then((res) => {
             if (res.status_code === 200) {
-                companyProfile = res.data;
+                // Pull structured data cleanly out of your JSON response
+                const invoiceDetails = res.data?.invoice_details;
+                const invoiceSetting = res.data?.invoice_setting || {};
+                const companyProfile = res.data?.company_info || {};
+
+                const invType = invoiceDetails?.invoice_type;
+                
+                // Initialize params object
+                const params = {
+                    invoice_id: id,
+                    btn: menulink,
+                    invoice: invoiceDetails,
+                    global: mThis.globalSetting, 
+                    company: companyProfile,     
+                    setting: invoiceSetting  
+                };
+
+                // Trigger the correct dialog layout based on Invoice Type
+                if (invType === 1) {
+                    InvoiceTaxDialog.show(params);
+                } else if (invType === 2) {
+                    InvoiceNoTaxDialog.show(params);
+                } else if (invType === 3) {
+                    InvoiceCommercialDialog.show(params);
+                } else {
+                    cv_interact.error("Unknown invoice type variant.");
+                }
             } else {
-                cv_interact.error(res.message);
+                cv_interact.error(res.message || "Could not determine invoice type.");
             }
         });
-        vsapi
-            .call(`${main_view.base_url}/prm/invoice_setting/get`)
-            .then((res) => {
-                if (res.status_code === 200) {
-                    globalSetting = res.data;
-                } else {
-                    cv_interact.error(res.message);
-                }
-            });
-
-        vsapi
-            .call(`${main_view.base_url}/prm/invoice/details`, { id: id })
-            .then((res) => {
-                if (res.status_code === 200) {
-                    localSetting = res.data.settings;
-
-                    invoice = res.data;
-
-                    const invType = invoice.invoice_type;
-                    const params = {
-                        invoice_id: id,
-                        btn: menulink,
-                        invoice: invoice,
-                        global: mThis.globalSetting,
-                    };
-
-                    const settings = localSetting || {};
-                    const global = globalSetting || {};
-                    const company = companyProfile || {};
-
-                    console.log(34, global);
-
-
-                    if (settings.show_balance !== null) {
-
-                        // settings.build_representative = global.build_representative;
-                        // settings.representative_phone = global.representative_phone;
-                        // settings.representative_address = global.representative_address;
-                        settings.QR_file = global.QR_file;
-                        settings.qr_file_name = global.qr_file_name;
-                        params.setting = settings;
-                        // params.company = company;
-                        // params.representative = representative;
-                    } else {
-                        params.setting = global;
-                        settings.QR_file = global.QR_file;
-                        settings.qr_file_name = global.qr_file_name;
-                        // params.company = company;
-                        // params.representative = representative;
-                    }
-
-                    if (invType === 1) {
-                        params.company = company;
-                        InvoiceTaxDialog.show(params);
-                    } else if (invType === 2) {
-                         params.company = company;
-                        InvoiceNoTaxDialog.show(params);
-                    } else if (invType === 3) {
-                         params.company = company;
-                        InvoiceCommercialDialog.show(params);
-                    }
-                } else {
-                    cv_interact.error("Could not determine invoice type.");
-                }
-            });
-    };
+}; 
 
     mThis.prepareFormOptions = (onFinish) => {
         vsapi

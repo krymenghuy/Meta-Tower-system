@@ -1257,7 +1257,7 @@ const CreateBookingDialog = (() => {
                                 .then((res) => {
                                     if (res.status_code === 200) {
                                         me.hide(true, op);
-                                        if (me.dataOptions.id > 0) {
+                                        if (me.dataOptions?.booking?.id > 0) {
                                             cv_interact.success("update_success_booking");
                                         } else {
                                             cv_interact.success("create_success_booking");
