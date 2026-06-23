@@ -293,13 +293,13 @@ const CreateItemsDialog = (() => {
                                 </div>
                             </div>
                             <div class="col-8">
-                                <select  data-style="material" name="category_id" class="data-input form-control" data-field="category_id" placeholder="Category">
+                                <select  data-style="material" name="category_id" class="data-input form-control" data-field="category_id" placeholder="${LocaleManager.trans('Category', 'labels')}">
                                 </select>
                            </div>
                             <div class="col-4">
                                 <div class="material-input outlined">
-                                    <select name="unit" data-style="material" class="data-input form-control" data-field="unit" placeholder="Unit">
-                                        <option value="">Select Unit</option>
+                                    <select name="unit" data-style="material" class="data-input form-control" data-field="unit" placeholder="${LocaleManager.trans('Unit Type', 'labels')}">
+                                        <option value="" vslang="labels.Select Unit">Select Unit</option>
                                         <option value="pcs">pcs</option>
                                         <option value="box">box</option>
                                         <option value="set">set</option>

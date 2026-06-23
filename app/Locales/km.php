@@ -123,6 +123,8 @@ return [
         'start_time_cannot_in_past' => 'ម៉ោងចាប់ផ្តើមមិនអាចនៅក្នុងពេលអតីតកាលបានទេ។',
         'end_time_cannot_in_past'   => 'ម៉ោងបញ្ចប់មិនអាចនៅក្នុងពេលអតីតកាលបានទេ។',
         'nid_issue_date' => 'សូមជ្រើសរើសថ្ងៃចេញអត្តសញ្ញាណប័ណ្ណ',
+        'enter_address' => 'សូមបញ្ចូលអាសយដ្ឋាន។',
+
 
 
 
@@ -651,6 +653,7 @@ return [
         'Refresh' => 'Refresh',
         'Dont Delete' => 'មិនលុប',
         'Delete' => 'លុបចោល',
+        'Edit' => 'កែប្រែ',
         'Remove' => 'ដកចេញ',
         'Save' => 'រក្សារទុក',
         'Save Changes' => 'រក្សារទុក',
@@ -707,6 +710,13 @@ return [
 
         'Save Change' => 'រក្សាទុក',
         'Complete' => 'បញ្ចប់',
+
+        'Upload Photo' => 'ភ្ជាប់រូបភាព',
+        'Delete Logo' => 'លុបនិមិត្តសញ្ញា',
+
+        
+
+        
         
 
 
@@ -899,6 +909,29 @@ return [
         'No Tax' => 'អត់ពន្ធ',
         'Commercial' => 'ពាណិជ្ជកម្ម',
         'Tenant' => 'អ្នកជួល',
+        'Logo' => 'និមិត្តសញ្ញា',
+        'Company Logo' => 'និមិត្តសញ្ញាក្រុមហ៊ុន',
+        'Exchange Rate (KHR)' => 'អត្រាប្តូរប្រាក់ (KHR)',
+        'Exchange Rate (USD - KHR)' => 'អត្រាប្តូរប្រាក់ (USD - KHR)',
+        'Invoice Display Options' => 'ជម្រើសបង្ហាញវិក្កយបត្រ',
+        'Show Commercial Tax' => 'បង្ហាញពន្ធពាណិជ្ជកម្ម',
+        'Show Payment Status' => 'បង្ហាញស្ថានភាពទូទាត់',
+        'Show Balance' => 'បង្ហាញសមតុល្យ',
+        'Show Amount Paid' => 'បង្ហាញចំនួនទឹកប្រាក់ដែលបានបង់',
+        'Show Signature' => 'បង្ហាញហត្ថលេខា',
+        'Upload QR code' => 'បញ្ជូល QR កូដ',
+        'Upload file' => 'បញ្ជូលឯកសារ',
+        'Delete file' => 'លុបឯកសារ',
+        'Category' => 'ប្រភេទ',
+        'Select Unit' => 'សូមជ្រើសរើសឯកតា',
+        'Level' => 'កម្រិត',
+        'Once' => 'ម្ដង',
+        'Hourly' => 'ម៉ោង',
+        'Standard' => 'ស្តង់ដារ',
+        'Premium' => 'ពិសេស',
+        'Bookable' => 'អាចកក់បាន',
+        
+        
         
         
         

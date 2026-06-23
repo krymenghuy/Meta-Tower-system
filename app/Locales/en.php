@@ -55,6 +55,8 @@ return [
         'required_start_time' => 'Start time is required.',
         'required_end_time' => 'End time is required.',
 
+        'enter_address' => 'Please enter address.',
+
         'select_tenant' => 'Please select a tenant.',
 
         'please_select_a_valid_category' => 'Please select a valid category.',
@@ -133,6 +135,7 @@ return [
         'amenity_already_booked' => 'This amenity is already booked for this time slot.',
         'cannot_cancel_in_30min' => 'Reservations cannot be canceled less than 30 minutes before start time.',
          'schedule_cannot_past' => 'Schedule cannot be in the past.',
+
 
 
 
@@ -343,6 +346,7 @@ return [
         "OK" => "OK",
         "Remove" => "Remove",
         "Delete" => "Delete",
+        "Edit" => "Edit",
         "Dont Delete" => "Don't Delete",
         "Dont Remove" => "Don't Remove",
         "Create" => "Create",
