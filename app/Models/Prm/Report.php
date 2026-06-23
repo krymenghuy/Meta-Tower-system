@@ -337,63 +337,82 @@ function getPaymentReport($arr, $ss)
         return DV::success(['data' => $res]);
     }
    
-// function getTenantDepositList($arr, $ss) {
-//     $d = (object)$arr;
-//     $is_paid = isset($d->is_paid) ? (int)$d->is_paid : null;
-//     $start_date = isset($d->start_date) ? convertDate($d->start_date) : date('Y-m-01');
-//     $end_date = isset($d->end_date) ? convertDate($d->end_date) : date('Y-m-t');
-//     $str_date = "DATE(d.deposit_date) >= '$start_date' AND DATE(d.deposit_date) <= '$end_date'";
-//     $sub_title = 'Deposit Date From: ' . date('d-M-Y', strtotime($start_date)) . ' To ' . date('d-M-Y', strtotime($end_date));
+public static function getTenantDepositList($arr, $ss)
+{
+    $d = (object)$arr;
 
-//     $rows = DB::table('deposits as d')
-//         ->join('tenants as t', 'd.tenant_id', '=', 't.id')
-//         ->selectRaw('
-//             t.name as tenant_name,
-//             t.code as tenant_id,
-//             d.deposit_date,
-//             d.created_at as payment_date,
-//             d.amount as deposit,
-//             d.updated_at as valid_date,
-//             d.remarks
-//         ')
-//         ->whereRaw($str_date)
-//         ->get();
+    $status_id = isset($d->status_id)
+        ? (int)$d->status_id
+        : null;
 
-    
+    $start_date = !empty($d->start_date)
+        ? convertDate($d->start_date)
+        : date('Y-m-01');
 
-//     $campuses = empty($campuses) ? ['N/A'] : $campuses;
+    $end_date = !empty($d->end_date)
+        ? convertDate($d->end_date)
+        : date('Y-m-t');
 
-//     $title_status = '(All)';
-//     if ($is_paid !== null) {
-//         $title_status = $is_paid == 1 ? '(Paid) ' : '(Unpaid) ';
-//     }
+    $query = DB::table('deposits as d')
+        ->join('tenants as t', 'd.tenant_id', '=', 't.id')
+        ->selectRaw("
+            t.code as tenant_code,
+            t.name as tenant_name,
+            d.deposit_date,
+            d.amount,
+            d.paid_amount,
+            d.status_id,
+            d.remarks,
+            d.created_at as payment_date,
+            d.updated_at as updated_date
+        ")
+        ->whereDate('d.deposit_date', '>=', $start_date)
+        ->whereDate('d.deposit_date', '<=', $end_date);
 
-//     $title = $title_status . 'Tenant Deposit Report';
+    if ($status_id) {
+        $query->where('d.status_id', $status_id);
+    }
 
-//     $startDate = date('d-M-Y', strtotime($start_date));
-//     $endDate = date('d-M-Y', strtotime($end_date));
-//     $campus_name = 'Ç1';
-//     $sub_title = '(' . ($campus_name ?: 'All Campus') . ')';
-//     $sub_title_2 = $startDate . ' To ' . $endDate;
+    $rows = $query
+        ->orderBy('d.deposit_date')
+        ->get();
 
-//     $date_rank = (object)[
-//         'start_date' => $startDate,
-//         'end_date' => $endDate
-//     ];
+    $title_status = '(All)';
 
-//     $company_profile = self::getCompanyInfo($ss);
+    switch ($status_id) {
+        case 1:
+            $title_status = '(Pending)';
+            break;
 
-   
+        case 2:
+            $title_status = '(Paid)';
+            break;
 
-//     return (object)[
-//         // 'header' => $header,
-//         'title' => $title,
-//         'sub_title' => $sub_title,
-//         'sub_title_2' => $sub_title_2,
-//         'date_rank' => $date_rank,
-//         'list' => $rows,
-//         'form' => 'deposit_list',
-//         'company_profile' => $company_profile
-//     ];
-// }
+        case 3:
+            $title_status = '(Refunded)';
+            break;
+    }
+
+    $title = $title_status . ' Tenant Deposit Report';
+
+    $startDate = date('d-M-Y', strtotime($start_date));
+    $endDate = date('d-M-Y', strtotime($end_date));
+
+    $date_rank = (object)[
+        'start_date' => $startDate,
+        'end_date' => $endDate
+    ];
+
+    $company_profile = self::getCompanyInfo($ss);
+
+    return (object)[
+        'title' => $title,
+        'sub_title' => 'Deposit Report',
+        'sub_title_2' => $startDate . ' To ' . $endDate,
+        'date_rank' => $date_rank,
+        'list' => $rows,
+        'form' => 'deposit_list',
+        'company_profile' => $company_profile
+    ];
+}
 }
