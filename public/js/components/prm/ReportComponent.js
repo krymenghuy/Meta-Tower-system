@@ -534,14 +534,10 @@ var ReportComponent = (() => {
     mThis.defaultPermissions = ['print', 'excel'];
     mThis.displayMainOptions = (onFinish = null) => {
     const payload = { app_id: main_view.app_id };
-    console.log(12,payload);
-    
     vsapi.call(`${main_view.base_url}/api/report-center/report-list`, payload, null, null, main_view.apiCluster)
         
         .then(res => {
-            console.log(JSON.stringify(res,null,2));
             const data = res.status_code === 200 ? res.data : [];
-            console.log(6666,data);
             mThis.renderPanelBox(data);
 
                 if (typeof onFinish === 'function') onFinish();

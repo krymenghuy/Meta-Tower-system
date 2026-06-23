@@ -81,7 +81,7 @@ class Tenant
             'legal_name'      => '1|string|0-150|text=legal_name_required',
             'nationality_id'  => '1|number|text=nationality_required',
             'national_id'     => '0|string|0-20',
-            'nid_issue_date'   => '1|date|text=nid_issue_date',
+            'nid_issue_date'   => '0|date',
             'passport_number' => '0|string|0-20',
             'phone_number'    => '1|string|1-20|text=phone_number_required',
             'email'           => '0|email|1-30',
@@ -97,6 +97,8 @@ class Tenant
         $d = (object) $inputs;
         $dob = $d->date_of_birth ?? null;
         $email = $d->email ?? null;
+        $nid_issue_date = convertDate($inputs['nid_issue_date'] ?? null);
+        $inputs['nid_issue_date'] = $nid_issue_date;
         if ($email !== null && $email !== '') {
                 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                     return DV::error('Invalid email format.');
@@ -113,10 +115,14 @@ class Tenant
         $nationality_id = $d->nationality_id ?? null;
         if ($nationality_id === 14) {
             $national_id = $d->national_id ?? null;
+            $nid_issue_date = $d->nid_issue_date ?? null;
             $passport = $d->passport_number ?? null;
 
             if (empty($national_id)) {
                 return DV::error('national_id_required');
+            }
+            if (empty($nid_issue_date)) {
+                return DV::error('nid_issue_date');
             }
             $nid_check = $this->checkUniqueTenantByNID($national_id, $id);
             if ($nid_check) return DV::error($nid_check);
@@ -126,6 +132,7 @@ class Tenant
         if ($nationality_id !== 14) {
             $passport = $d->passport_number ?? null;
             $national_id = $d->national_id ?? null;
+            $nid_issue_date = $d->nid_issue_date ?? null;
             if (empty($passport)) {
                 return DV::error('passport_number_required');
             }

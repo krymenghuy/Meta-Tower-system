@@ -2062,6 +2062,8 @@ const CreateTenantDialog = (() => {
                         click: (me, btn) => {
                             const op = me.getData();
                             op.id = me.dataOptions.id;
+                            console.log(56,op);
+                            
                             op.photo = me.fileBase64 ? me.previewImg.src : "";
 
                             vsapi
