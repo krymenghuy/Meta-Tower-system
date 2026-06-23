@@ -3,8 +3,6 @@ const CreateContractDialog = (()=>{
    const self = {};
    let dialog = null;
      self.show = (op)=>{
-        console.log(9090,op);
-        
         dialog = dialog || new GeneralDialog({
             cssClass:"modal-lg vs-modal",
             backdrop: "static",
@@ -99,7 +97,7 @@ const CreateContractDialog = (()=>{
                             <div class="row g-3">
                                 <div class="col-6">
                                     <div class="vs-material-field">
-                                        <input name="com_rep_name" class="data-input form-control" data-field="com_rep_name"  placeholder="Company Representative" />
+                                        <input name="com_rep_name" class="data-input form-control" data-field="com_rep_name"  placeholder=" " />
                                         <label vslang="labels.Company Representative">Company Representative</label>
                                     </div>
                                 </div>

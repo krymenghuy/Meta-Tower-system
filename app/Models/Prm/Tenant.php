@@ -81,11 +81,11 @@ class Tenant
             'legal_name'      => '1|string|0-150|text=legal_name_required',
             'nationality_id'  => '1|number|text=nationality_required',
             'national_id'     => '0|string|0-20',
-            'nid_issue_date'  => '0|date|text=nid_issue_date',
+            'nid_issue_date'   => '0|date',
             'passport_number' => '0|string|0-20',
             'phone_number'    => '1|string|1-20|text=phone_number_required',
             'email'           => '0|email|1-30',
-            'address'         => '1|string',
+            'address'         => '1|string|text=enter_address',
             'photo'           => '0|image'
         ];
         $email_char = ['@', '.'];
@@ -97,6 +97,8 @@ class Tenant
         $d = (object) $inputs;
         $dob = $d->date_of_birth ?? null;
         $email = $d->email ?? null;
+        $nid_issue_date = convertDate($inputs['nid_issue_date'] ?? null);
+        $inputs['nid_issue_date'] = $nid_issue_date;
         if ($email !== null && $email !== '') {
                 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                     return DV::error('Invalid email format.');
@@ -113,6 +115,7 @@ class Tenant
         $nationality_id = $d->nationality_id ?? null;
         if ($nationality_id === 14) {
             $national_id = $d->national_id ?? null;
+            $nid_issue_date = $d->nid_issue_date ?? null;
             $passport = $d->passport_number ?? null;
             $nid_issue_date = $d->nid_issue_date ?? null;
 
@@ -130,6 +133,7 @@ class Tenant
         if ($nationality_id !== 14) {
             $passport = $d->passport_number ?? null;
             $national_id = $d->national_id ?? null;
+            $nid_issue_date = $d->nid_issue_date ?? null;
             if (empty($passport)) {
                 return DV::error('passport_number_required');
             }
@@ -296,7 +300,7 @@ class Tenant
     {
         return url('') . '/assets/images/default/placeholder.svg';
     }
-    
+
     public static function getDetails($id, $ss = null)
     {
         Contract::applyPendingRenewalUnitChanges();
@@ -617,7 +621,7 @@ class Tenant
             ->leftJoin('building_spaces as bs', 'bs.id', '=', 'sr.space_id')
             ->leftJoin('services as s', 's.id', '=', 'sr.service_id')
             ->where('sr.tenant_id', $id)
-            ->where('sr.status_id', 2)
+            ->whereIn('sr.status_id', [2,4])
             ->select(
                 'sr.id as request_id',
                 'sr.code',
@@ -753,6 +757,6 @@ class Tenant
             'nationalities' => GeneralSettings::options_nationality($ss),
         ];
     }
-   
-  
+
+
 }

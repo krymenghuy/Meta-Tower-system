@@ -522,15 +522,15 @@ const CreateServicePriceDialog = (() => {
                                 </div>
                             </div>
                             <div class="col-6">
-                                <select data-style="material" name="service_type" class="data-input form-control" data-field="type_id" placeholder=" Type">
+                                <select data-style="material" name="service_type" class="data-input form-control" data-field="type_id" placeholder="${LocaleManager.trans('Type', 'labels')}">
                                 </select>
                             </div>
                             <div class="col-6">
-                                <select data-style="material" name="service_category" class="data-input form-control" data-field="category_id" placeholder="Category">
+                                <select data-style="material" name="service_category" class="data-input form-control" data-field="category_id" placeholder="${LocaleManager.trans('Category', 'labels')}">
                                 </select>
                             </div>
                             <div class="col-6">
-                                    <select data-style="material" name="charge_as" class="data-input form-control" data-field="charge_as" placeholder="Charge As">
+                                    <select data-style="material" name="charge_as" class="data-input form-control" data-field="charge_as" placeholder="${LocaleManager.trans('Charge As', 'labels')}">
                                     <option value="per_unit">Unit</option>
                                     <option value="one_time">Once</option>
                                     <option value="hour">Hourly</option>
@@ -538,7 +538,7 @@ const CreateServicePriceDialog = (() => {
                                     </select>
                             </div>
                             <div class="col-6">
-                                <select data-style="material" name="level" class="data-input form-control" data-field="level" placeholder="Level">
+                                <select data-style="material" name="level" class="data-input form-control" data-field="level" placeholder="${LocaleManager.trans('Level', 'labels')}">  
                                     <option value="1" selected >Standard</option>
                                     <option value="2">Premium</option>
                                 </select>
@@ -560,22 +560,15 @@ const CreateServicePriceDialog = (() => {
                 },
 
                 contentCreated: (me) => {
-                    console.log(123, me.controls.level);
-
                     const updateChargeAs = () => {
-                        const isSubscription =
-                            me.controls.service_type.value == 2;
-
-                        me.controls.charge_as.value = isSubscription
-                            ? "month"
-                            : "";
+                        const isSubscription = me.controls.service_type.value == 2;
+                        me.controls.charge_as.value = isSubscription ? "month" : "";
+                        console.log(4444,isSubscription);
+                        
                         me.controls.charge_as.disabled = isSubscription;
                     };
 
-                    me.controls.service_type?.addEventListener(
-                        "change",
-                        updateChargeAs,
-                    );
+                    me.controls.service_type?.addEventListener("change",updateChargeAs);
 
                     updateChargeAs();
                 },

@@ -311,7 +311,7 @@ var ReservationComponent = (() => {
             {
                 transTitle: "Cancel Reservation",
                 context: "delete",
-                confirmButtonText: "Cancel",
+                confirmButtonText: LocaleManager.trans('Cancel', 'buttons')
             },
             (confirmed) => {
                 if (!confirmed) return;
@@ -346,7 +346,7 @@ var ReservationComponent = (() => {
             {
                 transTitle: "Delete Reservation",
                 context: "delete",
-                confirmButtonText: "Delete",
+                confirmButtonText: LocaleManager.trans('Delete', 'buttons')
             },
             (e) => {
                 if (!e) return;
@@ -437,7 +437,7 @@ const CreateReservationDialog = (() => {
                                 </div>
                             </div>
                             <div class="col-6">
-                                <select data-style="material" name="amenity" class="data-input form-control" data-field="amenity_id" placeholder="Amenity">
+                                <select data-style="material" name="amenity" class="data-input form-control" data-field="amenity_id" placeholder="${LocaleManager.trans('Amenity', 'titles')}">
                                 </select>
                             </div>
 

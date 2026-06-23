@@ -88,10 +88,10 @@ var DepositComponent = (() => {
                 const status = (data.status ?? "pending").toLowerCase();
                 const statusConfig = {
                     pending:
-                        "border border-danger text-danger bg-danger-subtle",
+                        "border border-warning text-warning bg-warning-subtle",
                     paid: "border border-success text-success bg-success-subtle",
                     refunded:
-                        "border border-warning text-warning bg-warning-subtle",
+                        "border border-danger text-danger bg-danger-subtle",
                 };
                 const cls = statusConfig[status] ?? "bg-secondary text-white";
                 return `
@@ -454,7 +454,7 @@ const DepositDialog = (() => {
                             <div class="col-6">
                                 <div class="vs-material-field">
                                     <input name="tenant_name" class="data-input form-control" data-field="tenant_name" placeholder="Search Tenant..." autocomplete="off">
-                                    <label>Tenant</label>
+                                    <label vslang="labels.Tenant">Tenant</label>
                                 </div>
                             </div>
 

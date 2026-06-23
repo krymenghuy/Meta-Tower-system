@@ -119,10 +119,12 @@ return [
 
         'start_date_cannot_in_past' => 'ថ្ងៃចាប់ផ្តើមមិនអាចនៅក្នុងពេលអតីតកាលបានទេ។',
         'end_date_cannot_in_past' => 'ថ្ងៃបញ្ចប់មិនអាចនៅក្នុងពេលអតីតកាលបានទេ។',
-        'end_after_start' => 'ថ្ងៃ/ម៉ោងបញ្ចប់ត្រូវតែធំជាងថ្ងៃ/ម៉ោងចាប់ផ្តើម។',
+        'end_after_start' => 'ថ្ងៃ/ម៉ោង បញ្ចប់ត្រូវតែក្រោយ ថ្ងៃ/ម៉ោង ចាប់ផ្តើម។',
         'start_time_cannot_in_past' => 'ម៉ោងចាប់ផ្តើមមិនអាចនៅក្នុងពេលអតីតកាលបានទេ។',
         'end_time_cannot_in_past'   => 'ម៉ោងបញ្ចប់មិនអាចនៅក្នុងពេលអតីតកាលបានទេ។',
         'nid_issue_date' => 'សូមជ្រើសរើសថ្ងៃចេញអត្តសញ្ញាណប័ណ្ណ',
+        'enter_address' => 'សូមបញ្ចូលអាសយដ្ឋាន។',
+
 
 
 
@@ -140,6 +142,47 @@ return [
         'item_name_already_exists' => 'ឈ្មោះមុខទំនិញនេះត្រូវបានប្រើរួចហើយ។',
         'vendor_name_already_exists' => 'ឈ្មោះអ្នកផ្គត់ផ្គង់នេះមានរួចហើយ។',
 
+        'cannot_delete_po_received' => 'មិនអាចលុបបញ្ជាទិញនេះបានទេ ព្រោះវាត្រូវបានទទួលរួចហើយ។',
+        'cannot_delete_po_partial_received' => 'មិនអាចលុបបញ្ជាទិញនេះបានទេ ព្រោះវាត្រូវបានទទួលរួចហើយ។',
+        'cannot_delete_po_ordered' => 'មិនអាចលុបការបញ្ជាទិញនេះបានទេ ព្រោះវាត្រូវបានបញ្ជាទិញរួចហើយ។',
+        'po_already_rejected' => 'ការបញ្ជាទិញត្រូវបានបដិសេធរួចហើយ។',
+        'cannot_reject_completed_or_cancelled' => 'ការបញ្ជាទិញដែលបានបញ្ចប់ ឬបោះបង់ មិនអាចត្រូវបានបដិសេធឡើយ។',
+        'po_not_found' => 'រកមិនឃើញការបញ្ជាទិញឡើយ។',
+        'cannot_save_po' => 'មិនអាចរក្សាទុកការបញ្ជាទិញបានទេ។',
+        'duplicate_po_items' => 'មិនអនុញ្ញាតឱ្យមានមុខទំនិញស្ទួនគ្នានៅក្នុងការបញ្ជាទិញតែមួយទេ។',
+        'po_item_required' => 'សូមជ្រើសរើសយ៉ាងហោចណាស់មុខទំនិញមួយ មុនពេលរក្សាទុកការបញ្ជាទិញ។',
+
+        'amenity_already_booked' => 'សេវាកម្មនេះត្រូវបានកក់រួចហើយសម្រាប់ម៉ោងនេះ។',
+        'cannot_cancel_in_30min' => 'មិនអាចលុបចោលការកក់បានទេ ប្រសិនបើនៅសល់តិចជាង ៣០ នាទីមុនពេលចាប់ផ្តើម។',
+        'schedule_cannot_past' => 'កាលវិ.',
+        'required_select_tenant' => 'សូមជ្រើសរើសអ្នកជួល។',
+        'select_amenity'=>'សូមជ្រើសរើសទីតាំងដែលត្រឹមត្រូវ។',
+        'select_booking_date'=>'សូមជ្រើសរើសថ្ងៃកក់ដែលត្រឹមត្រូវ។',
+        'select_start_time'=>'សូមជ្រើសរើសម៉ោងចូលដែលត្រឹមត្រូវ។',
+        'select_end_time'=>'សូមជ្រើសរើសម៉ោងចេញដែលត្រឹមត្រូវ។',
+        'select_remarks' => 'សូមបញ្ចូលកំណត់សម្គាល់ដែលត្រឹមត្រូវ។',
+        'select_reference_code' => 'សូមបញ្ចូលលេខកូដដែលត្រឹមត្រូវ។',
+        'select_business_type' => 'សូមជ្រើសរើសប្រភេទអាជីវកម្មដែលត្រឹមត្រូវ។',
+        'select_unit_code' => 'សូមជ្រើសរើសលេខបន្ទប់ដែលត្រឹមត្រូវ។',
+        'select_deposit' => 'សូមជ្រើសរើសតម្លៃកក់។',
+        'select_start_date' => 'សូមជ្រើសរើសថ្ងៃចាប់ផ្ដើម។',
+        'select_end_date' => 'សូមជ្រើសរើសថ្ងៃបញ្ចប់។',
+        'contract_not_found.' => 'កិច្ចសន្យាមិនមានទេ.',
+        'end_date_must_be_after_start_date' => 'ថ្ងៃបញ្ចប់ត្រូវតែក្រោយថ្ងៃចាប់ផ្ដើម។',
+        "end_date_cannot_be_in_the_past" => "ថ្ងៃបញ្ចប់មិនអាចនៅក្នុងអតីតកាលបានទេ។",
+        "end_date_must_be_at_least_one_month_after_start_date" => "ថ្ងៃបញ្ចប់ត្រូវតែយ៉ាងតិចមួយខែក្រោយថ្ងៃចាប់ផ្ដើម។",
+        "select_tenant_before_create_contract" => "សូមបង្កើតអ្នកជួលមុនពេលបង្កើតកិច្ចសន្យា។",
+        "this_space_already_has_a_contract" => "ទីតាំងនេះមានកិច្ចសន្យារួចហើយ។",
+        "start_date_must_be_on_or_before_the_last_renewal_start" => "ថ្ងៃចាប់ផ្ដើមត្រូវតែនៅលើឬមុនការចាប់ផ្ដើមបន្ត។",
+        "dates_overlap_the_last_renewal_for_this_unit" => "កាលបរិច្ឆេទមានការត្រួតស៊ីគ្នានឹងការបន្តកិច្ចសន្យា។",
+        "only_pending_expired_or_terminated_contracts_can_be_deleted" => "មានតែសេចក្តីព្រាងកិច្ចសន្យា កិច្ចសន្យាដែលហួសកំណត់ ឬកិច្ចសន្យាដែលត្រូវបានបញ្ចប់ប៉ុណ្ណោះ ទើបអាចលុបបាន។" 
+
+
+      
+
+
+        
+        
         
 
 
@@ -148,6 +191,7 @@ return [
         'name' => 'ឈ្មោះ',
         'name_kh' => 'ឈ្មោះភាសាខ្មែរ',
         'building_id' => 'អគារ',
+        'tenant_id' => 'អ្នកជួល'
     ],
     'titles' => [
         'Create Building' => 'បង្កើតអគារ',
@@ -170,7 +214,7 @@ return [
         'Create Service Price' => 'បង្កើតតម្លៃសេវាកម្ម',
         'Modify Service Price' => 'កែប្រែតម្លៃសេវាកម្ម',
 
-        'Invoice Num' => 'ចំនួនវិក័យប័ត្រ',
+        'Invoice Num' => 'ចំនួនវិក្កយបត្រ',
         'Tenant' => 'អ្នកជួល',
         'Building' => 'អគារ',
         'Space Code' => 'លេខកូដបន្ទប់',
@@ -232,7 +276,7 @@ return [
         'Date of Birth' => 'ថ្ងៃខែឆ្នាំកំណើត',
         'National ID' => 'អត្តសញ្ញាណប័ណ្ណ',
         'Passport' => 'លិខិតឆ្លងដែន',
-        'Invoice Setting' => 'ការកំណត់វិក័យប័ត្រ',
+        'Invoice Setting' => 'ការកំណត់វិក្កយបត្រ',
         'Create Booking' => 'បង្កើតការកក់',
         'Modify Space' => 'កែប្រែបន្ទប់',
         'Delete Space' => 'លុបបន្ទប់',
@@ -242,13 +286,14 @@ return [
         'Clear Setting' => 'លុបការកំណត់',
 
         'View Details' => 'ព័ត៌មានលម្អិត',
-        'Upload Document' => 'ផ្ទុកឯកសារ',
+        'Upload Document' => 'បញ្ជូលឯកសារ',
         'Modify Document' => 'កែប្រែឯកសារ',
         'Create Contract' => 'បង្កើតកិច្ចសន្យា',
         'Modify Contract' => 'កែប្រែកិច្ចសន្យា',
         'Renew Contract' => 'បន្តកិច្ចសន្យា',
         'Terminate Contract' => 'បញ្ចប់កិច្ចសន្យា',
         'Delete Contract' => 'លុបកិច្ចសន្យា',
+        'Delete Bill Record' => 'លុបកំណត់ត្រាវិក្កយបត្រ',
         'Service Requests' => 'សំណើសេវាកម្ម',
         'Delete Tenant' => 'លុបអ្នកជួល',
         'Old Contract' => 'កិច្ចសន្យាចាស់',
@@ -342,7 +387,7 @@ return [
         'Contact Person' => 'បុគ្គលទំនាក់ទំនង',
         'Address' => 'អាសយដ្ឋាន',
         'Contact Info' => 'ព័ត៌មានទំនាក់ទំនង',
-        'Amenity' => 'ឈ្មោះបរិកា្ខរសេវាកម្ម',
+        'Amenity' => 'បរិកា្ខរសេវាកម្ម',
         'Reservation Date' => 'កាលបរិច្ឆេទកក់',
         'Total Areas' => 'ក្រឡាផ្ទៃសរុប',
         'Total Floors' => 'ចំនួនជាន់សរុប',
@@ -379,7 +424,7 @@ return [
         'Order Qty' => 'បរិមាណ',
         'Item' => 'មុខទំនិញ',
         'Unit Type' => 'ឯកតា',
-        'Unit Price' => 'តម្លៃ',
+        'Unit Price' => 'តម្លៃឯកតា',
         'Ordered Qty' => 'ចំនួនទំនិញ',
         'Received Qty' => 'ចំនួនទទួល',
         'Accept' => 'យល់ព្រម',
@@ -387,10 +432,10 @@ return [
         'Reject' => 'បដិសេធ',
 
         'Pay now' => 'បង់ប្រាក់',
-        'View Photo' => 'មើលរូបភាព',
+        'View Photo' => 'ភ្ជាប់រូបភាព',
         'Delete Photo' => 'លុបរូបភាព',
         'Upload Photo' => 'បញ្ជូលរូបភាព',
-        'Bill Payment Voucher' => 'ប័ណ្ណទូទាត់វិក្កយបត្រ',
+        'Bill Payment Voucher' => 'ទូទាត់វិក្កយបត្រ',
         'Pay Bill' => 'ទូទាត់វិក្កយបត្រ',
 
         'Cancel Payment' => 'បោះបង់ការទូទាត់',
@@ -407,11 +452,13 @@ return [
         'Gender' => 'ភេទ',
         'Legal Name' => 'ឈ្មោះស្របច្បាប់',
 
+        'Print Receipt' => 'បោះពុម្ពបង្កាន់ដៃ',
+
 
         'Create Invoice' => 'បង្កើតវិក្កយបត្រ',
         'Modify Invoice' => 'កែប្រែវិក្កយបត្រ',
-        'Generate New Bill' => 'បង្កើតវិក័យប័ត្រចំណាយ',
-        'Modify Bill' => 'កែប្រែវិក័យប័ត្រចំណាយ',
+        'Generate New Bill' => 'បង្កើតវិក្កយបត្រចំណាយ',
+        'Modify Bill' => 'កែប្រែវិក្កយបត្រចំណាយ',
         'Delete Invoice' => 'លុបវិក្កយបត្រ',
         'Electricity Utility' => 'ថ្លៃអគ្គិសនី',
         'Contract Details' => 'ព័ត៌មានកិច្ចសន្យា',
@@ -460,7 +507,9 @@ return [
         'Primary Contact' => 'អ្នកទំនាក់ទំនងទី១',
         'Secondary Contact' =>'អ្នកទំនាក់ទំនងទី២',
         
-        '' => '',
+        'Booking Details' => 'ព័ត៌មានលម្អិតអំពីការកក់',
+
+        'Complete' => 'បញ្ចប់',
 
 
         
@@ -484,7 +533,7 @@ return [
         'Service Prices' => 'តំលៃសេវាកម្ម',
         'Service Requests' => 'សំណើសេវាកម្ម',
         'Purchase Orders' => 'បញ្ចី និង ទិញទំនិញ',
-        'Invoices' => 'វិក័យប័ត្រ',
+        'Invoices' => 'វិក្កយបត្រ',
         'Receipts' => 'បង្កាន់ដៃ',
         'Transaction' => 'ប្រតិបត្តិការ',
         'Reservations' => 'ការកក់',
@@ -494,7 +543,7 @@ return [
         'Deposits' => 'ប្រាក់កក់',
 
         'Bills' => 'វិក្កយបត្រចំណាយ',
-        'Bill Payment' => 'ការទូទាត់វិក័យប័ត្រ',
+        'Bill Payment' => 'ការទូទាត់វិក្កយបត្រ',
         'Expense' => 'ចំណាយ',
         'Purchase Items' => 'មុខទំនិញ',
         'Payments' => 'ការទូទាត់',
@@ -585,7 +634,7 @@ return [
         'Departments' => 'នាយកដ្ឋាន',
         'Job Levels' => 'កម្រិតការងារ',
         'Positions' => 'មុខតំណែង',
-        'Invoice Setting' => 'ការកំណត់វិក័យប័ត្រ',
+        'Invoice Setting' => 'ការកំណត់វិក្កយបត្រ',
         'Skills' => 'ជំនាញ',
         'Tax Brackets' => 'កម្រិតពន្ធ',
         'Checkpoint Categories' => 'ផ្នែកត្រួតពិនិត្យសម្ភារៈ',
@@ -613,7 +662,7 @@ return [
         'Create Service' => 'បង្កើតសេវាកម្ម',
         'Create New Request' => 'បង្កើតការស្នើសុំសេវាកម្ម',
 
-        'Upload Document' => 'ផ្ទុកឯកសារ',
+        'Upload Document' => 'បញ្ជូលឯកសារ',
 
         'Purchase Orders' => 'បញ្ជាទិញទំនិញ',
         'Quick Order' => 'បញ្ជាលឿន',
@@ -628,9 +677,12 @@ return [
         'Continue' => 'បន្តរ',
         'Continue Now' => 'បន្តរ',
         'Choose File' => 'ជ្រើសរើសឯកសារ',
+        'View' => 'មើលរូបភាព',
+        'Upload' => 'បញ្ជូល',
         'Refresh' => 'Refresh',
         'Dont Delete' => 'មិនលុប',
         'Delete' => 'លុបចោល',
+        'Edit' => 'កែប្រែ',
         'Remove' => 'ដកចេញ',
         'Save' => 'រក្សារទុក',
         'Save Changes' => 'រក្សារទុក',
@@ -670,7 +722,7 @@ return [
 
         'Rent' => 'ថ្លៃជួល',
         'Service' => 'សេវាកម្ម',
-        'Request' => 'តម្លៃសេវាកម្ម',
+        'Request' => 'សំណើរសេវាកម្ម',
         'Electric' => 'ថ្លៃអគ្គិសនី',
 
         'Reset' => 'កំណត់ឡើងវិញ',
@@ -686,6 +738,14 @@ return [
         'Terminate Contract' => 'បញ្ចប់កិច្ចសន្យា',
 
         'Save Change' => 'រក្សាទុក',
+        'Complete' => 'បញ្ចប់',
+
+        'Upload Photo' => 'ភ្ជាប់រូបភាព',
+        'Delete Logo' => 'លុបនិមិត្តសញ្ញា',
+
+        
+
+        
         
 
 
@@ -740,6 +800,9 @@ return [
         'Full Name' => 'ឈ្មោះពេញ',
         'Email' => 'អ៊ីមែល',
         'Gender' => 'ភេទ',
+        'Male' => 'ប្រុស',
+        'Female' => 'ស្រី',
+        'Nationality' => 'សញ្ជាតិ',
         'Legal Name' => 'ឈ្មោះស្របច្បាប់',
         'Date of Birth' => 'ថ្ងៃខែឆ្នាំកំណើត',
         'National ID' => 'អត្តសញ្ញាណប័ណ្ណ',
@@ -747,6 +810,22 @@ return [
         'Phone Number' => 'លេខទូរស័ព្ទ',
         'Address' => 'អាសយដ្ឋាន',
         'National ID Issue Date' => 'ថ្ងៃចេញអត្តសញ្ញាណប័ណ្ណ',
+        'Select Charge As' => 'សូមជ្រើសរើសប្រភេទគិតថ្លៃ',
+        'Select type' => 'សូមជ្រើសរើសប្រភេទ',
+        'Select amenity' => 'សូមជ្រើសរើសបរិក្ខារ',
+        'Service Category' => 'ប្រភេទសេវាកម្ម',
+        'One Time' => 'ម្ដង',
+        'Hour' => 'ម៉ោង',
+        'Duration (hours)' => 'រយៈពេល (ម៉ោង)',
+        'Select Duration' => 'សូមជ្រើសរើសរយៈពេល',
+        '30 minutes' => '30 នាទី',
+        '1 hour' => '1 ម៉ោង',
+        '1.5 hours' => '1.5 ម៉ោង',
+        '2 hours' => '2 ម៉ោង',
+        '2.5 hours' => '2.5 ម៉ោង',
+        '3 hours' => '3 ម៉ោង',
+        '4 hours' => '4 ម៉ោង',
+        'Price x Duration' => 'តម្លៃ x រយៈពេល',
 
         'ID' => 'លេខសម្គាល់',
         'Unit' => 'បន្ទប់',
@@ -755,7 +834,7 @@ return [
         'Start Time' => 'ម៉ោងចាប់ផ្ដើម',
         'End Time' => 'ម៉ោងបញ្ចប់',
         'Lease Terms' => 'លក្ខខណ្ឌជួល',
-        'Monthly' => 'តម្លៃជួលប្រចាំខែ',
+        'Monthly' => 'តម្លៃជួលសម្រាប់ខែ',
         'Deposit' => 'ប្រាក់កក់',
 
         'Type' => 'ប្រភេទឯកសារ',
@@ -779,13 +858,15 @@ return [
         'Receiver' => 'អ្នកទទួល',
         'Item' => 'មុខទំនិញ',
         'UnitType' => 'ឯកតា',
-        'Unit Price' => 'តម្លៃ',
+        'Unit Price' => 'តម្លៃឯកតា',
 
 
         'Reference No.' => 'លេខយោង',
         'Total Amount' => 'ចំនួនសរុប',
         'Issue Date' => 'កាលបរិច្ឆេទចេញវិក្កយបត្រ',
         'Due Date' => 'កាលបរិច្ឆេទផុតកំណត់',
+        'Bill Number' => 'លេខវិក្កយបត្រ',
+        'Amount Paid' => 'ចំនួនទឹកប្រាក់ដែលបានបង់',
         'Amount' => 'ចំនួនទឹកប្រាក់',
         'Payment Date' => 'កាលបរិច្ឆេទទូទាត់',
         'Cheque No.' => 'លេខមូលប្បទានប័ត្រ',
@@ -801,6 +882,7 @@ return [
         'Code (Optional)' => 'លេខកូដបន្ទប់ (Optional)',
         'Scheduled Date' => 'កាលបរិច្ឆេទ',
 
+        'Business Type' => 'ប្រភេទអាជីវកម្ម',
         'Unit Code' => 'លេខកូដបន្ទប់',
         'Amount ($)' => 'ចំនួនទឹកប្រាក់($)',
         'Card Number' => 'លេខកាត',
@@ -842,6 +924,45 @@ return [
         'phone_number' => 'លេខទូរស័ព្ទ',
         'email' => 'អ៊ីមែល',
         'Position' => 'តំណែង',
+
+        'Booking Name' => 'ឈ្មោះអ្នកកក់',
+        'Booking Phone' => 'លេខទូរសព្ទអ្នកកក់',
+        'Check-in Date' => 'ថ្ងៃចូលនៅ',
+        'Check-out Date' => 'ថ្ងៃចេញពីស្នាក់នៅ',
+        'Deposit Amount ($)' => 'ចំនួនប្រាក់កក់ ($)',
+        'Contract' => 'កិច្ចសន្យា',
+        'Paid' => 'បានបង់',
+
+        'Invoice Type' => 'ប្រភេទវិក្កយបត្រ',
+        'Tax' => 'ពន្ធ',
+        'No Tax' => 'អត់ពន្ធ',
+        'Commercial' => 'ពាណិជ្ជកម្ម',
+        'Tenant' => 'អ្នកជួល',
+        'Logo' => 'និមិត្តសញ្ញា',
+        'Company Logo' => 'និមិត្តសញ្ញាក្រុមហ៊ុន',
+        'Exchange Rate (KHR)' => 'អត្រាប្តូរប្រាក់ (KHR)',
+        'Exchange Rate (USD - KHR)' => 'អត្រាប្តូរប្រាក់ (USD - KHR)',
+        'Invoice Display Options' => 'ជម្រើសបង្ហាញវិក្កយបត្រ',
+        'Show Commercial Tax' => 'បង្ហាញពន្ធពាណិជ្ជកម្ម',
+        'Show Payment Status' => 'បង្ហាញស្ថានភាពទូទាត់',
+        'Show Balance' => 'បង្ហាញសមតុល្យ',
+        'Show Amount Paid' => 'បង្ហាញចំនួនទឹកប្រាក់ដែលបានបង់',
+        'Show Signature' => 'បង្ហាញហត្ថលេខា',
+        'Upload QR code' => 'បញ្ជូល QR កូដ',
+        'Upload file' => 'បញ្ជូលឯកសារ',
+        'Delete file' => 'លុបឯកសារ',
+        'Category' => 'ប្រភេទ',
+        'Select Unit' => 'សូមជ្រើសរើសឯកតា',
+        'Level' => 'កម្រិត',
+        'Once' => 'ម្ដង',
+        'Hourly' => 'ម៉ោង',
+        'Standard' => 'ស្តង់ដារ',
+        'Premium' => 'ពិសេស',
+        'Bookable' => 'អាចកក់បាន',
+        
+        
+        
+        
         
 
 
@@ -1006,14 +1127,16 @@ return [
         'service_exist' => 'សេវាកម្មមានរួចហើយក្នុងបញ្ជី។',
         'service_request' => 'សូមជ្រើសរើសសំណើសេវាកម្ម។',
         'request_exist' => 'សំណើមានរួចហើយក្នុងបញ្ជី។',
+        'rent_exist' => 'ថ្លៃជួលមានរួចហើយក្នុងបញ្ជី។',
         'request_invoice' => 'សំណើសេវាកម្មត្រូវបានបន្ថែមទៅវិក្កយបត្រ។',
         'failed_load_invoice' => 'បរាជ័យក្នុងការផ្ទុកព័ត៌មានវិក្កយបត្រ។',
         'no_request' => 'មិនមានសំណើដែលពាក់ព័ន្ធនឹងកន្លែងនេះទេ។',
+        'rent_added_success' => 'ថ្លៃជួលសម្រាប់ ?? ត្រូវបានបន្ថែមដោយជោគជ័យ។',
         'receive_success_payment' => 'ទទួលការទូទាត់ដោយជោគជ័យ។',
         'payment_amount' => 'សូមបញ្ចូលចំនួនទឹកប្រាក់ទូទាត់។',
 
         'cancel_receipt' => 'បង្កាន់ដៃត្រូវបានបោះបង់។',
-        'complete_success_request' => 'សំណើសេវាកម្មត្រូវបានបញ្ចប់!',
+        'complete_success_request' => 'សំណើសេវាកម្មត្រូវបានទទួល!',
         'delete_success_request' => 'សំណើសេវាកម្មត្រូវបានលុបដោយជោគជ័យ។',
         'update_success_request' => 'សំណើសេវាកម្មត្រូវបានកែប្រែដោយជោគជ័យ!',
         'create_success_request' => 'សំណើសេវាកម្មត្រូវបានបង្កើត។',
@@ -1037,7 +1160,7 @@ return [
 
         'delete_payment_success' => 'ការទូទាត់ត្រូវបានលុបដោយជោគជ័យ។',
         'update_payment_success' => 'ការទូទាត់ត្រូវបានកែប្រែដោយជោគជ័យ។',
-        'create_payment_success' => 'ការទូទាត់ត្រូវបានបង្កើតដោយជោគជ័យ។',
+        'create_payment_success' => 'ការទូទាត់ត្រូវបានទទួលដោយជោគជ័យ  ។',
         'cancel_payment_success' => 'ការទូទាត់ត្រូវបានបោះបង់។',
         'no_photo' => 'មិនមានរូបភាពទេ។',
 
@@ -1062,6 +1185,9 @@ return [
 
         'No contract recorded for this tenant' => 'មិនមានកិច្ចសន្យាសម្រាប់អ្នកជួលនេះទេ។',
 
+        'confirm_authorize' => 'តើអ្នកប្រាកដទេថាចង់អនុម័តការបញ្ជាទិញនេះ?',
+        
+        
         "Confirm" => 'យល់ព្រម',
         "Log Out" => "ចាកចេញ",
         "Cancel" => "បោះបង់",

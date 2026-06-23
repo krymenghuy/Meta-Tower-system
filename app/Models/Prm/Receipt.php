@@ -396,7 +396,7 @@ class Receipt extends Model
                 if ($invoice) {
                     $amount_to_reverse = (float)$receipt->total_received;
                     $current_paid = (float)$invoice->paid_amount;
-                    $total_invoice = (float)$invoice->amount;
+                    $total_invoice = (float)$invoice->amount_payable;
 
                     $new_paid_amount = max(0, $current_paid - $amount_to_reverse);
                     $new_due_amount = max(0, $total_invoice - $new_paid_amount);

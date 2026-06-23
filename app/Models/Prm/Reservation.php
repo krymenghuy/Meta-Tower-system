@@ -49,11 +49,11 @@ class Reservation extends VSModel
     }
 
     $v_rule = [
-        'tenant_id'      => '1|number|exists=tenants.id|text=Please select a valid tenant.',
-        'amenity_id'     => '1|number|exists=amenities.id|text=Please select a valid amenity.',
-        'booking_date'   => '1|date|text=Please enter a valid booking date.',
-        'start_time'     => '1|time|text=Please enter a valid check-in time.',
-        'end_time'       => '1|time|text=Please enter a valid check-out time.',
+        'tenant_id'      => '1|number|exists=tenants.id|text=required_select_tenant',
+        'amenity_id'     => '1|number|exists=amenities.id|text=select_amenity',
+        'booking_date'   => '1|date|text=select_booking_date',
+        'start_time'     => '1|time|text=select_start_time',
+        'end_time'       => '1|time|text=select_end_time',
         'remarks'        => '0|string|0-350',
         'status_id'      => '0|number|default=1',
         'reference_code' => '0|string|0-50',
@@ -110,7 +110,7 @@ class Reservation extends VSModel
             ->exists();
 
         if ($exists) {
-            return DV::error('This amenity is already booked for this time slot.');
+            return DV::error('amenity_already_booked');
         }
     }
 
@@ -322,7 +322,7 @@ class Reservation extends VSModel
         $now = time();
 
         if (($bookingStart - $now) < (30 * 60)) {
-            return DV::error('Reservations cannot be canceled less than 30 minutes before start time.');
+            return DV::error('cannot_cancel_in_30min');
         }
 
         $cancelled = DB::table('reservations')->where('id', $id)->update([

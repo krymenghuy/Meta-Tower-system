@@ -78,6 +78,18 @@ class InvoiceController extends Controller
 
         return JDV::result($this->invoices->getFormOptions($id, $ss));
     }
+    public function getPrintInvoice(Request $req)
+    {
+
+        $ss = XAuthService::verifyAuth($req, -1); // ← fixed typo
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+
+
+
+        return JDV::result($this->invoices->getPrintInvoice($req->id, $ss));
+    }
 
     public function deleteInvoice(Request $req)
     {

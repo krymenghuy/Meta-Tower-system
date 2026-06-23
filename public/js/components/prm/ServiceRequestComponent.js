@@ -302,7 +302,7 @@ var ServiceRequestComponent = (function () {
                 const menu = me.getActiveMenus(container);
                 const status_id = container.dataset.statusid;
                menu.edit_request.style.display = (status_id >= 2) ? 'none' : 'block';
-            //    menu.delete_request.style.display = (status_id >= 2) ? 'none' : 'block';
+               menu.delete_request.style.display = (status_id == 3 || status_id == 4) ? 'block' : 'none';
                menu.accept_request.style.display = (status_id >= 2) ? 'none' : 'block';
                menu.complete_request.style.display = (status_id == 2) ? 'block' : 'none';
                menu.reject_request.style.display = (status_id >= 2) ? 'none' : 'block';
@@ -359,7 +359,7 @@ var ServiceRequestComponent = (function () {
                 'translate': true,
                 // 'title': "accepted",
                 'context': 'update',
-                'confirmButtonText': "Accept"
+                'confirmButtonText': LocaleManager.trans('Accept', 'buttons')
             },
             (e) => {
                 if (!e) return;
@@ -372,7 +372,7 @@ var ServiceRequestComponent = (function () {
                 .then(res => {
                     if (res.status_code === 200) {
                         mThis.ServiceRequestListView.showPage(mThis.getFilterData());
-                        cv_interact.success('Service Request has been accepted!');
+                        cv_interact.success(LocaleManager.trans('complete_success_request', 'message_box_default'));
                     } else {
                         cv_interact.error(res.error_message || 'Something went wrong');
                     }
@@ -390,7 +390,7 @@ var ServiceRequestComponent = (function () {
             {   
                 title: 'completed',
                 context: 'update',
-                confirmButtonText: 'Complete'
+                confirmButtonText: LocaleManager.trans('Complete', 'buttons'),
             },
             (e) => {
                 if (!e) return;
@@ -479,42 +479,42 @@ const CreateServiceRequestDialog = (() => {
                         <input type="hidden" class="data-input" data-field="tenant_id">
                         <div class="col-md-6">
                             <div class="vs-material-field">
-                                <input name="tenant" class="form-control" data-field="tenant_id" placeholder="Tenant" autocomplete="off">
-                                <label>Tenant</label>
+                                <input name="tenant" class="form-control" data-field="tenant_id" placeholder="${LocaleManager.trans('Tenant', 'titles')}" autocomplete="off">
+                                <label vslang="labels.Tenant">Tenant</label>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <select data-style="material" name="space_id"class="data-input form-control" data-field="space_id" required placeholder="Unit"></select>
+                            <select data-style="material" name="space_id"class="data-input form-control" data-field="space_id" required placeholder="${LocaleManager.trans('Unit', 'titles')}"></select>
                         </div>
                     </div>
                     <div class="row g-3 mb-3">
                         <div class="col-md-6">
-                            <select data-style="material" name="category_id" class="data-input form-control" data-field="category_id" required placeholder="Service Category"></select>
+                            <select data-style="material" name="category_id" class="data-input form-control" data-field="category_id" required placeholder="${LocaleManager.trans('Service Category', 'labels')}"></select>
                         </div>
                         <div class="col-md-6">
-                            <select data-style="material" name="service_id" class="data-input form-control" data-field="service_id" required placeholder="Service"></select>
+                            <select data-style="material" name="service_id" class="data-input form-control" data-field="service_id" required placeholder="${LocaleManager.trans('Service', 'titles')}"></select>
                         </div>
 
                     </div>
                     <div class="row g-3 mb-3">
                         <div class="col-md-3 unit-type-wrapper">
-                            <select data-style="material" name="unit_type" class="data-input form-control" data-field="unit_type" disabled placeholder="Charge As">
-                                <option value="">Charge As</option>
-                                <option value="1">One Time</option>
-                                <option value="2">Hour</option>
-                                <option value="3">Unit</option>
+                            <select data-style="material" name="unit_type" class="data-input form-control" data-field="unit_type" disabled placeholder="${LocaleManager.trans('Charge As', 'titles')}">
+                                <option value="">${LocaleManager.trans('Charge As', 'titles')}</option>
+                                <option value="1">${LocaleManager.trans('One Time', 'labels')}</option>
+                                <option value="2">${LocaleManager.trans('Hour', 'labels')}</option>
+                                <option value="3">${LocaleManager.trans('Unit', 'titles')}</option>
                             </select>
                         </div>
                         <div class="col-md-3 select-type-time" style="display:none;">
-                                <select name="duration_hours" data-style="material" class="data-input form-control" data-field="duration_hours" placeholder="Duration (hours)">
-                                    <option value=""> Select Duration </option>
-                                    <option value="0.5">30 minutes</option>
-                                    <option value="1.0">1 hour</option>
-                                    <option value="1.5">1.5 hours</option>
-                                    <option value="2.0">2 hours</option>
-                                    <option value="2.5">2.5 hours</option>
-                                    <option value="3.0">3 hours</option>
-                                    <option value="4.0">4 hours</option>
+                                <select name="duration_hours" data-style="material" class="data-input form-control" data-field="duration_hours" placeholder="${LocaleManager.trans('Duration (hours)', 'labels')}">
+                                    <option value="">${LocaleManager.trans('Select Duration', 'labels')}</option>
+                                    <option value="0.5">${LocaleManager.trans('30 minutes', 'labels')}</option>
+                                    <option value="1.0">${LocaleManager.trans('1 hour', 'labels')}</option>
+                                    <option value="1.5">${LocaleManager.trans('1.5 hours', 'labels')}</option>
+                                    <option value="2.0">${LocaleManager.trans('2 hours', 'labels')}</option>
+                                    <option value="2.5">${LocaleManager.trans('2.5 hours', 'labels')}</option>
+                                    <option value="3.0">${LocaleManager.trans('3 hours', 'labels')}</option>
+                                    <option value="4.0">${LocaleManager.trans('4 hours', 'labels')}</option>
                                 </select>
                         </div>
                         <div class="col-md-3">
@@ -537,12 +537,12 @@ const CreateServiceRequestDialog = (() => {
                                 <div class="d-flex align-items-center">
                                     <i class="fas fa-calculator fa-2x me-3 text-primary"></i>
                                     <div>
-                                        <small class="text-muted d-block mb-1">Amount</small>
+                                        <small class="text-muted d-block mb-1">${LocaleManager.trans('Amount', 'titles')}</small>
                                         <strong class="fs-4 text-primary" id="calc-total">$0.00</strong>
                                     </div>
                                 </div>
                                 <div class="text-end">
-                                    <small class="text-muted d-block">Price x Duration</small>
+                                    <small class="text-muted d-block">${LocaleManager.trans('Price x Duration', 'labels')}</small>
                                     <span class="badge bg-primary" id="calc-breakdown">-</span>
                                 </div>
                             </div>

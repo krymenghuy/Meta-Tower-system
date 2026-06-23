@@ -493,14 +493,14 @@ const CreateVendorDialog = (() => {
                             </div>
                             <div class="col-12 col-md-6">
                                 <div class="vs-material-field">
-                                    <select data-style="material" name="vendor_type_id" class="data-input form-control" data-field="vendor_type_id" placeholder="Type">
+                                    <select data-style="material" name="vendor_type_id" class="data-input form-control" data-field="vendor_type_id" placeholder="${LocaleManager.trans('Type', 'titles')}">
                                     <!-- <option value="" selected hidden></option> -->
                                     </select>
                                 </div>
                             </div>
                              <div class="col-12 col-md-6">
                                 <div class="vs-material-field">
-                                    <select data-style="material" name="vendor_category_id" class="data-input form-control" data-field="category_id" placeholder="Category">
+                                    <select data-style="material" name="vendor_category_id" class="data-input form-control" data-field="category_id" placeholder="${LocaleManager.trans('Category', 'titles')}">
                                     </select>
                                 </div>
                             </div>
@@ -508,7 +508,7 @@ const CreateVendorDialog = (() => {
                             <div class="col-12 col-md-6">
                                 <div class="vs-material-field">
                                     <input type="text" name="contact_person" class="data-input form-control" data-field="contact_person" placeholder=" " />
-                                    <label vslang="labels.Contact Person">Contact Person</label>
+                                    <label vslang="labels.Contact Person"></label>
                                 </div>
                             </div>
                             <div class="col-12 col-md-6">
@@ -524,10 +524,6 @@ const CreateVendorDialog = (() => {
                                 </div>
                             </div>
                          </div>
-
-
-
-
                 </div>
                 `;
                 },

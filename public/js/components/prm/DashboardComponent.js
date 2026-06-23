@@ -890,7 +890,7 @@ var DashboardComponent =  (() =>{
                     <div class="col-12 col-xl-6">
                         ${mThis.renderChartCard({
                             title: "Invoice Status",
-                            subtitle: "Paid, Pending, Partially Paid and Overdue",
+                            subtitle: "Paid, Unpaid, Partially Paid and Overdue",
                             pill: "Billing",
                             canvasId: "chartInvoiceStatus"
                         })}
@@ -941,114 +941,114 @@ var DashboardComponent =  (() =>{
     };
     mThis.initFilterForm = () => {
 
-    if (mThis.filterConfig) {
-        mThis.filterConfig.destroy?.();
-        mThis.filterConfig = null;
-    }
-
-    mThis.filterConfig = new FilterPanel({
-        triggerButton: mThis.lnkFilterButton,
-        cssClass: null,
-
-        fields: [
-            {
-                firstOption: { value: '', label: '(All Years)' },
-                name: "year",
-                label: "Year",
-                valueField: "value",
-                textField: "label",
-                data: "years"
-            },
-            {
-                firstOption: { value: '', label: '(All Months)' },
-                name: "month",
-                label: "Month",
-                valueField: "value",
-                textField: "label",
-                data: "months"
-            },
-            {
-                firstOption: { value: '', label: '(All Buildings)' },
-                name: "building_id",
-                label: "Building",
-                valueField: "id",
-                textField: "building",
-                data: "buildings"
-            }
-        ],
-
-        onShow: (me) => {
-            vsapi.call(
-                `${main_view.base_url}/prm/dashboard/filter-options`,
-                {},
-                null,
-                { loader: false }
-            ).then(res => {
-                if (res.status_code !== 200) return;
-
-                const d = res.data;
-
-                VSUtil.setComboItems(
-                    me.controls.year,
-                    d.years,
-                    'year',
-                    'year'
-                );
-
-                VSUtil.setComboItems(
-                    me.controls.month,
-                    d.months,
-                    'month',
-                    'month_name'
-                );
-
-                VSUtil.setComboItems(
-                    me.controls.building_id,
-                    d.buildings,
-                    'id',
-                    'building'
-                );
-
-                // Default values only once
-                        console.log(443333,!mThis.db_filter);
-
-                if (!mThis.db_filter) {
-                    const today = new Date();
-
-                    mThis.db_filter = {
-                        year: d.years?.find(x => x.year === today.getFullYear())?.year
-                            || d.years?.[0]?.year,
-
-                        month: d.months?.find(x => x.month === today.getMonth() + 1)?.month
-                            || d.months?.[0]?.month,
-
-                        building_id: d.buildings?.[0]?.id || null
-                    };
-
-                }
-
-                me.controls.year.value = mThis.db_filter.year ?? '';
-
-                console.log(2,mThis.db_filter);
-
-                me.controls.month.value = mThis.db_filter.month ?? '';
-                me.controls.building_id.value =
-                    mThis.db_filter.building_id ?? '';
-            });
-        },
-
-       onSelect: (me, data) => {
-
-            mThis.db_filter = {
-                year: data.year?.raw?.year,
-                month: data.month?.raw?.month,
-                building_id: data.building_id?.raw?.id
-            };
-
-            mThis.loadDashBoardData(mThis.db_filter, d => mThis.renderDashboard(d));
+        if (mThis.filterConfig) {
+            mThis.filterConfig.destroy?.();
+            mThis.filterConfig = null;
         }
-            });
-        };
+
+        mThis.filterConfig =  mThis.filterConfig || new FilterPanel({
+            triggerButton: mThis.lnkFilterButton,
+            cssClass: null,
+
+            fields: [
+                {
+                    firstOption: { value: '', label: '(All Years)' },
+                    name: "year",
+                    label: "Year",
+                    valueField: "value",
+                    textField: "label",
+                    data: "years"
+                },
+                {
+                    firstOption: { value: '', label: '(All Months)' },
+                    name: "month",
+                    label: "Month",
+                    valueField: "value",
+                    textField: "label",
+                    data: "months"
+                },
+                {
+                    firstOption: { value: '', label: '(All Buildings)' },
+                    name: "building_id",
+                    label: "Building",
+                    valueField: "id",
+                    textField: "building",
+                    data: "buildings"
+                }
+            ],
+
+            onShow: (me) => {
+                vsapi.call(
+                    `${main_view.base_url}/prm/dashboard/filter-options`,
+                    {},
+                    null,
+                    { loader: false }
+                ).then(res => {
+                    if (res.status_code !== 200) return;
+
+                    const d = res.data;
+
+                    VSUtil.setComboItems(
+                        me.controls.year,
+                        d.years,
+                        'year',
+                        'year'
+                    );
+
+                    VSUtil.setComboItems(
+                        me.controls.month,
+                        d.months,
+                        'month',
+                        'month_name'
+                    );
+
+                    VSUtil.setComboItems(
+                        me.controls.building_id,
+                        d.buildings,
+                        'id',
+                        'building'
+                    );
+
+                    // Default values only once
+                            console.log(443333,!mThis.db_filter);
+
+                    if (!mThis.db_filter) {
+                        const today = new Date();
+
+                        mThis.db_filter = {
+                            year: d.years?.find(x => x.year === today.getFullYear())?.year
+                                || d.years?.[0]?.year,
+
+                            month: d.months?.find(x => x.month === today.getMonth() + 1)?.month
+                                || d.months?.[0]?.month,
+
+                            building_id: d.buildings?.[0]?.id || null
+                        };
+
+                    }
+
+                    me.controls.year.value = mThis.db_filter.year ?? '';
+
+                    console.log(2,mThis.db_filter);
+
+                    me.controls.month.value = mThis.db_filter.month ?? '';
+                    me.controls.building_id.value =
+                        mThis.db_filter.building_id ?? '';
+                });
+            },
+
+        onSelect: (me, data) => {
+
+                mThis.db_filter = {
+                    year: data.year?.raw?.year,
+                    month: data.month?.raw?.month,
+                    building_id: data.building_id?.raw?.id
+                };
+
+                mThis.loadDashBoardData(mThis.db_filter, d => mThis.renderDashboard(d));
+            }
+        });
+    };
     mThis.renderHero = function (data) {
         return `
             <section class="md-hero">
