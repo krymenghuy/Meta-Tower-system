@@ -9,19 +9,11 @@ var InvoiceSettingComponent = (() => {
 
     // Element View Selectors
     mThis.elExchangeRate = mThis.self.querySelector("#_is_exchange_rate");
-    mThis.elRepresentativeName = mThis.self.querySelector(
-        "#_is_representative"
-    );
-    mThis.elRepresentativePhone = mThis.self.querySelector(
-        "#_is_representative_phone"
-    );
-    mThis.elRepresentativeAddress = mThis.self.querySelector(
-        "#_is_representative_address"
-    );
+
 
     // Button Selectors
     mThis.btnEditRate = mThis.self.querySelector("#_btnEditInvoiceSetting");
-    mThis.btnEditRep = mThis.self.querySelector("#_btnEditRepresentative");
+
 
     mThis.imgLogo = mThis.self.querySelector("#com_imgLogo");
     mThis.btnChooseLogo = mThis.self.querySelector("#com_btnChooseLogo");
@@ -66,16 +58,6 @@ var InvoiceSettingComponent = (() => {
             mThis.elExchangeRate.textContent =
                 rate !== "—" ? `${Number(rate).toLocaleString()} ៛` : "—";
         }
-
-        if (mThis.elRepresentativeName)
-            mThis.elRepresentativeName.textContent =
-                data.build_representative || "—";
-        if (mThis.elRepresentativePhone)
-            mThis.elRepresentativePhone.textContent =
-                data.representative_phone || "—";
-        if (mThis.elRepresentativeAddress)
-            mThis.elRepresentativeAddress.textContent =
-                data.representative_address || "—";
 
         mThis.self.querySelectorAll(".toggle-setting").forEach(input => {
             const field = input.getAttribute("data-field");
@@ -131,13 +113,6 @@ var InvoiceSettingComponent = (() => {
             });
         };
 
-        // Representative Dialog
-        mThis.btnEditRep.onclick = e => {
-            e.preventDefault();
-            mThis.loadSettings(currentData => {
-                mThis.representativeDialog.show(currentData);
-            });
-        };
 
         // Toggle switches
         mThis.self.querySelectorAll(".toggle-setting").forEach(input => {
@@ -363,112 +338,9 @@ var InvoiceSettingComponent = (() => {
         return self;
     };
 
-    // ── Dialog: Representative ─────────────────────────────────────────────────
-    const CreateRepresentativeDialog = () => {
-        const self = {};
-        let dialog = null;
-
-        self.show = currentData => {
-            dialog =
-                dialog ||
-                new GeneralDialog({
-                    title: "Representative Information",
-                    cssClass: "modal-md vs-modal",
-                    backdrop: "static",
-                    keyboard: true,
-                    createContent: () => {
-                        return [
-                            `
-                        <div>
-                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                                <div class="material-input outlined style-main mb-3">
-                                    <input class="data-input form-control" data-field="build_representative" id="build_representative" name="build_representative" type="text" placeholder=" ">
-                                    <label>Representative Name</label>
-                                </div>
-                                <div class="material-input outlined style-main mb-3">
-                                    <input class="data-input form-control" data-field="representative_phone" id="representative_phone" name="representative_phone" type="text" placeholder=" ">
-                                    <label>Representative Phone</label>
-                                </div>
-                            </div>
-                            <div class="material-input outlined style-main mb-3">
-                                <textarea class="data-input form-control" data-field="representative_address" id="representative_address" name="representative_address" placeholder=" "></textarea>
-                                <label>Representative Address</label>
-                            </div>
-                        </div>
-                    `
-                        ];
-                    },
-                    onPrepareForm: me => {
-                        me.controls.build_representative.value =
-                            me.dataOptions.build_representative || "";
-                        me.controls.representative_phone.value =
-                            me.dataOptions.representative_phone || "";
-                        me.controls.representative_address.value =
-                            me.dataOptions.representative_address || "";
-                    },
-                    buttons: [
-                        {
-                            label: '<span vslang="buttons.Cancel"></span>',
-                            cssClass: "btn btn-secondary",
-                            click: me => {
-                                me.hide(false);
-                            }
-                        },
-                        {
-                            label: '<span vslang="buttons.Save"></span>',
-                            cssClass: "btn btn-primary",
-                            click: (me, btn) => {
-                                const op = me.getData();
-                                op.id = 1;
-
-                                op.build_representative =
-                                    op.build_representative ||
-                                    me.dataOptions.build_representative;
-                                op.representative_phone =
-                                    op.representative_phone ||
-                                    me.dataOptions.representative_phone;
-                                op.representative_address =
-                                    op.representative_address ||
-                                    me.dataOptions.representative_address;
-
-                                vsapi
-                                    .call(
-                                        [
-                                            mThis.base_url,
-                                            "/prm/invoice_setting/save-invoice-representative"
-                                        ].join(""),
-                                        op,
-                                        btn,
-                                        null
-                                    )
-                                    .then(res => {
-                                        if (res.status_code === 200) {
-                                            me.hide(true, op);
-                                            cv_interact.success(
-                                                "Representative information saved successfully."
-                                            );
-                                            mThis.loadSettings(null);
-                                        } else {
-                                            cv_interact.error(
-                                                res.error_message ||
-                                                    "Failed to update information."
-                                            );
-                                        }
-                                    });
-                            }
-                        }
-                    ]
-                });
-
-            dialog.dataOptions = currentData || {};
-            dialog.show(currentData);
-        };
-
-        return self;
-    };
 
     mThis.exchangeRateDialog = CreateExchangeRateDialog();
-    mThis.representativeDialog = CreateRepresentativeDialog();
+
 
     return mThis;
 })();
