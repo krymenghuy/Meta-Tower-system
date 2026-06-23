@@ -858,7 +858,7 @@ const InvoiceDialog = (() => {
                                     <!-- LEFT: Tenant Info -->
                                     <div>
                                         <div class="field-row">
-                                            <label class="field-label fw-semibold" vslang="labels.Tenant Name">  </label>
+                                            <label class="field-label fw-semibold" vslang="labels.Tenant">  </label>
                                             <span class="field-sep">:</span>
                                             <input name="tenant" class="data-input form-control field-input" data-field="tenant_id" placeholder=" " autocomplete="off">
                                         </div>
@@ -873,7 +873,7 @@ const InvoiceDialog = (() => {
                                             <input name="email" class="data-input form-control field-input" placeholder=" " disabled>
                                         </div>
                                         <div class="field-row ">
-                                            <label class="field-label fw-semibold" vslang="labels.Space / Room"></label>
+                                            <label class="field-label fw-semibold" vslang="labels.Unit"></label>
                                             <span class="field-sep">:</span>
                                                 <select name="space"  data-style="material" class="data-input form-control" data-field="space_id" required placeholder=" ">
                                                 </select>
@@ -1373,7 +1373,7 @@ const InvoiceDialog = (() => {
 
                             me.itemsView.addRow(dataToAdd, 0);
                             cv_interact.success(
-                                `Rent for ${roomCode} added successfully.`
+                                LocaleManager.trans('rent_added_success', 'message_box_default').replace('??', roomCode),
                             );
                             ibMe.close();
                         }

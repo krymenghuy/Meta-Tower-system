@@ -1073,7 +1073,7 @@ var UserManagementComponent = new function(){
             }
 
             btn = VSUtil.closestLimited(e.target,'.btn-um-reports');
-            console.log(123,btn);
+            // console.log(123,btn);
             if(btn)
             {
                 let op = {

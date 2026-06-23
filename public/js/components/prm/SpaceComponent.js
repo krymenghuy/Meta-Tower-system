@@ -1,6 +1,6 @@
 "use strict";
 
-var SpaceComponent =  (function () {
+var SpaceComponent = (function () {
     const mThis = {};
     mThis.title_prop = "Space Management";
     mThis.base_url = main_view.base_url;
@@ -61,7 +61,7 @@ var SpaceComponent =  (function () {
                     mThis.applyListFilters();
                 },
             };
-            if (!AuthManager.allowed(206,false)) return;
+            if (!AuthManager.allowed(206, false)) return;
             BuildingSpaceDialog.show(op);
         };
         mThis.pr_tbl = mThis.SpaceListView.getListContainer();
@@ -524,7 +524,7 @@ var SpaceComponent =  (function () {
     };
 
     mThis.createContract = (id, menulink) => {
-        if (!AuthManager.allowed(227,false)) return;
+        if (!AuthManager.allowed(227, false)) return;
 
         vsapi
             .call(
@@ -613,7 +613,7 @@ var SpaceComponent =  (function () {
                 mThis.applyListFilters();
             },
         };
-        if (!AuthManager.allowed(207,false)) return;
+        if (!AuthManager.allowed(207, false)) return;
         BuildingSpaceDialog.show(op);
     };
     mThis.setMaintenance = (id, menulink) => {
@@ -625,13 +625,13 @@ var SpaceComponent =  (function () {
                 mThis.applyListFilters();
             },
         };
-        if (!AuthManager.allowed(213,false)) return;
+        if (!AuthManager.allowed(213, false)) return;
         if (typeof CreateMaintenanceDialog !== "undefined") {
             CreateMaintenanceDialog.show(op);
         }
     };
     mThis.finishMaintenance = (id, menulink) => {
-        if (!AuthManager.allowed(216,false)) return;
+        if (!AuthManager.allowed(216, false)) return;
         cv_interact.confirm(
             "confirm_finish_maintenance",
             {
@@ -673,7 +673,7 @@ var SpaceComponent =  (function () {
                 mThis.applyListFilters();
             },
         };
-        if (!AuthManager.allowed(209,false)) return;
+        if (!AuthManager.allowed(209, false)) return;
         CreateBookingDialog.show(op);
     };
     mThis.deleteSpace = (id, menulink) => {
@@ -684,7 +684,7 @@ var SpaceComponent =  (function () {
                 mThis.applyListFilters();
             },
         };
-         if (!AuthManager.allowed(208,false)) return;
+        if (!AuthManager.allowed(208, false)) return;
         cv_interact.confirm(
             "confirm_delete",
             {
@@ -704,7 +704,7 @@ var SpaceComponent =  (function () {
                         )
                         .then((res) => {
                             if (res.status_code == 200) {
-                               cv_interact.success("delete_success_space");
+                                cv_interact.success("delete_success_space");
                                 mThis.applyListFilters();
                             } else {
                                 cv_interact.error(res.error_message);
@@ -721,7 +721,7 @@ var SpaceComponent =  (function () {
                 mThis.applyListFilters();
             },
         };
-        if (!AuthManager.allowed(210,false)) return;
+        if (!AuthManager.allowed(210, false)) return;
         ViewBookingDialog.show(op);
     };
     mThis.editBooking = (id, menuLink) => {
@@ -739,7 +739,7 @@ var SpaceComponent =  (function () {
                     );
                     return;
                 }
-                if (!AuthManager.allowed(211,false)) return;
+                if (!AuthManager.allowed(211, false)) return;
                 CreateBookingDialog.show({
                     space_id: id,
                     booking: res.data,
@@ -753,7 +753,7 @@ var SpaceComponent =  (function () {
             });
     };
     mThis.cancelBooking = (id, menuLink) => {
-        if (!AuthManager.allowed(212,false)) return;
+        if (!AuthManager.allowed(212, false)) return;
         cv_interact.confirm(
             "confirm_cancel",
             {
@@ -903,11 +903,11 @@ const BuildingSpaceDialog = (() => {
                     return [
                         `<div class="row g-3 justify-content-center">
                             <div class="col-12">
-                                <select data-style="material" placeholder="Building" name="building_id" class="data-input form-control" data-field="building_id">
+                                <select data-style="material" placeholder="${LocaleManager.trans('Building', 'titles')}" name="building_id" class="data-input form-control" data-field="building_id">
                                 </select>
                             </div>
                             <div class="col-6">
-                                <select data-style="material" name="floor_id" class="data-input form-control" data-field="floor_id" placeholder="Floor">
+                                <select data-style="material" name="floor_id" class="data-input form-control" data-field="floor_id" placeholder="${LocaleManager.trans('Floor', 'titles')}">
                                 </select>
                             </div>
                             <div class="col-6">
@@ -917,7 +917,7 @@ const BuildingSpaceDialog = (() => {
                                 </div>
                             </div>
                             <div class="col-6">
-                                <select data-style="material" name="space_type_id" placeholder="Type" class="data-input form-control" data-field="space_type_id">
+                                <select data-style="material" name="space_type_id" placeholder="${LocaleManager.trans('Type', 'titles')}" class="data-input form-control" data-field="space_type_id">
                                 </select>
                             </div>
                             <div class="col-6">
@@ -933,10 +933,10 @@ const BuildingSpaceDialog = (() => {
                                 </div>
                             </div>
                             <div class="col-6">
-                                <select data-style="material" name="price_type" placeholder="Charge As" class="data-input form-control" data-field="price_type">
-                                    <option value="">Select Charge As</option>
+                                <select data-style="material" name="price_type" placeholder="${LocaleManager.trans('Charge As', 'titles')}" class="data-input form-control" data-field="price_type">
+                                    <option value="">${LocaleManager.trans('Select Charge As', 'labels')}</option>
                                     <option value="sqm">m²</option>
-                                    <option value="total">Unit</option>
+                                    <option value="total">${LocaleManager.trans('Unit', 'titles')}</option>
                                 </select>
                             </div>
 
@@ -1072,11 +1072,12 @@ const CreateBookingDialog = (() => {
                 backdrop: "static",
                 keyboard: true,
                 title: (me) => {
-                
-                    const title =  me.dataOptions?.booking?.id
-                        ? "Edit Booking"
+                    const bookingId =
+                        me.dataOptions?.booking?.id ?? me.dataOptions?.id;
+                    const title = bookingId
+                        ? "Modify Booking"
                         : "Create Booking";
-                    return `<h4 class="text-start fw-bold">${LocaleManager.trans(title, "titles")}</h4>`;
+                    return `<h4 class="text-start ">${LocaleManager.trans(title, "titles")}</h4>`;
                     // return me.dataOptions.id ? `<h4 class="text-prm-custom text-start fw-bold" vslang="titles.Modify Space"></h4>` : `<h4 class="text-prm-custom text-start fw-bold" vslang="titles.Create Space"></h4>`;
                 },
                 createContent: () => {
@@ -1328,50 +1329,50 @@ const ViewBookingDialog = (() => {
 
                             <div class="booker_profile overflow-y-auto overflow-x-hidden">
                                 <div class="info_title p-2 text-primary-custom">
-                                        <h5>Unit ${data.space_code ?? "_"}</h5>
+                                        <h5>${LocaleManager.trans("Unit", "titles")} ${data.space_code ?? "_"}</h5>
                                 </div>
 
                                 <div class="booker_info">
                                     <div class="row cols-2 mb-0">
                                         <div class="col-4 p_profile_left">
                                             <div class="d-flex">
-                                                <p class="text-nowrap text-muted width-p">Booking Name</p>
+                                                <p class="text-nowrap text-muted width-p">${LocaleManager.trans('Booking Name', 'labels')}</p>
                                                 <p class="px-3">:</p>
                                                 <p class="text-nowrap text-capitalize data-get">${data.booker_name ?? "_"}</p>
                                             </div>
                                             <div class="d-flex">
-                                                <p class="text-nowrap text-muted width-p">Booking Date</p>
+                                                <p class="text-nowrap text-muted width-p">${LocaleManager.trans('Booking Date', 'labels')}</p>
                                                 <p class="px-3">:</p>
                                                 <p class="text-nowrap text-capitalize data-get">${data.booking_date ?? "_"}</p>
                                             </div>
                                         </div>
                                         <div class="col-4 p_profile_center">
                                             <div class="d-flex">
-                                                <p class="text-nowrap text-muted width-p">Booking Phone</p>
+                                                <p class="text-nowrap text-muted width-p">${LocaleManager.trans('Booking Phone', 'labels')}</p>
                                                 <p class="px-3">:</p>
                                                 <p class="text-nowrap text-capitalize data-get">${data.booker_phone ?? "_"}</p>
                                             </div>
                                             <div class="d-flex">
-                                                <p class="text-nowrap text-muted width-p">Expired Date</p>
+                                                <p class="text-nowrap text-muted width-p">${LocaleManager.trans('Expired Date', 'labels')}</p>
                                                 <p class="px-3">:</p>
                                                 <p class="text-nowrap text-capitalize data-get">${data.expired_booking_date ?? "_"}</p>
                                             </div>
                                         </div>
                                         <div class="col-4 p_profile_right">
                                             <div class="d-flex">
-                                                <p class="text-nowrap text-muted width-p">Booking Email</p>
+                                                <p class="text-nowrap text-muted width-p">${LocaleManager.trans('Email', 'labels')}</p>
                                                 <p class="px-3">:</p>
                                                 <p class="text-nowrap data-get">${data.booker_email ?? "_"}</p>
                                             </div>
                                             <div class="d-flex">
-                                                <p class="text-nowrap text-muted width-p">Booking Amount</p>
+                                                <p class="text-nowrap text-muted width-p">${LocaleManager.trans('Booking Amount', 'labels')}</p>
                                                 <p class="px-3">:</p>
                                                 <p class="text-nowrap text-capitalize data-get">${VSMoney.formatAmount(data.booking_fee, data.currency ?? "USD") ?? "_"}</p>
                                             </div>
                                         </div>
                                         <div class="row cols-2 mb-0">
                                             <div class="d-flex align-items-start">
-                                                <p class="text-muted mb-0">Remark</p>
+                                                <p class="text-muted mb-0">${LocaleManager.trans('Remark', 'titles')}</p>
                                                 <p class="px-3 mb-0">:</p>
                                                 <p class="data-get mb-0 text-capitalize" style="word-break: break-word; overflow-wrap: anywhere;">
                                                     ${data.remarks ?? "_"}
@@ -1381,7 +1382,8 @@ const ViewBookingDialog = (() => {
                                     </div>
                                 </div>
                             </div>`;
-                        div.innerHTML = html;
+                        div.innerHTML = html;   
+                        
                     };
                 },
 
@@ -1395,8 +1397,7 @@ const ViewBookingDialog = (() => {
                     },
                 ],
                 prepareFormOptions: {
-                    createTitle: "Booking Detail",
-                    modifyTitle: "Booking Detail",
+                    createTitle: `${LocaleManager.trans("Booking Details", "titles")}`,
                     targetProp: "divModal",
                     api: {
                         endpoint: `${main_view.base_url}/prm/building-space/view-booking`,
@@ -1415,7 +1416,6 @@ const ViewBookingDialog = (() => {
 
     return self;
 })();
-
 
 
 

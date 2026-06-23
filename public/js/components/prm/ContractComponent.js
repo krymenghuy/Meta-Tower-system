@@ -842,8 +842,6 @@ const ContractDialog = (() => {
     // };
 
     self.show = (op) => {
-        console.log(6666, op);
-
         dialog =
             dialog ||
             new GeneralDialog({
@@ -869,10 +867,10 @@ const ContractDialog = (() => {
                         </div>
 
                         <div class="col-6">
-                            <select data-style="material" placeholder="Business Type" name="business_type_id" class="data-input form-control" data-field="business_type_id"> </select>
+                            <select data-style="material" placeholder="${LocaleManager.trans('Business Type', 'labels')}" name="business_type_id" class="data-input form-control" data-field="business_type_id"> </select>
                         </div>
                         <div class="col-3">
-                            <select data-style="material" placeholder="Unit Code" name="code" class="data-input form-control" data-field="space_id"> </select>
+                            <select data-style="material" placeholder="${LocaleManager.trans('Unit Code', 'labels')}" name="code" class="data-input form-control" data-field="space_id"> </select>
                         </div>
                         <div class="col-3">
                             <div class="vs-material-field">
@@ -1457,6 +1455,8 @@ const RenewDialog = (() => {
                 onPrepareForm: (me, data) => {
                     LocaleManager.translateZone(me.divModal);
                     const det = data.contract_details || {};
+                    console.log(33,det);
+                    
                     // const oldStartIso = normalizeContractDateToIso(det.start_date);
                     // const oldEndIso = normalizeContractDateToIso(det.end_date);
                     if (me.controls.old_contract_start) {
@@ -1517,12 +1517,12 @@ const RenewDialog = (() => {
                     const applyContractPriceFields = () => {
                         if (me.controls.price_type) {
                             me.controls.price_type.value = det.price_type ?? "";
-                            me.controls.price_type.value =
-                                det.price_type == "sqm"
-                                    ? "m²"
-                                    : det.price_type === "total"
-                                      ? "Unit"
-                                      : "";
+                            // me.controls.price_type.value =
+                            //     det.price_type == "sqm"
+                            //         ? "m²"
+                            //         : det.price_type === "total"
+                            //           ? "Unit"
+                            //           : "";
                         }
                         if (me.controls.price) {
                             me.controls.price.value =
@@ -1545,9 +1545,6 @@ const RenewDialog = (() => {
                         if (me.controls.price_type) {
                             me.controls.price_type.value =
                                 unitData.price_type ?? "";
-
-                            console.log(3333, unitData.price_type);
-
                             me.controls.price_type.value =
                                 unitData.price_type === "sqm"
                                     ? "m²"

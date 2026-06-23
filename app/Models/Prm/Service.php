@@ -32,7 +32,7 @@ class Service
             'description'     => '0|string|0-350',
         ];
 
-        $res = DBX::validateObject($arr,$v_rule,1,['name' => ['(', ')', '-', '.', '#'],'unit_type' => ['@', '.', '-', '_'],'description' => ['@', ',', '-', '.', '#']],$ss->lang,0,null);
+        $res = DBX::validateObject($arr,$v_rule,1,['name' => ['(', ')', '-','/','.', '#'],'unit_type' => ['@', '.', '-', '_'],'description' => ['@', ',','/','%','$', '-', '.', '#']],$ss->lang,0,null);
         if ($res->error) {
             return DV::error($res->error);
         }

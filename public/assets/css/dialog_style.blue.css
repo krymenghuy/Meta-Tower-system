@@ -338,7 +338,7 @@
     gap:16px;
 }
 
-.vs-modal .modal-footer::before{
+/* .vs-modal .modal-footer::before{
 
     content:"";
 
@@ -363,7 +363,7 @@
     border-radius:
 
         0 0 24px 24px;
-}
+} */
 
 .btn-vs-save{
 
