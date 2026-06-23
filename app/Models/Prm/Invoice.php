@@ -393,6 +393,9 @@ class Invoice extends VSModel
     }
 
 
+
+
+
     public function invoiceSetting($arr, $ss)
     {
         $d = (object) $arr;
@@ -610,7 +613,8 @@ class Invoice extends VSModel
 
                 'ii.remarks',
 
-                DB::raw('(i.amount - COALESCE(i.paid_amount, 0)) as balance')
+                // DB::raw('(i.amount - COALESCE(i.paid_amount, 0)) as balance')
+                DB::raw('(i.amount_payable - COALESCE(i.paid_amount, 0)) as balance'),
             ]);
 
 
@@ -706,7 +710,7 @@ class Invoice extends VSModel
                 'i.due_date',
                 'i.discount_type',
                 'i.discount_value',
-                DB::raw('(i.amount - COALESCE(i.paid_amount, 0)) as balance'),
+                DB::raw('(i.amount_payable - COALESCE(i.paid_amount, 0)) as balance'),
                 'i.payment_status_id',
                 'i.contract_id',
                 't.name as tenant_name',
