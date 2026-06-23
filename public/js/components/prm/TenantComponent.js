@@ -1766,9 +1766,9 @@ const CreateTenantDialog = (() => {
                                 </div>
                             </div>
                             <div class="col-12 col-md-6">
-                                <select data-style="material" name="sex" class="data-input form-control" data-field="sex" placeholder="${LocaleManager.trans('Gender', 'labels')}">
-                                    <option value="M">${LocaleManager.trans('Male', 'labels')}</option>
-                                    <option value="F">${LocaleManager.trans('Female', 'labels')}</option>
+                                <select data-style="material" name="sex" class="data-input form-control" data-field="sex" placeholder="${LocaleManager.trans("Gender", "labels")}">
+                                    <option value="M">${LocaleManager.trans("Male", "labels")}</option>
+                                    <option value="F">${LocaleManager.trans("Female", "labels")}</option>
                                 </select>
                             </div>
                             <div class="col-12 col-md-6">
@@ -1790,7 +1790,7 @@ const CreateTenantDialog = (() => {
                                 </div>
                             </div>
                             <div class="col-12 col-md-6">
-                                <select data-style="material" name="nationality_id" class="data-input form-control" data-field="nationality_id" placeholder="${LocaleManager.trans('Nationality', 'labels')}"></select>
+                                <select data-style="material" name="nationality_id" class="data-input form-control" data-field="nationality_id" placeholder="${LocaleManager.trans("Nationality", "labels")}"></select>
                             </div>
                     </div>
                     <div class="col-12 row g-2">
@@ -1864,7 +1864,8 @@ const CreateTenantDialog = (() => {
                         if (me.previewImg && me.previewImg.src) {
                             src = me.previewImg.src.split("/").pop();
                         }
-                        const isPlaceholder = src === "placeholder.svg" || src === "";
+                        const isPlaceholder =
+                            src === "placeholder.svg" || src === "";
 
                         if (!me.fileBase64 || isPlaceholder) {
                             me.uploadZone.classList.remove("d-none");
