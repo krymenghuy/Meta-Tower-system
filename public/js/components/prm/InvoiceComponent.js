@@ -487,168 +487,168 @@ var InvoiceComponent = (() => {
         return params;
     };
 
-    // mThis.initDropdownMenus = (container) => {
-    //     const menuOptions = {
-    //         containerElement: container,
-    //         actionButtonClass: "btn_leave_action",
-    //         cssClass: "bg-white box-shadow text-start",
-    //         menus: [
-    //             {
-    //                 html:
-    //                     '<span class="ps-2" vslang="titles.Receive Payment"></span>',
-    //                 icon: `<i class="fa-solid fa-hand-holding-dollar text-success fs-5"></i>`,
-    //                 cssClass: "border-bottom pb-2",
-    //                 name: "receive_invoice"
-    //             },
-
-    //             {
-    //                 html:
-    //                     '<span class="ps-2" vslang="titles.Modify Invoice"></span>',
-    //                 icon: `<i class="fa-solid fa-edit text-primary fs-5"></i>`,
-    //                 cssClass: "border-bottom pb-2",
-    //                 name: "modify_invoice"
-    //             },
-    //             {
-    //                 html:
-    //                     '<span class="ps-2" vslang="titles.Print Invoice"></span>',
-    //                 icon: `<i class="fa-solid fa-receipt text-primary fs-5"></i>`,
-    //                 cssClass: "border-bottom pb-2",
-    //                 name: "print_invoice"
-    //             },
-    //             {
-    //                 html:
-    //                     '<span class="ps-2" vslang="titles.Delete Invoice"></span>',
-    //                 icon: `<i class="fa-regular fa-trash-can text-danger fs-5"></i>`,
-    //                 cssClass: "border-bottom pb-2",
-    //                 name: "delete_invoice"
-    //             },
-    //             {
-    //                 html:
-    //                     '<span class="ps-2" vslang="titles.Invoice Setting"></span>',
-    //                 icon: `<i class="fa-solid fa-file-invoice-dollar text-warning-emphasis fs-5"></i>`,
-    //                 cssClass: "border-bottom pb-2",
-    //                 name: "invoice_setting"
-    //             },
-    //             {
-    //                 html:
-    //                     '<span class="ps-2" vslang="titles.Clear Setting"></span>',
-    //                 icon: `<i class="fa-solid fa-trash-can-arrow-up fs-5 text-danger"></i>`,
-    //                 cssClass: "border-bottom pb-2",
-    //                 name: "reset_invoice_setting"
-    //             }
-    //         ],
-    //         onShow: (me, menuContainer) => {
-    //             const menu = me.getActiveMenus(menuContainer);
-    //             const statusId = Number(menuContainer.dataset.statusid);
-
-    //             menu.receive_invoice.style.display =
-    //                 statusId === 2 || statusId === 3 || statusId === 4
-    //                     ? "block"
-    //                     : "none";
-    //             statusId === 2 || statusId === 3 ? "block" : "none";
-    //             menu.delete_invoice.style.display =
-    //                 statusId === 2 ? "block" : "none";
-    //             menu.modify_invoice.style.display =
-    //                 statusId === 2 ? "block" : "none";
-    //         },
-    //         onClick: (menulink, id, name) => {
-    //             if (name === "delete_invoice") {
-    //                 mThis.deleteInvoice(id);
-    //             } else if (name === "print_invoice") {
-    //                 mThis.printInvoice(id);
-    //             } else if (name === "receive_invoice") {
-    //                 mThis.receiveInvoice(id);
-    //             } else if (name === "modify_invoice") {
-    //                 mThis.editInvoice(id, menulink);
-    //             } else if (name === "invoice_setting") {
-    //                 mThis.btnInvoiceSetting(id, menulink);
-    //             } else if (name === "reset_invoice_setting") {
-    //                 mThis.btnResetInvoiceSetting(id, menulink);
-    //             }
-    //         }
-    //     };
-
-    //     new VSDropdownMenu(menuOptions);
-    // };
-
     mThis.initDropdownMenus = (container) => {
-    const menuOptions = {
-        containerElement: container,
-        actionButtonClass: "btn_leave_action",
-        cssClass: "bg-white shadow", 
-        menus: [
-            {
-                html: '<span class="ps-2 text-start" vslang="titles.Receive Payment"></span>',
-                icon: `<i class="fa-solid fa-fw fa-hand-holding-dollar text-success fs-5"></i>`,
-                cssClass: "border-bottom pb-2",
-                name: "receive_invoice"
-            },
-            {
-                html: '<span class="ps-2 text-start" vslang="titles.Modify Invoice"></span>',
-                icon: `<i class="fa-solid fa-fw fa-edit text-primary fs-5"></i>`,
-                cssClass: "border-bottom pb-2",
-                name: "modify_invoice"
-            },
-            {
-                html: '<span class="ps-2" vslang="titles.Print Invoice"></span>',
-                icon: `<i class="fa-solid fa-fw fa-receipt text-primary fs-5"></i>`,
-                cssClass: "border-bottom pb-2",
-                name: "print_invoice"
-            },
-            {
-                html: '<span class="ps-2" vslang="titles.Delete Invoice"></span>',
-                icon: `<i class="fa-solid fa-fw fa-trash-can text-danger fs-5"></i>`, // Swapped to fa-solid for consistency
-                cssClass: "border-bottom pb-2",
-                name: "delete_invoice"
-            },
-            {
-                html: '<span class="ps-2" vslang="titles.Invoice Setting"></span>',
-                icon: `<i class="fa-solid fa-fw fa-file-invoice-dollar text-warning-emphasis fs-5"></i>`,
-                cssClass: "border-bottom pb-2 ",
-                name: "invoice_setting"
-            },
-            {
-                html: '<span class="ps-2" vslang="titles.Clear Setting"></span>',
-                icon: `<i class="fa-solid fa-fw fa-trash-can-arrow-up fs-5 text-danger"></i>`,
-                cssClass: "border-bottom pb-2",
-                name: "reset_invoice_setting"
-            }
-        ],
-        onShow: (me, menuContainer) => {
-            const menu = me.getActiveMenus(menuContainer);
-            const statusId = Number(menuContainer.dataset.statusid);
+        const menuOptions = {
+            containerElement: container,
+            actionButtonClass: "btn_leave_action",
+            cssClass: "bg-white box-shadow text-start",
+            menus: [
+                {
+                    html:
+                        '<span class="ps-2" vslang="titles.Receive Payment"></span>',
+                    icon: `<i class="fa-solid fa-hand-holding-dollar text-success fs-5"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "receive_invoice"
+                },
 
-            // Set visibility based on status states cleanly
-            if (menu.receive_invoice) {
+                {
+                    html:
+                        '<span class="ps-2" vslang="titles.Modify Invoice"></span>',
+                    icon: `<i class="fa-solid fa-edit text-primary fs-5"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "modify_invoice"
+                },
+                {
+                    html:
+                        '<span class="ps-2" vslang="titles.Print Invoice"></span>',
+                    icon: `<i class="fa-solid fa-receipt text-primary fs-5"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "print_invoice"
+                },
+                {
+                    html:
+                        '<span class="ps-2" vslang="titles.Delete Invoice"></span>',
+                    icon: `<i class="fa-regular fa-trash-can text-danger fs-5"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "delete_invoice"
+                },
+                {
+                    html:
+                        '<span class="ps-2" vslang="titles.Invoice Setting"></span>',
+                    icon: `<i class="fa-solid fa-file-invoice-dollar text-warning-emphasis fs-5"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "invoice_setting"
+                },
+                {
+                    html:
+                        '<span class="ps-2" vslang="titles.Clear Setting"></span>',
+                    icon: `<i class="fa-solid fa-trash-can-arrow-up fs-5 text-danger"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "reset_invoice_setting"
+                }
+            ],
+            onShow: (me, menuContainer) => {
+                const menu = me.getActiveMenus(menuContainer);
+                const statusId = Number(menuContainer.dataset.statusid);
+
                 menu.receive_invoice.style.display =
-                    (statusId === 2 || statusId === 3 || statusId === 4) ? "block" : "none";
+                    statusId === 2 || statusId === 3 || statusId === 4
+                        ? "block"
+                        : "none";
+                statusId === 2 || statusId === 3 ? "block" : "none";
+                menu.delete_invoice.style.display =
+                    statusId === 2 ? "block" : "none";
+                menu.modify_invoice.style.display =
+                    statusId === 2 ? "block" : "none";
+            },
+            onClick: (menulink, id, name) => {
+                if (name === "delete_invoice") {
+                    mThis.deleteInvoice(id);
+                } else if (name === "print_invoice") {
+                    mThis.printInvoice(id);
+                } else if (name === "receive_invoice") {
+                    mThis.receiveInvoice(id);
+                } else if (name === "modify_invoice") {
+                    mThis.editInvoice(id, menulink);
+                } else if (name === "invoice_setting") {
+                    mThis.btnInvoiceSetting(id, menulink);
+                } else if (name === "reset_invoice_setting") {
+                    mThis.btnResetInvoiceSetting(id, menulink);
+                }
             }
-            if (menu.delete_invoice) {
-                menu.delete_invoice.style.display = (statusId === 2) ? "block" : "none";
-            }
-            if (menu.modify_invoice) {
-                menu.modify_invoice.style.display = (statusId === 2) ? "block" : "none";
-            }
-        },
-        onClick: (menulink, id, name) => {
-            if (name === "delete_invoice") {
-                mThis.deleteInvoice(id);
-            } else if (name === "print_invoice") {
-                mThis.printInvoice(id);
-            } else if (name === "receive_invoice") {
-                mThis.receiveInvoice(id);
-            } else if (name === "modify_invoice") {
-                mThis.editInvoice(id, menulink);
-            } else if (name === "invoice_setting") {
-                mThis.btnInvoiceSetting(id, menulink);
-            } else if (name === "reset_invoice_setting") {
-                mThis.btnResetInvoiceSetting(id, menulink);
-            }
-        }
+        };
+
+        new VSDropdownMenu(menuOptions);
     };
 
-    new VSDropdownMenu(menuOptions);
-};
+//     mThis.initDropdownMenus = (container) => {
+//     const menuOptions = {
+//         containerElement: container,
+//         actionButtonClass: "btn_leave_action",
+//         cssClass: "bg-white shadow", 
+//         menus: [
+//             {
+//                 html: '<span class="ps-2 text-start" vslang="titles.Receive Payment"></span>',
+//                 icon: `<i class="fa-solid fa-fw fa-hand-holding-dollar text-success fs-5"></i>`,
+//                 cssClass: "border-bottom pb-2",
+//                 name: "receive_invoice"
+//             },
+//             {
+//                 html: '<span class="ps-2 text-start" vslang="titles.Modify Invoice"></span>',
+//                 icon: `<i class="fa-solid fa-fw fa-edit text-primary fs-5"></i>`,
+//                 cssClass: "border-bottom pb-2",
+//                 name: "modify_invoice"
+//             },
+//             {
+//                 html: '<span class="ps-2" vslang="titles.Print Invoice"></span>',
+//                 icon: `<i class="fa-solid fa-fw fa-receipt text-primary fs-5"></i>`,
+//                 cssClass: "border-bottom pb-2",
+//                 name: "print_invoice"
+//             },
+//             {
+//                 html: '<span class="ps-2" vslang="titles.Delete Invoice"></span>',
+//                 icon: `<i class="fa-solid fa-fw fa-trash-can text-danger fs-5"></i>`, // Swapped to fa-solid for consistency
+//                 cssClass: "border-bottom pb-2",
+//                 name: "delete_invoice"
+//             },
+//             {
+//                 html: '<span class="ps-2" vslang="titles.Invoice Setting"></span>',
+//                 icon: `<i class="fa-solid fa-fw fa-file-invoice-dollar text-warning-emphasis fs-5"></i>`,
+//                 cssClass: "border-bottom pb-2 ",
+//                 name: "invoice_setting"
+//             },
+//             {
+//                 html: '<span class="ps-2" vslang="titles.Clear Setting"></span>',
+//                 icon: `<i class="fa-solid fa-fw fa-trash-can-arrow-up fs-5 text-danger"></i>`,
+//                 cssClass: "border-bottom pb-2",
+//                 name: "reset_invoice_setting"
+//             }
+//         ],
+//         onShow: (me, menuContainer) => {
+//             const menu = me.getActiveMenus(menuContainer);
+//             const statusId = Number(menuContainer.dataset.statusid);
+
+//             // Set visibility based on status states cleanly
+//             if (menu.receive_invoice) {
+//                 menu.receive_invoice.style.display =
+//                     (statusId === 2 || statusId === 3 || statusId === 4) ? "block" : "none";
+//             }
+//             if (menu.delete_invoice) {
+//                 menu.delete_invoice.style.display = (statusId === 2) ? "block" : "none";
+//             }
+//             if (menu.modify_invoice) {
+//                 menu.modify_invoice.style.display = (statusId === 2) ? "block" : "none";
+//             }
+//         },
+//         onClick: (menulink, id, name) => {
+//             if (name === "delete_invoice") {
+//                 mThis.deleteInvoice(id);
+//             } else if (name === "print_invoice") {
+//                 mThis.printInvoice(id);
+//             } else if (name === "receive_invoice") {
+//                 mThis.receiveInvoice(id);
+//             } else if (name === "modify_invoice") {
+//                 mThis.editInvoice(id, menulink);
+//             } else if (name === "invoice_setting") {
+//                 mThis.btnInvoiceSetting(id, menulink);
+//             } else if (name === "reset_invoice_setting") {
+//                 mThis.btnResetInvoiceSetting(id, menulink);
+//             }
+//         }
+//     };
+
+//     new VSDropdownMenu(menuOptions);
+// };
 
     mThis.deleteInvoice = (id, menuLink) => {
         if (!AuthManager.allowed(237)) return;

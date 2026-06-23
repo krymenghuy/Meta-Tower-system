@@ -256,7 +256,7 @@ class Invoice extends VSModel
             //     'penal_amount'     => $penal_amount,
             // ]);
 
-            $invoice_amount      = (float)$invoice->amount;
+            $invoice_amount      = (float)$invoice->amount_payable  ;
             $already_paid        = (float)$invoice->paid_amount;
             $total_received      = array_sum(array_column($pmt_breakdowns, 'amount'));
             $current_balance_due = ($invoice_amount - $already_paid) + $penal_amount;
@@ -356,6 +356,8 @@ class Invoice extends VSModel
             } elseif ($new_paid_amount > 0) {
                 $payment_status_id = 3; // partial
             }
+
+
 
             $is_paid = ($payment_status_id === 1) ? 1 : 0;
 
