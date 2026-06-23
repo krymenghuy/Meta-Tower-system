@@ -120,8 +120,8 @@ function v_display($mod_id, $module_ids = null)
                     </a>
                 </li>
 
-                <li class="kt-menu__item" aria-haspopup="true" <?php v_display(220); ?>>
-                    <a href="DepositComponent" modid="220" class="menu-item kt-menu__link">
+                <li class="kt-menu__item" aria-haspopup="true" <?php v_display(219); ?>>
+                    <a href="DepositComponent" modid="219" class="menu-item kt-menu__link">
                         <span class="kt-menu__link-icon">
                             <img class="opacity-icons icons" src="{{ asset('assets/images/icons/receipt.png') }}" />
                         </span>
@@ -262,8 +262,8 @@ function v_display($mod_id, $module_ids = null)
                                     </a>
                                 </li> --}}
 
-                                <li class="kt-menu__item" aria-haspopup="true" <?php v_display(244); ?>>
-                                    <a href="CompanyComponent" modid="244" class="menu-item kt-menu__link">
+                                <li class="kt-menu__item" aria-haspopup="true" <?php v_display(220); ?>>
+                                    <a href="CompanyComponent" modid="220" class="menu-item kt-menu__link">
                                         <span class="kt-menu__link-icon">
                                             <img class="opacity-icons icons" src="{{ asset('assets/images/icons/setting.png') }}" />
                                         </span>
