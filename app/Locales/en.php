@@ -241,7 +241,6 @@ return [
         'request_invoice' => 'Service request added to invoice',
         'failed_load_invoice' => 'Failed to load invoice details.',
         'no_request' => 'No Requests relate to this space.',
-        'rent_added_success' => 'Rent for ?? added successfully.',
         'receive_success_payment' => 'Payment Received Successfully.',
         'payment_amount' => 'Please enter a payment amount',
 

@@ -387,7 +387,7 @@ var PurchaseOrdersComponent = (() => {
             title: (me) => {
                     const title = me.dataOptions.id ? "Modify Purchase Orders" : "Purchase Orders";
                     if (title) {
-                       return  `<h4 class="text-white text-start">${LocaleManager.trans(title,'titles')}</h4>`;
+                       return  `<h4 class="text-prm-custom text-start fw-bold">${LocaleManager.trans(title,'titles')}</h4>`;
                     }
                 },
             createContent: () => {
@@ -523,7 +523,7 @@ var PurchaseOrdersComponent = (() => {
                     tableClass: 'table',
                     showColumnHeaders: true,
                     showAddLineButton: true,
-                    addLineButtonText: LocaleManager.trans('Add Item', 'buttons'),
+                    addLineButtonText: 'Add Item',
                     
                     onItemChange: async (iMe,ctx) => {
                         const item = ctx.item;

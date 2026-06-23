@@ -1766,9 +1766,9 @@ const CreateTenantDialog = (() => {
                                 </div>
                             </div>
                             <div class="col-12 col-md-6">
-                                <select data-style="material" name="sex" class="data-input form-control" data-field="sex" placeholder="${LocaleManager.trans('Gender', 'labels')}">
-                                    <option value="M">${LocaleManager.trans('Male', 'labels')}</option>
-                                    <option value="F">${LocaleManager.trans('Female', 'labels')}</option>
+                                <select data-style="material" name="sex" class="data-input form-control" data-field="sex" placeholder="Gender">
+                                    <option value="M">Male</option>
+                                    <option value="F">Female</option>
                                 </select>
                             </div>
                             <div class="col-12 col-md-6">
@@ -1790,7 +1790,7 @@ const CreateTenantDialog = (() => {
                                 </div>
                             </div>
                             <div class="col-12 col-md-6">
-                                <select data-style="material" name="nationality_id" class="data-input form-control" data-field="nationality_id" placeholder="${LocaleManager.trans('Nationality', 'labels')}"></select>
+                                <select data-style="material" name="nationality_id" class="data-input form-control" data-field="nationality_id" placeholder="Nationality"></select>
                             </div>
                     </div>
                     <div class="col-12 row g-2">
@@ -2128,7 +2128,7 @@ const TenantDocumentDialog = (() => {
                     const title = me.dataOptions.id
                         ? "Modify Document"
                         : "Upload Document";
-                    return `<h4 class="text-white text-start">${LocaleManager.trans(title, "titles")}</h4>`;
+                    return `<h4 class="text-prm-custom text-start fw-bold">${LocaleManager.trans(title, "titles")}</h4>`;
                     // return me.dataOptions.id ? `<h4 class="text-prm-custom text-start fw-bold" vslang="titles.Modify Space"></h4>` : `<h4 class="text-prm-custom text-start fw-bold" vslang="titles.Create Space"></h4>`;
                 },
 

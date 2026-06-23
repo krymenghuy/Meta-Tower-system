@@ -454,7 +454,7 @@ const DepositDialog = (() => {
                             <div class="col-6">
                                 <div class="vs-material-field">
                                     <input name="tenant_name" class="data-input form-control" data-field="tenant_name" placeholder="Search Tenant..." autocomplete="off">
-                                    <label vslang="labels.Tenant">Tenant</label>
+                                    <label>Tenant</label>
                                 </div>
                             </div>
                             

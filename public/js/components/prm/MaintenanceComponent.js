@@ -384,7 +384,7 @@ const CreateMaintenanceDialog = (() => {
                     <section class="maintenance-form-section mb-3 bg-white">
                         <div class="row g-3">
                             <div class="col-12 col-sm-12">
-                                <select data-style="material" name="building_id" class="data-input form-control" data-field="building_id" placeholder="${LocaleManager.trans('Building', 'titles')}"></select>
+                                <select data-style="material" name="building_id" class="data-input form-control" data-field="building_id" placeholder="Building"></select>
                             </div>
 
                         </div>
@@ -392,13 +392,13 @@ const CreateMaintenanceDialog = (() => {
                     <section class="maintenance-form-section mb-3 bg-white">
                         <div class="row">
                             <div  id="_maintenance_type_unit_row" class="col-6">
-                                <select data-style="material" name="type_unit" class="data-input form-control" data-field="type_unit" id="_maintenance_type_unit" placeholder="${LocaleManager.trans('Type', 'titles')}" required><option value="">${LocaleManager.trans('Select type', 'labels')}</option><option value="space">${LocaleManager.trans('Space', 'titles')}</option><option value="amenity">${LocaleManager.trans('Amenity', 'titles')}</option></select>
+                                <select data-style="material" name="type_unit" class="data-input form-control" data-field="type_unit" id="_maintenance_type_unit" placeholder="Type" required><option value="">Select type</option><option value="space">Space</option><option value="amenity">Amenity</option></select>
                             </div>
                             <div id="_maintenance_unit_space_row" class="col-6" style="display:none;">
-                                <select data-style="material" name="space_id" class="data-input form-control" data-field="space_id" id="_maintenance_space_id" placeholder="${LocaleManager.trans('Unit', 'titles')}"></select>
+                                <select data-style="material" name="space_id" class="data-input form-control" data-field="space_id" id="_maintenance_space_id" placeholder="Unit"></select>
                             </div>
                             <div id="_maintenance_unit_amenity_row" class="col-6" style="display:none;">
-                                <select data-style="material" name="amenity_id" class="data-input form-control" data-field="amenity_id" placeholder="${LocaleManager.trans('Amenity', 'titles')}"><option value="">${LocaleManager.trans('Select amenity', 'labels')}</option></select>
+                                <select data-style="material" name="amenity_id" class="data-input form-control" data-field="amenity_id" placeholder="amenity"><option value="">Select amenity</option></select>
                             </div>
                         </div>
                     </section>
