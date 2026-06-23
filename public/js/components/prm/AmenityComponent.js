@@ -584,11 +584,11 @@ const AmenityDialog = (() => {
                             </div>
                         </div>
                         <div class="col-6">
-                            <select data-style="material" name="building_id" class="data-input form-control" data-field="building_id" placeholder="Building">
+                            <select data-style="material" name="building_id" class="data-input form-control" data-field="building_id" placeholder="${LocaleManager.trans('Building', 'labels')}">
                             </select>
                         </div>
                         <div class="col-6">
-                            <select data-style="material" name="floor_id" class="data-input form-control" data-field="floor_id" placeholder="Floor Number">
+                            <select data-style="material" name="floor_id" class="data-input form-control" data-field="floor_id" placeholder="${LocaleManager.trans('Floor Number', 'labels')}">
                             </select>
                         </div>
                         <div class="col-6">
@@ -598,15 +598,11 @@ const AmenityDialog = (() => {
                             </div>
                         </div>
                         <div class="col-6">
-                            <select data-style="material" type="text" name="category_id"  class="data-input form-control" data-field="category_id" placeholder="Category" >
+                            <select data-style="material" type="text" name="category_id"  class="data-input form-control" data-field="category_id" placeholder="${LocaleManager.trans('Category', 'labels')}" >
                             </select>
                         </div>
                         <div class="col-6">
-                            <select data-style="material"
-                                    name="requires_booking"
-                                    class="data-input form-control"
-                                    data-field="requires_booking"
-                                    placeholder="Bookable">
+                            <select data-style="material" name="requires_booking" class="data-input form-control" data-field="requires_booking" placeholder="${LocaleManager.trans('Bookable', 'labels')}">
                                 <option value="0" >No</option>
                                 <option value="1">Yes</option>
                             </select>

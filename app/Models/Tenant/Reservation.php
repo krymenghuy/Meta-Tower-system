@@ -113,7 +113,7 @@
                 ->exists();
 
             if ($exists) {
-                return DV::error('This amenity is already booked for this time slot.');
+                return DV::error('amenity_already_booked');
             }
         }
 

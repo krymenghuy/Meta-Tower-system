@@ -1464,7 +1464,7 @@ const InvoiceDialog = (() => {
                             );
                             if (isDuplicate) {
                                 return ibMe.setError(
-                                    `Rent is already in the list.`
+                                    LocaleManager.trans("rent_exist", "message_box_default"),
                                 );
                             }
 

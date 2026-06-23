@@ -311,7 +311,7 @@ var ReservationComponent = (() => {
             {
                 transTitle: "Cancel Reservation",
                 context: "delete",
-                confirmButtonText: "Cancel",
+                confirmButtonText: LocaleManager.trans('Cancel', 'buttons')
             },
             (confirmed) => {
                 if (!confirmed) return;
@@ -346,7 +346,7 @@ var ReservationComponent = (() => {
             {
                 transTitle: "Delete Reservation",
                 context: "delete",
-                confirmButtonText: "Delete",
+                confirmButtonText: LocaleManager.trans('Delete', 'buttons')
             },
             (e) => {
                 if (!e) return;

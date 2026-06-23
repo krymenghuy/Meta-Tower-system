@@ -1,34 +1,33 @@
-<div id="_main_invoiceSetting_component" class="mobile-padding p-3" style="display:none;">
+<div id="_main_invoiceSetting_component" class="p-3 mobile-padding" style="display:none;">
     
     <div class="row g-3">
         <!-- Column 1: Exchange Rate and Invoice Display Options -->
-        <div class="col-md-6 d-flex flex-column gap-3">
+        <div class="d-flex flex-column gap-3 col-md-6">
             <!-- Exchange Rate Card -->
-            <div class="is-card w-100">
+            <div class="w-100 is-card">
                 {{-- Exchange Rate row --}}
                 <div class="is-card-row">
                     <div class="is-icon-wrap">
                         <i class="fa-solid fa-dollar-sign"></i>
                     </div>
                     <div class="is-card-info">
-                        <p class="is-label">Exchange Rate (USD - KHR)</p>
+                        <p class="is-label" vslang="labels.Exchange Rate (USD - KHR)"></p> 
                         <p class="is-value" id="_is_exchange_rate">—</p>
                     </div>
                     <button type="button" class="is-edit-btn" id="_btnEditInvoiceSetting">
-                        <i class="fa-regular fa-pen-to-square"></i>
-                        Edit
+                        <i class="fa-pen-to-square fa-regular"></i>
+                        <span vslang="buttons.Edit">Edit</span>
                     </button>
                 </div>
             </div>
 
             <!-- Invoice Display Options Card -->
-            <div class="is-card w-100">
-                <p class="is-section-title">Invoice Display Options</p>
+            <div class="w-100 is-card">
+                <p class="is-section-title" vslang="labels.Invoice Display Options"></p>
 
                 <div class="is-row">
-                    <span class="is-row-label">
+                    <span class="is-row-label" vslang="labels.Show Commercial Tax">
                         <i class="fa-solid fa-receipt"></i>
-                        Show Commercial Tax
                     </span>
                     <div class="form-check form-switch">
                         <input class="form-check-input toggle-setting" type="checkbox" data-field="show_comm_tax" id="_is_show_comm_tax">
@@ -36,9 +35,8 @@
                 </div>
 
                 <div class="is-row">
-                    <span class="is-row-label">
+                    <span class="is-row-label" vslang="labels.Show Payment Status">
                         <i class="fa-solid fa-credit-card"></i>
-                        Show Payment Status
                     </span>
                     <div class="form-check form-switch">
                         <input class="form-check-input toggle-setting" type="checkbox" data-field="show_pmt_status" id="_is_show_pmt_status">
@@ -46,9 +44,8 @@
                 </div>
 
                 <div class="is-row">
-                    <span class="is-row-label">
-                        <i class="fa-solid fa-scale-balanced"></i>
-                        Show Balance
+                    <span class="is-row-label" vslang="labels.Show Balance">
+                        <i class="fa-scale-balanced fa-solid"></i>
                     </span>
                     <div class="form-check form-switch">
                         <input class="form-check-input toggle-setting" type="checkbox" data-field="show_balance" id="_is_show_balance">
@@ -56,18 +53,16 @@
                 </div>
 
                 <div class="is-row">
-                    <span class="is-row-label">
+                    <span class="is-row-label" vslang="labels.Show Amount Paid">
                         <i class="fa-solid fa-money-bill-wave"></i>
-                        Show Amount Paid
                     </span>
                     <div class="form-check form-switch">
                         <input class="form-check-input toggle-setting" type="checkbox" data-field="show_amount_paid" id="_is_amount_paid">
                     </div>
                 </div>
                 <div class="is-row">
-                    <span class="is-row-label">
+                    <span class="is-row-label" vslang="labels.Show Signature">
                         <i class="fa-solid fa-signature"></i>
-                        Show Signature
                     </span>
                     <div class="form-check form-switch">
                         <input class="form-check-input toggle-setting" type="checkbox" data-field="show_sign" id="_is_show_sign">
@@ -77,10 +72,10 @@
         </div>
 
         <!-- Column 2: Upload QR Code -->
-        <div class="col-md-6 d-flex">
-            <div class="is-card w-100">
-                <p class="is-section-title">Upload QR code </p>
-                <div class="d-flex flex-column align-items-center gap-3 w-100 flex-grow-1 justify-content-center">
+        <div class="d-flex col-md-6">
+            <div class="w-100 is-card">
+                <p class="is-section-title" vslang="labels.Upload QR code"></p>
+                <div class="d-flex flex-grow-1 flex-column align-items-center justify-content-center gap-3 w-100">
                     <div class="cpn-logo-box" id="_logo_box">
                         <img id="com_imgLogo" 
                              class="data-input thumbnail"
@@ -90,17 +85,17 @@
 
                         <div id="_logo_placeholder" class="logo-placeholder">
                             <i class="fa-regular fa-image cpn-logo-icon"></i>
-                            <span class="cpn-logo-text">Upload QR code</span>
+                            <span class="cpn-logo-text" vslang="labels.Upload QR code"></span>
                         </div>
                     </div>
                     <input type="file" id="_logo_file_input" accept="image/*" style="display:none" />
                     
-                    <div class="w-100 mt-2 d-flex flex-column align-items-center" style="max-width: 250px;">
-                        <button id="com_btnChooseLogo" class="cpn-btn-upload w-100 mb-2">
-                            <i class="fa fa-upload me-2"></i> Upload file
+                    <div class="d-flex flex-column align-items-center mt-2 w-100" style="max-width: 250px;">
+                        <button id="com_btnChooseLogo" class="mb-2 w-100 cpn-btn-upload">
+                            <i class="me-2 fa fa-upload"></i> <span vslang="labels.Upload file"></span>
                         </button>
-                        <button id="com_btnDeleteLogo" class="cpn-btn-delete w-100">
-                            <i class="fa-regular fa-trash-can me-2"></i> Delete file
+                        <button id="com_btnDeleteLogo" class="w-100 cpn-btn-delete">
+                            <i class="me-2 fa-regular fa-trash-can"></i> <span vslang="labels.Delete file"></span>
                         </button>
                     </div>
                 </div>

@@ -85,7 +85,7 @@ class Tenant
             'passport_number' => '0|string|0-20',
             'phone_number'    => '1|string|1-20|text=phone_number_required',
             'email'           => '0|email|1-30',
-            'address'         => '1|string',
+            'address'         => '1|string|text=enter_address',
             'photo'           => '0|image'
         ];
         $email_char = ['@', '.'];

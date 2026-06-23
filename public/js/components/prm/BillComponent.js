@@ -406,11 +406,13 @@ var BillComponent = (() => {
     mThis.deleteBill = (id, menuLink) => {
         if (!AuthManager.allowed(276,false)) return;
         cv_interact.confirm(
-            "Delete this Bill Record?",
+            "confirm_delete",
             {
                 transTitle: "Delete Bill Record",
+                langSection: "message_box_default",
+                translate: true,
                 context: "delete",
-                confirmButtonText: "Delete",
+                confirmButtonText: LocaleManager.trans('Delete', 'buttons'),
             },
             function (e) {
                 if (e) {

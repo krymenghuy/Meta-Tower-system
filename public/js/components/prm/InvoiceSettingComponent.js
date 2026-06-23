@@ -34,8 +34,9 @@ var InvoiceSettingComponent = (() => {
         // ✅ Restore default placeholder content
         mThis.logoPlaceholder.innerHTML = `
             <i class="fa-regular fa-image cpn-logo-icon"></i>
-            <span class="cpn-logo-text">Upload QR code</span>
+            <span class="cpn-logo-text" vslang="labels.Upload QR code">Upload QR code</span>
         `;
+        LocaleManager.translateZone(mThis.logoPlaceholder);
     };
 
     mThis.showPdf = function(fileName) {
@@ -261,7 +262,7 @@ var InvoiceSettingComponent = (() => {
                         <div class="p-2">
                             <div class="row align-items-center">
                                 <div class="col-12 col-md-5 mb-2 mb-md-0">
-                                    <label for="exchange_rate" class="fw-semibold mb-0" style="font-size:14px;">Exchange Rate (KHR)</label>
+                                    <label for="exchange_rate" class="fw-semibold mb-0" style="font-size:14px;" vslang="labels.Exchange Rate (KHR)"></label>
                                     <div class="text-muted mt-1" style="font-size:12px;">1 USD = ? KHR</div>
                                 </div>
                                 <div class="col-12 col-md-7">
