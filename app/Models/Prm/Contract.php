@@ -33,35 +33,35 @@ class Contract
     {
         $tenantId = $arr['tenant_id'] ?? null;
         if ($tenantId === null || $tenantId === '' || !is_numeric($tenantId)) {
-            return DV::error('Please select a tenant.');
+            return DV::error('required_select_tenant');
         }
 
         $businessTypeId = $arr['business_type_id'] ?? null;
         if ($businessTypeId === null || $businessTypeId === '' || !is_numeric($businessTypeId)) {
-            return DV::error('Please select a business type.');
+            return DV::error('select_business_type');
         }
 
         $spaceId = $arr['space_id'] ?? null;
         if ($spaceId === null || $spaceId === '' || !is_numeric($spaceId)) {
-            return DV::error('Please select a valid unit code.');
+            return DV::error('select_unit_code');
         }
 
         $deposit = $arr['deposit'] ?? null;
         if ($deposit === null || $deposit === '') {
-            return DV::error('Deposit is required.');
+            return DV::error('select_deposit');
         }
         if (!is_numeric($deposit)) {
-            return DV::error('Deposit is required.');
+            return DV::error('select_deposit');
         }
 
         $startDate = trim(($arr['start_date'] ?? ''));
         if ($startDate === '') {
-            return DV::error('Please enter a valid contract start date.');
+            return DV::error('select_start_date');
         }
 
         $endDate = trim(($arr['end_date'] ?? ''));
         if ($endDate === '') {
-            return DV::error('Please enter a valid contract end date.');
+            return DV::error('select_end_date');
         }
 
         return null;
@@ -76,30 +76,30 @@ class Contract
         $ss = $ss ?? $this->userInfo;
 
         if (!$id) {
-            return DV::error('Contract not found.');
+            return DV::error('contract_not_found.');
         }
 
         $existing = DB::table('contracts')->where('id', $id)->first();
         if (!$existing) {
-            return DV::error('Contract not found.');
+            return DV::error('contract_not_found.');
         }
 
         $businessTypeId = $arr['business_type_id'] ?? null;
         if ($businessTypeId === null || $businessTypeId === '' || !is_numeric($businessTypeId)) {
-            return DV::error('Please select a business type.');
+            return DV::error('select_business_type');
         }
 
         $deposit = $arr['deposit'] ?? null;
         if ($deposit === null || $deposit === '') {
-            return DV::error('Deposit is required');
+            return DV::error('select_deposit');
         }
         if (!is_numeric($deposit)) {
-            return DV::error('Deposit is required');
+            return DV::error('select_deposit');
         }
 
         $v_rule = [
-            'business_type_id' => '1|number|exists=business_types.id|text=Please select a business type.',
-            'deposit'          => '1|number|text=Deposit is required',
+            'business_type_id' => '1|number|exists=business_types.id|text=select_business_type',
+            'deposit'          => '1|number|text=select_deposit',
             'remarks'          => '0|string|0-255',
         ];
         $res = DBX::validateObject($arr, $v_rule, 1, [], $ss->lang, 0, null);
@@ -141,11 +141,11 @@ class Contract
         $v_rule = [
             'tenant_id'        => '1|number|exists=tenants.id|text=select_tenant',
             'legal_name'       => '0|string|0-100',
-            'business_type_id' => '1|number|exists=business_types.id|text=Please select a business type.',
-            'space_id'         => '1|number|exists=building_spaces.id|text=Please select a valid unit code',
-            'deposit'          => '1|number|text=Deposit is required',
-            'start_date'       => '1|date|text=Please enter a valid contract start date.',
-            'end_date'         => '1|date|text=Please enter a valid contract end date.',
+            'business_type_id' => '1|number|exists=business_types.id|text=select_business_type',
+            'space_id'         => '1|number|exists=building_spaces.id|text=select_unit_code',
+            'deposit'          => '1|number|text=select_deposit',
+            'start_date'       => '1|date|text=select_start_date',
+            'end_date'         => '1|date|text=select_end_date',
             'space_type_id'    => '1|number|exists=space_types.id',
             'status_id'        => '1|number|default = 1',
             'sqm_size'         => '0|number',
@@ -163,13 +163,13 @@ class Contract
         $start = !empty($inputs['start_date']) ? strtotime($inputs['start_date']) : false;
         $end   = !empty($inputs['end_date']) ? strtotime($inputs['end_date']) : false;
         if ($start === false) {
-            return DV::error('Please enter a valid contract start date.');
+            return DV::error('select_start_date');
         }
         if ($end === false) {
-            return DV::error('Please enter a valid contract end date.');
+            return DV::error('select_end_date');
         }
         if ($end <= $start) {
-            return DV::error('End date must be after start date.');
+            return DV::error('end_date_must_be_after_start_date');
         }
         $todayStr = date('Y-m-d');
         $endInput = $inputs['end_date'] ?? '';
@@ -178,10 +178,10 @@ class Contract
                 $prevEnd = DB::table('contracts')->where('id', $id)->value('end_date');
                 $prevEndStr = $prevEnd ? date('Y-m-d', strtotime((string) $prevEnd)) : '';
                 if ($prevEndStr !== $endInput) {
-                    return DV::error('End date cannot be in the past.');
+                    return DV::error('end_date_cannot_be_in_the_past');
                 }
             } else {
-                return DV::error('End date cannot be in the past.');
+                return DV::error('end_date_cannot_be_in_the_past.');
             }
         }
         $minEnd = strtotime('-1 day', strtotime('+1 month', $start));
@@ -191,17 +191,17 @@ class Contract
             $minEnd = strtotime('-1 day', strtotime(date('Y-m-t', strtotime('+1 month', $start))));
         }
         if ($end < $minEnd) {
-            return DV::error('Contract validity​​​ must be at least 1 month.');
+            return DV::error('end_date_must_be_at_least_one_month_after_start_date');
         }
         $space_id  = $inputs['space_id'] ?? null;
         $tenant_id = $inputs['tenant_id'] ?? null;
         $bookingPhoneValidation = self::validateBookingTenantPhone($space_id, $tenant_id, true);
         if (!($bookingPhoneValidation->status ?? false)) {
-            return DV::error($bookingPhoneValidation->message ?? 'Please create tenant before creating contract.');
+            return DV::error($bookingPhoneValidation->message ?? 'select_tenant_before_create_contract');
         }
         $dup_id = self::checkDuplicateContract($space_id, $id);
         if ($dup_id) {
-            return DV::error('This space already has a contract.');
+            return DV::error('this_space_already_has_a_contract');
         }
         $created = !$id;
         if ($created && $space_id && !empty($inputs['start_date']) && !empty($inputs['end_date'])) {
@@ -219,10 +219,10 @@ class Contract
                 $isOverlapRenewal = $newStart <= $renewEnd && $newEnd >= $renewStart;
 
                 if ($newStart > $renewStart) {
-                    return DV::error('Start date must be on or before the last renewal start.');
+                    return DV::error('start_date_must_be_on_or_before_the_last_renewal_start');
                 }
                 if ($isOverlapRenewal) {
-                    return DV::error('Dates overlap the last renewal for this unit.');
+                    return DV::error('dates_overlap_the_last_renewal_for_this_unit');
                 }
             }
         }
@@ -745,11 +745,11 @@ class Contract
     public static function deleteContract($id = null)
     {
         if ($id === null || $id === '' || !is_numeric($id)) {
-            return DV::error('Invalid ID.');
+            return DV::error('invalid_id');
         }
         $contract = DB::table('contracts')->where('id', $id)->first();
         if (!$contract) {
-            return DV::error('Contract not found.');
+            return DV::error('contract_not_found');
         }
 
         $sid = $contract->status_id;
@@ -759,7 +759,7 @@ class Contract
             self::getTerminatedStatusId(),
         ], true);
         if (!$canDelete) {
-            return DV::error('Only pending, expired, or terminated contracts can be deleted.');
+            return DV::error('only_pending_expired_or_terminated_contracts_can_be_deleted');
         }
 
         DB::beginTransaction();
