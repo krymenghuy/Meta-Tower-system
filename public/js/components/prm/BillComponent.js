@@ -82,9 +82,9 @@ var BillComponent = (() => {
                         style="font-size:12px; display:inline-flex; align-items:center; gap:4px; text-decoration:none;">
                         ${hasFile
                             ? `<i class="fa-solid fa-paperclip text-success"></i>
-                            <span class="text-success" style="font-size:11px;">View</span>`
+                            <span class="text-success" style="font-size:11px;">${LocaleManager.trans('View', 'buttons')}</span>`
                             : `<i class="fa-solid fa-cloud-arrow-up fa-sm" style="color: rgb(74, 72, 107);"></i>
-                            <span style="font-size:11px; color: rgb(74, 72, 107);">Upload</span>`
+                            <span style="font-size:11px; color: rgb(74, 72, 107);">${LocaleManager.trans('Upload', 'buttons')}</span>`
                         }
                     </a>`;
             },
@@ -741,7 +741,7 @@ const BillDialog = (() => {
                             <div class="col-6">
                                 <div class="vs-material-field">
                                     <input  name="vendor" class="data-input form-control" data-field="vendor_name" placeholder="Vendor" autocomplete="off">
-                                    <label>Vendor</label>
+                                    <label vslang="labels.Vendor"></label>
                                 </div>
                             </div>
                             <div class="col-6">
@@ -752,13 +752,13 @@ const BillDialog = (() => {
                             </div>
                             <div class="col-3">
                                 <div class="vs-material-field">
-                                    <select name="building_id" data-style="material" class="data-input form-control" data-field="building_id" placeholder="Building">
+                                    <select name="building_id" data-style="material" class="data-input form-control" data-field="building_id" placeholder="${LocaleManager.trans('Building', 'titles')}">
                                     </select>
                                 </div>
                             </div>
                             <div class="col-3">
                                 <div class="vs-material-field">
-                                    <select name="expense_type_id" data-style="material" class="data-input form-control" data-field="expense_type_id" placeholder="Category">
+                                    <select name="expense_type_id" data-style="material" class="data-input form-control" data-field="expense_type_id" placeholder="${LocaleManager.trans('Category', 'titles')}">
                                     </select>
                                 </div>
                             </div>
@@ -789,12 +789,12 @@ const BillDialog = (() => {
                             <div class="col-8">
                                 <div class="vs-material-field">
                                     <input type="text" name="documents" class=" form-control " accept=".png,.jpg,.jpeg" /disabled>
-                                    <label vslang="labels.File">File</labe>
+                                    <label vslang="labels.File"></label>
                                 </div>
                             </div>
                             <div class="col-4">
                                 <div class="vs-material-field d-flex">
-                                    <button name ="btn_chooseFile"  class="btn btn-block" style="background-color: #e1e5f2; padding: 0.5rem 0.75rem !important;" vslang="buttons.Choose File"></button>
+                                    <button name ="btn_chooseFile"  class="btn btn-block" style="background-color: #e1e5f2; padding: 0.5rem 0.75rem !important;" vslang="buttons.Choose File">${LocaleManager.trans('Choose File', 'buttons')}</button>
                                 </div>
                             </div>
                             <div class="col-12 ">
@@ -806,13 +806,13 @@ const BillDialog = (() => {
                             <div class="col-6">
                                 <div class="vs-material-field d-none">
                                     <input name="bill_number" class="data-input form-control" data-field="bill_number" placeholder=" "></input>
-                                    <label>Bill Number</label>
+                                    <label vslang="labels.Bill Number"></label>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="vs-material-field d-none">
                                     <input name="paid_amount" class="data-input form-control" data-field="paid_amount" placeholder=" "></input>
-                                    <label>Amount Paid</label>
+                                    <label vslang="labels.Amount Paid"></label>
                                 </div>
                             </div>
                         </div>`,

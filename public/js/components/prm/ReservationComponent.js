@@ -437,7 +437,7 @@ const CreateReservationDialog = (() => {
                                 </div>
                             </div>
                             <div class="col-6">
-                                <select data-style="material" name="amenity" class="data-input form-control" data-field="amenity_id" placeholder="Amenity">
+                                <select data-style="material" name="amenity" class="data-input form-control" data-field="amenity_id" placeholder="${LocaleManager.trans('Amenity', 'titles')}">
                                 </select>
                             </div>
 
