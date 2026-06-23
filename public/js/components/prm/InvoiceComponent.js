@@ -748,6 +748,88 @@ var InvoiceComponent = (() => {
         });
     };
 
+    // mThis.printInvoice = (id, menulink) => {
+    //     let invoice = null;
+    //     let globalSetting = null;
+    //     let localSetting = null;
+    //     let companyProfile = null;
+    //     if(!AuthManager.allowed(238,false)) return;
+    //     // vsapi.call(`${main_view.base_url}/api/company/details`).then((res) => {
+    //     //     if (res.status_code === 200) {
+    //     //         companyProfile = res.data;
+    //     //     } else {
+    //     //         cv_interact.error(res.message);
+    //     //     }
+    //     // });
+    //     // vsapi
+    //     //     .call(`${main_view.base_url}/prm/invoice_setting/get`)
+    //     //     .then((res) => {
+    //     //         if (res.status_code === 200) {
+    //     //             globalSetting = res.data;
+    //     //         } else {
+    //     //             cv_interact.error(res.message);
+    //     //         }
+    //     //     });
+
+    //     vsapi
+    //         .call(`${main_view.base_url}/prm/invoice/print`, { id: id })
+    //         .then((res) => {
+    //             if (res.status_code === 200) {
+    //                 // localSetting = res.data.settings;
+
+
+    //                 // invoice = res.data;
+    //                 let invoiceDetails = res.data?.invoice_details;
+    //                 let invoiceSetting = res.data?.invoice_setting;
+    //                 let companyProfile = res.data?.company_info;
+
+    //                 const invType = invoiceDetails?.invoice_type;
+    //                 const params = {
+    //                     invoice_id: id,
+    //                     btn: menulink,
+    //                     invoice: invoiceDetails,
+    //                     global: mThis.globalSetting,
+    //                 };
+
+    //                 const settings = invoiceSetting || {};
+    //                 const global = globalSetting || {};
+    //                 const company = companyProfile || {};
+
+    //                 console.log(34, global);
+
+
+    //                 if (settings.show_balance !== null) {
+
+    //                     // settings.build_representative = global.build_representative;
+    //                     // settings.representative_phone = global.representative_phone;
+    //                     // settings.representative_address = global.representative_address;
+    //                     settings.QR_file = global.QR_file;
+    //                     settings.qr_file_name = global.qr_file_name;
+    //                     params.setting = settings;
+    //                     // params.company = company;
+    //                     // params.representative = representative;
+    //                 } else {
+    //                     params.setting = global;
+    //                     settings.QR_file = global.QR_file;
+    //                     settings.qr_file_name = global.qr_file_name;
+    //                 }
+
+    //                 if (invType === 1) {
+    //                     params.company = company;
+    //                     InvoiceTaxDialog.show(params);
+    //                 } else if (invType === 2) {
+    //                      params.company = company;
+    //                     InvoiceNoTaxDialog.show(params);
+    //                 } else if (invType === 3) {
+    //                      params.company = company;
+    //                     InvoiceCommercialDialog.show(params);
+    //                 }
+    //             } else {
+    //                 cv_interact.error("Could not determine invoice type.");
+    //             }
+    //         });
+    // };
+
     mThis.printInvoice = (id, menulink) => {
         if (!AuthManager.allowed(238, false)) return;
 
@@ -756,8 +838,16 @@ var InvoiceComponent = (() => {
             .then(res => {
                 if (res.status_code === 200) {
                     const invoiceDetails = res.data?.invoice_details;
-                    const invoiceSetting = res.data?.invoice_setting || {};
+                    const globalSetting = res.data?.invoice_setting || {};
                     const companyProfile = res.data?.company_info || {};
+                    const invoiceSetting = invoiceDetails.settings;
+
+
+
+                    console.log("invoiceDetails: ", invoiceDetails)
+                    console.log("companyProfile: ", companyProfile)
+                    console.log("globalSetting: ", globalSetting)
+                    console.log("invoiceSetting: ", invoiceSetting)
 
                     const invType = invoiceDetails?.invoice_type;
 
@@ -766,10 +856,17 @@ var InvoiceComponent = (() => {
                         invoice_id: id,
                         btn: menulink,
                         invoice: invoiceDetails,
-                        global: mThis.globalSetting,
+                        global: globalSetting,
                         company: companyProfile,
                         setting: invoiceSetting
                     };
+
+                     if (invoiceSetting.show_balance !== null) {
+                        params.setting = invoiceSetting;
+
+                    } else {
+                        params.setting = globalSetting;
+                    }
 
                     if (invType === 1) {
                         InvoiceTaxDialog.show(params);
