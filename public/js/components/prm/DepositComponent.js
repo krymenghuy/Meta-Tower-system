@@ -453,11 +453,7 @@ const DepositDialog = (() => {
 
                             <div class="col-6">
                                 <div class="vs-material-field">
-<<<<<<< Updated upstream
-                                    <input name="tenant_name" class="data-input form-control" data-field="tenant_name" placeholder="Search Tenant..." autocomplete="off">
-=======
                                     <input name="tenant_name" class="data-input form-control" data-field="tenant_name" placeholder=" " autocomplete="off" />
->>>>>>> Stashed changes
                                     <label vslang="labels.Tenant">Tenant</label>
                                 </div>
                             </div>
@@ -529,8 +525,6 @@ const DepositDialog = (() => {
                 },
 
                 contentCreated: (me) => {
-<<<<<<< Updated upstream
-=======
                     const setTenantFieldLocked = (locked) => {
                         if (!me.controls.tenant_name) return;
                         me.controls.tenant_name.disabled = locked;
@@ -544,7 +538,6 @@ const DepositDialog = (() => {
                     };
                     me.setTenantFieldLocked = setTenantFieldLocked;
 
->>>>>>> Stashed changes
                     const fillContractInfo = (tenantId) => {
                         me._selectedTenantId = tenantId || "";
                         if (me.controls.tenant_id)
@@ -645,10 +638,7 @@ const DepositDialog = (() => {
                             '<h4 class="text-start text-white fw-light" vslang="titles.Receive Deposit">Receive Deposit</h4>';
                     }
                     LocaleManager.translateZone(me.divModal);
-<<<<<<< Updated upstream
-=======
                     me.setTenantFieldLocked?.(!!me.dataOptions?.id);
->>>>>>> Stashed changes
                     if (!me.dataOptions?.id) {
                         setTimeout(() => {
                             if (
@@ -694,14 +684,11 @@ const DepositDialog = (() => {
 
                 onPrepareForm: (me, data) => {
                     const details = data?.deposit_details;
-<<<<<<< Updated upstream
-=======
                     const isExistingDeposit = !!(
                         me.dataOptions?.id || details?.tenant_id
                     );
                     me.setTenantFieldLocked?.(isExistingDeposit);
 
->>>>>>> Stashed changes
                     if (details) {
                         me.controls.tenant_id.value = details.tenant_id || "";
                         me.controls.contract_id.value =
@@ -734,10 +721,7 @@ const DepositDialog = (() => {
                         if (me.controls.remarks)
                             me.controls.remarks.value = details.remark || "";
                     } else {
-<<<<<<< Updated upstream
-=======
                         me.setTenantFieldLocked?.(false);
->>>>>>> Stashed changes
                         if (
                             me.searchTenant &&
                             typeof me.searchTenant.reset === "function"

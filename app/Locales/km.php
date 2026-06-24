@@ -175,10 +175,19 @@ return [
         "this_space_already_has_a_contract" => "ទីតាំងនេះមានកិច្ចសន្យារួចហើយ។",
         "start_date_must_be_on_or_before_the_last_renewal_start" => "ថ្ងៃចាប់ផ្ដើមត្រូវតែនៅលើឬមុនការចាប់ផ្ដើមបន្ត។",
         "dates_overlap_the_last_renewal_for_this_unit" => "កាលបរិច្ឆេទមានការត្រួតស៊ីគ្នានឹងការបន្តកិច្ចសន្យា។",
+        "only_pending_expired_or_terminated_contracts_can_be_deleted" => "មានតែសេចក្តីព្រាងកិច្ចសន្យា កិច្ចសន្យាដែលហួសកំណត់ ឬកិច្ចសន្យាដែលត្រូវបានបញ្ចប់ប៉ុណ្ណោះ ទើបអាចលុបបាន។",
+        "contract_template_not_found" => "មិនមានកិច្ចសន្យាទេ",
+        "staff_contract_not_found" => "មិនមានកិច្ចសន្យាបុគ្គលិកទេ",
+        "tenant_does_not_exist" => "លេខសម្គាល់អ្នកជួល ?? មិនមានទេ។",
         
 
 
+      
 
+
+        
+        
+        
 
 
     ],
@@ -296,6 +305,7 @@ return [
         'Overview' => 'ទិដ្ឋភាពទូទៅ',
         'Contract' => 'កិច្ចសន្យា',
         'Document' => 'ឯកសារ',
+        'Documents' => 'ឯកសារ',
         'Create Space' => 'បង្កើតបន្ទប់',
         'Identity Documents' => 'ឯកសារសម្គាល់',
 
@@ -804,6 +814,9 @@ return [
         'Date of Birth' => 'ថ្ងៃខែឆ្នាំកំណើត',
         'National ID' => 'អត្តសញ្ញាណប័ណ្ណ',
         'Passport' => 'លិខិតឆ្លងដែន',
+        'Passport Number' => 'លេខលិខិតឆ្លងដែន',
+        'Relationship' => 'ទំនាក់ទំនង',
+        'Partner' => 'ដៃគូរ',
         'Phone Number' => 'លេខទូរស័ព្ទ',
         'Address' => 'អាសយដ្ឋាន',
         'National ID Issue Date' => 'ថ្ងៃចេញអត្តសញ្ញាណប័ណ្ណ',

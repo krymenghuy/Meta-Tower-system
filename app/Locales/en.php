@@ -134,7 +134,22 @@ return [
 
         'amenity_already_booked' => 'This amenity is already booked for this time slot.',
         'cannot_cancel_in_30min' => 'Reservations cannot be canceled less than 30 minutes before start time.',
-         'schedule_cannot_past' => 'Schedule cannot be in the past.',
+        'schedule_cannot_past' => 'Schedule cannot be in the past.',
+        'select_business_type'   => 'Please select a valid business type.',
+        'select_unit_code'       => 'Please select a valid unit code.',
+        'select_deposit'         => 'Please select a valid deposit.',
+        'select_start_date'      => 'Please select a start date.',
+        'select_end_date'        => 'Please select an end date.',
+        'contract_not_found'     => 'The contract could not be found.',
+
+        'end_date_must_be_after_start_date' => 'The end date must be after the start date.',
+    'end_date_cannot_be_in_the_past' => 'The end date cannot be in the past.',
+    'end_date_must_be_at_least_one_month_after_start_date' => 'The end date must be at least one month after the start date.',
+    'select_tenant_before_create_contract' => 'Please select or create a tenant before creating a contract.',
+    'this_space_already_has_a_contract' => 'This space already has an active contract.',
+    'start_date_must_be_on_or_before_the_last_renewal_start' => 'The start date must be on or before the last renewal start date.',
+    'dates_overlap_the_last_renewal_for_this_unit' => 'The selected dates overlap with the last contract renewal for this unit.',
+    'only_pending_expired_or_terminated_contracts_can_be_deleted' => 'Only pending, expired, or terminated contracts can be deleted.',
 
 
 
@@ -150,7 +165,28 @@ return [
         'building_id' => 'Building',
     ],
     'titles' => [
-        'dashboard' => 'Dashboard - Meta Tower'
+        'dashboard' => 'Dashboard - Meta Tower',
+        'Personal Information' => 'Personal Information',
+        'Overview' => 'Overview',
+        'Contract' => 'Contract',
+        'Document' => 'Documents',
+        'Documents' => 'Documents',
+    ],
+    'labels' => [
+        'Name' => 'Name',
+        'Gender' => 'Gender',
+        'Male' => 'Male',
+        'Female' => 'Female',
+        'Date of Birth' => 'Date of Birth',
+        'Legal Name' => 'Legal Name',
+        'National ID' => 'National ID',
+        'Passport' => 'Passport Number',
+        'Passport Number' => 'Passport Number',
+        'Phone' => 'Phone',
+        'Email' => 'Email',
+        'Relationship' => 'Relationship',
+        'Partner' => 'Partner',
+        'Address' => 'Address',
     ],
     'menus' => [
 
