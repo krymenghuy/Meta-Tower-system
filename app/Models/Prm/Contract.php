@@ -1244,7 +1244,6 @@ class Contract
                 t.sex,
                 t.legal_name,
                 t.phone_number'
-
             )
             ->take(1)
             ->get()
@@ -1345,7 +1344,7 @@ class Contract
             ->selectRaw("t.id,t.branch_id,t.name,t.name_kh,t.code,t.national_id,t.passport_number,t.date_of_birth,t.nationality_id,t.sex,t.tenant_type,t.status_id,t.legal_name,t.phone_number,t.email,t.address,c.start_date,c.end_date,bs.code as unit_code,bs.floor_id,b.name as building,c.sqm_size,c.price,c.price_type,c.deposit")
             ->first();
         if (!$tenant) {
-            return DV::error("Tenant ID {$id} does not exist.");
+            return DV::error("tenant_does_not_exist::{$id}");
         }
 
         $x = new CompanyProfile($ss);
@@ -1443,7 +1442,7 @@ class Contract
         $templatePath = base_path('/storage/doc_templates/staff_contract_unlimited.docx');
         if (!file_exists($templatePath)) {
             \Log::error("Contract Template file not found at {$templatePath}");
-            return DV::error('Contract template not found.');
+            return DV::error('Contract_template_not_found');
         }
 
         // Load the template
