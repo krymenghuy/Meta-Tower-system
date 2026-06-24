@@ -315,13 +315,13 @@ const InvoiceNoTaxDialog = (() => {
                     <table class="pi-table">
                         <thead>
                             <tr>
-                                <th style="text-align:left;">Description</th>
-                                <th style="text-align:center;">Qty</th>
-                                <th style="text-align:center;">Start</th>
-                                <th style="text-align:center;">End</th>
-                                <th style="text-align:right;">Unit Price</th>
-                                <th style="text-align:right;">Discount</th>
-                                <th style="text-align:right;">Total</th>
+                                <th style="text-align:left;"> ${LocaleManager.trans('Description', 'titles')}</th>
+                                <th style="text-align:center;">${LocaleManager.trans('Qty', 'titles')}</th>
+                                <th style="text-align:center;">${LocaleManager.trans('Start Date', 'titles')}</th>
+                                <th style="text-align:center;">${LocaleManager.trans('End Date', 'titles')}</th>
+                                <th style="text-align:right;">${LocaleManager.trans('Unit Price', 'titles')}</th>
+                                <th style="text-align:right;">${LocaleManager.trans('Discount', 'titles')}</th>
+                                <th style="text-align:right;">${LocaleManager.trans('Total', 'titles')}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -441,7 +441,7 @@ const InvoiceNoTaxDialog = (() => {
         }
 
         const dlg = new GeneralDialog({
-            title: "No Tax Invoice",
+            title: LocaleManager.trans('No Tax Invoice', 'titles'),
             cssClass: "modal-xl vs-modal",
             backdrop: "static",
             keyboard: true,
@@ -458,7 +458,7 @@ const InvoiceNoTaxDialog = (() => {
                 container.innerHTML = buildInvoiceHTML(op.invoice, op.setting, op.company);
                 wireButtons(container);
             },
-            buttons: [{ label: "Close", cssClass: "btn btn-secondary", click: (me) => me.hide() }]
+            buttons: [{ label: '<span vslang="buttons.Close"></span>', cssClass: "btn btn-secondary", click: (me) => me.hide() }]
         });
         dlg.show(op);
     };

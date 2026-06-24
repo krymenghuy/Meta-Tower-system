@@ -1,5 +1,4 @@
 <div id="_main_invoiceSetting_component" class="p-3 mobile-padding" style="display:none;">
-    
     <div class="row g-3">
         <!-- Column 1: Exchange Rate and Invoice Display Options -->
         <div class="d-flex flex-column gap-3 col-md-6">
@@ -26,8 +25,9 @@
                 <p class="is-section-title" vslang="labels.Invoice Display Options"></p>
 
                 <div class="is-row">
-                    <span class="is-row-label" vslang="labels.Show Commercial Tax">
+                    <span class="is-row-label">
                         <i class="fa-solid fa-receipt"></i>
+                        <span vslang="labels.Show Commercial Tax">Show Commercial Tax</span>
                     </span>
                     <div class="form-check form-switch">
                         <input class="form-check-input toggle-setting" type="checkbox" data-field="show_comm_tax" id="_is_show_comm_tax">
@@ -35,8 +35,9 @@
                 </div>
 
                 <div class="is-row">
-                    <span class="is-row-label" vslang="labels.Show Payment Status">
+                    <span class="is-row-label">
                         <i class="fa-solid fa-credit-card"></i>
+                        <span vslang="labels.Show Payment Status">Show Payment Status</span>
                     </span>
                     <div class="form-check form-switch">
                         <input class="form-check-input toggle-setting" type="checkbox" data-field="show_pmt_status" id="_is_show_pmt_status">
@@ -44,8 +45,9 @@
                 </div>
 
                 <div class="is-row">
-                    <span class="is-row-label" vslang="labels.Show Balance">
+                    <span class="is-row-label">
                         <i class="fa-scale-balanced fa-solid"></i>
+                        <span vslang="labels.Show Balance">Show Balance</span>
                     </span>
                     <div class="form-check form-switch">
                         <input class="form-check-input toggle-setting" type="checkbox" data-field="show_balance" id="_is_show_balance">
@@ -53,16 +55,18 @@
                 </div>
 
                 <div class="is-row">
-                    <span class="is-row-label" vslang="labels.Show Amount Paid">
+                    <span class="is-row-label">
                         <i class="fa-solid fa-money-bill-wave"></i>
+                        <span vslang="labels.Show Amount Paid">Show Amount Paid</span>
                     </span>
                     <div class="form-check form-switch">
                         <input class="form-check-input toggle-setting" type="checkbox" data-field="show_amount_paid" id="_is_amount_paid">
                     </div>
                 </div>
                 <div class="is-row">
-                    <span class="is-row-label" vslang="labels.Show Signature">
+                    <span class="is-row-label">
                         <i class="fa-solid fa-signature"></i>
+                        <span vslang="labels.Show Signature">Show Signature</span>
                     </span>
                     <div class="form-check form-switch">
                         <input class="form-check-input toggle-setting" type="checkbox" data-field="show_sign" id="_is_show_sign">
@@ -85,7 +89,7 @@
 
                         <div id="_logo_placeholder" class="logo-placeholder">
                             <i class="fa-regular fa-image cpn-logo-icon"></i>
-                            <span class="cpn-logo-text" vslang="labels.Upload QR code"></span>
+                            <span class="cpn-logo-text"> ${LocaleManager.trans('Upload QR code', 'labels')} </span>
                         </div>
                     </div>
                     <input type="file" id="_logo_file_input" accept="image/*" style="display:none" />

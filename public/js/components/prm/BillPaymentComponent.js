@@ -536,7 +536,7 @@ const BillPaymentDialog = (() => {
                         </div>
                         <div class="col-4">
                             <div class="vs-material-field">
-                                <select name="bank" class="form-select data-input" data-field="bank" data-style="material" placeholder="Bank"></select>
+                                <select name="bank" class="form-select data-input" data-field="bank" data-style="material" placeholder="${LocaleManager.trans('Bank', 'labels')}"></select>
                             </div>
                         </div>
                         <div class="col-4">
@@ -553,7 +553,7 @@ const BillPaymentDialog = (() => {
                         </div>
                         <div class="col-4">
                             <div class="vs-material-field">
-                                <select name="cheque_bank_id" class="form-select data-input" data-field="cheque_bank_id" data-style="material" placeholder="Cheque"></select>
+                                <select name="cheque_bank_id" class="form-select data-input" data-field="cheque_bank_id" data-style="material" placeholder="${LocaleManager.trans('Cheque', 'labels')}"></select>
                             </div>
                         </div>
                         <div class="col-4">
