@@ -390,5 +390,22 @@ return [
         "No" => "No",
         "Finish" => "Finish",
     ],
+    'labels' => [
+        'Exchange Rate (USD - KHR)' => 'Exchange Rate (USD - KHR)',
+        'Invoice Display Options' => 'Invoice Display Options',
+        'Show Commercial Tax' => 'Show Commercial Tax',
+        'Show Payment Status' => 'Show Payment Status',
+        'Show Balance' => 'Show Balance',
+        'Show Amount Paid' => 'Show Amount Paid',
+        'Show Signature' => 'Show Signature',
+        'Upload QR code' => 'Upload QR code',
+        'Upload file' => 'Upload file',
+        'Delete file' => 'Delete file',
+    ],
+    'buttons' => [
+        'Edit' => 'Edit',
+        'Create Service' => 'Create Service',
+        'Generate New Bill' => 'Generate New Bill',
+    ],
 ];
 
