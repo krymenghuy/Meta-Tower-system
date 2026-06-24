@@ -303,7 +303,7 @@ var ServiceComponent = (() => {
                     name: "delete_service",
                 },
                 {
-                    html: '<span class="ps-2 " vslang="titles.Change Status"></span>',  
+                    html: '<span class="ps-2 " vslang="titles.Change Status"></span>',
                     icon: `<i class="fa-solid fa-bolt fs-5 text-primary"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "change_service_status",
@@ -538,14 +538,14 @@ const CreateServicePriceDialog = (() => {
                                     </select>
                             </div>
                             <div class="col-6">
-                                <select data-style="material" name="level" class="data-input form-control" data-field="level" placeholder="${LocaleManager.trans('Level', 'labels')}">  
+                                <select data-style="material" name="level" class="data-input form-control" data-field="level" placeholder="${LocaleManager.trans('Level', 'labels')}">
                                     <option value="1" selected >Standard</option>
                                     <option value="2">Premium</option>
                                 </select>
                             </div>
                             <div class="col-6">
                                 <div class="vs-material-field">
-                                    <input data-type="money" name="price" class="data-input inputbox-input form-control" data-field="price" placeholder="" />
+                                    <input type="text" name="price" class="data-input form-control" data-field="price" placeholder="" />
                                     <label vslang="labels.Price"></label>
                                 </div>
                             </div>
@@ -560,18 +560,73 @@ const CreateServicePriceDialog = (() => {
                 },
 
                 contentCreated: (me) => {
-                    const updateChargeAs = () => {
-                        const isSubscription = me.controls.service_type.value == 2;
-                        me.controls.charge_as.value = isSubscription ? "month" : "";
-                        console.log(4444,isSubscription);
-                        
-                        me.controls.charge_as.disabled = isSubscription;
+                    me.resetCreateForm = () => {
+                        ["name", "description"].forEach((f) => {
+                            if (me.controls[f]) me.controls[f].value = "";
+                        });
+                        if (me.controls.price) {
+                            me.controls.price.value = "";
+                            me.controls.price.defaultValue = "";
+                            me.controls.price.dispatchEvent(
+                                new Event("input", { bubbles: true }),
+                            );
+                        }
+                        ["service_type", "service_category", "charge_as"].forEach(
+                            (f) => {
+                                if (me.controls[f]) {
+                                    me.controls[f].value = "";
+                                    me.controls[f].dispatchEvent(
+                                        new Event("change", { bubbles: true }),
+                                    );
+                                }
+                            },
+                        );
+                        if (me.controls.level) {
+                            me.controls.level.value = "1";
+                            me.controls.level.dispatchEvent(
+                                new Event("change", { bubbles: true }),
+                            );
+                        }
+                        me.setReadOnly?.(false, ["charge_as"]);
                     };
 
-                    me.controls.service_type?.addEventListener("change",updateChargeAs);
-
-                    updateChargeAs();
+                    me.updateChargeAs = () => {
+                        const typeText = (
+                            me.controls.service_type?.selectedOptions?.[0]
+                                ?.text || ""
+                        )
+                            .trim()
+                            .toLowerCase();
+                        const isSubscription = typeText === "subscription";
+                        if (isSubscription)
+                            me.controls.charge_as.value = "month";
+                        me.setReadOnly?.(isSubscription, ["charge_as"]);
+                    };
+                    me.controls.service_type?.addEventListener(
+                        "change",
+                        me.updateChargeAs,
+                    );
+                    if (me.controls.price) applyNumberInput(me.controls.price);
                 },
+
+                onShow: (me) => {
+                    if (!me.dataOptions?.id) {
+                        me.resetCreateForm?.();
+                        [50, 150, 300].forEach((ms) =>
+                            setTimeout(() => me.resetCreateForm?.(), ms),
+                        );
+                    }
+                    setTimeout(() => me.updateChargeAs?.(), 100);
+                },
+
+                extendMethod: {
+                    setData: (me) => {
+                        if (!me.dataOptions?.id) {
+                            setTimeout(() => me.resetCreateForm?.(), 0);
+                        }
+                    },
+                },
+
                 configSelect: [
                     {
                         name: "service_category",
@@ -602,9 +657,19 @@ const CreateServicePriceDialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
-                    // console.log(123,data.service_details);
-                    // me.controls.charge_as.value = data.service_details.charge_as;
-                    // me.controls.type.value = data.service_details.type;
+                    const isCreate =
+                        !me.dataOptions?.id && !data?.service_details;
+                    if (isCreate) {
+                        me.resetCreateForm?.();
+                        [50, 150, 300].forEach((ms) =>
+                            setTimeout(() => me.resetCreateForm?.(), ms),
+                        );
+                    } else if (data?.service_details?.price != null) {
+                        if (me.controls.price)
+                            me.controls.price.value =
+                                data.service_details.price;
+                    }
+                    setTimeout(() => me.updateChargeAs?.(), 100);
                 },
 
                 buttons: [

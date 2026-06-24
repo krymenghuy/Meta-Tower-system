@@ -301,6 +301,7 @@ return [
         'Overview' => 'ទិដ្ឋភាពទូទៅ',
         'Contract' => 'កិច្ចសន្យា',
         'Document' => 'ឯកសារ',
+        'Documents' => 'ឯកសារ',
         'Create Space' => 'បង្កើតបន្ទប់',
         'Identity Documents' => 'ឯកសារសម្គាល់',
 
@@ -807,6 +808,9 @@ return [
         'Date of Birth' => 'ថ្ងៃខែឆ្នាំកំណើត',
         'National ID' => 'អត្តសញ្ញាណប័ណ្ណ',
         'Passport' => 'លិខិតឆ្លងដែន',
+        'Passport Number' => 'លេខលិខិតឆ្លងដែន',
+        'Relationship' => 'ទំនាក់ទំនង',
+        'Partner' => 'ដៃគូរ',
         'Phone Number' => 'លេខទូរស័ព្ទ',
         'Address' => 'អាសយដ្ឋាន',
         'National ID Issue Date' => 'ថ្ងៃចេញអត្តសញ្ញាណប័ណ្ណ',

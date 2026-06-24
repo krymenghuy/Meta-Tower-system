@@ -453,7 +453,7 @@ const DepositDialog = (() => {
 
                             <div class="col-6">
                                 <div class="vs-material-field">
-                                    <input name="tenant_name" class="data-input form-control" data-field="tenant_name" placeholder="Search Tenant..." autocomplete="off">
+                                    <input name="tenant_name" class="data-input form-control" data-field="tenant_name" placeholder=" " autocomplete="off" />
                                     <label vslang="labels.Tenant">Tenant</label>
                                 </div>
                             </div>
@@ -525,6 +525,19 @@ const DepositDialog = (() => {
                 },
 
                 contentCreated: (me) => {
+                    const setTenantFieldLocked = (locked) => {
+                        if (!me.controls.tenant_name) return;
+                        me.controls.tenant_name.disabled = locked;
+                        me.controls.tenant_name.readOnly = locked;
+                        if (locked && me.searchTenant) {
+                            if (typeof me.searchTenant.close === "function")
+                                me.searchTenant.close();
+                            if (typeof me.searchTenant.hide === "function")
+                                me.searchTenant.hide();
+                        }
+                    };
+                    me.setTenantFieldLocked = setTenantFieldLocked;
+
                     const fillContractInfo = (tenantId) => {
                         me._selectedTenantId = tenantId || "";
                         if (me.controls.tenant_id)
@@ -625,6 +638,7 @@ const DepositDialog = (() => {
                             '<h4 class="text-start text-white fw-light" vslang="titles.Receive Deposit">Receive Deposit</h4>';
                     }
                     LocaleManager.translateZone(me.divModal);
+                    me.setTenantFieldLocked?.(!!me.dataOptions?.id);
                     if (!me.dataOptions?.id) {
                         setTimeout(() => {
                             if (
@@ -670,6 +684,11 @@ const DepositDialog = (() => {
 
                 onPrepareForm: (me, data) => {
                     const details = data?.deposit_details;
+                    const isExistingDeposit = !!(
+                        me.dataOptions?.id || details?.tenant_id
+                    );
+                    me.setTenantFieldLocked?.(isExistingDeposit);
+
                     if (details) {
                         me.controls.tenant_id.value = details.tenant_id || "";
                         me.controls.contract_id.value =
@@ -702,6 +721,7 @@ const DepositDialog = (() => {
                         if (me.controls.remarks)
                             me.controls.remarks.value = details.remark || "";
                     } else {
+                        me.setTenantFieldLocked?.(false);
                         if (
                             me.searchTenant &&
                             typeof me.searchTenant.reset === "function"
