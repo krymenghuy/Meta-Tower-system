@@ -1244,7 +1244,6 @@ class Contract
                 t.sex,
                 t.legal_name,
                 t.phone_number'
-
             )
             ->take(1)
             ->get()
