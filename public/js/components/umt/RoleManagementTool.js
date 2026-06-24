@@ -344,7 +344,7 @@ var RoleManagementComponent = new function(){
             let lnk = VSUtil.closestLimited(e.target,'a.lnk-delete-role');
             if(lnk){
                let role_id = lnk.dataset.roleid;
-               if(!AuthManager.allowed(103)) return;
+               if(!AuthManager.allowed(112)) return;
                cv_interact.confirm(['Delete ', (RoleTabView.selected_role? `role ${RoleTabView.selected_role.name}`: 'this role') ,' permanently?'].join(''),{context:"delete","title":"Delete Role",confirmButtonText:"Delete"}, e=>{
                     if(e){
                         mThis.deleteRole(role_id);
@@ -371,7 +371,7 @@ var RoleManagementComponent = new function(){
                         }); 
                   }
                 };
-                if(!AuthManager.allowed(104)) return;
+                if(!AuthManager.allowed(111)) return;
                 RoleDialog.show(op);
                 return;
             }
@@ -392,7 +392,7 @@ var RoleManagementComponent = new function(){
                     }); 
                 }
             }
-            if(!AuthManager.allowed(102)) return;
+            if(!AuthManager.allowed(109,false)) return;
             RoleDialog.show(op);
         });
       
@@ -939,6 +939,7 @@ const RoleTabView = new function(){
     
     this.deleteUser = (user_id)=>{
        let p = {"id":user_id}  
+       if(!AuthManager.allowed(101,false)) return;
       cv_interact.confirm('Delete this user permanently?',{context:"delete",title:"Delete User"}, e=>{
          if(e){
              vsapi.call(`${main_view.base_url}/api/user/delete`,p,false,false).then(res =>{
@@ -1023,7 +1024,7 @@ const RoleTabView = new function(){
         }
 
         // UserDialog.show(op); 
-        if(!AuthManager.allowed(107)) return;
+        if(!AuthManager.allowed(100,false)) return;
         CreateLoginDialog.show(op); 
     }
    
@@ -1587,19 +1588,31 @@ this.PermissionPanel = new function(){
   
                   valueField:"id",
                   textField:"name",
-                  depends:{
-                      triggerBy:"app",
-                      api:{
-                          endpoint:`${main_view.base_url}/api/module/list`,
-                          params: (me,dataOptions,controls)=>{
-                              return {"app_id": controls.app.value};
-                          },
-                        //   onResponse:(me,res)=>{
-                        //        console.log(111,res.data);
-                        //   }
-                      }
+                //   depends:{
+                //       triggerBy:"app",
+                //       api:{
+                //           endpoint:`${main_view.base_url}/api/module/list`,
+                //           params: (me,dataOptions,controls)=>{
+                //               return {"app_id": controls.app.value};
+                //           },
+                      
+                //       }
   
-                  }
+                //   }
+                depends: {
+                        parents: ['app'],
+                        api: {
+                            endpoint: `${main_view.base_url}/api/module/list`,
+                            method: "POST",
+                            // onResponse:(res,me)=>{
+                            //     console.log('mm:: ',res);
+                            //     return res;
+                            // },
+                            // params: (me,op) => ({
+                            //   program_id: mThis.elFilter_program.value
+                            // })
+                        }
+                }
               }
            ],
            prepareFormOptions:{
@@ -1803,75 +1816,74 @@ this.ReportPanel = new function(){
              return [
              '<div class="row g-2">',
               `<div class="col-md-6">`,
-              `<label style="color:#0f6694; font-size:11px;" vslang="titles.Application">Application</label>`,
-              `<div class="material-input outlined">`,
-                `<div><select name ="app" class="data-input" data-field="app_id"></select></div>`,
+              `<div class="form-group">`,
+              `<label vslang="titles.Application">Application</label>`,
+                `<select name ="app" class="data-input" data-field="app_id"></select>`,
               `</div>`,
               `</div>`,
               `<div class="col-md-6">`,
-              `<label style="color:#0f6694; font-size:11px;" vslang="titles.Module">Module</label>`,
-
-              `<div class="material-input outlined">`,
-              `<div><select name ="module" class="data-input" data-field="module_id"></select></div>`,
-            `</div>`,
+                `<div class="form-group">`,
+                    `<label vslang="titles.Module">Module</label>`,
+                    `<select name ="module" class="data-input" data-field="module_id"></select>`,
+                `</div>`,
             `</div>`,
               `<div class="col-md-12">`,
-              `<div class="material-input outlined">`,
-                 `<input name="name" class="form-control data-input" data-field="name" placeholder=" " />`,
+              `<div class="form-group">`,
                  `<label vslang="titles.Report Name">Report Name</label>`,
+                 `<input name="name" class="form-control data-input" data-field="name" placeholder=" " />`,
               `</div>`,
               `</div>`,
 
               `<div class="col-md-12">`,
-              `<div class="material-input outlined">`,
-                 `<input name="code" class="form-control data-input" data-field="code" placeholder= " " />`,
+              `<div class="form-group">`,
                  `<label vslang="titles.Report Code">Report Code</label>`,
+                 `<input name="code" class="form-control data-input" data-field="code" placeholder= " " />`,
              `</div>`,
              `</div>`,
 
               `<div class="col-md-12">`,
-              `<div class="material-input outlined">`,
-                `<input name="params" class="form-control data-input" data-field="params" placeholder= " " />`,
+              `<div class="form-group">`,
                 `<label vslang="titles.Params">Report Filters</label>`,
+                `<input name="params" class="form-control data-input" data-field="params" placeholder= " " />`,
              `</div>`,
              `</div>`,
 
               `<div class="col-md-12">`,
-              `<div class="material-input outlined">`,
-                `<input name="export_group" class="form-control data-input" data-field="report_group" placeholder= " " />`,
+              `<div class="form-group">`,
                 `<label class="form-label" vslang="titles.Report Group">Report Group</label>`,
+                `<input name="export_group" class="form-control data-input" data-field="report_group" placeholder= " " />`,
              `</div>`,
              `</div>`,
     
              `<div class="col-md-6 d-none">`,
-                `<div class="material-input outlined">`,
-                `<input type="number" name="export_pdf" class="form-control data-input" data-field="export_pdf" placeholder= " " />`,
+                `<div class="form-group">`,
                 `<label vslang="titles.Export to PDF">Export to PDF</label>`,
+                `<input type="number" name="export_pdf" class="form-control data-input" data-field="export_pdf" placeholder= " " />`,
                 `</div>`,
             `</div>`,
           `<div class="col-md-6 d-none">`,
-          `<div class="material-input outlined">`,
-          `<input type="number" name="export_excel" class="form-control data-input" data-field="export_excel" placeholder= " "/>`,
+          `<div class="form-group">`,
           `<label vslang="titles.Export to Excel">Export to Excel</label>`,
+          `<input type="number" name="export_excel" class="form-control data-input" data-field="export_excel" placeholder= " "/>`,
        `</div>`,
        `</div>`,
 
     `<div class="col-md-6 d-none">`,
-        `<div class="material-input outlined">`,
-        `<input type="number" name="export_csv" class="form-control data-input" data-field="export_csv"/>`,
+        `<div class="form-group">`,
         `<label vslang="titles.Export to CSV">Export To CSV</label>`,
+        `<input type="number" name="export_csv" class="form-control data-input" data-field="export_csv"/>`,
         `</div>`,
      `</div>`,
      `<div class="col-md-12">`,
-     `<div class="material-input outlined">`,
-        `<input type="text" name="actions" class="form-control data-input" data-field="actions" placeholder= " " />`,
+     `<div class="form-group">`,
         `<label vslang="titles.Actions">Actions</label>`,
+        `<input type="text" name="actions" class="form-control data-input" data-field="actions" placeholder= " " />`,
      `</div>`,
      `</div>`,
         `<div class="col-md-12">`,
-        `<div class="material-input outlined">`,
-            `<input type="number" name="display_order" class="form-control data-input" data-field="display_order" placeholder=" " />`,
+        `<div class="form-group">`,
             `<label class="form-label" vslang="titles.Display Order">Display Order</label>`,
+            `<input type="number" name="display_order" class="form-control data-input" data-field="display_order" placeholder=" " />`,
         `</div>`,
         `</div>`,
     '</div>'     
@@ -1886,14 +1898,14 @@ this.ReportPanel = new function(){
            buttons:[
               {
                   label:"<span>Cancel</span>",
-                  cssClass:"btn btn-sm text-white btn-warning",
+                  cssClass:"btn-vs-cancel",
                   click:(me,btn)=>{
                      me.hide(false);
                   }
                 },
                 {
                   label:"<span>Save</span>",
-                  cssClass:"btn btn-sm btn-yp-custom",
+                  cssClass:"btn-vs-save",
                   click:(me,btn,divModal)=>{
                       let p = me.getData();
                       //report_id is primary key of table "reports", while "id" is, in fact, the permission's ID 
@@ -1943,19 +1955,33 @@ this.ReportPanel = new function(){
   
                   valueField:"id",
                   textField:"name",
-                  depends:{
-                      triggerBy:"app",
-                      api:{
-                          endpoint:`${main_view.base_url}/api/module/list`,
-                          params: (me,dataOption,controls)=>{
-                              return {"app_id": controls.app.value};
-                          },
-                            onResponse:(me,res)=>{
-                               console.log(111,res.data);
-                          }
-                      }
+                //   depends:{
+                //       triggerBy:"app",
+                //       api:{
+                //           endpoint:`${main_view.base_url}/api/module/list`,
+                //           params: (me,dataOption,controls)=>{
+                //               return {"app_id": controls.app.value};
+                //           },
+                //             onResponse:(me,res)=>{
+                //                console.log(111,res.data);
+                //           }
+                //       }
   
-                  }
+                //   }
+                depends: {
+                            parents: ['app'],
+                            api: {
+                                endpoint: `${main_view.base_url}/api/module/list`,
+                                method: "POST",
+                                // onResponse:(res,me)=>{
+                                //     console.log('mm:: ',res);
+                                //     return res;
+                                // },
+                                // params: (me,op) => ({
+                                //   program_id: mThis.elFilter_program.value
+                                // })
+                            }
+                    }
               }
            ],
            extendMethod:{
@@ -2144,11 +2170,12 @@ this.ReportPanel = new function(){
                                     return;
                                 }
                             };
+                            if (!AuthManager.allowed(103,false)) return;
                             ChangeLoginNameDialog.show(op);
                             break;
                        }
                        case 'reset_password':{
-                                if(!AuthManager.allowed(109)) return;
+                                if(!AuthManager.allowed(104)) return;
                                 let op = {
                                     login_name: lnk.dataset.loginname,
                                     id: lnk.dataset.id || lnk.dataset.userid,
@@ -2156,6 +2183,7 @@ this.ReportPanel = new function(){
                                         return;
                                     }
                                 };
+                            if (!AuthManager.allowed(104,false)) return;
                             SetPasswordDialog.show(op);
                          break;
                        }
@@ -2184,6 +2212,7 @@ this.ReportPanel = new function(){
               //Click on Remove User
                let lnk = VSUtil.closestLimited(e.target,'.lnk-remove-user');
                if (lnk){
+                if(!AuthManager.allowed(113,false)) return;
                  cv_interact.confirm(['Are you sure to remove the selected user from ',mThis.selected_role.name || 'the role', '?'].join(''),{"title":"Remove User","context":'delete', "confirmButtonText":"Remove"},e =>{
                      if(e){
                          let user_id = lnk.dataset.id || lnk.dataset.userid;
@@ -2201,7 +2230,7 @@ this.ReportPanel = new function(){
                //Click on reset password
                lnk = VSUtil.closestLimited(e.target,'.lnk-reset-password');
                if(lnk){
-                    if(!AuthManager.allowed(109)) return;
+                    if(!AuthManager.allowed(104,false)) return;
                     let op = {
                         login_name: lnk.dataset.loginname,
                         id: lnk.dataset.id || lnk.dataset.userid,
@@ -2209,13 +2238,15 @@ this.ReportPanel = new function(){
                             return;
                         }
                     };
+
+                if (!AuthManager.allowed(104,false)) return;
                 SetPasswordDialog.show(op);
                }
 
              //Click on lock user
              lnk = VSUtil.closestLimited(e.target,'.lnk-lock-user');
              if(lnk){
-                if(!AuthManager.allowed(113)) return;
+                if(!AuthManager.allowed(107)) return;
                     const user_id = lnk.dataset.id || lnk.dataset.userid;
                     const tr = VSUtil.closestLimited(e.target,'tr');
                     const user_name = tr.dataset.fullname;

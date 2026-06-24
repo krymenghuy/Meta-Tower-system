@@ -689,69 +689,143 @@ var TenantProfileComponent = new (function () {
         });
         targetPage.style.display = "block";
     };
-    mThis.renderProfile = (data) => {
-        // console.log(123, data);
-
-        let cls_class = "";
-        if (data && data.status) {
-            switch (data.status) {
-                case "Pending":
-                    cls_class =
-                        "badge text-warning bg-warning-subtle border border-warning";
-                    break;
-                case "Active":
-                    cls_class =
-                        "badge text-success bg-success-subtle border border-success";
-                    break;
-                case "Inactive":
-                    cls_class =
-                        "badge text-danger bg-danger-subtle border border-danger";
-                    break;
-                default:
-                    cls_class = "badge text-muted bg-light";
-                    break;
-            }
+    mThis._statusBadgeClass = (status) => {
+        switch (status) {
+            case "Pending":
+                return "badge text-warning bg-warning-subtle border border-warning";
+            case "Active":
+                return "badge text-success bg-success-subtle border border-success";
+            case "Inactive":
+                return "badge text-danger bg-danger-subtle border border-danger";
+            default:
+                return "badge text-muted bg-light";
         }
-        let html = `
-        <div class="row g-4 d-flex align-items-stretch"> <div class="col-12 col-lg-3">
-                <div class="card shadow-sm mb-3 h-100">
-                    <div class="card-body text-center d-flex flex-column">
-                        <div class="position-relative d-inline-block mb-3">
-                            <img src="${data.image_url || `${main_view.base_url}/assets/images/default/placeholder.svg`}"
-                                class="rounded-circle border shadow-sm"
-                                width="140" height="140"
-                                style="object-fit: cover; object-position: center;">
-                        </div>
-                        <h4 class="fw-bold mb-2 text-capitalize">${data.name}</h4>
-                        <div class="mb-3">
-                            <span class="${cls_class} px-3 py-2">${data.status}</span>
-                        </div>
-                        <hr class="my-3">
+    };
+    mThis._profileGenderLabel = (sex) => {
+        if (sex === "M") return "Male";
+        if (sex === "F") return "Female";
+        return "—";
+    };
+    mThis._profileFieldBox = (label, value, icon, iconBg = "#e7efff", iconColor = "#0c399e") => {
+        const safeLabel = mThis._escapeHtml(label);
+        const safeValue = value ?? "—";
+        return `<div class="col-md-4 col-sm-6">
+            <div class="profile-field-box d-flex gap-3 align-items-start">
+                <span class="profile-field-icon" style="background:${iconBg};color:${iconColor};">
+                    <i class="fa-solid ${icon}"></i>
+                </span>
+                <div class="flex-grow-1 min-w-0">
+                    <div class="profile-field-label">${safeLabel}</div>
+                    <div class="profile-field-value">${safeValue}</div>
+                </div>
+            </div>
+        </div>`;
+    };
+    mThis._personalInfoSectionHtml = (data) => {
+        const phone = data.phone_number
+            ? `<a href="tel:${mThis._escapeHtml(data.phone_number)}">${mThis._escapeHtml(data.phone_number)}</a>`
+            : "—";
+        const email = data.email
+            ? `<a href="mailto:${mThis._escapeHtml(data.email)}">${mThis._escapeHtml(data.email)}</a>`
+            : "—";
+        const name = mThis._escapeHtml(data.name ?? "—");
+        const legalName = mThis._escapeHtml(data.legal_name ?? "—");
+        const dob = mThis._escapeHtml(data.date_of_birth ?? "—");
+        const nationalId = mThis._escapeHtml(data.national_id ?? "—");
+        const passport = mThis._escapeHtml(data.passport_number ?? "—");
+        const relationship = mThis._escapeHtml(data.relationship ?? "Partner");
+        const address = mThis._escapeHtml(data.address ?? "—");
 
+        return `<div class="tab-pane py-2 active" id="overview_tenant_detail">
+            <div class="profile-section-title">
+                <i class="fa-solid fa-user me-2 text-primary"></i>Personal Information
+            </div>
+            <div class="row g-3 mb-4">
+                ${mThis._profileFieldBox("Name", `<span class="text-capitalize">${name}</span>`, "fa-user")}
+                ${mThis._profileFieldBox("Gender", mThis._profileGenderLabel(data.sex), "fa-venus-mars", "#fce8f3", "#c2185b")}
+                ${mThis._profileFieldBox("Date of Birth", dob, "fa-cake-candles", "#fff3e0", "#e65100")}
+            </div>
+            <div class="profile-section-title">
+                <i class="fa-solid fa-id-card me-2 text-primary"></i>Identity Documents
+            </div>
+            <div class="row g-3 mb-4">
+                ${mThis._profileFieldBox("Legal Name", legalName, "fa-file-signature")}
+                ${mThis._profileFieldBox("National ID", nationalId, "fa-address-card", "#e8f5e9", "#2e7d32")}
+                ${mThis._profileFieldBox("Passport Number", passport, "fa-passport", "#e3f2fd", "#1565c0")}
+            </div>
+            <div class="profile-section-title">
+                <i class="fa-solid fa-address-book me-2 text-primary"></i>Contact & Relationship
+            </div>
+            <div class="row g-3">
+                ${mThis._profileFieldBox("Phone", phone, "fa-phone", "#e8f5e9", "#2e7d32")}
+                ${mThis._profileFieldBox("Email", email, "fa-envelope", "#e3f2fd", "#1565c0")}
+                ${mThis._profileFieldBox("Relationship", relationship, "fa-people-arrows", "#f3e5f5", "#7b1fa2")}
+                <div class="col-12">
+                    <div class="profile-field-box d-flex gap-3 align-items-start">
+                        <span class="profile-field-icon" style="background:#fff3e0;color:#e65100;">
+                            <i class="fa-solid fa-location-dot"></i>
+                        </span>
+                        <div class="flex-grow-1 min-w-0">
+                            <div class="profile-field-label">Address</div>
+                            <div class="profile-field-value text-capitalize">${address}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+    };
+    mThis.renderProfile = (data) => {
+        const statusClass = mThis._statusBadgeClass(data?.status);
+        const statusLabel = mThis._escapeHtml(data?.status ?? "—");
+        const name = mThis._escapeHtml(data?.name ?? "—");
+        const code = mThis._escapeHtml(data?.code ?? "");
+        const imageUrl =
+            data.image_url ||
+            `${main_view.base_url}/assets/images/default/placeholder.svg`;
+        const phoneLink = data.phone_number
+            ? `href="tel:${mThis._escapeHtml(data.phone_number)}"`
+            : 'href="#" class="disabled pe-none opacity-50" tabindex="-1"';
+        const emailLink = data.email
+            ? `href="mailto:${mThis._escapeHtml(data.email)}"`
+            : 'href="#" class="disabled pe-none opacity-50" tabindex="-1"';
+
+        let html = `
+        <div class="tenant-profile-layout">
+        <div class="row g-4 d-flex align-items-stretch">
+            <div class="col-12 col-lg-3">
+                <div class="card profile-sidebar-card h-100">
+                    <div class="profile-sidebar-banner"></div>
+                    <div class="card-body text-center d-flex flex-column pt-0 px-4 pb-4">
+                        <div class="profile-avatar-wrap d-inline-block mx-auto">
+                            <img src="${imageUrl}"
+                                class="rounded-circle profile-avatar"
+                                alt="${name}">
+                        </div>
+                        <h4 class="fw-bold mb-1 mt-3 text-capitalize text-prm-custom">${name}</h4>
+                        ${code ? `<p class="text-muted small mb-2">ID: ${code}</p>` : ""}
+                        <div class="mb-3">
+                            <span class="${statusClass} px-3 py-2 rounded-pill">${statusLabel}</span>
+                        </div>
+                        <div class="profile-quick-actions d-flex gap-2 justify-content-center mt-auto">
+                            <a ${phoneLink} class="btn btn-outline-success btn-sm flex-fill">
+                                <i class="fa-solid fa-phone me-1"></i> Call
+                            </a>
+                            <a ${emailLink} class="btn btn-outline-primary btn-sm flex-fill">
+                                <i class="fa-solid fa-envelope me-1"></i> Email
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <div class="col-12 col-lg-9">
-                <div class="card shadow-sm h-100"> 
-                    
+                <div class="card profile-detail-card h-100">
                     <div class="card-body tab-content">
-                        <div class="tab-pane py-2 active" id="overview_tenant_detail">
-                            <div class="row g-4 mb-5">
-                                <div class="col-md-4"><small class="text-muted">Name</small><div class="text-capitalize">${data.name ?? "_"}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Gender</small><div class="">${data.sex == "M" ? "Male" : data.sex == "F" ? "Female" : "_"}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Date of Birth</small><div class="">${data.date_of_birth ?? "_"}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Legal Name</small><div class="">${data.legal_name ?? "_"}</div></div>
-                                <div class="col-md-4"><small class="text-muted">National ID</small><div class="">${data.national_id ?? "_"}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Passport Number</small><div class="">${data.passport_number ?? "_"}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Phone</small><div class=" text-primary">${data.phone_number ?? "_"}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Email</small><div class=" text-primary">${data.email ?? "_"}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Relationship</small><div class="">Partner</div></div>
-                                <div class="col-12"><small class="text-muted">Address</small><div class="text-prm-custom text-capitalize">${data.address ?? "_"}</div></div>
-                            </div>
-                        </div>
+                        ${mThis._personalInfoSectionHtml(data)}
+                    </div>
                 </div>
             </div>
+        </div>
         </div>
     `;
 
@@ -1001,23 +1075,7 @@ var TenantProfileComponent = new (function () {
                 .then((res) => {
                     const d = res.status_code == 200 ? res.data : {};
 
-                    let html = "";
-                    html += `<div class="tab-pane py-2 active" id="overview_tenant_detail">
-                            <h5 class="fw-bold mb-2"><i class="fa fa-user me-1 text-primary"></i> Personal Information</h5>
-                            <div class="row g-4 mb-5">
-                                <div class="col-md-4"><small class="text-muted">Name</small><div class="">${data.name ?? "_"}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Sex</small><div class="">${data.sex == "M" ? "Male" : data.sex == "F" ? "Female" : "_"}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Date of Birth</small><div class="">${data.date_of_birth ?? "_"}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Legal Name</small><div class="">${data.legal_name ?? ""}</div></div>
-                                <div class="col-md-4"><small class="text-muted">National ID</small><div class="">${data.national_id ?? "_"}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Passport Number</small><div class="">${data.passport_number ?? "_"}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Phone</small><div class="">${data.phone_number ?? "_"}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Email</small><div class=" text-primary">${data.email ?? "_"}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Relationship</small><div class="">Partner</div></div>
-                                <div class="col-12"><small class="text-muted">Address</small><div class="text-prm-custom text-capitalize">${data.address ?? "_"}</div></div>
-                            </div>
-                        </div>`;
-                    div.innerHTML = html;
+                    div.innerHTML = mThis._personalInfoSectionHtml(data);
                 });
         }
         if (target == "lease_tenant_history") {

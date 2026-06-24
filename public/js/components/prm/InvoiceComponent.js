@@ -5,7 +5,7 @@ var InvoiceComponent = (() => {
     mThis.title_prop = "Invoice Management";
     mThis.currency_symbol = "$";
     mThis.self = main_view.VSAppContent.querySelector(
-        "#_main_invoice_component"
+        "#_main_invoice_component",
     );
     mThis.btnAdd = mThis.self.querySelector("#_btnInvoice");
     mThis.btnAddTest = mThis.self.querySelector("#_btnInvoice_test");
@@ -26,7 +26,7 @@ var InvoiceComponent = (() => {
         {
             transTitle: "titles.Invoice No",
             className: "align-middle text-start text-nowrap",
-            data: function(data) {
+            data: function (data) {
                 const code = data.code
                     ? `<span class="text-prm-custom">${data.code}</span>`
                     : `<span class="text-muted fst-italic">_</span>`;
@@ -48,7 +48,7 @@ var InvoiceComponent = (() => {
                         ${typeHtml}
                     </div>
                 `;
-            }
+            },
         },
         {
             transTitle: "titles.Tenant",
@@ -131,8 +131,8 @@ var InvoiceComponent = (() => {
             transTitle: "titles.Balance",
             className: "align-middle text-danger  text-nowrap",
             data: (data) => {
-                const amt = data.due_amount
-                    ? Number(data.due_amount).toLocaleString("en-US", {
+                const amt = data.balance
+                    ? Number(data.balance).toLocaleString("en-US", {
                           minimumFractionDigits: 2,
                       })
                     : "0.00";
@@ -203,7 +203,11 @@ var InvoiceComponent = (() => {
                 // }
 
                 return `<div class="d-flex justify-content-center">
-                    <a href="javascript:void(0)" class="btn--Options btn_leave_action" data-id="${data.id}" data-statusid="${data.payment_status_id || ""}" style="padding: 0 10px;">
+                    <a href="javascript:void(0)" class="btn--Options btn_leave_action" data-id="${
+                        data.id
+                    }" data-statusid="${
+                        data.payment_status_id || ""
+                    }" style="padding: 0 10px;">
                         <i class="fa-solid fa-ellipsis-vertical text-black fs-5"></i>
                     </a>
                 </div>`;
@@ -232,6 +236,7 @@ var InvoiceComponent = (() => {
 
         mThis.btnAdd.onclick = (e) => {
             e.preventDefault();
+            if (!AuthManager.allowed(234, false)) return;
             InvoiceDialog.show({
                 id: null,
                 btn: e.target,
@@ -404,7 +409,7 @@ var InvoiceComponent = (() => {
                         <thead style="background:#e1e5f2;">
                             <tr style= background-color:#E1E5F2;" >
                                 <th class="text-center" vslang="titles.Item Description"> </th>
-                                <th class="text-center" vslang="titles.tart Date">S</th>
+                                <th class="text-center" vslang="titles.Start Date"></th>
                                 <th class="text-center" vslang="titles.End Date"></th>
                                 <th class="text-center" vslang="titles.Qty"></th>
                                 <th class="text-end" vslang="titles.Price"></th>
@@ -430,7 +435,7 @@ var InvoiceComponent = (() => {
                                 </td>
                             </tr>
                             <tr>
-                                <td colspan="7" class="text-end text-danger">Total Discount</td>
+                                <td colspan="7" class="text-end text-danger" vslang="titles.Total Discount"></td>
                                 <td colspan="1" class="text-end text-danger fs-6">
                                     ${(() => {
                                         const discVal = parseFloat(
@@ -453,7 +458,7 @@ var InvoiceComponent = (() => {
 
                             <!-- Displaying Net Total -->
                             <tr>
-                                <td colspan="7" class="text-end  text-primary">Grand (Net)</td>
+                                <td colspan="7" class="text-end  text-primary" vslang="titles.Grand (Net)"></td>
                                 <td colspan="1" class="text-end text-success fs-6">
                                     ${currency}${fmt(
                                         parseFloat(invoice.amount_payable || 0),
@@ -474,6 +479,7 @@ var InvoiceComponent = (() => {
                             : ""
                     }
                 </div>`;
+        LocaleManager.translateZone(container);
     };
 
     mThis.getFilterData = () => {
@@ -493,7 +499,7 @@ var InvoiceComponent = (() => {
         const menuOptions = {
             containerElement: container,
             actionButtonClass: "btn_leave_action",
-            cssClass: "bg-white box-shadow ",
+            cssClass: "bg-white box-shadow text-start",
             menus: [
                 {
                     html: '<span class="ps-2" vslang="titles.Receive Payment"></span>',
@@ -537,10 +543,6 @@ var InvoiceComponent = (() => {
                 const menu = me.getActiveMenus(menuContainer);
                 const statusId = Number(menuContainer.dataset.statusid);
 
-                // menu.print_invoice.style.display =
-                //     statusId === 1 || statusId === 3 || statusId === 2
-                //         ? "block"
-                //         : "none";
                 menu.receive_invoice.style.display =
                     statusId === 2 || statusId === 3 || statusId === 4
                         ? "block"
@@ -571,11 +573,89 @@ var InvoiceComponent = (() => {
         new VSDropdownMenu(menuOptions);
     };
 
-    mThis.deleteInvoice = (id, menuLink) => {
-        if (!AuthManager.allowed(242)) return;
+    //     mThis.initDropdownMenus = (container) => {
+    //     const menuOptions = {
+    //         containerElement: container,
+    //         actionButtonClass: "btn_leave_action",
+    //         cssClass: "bg-white shadow",
+    //         menus: [
+    //             {
+    //                 html: '<span class="ps-2 text-start" vslang="titles.Receive Payment"></span>',
+    //                 icon: `<i class="fa-solid fa-fw fa-hand-holding-dollar text-success fs-5"></i>`,
+    //                 cssClass: "border-bottom pb-2",
+    //                 name: "receive_invoice"
+    //             },
+    //             {
+    //                 html: '<span class="ps-2 text-start" vslang="titles.Modify Invoice"></span>',
+    //                 icon: `<i class="fa-solid fa-fw fa-edit text-primary fs-5"></i>`,
+    //                 cssClass: "border-bottom pb-2",
+    //                 name: "modify_invoice"
+    //             },
+    //             {
+    //                 html: '<span class="ps-2" vslang="titles.Print Invoice"></span>',
+    //                 icon: `<i class="fa-solid fa-fw fa-receipt text-primary fs-5"></i>`,
+    //                 cssClass: "border-bottom pb-2",
+    //                 name: "print_invoice"
+    //             },
+    //             {
+    //                 html: '<span class="ps-2" vslang="titles.Delete Invoice"></span>',
+    //                 icon: `<i class="fa-solid fa-fw fa-trash-can text-danger fs-5"></i>`, // Swapped to fa-solid for consistency
+    //                 cssClass: "border-bottom pb-2",
+    //                 name: "delete_invoice"
+    //             },
+    //             {
+    //                 html: '<span class="ps-2" vslang="titles.Invoice Setting"></span>',
+    //                 icon: `<i class="fa-solid fa-fw fa-file-invoice-dollar text-warning-emphasis fs-5"></i>`,
+    //                 cssClass: "border-bottom pb-2 ",
+    //                 name: "invoice_setting"
+    //             },
+    //             {
+    //                 html: '<span class="ps-2" vslang="titles.Clear Setting"></span>',
+    //                 icon: `<i class="fa-solid fa-fw fa-trash-can-arrow-up fs-5 text-danger"></i>`,
+    //                 cssClass: "border-bottom pb-2",
+    //                 name: "reset_invoice_setting"
+    //             }
+    //         ],
+    //         onShow: (me, menuContainer) => {
+    //             const menu = me.getActiveMenus(menuContainer);
+    //             const statusId = Number(menuContainer.dataset.statusid);
 
+    //             // Set visibility based on status states cleanly
+    //             if (menu.receive_invoice) {
+    //                 menu.receive_invoice.style.display =
+    //                     (statusId === 2 || statusId === 3 || statusId === 4) ? "block" : "none";
+    //             }
+    //             if (menu.delete_invoice) {
+    //                 menu.delete_invoice.style.display = (statusId === 2) ? "block" : "none";
+    //             }
+    //             if (menu.modify_invoice) {
+    //                 menu.modify_invoice.style.display = (statusId === 2) ? "block" : "none";
+    //             }
+    //         },
+    //         onClick: (menulink, id, name) => {
+    //             if (name === "delete_invoice") {
+    //                 mThis.deleteInvoice(id);
+    //             } else if (name === "print_invoice") {
+    //                 mThis.printInvoice(id);
+    //             } else if (name === "receive_invoice") {
+    //                 mThis.receiveInvoice(id);
+    //             } else if (name === "modify_invoice") {
+    //                 mThis.editInvoice(id, menulink);
+    //             } else if (name === "invoice_setting") {
+    //                 mThis.btnInvoiceSetting(id, menulink);
+    //             } else if (name === "reset_invoice_setting") {
+    //                 mThis.btnResetInvoiceSetting(id, menulink);
+    //             }
+    //         }
+    //     };
+
+    //     new VSDropdownMenu(menuOptions);
+    // };
+
+    mThis.deleteInvoice = (id, menuLink) => {
+        if (!AuthManager.allowed(237)) return;
         cv_interact.confirm(
-            "Are you sure you want to delete this invoice?",
+            "confirm_delete",
             {
                 transTitle: "Delete Invoice",
                 confirmButtonText: "Delete",
@@ -595,10 +675,10 @@ var InvoiceComponent = (() => {
                             mThis.InvoiceListView.showPage(
                                 mThis.getFilterData(),
                             );
-                            cv_interact.success("Invoice deleted successfully");
+                            cv_interact.success("delete_success_invoice");
                         } else {
                             cv_interact.error(
-                                res.error_message || "Failed to delete.",
+                                res.error_message || "delete_failed",
                             );
                         }
                     });
@@ -607,6 +687,7 @@ var InvoiceComponent = (() => {
     };
 
     mThis.btnInvoiceSetting = (id, menulink) => {
+        if (!AuthManager.allowed(240)) return;
         InvoiceSettingDialog.show({
             invoice_id: id,
             btn: menulink,
@@ -617,13 +698,12 @@ var InvoiceComponent = (() => {
     };
 
     mThis.btnResetInvoiceSetting = (id, menulink) => {
-        if (!AuthManager.allowed(242)) return;
-
+        if (!AuthManager.allowed(239)) return;
         cv_interact.confirm(
-            "Are you sure you want to reset this invoice settings?",
+            "confirm_reset_invoice",
             {
                 transTitle: "Reset Invoice Settings",
-                confirmButtonText: "Reset",
+                confirmButtonText: LocaleManager.trans('Reset', 'buttons'),
                 context: "danger",
             },
             (confirmed) => {
@@ -642,13 +722,10 @@ var InvoiceComponent = (() => {
                                 mThis.getFilterData(),
                             );
                             // Cleaned up messages so it describes a reset, not a deletion
-                            cv_interact.success(
-                                "Invoice settings reset successfully.",
-                            );
+                            cv_interact.success("reset_success_invoice");
                         } else {
                             cv_interact.error(
-                                res.error_message ||
-                                    "Failed to reset settings.",
+                                res.error_message || "reset_failed",
                             );
                         }
                     });
@@ -657,7 +734,7 @@ var InvoiceComponent = (() => {
     };
 
     mThis.editInvoice = (id, menulink) => {
-        console.log("editInvoice id:", id);
+        if (!AuthManager.allowed(236, false)) return;
         InvoiceDialog.show({
             id: id,
             btn: menulink,
@@ -667,6 +744,7 @@ var InvoiceComponent = (() => {
     };
 
     mThis.receiveInvoice = (id, menulink) => {
+        if (!AuthManager.allowed(235, false)) return;
         ReceiveDialog.show({
             invoice_id: id,
             btn: menulink,
@@ -675,82 +753,134 @@ var InvoiceComponent = (() => {
         });
     };
 
+    // mThis.printInvoice = (id, menulink) => {
+    //     let invoice = null;
+    //     let globalSetting = null;
+    //     let localSetting = null;
+    //     let companyProfile = null;
+    //     if(!AuthManager.allowed(238,false)) return;
+    //     // vsapi.call(`${main_view.base_url}/api/company/details`).then((res) => {
+    //     //     if (res.status_code === 200) {
+    //     //         companyProfile = res.data;
+    //     //     } else {
+    //     //         cv_interact.error(res.message);
+    //     //     }
+    //     // });
+    //     // vsapi
+    //     //     .call(`${main_view.base_url}/prm/invoice_setting/get`)
+    //     //     .then((res) => {
+    //     //         if (res.status_code === 200) {
+    //     //             globalSetting = res.data;
+    //     //         } else {
+    //     //             cv_interact.error(res.message);
+    //     //         }
+    //     //     });
+
+    //     vsapi
+    //         .call(`${main_view.base_url}/prm/invoice/print`, { id: id })
+    //         .then((res) => {
+    //             if (res.status_code === 200) {
+    //                 // localSetting = res.data.settings;
+
+    //                 // invoice = res.data;
+    //                 let invoiceDetails = res.data?.invoice_details;
+    //                 let invoiceSetting = res.data?.invoice_setting;
+    //                 let companyProfile = res.data?.company_info;
+
+    //                 const invType = invoiceDetails?.invoice_type;
+    //                 const params = {
+    //                     invoice_id: id,
+    //                     btn: menulink,
+    //                     invoice: invoiceDetails,
+    //                     global: mThis.globalSetting,
+    //                 };
+
+    //                 const settings = invoiceSetting || {};
+    //                 const global = globalSetting || {};
+    //                 const company = companyProfile || {};
+
+    //                 console.log(34, global);
+
+    //                 if (settings.show_balance !== null) {
+
+    //                     // settings.build_representative = global.build_representative;
+    //                     // settings.representative_phone = global.representative_phone;
+    //                     // settings.representative_address = global.representative_address;
+    //                     settings.QR_file = global.QR_file;
+    //                     settings.qr_file_name = global.qr_file_name;
+    //                     params.setting = settings;
+    //                     // params.company = company;
+    //                     // params.representative = representative;
+    //                 } else {
+    //                     params.setting = global;
+    //                     settings.QR_file = global.QR_file;
+    //                     settings.qr_file_name = global.qr_file_name;
+    //                 }
+
+    //                 if (invType === 1) {
+    //                     params.company = company;
+    //                     InvoiceTaxDialog.show(params);
+    //                 } else if (invType === 2) {
+    //                      params.company = company;
+    //                     InvoiceNoTaxDialog.show(params);
+    //                 } else if (invType === 3) {
+    //                      params.company = company;
+    //                     InvoiceCommercialDialog.show(params);
+    //                 }
+    //             } else {
+    //                 cv_interact.error("Could not determine invoice type.");
+    //             }
+    //         });
+    // };
+
     mThis.printInvoice = (id, menulink) => {
-        let invoice = null;
-        let globalSetting = null;
-        let localSetting = null;
-        let companyProfile = null;
-
-        vsapi.call(`${main_view.base_url}/api/company/details`).then((res) => {
-            if (res.status_code === 200) {
-                companyProfile = res.data;
-            } else {
-                cv_interact.error("Could not get company profile.");
-            }
-        });
-        vsapi
-            .call(`${main_view.base_url}/prm/invoice_setting/get`)
-            .then((res) => {
-                if (res.status_code === 200) {
-                    globalSetting = res.data;
-                } else {
-                    cv_interact.error("Could not determine invoice type.");
-                }
-            });
+        if (!AuthManager.allowed(238, false)) return;
 
         vsapi
-            .call(`${main_view.base_url}/prm/invoice/details`, { id: id })
+            .call(`${main_view.base_url}/prm/invoice/print`, { id: id })
             .then((res) => {
                 if (res.status_code === 200) {
-                    localSetting = res.data.settings;
+                    const invoiceDetails = res.data?.invoice_details;
+                    const globalSetting = res.data?.invoice_setting || {};
+                    const companyProfile = res.data?.company_info || {};
+                    const invoiceSetting = invoiceDetails.settings;
 
-                    invoice = res.data;
+                    console.log("invoiceDetails: ", invoiceDetails);
+                    console.log("companyProfile: ", companyProfile);
+                    console.log("globalSetting: ", globalSetting);
+                    console.log("invoiceSetting: ", invoiceSetting);
 
-                    const invType = invoice.invoice_type;
+                    const invType = invoiceDetails?.invoice_type;
+
+                    // Initialize params object
                     const params = {
                         invoice_id: id,
                         btn: menulink,
-                        invoice: invoice,
-                        global: mThis.globalSetting,
+                        invoice: invoiceDetails,
+                        global: globalSetting,
+                        company: companyProfile,
+                        setting: invoiceSetting,
                     };
 
-                    const settings = localSetting || {};
-                    const global = globalSetting || {};
-                    const company = companyProfile || {};
-
-                    console.log(34, global);
-
-
-                    if (settings.show_balance !== null) {
-
-                        // settings.build_representative = global.build_representative;
-                        // settings.representative_phone = global.representative_phone;
-                        // settings.representative_address = global.representative_address;
-                        settings.QR_file = global.QR_file;
-                        settings.qr_file_name = global.qr_file_name;
-                        params.setting = settings;
-                        // params.company = company;
-                        // params.representative = representative;
+                    if (invoiceSetting.show_balance !== null) {
+                        params.setting = invoiceSetting;
                     } else {
-                        params.setting = global;
-                        settings.QR_file = global.QR_file;
-                        settings.qr_file_name = global.qr_file_name;
-                        // params.company = company;
-                        // params.representative = representative;
+                        params.setting = globalSetting;
                     }
 
                     if (invType === 1) {
-                        params.company = company;
                         InvoiceTaxDialog.show(params);
                     } else if (invType === 2) {
-                         params.company = company;
                         InvoiceNoTaxDialog.show(params);
                     } else if (invType === 3) {
-                         params.company = company;
                         InvoiceCommercialDialog.show(params);
+                    } else {
+                        cv_interact.error("Unknown invoice type variant.");
                     }
                 } else {
-                    cv_interact.error("Could not determine invoice type.");
+                    cv_interact.error(
+                        res.message || "Could not determine invoice type.",
+                    );
                 }
             });
     };
@@ -825,22 +955,22 @@ const InvoiceDialog = (() => {
                                     <!-- LEFT: Tenant Info -->
                                     <div>
                                         <div class="field-row">
-                                            <label class="field-label fw-semibold" vslang="labels.Tenant Name">  </label>
+                                            <label class="field-label fw-semibold" vslang="labels.Tenant">  </label>
                                             <span class="field-sep">:</span>
                                             <input name="tenant" class="data-input form-control field-input" data-field="tenant_id" placeholder=" " autocomplete="off">
                                         </div>
                                         <div class="field-row">
                                             <label class="field-label fw-semibold" vslang="labels.Phone Number"></label>
                                             <span class="field-sep">:</span>
-                                            <input name="phone_number" class="data-input form-control field-input "  placeholder=" ">
+                                            <input name="phone_number" class="data-input form-control field-input"  placeholder=" " disabled>
                                         </div>
                                         <div class="field-row">
                                             <label class="field-label fw-semibold" vslang="labels.Email"></label>
                                             <span class="field-sep">:</span>
-                                            <input name="email" class="data-input form-control field-input " placeholder=" ">
+                                            <input name="email" class="data-input form-control field-input" placeholder=" " disabled>
                                         </div>
                                         <div class="field-row ">
-                                            <label class="field-label fw-semibold" vslang="labels.Space / Room"></label>
+                                            <label class="field-label fw-semibold" vslang="labels.Unit"></label>
                                             <span class="field-sep">:</span>
                                                 <select name="space"  data-style="material" class="data-input form-control" data-field="space_id" required placeholder=" ">
                                                 </select>
@@ -1005,13 +1135,13 @@ const InvoiceDialog = (() => {
 
                 me.controls.btnRent.onclick = () => {
                     if (!me._selectedTenantId) {
-                        return cv_interact.error("Please select Tenant first.");
+                        return cv_interact.error("select_tenant");
                     }
                     if (
                         !me.controls.space.value ||
                         me.controls.space.value === ""
                     ) {
-                        return cv_interact.error("Please select Space.");
+                        return cv_interact.error("select_space");
                     }
 
                     if (
@@ -1043,6 +1173,8 @@ const InvoiceDialog = (() => {
                             String(matchedSpace.contract_id),
                     );
 
+                    console.log("availableMonths", availableMonths);
+
                     if (!availableMonths || availableMonths.length === 0) {
                         return cv_interact.error(
                             "Rent has already reached the final month of the contract.",
@@ -1054,17 +1186,25 @@ const InvoiceDialog = (() => {
                     InputBox.resetInstance("rentPopUp");
 
                     InputBox.show({
-                        title: `${LocaleManager.trans('Rental Details', "titles")}`,
+                        title: `${LocaleManager.trans(
+                            "Rental Details",
+                            "titles",
+                        )}`,
                         // title: "Rental Details",
                         instanceKey: "rentPopUp",
-                        confirmButtonText: `${LocaleManager.trans('Save', "buttons")}`,
-                        cancelButtonText: `${LocaleManager.trans('Close', "buttons")}`,
+                        confirmButtonText: `${LocaleManager.trans(
+                            "Save",
+                            "buttons",
+                        )}`,
+                        cancelButtonText: `${LocaleManager.trans(
+                            "Close",
+                            "buttons",
+                        )}`,
                         createContent() {
                             const div = document.createElement("div");
                             rentDiv = div;
                             div.style.cssText =
                                 "display:flex; flex-direction:column;";
-                                
 
                             div.innerHTML = `
                 <div>
@@ -1144,7 +1284,7 @@ const InvoiceDialog = (() => {
                     <label style="color:#777;" vslang="labels.Remark"></label>
                 </div>
             `;
-            LocaleManager.translateZone(div);
+                            LocaleManager.translateZone(div);
                             return div;
                         },
 
@@ -1254,14 +1394,20 @@ const InvoiceDialog = (() => {
                                     String(data.tax_rate).trim() === ""
                                 ) {
                                     return ibMe.setError(
-                                        "Tax % is required for this invoice type.",
+                                        LocaleManager.trans(
+                                            "tax_required",
+                                            "message_box_default",
+                                        ),
                                     );
                                 }
 
                                 const taxValue = Number(data.tax_rate);
                                 if (isNaN(taxValue) || taxValue < 0) {
                                     return ibMe.setError(
-                                        "Please enter a valid Tax % value.",
+                                        LocaleManager.trans(
+                                            "enter_tax",
+                                            "message_box_default",
+                                        ),
                                     );
                                 }
                             }
@@ -1275,7 +1421,10 @@ const InvoiceDialog = (() => {
 
                             if (!realContractId) {
                                 return ibMe.setError(
-                                    "Unit Code / Room is missing.",
+                                    LocaleManager.trans(
+                                        "missing_unit",
+                                        "message_box_default",
+                                    ),
                                 );
                             }
 
@@ -1320,13 +1469,19 @@ const InvoiceDialog = (() => {
                             );
                             if (isDuplicate) {
                                 return ibMe.setError(
-                                    `Rent is already in the list.`,
+                                    LocaleManager.trans(
+                                        "rent_exist",
+                                        "message_box_default",
+                                    ),
                                 );
                             }
 
                             me.itemsView.addRow(dataToAdd, 0);
                             cv_interact.success(
-                                `Rent for ${roomCode} added successfully.`,
+                                LocaleManager.trans(
+                                    "rent_added_success",
+                                    "message_box_default",
+                                ).replace("??", roomCode),
                             );
                             ibMe.close();
                         },
@@ -1336,28 +1491,39 @@ const InvoiceDialog = (() => {
                 me.controls.btnElectric.onclick = () => {
                     console.log("Global Setting", globalSetting);
                     if (!me._selectedTenantId) {
-                        return cv_interact.error("Please select Tenant first.");
+                        return cv_interact.error("select_tenant");
                     }
                     if (
                         !me.controls.space.value ||
                         me.controls.space.value === ""
                     ) {
-                        return cv_interact.error("Please select Space.");
+                        return cv_interact.error("select_space");
                     }
                     // const exchangeRate = me.exchangeRate;
                     // console.log(1111111111111111111,exchangeRate);
+                    const getRowItem = me.itemsView.getItems();
+                    console.log("getRowItem", getRowItem);
 
                     // Fetch InvoiceSetting first, then open popup
                     const openElectricPopup = () => {
                         let electricDiv = null;
                         InputBox.resetInstance("electricPopUp");
                         InputBox.show({
-                            title: `${LocaleManager.trans('Electricity Utility', "titles")}`,
+                            title: `${LocaleManager.trans(
+                                "Electricity Utility",
+                                "titles",
+                            )}`,
                             // title: "vslang:titles.Electricity Utility",
                             // title: LocaleManager.translate("titles.Electricity Utility"),
                             instanceKey: "electricPopUp",
-                            confirmButtonText: `${LocaleManager.trans('Save', "buttons")}`,
-                            cancelButtonText: `${LocaleManager.trans('Close', "buttons")}`,
+                            confirmButtonText: `${LocaleManager.trans(
+                                "Save",
+                                "buttons",
+                            )}`,
+                            cancelButtonText: `${LocaleManager.trans(
+                                "Close",
+                                "buttons",
+                            )}`,
                             createContent() {
                                 const div = document.createElement("div");
                                 electricDiv = div;
@@ -1457,7 +1623,7 @@ const InvoiceDialog = (() => {
                                 </div>
                                 <input class="data-input" type="text" data-field="entry_mode" value="reading" style="display:none;">
                             `;
-                            LocaleManager.translateZone(div);
+                                LocaleManager.translateZone(div);
                                 return div;
                             },
 
@@ -1604,7 +1770,8 @@ const InvoiceDialog = (() => {
                                         // Form structure configuration
                                         rowReadingFields.style.display = "grid";
                                         rowManualFields.style.display = "none";
-                                        txtConsumptionHeader.textContent ="Readings";
+                                        txtConsumptionHeader.textContent =
+                                            "Readings";
 
                                         // Calculation Row: Standard 2x2 layout look
                                         rowCalculationFields.style.gridTemplateColumns =
@@ -1837,7 +2004,6 @@ const InvoiceDialog = (() => {
                                 ibMe.close();
                             },
                         });
-
                     }; // end openElectricPopup
 
                     openElectricPopup();
@@ -1846,13 +2012,13 @@ const InvoiceDialog = (() => {
                 // =====================Service ===================
                 me.controls.btnService.onclick = () => {
                     if (!me._selectedTenantId) {
-                        return cv_interact.error("Please select Tenant first.");
+                        return cv_interact.error("select_tenant");
                     }
                     if (
                         !me.controls.space.value ||
                         me.controls.space.value === ""
                     ) {
-                        return cv_interact.error("Please select Space.");
+                        return cv_interact.error("select_space");
                     }
 
                     const services = availableItem || [];
@@ -1874,11 +2040,20 @@ const InvoiceDialog = (() => {
                     InputBox.resetInstance("servicePopUp");
 
                     InputBox.show({
-                        title: `${LocaleManager.trans('Add Service', "titles")}`,
+                        title: `${LocaleManager.trans(
+                            "Add Service",
+                            "titles",
+                        )}`,
                         // title: "Add Service",
                         instanceKey: "servicePopUp",
-                        confirmButtonText: `${LocaleManager.trans('Save', "buttons")}`,
-                        cancelButtonText: `${LocaleManager.trans('Close', "buttons")}`,
+                        confirmButtonText: `${LocaleManager.trans(
+                            "Save",
+                            "buttons",
+                        )}`,
+                        cancelButtonText: `${LocaleManager.trans(
+                            "Close",
+                            "buttons",
+                        )}`,
                         createContent() {
                             const div = document.createElement("div");
                             serviceDiv = div;
@@ -2166,7 +2341,10 @@ const InvoiceDialog = (() => {
                         onConfirm(data, btn, ibMe) {
                             if (!data.service_id) {
                                 return ibMe.setError(
-                                    "Please select a Service.",
+                                    LocaleManager.trans(
+                                        "select_service",
+                                        "message_box_default",
+                                    ),
                                 );
                             }
 
@@ -2187,12 +2365,18 @@ const InvoiceDialog = (() => {
                             if (unit === "month") {
                                 if (!data.duration_months) {
                                     return ibMe.setError(
-                                        "Please input Duration.",
+                                        LocaleManager.trans(
+                                            "input_time",
+                                            "message_box_default",
+                                        ),
                                     );
                                 }
                                 if (!data.start_date || !data.end_date) {
                                     return ibMe.setError(
-                                        "Please input Start and End Date.",
+                                        LocaleManager.trans(
+                                            "input_date",
+                                            "message_box_default",
+                                        ),
                                     );
                                 }
                             }
@@ -2234,7 +2418,10 @@ const InvoiceDialog = (() => {
                             );
                             if (isDuplicate) {
                                 return ibMe.setError(
-                                    `Service is already in the list.`,
+                                    LocaleManager.trans(
+                                        "service_exist",
+                                        "message_box_default",
+                                    ),
                                 );
                             }
 
@@ -2260,7 +2447,11 @@ const InvoiceDialog = (() => {
 
                             cv_interact.success(
                                 `Service added for ${qtyMonths} ${
-                                    unit === "month" ? "month(s)" : "unit"
+                                    unit === "month"
+                                        ? qtyMonths === 1
+                                            ? "month"
+                                            : "months"
+                                        : "unit"
                                 }`,
                             );
                             ibMe.close();
@@ -2274,17 +2465,17 @@ const InvoiceDialog = (() => {
                 // ==================Service Request=========
                 me.controls.btnRequest.onclick = () => {
                     if (!me._selectedTenantId) {
-                        return cv_interact.error("Please select Tenant first.");
+                        return cv_interact.error("select_tenant");
                     }
 
                     const selectedSpaceId =
                         me.controls.space?.value || me.controls.space_id?.value;
                     if (!selectedSpaceId || selectedSpaceId === "") {
-                        return cv_interact.error("Please select Space.");
+                        return cv_interact.error("select_space");
                     }
 
                     const requests = me._requestedServices || [];
-                    console.log("All Requests", requests);
+                    // console.log("All Requests", requests);
 
                     const filteredRequests = requests.filter(
                         (r) => String(r.space_id) === String(selectedSpaceId),
@@ -2292,7 +2483,10 @@ const InvoiceDialog = (() => {
 
                     if (filteredRequests.length === 0) {
                         return cv_interact.error(
-                            "No Requests relate to this space.",
+                            LocaleManager.trans(
+                                "no_request",
+                                "message_box_default",
+                            ),
                         );
                     }
 
@@ -2308,10 +2502,19 @@ const InvoiceDialog = (() => {
 
                     InputBox.show({
                         // title: "Service Request",
-                        title: `${LocaleManager.trans('Service Request', "titles")}`,
+                        title: `${LocaleManager.trans(
+                            "Service Request",
+                            "titles",
+                        )}`,
                         instanceKey: "requestPopUp",
-                        confirmButtonText: `${LocaleManager.trans('Save', "buttons")}`,
-                        cancelButtonText: `${LocaleManager.trans('Close', "buttons")}`,
+                        confirmButtonText: `${LocaleManager.trans(
+                            "Save",
+                            "buttons",
+                        )}`,
+                        cancelButtonText: `${LocaleManager.trans(
+                            "Close",
+                            "buttons",
+                        )}`,
                         createContent() {
                             const div = document.createElement("div");
                             requestDiv = div;
@@ -2541,7 +2744,10 @@ const InvoiceDialog = (() => {
 
                             if (!selectedRequest) {
                                 return cv_interact.error(
-                                    "Please select a service request.",
+                                    LocaleManager.trans(
+                                        "service_request",
+                                        "message_box_default",
+                                    ),
                                 );
                             }
 
@@ -2568,7 +2774,10 @@ const InvoiceDialog = (() => {
                             );
                             if (isDuplicate) {
                                 return ibMe.setError(
-                                    "Service Request is already in the list.",
+                                    LocaleManager.trans(
+                                        "request_exist",
+                                        "message_box_default",
+                                    ),
                                 );
                             }
 
@@ -2591,17 +2800,17 @@ const InvoiceDialog = (() => {
 
                             me.itemsView.addRow(dataToAdd, 0);
                             cv_interact.success(
-                                "Service request added to invoice",
+                                LocaleManager.trans(
+                                    "request_invoice",
+                                    "message_box_default",
+                                ),
                             );
                             ibMe.close();
                         },
                     });
                 };
 
-                const subLabel = LocaleManager.trans('Sub Total', "titles")
-
-                console.log(11111, subLabel);
-                
+                const subLabel = LocaleManager.trans("Sub Total", "titles");
 
                 me.itemsView = new ItemsView(me.controls.divItemsView, {
                     currencyCode: "USD",
@@ -2704,11 +2913,14 @@ const InvoiceDialog = (() => {
                         showTax: false,
                         allowDiscount: true,
                         discountBeforeTax: true,
-                        labels:{
-                            subtotal:LocaleManager.trans('Sub Total', "titles"),
-                            discount:LocaleManager.trans('Discount', "titles"),
-                            total:LocaleManager.trans('Total', "titles"),
-                        }
+                        labels: {
+                            subtotal: LocaleManager.trans(
+                                "Sub Total",
+                                "titles",
+                            ),
+                            discount: LocaleManager.trans("Discount", "titles"),
+                            total: LocaleManager.trans("Total", "titles"),
+                        },
                         // currencyConversion: {
                         //     currency_code: "KHR",
                         //     rate: 4100
@@ -2720,7 +2932,7 @@ const InvoiceDialog = (() => {
                     //     transTitle: "titles.Amount in KHR"
                     // },
                     tableClass: "table",
-                    ensureEmptyRow: false,
+                    ensureEmptyRow: true,
                     showAddLineButton: false,
                     showAddLineButton: false,
 
@@ -2750,6 +2962,10 @@ const InvoiceDialog = (() => {
                                 "invoice_type",
                             ]);
                         }
+                    },
+
+                    afterDelete(rows, ctx) {
+                        console.log("afterDelete", rows, ctx);
                     },
 
                     onItemChange: (rowId, item, fieldName, td, tr) => {
@@ -2920,6 +3136,26 @@ const InvoiceDialog = (() => {
                     (s) => s.type_id == 2,
                 );
 
+                vsapi
+                    .call(
+                        `${main_view.base_url}/prm/invoice_setting/get-exchange-rate`,
+                        {},
+                    )
+                    .then((res) => {
+                        if (res.status_code !== 200) {
+                            cv_interact.error(
+                                LocaleManager.trans(
+                                    "failed_load_invoice",
+                                    "message_box_default",
+                                ),
+                            );
+                            return;
+                        }
+                        console.log("Global Setting", res);
+
+                        exchangeRate = res.data;
+                    });
+
                 const isReadOnly = me.dataOptions.id > 0;
                 me.controls.tenant.disabled = isReadOnly;
                 me.setReadOnly(isReadOnly, [
@@ -2948,7 +3184,7 @@ const InvoiceDialog = (() => {
                     });
                     if (me.controls.space) {
                         me.controls.space.innerHTML =
-                            '<option value="">-- Select Room / Space --</option>';
+                            '<option value="">Select Unit</option>';
                         me.controls.space.value = "";
                         me.controls.space.dispatchEvent(
                             new Event("change", { bubbles: true }),
@@ -2966,12 +3202,14 @@ const InvoiceDialog = (() => {
                         .then((res) => {
                             if (res.status_code !== 200) {
                                 cv_interact.error(
-                                    "Failed to load invoice details.",
+                                    LocaleManager.trans(
+                                        "failed_load_invoice",
+                                        "message_box_default",
+                                    ),
                                 );
                                 return;
                             }
                             const detail = res.data || {};
-                            console.log("invoice detail:", detail);
 
                             me.controls.due_date.value = detail.due_date;
                             me.controls.issue_date.value = detail.issue_date;
@@ -3019,7 +3257,6 @@ const InvoiceDialog = (() => {
                                                 me.controls.space.value =
                                                     String(detail.space_id);
 
-                                                // ✅ Verify — if Choices.js overrides, force via option.selected
                                                 if (
                                                     me.controls.space.value !==
                                                     String(detail.space_id)
@@ -3075,36 +3312,32 @@ const InvoiceDialog = (() => {
                 }
             },
 
+            // onShow: me => {
+            //     const title = me.divModal.querySelector(".modal-title");
+            //     if (title) {
+            //         const isModify = !!me.dataOptions?.id;
+            //         title.innerHTML = isModify
+            //             ? '<h4 class="text-prm-custom text-start fw-bold text-white" vslang="titles.Modify Invoice">Modify Invoice</h4>'
+            //             : '<h4 class="text-prm-custom text-start fw-bold text-white" vslang="titles.Create Invoice">Create Invoice</h4>';
+            //     }
+
+            // },
+
             onShow: (me) => {
-                const title = me.divModal.querySelector(".modal-title");
-                if (title) {
-                    const isModify = !!me.dataOptions?.id;
-                    // title.innerHTML = isModify
-                    //     ? '<h4 class="text-prm-custom text-start fw-bold" vslang="titles.Modify Invoice">Modify Invoice</h4>'
-                    //     : '<h4 class="text-prm-custom text-start fw-bold" vslang="titles.Create Invoice">Create Invoice</h4>';
+                const titleEl = me.divModal.querySelector(".modal-title");
+
+                if (titleEl) {
+                    const key = me.dataOptions?.id
+                        ? "Modify Invoice"
+                        : "Create Invoice";
+                    const translatedText = LocaleManager.trans(key, "titles");
+                    titleEl.innerHTML = `<h4 class="text-prm-custom text-start fw-bold text-white">${translatedText}</h4>`;
                 }
-
-                vsapi
-                    .call(
-                        `${main_view.base_url}/prm/invoice_setting/get-exchange-rate`,
-                        {},
-                    )
-                    .then((res) => {
-                        if (res.status_code !== 200) {
-                            cv_interact.error(
-                                "Failed to load invoice details.",
-                            );
-                            return;
-                        }
-                        console.log("Global Setting", res);
-
-                        exchangeRate = res.data;
-                    });
             },
 
             prepareFormOptions: {
-                modifyTitle: "vslang:titles.Modify Invoice",
-                createTitle: "vslang:titles.Create Invoice",
+                // modifyTitle: "vslang:titles.Modify Invoice",
+                // createTitle: "vslang:titles.Create Invoice",
                 targetProp: "invoice_details",
                 api: {
                     endpoint: `${main_view.base_url}/prm/invoice/form-options`,
@@ -3118,7 +3351,7 @@ const InvoiceDialog = (() => {
             onClose: (me) => {
                 if (me.controls && me.controls.space) {
                     me.controls.space.innerHTML =
-                        '<option value="">-- Select Room / Space --</option>';
+                        '<option value="">Select Unit</option>';
                 }
                 if (me.searchTenant) me.searchTenant.reset("");
                 if (me.itemsView) me.itemsView.setData([]);
@@ -3141,7 +3374,7 @@ const InvoiceDialog = (() => {
                         if (!formData) return;
 
                         if (!formData.items || formData.items.length === 0) {
-                            return cv_interact.error("Add at least one item.");
+                            return cv_interact.error("add_item");
                         }
                         formData.id = me.dataOptions.id;
 
@@ -3155,13 +3388,13 @@ const InvoiceDialog = (() => {
                                 if (res.status_code === 200) {
                                     cv_interact.success(
                                         formData.id
-                                            ? "Invoice has been updated."
-                                            : "Invoice has been successfully created.",
+                                            ? "update_success_invoice"
+                                            : "create_success_invoice",
                                     );
                                     me.hide(true);
                                 } else {
                                     cv_interact.error(
-                                        res.error_message || "Save failed.",
+                                        res.error_message || "save_failed",
                                     );
                                 }
                             });
@@ -3181,13 +3414,12 @@ const ReceiveDialog = (() => {
 
     self.show = (op) => {
         dialog = new GeneralDialog({
-            
             cssClass: "modal-lg vs-modal",
             title: (me) => {
-                    const title = me.dataOptions.id ? "Receive Payment" : "Create";
-                    if (title) {
-                       return  `<h4 class="text-prm-custom text-start fw-bold">${LocaleManager.trans(title,'titles')}</h4>`;
-                    }
+                return `<h4 class="text-white text-start ">${LocaleManager.trans(
+                    "Receive Payment",
+                    "titles",
+                )}</h4>`;
             },
 
             createContent: () => `
@@ -3212,9 +3444,9 @@ const ReceiveDialog = (() => {
                         <!-- Cash -->
                         <div>
                             <div class="d-flex align-items-center gap-2 mb-3">
-                                <span class="payment-badge" style="color:#0C447C;">Cash</span>
+                                <span class="payment-badge" style="color:#0C447C;">${LocaleManager.trans('Cash', 'labels')}</span>
                                 <div style="flex:1;height:1px;background:#dee2e6;"></div>
-                                <span style="font-size:11px;color:#0C447C;">Entered: <strong id="c_e" style="color:#212529;">—</strong></span>
+                                <span style="font-size:11px;color:#0C447C;">${LocaleManager.trans('Entered:', 'labels')}<strong id="c_e" style="color:#212529;">—</strong></span>
                             </div>
                             <div style="display:flex;flex-direction:row;gap:8px;flex-wrap:wrap;margin-bottom: 0.5rem;">
                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
@@ -3227,9 +3459,9 @@ const ReceiveDialog = (() => {
                         <!-- Bank Transfer -->
                         <div>
                             <div class="d-flex align-items-center gap-2 mb-3">
-                                <span class="payment-badge" style="color:#0C447C;">Bank Transfer</span>
+                                <span class="payment-badge" style="color:#0C447C;">${LocaleManager.trans('Bank Transfer', 'labels')}</span>
                                 <div style="flex:1;height:1px;background:#dee2e6;"></div>
-                                <span style="font-size:11px;color:#0C447C;">Entered: <strong id="b_e" style="color:#212529;">—</strong></span>
+                                <span style="font-size:11px;color:#0C447C;">${LocaleManager.trans('Entered:', 'labels')} <strong id="b_e" style="color:#212529;">—</strong></span>
                             </div>
                             <div style="display:flex;flex-direction:row;gap:8px;flex-wrap:wrap;margin-bottom: 0.5rem;">
                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
@@ -3249,9 +3481,9 @@ const ReceiveDialog = (() => {
                         <!-- Card -->
                         <div>
                             <div class="d-flex align-items-center gap-2 mb-3">
-                                <span class="payment-badge" style="color:#0C447C;">Card</span>
+                                <span class="payment-badge" style="color:#0C447C;">${LocaleManager.trans('Card', 'labels')}</span>
                                 <div style="flex:1;height:1px;background:#dee2e6;"></div>
-                                <span style="font-size:11px;color:#0C447C;">Entered: <strong id="ca_e" style="color:#212529;">—</strong></span>
+                                <span style="font-size:11px;color:#0C447C;">${LocaleManager.trans('Entered:', 'labels')} <strong id="ca_e" style="color:#212529;">—</strong></span>
                             </div>
                             <div style="display:flex;flex-direction:row;gap:8px;flex-wrap:wrap;margin-bottom: 0.5rem;">
                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
@@ -3275,9 +3507,9 @@ const ReceiveDialog = (() => {
                         <!-- Cheque -->
                         <div>
                             <div class="d-flex align-items-center gap-2 mb-3">
-                                <span class="payment-badge" style="color:#0C447C;">Cheque</span>
+                                <span class="payment-badge" style="color:#0C447C;">${LocaleManager.trans('Cheque', 'labels')}</span>
                                 <div style="flex:1;height:1px;background:#dee2e6;"></div>
-                                <span style="font-size:11px;color:#0C447C;">Entered: <strong id="ch_e" style="color:#212529;">—</strong></span>
+                                <span style="font-size:11px;color:#0C447C;">${LocaleManager.trans('Entered:', 'labels')} <strong id="ch_e" style="color:#212529;">—</strong></span>
                             </div>
                             <div style="display:flex;flex-direction:row;gap:8px;flex-wrap:wrap;margin-bottom: 0.5rem;">
                                 <div style="flex:1;min-width:120px;" class="material-input outlined">
@@ -3447,6 +3679,7 @@ const ReceiveDialog = (() => {
                         .then((res) => {
                             if (res.status_code === 200) {
                                 const d = res.data || {};
+                                console.log("data", d);
                                 const bal = Number(d.balance || 0).toFixed(2);
                                 const set = (id, val) => {
                                     const el = me.divModal.querySelector(
@@ -3507,7 +3740,10 @@ const ReceiveDialog = (() => {
 
                         if (totalInput <= 0) {
                             return cv_interact.error(
-                                "Please enter a payment amount.",
+                                LocaleManager.trans(
+                                    "payment_amount",
+                                    "message_box_default",
+                                ),
                             );
                         }
 
@@ -3520,12 +3756,15 @@ const ReceiveDialog = (() => {
                             .then((res) => {
                                 if (res.status_code === 200) {
                                     cv_interact.success(
-                                        "Payment Received Successfully.",
+                                        LocaleManager.trans(
+                                            "receive_success_payment",
+                                            "message_box_default",
+                                        ),
                                     );
                                     me.hide(true);
                                 } else {
                                     cv_interact.error(
-                                        res.error_message || "Save failed.",
+                                        res.error_message || "save_failed",
                                     );
                                 }
                             })
@@ -3537,6 +3776,8 @@ const ReceiveDialog = (() => {
                 },
             ],
         });
+        LocaleManager.trans("", "titles");
+        LocaleManager.trans("", "labels");
 
         dialog.show(op);
     };
@@ -3555,19 +3796,20 @@ const InvoiceSettingDialog = (() => {
         const invoiceId = currentData.id || currentData.invoice_id || 0;
 
         dialog = new GeneralDialog({
-            title: "Invoice Setting",
+            title: LocaleManager.trans("Invoice Setting", "titles"),
             cssClass: "modal-lg vs-modal",
             backdrop: "static",
             keyboard: true,
 
             createContent: () => `
                 <div class="is-card">
-                    <p class="is-section-title">Invoice Display Options</p>
+                    <p class="is-section-title"> ${LocaleManager.trans("Invoice Display Options", "labels")}</p>
 
                     <div class="is-row d-flex justify-content-between align-items-center mb-3">
                         <span class="is-row-label">
                             <i class="fa-solid fa-receipt me-2"></i>
-                            Show Commercial Tax
+                            ${LocaleManager.trans("Show Commercial Tax", "labels")}
+                            
                         </span>
                         <div class="form-check form-switch">
                             <input class="form-check-input toggle-setting" type="checkbox" data-field="show_comm_tax" id="_is_show_comm_tax">
@@ -3577,7 +3819,7 @@ const InvoiceSettingDialog = (() => {
                     <div class="is-row d-flex justify-content-between align-items-center mb-3">
                         <span class="is-row-label">
                             <i class="fa-solid fa-credit-card me-2"></i>
-                            Show Payment Status
+                            ${LocaleManager.trans("Show Payment Status", "labels")}
                         </span>
                         <div class="form-check form-switch">
                             <input class="form-check-input toggle-setting" type="checkbox" data-field="show_pmt_status" id="_is_show_pmt_status">
@@ -3587,7 +3829,7 @@ const InvoiceSettingDialog = (() => {
                     <div class="is-row d-flex justify-content-between align-items-center mb-3">
                         <span class="is-row-label">
                             <i class="fa-solid fa-scale-balanced me-2"></i>
-                            Show Balance
+                            ${LocaleManager.trans("Show Balance", "labels")}
                         </span>
                         <div class="form-check form-switch">
                             <input class="form-check-input toggle-setting" type="checkbox" data-field="show_balance" id="_is_show_balance">
@@ -3597,7 +3839,7 @@ const InvoiceSettingDialog = (() => {
                     <div class="is-row d-flex justify-content-between align-items-center mb-3">
                         <span class="is-row-label">
                             <i class="fa-solid fa-money-bill-wave me-2"></i>
-                            Show Amount Paid
+                            ${LocaleManager.trans("Show Amount Paid", "labels")}
                         </span>
                         <div class="form-check form-switch">
                             <input class="form-check-input toggle-setting" type="checkbox" data-field="show_amount_paid" id="_is_show_amount_paid">
@@ -3607,7 +3849,7 @@ const InvoiceSettingDialog = (() => {
                     <div class="is-row d-flex justify-content-between align-items-center mb-3">
                         <span class="is-row-label">
                             <i class="fa-solid fa-pen-to-square me-2"></i>
-                            Show Sign
+                            ${LocaleManager.trans("Show Signature", "labels")}
                         </span>
                         <div class="form-check form-switch">
                             <input class="form-check-input toggle-setting" type="checkbox" data-field="show_sign" id="_is_show_sign">
@@ -3736,8 +3978,12 @@ const InvoiceSettingDialog = (() => {
                             .then((res) => {
                                 if (res.status_code === 200) {
                                     me.hide(true, res);
+
                                     cv_interact.success(
-                                        "Settings updated successfully.",
+                                        LocaleManager.trans(
+                                            "update_success_setting",
+                                            "message_box_default",
+                                        ),
                                     );
 
                                     if (
@@ -3756,8 +4002,7 @@ const InvoiceSettingDialog = (() => {
                                     }
                                 } else {
                                     cv_interact.error(
-                                        res.error_message ||
-                                            "An error occurred while saving.",
+                                        res.error_message || "save_failed",
                                     );
                                 }
                             });

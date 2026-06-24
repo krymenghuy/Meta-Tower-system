@@ -112,7 +112,6 @@ var ReservationComponent = (() => {
             transTitle: "titles.Action",
             className: "col_action align-middle",
             data: (data) => {
-                // console.log(444, data.status_id);
 
                 if (data.status_id == 2) return "";
                 return `<div class="d-flex justify-content-center align-items-end">
@@ -157,7 +156,7 @@ var ReservationComponent = (() => {
                     mThis.ReservationListView.showPage(mThis.getFilterData());
                 },
             };
-            // if (!AuthManager.allowed(240)) return;
+            if (!AuthManager.allowed(248,false)) return;
             CreateReservationDialog.show(op);
         };
 
@@ -301,17 +300,18 @@ var ReservationComponent = (() => {
                 mThis.ReservationListView.showPage(mThis.getFilterData());
             },
         };
+        if (!AuthManager.allowed(249)) return;
         CreateReservationDialog.show(op);
     };
 
     mThis.cancelReservation = (id, menuLink) => {
-        if (!AuthManager.allowed(242)) return;
+        if (!AuthManager.allowed(250)) return;
         cv_interact.confirm(
-            "Cancel this reservation ?",
+            "confirm_cancel",
             {
                 transTitle: "Cancel Reservation",
                 context: "delete",
-                confirmButtonText: "Cancel",
+                confirmButtonText: LocaleManager.trans('Cancel', 'buttons')
             },
             (confirmed) => {
                 if (!confirmed) return;
@@ -325,13 +325,13 @@ var ReservationComponent = (() => {
                     )
                     .then((res) => {
                         if (res.status_code === 200) {
-                            cv_interact.success("Reservation cancelled.");
+                            cv_interact.success("cancel_success_reservation");
                             mThis.ReservationListView.showPage(
                                 mThis.getFilterData(),
                             );
                         } else {
                             cv_interact.error(
-                                res.error_message || "Cancel failed",
+                                res.error_message || "cancel_failed",
                             );
                         }
                     });
@@ -340,13 +340,13 @@ var ReservationComponent = (() => {
     };
 
     mThis.deleteReservation = (id, menuLink) => {
-        if (!AuthManager.allowed(242)) return;
+        if (!AuthManager.allowed(251)) return;
         cv_interact.confirm(
-            "Delete this reservation?",
+            "confirm_delete",
             {
                 transTitle: "Delete Reservation",
                 context: "delete",
-                confirmButtonText: "Delete",
+                confirmButtonText: LocaleManager.trans('Delete', 'buttons')
             },
             (e) => {
                 if (!e) return;
@@ -360,13 +360,13 @@ var ReservationComponent = (() => {
                     )
                     .then((res) => {
                         if (res.status_code === 200) {
-                            cv_interact.success("Reservation deleted.");
+                            cv_interact.success("delete_success_reservation");
                             mThis.ReservationListView.showPage(
                                 mThis.getFilterData(),
                             );
                         } else {
                             cv_interact.error(
-                                res.error_message || "Delete failed",
+                                res.error_message || "delete_failed",
                             );
                         }
                     });
@@ -437,7 +437,7 @@ const CreateReservationDialog = (() => {
                                 </div>
                             </div>
                             <div class="col-6">
-                                <select data-style="material" name="amenity" class="data-input form-control" data-field="amenity_id" placeholder="Amenity">
+                                <select data-style="material" name="amenity" class="data-input form-control" data-field="amenity_id" placeholder="${LocaleManager.trans('Amenity', 'titles')}">
                                 </select>
                             </div>
 
@@ -625,11 +625,11 @@ const CreateReservationDialog = (() => {
                                         me._selectedTenantId = null;
                                         if (me.dataOptions.id > 0) {
                                             cv_interact.success(
-                                                "updated",
-                                            );has
+                                                "update_success_reservation",
+                                            );
                                         } else {
                                             cv_interact.success(
-                                                "created",
+                                                "create_success_reservation",
                                             );
                                         }
                                     } else {

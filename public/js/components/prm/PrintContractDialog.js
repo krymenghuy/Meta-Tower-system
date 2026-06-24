@@ -3,8 +3,6 @@ const CreateContractDialog = (()=>{
    const self = {};
    let dialog = null;
      self.show = (op)=>{
-        console.log(9090,op);
-        
         dialog = dialog || new GeneralDialog({
             cssClass:"modal-lg vs-modal",
             backdrop: "static",
@@ -48,20 +46,20 @@ const CreateContractDialog = (()=>{
                                         <label vslang="labels.National ID"></label>
                                     </div>
                                 </div>
-                                <div class="col-6">
+                                <div class="col-6 d-none">
                                     <div class="vs-material-field">
                                         <input type="text" name="lease_term" class="data-input form-control form_input" data-field="lease_term" disabled placeholder=" " />
                                         <label vslang="labels.Duration">Duration</label>
                                     </div>
                                 </div>
                                 
-                                <div class="col-3">
+                                <div class="col-3 d-none">
                                     <div class="vs-material-field">
                                         <input type="text" data-type="date" name="start_date" class="data-input form-control form_input" data-field="start_date" disabled placeholder=" " />
                                         <label vslang="labels.Start Date">Start Date</label>
                                     </div>
                                 </div>
-                                <div class="col-3">
+                                <div class="col-3 d-none">
                                     <div class="vs-material-field">
                                         <input type="text" data-type="date" name="end_date" class="data-input form-control form_input" data-field="end_date" disabled placeholder=" " />
                                         <label vslang="labels.End Date">End Date</label>
@@ -99,7 +97,7 @@ const CreateContractDialog = (()=>{
                             <div class="row g-3">
                                 <div class="col-6">
                                     <div class="vs-material-field">
-                                        <input name="com_rep_name" class="data-input form-control" data-field="com_rep_name"  placeholder="Company Representative" />
+                                        <input name="com_rep_name" class="data-input form-control" data-field="com_rep_name"  placeholder=" " />
                                         <label vslang="labels.Company Representative">Company Representative</label>
                                     </div>
                                 </div>

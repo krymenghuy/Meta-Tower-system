@@ -1,5 +1,5 @@
 "use strict";
-var ReceiptComponent = new (function() {
+var ReceiptComponent = (() => {
     const mThis = this;
     mThis.title_prop = "Receipts";
     mThis.base_url = main_view.base_url;
@@ -20,11 +20,13 @@ var ReceiptComponent = new (function() {
             data: data => {
                 const code = data.code
                     ? `<span class="text-prm-custom">${data.code}</span>`
-                    : `<span class="text-muted fst-italic">N/A</span>`;
+                    : `<span class="text-muted fst-italic">_</span>`;
 
                 return `
                     <div class="d-flex flex-column">
                         ${code}
+
+                        ${data.deposit_id ? `<span class="d-block text-primary"style="font-size:12px;">Deposit</span>` : ''}
                     </div>
                 `;
             }
@@ -35,7 +37,7 @@ var ReceiptComponent = new (function() {
             data: data => {
                 const code = data.invoice_code
                     ? `<span class="text-prm-custom ">${data.invoice_code}</span>`
-                    : `<span class="text-muted fst-italic">N/A</span>`;
+                    : `<span class="text-muted fst-italic">_</span>`;
                 return `
                     <div class="d-flex flex-column ">
                         ${code}
@@ -150,7 +152,7 @@ var ReceiptComponent = new (function() {
             }
         },
         {
-            transTitle: "titles.Updated By",
+            transTitle: "titles.Last Updated",
             className: "align-middle text-nowrap",
             data: data => `
             <div class="d-flex flex-column">
@@ -233,7 +235,7 @@ var ReceiptComponent = new (function() {
             menus: [
                 {
                     html:
-                        '<span class="ps-2" vslang="title.Cancel Receipt"></span>',
+                        '<span class="ps-2" vslang="titles.Cancel Receipt"></span>',
                     icon: `<i class="fa-regular fa-rectangle-xmark fs-5 text-danger-emphasis"></i>`,
                     name: "cancel_receipt",
                     cssClass: "border-bottom pb-2"
@@ -262,6 +264,7 @@ var ReceiptComponent = new (function() {
     };
 
     mThis.printReceipt = (id, menuLink) => {
+        if (!AuthManager.allowed(241)) return;
         PrintReceiptDialog.show({
             receipt_id: id,
             btn: menuLink
@@ -269,15 +272,16 @@ var ReceiptComponent = new (function() {
     };
 
     mThis.cancelReceipt = id => {
+        if (!AuthManager.allowed(242)) return;
         Swal.fire({
-            title: "Cancel Receipt?",
+            title: `${LocaleManager.trans('Cancel Receipt?', "titles")}`,
             text: "This will restore the due balance on the invoice.",
             icon: "warning",
             input: "textarea",
             inputPlaceholder: "Reason for cancellation (required)...",
             showCancelButton: true,
             confirmButtonColor: "#d33",
-            confirmButtonText: "Yes, Cancel it!",
+            confirmButtonText: `${LocaleManager.trans('Yes, Cancel it!', "buttons")}`,
             reverseButtons: true,
             inputValidator: value => {
                 if (!value) return "You must provide a reason!";
@@ -290,7 +294,7 @@ var ReceiptComponent = new (function() {
                     .then(res => {
                         if (res.status_code !== 200) {
                             throw new Error(
-                                res.error_message || "Failed to cancel"
+                                res.error_message || "cancel_failed"
                             );
                         }
                         return res;
@@ -302,7 +306,7 @@ var ReceiptComponent = new (function() {
             allowOutsideClick: () => !Swal.isLoading()
         }).then(result => {
             if (result.isConfirmed) {
-                cv_interact.success("Receipt has been canceled.");
+                cv_interact.success("cancel_receipt");
                 mThis.ReceiptListView.showPage(mThis.getFilterData());
             }
         });

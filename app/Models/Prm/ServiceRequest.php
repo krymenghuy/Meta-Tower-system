@@ -29,7 +29,7 @@ class ServiceRequest extends VSModel
         $branch_id = $ss->branch_id;
         $v_rule = [
             'tenant_id'         => '1|number|exists=tenants.id|text=Please select a tenant.',
-            'space_id'          => '1|number|exists=building_spaces.id|text=Please select a space.',
+            'space_id'          => '1|number|exists=building_spaces.id|text=Please select a unit.',
             'category_id'       => '1|number|exists=service_categories.id|text=Please select a category.',
             'service_id'        => '1|number|exists=services.id|text=Please select a service.',
             'unit_type'         => '0|choice|1,2,3',
@@ -52,7 +52,7 @@ class ServiceRequest extends VSModel
         $now = time();
         $startDT = strtotime($scheduledDate . ' ' . $startTime);
         if ($startDT <= $now) {
-            return DV::error('Cannot schedule in the past.');
+            return DV::error('schedule_cannot_past');
         }
         if ($input['unit_type'] == 2 && empty($input['duration_hours'])) {
             return DV::error('Please select duration hour.');

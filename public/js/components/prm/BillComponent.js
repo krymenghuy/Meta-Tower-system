@@ -75,16 +75,17 @@ var BillComponent = (() => {
                 return `
                     <span class="d-block fw-semibold text-primary">${total}</span>
                     <a href="javascript:void(0)"
-                        class="${hasFile ? 'btn_view_bill_attachment' : 'btn_upload_bill_attachment'}"
+                        class="${hasFile ? "btn_view_bill_attachment" : "btn_upload_bill_attachment"}"
                         data-id="${data.id}"
                         data-fileurl="${data.image_url ?? ""}"
-                        title="${hasFile ? 'Click to view attachment' : 'Click to upload attachment'}"
+                        title="${hasFile ? "Click to view attachment" : "Click to upload attachment"}"
                         style="font-size:12px; display:inline-flex; align-items:center; gap:4px; text-decoration:none;">
-                        ${hasFile
-                            ? `<i class="fa-solid fa-paperclip text-success"></i>
-                            <span class="text-success" style="font-size:11px;">View</span>`
-                            : `<i class="fa-solid fa-cloud-arrow-up fa-sm" style="color: rgb(74, 72, 107);"></i>
-                            <span style="font-size:11px; color: rgb(74, 72, 107);">Upload</span>`
+                        ${
+                            hasFile
+                                ? `<i class="fa-solid fa-paperclip text-success"></i>
+                            <span class="text-success" style="font-size:11px;">${LocaleManager.trans("View", "buttons")}</span>`
+                                : `<i class="fa-solid fa-cloud-arrow-up fa-sm" style="color: rgb(74, 72, 107);"></i>
+                            <span style="font-size:11px; color: rgb(74, 72, 107);">${LocaleManager.trans("Upload", "buttons")}</span>`
                         }
                     </a>`;
             },
@@ -222,6 +223,7 @@ var BillComponent = (() => {
                     mThis.BillListView.showPage(mThis.getFilterData());
                 },
             };
+            if (!AuthManager.allowed(274, false)) return;
             BillDialog.show(op);
         };
 
@@ -399,15 +401,20 @@ var BillComponent = (() => {
                 mThis.BillListView.showPage(mThis.getFilterData());
             },
         };
+        if (!AuthManager.allowed(275, false)) return;
         BillDialog.show(op);
     };
     mThis.deleteBill = (id, menuLink) => {
+        if (!AuthManager.allowed(276, false)) return;
         cv_interact.confirm(
-            "Delete this Bill Record?",
+            "confirm_delete",
             {
                 transTitle: "Delete Bill Record",
+                langSection: "message_box_default",
+                translate: true,
                 context: "delete",
-                confirmButtonText: "Delete",
+                confirmButtonText: LocaleManager.trans("Delete", "buttons"),
+                tt
             },
             function (e) {
                 if (e) {
@@ -422,16 +429,14 @@ var BillComponent = (() => {
                         .then((res) => {
                             if (res.status_code == 200) {
                                 cv_interact.success(
-                                    res.message ||
-                                        "Bill record has been deleted.",
+                                    res.message || "delete_bill_success",
                                 );
                                 mThis.BillListView.showPage(
                                     mThis.getFilterData(),
                                 );
                             } else {
                                 cv_interact.error(
-                                    res.error_message ||
-                                        "Failed to delete bill record.",
+                                    res.error_message || "delete_failed",
                                 );
                             }
                         });
@@ -458,12 +463,14 @@ var BillComponent = (() => {
                     mThis.displayBillDetail(expandedContainer, id);
             },
         };
+        if (!AuthManager.allowed(277, false)) return;
         BillPaymentDialog.show(op);
     };
     mThis.uploadAttachment = (id, menuLink) => {
         const tr = menuLink.closest("tr");
         const fileUrl = tr?.dataset.fileurl || null;
         const vendor_id = tr?.dataset.vendorId || null;
+        if (!AuthManager.allowed(278, false)) return;
 
         FileChooser.chooseFile(
             {
@@ -506,9 +513,7 @@ var BillComponent = (() => {
                             // const newAttachmentId = res.data?.id || null;
                             // me.hide(true, p, newAttachmentId);
 
-                            cv_interact.success(
-                                "Bill record has been uploaded.",
-                            );
+                            cv_interact.success("upload_bill_photo");
                             mThis.BillListView.showPage(
                                 mThis.getFilterData(),
                                 1,
@@ -529,6 +534,8 @@ var BillComponent = (() => {
         );
     };
     mThis.viewAttachment = (id, menuLink) => {
+        if (!AuthManager.allowed(279, false)) return;
+
         vsapi
             .call(
                 `${main_view.base_url}/prm/bill/view-attachment`,
@@ -617,6 +624,7 @@ var BillComponent = (() => {
             });
     };
     mThis.deleteAttachment = (id, menuLink) => {
+        if (!AuthManager.allowed(280, false)) return;
         cv_interact.confirm(
             "Delete this attachment?",
             {
@@ -636,14 +644,11 @@ var BillComponent = (() => {
                     )
                     .then((res) => {
                         if (res.status_code === 200) {
-                            cv_interact.success(
-                                "Attachment deleted successfully.",
-                            );
+                            cv_interact.success("delete_bill_photo");
                             mThis.BillListView.showPage(mThis.getFilterData());
                         } else {
                             cv_interact.error(
-                                res.error_message ||
-                                    "Failed to delete attachment.",
+                                res.error_message || "delete_failed",
                             );
                         }
                     })
@@ -733,7 +738,7 @@ const BillDialog = (() => {
                             <div class="col-6">
                                 <div class="vs-material-field">
                                     <input  name="vendor" class="data-input form-control" data-field="vendor_name" placeholder="Vendor" autocomplete="off">
-                                    <label>Vendor</label>
+                                    <label vslang="labels.Vendor"></label>
                                 </div>
                             </div>
                             <div class="col-6">
@@ -744,13 +749,13 @@ const BillDialog = (() => {
                             </div>
                             <div class="col-3">
                                 <div class="vs-material-field">
-                                    <select name="building_id" data-style="material" class="data-input form-control" data-field="building_id" placeholder="Building">
+                                    <select name="building_id" data-style="material" class="data-input form-control" data-field="building_id" placeholder="${LocaleManager.trans("Building", "titles")}">
                                     </select>
                                 </div>
                             </div>
                             <div class="col-3">
                                 <div class="vs-material-field">
-                                    <select name="expense_type_id" data-style="material" class="data-input form-control" data-field="expense_type_id" placeholder="Category">
+                                    <select name="expense_type_id" data-style="material" class="data-input form-control" data-field="expense_type_id" placeholder="${LocaleManager.trans("Category", "titles")}">
                                     </select>
                                 </div>
                             </div>
@@ -766,27 +771,27 @@ const BillDialog = (() => {
                                     <label vslang="labels.Total Amount"></label>
                                 </div>
                             </div>
-                            <div class="col-3">
+                            <div class="col-6">
                                 <div class="vs-material-field">
                                     <input data-type="date" name="bill_date" class="data-input form-control form_input" data-field="bill_date" placeholder=" "/>
                                     <label vslang="labels.Issue Date"></label>
                                 </div>
                             </div>
-                            <div class="col-3">
+                            <div class="col-6">
                                 <div class="vs-material-field">
                                     <input data-type="date" name="due_date" class="data-input form-control form_input" data-field="due_date" placeholder=" "/>
                                     <label vslang="labels.Due Date"></label>
                                 </div>
                             </div>
-                            <div class="col-4">
+                            <div class="col-8">
                                 <div class="vs-material-field">
                                     <input type="text" name="documents" class=" form-control " accept=".png,.jpg,.jpeg" /disabled>
-                                    <label>File</labe>
+                                    <label vslang="labels.File"></label>
                                 </div>
                             </div>
-                            <div class="col-2">
+                            <div class="col-4">
                                 <div class="vs-material-field d-flex">
-                                    <button name ="btn_chooseFile"  class="btn btn-block" style="background-color: #e1e5f2; padding: 0.5rem 0.75rem !important;" vslang="buttons.Choose File"></button>
+                                    <button name ="btn_chooseFile"  class="btn btn-block" style="background-color: #e1e5f2; padding: 0.5rem 0.75rem !important;" vslang="buttons.Choose File">${LocaleManager.trans("Choose File", "buttons")}</button>
                                 </div>
                             </div>
                             <div class="col-12 ">
@@ -798,13 +803,13 @@ const BillDialog = (() => {
                             <div class="col-6">
                                 <div class="vs-material-field d-none">
                                     <input name="bill_number" class="data-input form-control" data-field="bill_number" placeholder=" "></input>
-                                    <label>Bill Number</label>
+                                    <label vslang="labels.Bill Number"></label>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="vs-material-field d-none">
                                     <input name="paid_amount" class="data-input form-control" data-field="paid_amount" placeholder=" "></input>
-                                    <label>Amount Paid</label>
+                                    <label vslang="labels.Amount Paid"></label>
                                 </div>
                             </div>
                         </div>`,
@@ -956,8 +961,8 @@ const BillDialog = (() => {
                     if (title) {
                         const isModify = !!me.dataOptions?.id;
                         // title.innerHTML = isModify
-                            // ? '<h4 class="text-prm-custom text-start fw-bold">Modify Bill</h4>'
-                            // : '<h4 class="text-prm-custom text-start fw-bold">Generate New Bill</h4>';
+                        // ? '<h4 class="text-prm-custom text-start fw-bold">Modify Bill</h4>'
+                        // : '<h4 class="text-prm-custom text-start fw-bold">Generate New Bill</h4>';
                     }
                 },
                 prepareFormOptions: {
@@ -1093,9 +1098,7 @@ const BillDialog = (() => {
                                     .toLowerCase();
 
                                 if (!allowExt.includes(fileExt)) {
-                                    cv_interact.error(
-                                        "Please select a valid file.",
-                                    );
+                                    cv_interact.error("select_valid_file");
                                     return;
                                 }
                                 const nameWithoutExt = me.fileData.fileName
@@ -1140,11 +1143,11 @@ const BillDialog = (() => {
 
                                         if (me.dataOptions.id > 0) {
                                             cv_interact.success(
-                                                "updated",
+                                                "update_bill_success",
                                             );
                                         } else {
                                             cv_interact.success(
-                                                "created",
+                                                "create_success_bill",
                                             );
                                         }
                                     } else {

@@ -1094,13 +1094,10 @@ function jsonToTable(div, d) {
         </div>`,
     ].join("");
 
-    div.html(html);
-    togglePanelTable(div);
+    div.innerHTML = html;
+    // togglePanelTable(div);
     HtmlString = html;
 }
-
-
-
 function tenantList(div, data) {
      const d = data?.list ?? [];
      const company_info = data.company_profile ?? {};
@@ -1122,12 +1119,11 @@ function tenantList(div, data) {
                 <tr>
                     <th class="text-center">No</th>
                     <th class="text-center">Name</th>
-                    <th class="text-center">Legal Name</th>
-                    <th class="text-center">National ID</th>
-                    <th class="text-center">Passport</th>
                     <th class="text-center">Sex</th>
                     <th class="text-center">Phone</th>
                     <th class="text-center">Email</th>
+                    <th class="text-center">National ID</th>
+                    <th class="text-center">Passport</th>
                     <th class="text-center">Status</th>
                     <th class="text-center">Address</th>
                 </tr>
@@ -1145,15 +1141,6 @@ function tenantList(div, data) {
                     <td class="align-middle">
                         ${st.name ?? 'N/A'}
                     </td>
-                    <td class="align-middle">
-                        ${st.legal_name ?? 'N/A'}
-                    </td>
-                    <td class="text-center align-middle">
-                        ${st.national_id ?? 'N/A'}
-                    </td>
-                    <td class="text-center align-middle">
-                        ${st.passport_number ?? 'N/A'}
-                    </td>
                     <td class="text-center align-middle">
                         ${
                             st.sex === 'M'
@@ -1168,6 +1155,12 @@ function tenantList(div, data) {
                     </td>
                     <td class="align-middle">
                         ${st.email ?? 'N/A'}
+                    </td>
+                    <td class="text-center align-middle">
+                        ${st.national_id ?? 'N/A'}
+                    </td>
+                    <td class="text-center align-middle">
+                        ${st.passport_number ?? 'N/A'}
                     </td>
                     <td class="text-center align-middle">
                         ${st.status ?? 'N/A'}
@@ -1198,6 +1191,140 @@ function tenantList(div, data) {
     // togglePanelTable(div);
     HtmlString = html;
 }
+
+function depositList(div, data) {
+    console.log(123,data);
+
+    const rows = data?.list ?? [];
+    
+    const company = data?.company_profile ?? {};
+
+    let totalDeposit = 0;
+
+    let html = `
+    <div class="d-block position-relative">
+        <div class="height-logo-report position-absolute overflow-hidden">
+            <img
+                style="max-width:100px;max-height:100px;"
+                class="object-fit-scale set-min-size-logo"
+                src="${company.logo_url || ''}"
+                alt="">
+        </div>
+
+        <div class="d-flex flex-column gap-2 justify-content-center align-items-center set-min-size-container-title">
+            <h4 class="text-center text-uppercase mb-0">
+                ${data.title ?? ''}
+            </h4>
+
+            <p class="text-center fs-5 mb-0">
+                ${data.sub_title ?? ''}
+            </p>
+
+            <p class="text-center fs-6 mb-0">
+                ${data.sub_title_2 ?? ''}
+            </p>
+        </div>
+    </div>
+
+    <div class="table-responsive mt-3">
+        <table class="table table-bordered table-sm">
+            <thead class="table-light">
+                <tr>
+                    <th width="50" class="text-center">No</th>
+                    <th>Tenant Name</th>
+                    <th width="120" class="text-center">Tenant ID</th>
+                    <th width="120" class="text-center">Deposit Date</th>
+                    <th width="120" class="text-center">Payment Date</th>
+                    <th width="130" class="text-end">Deposit</th>
+                    <th width="120" class="text-center">Valid Date</th>
+                    <th>Remarks</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    if (rows.length > 0) {
+
+        rows.forEach((row, index) => {
+
+            const deposit = parseFloat(row.deposit || 0);
+
+            totalDeposit += deposit;
+
+            html += `
+                <tr>
+                    <td class="text-center">
+                        ${index + 1}
+                    </td>
+
+                    <td>
+                        ${row.tenant_name ?? ''}
+                    </td>
+
+                    <td class="text-center">
+                        ${row.tenant_id ?? ''}
+                    </td>
+
+                    <td class="text-center">
+                        ${VSUtil.formatDate?.(row.deposit_date) || row.deposit_date || ''}
+                    </td>
+
+                    <td class="text-center">
+                        ${VSUtil.formatDate?.(row.payment_date) || row.payment_date || ''}
+                    </td>
+
+                    <td class="text-end">
+                        ${deposit.toLocaleString(undefined, {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2
+                        })}
+                    </td>
+
+                    <td class="text-center">
+                        ${VSUtil.formatDate?.(row.valid_date) || row.valid_date || ''}
+                    </td>
+
+                    <td>
+                        ${row.remarks ?? ''}
+                    </td>
+                </tr>
+            `;
+        });
+
+        html += `
+            <tr class="fw-bold">
+                <td colspan="5" class="text-end">
+                    Total Deposit
+                </td>
+                <td class="text-end">
+                    ${totalDeposit.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    })}
+                </td>
+                <td colspan="2"></td>
+            </tr>
+        `;
+    } else {
+        html += `
+            <tr>
+                <td colspan="8" class="text-center">
+                    No data found
+                </td>
+            </tr>
+        `;
+    }
+
+    html += `
+            </tbody>
+        </table>
+    </div>
+    `;
+
+    div.innerHTML = html;
+    HtmlString = html;
+}
+
 function totalPaymentHistory(div, data) {
     let html = `
         <div class="d-flex position-relative w-100">
@@ -3330,6 +3457,12 @@ function windowPrint(html=null, style) {
                     }
                     .set-min-size-container-title {
                         min-height: 100px;
+                    }
+                        .table tbody>tr>td {
+                        max-height: 150px;
+                        max-width: 300px;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
                     }
 
                 </style>

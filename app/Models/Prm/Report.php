@@ -329,7 +329,7 @@ function getPaymentReport($arr, $ss)
             'form' => 'payments',
             'vendor_info' => $vendor,
             'list' => $rows,
-            'title' => 'Vendor Payment Report',
+            'title' => 'Vendor Payment',
             'sub_title' => '',
             
             'company_profile' => self::getCompanyInfo($ss)
@@ -337,5 +337,70 @@ function getPaymentReport($arr, $ss)
         return DV::success(['data' => $res]);
     }
    
+public static function getTenantDepositList($arr, $ss)
+{
+    $d = (object)$arr;
+    $is_paid = isset($d->status_id) ? (int)$d->status_id : null;
+
+    $start_date = isset($d->start_date) ? convertDate($d->start_date) : date('Y-m-01');
+    $end_date = isset($d->end_date) ? convertDate($d->end_date) : date('Y-m-t');
+    $str_date = "DATE(d.deposit_date) >= '$start_date' AND DATE(d.deposit_date) <= '$end_date'";
+    $sub_title = 'Deposit Date From: ' . date('d-M-Y', strtotime($start_date)) . ' To ' . date('d-M-Y', strtotime($end_date));
+
+    $str_search = '1=1';
+    if ($is_paid !== null) $str_search .= ' AND d.status_id = ' . $is_paid;
+
+    $query = DB::table('deposits as d')
+        ->join('tenants as t', 'd.tenant_id', '=', 't.id')
+        ->selectRaw("
+            t.code as tenant_code,
+            t.name as tenant_name,
+            d.deposit_date,
+            d.amount,
+            d.paid_amount,
+            d.status_id,
+            d.remarks,
+            d.created_at as payment_date,
+            d.updated_at as updated_date
+        ")
+        ->whereRaw($str_search)
+        ->whereRaw($str_date)
+        ->get();
+
     
+    $statusLabel = '(All)';
+
+    switch ($is_paid) {
+        case 1:
+            $statusLabel = '(Pending)';
+            break;
+        case 2:
+            $statusLabel = '(Paid)';
+            break;
+        case 3:
+            $statusLabel = '(Refunded)';
+            break;
+    }
+    $title = $statusLabel . ' Tenant Deposit Report';
+
+    $startDate = date('d-M-Y', strtotime($start_date));
+    $endDate = date('d-M-Y', strtotime($end_date));
+    $sub_title_2 = $startDate . ' To ' . $endDate;
+    $date_rank = (object)[
+        'start_date' => $startDate,
+        'end_date' => $endDate
+    ];
+
+    $company_profile = self::getCompanyInfo($ss);
+
+    return (object)[
+        'title' => $title,
+        'sub_title' => $sub_title,
+        'sub_title_2' =>$sub_title_2,
+        'date_rank' => $date_rank,
+        'list' => $query,
+        'form' => 'deposit_list',
+        'company_profile' => $company_profile
+    ];
+}
 }

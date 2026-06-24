@@ -612,4 +612,31 @@ class BillPayment
             return DV::error('Something went wrong on server side');
         }
     }
+    public static function refundDeposit($contractId, $tenantId, $amount, $refundDate, $remarks, $ss)
+{
+    $existingDeposit = DB::table('deposits')->where('contract_id', $contractId)->first();
+
+    $paymentData = [
+        'status_id'     => 1,             
+        'bill_id'       => 0,             
+        'payer'         => null,         
+        'total_amount'  => $amount,       
+        'payment_date'  => $refundDate,   
+        'currency_code' => 'USD',         
+        'ref_no'        => null,          
+        'note'          => $remarks,        
+        'create_user'   => 'Admin',       
+        'update_user'   => 'Admin',
+        'update_uid'    => 1,
+        'created_at'    => now(),
+    ];
+
+    $where = []; 
+    DBX::saveData($ss, 'bill_payments', $where, $paymentData, [], 1);
+    
+    if ($existingDeposit) {
+        DB::table('deposits')->where('id', $existingDeposit->id)->update(['status_id' => 3]);
+    }
+}
+
 }

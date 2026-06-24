@@ -24,20 +24,24 @@ use App\Http\Controllers\Prm\ReservationController;
 use App\Http\Controllers\Prm\AmenityController;
 use App\Http\Controllers\Prm\ItemController;
 use App\Http\Controllers\Prm\MaintenanceController;
+use App\Http\Controllers\Prm\DashboardController;
+
 use App\Http\Controllers\Prm\BillController;
 use App\Http\Controllers\Prm\BillPaymentController;
 use App\Http\Controllers\Prm\ReceiptController;
 use App\Http\Controllers\Prm\ReportController;
+use App\Http\Controllers\Prm\InvoiceSettingController;
+use App\Http\Controllers\Prm\DepositController;
 
 use App\Http\Controllers\tenant\AccountStaffController;
 use App\Http\Controllers\tenant\ZoneController;
 use App\Http\Controllers\Tenant\ContractsController;
-use App\Http\Controllers\Prm\InvoiceSettingController;
 use App\Http\Controllers\Tenant\TenantProfileController;
 use App\Http\Controllers\Tenant\ReservationsController;
 use App\Http\Controllers\Tenant\RequestServiceController;
 use App\Http\Controllers\Tenant\ReceiptController as TenantReceiptController;
 use App\Http\Controllers\Tenant\InvoiceController as TenantInvoiceController;
+use App\Http\Controllers\Tenant\TeamController;
 
 
 
@@ -66,10 +70,16 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('company')->gr
     Route::post('/info', [CompanyProfileController::class, 'getCompanyInfo']);
 });
 //end::CompanyProfileController
-// Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('dashboard')->group(function () {
-//     Route::post('/data', [DashboardController::class, 'getDashboardData']);
-//     Route::post('/overview-data', [DashboardController::class, 'getOverviewData']);
-// });
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('dashboard')->group(function () {
+    Route::post('/summary', [DashboardController::class, 'summarizeDashboard']);
+    Route::post('/data', [DashboardController::class, 'getDashboardData']);
+    Route::post('/charts', [DashboardController::class, 'getCharts']);
+    Route::post('/activities', [DashboardController::class, 'getActivities']);
+    Route::post('/lease-expiry', [DashboardController::class, 'getLeaseExpiry']);
+    Route::post('/filter-options', [DashboardController::class, 'getFilterOptions']);
+
+});
+
 
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->group( function (){
@@ -230,6 +240,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('invoice')->gr
     Route::post('/setting', [InvoiceController::class, 'invoiceSetting']);
     Route::post('/get-setting', [InvoiceController::class, 'getInvoiceSetting']);
     Route::post('/reset-setting', [InvoiceController::class, 'resetInvoiceSetting']);
+    Route::post('/print', [InvoiceController::class, 'getPrintInvoice']);
 
 });
 
@@ -344,6 +355,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('reports')->gr
     Route::post('/tenant_list', [ReportController::class, 'getTenantReportList']);
     Route::post('total_payment_history',[ReportController::class,'getTotalPaymentHistory']);
     Route::post('payments',[ReportController::class,'getPaymentReport']);
+    Route::post('deposit-list',[ReportController::class,'getTenantDepositList']);
 
 });
 
@@ -357,6 +369,18 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('invoice_setti
     Route::post('/save-invoice-representative', [InvoiceSettingController::class, 'saveInvoiceSettingRepresentative']);
     Route::post('/save-QR', [InvoiceSettingController::class, 'saveQR']);
     Route::post('/delete-QR', [InvoiceSettingController::class, 'deleteQR']);
+});
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('deposit')->group(function () {
+    Route::post('/save', [DepositController::class, 'saveDeposit']);
+    Route::post('/list-paginate', [DepositController::class, 'getListDeposit']);
+    Route::post('/details', [DepositController::class, 'depositDetails']);
+    Route::post('/form-options', [DepositController::class, 'getFormOptions']);
+    Route::post('/delete', [DepositController::class, 'deleteDeposit']);
+    Route::post('/update-status', [DepositController::class, 'updateDepositStatus']);
+    // Route::post('/view-attachment', [DepositController::class, 'viewDepositAttachment']);
+    // Route::post('/delete-attachment', [DepositController::class, 'deleteDepositAttachment']);
+    // Route::post('/upload-attachment', [DepositController::class, 'uploadDepositAttachment']);
 });
 
 
@@ -418,5 +442,18 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant/receip
     Route::post('/details', [TenantReceiptController::class, 'receiptDetails']);
     Route::post('/form-options', [TenantReceiptController::class, 'getFormOptions']);
 });
+    
 
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant/team')->group(function () {
+    Route::post('/save', [TeamController::class, 'saveTeamTenant']);
+    Route::post('/create', [TeamController::class, 'saveTeam']);
+    Route::post('/list-paginate', [TeamController::class, 'getListTeam']);
+    Route::post('/details', [TeamController::class, 'getDetails']);
+    Route::post('/form-options', [TeamController::class, 'getFormOptions']);
+    Route::post('/delete', [TeamController::class, 'deleteTeam']);
+    Route::post('/profile/photo/delete', [TeamController::class, 'deleteProfilePhoto']);
+    Route::post('/profile/photo/save', [TeamController::class, 'saveProfilePhoto']);
+    Route::post('/update-status', [TeamController::class, 'updateTeamStatus']);
+});
 

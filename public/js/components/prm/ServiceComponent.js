@@ -118,7 +118,7 @@ var ServiceComponent = (() => {
             },
         },
         {
-            transTitle: "titles.Updated By",
+            transTitle: "titles.Last Updated",
             className: "align-middle",
             data: (data, index, tr) => {
                 return `<div class="d-flex flex-column">
@@ -169,7 +169,7 @@ var ServiceComponent = (() => {
                     mThis.ServiceListView.showPage(mThis.getFilterData());
                 },
             };
-            // if (!AuthManager.allowed(240)) return;
+            if (!AuthManager.allowed(252, false)) return;
             CreateServicePriceDialog.show(op);
         };
 
@@ -303,7 +303,7 @@ var ServiceComponent = (() => {
                     name: "delete_service",
                 },
                 {
-                    html: '<span class="ps-2 " vslang="titles.Change Status"></span>',
+                    html: '<span class="ps-2 " vslang="titles.Change Status"></span>',  
                     icon: `<i class="fa-solid fa-bolt fs-5 text-primary"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "change_service_status",
@@ -339,17 +339,25 @@ var ServiceComponent = (() => {
     mThis.changeServiceStatus = (id, link) => {
         const tr = link.closest("tr");
         const status_id = tr?.dataset.statusid || "";
+        if (!AuthManager.allowed(254, false)) return;
         const inputOptions = {
             context: "success",
-            title: "Change Status",
+            title: `${LocaleManager.trans("Change Status", "titles")}`,
             label: "Service Status",
             valueKey: "status_id",
             labelKey: "name",
-            confirmButtonText: "Save",
+            confirmButtonText: `${LocaleManager.trans("Save", "buttons")}`,
+            cancelButtonText: `${LocaleManager.trans("Close", "buttons")}`,
             requiredMessage: "Please select a status",
             data: [
-                { status_id: "1", name: "Active" },
-                { status_id: "2", name: "Inactive" },
+                {
+                    status_id: "1",
+                    name: LocaleManager.trans("Active", "titles"),
+                },
+                {
+                    status_id: "2",
+                    name: LocaleManager.trans("Inactive", "titles"),
+                },
             ],
             defaultValue: status_id,
             onConfirm: (status, btn, me) => {
@@ -363,15 +371,13 @@ var ServiceComponent = (() => {
                     .then((res) => {
                         if (res.status_code === 200) {
                             me.close();
-                            cv_interact.success(
-                                "Service status has been updated",
-                            );
+                            cv_interact.success("update_success_status");
                             mThis.ServiceListView.showPage(
                                 mThis.getFilterData(),
                             );
                         } else {
                             me.setError(
-                                res.error_message || "Unable to update status",
+                                res.error_message || "update_failed_status",
                             );
                         }
                     });
@@ -387,7 +393,7 @@ var ServiceComponent = (() => {
                 mThis.ServiceListView.showPage(mThis.getFilterData());
             },
         };
-
+        if (!AuthManager.allowed(253, false)) return;
         CreateServicePriceDialog.show(op);
     };
     mThis.deleteService = (id, menuLink) => {
@@ -398,8 +404,9 @@ var ServiceComponent = (() => {
                 mThis.ServiceListView.showPage(mThis.getFilterData());
             },
         };
+        if (!AuthManager.allowed(255, false)) return;
         cv_interact.confirm(
-            "Delete this Service?",
+            "confirm_delete",
             {
                 transTitle: "Delete Service",
                 context: "delete",
@@ -417,16 +424,13 @@ var ServiceComponent = (() => {
                         )
                         .then((res) => {
                             if (res.status_code == 200) {
-                                cv_interact.success(
-                                    "Service deleted successfully",
-                                );
+                                cv_interact.success("delete_success_service");
                                 mThis.ServiceListView.showPage(
                                     mThis.getFilterData(),
                                 );
                             } else {
                                 cv_interact.error(
-                                    res.error_message ||
-                                        "Failed to delete service",
+                                    res.error_message || "delete_failed",
                                 );
                             }
                         });
@@ -518,15 +522,15 @@ const CreateServicePriceDialog = (() => {
                                 </div>
                             </div>
                             <div class="col-6">
-                                <select data-style="material" name="service_type" class="data-input form-control" data-field="type_id" placeholder=" Type">
+                                <select data-style="material" name="service_type" class="data-input form-control" data-field="type_id" placeholder="${LocaleManager.trans('Type', 'labels')}">
                                 </select>
                             </div>
                             <div class="col-6">
-                                <select data-style="material" name="service_category" class="data-input form-control" data-field="category_id" placeholder="Category">
+                                <select data-style="material" name="service_category" class="data-input form-control" data-field="category_id" placeholder="${LocaleManager.trans('Category', 'labels')}">
                                 </select>
                             </div>
                             <div class="col-6">
-                                    <select data-style="material" name="charge_as" class="data-input form-control" data-field="charge_as" placeholder="Charge As">
+                                    <select data-style="material" name="charge_as" class="data-input form-control" data-field="charge_as" placeholder="${LocaleManager.trans('Charge As', 'labels')}">
                                     <option value="per_unit">Unit</option>
                                     <option value="one_time">Once</option>
                                     <option value="hour">Hourly</option>
@@ -534,7 +538,7 @@ const CreateServicePriceDialog = (() => {
                                     </select>
                             </div>
                             <div class="col-6">
-                                <select data-style="material" name="level" class="data-input form-control" data-field="level" placeholder="Level">
+                                <select data-style="material" name="level" class="data-input form-control" data-field="level" placeholder="${LocaleManager.trans('Level', 'labels')}">  
                                     <option value="1" selected >Standard</option>
                                     <option value="2">Premium</option>
                                 </select>
@@ -556,22 +560,15 @@ const CreateServicePriceDialog = (() => {
                 },
 
                 contentCreated: (me) => {
-                    console.log(123, me.controls.level);
-
                     const updateChargeAs = () => {
-                        const isSubscription =
-                            me.controls.service_type.value == 2;
-
-                        me.controls.charge_as.value = isSubscription
-                            ? "month"
-                            : "";
+                        const isSubscription = me.controls.service_type.value == 2;
+                        me.controls.charge_as.value = isSubscription ? "month" : "";
+                        console.log(4444,isSubscription);
+                        
                         me.controls.charge_as.disabled = isSubscription;
                     };
 
-                    me.controls.service_type?.addEventListener(
-                        "change",
-                        updateChargeAs,
-                    );
+                    me.controls.service_type?.addEventListener("change",updateChargeAs);
 
                     updateChargeAs();
                 },
@@ -641,11 +638,11 @@ const CreateServicePriceDialog = (() => {
                                         me.hide(true, op);
                                         if (me.dataOptions.id > 0) {
                                             cv_interact.success(
-                                                "Service has been updated successfully.",
+                                                "update_success_service",
                                             );
                                         } else {
                                             cv_interact.success(
-                                                "New service has been added successfully.",
+                                                "create_success_service",
                                             );
                                         }
                                     } else {

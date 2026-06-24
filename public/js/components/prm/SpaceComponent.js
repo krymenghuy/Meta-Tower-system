@@ -1,7 +1,7 @@
 "use strict";
 
-var SpaceComponent = new (function () {
-    const mThis = this;
+var SpaceComponent = (function () {
+    const mThis = {};
     mThis.title_prop = "Space Management";
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_space_component");
@@ -61,6 +61,7 @@ var SpaceComponent = new (function () {
                     mThis.applyListFilters();
                 },
             };
+            if (!AuthManager.allowed(206, false)) return;
             BuildingSpaceDialog.show(op);
         };
         mThis.pr_tbl = mThis.SpaceListView.getListContainer();
@@ -523,6 +524,8 @@ var SpaceComponent = new (function () {
     };
 
     mThis.createContract = (id, menulink) => {
+        if (!AuthManager.allowed(227, false)) return;
+
         vsapi
             .call(
                 `${main_view.base_url}/prm/contract/form-options`,
@@ -610,7 +613,7 @@ var SpaceComponent = new (function () {
                 mThis.applyListFilters();
             },
         };
-
+        if (!AuthManager.allowed(207, false)) return;
         BuildingSpaceDialog.show(op);
     };
     mThis.setMaintenance = (id, menulink) => {
@@ -622,13 +625,15 @@ var SpaceComponent = new (function () {
                 mThis.applyListFilters();
             },
         };
+        if (!AuthManager.allowed(213, false)) return;
         if (typeof CreateMaintenanceDialog !== "undefined") {
             CreateMaintenanceDialog.show(op);
         }
     };
     mThis.finishMaintenance = (id, menulink) => {
+        if (!AuthManager.allowed(216, false)) return;
         cv_interact.confirm(
-            "Finish this maintenance?",
+            "confirm_finish_maintenance",
             {
                 transTitle: "Finish Maintenance",
                 context: "confirm",
@@ -646,7 +651,7 @@ var SpaceComponent = new (function () {
                         .then((res) => {
                             if (res.status_code === 200) {
                                 cv_interact.success(
-                                    "Maintenance has been completed.",
+                                    "finish_maintenance_success",
                                 );
                                 mThis.applyListFilters();
                             } else {
@@ -668,7 +673,7 @@ var SpaceComponent = new (function () {
                 mThis.applyListFilters();
             },
         };
-
+        if (!AuthManager.allowed(209, false)) return;
         CreateBookingDialog.show(op);
     };
     mThis.deleteSpace = (id, menulink) => {
@@ -679,7 +684,7 @@ var SpaceComponent = new (function () {
                 mThis.applyListFilters();
             },
         };
-        // if (!AuthManager.allowed(242)) return;
+        if (!AuthManager.allowed(208, false)) return;
         cv_interact.confirm(
             "confirm_delete",
             {
@@ -699,10 +704,7 @@ var SpaceComponent = new (function () {
                         )
                         .then((res) => {
                             if (res.status_code == 200) {
-                                cv_interact.success =
-                                    (message,
-                                    (title = null),
-                                    (position = "center"));
+                                cv_interact.success("delete_success_space");
                                 mThis.applyListFilters();
                             } else {
                                 cv_interact.error(res.error_message);
@@ -719,6 +721,7 @@ var SpaceComponent = new (function () {
                 mThis.applyListFilters();
             },
         };
+        if (!AuthManager.allowed(210, false)) return;
         ViewBookingDialog.show(op);
     };
     mThis.editBooking = (id, menuLink) => {
@@ -736,6 +739,7 @@ var SpaceComponent = new (function () {
                     );
                     return;
                 }
+                if (!AuthManager.allowed(211, false)) return;
                 CreateBookingDialog.show({
                     space_id: id,
                     booking: res.data,
@@ -749,8 +753,9 @@ var SpaceComponent = new (function () {
             });
     };
     mThis.cancelBooking = (id, menuLink) => {
+        if (!AuthManager.allowed(212, false)) return;
         cv_interact.confirm(
-            "Cancel this booking ?",
+            "confirm_cancel",
             {
                 title: "Cancel Booking",
                 context: "delete",
@@ -767,7 +772,7 @@ var SpaceComponent = new (function () {
                     )
                     .then((res) => {
                         if (res.status_code === 200) {
-                            cv_interact.success("Booking has been cancelled.");
+                            cv_interact.success("cancel_success_booking");
                             mThis.applyListFilters();
                         } else {
                             cv_interact.error(res.error_message || "Failed.");
@@ -891,18 +896,18 @@ const BuildingSpaceDialog = (() => {
                     const title = me.dataOptions.id
                         ? "Modify Space"
                         : "Create Space";
-                    return `<h4 class="text-prm-custom text-start fw-bold">${LocaleManager.trans(title, "titles")}</h4>`;
+                    return LocaleManager.trans(title, "titles");
                     // return me.dataOptions.id ? `<h4 class="text-prm-custom text-start fw-bold" vslang="titles.Modify Space"></h4>` : `<h4 class="text-prm-custom text-start fw-bold" vslang="titles.Create Space"></h4>`;
                 },
                 createContent: () => {
                     return [
                         `<div class="row g-3 justify-content-center">
                             <div class="col-12">
-                                <select data-style="material" placeholder="Building" name="building_id" class="data-input form-control" data-field="building_id">
+                                <select data-style="material" placeholder="${LocaleManager.trans('Building', 'titles')}" name="building_id" class="data-input form-control" data-field="building_id">
                                 </select>
                             </div>
                             <div class="col-6">
-                                <select data-style="material" name="floor_id" class="data-input form-control" data-field="floor_id" placeholder="Floor">
+                                <select data-style="material" name="floor_id" class="data-input form-control" data-field="floor_id" placeholder="${LocaleManager.trans('Floor', 'titles')}">
                                 </select>
                             </div>
                             <div class="col-6">
@@ -912,7 +917,7 @@ const BuildingSpaceDialog = (() => {
                                 </div>
                             </div>
                             <div class="col-6">
-                                <select data-style="material" name="space_type_id" placeholder="Type" class="data-input form-control" data-field="space_type_id">
+                                <select data-style="material" name="space_type_id" placeholder="${LocaleManager.trans('Type', 'titles')}" class="data-input form-control" data-field="space_type_id">
                                 </select>
                             </div>
                             <div class="col-6">
@@ -928,10 +933,10 @@ const BuildingSpaceDialog = (() => {
                                 </div>
                             </div>
                             <div class="col-6">
-                                <select data-style="material" name="price_type" placeholder="Charge As" class="data-input form-control" data-field="price_type">
-                                    <option value="">Select Charge As</option>
+                                <select data-style="material" name="price_type" placeholder="${LocaleManager.trans('Charge As', 'titles')}" class="data-input form-control" data-field="price_type">
+                                    <option value="">${LocaleManager.trans('Select Charge As', 'labels')}</option>
                                     <option value="sqm">m²</option>
-                                    <option value="total">Unit</option>
+                                    <option value="total">${LocaleManager.trans('Unit', 'titles')}</option>
                                 </select>
                             </div>
 
@@ -1034,11 +1039,11 @@ const BuildingSpaceDialog = (() => {
                                         me.hide(true, op);
                                         if (me.dataOptions.id > 0) {
                                             cv_interact.success(
-                                                LocaleManager.trans("updated", "message_box_default"),
+                                                LocaleManager.trans("update_success_space", "message_box_default"),
                                             );
                                         } else {
                                             cv_interact.success(
-                                                LocaleManager.trans("created", "message_box_default"),
+                                                LocaleManager.trans("create_success_space", "message_box_default"),
                                             );
                                         }
                                     } else {
@@ -1059,6 +1064,16 @@ const CreateBookingDialog = (() => {
     const self = {};
     let dialog = null;
 
+    const getBookingDialogTitle = (me) => {
+        const bookingId =
+            me.dataOptions?.booking?.id ?? me.detail?.booking?.id;
+        const isEdit = Number(bookingId) > 0;
+        return LocaleManager.trans(
+            isEdit ? "Modify Booking" : "Create Booking",
+            "titles",
+        );
+    };
+
     self.show = (op) => {
         dialog =
             dialog ||
@@ -1067,10 +1082,12 @@ const CreateBookingDialog = (() => {
                 backdrop: "static",
                 keyboard: true,
                 title: (me) => {
-                    const title = me.dataOptions.id
-                        ? "Edit Booking"
+                    const bookingId =
+                        me.dataOptions?.booking?.id ?? me.dataOptions?.id;
+                    const title = bookingId
+                        ? "Modify Booking"
                         : "Create Booking";
-                    return `<h4 class="text-prm-custom text-start fw-bold">${LocaleManager.trans(title, "titles")}</h4>`;
+                    return `<h4 class="text-start ">${LocaleManager.trans(title, "titles")}</h4>`;
                     // return me.dataOptions.id ? `<h4 class="text-prm-custom text-start fw-bold" vslang="titles.Modify Space"></h4>` : `<h4 class="text-prm-custom text-start fw-bold" vslang="titles.Create Space"></h4>`;
                 },
                 createContent: () => {
@@ -1111,7 +1128,7 @@ const CreateBookingDialog = (() => {
 
                             <div class="col-6">
                                 <div class="vs-material-field">
-                                    <input type="text" 
+                                    <input type="text"
                                         name="booking_fee"
                                         class="data-input form-control"
                                         data-field="booking_fee"
@@ -1139,9 +1156,7 @@ const CreateBookingDialog = (() => {
                     const bookingId =
                         me.dataOptions?.booking?.id ?? me.detail?.booking?.id;
                     const isEdit = Number(bookingId) > 0;
-                    // title.innerHTML = isEdit
-                    //     ? '<h4 class="text-prm-custom text-start fw-bold">Edit Booking</h4>'
-                    //     : '<h4 class="text-prm-custom text-start fw-bold">Create Booking</h4>';
+                    title.textContent = getBookingDialogTitle(me);
                     const c = me.controls;
                     if (c?.booking_date) c.booking_date.disabled = isEdit;
                     if (c?.expired_booking_date)
@@ -1250,10 +1265,10 @@ const CreateBookingDialog = (() => {
                                 .then((res) => {
                                     if (res.status_code === 200) {
                                         me.hide(true, op);
-                                        if (me.dataOptions.id > 0) {
-                                            cv_interact.success("updated");
+                                        if (me.dataOptions?.booking?.id > 0) {
+                                            cv_interact.success("update_success_booking");
                                         } else {
-                                            cv_interact.success("created");
+                                            cv_interact.success("create_success_booking");
                                         }
                                     } else {
                                         cv_interact.error(res.error_message);
@@ -1322,50 +1337,50 @@ const ViewBookingDialog = (() => {
 
                             <div class="booker_profile overflow-y-auto overflow-x-hidden">
                                 <div class="info_title p-2 text-primary-custom">
-                                        <h5>Unit ${data.space_code ?? "_"}</h5>
+                                        <h5>${LocaleManager.trans("Unit", "titles")} ${data.space_code ?? "_"}</h5>
                                 </div>
 
                                 <div class="booker_info">
                                     <div class="row cols-2 mb-0">
                                         <div class="col-4 p_profile_left">
                                             <div class="d-flex">
-                                                <p class="text-nowrap text-muted width-p">Booking Name</p>
+                                                <p class="text-nowrap text-muted width-p">${LocaleManager.trans('Booking Name', 'labels')}</p>
                                                 <p class="px-3">:</p>
                                                 <p class="text-nowrap text-capitalize data-get">${data.booker_name ?? "_"}</p>
                                             </div>
                                             <div class="d-flex">
-                                                <p class="text-nowrap text-muted width-p">Booking Date</p>
+                                                <p class="text-nowrap text-muted width-p">${LocaleManager.trans('Booking Date', 'labels')}</p>
                                                 <p class="px-3">:</p>
                                                 <p class="text-nowrap text-capitalize data-get">${data.booking_date ?? "_"}</p>
                                             </div>
                                         </div>
                                         <div class="col-4 p_profile_center">
                                             <div class="d-flex">
-                                                <p class="text-nowrap text-muted width-p">Booking Phone</p>
+                                                <p class="text-nowrap text-muted width-p">${LocaleManager.trans('Booking Phone', 'labels')}</p>
                                                 <p class="px-3">:</p>
                                                 <p class="text-nowrap text-capitalize data-get">${data.booker_phone ?? "_"}</p>
                                             </div>
                                             <div class="d-flex">
-                                                <p class="text-nowrap text-muted width-p">Expired Date</p>
+                                                <p class="text-nowrap text-muted width-p">${LocaleManager.trans('Expired Date', 'labels')}</p>
                                                 <p class="px-3">:</p>
                                                 <p class="text-nowrap text-capitalize data-get">${data.expired_booking_date ?? "_"}</p>
                                             </div>
                                         </div>
                                         <div class="col-4 p_profile_right">
                                             <div class="d-flex">
-                                                <p class="text-nowrap text-muted width-p">Booking Email</p>
+                                                <p class="text-nowrap text-muted width-p">${LocaleManager.trans('Email', 'labels')}</p>
                                                 <p class="px-3">:</p>
                                                 <p class="text-nowrap data-get">${data.booker_email ?? "_"}</p>
                                             </div>
                                             <div class="d-flex">
-                                                <p class="text-nowrap text-muted width-p">Booking Amount</p>
+                                                <p class="text-nowrap text-muted width-p">${LocaleManager.trans('Booking Amount', 'labels')}</p>
                                                 <p class="px-3">:</p>
                                                 <p class="text-nowrap text-capitalize data-get">${VSMoney.formatAmount(data.booking_fee, data.currency ?? "USD") ?? "_"}</p>
                                             </div>
                                         </div>
                                         <div class="row cols-2 mb-0">
                                             <div class="d-flex align-items-start">
-                                                <p class="text-muted mb-0">Remark</p>
+                                                <p class="text-muted mb-0">${LocaleManager.trans('Remark', 'titles')}</p>
                                                 <p class="px-3 mb-0">:</p>
                                                 <p class="data-get mb-0 text-capitalize" style="word-break: break-word; overflow-wrap: anywhere;">
                                                     ${data.remarks ?? "_"}
@@ -1376,6 +1391,7 @@ const ViewBookingDialog = (() => {
                                 </div>
                             </div>`;
                         div.innerHTML = html;
+
                     };
                 },
 
@@ -1389,8 +1405,7 @@ const ViewBookingDialog = (() => {
                     },
                 ],
                 prepareFormOptions: {
-                    createTitle: "Booking Detail",
-                    modifyTitle: "Booking Detail",
+                    createTitle: `${LocaleManager.trans("Booking Details", "titles")}`,
                     targetProp: "divModal",
                     api: {
                         endpoint: `${main_view.base_url}/prm/building-space/view-booking`,
@@ -1409,6 +1424,7 @@ const ViewBookingDialog = (() => {
 
     return self;
 })();
+
 
 
 

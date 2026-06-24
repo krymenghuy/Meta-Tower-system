@@ -44,7 +44,9 @@ return [
             'files' => [
                 'https://cdn.vectoraclouds.com/frontcore/sanitizer/sanitizer.js',
                 'https://cdn.vectoraclouds.com/beta-frontcore/utils/vsutils.v2.js',
-                'https://cdn.vectoraclouds.com/beta-frontcore/components/FilterPanel.js',
+                'https://cdn.vectoraclouds.com/beta-frontcore/components/FilterPanel.v2.js',
+                // 'https://cdn.vectoraclouds.com/frontcore/components/FilterPanel.v2.js',
+
                 '/assets/js/sweetalert2.all.min.js',
                 '/assets/js/sweetalert2.toast.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/ExpandableTableRow.v2.js',
@@ -52,6 +54,7 @@ return [
                 'https://cdn.vectoraclouds.com/frontcore/components/VSDropdownMenu.js',
 
                 'https://cdn.vectoraclouds.com/beta-vfc/vfc.utils.configSelect.js',
+                 'https://cdn.vectoraclouds.com/beta-vfc/VSInteractBoundary.js',
                 'https://cdn.vectoraclouds.com/vfc/vfc.utils.inputFormat.js',
                 'https://cdn.vectoraclouds.com/beta-vfc/vfc.form.js',
                 'https://cdn.vectoraclouds.com/beta-vfc/vfc.material.js',
@@ -71,7 +74,8 @@ return [
  
                 'https://cdn.vectoraclouds.com/frontcore/utils/DateHelper.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/DateTimePicker/DateTimePicker.js',
-                //'/assets/js/jquery.datepicker2.js',
+                'https://cdn.vectoraclouds.com/frontcore/components/QuickToast/QuickToast.js',
+
                 '/assets/js/toastr.min.js',
                 '/assets/js/init.toastr.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/layout.js',
@@ -150,6 +154,7 @@ return [
                 'js/components/prm/ItemsComponent.js',
                 'js/components/prm/InvoiceSettingComponent.js',
                 'js/components/prm/PrintContractDialog.js',
+                'js/components/prm/DepositComponent.js',
                 
 
 
@@ -185,7 +190,7 @@ return [
                 '/js/components/common/pusher_client.js',
                 '/js/components/tenant/DashboardComponent.js',
                 '/js/components/tenant/TenantProfileComponent.js',
-                '/js/components/tenant/StaffComponent.js',
+                '/js/components/tenant/TeamComponent.js',
                 '/js/components/tenant/ContractsComponent.js',
                 '/js/components/tenant/InvoicesComponent.js',
                 '/js/components/tenant/ReceiptsComponent.js',
@@ -224,6 +229,7 @@ return [
                 'https://cdn.vectoraclouds.com/frontcore/utils/DateHelper.js',
 
                  'https://cdn.vectoraclouds.com/frontcore/components/DateTimePicker/DateTimePicker.js',
+                   'https://cdn.vectoraclouds.com/frontcore/components/QuickToast/QuickToast.js',
                 'https://cdn.jsdelivr.net/npm/fuse.js@7.1.0',
                 'assets/js/choices.11.2.js',
                 'https://cdn.vectoraclouds.com/beta-frontcore/components/vs_choices.js',

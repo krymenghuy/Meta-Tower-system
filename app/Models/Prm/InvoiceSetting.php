@@ -70,7 +70,7 @@ class InvoiceSetting extends VSModel
         ];
     }
 
-    public function getInvoiceSetting($id = null, $ss = null)
+    public function  getInvoiceSetting($id = null, $ss = null)
     {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
@@ -102,9 +102,6 @@ class InvoiceSetting extends VSModel
             'show_pmt_status' => $setting->show_pmt_status,
             'show_amount_paid' => $setting->show_amount_paid,
             'exchange_rate' => $setting->exchange_rate ?? '0.00',
-            'build_representative' => $setting->build_representative,
-            'representative_phone' => $setting->representative_phone,
-            'representative_address' => $setting->representative_address,
             'qr_file_name'           => $setting->qr_file_name,
             'QR_file_type'              => $file_type,
             'QR_file'              => $cleanPath,
@@ -171,63 +168,63 @@ class InvoiceSetting extends VSModel
         ];
     }
 
-    public function saveInvoiceSettingRepresentative($arr = [], $id = null, $ss = null)
-    {
-        if (is_object($id) && is_null($ss)) {
-            $ss = $id;
-            $id = null;
-        }
+    // public function saveInvoiceSettingRepresentative($arr = [], $id = null, $ss = null)
+    // {
+    //     if (is_object($id) && is_null($ss)) {
+    //         $ss = $id;
+    //         $id = null;
+    //     }
 
-        $id = $id ?? $this->id;
-        $ss = $ss ?? $this->userInfo;
-        $lang = ($ss && isset($ss->lang)) ? $ss->lang : 'en';
+    //     $id = $id ?? $this->id;
+    //     $ss = $ss ?? $this->userInfo;
+    //     $lang = ($ss && isset($ss->lang)) ? $ss->lang : 'en';
 
-        $v_rule = [
-            'build_representative' => '0|string|1-200',
-            'representative_phone' => '0|string|1-20',
-            'representative_address' => '0|string|1-200',
-        ];
-        $address_char = ['@', ',', '.', '#'];
-        $res = DBX::validateObject($arr, $v_rule, 1, ['representative_address' => $address_char], $lang, 0, null);
-        if ($res->error) {
-            return DV::error($res->error);
-        }
+    //     $v_rule = [
+    //         'build_representative' => '0|string|1-200',
+    //         'representative_phone' => '0|string|1-20',
+    //         'representative_address' => '0|string|1-200',
+    //     ];
+    //     $address_char = ['@', ',', '.', '#'];
+    //     $res = DBX::validateObject($arr, $v_rule, 1, ['representative_address' => $address_char], $lang, 0, null);
+    //     if ($res->error) {
+    //         return DV::error($res->error);
+    //     }
 
-        $inputs = $res->values;
+    //     $inputs = $res->values;
 
-        $resSave = DBX::saveData($ss, $this->table, ['id' => 1], $inputs, [], 1);
-        if (!$resSave) {
-            return DV::error('Error saving invoice setting!');
-        }
-        return [
-            'id' => $id,
-            'build_representative' =>  $inputs['build_representative'] ?? null,
-            'representative_phone' =>  $inputs['representative_phone'] ?? null,
-            'representative_address' =>  $inputs['representative_address'] ?? null
-        ];
-    }
+    //     $resSave = DBX::saveData($ss, $this->table, ['id' => 1], $inputs, [], 1);
+    //     if (!$resSave) {
+    //         return DV::error('Error saving invoice setting!');
+    //     }
+    //     return [
+    //         'id' => $id,
+    //         'build_representative' =>  $inputs['build_representative'] ?? null,
+    //         'representative_phone' =>  $inputs['representative_phone'] ?? null,
+    //         'representative_address' =>  $inputs['representative_address'] ?? null
+    //     ];
+    // }
 
-    public function getInvoiceBuildingInfo($arr = [], $ss = null)
-    {
-        $d = (array) $arr;
-        $id = (int) ($d['id'] ?? $this->id ?? 1);
+    // public function getInvoiceBuildingInfo($arr = [], $ss = null)
+    // {
+    //     $d = (array) $arr;
+    //     $id = (int) ($d['id'] ?? $this->id ?? 1);
 
-        $info = DB::table('invoice_setting_info')->where('id', $id)->first();
+    //     $info = DB::table('invoice_setting_info')->where('id', $id)->first();
 
-        if (!$info && $id !== 1) {
-            $info = DB::table('invoice_setting_info')->where('id', 1)->first();
-        }
+    //     if (!$info && $id !== 1) {
+    //         $info = DB::table('invoice_setting_info')->where('id', 1)->first();
+    //     }
 
-        return [
-            'id'                  => $info ? (int)$info->id : 0,
-            'build_name'          => $info->build_name ?? '',
-            'build_email'         => $info->build_email ?? '',
-            'build_phone'         => $info->build_phone ?? '',
-            'build_address'         => $info->build_address ?? '',
-            'build_representative' => $info->build_representative ?? '',
-            'build_title_type'    => $info->build_title_type ?? '',
-        ];
-    }
+    //     return [
+    //         'id'                  => $info ? (int)$info->id : 0,
+    //         'build_name'          => $info->build_name ?? '',
+    //         'build_email'         => $info->build_email ?? '',
+    //         'build_phone'         => $info->build_phone ?? '',
+    //         'build_address'         => $info->build_address ?? '',
+    //         'build_representative' => $info->build_representative ?? '',
+    //         'build_title_type'    => $info->build_title_type ?? '',
+    //     ];
+    // }
 
     
 

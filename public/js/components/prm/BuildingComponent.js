@@ -153,6 +153,7 @@ var BuildingComponent = (() => {
                     // mThis.fetchSummaryData();
                 },
             };
+            if (!AuthManager.allowed(200,false)) return;
             BuildingDialog.show(op);
         };
 
@@ -186,7 +187,7 @@ var BuildingComponent = (() => {
                         parent_tr.dataset.totalfloor || "0",
                         10,
                     );
-                    console.log(123456, id);
+                    
                     if (id > 0) {
                         mThis.displayFloorNumber(container, id, totalFloor);
                     }
@@ -293,7 +294,7 @@ var BuildingComponent = (() => {
                                 );
                             },
                         };
-
+                         if (!AuthManager.allowed(203,false)) return;
                         CreateFloorDialog.show(op);
                     });
                 }
@@ -389,7 +390,7 @@ var BuildingComponent = (() => {
     };
 
     mThis.editFloor = (op, onDone) => {
-        console.log(8888, op);
+        if (!AuthManager.allowed(204,false)) return;
         CreateFloorDialog.show({
             id: op.id,
             building_id: op.building_id,
@@ -400,6 +401,7 @@ var BuildingComponent = (() => {
     };
 
     mThis.deleteFloor = (op, onDone) => {
+         if (!AuthManager.allowed(205,false)) return;
         cv_interact.confirm(
             "confirm_delete",
             {
@@ -423,7 +425,7 @@ var BuildingComponent = (() => {
                         if (res.status_code === 200) {
                             
                             if (typeof onDone === "function") onDone();
-                            cv_interact.success('deleted');
+                            cv_interact.success('delete_floor');
                         } else {
                             cv_interact.error(res.error_message);
                         }
@@ -492,6 +494,7 @@ var BuildingComponent = (() => {
                 // mThis.fetchSummaryData();
             },
         };
+        if (!AuthManager.allowed(201,false)) return;
         BuildingDialog.show(op);
     };
 
@@ -504,7 +507,7 @@ var BuildingComponent = (() => {
                 // mThis.fetchSummaryData();
             },
         };
-        // if (!AuthManager.allowed(242)) return;
+        if (!AuthManager.allowed(202,false)) return;
         cv_interact.confirm(
             "confirm_delete",
             {
@@ -527,7 +530,7 @@ var BuildingComponent = (() => {
                         .then((res) => {
                             if (res.status_code == 200) {
                                 mThis.BuildingListView.showPage();
-                               cv_interact.success('deleted');
+                               cv_interact.success('delete_success_building');
                             } else {
                                 cv_interact.error(res.error_message);
                             }
@@ -577,7 +580,7 @@ const BuildingDialog = (() => {
                 title: (me) => {
                     const title = me.dataOptions.id ? "Modify Building" : "Create Building";
                     if (title) {
-                       return  `<h4 class="text-prm-custom text-start fw-bold">${LocaleManager.trans(title,'titles')}</h4>`;
+                       return  `<h4 class="text-start fw-bold">${LocaleManager.trans(title,'titles')}</h4>`;
                     }
                 },
                 createContent: () => {
@@ -691,10 +694,9 @@ const BuildingDialog = (() => {
               
                 onPrepareForm: (me, data) => {
                     const isReadOnly = me.dataOptions.id > 0;
-                    console.log(4444, data, me.dataOptions.id);
-
                     me.setReadOnly(isReadOnly, ["total_floor"]);
-                    const hasUnit = data.building_details.total_space > 0;
+                    const total_space = Number(data.building_details?.total_space || 0);
+                    const hasUnit = total_space > 0;
                     me.controls.prefix.disabled = hasUnit;
                 },
                 buttons: [
@@ -721,9 +723,9 @@ const BuildingDialog = (() => {
                                 if (res.status_code === 200) {
                                     me.hide(true, op);
                                     if(me.dataOptions.id > 0){
-                                        cv_interact.success('updated');
+                                        cv_interact.success('update_success_building');
                                     }else {
-                                        cv_interact.success('created');
+                                        cv_interact.success('create_success_building');
                                     }
                                     
                                 } else {
@@ -744,7 +746,6 @@ const CreateFloorDialog = (() => {
     let dialog = null;
 
     self.show = (op) => {
-        console.log(9999, op);
         dialog =
             dialog ||
             new GeneralDialog({
@@ -754,7 +755,7 @@ const CreateFloorDialog = (() => {
                 title: (me) => {
                     const title = me.dataOptions.id ? "Modify Floor" : "Create Floor";
                     if (title) {
-                       return  `<h4 class="text-prm-custom text-start fw-bold">${LocaleManager.trans(title,'titles')}</h4>`;
+                       return  `<h4 class="text-start fw-bold">${LocaleManager.trans(title,'titles')}</h4>`;
                     }
                 },
                 createContent: () => `
@@ -794,7 +795,6 @@ const CreateFloorDialog = (() => {
               
                 onPrepareForm: (me, data) => {
                     const details = data?.floor_details || {};
-                    console.log(5555, details);
                     const floorNumber = me.divModal.querySelector(
                         '[data-field="floor_number"]',
                     );
@@ -832,8 +832,6 @@ const CreateFloorDialog = (() => {
                             const op = me.getData();
                             op.building_id = me.dataOptions.building_id;
                             op.id = me.dataOptions?.id || 0;
-                            console.log(8000,op);
-                            
                             vsapi.call(
                                 main_view.base_url + "/prm/building/add-floor",
                                 op,
@@ -845,9 +843,9 @@ const CreateFloorDialog = (() => {
                                     }
                                     me.hide(true, op);
                                     if (me.dataOptions.id > 0) {
-                                        cv_interact.success('updated');
+                                        cv_interact.success('update_floor');
                                     } else {
-                                        cv_interact.success('created');
+                                        cv_interact.success('create_floor');
                                     }
                                 } else {
                                     cv_interact.error(res.error_message);
