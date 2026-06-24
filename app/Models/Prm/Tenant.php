@@ -85,7 +85,7 @@ class Tenant
             'passport_number' => '0|string|0-20',
             'phone_number'    => '1|string|1-20|text=phone_number_required',
             'email'           => '0|email|1-30',
-            'address'         => '1|string',
+            'address'         => '1|string|text=enter_address',
             'photo'           => '0|image'
         ];
         $email_char = ['@', '.'];
@@ -117,6 +117,7 @@ class Tenant
             $national_id = $d->national_id ?? null;
             $nid_issue_date = $d->nid_issue_date ?? null;
             $passport = $d->passport_number ?? null;
+            $nid_issue_date = $d->nid_issue_date ?? null;
 
             if (empty($national_id)) {
                 return DV::error('national_id_required');
@@ -136,6 +137,7 @@ class Tenant
             if (empty($passport)) {
                 return DV::error('passport_number_required');
             }
+            $inputs['nid_issue_date'] = null;
             $nid_check = $this->checkUniqueTenantByNID($national_id, $id);
             if ($nid_check) return DV::error($nid_check);
             $passport_check = $this->checkUniqueTenantByPassport($passport, $id);
@@ -298,7 +300,7 @@ class Tenant
     {
         return url('') . '/assets/images/default/placeholder.svg';
     }
-    
+
     public static function getDetails($id, $ss = null)
     {
         Contract::applyPendingRenewalUnitChanges();
@@ -755,6 +757,6 @@ class Tenant
             'nationalities' => GeneralSettings::options_nationality($ss),
         ];
     }
-   
-  
+
+
 }

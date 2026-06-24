@@ -27,8 +27,9 @@ echo $user->lang ?? 'en';
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Battambang&family=Noto+Sans+Khmer:wght@400;700&display=swap" rel="stylesheet">
     <?php
-    StyleManager::render('prm-style', 1, 79);
+    StyleManager::render('prm-style', 1, 80);
     ?>
     <style>
         /* Custom animations for the modal like Materialize css effect */
@@ -99,8 +100,8 @@ echo $user->lang ?? 'en';
     <?php
     ScriptManager::render('priority-one', 1, 14);
     ScriptManager::render('primary', 1, 18);
-    ScriptManager::render('primary-defer', 1, 43); 
-    ScriptManager::render('prm-components', 1, 279);
+    ScriptManager::render('primary-defer', 1, 43);
+    ScriptManager::render('prm-components', 1, 280);
     //ScriptManager::render('pdfmake', 1);
     ?>
 </head>
@@ -298,7 +299,7 @@ echo $user->lang ?? 'en';
                                                         'bg' => '#d6eaf8',
                                                     ],
                                                 ];
-                                                
+
                                                 $name = $app->name ?? ($app->app_name ?? '');
                                                 $nameKey = strtolower(trim($name));
                                                 $iconConf = $appIconMap[$nameKey] ?? null;

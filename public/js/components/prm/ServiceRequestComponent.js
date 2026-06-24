@@ -302,7 +302,7 @@ var ServiceRequestComponent = (function () {
                 const menu = me.getActiveMenus(container);
                 const status_id = container.dataset.statusid;
                menu.edit_request.style.display = (status_id >= 2) ? 'none' : 'block';
-            //    menu.delete_request.style.display = (status_id >= 2) ? 'none' : 'block';
+               menu.delete_request.style.display = (status_id == 3 || status_id == 4) ? 'block' : 'none';
                menu.accept_request.style.display = (status_id >= 2) ? 'none' : 'block';
                menu.complete_request.style.display = (status_id == 2) ? 'block' : 'none';
                menu.reject_request.style.display = (status_id >= 2) ? 'none' : 'block';
@@ -359,7 +359,7 @@ var ServiceRequestComponent = (function () {
                 'translate': true,
                 // 'title': "accepted",
                 'context': 'update',
-                'confirmButtonText': "Accept"
+                'confirmButtonText': LocaleManager.trans('Accept', 'buttons')
             },
             (e) => {
                 if (!e) return;
@@ -372,7 +372,7 @@ var ServiceRequestComponent = (function () {
                 .then(res => {
                     if (res.status_code === 200) {
                         mThis.ServiceRequestListView.showPage(mThis.getFilterData());
-                        cv_interact.success('Service Request has been accepted!');
+                        cv_interact.success(LocaleManager.trans('complete_success_request', 'message_box_default'));
                     } else {
                         cv_interact.error(res.error_message || 'Something went wrong');
                     }
@@ -390,7 +390,7 @@ var ServiceRequestComponent = (function () {
             {   
                 title: 'completed',
                 context: 'update',
-                confirmButtonText: 'Complete'
+                confirmButtonText: LocaleManager.trans('Complete', 'buttons'),
             },
             (e) => {
                 if (!e) return;

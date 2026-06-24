@@ -7,7 +7,7 @@
  
             <!-- Account Management -->
             <div class="cpn-card">
-                <p class="cpn-section-title">Logo Building</p>
+                <p class="cpn-section-title" vslang="labels.Logo"></p>
                 <div class="d-flex flex-column align-items-center gap-3">
                     <div class="cpn-logo-box" id="_logo_box">
                         <!-- Uploaded Logo -->
@@ -20,15 +20,15 @@
                         <!-- Placeholder -->
                         <div id="_logo_placeholder" class="logo-placeholder">
                             <i class="fa-regular fa-image cpn-logo-icon"></i>
-                            <span class="cpn-logo-text">Company Logo</span>
+                            <span class="cpn-logo-text" vslang="labels.Company Logo"></span>
                         </div>
                     </div>
                     <input type="file" id="_logo_file_input" accept="image/*" style="display:none" />
-                    <button id="com_btnChooseLogo" class="w-100 cpn-btn-upload">
-                        <i class="me-2 fa fa-upload"></i> Upload Photo
+                    <button id="com_btnChooseLogo" class="w-100 cpn-btn-upload" vslang="buttons.Upload Photo">
+                        <i class="me-2 fa fa-upload"></i> <span vslang="buttons.Upload Photo"></span>
                     </button>
-                    <button id="com_btnDeleteLogo" class="w-100 cpn-btn-delete">
-                        <i class="me-2 fa-regular fa-trash-can"></i> Delete Logo
+                    <button id="com_btnDeleteLogo" class="w-100 cpn-btn-delete" vslang="buttons.Delete Logo">
+                        <i class="me-2 fa-regular fa-trash-can"></i> <span vslang="buttons.Delete Logo"></span>
                     </button>
                 </div>
             </div>
@@ -72,13 +72,13 @@
                 <div class="col-lg-6">
                     <div class="vs-material-field">
                         <input class="data-input form-control" data-field="email" placeholder=" " autocomplete="off">
-                        <label vslang="labels.email"></label>
+                        <label vslang="labels.Email"></label>
                     </div>
                 </div>
                 <div class="col-lg-6">
                     <div class="vs-material-field">
                         <input class="data-input form-control" data-field="phone_number" placeholder=" " autocomplete="off">
-                        <label vslang="labels.phone_number"></label>
+                        <label vslang="labels.Phone Number"></label>
                     </div>
                 </div>
                 <div class="col-lg-6">
@@ -113,13 +113,13 @@
                         <div class="col-lg-6">
                             <div class="vs-material-field">
                                 <input class="data-input form-control" data-field="first_cp_phone" placeholder=" " />
-                                <label vslang="labels.phone_number"></label>
+                                <label vslang="labels.Phone Number"></label>
                             </div>
                         </div>
                         <div class="col-lg-6">
                             <div class="vs-material-field">
                                 <input class="data-input form-control" data-field="first_cp_email" placeholder=" " />
-                                <label vslang="labels.email"></label>
+                                <label vslang="labels.Email"></label>
                             </div>
                         </div>
                         <div class="col-lg-6">
@@ -144,13 +144,13 @@
                         <div class="col-lg-6">
                             <div class="vs-material-field">
                                 <input class="data-input form-control" data-field="second_cp_phone" placeholder=" " />
-                                <label vslang="labels.phone_number"></label>
+                                <label vslang="labels.Phone Number"></label>
                             </div>
                         </div>
                         <div class="col-lg-6">
                             <div class="vs-material-field">
                                 <input class="data-input form-control" data-field="second_cp_email" placeholder=" " />
-                                <label vslang="labels.email"></label>
+                                <label vslang="labels.Email"></label>
                             </div>
                         </div>
                         <div class="col-lg-6">

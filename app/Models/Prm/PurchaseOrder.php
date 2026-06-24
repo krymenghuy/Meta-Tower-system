@@ -192,7 +192,7 @@ class PurchaseOrder extends VSModel
 
             if (!$po_id) {
                 DB::rollBack();
-                return DV::error('Cannot save purchase order');
+                return DV::error('cannot_save_po');
             }
 
             self::setPONumber($ss->branch_id, $po_id, 'PO', $inputs['po_date'], 4, 'PO');
@@ -204,7 +204,7 @@ class PurchaseOrder extends VSModel
             $itemIds = array_column($valid_items, 'item_id');
 
             if (count($itemIds) !== count(array_unique($itemIds))) {
-                return DV::error('Duplicate items are not allowed in a single purchase order.');
+                return DV::error('duplicate_po_items');
             }
             // 🔥 STEP 1: collect incoming IDs first
             $incoming_ids = [];
@@ -227,7 +227,7 @@ class PurchaseOrder extends VSModel
 
             $success_count = 0;
             if (empty($valid_items)) {
-                return DV::error('Please select at least one item before saving the purchase order.');
+                return DV::error('po_item_required');
             }
             foreach ($valid_items as $item) {
 
@@ -385,19 +385,19 @@ class PurchaseOrder extends VSModel
             ->first();
 
         if (!$po) {
-            return DV::error('Purchase order not found.');
+            return DV::error('po_not_found');
         }
 
         if ($po->status_id == 3) {
-            return DV::error('This purchase order cannot be deleted because it has already been ordered.');
+            return DV::error('cannot_delete_po_ordered');
         }
 
         if ($po->status_id == 4) {
-            return DV::error('This purchase order cannot be deleted because it has been partially received.');
+            return DV::error('cannot_delete_po_partial_received');
         }
 
         if ($po->status_id == 5) {
-            return DV::error('This purchase order cannot be deleted because it has already been received.');
+            return DV::error('cannot_delete_po_received');
         }
 
         DB::beginTransaction();
@@ -498,15 +498,15 @@ class PurchaseOrder extends VSModel
             ->first();
 
         if (!$po) {
-            return DV::error('Purchase Order not found.');
+            return DV::error('po_not_found');
         }
 
         if ($po->status_id == 7) {
-            return DV::error('Purchase Order is already rejected.');
+            return DV::error('po_already_rejected');
         }
 
         if (in_array($po->status_id, [5, 6])) {
-            return DV::error('Completed or cancelled Purchase Orders cannot be rejected.');
+            return DV::error('cannot_reject_completed_or_cancelled');
         }
 
         $reject = DB::table('purchase_orders')
@@ -529,7 +529,7 @@ class PurchaseOrder extends VSModel
         }
         $po = DB::table('purchase_orders')->select('id', 'status_id')->where('id', $po_id)->first();
         if (!$po) {
-            return DV::error('Purchase order not found.');
+            return DV::error('po_not_found');
         }
         if ($po->status_id == 7) {
             return DV::error('Rejected purchase orders cannot be authorized.');
@@ -592,8 +592,6 @@ class PurchaseOrder extends VSModel
     DB::beginTransaction();
 
     try {
-        $allFullyReceived = true;
-
         foreach ($items as $item) {
 
             $poItem = DB::table('purchase_order_items')
@@ -605,22 +603,13 @@ class PurchaseOrder extends VSModel
                 return DV::error('PO item not found');
             }
 
-            if (!isset($item['received_qty']) || $item['received_qty'] === '' || $item['received_qty'] === null) {
-                return DV::error('Received quantity is required.');
-            }
-
-            $receiveQty = (float) $item['received_qty'];
-
-            if ($receiveQty <= 0) {
-                return DV::error('Invalid receive quantity.');
-            }
+            $receiveQty = $item['received_qty'] ?? 0;
 
             if ($receiveQty > $poItem->qty) {
                 return DV::error('Receive quantity exceeds ordered quantity.');
             }
-
-            $statusId = $receiveQty > 0 ? 5 : 4;
-
+           
+            $statusId = ($receiveQty == 0) ? 3 : 5;
             DB::table('purchase_order_items')
                 ->where('id', $poItem->id)
                 ->update([
@@ -631,22 +620,30 @@ class PurchaseOrder extends VSModel
                     'received_user' => $ss->login_name ?? null,
                     'status_id' => $statusId,
                 ]);
+        }
+        $count_total_item = DB::table('purchase_order_items')->where('po_id',$id)->count();
+        $total_receive_item = DB::table('purchase_order_items')->where('po_id',$id)->where('status_id',5)->count();
+        $po_status = null;
 
-            if ($receiveQty <= 0) {
-                $allFullyReceived = false;
-            }
+        if ($count_total_item > 0 && $total_receive_item == $count_total_item) {
+            $po_status = 5;
+        } elseif ($total_receive_item > 0) {
+            $po_status = 4;
+        } else {
+            $po_status = 3;
         }
 
         DB::table('purchase_orders')
             ->where('id', $id)
             ->update([
-                'status_id' => $allFullyReceived ? 5 : 4,
+                'status_id' => $po_status,
                 'update_uid' => $ss->user_id ?? null,
                 'update_user' => $ss->login_name ?? null,
                 'updated_at' => now(),
             ]);
 
         DB::commit();
+        if($po_status == 3) return DV::error('Invalid receive quantity.');
 
         return DV::success(['message' => 'Purchase order received successfully.']);
 

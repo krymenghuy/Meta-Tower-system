@@ -88,10 +88,10 @@ var DepositComponent = (() => {
                 const status = (data.status ?? "pending").toLowerCase();
                 const statusConfig = {
                     pending:
-                        "border border-danger text-danger bg-danger-subtle",
+                        "border border-warning text-warning bg-warning-subtle",
                     paid: "border border-success text-success bg-success-subtle",
                     refunded:
-                        "border border-warning text-warning bg-warning-subtle",
+                        "border border-danger text-danger bg-danger-subtle",
                 };
                 const cls = statusConfig[status] ?? "bg-secondary text-white";
                 return `
@@ -450,35 +450,35 @@ const DepositDialog = (() => {
                         `<div class="row g-3">
                             <input name="tenant_id" class="d-none data-input form-control" data-field="tenant_id">
                             <input name="contract_id" class="d-none data-input form-control" data-field="contract_id">
-                            
+
                             <div class="col-6">
                                 <div class="vs-material-field">
                                     <input name="tenant_name" class="data-input form-control" data-field="tenant_name" placeholder="Search Tenant..." autocomplete="off">
                                     <label vslang="labels.Tenant">Tenant</label>
                                 </div>
                             </div>
-                            
+
                             <div class="col-6">
                                 <div class="vs-material-field">
                                     <input name="phone_number" class="data-input form-control" data-field="phone_number" placeholder=" " disabled />
                                     <label vslang="labels.Phone Number">Phone Number</label>
                                 </div>
                             </div>
-                            
+
                             <div class="col-4">
                                 <div class="vs-material-field">
                                     <input name="building" class="data-input form-control" data-field="building" placeholder=" " disabled />
                                     <label vslang="labels.Building"></label>
                                 </div>
                             </div>
-                            
+
                             <div class="col-4">
                                 <div class="vs-material-field">
                                     <input name="space_code" class="data-input form-control" data-field="space_code" placeholder=" " disabled />
                                     <label vslang="labels.Unit Code">Unit Code</label>
                                 </div>
                             </div>
-                            
+
                             <div class="col-4">
                                 <div class="vs-material-field">
                                     <input name="amount" class="data-input form-control" data-field="amount" placeholder=" " disabled />
@@ -486,7 +486,7 @@ const DepositDialog = (() => {
                                 </div>
                             </div>
 
-                            <div class="col-6"> 
+                            <div class="col-6">
                                 <div class="vs-material-field">
                                     <input type="text" data-type="date" name="deposit_date" class="data-input form-control form_input" data-field="deposit_date" placeholder=" "/>
                                     <label vslang="labels.Payment Date"></label>
@@ -803,7 +803,7 @@ const RefundDetailsDialog = (() => {
 
             createContent() {
                 const div = document.createElement("div");
-                div.innerHTML = `   
+                div.innerHTML = `
 
                     <div id="_rdv_loader" class="text-center py-4">
                         <div class="spinner-border spinner-border-sm text-primary"></div>

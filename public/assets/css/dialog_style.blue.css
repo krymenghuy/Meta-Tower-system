@@ -222,6 +222,23 @@
     font-weight:700;
 
     letter-spacing:-.02em;
+
+    font-family: inherit;
+}
+
+.vs-modal .modal-title h1,
+.vs-modal .modal-title h2,
+.vs-modal .modal-title h3,
+.vs-modal .modal-title h4,
+.vs-modal .modal-title h5,
+.vs-modal .modal-title h6{
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    letter-spacing: inherit;
+    color: inherit;
+    margin: 0;
+    line-height: inherit;
 }
 .vs-modal .btn-close{
 

@@ -1064,6 +1064,16 @@ const CreateBookingDialog = (() => {
     const self = {};
     let dialog = null;
 
+    const getBookingDialogTitle = (me) => {
+        const bookingId =
+            me.dataOptions?.booking?.id ?? me.detail?.booking?.id;
+        const isEdit = Number(bookingId) > 0;
+        return LocaleManager.trans(
+            isEdit ? "Modify Booking" : "Create Booking",
+            "titles",
+        );
+    };
+
     self.show = (op) => {
         dialog =
             dialog ||
@@ -1118,7 +1128,7 @@ const CreateBookingDialog = (() => {
 
                             <div class="col-6">
                                 <div class="vs-material-field">
-                                    <input type="text" 
+                                    <input type="text"
                                         name="booking_fee"
                                         class="data-input form-control"
                                         data-field="booking_fee"
@@ -1146,9 +1156,7 @@ const CreateBookingDialog = (() => {
                     const bookingId =
                         me.dataOptions?.booking?.id ?? me.detail?.booking?.id;
                     const isEdit = Number(bookingId) > 0;
-                    // title.innerHTML = isEdit
-                    //     ? '<h4 class="text-prm-custom text-start fw-bold">Edit Booking</h4>'
-                    //     : '<h4 class="text-prm-custom text-start fw-bold">Create Booking</h4>';
+                    title.textContent = getBookingDialogTitle(me);
                     const c = me.controls;
                     if (c?.booking_date) c.booking_date.disabled = isEdit;
                     if (c?.expired_booking_date)
@@ -1382,8 +1390,8 @@ const ViewBookingDialog = (() => {
                                     </div>
                                 </div>
                             </div>`;
-                        div.innerHTML = html;   
-                        
+                        div.innerHTML = html;
+
                     };
                 },
 
