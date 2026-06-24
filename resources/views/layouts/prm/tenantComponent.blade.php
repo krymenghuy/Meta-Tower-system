@@ -4,7 +4,7 @@
             <div class="align-items-center row g-3">
                 <div class="col-12 col-md-6 col-lg-3">
                     <div class="position-relative w-100">
-                        <input type="text" class="filter-field rounded-2 input-search" id="_search_tenant_"
+                        <input vslang="titles.Search by name, code or phone" type="text" class="filter-field rounded-2 input-search" id="_search_tenant_"
                             placeholder="Search by name, code or phone">
                     </div>
                 </div>
