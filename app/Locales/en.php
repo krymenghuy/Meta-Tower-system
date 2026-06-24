@@ -165,7 +165,28 @@ return [
         'building_id' => 'Building',
     ],
     'titles' => [
-        'dashboard' => 'Dashboard - Meta Tower'
+        'dashboard' => 'Dashboard - Meta Tower',
+        'Personal Information' => 'Personal Information',
+        'Overview' => 'Overview',
+        'Contract' => 'Contract',
+        'Document' => 'Documents',
+        'Documents' => 'Documents',
+    ],
+    'labels' => [
+        'Name' => 'Name',
+        'Gender' => 'Gender',
+        'Male' => 'Male',
+        'Female' => 'Female',
+        'Date of Birth' => 'Date of Birth',
+        'Legal Name' => 'Legal Name',
+        'National ID' => 'National ID',
+        'Passport' => 'Passport Number',
+        'Passport Number' => 'Passport Number',
+        'Phone' => 'Phone',
+        'Email' => 'Email',
+        'Relationship' => 'Relationship',
+        'Partner' => 'Partner',
+        'Address' => 'Address',
     ],
     'menus' => [
 
