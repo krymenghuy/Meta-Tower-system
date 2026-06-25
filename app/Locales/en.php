@@ -171,6 +171,8 @@ return [
         'Contract' => 'Contract',
         'Document' => 'Documents',
         'Documents' => 'Documents',
+        'No_renewal_history' => 'No renewal history for this contract.',
+        'Renewals_will_appear' => 'Renewals will appear here when the contract is renewed.',
     ],
     'labels' => [
         'Name' => 'Name',
@@ -407,6 +409,8 @@ return [
         'Edit' => 'Edit',
         'Create Service' => 'Create Service',
         'Generate New Bill' => 'Generate New Bill',
+        'Create Contract' => 'Create Contract',
+        'Create Tenant' => 'Create Tenant1212121',
     ],
 ];
 

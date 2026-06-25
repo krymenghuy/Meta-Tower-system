@@ -5,7 +5,7 @@
                 <div class="col-12 col-md-6 col-lg-3">
                     <div class="position-relative w-100">
                        <input type="text" class="filter-field rounded-2 input-search" id="_search_tenant_"
-                          placeholder="{{ \Vsd\Locales\Localization::trans('Search by name, code or phone', 'labels') }}">
+                          --placeholder="{{ \Vsd\Locales\Localization::trans('Search by name, code or phone', 'labels') }}">
                     </div>
                 </div>
                 <div class="col-12 col-md-6 col-lg-2">
@@ -39,7 +39,7 @@
                         <div class="col-12 col-md-auto">
                             <button type="button" class="w-100 btnAddNewPrm" id="_btnAddTenant">
                                 <i class="me-2 fa fa-user-plus"></i>
-                                <span vslang="buttons.Create Tenant">Create Tenant</span>
+                                <span vslang="buttons.Create Tenant"></span>
                             </button>
                         </div>
                     </div>

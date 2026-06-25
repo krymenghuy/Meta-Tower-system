@@ -213,6 +213,8 @@ return [
         'Modify' => 'កែប្រែ',
         'Cancel' => 'បោះបង់',
         'No data to display' => "មិនមានទិន្នន័យបង្ហាញ",
+        'No_renewal_history' => 'គ្មានប្រវត្តិនៃការបន្តកិច្ចសន្យាសម្រាប់កិច្ចសន្យានេះទេ។',
+        'Renewals_will_appear' => 'ការបន្តកិច្ចសន្យានឹងបង្ហាញនៅទីនេះនៅពេលកិច្ចសន្យាត្រូវបានបន្ត។',
 
 
         'Create Service Price' => 'បង្កើតតម្លៃសេវាកម្ម',
@@ -654,7 +656,8 @@ return [
         'Create Building' => 'បង្កើតអគារ',
         'Create Floor' => 'បង្កើតជាន់ថ្មី',
         'Create Space' => 'បង្កើតបន្ទប់',
-        'Create Tenant' => 'បង្កើតអ្នកជួល',
+        // 'Create Tenant' => 'បង្កើតអ្នកជួល',
+        'Create Tenant' => 'adadadad',
         'Create Reservation' => 'បង្កើតការកក់',
         'Create Maintenance' => 'បង្កើតការថែទាំ',
         'Generate New Bill' => 'បង្កើតវិក័យប័ត្រចំណាយ',
