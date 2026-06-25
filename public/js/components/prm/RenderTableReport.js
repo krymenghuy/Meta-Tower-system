@@ -1385,6 +1385,157 @@ function VendorPayments(div, data) {
     // togglePanelTable(div);
     HtmlString = html;
 }
+function incomeByCategoryTable(div, d) {
+    let header = null,
+        body = null,
+        tr = null,
+        table = null,
+        cnt = 0;
+    const thead = d.header ?? [],
+        tbody = d.list.all_fee ?? [],
+        company_info = d.company_profile ?? {};
+    const length = tbody.length;
+
+    const html = [
+        `<div class="d-block position-relative">
+           <div class="height-logo-report position-absolute float-start">
+            <img style="max-width: 100px; max-height: 100px;" class=" object-fit-scale set-min-size-logo" src="${company_info.logo_url ?? ''}" alt="" />
+            </div>
+        <div class="d-flex flex-column gap-2 justify-content-center align-items-center set-min-size-container-title">
+            <h4 class="text-center text-uppercase">${d.title ?? ""}</h4>
+            <p class="text-center w-100 fs-5-1 get-subtitle  fs-5">${
+                d.sub_title_2 ?? ""
+            }</p>
+        </div>
+    </div>
+    <div class="table-responsive mt-3 pt-3 pb-3 bg-white">
+        ${
+            ((cnt = 0),
+            (table = null),
+            tbody &&
+                tbody.map((tbl, i) => {
+                    cnt++;
+                    table = [
+                        table,
+                        `<p class="pb-0 mb-1 text-center text-capitalize fs-5-1 get-title">${
+                            tbl.fee_type ? tbl.fee_type.replace(/\_/g, " ") : ""
+                        }</p>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            ${
+                                ((header = null),
+                                thead &&
+                                    thead.map((th) => {
+                                        header = [
+                                            header,
+                                            `<th style="background-color:#fff" class="bg-primary-subtle1 text-nowarp${
+                                                i === 0 ? " count-th" : ""
+                                            }">${th.name ?? ""}</th>`,
+                                        ].join("");
+                                    }),
+                                header
+                                    ? `<th style="background-color:#fff" class="bg-primary-subtle1${
+                                          i === 0 ? " count-th" : ""
+                                      }">No.</th>` + header
+                                    : "")
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${
+                            ((body = null),
+                            tbl &&
+                                tbl.fee &&
+                                tbl.fee.map((d, i) => {
+                                    body = [
+                                        body,
+                                        `<tr class="text-nowrap">
+                                ${
+                                    ((tr = null),
+                                    thead.map((k) => {
+                                        tr = [
+                                            tr,
+                                            `<td class="text-capitalize align-middle ${
+                                                k.key == "remark"
+                                                    ? "text-break"
+                                                    : ""
+                                            }" style="${
+                                                k.key == "remark"
+                                                    ? "min-width: 250px"
+                                                    : ""
+                                            }">${d[k.key] ?? ""}</td>`,
+                                        ].join("");
+                                    }),
+                                    tr
+                                        ? `<td class="align-middle">${
+                                              i + 1
+                                          }</td>` + tr
+                                        : "")
+                                }</tr>`,
+                                    ].join("");
+                                }),
+                            body +
+                                `<tr>
+                            <td style="background-color:#fff" class="bg-primary-subtle1 text-uppercase text-center" colspan="4">${
+                                tbl.sub_label ??
+                                "Sub Total " + tbl.fee_type.replace(/\_/g, " ")
+                            }</td>
+                            <td style="background-color:#fff" class="bg-primary-subtle1 text-center">${
+                                tbl.total_cash ?? ""
+                            }</td>
+                            <td style="background-color:#fff" class="bg-primary-subtle1 text-center">${
+                                tbl.total_cheque ?? ""
+                            }</td>
+                            <td style="background-color:#fff" class="bg-primary-subtle1 text-center">${
+                                tbl.total_transfer ?? ""
+                            }</td>
+                            <td style="background-color:#fff" class="bg-primary-subtle1 text-center"</td>
+                        </tr>
+                        <tr>
+                            <td style="background-color:#e9ecef" class="bg-body-secondary text-uppercase text-center" colspan="5">${
+                                tbl.label ??
+                                "Total " + tbl.fee_type.replace(/\_/g, " ")
+                            }</td>
+                            <td style="background-color:#e9ecef" class="bg-body-secondary text-center" colspan="3">${
+                                tbl.total ?? ""
+                            }</td>
+                            <td style="background-color:#e9ecef" class="bg-body-secondary text-center" colspan=""></td>
+                        </tr>`)
+                        }
+                    </tbody>
+                    <tfoot>${cnt === length ? footerHtml(d) : ""}</tfoot>
+                </table>`,
+                    ].join("");
+                }),
+            table ?? "")
+        }
+    </div>
+    <div class="d-flex justify-content-between">
+        <div class="d-block">
+            <p>Prepared By</p>
+            <hr class="bg-dark pb-0 mb-1 mt-5"/>
+            <p class="pb-0 mb-1">Finance Officer</p>
+            <p>Date: ${(".".repeat(15) + "/").repeat(3).slice(0, -1)}</p>
+        </div>
+        <div class="d-block">
+            <p>Checked By</p>
+            <hr class="bg-dark pb-0 mb-1 mt-5"/>
+            <p class="pb-0 mb-1">Finance Manager</p>
+            <p>Date: ${(".".repeat(15) + "/").repeat(3).slice(0, -1)}</p>
+        </div>
+        <div class="d-block">
+            <p>Approved By</p>
+            <hr class="bg-dark mt-5"/>
+            <p>Date: ${(".".repeat(15) + "/").repeat(3).slice(0, -1)}</p>
+        </div>
+    </div>`,
+    ].join("");
+
+    div.innerHTML = html;
+    // togglePanelTable(div);
+    HtmlString = html;
+}
 
 function totalPaymentHistory(div, data) {
     let html = `
@@ -1755,154 +1906,7 @@ function nonTuitionFeeTable(div, d) {
     HtmlString = html;
 }
 
-function incomeByCategoryTable(div, d) {
-    let header = null,
-        body = null,
-        tr = null,
-        table = null,
-        cnt = 0;
-    const thead = d.header ?? [],
-        tbody = d.list.all_fee ?? [],
-        company_info = d.company_profile ?? {};
-    const length = tbody.length;
 
-    const html = [
-        `<div class="d-block position-relative">
-        <div class="d-flex flex-column gap-2 justify-content-center align-items-center set-min-size-container-title">
-            <h4 class="text-center text-uppercase">${d.title ?? ""}</h4>
-            <p class="text-center w-100 fs-5-1 get-subtitle  fs-5">${
-                d.sub_title ?? ""
-            }</p>
-        </div>
-    </div>
-    <div class="table-responsive mt-3 pt-3 pb-3 bg-white">
-        ${
-            ((cnt = 0),
-            (table = null),
-            tbody &&
-                tbody.map((tbl, i) => {
-                    cnt++;
-                    table = [
-                        table,
-                        `<p class="pb-0 mb-1 text-center text-capitalize fs-5-1 get-title">${
-                            tbl.fee_type ? tbl.fee_type.replace(/\_/g, " ") : ""
-                        }</p>
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            ${
-                                ((header = null),
-                                thead &&
-                                    thead.map((th) => {
-                                        header = [
-                                            header,
-                                            `<th style="background-color:#fff3cd" class="bg-warning-subtle text-nowarp${
-                                                i === 0 ? " count-th" : ""
-                                            }">${th.name ?? ""}</th>`,
-                                        ].join("");
-                                    }),
-                                header
-                                    ? `<th style="background-color:#fff3cd" class="bg-warning-subtle${
-                                          i === 0 ? " count-th" : ""
-                                      }">No.</th>` + header
-                                    : "")
-                            }
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${
-                            ((body = null),
-                            tbl &&
-                                tbl.fee &&
-                                tbl.fee.map((d, i) => {
-                                    body = [
-                                        body,
-                                        `<tr class="text-nowrap">
-                                ${
-                                    ((tr = null),
-                                    thead.map((k) => {
-                                        tr = [
-                                            tr,
-                                            `<td class="text-capitalize align-middle ${
-                                                k.key == "remark"
-                                                    ? "text-break"
-                                                    : ""
-                                            }" style="${
-                                                k.key == "remark"
-                                                    ? "min-width: 250px"
-                                                    : ""
-                                            }">${d[k.key] ?? ""}</td>`,
-                                        ].join("");
-                                    }),
-                                    tr
-                                        ? `<td class="align-middle">${
-                                              i + 1
-                                          }</td>` + tr
-                                        : "")
-                                }</tr>`,
-                                    ].join("");
-                                }),
-                            body +
-                                `<tr>
-                            <td style="background-color:#fff3cd" class="bg-warning-subtle text-uppercase text-center" colspan="4">${
-                                tbl.sub_label ??
-                                "Sub Total " + tbl.fee_type.replace(/\_/g, " ")
-                            }</td>
-                            <td style="background-color:#fff3cd" class="bg-warning-subtle text-center">${
-                                tbl.total_cash ?? ""
-                            }</td>
-                            <td style="background-color:#fff3cd" class="bg-warning-subtle text-center">${
-                                tbl.total_cheque ?? ""
-                            }</td>
-                            <td style="background-color:#fff3cd" class="bg-warning-subtle text-center">${
-                                tbl.total_transfer ?? ""
-                            }</td>
-                            <td style="background-color:#fff3cd" class="bg-warning-subtle text-center"</td>
-                        </tr>
-                        <tr>
-                            <td style="background-color:#e9ecef" class="bg-body-secondary text-uppercase text-center" colspan="4">${
-                                tbl.label ??
-                                "Total " + tbl.fee_type.replace(/\_/g, " ")
-                            }</td>
-                            <td style="background-color:#e9ecef" class="bg-body-secondary text-center" colspan="3">${
-                                tbl.total ?? ""
-                            }</td>
-                            <td style="background-color:#e9ecef" class="bg-body-secondary text-center" colspan=""></td>
-                        </tr>`)
-                        }
-                    </tbody>
-                    <tfoot>${cnt === length ? footerHtml(d) : ""}</tfoot>
-                </table>`,
-                    ].join("");
-                }),
-            table ?? "")
-        }
-    </div>
-    <div class="d-flex justify-content-between">
-        <div class="d-block">
-            <p>Prepared By</p>
-            <hr class="bg-dark pb-0 mb-1 mt-5"/>
-            <p class="pb-0 mb-1">Finance Officer</p>
-            <p>Date: ${(".".repeat(15) + "/").repeat(3).slice(0, -1)}</p>
-        </div>
-        <div class="d-block">
-            <p>Checked By</p>
-            <hr class="bg-dark pb-0 mb-1 mt-5"/>
-            <p class="pb-0 mb-1">Finance Manager</p>
-            <p>Date: ${(".".repeat(15) + "/").repeat(3).slice(0, -1)}</p>
-        </div>
-        <div class="d-block">
-            <p>Approved By</p>
-            <hr class="bg-dark mt-5"/>
-            <p>Date: ${(".".repeat(15) + "/").repeat(3).slice(0, -1)}</p>
-        </div>
-    </div>`,
-    ].join("");
-
-    div.html(html);
-    togglePanelTable(div);
-    HtmlString = html;
-}
 
 function totalPaymentByYear(div, d) {
     let header = null,
@@ -2069,7 +2073,7 @@ function totalPaymentHistory1(div, d) {
                             body = [
                                 body,
                                 `<tr>
-                            <td style="background-color:#fff3cd" class="bg-warning-subtle" colspan="${
+                            <td style="background-color:#fff" class="bg-primary-subtle1" colspan="${
                                 parseInt(thead.length) + 1
                             }">${list.level ?? ""}</td>
                         </tr>
