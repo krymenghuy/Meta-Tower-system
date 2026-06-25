@@ -4,8 +4,8 @@
             <div class="align-items-center row g-3">
                 <div class="col-12 col-md-6 col-lg-3">
                     <div class="position-relative w-100">
-                        <input type="text" class="filter-field rounded-2 input-search" id="_search_tenant_"
-                            placeholder="Search by name, code or phone">
+                       <input type="text" class="filter-field rounded-2 input-search" id="_search_tenant_"
+                          placeholder="{{ \Vsd\Locales\Localization::trans('Search by name, code or phone', 'labels') }}">
                     </div>
                 </div>
                 <div class="col-12 col-md-6 col-lg-2">
@@ -27,18 +27,18 @@
                         </label>
                     </div>
                 </div>
-                <div class="col-12 col-md-6 col-lg-4 ms-md-auto">
-                    <div class="row g-2 justify-content-end">
+                <div class="ms-md-auto col-12 col-md-6 col-lg-4">
+                    <div class="justify-content-end row g-2">
                         <div class="col-12 col-md-auto">
-                            <button type="button" class="btnAddNewPrm w-100" id="_tenant_btn_pdf">
-                                <i class="fa fa-print text-white me-2"></i>
+                            <button type="button" class="w-100 btnAddNewPrm" id="_tenant_btn_pdf">
+                                <i class="me-2 text-white fa fa-print"></i>
                                 <span class="text-white" vslang="buttons.PDF"></span>
                             </button>
                         </div>
 
                         <div class="col-12 col-md-auto">
-                            <button type="button" class="btnAddNewPrm w-100" id="_btnAddTenant">
-                                <i class="fa fa-user-plus me-2"></i>
+                            <button type="button" class="w-100 btnAddNewPrm" id="_btnAddTenant">
+                                <i class="me-2 fa fa-user-plus"></i>
                                 <span vslang="buttons.Create Tenant">Create Tenant</span>
                             </button>
                         </div>

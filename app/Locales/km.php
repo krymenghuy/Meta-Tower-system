@@ -1228,5 +1228,22 @@ return [
         'Accept' => 'យល់ព្រម',
         'View Reservation' => 'មើលព័ត៌មានការកក់',
     ],
-    
+    'labels' => [
+        'Exchange Rate (USD - KHR)' => 'អត្រាប្តូរប្រាក់ (USD - KHR)',
+        'Invoice Display Options' => 'ជម្រើសបង្ហាញលើវិក្កយបត្រ',
+        'Show Commercial Tax' => 'បង្ហាញពន្ធពាណិជ្ជកម្ម',
+        'Show Payment Status' => 'បង្ហាញស្ថានភាពទូទាត់ប្រាក់',
+        'Show Balance' => 'បង្ហាញសមតុល្យនៅសល់',
+        'Show Amount Paid' => 'បង្ហាញចំនួនទឹកប្រាក់បានបង់',
+        'Show Signature' => 'បង្ហាញហត្ថលេខា',
+        'Upload QR code' => 'បញ្ជូលកូដ QR',
+        'Upload file' => 'បញ្ជូលឯកសារ',
+        'Delete file' => 'លុបឯកសារ',
+        'Search by name, code or phone' => 'ស្វែងរកតាមឈ្មោះ កូដ ឬលេខទូរស័ព្ទ',
+    ],
+    'buttons' => [
+        'Edit' => 'កែប្រែ',
+        'Create Service' => 'បង្កើតសេវាកម្ម',
+        'Generate New Bill' => 'បង្កើតវិក្កយបត្រថ្មី',
+    ],
 ];

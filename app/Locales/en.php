@@ -401,6 +401,7 @@ return [
         'Upload QR code' => 'Upload QR code',
         'Upload file' => 'Upload file',
         'Delete file' => 'Delete file',
+        'Search by name, code or phone' => 'Search by name, code or phone',
     ],
     'buttons' => [
         'Edit' => 'Edit',
