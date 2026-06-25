@@ -242,16 +242,16 @@ function v_display($mod_id, $module_ids = null)
                             </a>
                         </li> -->
 
-                  <li class="kt-menu__item" aria-haspopup="true" <?php v_display(228); ?>>
-                    <a href="TeamComponent" modid="228" class="menu-item kt-menu__link">
+                  <li class="kt-menu__item" aria-haspopup="true" <?php v_display(312); ?>>
+                    <a href="TeamComponent" modid="312" class="d-none menu-item kt-menu__link">
                         <span class="kt-menu__link-icon">
                             <img class="opacity-icons icons" src="{{ asset('assets/images/icons/staff.svg') }}" />
                         </span>
                         <span class="font-color kt-menu__link-text" vslang="menus.Team">Team</span>
                     </a>
                 </li>
-                <li class="kt-menu__item" aria-haspopup="true" <?php v_display(229); ?>>
-                    <a href="TenantProfileComponent" modid="229" class="menu-item kt-menu__link">
+                <li class="kt-menu__item" aria-haspopup="true" <?php v_display(308); ?>>
+                    <a href="TenantProfileComponent" modid="308" class="d-none menu-item kt-menu__link">
                         <span class="kt-menu__link-icon">
                             <img class="opacity-icons icons" src="{{ asset('assets/images/icons/staff.svg') }}" />
                         </span>
