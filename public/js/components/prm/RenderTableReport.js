@@ -1299,6 +1299,92 @@ function depositList(div, data) {
     div.innerHTML = html;
     HtmlString = html;
 }
+function VendorPayments(div, data) {
+    let html = ` 
+    <div class="d-block position-relative">
+  
+        <div class="d-flex flex-column gap-2 justify-content-center align-items-center set-min-size-container-title">
+            <h4 class="text-center text-uppercase">${data?.title ?? ''}</h4>
+            <p class="text-center w-100 fs-5-1 get-subtitle  fs-5">${data?.sub_title ?? ''}</p>
+        </div>
+    </div>
+    <div class="d-flex justify-content-end w-100">
+        <div class="d-flex border rounded-3 shadow-sm ps-3 pt-3 me-3 pb-0 w-25" style="min-width: 400px; margin-top: -70px;">
+            <div class="w-50">
+                <p class="text-nowrap">Vendor</p>
+                <p class="text-nowrap">Phone</p>
+                <p class="text-nowrap">CP Name</p>
+                <p class="text-nowrap">CP Phone</p>
+            </div>
+            <div class="w-50">
+                <p class="text-nowrap">${data?.vendor_info?.name ?? '_'}</p>
+                <p class="text-nowrap">${data?.vendor_info?.phone_number ?? '_'}</p>
+                <p class="text-nowrap">${data?.vendor_info?.contact_person ?? '_'}</p>
+                <p class="text-nowrap">${data?.vendor_info?.contact_phone ?? '_'}</p>
+            </div>
+        </div>
+    </div>
+    `;
+     const d = data?.list ?? [];
+
+    html += `
+    <div class="table-responsive mt-3 pt-3 pb-3 bg-white overflow-x-hover-auto">
+        <table class="table table-bordered text-nowrap">
+            <thead>
+                <tr>
+                    <th class="text-center">Payment Date</th>
+                    <th class="text-center">Ref No</th>
+                    <th class="text-center">Total Amount</th>
+                    <th class="text-center">Paid Amount</th>
+                    <th class="text-center">Balance</th>
+                    
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    if (d.length) {
+        d.forEach((st, index) => {
+            html += `
+                <tr>
+                    <td class="text-start align-middle">
+                        ${st.payment_date ?? '_'}
+                    </td>
+                    <td class="align-middle">
+                        ${st.ref_no ?? '_'}
+                    </td>
+                    <td class="align-middle text-primary text-end">
+                        ${st.total_amount ?? '_'}
+                    </td>
+                    <td class="align-middle text-success text-end">
+                        ${st.paid_amount ?? '_'}
+                    </td><td class="align-middle text-danger text-end">
+                        ${st.balance ?? '_'}
+                    </td>
+                    
+                </tr>
+            `;
+        });
+    } else {
+        html += `
+            <tr>
+                <td colspan="13" class="text-center">
+                    No data found
+                </td>
+            </tr>
+        `;
+    }
+
+    html += `
+            </tbody>
+        </table>
+    </div>
+    `;
+  
+    div.innerHTML = html;
+    // togglePanelTable(div);
+    HtmlString = html;
+}
 
 function totalPaymentHistory(div, data) {
     let html = `
@@ -2366,92 +2452,7 @@ function attendanceList(div, d) {
     HtmlString = html;
 }
 
-function Payments(div, data) {
-    let html = ` 
-    <div class="d-block position-relative">
-  
-        <div class="d-flex flex-column gap-2 justify-content-center align-items-center set-min-size-container-title">
-            <h4 class="text-center text-uppercase">${data?.title ?? ''}</h4>
-            <p class="text-center w-100 fs-5-1 get-subtitle  fs-5">${data?.sub_title ?? ''}</p>
-        </div>
-    </div>
-    <div class="d-flex justify-content-end w-100">
-        <div class="d-flex border rounded-3 shadow-sm ps-3 pt-3 me-3 pb-0 w-25" style="min-width: 400px; margin-top: -70px;">
-            <div class="w-50">
-                <p class="text-nowrap">Vendor</p>
-                <p class="text-nowrap">Phone</p>
-                <p class="text-nowrap">CP Name</p>
-                <p class="text-nowrap">CP Phone</p>
-            </div>
-            <div class="w-50">
-                <p class="text-nowrap">${data?.vendor_info?.name ?? '_'}</p>
-                <p class="text-nowrap">${data?.vendor_info?.phone_number ?? '_'}</p>
-                <p class="text-nowrap">${data?.vendor_info?.contact_person ?? '_'}</p>
-                <p class="text-nowrap">${data?.vendor_info?.contact_phone ?? '_'}</p>
-            </div>
-        </div>
-    </div>
-    `;
-     const d = data?.list ?? [];
 
-    html += `
-    <div class="table-responsive mt-3 pt-3 pb-3 bg-white overflow-x-hover-auto">
-        <table class="table table-bordered text-nowrap">
-            <thead>
-                <tr>
-                    <th class="text-center">Payment Date</th>
-                    <th class="text-center">Ref No</th>
-                    <th class="text-center">Total Amount</th>
-                    <th class="text-center">Paid Amount</th>
-                    <th class="text-center">Balance</th>
-                    
-                </tr>
-            </thead>
-            <tbody>
-    `;
-
-    if (d.length) {
-        d.forEach((st, index) => {
-            html += `
-                <tr>
-                    <td class="text-start align-middle">
-                        ${st.payment_date ?? '_'}
-                    </td>
-                    <td class="align-middle">
-                        ${st.ref_no ?? '_'}
-                    </td>
-                    <td class="align-middle text-primary text-end">
-                        ${st.total_amount ?? '_'}
-                    </td>
-                    <td class="align-middle text-success text-end">
-                        ${st.paid_amount ?? '_'}
-                    </td><td class="align-middle text-danger text-end">
-                        ${st.balance ?? '_'}
-                    </td>
-                    
-                </tr>
-            `;
-        });
-    } else {
-        html += `
-            <tr>
-                <td colspan="13" class="text-center">
-                    No data found
-                </td>
-            </tr>
-        `;
-    }
-
-    html += `
-            </tbody>
-        </table>
-    </div>
-    `;
-  
-    div.innerHTML = html;
-    // togglePanelTable(div);
-    HtmlString = html;
-}
 
 // function incomeByClassTable(div,d)
 // {
