@@ -175,19 +175,15 @@ return [
         "this_space_already_has_a_contract" => "ទីតាំងនេះមានកិច្ចសន្យារួចហើយ។",
         "start_date_must_be_on_or_before_the_last_renewal_start" => "ថ្ងៃចាប់ផ្ដើមត្រូវតែនៅលើឬមុនការចាប់ផ្ដើមបន្ត។",
         "dates_overlap_the_last_renewal_for_this_unit" => "កាលបរិច្ឆេទមានការត្រួតស៊ីគ្នានឹងការបន្តកិច្ចសន្យា។",
-        "only_pending_expired_or_terminated_contracts_can_be_deleted" => "មានតែសេចក្តីព្រាងកិច្ចសន្យា កិច្ចសន្យាដែលហួសកំណត់ ឬកិច្ចសន្យាដែលត្រូវបានបញ្ចប់ប៉ុណ្ណោះ ទើបអាចលុបបាន។",
-        "contract_template_not_found" => "មិនមានកិច្ចសន្យាទេ",
-        "staff_contract_not_found" => "មិនមានកិច្ចសន្យាបុគ្គលិកទេ",
-        "tenant_does_not_exist" => "លេខសម្គាល់អ្នកជួល ?? មិនមានទេ។",
-        
+        "only_pending_expired_or_terminated_contracts_can_be_deleted" => "មានតែសេចក្តីព្រាងកិច្ចសន្យា កិច្ចសន្យាដែលហួសកំណត់ ឬកិច្ចសន្យាដែលត្រូវបានបញ្ចប់ប៉ុណ្ណោះ ទើបអាចលុបបាន។"
 
 
-      
 
 
-        
-        
-        
+
+
+
+
 
 
     ],
@@ -511,13 +507,13 @@ return [
 
         'Primary Contact' => 'អ្នកទំនាក់ទំនងទី១',
         'Secondary Contact' =>'អ្នកទំនាក់ទំនងទី២',
-        
+
         'Booking Details' => 'ព័ត៌មានលម្អិតអំពីការកក់',
 
         'Complete' => 'បញ្ចប់',
 
 
-        
+
 
 
 
@@ -748,10 +744,10 @@ return [
         'Upload Photo' => 'ភ្ជាប់រូបភាព',
         'Delete Logo' => 'លុបនិមិត្តសញ្ញា',
 
-        
 
-        
-        
+
+
+
 
 
 
@@ -967,11 +963,11 @@ return [
         'Standard' => 'ស្តង់ដារ',
         'Premium' => 'ពិសេស',
         'Bookable' => 'អាចកក់បាន',
-        
-        
-        
-        
-        
+
+
+
+
+
 
 
 
@@ -1194,8 +1190,8 @@ return [
         'No contract recorded for this tenant' => 'មិនមានកិច្ចសន្យាសម្រាប់អ្នកជួលនេះទេ។',
 
         'confirm_authorize' => 'តើអ្នកប្រាកដទេថាចង់អនុម័តការបញ្ជាទិញនេះ?',
-        
-        
+
+
         "Confirm" => 'យល់ព្រម',
         "Log Out" => "ចាកចេញ",
         "Cancel" => "បោះបង់",

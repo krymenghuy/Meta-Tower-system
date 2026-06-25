@@ -27,7 +27,7 @@
             </div>
             <div class="col-12 col-md-6 col-lg-4">
                 <div class="position-relative w-100">
-                    <input type="text" class="rounded-2 filter-field input-search" id="_search_space" placeholder="Search by unit">
+                    <input type="text" class="rounded-2 filter-field input-search" id="_search_space" vslang="titles.Search by unit"  placeholder='vslang="titles.Search by unit"'>
                 </div>
             </div>
 

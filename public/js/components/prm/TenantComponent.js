@@ -53,7 +53,12 @@ var TenantComponent = (function () {
             transTitle: "titles.Name",
             className: "align-middle",
             data: (data) => {
-                const sexLabel = mThis._sexLabel(data.sex);
+                const sexLabel =
+                    data.sex === "M"
+                        ? "Male"
+                        : data.sex === "F"
+                          ? "Female"
+                          : "_";
                 return `
                     <div class="text-prm-custom" style="width:120px;">
                         <span class="text-wrap text-break text-capitalize" style ="word-break:break-word;">${data.name ?? "_"}</span>
@@ -1058,14 +1063,14 @@ var TenantComponent = (function () {
                             </h5>
                             <div class="row g-4 mb-5">
                                 <div class="col-md-4"><small class="text-muted" vslang="labels.Name">Name</small><div class="text-capitalize">${data.name ?? "_"}</div></div>
-                                <div class="col-md-4"><small class="text-muted" vslang="labels.Gender">Gender</small><div class="">${mThis._sexLabel(data.sex)}</div></div>
+                                <div class="col-md-4"><small class="text-muted" vslang="labels.Gender">Gender</small><div class="">${data.sex == "M" ? "Male" : data.sex == "F" ? "Female" : "_"}</div></div>
                                 <div class="col-md-4"><small class="text-muted" vslang="labels.Date of Birth">Date of Birth</small><div class="">${data.date_of_birth ?? "_"}</div></div>
                                 <div class="col-md-4"><small class="text-muted" vslang="labels.Legal Name">Legal Name</small><div class="">${data.legal_name ?? "_"}</div></div>
                                 <div class="col-md-4"><small class="text-muted" vslang="labels.National ID">National ID</small><div class="">${data.national_id ?? "_"}</div></div>
                                 <div class="col-md-4"><small class="text-muted" vslang="labels.Passport Number">Passport Number</small><div class="">${data.passport_number ?? "_"}</div></div>
                                 <div class="col-md-4"><small class="text-muted" vslang="labels.Phone">Phone</small><div class=" text-primary">${data.phone_number ?? "_"}</div></div>
                                 <div class="col-md-4"><small class="text-muted" vslang="labels.Email">Email</small><div class=" text-primary">${data.email ?? "_"}</div></div>
-                                <div class="col-md-4"><small class="text-muted" vslang="labels.Relationship">Relationship</small><div class="">${mThis._relationshipLabel(data.relationship)}</div></div>
+                                <div class="col-md-4"><small class="text-muted" vslang="labels.Relationship">Relationship</small><div class="">Partner</div></div>
                                 <div class="col-12"><small class="text-muted" vslang="labels.Address">Address</small><div class="text-prm-custom text-capitalize">${data.address ?? "_"}</div></div>
                             </div>
 
@@ -1381,16 +1386,16 @@ var TenantComponent = (function () {
                                 <span vslang="titles.Personal Information">Personal Information</span>
                             </h5>
                             <div class="row g-4 mb-5">
-                                <div class="col-md-4"><small class="text-muted" vslang="labels.Name">Name</small><div class="">${data.name ?? "_"}</div></div>
-                                <div class="col-md-4"><small class="text-muted" vslang="labels.Gender">Gender</small><div class="">${mThis._sexLabel(data.sex)}</div></div>
-                                <div class="col-md-4"><small class="text-muted" vslang="labels.Date of Birth">Date of Birth</small><div class="">${data.date_of_birth ?? "_"}</div></div>
-                                <div class="col-md-4"><small class="text-muted" vslang="labels.Legal Name">Legal Name</small><div class="">${data.legal_name ?? ""}</div></div>
-                                <div class="col-md-4"><small class="text-muted" vslang="labels.National ID">National ID</small><div class="">${data.national_id ?? "_"}</div></div>
-                                <div class="col-md-4"><small class="text-muted" vslang="labels.Passport Number">Passport Number</small><div class="">${data.passport_number ?? "_"}</div></div>
-                                <div class="col-md-4"><small class="text-muted" vslang="labels.Phone">Phone</small><div class="">${data.phone_number ?? "_"}</div></div>
-                                <div class="col-md-4"><small class="text-muted" vslang="labels.Email">Email</small><div class=" text-primary">${data.email ?? "_"}</div></div>
-                                <div class="col-md-4"><small class="text-muted" vslang="labels.Relationship">Relationship</small><div class="">${mThis._relationshipLabel(data.relationship)}</div></div>
-                                <div class="col-12"><small class="text-muted" vslang="labels.Address">Address</small><div class="text-prm-custom text-capitalize">${data.address ?? "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Name</small><div class="">${data.name ?? "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Sex</small><div class="">${data.sex == "M" ? "Male" : data.sex == "F" ? "Female" : "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Date of Birth</small><div class="">${data.date_of_birth ?? "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Legal Name</small><div class="">${data.legal_name ?? ""}</div></div>
+                                <div class="col-md-4"><small class="text-muted">National ID</small><div class="">${data.national_id ?? "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Passport Number</small><div class="">${data.passport_number ?? "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Phone</small><div class="">${data.phone_number ?? "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Email</small><div class=" text-primary">${data.email ?? "_"}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Relationship</small><div class="">Partner</div></div>
+                                <div class="col-12"><small class="text-muted">Address</small><div class="text-prm-custom text-capitalize">${data.address ?? "_"}</div></div>
                             </div>
 
                         </div>`;

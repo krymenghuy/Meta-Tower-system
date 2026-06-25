@@ -71,7 +71,7 @@ return [
 
                 'https://cdn.vectoraclouds.com/frontcore/utils/validator.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/cv_interact.js',
- 
+
                 'https://cdn.vectoraclouds.com/frontcore/utils/DateHelper.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/DateTimePicker/DateTimePicker.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/QuickToast/QuickToast.js',
@@ -155,7 +155,7 @@ return [
                 'js/components/prm/InvoiceSettingComponent.js',
                 'js/components/prm/PrintContractDialog.js',
                 'js/components/prm/DepositComponent.js',
-                
+
 
 
             ]
