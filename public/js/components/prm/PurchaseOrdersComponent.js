@@ -496,7 +496,7 @@ var PurchaseOrdersComponent = (() => {
                         </div>
                     </div>
                     <div class="col-md-5"></div>
-                    
+
                     <div class="col-md-3 mt-3 mt-md-0">
                         <div class="d-flex align-items-center mb-2">
                             <span class="fw-bold" style="min-width:90px;" vslang="labels.Building"></span>
@@ -704,8 +704,8 @@ var PurchaseOrdersComponent = (() => {
                                     const lastRowData = lastRowInGrid.data || {};
 
                                     if (!lastRowData.item_id) {
-                                        cv_interact.error(LocaleManager.trans("select_item_first")); 
-                                        return false; 
+                                        cv_interact.error(LocaleManager.trans("select_item_first"));
+                                        return false;
                                     }
 
                                     if (lastRowData.unit_price === undefined || lastRowData.unit_price === null || lastRowData.unit_price === "") {
@@ -1373,7 +1373,7 @@ var PurchaseOrdersComponent = (() => {
                     "id",
                     "building",
                     "",
-                    "All Buildings",
+                    LocaleManager.trans("All buildings", "titles"),
                     "",
                 );
                 VSUtil.setComboItems(
@@ -1382,7 +1382,7 @@ var PurchaseOrdersComponent = (() => {
                     "id",
                     "vendor",
                     "",
-                    "All Vendors",
+                    LocaleManager.trans("All Vendors", "titles"),
                     "",
                 );
                 VSUtil.setComboItems(
@@ -1391,7 +1391,7 @@ var PurchaseOrdersComponent = (() => {
                     "id",
                     "name",
                     "",
-                    "All Statuses",
+                    LocaleManager.trans("All Statuses", "titles"),
                     "",
                 );
                 if (typeof onFinish === "function") onFinish();

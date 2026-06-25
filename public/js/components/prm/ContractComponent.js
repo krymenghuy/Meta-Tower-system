@@ -741,7 +741,7 @@ var ContractComponent = (() => {
                     "id",
                     "status_name",
                     "",
-                    "All Statuses",
+                    LocaleManager.trans("All Statuses", "titles"),
                     "",
                 );
                 VSUtil.setComboItems(
@@ -750,7 +750,7 @@ var ContractComponent = (() => {
                     "id",
                     "business_type",
                     "",
-                    "All Business Types",
+                    LocaleManager.trans("All Business Types", "titles"),
                     "",
                 );
 
@@ -1456,7 +1456,7 @@ const RenewDialog = (() => {
                     LocaleManager.translateZone(me.divModal);
                     const det = data.contract_details || {};
                     console.log(33,det);
-                    
+
                     // const oldStartIso = normalizeContractDateToIso(det.start_date);
                     // const oldEndIso = normalizeContractDateToIso(det.end_date);
                     if (me.controls.old_contract_start) {

@@ -4,13 +4,14 @@
             <div class="align-items-center row g-3">
                 <div class="col-12 col-md-6 col-lg-3">
                     <div class="position-relative w-100">
-                       <input type="text" class="filter-field rounded-2 input-search" id="_search_tenant_"
-                          placeholder="{{ \Vsd\Locales\Localization::trans('Search by name, code or phone', 'labels') }}">
+                        <input type="text" class="filter-field rounded-2 input-search" id="_search_tenant_"
+                        placeholder="{{ \Vsd\Locales\Localization::trans('Search by name, code or phone', 'labels') }}">
                     </div>
                 </div>
                 <div class="col-12 col-md-6 col-lg-2">
                     <select id="_el_tenant_status" class="filter-field data-input form-control" data-field="status_id"
-                        placeholder="Status"></select>
+                        placeholder="{{ \Vsd\Locales\Localization::trans('All Statuses', 'labels') }}">
+                    </select>
                 </div>
                 <div class="col-12 col-md-6 col-lg-3">
                     <div class="btn-group btn-group-sm gap-2 rounded" role="group">

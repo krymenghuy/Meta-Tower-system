@@ -2,16 +2,16 @@
     <div id="_divFilter_maintenance" class="rounded-2 p-3 bg-white shadow-sm">
        <div class="row g-3 align-items-center">
            <div class="col-12 col-md-6 col-lg-3">
-               <input type="text" class="rounded-2 filter-field input-search" id="_search_maintenance" placeholder="Search by Unit">
+               <input type="text" class="rounded-2 filter-field input-search" id="_search_maintenance" placeholder="{{ \Vsd\Locales\Localization::trans('Search by unit', 'titles') }}">
            </div>
            <div class="col-12 col-md-6 col-lg-2">
-               <select id="_maintenance_building_id" class="data-input filter-field form-control" data-field="building_id"></select>
-           </div> 
-           <div class="col-12 col-md-6 col-lg-2">
-               <select id="_maintenance_type_id" class="data-input filter-field form-control" data-field="unit_type"></select>
+               <select id="_maintenance_building_id" class="data-input filter-field form-control" data-field="building_id" placeholder='vslang="titles.All buildings"'></select>
            </div>
            <div class="col-12 col-md-6 col-lg-2">
-               <select id="_maintenance_status_id" class="data-input filter-field form-control" data-field="status_id"></select>
+               <select id="_maintenance_type_id" class="data-input filter-field form-control" data-field="unit_type" placeholder='vslang="titles.All Types"'></select>
+           </div>
+           <div class="col-12 col-md-6 col-lg-2">
+               <select id="_maintenance_status_id" class="data-input filter-field form-control" data-field="status_id" placeholder='vslang="titles.All Statuses"'></select>
            </div>
            <div class="col-12 col-md-3 col-lg-auto ms-md-auto text-md-end">
                <button type="button" class="btnAddNewPrm w-100 w-md-auto" id="_btn_maintenance">

@@ -12,6 +12,12 @@
             <div class="col-12 col-md-6 col-lg-2">
                 <select id="_service_request_status" class="filter-field data-input form-control" data-field="status_id" placeholder=" "></select>
             </div>
+            <div class="ms-md-auto text-md-end col-12 col-md-auto">
+                <button type="button" class="w-100 w-md-auto btnAddNewPrm" id="_btnServiceRequest">
+                    <i class="me-2 fa-brands fa-wpforms"></i>
+                    <span vslang="buttons.Create Service Request"></span>
+                </button>
+            </div>
         </div>
     </div>
 

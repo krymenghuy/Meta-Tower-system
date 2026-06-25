@@ -4,20 +4,20 @@
             <div class="col-12">
                 <div class="align-items-center row g-3">
                     <div class="col-12 col-md-6 col-lg-2">
-                        <select type="id" id="_bill_building_id" class="filter-field data-input form-control"
-                            data-field="building_id"></select>
+                        <select  type="id" id="_bill_building_id" class="filter-field data-input form-control"
+                            data-field="building_id" placeholder='vslang="titles.All buildings"'></select>
                     </div>
                     <div class="col-12 col-md-6 col-lg-2">
                         <select type="id" id="_bill_vendor_id" class="filter-field data-input form-control"
-                            data-field="vendor_id"></select>
+                            data-field="vendor_id" placeholder='vslang="titles.All Vendors"'></select>
                     </div>
                     <div class="col-12 col-md-6 col-lg-3">
                         <select type="id" id="_bill_expense_type_id" class="filter-field data-input form-control"
-                            data-field="expanse_type_id"></select>
+                            data-field="expanse_type_id" placeholder='vslang="titles.All Types"'></select>
                     </div>
                     <div class="col-12 col-md-6 col-lg-3">
                         <select type="id" id="_bill_status_id" class="filter-field data-input form-control"
-                            data-field="status_id"></select>
+                            data-field="status_id" placeholder='vslang="titles.All Statuses"'></select>
                     </div>
                     <div class="ms-md-auto text-md-end col-12 col-md-auto">
                         <button type="button" class="w-100 w-md-auto btnAddNewPrm" id="_btnBill">
@@ -29,20 +29,20 @@
             </div>
             <div class="col-12 col-md-6 col-lg-4">
                 <input type="text" class="filter-field rounded-2 input-search" id="_search_bill"
-                    placeholder="Search by Reference No">
+                    placeholder="{{ \Vsd\Locales\Localization::trans('Search by Reference No', 'titles') }}">
             </div>
             <div class="col-12 col-md-6 col-lg-3">
                 <div id="_dateFilter_receipt" class="d-flex align-items-center gap-3">
                     <div class="flex-fill material-input outlined" style="margin-bottom: 0;">
                         <input data-select="datepicker" class="filter-field form-control range-filter" placeholder=" "
                             data-field="bill_date_start" />
-                        <label class="form-label">From Issue Date</label>
+                        <label vslang="titles.From Issue Date" class="form-label">From Issue Date</label>
                     </div>
 
                     <div class="flex-fill material-input outlined" style="margin-bottom: 0;">
                         <input data-select="datepicker" class="filter-field form-control range-filter" placeholder=" "
                             data-field="bill_date_end" />
-                        <label class="form-label">To Issue Date </label>
+                        <label vslang="titles.To Issue Date" class="form-label">To Issue Date</label>
                     </div>
                 </div>
             </div>
@@ -51,13 +51,13 @@
                     <div class="flex-fill material-input outlined" style="margin-bottom: 0;">
                         <input data-select="datepicker" class="filter-field form-control range-filter" placeholder=" "
                             data-field="due_date" />
-                        <label class="form-label">From Due Date</label>
+                        <label vslang="titles.From Due Date" class="form-label">From Due Date</label>
                     </div>
 
                     <div class="flex-fill material-input outlined" style="margin-bottom: 0;">
                         <input data-select="datepicker" class="filter-field form-control range-filter" placeholder=" "
                             data-field="due_date_end" />
-                        <label class="form-label">To Due Date </label>
+                        <label vslang="titles.To Due Date" class="form-label">To Due Date</label>
                     </div>
                 </div>
             </div>

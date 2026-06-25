@@ -46,13 +46,13 @@ class Bill
         $ref_no_char = ['@', '.', '-', '_'];
 
         $v_rule = [
-            'vendor_id'       => '1|number|exists=vendors.id|text=Please select a valid vendor.',
-            'building_id'     => '1|number|exists=buildings.id|text=Please select a valid building.',
-            'expense_type_id' => '1|number|exists=expense_categories.id|text=Please select a valid category.',
-            'ref_no'          => '1|string|0-25|text=Reference no is required.',
-            'total_amount'    => '1|number|min=0|text=Total amount is required.',
-            'bill_date'       => '1|date|text=Issue date is required.',
-            'due_date'        => '1|date|text=Due date is required.',
+            'vendor_id'       => '1|number|exists=vendors.id|text=please_select_a_valid_vendor',
+            'building_id'     => '1|number|exists=buildings.id|text=please_select_a_valid_building',
+            'expense_type_id' => '1|number|exists=expense_categories.id|text=please_select_a_valid_category',
+            'ref_no'          => '1|string|0-25|text=reference_no_is_required',
+            'total_amount'    => '1|number|min=0|text=total_amount_is_required',
+            'bill_date'       => '1|date|text=issue_date_is_required',
+            'due_date'        => '1|date|text=due_date_is_required',
             'remark'          => '0|string|0-255',
             'data'            => '0|string',
             'ext'             => '0|string',
@@ -75,13 +75,13 @@ class Bill
         $dueDate  = strtotime($inputs['due_date']);
 
         if ($dueDate < $billDate) {
-            return DV::error('Due date must be after the issue date.');
+            return DV::error('due_date_must_be_after_issue_date');
         }
         $originalFileName = $inputs['original_file_name'] ?? null;
         unset($inputs['data'], $inputs['ext'], $inputs['original_file_name']);
         $total = floatval($inputs['total_amount'] ?? 0);
         if ($total < 0) {
-            return  DV::error('Total amount cannot be negative.');
+            return  DV::error('total_amount_cannot_be_negative');
         }
 
         $inputs['total_amount'] = $total;
@@ -94,7 +94,7 @@ class Bill
                 ->exists();
 
             if ($exists) {
-                return DV::error('Bill number already exists');
+                return DV::error('bill_number_already_exists');
             }
         }
 
@@ -105,7 +105,7 @@ class Bill
                 ->exists();
 
             if ($exists) {
-                return DV::error('Reference number already exists.');
+                return DV::error('reference_number_already_exists');
             }
         }
 
@@ -116,7 +116,7 @@ class Bill
             $id = DBX::saveData($ss, 'bills', ['id' => $id], $inputs);
             if (!$id) {
                 DB::rollBack();
-                return DV::error('Error saving bill');
+                return DV::error('error_saving_bill');
             }
             if ($created) {
                 setOfficialBillNumber($branch_id, 'bill_code_control', 'bills', ['id' => $id], 'B-', 5);
@@ -133,7 +133,7 @@ class Bill
                     $category = 'document';
                 } else {
                     DB::rollBack();
-                    return DV::error('Invalid file type.');
+                    return DV::error('file_type');
                 }
 
                 // if (!is_string($data)) {
@@ -336,13 +336,13 @@ class Bill
         $id = $id ?? $this->id;
         $paid = DB::table('bills')->select('id', 'status_id', 'paid_amount')->where('id', $id)->first();
         if (!$paid) {
-            return DV::error('Bill not found.');
+            return DV::error('bill_not_found');
         }
         $is_paid = ($paid->paid_amount > 0 || $paid->status_id > 1);
-        if ($is_paid) return DV::error('Cannot delete paid invoice');
+        if ($is_paid) return DV::error('cannot_delete_paid_invoice');
         $deleted = DB::table('bills')->where('id', $id)->delete();
         if (!$deleted) {
-            return DV::error('Delete failed.');
+            return DV::error('delete_failed');
         }
         return DV::depends($deleted, ['action' => 'deleted']);
     }
@@ -365,7 +365,7 @@ class Bill
         $ss = $ss ?? $this->userInfo;
 
         $currentStatus = DB::table('bills')->where('id', $id)->value('status_id');
-        if ($currentStatus == $status_id) return DV::error('It is the same current status.');
+        if ($currentStatus == $status_id) return DV::error('same_current_status');
         $x = DB::table('bills')->where('id', $id)->update([
             'status_id'   => $status_id,
             'update_user' => $ss->full_name,
@@ -380,14 +380,14 @@ class Bill
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
 
-        if (!$id) return DV::error('Bill not found.');
+        if (!$id) return DV::error('bill_not_found');
 
         $bill = DB::table('bills')
             ->where('id', $id)
             ->select('id', 'file_image')
             ->first();
 
-        if (!$bill) return DV::error('Bill not found.');
+        if (!$bill) return DV::error('bill_not_found');
 
         $v_rule = [
             'id'                 => '1|integer|exists:bills,id',
@@ -416,12 +416,12 @@ class Bill
         $originalFileName = $inputs['original_file_name'] ?? null;
         $remark           = $inputs['remark']             ?? null;
 
-        if (!$data || !$ext) return DV::error('File is required.');
+        if (!$data || !$ext) return DV::error('file_is_required');
 
         // validate extension
         $allowedExt = array_merge(self::$allowed_image_extensions, self::$allowed_doc_extensions);
         if (!in_array($ext, $allowedExt)) {
-            return DV::error('Invalid file type.');
+            return DV::error('file_type');
         }
 
 
@@ -447,7 +447,7 @@ class Bill
                 $category = 'document';
             } else {
                 DB::rollBack();
-                return DV::error('Invalid file type.');
+                return DV::error('file_type');
             }
 
             $file = XPublicStorage::savefile(
@@ -496,8 +496,8 @@ class Bill
             ->select('id', 'file_image', 'ext')
             ->first();
 
-        if (!$bill) return DV::error('Bill not found.');
-        if (!$bill->file_image) return DV::error('No attachment found for this bill.');
+        if (!$bill) return DV::error('bill_not_found');
+        if (!$bill->file_image) return DV::error('no_attachment_found_for_bill');
 
         $ext = strtolower(pathinfo($bill->file_image, PATHINFO_EXTENSION));
         $category = in_array($ext, self::$allowed_image_extensions) ? 'image' : 'document';
@@ -541,8 +541,8 @@ class Bill
             ->select('id', 'file_image')
             ->first();
 
-        if (!$bill)     return DV::error('Bill not found.');
-        if (!$bill->file_image) return DV::error('No attachment found for this bill.');
+        if (!$bill)     return DV::error('bill_not_found');
+        if (!$bill->file_image) return DV::error('no_attachment_found_for_bill');
 
         $ext = strtolower(pathinfo($bill->file_image, PATHINFO_EXTENSION));
         $category = in_array($ext, self::$allowed_image_extensions) ? 'image' : 'document';
@@ -570,7 +570,7 @@ class Bill
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Bill::deleteAttachment Error: ' . $e->getMessage());
-            return DV::error('Failed to delete attachment.');
+            return DV::error('failed_to_delete_attachment');
         }
     }
 }

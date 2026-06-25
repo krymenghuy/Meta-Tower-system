@@ -2,24 +2,24 @@
     <div id="_divFilter_bill" class="rounded-2 p-3 bg-white shadow-sm">
         <div class="row g-3 align-items-center">
             <div class="col-12 col-md-6 col-lg-3">
-                <input type="text" class="rounded-2 filter-field input-search" id="_search_bill_payment" placeholder="Search by vendor" >
+                <input  type="text" class="rounded-2 filter-field input-search" id="_search_bill_payment" placeholder="{{ \Vsd\Locales\Localization::trans('Search by vendor', 'titles') }}" >
             </div>
-            <!-- <div class="col-12 col-md-6 col-lg-2"> 
+            <!-- <div class="col-12 col-md-6 col-lg-2">
                 <select type="id" id="_bill_expanse_type_id" class="data-input filter-field form-control" data-field="expense_type_id"></select>
             </div> -->
             <div class="col-12 col-md-6 col-lg-2 d-none">
-                <select type="id" id="_bill_status_id" class="data-input filter-field form-control" data-field="status_id"></select>
+                <select placeholder='vslang="titles.All Statuses"' type="id" id="_bill_status_id" class="data-input filter-field form-control" data-field="status_id"></select>
             </div>
             <div class="col-12 col-md-6 col-lg-4">
                 <div id="_dateFilter_receipt" class="d-flex gap-3 align-items-center">
                     <div class="material-input outlined flex-fill" style="margin-bottom: 0;">
-                        <input data-select="datepicker" class="form-control filter-field" placeholder=" " data-field="date_from" />
-                        <label class="form-label">From Date</label>
+                        <input  data-select="datepicker" class="form-control filter-field" placeholder=" " data-field="date_from" />
+                        <label vslang="titles.From Date" class="form-label">From Date</label>
                     </div>
 
                     <div class="material-input outlined flex-fill" style="margin-bottom: 0;">
                         <input data-select="datepicker" class="form-control filter-field" placeholder=" " data-field="date_to" />
-                        <label class="form-label">To Date</label>
+                        <label vslang="titles.To Date" class="form-label">To Date</label>
                     </div>
                 </div>
             </div>
@@ -49,7 +49,7 @@
         margin-bottom: 14px;
     }
     .bill-field-group label {
-        display: block; 
+        display: block;
         font-size: 12px;
         font-weight: 600;
         color: #495057;

@@ -399,7 +399,7 @@ var DepositComponent = (() => {
                     "id",
                     "building",
                     "",
-                    "All Buildings",
+                    LocaleManager.trans("All buildings", "titles"),
                     "",
                 );
                 VSUtil.setComboItems(
@@ -408,7 +408,7 @@ var DepositComponent = (() => {
                     "id",
                     "tenant",
                     "",
-                    "All Tenants",
+                    LocaleManager.trans("All Tenants", "titles"),
                     "",
                 );
                 VSUtil.setComboItems(
@@ -417,7 +417,7 @@ var DepositComponent = (() => {
                     "id",
                     "name",
                     "",
-                    "All Statuses",
+                    LocaleManager.trans("All Statuses", "titles"),
                     "",
                 );
                 if (typeof onFinish === "function") onFinish();

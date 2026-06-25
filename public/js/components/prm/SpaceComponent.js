@@ -821,7 +821,7 @@ var SpaceComponent = (function () {
                     "id",
                     "space_status",
                     "",
-                    "All Statuses",
+                    LocaleManager.trans("All Statuses", "titles"),
                     "",
                 );
                 VSUtil.setComboItems(
@@ -830,7 +830,7 @@ var SpaceComponent = (function () {
                     "id",
                     "building",
                     "",
-                    "All buildings",
+                    LocaleManager.trans("All buildings", "titles"),
                     "",
                 );
                 VSUtil.setComboItems(
@@ -839,7 +839,7 @@ var SpaceComponent = (function () {
                     "id",
                     "name",
                     "",
-                    "All Floors",
+                    LocaleManager.trans("All Floors", "titles"),
                     "",
                 );
                 VSUtil.setComboItems(
@@ -848,7 +848,7 @@ var SpaceComponent = (function () {
                     "id",
                     "space_type",
                     "",
-                    "All Types",
+                    LocaleManager.trans("All Types", "titles"),
                     "",
                 );
 

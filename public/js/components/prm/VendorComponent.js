@@ -106,7 +106,7 @@ var VendorComponent = (() => {
             data: (data, index, tr) => {
                 return `
                     <div class="text-primary-custom" style="width:250px;">
-                        <i class="fa-solid fa-location-dot" style="color: rgb(72 71 83);"></i> 
+                        <i class="fa-solid fa-location-dot" style="color: rgb(72 71 83);"></i>
                         <span class="text-wrap text-break" style ="word-break:break-word;">${data.address ?? "_"}</span>
                     </div>
                 `;
@@ -416,7 +416,7 @@ var VendorComponent = (() => {
                     "id",
                     "vendor_type",
                     "",
-                    "All Types",
+                    LocaleManager.trans("All Types", "titles"),
                     "",
                 );
                 VSUtil.setComboItems(
@@ -425,7 +425,7 @@ var VendorComponent = (() => {
                     "id",
                     "vendor_status",
                     "",
-                    "All Statuses",
+                    LocaleManager.trans("All Statuses", "titles"),
                     "",
                 );
                 VSUtil.setComboItems(
@@ -434,7 +434,7 @@ var VendorComponent = (() => {
                     "id",
                     "vendor_category",
                     "",
-                    "All Categories",
+                    LocaleManager.trans("All Categories", "titles"),
                     "",
                 );
                 if (typeof onFinish === "function") onFinish();
@@ -504,7 +504,7 @@ const CreateVendorDialog = (() => {
                                     </select>
                                 </div>
                             </div>
-                               
+
                             <div class="col-12 col-md-6">
                                 <div class="vs-material-field">
                                     <input type="text" name="contact_person" class="data-input form-control" data-field="contact_person" placeholder=" " />

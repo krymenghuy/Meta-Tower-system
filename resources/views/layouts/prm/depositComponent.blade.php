@@ -4,16 +4,16 @@
             <div class="col-12">
                 <div class="align-items-center row g-3">
                     <div class="col-12 col-md-6 col-lg-2">
-                        <select type="id" id="_deposit_building_id" class="filter-field data-input form-control"
-                            data-field="building_id"></select>
+                        <select  type="id" id="_deposit_building_id" class="filter-field data-input form-control"
+                            data-field="building_id" placeholder='vslang="titles.All buildings"'></select>
                     </div>
                     <div class="col-12 col-md-6 col-lg-2">
                         <select type="id" id="_deposit_vendor_id" class="filter-field data-input form-control"
-                            data-field="tenant_id"></select>
+                            data-field="tenant_id" placeholder='vslang="titles.All Tenants"'></select>
                     </div>
                     <div class="col-12 col-md-6 col-lg-2">
                         <select type="id" id="_deposit_status_id" class="filter-field data-input form-control"
-                            data-field="status_id"></select>
+                            data-field="status_id" placeholder='vslang="titles.All Statuses"'></select>
                     </div>
 
                     <div class="col-12 col-md-6 col-lg-2">
@@ -21,7 +21,7 @@
                             <div class="flex-fill material-input outlined" style="margin-bottom: 0;">
                                 <input data-select="datepicker" class="filter-field form-control range-filter" placeholder=" "
                                     data-field="deposit_date_start" />
-                                <label class="form-label">Deposit Date</label>
+                                <label vslang="titles.Deposit Date" class="form-label">Deposit Date</label>
                             </div>
                         </div>
                     </div>
@@ -34,7 +34,7 @@
             </div>
             <div class="col-12 col-md-6 col-lg-3">
                 <input type="text" class="filter-field rounded-2 input-search" id="_search_deposit"
-                    placeholder="Search tenant, unit">
+                    placeholder="{{ \Vsd\Locales\Localization::trans('Search tenant, unit', 'titles') }}">
             </div>
 
         </div>

@@ -248,7 +248,7 @@ var ItemsComponent = (() => {
                     "id",
                     "name",
                     "",
-                    "All Categories",
+                    LocaleManager.trans("All Categories", "titles"),
                     "",
                 );
                 if (typeof onFinish === "function") onFinish();

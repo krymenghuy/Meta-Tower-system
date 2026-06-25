@@ -524,7 +524,7 @@ const BillPaymentDialog = (() => {
                         </div>
                         <div class="col-md-3">
                             <div class="vs-material-field">
-                                <input type="text" name="payer" class="data-input form-control" data-field="payer" placeholder=" " > 
+                                <input type="text" name="payer" class="data-input form-control" data-field="payer" placeholder=" " >
                                 <label vslang="labels.Payer"></label>
                             </div>
                         </div>

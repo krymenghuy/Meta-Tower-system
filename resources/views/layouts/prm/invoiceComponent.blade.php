@@ -3,15 +3,15 @@
         <div class="align-items-center row g-3">
             <div class="col-12 col-md-6 col-lg-4" >
                 <div class="position-relative w-100">
-                <input type="text" class="filter-field rounded-2 input-search" id="_search_invoice" placeholder="Search by tenant or invoice no" >
+                <input type="text" class="filter-field rounded-2 input-search"  id="_search_invoice" placeholder="{{ \Vsd\Locales\Localization::trans('Search by tenant or invoice no', 'titles') }}" >
             </div>
          </div>
 
         <div class="col-12 col-md-6 col-lg-2">
-            <select id="payment_status" class="filter-field data-input form-control" data-field="status_id"></select>
+            <select id="payment_status" placeholder='vslang="titles.All Statuses"' class="filter-field data-input form-control" data-field="status_id"></select>
         </div>
         <div class="col-12 col-md-6 col-lg-2">
-            <select id="invoice_type" class="filter-field data-input form-control" data-field="invoice_type"></select>
+            <select id="invoice_type" placeholder='vslang="titles.All Types"' class="filter-field data-input form-control" data-field="invoice_type"></select>
         </div>
 
             <div class="ms-md-auto text-md-end col-12 col-md-auto">

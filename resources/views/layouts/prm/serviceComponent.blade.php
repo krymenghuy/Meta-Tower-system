@@ -2,19 +2,19 @@
     <div id="_divFilter_service" class="rounded-2 p-3 bg-white shadow-sm">
         <div class="row g-3 align-items-center">
             <div class="col-12 col-md-6 col-lg-3">
-                <input type="text" class="rounded-2 filter-field input-search" id="_search_service" placeholder="Search by name">
+                <input  type="text" class="rounded-2 filter-field input-search" id="_search_service" placeholder="{{ \Vsd\Locales\Localization::trans('Search by name', 'titles') }}">
             </div>
             <div class="col-12 col-md-6 col-lg-3">
-                <select type="id" id="_service_category_id" class="data-input filter-field" data-field="category_id"></select>
+                <select type="id" id="_service_category_id" class="data-input filter-field" data-field="category_id" placeholder='vslang="titles.All Categories"'></select>
             </div>
             <div class="col-12 col-md-6 col-lg-2">
-                <select type="id" id="_service_type_id" class="data-input filter-field" data-field="type_id"></select>
+                <select type="id" id="_service_type_id" class="data-input filter-field" data-field="type_id" placeholder='vslang="titles.All Types"'></select>
             </div>
             <div class="col-12 col-md-6 col-lg-2 ">
-                <select type="id" id="_charge_as" class="data-input filter-field" data-field="charge_as"></select>
+                <select type="id" id="_charge_as" class="data-input filter-field" data-field="charge_as" placeholder='vslang="titles.All Charge As"'></select>
             </div>
             <div class="col-12 col-md-6 col-lg-2  d-none">
-                <select type="id" id="_status_id" class="data-input filter-field" data-field="status_id"></select>
+                <select type="id" id="_status_id" class="data-input filter-field" data-field="status_id" placeholder='vslang="titles.All Statuses"'></select>
             </div>
             <div class="col-12 col-md-auto ms-md-auto text-md-end">
                 <button type="button" class="btnAddNewPrm w-100 w-md-auto" id="_btnService">
@@ -23,7 +23,7 @@
                 </button>
             </div>
         </div>
-        
+
     </div>
     <div id="_service_list" class="mt-3 rounded-2"></div>
 </div>

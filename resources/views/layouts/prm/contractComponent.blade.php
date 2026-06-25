@@ -3,14 +3,14 @@
         <div class="row g-3 align-items-center">
             <div class="col-12 col-md-6 col-lg-3">
                 <div class=" position-relative w-100">
-                    <input type="text" class="rounded-2 filter-field input-search" id="_search_contract" placeholder="Search by tenant, phone or unit">
+                    <input type="text" class="rounded-2 filter-field input-search" id="_search_contract" placeholder="{{ \Vsd\Locales\Localization::trans('Search by tenant, phone or unit', 'labels') }}">
                 </div>
             </div>
             <div class="col-12 col-md-6 col-lg-3">
-                <select id="business_type_id" class="data-input filter-field form-control" data-field="business_type_id"></select>
+                <select id="business_type_id" class="data-input filter-field form-control" data-field="business_type_id" placeholder='vslang="titles.All Business Types"'></select>
             </div>
             <div class="col-12 col-md-6 col-lg-2">
-                <select id="el_contract_status_id" class="data-input filter-field form-control" data-field="status_id"></select>
+                <select id="el_contract_status_id" class="data-input filter-field form-control" data-field="status_id" placeholder='vslang="titles.All Statuses"'></select>
             </div>
             <div class="col-12 col-md-auto ms-md-auto text-md-end">
             <button type="button" class="btnAddNewPrm w-100 w-md-auto" id="_btnAddContract">
