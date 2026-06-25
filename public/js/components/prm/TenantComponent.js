@@ -1973,7 +1973,7 @@ const CreateTenantDialog = (() => {
                                     me.ext = null;
                                     me.renderTenantImage();
                                     cv_interact.success(
-                                        "Profile photo was deleted!",
+                                        "delete_profile_success",
                                     );
                                 } else cv_interact.error(res.error_message);
                             });

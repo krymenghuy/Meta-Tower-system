@@ -156,10 +156,10 @@ return [
         'cannot_cancel_in_30min' => 'មិនអាចលុបចោលការកក់បានទេ ប្រសិនបើនៅសល់តិចជាង ៣០ នាទីមុនពេលចាប់ផ្តើម។',
         'schedule_cannot_past' => 'កាលវិ.',
         'required_select_tenant' => 'សូមជ្រើសរើសអ្នកជួល។',
-        'select_amenity'=>'សូមជ្រើសរើសទីតាំងដែលត្រឹមត្រូវ។',
-        'select_booking_date'=>'សូមជ្រើសរើសថ្ងៃកក់ដែលត្រឹមត្រូវ។',
-        'select_start_time'=>'សូមជ្រើសរើសម៉ោងចូលដែលត្រឹមត្រូវ។',
-        'select_end_time'=>'សូមជ្រើសរើសម៉ោងចេញដែលត្រឹមត្រូវ។',
+        'select_amenity' => 'សូមជ្រើសរើសទីតាំងដែលត្រឹមត្រូវ។',
+        'select_booking_date' => 'សូមជ្រើសរើសថ្ងៃកក់ដែលត្រឹមត្រូវ។',
+        'select_start_time' => 'សូមជ្រើសរើសម៉ោងចូលដែលត្រឹមត្រូវ។',
+        'select_end_time' => 'សូមជ្រើសរើសម៉ោងចេញដែលត្រឹមត្រូវ។',
         'select_remarks' => 'សូមបញ្ចូលកំណត់សម្គាល់ដែលត្រឹមត្រូវ។',
         'select_reference_code' => 'សូមបញ្ចូលលេខកូដដែលត្រឹមត្រូវ។',
         'select_business_type' => 'សូមជ្រើសរើសប្រភេទអាជីវកម្មដែលត្រឹមត្រូវ។',
@@ -175,7 +175,11 @@ return [
         "this_space_already_has_a_contract" => "ទីតាំងនេះមានកិច្ចសន្យារួចហើយ។",
         "start_date_must_be_on_or_before_the_last_renewal_start" => "ថ្ងៃចាប់ផ្ដើមត្រូវតែនៅលើឬមុនការចាប់ផ្ដើមបន្ត។",
         "dates_overlap_the_last_renewal_for_this_unit" => "កាលបរិច្ឆេទមានការត្រួតស៊ីគ្នានឹងការបន្តកិច្ចសន្យា។",
-        "only_pending_expired_or_terminated_contracts_can_be_deleted" => "មានតែសេចក្តីព្រាងកិច្ចសន្យា កិច្ចសន្យាដែលហួសកំណត់ ឬកិច្ចសន្យាដែលត្រូវបានបញ្ចប់ប៉ុណ្ណោះ ទើបអាចលុបបាន។"
+        "only_pending_expired_or_terminated_contracts_can_be_deleted" => "មានតែសេចក្តីព្រាងកិច្ចសន្យា កិច្ចសន្យាដែលហួសកំណត់ ឬកិច្ចសន្យាដែលត្រូវបានបញ្ចប់ប៉ុណ្ណោះ ទើបអាចលុបបាន។",
+        "contract_template_not_found" => "មិនមានកិច្ចសន្យាទេ",
+        "staff_contract_not_found" => "មិនមានកិច្ចសន្យាបុគ្គលិកទេ",
+        "tenant_does_not_exist" => "លេខសម្គាល់អ្នកជួល ?? មិនមានទេ។",
+
 
 
 
@@ -187,7 +191,7 @@ return [
 
 
     ],
-    'api_body_keys' =>[
+    'api_body_keys' => [
         'name' => 'ឈ្មោះ',
         'name_kh' => 'ឈ្មោះភាសាខ្មែរ',
         'building_id' => 'អគារ',
@@ -508,9 +512,12 @@ return [
         'Primary Contact' => 'អ្នកទំនាក់ទំនងទី១',
         'Secondary Contact' =>'អ្នកទំនាក់ទំនងទី២',
 
+        'Secondary Contact' => 'អ្នកទំនាក់ទំនងទី២',
+
         'Booking Details' => 'ព័ត៌មានលម្អិតអំពីការកក់',
 
         'Complete' => 'បញ្ចប់',
+        'No Tax Invoice' => 'វិក្កយបត្រគ្មានពន្ធ'
 
 
 
@@ -743,6 +750,7 @@ return [
 
         'Upload Photo' => 'ភ្ជាប់រូបភាព',
         'Delete Logo' => 'លុបនិមិត្តសញ្ញា',
+        'Receive' => 'ទទួល',
 
 
 
@@ -873,9 +881,10 @@ return [
         'Amount Paid' => 'ចំនួនទឹកប្រាក់ដែលបានបង់',
         'Amount' => 'ចំនួនទឹកប្រាក់',
         'Payment Date' => 'កាលបរិច្ឆេទទូទាត់',
+        'Bank' => 'ធនាគារ',
+        'Cheque' => 'មូលប្បទានប័ត្រ',
         'Cheque No.' => 'លេខមូលប្បទានប័ត្រ',
         'Payer' => 'អ្នកបង់ប្រាក់',
-        'Cash' => 'ចំនួនសាច់ប្រាក់ ',
         'Pay To' => 'អ្នកទទួលប្រាក់ ',
         'File' => 'ឯកសារ',
 
@@ -963,6 +972,13 @@ return [
         'Standard' => 'ស្តង់ដារ',
         'Premium' => 'ពិសេស',
         'Bookable' => 'អាចកក់បាន',
+        'Cash' => 'សាច់ប្រាក់',
+        'Card' => 'កាត',
+        'Bank Transfer' => 'ប្រតិបត្តិការធនាគារ',
+        'Entered:' => 'បានបញ្ចូល:',
+
+
+
 
 
 
@@ -1191,6 +1207,10 @@ return [
 
         'confirm_authorize' => 'តើអ្នកប្រាកដទេថាចង់អនុម័តការបញ្ជាទិញនេះ?',
 
+        'select_item_first' => 'សូមជ្រើសរើសមុខទំនិញជាមុនសិន។',
+        'please_enter_price' => 'សូមបញ្ចូលតម្លៃឯកតាជាមុនសិន។',
+        'confirm_reset_invoice' => 'តើអ្នកប្រាកដទេថាចង់កំណត់ការកំណត់វិក្កយបត្រនេះឡើងវិញ?',
+
 
         "Confirm" => 'យល់ព្រម',
         "Log Out" => "ចាកចេញ",
@@ -1210,4 +1230,5 @@ return [
         'Accept' => 'យល់ព្រម',
         'View Reservation' => 'មើលព័ត៌មានការកក់',
     ],
+
 ];
