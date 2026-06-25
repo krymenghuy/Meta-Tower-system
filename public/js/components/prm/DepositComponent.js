@@ -27,14 +27,14 @@ var DepositComponent = (() => {
             transTitle: "titles.Unit",
             className: "align-middle text-nowrap",
             data: (data) =>
-                `<span class="d-block text-nowrap fw-semibold">${data.space_code ?? "_"}</span>
+                `<span class="d-block text-nowrap">${data.space_code ?? "_"}</span>
                  <span class="d-block text-muted small">${data.building_name ?? "_"}</span>`,
         },
         {
             transTitle: "titles.Tenant",
             className: "align-middle text-nowrap",
             data: (data) =>
-                `<span class="d-block fw-semibold text-capitalize">${data.tenant_name ?? "_"}</span>
+                `<span class="d-block text-capitalize">${data.tenant_name ?? "_"}</span>
                  <span class="d-block text-primary small">${data.phone_number ?? "_"}</span>`,
         },
         {
