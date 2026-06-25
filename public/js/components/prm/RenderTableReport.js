@@ -1490,8 +1490,10 @@ function incomeByCategoryTable(div, d) {
                             <td style="background-color:#fff" class="bg-primary-subtle1 text-center">${
                                 tbl.total_transfer ?? ""
                             }</td>
-                            <td style="background-color:#fff" class="bg-primary-subtle1 text-center"</td>
-                        </tr>
+                            <td style="background-color:#fff" class="bg-primary-subtle1 text-center">${
+                                tbl.total_card ?? ""
+                            }</td>
+                                <td style="background-color:#fff" class="bg-primary-subtle1 text-center"></td>
                         <tr>
                             <td style="background-color:#e9ecef" class="bg-body-secondary text-uppercase text-center" colspan="5">${
                                 tbl.label ??
