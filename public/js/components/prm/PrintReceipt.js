@@ -20,7 +20,7 @@ const PrintReceiptDialog = (() => {
             'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen',
             'Seventeen', 'Eighteen', 'Nineteen'];
         const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
-        if (amount === 0) return 'Zero Dollars Only';
+        if (amount === 0) return 'Zero Dollars';
         const dollars = Math.floor(amount);
         const cents = Math.round((amount - dollars) * 100);
         const toWords = (n) => {
@@ -36,7 +36,7 @@ const PrintReceiptDialog = (() => {
         if (remainder > 0) result += toWords(remainder);
         result = result.trim() + ' Dollar' + (dollars !== 1 ? 's' : '');
         if (cents > 0) result += ' and ' + toWords(cents).trim() + ' Cent' + (cents !== 1 ? 's' : '');
-        return result + ' Only';
+        return result;
     };
 
     // Determine payment status label
@@ -323,14 +323,14 @@ const PrintReceiptDialog = (() => {
         <table class="pi-doc-table">
             <thead>
                 <tr>
-                    <th style="text-align:left;min-width:120px;">Description</th>
-                    <th style="text-align:center;width:80px;">Qty</th>
-                    <th style="text-align:center;width:100px;">Start Date</th>
-                    <th style="text-align:center;width:100px;">End Date</th>
-                    <th style="text-align:center;width:100px;">Price</th>
-                    <th style="text-align:right;width:40px;">Discount</th>
-                    ${typeOfInvoice === 1 ? `<th style="text-align:right;width:40px;">Tax</th>` : ''}
-                    <th style="text-align:right;width:90px;">Total</th>
+                    <th style="text-align:left;min-width:120px;">${LocaleManager.trans("Description", "labels")}</th>
+                    <th style="text-align:center;width:80px;">${LocaleManager.trans("Qty", "labels")}</th>
+                    <th style="text-align:center;width:100px;">${LocaleManager.trans("Start Date", "labels")}</th>
+                    <th style="text-align:center;width:100px;">${LocaleManager.trans("End Date", "labels")}</th>
+                    <th style="text-align:center;width:100px;">${LocaleManager.trans("Price", "labels")}</th>
+                    <th style="text-align:right;width:40px;">${LocaleManager.trans("Discount", "labels")}</th>
+                    ${typeOfInvoice === 1 ? `<th style="text-align:right;width:40px;">${LocaleManager.trans("Tax", "labels")}</th>` : ''}
+                    <th style="text-align:right;width:90px;">${LocaleManager.trans("Total", "labels")}</th>
                 </tr>
             </thead>
             <tbody>
@@ -346,7 +346,7 @@ const PrintReceiptDialog = (() => {
         </div>
 
         <div style="flex:1;padding:14px 20px; position:relative;z-index:1;min-width:220px;">
-            <div style="font-size:11px;font-weight:700;color:#374151;margin-bottom:10px;text-decoration:underline;text-underline-offset:3px;">* Method of Payment</div>
+            <div style="font-size:11px;font-weight:700;color:#374151;margin-bottom:10px;text-decoration:underline;text-underline-offset:3px;" vslang="labels.Payment Method"></div>
             <table style="border-collapse:collapse;">
                 <tbody>${paymentRows}</tbody>
             </table>
@@ -355,32 +355,32 @@ const PrintReceiptDialog = (() => {
         <div style="min-width:336px;position:relative;z-index:1; border:1px solid #D1D5DB;border-top:none;border-bottom:none;">
             <div style="overflow:hidden;">
                 <div style="display:flex;justify-content:space-between;padding:10px 16px;border-bottom:1px solid #EEF0F5;">
-                    <span style="font-size:12px;color:#6B7280;">Sub Total</span>
+                    <span style="font-size:12px;color:#6B7280;" vslang="labels.Sub Total"></span>
                     <span style="font-size:12px;font-weight:600;color:#111827;">${currency}${fmt(subTotal)}</span>
                 </div>
 
                 <div style="display:flex;justify-content:space-between;padding:10px 16px;border-bottom:1px solid #EEF0F5;">
-                    <span style="font-size:12px;color:#A32D2D;">Discount ${totalDiscount > 0 ? `(${isAmountDisc ? currency : ''}${fmt(totalDiscount)}${!isAmountDisc ? '%' : ''})` : ''}</span>
+                    <span style="font-size:12px;color:#A32D2D;" vslang="labels.Discount"> ${totalDiscount > 0 ? `(${isAmountDisc ? currency : ''}${fmt(totalDiscount)}${!isAmountDisc ? '%' : ''})` : ''}</span>
                     <span style="font-size:12px;font-weight:600;color:#A32D2D;">− ${currency}${fmt(discValue)}</span>
                 </div>
 
                 <div style="display:flex;justify-content:space-between;padding:12px 16px;background:#F8FAFF;border-top:2px solid #E5E9F5;border-bottom:1px solid #EEF0F5;">
-                    <span style="font-size:13px;font-weight:700;color:#111;">Total (Net)</span>
+                    <span style="font-size:13px;font-weight:700;color:#111;" vslang="labels.Total Net">Total (Net)</span>
                     <span style="font-size:14px;font-weight:700;color:#111;">${currency}${fmt(netTotal)}</span>
                 </div>
 
                 <div style="display:flex;justify-content:space-between;padding:10px 16px;border-bottom:1px solid #EEF0F5;">
-                    <span style="font-size:12px;color:#3B6D11;">Payment Amount</span>
+                    <span style="font-size:12px;color:#3B6D11;" vslang="labels.Payment Amount"></span>
                     <span style="font-size:12px;font-weight:600;color:#3B6D11;">${currency}${fmt(paymentAmount)}</span>
                 </div>
 
                 <div style="display:flex;justify-content:space-between;padding:10px 16px;border-bottom:1px solid #EEF0F5;">
-                    <span style="font-size:12px;color:#3B6D11;">Total Paid</span>
+                    <span style="font-size:12px;color:#3B6D11;" vslang="labels.Total Paid"></span>
                     <span style="font-size:12px;font-weight:600;color:#3B6D11;">${currency}${fmt(totalPaid)}</span>
                 </div>
 
                 <div style="display:flex;justify-content:space-between;align-items:center;padding:13px 16px;background:#0F2060;">
-                    <span style="font-size:12px;font-weight:500;color:rgba(255,255,255,0.8);">Balance</span>
+                    <span style="font-size:12px;font-weight:500;color:rgba(255,255,255,0.8);" vslang="titles.Balance"></span>
                     <span style="font-size:16px;font-weight:700;color:#FDE68A;">${currency}${fmt(balance)}</span>
                 </div>
             </div>
@@ -393,7 +393,7 @@ const PrintReceiptDialog = (() => {
             <span style="margin-left:8px;">${numberToWords(paymentAmount)}</span>
         </div>
         <div style="font-size:12px;color:#374151;margin-top:10px;display:flex;align-items:baseline;gap:6px;">
-            <span style="font-weight:700;white-space:nowrap;">*Remarks:</span>
+            <span style="font-weight:700;white-space:nowrap;" vslang="labels.Remark:"></span>
             <span style="flex:1;padding-bottom:2px;">&nbsp;${data.remarks || ''}</span>
         </div>
     </div>
@@ -424,7 +424,7 @@ const PrintReceiptDialog = (() => {
 
     <div class="pi-action-bar" style="display:flex;justify-content:flex-end;gap:10px;padding:14px 20px;border-top:1px solid #E5E9F5;background:#fff;">
         <button id="pi-print-btn" style="padding:9px 22px;border-radius:8px;border:1.5px solid #1A3D91;background:#fff;color:#1A3D91;font-weight:600;cursor:pointer;">
-            <i class="bi bi-printer-fill"></i> Print Receipt
+            <i class="bi bi-printer-fill"></i> ${LocaleManager.trans("Print Receipt", "titles")}
         </button>
     </div>
 
@@ -451,7 +451,7 @@ const PrintReceiptDialog = (() => {
         const invoiceDetailsUrl = op.invoiceDetailsUrl || `${main_view.base_url}/prm/invoice/details`;
 
         const dlg = new GeneralDialog({
-            title: "Print Receipt",
+            title: LocaleManager.trans("Print Receipt", "titles"),
             cssClass: "modal-xl vs-modal",
             backdrop: "static",
             keyboard: true,
@@ -481,21 +481,24 @@ const PrintReceiptDialog = (() => {
                                     const invoiceData = (invRes.status_code === 200) ? invRes.data : null;
                                     container.innerHTML = buildReceiptHTML(receiptData, invoiceData);
                                     wireButtons(container);
+                                    LocaleManager.translateZone(container);
                                 })
                                 .catch(() => {
                                     container.innerHTML = buildReceiptHTML(receiptData);
                                     wireButtons(container);
+                                    LocaleManager.translateZone(container);
                                 });
                         } else {
                             container.innerHTML = buildReceiptHTML(receiptData);
                             wireButtons(container);
+                            LocaleManager.translateZone(container);
                         }
                     })
                     .catch(() => {
                         container.innerHTML = `<div class="alert alert-danger m-4">Network error.</div>`;
                     });
             },
-            buttons: [{ label: "Close", cssClass: "btn btn-secondary", click: (me) => me.hide() }]
+            buttons: [{ label: LocaleManager.trans("Close", "buttons"), cssClass: "btn btn-secondary", click: (me) => me.hide() }]
         });
 
         dlg.show(op);

@@ -352,6 +352,10 @@ return [
         'update_success_item' => 'Item updated successfully.',
         'create_success_item' => 'Item created successfully.',
         'delete_success_item' => 'Item deleted successfully.',
+        
+        'restore_to_invoice' => 'This will restore to the due balance on the invoice.',
+        'reason_for_cancellation' => 'Reason for cancellation (required)...',
+        'reason_required' => 'You must provide a reason!',
 
         '' => '',
         '' => '',
@@ -392,19 +396,7 @@ return [
         "No" => "No",
         "Finish" => "Finish",
     ],
-    'labels' => [
-        'Exchange Rate (USD - KHR)' => 'Exchange Rate (USD - KHR)',
-        'Invoice Display Options' => 'Invoice Display Options',
-        'Show Commercial Tax' => 'Show Commercial Tax',
-        'Show Payment Status' => 'Show Payment Status',
-        'Show Balance' => 'Show Balance',
-        'Show Amount Paid' => 'Show Amount Paid',
-        'Show Signature' => 'Show Signature',
-        'Upload QR code' => 'Upload QR code',
-        'Upload file' => 'Upload file',
-        'Delete file' => 'Delete file',
-        'Search by name, code or phone' => 'Search by name, code or phone',
-    ],
+    
     'buttons' => [
         'Edit' => 'Edit',
         'Create Service' => 'Create Service',

@@ -5,7 +5,7 @@
                 <div class="col-12 col-md-6 col-lg-3">
                     <div class="position-relative w-100">
                        <input type="text" class="filter-field rounded-2 input-search" id="_search_tenant_"
-                          --placeholder="{{ \Vsd\Locales\Localization::trans('Search by name, code or phone', 'labels') }}">
+                          placeholder="{{ \Vsd\Locales\Localization::trans('Search by name, code or phone', 'labels') }}">
                     </div>
                 </div>
                 <div class="col-12 col-md-6 col-lg-2">

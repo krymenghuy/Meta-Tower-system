@@ -275,16 +275,17 @@ var ReceiptComponent = (() => {
         if (!AuthManager.allowed(242)) return;
         Swal.fire({
             title: `${LocaleManager.trans('Cancel Receipt?', "titles")}`,
-            text: "This will restore the due balance on the invoice.",
+            text: LocaleManager.trans('restore_to_invoice', "message_box_default"),
             icon: "warning",
             input: "textarea",
-            inputPlaceholder: "Reason for cancellation (required)...",
+            inputPlaceholder: LocaleManager.trans('reason_for_cancellation', "message_box_default"),
             showCancelButton: true,
+            cancelButtonText: `${LocaleManager.trans("Cancel", "buttons")}`,
             confirmButtonColor: "#d33",
             confirmButtonText: `${LocaleManager.trans('Yes, Cancel it!', "buttons")}`,
             reverseButtons: true,
             inputValidator: value => {
-                if (!value) return "You must provide a reason!";
+                if (!value) return LocaleManager.trans("reason_required", "message_box_default");
             },
             showLoaderOnConfirm: true,
             preConfirm: remark => {
