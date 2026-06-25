@@ -1100,6 +1100,8 @@ function jsonToTable(div, d) {
 }
 function tenantList(div, data) {
      const d = data?.list ?? [];
+     console.log(333,d);
+     
      const company_info = data.company_profile ?? {};
     let html = `
     <div class="d-block position-relative">
@@ -1193,10 +1195,7 @@ function tenantList(div, data) {
 }
 
 function depositList(div, data) {
-    console.log(123,data);
-
     const rows = data?.list ?? [];
-    
     const company = data?.company_profile ?? {};
 
     let totalDeposit = 0;
@@ -1215,11 +1214,6 @@ function depositList(div, data) {
             <h4 class="text-center text-uppercase mb-0">
                 ${data.title ?? ''}
             </h4>
-
-            <p class="text-center fs-5 mb-0">
-                ${data.sub_title ?? ''}
-            </p>
-
             <p class="text-center fs-6 mb-0">
                 ${data.sub_title_2 ?? ''}
             </p>
@@ -1231,77 +1225,58 @@ function depositList(div, data) {
             <thead class="table-light">
                 <tr>
                     <th width="50" class="text-center">No</th>
-                    <th>Tenant Name</th>
-                    <th width="120" class="text-center">Tenant ID</th>
+                    <th>Name</th>
+                    <th width="120" class="text-center">Code</th>
                     <th width="120" class="text-center">Deposit Date</th>
-                    <th width="120" class="text-center">Payment Date</th>
                     <th width="130" class="text-end">Deposit</th>
-                    <th width="120" class="text-center">Valid Date</th>
                     <th>Remarks</th>
                 </tr>
             </thead>
             <tbody>
     `;
 
-    if (rows.length > 0) {
+    if (rows.length) {
 
         rows.forEach((row, index) => {
 
-            const deposit = parseFloat(row.deposit || 0);
+            const deposit = parseFloat(
+                String(row.amount || 0).replace(/[$,]/g, '')
+            );
 
             totalDeposit += deposit;
 
             html += `
                 <tr>
+                    <td class="text-center">${index + 1}</td>
+                    <td>${row.tenant_name ?? ''}</td>
+                    <td class="text-center">${row.tenant_code ?? ''}</td>
                     <td class="text-center">
-                        ${index + 1}
+                        ${row.deposit_date ?? ''}
                     </td>
-
-                    <td>
-                        ${row.tenant_name ?? ''}
-                    </td>
-
-                    <td class="text-center">
-                        ${row.tenant_id ?? ''}
-                    </td>
-
-                    <td class="text-center">
-                        ${VSUtil.formatDate?.(row.deposit_date) || row.deposit_date || ''}
-                    </td>
-
-                    <td class="text-center">
-                        ${VSUtil.formatDate?.(row.payment_date) || row.payment_date || ''}
-                    </td>
-
                     <td class="text-end">
                         ${deposit.toLocaleString(undefined, {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 2
                         })}
                     </td>
-
-                    <td class="text-center">
-                        ${VSUtil.formatDate?.(row.valid_date) || row.valid_date || ''}
-                    </td>
-
-                    <td>
-                        ${row.remarks ?? ''}
-                    </td>
+                    <td>${row.remarks ?? ''}</td>
                 </tr>
             `;
         });
 
         html += `
             <tr class="fw-bold">
-                <td colspan="5" class="text-end">
+                <td colspan="4" class="text-end">
                     Total Deposit
                 </td>
+
                 <td class="text-end">
                     ${totalDeposit.toLocaleString(undefined, {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2
                     })}
                 </td>
+
                 <td colspan="2"></td>
             </tr>
         `;

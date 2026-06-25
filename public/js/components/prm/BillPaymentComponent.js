@@ -39,7 +39,7 @@ var BillPaymentComponent = (() => {
             transTitle: "titles.Vendor",
             className: "align-middle",
             data: (data) =>
-                `<span class="d-block text-prm-custom text-capitalize">${data.vendor_name ?? ""}</span>`,
+                `<span class="d-block text-prm-custom text-capitalize text-nowrap">${data.vendor_name ?? ""}</span>`,
         },
         {
             transTitle: "titles.Amount",

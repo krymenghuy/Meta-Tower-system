@@ -208,7 +208,7 @@ class Report //extends Model
             2 => '(Already got contract)',
             3 => '(Already moved out)',
         ];
-        $title = 'Tenant List ' . ($statusLabels[$status_id] ?? '(All Statuses)');
+        $title = 'Tenant List Report' . ($statusLabels[$status_id] ?? '(All Statuses)');
         $sub_title = $start_date && $end_date ? date('d-M-Y', strtotime($start_date)) .' to '. date('d-M-Y', strtotime($end_date)) : 'All Statuses';
         $date_rank = (object)[];
         if($start_date && $end_date ){
@@ -329,7 +329,7 @@ function getPaymentReport($arr, $ss)
             'form' => 'payments',
             'vendor_info' => $vendor,
             'list' => $rows,
-            'title' => 'Vendor Payment',
+            'title' => 'Vendor Payment Report',
             'sub_title' => '',
             
             'company_profile' => self::getCompanyInfo($ss)
@@ -350,7 +350,7 @@ public static function getTenantDepositList($arr, $ss)
     $str_search = '1=1';
     if ($is_paid !== null) $str_search .= ' AND d.status_id = ' . $is_paid;
 
-    $query = DB::table('deposits as d')
+    $rows = DB::table('deposits as d')
         ->join('tenants as t', 'd.tenant_id', '=', 't.id')
         ->selectRaw("
             t.code as tenant_code,
@@ -366,7 +366,11 @@ public static function getTenantDepositList($arr, $ss)
         ->whereRaw($str_search)
         ->whereRaw($str_date)
         ->get();
-
+    foreach($rows as $row){
+        $row->amount = '$' . number_format($row->amount, 2);
+        $row->paid_amount = '$' . number_format($row->paid_amount, 2);
+         $row = setOfficialDates($row, ['deposit_date'], [''], ['']);
+    }
     
     $statusLabel = '(All)';
 
@@ -398,7 +402,7 @@ public static function getTenantDepositList($arr, $ss)
         'sub_title' => $sub_title,
         'sub_title_2' =>$sub_title_2,
         'date_rank' => $date_rank,
-        'list' => $query,
+        'list' => $rows,
         'form' => 'deposit_list',
         'company_profile' => $company_profile
     ];
