@@ -356,6 +356,8 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('reports')->gr
     Route::post('total_payment_history',[ReportController::class,'getTotalPaymentHistory']);
     Route::post('vendor_payment_list',[ReportController::class,'getVendorPaymentReport']);
     Route::post('deposit_list',[ReportController::class,'getTenantDepositList']);
+    Route::post('income_by_category',[ReportController::class,'getIncomeByCategories']);
+
 
 });
 

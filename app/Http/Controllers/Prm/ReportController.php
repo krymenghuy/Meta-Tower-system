@@ -36,10 +36,17 @@ class ReportController extends Controller
         $report = new Report();
         return JDV::raw($report->getVendorPaymentReport($req->all(),$ss));
     }
-     function getTenantDepositList(Request $req){
+    function getTenantDepositList(Request $req){
         $ss = XAuthService::verifyAuth($req,300);
         if($ss->status_code != 200) return $ss;
         $report = new Report();
         return JDV::result($report->getTenantDepositList($req->all(),$ss));
+    }
+
+    function getIncomeByCategories(Request $req){
+        $ss = XAuthService::verifyAuth($req,'301');
+        if($ss->status_code != 200) return $ss;
+        $report = new Report();
+        return JDV::result($report->getIncomeByCategories($req->all(),$ss));
     }
 }
