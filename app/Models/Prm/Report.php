@@ -307,7 +307,7 @@ class Report //extends Model
     ];
 }
 
-function getPaymentReport($arr, $ss)
+function getVendorPaymentReport($arr, $ss)
     {
         $d = (object) $arr;
         $vendor_id = isset($d->vendor_id) ? $d->vendor_id : null;
@@ -326,12 +326,11 @@ function getPaymentReport($arr, $ss)
         }
 
         $res = (object) [
-            'form' => 'payments',
+            'form' => 'vendor_payment_list',
             'vendor_info' => $vendor,
             'list' => $rows,
-            'title' => 'Vendor Payment Report',
+            'title' => 'Vendor Payment',
             'sub_title' => '',
-            
             'company_profile' => self::getCompanyInfo($ss)
         ];
         return DV::success(['data' => $res]);

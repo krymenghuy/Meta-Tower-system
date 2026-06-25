@@ -412,8 +412,8 @@ var ReportComponent = (() => {
                     case 'leave_student':
                         leaveStudent(containerTable,d);
                         break;
-                    case 'payments':
-                        Payments(containerTable,d);
+                    case 'vendor_payment_list':
+                        VendorPayments(containerTable,d);
                         break;
                     case 'income_by_class':
                         incomeByClassTable(containerTable,d);
