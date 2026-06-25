@@ -1697,7 +1697,7 @@ var TenantComponent = (function () {
                     "id",
                     "name",
                     "",
-                    "All Statuses",
+                    LocaleManager.trans("All Statuses", "titles"),
                     "",
                 );
                 if (typeof onFinish === "function") onFinish();

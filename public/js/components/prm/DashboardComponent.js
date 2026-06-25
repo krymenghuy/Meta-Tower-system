@@ -869,8 +869,8 @@ var DashboardComponent =  (() =>{
                 `<div class="row g-3 mt-1">
                     <div class="col-12 col-xl-6">
                         ${mThis.renderChartCard({
-                            title: "Occupancy by Floor",
-                            subtitle: "Occupied, Booked and Available Units",
+                            title: LocaleManager.trans('Occupancy by Floor', 'titles'),
+                            subtitle: LocaleManager.trans('Occupied, Booked and Available Units', 'titles'),
                             pill: "Meta Tower",
                             canvasId: "chartOccupancy"
                         })}
@@ -878,8 +878,8 @@ var DashboardComponent =  (() =>{
 
                     <div class="col-12 col-xl-6">
                         ${mThis.renderChartCard({
-                            title: "Revenue Trend",
-                            subtitle: "Rent, Electricity, Service Fee Revenue",
+                            title: LocaleManager.trans('Revenue Trend', 'titles'),
+                            subtitle: LocaleManager.trans('Rent, Electricity, Service Fee Revenue', 'titles'),
                             pill: "Monthly",
                             canvasId: "chartRevenue"
                         })}
@@ -933,6 +933,7 @@ var DashboardComponent =  (() =>{
             `</div>`
         ].join("");
         div.innerHTML = html;
+        LocaleManager.translateZone(div);
         mThis.state.rendered = true;
         mThis.updateHeight();
         mThis.lnkFilterButton = div.querySelector('.js-dashboard-filter');
@@ -1055,7 +1056,7 @@ var DashboardComponent =  (() =>{
                 <div class="md-hero-inner">
                     <div>
                         <div class="md-hero-eyebrow">
-                           <span>Executive Review · ${data.period}</span>
+                           <span vslang="labels.Executive Review ·">  ${data.period}</span>
                            <a href="javascript:void(0)"
                                 class="btn-filter-summery-db js-dashboard-filter">
                                 <img
@@ -1065,9 +1066,7 @@ var DashboardComponent =  (() =>{
                             </a>
                         </div>
 
-                        <h1 class="md-hero-title">
-                            Meta Tower Performance Dashboard
-                        </h1>
+                        <h1 class="md-hero-title" vslang="titles.Meta Tower Performance Dashboard"></h1>
 
                         <div class="md-hero-subtitle">
                             Strategic overview for occupancy, rental revenue, invoicing,
@@ -1080,27 +1079,21 @@ var DashboardComponent =  (() =>{
                             <div class="md-hero-stat-value">
                                 ${data.occupancy_rate}%
                             </div>
-                            <div class="md-hero-stat-label">
-                                Occupancy
-                            </div>
+                            <div class="md-hero-stat-label" vslang="labels.Occupancy"></div>
                         </div>
 
                         <div class="md-hero-stat">
                             <div class="md-hero-stat-value">
                                 ${mThis.money(data.monthly_revenue)}
                             </div>
-                            <div class="md-hero-stat-label">
-                                Monthly Revenue
-                            </div>
+                            <div class="md-hero-stat-label" vslang="labels.Monthly Revenue"></div>
                         </div>
 
                         <div class="md-hero-stat">
                             <div class="md-hero-stat-value">
                                 ${data.collection_rate}%
                             </div>
-                            <div class="md-hero-stat-label">
-                                Collection Rate
-                            </div>
+                            <div class="md-hero-stat-label" vslang="labels.Collection Rate"></div>
                         </div>
                     </div>
                 </div>

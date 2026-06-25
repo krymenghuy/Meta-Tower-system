@@ -65,7 +65,7 @@ return [
         'booking_fee_required' => 'សូមបញ្ចូលចំនួនទឺកប្រាក់កក់។',
 
         'select_space' => 'សូមជ្រើសរើសបន្ទប់។',
-        'select_amenity' => 'សូមជ្រើសរើសទីតាំង។',
+        // 'select_amenity' => 'សូមជ្រើសរើសទីតាំង។',
         'select_type' => 'សូមជ្រើសរើសប្រភេទ។',
         'required_start_date' => 'ថ្ងៃចាប់ផ្តើមត្រូវតែបញ្ចូល។',
         'required_end_date' => 'ថ្ងៃបញ្ចប់ត្រូវតែបញ្ចូល។',
@@ -179,15 +179,15 @@ return [
         "contract_template_not_found" => "មិនមានកិច្ចសន្យាទេ",
         "staff_contract_not_found" => "មិនមានកិច្ចសន្យាបុគ្គលិកទេ",
         "tenant_does_not_exist" => "លេខសម្គាល់អ្នកជួល ?? មិនមានទេ។",
-        
 
 
-      
 
 
-        
-        
-        
+
+
+
+
+
 
 
     ],
@@ -213,6 +213,9 @@ return [
         'Modify' => 'កែប្រែ',
         'Cancel' => 'បោះបង់',
         'No data to display' => "មិនមានទិន្នន័យបង្ហាញ",
+        'No_renewal_history' => 'គ្មានប្រវត្តិនៃការបន្តកិច្ចសន្យាសម្រាប់កិច្ចសន្យានេះទេ។',
+        'Renewals_will_appear' => 'ការបន្តកិច្ចសន្យានឹងបង្ហាញនៅទីនេះនៅពេលកិច្ចសន្យាត្រូវបានបន្ត។',
+        'All Statuses' => 'ស្ថានភាពទាំងអស់',
 
 
         'Create Service Price' => 'បង្កើតតម្លៃសេវាកម្ម',
@@ -249,7 +252,6 @@ return [
         'Modify Purchase Orders' => 'កែប្រែការបញ្ជាទិញទំនិញ',
         'Receive Purchase Order' => 'ទទួលទំនិញ',
         'Reservation' => 'ការកក់',
-        'Service' => 'សេវាកម្ម',
         'Service Request' => 'សំណើសេវាកម្ម',
         'Vendors' => 'អ្នកផ្គត់ផ្គង់',
         'Create Vendor' => 'បង្កើតអ្នកផ្គត់ផ្គង់',
@@ -445,8 +447,9 @@ return [
 
         'Cancel Payment' => 'បោះបង់ការទូទាត់',
         'Delete Payment' => 'លុបការទូទាត់',
-        'Cancel Receipt' => 'បោះបង់បង្កាន់ដៃ',
+        'Cancel Receipt?' => 'តើអ្នកប្រាកដថាចង់បោះបង់បង្កាន់ដៃនេះមែនទេ?', 
         'Delete Receipt' => 'លុបបង្កាន់ដៃ',
+        'Cancel Receipt' => 'បោះបង់បង្កាន់ដៃ',
 
         'Create Service Request' => 'បង្កើតសំណើសេវាកម្ម',
         'QTY' => 'ចំនួន',
@@ -515,7 +518,14 @@ return [
         'Booking Details' => 'ព័ត៌មានលម្អិតអំពីការកក់',
 
         'Complete' => 'បញ្ចប់',
-        'No Tax Invoice' => 'វិក្កយបត្រគ្មានពន្ធ'
+        'No Tax Invoice' => 'វិក្កយបត្រគ្មានពន្ធ',
+
+        'Prepare Print Contract' => 'ត្រៀមបោះពុម្ពកិច្ចសន្យា',
+        'Print Contract' => 'បោះពុម្ពកិច្ចសន្យា',
+        
+        
+        
+
 
 
 
@@ -749,6 +759,7 @@ return [
         'Upload Photo' => 'ភ្ជាប់រូបភាព',
         'Delete Logo' => 'លុបនិមិត្តសញ្ញា',
         'Receive' => 'ទទួល',
+        'Yes, Cancel it!' => 'យល់ព្រម, បោះបង់!',
 
 
 
@@ -789,6 +800,8 @@ return [
         'Floor Number' => 'លេខជាន់',
         'Floor Name' => 'ឈ្មោះជាន់',
         'Description' => 'ការពិពណ៌នា',
+        'Qty' => 'ចំនួន',
+        'QTY' => 'ចំនួន',
 
         'Unit Code (Optional)' => 'លេខកូដបន្ទប់ (Optional)',
         'Size (m²)' => 'ទំហំ (m²)',
@@ -899,7 +912,7 @@ return [
         'Card Number' => 'លេខកាត',
         'Balance Due' => 'ប្រាក់នៅសល់ត្រូវបង់',
         'Remaining' => 'ចំនួនទឹកប្រាក់នៅសល់',
-        'Total Paid' => 'ចំនួនទឹកប្រាក់ដែលបានបង់',
+        'Total Paid' => 'ចំនួនទឹកប្រាក់ដែលបានបង់សរុប',
 
         'Total Price ($)' => 'តម្លៃសរុប ($)',
         'Discount' => 'បញ្ចុះតម្លៃ',
@@ -951,7 +964,6 @@ return [
         'Tenant' => 'អ្នកជួល',
         'Logo' => 'និមិត្តសញ្ញា',
         'Company Logo' => 'និមិត្តសញ្ញាក្រុមហ៊ុន',
-        'Exchange Rate (KHR)' => 'អត្រាប្តូរប្រាក់ (KHR)',
         'Exchange Rate (USD - KHR)' => 'អត្រាប្តូរប្រាក់ (USD - KHR)',
         'Invoice Display Options' => 'ជម្រើសបង្ហាញវិក្កយបត្រ',
         'Show Commercial Tax' => 'បង្ហាញពន្ធពាណិជ្ជកម្ម',
@@ -974,18 +986,42 @@ return [
         'Card' => 'កាត',
         'Bank Transfer' => 'ប្រតិបត្តិការធនាគារ',
         'Entered:' => 'បានបញ្ចូល:',
+
+        'Search by name, code or phone' => 'ស្វែងរកតាមឈ្មោះ កូដ ឬលេខទូរស័ព្ទ',
+
+        'Occupancy by Floor' => 'តារាងបែងចែកជាន់',
+        'Monthly Revenue' => 'ប្រាក់ចំណូលប្រចាំខែ',
+        'Collection Rate' => 'អត្រាបង់ប្រាក់',
+        'Executive Review ·' => 'របាយការណ៍សង្ខេប ·',
+
+
+        'Occupied, Booked and Available Units' => 'បន្ទប់ដែលបានជួល បន្ទប់ដែលបានកក់ និងបន្ទប់ទំនេរ',
+        'Occupancy' => 'បន្ទប់ដែលបានជួល',
+        'Booked' => 'បន្ទប់ដែលបានកក់',
+        'Available' => 'បន្ទប់ទំនេរ',
+        'Revenue Trend' => 'តារាងបែងចែកប្រាក់ចំណូល',
+        'Rent, Electricity, Service Fee Revenue' => 'ប្រាក់ចំណូលពីការជួល អគ្គិសនី និងសេវា',
+        'Rent' => 'ប្រាក់បង់ជួល',
+        'Electricity' => 'អគ្គិសនី',
+        'Service Fee' => 'សេវា',
+        'Total Revenue' => 'ប្រាក់ចំណូលសរុប',
+        'Occupancy Rate' => 'អត្រាជួលបន្ទប់',
+        'Average Daily Rate' => 'អត្រាជួលបន្ទប់ជាមធ្យម',
+        'Total Occupied' => 'បន្ទប់ដែលបានជួលសរុប',
+        'Total Available' => 'បន្ទប់ទំនេរសរុប',
+        'Total Booked' => 'បន្ទប់ដែលបានកក់សរុប',
+
+        'Tenant Details' => 'ព័ត៌មានលម្អិតអំពីអ្នកជួល',
+        'Monthly Price' => 'តម្លៃជួលប្រចាំខែ',
+        'Current Address' => 'អាស័យដ្ឋានបច្ចុប្បន្ន',
+        'Company Representative' => 'តំណាងក្រុមហ៊ុន',
+        'Payment Method' => 'វិធីសាស្ត្រទូទាត់ប្រាក់',
+        'Remark:' => 'កំណត់សម្គាល់:',
+        'Payment Amount' => 'ចំនួនទឹកប្រាក់ដែលបានបង់',
+        'Sub Total' => 'សរុបរង',
+        'Total Net' => 'ទឹកប្រាក់សរុប',
         
         
-        
-
-
-
-
-
-
-
-
-
 
 
 
@@ -1002,59 +1038,6 @@ return [
 
     ],
 
-    // 'message_box_default' => [
-
-    //     'required' => 'សូមបញ្ចូលព័ត៌មាននេះ។',
-    //     'created'  => 'ទិន្នន័យត្រូវបានបង្កើតដោយជោគជ័យ។',
-    //     'update_success_tenant' => 'ព័ត៌មានភ្ញៀវត្រូវបានកែប្រែដោយជោគជ័យ',
-    //     'delete_success_tenant' => 'ព័ត៌មានភ្ញៀវរូវបានលុបដោយជោគជ័យ',
-    //     'create_success_tenant'=>'ព័ត៌មានភ្ញៀវត្រូវបានបង្កើត',
-    //     'updated'  => 'ទិន្នន័យត្រូវបានកែប្រែដោយជោគជ័យ',
-    //     'deleted'  => 'ទិន្នន័យត្រូវបានលុបដោយជោគជ័យ',
-    //     'success' => 'ប្រតិបត្តិការបានជោគជ័យ។',
-    //     'terminated'  => 'ទិន្នន័យត្រូវបានបញ្ឈប់ដោយជោគជ័យ។',
-    //     'cancelled' => 'បានបោះបង់ដោយជោគជ័យ។',
-    //     'finished'         => 'បានបញ្ចប់ដោយជោគជ័យ។',
-    //     'confirm_delete' => 'តើអ្នកពិតជាចង់លុបទិន្នន័យនេះមែនទេ?',
-    //     'confirm_terminate' => 'តើអ្នកពិតជាចង់បញ្ឈប់ទិន្នន័យនេះមែនទេ?',
-    //     'confirm_cancel' => 'តើអ្នកពិតជាចង់បោះបង់នេះមែនទេ?',
-    //     'confirm_finish' => 'តើអ្នកពិតជាចង់បញ្ចប់ការងារនេះមែនទេ?',
-    //     'confirm_accept' => 'តើអ្នកពិតជាចង់ទទួលយកការស្នើសុំនេះមែនទេ?',
-
-
-    //     'delete_maintenance' => 'លុបការថែទាំ',
-    //     'confirm_delete_maintenance' => 'តើអ្នកពិតជាចង់លុបការថែទាំនេះមែនទេ?',
-    //     'maintenance_deleted' => 'ការថែទាំត្រូវបានលុបដោយជោគជ័យ។',
-
-    //     'cancel_maintenance' => 'បោះបង់ការថែទាំ',
-    //     'confirm_cancel_maintenance' => 'តើអ្នកពិតជាចង់បោះបង់ការថែទាំនេះមែនទេ?',
-    //     'maintenance_cancelled' => 'ការថែទាំត្រូវបានបោះបង់ដោយជោគជ័យ។',
-
-    //     'finish_maintenance' => 'បញ្ចប់ការថែទាំ',
-    //     'confirm_finish_maintenance' => 'តើអ្នកពិតជាចង់បញ្ចប់ការថែទាំនេះមែនទេ?',
-    //     'maintenance_finished' => 'ការថែទាំត្រូវបានបញ្ចប់ដោយជោគជ័យ។',
-
-    //     "Confirm" => 'បញ្ជាក់',
-    //     "Log Out" => "ចាកចេញ",
-    //     "Cancel" => "បោះបង់",
-    //     "OK" => "បាទ",
-    //     "Remove" => "លុប",
-    //     "Delete" => "លុប",
-    //     "Dont Delete" => "មិនលុប",
-    //     "Dont Remove" => "មិនលុប",
-    //     "Create" => "បង្កើត",
-    //     "Yes" => "បាទ",
-    //     "No" => "ទេ",
-    //     "Finish" => "បញ្ចប់",
-    //     "Terminate" => "បញ្ឈប់",
-    //     'Save' => 'រក្សារទុក',
-    //     'Change Status' => 'ប្ដូរស្ថានភាព',
-    //     'Accept' => 'យល់ព្រម',
-    //     'View Reservation' => 'មើលព័ត៌មានការកក់',
-
-
-
-    // ],
 
     'message_box_default' => [
         'required' => 'សូមបញ្ចូលព័ត៌មាននេះ។',
@@ -1206,8 +1189,11 @@ return [
         'confirm_authorize' => 'តើអ្នកប្រាកដទេថាចង់អនុម័តការបញ្ជាទិញនេះ?',
 
         'select_item_first' => 'សូមជ្រើសរើសមុខទំនិញជាមុនសិន។',
-        'please_enter_price' => 'សូមបញ្ចូលតម្លៃឯកតាជាមុនសិន។',   
+        'please_enter_price' => 'សូមបញ្ចូលតម្លៃឯកតាជាមុនសិន។',
         'confirm_reset_invoice' => 'តើអ្នកប្រាកដទេថាចង់កំណត់ការកំណត់វិក្កយបត្រនេះឡើងវិញ?',
+        'restore_to_invoice' => 'សកម្មភាពនេះនឹងស្ដារចំនួនទឹកប្រាក់ដែលត្រូវបង់នៅលើវិក្កយបត្រឡើងវិញ។',
+        'reason_for_cancellation'=> 'សូមបញ្ចូលមូលហេតុនៃការបោះបង់។',
+        'reason_required' => 'សូមបញ្ជាក់ពីមូលហេតុ!',
 
 
         "Confirm" => 'យល់ព្រម',
@@ -1227,6 +1213,12 @@ return [
         'Change Status' => 'ប្ដូរស្ថានភាព',
         'Accept' => 'យល់ព្រម',
         'View Reservation' => 'មើលព័ត៌មានការកក់',
+
+
+        'success' => 'ប្រតិបត្តិការបានជោគជ័យ។',
+        'terminated'  => 'ទិន្នន័យត្រូវបានបញ្ឈប់ដោយជោគជ័យ។',
+       
+
     ],
-    
+
 ];
