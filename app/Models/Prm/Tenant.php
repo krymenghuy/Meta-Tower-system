@@ -750,6 +750,7 @@ class Tenant
             $tenant->com_rep_sex =  $p->first_cp_sex;
             $tenant->com_rep_nid = $p->first_cp_nid;
             $tenant->com_rep_dob =$p->first_cp_dob;
+            $tenant->com_rep_nid_issue_date = $p->first_cp_nid_issue_date;
             $tenant->com_rep_address = $p->first_cp_address;
         }
         return (object)[
