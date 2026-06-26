@@ -88,16 +88,14 @@ class Team // Changed from Staff to Team to resolve the "Class not found" error
         return null;
     }
 
-    /**
-     * Creates or Updates a tenant team entity (saves to tenant_team table)
-     */
     public function createTeam($arr = [], $id = null, $ss = null){
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id ?? null;
         
         $v_rule = [
-            'space_id'   => '1|integer',
+            'space_id'  => '1|number|text=space_required',
+            'member_count'  => '1|number|text=member_count_required',
             'team_name'  => '1|string|0-30|text=name_required',
         ];
         
@@ -110,6 +108,10 @@ class Team // Changed from Staff to Team to resolve the "Class not found" error
         $inputs['tenant_id'] = $ss->official_id;
         $inputs['member_count'] = $d->member_count ?? 0;
 
+        \Log::info('SSS', [$ss, $d]);
+        \Log::info('Inputs', [$inputs]);
+        \Log::info('ID', [$id]);
+
         $id = DBX::saveData($ss, 'tenant_team', ['id' => $id], $inputs, [], 1);
         if (!$id) {
             return DV::error('create_failed');
@@ -117,6 +119,7 @@ class Team // Changed from Staff to Team to resolve the "Class not found" error
 
         return DV::depends(1, ['tenant_team' => $inputs, 'id' => $id]);
     }
+
 
     /**
      * Alias method to keep TeamController standalone execution intact
@@ -374,12 +377,8 @@ class Team // Changed from Staff to Team to resolve the "Class not found" error
 
     public static function getFormOptions($id, $ss)
     {
-        $details = $id ? self::getDetails($id, $ss) : null;
         return (object) [
-            'teams' => $details,
-            'nationalities' => GeneralSettings::options_nationality($ss),
-            'statuses' => GeneralSettings::options_tenant_status($ss),
-            'spaces'  => GeneralSettings::options_building_space($ss)
+            'spaces'  => GeneralSettings::create_team_space_options($ss)
         ];
     }
 

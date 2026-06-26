@@ -20,7 +20,10 @@
                 </div>
             </div>
         </div>
-        <div id="_team_list_view" class="mt-3 rounded-2 overflow-y-auto"></div>
+    <div class="mt-3 d-flex w-100 gap-2">
+        <div id="_team_card_view" class="col-6 mt-3 rounded-2 overflow-y-auto w-25"></div>
+        <div id="_team_list_view" class="col-6 mt-3 rounded-2 overflow-y-auto w-75"></div>
+    </div>
     </div>
 </div>
 

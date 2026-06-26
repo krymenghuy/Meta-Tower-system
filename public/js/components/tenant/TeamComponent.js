@@ -997,6 +997,17 @@ const CreateTeamDialog = (() => {
                                 <label vslang="labels.Team Name">Team Name</label>
                             </div>
                         </div>
+                        <div class="col-12 col-md-4">
+                            <div class="vs-material-field">
+                                <select name="space_id" 
+                                       class="data-input form-control" 
+                                       data-field="space_id"
+                                       required>
+                                    <option value="">Select Space</option>
+                                </select>
+                                <label vslang="labels.Space">Space</label>
+                            </div>
+                        </div>
                         
                         <div class="col-12 col-md-4">
                             <div class="vs-material-field">
@@ -1005,11 +1016,10 @@ const CreateTeamDialog = (() => {
                                        class="data-input form-control" 
                                        data-field="member_count" 
                                        placeholder=" " 
-                                       min="1" />
+                                       min="0" />
                                 <label vslang="labels.Member Count">Member Count</label>
                             </div>
                         </div>         
-                        <input type="hidden" name="space_id" data-field="space_id" class="data-input" />
                     </div>
                 `;
             },
@@ -1025,13 +1035,24 @@ const CreateTeamDialog = (() => {
             },
 
             onPrepareForm: (me, data) => {
-                // Pre-fill hidden fields if passed from parent
-                if (op.tenant_id) {
-                    me.controls.tenant_id.value = op.tenant_id;
-                }
+                // ↵ FIXED: Populate the select element using your option dataset 
+                const spacesList = data?.spaces || [];
                 
-            },
+                VSUtil.setComboItems(
+                    me.controls.space_id, // Links to your updated select field
+                    spacesList,
+                    "id",                 // Value stored in DB
+                    "code",               // Text displayed to users ("A-B-12")
+                    "",
+                    "Select Space",       // Default prompt item
+                    ""
+                );
 
+                // If editing an existing team entry, assign selected values
+                if (data?.team) {
+                    me.setData(data.team);
+                }
+            },
 
             buttons: [
                 {

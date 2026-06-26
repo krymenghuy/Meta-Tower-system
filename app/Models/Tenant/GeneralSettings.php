@@ -553,6 +553,21 @@ static function options_maintenance_amenity($ss)
             ');
     }
 
+    static function create_team_space_options ($ss){
+
+        // \Log::info('ss' . print_r($ss, true));
+        // \Log::info('official_id' . print_r($ss->official_id, true));
+        return DB::table('building_spaces as bs')
+            ->join('contracts as c', 'c.space_id', '=', 'bs.id')
+            ->where('c.tenant_id', $ss->official_id)
+            ->where('c.status_id', 2)
+            ->selectRaw('
+                bs.id,
+                bs.code
+            ')
+            ->get();
+    }
+
     static function options_building_space($ss, $include_space_id = null, $exclude_under_maintenance = false)
     {
 
