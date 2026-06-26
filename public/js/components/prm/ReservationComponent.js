@@ -390,7 +390,7 @@ var ReservationComponent = (() => {
                     "id",
                     "reservation_status",
                     "",
-                    "All Statuses",
+                    LocaleManager.trans("All Statuses", "titles"),
                     "",
                 );
                 if (typeof onFinish === "function") onFinish();

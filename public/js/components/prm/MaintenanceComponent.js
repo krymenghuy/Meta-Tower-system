@@ -317,9 +317,9 @@ var MaintenanceComponent = (() => {
             .then(res => {
                 if (res.status_code === 200) {
                     const d = res.data || {};
-                    VSUtil.setComboItems(mThis.elFilter_building, d.buildings || [], "id", "building", '', "All Buildings", '');
-                    VSUtil.setComboItems(mThis.elFilter_type, d.types || [], "id", "name", '', "All Types", '');
-                    VSUtil.setComboItems(mThis.elFilter_status, d.maintenance_statuses || [], "id", "maintenance_status", '', "All Statuses", '');
+                    VSUtil.setComboItems(mThis.elFilter_building, d.buildings || [], "id", "building", '', LocaleManager.trans("All buildings", "titles"), '');
+                    VSUtil.setComboItems(mThis.elFilter_type, d.types || [], "id", "name", '', LocaleManager.trans("All Types", "titles"), '');
+                    VSUtil.setComboItems(mThis.elFilter_status, d.maintenance_statuses || [], "id", "maintenance_status", '', LocaleManager.trans("All Statuses", "titles"), '');
                 }
                 if (typeof onFinish === "function") onFinish();
             });

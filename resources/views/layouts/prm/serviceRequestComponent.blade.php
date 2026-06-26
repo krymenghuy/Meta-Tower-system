@@ -3,14 +3,14 @@
         <div class="align-items-center row g-3">
             <div class="col-12 col-md-6 col-lg-3">
                 <div class="position-relative w-100">
-                <input type="text" class="filter-field rounded-2 input-search" id="_search_service_request" placeholder="Search by request no. or tenant">
+                <input  type="text" class="filter-field rounded-2 input-search" id="_search_service_request" placeholder="{{ \Vsd\Locales\Localization::trans('Search by request no. or tenant', 'titles') }}">
             </div>
         </div>
             <div class="col-12 col-md-6 col-lg-2">
-                <select id="_service_request_category_id" class="filter-field data-input form-control" data-field="category_id"></select>
+                <select id="_service_request_category_id" class="filter-field data-input form-control" data-field="category_id" placeholder='vslang="titles.All Categories"'></select>
             </div>
             <div class="col-12 col-md-6 col-lg-2">
-                <select id="_service_request_status" class="filter-field data-input form-control" data-field="status_id" placeholder="Status"></select>
+                <select id="_service_request_status" class="filter-field data-input form-control" data-field="status_id" placeholder='vslang="titles.All Statuses"' ></select>
             </div>
             <div class="ms-md-auto text-md-end col-12 col-md-auto">
                 <button type="button" class="w-100 w-md-auto btnAddNewPrm" id="_btnServiceRequest">

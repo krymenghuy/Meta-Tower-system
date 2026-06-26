@@ -348,7 +348,7 @@ var ServiceRequestComponent = (function () {
             },
         });
     };
-    
+
     mThis.acceptRequest = (id, menuLink) => {
         if (!AuthManager.allowed(260,false)) return;
         cv_interact.confirm(
@@ -387,7 +387,7 @@ var ServiceRequestComponent = (function () {
         if (!AuthManager.allowed(261,false)) return;
         cv_interact.confirm(
             "confirm_complete",
-            {   
+            {
                 title: 'completed',
                 context: 'update',
                 confirmButtonText: LocaleManager.trans('Complete', 'buttons'),
@@ -445,8 +445,8 @@ var ServiceRequestComponent = (function () {
         vsapi.call(`${main_view.base_url}/prm/service-request/form-options`,null,null,null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
-                    VSUtil.setComboItems(mThis.elStatus, d.request_statuses, 'id', 'name', '', 'All Statuses', '');
-                    VSUtil.setComboItems(mThis.elService_category, d.service_categories, 'id', 'service_category', '', 'All Categories', '');
+                    VSUtil.setComboItems(mThis.elStatus, d.request_statuses, 'id', 'name', '', LocaleManager.trans('All Statuses', 'titles'), '');
+                    VSUtil.setComboItems(mThis.elService_category, d.service_categories, 'id', 'service_category', '', LocaleManager.trans('All Categories', 'titles'), '');
                 if (typeof onFinish === 'function') onFinish();
             });
     };
@@ -768,7 +768,7 @@ const CreateServiceRequestDialog = (() => {
                                     cv_interact.error(res.error_message || "save_failed");
                                 }
                             })
-                            
+
                     }
                 }
             ]

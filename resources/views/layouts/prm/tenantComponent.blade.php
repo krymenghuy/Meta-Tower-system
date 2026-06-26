@@ -1,4 +1,4 @@
-<div id="_main_tenant_component" class="p-3 mobile-padding" style="display:none;">
+ <div id="_main_tenant_component" class="p-3 mobile-padding" style="display:none;">
     <div id="_tenant_list_container" style="display:none">
         <div id="_divFilter_tenant" class="bg-white shadow-sm p-3 rounded-2">
             <div class="align-items-center row g-3">
@@ -10,7 +10,8 @@
                 </div>
                 <div class="col-12 col-md-6 col-lg-2">
                     <select id="_el_tenant_status" class="filter-field data-input form-control" data-field="status_id"
-                        placeholder="Status"></select>
+                        placeholder="{{ \Vsd\Locales\Localization::trans('All Statuses', 'labels') }}">
+                    </select>
                 </div>
                 <div class="col-12 col-md-6 col-lg-3">
                     <div class="btn-group btn-group-sm gap-2 rounded" role="group">

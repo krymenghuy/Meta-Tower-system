@@ -2,10 +2,10 @@
      <div id="_divFilter_item" class="rounded-2 p-3 bg-white shadow-sm">
         <div class="row g-3 align-items-center">
             <div class="col-12 col-md-6 col-lg-3">
-                <input type="text" class="rounded-2 filter-field input-search" id="_search_item" placeholder="Search by name or code">
+                <input type="text" class="rounded-2 filter-field input-search" id="_search_item" placeholder="{{ \Vsd\Locales\Localization::trans('Search by name or code', 'titles') }}">
          </div>
             <div class="col-12 col-md-6 col-lg-3">
-                <select type="id" id="_item_category_id" class="data-input filter-field form-control" data-field="category_id"></select>
+                <select type="id" id="_item_category_id" class="data-input filter-field form-control" data-field="category_id" placeholder='vslang="titles.All Categories"'></select>
             </div>
 
             <div class="col-12 col-md-auto ms-md-auto text-md-end" style="overflow:visible;">

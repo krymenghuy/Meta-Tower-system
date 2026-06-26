@@ -729,15 +729,13 @@ const CreateServiceRequestDialog = (() => {
             createContent: () => `
                 <div class="container-fluid">
                     <div class="row g-3 mb-3">
-                        <div class="col-md-6">
+                        <div class="col-12 col-md-4">
                             <select data-style="material" name="space_id" class="data-input form-control" data-field="space_id" required placeholder="Unit"></select>
                         </div>
-                    </div>
-                    <div class="row g-3 mb-3">
-                        <div class="col-md-6">
+                        <div class="col-12 col-md-4">
                             <select data-style="material" name="category_id" class="data-input form-control" data-field="category_id" required placeholder="Service Category"></select>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-12 col-md-4">
                             <select data-style="material" name="service_id" class="data-input form-control" data-field="service_id" placeholder="Service Name"></select>
                         </div>
                     </div>

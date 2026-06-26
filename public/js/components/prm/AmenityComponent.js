@@ -515,7 +515,7 @@ var AmenityComponent = (() => {
                     "id",
                     "amenity_status",
                     "",
-                    "All Statuses",
+                    LocaleManager.trans("All Statuses", "titles"),
                     "",
                 );
                 VSUtil.setComboItems(
@@ -524,7 +524,7 @@ var AmenityComponent = (() => {
                     "id",
                     "building",
                     "",
-                    "All Buildings",
+                    LocaleManager.trans("All buildings", "titles"),
                     "",
                 );
                 VSUtil.setComboItems(
@@ -533,7 +533,7 @@ var AmenityComponent = (() => {
                     "id",
                     "name",
                     "",
-                    "All Floor",
+                    LocaleManager.trans("All Floors", "titles"),
                     "",
                 );
                 VSUtil.setComboItems(
@@ -542,7 +542,7 @@ var AmenityComponent = (() => {
                     "id",
                     "amenity_category",
                     "",
-                    "All Categories",
+                    LocaleManager.trans("All Categories", "titles"),
                     "",
                 );
                 // VSUtil.setComboItems(mThis.elFilter_type, d.service_types, 'id', 'service_type', true, 'All Services type', null);
@@ -799,7 +799,7 @@ const ActiveReservationDialog = (() => {
         tbody.innerHTML = rows
             .map(
                 (r) => `
-            <tr>              
+            <tr>
                 <td class="align-middle">
                     <span class="d-block text-prm-custom text-nowrap text-capitalize">${r.tenant_name ?? ""}</span>
                     <small class="text-muted text-nowrap">${r.phone_number ?? ""}</small>

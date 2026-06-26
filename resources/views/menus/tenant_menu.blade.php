@@ -156,8 +156,8 @@ function v_display($mod_id, $module_ids = null)
         </div>
         <div class="" id ="_dms_aside_menus" style="display:none;">
             <ul class="kt-menu__nav">
-                <li class="kt-menu__item" aria-haspopup="true" <?php v_display(221); ?>>
-                    <a href="DashboardComponent" modid="221" class="menu-item kt-menu__link">
+                <li class="kt-menu__item" aria-haspopup="true" <?php v_display(306); ?>>
+                    <a href="DashboardComponent" modid="306" class="menu-item kt-menu__link">
                         <span class="kt-menu__link-icon">
                             <img class="opacity-icons icons" src="{{ asset('assets/images/icons/dashboard.svg') }}" />
                         </span>
@@ -179,8 +179,8 @@ function v_display($mod_id, $module_ids = null)
                     </a>
                 </li>
 
-                <li class="kt-menu__item" aria-haspopup="true" <?php v_display(222); ?>>
-                    <a href="ReservationComponent" modid="222" class="menu-item kt-menu__link">
+                <li class="kt-menu__item" aria-haspopup="true" <?php v_display(305); ?>>
+                    <a href="ReservationComponent" modid="305" class="menu-item kt-menu__link">
                         <span class="kt-menu__link-icon">
                             <img class="opacity-icons icons" src="{{ asset('assets/images/icons/reservation.svg') }}" />
                         </span>
@@ -188,8 +188,8 @@ function v_display($mod_id, $module_ids = null)
                     </a>
                 </li>
 
-                <li class="kt-menu__item" aria-haspopup="true" <?php v_display(223); ?>>
-                    <a href="InvoicesComponent" modid="223" class="menu-item kt-menu__link">
+                <li class="kt-menu__item" aria-haspopup="true" <?php v_display(307); ?>>
+                    <a href="InvoicesComponent" modid="307" class="menu-item kt-menu__link">
                         <span class="kt-menu__link-icon">
                             <img class="opacity-icons icons" src="{{ asset('assets/images/icons/staff.svg') }}" />
                         </span>
@@ -197,8 +197,8 @@ function v_display($mod_id, $module_ids = null)
                     </a>
                 </li>
 
-                <li class="kt-menu__item" aria-haspopup="true" <?php v_display(224); ?>>
-                    <a href="ReceiptsComponent" modid="224" class="menu-item kt-menu__link">
+                <li class="kt-menu__item" aria-haspopup="true" <?php v_display(308); ?>>
+                    <a href="ReceiptsComponent" modid="308" class="menu-item kt-menu__link">
                         <span class="kt-menu__link-icon">
                             <img class="opacity-icons icons" src="{{ asset('assets/images/icons/receipt.png') }}" />
                         </span>
@@ -206,8 +206,8 @@ function v_display($mod_id, $module_ids = null)
                     </a>
                 </li>
 
-                <li class="kt-menu__item" aria-haspopup="true" <?php v_display(225); ?>>
-                    <a href="RequestServiceComponent" modid="225" class="menu-item kt-menu__link">
+                <li class="kt-menu__item" aria-haspopup="true" <?php v_display(306); ?>>
+                    <a href="RequestServiceComponent" modid="306" class="menu-item kt-menu__link">
                         <span class="kt-menu__link-icon">
                             <img class="opacity-icons icons"
                                 src="{{ asset('assets/images/icons/zone_floor.svg') }}" />
@@ -224,8 +224,8 @@ function v_display($mod_id, $module_ids = null)
                         <span class="font-color kt-menu__link-text" vslang="menus.Announcements">Announcements</span>
                     </a>
                 </li>
-                <li class="kt-menu__item" aria-haspopup="true" <?php v_display(227); ?>>
-                    <a href="ServicesComponent" modid="227" class="menu-item kt-menu__link">
+                <li class="kt-menu__item" aria-haspopup="true" <?php v_display(312); ?>>
+                    <a href="ServicesComponent" modid="312" class="menu-item kt-menu__link">
                         <span class="kt-menu__link-icon">
                             <img class="opacity-icons icons" src="{{ asset('assets/images/icons/staff.svg') }}" />
                         </span>

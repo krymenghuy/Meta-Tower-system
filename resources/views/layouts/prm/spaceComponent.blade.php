@@ -5,16 +5,16 @@
                 <div class="row g-3 align-items-center">
 
                     <div class="col-12 col-md-2">
-                        <select id="building_id" class="data-input filter-field form-control" data-field="building_id" placeholder="Building"></select>
+                        <select id="building_id" class="data-input filter-field form-control" data-field="building_id" placeholder='vslang="titles.All buildings"'></select>
                     </div>
                     <div class="col-12 col-md-2">
-                        <select id="floor_id" class="data-input filter-field form-control" data-field="floor_id" placeholder="Floor"></select>
+                        <select id="floor_id" class="data-input filter-field form-control" data-field="floor_id" placeholder='vslang="titles.All Floors"'></select>
                     </div>
                     <div class="col-12 col-md-2">
-                        <select id="space_type_id" class="data-input filter-field form-control" data-field="space_type_id" placeholder="Type"></select>
+                        <select id="space_type_id" class="data-input filter-field form-control" data-field="space_type_id" placeholder='vslang="titles.All Types"'></select>
                     </div>
                     <div class="col-12 col-md-2">
-                        <select type="id" id="_space_status" class="data-input filter-field form-control" data-field="status_id" placeholder="Status"></select>
+                        <select type="id" id="_space_status" class="data-input filter-field form-control" data-field="status_id" placeholder='vslang="titles.All Statuses"'></select>
                     </div>
 
                     <div class="col-12 col-md-auto ms-md-auto text-md-end">
@@ -27,7 +27,7 @@
             </div>
             <div class="col-12 col-md-6 col-lg-4">
                 <div class="position-relative w-100">
-                    <input type="text" class="rounded-2 filter-field input-search" id="_search_space" placeholder="Search by unit">
+                    <input type="text" class="rounded-2 filter-field input-search" id="_search_space" placeholder="{{ \Vsd\Locales\Localization::trans('Search by unit', 'titles') }}">
                 </div>
             </div>
 
