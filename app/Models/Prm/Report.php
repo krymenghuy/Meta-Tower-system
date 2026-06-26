@@ -102,7 +102,7 @@ class Report //extends Model
         }
         return $rows;
     }
-    function createKeyValue($key_name, $arr)
+    static function createKeyValue($key_name, $arr)
     {
         $result = [];
         foreach ($arr as $d) {
@@ -110,7 +110,7 @@ class Report //extends Model
         }
         return $result;
     }
-    function createMulKeyValue($key_name, $arr, $bonus_data = null)
+    static function createMulKeyValue($key_name, $arr, $bonus_data = null)
     {
         $result = [];
         $count = count($arr);
@@ -208,7 +208,7 @@ class Report //extends Model
             2 => '(Already got contract)',
             3 => '(Already moved out)',
         ];
-        $title = 'Tenant List ' . ($statusLabels[$status_id] ?? '(All Statuses)');
+        $title = 'Tenant List Report' . ($statusLabels[$status_id] ?? '(All Statuses)');
         $sub_title = $start_date && $end_date ? date('d-M-Y', strtotime($start_date)) .' to '. date('d-M-Y', strtotime($end_date)) : 'All Statuses';
         $date_rank = (object)[];
         if($start_date && $end_date ){
@@ -307,7 +307,7 @@ class Report //extends Model
     ];
 }
 
-function getPaymentReport($arr, $ss)
+function getVendorPaymentReport($arr, $ss)
     {
         $d = (object) $arr;
         $vendor_id = isset($d->vendor_id) ? $d->vendor_id : null;
@@ -326,12 +326,11 @@ function getPaymentReport($arr, $ss)
         }
 
         $res = (object) [
-            'form' => 'payments',
+            'form' => 'vendor_payment_list',
             'vendor_info' => $vendor,
             'list' => $rows,
             'title' => 'Vendor Payment',
             'sub_title' => '',
-            
             'company_profile' => self::getCompanyInfo($ss)
         ];
         return DV::success(['data' => $res]);
@@ -350,7 +349,7 @@ public static function getTenantDepositList($arr, $ss)
     $str_search = '1=1';
     if ($is_paid !== null) $str_search .= ' AND d.status_id = ' . $is_paid;
 
-    $query = DB::table('deposits as d')
+    $rows = DB::table('deposits as d')
         ->join('tenants as t', 'd.tenant_id', '=', 't.id')
         ->selectRaw("
             t.code as tenant_code,
@@ -366,7 +365,11 @@ public static function getTenantDepositList($arr, $ss)
         ->whereRaw($str_search)
         ->whereRaw($str_date)
         ->get();
-
+    foreach($rows as $row){
+        $row->amount = '$' . number_format($row->amount, 2);
+        $row->paid_amount = '$' . number_format($row->paid_amount, 2);
+         $row = setOfficialDates($row, ['deposit_date'], [''], ['']);
+    }
     
     $statusLabel = '(All)';
 
@@ -398,9 +401,216 @@ public static function getTenantDepositList($arr, $ss)
         'sub_title' => $sub_title,
         'sub_title_2' =>$sub_title_2,
         'date_rank' => $date_rank,
-        'list' => $query,
+        'list' => $rows,
         'form' => 'deposit_list',
         'company_profile' => $company_profile
     ];
 }
+public static function getIncomeByCategories($arr, $ss)
+{
+    $d = (object) $arr;
+
+    $header_list = [
+        'Date',
+        'Receipt No.',
+        'Tenant Name',
+        'Cash',
+        'Transfer',
+        'Cheque',
+        'Card',
+        'Remark'
+    ];
+
+    $keys = self::createKeyValue(
+        'key',
+        self::stringToKeyCase($header_list)
+    );
+
+    $header = self::createMulKeyValue(
+        'name',
+        $header_list,
+        $keys
+    );
+
+    $company_profile = self::getCompanyInfo($ss);
+
+    $start_date = !empty($d->start_date)
+        ? convertDate($d->start_date)
+        : date('Y-m-01');
+
+    $end_date = !empty($d->end_date)
+        ? convertDate($d->end_date)
+        : date('Y-m-t');
+
+    $rows = DB::table('invoices as v')
+        ->join('receipts as r', 'r.invoice_id', '=', 'v.id')
+        ->join('tenants as t', 't.id', '=', 'v.tenant_id')
+        ->join('invoice_items as i', 'i.invoice_id', '=', 'v.id')
+        ->whereBetween(DB::raw('DATE(r.receipt_date)'), [$start_date, $end_date])
+        ->select(
+            'r.id as receipt_id',
+            'r.code as receipt_no',
+            'r.receipt_date',
+            't.name as tenant_name',
+            'i.type',
+            'v.general_remark'
+        )
+        ->groupBy(
+            'r.id',
+            'r.code',
+            'r.receipt_date',
+            't.name',
+            'i.type',
+            'v.general_remark'
+        )
+        ->orderBy('i.type')
+        ->orderBy('r.receipt_date')
+        ->get();
+
+    $receiptPayments = DB::table('receipt_breakdowns')
+        ->select('receipt_id', 'method', 'amount', 'cheque_number')
+        ->get()
+        ->groupBy('receipt_id');
+
+    $typeNames = [
+        'rent' => 'Rent',
+        'utility' => 'Utility',
+        'service_request' => 'Service Request',
+        'service' => 'Service'
+    ];
+
+    $groupedData = [];
+
+    $grandCash = 0;
+    $grandTransfer = 0;
+    $grandCheque = 0;
+    $grandCard = 0;
+
+    foreach ($rows as $row) {
+
+        $category = $typeNames[$row->type]
+            ?? ucwords(str_replace('_', ' ', $row->type));
+
+        if (!isset($groupedData[$category])) {
+            $groupedData[$category] = [
+                'fee_type' => $category,
+                'fee' => [],
+                'cash_total' => 0,
+                'transfer_total' => 0,
+                'cheque_total' => 0,
+                'card_total' => 0,
+            ];
+        }
+
+        $cash = 0;
+        $transfer = 0;
+        $cheque = 0;
+        $card = 0;
+
+        $payments = $receiptPayments[$row->receipt_id] ?? [];
+
+        foreach ($payments as $payment) {
+
+            switch (strtolower($payment->method)) {
+
+                case 'cash':
+                    $cash += $payment->amount;
+                    break;
+                    
+                case 'transfer':
+                    $transfer += $payment->amount;
+                    break;
+
+                case 'cheque':
+                    $cheque += $payment->amount;
+                    break;
+
+                case 'card':
+                    $card += $payment->amount;
+                    break;
+            }
+        }
+
+        // GROUP TOTALS
+        $groupedData[$category]['cash_total'] += $cash;
+        $groupedData[$category]['transfer_total'] += $transfer;
+        $groupedData[$category]['cheque_total'] += $cheque;
+        $groupedData[$category]['card_total'] += $card;
+
+        // GRAND TOTALS
+        $grandCash += $cash;
+        $grandTransfer += $transfer;
+        $grandCheque += $cheque;
+        $grandCard += $card;
+
+        $groupedData[$category]['fee'][] = (object)[
+            'date' => date('d-M-Y', strtotime($row->receipt_date)),
+            'receipt_no' => $row->receipt_no,
+            'tenant_name' => $row->tenant_name,
+            'cash' => $cash,
+            'transfer' => $transfer,
+            'cheque' => $cheque,
+            'card' => $card,
+            'remark' => $row->general_remark,
+        ];
+    }
+
+    // FORMAT GROUP TOTALS
+    foreach ($groupedData as &$group) {
+
+        $group['total_cash'] = '$' . number_format($group['cash_total'], 2);
+        $group['total_transfer'] = '$' . number_format($group['transfer_total'], 2);
+        $group['total_cheque'] = '$' . number_format($group['cheque_total'], 2);
+        $group['total_card'] = '$' . number_format($group['card_total'], 2);
+
+        $group['total'] = '$' . number_format(
+            $group['cash_total']
+            + $group['transfer_total']
+            + $group['cheque_total']
+            + $group['card_total'],
+            2
+        );
+
+        unset(
+            $group['cash_total'],
+            $group['transfer_total'],
+            $group['cheque_total'],
+            $group['card_total']
+        );
+
+        $group['sub_label'] = 'Sub Total';
+    }
+
+    $fee_totals = [
+        'cash' => '$' . number_format($grandCash, 2),
+        'transfer' => '$' . number_format($grandTransfer, 2),
+        'cheque' => '$' . number_format($grandCheque, 2),
+        'card' => '$' . number_format($grandCard, 2),
+        'total' => '$' . number_format(
+            $grandCash + $grandTransfer + $grandCheque + $grandCard,
+            2
+        ),
+        'label' => 'Grand Total',
+        'sub_label' => 'Sub Total'
+    ];
+
+    $date_rank = (object)[
+        'start_date' => date('d-M-Y', strtotime($start_date)),
+        'end_date' => date('d-M-Y', strtotime($end_date))
+    ];
+
+    return (object)[
+        'header' => $header,
+        'title' => 'Income By Category',
+        'sub_title_2' => $date_rank->start_date . ' To ' . $date_rank->end_date,
+        'date_rank' => $date_rank,
+        'form' => 'income_by_category',
+        'list' => [
+            'all_fee' => array_values($groupedData),
+            'fee_totals' => $fee_totals
+        ],
+        'company_profile' => $company_profile
+    ];
+}
+
 }

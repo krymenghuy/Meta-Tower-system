@@ -1116,8 +1116,8 @@ const InvoiceDialog = (() => {
 
             contentCreated: (me) => {
                 me.controls = me.controls || {};
-                const btn_close = me.divModal.querySelector(".close");
-                if (btn_close) btn_close.classList.add("d-none");
+                // const btn_close = me.divModal.querySelector(".close");
+                // if (btn_close) btn_close.classList.add("show");
                 const allInputs = me.divModal.querySelectorAll(
                     ".data-input, input, select, textarea",
                 );

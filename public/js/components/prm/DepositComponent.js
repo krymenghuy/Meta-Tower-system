@@ -27,14 +27,14 @@ var DepositComponent = (() => {
             transTitle: "titles.Unit",
             className: "align-middle text-nowrap",
             data: (data) =>
-                `<span class="d-block text-nowrap fw-semibold">${data.space_code ?? "_"}</span>
+                `<span class="d-block text-nowrap">${data.space_code ?? "_"}</span>
                  <span class="d-block text-muted small">${data.building_name ?? "_"}</span>`,
         },
         {
             transTitle: "titles.Tenant",
             className: "align-middle text-nowrap",
             data: (data) =>
-                `<span class="d-block fw-semibold text-capitalize">${data.tenant_name ?? "_"}</span>
+                `<span class="d-block text-capitalize">${data.tenant_name ?? "_"}</span>
                  <span class="d-block text-primary small">${data.phone_number ?? "_"}</span>`,
         },
         {
@@ -494,10 +494,10 @@ const DepositDialog = (() => {
                             </div>
 
                             <div class="col-6">
-                                <select name="payment_method" data-style="material" class="data-input form-control" data-field="payment_method" placeholder="Payment Method">
-                                    <option value="Cash">Cash</option>
-                                    <option value="Bank Transfer">Bank Transfer</option>
-                                    <option value="Cheque">Cheque</option>
+                                <select name="payment_method" data-style="material" class="data-input form-control" data-field="payment_method" placeholder="${LocaleManager.trans("Payment Method", "labels")}">
+                                    <option value="Cash">${LocaleManager.trans("Cash", "labels")}</option>
+                                    <option value="Bank Transfer">${LocaleManager.trans("Bank Transfer", "labels")}</option>
+                                    <option value="Cheque">${LocaleManager.trans("Cheque", "labels")}</option>
                                 </select>
                             </div>
                             <div class="col-6">

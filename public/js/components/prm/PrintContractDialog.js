@@ -20,9 +20,9 @@ const CreateContractDialog = (()=>{
                                     </div>
                                 </div>
                                 <div class="col-md-3">
-                                    <select data-style="material" name="sex" class="data-input form-control" data-field="sex" disabled placeholder="Gender">
-                                        <option value="M">Male</option>
-                                        <option value="F">Female</option>
+                                    <select data-style="material" name="sex" class="data-input form-control" data-field="sex" placeholder="${LocaleManager.trans("Gender", "labels")}">
+                                        <option value="M">${LocaleManager.trans("Male", "labels")}</option>
+                                        <option value="F">${LocaleManager.trans("Female", "labels")}</option>
                                     </select>
                                 </div>
                                 <div class="col-md-3">
@@ -38,7 +38,7 @@ const CreateContractDialog = (()=>{
                                     </div>
                                 </div>
                                 <div class="col-md-3">
-                                    <select data-style="material" name="nationality_id" class="data-input form-control" data-field="nationality_id" disabled placeholder="Nationality"></select>
+                                    <select data-style="material" name="nationality_id" class="data-input form-control" data-field="nationality_id" disabled placeholder="${LocaleManager.trans("Nationality", "labels")}"></select>
                                 </div>
                                 <div class="col-3">
                                     <div class="vs-material-field">
@@ -68,7 +68,7 @@ const CreateContractDialog = (()=>{
                                  <div class="col-6">
                                     <div class="vs-material-field">
                                         <input type="text" name="space_code" class="data-input form-control form_input" data-field="space_code" disabled placeholder=" " />
-                                        <label vslang="labels.Space Code">Space Code</label>
+                                        <label vslang="labels.Unit Code"></label>
                                     </div>
                                 </div>
                                 <div class="col-3">
