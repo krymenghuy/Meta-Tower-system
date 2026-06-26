@@ -840,6 +840,7 @@ return [
         'Payee' => 'Payee'
     ],
     'labels' => [
+        'Objective' => 'គោលបំណង',
         'Full Name (EN)' => 'ឈ្មោះពេញ (អង់គ្លេស)',
         'Full Name (KH)' => 'ឈ្មោះពេញ (ខ្មែរ)',
         'Shortcut' => 'អក្សរកាត់',
@@ -1066,6 +1067,7 @@ return [
         'Monthly Price' => 'តម្លៃជួលប្រចាំខែ',
         'Current Address' => 'អាស័យដ្ឋានបច្ចុប្បន្ន',
         'Company Representative' => 'តំណាងក្រុមហ៊ុន',
+        'Signature Date' => 'ថ្ងៃចុះហត្ថលេខា',
         'Payment Method' => 'វិធីសាស្ត្រទូទាត់ប្រាក់',
         'Remark:' => 'កំណត់សម្គាល់:',
         'Payment Amount' => 'ចំនួនទឹកប្រាក់ដែលបានបង់',
