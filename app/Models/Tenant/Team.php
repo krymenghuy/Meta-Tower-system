@@ -97,6 +97,7 @@ class Team // Changed from Staff to Team to resolve the "Class not found" error
             'space_id'  => '1|number|text=space_required',
             'member_count'  => '1|number|text=member_count_required',
             'team_name'  => '1|string|0-30|text=name_required',
+            'code'      => '0|string|0-100',
         ];
         
         $res = DBX::validateObject($arr, $v_rule, 0, $ss->lang);
@@ -107,6 +108,9 @@ class Team // Changed from Staff to Team to resolve the "Class not found" error
 
         $inputs['tenant_id'] = $ss->official_id;
         $inputs['member_count'] = $d->member_count ?? 0;
+        if (empty($inputs['code']) && !empty($d->space_id)) {
+            $inputs['code'] = DB::table('building_spaces')->where('id', $d->space_id)->value('code');
+        }
 
         \Log::info('SSS', [$ss, $d]);
         \Log::info('Inputs', [$inputs]);
@@ -119,6 +123,21 @@ class Team // Changed from Staff to Team to resolve the "Class not found" error
 
         return DV::depends(1, ['tenant_team' => $inputs, 'id' => $id]);
     }
+
+public function getTeamList($arr = [], $ss = null){
+    if (is_object($arr)) {
+        $ss = $arr;
+        $arr = [];
+    }
+    $ss = $ss ?? $this->userInfo;
+
+    $query = DB::table('tenant_team as s')
+        ->where('s.tenant_id', $ss->official_id)
+        ->selectRaw("s.id, s.tenant_id, s.space_id, s.code, s.team_name, s.member_count, s.branch_id, s.created_at")
+        ->orderBy('s.created_at', 'desc');
+    $results = $query->get();
+    return $results;
+}
 
 
     /**
@@ -415,19 +434,17 @@ class Team // Changed from Staff to Team to resolve the "Class not found" error
 
     public static function createProfilePicture($photo_data, $file_type = null, $id = null, $ss = null)
     {
-        $id = $id ?? $id;
-        $ss = $ss ?? $ss;
-        $col_subs_id = DBX::getHEX('s.subs_id', 'subs_id');
+        $col_subs_id = DBX::getHex('s.subs_id', 'subs_id');
         $team = DB::table('teams as s')->where('s.id', $id)->selectRaw($col_subs_id . ',s.id,s.branch_id,s.photo_file_name')->first();
-        $delete_image = (!$photo_data || isImage($photo_data));
         if (!$team) {
             return DV::error('Team member identify is not correct!');
         }
-        if ($delete_image) {
-            XPublicStorage::delete(['subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 'image', $team->photo_file_name);
+        $delete_image = (!$photo_data || isImage($photo_data));
+        if ($delete_image && !empty($team->photo_file_name)) {
+            XPublicStorage::delete(['subs_id' => $team->subs_id, 'dir' => self::$img_dir], 'image', $team->photo_file_name);
             DB::table('teams')->where('id', $id)->update(['photo_file_name' => null]);
         }
-        $res = XPublicStorage::saveImage(['subs_id' => $ss->subs_id, 'dir' => self::$img_dir], null, $photo_data, null, ['id' => $id, 'store' => 'teams.photo_file_name']);
+        $res = XPublicStorage::saveImage(['subs_id' => $team->subs_id, 'dir' => self::$img_dir], null, $photo_data, null, ['id' => $id, 'store' => 'teams.photo_file_name']);
         if ($res->status === 'Error') return $res;
         $img = self::profilePicture($id, $ss);
         return DV::depends(1, ['image_url' => $img]);
@@ -437,9 +454,12 @@ class Team // Changed from Staff to Team to resolve the "Class not found" error
     {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
-        $team = DB::table('teams as s')->where('id', $id)->selectRaw('id,photo_file_name')->first();
+        $col_subs_id = DBX::getHex('s.subs_id', 'subs_id');
+        $team = DB::table('teams as s')->where('id', $id)->selectRaw($col_subs_id . ',s.id,s.photo_file_name')->first();
         if (!$team) return DV::error('Team member identify is not correct!');
-        XPublicStorage::delete(['subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 'image', $team->photo_file_name);
+        if (!empty($team->photo_file_name)) {
+            XPublicStorage::delete(['subs_id' => $team->subs_id, 'dir' => self::$img_dir], 'image', $team->photo_file_name);
+        }
         DB::table('teams')->where('id', $id)->update(['photo_file_name' => null]);
         return DV::success();
     }

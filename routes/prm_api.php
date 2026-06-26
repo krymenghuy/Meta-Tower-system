@@ -450,7 +450,8 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant/receip
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant/team')->group(function () {
     Route::post('/save', [TeamController::class, 'saveTeamTenant']);
     Route::post('/create', [TeamController::class, 'saveTeam']);
-    Route::post('/list-paginate', [TeamController::class, 'getListTeam']);
+    Route::post('/list', [TeamController::class, 'getTeamList']);
+    Route::post('/list-paginate', [TeamController::class, 'getListPaginate']);
     Route::post('/details', [TeamController::class, 'getDetails']);
     Route::post('/form-options', [TeamController::class, 'getFormOptions']);
     Route::post('/delete', [TeamController::class, 'deleteTeam']);

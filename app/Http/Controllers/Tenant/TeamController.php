@@ -39,9 +39,16 @@ class TeamController extends Controller
         return JDV::raw($res);
 
     }
+      public function getTeamList(Request $req){
+        $ss = XAuthService::verifyAuth($req, -1);
+        if($ss->status_code !==200){
+            return JDV::raw($ss);
+        }
+        return JDV::result($this->teams->getTeamList($req->all(),$ss));
+    }
 
 
-    public function getListTeam(Request $req){
+    public function getListPaginate(Request $req){
         $ss = XAuthService::verifyAuth($req, -1);
         if($ss->status_code !==200){
             return JDV::raw($ss);
