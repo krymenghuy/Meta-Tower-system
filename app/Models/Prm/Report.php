@@ -516,7 +516,8 @@ public static function getIncomeByCategories($arr, $ss)
                 case 'cash':
                     $cash += $payment->amount;
                     break;
-                    
+
+                case 'bank':
                 case 'transfer':
                     $transfer += $payment->amount;
                     break;
