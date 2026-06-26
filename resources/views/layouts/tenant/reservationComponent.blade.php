@@ -28,7 +28,7 @@
             </div>
         </div>
     </div>
-    <div id="_reservation_list" class="reservation-list-wrap mt-3"></div>
+    <div id="_reservation_list" class="reservation-list-wrap bg-white mt-3"></div>
 </div>
 
 <style>
@@ -41,27 +41,32 @@
     --reservation-muted: #8b95a5;
     --reservation-border: #e8ecf2;
     --reservation-surface: #f6f8fb;
+    --reservation-header-bg: #eaeff2;
     --reservation-upcoming: #3b82f6;
     --reservation-completed: #22c55e;
+}
+
+.reservation-list-wrap .reservation-list {
+    background: #fff;
+    border: none;
+    border-radius: 0;
+    overflow: visible;
 }
 
 .reservation-list__header {
     display: flex;
     align-items: stretch;
-    gap: 12px;
-    margin-bottom: 10px;
-    background: linear-gradient(135deg, var(--reservation-navy) 0%, #25206a 100%);
-    border: 1px solid var(--reservation-navy);
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(26, 22, 71, 0.1);
+    gap: 0;
+    background: var(--reservation-header-bg);
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
     overflow: hidden;
-    min-height: 52px;
+    min-height: auto;
 }
 
 .reservation-list__header-accent {
-    width: 4px;
-    flex-shrink: 0;
-    background: rgba(255, 255, 255, 0.28);
+    display: none;
 }
 
 .reservation-list__header-grid,
@@ -74,7 +79,24 @@
 }
 
 .reservation-list__header-grid {
-    padding: 11px 0;
+    padding: 0;
+    gap: 0;
+}
+
+.reservation-list__header-cell {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    padding: 10px 16px;
+}
+
+.reservation-list__header-en {
+    font-size: 14px;
+    font-weight: 500;
+    text-transform: uppercase;
+    color: #1a1647;
+    line-height: 1.2;
+    white-space: nowrap;
 }
 
 .reservation-list__header-action,
@@ -84,29 +106,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
-}
-
-.reservation-list__header-cell {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-    min-width: 0;
-}
-
-.reservation-list__header-km {
-    font-size: 11px;
-    font-weight: 500;
-    color: rgba(255, 255, 255, 0.72);
-    line-height: 1.2;
-}
-
-.reservation-list__header-en {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: #fff;
-    line-height: 1.2;
 }
 
 .reservation-list__rows {

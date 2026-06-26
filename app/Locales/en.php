@@ -152,7 +152,7 @@ return [
 
         'amenity_already_booked' => 'This amenity is already booked for this time slot.',
         'cannot_cancel_in_30min' => 'Reservations cannot be canceled less than 30 minutes before start time.',
-         'schedule_cannot_past' => 'Schedule cannot be in the past.',
+        'schedule_cannot_past' => 'Schedule cannot be in the past.',
 
 
 
@@ -176,6 +176,7 @@ return [
         'Documents' => 'Documents',
         'No_renewal_history' => 'No renewal history for this contract.',
         'Renewals_will_appear' => 'Renewals will appear here when the contract is renewed.',
+        'Search by tenant, phone or unit' => 'Search by tenant, phone or unit',
     ],
     'labels' => [
         'Name' => 'Name',
@@ -408,7 +409,7 @@ return [
         'Create Service Request' => 'Create Service Request',
         'Generate New Bill' => 'Generate New Bill',
         'Create Contract' => 'Create Contract',
-        'Create Tenant' => 'Create Tenant1212121',
+        'Create Tenant' => 'Create Tenant',
     ],
 ];
 
