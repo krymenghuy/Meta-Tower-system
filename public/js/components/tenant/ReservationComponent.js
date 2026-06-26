@@ -146,23 +146,18 @@ var ReservationComponent = (() => {
                     <div class="reservation-list__header-accent"></div>
                     <div class="reservation-list__header-grid">
                         <div class="reservation-list__header-cell reservation-list__header-cell--amenity">
-                            <span class="reservation-list__header-km">ឈ្មោះសេវាកម្ម</span>
                             <span class="reservation-list__header-en">Amenity</span>
                         </div>
                         <div class="reservation-list__header-cell reservation-list__header-cell--date">
-                            <span class="reservation-list__header-km">កាលបរិច្ឆេទ</span>
                             <span class="reservation-list__header-en">Date</span>
                         </div>
                         <div class="reservation-list__header-cell reservation-list__header-cell--time">
-                            <span class="reservation-list__header-km">ម៉ោង</span>
                             <span class="reservation-list__header-en">Time Detail</span>
                         </div>
                         <div class="reservation-list__header-cell reservation-list__header-cell--notes">
-                            <span class="reservation-list__header-km">កំណត់ចំណាំ</span>
                             <span class="reservation-list__header-en">Administrative Notes</span>
                         </div>
                         <div class="reservation-list__header-cell reservation-list__header-cell--status">
-                            <span class="reservation-list__header-km">ស្ថានភាព</span>
                             <span class="reservation-list__header-en">Status</span>
                         </div>
                     </div>

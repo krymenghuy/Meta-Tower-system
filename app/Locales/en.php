@@ -176,6 +176,7 @@ return [
         'Documents' => 'Documents',
         'No_renewal_history' => 'No renewal history for this contract.',
         'Renewals_will_appear' => 'Renewals will appear here when the contract is renewed.',
+        'Search by tenant, phone or unit' => 'Search by tenant, phone or unit',
     ],
     'labels' => [
         'Name' => 'Name',

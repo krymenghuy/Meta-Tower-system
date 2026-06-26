@@ -302,6 +302,7 @@ return [
         'Search by unit' => 'ស្វែងរកតាមបន្ទប់',
         'Search by tenant, amenity or phone' => 'ស្វែងរកតាមអ្នកជួល ឬ លេខទូរស័ព្ទ',
         'Search by tenant or invoice no' => 'ស្វែងរកតាមអ្នកជួល ឬ លេខវិក្កយបត្រ',
+        'Search by tenant, phone or unit' => 'ស្វែងរកតាមអ្នកជួល លេខទូរស័ព្ទ ឬ បន្ទប់',
         'Search by invoice no or receipt no' => 'ស្វែងរកតាមលេខវិក្កយបត្រ ឬ លេខបង្កាន់ដៃ',
         'Search tenant, unit' => 'ស្វែងរកអ្នកជួល បន្ទប់',
         'Search by request no. or tenant' => 'ស្វែងរកតាមលេខសំណើ ឬ អ្នកជួល',
