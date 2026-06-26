@@ -7,12 +7,13 @@
             </div>
          </div>
 
-           <div class="col-12 col-md-6 col-lg-2">
-                <select id="payment_status" class="filter-field data-input form-control" data-field="status_id"></select>
-            </div>
-             <div class="col-12 col-md-6 col-lg-2">
-                <select id="invoice_type" class="filter-field data-input form-control" data-field="invoice_type"></select>
-            </div>
+        <div class="col-12 col-md-6 col-lg-2">
+            <select id="payment_status" class="filter-field data-input form-control" data-field="status_id"></select>
+        </div>
+        <div class="col-12 col-md-6 col-lg-2">
+            <select id="invoice_type" class="filter-field data-input form-control" data-field="invoice_type"></select>
+        </div>
+
             <div class="ms-md-auto text-md-end col-12 col-md-auto">
                 <button type="button" class="w-100 w-md-auto btnAddNewPrm" id="_btnInvoice">
                         <i class="mr-2 fa-solid fa-file-invoice-dollar"></i>

@@ -118,7 +118,7 @@ var ServiceComponent = (() => {
             },
         },
         {
-            transTitle: "titles.Updated By",
+            transTitle: "titles.Last Updated",
             className: "align-middle",
             data: (data, index, tr) => {
                 return `<div class="d-flex flex-column">
@@ -169,7 +169,7 @@ var ServiceComponent = (() => {
                     mThis.ServiceListView.showPage(mThis.getFilterData());
                 },
             };
-            if (!AuthManager.allowed(252,false)) return;
+            if (!AuthManager.allowed(252, false)) return;
             CreateServicePriceDialog.show(op);
         };
 
@@ -339,19 +339,25 @@ var ServiceComponent = (() => {
     mThis.changeServiceStatus = (id, link) => {
         const tr = link.closest("tr");
         const status_id = tr?.dataset.statusid || "";
-        if (!AuthManager.allowed(254,false)) return;
+        if (!AuthManager.allowed(254, false)) return;
         const inputOptions = {
             context: "success",
-            title: `${LocaleManager.trans('Change Status', "titles")}`,
+            title: `${LocaleManager.trans("Change Status", "titles")}`,
             label: "Service Status",
             valueKey: "status_id",
             labelKey: "name",
-            confirmButtonText: `${LocaleManager.trans('Save', "buttons")}`,
-            cancelButtonText: `${LocaleManager.trans('Close', "buttons")}`,
+            confirmButtonText: `${LocaleManager.trans("Save", "buttons")}`,
+            cancelButtonText: `${LocaleManager.trans("Close", "buttons")}`,
             requiredMessage: "Please select a status",
             data: [
-                { status_id: "1", name: "Active" },
-                { status_id: "2", name: "Inactive" },
+                {
+                    status_id: "1",
+                    name: LocaleManager.trans("Active", "titles"),
+                },
+                {
+                    status_id: "2",
+                    name: LocaleManager.trans("Inactive", "titles"),
+                },
             ],
             defaultValue: status_id,
             onConfirm: (status, btn, me) => {
@@ -365,9 +371,7 @@ var ServiceComponent = (() => {
                     .then((res) => {
                         if (res.status_code === 200) {
                             me.close();
-                            cv_interact.success(
-                                "update_success_status",
-                            );
+                            cv_interact.success("update_success_status");
                             mThis.ServiceListView.showPage(
                                 mThis.getFilterData(),
                             );
@@ -389,7 +393,7 @@ var ServiceComponent = (() => {
                 mThis.ServiceListView.showPage(mThis.getFilterData());
             },
         };
-        if (!AuthManager.allowed(253,false)) return;
+        if (!AuthManager.allowed(253, false)) return;
         CreateServicePriceDialog.show(op);
     };
     mThis.deleteService = (id, menuLink) => {
@@ -400,9 +404,9 @@ var ServiceComponent = (() => {
                 mThis.ServiceListView.showPage(mThis.getFilterData());
             },
         };
-        if (!AuthManager.allowed(255,false)) return;
+        if (!AuthManager.allowed(255, false)) return;
         cv_interact.confirm(
-            "Delete this Service?",
+            "confirm_delete",
             {
                 transTitle: "Delete Service",
                 context: "delete",
@@ -420,16 +424,13 @@ var ServiceComponent = (() => {
                         )
                         .then((res) => {
                             if (res.status_code == 200) {
-                                cv_interact.success(
-                                    "delete_success_service",
-                                );
+                                cv_interact.success("delete_success_service");
                                 mThis.ServiceListView.showPage(
                                     mThis.getFilterData(),
                                 );
                             } else {
                                 cv_interact.error(
-                                    res.error_message ||
-                                        "delete_failed",
+                                    res.error_message || "delete_failed",
                                 );
                             }
                         });
@@ -521,15 +522,15 @@ const CreateServicePriceDialog = (() => {
                                 </div>
                             </div>
                             <div class="col-6">
-                                <select data-style="material" name="service_type" class="data-input form-control" data-field="type_id" placeholder=" Type">
+                                <select data-style="material" name="service_type" class="data-input form-control" data-field="type_id" placeholder="${LocaleManager.trans('Type', 'labels')}">
                                 </select>
                             </div>
                             <div class="col-6">
-                                <select data-style="material" name="service_category" class="data-input form-control" data-field="category_id" placeholder="Category">
+                                <select data-style="material" name="service_category" class="data-input form-control" data-field="category_id" placeholder="${LocaleManager.trans('Category', 'labels')}">
                                 </select>
                             </div>
                             <div class="col-6">
-                                    <select data-style="material" name="charge_as" class="data-input form-control" data-field="charge_as" placeholder="Charge As">
+                                    <select data-style="material" name="charge_as" class="data-input form-control" data-field="charge_as" placeholder="${LocaleManager.trans('Charge As', 'labels')}">
                                     <option value="per_unit">Unit</option>
                                     <option value="one_time">Once</option>
                                     <option value="hour">Hourly</option>
@@ -537,14 +538,14 @@ const CreateServicePriceDialog = (() => {
                                     </select>
                             </div>
                             <div class="col-6">
-                                <select data-style="material" name="level" class="data-input form-control" data-field="level" placeholder="Level">
+                                <select data-style="material" name="level" class="data-input form-control" data-field="level" placeholder="${LocaleManager.trans('Level', 'labels')}">
                                     <option value="1" selected >Standard</option>
                                     <option value="2">Premium</option>
                                 </select>
                             </div>
                             <div class="col-6">
                                 <div class="vs-material-field">
-                                    <input data-type="money" name="price" class="data-input inputbox-input form-control" data-field="price" placeholder="" />
+                                    <input type="text" name="price" class="data-input form-control" data-field="price" placeholder="" />
                                     <label vslang="labels.Price"></label>
                                 </div>
                             </div>
@@ -559,25 +560,73 @@ const CreateServicePriceDialog = (() => {
                 },
 
                 contentCreated: (me) => {
-                    console.log(123, me.controls.level);
-
-                    const updateChargeAs = () => {
-                        const isSubscription =
-                            me.controls.service_type.value == 2;
-
-                        me.controls.charge_as.value = isSubscription
-                            ? "month"
-                            : "";
-                        me.controls.charge_as.disabled = isSubscription;
+                    me.resetCreateForm = () => {
+                        ["name", "description"].forEach((f) => {
+                            if (me.controls[f]) me.controls[f].value = "";
+                        });
+                        if (me.controls.price) {
+                            me.controls.price.value = "";
+                            me.controls.price.defaultValue = "";
+                            me.controls.price.dispatchEvent(
+                                new Event("input", { bubbles: true }),
+                            );
+                        }
+                        ["service_type", "service_category", "charge_as"].forEach(
+                            (f) => {
+                                if (me.controls[f]) {
+                                    me.controls[f].value = "";
+                                    me.controls[f].dispatchEvent(
+                                        new Event("change", { bubbles: true }),
+                                    );
+                                }
+                            },
+                        );
+                        if (me.controls.level) {
+                            me.controls.level.value = "1";
+                            me.controls.level.dispatchEvent(
+                                new Event("change", { bubbles: true }),
+                            );
+                        }
+                        me.setReadOnly?.(false, ["charge_as"]);
                     };
 
+                    me.updateChargeAs = () => {
+                        const typeText = (
+                            me.controls.service_type?.selectedOptions?.[0]
+                                ?.text || ""
+                        )
+                            .trim()
+                            .toLowerCase();
+                        const isSubscription = typeText === "subscription";
+                        if (isSubscription)
+                            me.controls.charge_as.value = "month";
+                        me.setReadOnly?.(isSubscription, ["charge_as"]);
+                    };
                     me.controls.service_type?.addEventListener(
                         "change",
-                        updateChargeAs,
+                        me.updateChargeAs,
                     );
-
-                    updateChargeAs();
+                    if (me.controls.price) applyNumberInput(me.controls.price);
                 },
+
+                onShow: (me) => {
+                    if (!me.dataOptions?.id) {
+                        me.resetCreateForm?.();
+                        [50, 150, 300].forEach((ms) =>
+                            setTimeout(() => me.resetCreateForm?.(), ms),
+                        );
+                    }
+                    setTimeout(() => me.updateChargeAs?.(), 100);
+                },
+
+                extendMethod: {
+                    setData: (me) => {
+                        if (!me.dataOptions?.id) {
+                            setTimeout(() => me.resetCreateForm?.(), 0);
+                        }
+                    },
+                },
+
                 configSelect: [
                     {
                         name: "service_category",
@@ -608,9 +657,19 @@ const CreateServicePriceDialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
-                    // console.log(123,data.service_details);
-                    // me.controls.charge_as.value = data.service_details.charge_as;
-                    // me.controls.type.value = data.service_details.type;
+                    const isCreate =
+                        !me.dataOptions?.id && !data?.service_details;
+                    if (isCreate) {
+                        me.resetCreateForm?.();
+                        [50, 150, 300].forEach((ms) =>
+                            setTimeout(() => me.resetCreateForm?.(), ms),
+                        );
+                    } else if (data?.service_details?.price != null) {
+                        if (me.controls.price)
+                            me.controls.price.value =
+                                data.service_details.price;
+                    }
+                    setTimeout(() => me.updateChargeAs?.(), 100);
                 },
 
                 buttons: [

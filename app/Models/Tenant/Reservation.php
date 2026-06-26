@@ -113,7 +113,7 @@
                 ->exists();
 
             if ($exists) {
-                return DV::error('This amenity is already booked for this time slot.');
+                return DV::error('amenity_already_booked');
             }
         }
 
@@ -185,7 +185,7 @@
 
             $tenant_id = $ss->official_id;
 
-            \Log::info(print_r($ss, true));
+            // \Log::info(print_r($ss, true));
 
 
             if($search_value){

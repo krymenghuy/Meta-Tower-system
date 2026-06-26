@@ -3,8 +3,7 @@
     margin: 0;
     box-sizing: border-box;
     -webkit-user-drag: none;
-    font-family: 'Inter','Battambang', sans-serif;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Inter', 'Battambang', sans-serif;
     /* Improved default settings */
     font-size: 0.95rem;
     /* line-height: 1.5; */
@@ -1281,7 +1280,7 @@ a.menu-selected .kt-menu__link-text {
 }
 
 .container-table .table-title {
-    font-family: 'inter', sans-serif;
+    font-family: 'Inter', 'Battambang', sans-serif;
     /* font-family: inherit; */
     padding: 1rem;
     font-size: calc(1rem + 0.3vw);
@@ -1290,7 +1289,7 @@ a.menu-selected .kt-menu__link-text {
 }
 
 .container-table .table thead > tr > th {
-    font-family: 'inter', sans-serif;
+    font-family: 'Inter', 'Battambang', sans-serif;
     /* font-family: 'Poppins'; */
     /* font-family: inherit; */
     font-size: 1rem;
@@ -1318,7 +1317,7 @@ a.menu-selected .kt-menu__link-text {
     margin: 0;
     padding: 0;
     list-style-type: none;
-    font-family: 'inter', sans-serif;
+    font-family: 'Inter', 'Battambang', sans-serif;
     /* font-family: inherit; */
     max-height: 300px;
     overflow: hidden;
@@ -2281,7 +2280,7 @@ thead th {
       position: relative;
       margin-bottom: 2rem;
       /* font-family: Arial, sans-serif; */
-      font-family: 'inter', sans-serif;
+      font-family: 'Inter', 'Battambang', sans-serif;
 
     }
 

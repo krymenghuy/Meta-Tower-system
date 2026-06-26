@@ -273,6 +273,10 @@ class GeneralSettings //extends Model
         }
         return $new_row;
     }
+    
+
+
+
     static function loc_options_city($ss)
     {
         return DB::table('loc_cities')->selectRaw('id as birth_city_id,name as city_name')->orderByRaw('name ASC')->get();
@@ -455,7 +459,7 @@ static function options_maintenance_amenity($ss)
     }
     static function options_tenant($ss)
     {
-        return DB::table('tenants')->selectRaw('id,name AS tenant')->get();
+        return DB::table('tenants')->selectRaw('id,name AS tenant,phone_number')->get();
     }
     static function options_tenant_status($ss)
     {

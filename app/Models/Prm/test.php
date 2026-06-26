@@ -268,7 +268,7 @@ class Invoice extends VSModel
 
             // Update invoice payment status
             $new_paid_amount = (float)$invoice->paid_amount + $total_received;
-            $new_due_amount  = max(0, (float)$invoice->amount - $new_paid_amount);
+            $new_due_amount  = max(0, (float)$invoice->amount_payable - $new_paid_amount);
 
             $payment_status_id = ($new_due_amount <= 0.001) ? 1 : ($new_paid_amount > 0 ? 3 : 2);
             $is_paid           = ($new_due_amount <= 0.001) ? 1 : 0;

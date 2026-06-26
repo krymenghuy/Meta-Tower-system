@@ -337,7 +337,7 @@ var AmenityComponent = (() => {
     mThis.setMaintenance = async (id, menuLink) => {
         const tr = menuLink?.closest("tr");
         const buildingId = tr?.dataset?.buildingid || null;
-        if (!AuthManager.allowed(213,false)) return;
+        if (!AuthManager.allowed(213, false)) return;
 
         const op = {
             amenity_id: id,
@@ -352,9 +352,9 @@ var AmenityComponent = (() => {
     };
 
     mThis.finishMaintenance = (id, menuLink) => {
-        if (!AuthManager.allowed(216,false)) return;
+        if (!AuthManager.allowed(216, false)) return;
         cv_interact.confirm(
-            "Finish this maintenance?",
+            "confirm_finish",
             {
                 transTitle: "Finish Maintenance",
                 context: "confirm",
@@ -395,7 +395,7 @@ var AmenityComponent = (() => {
         };
         if (!AuthManager.allowed(245)) return;
         cv_interact.confirm(
-            "Delete this Amenity?",
+            "confirm_delete",
             {
                 title: "Delete Amenity",
                 context: "delete",
@@ -413,16 +413,13 @@ var AmenityComponent = (() => {
                         )
                         .then((res) => {
                             if (res.status_code === 200) {
-                                cv_interact.success(
-                                    "delete_success_amenity",
-                                );
+                                cv_interact.success("delete_success_amenity");
                                 mThis.AmenityListView.showPage(
                                     mThis.getFilterData(),
                                 );
                             } else {
                                 cv_interact.error(
-                                    res.error_message ||
-                                        "delete_failed",
+                                    res.error_message || "delete_failed",
                                 );
                             }
                         });
@@ -439,12 +436,12 @@ var AmenityComponent = (() => {
 
         const inputOptions = {
             context: "success",
-            title: `${LocaleManager.trans('Change Status', "titles")}`,
+            title: `${LocaleManager.trans("Change Status", "titles")}`,
             label: "Amenity Status",
             valueKey: "status_id",
             labelKey: "name",
-            confirmButtonText: `${LocaleManager.trans('Save', "buttons")}`,
-            cancelButtonText: `${LocaleManager.trans('Close', "buttons")}`,
+            confirmButtonText: `${LocaleManager.trans("Save", "buttons")}`,
+            cancelButtonText: `${LocaleManager.trans("Close", "buttons")}`,
             requiredMessage: "Please select a status",
             data: [
                 { status_id: "1", name: "Active" },
@@ -463,9 +460,7 @@ var AmenityComponent = (() => {
                     .then((res) => {
                         if (res.status_code === 200) {
                             me.close();
-                            cv_interact.success(
-                                "update_success_status",
-                            );
+                            cv_interact.success("update_success_status");
                             mThis.AmenityListView.showPage(
                                 mThis.getFilterData(),
                             );
@@ -589,11 +584,11 @@ const AmenityDialog = (() => {
                             </div>
                         </div>
                         <div class="col-6">
-                            <select data-style="material" name="building_id" class="data-input form-control" data-field="building_id" placeholder="Building">
+                            <select data-style="material" name="building_id" class="data-input form-control" data-field="building_id" placeholder="${LocaleManager.trans('Building', 'labels')}">
                             </select>
                         </div>
                         <div class="col-6">
-                            <select data-style="material" name="floor_id" class="data-input form-control" data-field="floor_id" placeholder="Floor Number">
+                            <select data-style="material" name="floor_id" class="data-input form-control" data-field="floor_id" placeholder="${LocaleManager.trans('Floor Number', 'labels')}">
                             </select>
                         </div>
                         <div class="col-6">
@@ -603,15 +598,11 @@ const AmenityDialog = (() => {
                             </div>
                         </div>
                         <div class="col-6">
-                            <select data-style="material" type="text" name="category_id"  class="data-input form-control" data-field="category_id" placeholder="Category" >
+                            <select data-style="material" type="text" name="category_id"  class="data-input form-control" data-field="category_id" placeholder="${LocaleManager.trans('Category', 'labels')}" >
                             </select>
                         </div>
                         <div class="col-6">
-                            <select data-style="material"
-                                    name="requires_booking"
-                                    class="data-input form-control"
-                                    data-field="requires_booking"
-                                    placeholder="Bookable">
+                            <select data-style="material" name="requires_booking" class="data-input form-control" data-field="requires_booking" placeholder="${LocaleManager.trans('Bookable', 'labels')}">
                                 <option value="0" >No</option>
                                 <option value="1">Yes</option>
                             </select>
@@ -800,8 +791,8 @@ const ActiveReservationDialog = (() => {
             tbody.innerHTML = `
                 <tr>
                     <td colspan="4" class="text-center text-muted py-4">
-                        No data to display
-                    </td>
+            ${LocaleManager.trans("No data to display", "titles")}
+        </td>
                 </tr>`;
             return;
         }
@@ -820,7 +811,7 @@ const ActiveReservationDialog = (() => {
                 <td class="align-middle" style="min-width:70px">${statusBadge(r.status_id, r.status)}</td>
                 <td class="align-middle">
                     <div class="text-primary-prm text-capitalize" style="width:200px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${r.remarks ?? '_'}</span>
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${r.remarks ?? "_"}</span>
                     </div>
                 </td>
             </tr>
@@ -833,13 +824,13 @@ const ActiveReservationDialog = (() => {
         InputBox.resetInstance("activeReservationView");
 
         InputBox.show({
-            title: "Reservation Details",
+            title: `${LocaleManager.trans("Reservation Details", "titles")}`,
             instanceKey: "activeReservationView",
             context: "info",
             size: "md",
             confirmButtonText: null,
             showconfirmButtonText: false,
-            cancelButtonText: "Close",
+            cancelButtonText: `${LocaleManager.trans("Close", "buttons")}`,
 
             createContent() {
                 const div = document.createElement("div");
@@ -860,16 +851,17 @@ const ActiveReservationDialog = (() => {
                         <table class="table table-sm table--white rounded-2 overflow-hidden">
                             <thead class="header-uppercase" >
                                 <tr>
-                                    <th class="text-start" style="width:100px;">Tenant</th>
-                                    <th class="text-start" style="width: 150px;">Schedule Date</th>
-                                    <th class="text-center" style="width:80px;">Status</th>
-                                    <th class="text-start" style="width:160px;">Remark</th>
+                                    <th class="text-start" style="width:100px;" vslang="titles.Tenant"></th>
+                                    <th class="text-start" style="width: 150px;" vslang="titles.Schedule Date"></th>
+                                    <th class="text-center" style="width:80px;" vslang="titles.Status"></th>
+                                    <th class="text-start" style="width:160px;" vslang="titles.Remark"></th>
                                 </tr>
                             </thead>
                             <tbody id="_arv_tbody"></tbody>
                         </table>
                     </div>
                 `;
+                LocaleManager.translateZone(div);
                 return div;
             },
 

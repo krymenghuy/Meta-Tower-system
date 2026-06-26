@@ -1,8 +1,8 @@
-
 <!DOCTYPE html>
 <html lang="<?php $user = XAuthService::user();
-  echo $user->lang ?? 'en';
+echo $user->lang ?? 'en';
 ?>">
+
 <head>
     <base href="../">
     <meta charset="utf-8" />
@@ -27,8 +27,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Battambang&family=Noto+Sans+Khmer:wght@400;700&display=swap" rel="stylesheet">
     <?php
-    StyleManager::render('prm-style', 1, 60);
+    StyleManager::render('prm-style', 1, 82);
     ?>
     <style>
         /* Custom animations for the modal like Materialize css effect */
@@ -70,10 +71,11 @@
             color: #fff;
             border-bottom: 1px solid #EDF3F7;
         }
-      .font-kh {
+
+        .font-kh {
             /* font-family: Arial, Helvetica, serif; */
             /* font-family: Verdana, sans-serif; */
-           /* font-family:'Helvetica Neue',Helvetica,Arial,sans-serif; */
+            /* font-family:'Helvetica Neue',Helvetica,Arial,sans-serif; */
             font-family: 'Khmer OS Battambang';
             /* font-family: "Fasthand", cursive; */
         }
@@ -81,31 +83,31 @@
         .font-en {
             /* font-family: Verdana, sans-serif; */
             /* font-family: 'Battambang'; */
-             /* font-family: "Source Sans 3", sans-serif; */
-             /* font-family: "Open Sans", sans-serif; */
-             /* font-family: "Roboto", sans-serif; */
+            /* font-family: "Source Sans 3", sans-serif; */
+            /* font-family: "Open Sans", sans-serif; */
+            /* font-family: "Roboto", sans-serif; */
 
             /* font-family: 'Segoe UI', sans-serif; */
             /* font-family: Arial, sans-serif; */
-           /* font-family:'Helvetica Neue',Helvetica,Arial,sans-serif; */
-           font-family: 'Inter', sans-serif;
-        }
-        .svg-white {
-    filter: brightness(0) invert(1);
+            /* font-family:'Helvetica Neue',Helvetica,Arial,sans-serif; */
+            font-family: 'Inter', sans-serif;
         }
 
+        .svg-white {
+            filter: brightness(0) invert(1);
+        }
     </style>
     <?php
     ScriptManager::render('priority-one', 1, 14);
     ScriptManager::render('primary', 1, 18);
-    ScriptManager::render('primary-defer', 1, 42);
-    ScriptManager::render('prm-components', 1, 260);
+    ScriptManager::render('primary-defer', 1, 43);
+    ScriptManager::render('prm-components', 1, 282);
     //ScriptManager::render('pdfmake', 1);
     ?>
 </head>
 
 <body style="display:none"
-    class="kt-quick-panel--right kt-demo-panel--right kt-offcanvas-panel--right kt-header--fixed kt-header-mobile--fixed kt-subheader--enabled kt-subheader--fixed kt-subheader--solid kt-aside--enabled kt-aside--fixed">
+    class="kt-demo-panel--right kt-offcanvas-panel--right kt-quick-panel--right kt-aside--fixed kt-header--fixed kt-header-mobile--fixed kt-subheader--fixed kt-subheader--enabled kt-subheader--solid kt-aside--enabled">
     <div id="vs_loading" class="vs-loader-bar"></div>
     <?php
     ScriptManager::render('primary-loader', 1);
@@ -115,96 +117,105 @@
         <input type="hidden" id="__xsp_name" value="_csrf_115578" />
         <input type="hidden" id="__xsp_value" value="<?php echo Str::random(30); ?>" />
     </div>
-    <div id="kt_header_mobile" class="kt-header-mobile kt-header-mobile--fixed">
+    <div id="kt_header_mobile" class="kt-header-mobile--fixed kt-header-mobile">
         <div class="kt-header-mobile__logo">
             <a href="javascript:void(0)">
-                <img loading="lazy" decoding="async" alt="Logo" src="{{ asset('assets/images/meta/Meta_logo.png') }}" />
+                <img loading="lazy" decoding="async" alt="Logo"
+                    src="{{ asset('assets/images/meta/Meta_logo.png') }}" />
             </a>
         </div>
         <div class="kt-header-mobile__toolbar" style="margin-bottom:10px">
-            <button class="kt-header-mobile__toggler kt-header-mobile__toggler--left" id="kt_aside_mobile_toggler">
+            <button class="kt-header-mobile__toggler--left kt-header-mobile__toggler" id="kt_aside_mobile_toggler">
                 <span class="text-primary"></span>
             </button>
             <button class="kt-header-mobile__topbar-toggler" id="kt_header_mobile_topbar_toggler">
                 <i class="flaticon-more"></i>
             </button>
-            <div class="d-flex flex-row justify-content-center w-100 shadow rounded-5 mb-2 mt-1">
-                <h4 id="mobile_screen_title" class=" mobile-screen-title p-1"></h4>
+            <div class="d-flex flex-row justify-content-center shadow mt-1 mb-2 rounded-5 w-100">
+                <h4 id="mobile_screen_title" class="p-1 mobile-screen-title"></h4>
             </div>
         </div>
     </div>
     <div class="kt-grid kt-grid--hor kt-grid--root">
-        <div class="kt-grid__item kt-grid__item--fluid kt-grid kt-grid--ver kt-page">
-            <div class="kt-aside kt-aside--fixed kt-grid__item kt-grid kt-grid--desktop kt-grid--hor-desktop"
+        <div class="kt-grid kt-grid--ver kt-grid__item kt-grid__item--fluid kt-page">
+            <div class="kt-aside--fixed kt-grid kt-grid--desktop kt-grid--hor-desktop kt-aside kt-grid__item"
                 id="kt_aside">
                 @include('menus.prm_menu')
             </div>
-            <div class="kt-grid__item kt-grid__item--fluid kt-grid kt-grid--hor kt-wrapper" id="kt_wrapper">
-                <div id="kt_header" class="kt-header kt-grid__item kt-header--fixed">
+            <div class="kt-grid kt-grid--hor kt-grid__item kt-grid__item--fluid kt-wrapper" id="kt_wrapper">
+                <div id="kt_header" class="kt-header--fixed kt-header kt-grid__item">
                     <div class="animation-line line--loader" style="display:none" id="vs_loader"></div>
                     <div class="kt-header-menu-wrapper" id="kt_header_menu_wrapper">
-                        <div class="d-flex flex-row flex-wrap shadow justify-content-between">
-                           <div id="_main_top_right_menus" class="mainview-top-right">
-                                <div class="show--title d-flex flex-grow-1">
-                                  <div class="screen-info" id="kt_header_menu_wrapper">
-                                            <span class="screen-title mb-0 text-nowrap" vslang="titles.dashboard" style="text-transform:capitalize;" id="screen_title"></span>
-                                        </div>
-                                        <div class="d-flex align-item-center justify-content-end w-100">
-                                            <!-- <div class="d-flex align-item-center justify-content-end w-50" >
+                        <div class="d-flex flex-row flex-wrap justify-content-between shadow">
+                            <div id="_main_top_right_menus" class="mainview-top-right">
+                                <div class="d-flex flex-grow-1 show--title">
+                                    <div class="screen-info" id="kt_header_menu_wrapper">
+                                        <span class="mb-0 text-nowrap screen-title" vslang="titles.dashboard"
+                                            style="text-transform:capitalize;" id="screen_title"></span>
+                                    </div>
+                                    <div class="d-flex justify-content-end w-100 align-item-center">
+                                        <!-- <div class="d-flex justify-content-end w-50 align-item-center" >
                                                 <input type="text" class="form-control form-control-sm" id="_search_anything" placeholder="Search anything..." >
                                             </div> -->
-                                            <!-- <div class="rounded-circle">
+                                        <!-- <div class="rounded-circle">
                                                 <a href="javascript:void(0)" id="_db_filter_data" class="btn-filter-summery-db mt-1"> -->
-                                                    <!-- <i class="fa-solid fa-filter fs-5 text-white"></i> -->
-                                                     <!-- <img class="me-2 svg-white" style="height:20px;" src="{{ asset('assets/images/icons/filter-circle.svg') }}" /> -->
-                                                <!-- </a>
+                                        <!-- <i class="text-white fa-solid fa-filter fs-5"></i> -->
+                                        <!-- <img class="me-2 svg-white" style="height:20px;" src="{{ asset('assets/images/icons/filter-circle.svg') }}" /> -->
+                                        <!-- </a>
                                             </div> -->
-                                        </div>
-                                </div>
-                                <div id="_main_top_right_menus" class="d-flex flex-row gap-2 flex-wrap px-3 justify-content-end align-items-center">
-                                    <div class="dropdown choose--language">
-                                            <button id="_main_btn_lang" class="btn-dropdown main-menu-button align--language" data-menu="lang">
-                                                <img src="{{ asset('assets/images/icons/khmer.png') }}" style="border-radius: 50%;height:25px;" />
-                                                <span id="_main_lang_name" class="mx-2 " style="color:#6b6f82;">
-                                                    <?php
-                                                        echo Session::get('lang_name', 'Khmer');
-                                                    ?>
-                                                </span>
-                                                <i class="fa-solid fa-caret-down  ps-2 fs-5" style="color:#6b6f82;"></i>
-                                            </button>
-                                            <div class="dropdown-menu dropdown-menu-right">
-                                                <span class="lang-menu-header"></span>
-                                                <div class="main-lang-menus">
-                                                    <span class="lang-menu-item">
-                                                        <a class="dropdown-item lnk-lang" data-lang="km" data-name="ខ្មែរ" href="javascript:void(0)">
-                                                            <img class="menu-item-icon" src="{{ asset('assets/images/icons/khmer.png') }}" />
-                                                            ខ្មែរ
-                                                        </a>
-                                                    </span>
-                                                    <span class="lang-menu-item">
-                                                        <a class="dropdown-item lnk-lang" data-lang="en" data-name="English" href="javascript:void(0)">
-                                                            <img class="menu-item-icon" src="{{ asset('assets/images/icons/english.png') }}" />
-                                                            English
-                                                        </a>
-                                                    </span>
-                                                </div>
-                                            </div>
                                     </div>
-                                    <!-- <div class="dropdown nav--question  btn-1">
+                                </div>
+                                <div id="_main_top_right_menus"
+                                    class="d-flex flex-row flex-wrap align-items-center justify-content-end gap-2 px-3">
+                                    <div class="dropdown choose--language">
+                                        <button id="_main_btn_lang"
+                                            class="btn-dropdown main-menu-button align--language" data-menu="lang">
+                                            <img src="{{ asset('assets/images/icons/khmer.png') }}"
+                                                style="border-radius: 50%;height:25px;" />
+                                            <span id="_main_lang_name" class="mx-2" style="color:#6b6f82;">
+                                                <?php
+                                                echo Session::get('lang_name', 'Khmer');
+                                                ?>
+                                            </span>
+                                            <i class="ps-2 fa-caret-down fa-solid fs-5" style="color:#6b6f82;"></i>
+                                        </button>
+                                        <div class="dropdown-menu-right dropdown-menu">
+                                            <span class="lang-menu-header"></span>
+                                            <div class="main-lang-menus">
+                                                <span class="lang-menu-item">
+                                                    <a class="dropdown-item lnk-lang" data-lang="km"
+                                                        data-name="ខ្មែរ" href="javascript:void(0)">
+                                                        <img class="menu-item-icon"
+                                                            src="{{ asset('assets/images/icons/khmer.png') }}" />
+                                                        ខ្មែរ
+                                                    </a>
+                                                </span>
+                                                <span class="lang-menu-item">
+                                                    <a class="dropdown-item lnk-lang" data-lang="en"
+                                                        data-name="English" href="javascript:void(0)">
+                                                        <img class="menu-item-icon"
+                                                            src="{{ asset('assets/images/icons/english.png') }}" />
+                                                        English
+                                                    </a>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- <div class="dropdown nav--question btn-1">
                                         <button id="_main_btn_question" class="btn-dropdown main-menu-button av--question"
                                             data-menu="question">
                                             <i class="fa-regular fa-circle-question fs-4" style="color:#6b6f82;"></i>
                                         </button>
                                     </div> -->
-                                    <div class="dropdown nav--notification  btn-1">
-                                        <button id="_main_btn_notif" class="btn-dropdown main-menu-button av--notification"
-                                            data-menu="notif">
+                                    <div class="dropdown nav--notification btn-1">
+                                        <button id="_main_btn_notif"
+                                            class="btn-dropdown main-menu-button av--notification" data-menu="notif">
                                             <i class="fa-regular fa-bell fs-4" style="color:#6b6f82;"></i>
                                             <span class="number--notification notif-count"
                                                 id="_main_notif_count">3</span>
                                         </button>
                                         <div
-                                            class="dropdown-menu dropdown-menu-right rounded-2 shadow-lg notification-dropdown">
+                                            class="dropdown-menu-right shadow-lg rounded-2 dropdown-menu notification-dropdown">
                                             <div class="con--header">
                                                 <span class="notif-header">Notification</span>
                                             </div>
@@ -213,32 +224,38 @@
                                     </div>
 
                                     {{-- <div class="dropdown app--list">
-                                        <button class="btn-dropdown main-menu-button " data-menu="app"> <i class="fa-brands fa-microsoft ms-2 fs-4" style="color:#1a1647;"></i> </button>
+                                        <button class="btn-dropdown main-menu-button" data-menu="app"> <i class="ms-2 fa-brands fa-microsoft fs-4" style="color:#1a1647;"></i> </button>
 
                                         <?php
-                                            $user = XAuthService::user();
-                                            if (!$user) return redirect('/');
-                                            $apps = collect($user->apps)->filter(fn($a) => !$a->is_mobile_app);
+                                        $user = XAuthService::user();
+                                        if (!$user) {
+                                            return redirect('/');
+                                        }
+                                        $apps = collect($user->apps)->filter(fn($a) => !$a->is_mobile_app);
                                         ?>
 
-                                        <div class="dropdown-menu dropdown-menu-end bg-white p-3 shadow-lg rounded-2 "
+                                        <div class="bg-white shadow-lg p-3 rounded-2 dropdown-menu dropdown-menu-end"
                                             style="min-width:320px; max-width:380px;left:-150px;top:60px;">
-                                            <div class="row row-cols-3 g-3 text-center">
+                                            <div class="text-center row row-cols-3 g-3">
                                                 <?php foreach ($apps as $app): ?>
                                                     <?php
-                                                        $icon = empty($app->icon_file_name)
-                                                            ? '<div class="d-flex align-items-center justify-content-center bg-light rounded-circle mx-auto" style="width:56px; height:56px;">
-                                                                <i class="fa-solid fa-layer-group fs-3 text-primary-custom"></i>
-                                                            </div>'
-                                                            : '<div class="d-flex align-items-center justify-content-center bg-light rounded-circle mx-auto overflow-hidden" style="width:56px; height:56px;">
-                                                                <img src="'.$app->icon_file_name.'"  alt="'.($app->name ?? $app->app_name).'" style="width:100%; height:100%; object-fit:cover;">
-                                                            </div>';
-                                                        $name  = $app->name ?? $app->app_name;
-                                                        $route = '/'.ltrim($app->home_route, '/');
+                                                    $icon = empty($app->icon_file_name)
+                                                        ? '<div class="d-flex align-items-center justify-content-center bg-light mx-auto rounded-circle" style="width:56px; height:56px;">
+                                                                                                                                                                        <i class="fa-layer-group text-primary-custom fa-solid fs-3"></i>
+                                                                                                                                                                    </div>'
+                                                        : '<div class="d-flex align-items-center justify-content-center bg-light mx-auto rounded-circle overflow-hidden" style="width:56px; height:56px;">
+                                                                                                                                                                        <img src="' .
+                                                            $app->icon_file_name .
+                                                            '"  alt="' .
+                                                            ($app->name ?? $app->app_name) .
+                                                            '" style="width:100%; height:100%; object-fit:cover;">
+                                                                                                                                                                    </div>';
+                                                    $name = $app->name ?? $app->app_name;
+                                                    $route = '/' . ltrim($app->home_route, '/');
                                                     ?>
                                                     <div class="col">
                                                         <a href="<?= $route ?>"
-                                                        class="app-link d-block text-decoration-none text-dark small"
+                                                        class="d-block text-dark text-decoration-none app-link small"
                                                         data-app-key="<?= htmlspecialchars($name) ?>">
                                                             <?= $icon ?>
                                                             <div class="mt-2 text-truncate"><?= $name ?></div>
@@ -253,102 +270,113 @@
                                             <i class="fa-solid fa-indent fs-4" style="color:#6b6f82;"></i>
                                         </button>
                                         <?php
-                                            $user = XAuthService::user();
-                                            if (!$user) return redirect('/');
-                                            $apps = collect($user->apps)->filter(fn($a) => !$a->is_mobile_app);
+                                        $user = XAuthService::user();
+                                        if (!$user) {
+                                            return redirect('/');
+                                        }
+                                        $apps = collect($user->apps)->filter(fn($a) => !$a->is_mobile_app);
                                         ?>
 
-                                        <div class="dropdown-menu dropdown-menu-end bg-white p-3 shadow-lg rounded-2"
+                                        <div class="bg-white shadow-lg p-3 rounded-2 dropdown-menu dropdown-menu-end"
                                             style="min-width:320px; max-width:380px; left:-150px; top:60px;">
-                                            <div class="row row-cols-3 g-3 text-center">
+                                            <div class="text-center row row-cols-3 g-3">
                                                 <?php foreach ($apps as $app): ?>
-                                                    <?php
-                                                        $appIconMap = [
-                                                            'meta estate'           => [
-                                                                'icon'  => 'fa-building',
-                                                                'color' => '#e67e22',
-                                                                'bg'    => '#fdebd0'
-                                                            ],
-                                                            'authorization manager' => [
-                                                                'icon'  => 'fa-shield-halved',
-                                                                'color' => '#8e44ad',
-                                                                'bg'    => '#f4ecf7'
-                                                            ],
-                                                            'meta client'           => [
-                                                                'icon'  => 'fa-users',
-                                                                'color' => '#2980b9',
-                                                                'bg'    => '#d6eaf8'
-                                                            ],
-                                                        ];
+                                                <?php
+                                                $appIconMap = [
+                                                    'meta estate' => [
+                                                        'icon' => 'fa-building',
+                                                        'color' => '#e67e22',
+                                                        'bg' => '#fdebd0',
+                                                    ],
+                                                    'authorization manager' => [
+                                                        'icon' => 'fa-shield-halved',
+                                                        'color' => '#8e44ad',
+                                                        'bg' => '#f4ecf7',
+                                                    ],
+                                                    'meta client' => [
+                                                        'icon' => 'fa-users',
+                                                        'color' => '#2980b9',
+                                                        'bg' => '#d6eaf8',
+                                                    ],
+                                                ];
 
-                                                        $name     = $app->name ?? $app->app_name ?? '';
-                                                        $nameKey  = strtolower(trim($name));
-                                                        $iconConf = $appIconMap[$nameKey] ?? null;
-                                                        $route    = '/' . ltrim($app->home_route, '/');
-                                                        if (!empty($app->icon_file_name)) {
-                                                            $icon = '
-                                                                <div class="d-flex align-items-center justify-content-center
-                                                                            bg-light rounded-circle mx-auto overflow-hidden"
-                                                                    style="width:56px; height:56px;">
-                                                                    <img src="' . $app->icon_file_name . '"
-                                                                        alt="' . htmlspecialchars($name) . '"
-                                                                        style="width:100%; height:100%; object-fit:cover;">
-                                                                </div>';
-
-                                                        } elseif ($iconConf) {
-                                                            $icon = '
-                                                                <div class="d-flex align-items-center justify-content-center
-                                                                            rounded-circle mx-auto"
-                                                                    style="width:56px; height:56px;
-                                                                            background-color:' . $iconConf['bg'] . ';">
-                                                                    <i class="fa-solid ' . $iconConf['icon'] . ' fs-3"
-                                                                    style="color:' . $iconConf['color'] . ';"></i>
-                                                                </div>';
-                                                        } else {
-                                                            $icon = '
-                                                                <div class="d-flex align-items-center justify-content-center
-                                                                            bg-light rounded-circle mx-auto"
-                                                                    style="width:56px; height:56px;">
-                                                                    <i class="fa-solid fa-layer-group fs-3"
-                                                                    style="color:#1a1647;"></i>
-                                                                </div>';
-                                                        }
-                                                    ?>
-                                                    <div class="col">
-                                                        <a href="<?= $route ?>"
-                                                        class="app-link d-block text-decoration-none text-dark small"
+                                                $name = $app->name ?? ($app->app_name ?? '');
+                                                $nameKey = strtolower(trim($name));
+                                                $iconConf = $appIconMap[$nameKey] ?? null;
+                                                $route = '/' . ltrim($app->home_route, '/');
+                                                if (!empty($app->icon_file_name)) {
+                                                    $icon =
+                                                        '
+                                                                                                                                                                <div class="d-flex align-items-center justify-content-center bg-light mx-auto rounded-circle overflow-hidden"
+                                                                                                                                                                    style="width:56px; height:56px;">
+                                                                                                                                                                    <img src="' .
+                                                        $app->icon_file_name .
+                                                        '"
+                                                                                                                                                                        alt="' .
+                                                        htmlspecialchars($name) .
+                                                        '"
+                                                                                                                                                                        style="width:100%; height:100%; object-fit:cover;">
+                                                                                                                                                                </div>';
+                                                } elseif ($iconConf) {
+                                                    $icon =
+                                                        '
+                                                                                                                                                                <div class="d-flex align-items-center justify-content-center mx-auto rounded-circle"
+                                                                                                                                                                    style="width:56px; height:56px;
+                                                                                                                                                                            background-color:' .
+                                                        $iconConf['bg'] .
+                                                        ';">
+                                                                                                                                                                    <i class="fa-solid ' .
+                                                        $iconConf['icon'] .
+                                                        ' fs-3"
+                                                                                                                                                                    style="color:' .
+                                                        $iconConf['color'] .
+                                                        ';"></i>
+                                                                                                                                                                </div>';
+                                                } else {
+                                                    $icon = '
+                                                                                                                                                                <div class="d-flex align-items-center justify-content-center bg-light mx-auto rounded-circle"
+                                                                                                                                                                    style="width:56px; height:56px;">
+                                                                                                                                                                    <i class="fa-layer-group fa-solid fs-3"
+                                                                                                                                                                    style="color:#1a1647;"></i>
+                                                                                                                                                                </div>';
+                                                }
+                                                ?>
+                                                <div class="col">
+                                                    <a href="<?= $route ?>"
+                                                        class="d-block text-dark text-decoration-none app-link small"
                                                         data-app-key="<?= htmlspecialchars($name) ?>">
-                                                            <?= $icon ?>
-                                                            <div class="mt-2 text-truncate"><?= htmlspecialchars($name) ?></div>
-                                                        </a>
-                                                    </div>
+                                                        <?= $icon ?>
+                                                        <div class="mt-2 text-truncate"><?= htmlspecialchars($name) ?>
+                                                        </div>
+                                                    </a>
+                                                </div>
                                                 <?php endforeach; ?>
                                             </div>
                                         </div>
                                     </div>
 
                                     <script>
-                                    document.addEventListener('DOMContentLoaded', function () {
-                                        const appLinks = document.querySelectorAll('.app-link');
-                                        const storageKey = 'selected_app_name';
+                                        document.addEventListener('DOMContentLoaded', function() {
+                                            const appLinks = document.querySelectorAll('.app-link');
+                                            const storageKey = 'selected_app_name';
 
-                                        const selectedApp = localStorage.getItem(storageKey);
-                                        if (selectedApp) {
+                                            const selectedApp = localStorage.getItem(storageKey);
+                                            if (selectedApp) {
+                                                appLinks.forEach(link => {
+                                                    if (link.dataset.appKey === selectedApp) {
+                                                        link.classList.add('active');
+                                                    }
+                                                });
+                                            }
+
                                             appLinks.forEach(link => {
-                                                if (link.dataset.appKey === selectedApp) {
-                                                    link.classList.add('active');
-                                                }
-                                            });
-                                        }
-
-                                        appLinks.forEach(link => {
-                                            link.addEventListener('click', function () {
-                                                appLinks.forEach(l => l.classList.remove('active'));
-                                                this.classList.add('active');
-                                                localStorage.setItem(storageKey, this.dataset.appKey);
+                                                link.addEventListener('click', function() {
+                                                    appLinks.forEach(l => l.classList.remove('active'));
+                                                    this.classList.add('active');
+                                                    localStorage.setItem(storageKey, this.dataset.appKey);
+                                                });
                                             });
                                         });
-                                    });
                                     </script>
 
 
@@ -356,36 +384,37 @@
                                         <button id="_main_btn_user" class="btn-dropdown main-menu-button"
                                             data-menu="user">
                                             <img src="<?php echo $user->image_url; ?>" style="border-radius:50%;height:25px" />
-                                                <span class="mx-2" style="color:#6b6f82;">
-                                                    <?php
-                                                        //$user = App\Services\Umt\XAuthService::user();
-                                                        echo $user ? $user->full_name : '';
-                                                    ?>
-                                                </span>
-                                                <i class="fa-solid fa-caret-down" style="color:#6b6f82;"></i>
+                                            <span class="mx-2" style="color:#6b6f82;">
+                                                <?php
+                                                //$user = App\Services\Umt\XAuthService::user();
+                                                echo $user ? $user->full_name : '';
+                                                ?>
+                                            </span>
+                                            <i class="fa-caret-down fa-solid" style="color:#6b6f82;"></i>
                                         </button>
 
-                                        <div class="dropdown-menu dropdown-menu-left bg-white rounded-2 shadow-lg"
+                                        <div class="dropdown-menu-left bg-white shadow-lg rounded-2 dropdown-menu"
                                             style="width:250px;position:absolute;left:-150px;top:60px;">
                                             <span class="user-menu-header"></span>
                                             <div class="main-user-menus">
                                                 <span class="user-menu-item">
                                                     <a id="_main_mnu_about" class="dropdown-item"
                                                         href="javascript:void(0)">
-                                                        <i class="fas fa-cog m-2"></i>
+                                                        <i class="m-2 fas fa-cog"></i>
                                                         About Meta Estate
                                                     </a>
                                                 </span>
                                                 <span class="user-menu-item">
-                                                    <a id="_main_mnu_changepwd" class="dropdown-item" href="javascript:void(0)">
-                                                        <i class="fas fa-key m-2"></i>
+                                                    <a id="_main_mnu_changepwd" class="dropdown-item"
+                                                        href="javascript:void(0)">
+                                                        <i class="m-2 fas fa-key"></i>
                                                         Change password
                                                     </a>
                                                 </span>
                                                 <span class="user-menu-item">
                                                     <a id="_main_mnu_logout" class="dropdown-item"
                                                         href="javascript:void(0)">
-                                                        <i class="fas fa-sign-out-alt m-2"></i>
+                                                        <i class="m-2 fas fa-sign-out-alt"></i>
                                                         Log out
                                                     </a>
                                                 </span>
@@ -397,7 +426,7 @@
                         </div>
                     </div>
                 </div>
-                <div id="_p2" class="h-100 " id="kt_content">
+                <div id="_p2" class="h-100" id="kt_content">
                     <div id="" class="h-100">
                         <div class="pb-2" id="_app_content">
                             @include('layouts.prm.dashboardComponent')
@@ -428,6 +457,7 @@
                             @include('layouts.prm.amenityComponent')
                             @include('layouts.prm.itemsComponent')
                             @include('layouts.prm.invoiceSettingComponent')
+                            @include('layouts.prm.depositComponent')
 
 
                         </div>

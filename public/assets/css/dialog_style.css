@@ -4,7 +4,7 @@
 .vs-modal {
     border: none !important;
     outline: none !important;
-    border-radius: 10px;
+    border-radius: 20px;
     overflow: visible;
     background: #ffffff;
     box-shadow:
@@ -23,7 +23,8 @@
    HEADER
 ========================= */
 .vs-modal .modal-header {
-    background: #c4c4c7;
+    /* background: #c4c4c7; */
+    background: #dfe7f4;
     padding: 18px 24px;
     border: none;
     position: relative;
@@ -82,7 +83,7 @@
    FOOTER
 ========================= */
 .vs-modal .modal-footer {
-    background: #fafbff;
+    background: #f6f7fb;
     padding: 16px 24px;
     border: none;
     display: flex;
@@ -285,7 +286,7 @@
 .vs-modal .modal-footer .btn-primary,
 .vs-modal .modal-footer .btn-submit {
     color: #ffffff !important;
-    background-color: #1a1647;
+    background-color: #2b3991;
     border: 1px solid #0F2554 !important;
 }
 

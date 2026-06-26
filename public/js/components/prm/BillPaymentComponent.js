@@ -39,7 +39,7 @@ var BillPaymentComponent = (() => {
             transTitle: "titles.Vendor",
             className: "align-middle",
             data: (data) =>
-                `<span class="d-block text-prm-custom text-capitalize">${data.vendor_name ?? ""}</span>`,
+                `<span class="d-block text-prm-custom text-capitalize text-nowrap">${data.vendor_name ?? ""}</span>`,
         },
         {
             transTitle: "titles.Amount",
@@ -93,7 +93,7 @@ var BillPaymentComponent = (() => {
             },
         },
         {
-            transTitle: "titles.Updated By",
+            transTitle: "titles.Last Updated",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
                 return `<div class="d-flex flex-column">
@@ -259,7 +259,7 @@ var BillPaymentComponent = (() => {
         };
         if (!AuthManager.allowed(282,false)) return;
         cv_interact.confirm(
-            "Delete this Payment?",
+            "confirm_delete",
             { context: "delete", confirmButtonText: "Delete" },
             function (e) {
                 if (e) {
@@ -536,7 +536,7 @@ const BillPaymentDialog = (() => {
                         </div>
                         <div class="col-4">
                             <div class="vs-material-field">
-                                <select name="bank" class="form-select data-input" data-field="bank" data-style="material" placeholder="Bank"></select>
+                                <select name="bank" class="form-select data-input" data-field="bank" data-style="material" placeholder="${LocaleManager.trans('Bank', 'labels')}"></select>
                             </div>
                         </div>
                         <div class="col-4">
@@ -553,7 +553,7 @@ const BillPaymentDialog = (() => {
                         </div>
                         <div class="col-4">
                             <div class="vs-material-field">
-                                <select name="cheque_bank_id" class="form-select data-input" data-field="cheque_bank_id" data-style="material" placeholder="Cheque"></select>
+                                <select name="cheque_bank_id" class="form-select data-input" data-field="cheque_bank_id" data-style="material" placeholder="${LocaleManager.trans('Cheque', 'labels')}"></select>
                             </div>
                         </div>
                         <div class="col-4">
@@ -638,13 +638,19 @@ const BillPaymentDialog = (() => {
                             }
                         }
 
-                        me.divModal.querySelector("#c_e").textContent =
-                            cash > 0 ? fmt(cash) : "—";
-                        me.divModal.querySelector("#b_e").textContent =
-                            bank > 0 ? fmt(bank) : "—";
-                        me.divModal.querySelector("#ch_e").textContent =
-                            cheque > 0 ? fmt(cheque) : "—";
+                        const cashEl = me.divModal.querySelector("#c_e");
+                        const bankEl = me.divModal.querySelector("#b_e");
+                        const chequeEl = me.divModal.querySelector("#ch_e");
+                        if (cashEl)
+                            cashEl.textContent = cash > 0 ? fmt(cash) : "—";
+                        if (bankEl)
+                            bankEl.textContent = bank > 0 ? fmt(bank) : "—";
+                        if (chequeEl)
+                            chequeEl.textContent =
+                                cheque > 0 ? fmt(cheque) : "—";
                     };
+
+                    me.updateTotals = updateTotals;
 
                     const amountFields = [
                         "cash",
@@ -756,22 +762,46 @@ const BillPaymentDialog = (() => {
                         .then((res) => {
                             if (res.status_code == 200) {
                                 bill = res.data.bill;
-                    // console.log(123456, bill);
+
+                                const resetPaymentFields = () => {
+                                    [
+                                        "cash",
+                                        "bank_amount",
+                                        "cheque_amount",
+                                        "bank_ref_number",
+                                        "cheque_number",
+                                        "remark",
+                                        "payer",
+                                    ].forEach((name) => {
+                                        if (me.controls[name])
+                                            me.controls[name].value = "";
+                                    });
+                                    if (me.controls.bank)
+                                        me.controls.bank.value = "";
+                                    if (me.controls.cheque_bank_id)
+                                        me.controls.cheque_bank_id.value = "";
+                                };
+                                resetPaymentFields();
 
                                 const dueAmount = Number(bill?.balance || 0);
+                                const fmtDue = "$" + dueAmount.toFixed(2);
                                 const dueEl =
                                     me.divModal.querySelector("#f_due");
-                                if (dueEl)
-                                    dueEl.textContent =
-                                        "$" + dueAmount.toFixed(2);
+                                if (dueEl) dueEl.textContent = fmtDue;
+
+                                const totEl =
+                                    me.divModal.querySelector("#f_tot");
+                                if (totEl) totEl.textContent = "$0.00";
 
                                 const balEl =
                                     me.divModal.querySelector("#f_bal");
                                 if (balEl) {
                                     balEl.style.color = "#FAB31C";
-                                    balEl.textContent =
-                                        "$" + dueAmount.toFixed(2);
+                                    balEl.textContent = fmtDue;
                                 }
+
+                                if (typeof me.updateTotals === "function")
+                                    me.updateTotals();
 
                                 if (me.controls.total_amount)
                                     me.controls.total_amount.value = Number(

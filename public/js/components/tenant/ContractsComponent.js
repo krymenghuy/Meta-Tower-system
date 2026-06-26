@@ -350,13 +350,14 @@ var ContractsComponent = new (function () {
                     <div class="card  shadow-sm">
                         <div class="card-body text-center py-4">
                             <span class="rounded-circle d-inline-flex align-items-center justify-content-center bg-light text-muted mb-2" style="width:48px;height:48px;"><i class="fa-solid fa-rotate-right fa-lg"></i></span>
-                            <p class="text-muted mb-0">No renewal history for this contract.</p>
-                            <small class="text-muted">Renewals will appear here when the contract is renewed.</small>
+                            <p class="text-muted mb-0" vslang="titles.No_renewal_history"></p>
+                            <small class="text-muted" vslang="titles.Renewals_will_appear"></small>
                         </div>
                     </div>`;
         }
 
         container.innerHTML = renewalTableHtml;
+        LocaleManager.translateZone(container);
     };
 
     mThis.buildContractDetailHtml = (data) => {
@@ -607,7 +608,7 @@ var ContractsComponent = new (function () {
             // Auto-refresh every hour to update contract statuses
             if (!mThis.autoRefreshInterval) {
                 mThis.autoRefreshInterval = setInterval(() => {
-                    console.log('Auto-refreshing contracts...');
+                    // console.log('Auto-refreshing contracts...');
                     mThis.ContractListView.showPage(mThis.getFilterData());
 
                     // Re-initialize tooltips after refresh

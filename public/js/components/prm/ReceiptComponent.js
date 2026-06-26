@@ -1,5 +1,5 @@
 "use strict";
-var ReceiptComponent = new (function() {
+var ReceiptComponent = (() => {
     const mThis = this;
     mThis.title_prop = "Receipts";
     mThis.base_url = main_view.base_url;
@@ -25,6 +25,8 @@ var ReceiptComponent = new (function() {
                 return `
                     <div class="d-flex flex-column">
                         ${code}
+
+                        ${data.deposit_id ? `<span class="d-block text-primary"style="font-size:12px;">Deposit</span>` : ''}
                     </div>
                 `;
             }
@@ -150,7 +152,7 @@ var ReceiptComponent = new (function() {
             }
         },
         {
-            transTitle: "titles.Updated By",
+            transTitle: "titles.Last Updated",
             className: "align-middle text-nowrap",
             data: data => `
             <div class="d-flex flex-column">
@@ -233,7 +235,7 @@ var ReceiptComponent = new (function() {
             menus: [
                 {
                     html:
-                        '<span class="ps-2" vslang="title.Cancel Receipt"></span>',
+                        '<span class="ps-2" vslang="titles.Cancel Receipt"></span>',
                     icon: `<i class="fa-regular fa-rectangle-xmark fs-5 text-danger-emphasis"></i>`,
                     name: "cancel_receipt",
                     cssClass: "border-bottom pb-2"
@@ -273,16 +275,17 @@ var ReceiptComponent = new (function() {
         if (!AuthManager.allowed(242)) return;
         Swal.fire({
             title: `${LocaleManager.trans('Cancel Receipt?', "titles")}`,
-            text: "This will restore the due balance on the invoice.",
+            text: LocaleManager.trans('restore_to_invoice', "message_box_default"),
             icon: "warning",
             input: "textarea",
-            inputPlaceholder: "Reason for cancellation (required)...",
+            inputPlaceholder: LocaleManager.trans('reason_for_cancellation', "message_box_default"),
             showCancelButton: true,
+            cancelButtonText: `${LocaleManager.trans("Cancel", "buttons")}`,
             confirmButtonColor: "#d33",
             confirmButtonText: `${LocaleManager.trans('Yes, Cancel it!', "buttons")}`,
             reverseButtons: true,
             inputValidator: value => {
-                if (!value) return "You must provide a reason!";
+                if (!value) return LocaleManager.trans("reason_required", "message_box_default");
             },
             showLoaderOnConfirm: true,
             preConfirm: remark => {

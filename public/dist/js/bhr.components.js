@@ -5,39 +5,39 @@ var main_view = (()=>{
     mThis.onLayoutLoad = null;
     mThis.elScreenTitle = document.querySelector('#screen_title');
     mThis.elScreenTitle_mobile =  document.querySelector('#mobile_screen_title');
-    
+
     mThis.base_url = document.querySelector('meta[name="base_url"]').getAttribute('content');
     //mThis.mainRoute = document.querySelector('meta[name="main_route"]').getAttribute('content');
-    mThis.asset_url =document.querySelector('meta[name="asset_url"]').getAttribute('content'); 
+    mThis.asset_url =document.querySelector('meta[name="asset_url"]').getAttribute('content');
     mThis.branch_id = document.querySelector('meta[name="sess_branch_id"]').getAttribute('content');
-    mThis.user_id = document.querySelector('meta[name="sess_user_id"]').getAttribute('content'); 
-    mThis.subs_id = document.querySelector('meta[name="subs_id"]').getAttribute('content'); 
+    mThis.user_id = document.querySelector('meta[name="sess_user_id"]').getAttribute('content');
+    mThis.subs_id = document.querySelector('meta[name="subs_id"]').getAttribute('content');
     mThis.app_id = document.querySelector('meta[name="app_id"]').getAttribute('content');
 
     mThis.VSAppContent = document.querySelector('#_app_content');
     //mThis.appContent = $(mThis.VSAppContent); //should no longer use it !!!
-   
+
     mThis.auth_script_url ="https://cdn.vectoraclouds.com/frontcore/utils/AuthManager.v2.js?v=2";
     //mThis.auth_script_url = mThis.base_url +  "/assets/js/AuthManager.v2.js?v=2";
 
     mThis.secure_endpoint =  [mThis.base_url,'/api/1a2b3c4d5e6f7g8h9i0j1k2l3m/en'].join('');
     mThis.top_right_menus = document.querySelector('#_main_top_right_menus');
-      
+
     // mThis.btnTasks = mThis.top_right_menus.querySelector('#_main_btn_tasks');
     mThis.btnLang = mThis.top_right_menus.querySelector('#_main_btn_lang');
     mThis.btnUser = mThis.top_right_menus.querySelector('#_main_btn_user');
     mThis.btnNotif = mThis.top_right_menus.querySelector('#_main_btn_notif');
-     
+
     mThis.current_view_name = '';
     mThis.pusher_channel = {};
-    
+
     mThis.MULTI_WAREHOUSE_OP =1;
     mThis.DEF_TO_WAREHOUSE_ID =1;
     mThis.DEF_WAREHOUSE_ID =1;
-   
+
     mThis.mnuLogout = mThis.top_right_menus.querySelector('#_main_mnu_logout');
     mThis.mnuAbout1 = mThis.top_right_menus.querySelector('#_main_mnu_about');
-    
+
     if (!mThis.branch_id || !mThis.user_id){
         console.error('branch_id (company_id) and user_id are not found! => so Notifications will not work!');
     }
@@ -47,7 +47,7 @@ var main_view = (()=>{
         const p = {'data':qstring};
         vsapi.call([mThis.base_url,'/api/vs-encrypt031181'].join(''),p).then((res)=>{
             onFinish(res.data || res);
-        }); 
+        });
     }
 
     // function channelPrefix(){
@@ -80,11 +80,11 @@ mThis.init_vsapi = async () => {
     authType: vsapi.authTypes.BEARER,
     //fetchTokenUrl:'/api/vsx-sec/token',
     tokenResolver: async () => {
-      const res = await fetch('/api/vsx-sec/token', { 
+      const res = await fetch('/api/vsx-sec/token', {
          credentials: 'include',
          headers: {
          'X-Requested-With': 'XMLHttpRequest'
-        } 
+        }
      });
       const json = await res.json();
       if(json.status_code == 200){
@@ -113,8 +113,8 @@ mThis.init_vsapi = async () => {
       //window.Sanitizer  = window.Sanitizer || StringSanitizer || null;
      //BEGIN:: process side menus click using VSRoute
        mThis.side_menus = document.querySelector('#_dms_aside_menus');
-       
-      //Sanitizer.setDebugMode(false);     
+
+      //Sanitizer.setDebugMode(false);
       VSRoute.init(mThis.side_menus.querySelectorAll('a.menu-item'),"DashboardComponent",mThis.side_menus,{debug:true});
 
       // Same contract UI as PRM: allow menu href ContractComponent or ContractsComponent
@@ -155,11 +155,11 @@ mThis.init_vsapi = async () => {
             LocaleManager.translateAll(lang);
             mThis.setLangMenu(lang);
             btn.closest('.dropdown-menu').classList.remove('show');
-            LocaleManager.saveLang(lang);   
+            LocaleManager.saveLang(lang);
             return;
            }
         }
-   
+
         // $(document).on('click', function(e){
         //     let x = $(this).find('body div.dropdown-menu');
         //     let container = x.parent();
@@ -175,25 +175,25 @@ mThis.init_vsapi = async () => {
             let dropdownMenu =  mThis.prev_shown_dropdown_menus ; // //document.querySelector('.dropdown-menu');
             // Get the container element
             let container = dropdownMenu ? dropdownMenu.closest('.dropdown') : null;
-        
+
             if (container) {
                 // Check if the click target is outside the container
                 if (!container.contains(e.target)) {
                     dropdownMenu.classList.remove('show');
                 }
             }
-          
+
             if (e.target.matches('.dropdown-item')) {
                 // Get the parent element and remove the 'show' class
                 e.target.parentElement.classList.remove('show');
-            } 
+            }
         });
 
         // $(document).on('click', '.dropdown-item', function (e) {
         //     $(this).parent().removeClass('show');
         // });
-        
-        mThis.lnkLogout = mThis.side_menus.querySelector('#_main_lnkLogout'); 
+
+        mThis.lnkLogout = mThis.side_menus.querySelector('#_main_lnkLogout');
         mThis.lnkLogout.onclick = e =>{
             cv_interact.confirm("Do you want to log out?",{
                 title: "Sign Out",
@@ -208,7 +208,7 @@ mThis.init_vsapi = async () => {
             });
         };
 
-        
+
         mThis.mnuLogout.addEventListener('click',e => {
             cv_interact.confirm("Do you want to log out?",{
                 title: "Sign Out",
@@ -223,7 +223,7 @@ mThis.init_vsapi = async () => {
             });
         });
 
-       
+
         if (typeof mThis.onLayoutLoad ==='function') mThis.onLayoutLoad();
     }
     //end::main_view.init()
@@ -232,7 +232,7 @@ mThis.init_vsapi = async () => {
         mThis.deleteAllCookies();
         window.location.replace([mThis.base_url,'/logout'].join(''));
     }
-    
+
     mThis.setLangMenu = (lang)=>{
         let lnkName = mThis.top_right_menus.querySelector('#_main_lang_name');
         let lang_name = LocaleManager.langs[lang].name;
@@ -264,12 +264,12 @@ mThis.init_vsapi = async () => {
         if(['na','n/a'].indexOf(title.toLowerCase()) >=0 ) title = 'General';
         newDiv.innerHTML = `<span class="notif-title">${(title)}</span><span class="notif-text">${notif.message}</span>`;
         div.insertBefore(newDiv, div.firstChild);
-    
+
         if (update_count) {
             mThis.incrementNotificationCount();
         }
     };
-          
+
     mThis.changeRequestStatus = (d) => {
         d.request_id =d.request_id?d.request_id:d.id;
         d.request_completed =d.request_completed?d.request_completed:d.completed;
@@ -278,9 +278,9 @@ mThis.init_vsapi = async () => {
         let div = mThis.top_right_menus.querySelector('div.main-task-panel');
         let el =null;
         div.querySelectorAll('.main-task-item').forEach(el =>{
-            if(el.dataset.id == d.request_id) return false; 
+            if(el.dataset.id == d.request_id) return false;
         });
-             
+
         if(el) {
             let v = el.querySelector('div.task-buttons');
             let buttons = null;
@@ -289,7 +289,7 @@ mThis.init_vsapi = async () => {
                 if((d.request_status+'').toLowerCase() =='approved')
                     buttons = `<span class="task-btn-approved"><i class="fa fa-check" style="color:green"></i> Approved</span>`;
                 else
-                    buttons = `<span class="task-btn-rejected"><i class="fa fa-times" style="color:red"></i> Rejected</span>`;     
+                    buttons = `<span class="task-btn-rejected"><i class="fa fa-times" style="color:red"></i> Rejected</span>`;
             }
             v.innerHTML = buttons;
         }
@@ -322,7 +322,7 @@ mThis.init_vsapi = async () => {
             if((c.status+'').toLowerCase() =='approved')
                 buttons = `<div class="task-buttons"><span class="task-btn-approved"><i class="fa fa-check" style="color:green"></i> Approved</span></div>`;
             else
-                buttons = `<div class="task-buttons"><span class="task-btn-rejected"><i class="fa fa-times" style="color:red"></i> Rejected</span></div>`;     
+                buttons = `<div class="task-buttons"><span class="task-btn-rejected"><i class="fa fa-times" style="color:red"></i> Rejected</span></div>`;
         }
         else{
             buttons = `<div class="task-buttons form-inline">
@@ -330,15 +330,15 @@ mThis.init_vsapi = async () => {
             <button data-id="${c.request_id}" class="btn btn-sm btn-success btn-approve-request">Approve</button>
             </div>`;
         }
-                     
+
         let item =`<div class="main-task-item" data-id="${c.request_id}" data-completed="${c.request_completed}" data-status="${c.request_status}">
         <span class="task-title">${c.title}</span>
         <span class="task-text">${c.description}</span>
                 ${buttons}
         </div>`;
-               
+
         mThis.top_right_menus.find('div.main-task-panel').prepend(item);
-        if(update_count) mThis.incrementTaskCount();    
+        if(update_count) mThis.incrementTaskCount();
     }
 
     mThis.displayUserMenus = ()=>{
@@ -363,9 +363,9 @@ mThis.init_vsapi = async () => {
                             i++;
                         }while(c);
                     }
-                } 
+                }
             }
-            
+
             if(i==0){
                 let empty_item =`<div class="main-notif-item empty-item"><span class="p-1 text-muted text-center">No Notifications</span></div>`;
                 mThis.top_right_menus.querySelector('div.main-notif-panel').innerHTML =  empty_item;
@@ -397,22 +397,22 @@ mThis.init_vsapi = async () => {
     //                     mThis.addTaskItem(c,false);
     //                 i++;
     //             }while(c);
-                    
+
     //             if(i==0) {
     //                 let item =`<div class="main-task-item">
-    //                         <span class="task-text">No pending requests</span>     
+    //                         <span class="task-text">No pending requests</span>
     //                     </div>`;
     //                     let html = `<div class="dropdown-menu dropdown-menu-right">
-    //                         <span class="task-header">Requests</span> 
+    //                         <span class="task-header">Requests</span>
     //                         <div class="main-task-panel">
     //                             ${item}
     //                         </div>
     //                     </div>`;
     //                     if(mThis.btnTasks){
-    //                         const p = mThis.btnTasks.parentElement;   
+    //                         const p = mThis.btnTasks.parentElement;
     //                         if(p) p.insertAdjacentHTML("beforeend",html);
     //                     }
-                    
+
     //             }
     //             mThis.setTaskCount(i);
     //         }
@@ -424,19 +424,19 @@ mThis.init_vsapi = async () => {
             if(res.status_code ===200){
                 let d = res.data;
                 const span = mThis.btnNotif.querySelector('.number--notification');
-                if(d > 0) span.textContent =  d; else span.textContent = 0; 
-                if(d > 0) mThis.btnNotif.dataset.count = d ; else mThis.btnNotif.dataset.count = 0; 
+                if(d > 0) span.textContent =  d; else span.textContent = 0;
+                if(d > 0) mThis.btnNotif.dataset.count = d ; else mThis.btnNotif.dataset.count = 0;
             }
         });
     }
-    
+
     mThis.incrementNotificationCount = ()=>{
         const notifCount_span = mThis.btnNotif.querySelector('span.number--notification');
         let d = mThis.btnNotif.dataset.count;
         d = d>=0?d:0;
         d++;
         notifCount_span.textContent = d;
-        mThis.btnNotif.dataset.count = d;         
+        mThis.btnNotif.dataset.count = d;
     }
 
     // mThis.incrementTaskCount = ()=>{
@@ -446,23 +446,23 @@ mThis.init_vsapi = async () => {
     //     mThis.btnNotif.textContent = d;
     //     mThis.btnNotif.dataset.count = d;
     // }
-    
+
     mThis.setContentView = (viewInstance, title_prop = null) => {
         const siblings = Array.from(viewInstance.parentElement.children);
-        
+
         // Hide all siblings smoothly
         siblings.forEach((div) => {
             if (div !== viewInstance && div.style.display !== 'none') {
                 div.style.display = 'none';
             }
         });
-    
+
         // // Prepare the target view for fade-in
         // if (viewInstance.style.display !== 'block') {
         //     viewInstance.style.display = 'block';
         //     viewInstance.style.opacity = 0;
         // }
-    
+
         // // Ensure transition is applied only after display change
         // requestAnimationFrame(() => {
         //     viewInstance.style.transition = 'opacity 200ms';
@@ -476,7 +476,7 @@ mThis.init_vsapi = async () => {
     return mThis;
 })();
 //end::main_view module
- 
+
 window.addEventListener('DOMContentLoaded',async()=>{
      VSUtil.defaultStyle = 'material';
     await main_view.init_vsapi();
@@ -486,13 +486,13 @@ window.addEventListener('DOMContentLoaded',async()=>{
     main_view.setLangMenu(LocaleManager.currentLanguage.code);
 
     const inputs = main_view.VSAppContent.querySelectorAll("input");
-       
+
     DateTimePicker.destroyAll();
     inputs.forEach(el =>{
         const type = el.getAttribute('type') ?? el.dataset.select ?? '';
         if(['date','daterange','datepicker'].indexOf(type.toLowerCase()) >= 0){
             new DateTimePicker(el,null);
-        }  
+        }
         el.onselect = function(e){
             e.preventDefault();
         }
@@ -502,13 +502,13 @@ window.addEventListener('DOMContentLoaded',async()=>{
         }
     });
 });
-  
+
 // window.oncontextmenu = function(){
 //     return false;
 // }
 
 // document.onkeydown = function(e){
-//     if(window.event.keyCode == 123 ||  e.button == 2)    
+//     if(window.event.keyCode == 123 ||  e.button == 2)
 //         return false;
 // }
 "use strict";
@@ -537,7 +537,7 @@ class SearchWidget{
           if (lnk){
             that.setState(null);
           }
-          
+
        });
     }
 
@@ -558,11 +558,11 @@ class SearchWidget{
              }
              el.onmouseenter = e=>{
                 el.dataset.isfocus =1;
-                clearTimeout(that.mTimeout);  
+                clearTimeout(that.mTimeout);
              }
              el.onmouseleave = e=>{
                 e.preventDefault();
-                el.dataset.isfocus =0; 
+                el.dataset.isfocus =0;
                 let tog_state = this.state ==1? 0 : 1;
                 if(!el.value || (tog_state + '').trim() ==''){
                     that.mTimeout =  setTimeout(()=>{
@@ -571,7 +571,7 @@ class SearchWidget{
                 }
              }
         }
-         
+
       } else{
          let tog_state = this.state ==1? 0 : 1;
          this.setState(tog_state);
@@ -585,7 +585,7 @@ class SearchWidget{
        if(this.state ==1){
          const el = this.container.querySelector('.sw-search-input');
          return el? el.value: null;
-       }else return null;   
+       }else return null;
     }
 
     setValue(value){
@@ -614,23 +614,23 @@ const FindContext = (()=>{
         "staff":`${main_view.base_url}/api/employee/find`,
         "employee":`${main_view.base_url}/ypg/employee/list`,
         // "parent":`${main_view.base_url}/api/guardian/find`,
-        //"user":`${main_view.base_url}/api/user/find`  
-    };  
+        //"user":`${main_view.base_url}/api/user/find`
+    };
 
     self.getTitle = (role)=>{
        switch(role){
           case  'sfaff':
-          case 'employee':  
+          case 'employee':
             return "Find Staff";
           default:{
             return 'Find Someone'
-          }  
+          }
        }
     };
 
     self.getColumns = (role)=>{
         switch(role){
-            case 'staff': 
+            case 'staff':
             case 'employee':
                {
                    return [
@@ -659,13 +659,13 @@ const FindContext = (()=>{
                         name:"position",
                         data:(data,index,tr)=>{
                            return [`<span class="text-primary">`,data.position_id,` </span>`].join('');
-                        } 
+                        }
                      },
                    ];
-                   
+
                }
-               
-            case 'user':  
+
+            case 'user':
             case 'login':{
                 return [
                      {
@@ -696,7 +696,7 @@ const FindContext = (()=>{
             }
             default:{
                return [];
-            } 
+            }
          }
     };
 
@@ -727,7 +727,7 @@ const FindPersonDialog = (()=>{
                       `</div>`,
                       `<div class="w-100">`,
                          `<table name="tblPersons" id="tblPersons" class="table mt-3">`,
-                             
+
                          `<thead></thead><tbody></tbody>`,
                          `</table>`,
                        `</div>`,
@@ -736,7 +736,7 @@ const FindPersonDialog = (()=>{
             },
             contentCreated:(me)=>{
                 me.renderColumns = (tbl, cols) => {
-                  
+
                     const thead = tbl.querySelector('thead');
                     const tbody = tbl.querySelector('tbody');
                     thead.innerHTML = '';
@@ -747,18 +747,18 @@ const FindPersonDialog = (()=>{
                         html = [html, '<th>',c.title,'</th>'].join('');
                     });
                     thead.innerHTML = ['<tr>',html,'</tr>'].join('');
-                    
+
                     rows = [rows ,`<tr>
                                  <td colspan="100%" >
                                     <span class="d-flex align-items-center justify-content-center">Search for someone here</span>
                                  </td>
                               </tr>`].join('');
                     tbody.innerHTML = rows;
-                    // tbody.addEventListener('click', function(event) 
+                    // tbody.addEventListener('click', function(event)
                     tbody.onclick = (event) =>{
                      let tr = VSUtil.closestLimited(event.target,'tr');
                      if (tr) {
-                        tr.classList.toggle('row-selected'); 
+                        tr.classList.toggle('row-selected');
                         if(me.dataOptions.singleSelect && tr.classList.contains('row-selected')){
                            if(me.prev_selected_tr) me.prev_selected_tr.classList.remove('row-selected');
                         }
@@ -766,7 +766,7 @@ const FindPersonDialog = (()=>{
                      }
                   };
                 };
-              
+
                me.getSelection = (tbl, cols)=>{
                  //const tbl = me.controls.tblPersons;
                  //const context = FindContext.getColumns(me.dataOptions.role);`
@@ -775,7 +775,7 @@ const FindPersonDialog = (()=>{
                  let tds = null;
                  tbody.querySelectorAll('tr').forEach(tr =>{
                      if(tr.classList.contains('row-selected')){
-                        tds = tds||tr.querySelectorAll('td') 
+                        tds = tds||tr.querySelectorAll('td')
                         let item = {};
                         tds.forEach(td=>{
                            item[td.dataset.name] = td.textContent;
@@ -806,7 +806,7 @@ const FindPersonDialog = (()=>{
                         cols.map(c =>{
                            let name = c.name;
                            let val = typeof c.data == 'function' ? c.data(item,index) : (item[c.data || c.name]);
-                           
+
                            row_html = [row_html,'<td data-name="',name,'">',val,'</td>'].join('');
                         });
                         html += ['<tr data-id="',item.id,'">',row_html,'</tr>'].join('');
@@ -838,7 +838,7 @@ const FindPersonDialog = (()=>{
                me.renderColumns(me.controls.tblPersons, context.columns);
                const elTitle = divModal.querySelector('.modal-content .modal-title');
                if(elTitle){
-                  elTitle.textContent = context.title; 
+                  elTitle.textContent = context.title;
                }
                LocaleManager.translateZone(me.divModal);
             },
@@ -854,7 +854,7 @@ const FindPersonDialog = (()=>{
                 label:'<span vslang="DataTransferItemList.OK"></span>',
                 cssClass:'btn btn-primary',
                 click:(me)=>{
-                  me.context = me.context || FindContext.getContext(me.dataOptions.role);  
+                  me.context = me.context || FindContext.getContext(me.dataOptions.role);
                   const p = me.getSelection(me.controls.tblPersons,me.context.columns);
                   if (!p || !p[0]){
                      cv_interact.warning('No one is selected!');
@@ -863,9 +863,9 @@ const FindPersonDialog = (()=>{
                   const d = me.dataOptions.singleSelect ? p[0]: p;
                   me.hide(true,d);
                 }
-              }  
+              }
             ],
-        
+
          });
         dialog.show(op);
      }
@@ -875,7 +875,7 @@ const FindPersonDialog = (()=>{
 "use strict";
 const PusherClient = new function(){
     const mThis = this;
- 
+
     this.branch_id = document.querySelector('meta[name="sess_branch_id"]').getAttribute('content');
     this.user_id = document.querySelector('meta[name="sess_user_id"]').getAttribute('content');
     // this.branch_id = $('meta[name="sess_branch_id"]').attr('content');
@@ -887,14 +887,14 @@ const PusherClient = new function(){
     this.backend_channel_name = ['dms.backend.',this.branch_id].join('');
     //*** FOr HouExpress */
    // this.backend_channel_name = ['houex.backend.',this.branch_id].join('');
-   
+
     this.pusher_channel = {'bind':()=>{ return;}};
 
     //pusher_app_key are in .env file, and in main.js
-    //cookie_name are set in main.js, app.js, vsapi.js, loginController.php, Master.blade.php, "login/index.blade.php" 
-    
+    //cookie_name are set in main.js, app.js, vsapi.js, loginController.php, Master.blade.php, "login/index.blade.php"
+
     //*** For Demo DMS */
-    const pusher_app_key = 'e71b395ef6f9326086ca'; //process.env.PUSHER_APP_KEY 
+    const pusher_app_key = 'e71b395ef6f9326086ca'; //process.env.PUSHER_APP_KEY
 
     //** For HOUExpress */
     //let pusher_app_key = '105a036ea697941d67d1'; //process.env.PUSHER_APP_KEY
@@ -918,21 +918,21 @@ const PusherClient = new function(){
                         }else{
                             console.error('Pusher authorization failed. This can happen when token expired!');
                         }
-                       
+
                     });
                 }
             };
         }
     });
- 
+
     pusher.connection.bind('error', function(err) {
         console.error("Pusher error:", err);
     });
-    
+
     pusher.connection.bind('connected',(payload)=>{
         console.info('Web socket connection successful :)');
     });
- 
+
     mThis.pusher_channel = pusher.subscribe(`private-${mThis.backend_channel_name}`);
 
     mThis.pusher_channel.bind('pusher:subscription_succeeded',(d)=>{
@@ -958,7 +958,7 @@ const PusherClient = new function(){
         });
 
         let order_id = data.order?data.order.id:0;
-        let image_count = (data.order || {}).image_count; 
+        let image_count = (data.order || {}).image_count;
         OrderImagesComponent.addImage(order_id,data.img,image_count);
     });
 
@@ -1003,7 +1003,7 @@ const PusherClient = new function(){
     //     TripListComponent.packageStatusChanged_eventHandler(d);
     // });
 
-    mThis.pusher_channel.bind('order_created', (d)=>{ 
+    mThis.pusher_channel.bind('order_created', (d)=>{
         toastr.info(d.data.message, 'Order Created');
         main_view.addNotificationItem({'title':d.data.title,'message':d.data.message});
         const tr = PickupListComponent.getExpandedRow_tr();
@@ -1054,9 +1054,9 @@ const PusherClient = new function(){
 
             let tr = PickupListComponent.findRowByOrdderId(data.order_id);
             PickupListComponent.updatePickupStatus(tr,data);
-        } 
+        }
     });
-                    
+
     mThis.pusher_channel.bind('order_deleted',(d) =>{
         let data = d.data;
         toastr.error(DUtil.escapeHtml(data.message),'Order Deleted',data.title?data.title:'Order Deleted');
@@ -1072,14 +1072,14 @@ const PusherClient = new function(){
             }
         }
     });
-   
+
     mThis.pusher_channel.bind('package_photo_picked',(d) =>{
         let data = d.data;
         data.title = data.title || 'Photo Picked';
         toastr.info(DUtil.escapeHtml(data.message),'Photo Picked',data.title);
         main_view.addNotificationItem({'title':data.title,'message':data.message});
         if(PickupListComponent.tblOrders && PickupListComponent.tblOrders.style.display !== 'none'){
-            PickupListComponent.setImageCount(data.order_id,data.img_count); 
+            PickupListComponent.setImageCount(data.order_id,data.img_count);
         }
     });
 
@@ -1089,7 +1089,7 @@ const PusherClient = new function(){
         toastr.warning(DUtil.escapeHtml(data.message),'Photo Deleted',data.title);
         main_view.addNotificationItem({'title':data.title,'message':data.message});
         if(PickupListComponent.tblOrders && PickupListComponent.tblOrders.style.display !== 'none'){
-            PickupListComponent.setImageCount(data.order_id,data.img_count); 
+            PickupListComponent.setImageCount(data.order_id,data.img_count);
         }
     });
 
@@ -1119,7 +1119,7 @@ var DashboardComponent = new (function () {
 		if (mThis.initAlready) return;
 		mThis.initAlready = true;
 	};
-  
+
 	mThis.renderDashboard = () => {
 		const div = mThis.self;
 		const html = `
@@ -2026,8 +2026,8 @@ var TenantProfileComponent = new (function () {
             </div>
 
             <div class="col-12 col-lg-9">
-                <div class="card shadow-sm h-100"> 
-                    
+                <div class="card shadow-sm h-100">
+
                     <div class="card-body tab-content">
                         <div class="tab-pane py-2 active" id="overview_tenant_detail">
                             <div class="row g-4 mb-5">
@@ -4180,7 +4180,7 @@ var InvoicesComponent = (() => {
                 tr.dataset.canceled = 0;
             },
             listContainerClass: null,
-        }); 
+        });
 
         // mThis.btnAdd.onclick = (e) => {
         //     e.preventDefault();
@@ -4954,7 +4954,7 @@ const InvoiceDialog = (() => {
                         ${
                             Number(invoiceType) === 2
                                 ? ""
-                                : `                                        
+                                : `
                             <div class="material-input outlined" style="margin-bottom: 1rem;">
                                 <input class="data-input form-control" data-field="tax_rate" name="tax_rate" type="text" inputmode="decimal" placeholder="0" required>
                                 <label style="color:#777;">Tax % </label>
@@ -5233,13 +5233,13 @@ const InvoiceDialog = (() => {
 
                                 <!-- Dynamic Row Container: Swaps between 2 columns (Reading mode) and 3 columns (Manual mode) -->
                                 <div id="row_calculation_fields" style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                                    
+
                                     <!-- Only visible in Reading Tab -->
                                     <div id="wrapper_units_readonly" class="material-input outlined" style="margin-bottom: 1rem;">
                                         <input id="units_used_readonly" class="form-control bg-light cursor-blocked" type="text" readonly placeholder="0.00">
                                         <label style="color:#777;">Calculated Units (kWh)</label>
                                     </div>
-                                    
+
                                     <!-- Shared Field: Changes grid position dynamically -->
                                     <div id="wrapper_exchange_rate" class="material-input outlined" style="margin-bottom: 1rem;">
                                         <input class="data-input form-control" data-field="exchange_rate" name="exchange_rate" type="text" inputmode="decimal" placeholder="0.00" value="4025">
@@ -5280,7 +5280,7 @@ const InvoiceDialog = (() => {
                                         style="background-color: #f0f7ff; border-color: #0c447c; color: #0c447c; font-weight: bold; font-size: 1.1em;">
                                     <label style="color:#0c447c;">Total Amount ($)</label>
                                 </div>
-                                
+
                                 <div class="material-input outlined" style="display:none;">
                                     <textarea class="data-input form-control" data-field="remark" name="remark" rows="2" placeholder=" "></textarea>
                                     <label style="color:#777;">Remark</label>
@@ -6215,7 +6215,7 @@ const InvoiceDialog = (() => {
                                                 </select>
                                             </div>
                                         </div>
-                                        
+
                                         <div class="material-input outlined" style="grid-column: span 2; margin-top: 0.5rem;">
                                             <input class="data-input form-control cursor-blocked" data-field="total_amount" name="total_amount" type="text" readonly
                                                 style="background-color: #f0f7ff; border-color: #0c447c; color: #0c447c; font-weight: bold; font-size: 1.1em;" placeholder=" ">
@@ -8748,8 +8748,8 @@ var TenantProfileComponent = new (function () {
             </div>
 
             <div class="col-12 col-lg-9">
-                <div class="card shadow-sm h-100"> 
-                    
+                <div class="card shadow-sm h-100">
+
                     <div class="card-body tab-content">
                         <div class="tab-pane py-2 active" id="overview_tenant_detail">
                             <div class="row g-4 mb-5">

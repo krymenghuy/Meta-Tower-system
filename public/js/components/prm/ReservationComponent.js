@@ -112,7 +112,6 @@ var ReservationComponent = (() => {
             transTitle: "titles.Action",
             className: "col_action align-middle",
             data: (data) => {
-                // console.log(444, data.status_id);
 
                 if (data.status_id == 2) return "";
                 return `<div class="d-flex justify-content-center align-items-end">
@@ -308,11 +307,11 @@ var ReservationComponent = (() => {
     mThis.cancelReservation = (id, menuLink) => {
         if (!AuthManager.allowed(250)) return;
         cv_interact.confirm(
-            "Cancel this reservation ?",
+            "confirm_cancel",
             {
                 transTitle: "Cancel Reservation",
                 context: "delete",
-                confirmButtonText: "Cancel",
+                confirmButtonText: LocaleManager.trans('Cancel', 'buttons')
             },
             (confirmed) => {
                 if (!confirmed) return;
@@ -343,11 +342,11 @@ var ReservationComponent = (() => {
     mThis.deleteReservation = (id, menuLink) => {
         if (!AuthManager.allowed(251)) return;
         cv_interact.confirm(
-            "Delete this reservation?",
+            "confirm_delete",
             {
                 transTitle: "Delete Reservation",
                 context: "delete",
-                confirmButtonText: "Delete",
+                confirmButtonText: LocaleManager.trans('Delete', 'buttons')
             },
             (e) => {
                 if (!e) return;
@@ -438,7 +437,7 @@ const CreateReservationDialog = (() => {
                                 </div>
                             </div>
                             <div class="col-6">
-                                <select data-style="material" name="amenity" class="data-input form-control" data-field="amenity_id" placeholder="Amenity">
+                                <select data-style="material" name="amenity" class="data-input form-control" data-field="amenity_id" placeholder="${LocaleManager.trans('Amenity', 'titles')}">
                                 </select>
                             </div>
 
@@ -627,7 +626,7 @@ const CreateReservationDialog = (() => {
                                         if (me.dataOptions.id > 0) {
                                             cv_interact.success(
                                                 "update_success_reservation",
-                                            );has
+                                            );
                                         } else {
                                             cv_interact.success(
                                                 "create_success_reservation",

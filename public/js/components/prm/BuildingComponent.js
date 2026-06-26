@@ -580,7 +580,7 @@ const BuildingDialog = (() => {
                 title: (me) => {
                     const title = me.dataOptions.id ? "Modify Building" : "Create Building";
                     if (title) {
-                       return  `<h4 class="text-prm-custom text-start fw-bold">${LocaleManager.trans(title,'titles')}</h4>`;
+                       return  `<h4 class="text-start fw-bold">${LocaleManager.trans(title,'titles')}</h4>`;
                     }
                 },
                 createContent: () => {
@@ -695,7 +695,8 @@ const BuildingDialog = (() => {
                 onPrepareForm: (me, data) => {
                     const isReadOnly = me.dataOptions.id > 0;
                     me.setReadOnly(isReadOnly, ["total_floor"]);
-                    const hasUnit = data.building_details.total_space > 0;
+                    const total_space = Number(data.building_details?.total_space || 0);
+                    const hasUnit = total_space > 0;
                     me.controls.prefix.disabled = hasUnit;
                 },
                 buttons: [
@@ -754,7 +755,7 @@ const CreateFloorDialog = (() => {
                 title: (me) => {
                     const title = me.dataOptions.id ? "Modify Floor" : "Create Floor";
                     if (title) {
-                       return  `<h4 class="text-prm-custom text-start fw-bold">${LocaleManager.trans(title,'titles')}</h4>`;
+                       return  `<h4 class="text-start fw-bold">${LocaleManager.trans(title,'titles')}</h4>`;
                     }
                 },
                 createContent: () => `

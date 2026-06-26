@@ -22,7 +22,7 @@ return [
         'file_size_between' => 'File size must be between ??KB and ??KB.',
         'default' => 'Invalid ??.',
 
-        'name_required' => 'Name is required.',
+        'name_required' => '?? is required and must be at most ?? characters. Given value: ??',
         'prefix_required' => 'Prefix is required.',
         'total_floor_required' => 'Total floor is required.',
         'total_area_required' => 'Total area is required.',
@@ -36,7 +36,7 @@ return [
         'select_price_type' => 'Please select the Charge As.',
 
         'select_gender' => 'Please select a gender.',
-        'date_of_birth_required' => 'Please select a valid date of birth',
+        'date_of_birth_required' => 'Please select a valid date of birth.',
         'legal_name_required' => 'Please enter the legal name.',
         'nationality_required' => 'Please select a nationality.',
         'phone_number_required' => 'Please enter the phone number.',
@@ -54,6 +54,8 @@ return [
         'required_end_date' => 'End date is required.',
         'required_start_time' => 'Start time is required.',
         'required_end_time' => 'End time is required.',
+
+        'enter_address' => 'Please enter address.',
 
         'select_tenant' => 'Please select a tenant.',
 
@@ -118,13 +120,75 @@ return [
 
         'item_name_already_exists' => 'Item name already exists!',
         'end_time_must' => 'End time must be greater than start time.',
+        'nid_issue_date' => 'Please Select National ID Issue Date.',
+
+        'cannot_delete_po_received' => 'This purchase order cannot be deleted because it has been fully received.',
+        'cannot_delete_po_partial_received' => 'This purchase order cannot be deleted because it has been partially received.',
+        'cannot_delete_po_ordered' => 'This purchase order cannot be deleted because it has already been ordered.',
+        'po_already_rejected' => 'Purchase Order is already rejected.',
+        'cannot_reject_completed_or_cancelled' => 'Completed or cancelled Purchase Orders cannot be rejected.',
+        'po_not_found' => 'Purchase Order not found.',
+        'cannot_save_po' => 'Cannot save purchase order.',
+        'duplicate_po_items' => 'Duplicate items are not allowed in a single purchase order.',
+        'po_item_required' => 'Please select at least one item before saving the purchase order.',
+
+        'amenity_already_booked' => 'This amenity is already booked for this time slot.',
+        'cannot_cancel_in_30min' => 'Reservations cannot be canceled less than 30 minutes before start time.',
+        'schedule_cannot_past' => 'Schedule cannot be in the past.',
+        'select_business_type'   => 'Please select a valid business type.',
+        'select_unit_code'       => 'Please select a valid unit code.',
+        'select_deposit'         => 'Please select a valid deposit.',
+        'select_start_date'      => 'Please select a start date.',
+        'select_end_date'        => 'Please select an end date.',
+        'contract_not_found'     => 'The contract could not be found.',
+
+        'end_date_must_be_after_start_date' => 'The end date must be after the start date.',
+    'end_date_cannot_be_in_the_past' => 'The end date cannot be in the past.',
+    'end_date_must_be_at_least_one_month_after_start_date' => 'The end date must be at least one month after the start date.',
+    'select_tenant_before_create_contract' => 'Please select or create a tenant before creating a contract.',
+    'this_space_already_has_a_contract' => 'This space already has an active contract.',
+    'start_date_must_be_on_or_before_the_last_renewal_start' => 'The start date must be on or before the last renewal start date.',
+    'dates_overlap_the_last_renewal_for_this_unit' => 'The selected dates overlap with the last contract renewal for this unit.',
+    'only_pending_expired_or_terminated_contracts_can_be_deleted' => 'Only pending, expired, or terminated contracts can be deleted.',
+
+
+
+
 
 
 
 
     ],
+    'api_body_keys' =>[
+        'name' => 'Name',
+        'name_kh' => 'Name Khmer',
+        'building_id' => 'Building',
+    ],
     'titles' => [
-        'dashboard' => 'Dashboard - Meta Tower'
+        'dashboard' => 'Dashboard - Meta Tower',
+        'Personal Information' => 'Personal Information',
+        'Overview' => 'Overview',
+        'Contract' => 'Contract',
+        'Document' => 'Documents',
+        'Documents' => 'Documents',
+        'No_renewal_history' => 'No renewal history for this contract.',
+        'Renewals_will_appear' => 'Renewals will appear here when the contract is renewed.',
+    ],
+    'labels' => [
+        'Name' => 'Name',
+        'Gender' => 'Gender',
+        'Male' => 'Male',
+        'Female' => 'Female',
+        'Date of Birth' => 'Date of Birth',
+        'Legal Name' => 'Legal Name',
+        'National ID' => 'National ID',
+        'Passport' => 'Passport Number',
+        'Passport Number' => 'Passport Number',
+        'Phone' => 'Phone',
+        'Email' => 'Email',
+        'Relationship' => 'Relationship',
+        'Partner' => 'Partner',
+        'Address' => 'Address',
     ],
     'menus' => [
 
@@ -171,6 +235,7 @@ return [
         'finish_maintenance' => 'Finish Maintenance',
         'confirm_finish_maintenance' => 'Are you sure you want to finish this maintenance?',
         'maintenance_finished' => 'Maintenance has been finished successfully.',
+        'confirm_authorize' => 'Are you sure you want to authorize this purchase order?',
 
         'update_success_tenant' => 'Tenant updated successfully.',
         'create_success_tenant' => 'Tenant created successfully.',
@@ -179,7 +244,7 @@ return [
         'select_document_type' => 'Please select a document type.',
         'select_file' => 'Please select a file.',
         'select_valid_file' => 'Please select a valid file.',
-        'remarks_max_255' => 'Remarks must not exceed 255 characters.',   
+        'remarks_max_255' => 'Remarks must not exceed 255 characters.',
         'update_success_document' => 'Document updated successfully.',
         'create_success_document' => 'Document created successfully.',
         'delete_success_document' => 'Document deleted successfully.',
@@ -212,6 +277,7 @@ return [
         'delete_success_reservation' => 'Reservation deleted successfully.',
         'cancel_success_reservation' => 'Reservation cancelled successfully.',
 
+        'confirm_reset_invoice' => 'Are you sure you want to reset this invoice setting?',
         'delete_success_invoice' => 'Invoice deleted successfully.',
         'reset_success_invoice' => 'Invoice setting reset successfully.',
         'update_success_setting' => 'Settings updated successfully.',
@@ -230,9 +296,11 @@ return [
         'service_exist' => 'Service is already in the list.',
         'service_request' => 'Please select a service request.',
         'request_exist' => 'Request is already in the list.',
+        'rent_exist' => 'Rent is already in the list.',
         'request_invoice' => 'Service request added to invoice',
         'failed_load_invoice' => 'Failed to load invoice details.',
         'no_request' => 'No Requests relate to this space.',
+        'rent_added_success' => 'Rent for ?? added successfully.',
         'receive_success_payment' => 'Payment Received Successfully.',
         'payment_amount' => 'Please enter a payment amount',
 
@@ -284,6 +352,10 @@ return [
         'update_success_item' => 'Item updated successfully.',
         'create_success_item' => 'Item created successfully.',
         'delete_success_item' => 'Item deleted successfully.',
+        
+        'restore_to_invoice' => 'This will restore to the due balance on the invoice.',
+        'reason_for_cancellation' => 'Reason for cancellation (required)...',
+        'reason_required' => 'You must provide a reason!',
 
         '' => '',
         '' => '',
@@ -316,12 +388,21 @@ return [
         "OK" => "OK",
         "Remove" => "Remove",
         "Delete" => "Delete",
+        "Edit" => "Edit",
         "Dont Delete" => "Don't Delete",
         "Dont Remove" => "Don't Remove",
         "Create" => "Create",
         "Yes" => "Yes",
         "No" => "No",
         "Finish" => "Finish",
+    ],
+    
+    'buttons' => [
+        'Edit' => 'Edit',
+        'Create Service' => 'Create Service',
+        'Generate New Bill' => 'Generate New Bill',
+        'Create Contract' => 'Create Contract',
+        'Create Tenant' => 'Create Tenant1212121',
     ],
 ];
 
