@@ -61,6 +61,24 @@ return [
 
         'please_select_a_valid_category' => 'Please select a valid category.',
         'please_select_a_valid_unit' => 'Please select a valid unit.',
+        'please_select_a_valid_vendor' => 'Please select a valid vendor.',
+        'please_select_a_valid_building' => 'Please select a valid building.',
+        'reference_no_is_required' => 'Reference no is required.',
+        'total_amount_is_required' => 'Total amount is required.',
+        'issue_date_is_required' => 'Issue date is required.',
+        'due_date_is_required' => 'Due date is required.',
+        'due_date_must_be_after_issue_date' => 'Due date must be after the issue date.',
+        'total_amount_cannot_be_negative' => 'Total amount cannot be negative.',
+        'bill_number_already_exists' => 'Bill number already exists.',
+        'reference_number_already_exists' => 'Reference number already exists.',
+        'error_saving_bill' => 'Error saving bill.',
+        'bill_not_found' => 'Bill not found.',
+        'cannot_delete_paid_invoice' => 'Cannot delete paid invoice.',
+        'delete_failed' => 'Delete failed.',
+        'same_current_status' => 'It is the same current status.',
+        'file_is_required' => 'File is required.',
+        'no_attachment_found_for_bill' => 'No attachment found for this bill.',
+        'failed_to_delete_attachment' => 'Failed to delete attachment.',
 
         'contact_person_required' => 'Contact person is required.',
         'contact_phone_required' => 'Contact phone is required.',
@@ -134,22 +152,7 @@ return [
 
         'amenity_already_booked' => 'This amenity is already booked for this time slot.',
         'cannot_cancel_in_30min' => 'Reservations cannot be canceled less than 30 minutes before start time.',
-        'schedule_cannot_past' => 'Schedule cannot be in the past.',
-        'select_business_type'   => 'Please select a valid business type.',
-        'select_unit_code'       => 'Please select a valid unit code.',
-        'select_deposit'         => 'Please select a valid deposit.',
-        'select_start_date'      => 'Please select a start date.',
-        'select_end_date'        => 'Please select an end date.',
-        'contract_not_found'     => 'The contract could not be found.',
-
-        'end_date_must_be_after_start_date' => 'The end date must be after the start date.',
-    'end_date_cannot_be_in_the_past' => 'The end date cannot be in the past.',
-    'end_date_must_be_at_least_one_month_after_start_date' => 'The end date must be at least one month after the start date.',
-    'select_tenant_before_create_contract' => 'Please select or create a tenant before creating a contract.',
-    'this_space_already_has_a_contract' => 'This space already has an active contract.',
-    'start_date_must_be_on_or_before_the_last_renewal_start' => 'The start date must be on or before the last renewal start date.',
-    'dates_overlap_the_last_renewal_for_this_unit' => 'The selected dates overlap with the last contract renewal for this unit.',
-    'only_pending_expired_or_terminated_contracts_can_be_deleted' => 'Only pending, expired, or terminated contracts can be deleted.',
+         'schedule_cannot_past' => 'Schedule cannot be in the past.',
 
 
 
@@ -189,6 +192,8 @@ return [
         'Relationship' => 'Relationship',
         'Partner' => 'Partner',
         'Address' => 'Address',
+        'Search by name, code or phone' => 'Search by name, code or phone',
+        'Search by tenant, phone or unit' => 'Search by tenant, phone or unit',
     ],
     'menus' => [
 
@@ -265,7 +270,7 @@ return [
         'select_amenity' => 'Please select a amenity.',
         'create_success_maintenance' => 'Maintenance created successfully.',
         'update_success_maintenance' => 'Maintenance updated successfully.',
-        
+
         'create_success_contract' => 'Contract created successfully.',
         'update_success_contract' => 'Contract updated successfully.',
         'delete_success_contract' => 'Contract deleted successfully.',
@@ -285,7 +290,7 @@ return [
         'select_tenant' => 'Please select tenant first.',
         'update_success_invoice' => 'Invoice updated successfully.',
         'create_success_invoice' => 'Invoice created successfully.',
-        'cancel_success_invoice' => 'Invoice cancelled successfully.',  
+        'cancel_success_invoice' => 'Invoice cancelled successfully.',
         'add_item' => 'Please add at least one item.',
         'tax_required' => 'Tax % is required for this invoice type.',
         'enter_tax' => 'Please enter a valid Tax % value.',
@@ -320,7 +325,7 @@ return [
         'receive_success_order' => 'Purchase Order received successfully.',
         'reject_success_order' => 'Purchase Order rejected successfully.',
         'authorized_purchase' => 'Purchase Order has been authorized!',
-        
+
 
         'delete_bill_success' => 'Bill record has been deleted."',
         'update_bill_success' => 'Bill updated successfully.',
@@ -352,7 +357,7 @@ return [
         'update_success_item' => 'Item updated successfully.',
         'create_success_item' => 'Item created successfully.',
         'delete_success_item' => 'Item deleted successfully.',
-        
+
         'restore_to_invoice' => 'This will restore to the due balance on the invoice.',
         'reason_for_cancellation' => 'Reason for cancellation (required)...',
         'reason_required' => 'You must provide a reason!',
@@ -370,17 +375,17 @@ return [
 
 
 
-        
 
 
 
 
 
-        
 
 
-        
-        
+
+
+
+
 
         "Confirm" => 'Confirm',
         "Log Out" => "Log Out",
@@ -396,10 +401,11 @@ return [
         "No" => "No",
         "Finish" => "Finish",
     ],
-    
+
     'buttons' => [
         'Edit' => 'Edit',
         'Create Service' => 'Create Service',
+        'Create Service Request' => 'Create Service Request',
         'Generate New Bill' => 'Generate New Bill',
         'Create Contract' => 'Create Contract',
         'Create Tenant' => 'Create Tenant1212121',

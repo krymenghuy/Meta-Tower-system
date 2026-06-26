@@ -896,7 +896,7 @@ var InvoiceComponent = (() => {
                     "id",
                     "payment_status",
                     "",
-                    "All Statuses",
+                    LocaleManager.trans("All Statuses", "titles"),
                     "",
                 );
 
@@ -912,7 +912,7 @@ var InvoiceComponent = (() => {
                     "id",
                     "name",
                     "",
-                    "All Types",
+                    LocaleManager.trans("All Types", "titles"),
                     "",
                 );
 
@@ -3809,7 +3809,7 @@ const InvoiceSettingDialog = (() => {
                         <span class="is-row-label">
                             <i class="fa-solid fa-receipt me-2"></i>
                             ${LocaleManager.trans("Show Commercial Tax", "labels")}
-                            
+
                         </span>
                         <div class="form-check form-switch">
                             <input class="form-check-input toggle-setting" type="checkbox" data-field="show_comm_tax" id="_is_show_comm_tax">

@@ -455,7 +455,7 @@ var ServiceComponent = (() => {
                     "id",
                     "service_category",
                     "",
-                    "All Categories ",
+                    LocaleManager.trans("All Categories", "titles"),
                     "",
                 );
                 VSUtil.setComboItems(
@@ -464,7 +464,7 @@ var ServiceComponent = (() => {
                     "id",
                     "service_type",
                     "",
-                    "All Types",
+                    LocaleManager.trans("All Types", "titles"),
                     "",
                 );
                 VSUtil.setComboItems(
@@ -473,7 +473,7 @@ var ServiceComponent = (() => {
                     "id",
                     "status_name",
                     "",
-                    "All Statuses",
+                    LocaleManager.trans("All Statuses", "titles"),
                     "",
                 );
                 VSUtil.setComboItems(
@@ -482,7 +482,7 @@ var ServiceComponent = (() => {
                     "id",
                     "name",
                     "",
-                    "All Charges",
+                    LocaleManager.trans("All Charge As", "titles"),
                     "",
                 );
 

@@ -187,7 +187,7 @@ var BuildingComponent = (() => {
                         parent_tr.dataset.totalfloor || "0",
                         10,
                     );
-                    
+
                     if (id > 0) {
                         mThis.displayFloorNumber(container, id, totalFloor);
                     }
@@ -423,7 +423,7 @@ var BuildingComponent = (() => {
                     )
                     .then((res) => {
                         if (res.status_code === 200) {
-                            
+
                             if (typeof onDone === "function") onDone();
                             cv_interact.success('delete_floor');
                         } else {
@@ -691,7 +691,7 @@ const BuildingDialog = (() => {
                         },
                     },
                 },
-              
+
                 onPrepareForm: (me, data) => {
                     const isReadOnly = me.dataOptions.id > 0;
                     me.setReadOnly(isReadOnly, ["total_floor"]);
@@ -727,7 +727,7 @@ const BuildingDialog = (() => {
                                     }else {
                                         cv_interact.success('create_success_building');
                                     }
-                                    
+
                                 } else {
                                     cv_interact.error(res.error_message);
                                 }
@@ -792,7 +792,7 @@ const CreateFloorDialog = (() => {
                         }),
                     },
                 },
-              
+
                 onPrepareForm: (me, data) => {
                     const details = data?.floor_details || {};
                     const floorNumber = me.divModal.querySelector(

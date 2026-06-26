@@ -676,7 +676,7 @@ var BillComponent = (() => {
                     "id",
                     "building",
                     "",
-                    "All Buildings",
+                    LocaleManager.trans("All buildings", "titles"),
                     "",
                 );
                 VSUtil.setComboItems(
@@ -685,7 +685,7 @@ var BillComponent = (() => {
                     "id",
                     "vendor",
                     "",
-                    "All Vendor",
+                    LocaleManager.trans("All Vendors", "titles"),
                     "",
                 );
                 VSUtil.setComboItems(
@@ -694,7 +694,7 @@ var BillComponent = (() => {
                     "id",
                     "bill_status",
                     "",
-                    "All Statuses",
+                    LocaleManager.trans("All Statuses", "titles"),
                     "",
                 );
                 VSUtil.setComboItems(
@@ -703,7 +703,7 @@ var BillComponent = (() => {
                     "id",
                     "expense_category",
                     "",
-                    "All Categories",
+                    LocaleManager.trans("All Types", "titles"),
                     "",
                 );
                 if (typeof onFinish === "function") onFinish();

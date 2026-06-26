@@ -2,16 +2,16 @@
      <div id="_divFilter_vendor" class="rounded-2 p-3 bg-white shadow-sm">
         <div class="row g-3 align-items-center">
             <div class="col-12 col-md-6 col-lg-3">
-                <input type="text" class="rounded-2 filter-field input-search" id="_search_vendor" placeholder="Search by name or phone">
+                <input  type="text" class="rounded-2 filter-field input-search" id="_search_vendor" placeholder="{{ \Vsd\Locales\Localization::trans('Search by name or phone', 'titles') }}">
          </div>
             <div class="col-12 col-md-6 col-lg-2 ">
-                <select type="id" id="_vendor_type_id" class="data-input filter-field" data-field="vendor_type_id"></select>
+                <select type="id" id="_vendor_type_id" class="data-input filter-field" data-field="vendor_type_id" placeholder='vslang="titles.All Types"'></select>
             </div>
             <div class="col-12 col-md-6 col-lg-2 ">
-                <select type="id" id="_vendor_category_id" class="data-input filter-field" data-field="category_id"></select>
+                <select placeholder='vslang="titles.All Categories"' type="id" id="_vendor_category_id" class="data-input filter-field" data-field="category_id"></select>
             </div>
             <div class="col-12 col-md-6 col-lg-2 ">
-                <select type="id" id="_vendor_status_id" class="data-input filter-field" data-field="status_id"></select>
+                <select placeholder='vslang="titles.All Statuses"' type="id" id="_vendor_status_id" class="data-input filter-field" data-field="status_id"></select>
             </div>
 
             <div class="col-12 col-md-auto ms-md-auto text-md-end">
