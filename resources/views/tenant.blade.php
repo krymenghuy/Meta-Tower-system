@@ -19,6 +19,8 @@
     <meta name="subs_id" content="{{ sess_subs_id() }}" />
     <meta name="default_component" content="<?php echo $defaultComponent; ?>" />
     <meta name="asset_url" content="{{ asset('assets') }}" />
+    <meta name="tenant_name"
+      content="<?php echo $user ? $user->full_name : ''; ?>" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Moul&display=swap" rel="stylesheet" />
@@ -164,12 +166,12 @@
                                     <div class="dropdown choose--language">
                                             <button id="_main_btn_lang" class="btn-dropdown main-menu-button align--language" data-menu="lang">
                                                 <img src="{{ asset('assets/images/icons/khmer.png') }}" style="border-radius: 50%;height:25px;" />
-                                                <span id="_main_lang_name" class="mx-2">
+                                                <span id="_main_lang_name" class="mx-2" style="color:#6b6f82;">
                                                     <?php
                                                         echo Session::get('lang_name', 'Khmer');
                                                     ?>
                                                 </span>
-                                                <i class="ps-2 fa-caret-down fa-solid fs-5"></i>
+                                                <i class="ps-2 fa-caret-down fa-solid fs-5" style="color:#6b6f82;"></i>
                                             </button>
                                             <div class="dropdown-menu-right dropdown-menu">
                                                 <span class="lang-menu-header"></span>
@@ -192,7 +194,7 @@
                                     <div class="dropdown nav--notification">
                                         <button id="_main_btn_notif" class="btn-dropdown main-menu-button"
                                             data-menu="notif">
-                                            <i class="ms-2 fa-solid fa-bell fs-4" style="color:#080809;"></i>
+                                            <i class="fa-regular fa-bell fs-4" style="color:#6b6f82;"></i>
                                             <span class="number--notification notif-count"
                                                 id="_main_notif_count">0</span>
                                         </button>
@@ -206,7 +208,7 @@
                                     </div>
 
                                     <div class="dropdown app--list">
-                                        <button class="btn-dropdown main-menu-button" data-menu="app"> <i class="ms-2 fa-brands fa-microsoft fs-4" style="color:#080809;"></i> </button>
+                                        <button class="btn-dropdown main-menu-button" data-menu="app"> <i class="fa-solid fa-indent fs-4 ms-2" style="color:#6b6f82;"></i> </button>
 
                                         <?php
                                             $user = XAuthService::user();
@@ -271,7 +273,7 @@
                                         <button id="_main_btn_user" class="btn-dropdown main-menu-button"
                                             data-menu="user">
                                             <img src="<?php echo $user->image_url; ?>" style="border-radius:50%;height:25px" />
-                                                <span class="mx-2">
+                                                <span class="mx-2" style="color:#6b6f82;">
                                                     <?php
                                                         //$user = App\Services\Umt\XAuthService::user();
                                                         echo $user ? $user->full_name : '';
@@ -288,6 +290,13 @@
                                                         href="javascript:void(0)">
                                                         <i class="m-2 fas fa-cog"></i>
                                                         About Meta Client
+                                                    </a>
+                                                </span>
+                                                <span class="user-menu-item">
+                                                    <a id="_main_mnu_changepwd" class="dropdown-item"
+                                                        href="javascript:void(0)">
+                                                        <i class="m-2 fas fa-key"></i>
+                                                        Change password
                                                     </a>
                                                 </span>
                                                 <div class="dropdown-divider"></div>

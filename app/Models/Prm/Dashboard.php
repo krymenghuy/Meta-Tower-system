@@ -204,7 +204,7 @@ class Dashboard extends VSModel
                 'note' => "$occupiedSpaces / $totalSpaces spaces occupied",
                 'trend' => $trend,
                 'icon' => '🏢',
-                'color' => "COLORS.violet",
+                'color' => "violet",
                 'soft' => "rgba(79,70,229,.11)"
             ],
             (object)[
@@ -214,7 +214,7 @@ class Dashboard extends VSModel
                 'note' => 'Registered companies',
                 'trend' => "+$newTenants new tenants",
                 'icon' => '👥',
-                'color' => "COLORS.success",
+                'color' => "accent",
                 'soft' => "rgba(16,185,129,.12)"
             ],
             (object)[
@@ -224,7 +224,7 @@ class Dashboard extends VSModel
                 'note' => 'Rent + utilities + service fees',
                 'trend' => "↑ {$revenueGrowth}%",
                 'icon' => '💳',
-                'color' => "COLORS.info",
+                'color' => "violet",
                 'soft' => "rgba(14,165,233,.12)"
             ],
             (object)[
@@ -233,7 +233,8 @@ class Dashboard extends VSModel
                 'value' => '$' . number_format($outstandingAmount, 2),
                 'note' => "$overdueInvoices overdue invoices",
                 'trend' => 'Requires follow-up',
-                'icon' => '⚠','color' => "COLORS.danger",
+                'icon' => '⚠',
+                'color' => "violet",
                 'soft' => "rgba(239,68,68,.12)"
             ]
         ];
