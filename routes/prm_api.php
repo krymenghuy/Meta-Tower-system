@@ -386,16 +386,16 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('deposit')->gr
 });
 
 
-Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant/tenantProfile')->group(function () {
-    Route::post('/create', [TenantProfileController::class, 'createTenant']);
-    Route::post('/profile/photo',[TenantProfileController::class,'getProfilePhoto']);
-    Route::post('/profile/photo/delete',[TenantProfileController::class,'deleteProfilePhoto']);
-    Route::post('/profile/photo/create',[TenantProfileController::class,'createProfilePhoto']);
-    Route::post('/list-paginate', [TenantProfileController::class, 'getListPaginate']);
-    Route::post('/details', [TenantProfileController::class, 'getDetails']);
-    Route::post('/form-options', [TenantProfileController::class, 'getFormOptions']);
-    Route::post('/delete', [TenantProfileController::class, 'delete']);
-});
+// Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant/tenantProfile')->group(function () {
+//     Route::post('/create', [TenantProfileController::class, 'createTenant']);
+//     Route::post('/profile/photo',[TenantProfileController::class,'getProfilePhoto']);
+//     Route::post('/profile/photo/delete',[TenantProfileController::class,'deleteProfilePhoto']);
+//     Route::post('/profile/photo/create',[TenantProfileController::class,'createProfilePhoto']);
+//     Route::post('/list-paginate', [TenantProfileController::class, 'getListPaginate']);
+//     Route::post('/details', [TenantProfileController::class, 'getDetails']);
+//     Route::post('/form-options', [TenantProfileController::class, 'getFormOptions']);
+//     Route::post('/delete', [TenantProfileController::class, 'delete']);
+// });
 
 // Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant/reservation')->group(function () {
 //     Route::post('/save', [ReservationsController::class, 'saveReservation']);
