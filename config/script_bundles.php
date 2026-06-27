@@ -193,6 +193,7 @@ return [
                 '/js/components/tenant/TenantProfileComponent.js',
                 '/js/components/tenant/TeamComponent.js',
                 '/js/components/tenant/ContractsComponent.js',
+                '/js/components/tenant/Contracts2Component.js',
                 '/js/components/tenant/InvoicesComponent.js',
                 '/js/components/tenant/ReceiptsComponent.js',
                 '/js/components/tenant/RequestServiceComponent.js',
