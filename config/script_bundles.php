@@ -185,6 +185,7 @@ return [
                 'https://cdn.vectoraclouds.com/frontcore/components/listview/listview.v2.js',
 
                 //'/assets/js/xlsx/xlsx.full.min.js',
+                '/js/components/umt/ChangePasswordDialog.js',
                 'assets/js/pusher/pusher.min.js',
                 '/js/components/common/FindPersonDialog.js',
                 '/js/components/common/pusher_client.js',
