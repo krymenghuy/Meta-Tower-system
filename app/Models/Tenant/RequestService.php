@@ -28,7 +28,6 @@ class RequestService extends VSModel
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
 
-        \Log::info(array($arr, $id, $ss));
         $v_rule = [
             'tenant_id'         => '0|number|exists=tenants.id|text=Please select a tenant.',
             'space_id'          => '1|number|exists=building_spaces.id|text=Please select a space.',
