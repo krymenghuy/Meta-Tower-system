@@ -1796,22 +1796,22 @@ const CreateTenantDialog = (() => {
                             </div>
                     </div>
                     <div class="col-12 row g-2">
-                        <div class="col-12 col-md-3">
+                        <div class="col-12 col-md-6">
                             <div class="vs-material-field">
                                 <input type="text" name="national_id" class="data-input form-control" data-field="national_id" placeholder=" " />
                                 <label vslang="labels.National ID">National ID</label>
                             </div>
                         </div>
-                        <div class="col-12 col-md-4">
-                            <div class="vs-material-field">
-                                <input type="text" data-type="date" name="nid_issue_date" class="data-input form-control form_input" data-field="nid_issue_date" placeholder=" " />
-                                <label vslang="labels.National ID Issue Date">National ID Issue Date</label>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-5">
+                        <div class="col-12 col-md-6">
                             <div class="vs-material-field">
                                 <input type="text" name="passport_number" class="data-input form-control" data-field="passport_number" placeholder=" " />
                                 <label vslang="labels.Passport">Passport Number</label>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="vs-material-field">
+                                <input type="text" data-type="date" name="issue_date" class="data-input form-control form_input" data-field="issue_date" placeholder=" " />
+                                <label vslang="labels.Issue Date On">Issue Date On</label>
                             </div>
                         </div>
                         <div class="col-12 col-md-6 pt-2">
@@ -1993,6 +1993,59 @@ const CreateTenantDialog = (() => {
                                 } else cv_interact.error(res.error_message);
                             });
                     };
+
+                    const updateNidPassportRequiredLabels = () => {
+                        const natSelect = me.divModal.querySelector('[name="nationality_id"]');
+                        const nationalIdInput = me.divModal.querySelector('[name="national_id"]');
+                        const passportInput = me.divModal.querySelector('[name="passport_number"]');
+                        const issueInput = me.divModal.querySelector('[name="issue_date"]');
+                        
+                        if (!natSelect) return;
+                        
+                        const selectedOption = natSelect.options[natSelect.selectedIndex];
+                        const selectedText = (selectedOption?.text || '').trim().toLowerCase();
+                        
+                        const nidCol = nationalIdInput?.closest('.col-12');
+                        const passportCol = passportInput?.closest('.col-12');
+                        const issueCol = issueInput?.closest('.col-12');
+                        
+                        // Khmer or Cambodian, or default to Khmer if empty
+                        const isKhmer = selectedText === 'khmer' || selectedText === 'cambodian' || selectedText === '';
+                        
+                        if (isKhmer) {
+                            if (nidCol) {
+                                nidCol.classList.remove('d-none', 'col-md-4');
+                                nidCol.classList.add('col-md-6');
+                            }
+                            if (passportCol) {
+                                passportCol.classList.add('d-none');
+                            }
+                            if (issueCol) {
+                                issueCol.classList.remove('col-md-4');
+                                issueCol.classList.add('col-md-6');
+                            }
+                        } else {
+                            if (nidCol) {
+                                nidCol.classList.remove('d-none', 'col-md-6');
+                                nidCol.classList.add('col-md-4');
+                            }
+                            if (passportCol) {
+                                passportCol.classList.remove('d-none', 'col-md-6');
+                                passportCol.classList.add('col-md-4');
+                            }
+                            if (issueCol) {
+                                issueCol.classList.remove('col-md-6');
+                                issueCol.classList.add('col-md-4');
+                            }
+                        }
+                    };
+
+                    me.updateNidPassportRequiredLabels = updateNidPassportRequiredLabels;
+
+                    const natSelect = me.divModal.querySelector('[name="nationality_id"]');
+                    if (natSelect) {
+                        natSelect.addEventListener('change', updateNidPassportRequiredLabels);
+                    }
                 },
                 configSelect: [
                     {
@@ -2049,6 +2102,13 @@ const CreateTenantDialog = (() => {
                             me.fileBase64 = null;
                         }
                         me.renderTenantImage();
+
+                        // Update NID / Passport labels when initial data is set
+                        setTimeout(() => {
+                            if (typeof me.updateNidPassportRequiredLabels === 'function') {
+                                me.updateNidPassportRequiredLabels();
+                            }
+                        }, 200);
                     },
                 },
                 buttons: [

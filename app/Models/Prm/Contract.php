@@ -662,9 +662,17 @@ class Contract
                             c.end_date,
                             c.remarks,
                             bs.code as space_code,
+                            bs.floor_id,
                             t.name as tenant_name,
+                            t.name as name,
                             t.phone_number,
                             t.email,
+                            t.national_id,
+                            t.nid_issue_date as issue_date,
+                            t.nid_issue_date,
+                            t.nationality_id,
+                            t.sex,
+                            t.address,
                             bt.name as business_name,
                             st.name as space_name
                             ')
@@ -732,14 +740,31 @@ class Contract
                 }
             }
         }
+        if ($id && $contract_details) {
+            $x = new CompanyProfile($ss);
+            $p = (object) $x->getDetails($ss);
+            if ($p) {
+                $contract_details->issue_date = date('d-M-Y');
+                $contract_details->com_rep_name = $p->first_cp_name;
+                $contract_details->com_rep_sex =  $p->first_cp_sex;
+                $contract_details->com_rep_nid = $p->first_cp_nid;
+                $contract_details->com_rep_dob = $p->first_cp_dob;
+                $contract_details->com_rep_nid_issue_date = $p->first_cp_nid_issue_date;
+                $contract_details->com_rep_address = $p->first_cp_address;
+            }
+        }
+
         return (object) [
             'contract_details' => $contract_details,
-            'tenants'      => GeneralSettings::options_tenant($ss),
+            'contractInfo'     => $contract_details, // Alias for PrintContractDialog compatibility
+            'tenants'          => GeneralSettings::options_tenant($ss),
             'legal_names'      => GeneralSettings::options_legal($ss),
-            'statuses'      => GeneralSettings::options_contract_status($ss),
+            'statuses'         => GeneralSettings::options_contract_status($ss),
             'space_types'      => GeneralSettings::options_space_type($ss),
-            'building_spaces'      => $building_spaces,
-            'business_types'   => GeneralSettings::options_business_type($ss)
+            'building_spaces'  => $building_spaces,
+            'business_types'   => GeneralSettings::options_business_type($ss),
+            'nationalities'    => GeneralSettings::options_nationality($ss),
+            'floors'           => GeneralSettings::options_floor($ss),
         ];
     }
     public static function deleteContract($id = null)
@@ -1355,42 +1380,65 @@ class Contract
             (object) ['address_kh' => 'ផ្ទះលេខ១២ ផ្លូវ៤៥៤ សង្កាត់ទួលទំពូងទី១ ខណ្ឌចំការមន រាជធានីភ្នំពេញ', 'address' => '#16, St.454, Sangkat Toul Tum Poung 1, Khan Chamkarmon, Phnom Penh', 'phone_number' => $p->phone_number ?? '', 'email' => $p->email ?? ''],
         ];
 
-        $com_rep_name = $p->first_cp_name ?? 'CP Name';
-        $com_rep_nid = $p->first_cp_nid ?? '(ID Card)';
-        $com_rep_sex = $p->first_cp_sex ?? 'Sex';
+        $com_rep_name = $d->com_rep_name ?? $p->first_cp_name ?? 'CP Name';
+        $com_rep_nid = $d->com_rep_nid ?? $d->com_rep_national_id ?? $p->first_cp_nid ?? '(ID Card)';
+        $com_rep_sex = $d->com_rep_sex ?? $p->first_cp_sex ?? 'Sex';
         $com_rep_title = match ($com_rep_sex) {
             'M' => 'លោក',
             'F' => 'កញ្ញា',
             default => '',
         };
         $com_rep_full_name = $com_rep_title . ' ' . ($com_rep_name ?? '');
-        $com_rep_dob = $p->first_cp_dob ?? '';
-        $com_rep_nid_issue_date = $p->first_cp_nid_issue_date ?? '';
-        $com_rep_address = $p->first_cp_address ?? '';
+        $com_rep_dob = $d->com_rep_dob ?? $p->first_cp_dob ?? '';
+        $com_rep_nid_issue_date = $d->com_rep_nid_issue_date ?? $p->first_cp_nid_issue_date ?? '';
+        $com_rep_address = $d->com_rep_address ?? $p->first_cp_address ?? '';
         $com_address = $p->billing_address ?? '';
 
-        $tenant_name = $tenant->name_kh;
-        $tenant_sex = $tenant->sex ?? '(Sex)';
+        $tenant_name = $d->name ?? $tenant->name_kh;
+        $tenant_sex = $d->sex ?? $tenant->sex ?? '(Sex)';
         $tenant_title = match ($tenant_sex) {
             'M' => 'លោក',
             'F' => 'កញ្ញា',
             default => '',
         };
         $tenant_full_name = $tenant_title . ' ' . ($tenant_name ?? '');
-        $tenant_nid = $tenant->national_id ?? '';
-        $tenant_phone = $tenant->phone_number ?? '';
-        $tenant_address = $tenant_address ?? $tenant->address;
-        $start_date = $tenant->start_date ?? '';
-        $end_date = $tenant->end_date ?? '';
-        $lease_term = Carbon::parse($start_date)
-            ->diffInMonths(Carbon::parse($end_date));
-        $unit = $tenant->unit_code ?? '';
-        $floor = $tenant->floor_id ?? '';
+        $tenant_nid = $d->national_id ?? $tenant->national_id ?? '';
+        $tenant_phone = $d->phone_number ?? $tenant->phone_number ?? '';
+        $tenant_address = $tenant_address ?? $d->address ?? $tenant->address;
+        $start_date = $d->start_date ?? $tenant->start_date ?? '';
+        $end_date = $d->end_date ?? $tenant->end_date ?? '';
+
+        $lease_term = null;
+        if (isset($d->duration)) {
+            $lease_term = trim(str_replace('ខែ', '', $d->duration));
+        } else if (isset($d->lease_term)) {
+            $lease_term = trim(str_replace('ខែ', '', $d->lease_term));
+        }
+        
+        if (is_null($lease_term) || $lease_term === '') {
+            $lease_term = Carbon::parse($start_date)
+                ->diffInMonths(Carbon::parse($end_date));
+        }
+
+        $unit = $d->space_code ?? $tenant->unit_code ?? '';
+        $floor = $d->floor_id ?? $tenant->floor_id ?? '';
         $building = $tenant->building ?? '';
-        $monthly_price = $tenant->price_type === 'sqm'
-            ? $tenant->sqm_size * $tenant->price
-            : $tenant->price;
-        $deposit = $tenant->deposit;
+
+        $monthly_price = $d->price_per_month ?? $d->monthly_price ?? null;
+        if (!is_null($monthly_price)) {
+            $monthly_price = trim(str_replace(['$', ','], '', $monthly_price));
+        } else {
+            $monthly_price = $tenant->price_type === 'sqm'
+                ? $tenant->sqm_size * $tenant->price
+                : $tenant->price;
+        }
+
+        $deposit = $d->deposit ?? null;
+        if (!is_null($deposit)) {
+            $deposit = trim(str_replace(['$', ','], '', $deposit));
+        } else {
+            $deposit = $tenant->deposit;
+        }
 
 
         $price_text = number_format($monthly_price, 2);
