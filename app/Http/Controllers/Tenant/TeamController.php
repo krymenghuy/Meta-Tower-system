@@ -28,14 +28,14 @@ class TeamController extends Controller
 
     }
 
-    public function saveTeam(Request $req){
+    public function saveTeamMember(Request $req){
         $ss = XAuthService::verifyAuth($req, -1);
         if($ss->status_code !==200){
             return JDV::raw($ss);
         }
         $id = $req->team_id ?? $req->id;
         $team = new Team($id,$ss);
-        $res = $team->saveTeam($req->all(),$id);
+        $res = $team->saveTeamMember($req->all(),$id);
         return JDV::raw($res);
 
     }
@@ -48,12 +48,12 @@ class TeamController extends Controller
     }
 
 
-    public function getListPaginate(Request $req){
+    public function getListTeamMemberPaginate(Request $req){
         $ss = XAuthService::verifyAuth($req, -1);
         if($ss->status_code !==200){
             return JDV::raw($ss);
         }
-        return JDV::result($this->teams->getListPaginate($req->all(),$ss));
+        return JDV::result($this->teams->getListTeamMemberPaginate($req->all(),$ss));
     }
 
     public function getDetails(Request $req){
