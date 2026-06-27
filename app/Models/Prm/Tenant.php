@@ -38,7 +38,7 @@ class Tenant
         if (!$nid) return 'National ID cannot be empty';
         if ($id > 0) $str_id = "t.id <> $id";
         $x = DB::table('tenants as t')->where('t.national_id', $nid)->whereRaw($str_id)->select('id')->take(1)->exists();
-        if ($x) return 'A tenant with National ID '.$nid.' already exists in the system.';
+        if ($x) return 'A tenant with National ID ' . $nid . ' already exists in the system.';
         return null;
     }
     function checkUniqueTenantByPassport($passport, $id = null)
@@ -50,7 +50,7 @@ class Tenant
             $str_id = "t.id <> $id";
         }
         $x = DB::table('tenants as t')->where('t.passport_number', $passport)->whereRaw($str_id)->select('id')->take(1)->exists();
-        if ($x) return 'A tenant with this Passport number ' . $passport. ' already exists in the system.';
+        if ($x) return 'A tenant with this Passport number ' . $passport . ' already exists in the system.';
         return null;
     }
     function checkUniqueTenantByPhone($phone_number, $id = null)
@@ -80,8 +80,8 @@ class Tenant
             'date_of_birth'   => '1|date|text=date_of_birth_required',
             'legal_name'      => '1|string|0-150|text=legal_name_required',
             'nationality_id'  => '1|number|text=nationality_required',
-            'national_id'     => '0|string|0-20',
-            'nid_issue_date'   => '0|date',
+            'national_id'     => '1|string|0-20|text=national_id_required',
+            'issue_date'      => '1|date|text=issue_date',
             'passport_number' => '0|string|0-20',
             'phone_number'    => '1|string|1-20|text=phone_number_required',
             'email'           => '0|email|1-30',
@@ -97,12 +97,13 @@ class Tenant
         $d = (object) $inputs;
         $dob = $d->date_of_birth ?? null;
         $email = $d->email ?? null;
-        $nid_issue_date = convertDate($inputs['nid_issue_date'] ?? null);
+        $nid_issue_date = convertDate($inputs['issue_date'] ?? null);
         $inputs['nid_issue_date'] = $nid_issue_date;
+        unset($inputs['issue_date']);
         if ($email !== null && $email !== '') {
-                if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                    return DV::error('Invalid email format.');
-                }
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                return DV::error('Invalid email format.');
+            }
         }
         if ($dob) {
             $birth = new \DateTime($dob);
@@ -115,15 +116,10 @@ class Tenant
         $nationality_id = $d->nationality_id ?? null;
         if ($nationality_id === 14) {
             $national_id = $d->national_id ?? null;
-            $nid_issue_date = $d->nid_issue_date ?? null;
             $passport = $d->passport_number ?? null;
-            $nid_issue_date = $d->nid_issue_date ?? null;
 
             if (empty($national_id)) {
                 return DV::error('national_id_required');
-            }
-            if (empty($nid_issue_date)) {
-                return DV::error('nid_issue_date');
             }
             $nid_check = $this->checkUniqueTenantByNID($national_id, $id);
             if ($nid_check) return DV::error($nid_check);
@@ -133,11 +129,9 @@ class Tenant
         if ($nationality_id !== 14) {
             $passport = $d->passport_number ?? null;
             $national_id = $d->national_id ?? null;
-            $nid_issue_date = $d->nid_issue_date ?? null;
             if (empty($passport)) {
                 return DV::error('passport_number_required');
             }
-            $inputs['nid_issue_date'] = null;
             $nid_check = $this->checkUniqueTenantByNID($national_id, $id);
             if ($nid_check) return DV::error($nid_check);
             $passport_check = $this->checkUniqueTenantByPassport($passport, $id);
@@ -148,7 +142,7 @@ class Tenant
         if ($phone_check) return DV::error($phone_check);
         $inputs['phone_number'] = $phone_number;
         $address = $d->address ?? null;
-        if(!$address){
+        if (!$address) {
             return DV::error('address_required');
         }
         $photo = $d->photo ?? null;
@@ -226,7 +220,7 @@ class Tenant
             ->whereRaw($str_moreWhere)
             ->selectRaw("
                 t.id,t.name,t.name_kh,t.sex,t.tenant_type,t.date_of_birth,t.nationality_id,
-                t.legal_name,t.code,t.photo_file_name,t.national_id,t.nid_issue_date,
+                t.legal_name,t.code,t.photo_file_name,t.national_id,t.nid_issue_date, t.nid_issue_date as issue_date,
                 t.passport_number,t.phone_number,t.email,t.address,
                 t.status_id,ts.name as status,
                 bt.name as business_type,
@@ -309,7 +303,8 @@ class Tenant
         $start_date = DBX::formatDate("c.start_date", 'start_date');
         $end_date = DBX::formatDate("c.end_date", 'end_date');
         $date_of_birth = DBX::formatDate("t.date_of_birth", 'date_of_birth');
-        $nid_issue_date = DBX::formatDate("t.nid_issue_date", 'nid_issue_date');
+        $nid_issue_date = DBX::formatDate("t.nid_issue_date", 'issue_date');
+        $nid_issue_date_raw = DBX::formatDate("t.nid_issue_date", 'nid_issue_date');
         $lastContract = self::liveContractSubquery();
         $row = DB::table('tenants as t')
             ->leftJoinSub($lastContract, 'lc', function ($join) {
@@ -317,19 +312,21 @@ class Tenant
             })
             ->leftJoin('contracts as c', 'c.id', '=', 'lc.id')
             ->leftJoin('building_spaces as bs', 'bs.id', '=', 'c.space_id')
+            ->leftJoin('floors as f', 'f.id', '=', 'bs.floor_id')
+            // ->leftJoin("$auth_db.um_branches as ub", 'ub.id', '=', 't.branch_id')
             ->join('tenant_statuses as ts', 'ts.id', '=', 't.status_id')
             ->where('t.id', $id)
-            ->selectRaw("t.id,t.branch_id,t.name,t.name_kh,t.code,t.national_id,passport_number,$date_of_birth,$nid_issue_date,t.nationality_id,t.photo_file_name,t.sex,t.tenant_type,t.status_id,ts.name as status,t.legal_name,t.phone_number,t.email,t.address,c.price,c.price_type,c.sqm_size,c.deposit,$start_date,$end_date,bs.code as space_code")
+            ->selectRaw("t.id,t.branch_id,t.name,t.name_kh,t.code,t.national_id,passport_number,$date_of_birth,$nid_issue_date,$nid_issue_date_raw,t.nationality_id,t.photo_file_name,t.sex,t.tenant_type,t.status_id,ts.name as status,t.legal_name,t.phone_number,t.email,t.address,c.price,c.price_type,c.sqm_size,c.deposit,$start_date,$end_date,bs.code as space_code,c.space_id,bs.floor_id,f.name as floor_name")
             ->first();
         if ($row) {
             $img = self::profilePicture($id, $ss);
             $row->image_url = $img;
             $row->photo = $img;
             $row->monthly_price = $row->price_type === 'sqm'
-            ? $row->sqm_size * $row->price
-            : $row->price;
+                ? $row->sqm_size * $row->price
+                : $row->price;
             $row->monthly_price = number_format($row->monthly_price, 2);
-           $row->lease_term = Carbon::parse($row->start_date)
+            $row->lease_term = Carbon::parse($row->start_date)
                 ->diffInMonths(Carbon::parse($row->end_date)) . ' ខែ';
         } else $row = null;
         return $row;
@@ -368,7 +365,7 @@ class Tenant
         $documents = DB::table('tenant_documents')->where('tenant_id', $id)->get();
         foreach ($documents as $doc) {
             $tenantDoc = new TenantDocument($doc->id, $ss);
-            $tenantDoc->deleteTenantDocument($ss,$doc->id);
+            $tenantDoc->deleteTenantDocument($ss, $doc->id);
         }
 
         $deleted = DB::table('tenants')->where('id', $id)->delete();
@@ -560,7 +557,7 @@ class Tenant
         $ss = $ss ?? $this->userInfo;
         $tenant = DB::table('tenants')
             ->where('id', $id)
-            ->select('id', 'name','name_kh', 'legal_name', 'email', 'phone_number')->first();
+            ->select('id', 'name', 'name_kh', 'legal_name', 'email', 'phone_number')->first();
         $spaces = $this->getActiveSpaces($id, $ss);
         return (object)[
             'tenant' => $tenant,
@@ -621,7 +618,7 @@ class Tenant
             ->leftJoin('building_spaces as bs', 'bs.id', '=', 'sr.space_id')
             ->leftJoin('services as s', 's.id', '=', 'sr.service_id')
             ->where('sr.tenant_id', $id)
-            ->whereIn('sr.status_id', [2,4])
+            ->whereIn('sr.status_id', [2, 4])
             ->select(
                 'sr.id as request_id',
                 'sr.code',
@@ -699,7 +696,7 @@ class Tenant
                     'start_date'  => $contract->start_date,
                     'end_date'    => $contract->end_date,
                     'deposit'     => $contract->deposit,
-                    'building_name'=> $contract->building_name,
+                    'building_name' => $contract->building_name,
                 ];
             })
             ->values();
@@ -711,53 +708,55 @@ class Tenant
             'service_requests' => $serviceRequests,
         ];
     }
-     function getList($arr, $ss){
+    function getList($arr, $ss)
+    {
         $d = (object) $arr;
         $status_id = $d->status_id ?? null;
         $building_id = $d->building_id ?? null;
         $str_search = '1=1';
-        if($status_id){
+        if ($status_id) {
             $str_search .= " AND t.status_id = $status_id";
         }
-        if($building_id){
+        if ($building_id) {
             $str_search .= " AND bs.building_id = $building_id";
         }
         $rows = DB::table('tenants as t')
-        ->whereRaw($str_search)
+            ->whereRaw($str_search)
             ->selectRaw("t.id,t.name,t.name_kh,t.code,t.national_id,t.passport_number,t.date_of_birth,t.nationality_id,t.sex,t.tenant_type,t.status_id,t.legal_name,t.phone_number,t.email,t.address")->get();
-            foreach($rows as $row){
-                setOfficialDates($row, ['start_date', 'date_of_birth' ,'end_date'], [''], []);
-
-            }
+        foreach ($rows as $row) {
+            setOfficialDates($row, ['start_date', 'date_of_birth', 'end_date'], [''], []);
+        }
         return (object) [
             'list' => $rows,
             'company_profile' => Report::getCompanyInfo($ss),
         ];
     }
-     static function contractFormOption($id,$ss)
+    static function contractFormOption($id, $ss)
     {
         $tenant = null;
         if ($id) {
-             $tenant = Tenant::getDetails($id, $ss);
-        }else return DV::error('Branch Can not be Empty!');
+            $tenant = Tenant::getDetails($id, $ss);
+        } else return DV::error('Branch Can not be Empty!');
 
         $x = new CompanyProfile($ss);
         $p = (object) $x->getDetails($ss);
 
-        if ($p){
+        if ($p) {
             $tenant->issue_date = date('d-M-Y');
             $tenant->com_rep_name = $p->first_cp_name;
             $tenant->com_rep_sex =  $p->first_cp_sex;
             $tenant->com_rep_nid = $p->first_cp_nid;
-            $tenant->com_rep_dob =$p->first_cp_dob;
+            $tenant->com_rep_dob = $p->first_cp_dob;
             $tenant->com_rep_nid_issue_date = $p->first_cp_nid_issue_date;
             $tenant->com_rep_address = $p->first_cp_address;
+            $tenant->address_kh = $p->address_kh;
+            
         }
         return (object)[
             'contractInfo' => $tenant,
             'nationalities' => GeneralSettings::options_nationality($ss),
+            'building_spaces' => GeneralSettings::options_building_space($ss),
+            'floors' => GeneralSettings::options_floor($ss),
         ];
     }
-
-
 }
