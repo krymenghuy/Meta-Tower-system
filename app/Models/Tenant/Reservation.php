@@ -268,18 +268,18 @@
 
         public static function getFormOptions($id,$ss)  
         {
-            // $ss = $ss ? $ss : $this->userInfo;
+            $ss = $ss ? $ss : $this->userInfo;
             $reservation_details = $id ? self::reservationDetails($id) : null;
-            $reservation_details = $id ? self::reservationDetails($id) : null;
+            // $reservation_details = $id ? self::reservationDetails($id) : null;
 
         // Auto-fill logged-in tenant from session
-        $logged_in_tenant = null;
-        if ($ss && !empty($ss->id)) {
-            $logged_in_tenant = DB::table('tenants')
-                ->where('user_id', $ss->id) // adjust if column name differs
-                ->select('id', 'name', 'phone_number')
-                ->first();
-        }
+        // $logged_in_tenant = null;
+        // if ($ss && !empty($ss->id)) {
+        //     $logged_in_tenant = DB::table('tenants')
+        //         ->where('user_id', $ss->id) // adjust if column name differs
+        //         ->select('id', 'name', 'phone_number')
+        //         ->first();
+        // }
             return (object) [
                 'reservation_details' => $reservation_details,
                 'amenities'      => GeneralSettings::options_amenity($ss),

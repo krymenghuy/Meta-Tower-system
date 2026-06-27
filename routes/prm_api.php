@@ -397,38 +397,38 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant/tenant
     Route::post('/delete', [TenantProfileController::class, 'delete']);
 });
 
-Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant/reservation')->group(function () {
-    Route::post('/save', [ReservationsController::class, 'saveReservation']);
-    Route::post('/list-paginate', [ReservationsController::class, 'getListPaginate']);
-    Route::post('/details', [ReservationsController::class, 'reservationDetails']);
-    Route::post('/form-options', [ReservationsController::class, 'getFormOptions']);
-    Route::post('/delete', [ReservationsController::class, 'deleteReservation']);
-    Route::post('/update-status', [ReservationsController::class, 'updateReservationStatus']);
-    Route::post('/get-amenity-info', [ReservationsController::class, 'getAmenityInfo']);
-    Route::post('/cancel', [ReservationsController::class, 'cancelReservation']);
-});
+// Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant/reservation')->group(function () {
+//     Route::post('/save', [ReservationsController::class, 'saveReservation']);
+//     Route::post('/list-paginate', [ReservationsController::class, 'getListPaginate']);
+//     Route::post('/details', [ReservationsController::class, 'reservationDetails']);
+//     Route::post('/form-options', [ReservationsController::class, 'getFormOptions']);
+//     Route::post('/delete', [ReservationsController::class, 'deleteReservation']);
+//     Route::post('/update-status', [ReservationsController::class, 'updateReservationStatus']);
+//     Route::post('/get-amenity-info', [ReservationsController::class, 'getAmenityInfo']);
+//     Route::post('/cancel', [ReservationsController::class, 'cancelReservation']);
+// });
 
-Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant/request-service')->group(function () {
-    Route::post('/save', [RequestServiceController::class, 'saveServiceRequest']);
-    Route::post('/list',[RequestServiceController::class, 'getServiceRequestList']);
-    Route::post('/details',[RequestServiceController::class, 'serviceRequestDetails']);
-    Route::post('/delete',[RequestServiceController::class,'delete']);
-    Route::post('/form-options',[RequestServiceController::class,'getFormOptions']);
-    Route::post('/accept',[RequestServiceController::class,'acceptRequest']);
-    Route::post('/reject',[RequestServiceController::class,'rejectRequest']);
-    Route::post('/cancel',[RequestServiceController::class,'cancelRequest']);
-    Route::post('/complete',[RequestServiceController::class,'completeRequest']);
+// Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant/request-service')->group(function () {
+//     Route::post('/save', [RequestServiceController::class, 'saveServiceRequest']);
+//     Route::post('/list',[RequestServiceController::class, 'getServiceRequestList']);
+//     Route::post('/details',[RequestServiceController::class, 'serviceRequestDetails']);
+//     Route::post('/delete',[RequestServiceController::class,'delete']);
+//     Route::post('/form-options',[RequestServiceController::class,'getFormOptions']);
+//     Route::post('/accept',[RequestServiceController::class,'acceptRequest']);
+//     Route::post('/reject',[RequestServiceController::class,'rejectRequest']);
+//     Route::post('/cancel',[RequestServiceController::class,'cancelRequest']);
+//     Route::post('/complete',[RequestServiceController::class,'completeRequest']);
 
 
-});
+// });
 
-Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant/contract')->group(function () {
-    Route::post('/save', [ContractsController::class, 'saveContracts']);
-    Route::post('/list-paginate', [ContractsController::class, 'getListContracts']);
-    Route::post('/details', [ContractsController::class, 'contractsDetails']);
-    Route::post('/form-options', [ContractsController::class, 'getFormOptions']);
-    Route::post('/delete', [ContractsController::class, 'deleteContracts']);
-});
+// Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant/contract')->group(function () {
+//     Route::post('/save', [ContractsController::class, 'saveContracts']);
+//     Route::post('/list-paginate', [ContractsController::class, 'getListContracts']);
+//     Route::post('/details', [ContractsController::class, 'contractsDetails']);
+//     Route::post('/form-options', [ContractsController::class, 'getFormOptions']);
+//     Route::post('/delete', [ContractsController::class, 'deleteContracts']);
+// });
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant/invoice')->group(function () {
     Route::post('/list-paginate', [TenantInvoiceController::class, 'getListPaginate']);

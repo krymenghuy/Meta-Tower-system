@@ -178,7 +178,7 @@ var ReservationComponent = (() => {
         }
 
         mThis.ReservationListView = new ListView("_reservation_list", {
-            fetchApi: `${main_view.base_url}/prm/tenant/reservation/list-paginate`,
+            fetchApi: `${main_view.base_url}/tenant/reservation/list-paginate`,
             perPage: 8,
             apiCluster: main_view.apiCluster,
             renderItems: (items, container) => {
@@ -354,7 +354,7 @@ var ReservationComponent = (() => {
                 if (!confirmed) return;
                 vsapi
                     .call(
-                        `${main_view.base_url}/prm/reservation/cancel`,
+                        `${main_view.base_url}/tenant/reservation/cancel`,
                         { id: id },
                         false,
                         false,
@@ -389,7 +389,7 @@ var ReservationComponent = (() => {
                 if (!e) return;
                 vsapi
                     .call(
-                        `${main_view.base_url}/prm/reservation/delete`,
+                        `${main_view.base_url}/tenant/reservation/delete`,
                         { id: id },
                         false,
                         false,
@@ -414,7 +414,7 @@ var ReservationComponent = (() => {
     mThis.prepareFormOptions = (onFinish) => {
         vsapi
             .call(
-                `${main_view.base_url}/prm/reservation/form-options`,
+                `${main_view.base_url}/tenant/reservation/form-options`,
                 null,
                 null,
                 null,
@@ -569,7 +569,7 @@ const CreateReservationDialog = (() => {
                     api: {
                         endpoint: [
                             main_view.base_url,
-                            "/prm/reservation/form-options",
+                            "/tenant/reservation/form-options",
                         ].join(""),
                         params: (op) => {
                             return {

@@ -220,7 +220,7 @@ var RequestServiceComponent = (function () {
             mThis.self.querySelector("#_service_request_list");
         mThis.ServiceRequestListView = new ListView(mThis.divListView, {
             api: {
-                endpoint: `${main_view.base_url}/prm/tenant/request-service/list`,
+                endpoint: `${main_view.base_url}/tenant/request-service/list`,
                 method: "POST",
                 cacheTTL: 3000,
             },
@@ -481,7 +481,7 @@ var RequestServiceComponent = (function () {
                 if (!confirmed) return;
                 vsapi
                     .call(
-                        `${main_view.base_url}/prm/tenant/request-service/cancel`,
+                        `${main_view.base_url}/tenant/request-service/cancel`,
                         { id },
                         menuLink,
                         false,
@@ -915,7 +915,7 @@ const CreateServiceRequestDialog = (() => {
                 modifyTitle: "Modify Service Request",
                 targetProp: "request_details",
                 api: {
-                    endpoint: `${main_view.base_url}/prm/tenant/request-service/form-options`,
+                    endpoint: `${main_view.base_url}/tenant/request-service/form-options`,
                     params: (op) => ({ id: op.id }),
                 },
             },
@@ -936,7 +936,7 @@ const CreateServiceRequestDialog = (() => {
                             "Failed to save service request.";
                         vsapi
                             .call(
-                                `${main_view.base_url}/prm/tenant/request-service/save`,
+                                `${main_view.base_url}/tenant/request-service/save`,
                                 data,
                                 btn,
                                 null,

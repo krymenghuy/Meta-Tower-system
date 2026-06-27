@@ -147,7 +147,7 @@ var ReceiptsComponent = new (function () {
         if (!mThis.bindDom()) return;
 
         mThis.ReceiptListView = new ListView("_receipts_list", {
-            fetchApi: `${main_view.base_url}/prm/tenant/receipt/list-paginate`,
+            fetchApi: `${main_view.base_url}/tenant/receipt/list-paginate`,
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
@@ -224,15 +224,15 @@ var ReceiptsComponent = new (function () {
         PrintReceiptDialog.show({
             receipt_id: id,
             btn: menuLink,
-            detailsUrl: `${mThis.base_url}/prm/tenant/receipt/details`,
-            invoiceDetailsUrl: `${mThis.base_url}/prm/tenant/invoice/details`,
+            detailsUrl: `${mThis.base_url}/tenant/receipt/details`,
+            invoiceDetailsUrl: `${mThis.base_url}/tenant/invoice/details`,
         });
     };
 
     mThis.prepareFormOptions = (onFinish) => {
         vsapi
             .call(
-                `${main_view.base_url}/prm/tenant/receipt/form-options`,
+                `${main_view.base_url}/tenant/receipt/form-options`,
                 {},
                 null,
                 null,
