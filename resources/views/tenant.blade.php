@@ -321,6 +321,7 @@
                             @include('layouts.tenant.dashboardComponent')
                             @include('layouts.tenant.teamComponent')
                             @include('layouts.tenant.contractsComponent')
+                            @include('layouts.tenant.contracts2Component')
                             @include('layouts.tenant.invoicesComponent')
                             @include('layouts.tenant.receiptsComponent')
                             @include('layouts.tenant.requestServiceComponent')
