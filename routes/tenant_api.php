@@ -110,7 +110,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('receipt')->gr
     Route::post('/details', [TenantReceiptController::class, 'receiptDetails']);
     Route::post('/form-options', [TenantReceiptController::class, 'getFormOptions']);
 });
-Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant/team')->group(function () {
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('team')->group(function () {
     Route::post('/save', [TeamController::class, 'saveTeamTenant']);
     Route::post('/create', [TeamController::class, 'saveTeam']);
     Route::post('/list-paginate', [TeamController::class, 'getListTeam']);

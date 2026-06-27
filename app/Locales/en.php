@@ -128,7 +128,7 @@ return [
         'invalid_date_of_birth_age' => 'Invalid date of birth age.',
         'passport_number_required' => 'Passport number is required for foreign nationality.',
         'date_of_birth_cannot_be_in_the_future' => 'Date of birth cannot be in the future.',
-        'national_id_required' => 'National ID is required for Khmer nationality.',
+        'national_id_required' => 'National ID is required.',
         'select_document_type' => 'Please select a document type.',
         'select_file' => 'Please select a file.',
         'select_valid_file' => 'Please select a valid file.',
@@ -138,7 +138,7 @@ return [
 
         'item_name_already_exists' => 'Item name already exists!',
         'end_time_must' => 'End time must be greater than start time.',
-        'nid_issue_date' => 'Please Select National ID Issue Date.',
+        'issue_date' => 'Please Select Issue Date.',
 
         'cannot_delete_po_received' => 'This purchase order cannot be deleted because it has been fully received.',
         'cannot_delete_po_partial_received' => 'This purchase order cannot be deleted because it has been partially received.',
