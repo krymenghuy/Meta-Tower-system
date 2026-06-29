@@ -202,7 +202,7 @@ function v_display($mod_id, $module_ids = null)
                         <span class="kt-menu__link-icon">
                             <img class="opacity-icons icons" src="{{ asset('assets/images/icons/staff.svg') }}" />
                         </span>
-                        <span class="font-color kt-menu__link-text" vslang="menus.Invoice">Invoice</span>
+                        <span class="font-color kt-menu__link-text" vslang="menus.My Invoices">My Invoices</span>
                     </a>
                 </li>
 
@@ -211,7 +211,7 @@ function v_display($mod_id, $module_ids = null)
                         <span class="kt-menu__link-icon">
                             <img class="opacity-icons icons" src="{{ asset('assets/images/icons/receipt.png') }}" />
                         </span>
-                        <span class="font-color kt-menu__link-text" vslang="menus.Transaction">Transaction</span>
+                        <span class="font-color kt-menu__link-text" vslang="menus.Transactions">Transactions</span>
                     </a>
                 </li>
 
