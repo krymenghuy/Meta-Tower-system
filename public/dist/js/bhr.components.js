@@ -1449,39 +1449,130 @@ const ContractViewDialog((= const self{} self.show(op= const dialogClass op.dial
 var Contracts2Component new(function( const mThis this mThis.title_prop"Contract 2" mThis.self main_view.VSAppContent.querySelector("#_main_contract2_component") mThis.elBusinessType mThis.self.querySelector("#business_type2_id") mThis.divFilter mThis.self.querySelector("#_divFilter_contract2") mThis.elStatus mThis.self.querySelector("#el_contract2_status_id") mThis.elSearch mThis.self.querySelector("#_search_contract2") mThis.contractItemsMap{} mThis.escapeHtml(str= if(str= null| str=="" return"" const div document.createElement("div") div.textContent String(str) return div.innerHTML} mThis.getStatusMeta(data= const statusId parseInt(data.status_id 10) const statusKey(data.status?"").toLowerCase() const map 1 text"Pending" cls"contract2-status contract2-status--pending}, 2 text"Active" cls"contract2-status contract2-status--active}, 3 text"Expired" cls"contract2-status contract2-status--expired}, 4 text"Terminated" cls"contract2-status contract2-status--terminated},} const m map[statusId| null const label m?.text|(statusKey=="terminated"Terminated data.status?"—") const cls m?.cls|"contract2-status" return label cls}} mThis.formatContractCode(id= const num parseInt(id 10) if(!num return"—" return`-${String(num).padStart(5, "0")}`} mThis.formatPriceInline(data= const price VSMoney.formatAmount data.price, data.currency_code?"USD",) const suffix data.price_type=="total"/mon"/m²" return`{price}<small>${suffix}</small>`} mThis.formatDeposit(data= return VSMoney.formatAmount data.deposit, data.currency_code?"USD",)} mThis.formatPriceDetail(data= const price VSMoney.formatAmount data.price, data.currency_code?"USD",) const suffix data.price_type=="total"/mon"/m²" return`{price}&nbsp;<small>${suffix}</small>`} mThis.formatAreaDetail(sqm= if(sqm= null| sqm=="" return null const n parseFloat(sqm) if(Number.isNaN(n) return String(sqm) return`{n.toFixed(2)} m²`} mThis.emptyValueHtml(text"N/A"= return`span class="contract2-detail__field-value contract2-detail__field-value--empty">${mThis.escapeHtml(text)}</span>`} mThis.valueHtml(val emptyText"N/A"= if(val= null| String(val).trim(=="| val=="—" return mThis.emptyValueHtml(emptyText)} return`span class="contract2-detail__field-value">${mThis.escapeHtml(String(val))}</span>`} mThis.renderDetailField(label valueHtml= return`            <div class="contract2-detail__field">
                 <span class="contract2-detail__field-label">${label}</span>
                 ${valueHtml}
-            </div>`} mThis.formatDateRange(start end= const s(start?"").trim(|"—" const e(end?"").trim(|"—" return`{s} – ${e}`} mThis.parseDisplayDate(dateStr= if(dateStr= null| String(dateStr).trim(=="" return null const parts String(dateStr).trim().replace(///g").split(//s+/) if(parts.length 3 return null const day parts[0] const monthRaw parts[1] const month monthRaw.length 3 monthRaw.charAt(0).toUpperCase(+ monthRaw.slice(1 3).toLowerCase() monthRaw.charAt(0).toUpperCase( monthRaw.slice(1).toLowerCase() const year parts[2] return day month year}} mThis.formatRenewalActionDate(dateStr= const parsed mThis.parseDisplayDate(dateStr) if(!parsed return"—" return`{parsed.day} ${parsed.month} ${parsed.year}`} mThis.formatTermRangeCompact(start end= const startParsed mThis.parseDisplayDate(start) const endParsed mThis.parseDisplayDate(end) if(!startParsed|!endParsed return mThis.formatDateRange(start end)} const shortYear endParsed.year.length 2 endParsed.year.slice(-2) endParsed.year return`{startParsed.day} ${startParsed.month} – ${endParsed.day} ${endParsed.month} ${shortYear}`} mThis.formatPriceRenewal(data= const price VSMoney.formatAmount data.price, data.currency_code?"USD",) const suffix data.price_type=="total"/mon"/m²" return`{price}${suffix}`} mThis.formatDepositRenewal(data= return VSMoney.formatAmount(data.deposit data.currency_code?"USD")} mThis.renderContractRows(container items= items items?[] mThis.contractItemsMap{} container.innerHTML"" if(!items.length container.innerHTML`                <div class="contract2-list-empty text-center py-5 px-3">
+            </div>`} mThis.formatDateRange(start end= const s(start?"").trim(|"—" const e(end?"").trim(|"—" return`{s} – ${e}`} mThis.parseDisplayDate(dateStr= if(dateStr= null| String(dateStr).trim(=="" return null const parts String(dateStr).trim().replace(///g").split(//s+/) if(parts.length 3 return null const day parts[0] const monthRaw parts[1] const month monthRaw.length 3 monthRaw.charAt(0).toUpperCase(+ monthRaw.slice(1 3).toLowerCase() monthRaw.charAt(0).toUpperCase( monthRaw.slice(1).toLowerCase() const year parts[2] return day month year}} mThis.formatRenewalActionDate(dateStr= const parsed mThis.parseDisplayDate(dateStr) if(!parsed return"—" return`{parsed.day} ${parsed.month} ${parsed.year}`} mThis.formatTermRangeCompact(start end= const startParsed mThis.parseDisplayDate(start) const endParsed mThis.parseDisplayDate(end) if(!startParsed|!endParsed return mThis.formatDateRange(start end)} const shortYear endParsed.year.length 2 endParsed.year.slice(-2) endParsed.year return`{startParsed.day} ${startParsed.month} – ${endParsed.day} ${endParsed.month} ${shortYear}`} mThis.formatPriceRenewal(data= const price VSMoney.formatAmount data.price, data.currency_code?"USD",) const suffix data.price_type=="total"/mon"/m²" return`{price}${suffix}`} mThis.formatDepositRenewal(data= return VSMoney.formatAmount(data.deposit data.currency_code?"USD")} mThis.getSpaceImageMeta(data= const type String(data.space_type?"").toLowerCase() const base"/assets/images/contracts/" if(type.includes("warehouse"| type.includes("storage") return icon"fa-warehouse", gradient"linear-gradient(135deg#64748b 0%#334155 100%)", imageUrl`{base}warehouse-default.jpg`,}} if(type.includes("retail"| type.includes("shop") return icon"fa-store", gradient"linear-gradient(135deg#f59e0b 0%#d97706 100%)", imageUrl`{base}retail-default.jpg`,}} return icon"fa-building", gradient"linear-gradient(135deg#3b82f6 0%#1d4ed8 100%)", imageUrl`{base}office-default.jpg`,}} mThis.renderSpacePhoto(data imageMeta= const photoUrl`{main_view.base_url}${imageMeta.imageUrl}` const spaceType mThis.escapeHtml(data.space_type?"Space") return`            <div class="contract2-card__photo" data-gradient="${mThis.escapeHtml(imageMeta.gradient)}">
+                <img class="contract2-card__photo-img"
+                    src="${photoUrl}"
+                    alt="${spaceType}"
+                    loading="lazy">
+                <div class="contract2-card__photo-fallback" style="background:${imageMeta.gradient}">
+                    <i class="fa-solid ${imageMeta.icon}"></i>
+                </div>
+                <span class="contract2-card__photo-label">${spaceType}</span>
+            </div>`} mThis.renderPaymentChart(seed= const heights[42 58 48 72 65] const months["Jun""Jul""Aug""Sep""Oct"] const offset(parseInt(seed 10| 0 3 return`            <div class="contract2-card__chart">
+                <div class="contract2-card__chart-title">Recent Payment History</div>
+                <div class="contract2-card__chart-bars">
+                    ${months
+                        .map((month, i) => {
+                            const h = heights[(i + offset) % heights.length];
+                            return `<div class="contract2-card__chart-bar-wrap"<div class="contract2-card__chart-bar style="height:${h}%"></div<span>${month}</span</div>`
+                        })
+                        .join("")}
+                </div>
+            </div>`} mThis.renderContractCard(data= const status mThis.getStatusMeta(data) const unitLabel mThis.escapeHtml(data.space_code?"Unit") const businessType mThis.escapeHtml(data.business_type?"—") const deposit mThis.formatDeposit(data) const priceBlock mThis.formatPriceInline(data) const duration mThis.escapeHtml mThis.formatDateRange(data.start_date data.end_date),) const keyRenewalDate mThis.escapeHtml(data.end_date?"—") const sqmDisplay data.price_type=="total"`{VSMoney.formatAmount(data.price, data.currency_code ?? "USD")} · ${mThis.formatAreaDetail(data.sqm_size) ?? "—"}` const imageMeta mThis.getSpaceImageMeta(data) const tenantName mThis.escapeHtml(data.tenant_name?"—") const tenantRole mThis.escapeHtml(data.legal_name|"Primary tenant") const tenantInitial tenantName.charAt(0).toUpperCase(|"T" return`            <div class="col-12 col-xl-6">
+                <div class="contract2-card" data-contract-id="${data.id}">
+                    <div class="contract2-card__header">
+                        <div class="contract2-card__header-left">
+                            <span class="contract2-card__icon">
+                                <i class="fa-solid fa-building-columns"></i>
+                            </span>
+                            <div class="contract2-card__header-text">
+                                <div class="contract2-card__title-row">
+                                    <span class="contract2-card__title">${unitLabel}</span>
+                                </div>
+                                <div class="contract2-card__subtitle">${businessType}</div>
+                            </div>
+                        </div>
+                        <div class="contract2-card__header-right">
+                            <label class="contract2-card__toggle" title="Collapse/Expand Details">
+                                <span class="contract2-card__toggle-label">Collapse/Expand Details</span>
+                                <input type="checkbox" class="contract2-card__toggle-input" checked aria-expanded="true">
+                                <span class="contract2-card__toggle-track"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="contract2-card__body">
+                        <div class="row g-3 contract2-card__body-grid">
+                            <div class="col-12 col-md-4 contract2-card__col-left">
+                                ${mThis.renderSpacePhoto(data, imageMeta)}
+                                <div class="contract2-card__address">
+                                    <div class="contract2-card__address-head">
+                                        <i class="fa-solid fa-location-dot"></i>
+                                        <span>Property Address</span>
+                                    </div>
+                                    <p>Meta Tower, ${unitLabel}, Phnom Penh, Cambodia</p>
+                                </div>
+                                <div class="contract2-card__floorplan">
+                                    <img class="contract2-card__floorplan-img"
+                                        src="${main_view.base_url}/assets/images/contracts/floor-plan-default.png"
+                                        alt="Floor plan - ${unitLabel}"
+                                        loading="lazy">
+                                </div>
+                                <div class="contract2-card__sqft">
+                                    <span class="contract2-card__sqft-label">Square footage</span>
+                                    <span class="contract2-card__sqft-value">${sqmDisplay}</span>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-8 contract2-card__col-right">
+                                <div class="contract2-card__panel">
+                                    <div class="contract2-card__panel-head">
+                                        <div class="contract2-card__section-title">Contract Status</div>
+                                        <span class="${status.cls}">${mThis.escapeHtml(status.label)}</span>
+                                    </div>
+                                    <div class="contract2-card__status-block">
+                                        <div class="contract2-card__duration">
+                                            <span>Duration:</span>
+                                            <strong>${duration}</strong>
+                                        </div>
+                                        <div class="contract2-card__renewal-date">
+                                            Key renewal date: <strong>${keyRenewalDate}</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="contract2-card__panel contract2-card__panel--finance">
+                                    <div class="contract2-card__section-title">Financial Details</div>
+                                    <div class="contract2-card__finance-grid">
+                                        <div class="contract2-card__finance-main">
+                                            <div class="contract2-card__price-big">${priceBlock}</div>
+                                            <ul class="contract2-card__finance-list">
+                                                <li><span>Total sum of Deposit:</span> <strong>${deposit}</strong></li>
+                                                <li><span>Utility Details:</span> <strong>Any</strong></li>
+                                                <li><span>Property type:</span> <strong>${mThis.escapeHtml(data.space_type ?? "—")}</strong></li>
+                                            </ul>
+                                        </div>
+                                        ${mThis.renderPaymentChart(data.id)}
+                                    </div>
+                                </div>
+                                <div class="contract2-card__panel contract2-card__panel--contacts">
+                                    <div class="contract2-card__section-title">Tenant Contacts</div>
+                                    <div class="contract2-card__contact">
+                                        <span class="contract2-card__contact-avatar">${tenantInitial}</span>
+                                        <div class="contract2-card__contact-info">
+                                            <strong>${tenantName}</strong>
+                                            <span>${tenantRole}</span>
+                                        </div>
+                                        <button type="button" class="contract2-card__contact-btn" title="Contact">
+                                            <i class="fa-regular fa-user"></i>
+                                        </button>
+                                    </div>
+                                    <div class="contract2-card__detail-wrap">
+                                        <button type="button" class="contract2-card__action contract2-card__action--detail btn_contract2_detail"
+                                            data-id="${data.id}">
+                                            View detail
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>`} mThis.bindCardEvents(container= if(!container return container.querySelectorAll(".contract2-card__photo-img").forEach((img= img.addEventListener("error"(= const wrap img.closest(".contract2-card__photo") if(wrap wrap.classList.add("is-fallback")})}) container.querySelectorAll(".contract2-card__toggle-input").forEach((input= input.addEventListener("change"(= const card input.closest(".contract2-card") if(!card return const expanded input.checked card.classList.toggle("is-collapsed"!expanded) input.setAttribute("aria-expanded" expanded"true"false")})}) container.querySelectorAll(".btn_contract2_detail").forEach((btn= btn.addEventListener("click"(= mThis.showContractDetailDialog(btn.dataset.id)})})} mThis.renderContractRows(container items= items items?[] mThis.contractItemsMap{} container.innerHTML"" if(!items.length container.innerHTML`                <div class="contract2-list-empty text-center py-5 px-3">
                     <span class="d-inline-flex align-items-center justify-content-center mb-3 rounded-3 bg-light text-primary"
                         style="width:44px;height:44px;border:1px solid #e5e7eb;">
                         <i class="fa-regular fa-file-lines"></i>
                     </span>
                     <p class="mb-1 fw-semibold text-prm-custom">No contracts found</p>
                     <small class="text-muted">Try adjusting your search or filters.</small>
-                </div>` return} let html'<div class="contract2-list">' items.forEach((data= mThis.contractItemsMap[data.id data const status mThis.getStatusMeta(data) const unitLabel mThis.escapeHtml(data.space_code?"Unit") const subtitle`{mThis.escapeHtml(data.business_type ?? "—")} · ${mThis.escapeHtml(
-                mThis.formatDateRange(data.start_date, data.end_date),
-            )}` html+`            <div class="contract2-row" data-contract-id="${data.id}">
-                <span class="contract2-row__icon">
-                    <i class="fa-solid fa-building-columns"></i>
-                </span>
-                <div class="contract2-row__main">
-                    <div class="contract2-row__title-row">
-                        <span class="contract2-row__title">${unitLabel}</span>
-                        <span class="${status.cls}">${mThis.escapeHtml(status.label)}</span>
-                    </div>
-                    <div class="contract2-row__subtitle">${subtitle}</div>
-                </div>
-                <div class="contract2-row__price">
-                    <span class="contract2-row__price-value">${mThis.formatPriceInline(data)}</span>
-                </div>
-                <div class="contract2-row__menu-wrap">
-                    <a href="javascript:void(0)" class="btn_contract2_action contract2-row__menu-btn"
-                        data-id="${data.id}"
-                        data-statusid="${data.status_id ?? ""}"
-                        aria-haspopup="true" aria-expanded="false"
-                        title="More options">
-                        <i class="fa-solid fa-ellipsis-vertical"></i>
-                    </a>
-                </div>
-            </div>`}) html+"</div>" container.innerHTML html} mThis.init(= if(mThis.initAlready return mThis.Contract2ListView new ListView("_contract2_list" fetchApi`{main_view.base_url}/tenant/contract/list-paginate`, perPage 10, apiCluster main_view.apiCluster, renderItems(items container= mThis.renderContractRows(container items)}, listContainerClass null,}) mThis.pr_tbl mThis.Contract2ListView.getListContainer() const sh_parent mThis.pr_tbl.parentElement sh_parent.style.maxHeight window.innerHeight 200"px" sh_parent.classList.add("overflow-y-auto") window.onresize(= sh_parent.style.maxHeight window.innerHeight 200"px"} mThis.initDropdownMenus(mThis.pr_tbl) mThis.divFilter.querySelectorAll(".filter-field").forEach((el= el.onchange(= mThis.Contract2ListView.showPage(mThis.getFilterData())}}) mThis.elSearch.addEventListener("keyup"(= clearTimeout(mThis.search_timeout) mThis.search_timeout setTimeout((= mThis.Contract2ListView.showPage(mThis.getFilterData())} 250)}) mThis.initAlready true} mThis.getFilterData(= const p search_value(mThis.elSearch.value|"").trim(),} mThis.divFilter.querySelectorAll(".filter-field").forEach((el= p[el.dataset.field el.value}) return p} mThis.buildDetailHtml(data= const status mThis.getStatusMeta(data) const unitLabel mThis.escapeHtml(data.space_code?"Unit") const area mThis.formatAreaDetail(data.sqm_size) const areaHtml area mThis.emptyValueHtml("N/A") const priceHtml`span class="contract2-detail__field-value">${mThis.formatPriceDetail(data)}</span>` const depositHtml`span class="contract2-detail__field-value">${mThis.formatDeposit(data)}</span>` const remarkHtml mThis.valueHtml(data.remarks"No remarks") return`            <div class="contract2-detail" id="_contract2_detail_root">
+                </div>` return} let html'<div class="row g-3 contract2-card-grid">' items.forEach((data= mThis.contractItemsMap[data.id data html+ mThis.renderContractCard(data)}) html+"</div>" container.innerHTML html mThis.bindCardEvents(container)} mThis.init(= if(mThis.initAlready return mThis.Contract2ListView new ListView("_contract2_list" fetchApi`{main_view.base_url}/tenant/contract/list-paginate`, perPage 6, apiCluster main_view.apiCluster, renderItems(items container= mThis.renderContractRows(container items)}, listContainerClass null,}) mThis.pr_tbl mThis.Contract2ListView.getListContainer() const sh_parent mThis.pr_tbl.parentElement sh_parent.style.maxHeight window.innerHeight 200"px" sh_parent.classList.add("overflow-y-auto") window.onresize(= sh_parent.style.maxHeight window.innerHeight 200"px"} mThis.divFilter.querySelectorAll(".filter-field").forEach((el= el.onchange(= mThis.Contract2ListView.showPage(mThis.getFilterData())}}) mThis.elSearch.addEventListener("keyup"(= clearTimeout(mThis.search_timeout) mThis.search_timeout setTimeout((= mThis.Contract2ListView.showPage(mThis.getFilterData())} 250)}) mThis.initAlready true} mThis.getFilterData(= const p search_value(mThis.elSearch.value|"").trim(),} mThis.divFilter.querySelectorAll(".filter-field").forEach((el= p[el.dataset.field el.value}) return p} mThis.buildDetailHtml(data= const status mThis.getStatusMeta(data) const unitLabel mThis.escapeHtml(data.space_code?"Unit") const area mThis.formatAreaDetail(data.sqm_size) const areaHtml area mThis.emptyValueHtml("N/A") const priceHtml`span class="contract2-detail__field-value">${mThis.formatPriceDetail(data)}</span>` const depositHtml`span class="contract2-detail__field-value">${mThis.formatDeposit(data)}</span>` const remarkHtml mThis.valueHtml(data.remarks"No remarks") return`            <div class="contract2-detail" id="_contract2_detail_root">
                 <button type="button" class="contract2-detail__close-btn" aria-label="Close">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
@@ -1522,7 +1613,7 @@ var Contracts2Component new(function( const mThis this mThis.title_prop"Contract
                 <section class="contract2-detail__main">
                     <div class="contract2-detail__tabs">
                         <button type="button" class="contract2-detail__tab is-active" data-tab="overview">Overview</button>
-                        <button type="button" class="contract2-detail__tab" data-tab="tenant">Tenant</button>
+                        <button type="button" class="contract2-detail__tab" data-tab="renew">View renew</button>
                         <button type="button" class="contract2-detail__tab" data-tab="documents">Documents</button>
                     </div>
                     <div class="contract2-detail__panel">
@@ -1557,20 +1648,8 @@ var Contracts2Component new(function( const mThis this mThis.title_prop"Contract
                                 </div>
                             </div>
                         </div>
-                        <div class="contract2-detail__tab-panel d-none" data-panel="tenant">
-                            <div class="contract2-detail__section-card">
-                                <div class="contract2-detail__section-head">
-                                    <span class="contract2-detail__section-icon"><i class="fa-regular fa-user"></i></span>
-                                    <span>Tenant information</span>
-                                </div>
-                                <div class="contract2-detail__info-grid">
-                                    ${mThis.renderDetailField("Name", mThis.valueHtml(data.tenant_name))}
-                                    ${mThis.renderDetailField("Phone", mThis.valueHtml(data.phone_number))}
-                                    ${mThis.renderDetailField("Email", mThis.valueHtml(data.email))}
-                                    ${mThis.renderDetailField("Legal name", mThis.valueHtml(data.legal_name))}
-                                    ${mThis.renderDetailField("Tenant code", mThis.valueHtml(data.code))}
-                                </div>
-                            </div>
+                        <div class="contract2-detail__tab-panel d-none" data-panel="renew">
+                            <div id="_contract2_detail_renew_panel" class="contract2-detail__renew-panel"></div>
                         </div>
                         <div class="contract2-detail__tab-panel d-none" data-panel="documents">
                             <div class="contract2-detail__empty-tab">
@@ -1581,7 +1660,7 @@ var Contracts2Component new(function( const mThis this mThis.title_prop"Contract
                         </div>
                     </div>
                 </section>
-            </div>`} mThis.bindDetailTabs(root onClose= if(!root return const tabs root.querySelectorAll(".contract2-detail__tab") const panels root.querySelectorAll(".contract2-detail__tab-panel") tabs.forEach((tab= tab.onclick(= const name tab.dataset.tab tabs.forEach((t= t.classList.toggle("is-active" t== tab)) panels.forEach((panel= panel.classList.toggle("d-none" panel.dataset.panel!= name)})}}) const closeBtn root.querySelector(".contract2-detail__close-btn") if(closeBtn& typeof onClose=="function" closeBtn.onclick(e= e.preventDefault() onClose()}}} mThis.showContractDetailDialog(id= const data mThis.contractItemsMap[id] if(!data return Contract2ViewDialog.show( title"", contentHtml mThis.buildDetailHtml(data), dialogClass"contract2-detail-modal", hideFooter true, hideHeader true, onReady(root hide= mThis.bindDetailTabs(root hide)},})} mThis.buildRenewalTimelineHtml(data renewals= const unitLabel mThis.escapeHtml(data.space_code?"Unit") const renewalsList Array.isArray(renewals renewals[] const totalEntries 1 renewalsList.length const isActive parseInt(data.status_id 10== 2| String(data.status?"").toLowerCase(=="active" const activeBadge isActive"" const priceText mThis.formatPriceRenewal(data) const depositText mThis.formatDepositRenewal(data) const renderItemBox(term price deposit changedBy=`            <div class="contract2-renewal__item-box">
+            </div>`} mThis.bindDetailTabs(root onClose contractId options{}= if(!root return const tabs root.querySelectorAll(".contract2-detail__tab") const panels root.querySelectorAll(".contract2-detail__tab-panel") let renewLoaded false const activateTab(name= tabs.forEach((t= t.classList.toggle("is-active" t.dataset.tab== name)}) panels.forEach((panel= panel.classList.toggle("d-none" panel.dataset.panel!= name)}) if(name=="renew&!renewLoaded& contractId renewLoaded true const renewPanel root.querySelector("#_contract2_detail_renew_panel") mThis.loadRenewalHistory(renewPanel contractId null inline true})}} tabs.forEach((tab= tab.onclick(= activateTab(tab.dataset.tab)}) if(options.initialTab activateTab(options.initialTab)} const closeBtn root.querySelector(".contract2-detail__close-btn") if(closeBtn& typeof onClose=="function" closeBtn.onclick(e= e.preventDefault() onClose()}}} mThis.showContractDetailDialog(id options{}= const data mThis.contractItemsMap[id] if(!data return Contract2ViewDialog.show( title"", contentHtml mThis.buildDetailHtml(data), dialogClass"contract2-detail-modal", hideFooter true, hideHeader true, onReady(root hide= mThis.bindDetailTabs(root hide id options)},})} mThis.buildRenewalTimelineHtml(data renewals options{}= const inline options.inline== true const unitLabel mThis.escapeHtml(data.space_code?"Unit") const renewalsList Array.isArray(renewals renewals[] const totalEntries 1 renewalsList.length const isActive parseInt(data.status_id 10== 2| String(data.status?"").toLowerCase(=="active" const activeBadge isActive"" const priceText mThis.formatPriceRenewal(data) const depositText mThis.formatDepositRenewal(data) const renderItemBox(term price deposit changedBy=`            <div class="contract2-renewal__item-box">
                 <div class="contract2-renewal__item-field">
                     <span class="contract2-renewal__field-label">Term</span>
                     <span class="contract2-renewal__field-value">${mThis.escapeHtml(term)}</span>
@@ -1622,29 +1701,34 @@ var Contracts2Component new(function( const mThis this mThis.title_prop"Contract
                     depositText,
                     row.update_user,
                 )}
-            </div>`}) return`            <div class="contract2-renewal-shell">
-                <button type="button" class="contract2-renewal__close-btn" aria-label="Close">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-                <div class="contract2-renewal">
-                    <div class="contract2-renewal__head">
-                        <div>
-                            <div class="contract2-renewal__title">${unitLabel} · renewal history</div>
-                            <div class="contract2-renewal__sub">${totalEntries} renewal${totalEntries === 1 ? "" : "s"} on record</div>
+            </div>`}) const footHtml inline""`div class="contract2-renewal__foot">
+                    <button type="button" class="contract2-renewal__scroll-hint" tabindex="-1" aria-hidden="true">
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                </div>` const subText inline`{totalEntries} renewal${totalEntries === 1 ? "" : "s"} on record` const headIconHtml inline"" const bodyHtml`                <div class="contract2-renewal${inline ? " contract2-renewal--inline" : ""}">
+                    <div class="contract2-renewal__head${inline ? " contract2-renewal__head--inline" : ""}">
+                        <div class="contract2-renewal__head-main">
+                            ${headIconHtml}
+                            <div>
+                                <div class="contract2-renewal__title">${unitLabel} · renewal history</div>
+                                <div class="contract2-renewal__sub">${subText}</div>
+                            </div>
                         </div>
                         ${activeBadge}
                     </div>
-                    <div class="contract2-renewal__timeline">${timelineHtml}</div>
-                    <div class="contract2-renewal__foot">
-                        <button type="button" class="contract2-renewal__scroll-hint" tabindex="-1" aria-hidden="true">
-                            <i class="fa-solid fa-chevron-down"></i>
-                        </button>
+                    <div class="contract2-renewal__timeline-wrap">
+                        <div class="contract2-renewal__timeline">${timelineHtml}</div>
                     </div>
-                </div>
-            </div>`} mThis.loadRenewalHistory(container id onClose= const data mThis.contractItemsMap[id] if(!data return container.innerHTML`div class="contract2-renewal-loading"><div class="spinner-border text-primary" role="status"></div></div>` vsapi.call`{main_view.base_url}/prm/contract/list-renewals`, contract_id id per_page 50}, null, null,).then((res= const renewals res.status_code== 200& res.data& res.data.data res.data.data[] container.innerHTML mThis.buildRenewalTimelineHtml(data renewals) mThis.bindRenewalDialog(container onClose)}).catch((= container.innerHTML`div class="alert alert-danger m-0">Failed to load renewal history.</div>`})} mThis.bindRenewalDialog(container onClose= if(!container return const closeBtn container.querySelector(".contract2-renewal__close-btn") if(closeBtn& typeof onClose=="function" closeBtn.onclick(e= e.preventDefault() onClose()}}} mThis.showRenewRecordDialog(id= const data mThis.contractItemsMap[id] if(!data return Contract2ViewDialog.show( title"", contentHtml`div id="_contract2_renewal_panel"></div>`, dialogClass"contract2-renewal-modal", hideFooter true, hideHeader true, onReady(panel hide= mThis.loadRenewalHistory(panel id hide)},})} mThis.downloadAgreement(id= cv_interact.info("Agreement download is not available for this contract yet.")} mThis.initDropdownMenus(listContainer= new VSDropdownMenu( containerElement listContainer, actionButtonClass"btn_contract2_action", cssClass"contract2-row__dropdown shadow-sm", adjustPosition top 4}, menus html'<span class="ps-2">View detail</span>', icon`i class="fa-regular fa-eye fs-6 text-prm-custom"></i>`, cssClass"contract2-row__dropdown-item", name"view_detail",}, html'<span class="ps-2">View renew record</span>', icon`i class="fa-solid fa-clock-rotate-left fs-6 text-prm-custom"></i>`, cssClass"contract2-row__dropdown-item", name"view_renew_record",}, html'<span class="ps-2">Download agreement</span>', icon`i class="fa-solid fa-download fs-6 text-prm-custom"></i>`, cssClass"contract2-row__dropdown-item menu-item--divider", name"download_agreement",},], onClick(menuLink id name= if(name=="view_detail" mThis.showContractDetailDialog(id) else if(name=="view_renew_record" mThis.showRenewRecordDialog(id) else if(name=="download_agreement" mThis.downloadAgreement(id)}},})} mThis.prepareFormOptions(onFinish= vsapi.call(`{main_view.base_url}/tenant/contract/form-options` null null null).then((res= const d res.status_code= 200 res.data{} VSUtil.setComboItems mThis.elStatus, d.statuses,"id","status_name","","All Statuses","",) VSUtil.setComboItems mThis.elBusinessType, d.business_types,"id","business_type","","All Business Types","",) if(typeof onFinish=="function" onFinish()})} mThis.show(options= mThis.init() mThis.options options mThis.prepareFormOptions((= main_view.setContentView(mThis.self mThis.title_prop) mThis.Contract2ListView.showPage(mThis.getFilterData())})} return mThis})()
+                    ${footHtml}
+                </div>` if(inline return bodyHtml} return`            <div class="contract2-renewal-shell">
+                <button type="button" class="contract2-renewal__close-btn" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+                ${bodyHtml}
+            </div>`} mThis.loadRenewalHistory(container id onClose options{}= const data mThis.contractItemsMap[id] if(!data return container.innerHTML`div class="contract2-renewal-loading${options.inline ? " contract2-renewal-loading--inline" : ""}"><div class="spinner-border text-primary" role="status"></div></div>` vsapi.call`{main_view.base_url}/prm/contract/list-renewals`, contract_id id per_page 50}, null, null,).then((res= const renewals res.status_code== 200& res.data& res.data.data res.data.data[] container.innerHTML mThis.buildRenewalTimelineHtml data, renewals, options,) if(!options.inline mThis.bindRenewalDialog(container onClose)}}).catch((= container.innerHTML`div class="alert alert-danger m-0">Failed to load renewal history.</div>`})} mThis.bindRenewalDialog(container onClose= if(!container return const closeBtn container.querySelector(".contract2-renewal__close-btn") if(closeBtn& typeof onClose=="function" closeBtn.onclick(e= e.preventDefault() onClose()}}} mThis.prepareFormOptions(onFinish= vsapi.call(`{main_view.base_url}/tenant/contract/form-options` null null null).then((res= const d res.status_code= 200 res.data{} VSUtil.setComboItems mThis.elStatus, d.statuses,"id","status_name","","All Statuses","",) VSUtil.setComboItems mThis.elBusinessType, d.business_types,"id","business_type","","All Business Types","",) if(typeof onFinish=="function" onFinish()})} mThis.show(options= mThis.init() mThis.options options mThis.prepareFormOptions((= main_view.setContentView(mThis.self mThis.title_prop) mThis.Contract2ListView.showPage(mThis.getFilterData())})} return mThis})()
 const Contract2ViewDialog((= const self{} self.show(op= const dialogClass op.dialogClass|"contract2-detail-modal" const buttons op.hideFooter[] label"<span>Close</span>", cssClass"btn btn-secondary", click(me= me.hide(false),},] const dialog new GeneralDialog( title op.title?"Contract Detail", cssClass`odal-xl vs-modal vs-modal--compact ${dialogClass}`, backdrop"static", keyboard true, createContent(= op.contentHtml|"", contentCreated(me= const hideDialog(= me.hide(false) if(!op.hideHeader const closeBtn me.divModal.querySelector(".btn-close") if(closeBtn closeBtn.addEventListener("click"(e= e.preventDefault() e.stopPropagation() hideDialog()})}} const customClose me.divModal.querySelector".contract2-detail__close-btn.contract2-renewal__close-btn",) if(customClose customClose.onclick(e= e.preventDefault() hideDialog()}} if(typeof op.onReady=="function" const panel me.divModal.querySelector("#_contract2_renewal_panel"| me.divModal.querySelector("#_contract2_detail_root"| me.divModal.querySelector(".contract2-detail"| me.divModal.querySelector(".modal-body") op.onReady(panel hideDialog)}}, buttons,}) dialog.show(op)} return self})();
 "use strict"
-var InvoicesComponent((= const mThis{} mThis.title_prop"Invoice Management" mThis.currency_symbol"$" mThis.self main_view.VSAppContent.querySelector"#_main_invoice_component",) mThis.btnAdd mThis.self.querySelector("#_btnInvoice") mThis.btnAddTest mThis.self.querySelector("#_btnInvoice_test") mThis.divFilter mThis.self.querySelector("#_divFilter_invoice") mThis.elFilter_status mThis.self.querySelector("#payment_status") mThis.elFilter_invoice_type mThis.self.querySelector("#invoice_type") mThis.elSpaceType mThis.self.querySelector("#space_type_id") mThis.elTenant mThis.self.querySelector("#tenant_id") mThis.elSearch mThis.self.querySelector("#_search_invoice") mThis.tblReceive mThis.self.querySelector("#_tblReceive") let InvoiceItemDialog null mThis.cols transTitle"" className"align-middle text-capitalize}, transTitle"titles.Invoice No", className"align-middle text-start text-nowrap", data function(data const code data.code`span class="text-muted fst-italic">_</span>` let typeHtml"" const val data.invoice_type if(val= 1 typeHtml`span class="d-block text-primary"style="font-size:12px;""> Tax</span>` else if(val= 2 typeHtml`span class="d-block text-primary"style="font-size:12px;""> No Tax</span>` else typeHtml`span class="d-block text-primary"style="font-size:12px;""> Commercial</span>`} return`                    <div class="d-flex flex-column">
+var InvoicesComponent((= const mThis{} mThis.title_prop"Invoice Management" mThis.currency_symbol"$" mThis.self main_view.VSAppContent.querySelector"#_main_invoice_component",) mThis.btnAdd mThis.self.querySelector("#_btnInvoice") mThis.btnAddTest mThis.self.querySelector("#_btnInvoice_test") mThis.divFilter mThis.self.querySelector("#_divFilter_invoice") mThis.elFilter_status mThis.self.querySelector("#payment_status") mThis.elFilter_invoice_type mThis.self.querySelector("#invoice_type") mThis.elSpaceType mThis.self.querySelector("#space_type_id") mThis.elTenant mThis.self.querySelector("#tenant_id") mThis.elSearch mThis.self.querySelector("#_search_invoice") mThis.tblReceive mThis.self.querySelector("#_tblReceive") mThis.cols transTitle"" className"align-middle text-capitalize}, transTitle"titles.Invoice No", className"align-middle text-start text-nowrap", data function(data const code data.code`span class="text-muted fst-italic">_</span>` let typeHtml"" const val data.invoice_type if(val= 1 typeHtml`span class="d-block text-primary"style="font-size:12px;""> Tax</span>` else if(val= 2 typeHtml`span class="d-block text-primary"style="font-size:12px;""> No Tax</span>` else typeHtml`span class="d-block text-primary"style="font-size:12px;""> Commercial</span>`} return`                    <div class="d-flex flex-column">
                         ${code}
                      <!--   <hr class="m-0 border border-secondary border-3 opacity-75"> -->
                         ${typeHtml}
@@ -1679,7 +1763,7 @@ var InvoicesComponent((= const mThis{} mThis.title_prop"Invoice Management" mThi
                         }" data-statusid="${data.payment_status_id || ""}" style="padding: 0 10px;">
                         <i class="fa-solid fa-ellipsis-vertical text-prm-custom fs-5"></i>
                     </a>
-                </div>`},},] mThis.init(= if(mThis.initAlready return mThis.InvoiceListView new ListView("_invoices_list" fetchApi`{main_view.base_url}/prm/tenant/invoice/list-paginate`, perPage 10, apiCluster main_view.apiCluster, columns mThis.cols, tableClass"table table--white rounded-2 rounded-2 overflow-hidden header-uppercase", rowCreated(data index tr= tr.classList.add("invoice""cursor-pointer") tr.id`nvoice_id_${data.id}` tr.dataset.statusid data.payment_status_id| 0 tr.dataset.canceled 0}, listContainerClass null,}) mThis.listContainer mThis.InvoiceListView.getListContainer() const sh_parent mThis.listContainer.parentElement sh_parent.style.maxHeight window.innerHeight 220"px" sh_parent.classList.add("overflow-y-auto") window.onresize(= sh_parent.style.maxHeight window.innerHeight 220"px"} mThis.tblInvoice mThis.InvoiceListView.getTable() mThis.initDropdownMenus(mThis.tblInvoice) mThis.divFilter.querySelectorAll(".filter-field").forEach((el= el.onchange(= mThis.InvoiceListView.showPage(mThis.getFilterData())}) let timeOut null mThis.elSearch.onkeyup function(e e.preventDefault() clearTimeout(timeOut) timeOut setTimeout((= mThis.InvoiceListView.showPage(mThis.getFilterData())} 250)} new ExpandableRowConfig(mThis.tblInvoice.id dontExpandByClickingOn["btn_leave_action"], onOpen(container detail_tr parent_tr= const id parent_tr.id.replace("invoice_id_""") if(id&!isNaN(id) mThis.displayInvoiceDetail(container id)},}) vsapi.call`{main_view.base_url}/prm/invoice_setting/get`{},).then((res= InvoiceSetting res.data console.log(111112 InvoiceSetting) if(res.status_code!= 200 cv_interact.error("Failed to load invoice details.") return}}) mThis.initAlready true} mThis.displayInvoiceDetail(container id= container.innerHTML`div class="text-center py-3"><div class="spinner-border text-primary" role="status"></div></div>` vsapi.call(`{main_view.base_url}/prm/tenant/invoice/details` id}).then((res= if(res.status_code!= 200 container.innerHTML`div class="alert alert-danger m-3">Failed to load invoice details</div>` return} mThis.renderInvoiceDetail(container res.data|{}) console.log(1112345678 res.data)}).catch((= container.innerHTML`div class="alert alert-danger m-3">Network error loading invoice detail.</div>`})} mThis.renderInvoiceDetail(container invoice= const currency mThis.currency_symbol|"$" const validItems(invoice.items|[]).filter(item= parseFloat(item.price| 0 0| parseFloat(item.total| 0 0| parseFloat(item.amount| 0 0,) const formatDate(dateStr= if(!dateStr return"—" const date new Date(dateStr) if(isNaN(date.getTime()) return dateStr return date.toLocaleDateString("en-GB" day"2-digit", month"short", year"numeric",})} const getDiscountDisplay(item= const value parseFloat(item.discount| 0) const type(item.discount_type|"percent").toLowerCase().trim() const discType type=="percent"%"$" const currency mThis.currency_symbol|"$" if(value< 0 return`span class="text-center ">0%</span>`} if(type=="amount| type=="$" return`{currency}${value.toFixed(2)}` else const percentStr value 1== 0 value.toFixed(0 value.toFixed(2) return`{percentStr}${discType}`}} const itemsHtml validItems.map((item= const qty parseFloat(item.qty| 1) const price parseFloat(item.price| 0) const discount parseFloat(item.discount| 0) const taxAmount parseFloat(item.tax_rate| 0 const total parseFloat(item.total| item.amount| 0) const unit_type item.unit_type return`                <tr>
+                </div>`},},] mThis.init(= if(mThis.initAlready return mThis.InvoiceListView new ListView("_invoices_list" fetchApi`{main_view.base_url}/tenant/invoice/list-paginate`, perPage 10, apiCluster main_view.apiCluster, columns mThis.cols, tableClass"table table--white rounded-2 rounded-2 overflow-hidden header-uppercase", rowCreated(data index tr= tr.classList.add("invoice""cursor-pointer") tr.id`nvoice_id_${data.id}` tr.dataset.statusid data.payment_status_id| 0 tr.dataset.canceled 0}, listContainerClass null,}) mThis.listContainer mThis.InvoiceListView.getListContainer() const sh_parent mThis.listContainer.parentElement sh_parent.style.maxHeight window.innerHeight 220"px" sh_parent.classList.add("overflow-y-auto") window.onresize(= sh_parent.style.maxHeight window.innerHeight 220"px"} mThis.tblInvoice mThis.InvoiceListView.getTable() mThis.initDropdownMenus(mThis.tblInvoice) mThis.divFilter.querySelectorAll(".filter-field").forEach((el= el.onchange(= mThis.InvoiceListView.showPage(mThis.getFilterData())}) let timeOut null mThis.elSearch.onkeyup function(e e.preventDefault() clearTimeout(timeOut) timeOut setTimeout((= mThis.InvoiceListView.showPage(mThis.getFilterData())} 250)} new ExpandableRowConfig(mThis.tblInvoice.id dontExpandByClickingOn["btn_leave_action"], onOpen(container detail_tr parent_tr= const id parent_tr.id.replace("invoice_id_""") if(id&!isNaN(id) mThis.displayInvoiceDetail(container id)},}) vsapi.call`{main_view.base_url}/prm/invoice_setting/get`{},).then((res= InvoiceSetting res.data console.log(111112 InvoiceSetting) if(res.status_code!= 200 cv_interact.error("Failed to load invoice details.") return}}) mThis.initAlready true} mThis.displayInvoiceDetail(container id= container.innerHTML`div class="text-center py-3"><div class="spinner-border text-primary" role="status"></div></div>` vsapi.call(`{main_view.base_url}/tenant/invoice/details` id}).then((res= if(res.status_code!= 200 container.innerHTML`div class="alert alert-danger m-3">Failed to load invoice details</div>` return} mThis.renderInvoiceDetail(container res.data|{}) console.log(1112345678 res.data)}).catch((= container.innerHTML`div class="alert alert-danger m-3">Network error loading invoice detail.</div>`})} mThis.renderInvoiceDetail(container invoice= const currency mThis.currency_symbol|"$" const validItems(invoice.items|[]).filter(item= parseFloat(item.price| 0 0| parseFloat(item.total| 0 0| parseFloat(item.amount| 0 0,) const formatDate(dateStr= if(!dateStr return"—" const date new Date(dateStr) if(isNaN(date.getTime()) return dateStr return date.toLocaleDateString("en-GB" day"2-digit", month"short", year"numeric",})} const getDiscountDisplay(item= const value parseFloat(item.discount| 0) const type(item.discount_type|"percent").toLowerCase().trim() const discType type=="percent"%"$" const currency mThis.currency_symbol|"$" if(value< 0 return`span class="text-center ">0%</span>`} if(type=="amount| type=="$" return`{currency}${value.toFixed(2)}` else const percentStr value 1== 0 value.toFixed(0 value.toFixed(2) return`{percentStr}${discType}`}} const itemsHtml validItems.map((item= const qty parseFloat(item.qty| 1) const price parseFloat(item.price| 0) const discount parseFloat(item.discount| 0) const taxAmount parseFloat(item.tax_rate| 0 const total parseFloat(item.total| item.amount| 0) const unit_type item.unit_type return`                <tr>
                     <td class="fw-medium">${item.remarks || "—"}
                     </td>
                     <td class="text-center small">${formatDate(
@@ -1754,545 +1838,7 @@ var InvoicesComponent((= const mThis{} mThis.title_prop"Invoice Management" mThi
                                         } else {
                                             return `${currency}${fmt(discVal)}<div class="mt-3 p-3 bg-light rounded border"<small class="text-muted fw-semibold d-block text-uppercase style="font-size 0.7rem;">Remarks:</small<p class="mb-0 small">${invoice.remarks}</p</div>`                            : ""
                     }
-                </div>`} mThis.getFilterData(= const params payment_status_id mThis.elFilter_status.value, search_value mThis.elSearch.value.trim(),} mThis.divFilter.querySelectorAll(".filter-field").forEach((el= if(el.value& el.dataset.field params[el.dataset.field el.value.trim()}}) return params} mThis.initDropdownMenus(container= const menuOptions containerElement container, actionButtonClass"btn_leave_action", cssClass"bg-white box-shadow", menus html'<span class="ps-2 vslang="titles.Print"></span>', icon`i class="fa-solid fa-receipt text-primary fs-5"></i>`, cssClass"border-bottom pb-2", name"print_invoice",},], onShow(me menuContainer= const menu me.getActiveMenus(menuContainer) const statusId Number(menuContainer.dataset.statusid) menu.delete_invoice.style.display statusId== 2"block"none" menu.modify_invoice.style.display statusId== 2"block"none"}, onClick(menulink id name= if(name=="delete_invoice" mThis.deleteInvoice(id) else if(name=="print_invoice" mThis.printInvoice(id) else if(name=="modify_invoice" mThis.editInvoice(id menulink)}},} new VSDropdownMenu(menuOptions)} mThis.deleteInvoice(id menuLink= if(!AuthManager.allowed(242) return cv_interact.confirm"Are you sure you want to delete this invoice?", transTitle"Delete Invoice", confirmButtonText"Delete", context"danger",},(confirmed= if(!confirmed return vsapi.call`{main_view.base_url}/prm/tenant/invoice/delete`, id}, menuLink,).then((res= if(res.status_code== 200 mThis.InvoiceListView.showPage mThis.getFilterData(),) cv_interact.success("Invoice deleted successfully") else cv_interact.error res.error_message|"Failed to delete.",)}})},)} mThis.editInvoice(id menulink= console.log("editInvoice id:" id) InvoiceDialog.show( id id, btn menulink, onClose(= mThis.InvoiceListView.showPage(mThis.getFilterData()),})} mThis.receiveInvoice(id menulink= ReceiveDialog.show( invoice_id id, btn menulink, onClose(= mThis.InvoiceListView.showPage(mThis.getFilterData()),})} mThis.printInvoice(id invoice_type menulink= if(!invoice_type| invoice_type=="undefined" console.warn"Type missing for ID id" Fetching from server...",) vsapi.call(`{main_view.base_url}/prm/tenant/invoice/details` id id}).then((res= if(res.status_code== 200 mThis.printInvoice(id res.data.invoice_type menulink) else cv_interact.error("Could not determine invoice type.")}}) return} const invType parseInt(invoice_type) const params invoice_id id btn menulink} if(invType== 1 InvoiceTaxDialog.show(params) else if(invType== 2 InvoiceNoTaxDialog.show(params) else if(invType== 3 InvoiceCommercialDialog.show(params)}} mThis.prepareFormOptions(onFinish= vsapi.call(`{main_view.base_url}/prm/tenant/invoice/form-options`).then((res= const d res.status_code== 200 res.data{} VSUtil.setComboItems mThis.elFilter_status, d.statuses,"id","payment_status","","All Statuses","",) const typeOptions id 1 name"Tax}, id 2 name"No Tax}, id 3 name"Commercial},] VSUtil.setComboItems mThis.elFilter_invoice_type, typeOptions,"id","name","","All Types","",) if(typeof onFinish=="function" onFinish()})} mThis.show(options{}= mThis.init() mThis.options options mThis.prepareFormOptions((= main_view.setContentView(mThis.self mThis.title_prop) mThis.InvoiceListView.showPage(mThis.getFilterData())})} return mThis})()
-const InvoiceDialog((= const self{} let dialog null let availableItem[] let InvoiceSetting null self.show(op= dialog new GeneralDialog( cssClass"modal-xl vs-modal", backdrop"static", keyboard true, createContent(=`                        <div class="container-fluid">
-                            <div id="_invoice_form_container" class="bg-white rounded-3">
-
-                                <div class="d-flex justify-content-between align-items-start">
-
-                                    <!-- LEFT: Tenant Info -->
-                                    <div>
-                                        <div class="field-row">
-                                            <label class="field-label fw-semibold">Tenant Name  </label>
-                                            <span class="field-sep">:</span>
-                                            <input name="tenant" class="data-input form-control field-input" data-field="tenant_id" placeholder=" " autocomplete="off">
-                                        </div>
-                                        <div class="field-row">
-                                            <label class="field-label fw-semibold">Phone Number</label>
-                                            <span class="field-sep">:</span>
-                                            <input name="phone_number" class="data-input form-control field-input bg-light"  placeholder=" ">
-                                        </div>
-                                        <div class="field-row">
-                                            <label class="field-label fw-semibold">Email Address</label>
-                                            <span class="field-sep">:</span>
-                                            <input name="email" class="data-input form-control field-input " placeholder=" ">
-                                        </div>
-                                        <div class="field-row ">
-                                            <label class="field-label fw-semibold">Space / Room</label>
-                                            <span class="field-sep">:</span>
-                                                <select name="space"  data-style="material" class="data-input form-control" data-field="space_id" required placeholder=" ">
-                                                </select>
-                                        </div>
-                                    </div>
-
-                                    <!-- RIGHT: Space / Button -->
-                                    <div>
-                                        <div class="field-row ">
-                                            <label class="field-label fw-semibold">Invoice Type</label>
-                                            <span class="field-sep">:</span>
-                                                <select name="invoice_type"  data-style="material" class="data-input form-control" data-field="invoice_type" required placeholder=" ">
-                                                    <option value="1">Tax</option>
-                                                    <option value="2">No Tax</option>
-                                                    <option value="3">Commercial</option>
-                                                </select>
-                                        </div>
-                                        <div class="field-row ">
-                                            <label class="field-label fw-semibold">Issue Date </label>
-                                            <span class="field-sep">:</span>
-                                            <input type="text" data-type="date" name="issue_date" data-field="issue_date" class="form-control data-input field-input" required placeholder=" ">
-                                        </div>
-                                        <div class="field-row ">
-                                            <label class="field-label fw-semibold">Due Date </label>
-                                            <span class="field-sep">:</span>
-                                            <input type="text" data-type="date" name="due_date" data-field="due_date" class="form-control data-input field-input" required placeholder=" ">
-                                        </div>
-
-
-                                        <div class="field-row w-100 justify-content-end">
-                                            <div class="d-flex flex-wrap gap-2 justify-content-end ">
-                                                <button name="btnRent" class="custom-button">Rent</button>
-                                                <button name="btnService" class="custom-button">Service</button>
-                                                <button name="btnRequest" class="custom-button">Request</button>
-                                                <button name="btnElectric" class="custom-button">Electric</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div name="divItemsView" ></div>
-                                <div class="mt-4 d-flex justify-content-end mb-3">
-                                    <div name="div_invoice_summary" class="w-100" style="max-width: 400px;"></div>
-                                </div>
-
-                                <div class="material-input outlined">
-                                    <textarea class="data-input form-control" data-field="general_remark" name="general_remark" rows="1" placeholder=" "></textarea>
-                                    <label style="color:#777;">Remark</label>
-                                </div>
-
-
-                            </div>
-                        </div>
-
-                        <style>
-                        .field-row {
-                            display: flex;
-                            align-items: center;
-                            margin-bottom: 12px;
-                            --field-width: 260px;
-                        }
-                        .field-label {
-                            width: 110px;
-                            font-size: 0.875rem;
-                            color: #222;
-                            flex-shrink: 0;
-                        }
-                        .field-sep {
-                            margin: 0 10px;
-                            font-weight: 600;
-                            color: #444;
-                            flex-shrink: 0;
-                        }
-                        .field-row .field-input {
-                            width: var(--field-width);
-                            border-radius: 6px;
-                            border: 1px solid #d0d0d0;
-                            font-size: 0.875rem;
-                            padding: 6px 10px;
-                            background-color: #fff;
-                            box-sizing: border-box;
-                        }
-                        .field-row .field-input:focus {
-                            border-color: #86b7fe;
-                            box-shadow: 0 0 0 3px rgba(13,110,253,0.15);
-                            outline: none;
-                        }
-                        .field-row .choices {
-                            width: var(--field-width) !important;
-                            flex-shrink: 0;
-                        }
-                        .field-row .choices .choices__inner {
-                            width: 100% !important;
-                            min-height: unset !important;
-                            border-radius: 6px !important;
-                            border: 1px solid #d0d0d0 !important;
-                            font-size: 0.875rem !important;
-                            padding: 6px 10px !important;
-                            background-color: #fff !important;
-                            box-sizing: border-box;
-                        }
-                        .field-row .choices.is-focused .choices__inner,
-                        .field-row .choices .choices__inner:focus-within {
-                            border-color: #86b7fe !important;
-                            box-shadow: 0 0 0 3px rgba(13,110,253,0.15) !important;
-                            outline: none !important;
-                        }
-                        .field-row .choices[data-type="select-one"] .choices__button {
-                            display: none !important;
-                        }
-                        .field-row .choices .choices__list--dropdown {
-                            width: var(--field-width) !important;
-                            z-index: 9999;
-                        }
-                        .custom-button {
-                            color: #1a1647;
-                            padding: 10px;
-                            font-size: 12px;
-                            border-radius: 0.5em;
-                            background: ##d4d4db;
-                            cursor: pointer;
-                            border: 1px solid #9290aa;
-                            transition: all 0.3s;
-                        }
-                        .custom-button:hover {
-                            background-color: #b9b9c9;
-                            border-color: #1a1647;
-                        }
-
-                        .custom-button:active {
-                            color: #666;
-                            box-shadow: inset 4px 4px 12px #c5c5c5, inset -4px -4px 12px #ffffff;
-                        }
-
-                        .cursor-blocked {
-                            cursor: not-allowed !important;
-                        }
-
-                        </style>
-
-
-                    `, contentCreated(me= me.controls me.controls|{} const btn_close me.divModal.querySelector(".close") if(btn_close btn_close.classList.add("d-none") const allInputs me.divModal.querySelectorAll".data-input input select textarea",) allInputs.forEach((el= const key el.dataset.field| el.name if(key me.controls[key el}) me.controls.divItemsView me.divModal.querySelector'[name="divItemsView"]',) me.controls.div_invoice_summary me.divModal.querySelector'[name="div_invoice_summary"]',) me.controls.btnRent.onclick(= if(!me._selectedTenantId return cv_interact.error("Please select Tenant first.")} if!me.controls.space.value| me.controls.space.value=="" return cv_interact.error("Please select Space.")} if!me.controls.invoice_type.value| me.controls.invoice_type.value=="" return cv_interact.error("Please select Invoice Type.")} const invoiceType me.controls.invoice_type.value const spaces me._tenantSpaces|[] const months me._tenantMonths|[] const selectedSpaceId me.controls.space?.value| me.controls.space_id?.value|"" const matchedSpace spaces.find(s= String(s.space_id== String(selectedSpaceId),| spaces[0] if(!matchedSpace return cv_interact.error("No space/contract found.")} const availableMonths months.filter(m= String(m.contract_id== String(matchedSpace.contract_id),) if(!availableMonths| availableMonths.length== 0 return cv_interact.error"Rent has already reached the final month of the contract.",)} let rentDiv null InputBox.resetInstance("rentPopUp") InputBox.show( title"Rent Detail", instanceKey"rentPopUp", confirmButtonText"Save", createContent( const div document.createElement("div") rentDiv div div.style.cssText"display:flex flex-direction:column;" div.innerHTML<div class="material-input outlined style="margin-bottom 1rem;"<input class="data-input form-control data-field="tax_rate name="tax_rate type="text inputmode="decimal placeholder="0 required<label style="color:#777;">Tax</label</div>`                        }
-                        <div class="material-input outlined" style="display:flex; gap:8px; align-items:flex-end; grid-column: span 2;">
-                            <div style="flex:1">
-                                <input class="data-input form-control" data-field="discount" name="discount" type="text" inputmode="decimal" placeholder="0">
-                                <label style="color:#777;">Discount</label>
-                            </div>
-                            <div style="width:100px;">
-                                <select class="data-input form-control" data-field="discount_type" name="discount_type">
-                                    <option value="percent" selected>%</option>
-                                    <option value="amount">$</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="material-input outlined" style="margin-bottom: 1rem; display:none;">
-                    <textarea class="data-input form-control" data-field="remark" name="remark" rows="2" placeholder=" "></textarea>
-                    <label style="color:#777;">Remark</label>
-                </div>
-            ` return div}, onOpen(ibMe const elContract rentDiv.querySelector'[data-field="contract_id"]',) const elMonthly rentDiv.querySelector'[data-field="monthly"]',) const elPrice rentDiv.querySelector'[data-field="price"]',) const elStartDate rentDiv.querySelector'[data-field="start_date"]',) const elEndDate rentDiv.querySelector'[data-field="end_date"]',) const elDiscountType rentDiv.querySelector'[data-field="discount_type"]',) if(!elContract|!elMonthly|!elPrice return elContract.value matchedSpace.space_code|"(No code)" elContract.dataset.contractId String matchedSpace.contract_id,) const effectivePrice Number matchedSpace.effective_price| 0,) elPrice.value effectivePrice.toFixed(2) const matchedMonth months.find(m= String(m.contract_id== String(matchedSpace.contract_id),|{} elMonthly.value matchedMonth.month|"" if(elDiscountType elDiscountType.value"percent"} if(elStartDate elStartDate.value matchedMonth.start_date|""} if(elEndDate elEndDate.value matchedMonth.end_date|""} const numericInputs rentDiv.querySelector'[data-field="discount"]',), rentDiv.querySelector'[data-field="tax_rate"]',),].filter((input= input!= null) numericInputs.forEach((input= input.addEventListener("input"(e= let v e.target.value.replace/[^0-9.]/g,"",) const parts v.split(".") if(parts.length 2 v parts[0". parts[1]} if(parts[1!= undefined v parts[0+".+ parts[1].slice(0 2)} e.target.value v}) input.addEventListener("blur"(e= let v parseFloat(e.target.value) if(isNaN(v| v 0 e.target.value"" return} e.target.value v.toFixed(2)})})}, onConfirm(data btn ibMe const elTaxRate document.querySelector'[data-field="tax_rate"]',) if(elTaxRate if data.tax_rate== undefined| data.tax_rate== null| String(data.tax_rate).trim(=="" return ibMe.setError"Tax is required for this invoice type.",)} const taxValue Number(data.tax_rate) if(isNaN(taxValue| taxValue 0 return ibMe.setError"Please enter a valid Tax value.",)}} const elContract document.querySelector'[data-field="contract_id"]',) const realContractId elContract?.dataset.contractId| data.contract_id if(!realContractId return ibMe.setError"Unit Code Room is missing.",)} const roomCode matchedSpace.space_code|"—" const finalPrice Number data.price| matchedSpace.effective_price| 0,) const dataToAdd item_id realContractId, type"rent", price finalPrice, qty 1, remarks`ent - ${roomCode} (${
-                                    data.monthly || "N/A"
-                                })`, contract_id realContractId, start_date data.start_date|"", end_date data.end_date|"", space_code roomCode, discount Number(data.discount| 0, discount_type data.discount_type|"percent", tax_rate Number(data.tax_rate| 0, unit_type`onthly`,} const existingIds me.itemsView.rows.map(row= row.meta?.item_id| row.data?.item_id,).filter(id= id!= undefined& id!="& id!= null,) const isDuplicate existingIds.some(id= String(id== String(dataToAdd.item_id),) if(isDuplicate return ibMe.setError`ent is already in the list.`,)} me.itemsView.addRow(dataToAdd 0) cv_interact.success`ent for ${roomCode} added successfully.`,) ibMe.close()},})} me.controls.btnElectric.onclick(= if(!me._selectedTenantId return cv_interact.error("Please select Tenant first.")} if!me.controls.space.value| me.controls.space.value=="" return cv_interact.error("Please select Space.")} const openElectricPopup(= let electricDiv null InputBox.resetInstance("electricPopUp") InputBox.show( title"Electricity Utility", instanceKey"electricPopUp", confirmButtonText"Save", createContent( const div document.createElement("div") electricDiv div div.style.cssText"display:flex flex-direction:column;" div.innerHTML`                                <!-- Tabs Container -->
-                                <div class="d-flex mb-3" style="border-bottom:1px solid #eee; gap:16px;">
-                                    <div id="btn_tab_reading" style="cursor:pointer; padding:8px 12px; border-bottom:2px solid #0C447C; color:#0C447C; font-weight:600;">By Reading</div>
-                                    <div id="btn_tab_manual" style="cursor:pointer; padding:8px 12px; color:#777;">Manual Entry</div>
-                                </div>
-
-                                <!-- Section: Core Consumption Inputs -->
-                                <div class="d-flex align-items-center mb-3">
-                                    <span id="consumption_header" style="color:#0C447C; font-size:13px;">Readings</span>
-                                    <div style="flex:1; height:1px; background:#e0e0e0; margin-left:8px;"></div>
-                                </div>
-
-                                <!-- Conditional Dynamic Fields (Reading vs Manual) -->
-                                <div id="row_reading_fields" style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                                    <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                        <input class="data-input form-control" data-field="old_electric" name="old_electric" type="text" inputmode="decimal" placeholder="0">
-                                        <label style="color:#777;">Old Reading (kWh)</label>
-                                    </div>
-                                    <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                        <input class="data-input form-control" data-field="new_electric" name="new_electric" type="text" inputmode="decimal" placeholder="0">
-                                        <label style="color:#777;">New Reading (kWh)</label>
-                                    </div>
-                                </div>
-
-                                <!-- Shared Units Field (ReadOnly on Reading tab, Editable on Manual tab) -->
-                                <div id="row_manual_fields" class="material-input outlined" style="margin-bottom: 1rem; display:none;">
-                                    <input class="data-input form-control" data-field="units_used" name="units_used" type="text" inputmode="decimal" placeholder="0.00">
-                                    <label style="color:#777;">Units Used (kWh)</label>
-                                </div>
-
-                               <!-- Section: Unified Calculations -->
-                                <div class="d-flex align-items-center mb-3">
-                                    <span style="color:#0C447C; font-size:13px;">Calculation</span>
-                                    <div style="flex:1; height:1px; background:#e0e0e0; margin-left:8px;"></div>
-                                </div>
-
-                                <!-- Dynamic Row Container: Swaps between 2 columns (Reading mode) and 3 columns (Manual mode) -->
-                                <div id="row_calculation_fields" style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-
-                                    <!-- Only visible in Reading Tab -->
-                                    <div id="wrapper_units_readonly" class="material-input outlined" style="margin-bottom: 1rem;">
-                                        <input id="units_used_readonly" class="form-control bg-light cursor-blocked" type="text" readonly placeholder="0.00">
-                                        <label style="color:#777;">Calculated Units (kWh)</label>
-                                    </div>
-
-                                    <!-- Shared Field: Changes grid position dynamically -->
-                                    <div id="wrapper_exchange_rate" class="material-input outlined" style="margin-bottom: 1rem;">
-                                        <input class="data-input form-control" data-field="exchange_rate" name="exchange_rate" type="text" inputmode="decimal" placeholder="0.00" value="4025">
-                                        <label style="color:#777;">Exchange Rate (KHR)</label>
-                                    </div>
-
-                                    <!-- Hidden on Reading Init, part of the 3-column row in Manual -->
-                                    <div id="wrapper_price_khr" class="material-input outlined" style="margin-bottom: 1rem;">
-                                        <input class="data-input form-control" data-field="price_khr" name="price_khr" type="text" inputmode="decimal" placeholder="0.00">
-                                        <label style="color:#777;">Price per kWh (KHR)</label>
-                                    </div>
-
-                                    <div id="wrapper_price_usd" class="material-input outlined" style="margin-bottom: 1rem;">
-                                        <input class="data-input form-control" data-field="price_usd" name="price_usd" type="text" inputmode="decimal" placeholder="0.00">
-                                        <label style="color:#777;">Price per kWh (USD)</label>
-                                    </div>
-                                </div>
-
-                                <!-- Section: Unified Period -->
-                                <div class="d-flex align-items-center mb-3">
-                                    <span style="color:#0C447C; font-size:13px;">Period</span>
-                                    <div style="flex:1; height:1px; background:#e0e0e0; margin-left:8px;"></div>
-                                </div>
-                                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                                    <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                        <input class="data-input form-control" data-field="start_date" name="start_date" type="text" data-type="date" placeholder=" ">
-                                        <label style="color:#777;">Start Date</label>
-                                    </div>
-                                    <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                        <input class="data-input form-control" data-field="end_date" name="end_date" type="text" data-type="date" placeholder=" ">
-                                        <label style="color:#777;">End Date</label>
-                                    </div>
-                                </div>
-
-                                <!-- Unified Total Amount Footer Display -->
-                                <div class="material-input outlined">
-                                    <input class="data-input form-control cursor-blocked" data-field="total_amount" name="total_amount" type="text" readonly
-                                        style="background-color: #f0f7ff; border-color: #0c447c; color: #0c447c; font-weight: bold; font-size: 1.1em;">
-                                    <label style="color:#0c447c;">Total Amount ($)</label>
-                                </div>
-
-                                <div class="material-input outlined" style="display:none;">
-                                    <textarea class="data-input form-control" data-field="remark" name="remark" rows="2" placeholder=" "></textarea>
-                                    <label style="color:#777;">Remark</label>
-                                </div>
-                                <input class="data-input" type="text" data-field="entry_mode" value="reading" style="display:none;">
-                            ` return div}, onOpen(ibMe const elOld electricDiv.querySelector'[data-field="old_electric"]',) const elNew electricDiv.querySelector'[data-field="new_electric"]',) const elUnits electricDiv.querySelector'[data-field="units_used"]',) const elUnitsReadonly electricDiv.querySelector"#units_used_readonly",) const elExchangeRate electricDiv.querySelector'[data-field="exchange_rate"]',) const elPriceKHR electricDiv.querySelector'[data-field="price_khr"]',) const elPriceUSD electricDiv.querySelector'[data-field="price_usd"]',) const elStartDate electricDiv.querySelector'[data-field="start_date"]',) const elEndDate electricDiv.querySelector'[data-field="end_date"]',) const elTotal electricDiv.querySelector'[data-field="total_amount"]',) const elRemark electricDiv.querySelector'[data-field="remark"]',) const elMode electricDiv.querySelector'[data-field="entry_mode"]',) const btnTabReading electricDiv.querySelector"#btn_tab_reading",) const btnTabManual electricDiv.querySelector"#btn_tab_manual",) const txtConsumptionHeader electricDiv.querySelector"#consumption_header",) const rowReadingFields electricDiv.querySelector"#row_reading_fields",) const rowManualFields electricDiv.querySelector"#row_manual_fields",) const wrapperUnitsReadonly electricDiv.querySelector"#wrapper_units_readonly",) elExchangeRate.value InvoiceSetting(InvoiceSetting.exchange_rate?"")"" console.log"InvoiceSetting.exchange_rate", InvoiceSetting InvoiceSetting.exchange_rate null,) elPriceKHR.addEventListener("input"(e= const rate parseFloat(elExchangeRate.value| 4000 const khrVal parseFloat(e.target.value| 0 elPriceUSD.value khrVal 0(khrVal rate).toFixed(2)"" recalc()}) elPriceUSD.addEventListener("input"(e= const rate parseFloat(elExchangeRate.value| 4000 const usdVal parseFloat(e.target.value| 0 elPriceKHR.value usdVal 0 Math.round(usdVal rate)"" recalc()}) elExchangeRate.addEventListener("input"(= const rate parseFloat(elExchangeRate.value| 4000 const usdVal parseFloat(elPriceUSD.value| 0 if(usdVal 0 elPriceKHR.value Math.round usdVal rate,) else const khrVal parseFloat(elPriceKHR.value| 0 if(khrVal 0) elPriceUSD.value khrVal rate).toFixed(2)} recalc()}) const rowCalculationFields electricDiv.querySelector"#row_calculation_fields",) const switchTab(mode= elMode.value mode if(mode=="reading" rowReadingFields.style.display"grid" rowManualFields.style.display"none" txtConsumptionHeader.textContent"Readings" rowCalculationFields.style.gridTemplateColumns"1fr 1fr" wrapperUnitsReadonly.style.display"block" btnTabReading.style.cssText"cursor:pointer padding:8px 12px border-bottom:2px solid#0C447C color:#0C447C font-weight:600;" btnTabManual.style.cssText"cursor:pointer padding:8px 12px color:#777 font-weight:400 border-bottom:none;" else rowReadingFields.style.display"none" rowManualFields.style.display"block" txtConsumptionHeader.textContent"Manual Entry" rowCalculationFields.style.gridTemplateColumns"1fr 1fr 1fr" wrapperUnitsReadonly.style.display"none" btnTabManual.style.cssText"cursor:pointer padding:8px 12px border-bottom:2px solid#0C447C color:#0C447C font-weight:600;" btnTabReading.style.cssText"cursor:pointer padding:8px 12px color:#777 font-weight:400 border-bottom:none;"} recalc()} btnTabReading.onclick(= switchTab("reading") btnTabManual.onclick(= switchTab("manual") const recalc(= const mode elMode.value let units 0 if(mode=="reading" const oldVal parseFloat(elOld.value| 0 const newVal parseFloat(elNew.value| 0 units newVal oldVal if(units 0 elUnitsReadonly.value"0.00" elUnitsReadonly.style.color"red" else elUnitsReadonly.value units.toFixed(2) elUnitsReadonly.style.color"#212529"} else units parseFloat(elUnits.value| 0} const ppu parseFloat(elPriceUSD.value| 0 const total Math.max(0 units ppu if(elTotal) elTotal.value total.toFixed(2) if(elRemark const start elStartDate.value|"" const end elEndDate.value|"" const period start& end"" const calcStr units 0& ppu 0 mode=="reading"� Reading Setup"� Manual Entry" elRemark.value`lectric${period}${calcStr}`}} elOld, elNew, elUnits, elPriceUSD, elExchangeRate, elStartDate, elEndDate,].forEach((el= if(!el return el.addEventListener("input" recalc) if(el.dataset.type=="date" el.addEventListener("change" recalc)} el.addEventListener("input"(e= if(el.dataset.type=="date" return let v e.target.value.replace/[^0-9.]/g,"",) const parts v.split(".") if(parts.length 2) v parts[0". parts[1] if(parts[1!= undefined) v parts[0+".+ parts[1].slice(0 2) e.target.value v}) el.addEventListener("blur"(e= if(el.dataset.type=="date" return let v parseFloat(e.target.value) if(isNaN(v| v 0 e.target.value"" return} e.target.value v.toFixed(2)})})}, onConfirm(data btn ibMe const mode data.entry_mode|"reading" const ppu parseFloat(data.price_usd| 0 let units 0 let remarks"" if(mode=="reading" const oldReading parseFloat(data.old_electric| 0 const newReading parseFloat(data.new_electric| 0 units newReading oldReading if(newReading< 0) return ibMe.setError"New reading is required.",) if(newReading< oldReading) return ibMe.setError"New reading must be greater than old reading.",) remarks`lectricity ${oldReading}kWh - ${newReading}kWh` else units parseFloat(data.units_used| 0 if(units< 0) return ibMe.setError"Units Used field is required and must be greater than 0.",) remarks`lectric Utility - ${
-                                        data.start_date || ""
-                                    } to ${data.end_date || ""}`} if(ppu< 0) return ibMe.setError"Price per kWh(USD is required.",) if(!data.start_date|!data.end_date) return ibMe.setError"Start and End dates are required.",) if new Date(data.end_date new Date(data.start_date) return ibMe.setError"End date cannot be before Start date.",)} me.itemsView.addRow item_id null, type"utility", price ppu, qty units, remarks mode=="reading"`lectricity ${units}KWh`, unit_type"KWh", old_reading mode=="reading" parseFloat data.old_electric,| 0 0, new_reading mode=="reading" parseFloat data.new_electric,| 0 0, units_used units, price_per_unit ppu, start_date data.start_date, end_date data.end_date, discount 0, discount_type"percent",}, 0,) cv_interact.success("Electric item added.") ibMe.close()},})} if(InvoiceSetting openElectricPopup() else vsapi.call`{main_view.base_url}/prm/invoice_setting/get`,{},).then((res= if res.status_code== 200& res.data& res.data.length 0 InvoiceSetting res.data[0] else InvoiceSetting{}} openElectricPopup()}).catch((= InvoiceSetting{} openElectricPopup()})}} me.controls.btnService.onclick(= if(!me._selectedTenantId return cv_interact.error("Please select Tenant first.")} if!me.controls.space.value| me.controls.space.value=="" return cv_interact.error("Please select Space.")} const services availableItem|[] if(services.length== 0 return cv_interact.error("No services available.")} const serviceOptions services.map(s=`option value="${s.id}">${
-                                    s.service || s.name || `Service#${s.id}`                                }</option>`,).join("") let serviceDiv null InputBox.resetInstance("servicePopUp") InputBox.show( title"Add Service", instanceKey"servicePopUp", confirmButtonText"Save", createContent( const div document.createElement("div") serviceDiv div div.style.cssText"display:flex flex-direction:column;" div.innerHTML`                                <div>
-                                    <div class="d-flex align-items-center mb-3">
-                                        <span style="color:#0C447C; font-size:13px;">Service Selection</span>
-                                        <div style="flex:1; height:1px; background:#e0e0e0;"></div>
-                                    </div>
-                                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                                        <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                            <select class="data-input form-control" data-style="material" data-field="service_id" name="service_id" placeholder="Select Service">
-                                                ${serviceOptions}
-                                            </select>
-                                        </div>
-                                        <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                            <input class="data-input form-control bg-light" data-field="charge_as" name="charge_as" type="text" readonly placeholder=" ">
-                                            <label style="color:#777;">Charge As</label>
-                                        </div>
-                                        <div id="price_wrapper" class="material-input outlined" style="margin-bottom: 1rem; grid-column: span 2;">
-                                            <input class="data-input form-control bg-light" data-field="price" name="price" type="text" readonly placeholder=" ">
-                                            <label style="color:#777;">Unit Price ($)</label>
-                                        </div>
-                                        <div id="duration_container" style="display:none; margin-bottom: 1rem;" class="material-input outlined" >
-                                            <select class="data-input form-control" data-style="material" data-field="duration_months" name="duration_months" placeholder="Duration (Qty)">
-                                                <option value="1">1 Month</option>
-                                                <option value="3">3 Months</option>
-                                                <option value="6">6 Months</option>
-                                                <option value="12">12 Months</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div id="billing_period_container" style="display:none;">
-                                    <div class="d-flex align-items-center  mb-3">
-                                        <span style=" color:#0C447C; font-size:13px;">Billing Period</span>
-                                        <div style="flex:1; height:1px; background:#e0e0e0;"></div>
-                                    </div>
-                                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                                        <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                            <input class="data-input form-control" data-field="start_date" name="start_date" type="text" data-type="date" placeholder=" ">
-                                            <label style="color:#777;">Start Date</label>
-                                        </div>
-                                        <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                            <input class="data-input form-control" data-field="end_date" name="end_date" type="text" data-type="date" placeholder=" ">
-                                            <label style="color:#777;">End Date</label>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <div class="d-flex align-items-center mb-3">
-                                        <span style="color:#0C447C; font-size:13px;">Financials</span>
-                                        <div style="flex:1; height:1px; background:#e0e0e0;"></div>
-                                    </div>
-
-                                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                                        <div class="material-input outlined" style="display:flex; gap:8px; align-items:flex-end; grid-column: span 2;">
-                                            <div style="flex:1;">
-                                                <input class="data-input form-control" data-field="discount" name="discount" type="text" inputmode="decimal" placeholder="0">
-                                                <label style="color:#777;">Discount</label>
-                                            </div>
-                                            <div style="width:80px;">
-                                                <select class="data-input form-control" data-field="discount_type" name="discount_type">
-                                                    <option value="percent" selected>%</option>
-                                                    <option value="amount">$</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="material-input outlined mt-2">
-                                    <input class="data-input form-control cursor-blocked" data-field="total_amount" name="total_amount" type="text" readonly
-                                        style="background-color: #f0f7ff; border-color: #0c447c; color: #0c447c; font-weight: bold; font-size: 1.1em;">
-                                    <label style="color:#0c447c;">Total Amount ($)</label>
-                                </div>
-
-                                <div class="material-input outlined mt-3" style="display:none;">
-                                    <textarea class="data-input form-control" data-field="remark" name="remark" rows="2" placeholder=" "></textarea>
-                                    <label style="color:#777;">Remark</label>
-                                </div>
-                            ` return div}, onOpen(ibMe const elBillingCont serviceDiv.querySelector"#billing_period_container",) const elPriceWrapper serviceDiv.querySelector("#price_wrapper") const elService serviceDiv.querySelector'[data-field="service_id"]',) const elUnitType serviceDiv.querySelector'[data-field="charge_as"]',) const elPrice serviceDiv.querySelector'[data-field="price"]',) const elDuration serviceDiv.querySelector'[data-field="duration_months"]',) const elDurationCont serviceDiv.querySelector"#duration_container",) const elStartDate serviceDiv.querySelector'[data-field="start_date"]',) const elEndDate serviceDiv.querySelector'[data-field="end_date"]',) const elDiscount serviceDiv.querySelector'[data-field="discount"]',) const elDiscountType serviceDiv.querySelector'[data-field="discount_type"]',) const elTotalAmount serviceDiv.querySelector'[data-field="total_amount"]',) const calculateTotalAmount(= const price parseFloat(elPrice.value| 0 const isMonthly(elUnitType.value|"").toLowerCase(=="month" const qty isMonthly parseInt(elDuration.value| 1 1 let subtotal price qty const discountVal parseFloat(elDiscount.value| 0 if(elDiscountType.value=="percent" subtotal subtotal- subtotal(discountVal 100) else if(elDiscountType.value=="amount" subtotal subtotal discountVal} if(subtotal 0 subtotal 0 if(elTotalAmount elTotalAmount.value subtotal.toFixed(2)}} const fillFields(serviceId= const selected services.find(s= String(s.id== String(serviceId),) if(selected const unit selected.charge_as|"").toLowerCase() if(elUnitType) elUnitType.value selected.charge_as|"—" if(elPrice) elPrice.value Number selected.price| 0,).toFixed(2) if(unit=="month" elDurationCont.style.display"block" elBillingCont.style.display"block" elPriceWrapper.style.gridColumn"span 1" else elDurationCont.style.display"none" elDuration.value"1" elBillingCont.style.display"none" elPriceWrapper.style.gridColumn"span 2" elStartDate.value"" elEndDate.value""} recalcDates() calculateTotalAmount()}} const recalcDates(= if(elStartDate.value& elDuration.value let start new Date(elStartDate.value) if(isNaN(start.getTime()) return let months parseInt(elDuration.value| 1 let end new Date(start) end.setMonth(end.getMonth( months) end.setDate(end.getDate( 1) const formatDate(date= const monthsArr"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec",] const day String date.getDate(),).padStart(2"0") const month monthsArr[date.getMonth()] const year date.getFullYear() return`{day}-${month}-${year}`} elEndDate.value formatDate(end)}} if(elDiscountType) elDiscountType.value"percent" if(elService fillFields(elService.value) elService.addEventListener("change"(e= fillFields(e.target.value),)}[elDuration elStartDate].forEach((el= el?.addEventListener("change"(= recalcDates() calculateTotalAmount()})}) if(elDiscountType elDiscountType.addEventListener"change", calculateTotalAmount,)} if(elDiscount elDiscount.addEventListener("input"(e= let v e.target.value.replace/[^0-9.]/g,"",) const parts v.split(".") if(parts.length 2) v parts[0". parts[1] e.target.value v calculateTotalAmount()}) elDiscount.addEventListener("blur"(e= let v parseFloat(e.target.value) e.target.value isNaN(v| v 0" v.toFixed(2) calculateTotalAmount()})}}, onConfirm(data btn ibMe if(!data.service_id return ibMe.setError"Please select a Service.",)} const selectedService services.find(s= String(s.id== String(data.service_id),) if(!selectedService return const serviceDisplayName selectedService.service| selectedService.name|`ervice #${selectedService.id}` const unit selectedService.charge_as|"").toLowerCase() if(unit=="month" if(!data.duration_months return ibMe.setError"Please input Duration.",)} if(!data.start_date|!data.end_date return ibMe.setError"Please input Start and End Date.",)}} const qtyMonths unit=="month" parseInt(data.duration_months| 1 1 let remarkStr serviceDisplayName if(unit=="month" remarkStr+`- ${qtyMonths} Month${
-                                    qtyMonths > 1 ? "s" : ""
-                                } `} const totalAmountInput serviceDiv.querySelector'[data-field="total_amount"]',) const calculatedTotal totalAmountInput parseFloat(totalAmountInput.value) Number(selectedService.price| 0 const existingIds me.itemsView.rows.map(row= row.meta?.item_id| row.data?.item_id,).filter(id= id!= undefined& id!="& id!= null,) const isDuplicate existingIds.some(id= String(id== String(data.service_id),) if(isDuplicate return ibMe.setError`ervice is already in the list.`,)} me.itemsView.addRow item_id data.service_id, type"service", price Number(selectedService.price| 0, qty qtyMonths, remarks remarkStr, unit_type(selectedService.charge_as|"Month"+(qtyMonths 1"s""), discount Number(data.discount| 0, start_date data.start_date|"", end_date data.end_date|"", discount_type data.discount_type|"percent", total_amount calculatedTotal,}, 0,) cv_interact.success`ervice added for ${qtyMonths} ${
-                                    unit === "month" ? "month(s)" : "unit"
-                                }`,) ibMe.close()}, onCancel(ibMe ibMe.close()},})} me.controls.btnRequest.onclick(= if(!me._selectedTenantId return cv_interact.error("Please select Tenant first.")} const selectedSpaceId me.controls.space?.value| me.controls.space_id?.value if(!selectedSpaceId| selectedSpaceId=="" return cv_interact.error("Please select Space.")} const requests me._requestedServices|[] console.log("All Requests" requests) const filteredRequests requests.filter(r= String(r.space_id== String(selectedSpaceId),) if(filteredRequests.length== 0 return cv_interact.error"No Requests relate to this space.",)} const serviceRequestOption filteredRequests.map(sr=`option value="${sr.request_id}">${sr.code} (${sr.space_code})</option>`,).join("") let requestDiv null InputBox.resetInstance("requestPopUp") InputBox.show( title"Service Request", instanceKey"requestPopUp", confirmButtonText"Save", createContent( const div document.createElement("div") requestDiv div div.style.cssText"display:flex flex-direction:column;" div.innerHTML`                                <div>
-                                    <div class="d-flex align-items-center mb-3">
-                                        <span style="color:#0C447C; font-size:13px;">Request Info</span>
-                                        <div style="flex:1; height:1px; background:#e0e0e0;"></div>
-                                    </div>
-                                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                                        <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                            <select class="data-input form-control" data-field="request_id" name="request_id" data-style="material" placeholder="Request No">
-                                                ${serviceRequestOption}
-                                            </select>
-                                        </div>
-                                        <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                            <input class="data-input form-control bg-light cursor-blocked" data-field="service_name" name="service_name" type="text" readonly placeholder=" ">
-                                            <label style="color:#777;">Service Name</label>
-                                        </div>
-                                        <div class="material-input outlined" style="margin-bottom: 1rem;">
-                                            <input class="data-input form-control bg-light" data-field="unit_type" name="unit_type" type="text" readonly placeholder=" ">
-                                            <label style="color:#777;">Unit Type</label>
-                                        </div>
-                                        <div class="material-input outlined" data-wrapper="duration" style="margin-bottom: 1rem;">
-                                            <input class="data-input form-control bg-light cursor-blocked" data-field="duration_hours" name="duration_hours" type="text" readonly placeholder=" ">
-                                            <label style="color:#777;">Duration (Hours)</label>
-                                        </div>
-                                        <div id="price_wrapper_requested" class="material-input outlined" style="margin-bottom: 1rem;">
-                                            <input class="data-input form-control bg-light cursor-blocked" data-field="price" name="price" type="text" readonly placeholder=" ">
-                                            <label style="color:#777;">Original Price ($)</label>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <div class="d-flex align-items-center mb-3">
-                                        <span style="color:#0C447C; font-size:13px;">Financials</span>
-                                        <div style="flex:1; height:1px; background:#e0e0e0;"></div>
-                                    </div>
-                                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                                        <div class="material-input outlined" style="display:flex; gap:8px; align-items:flex-end; grid-column: span 2;">
-                                            <div style="flex:1;">
-                                                <input class="data-input form-control" data-field="discount" name="discount" type="text" inputmode="decimal" placeholder="0">
-                                                <label style="color:#777;">Discount</label>
-                                            </div>
-                                            <div style="width:80px;">
-                                                <select class="data-input form-control" data-field="discount_type" name="discount_type">
-                                                    <option value="percent" selected>%</option>
-                                                    <option value="amount">$</option>
-                                                </select>
-                                            </div>
-                                        </div>
-
-                                        <div class="material-input outlined" style="grid-column: span 2; margin-top: 0.5rem;">
-                                            <input class="data-input form-control cursor-blocked" data-field="total_amount" name="total_amount" type="text" readonly
-                                                style="background-color: #f0f7ff; border-color: #0c447c; color: #0c447c; font-weight: bold; font-size: 1.1em;" placeholder=" ">
-                                            <label style="color:#0c447c;">Total Amount ($)</label>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class=" material-input outlined" style="display:none;">
-                                    <textarea class="data-input form-control" data-field="remark" name="remark" rows="2" placeholder=" "></textarea>
-                                    <label style="color:#777;">Remark</label>
-                                </div>
-                            ` return div}, onOpen(ibMe const elPriceWrapperR requestDiv.querySelector"#price_wrapper_requested",) const elRequest requestDiv.querySelector'[data-field="request_id"]',) const elDuration requestDiv.querySelector'[data-field="duration_hours"]',) const elPrice requestDiv.querySelector'[data-field="price"]',) const elServiceName requestDiv.querySelector'[data-field="service_name"]',) const elUnitType requestDiv.querySelector'[data-field="unit_type"]',) const elRemark requestDiv.querySelector'[data-field="remark"]',) const elDurationWrapper requestDiv.querySelector'[data-wrapper="duration"]',) const elDiscount requestDiv.querySelector'[data-field="discount"]',) const elDiscountType requestDiv.querySelector'[data-field="discount_type"]',) const elTotalAmount requestDiv.querySelector'[data-field="total_amount"]',) if(elPriceWrapperR) elPriceWrapperR.style.gridColumn"span 2" const calculateTotalAmount(= if(!elPrice|!elTotalAmount return const originalPrice parseFloat(elPrice.value| 0 const duration elUnitType& elUnitType.value=="Hour" parseFloat(elDuration.value| 0 1 const baseTotal originalPrice duration const discountVal parseFloat(elDiscount.value| 0 const discType elDiscountType elDiscountType.value"percent" let finalTotal baseTotal if(discType=="percent" finalTotal baseTotal- baseTotal(discountVal 100) else finalTotal baseTotal discountVal} if(finalTotal 0 finalTotal 0 elTotalAmount.value finalTotal.toFixed(2)} const fillRequestData(selectedId= const matched filteredRequests.find(r= String(r.request_id== String(selectedId),) if(matched elServiceName.value matched.service_name|"" elUnitType.value matched.unit_type|"" elDuration.value matched.duration_hours|"0" elPrice.value Number matched.price,).toFixed(2) elRemark.value matched.remarks|"" elDurationWrapper.style.display matched.unit_type=="Hour""block""none" elPriceWrapperR.style.gridColumn matched.unit_type=="Hour""span 2""span 1" calculateTotalAmount()}} if(elDiscountType elDiscountType.value"percent" elDiscountType.addEventListener"change", calculateTotalAmount,)} if(elRequest fillRequestData(elRequest.value) elRequest.addEventListener("change"(e= fillRequestData(e.target.value)})} if(elDiscount elDiscount.addEventListener("input"(e= let v e.target.value.replace/[^0-9.]/g,"",) const parts v.split(".") if(parts.length 2) v parts[0". parts[1] if(parts[1!= undefined) v parts[0+".+ parts[1].slice(0 2) e.target.value v calculateTotalAmount()}) elDiscount.addEventListener("blur"(e= const v parseFloat(e.target.value) e.target.value isNaN(v| v 0" v.toFixed(2) calculateTotalAmount()})}}, onConfirm(data btn ibMe const selectedRequest filteredRequests.find(r= String(r.request_id== String(data.request_id),) if(!selectedRequest return cv_interact.error"Please select a service request.",)} const requestDisplayName selectedRequest.code|`equest # ${selectedRequest.request_id}` const existingIds me.itemsView.rows.map(row= row.meta?.item_id| row.data?.item_id,).filter(id= id!= undefined& id!="& id!= null,) const isDuplicate existingIds.some(id= String(id== String(selectedRequest.request_id),) if(isDuplicate return ibMe.setError"Service Request is already in the list.",)} const dataToAdd item_id selectedRequest.request_id, type"Service Request", price Number(selectedRequest.price), qty selectedRequest.unit_type=="Hour" selectedRequest.duration_hours| 0 1, unit_type`{selectedRequest.unit_type || 0}`, remarks`ervice Request:  ${requestDisplayName}`, space_id selectedRequest.space_id, space_code selectedRequest.space_code, discount Number(data.discount| 0, discount_type data.discount_type|"percent", request_id selectedRequest.request_id,} me.itemsView.addRow(dataToAdd 0) cv_interact.success"Service request added to invoice",) ibMe.close()},})} me.itemsView new ItemsView(me.controls.divItemsView currencyCode"USD", columns name"remarks", transTitle"titles.Item", displayType"text", dataType"string", readOnly true, className"small col-item-name", width"230px",}, name"start_date", transTitle"titles.Start Date", dataType"text", readOnly true, defaultValue"-", width"130px",}, name"end_date", transTitle"titles.End Date", dataType"text", readOnly true, defaultValue"-", width"130px",}, name"qty", transTitle"titles.QTY", dataType"number", readOnly true, className"text-start", width"70px",}, name"unit_type", transTitle"titles.Charge As", dataType"text", readOnly true, defaultValue"-", width"110px",}, name"price", transTitle"titles.Price", readOnly true, isNumeric true, dataType"money", width"150px",}, name"discount", transTitle"titles.Discount", isDiscount true, discountType["percent""amount"], defaultDiscountType"percent", discountBeforeTax true, readOnly true, width"100px",}, name"tax_rate", transTitle"titles.Tax", dataType"percent", readOnly true,}, name"total", transTitle"titles.Total", dataType"money", readOnly true, isNumeric true, width"150px",},], calc mode"auto", qtyField"qty", priceField"price", totalField"total", taxField"tax_rate", currencyPrecision 2,}, totalSummary container me.controls.div_invoice_summary, showTax false, allowDiscount true, discountBeforeTax true,}, tableClass"table", ensureEmptyRow false, showAddLineButton false, showAddLineButton false, validateColumns item_id"positive", qty"positive", price"positive",}, itemRendered(item ctx const tr ctx.tr const item_id ctx.data.item_id const type ctx.data.type const unit_type ctx.data.unit_type item.setRowMeta(tr item_id item_id, type type, unit_type unit_type,}) if(item.rows.length> 2 me.controls.tenant.disabled true me.setReadOnly(true"tenant_id","space_id","invoice_type",])}}, onItemChange(rowId item fieldName td tr= if(fieldName=="item_id" const selectedService availableItem.find(s= String(s.id== String(item.item_id),) if(selectedService me.itemsView.setCellValue tr,"price", Number(selectedService.price| 0,) me.itemsView.setCellValue tr,"unit_type", selectedService.unit_type|"—",) me.itemsView.setCellValue(tr"qty" 1) me.itemsView.setCellValue tr,"remarks", selectedService.service| selectedService.name|"—",) me.itemsView.setCellValue tr,"type","service",) else if(item.contract_id| item.space_price const rentPrice parseFloat item.space_price| item.price,| 0 me.itemsView.setCellValue tr,"price", rentPrice,) me.itemsView.setCellValue(tr"type""rent") me.itemsView.setCellValue(tr"unit_type""—")}}},}) me.searchTenant VSSearchInput.init(me.controls.tenant type"select", prefetch true, query from"tenants", where[["status_id""=" 2]], select"id","name","legal_name","email","phone_number",], searchFields name"LIKE", legal_name"like", email"=", phone"=",},}, columns name"Name" phone_number"Phone}, onSelect(tenant= me._selectedTenantId tenant.id vsapi.post`{main_view.base_url}/prm/tenant/option-tenant-with-contract`, tenant_id tenant.id},{},).then((res= const d res.data|{} me.controls.phone_number.value d.tenant?.phone_number|"" me.controls.email.value d.tenant?.email|"" me._selectedTenantId tenant.id me._tenantData d me._tenantSpaces d.spaces|[] me._tenantMonths d.months|[] me._requestedServices d.service_requests|[] VSUtil.setComboItems me.controls.space, d.spaces|[],"space_id","space_code","","Select Space","",)})},}) me.searchTenant.reset("") me.saveData(= let header me.getData() const items me.itemsView.getItems( metaKeys["item_id""type""remark""unit_type"],}) console.log("Items" items) const totals me.itemsView.getCurrentTotals?.(|{} if(me._selectedTenantId header.tenant_id me._selectedTenantId} if(me.dataOptions?.id header.id me.dataOptions.id} const toMySQLDate(dateStr= if(!dateStr return null const d new Date(dateStr) return isNaN(d.getTime()) null d.toISOString().split("T")[0]} const mappedItems items.filter(item= parseFloat(item.price| 0 0| parseFloat(item.qty| 0 0,).map((item= return...item, item_id item.item_id| null, type item.type|"service", qty parseFloat(item.qty| 1), price parseFloat(item.price| 0), unit_type item.unit_type|"—", remarks item.remarks| item.description|"", start_date item.start_date, end_date item.end_date, discount parseFloat(item.discount| 0), tax_rate parseFloat(item.tax_rate| 0), amount parseFloat(item.total| 0),}}) return...header, items mappedItems, discount_value totals.discount_value| 0, discount_type totals.discount_type|"percent", amount totals.subtotal amount_payable totals.grand_total,}}}, onPrepareForm(me data= availableItem(data.services|[]).filter(s= s.type_id= 2,) const isReadOnly me.dataOptions.id 0 me.controls.tenant.disabled isReadOnly me.setReadOnly(isReadOnly"tenant_id","space_id","invoice_type",]) me._selectedTenantId null me._tenantData null me._tenantSpaces[] me._tenantMonths[] if(me.controls Object.values(me.controls).forEach((el= if el&(el.tagName=="INPUT| el.tagName=="TEXTAREA") el.value""}}) if(me.controls.space me.controls.space.innerHTML'<option value="">- Select Room Space--</option>' me.controls.space.value"" me.controls.space.dispatchEvent new Event("change" bubbles true}),)}} if(me.searchTenant me.searchTenant.reset("") if(me.itemsView me.itemsView.setData([]) if(me.dataOptions.id vsapi.call(`{main_view.base_url}/prm/tenant/invoice/details` id me.dataOptions.id,}).then((res= if(res.status_code!= 200 cv_interact.error"Failed to load invoice details.",) return} const detail res.data|{} console.log("invoice detail:" detail) me.controls.due_date.value detail.due_date me.controls.issue_date.value detail.issue_date me.controls.invoice_type.value detail.invoice_type|"" if(me.controls.general_remark me.controls.general_remark.value detail.general_remark|""} if(me.controls.tenant me.controls.tenant.value detail.tenant_name|""} if(detail.tenant_id me._selectedTenantId detail.tenant_id me.controls.phone_number.value detail.tenant_phone|"" me.controls.email.value detail.tenant_email|"" vsapi.post`{main_view.base_url}/prm/tenant/option-tenant-with-contract`, tenant_id detail.tenant_id},{},).then((res= const d res.data|{} me._tenantSpaces d.spaces|[] me._tenantMonths d.months|[] me._requestedServices d.service_requests|[] VSUtil.setComboItems me.controls.space, d.spaces|[],"space_id","space_code","","Select Space","",) setTimeout((= if(detail.space_id me.controls.space.value String(detail.space_id) if me.controls.space.value!= String(detail.space_id) const opt Array.from me.controls.space.options,).find(o= String(o.value== String detail.space_id,),) if(opt opt.selected true me.controls.space.dispatchEvent new Event"change", bubbles true,},),) console.log"space restored via option.selected:", opt.text,) else console.warn"space option not found for id:", detail.space_id,)} else console.log"space restored:", me.controls.space.value,)}}} 100)})} me.itemsView.setData(detail) console.log"Invoice items loaded into view:", detail.items,)})}}, onShow(me= const title me.divModal.querySelector(".modal-title") if(title const isModify!!me.dataOptions?.id title.innerHTML isModify'<h4 class="text-prm-custom text-start fw-bold">Modify Invoice</h4>''<h4 class="text-prm-custom text-start fw-bold">Create Invoice</h4>'}}, prepareFormOptions modifyTitle"Modify Invoice", createTitle"Create Invoice", targetProp"invoice_details", api endpoint`{main_view.base_url}/prm/tenant/invoice/form-options`, params(op= console.log("API params op:" op) return id op.id}},},}, onClose(me= if(me.controls& me.controls.space me.controls.space.innerHTML'<option value="">- Select Room Space--</option>'} if(me.searchTenant me.searchTenant.reset("") if(me.itemsView me.itemsView.setData([])}, buttons label'<span vslang="buttons.Cancel"></span>', cssClass"btn btn-secondary", click(me= me.hide(false)},}, label'<span vslang="buttons.Save"></span>', cssClass"btn btn-primary", click(me btn= const formData me.saveData() if(!formData return if(!formData.items| formData.items.length== 0 return cv_interact.error("Add at least one item.")} formData.id me.dataOptions.id vsapi.call`{main_view.base_url}/prm/tenant/invoice/save`, formData, btn,).then((res= if(res.status_code== 200 cv_interact.success formData.id"Invoice has been updated.""Invoice has been successfully created.",) me.hide(true) else cv_interact.error res.error_message|"Save failed.",)}})},},],}) dialog.show(op)} return self})()
-const ReceiveDialog((= const self{} let dialog null self.show(op= dialog new GeneralDialog( title"Receive Payment", cssClass"modal-lg vs-modal", backdrop"static", keyboard true, createContent(=`                <div class="container-fluid px-0">
-                    <div class="row g-0" style="border-radius:8px;overflow:hidden;margin-bottom:1.5rem;">
-                        <div class="col-4" style="padding:0.75rem 1.25rem;border-right:1px solid white; background:#e1e5f2;">
-                            <div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#1a1647;margin-bottom:4px;">Balance Due</div>
-                            <div style="font-size:17px;font-weight:600;color:#5665E1;" id="f_due">$0.00</div>
-                        </div>
-                        <div class="col-4" style="padding:0.75rem 1.25rem;border-right:1px solid white; text-align:center;background:#e1e5f2;">
-                            <div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#1a1647;margin-bottom:4px;">Total Paid</div>
-                            <div style="font-size:17px;font-weight:600;color:#19BF9B;" id="f_tot">$0.00</div>
-                        </div>
-                        <div class="col-4" style="padding:0.75rem 1.25rem;text-align:right;background:#e1e5f2;">
-                            <div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#1a1647;margin-bottom:4px;">Remaining</div>
-                            <div style="font-size:17px;font-weight:600;color:#FAB31C;" id="f_bal">$0.00</div>
-                        </div>
-                    </div>
-
-                    <div style="display:flex;flex-direction:column;">
-
-                        <!-- Cash -->
-                        <div>
-                            <div class="d-flex align-items-center gap-2 mb-3">
-                                <span class="payment-badge" style="color:#0C447C;">Cash</span>
-                                <div style="flex:1;height:1px;background:#dee2e6;"></div>
-                                <span style="font-size:11px;color:#0C447C;">Entered: <strong id="c_e" style="color:#212529;">—</strong></span>
-                            </div>
-                            <div style="display:flex;flex-direction:row;gap:8px;flex-wrap:wrap;margin-bottom: 0.5rem;">
-                                <div style="flex:1;min-width:120px;" class="material-input outlined">
-                                    <input name="cash" type="text" class="form-control data-input" data-field="cash" min="0" step="0.01" placeholder=" "/>
-                                    <label style="padding-left:6px;color:#777777;">Amount ($)</label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Bank Transfer -->
-                        <div>
-                            <div class="d-flex align-items-center gap-2 mb-3">
-                                <span class="payment-badge" style="color:#0C447C;">Bank Transfer</span>
-                                <div style="flex:1;height:1px;background:#dee2e6;"></div>
-                                <span style="font-size:11px;color:#0C447C;">Entered: <strong id="b_e" style="color:#212529;">—</strong></span>
-                            </div>
-                            <div style="display:flex;flex-direction:row;gap:8px;flex-wrap:wrap;margin-bottom: 0.5rem;">
-                                <div style="flex:1;min-width:120px;" class="material-input outlined">
-                                    <select name="bank_transfer_bank_id" class="form-select data-input" data-field="bank_transfer_bank_id" data-style="material"></select>
-                                </div>
-                                <div style="flex:1;min-width:120px;" class="material-input outlined">
-                                    <input name="transfer_amount" type="text" class="form-control data-input" data-field="transfer_amount" min="0" step="0.01" placeholder=" "/>
-                                    <label style="padding-left:6px;color:#777777;">Amount ($)</label>
-                                </div>
-                                <div style="flex:1;min-width:120px;" class="material-input outlined">
-                                    <input name="bank_ref_number" type="text" class="form-control data-input" data-field="bank_ref_number" placeholder=" "/>
-                                    <label style="padding-left:6px;color:#777777;">Ref Number</label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Card -->
-                        <div>
-                            <div class="d-flex align-items-center gap-2 mb-3">
-                                <span class="payment-badge" style="color:#0C447C;">Card</span>
-                                <div style="flex:1;height:1px;background:#dee2e6;"></div>
-                                <span style="font-size:11px;color:#0C447C;">Entered: <strong id="ca_e" style="color:#212529;">—</strong></span>
-                            </div>
-                            <div style="display:flex;flex-direction:row;gap:8px;flex-wrap:wrap;margin-bottom: 0.5rem;">
-                                <div style="flex:1;min-width:120px;" class="material-input outlined">
-                                    <select name="card_type" class="form-select data-input" data-field="card_type" data-style="material">
-                                        <option value="">None</option>
-                                        <option value="credit">Credit</option>
-                                        <option value="debit">Debit</option>
-                                    </select>
-                                </div>
-                                <div style="flex:1;min-width:120px;" class="material-input outlined">
-                                    <input name="card_amount" type="text" class="form-control data-input" data-field="card_amount" min="0" step="0.01" placeholder=" "/>
-                                    <label style="padding-left:6px;color:#777777;">Amount ($)</label>
-                                </div>
-                                <div style="flex:1;min-width:120px;" class="material-input outlined">
-                                    <input name="card_number" type="text" class="form-control data-input" data-field="card_number" placeholder=" "/>
-                                    <label style="padding-left:6px;color:#777777;">Card Number</label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Cheque -->
-                        <div>
-                            <div class="d-flex align-items-center gap-2 mb-3">
-                                <span class="payment-badge" style="color:#0C447C;">Cheque</span>
-                                <div style="flex:1;height:1px;background:#dee2e6;"></div>
-                                <span style="font-size:11px;color:#0C447C;">Entered: <strong id="ch_e" style="color:#212529;">—</strong></span>
-                            </div>
-                            <div style="display:flex;flex-direction:row;gap:8px;flex-wrap:wrap;margin-bottom: 0.5rem;">
-                                <div style="flex:1;min-width:120px;" class="material-input outlined">
-                                    <select name="cheque_bank_id" class="form-select data-input" data-field="cheque_bank_id" data-style="material"></select>
-                                </div>
-                                <div style="flex:1;min-width:120px;" class="material-input outlined">
-                                    <input name="cheque_amount" type="text" class="form-control data-input" data-field="cheque_amount" min="0" step="0.01" placeholder=" "/>
-                                    <label style="padding-left:6px;color:#777777;">Amount ($)</label>
-                                </div>
-                                <div style="flex:1;min-width:120px;" class="material-input outlined">
-                                    <input name="cheque_number" type="text" class="form-control data-input" data-field="cheque_number" placeholder=" "/>
-                                    <label style="padding-left:6px;color:#777777;">Cheque Number</label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Remarks -->
-                        <div>
-                            <div class="material-input outlined" style="margin:0;">
-                                <textarea name="remarks" class="form-control data-input" data-field="remarks" rows="2" style="height:55px;" placeholder=" "></textarea>
-                                <label style="padding-left:6px;color:#777777;">Remarks</label>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>`, contentCreated(me= const updateTotals(= const getValue(name= const el me.divModal.querySelector`name="${name}"]`,) return el parseFloat(el.value| 0 0} const fmt(n="$ Number(n).toFixed(2) const cash getValue("cash") const bank getValue("transfer_amount") const card getValue("card_amount") const cheque getValue("cheque_amount") const totalPaid cash bank card cheque let due 0 const dueEl me.divModal.querySelector("#f_due") if(dueEl due parseFloat dueEl.textContent.replace(//^0-9.-]+/g""),| 0} const remaining due totalPaid me.divModal.querySelector("#f_tot").textContent fmt(totalPaid) const balEl me.divModal.querySelector("#f_bal") if(balEl if(totalPaid due 0.001 balEl.style.color"#dc3545" balEl.textContent"Overpaid fmt(Math.abs(remaining)) else balEl.style.color remaining< 0.001"#3B6D11"#FAB31C" balEl.textContent fmt(Math.max(0 remaining))}} me.divModal.querySelector("#c_e").textContent cash 0 fmt(cash"—" me.divModal.querySelector("#b_e").textContent bank 0 fmt(bank"—" me.divModal.querySelector("#ca_e").textContent card 0 fmt(card"—" me.divModal.querySelector("#ch_e").textContent cheque 0 fmt(cheque"—"} const amountFields"cash","transfer_amount","card_amount","cheque_amount",] amountFields.forEach((name= const input me.divModal.querySelector(`name="${name}"]`) if(input input.addEventListener("input" updateTotals) input.addEventListener("change" updateTotals)}}) me.convertPayment(data= const parseAmt(v= isNaN(parseFloat(v) 0 parseFloat(v) const breakdowns[] if(parseAmt(data.cash 0 breakdowns.push( method"Cash", amount parseAmt(data.cash), currency_code"USD",})} if(parseAmt(data.transfer_amount 0 breakdowns.push( method"Bank", amount parseAmt(data.transfer_amount), currency_code"USD", bank_id parseInt(data.bank_transfer_bank_id| null, bank_name me.getSelectText me.getSelectText("bank_transfer_bank_id") null, bank_ref_number data.bank_ref_number| null,})} if(parseAmt(data.card_amount 0 breakdowns.push( method"Card", amount parseAmt(data.card_amount), currency_code"USD", card_type data.card_type| null, card_number data.card_number| null,})} if(parseAmt(data.cheque_amount 0 breakdowns.push( method"Cheque", amount parseAmt(data.cheque_amount), currency_code"USD", bank_id parseInt(data.cheque_bank_id| null, cheque_bank_name me.getSelectText me.getSelectText("cheque_bank_id") null, cheque_number data.cheque_number| null,})} return invoice_id me.dataOptions?.invoice_id| null, remarks(data.remarks|"").trim() pmt_breakdowns breakdowns,}} applyNumberInput(me.controls.cash) applyNumberInput(me.controls.cheque_amount) applyNumberInput(me.controls.card_amount) applyNumberInput(me.controls.transfer_amount)}, onPrepareForm(me= const opts me.dataOptions|{} if(opts.invoice_id vsapi.call(`{main_view.base_url}/prm/tenant/invoice/details` id opts.invoice_id,}).then((res= if(res.status_code== 200 const d res.data|{} const bal Number(d.balance| 0).toFixed(2) const set(id val= const el me.divModal.querySelector"# id,) if(el el.textContent val} set("f_due""$ bal) set("f_bal""$ bal) set("f_tot""$0.00")}})} vsapi.call(`{main_view.base_url}/prm/tenant/invoice/form-options`).then((res= const banks res?.data?.banks|[] if(me.controls.bank_transfer_bank_id VSUtil.setComboItems me.controls.bank_transfer_bank_id, banks,"id","name", true,"� Select Bank—",)} if(me.controls.cheque_bank_id VSUtil.setComboItems me.controls.cheque_bank_id, banks,"id","name", true,"� Select Bank—",)}})}, buttons label"Cancel", cssClass"btn btn-secondary", click(me= me.hide(false),}, label"Receive", cssClass"btn btn-primary", click(me btn= const rawData me.getData() const payload me.convertPayment(rawData) const totalInput payload.pmt_breakdowns.reduce(sum item= sum item.amount, 0,) if(totalInput< 0 return cv_interact.error"Please enter a payment amount.",)} vsapi.call`{main_view.base_url}/prm/tenant/invoice/receive`, payload, btn,).then((res= if(res.status_code== 200 cv_interact.success"Payment Received Successfully.",) me.hide(true) else cv_interact.error res.error_message|"Save failed.",)}}).catch((err= console.error(err) cv_interact.error("Network error occurred.")})},},],}) dialog.show(op)} return self})();
+                </div>`} mThis.getFilterData(= const params payment_status_id mThis.elFilter_status.value, search_value mThis.elSearch.value.trim(),} mThis.divFilter.querySelectorAll(".filter-field").forEach((el= if(el.value& el.dataset.field params[el.dataset.field el.value.trim()}}) return params} mThis.initDropdownMenus(container= const menuOptions containerElement container, actionButtonClass"btn_leave_action", cssClass"bg-white box-shadow", menus html'<span class="ps-2 vslang="titles.Print"></span>', icon`i class="fa-solid fa-receipt text-primary fs-5"></i>`, cssClass"border-bottom pb-2", name"print_invoice",},], onClick(menulink id name= if(name=="print_invoice" mThis.printInvoice(id)},} new VSDropdownMenu(menuOptions)} mThis.printInvoice(id invoice_type menulink= if(!invoice_type| invoice_type=="undefined" console.warn"Type missing for ID id" Fetching from server...",) vsapi.call(`{main_view.base_url}/tenant/invoice/details` id id}).then((res= if(res.status_code== 200 mThis.printInvoice(id res.data.invoice_type menulink) else cv_interact.error("Could not determine invoice type.")}}) return} const invType parseInt(invoice_type) const params invoice_id id btn menulink} if(invType== 1 InvoiceTaxDialog.show(params) else if(invType== 2 InvoiceNoTaxDialog.show(params) else if(invType== 3 InvoiceCommercialDialog.show(params)}} mThis.prepareFormOptions(onFinish= vsapi.call(`{main_view.base_url}/tenant/invoice/form-options`).then((res= const d res.status_code== 200 res.data{} VSUtil.setComboItems mThis.elFilter_status, d.statuses,"id","payment_status","","All Statuses","",) const typeOptions id 1 name"Tax}, id 2 name"No Tax}, id 3 name"Commercial},] VSUtil.setComboItems mThis.elFilter_invoice_type, typeOptions,"id","name","","All Types","",) if(typeof onFinish=="function" onFinish()})} mThis.show(options{}= mThis.init() mThis.options options mThis.prepareFormOptions((= main_view.setContentView(mThis.self mThis.title_prop) mThis.InvoiceListView.showPage(mThis.getFilterData())})} return mThis})();
 "use strict"
 var ReceiptsComponent new(function( const mThis this mThis.title_prop"Transaction" mThis.currency_symbol"$" mThis.bindDom(= if(mThis.self return true if(!main_view?.VSAppContent return false mThis.base_url main_view.base_url mThis.self main_view.VSAppContent.querySelector"#_main_receipts_component") if(!mThis.self return false mThis.elStatus mThis.self.querySelector("#_receipts_status") mThis.divFilter mThis.self.querySelector("#_divFilter_receipts") mThis.elSearch mThis.self.querySelector("#_search_receipts") return true} mThis.cols transTitle"" className"align-middle}, transTitle"titles.Receipt No", className"align-middle text-nowrap", data(data= const code data.code`span class="text-muted fst-italic">N/A</span>` return`                    <div class="d-flex flex-column">
                         ${code}
