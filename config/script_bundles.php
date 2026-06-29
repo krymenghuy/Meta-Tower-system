@@ -155,6 +155,7 @@ return [
                 'js/components/prm/InvoiceSettingComponent.js',
                 'js/components/prm/PrintContractDialog.js',
                 'js/components/prm/DepositComponent.js',
+                'js/components/prm/AnnouncementComponent.js',
 
 
 
@@ -198,7 +199,7 @@ return [
                 '/js/components/tenant/ReceiptsComponent.js',
                 '/js/components/tenant/RequestServiceComponent.js',
                 '/js/components/tenant/AnnouncementComponent.js',
-                '/js/components/tenant/ReservationComponent.js',
+                '/js/components/tenant/BookAmenityComponent.js',
                 '/js/components/tenant/ServicesComponent.js',
 
 

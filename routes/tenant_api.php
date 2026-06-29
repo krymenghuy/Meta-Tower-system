@@ -11,7 +11,7 @@ use App\Http\Controllers\Tenant\DashboardController;
 use App\Http\Controllers\tenant\ZoneController;
 use App\Http\Controllers\Tenant\ContractsController;
 use App\Http\Controllers\Tenant\TenantProfileController;
-use App\Http\Controllers\Tenant\ReservationsController;
+use App\Http\Controllers\Tenant\BookAmenityController;
 use App\Http\Controllers\Tenant\RequestServiceController;
 use App\Http\Controllers\Tenant\ReceiptController as TenantReceiptController;
 use App\Http\Controllers\Tenant\InvoiceController as TenantInvoiceController;
@@ -68,14 +68,14 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant/tenant
     Route::post('/delete', [TenantProfileController::class, 'delete']);
 });
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('reservation')->group(function () {
-    Route::post('/save', [ReservationsController::class, 'saveReservation']);
-    Route::post('/list-paginate', [ReservationsController::class, 'getListPaginate']);
-    Route::post('/details', [ReservationsController::class, 'reservationDetails']);
-    Route::post('/form-options', [ReservationsController::class, 'getFormOptions']);
-    Route::post('/delete', [ReservationsController::class, 'deleteReservation']);
-    Route::post('/update-status', [ReservationsController::class, 'updateReservationStatus']);
-    Route::post('/get-amenity-info', [ReservationsController::class, 'getAmenityInfo']);
-    Route::post('/cancel', [ReservationsController::class, 'cancelReservation']);
+    Route::post('/save', [BookAmenityController::class, 'saveReservation']);
+    Route::post('/list-paginate', [BookAmenityController::class, 'getListPaginate']);
+    Route::post('/details', [BookAmenityController::class, 'reservationDetails']);
+    Route::post('/form-options', [BookAmenityController::class, 'getFormOptions']);
+    Route::post('/delete', [BookAmenityController::class, 'deleteReservation']);
+    Route::post('/update-status', [BookAmenityController::class, 'updateReservationStatus']);
+    Route::post('/get-amenity-info', [BookAmenityController::class, 'getAmenityInfo']);
+    Route::post('/cancel', [BookAmenityController::class, 'cancelReservation']);
 });
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('request-service')->group(function () {
     Route::post('/save', [RequestServiceController::class, 'saveServiceRequest']);

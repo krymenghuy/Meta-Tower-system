@@ -40,6 +40,9 @@ return [
         'default' => '?? មិនត្រឹមត្រូវ។',
 
         'name_required' => 'តម្រូវឱ្យបញ្ចូល ?? ហើយមិនអាចលើសពី ?? តួអក្សរបានទេ។ តម្លៃដែលបានបញ្ចូល៖ ??',
+        'announcement_title_required' => 'សូមបញ្ចូលចំណងជើង។',
+        'announcement_description_required' => 'សូមបញ្ចូលការពិពណ៌នា។',
+        'announcement_title_already_exists' => 'ចំណងជើងសេចក្តីប្រកាសនេះមានរួចហើយ។',
         'prefix_required' => 'សូមបញ្ចូលអក្សរកាត់។',
         'total_floor_required' => 'សូមបញ្ចូលចំនួនជាន់សរុប។',
         'total_area_required' => 'សូមបញ្ចូលចំនួនក្រឡាផ្ទៃសរុប។',
@@ -1198,6 +1201,9 @@ return [
         'delete_success_vendor' => 'អ្នកផ្គត់ផ្គង់ត្រូវបានលុបដោយជោគជ័យ។',
         'update_success_vendor' => 'អ្នកផ្គត់ផ្គង់ត្រូវបានកែប្រែដោយជោគជ័យ។',
         'create_success_vendor' => 'អ្នកផ្គត់ផ្គង់ត្រូវបានបង្កើតដោយជោគជ័យ។',
+        'create_success_announcement' => 'សេចក្តីប្រកាសត្រូវបានបង្កើតដោយជោគជ័យ។',
+        'update_success_announcement' => 'សេចក្តីប្រកាសត្រូវបានធ្វើបច្ចុប្បន្នភាពដោយជោគជ័យ។',
+        'delete_success_announcement' => 'សេចក្តីប្រកាសត្រូវបានលុបដោយជោគជ័យ។',
 
         'create_success_order' => 'ការបញ្ជាទិញត្រូវបានបង្កើតដោយជោគជ័យ។',
         'delete_success_order' => 'ការបញ្ជាទិញត្រូវបានលុបដោយជោគជ័យ។',
@@ -1245,7 +1251,7 @@ return [
         'please_enter_price' => 'សូមបញ្ចូលតម្លៃឯកតាជាមុនសិន។',
         'confirm_reset_invoice' => 'តើអ្នកប្រាកដទេថាចង់កំណត់ការកំណត់វិក្កយបត្រនេះឡើងវិញ?',
         'restore_to_invoice' => 'សកម្មភាពនេះនឹងស្ដារចំនួនទឹកប្រាក់ដែលត្រូវបង់នៅលើវិក្កយបត្រឡើងវិញ។',
-        'reason_for_cancellation'=> 'សូមបញ្ចូលមូលហេតុនៃការបោះបង់។',
+        'reason_for_cancellation' => 'សូមបញ្ចូលមូលហេតុនៃការបោះបង់។',
         'reason_required' => 'សូមបញ្ជាក់ពីមូលហេតុ!',
 
 
