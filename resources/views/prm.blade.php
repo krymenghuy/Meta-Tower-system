@@ -325,9 +325,7 @@ echo $user->lang ?? 'en';
                                                                                                                                                                             background-color:' .
                                                         $iconConf['bg'] .
                                                         ';">
-                                                                                                                                                                    <i class="fa-solid ' .
-                                                        $iconConf['icon'] .
-                                                        ' fs-3"
+                                                                                                                                                                    <i class="fa-solid ' . $iconConf['icon'] . ' fs-3"
                                                                                                                                                                     style="color:' .
                                                         $iconConf['color'] .
                                                         ';"></i>
@@ -458,6 +456,7 @@ echo $user->lang ?? 'en';
                             @include('layouts.prm.itemsComponent')
                             @include('layouts.prm.invoiceSettingComponent')
                             @include('layouts.prm.depositComponent')
+                            @include('layouts.prm.announcementComponent')
 
 
                         </div>
