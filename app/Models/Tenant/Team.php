@@ -148,15 +148,33 @@ class Team
         return $query->get();
     }
 
-    public function getTeamDetails($id, $ss = null){
-        $ss = $ss ?? $this->userInfo;
+    public static function getTeamDetails($id){
 
+        \Log::info($id);
         $query = DB::table('tenant_team as s')
             ->where('s.id', $id)
             ->selectRaw("s.id, s.tenant_id, s.space_id, s.code, s.team_name, s.member_count, s.branch_id, s.created_at")
             ->orderBy('s.created_at', 'desc');
         
         return $query->get();
+    }
+
+    public function deleteTeam($id, $ss = null){
+        $id = $id ?? $this->id;
+        $ss = $ss ?? $this->userInfo;
+
+        $team = DB::table('tenant_team')->where('id', $id)->first();
+        if(!$team){
+            return DV::error('Team not found');
+        }
+        // if($team->tenant_id != $ss->official_id){
+        //     return DV::error('You are not authorized to delete this team');
+        // }
+        $deleted = DB::table('tenant_team')->where('id', $id)->delete();
+         
+        return $deleted
+            ? DV::depends($deleted, ['action' => 'deleted'])
+            : DV::error('Delete failed.');
     }
      
 
@@ -438,7 +456,10 @@ class Team
     }
 
     public static function getFormOptions($id, $ss)
+
+    
     {
+        \Log::info($id);
         $teamDetails = $id ? self::getTeamDetails($id) : null;
         return (object) [
             'team'         => $teamDetails,

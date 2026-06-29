@@ -282,19 +282,60 @@ var TeamComponent = new (function() {
                 console.log(teamId);
             });
         });
+ 
+       // Corrected delete button listener (duplication removed)
+        container.querySelectorAll(".delete-team-btn").forEach(btn => {
+            btn.addEventListener("click", e => {
+                e.stopPropagation(); // Prevents card click event
+                const teamId = e.currentTarget.dataset.id; //
+                
+                cv_interact.confirm(
+                    "confirm_delete",
+                    {
+                        title: "deleted",
+                        context: "delete",
+                        confirmButtonText: "Delete",
+                    },
+                    function (isConfirmed) {
+                        if (isConfirmed) {
+                            vsapi
+                                .call(
+                                    `${main_view.base_url}/tenant/team/delete`,
+                                    { id: teamId }, //
+                                    false,
+                                    false,
+                                    false,
+                                )
+                                .then((res) => {
+                                    if (res.status_code == 200) {
+                                        mThis.showPage("team_list"); // Refreshes the list
+                                        cv_interact.success("delete_success_tenant"); //
+                                    } else {
+                                        cv_interact.error(res.error_message); //
+                                    }
+                                });
+                        }
+                    },
+                );
+            });
+        });
 
-        // Edit Team
+
         container.querySelectorAll(".edit-team-btn").forEach(btn => {
             btn.addEventListener("click", e => {
                 e.stopPropagation();
-                const id = e.currentTarget.dataset.id;
-                CreateTeamDialog.show({
-                    id: id,
-
-                    
+                
+                // ✅ CORRECT: ID is successfully retrieved
+                const teamId = e.currentTarget.dataset.id;
+                console.log("Opening edit dialog for team ID:", teamId);
+                
+                let op = {
+                    id: teamId,
                     onClose: () => mThis.refreshTeamList()
-                });
-                console.log(11222,id);
+                };
+                
+                CreateTeamDialog.show(op);
+                console.log("Opening edit dialog for team ID:", teamId);
             });
         });
     };
@@ -392,19 +433,158 @@ var TeamComponent = new (function() {
     return mThis;
 })();
 
+// const CreateTeamDialog = (() => {
+//     const self = {};
+//     let dialog = null;
+
+//     self.show = op => {
+
+//         dialog = new GeneralDialog({
+//                 cssClass: "modal-md vs-modal",
+//                 backdrop: "static",
+//                 keyboard: true,
+//                 createContent: () => {
+//                     return `
+//                     <input type="hidden" name="id" class="data-input" data-field="id" />
+
+//                     <div class="row g-3">
+//                         <div class="col-6">
+//                             <div class="vs-material-field">
+//                                 <input type="text" 
+//                                     name="team_name" 
+//                                     class="data-input form-control" 
+//                                     data-field="team_name" 
+//                                     placeholder=" " 
+//                                     required />
+//                                 <label vslang="labels.Team Name">Team Name</label>
+//                             </div>
+//                         </div>
+
+//                         <div class="col-6 col-md-6">
+//                             <select name="space_id" 
+//                                     class="data-input form-control"
+//                                     data-style="material" 
+//                                     data-field="space_id"
+//                                     required
+//                                     placeholder="${LocaleManager.trans(
+//                                         "Select Space",
+//                                         "labels"
+//                                     )}">      
+//                             </select>
+//                         </div>
+                                
+//                     </div>
+//                 `;
+//                 },
+
+//                 prepareFormOptions: {
+//                     createTitle: "vslang:titles.Create New Team",
+//                     modifyTitle: "vslang:titles.Modify Team",
+//                     targetProp: "team",
+//                     api: {
+//                         endpoint: `${main_view.base_url}/tenant/team/form-options`,
+//                         params: () => ({ id: op.id }) 
+//                     }
+//                 },
+                
+
+//                 onPrepareForm: (me, data) => {
+//                     console.log("me",me);
+//                     console.log("data",data);
+//                     me.renderTeamCards();
+
+                    
+//                     const spacesList = data?.spaces || [];
+
+//                     VSUtil.setComboItems(
+//                         me.controls.space_id,
+//                         spacesList,
+//                         "id", 
+//                         "code", 
+//                         "",
+//                         "Select Space", 
+//                         ""
+//                     );
+
+//                     // If backend found and returned the team data, bind it to the inputs automatically
+//                     if (data?.team) {
+//                         me.setData(data.team);
+//                     }
+//                 },
+
+//                 buttons: [
+//                     {
+//                         label: '<span vslang="buttons.Cancel"></span>',
+//                         cssClass: "btn btn-secondary",
+//                         click: me => {
+//                             me.hide(false);
+//                         }
+//                     },
+//                     {
+//                         label: '<span vslang="buttons.Save"></span>',
+//                         cssClass: "btn btn-primary",
+//                         click: (me, btn) => {
+//                             const payload = me.getData();
+                            
+//                             // Ensure the ID accompanies the payload
+//                             payload.id = me.dataOptions.id || payload.id; 
+
+//                             vsapi
+//                                 .call(
+//                                     `${main_view.base_url}/tenant/team/save`,
+//                                     payload,
+//                                     btn,
+//                                     null
+//                                 )
+//                                 .then(res => {
+//                                     if (res.status_code === 200) {
+//                                         const newTeamId = res.data?.id || null;
+//                                         me.hide(true, payload, newTeamId);
+
+//                                         if (payload.id > 0) {
+//                                             cv_interact.success(
+//                                                 "update_success_team"
+//                                             );
+//                                         } else {
+//                                             cv_interact.success(
+//                                                 "create_success_team"
+//                                             );
+//                                         }
+                                        
+//                                         if (typeof op.onClose === 'function') {
+//                                             op.onClose();
+//                                         }
+//                                     } else {
+//                                         cv_interact.error(
+//                                             res.error_message ||
+//                                                 "Failed to save team"
+//                                         );
+//                                     }
+//                                 });
+//                         }
+//                     }
+//                 ]
+//             });
+
+//         dialog.show(op);
+//     };
+
+//     return self;
+// })();
+
 const CreateTeamDialog = (() => {
     const self = {};
     let dialog = null;
 
     self.show = op => {
-        dialog =
-            dialog ||
-            new GeneralDialog({
+        dialog = new GeneralDialog({
                 cssClass: "modal-md vs-modal",
                 backdrop: "static",
                 keyboard: true,
                 createContent: () => {
                     return `
+                    <input type="hidden" name="id" class="data-input" data-field="id" />
+
                     <div class="row g-3">
                         <div class="col-6">
                             <div class="vs-material-field">
@@ -441,19 +621,15 @@ const CreateTeamDialog = (() => {
                     targetProp: "team",
                     api: {
                         endpoint: `${main_view.base_url}/tenant/team/form-options`,
-                        params: op => ({ id: op.id })
+                        // ✅ FIX 2: Use an empty parameter arrow function to prevent variable shadowing.
+                        // This allows correctly passing the outer team ID context.
+                        params: () => ({ id: op.id }) 
                     }
                 },
                 
 
                 onPrepareForm: (me, data) => {
-                    console.log(1122,data);
-                    console.log(3355, me);
-                    
-                    
                     const spacesList = data?.spaces || [];
-                    console.log(333,data);
-                    
 
                     VSUtil.setComboItems(
                         me.controls.space_id,
@@ -465,6 +641,7 @@ const CreateTeamDialog = (() => {
                         ""
                     );
 
+                    // If backend found and returned the team data, bind it to the inputs automatically
                     if (data?.team) {
                         me.setData(data.team);
                     }
@@ -482,22 +659,24 @@ const CreateTeamDialog = (() => {
                         label: '<span vslang="buttons.Save"></span>',
                         cssClass: "btn btn-primary",
                         click: (me, btn) => {
-                            const formData = me.getData();
-                            console.log(6677,formData);
+                            const payload = me.getData();
+                            
+                            // Ensure the ID accompanies the payload
+                            payload.id = me.dataOptions.id || payload.id; 
 
                             vsapi
                                 .call(
                                     `${main_view.base_url}/tenant/team/save`,
-                                    formData,
+                                    payload,
                                     btn,
                                     null
                                 )
                                 .then(res => {
                                     if (res.status_code === 200) {
                                         const newTeamId = res.data?.id || null;
-                                        me.hide(true, formData, newTeamId);
+                                        me.hide(true, payload, newTeamId);
 
-                                        if (formData.id > 0) {
+                                        if (payload.id > 0) {
                                             cv_interact.success(
                                                 "update_success_team"
                                             );
@@ -505,6 +684,10 @@ const CreateTeamDialog = (() => {
                                             cv_interact.success(
                                                 "create_success_team"
                                             );
+                                        }
+                                        
+                                        if (typeof op.onClose === 'function') {
+                                            op.onClose();
                                         }
                                     } else {
                                         cv_interact.error(

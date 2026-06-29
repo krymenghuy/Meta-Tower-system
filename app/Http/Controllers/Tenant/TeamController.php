@@ -81,7 +81,7 @@ class TeamController extends Controller
             return JDV::raw($ss);
         }
         $id = $req->id ?? $req->staff_id;
-        $res = $this->teams->deleteTeamMember($id);
+        $res = $this->teams->deleteTeam($id);
         return JDV::raw($res);
     }
 
