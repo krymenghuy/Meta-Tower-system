@@ -1405,6 +1405,7 @@ class Contract
         $tenant_nid = $d->national_id ?? $tenant->national_id ?? '';
         $tenant_phone = $d->phone_number ?? $tenant->phone_number ?? '';
         $tenant_address = $tenant_address ?? $d->address ?? $tenant->address;
+        $tenant_position = $d->tenant_position ?? 'អ្នកគ្រប់គ្រងទូទៅ';
         $start_date = $d->start_date ?? $tenant->start_date ?? '';
         $end_date = $d->end_date ?? $tenant->end_date ?? '';
 
@@ -1459,7 +1460,8 @@ class Contract
             'tenant_name' => $tenant_name,
             'tenant_code' => $tenant->code ?? '(ID)',
             'tenant_sex' => self::getSex($tenant_sex),
-
+            'tenant_position'=>$tenant_position,
+ 
 
             'tenant_phone' => $tenant_phone,
             'tenant_nid' => $tenant_nid,
@@ -1668,7 +1670,7 @@ class Contract
         // Lunar days (simplified mapping example)
         $lunarDays = [
             1 => '១កើត',
-            2 => '២កើត',
+            2 => '២កើត',     
             3 => '៣កើត',
             4 => '៤កើត',
             5 => '៥កើត',

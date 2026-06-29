@@ -239,6 +239,15 @@ function v_display($mod_id, $module_ids = null)
                         <span class="font-color kt-menu__link-text" vslang="menus.Service Prices"></span>
                     </a>
                 </li>
+                <li class="kt-menu__item" aria-haspopup="true" <?php v_display(217); ?>>
+                    <a href="AnnouncementComponent" modid="217" class="menu-item kt-menu__link">
+                        <span class="kt-menu__link-icon">
+                            <img class="opacity-icons icons"
+                                src="{{ asset('assets/images/icons/service_price.svg') }}" />
+                        </span>
+                        <span class="font-color kt-menu__link-text" vslang="menus.Announcements"></span>
+                    </a>
+                </li>
                 
                 <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover"
                     <?php v_display(null, [220]); ?>>

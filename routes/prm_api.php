@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Prm\GeneralSettingsController;
 
 use App\Http\Controllers\Prm\TenantController;
+use App\Http\Controllers\Prm\AnnouncementController;
 use App\Http\Controllers\Prm\TenantDocumentController;
 use App\Http\Controllers\Prm\BuildingController;
 use App\Http\Controllers\Prm\BuildingSpaceController;
@@ -383,6 +384,14 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('deposit')->gr
     // Route::post('/view-attachment', [DepositController::class, 'viewDepositAttachment']);
     // Route::post('/delete-attachment', [DepositController::class, 'deleteDepositAttachment']);
     // Route::post('/upload-attachment', [DepositController::class, 'uploadDepositAttachment']);
+});
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('announcement')->group(function () {
+    Route::post('/save', [AnnouncementController::class, 'save']);
+    Route::post('/list-paginate', [AnnouncementController::class, 'getListPaginate']);
+    Route::post('/details', [AnnouncementController::class, 'details']);
+    Route::post('/form-options', [AnnouncementController::class, 'getFormOptions']);
+    Route::post('/delete', [AnnouncementController::class, 'delete']);
 });
 
 

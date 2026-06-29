@@ -23,6 +23,9 @@ return [
         'default' => 'Invalid ??.',
 
         'name_required' => '?? is required and must be at most ?? characters. Given value: ??',
+        'announcement_title_required' => 'Title is required.',
+        'announcement_description_required' => 'Description is required.',
+        'announcement_title_already_exists' => 'Announcement with this title already exists.',
         'prefix_required' => 'Prefix is required.',
         'total_floor_required' => 'Total floor is required.',
         'total_area_required' => 'Total area is required.',
@@ -275,6 +278,9 @@ return [
         'create_success_contract' => 'Contract created successfully.',
         'update_success_contract' => 'Contract updated successfully.',
         'delete_success_contract' => 'Contract deleted successfully.',
+        'create_success_announcement' => 'Announcement created successfully.',
+        'update_success_announcement' => 'Announcement updated successfully.',
+        'delete_success_announcement' => 'Announcement deleted successfully.',
         'confirm_terminate' => 'Are you sure you want to terminate this contract?',
         'contract_terminated' => 'Contract terminated successfully.',
 
@@ -412,4 +418,3 @@ return [
         'Create Tenant' => 'Create Tenant',
     ],
 ];
-
