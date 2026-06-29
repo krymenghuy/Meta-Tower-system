@@ -88,6 +88,16 @@ class Team
         }
         return null;
     }
+    private function updateTeamMemberCount($team_id)
+    {
+        $count = DB::table('team_member')
+            ->where('team_id', $team_id)
+            ->count();
+
+        DB::table('tenant_team')
+            ->where('id', $team_id)
+            ->update(['member_count' => $count]);
+    }
 
     public function createTeam($arr = [], $id = null, $ss = null)
     {
@@ -97,7 +107,7 @@ class Team
         
         $v_rule = [
             'space_id'     => '1|number|text=space_required',
-            'member_count' => '1|number|text=member_count_required',
+            'member_count' => '0|number|text=member_count_required',
             'team_name'    => '1|string|0-30|text=name_required',
             'code'         => '0|string|0-100',
         ];
@@ -138,12 +148,27 @@ class Team
         return $query->get();
     }
 
+    public function getTeamDetails($id, $ss = null){
+        $ss = $ss ?? $this->userInfo;
+
+        $query = DB::table('tenant_team as s')
+            ->where('s.id', $id)
+            ->selectRaw("s.id, s.tenant_id, s.space_id, s.code, s.team_name, s.member_count, s.branch_id, s.created_at")
+            ->orderBy('s.created_at', 'desc');
+        
+        return $query->get();
+    }
+     
+
     public function saveTeamMember($arr = [], $id = null, $ss = null)
     {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id ?? null;
         $created = !$id;
+        $old_team_id = null;
+        if ($id>0) {
+            $old_team_id = DB::table('team_member')->where('id', $id)->value('team_id');        }
 
         $v_rule = [
             'code'            => '0|string|0-20',
@@ -162,6 +187,7 @@ class Team
             'start_date'      => '0|date|text=start_date_required',
             'status_id'       => '0|number',
             'photo'           => '0|image',
+            'team_id'         => '1|number',
         ];
 
         $email_char = ['@', '.', '-', '_'];
@@ -177,6 +203,11 @@ class Team
 
         $inputs = $res->values;
         $d = (object) $inputs;
+
+        // $team_id = $d->team_id ?? $arr['team_id'] ?? null;   // Check both sources
+        // if ($team_id && is_numeric($team_id)) {
+        //     $inputs['team_id'] = (int)$team_id;
+        // }
 
         // 1. Email Validations
         $email = $d->email ?? null;
@@ -276,12 +307,19 @@ class Team
         $inputs['status_id'] = $d->status_id ?? 1;
         $inputs['tenant_id'] = $ss->official_id;
 
+
         // 9. Save to database
         $saved_id = DBX::saveData($ss, 'team_member', ['id' => $id], $inputs, [], 1);
         if (!$saved_id) {
             return DV::error('create_failed');
         }
 
+        if (!empty($inputs['team_id'])) {
+            $this->updateTeamMemberCount($inputs['team_id']);
+        }
+        if ($old_team_id && $old_team_id != ($inputs['team_id'] ?? null)) {
+            $this->updateTeamMemberCount($old_team_id);
+        }
         // 10. Auto Code Generator
         if ($created) {
             setOfficialCode($branch_id, 'staff_code_control', 'team_member', ['id' => $saved_id], 'S', 4, null);
@@ -300,12 +338,31 @@ class Team
 
         XPublicStorage::saveImage(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], null, $photo, null, ['id' => $saved_id, 'store' => 'team_member.photo_file_name']);
 
-        return DV::depends(1, ['team_member' => $inputs, 'id' => $saved_id]);
+        $count_munber = DB::table('team_member as tm')
+                        ->where('team_id', $inputs['team_id'])
+                        ->count();
+        
+
+        return DV::depends(1, ['team_member' => $inputs, 'id' => $saved_id, 'count_number' => $count_munber]);
     }
 
     public function getListTeamMemberPaginate($arr, $ss = null)
     {
+
+        \Log::info($arr);
         $d = (object) $arr;
+        $v_rule = [
+            'team_id' => '1|integer|text=team_id_required',
+        ];
+
+        $res = DBX::validateObject($arr, $v_rule, 1, [], $ss->lang, 0, null);
+        if ($res->error) {
+            return DV::error($res->error);
+        }
+        $inputs = $res->values;
+
+
+        $team_id       = (int)$d->team_id;
         $branch_id = $ss->branch_id;
         $status_id = $d->status_id ?? null;
         $search_value = $d->search_value ?? null;
@@ -331,7 +388,7 @@ class Team
             ->join('staff_statuses as ss', 'ss.id', '=', 's.status_id')
             ->whereRaw($str_search)
             ->whereRaw($str_moreWhere)
-            ->where('s.tenant_id', $ss->official_id)
+            ->where('s.team_id', $team_id)
             ->selectRaw("
                 s.id, s.name, s.sex, s.date_of_birth, s.nationality_id,
                 s.code, s.national_id, s.photo_file_name, s.position, s.start_date,
@@ -382,40 +439,46 @@ class Team
 
     public static function getFormOptions($id, $ss)
     {
+        $teamDetails = $id ? self::getTeamDetails($id) : null;
         return (object) [
+            'team'         => $teamDetails,
             'spaces'       => GeneralSettings::create_team_space_options($ss),
             'nationalities'=> GeneralSettings::options_nationality($ss),
         ];
     }
 
-    public static function getDetails($id, $ss = null)
-    {
-        $date_of_birth = DBX::formatDate("s.date_of_birth", 'date_of_birth');
-        $nid_issue_date = DBX::formatDate("s.nid_issue_date", 'nid_issue_date');
+    // public static function getDetails($id, $ss = null)
+    // {
+    //     $date_of_birth = DBX::formatDate("s.date_of_birth", 'date_of_birth');
+    //     $nid_issue_date = DBX::formatDate("s.nid_issue_date", 'nid_issue_date');
         
-        $row = DB::table('team_member as s')
-            ->join('staff_statuses as ss', 'ss.id', '=', 's.status_id')
-            ->where('s.id', $id)
-            ->selectRaw("s.id,s.branch_id,s.name,s.code,s.national_id,s.passport_number,$date_of_birth,$nid_issue_date,s.nationality_id,s.photo_file_name,s.sex,s.status_id,ss.name as status,s.phone_number,s.email,s.address")
-            ->first();
+    //     $row = DB::table('team_member as s')
+    //         ->join('staff_statuses as ss', 'ss.id', '=', 's.status_id')
+    //         ->where('s.id', $id)
+    //         ->selectRaw("s.id,s.branch_id,s.name,s.code,s.national_id,s.passport_number,$date_of_birth,$nid_issue_date,s.nationality_id,s.photo_file_name,s.sex,s.status_id,ss.name as status,s.phone_number,s.email,s.address")
+    //         ->first();
             
-        if ($row) {
-            $img = self::profilePicture($id, $ss);
-            $row->image_url = $img;
-            $row->photo = $img;
-        }
-        return $row;
-    }
+    //     if ($row) {
+    //         $img = self::profilePicture($id, $ss);
+    //         $row->image_url = $img;
+    //         $row->photo = $img;
+    //     }
+    //     return $row;
+    // }
 
-    public function deleteTeam($id)
-    {
-        $id = $id ?? $this->id;
-        $deleted = DB::table('team_member')->where('id', $id)->delete();
-        if ($deleted) {
+    public function deleteTeamMember($id)  // rename if needed
+        {
+            $member = DB::table('team_member')->where('id', $id)->first();
+            $team_id = $member->team_id ?? null;
+
+            $deleted = DB::table('team_member')->where('id', $id)->delete();
+
+            if ($deleted && $team_id) {
+                $this->updateTeamMemberCount($team_id);
+            }
+
             return DV::depends(1, ['id' => $id]);
         }
-        return DV::error('Error deleting team member!');
-    }
 
     public static function createProfilePicture($photo_data, $file_type = null, $id = null, $ss = null)
     {

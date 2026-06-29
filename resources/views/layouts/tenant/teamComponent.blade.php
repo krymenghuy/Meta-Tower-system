@@ -24,33 +24,31 @@
         </div>
 
         <!-- Two Column Layout -->
-        <div class="row g-3">
+     <div class="row g-3">
 
-            <!-- LEFT COLUMN: Team Cards (≈35%) -->
-            <div class="col-lg-5 col-xl-4">
-                <div class="card h-100 shadow-sm border-0">
-                    <div class="card-header bg-white py-3">
-                        <h6 class="mb-0 text-muted">Teams Overview</h6>
-                    </div>
-                    <div class="card-body p-3" style="height: calc(100vh - 240px); overflow-y: auto;">
-                        <div id="_team_card_view"></div>
-                    </div>
+        <div class="col-lg-3">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-header bg-white py-3">
+                    <h6 class="mb-0 text-muted">Teams Overview</h6>
+                </div>
+                <div class="card-body p-3" style="height: calc(100vh - 240px); overflow-y: auto;">
+                    <div id="_team_card_view"></div>
                 </div>
             </div>
-
-            <!-- RIGHT COLUMN: Table / List (≈65%) -->
-            <div class="col-lg-7 col-xl-8">
-                <div class="card h-100 shadow-sm border-0">
-                    <div class="card-header bg-white py-3">
-                        <h6 class="mb-0 text-muted">Team Members</h6>
-                    </div>
-                    <div class="card-body p-0" style="height: calc(100vh - 240px); overflow-y: auto;">
-                        <div id="_team_list_view"></div>
-                    </div>
-                </div>
-            </div>
-
         </div>
+
+        <div class="col-lg-9">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-header bg-white py-3">
+                    <h6 class="mb-0 text-muted">Team Members</h6>
+                </div>
+                <div class="card-body p-0" style="height: calc(100vh - 240px); overflow-y: auto;">
+                    <div id="_team_list_view"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
 
     </div>
 </div>

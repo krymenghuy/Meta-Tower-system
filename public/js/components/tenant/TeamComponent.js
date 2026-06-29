@@ -1,382 +1,10 @@
 "use strict";
 
-
-// var TeamComponent = new (function () {
-//     const mThis = this;
-//     mThis.title_prop = "Team Management";
-//     this.defaultPage = "team_list";
-//     mThis.self = main_view.VSAppContent.querySelector("#_main_team_component");
-
-//     mThis.btnAdd = mThis.self.querySelector("#_btnAddTeam");
-//     mThis.divFilter = mThis.self.querySelector("#_divFilter_team");
-//     mThis.elSearch = mThis.self.querySelector("#_search_team");
-//     mThis.elStatus = mThis.self.querySelector("#_el_team_status");
-//     mThis.btnBack = document.querySelector("#_btn_back_team");
-//     mThis.divTenantListContainer = mThis.self.querySelector("#_team_list_container");
-//     mThis.divProfileView = document.querySelector("#_team_profile_view");
-//     mThis.listViewContainer = mThis.self.querySelector("#_team_list_view");
-//     mThis.teamCardView = mThis.self.querySelector("#_team_card_view");
-
-//     this.pages = {
-//         team_list: this.divTenantListContainer,
-//         profile_view: this.divProfileView,
-//     };
-
-//     mThis.profile_info_tenant = this.divProfileView.querySelector("#profile_info_team");
-//     mThis.cols = [
-//         {
-//             transTitle: "",
-//             className: "align-middle",
-//         },
-//         {
-//             transTitle: "titles.Photo",
-//             className: "align-middle",
-//             data: (data) =>
-//                 `<img class="btn-view-tenant-photo" data-id="${data.id}" src="${data.image_url || `${main_view.base_url}/assets/images/default/placeholder.svg`}" alt="" style="width: 50px; height: 50px; border-radius: 6px; margin-right: 10px;"/>`,
-//         },
-//         {
-//             transTitle: "titles.Code",
-//             className: "align-middle",
-//             data: (data) => {
-//                 return `<span class="text-prm-custom text-nowrap">${data.code ?? "_"}</span>`;
-//             },
-//         },
-//         {
-//             transTitle: "titles.Name",
-//             className: "align-middle",
-//             data: (data) => {
-//                 const sexLabel = mThis._sexLabel(data.sex);
-//                 return `
-//                     <div class="text-prm-custom" style="width:120px;">
-//                         <span class="text-wrap text-break text-capitalize" style ="word-break:break-word;">${data.name ?? "_"}</span>
-//                         <span class="d-block text-primary" style="font-size:12px;">${sexLabel}</span>
-//                     </div>
-//                 `;
-//             },
-//         },
-//         {
-//             transTitle: "titles.Date of Birth",
-//             className: "align-middle ",
-//             data: (data) => {
-//                 return `<span class="text-prm-custom text-nowrap">${data.date_of_birth ?? "_"}</span>`;
-//             },
-//         },
-//         {
-//             transTitle: "titles.National ID",
-//             className: "align-middle",
-//             data: (data) => {
-//                 return `<span class="text-prm-custom text-nowrap">${data.national_id ?? "_"}</span>`;
-//             },
-//         },
-//         {
-//             transTitle: "titles.Passport",
-//             className: "align-middle",
-//             data: (data) => {
-//                 return `<span class="text-prm-custom text-nowrap">${data.passport_number ?? "_"}</span>`;
-//             },
-//         },
-//         {
-//             transTitle: "titles.Contact Info",
-//             className: "align-middle",
-//             data: (data) =>
-//                 `<span class="d-block text-prm-custom"><i class="fa-solid text-success px-1 fa-phone" style="font-size:12px;"></i> ${data.phone_number ?? "_"}</span>
-//                  <span class="d-block text-primary"><i class="fa-solid text-primary px-1 fa-envelope" style="font-size:12px;"></i> ${data.email ?? "_"}</span>`,
-//         },
-//         {
-//             transTitle: "titles.Status",
-//             className: "align-middle text-center",
-//             data: (data) => {
-//                 const status = data.status;
-//                 let cls =
-//                     "badge text-warning bg-warning-subtle border border-warning";
-
-//                 if (status == "Pending") {
-//                     cls =
-//                         "badge text-warning bg-warning-subtle border border-warning";
-//                 } else if (status === "Inactive") {
-//                     cls =
-//                         "badge text-danger bg-danger-subtle border border-danger";
-//                 } else if (status == "Active") {
-//                     cls =
-//                         "badge text-success bg-success-subtle border border-success";
-//                 }
-
-//                 return `
-//                     <span class="${cls} text-capitalize d-inline-block text-center"
-//                         style="min-width:70px"
-//                         data-status_id="${data.status_id}">
-//                         ${data.status ?? ""}
-//                     </span>
-//                 `;
-//             },
-//         },
-
-//         {
-//             transTitle: "titles.Last Updated",
-//             className: "align-middle",
-//             data: (data) => {
-//                 return `<div class="d-flex flex-column">
-//                     <span class="text-capitalize text-start text-prm-custom">${data.update_user ?? ""}</span>
-//                     <small class="text-muted">${data.updated_at ?? ""}</small>
-//                 </div>`;
-//             },
-//         },
-//         {
-//             className: "col_action align-middle",
-//             data: (data) => `
-//                 <div class="d-flex justify-content-center align-items-end">
-//                     <a href="javascript:void(0)"
-//                     class="btn-tenant-dropdown-action"
-//                     data-id="${data.id}"
-//                     data-statusid="${data.status_id}"
-//                     aria-haspopup="true"
-//                     aria-expanded="false"
-//                     style="cursor: pointer; padding: 8px;">
-//                         <i class="fa-solid fa-ellipsis-vertical text-prm-custom fs-5" ></i>
-//                     </a>
-//                 </div>`,
-//         },
-//     ];
-
-//     mThis.init = () => {
-//         if (mThis.initAlready) return;
-
-//         mThis.staffListView = new ListView(mThis.staffListViewContainer, {
-//             fetchApi: `${main_view.base_url}/prm/tenant/team/member-list`,
-//             perPage: 8,
-//             columns: mThis.cols,
-//             apiCluster: main_view.apiCluster,
-//             tableClass:
-//                 "table table--white rounded-2 overflow-hidden header-uppercase text-nowrap",
-//             rowCreated: (data, index, tr) => {
-//                 tr.dataset.id = data.id;
-//                 tr.dataset.statusid = data.status_id;
-//                 mThis.initDropdownMenus(tr);
-//             },
-//         });
-
-//         mThis.btnAdd.onclick = function (e) {
-//             e.preventDefault();
-//             const op = {
-//                 id: null,
-//                 btn: e.target,
-//                 onClose: () => mThis.refreshTeamList()
-//             };
-//             CreateTeamDialog.show(op);
-//         };
-
-//         mThis.btnBack.onclick = function (e) {
-//             e.preventDefault();
-//             mThis.showPage("team_list");
-//         };
-
-//         mThis.initAlready = true;
-//     };
-
-
-//     mThis.renderTeamCards = (container, data) => {
-//         container.innerHTML = "";
-//         let html = `<div class="row g-3">`;
-
-//         if (Array.isArray(data) && data.length > 0) {
-//             data.forEach((team) => {
-//                 const createdDate = team.created_at
-//                     ? new Date(team.created_at).toLocaleDateString('en-GB')
-//                     : '—';
-
-//                     html += `
-//                         <div style="padding: 5px;">
-//                             <div class="team-card" data-id="${team.id}"
-//                                 style="background-color: #f0f1f7;
-//                                         border-radius: 12px;
-//                                         border-bottom: 3px solid #2d4acb;
-//                                         overflow: hidden;">
-
-//                                 <div style="padding: 14px 16px;">
-//                                     <div style="display: flex; align-items: center; gap: 12px;">
-
-//                                         <div style="width: 48px; height: 48px; border-radius: 10px;
-//                                                     background-color: #dde1f7; flex-shrink: 0;
-//                                                     display: flex; align-items: center; justify-content: center;">
-//                                             <i class="fa-solid fa-users" style="font-size: 20px; color: #2d4acb;"></i>
-//                                         </div>
-
-//                                         <div style="flex: 1; min-width: 0;">
-//                                             <div style="font-size: 14px; font-weight: 600; color: #1a2566;
-//                                                         white-space: nowrap; overflow: hidden;
-//                                                         text-overflow: ellipsis; margin-bottom: 4px;">
-//                                                 ${team.team_name ?? "—"}
-//                                             </div>
-//                                             <span style="display: inline-block; font-size: 11px; font-weight: 500;
-//                                                         padding: 2px 8px; border-radius: 20px;
-//                                                         background-color: ${team.code ? '#dde1f7' : '#e8e9ee'};
-//                                                         color: ${team.code ? '#2d4acb' : '#6b7280'};">
-//                                                 ${team.code ?? 'No code'}
-//                                             </span>
-//                                         </div>
-
-//                                         <div style="text-align: right; flex-shrink: 0;">
-//                                             <div style="font-size: 22px; font-weight: 700;
-//                                                         color: #1a2566; line-height: 1;">
-//                                                 ${team.member_count ?? 0}
-//                                             </div>
-//                                             <div style="font-size: 11px; color: #6b7280; margin-top: 2px;">
-//                                                 Members
-//                                             </div>
-//                                         </div>
-
-//                                     </div>
-//                                 </div>
-
-//                                <div style="display: flex; gap: 8px; padding: 10px 16px;
-//                                         background-color: #ffffff;
-//                                         border-top: 1px solid #e2e5f5;">
-
-//                                 <button class="view-team-btn" data-id="${team.id}"
-//                                         onclick="CreateTeamMemberDialog.show({ id: 0, team_id: ${team.id} })"
-//                                         style="flex: 1; padding: 7px 0; font-size: 12px; font-weight: 500;
-//                                             border-radius: 7px; cursor: pointer;
-//                                             border: 1.5px solid #22c55e;
-//                                             background: transparent; color: #16a34a;">
-//                                     <i class="fa-solid fa-user-plus" style="margin-right: 4px; font-size: 11px;"></i>
-//                                     Create staff
-//                                 </button>
-
-//                                 <button class="edit-team-btn" data-id="${team.id}"
-//                                         style="flex: 1; padding: 7px 0; font-size: 12px; font-weight: 500;
-//                                             border-radius: 7px; cursor: pointer;
-//                                             border: 1.5px solid #3b82f6;
-//                                             background: transparent; color: #2563eb;">
-//                                     <i class="fa-solid fa-pen" style="margin-right: 4px; font-size: 11px;"></i>
-//                                     Edit
-//                                 </button>
-
-//                                 <button class="delete-team-btn" data-id="${team.id}"
-//                                         style="flex: 1; padding: 7px 0; font-size: 12px; font-weight: 500;
-//                                             border-radius: 7px; cursor: pointer;
-//                                             border: 1.5px solid #f87171;
-//                                             background: transparent; color: #dc2626;">
-//                                     <i class="fa-solid fa-trash" style="margin-right: 4px; font-size: 11px;"></i>
-//                                     Delete
-//                                 </button>
-
-//                             </div>
-
-//                             </div>
-//                         </div>`;
-//             });
-//         } else {
-//             html += `<div class="text-center py-5 text-muted"><i class="fa-solid fa-users fa-3x mb-3 opacity-25"></i><p>No teams found</p></div>`;
-//         }
-
-//         html += `</div>`;
-//         container.innerHTML = html;
-//         mThis.attachTeamCardEvents(container);
-//     };
-//     mThis.attachTeamCardEvents = (container) => {
-//         container.querySelectorAll('.view-team-btn').forEach(btn => {
-//             btn.addEventListener('click', (e) => {
-//                 const id = e.currentTarget.dataset.id;
-//                 mThis.showPage("profile_view", { id: id });
-//             });
-//         });
-
-//         container.querySelectorAll('.edit-team-btn').forEach(btn => {
-//             btn.addEventListener('click', (e) => {
-//                 const id = e.currentTarget.dataset.id;
-//                 const op = { id: id, onClose: () => mThis.refreshTeamList() };
-//                 CreateTeamDialog.show(op);
-//             });
-//         });
-//     };
-
-//     mThis.refreshTeamList = () => {
-//         mThis.showPage("team_list");
-//     };
-
-//     mThis.showPage = async (pageName, op = {}) => {
-//         if (this.self.style.display !== "block") {
-//             main_view.setContentView(this.self, this.title_prop);
-//         }
-
-//         switch (pageName) {
-//             case "team_list": {
-//                 mThis.currentPage = "team_list";
-//                 const filter = mThis.getFilterData();
-
-//                 // Fetch teams
-//                 const res = await vsapi.call(
-//                     `${main_view.base_url}/prm/tenant/team/list`,
-//                     filter,
-//                     false,
-//                     null
-//                 );
-
-//                 const teams = res.data || [];
-
-//                 // Render Cards
-//                 if (mThis.teamCardView) {
-//                     mThis.renderTeamCards(mThis.teamCardView, teams);
-//                 }
-
-//                 // Render Table
-//                 mThis.staffListView.showPage(filter);
-//                 break;
-//             }
-
-//             case "profile_view": {
-//                 mThis.currentPage = "profile_view";
-//                 const team_id = op.id || op.tenant_id || op;
-//                 const p = { id: team_id };
-
-//                 const res = await vsapi.call(
-//                     `${main_view.base_url}/prm/tenant/team/details`,
-//                     p,
-//                     false,
-//                     null
-//                 );
-
-//                 const data = res.data || {};
-//                 mThis.renderProfile(data);
-//                 break;
-//             }
-//         }
-
-//         // Toggle visibility
-//         const targetPage = mThis.getPageContainer(pageName);
-//         const siblings = Array.from(targetPage.parentElement.children);
-//         siblings.forEach(div => {
-//             if (div !== targetPage) div.style.display = "none";
-//         });
-//         targetPage.style.display = "block";
-//     };
-
-//     mThis.getFilterData = () => {
-//         let p = { search_value: mThis.elSearch.value };
-//         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
-//             p[el.dataset.field] = el.value;
-//         });
-//         return p;
-//     };
-
-//     mThis.getPageContainer = (pageName) => {
-//         return mThis.pages[pageName];
-//     };
-
-//     mThis.show = (options) => {
-//         mThis.init();
-//         mThis.options = options;
-//         mThis.showPage(mThis.defaultPage);
-//     };
-
-//     return mThis;
-// })();
-
-
-var TeamComponent = new (function () {
+var TeamComponent = new (function() {
     const mThis = this;
     mThis.title_prop = "Team Management";
     this.defaultPage = "team_list";
+    mThis.member_count;
     mThis.self = main_view.VSAppContent.querySelector("#_main_team_component");
 
     mThis.btnAdd = mThis.self.querySelector("#_btnAddTeam");
@@ -384,87 +12,108 @@ var TeamComponent = new (function () {
     mThis.elSearch = mThis.self.querySelector("#_search_team");
     mThis.elStatus = mThis.self.querySelector("#_el_team_status");
     mThis.btnBack = document.querySelector("#_btn_back_team");
-    mThis.divTenantListContainer = mThis.self.querySelector("#_team_list_container");
+    mThis.divTenantListContainer = mThis.self.querySelector(
+        "#_team_list_container"
+    );
     mThis.divProfileView = document.querySelector("#_team_profile_view");
     mThis.listViewContainer = mThis.self.querySelector("#_team_list_view");
     mThis.teamCardView = mThis.self.querySelector("#_team_card_view");
 
     this.pages = {
         team_list: this.divTenantListContainer,
-        profile_view: this.divProfileView,
+        profile_view: this.divProfileView
     };
 
-    mThis.profile_info_tenant = this.divProfileView.querySelector("#profile_info_team");
+    mThis.profile_info_tenant = this.divProfileView.querySelector(
+        "#profile_info_team"
+    );
     mThis.cols = [
         {
             transTitle: "",
-            className: "align-middle",
+            className: "align-middle"
         },
         {
             transTitle: "titles.Photo",
             className: "align-middle",
-            data: (data) =>
-                `<img class="btn-view-tenant-photo" data-id="${data.id}" src="${data.image_url || `${main_view.base_url}/assets/images/default/placeholder.svg`}" alt="" style="width: 50px; height: 50px; border-radius: 6px; margin-right: 10px;"/>`,
+            data: data =>
+                `<img class="btn-view-tenant-photo" data-id="${
+                    data.id
+                }" src="${data.image_url ||
+                    `${main_view.base_url}/assets/images/default/placeholder.svg`}" alt="" style="width: 50px; height: 50px; border-radius: 6px; margin-right: 10px;"/>`
         },
         {
             transTitle: "titles.Code",
             className: "align-middle",
-            data: (data) => {
-                return `<span class="text-prm-custom text-nowrap">${data.code ?? "_"}</span>`;
-            },
+            data: data => {
+                return `<span class="text-prm-custom text-nowrap">${data.code ??
+                    "_"}</span>`;
+            }
         },
         {
             transTitle: "titles.Name",
             className: "align-middle",
-            data: (data) => {
-                const sexLabel = mThis._sexLabel ? mThis._sexLabel(data.sex) : (data.sex === 'M' ? 'Male' : 'Female');
+            data: data => {
+                const sexLabel = mThis._sexLabel
+                    ? mThis._sexLabel(data.sex)
+                    : data.sex === "M"
+                    ? "Male"
+                    : "Female";
                 return `
                     <div class="text-prm-custom" style="width:120px;">
-                        <span class="text-wrap text-break text-capitalize" style ="word-break:break-word;">${data.name ?? "_"}</span>
+                        <span class="text-wrap text-break text-capitalize" style ="word-break:break-word;">${data.name ??
+                            "_"}</span>
                         <span class="d-block text-primary" style="font-size:12px;">${sexLabel}</span>
                     </div>
                 `;
-            },
+            }
         },
         {
             transTitle: "titles.Date of Birth",
             className: "align-middle ",
-            data: (data) => {
-                return `<span class="text-prm-custom text-nowrap">${data.date_of_birth ?? "_"}</span>`;
-            },
+            data: data => {
+                return `<span class="text-prm-custom text-nowrap">${data.date_of_birth ??
+                    "_"}</span>`;
+            }
         },
         {
             transTitle: "titles.National ID",
             className: "align-middle",
-            data: (data) => {
-                return `<span class="text-prm-custom text-nowrap">${data.national_id ?? "_"}</span>`;
-            },
+            data: data => {
+                return `<span class="text-prm-custom text-nowrap">${data.national_id ??
+                    "_"}</span>`;
+            }
         },
         {
             transTitle: "titles.Passport",
             className: "align-middle",
-            data: (data) => {
-                return `<span class="text-prm-custom text-nowrap">${data.passport_number ?? "_"}</span>`;
-            },
+            data: data => {
+                return `<span class="text-prm-custom text-nowrap">${data.passport_number ??
+                    "_"}</span>`;
+            }
         },
         {
             transTitle: "titles.Contact Info",
             className: "align-middle",
-            data: (data) =>
-                `<span class="d-block text-prm-custom"><i class="fa-solid text-success px-1 fa-phone" style="font-size:12px;"></i> ${data.phone_number ?? "_"}</span>
-                 <span class="d-block text-primary"><i class="fa-solid text-primary px-1 fa-envelope" style="font-size:12px;"></i> ${data.email ?? "_"}</span>`,
+            data: data =>
+                `<span class="d-block text-prm-custom"><i class="fa-solid text-success px-1 fa-phone" style="font-size:12px;"></i> ${data.phone_number ??
+                    "_"}</span>
+                 <span class="d-block text-primary"><i class="fa-solid text-primary px-1 fa-envelope" style="font-size:12px;"></i> ${data.email ??
+                     "_"}</span>`
         },
         {
             transTitle: "titles.Status",
             className: "align-middle text-center",
-            data: (data) => {
+            data: data => {
                 const status = data.status;
-                let cls = "badge text-warning bg-warning-subtle border border-warning";
+                let cls =
+                    "badge text-warning bg-warning-subtle border border-warning";
 
                 if (status === "Inactive") {
-                    cls = "badge text-danger bg-danger-subtle border border-danger";
+                    cls =
+                        "badge text-danger bg-danger-subtle border border-danger";
                 } else if (status === "Active") {
-                    cls = "badge text-success bg-success-subtle border border-success";
+                    cls =
+                        "badge text-success bg-success-subtle border border-success";
                 }
 
                 return `
@@ -474,21 +123,22 @@ var TeamComponent = new (function () {
                         ${data.status ?? ""}
                     </span>
                 `;
-            },
+            }
         },
         {
             transTitle: "titles.Last Updated",
             className: "align-middle",
-            data: (data) => {
+            data: data => {
                 return `<div class="d-flex flex-column">
-                    <span class="text-capitalize text-start text-prm-custom">${data.update_user ?? ""}</span>
+                    <span class="text-capitalize text-start text-prm-custom">${data.update_user ??
+                        ""}</span>
                     <small class="text-muted">${data.updated_at ?? ""}</small>
                 </div>`;
-            },
+            }
         },
         {
             className: "col_action align-middle",
-            data: (data) => `
+            data: data => `
                 <div class="d-flex justify-content-center align-items-end">
                     <a href="javascript:void(0)"
                     class="btn-tenant-dropdown-action"
@@ -499,27 +149,28 @@ var TeamComponent = new (function () {
                     style="cursor: pointer; padding: 8px;">
                         <i class="fa-solid fa-ellipsis-vertical text-prm-custom fs-5" ></i>
                     </a>
-                </div>`,
-        },
+                </div>`
+        }
     ];
 
     mThis.init = () => {
         if (mThis.initAlready) return;
 
         mThis.staffListView = new ListView(mThis.listViewContainer, {
-            fetchApi: `${main_view.base_url}/prm/tenant/team/member-list`,
+            fetchApi: `${main_view.base_url}/tenant/team/member-list`,
             perPage: 8,
             columns: mThis.cols,
             apiCluster: main_view.apiCluster,
-            tableClass: "table table--white rounded-2 overflow-hidden header-uppercase text-nowrap",
+            tableClass:
+                "table table--white rounded-2 overflow-hidden header-uppercase text-nowrap",
             rowCreated: (data, index, tr) => {
                 tr.dataset.id = data.id;
                 tr.dataset.statusid = data.status_id;
                 if (mThis.initDropdownMenus) mThis.initDropdownMenus(tr);
-            },
+            }
         });
 
-        mThis.btnAdd.onclick = function (e) {
+        mThis.btnAdd.onclick = function(e) {
             e.preventDefault();
             const op = {
                 id: null,
@@ -529,7 +180,7 @@ var TeamComponent = new (function () {
             CreateTeamDialog.show(op);
         };
 
-        mThis.btnBack.onclick = function (e) {
+        mThis.btnBack.onclick = function(e) {
             e.preventDefault();
             mThis.showPage("team_list");
         };
@@ -538,11 +189,13 @@ var TeamComponent = new (function () {
     };
 
     mThis.renderTeamCards = (container, data) => {
+        console.log(11, data);
+
         container.innerHTML = "";
         let html = `<div class="row g-3">`;
 
         if (Array.isArray(data) && data.length > 0) {
-            data.forEach((team) => {
+            data.forEach(team => {
                 html += `
                     <div style="padding: 5px;">
                         <div class="team-card" data-id="${team.id}"
@@ -557,34 +210,40 @@ var TeamComponent = new (function () {
                                         <div style="font-size: 14px; font-weight: 600; color: #1a2566; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px;">
                                             ${team.team_name ?? "—"}
                                         </div>
-                                        <span style="display: inline-block; font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 20px; background-color: ${team.code ? '#dde1f7' : '#e8e9ee'}; color: ${team.code ? '#2d4acb' : '#6b7280'};">
-                                            ${team.code ?? 'No code'}
+                                        <span style="display: inline-block; font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 20px; background-color: ${
+                                            team.code ? "#dde1f7" : "#e8e9ee"
+                                        }; color: ${
+                    team.code ? "#2d4acb" : "#6b7280"
+                };">
+                                            ${team.code ?? "No code"}
                                         </span>
                                     </div>
                                     <div style="text-align: right; flex-shrink: 0;">
-                                        <div style="font-size: 22px; font-weight: 700; color: #1a2566; line-height: 1;">
-                                            ${team.member_count ?? 0}
+                                        <div data-field="member_count" style="font-size: 22px; font-weight: 700; color: #1a2566; line-height: 1;">
+                                            ${team.member_count}
                                         </div>
                                         <div style="font-size: 11px; color: #6b7280; margin-top: 2px;">Members</div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div style="display: flex; gap: 8px; padding: 10px 16px; background-color: #ffffff; border-top: 1px solid #e2e5f5;">
+                            <div style="display: flex; gap: 8px; padding: 10px 16px; background-color: #ffffff; border-top: 1px solid #e2e5f5; justify-content: flex-end; align-items: center;">
                                 <button class="create-staff-btn" data-id="${team.id}"
-                                        style="flex: 1; padding: 7px 0; font-size: 12px; font-weight: 500; border-radius: 7px; cursor: pointer; border: 1.5px solid #22c55e; background: transparent; color: #16a34a;">
-                                    <i class="fa-solid fa-user-plus" style="margin-right: 4px; font-size: 11px;"></i>
-                                    Create staff
+                                        style="width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; border-radius: 8px; cursor: pointer; border: 1.5px solid #22c55e; background: transparent; color: #16a34a; transition: all 0.2s;"
+                                        title="Create staff">
+                                    <i class="fa-solid fa-user-plus"></i>
                                 </button>
+                                
                                 <button class="edit-team-btn" data-id="${team.id}"
-                                        style="flex: 1; padding: 7px 0; font-size: 12px; font-weight: 500; border-radius: 7px; cursor: pointer; border: 1.5px solid #3b82f6; background: transparent; color: #2563eb;">
-                                    <i class="fa-solid fa-pen" style="margin-right: 4px; font-size: 11px;"></i>
-                                    Edit
+                                        style="width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; border-radius: 8px; cursor: pointer; border: 1.5px solid #3b82f6; background: transparent; color: #2563eb; transition: all 0.2s;"
+                                        title="Edit">
+                                    <i class="fa-solid fa-pen"></i>
                                 </button>
+                                
                                 <button class="delete-team-btn" data-id="${team.id}"
-                                        style="flex: 1; padding: 7px 0; font-size: 12px; font-weight: 500; border-radius: 7px; cursor: pointer; border: 1.5px solid #f87171; background: transparent; color: #dc2626;">
-                                    <i class="fa-solid fa-trash" style="margin-right: 4px; font-size: 11px;"></i>
-                                    Delete
+                                        style="width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; border-radius: 8px; cursor: pointer; border: 1.5px solid #f87171; background: transparent; color: #dc2626; transition: all 0.2s;"
+                                        title="Delete">
+                                    <i class="fa-solid fa-trash"></i>
                                 </button>
                             </div>
                         </div>
@@ -599,32 +258,43 @@ var TeamComponent = new (function () {
         mThis.attachTeamCardEvents(container);
     };
 
-    mThis.attachTeamCardEvents = (container) => {
-        // 1. Opens Create Staff Dialog specifically
-        container.querySelectorAll('.create-staff-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
+    mThis.attachTeamCardEvents = container => {
+        // Create Staff Button
+        container.querySelectorAll(".create-staff-btn").forEach(btn => {
+            btn.addEventListener("click", e => {
                 e.stopPropagation();
                 const teamId = e.currentTarget.dataset.id;
-                CreateTeamMemberDialog.show({ id: 0, team_id: teamId });
+                CreateTeamMemberDialog.show({
+                    id: 0,
+                    team_id: teamId
+                });
             });
         });
 
-        // 2. Click container card header area to view group profile details page
-        container.querySelectorAll('.team-card').forEach(card => {
-            card.addEventListener('click', (e) => {
-                if (e.target.closest('button')) return; // Avoid firing when control actions are selected
-                const id = e.currentTarget.dataset.id;
-                mThis.showPage("profile_view", { id: id });
+        // Click on card → View Team Profile (filter members by team)
+        container.querySelectorAll(".team-card").forEach(card => {
+            card.addEventListener("click", async e => {
+                if (e.target.closest("button")) return;
+                const teamId = e.currentTarget.dataset.id;
+                mThis.staffListView.showPage({ team_id: teamId });
+                // mThis.showPage("profile_view", { id: teamId });
+
+                console.log(teamId);
             });
         });
 
-        // 3. Edit Dialog configuration triggers
-        container.querySelectorAll('.edit-team-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
+        // Edit Team
+        container.querySelectorAll(".edit-team-btn").forEach(btn => {
+            btn.addEventListener("click", e => {
                 e.stopPropagation();
                 const id = e.currentTarget.dataset.id;
-                const op = { id: id, onClose: () => mThis.refreshTeamList() };
-                CreateTeamDialog.show(op);
+                CreateTeamDialog.show({
+                    id: id,
+
+                    
+                    onClose: () => mThis.refreshTeamList()
+                });
+                console.log(11222,id);
             });
         });
     };
@@ -644,7 +314,7 @@ var TeamComponent = new (function () {
                 const filter = mThis.getFilterData();
 
                 const res = await vsapi.call(
-                    `${main_view.base_url}/prm/tenant/team/list`,
+                    `${main_view.base_url}/tenant/team/list`,
                     filter,
                     false,
                     null
@@ -665,17 +335,26 @@ var TeamComponent = new (function () {
             case "profile_view": {
                 mThis.currentPage = "profile_view";
                 const team_id = op.id || op.tenant_id || op;
-                const p = { id: team_id };
 
+                // Render team details
                 const res = await vsapi.call(
-                    `${main_view.base_url}/prm/tenant/team/details`,
-                    p,
+                    `${main_view.base_url}/tenant/team/details`,
+                    { id: team_id },
                     false,
                     null
                 );
 
                 const data = res.data || {};
                 if (mThis.renderProfile) mThis.renderProfile(data);
+
+                // Filter staff list to this team
+                if (mThis.staffListView) {
+                    mThis.staffListView.fetchApi = `${main_view.base_url}/tenant/team/member-list`;
+                    mThis.staffListView.showPage({
+                        team_id: team_id,
+                        ...mThis.getFilterData()
+                    });
+                }
                 break;
             }
         }
@@ -693,18 +372,18 @@ var TeamComponent = new (function () {
     mThis.getFilterData = () => {
         let p = { search_value: mThis.elSearch ? mThis.elSearch.value : "" };
         if (mThis.divFilter) {
-            mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
+            mThis.divFilter.querySelectorAll(".filter-field").forEach(el => {
                 p[el.dataset.field] = el.value;
             });
         }
         return p;
     };
 
-    mThis.getPageContainer = (pageName) => {
+    mThis.getPageContainer = pageName => {
         return mThis.pages[pageName];
     };
 
-    mThis.show = (options) => {
+    mThis.show = options => {
         mThis.init();
         mThis.options = options;
         mThis.showPage(mThis.defaultPage);
@@ -713,22 +392,21 @@ var TeamComponent = new (function () {
     return mThis;
 })();
 
-
-
-
 const CreateTeamDialog = (() => {
     const self = {};
     let dialog = null;
 
-    self.show = (op) => {
-        dialog = dialog || new GeneralDialog({
-            cssClass: "modal-md vs-modal",
-            backdrop: "static",
-            keyboard: true,
-            createContent: () => {
-             return `
+    self.show = op => {
+        dialog =
+            dialog ||
+            new GeneralDialog({
+                cssClass: "modal-md vs-modal",
+                backdrop: "static",
+                keyboard: true,
+                createContent: () => {
+                    return `
                     <div class="row g-3">
-                        <div class="col-12">
+                        <div class="col-6">
                             <div class="vs-material-field">
                                 <input type="text" 
                                     name="team_name" 
@@ -746,91 +424,99 @@ const CreateTeamDialog = (() => {
                                     data-style="material" 
                                     data-field="space_id"
                                     required
-                                    placeholder="${LocaleManager.trans('Select Space', 'labels')}">      
+                                    placeholder="${LocaleManager.trans(
+                                        "Select Space",
+                                        "labels"
+                                    )}">      
                             </select>
                         </div>
-                        
-                        <div class="col-6 col-md-6">
-                            <div class="vs-material-field">
-                                <input type="number" 
-                                    name="member_count" 
-                                    class="data-input form-control" 
-                                    data-field="member_count" 
-                                    placeholder=" "  />
-                                <label vslang="labels.Member Count">Member Count</label>
-                            </div>
-                        </div>         
+                                
                     </div>
                 `;
-            },
+                },
 
-            prepareFormOptions: {
-                createTitle: "vslang:titles.Create New Team",
-                modifyTitle: "vslang:titles.Modify Team",
-                targetProp: "team",
-                api: {
-                    endpoint: `${main_view.base_url}/prm/tenant/team/form-options`,
-                    params: (op) => ({ id: op.id })
-                }
-            },
-
-            onPrepareForm: (me, data) => {
-                // ↵ FIXED: Populate the select element using your option dataset 
-                const spacesList = data?.spaces || [];
-                
-                VSUtil.setComboItems(
-                    me.controls.space_id, // Links to your updated select field
-                    spacesList,
-                    "id",                 // Value stored in DB
-                    "code",               // Text displayed to users ("A-B-12")
-                    "",
-                    "Select Space",       // Default prompt item
-                    ""
-                );
-
-                // If editing an existing team entry, assign selected values
-                if (data?.team) {
-                    me.setData(data.team);
-                }
-            },
-
-            buttons: [
-                {
-                    label: '<span vslang="buttons.Cancel"></span>',
-                    cssClass: "btn btn-secondary",
-                    click: (me) => {
-                        me.hide(false);
+                prepareFormOptions: {
+                    createTitle: "vslang:titles.Create New Team",
+                    modifyTitle: "vslang:titles.Modify Team",
+                    targetProp: "team",
+                    api: {
+                        endpoint: `${main_view.base_url}/tenant/team/form-options`,
+                        params: op => ({ id: op.id })
                     }
                 },
-                {
-                    label: '<span vslang="buttons.Save"></span>',
-                    cssClass: "btn btn-primary",
-                    click: (me, btn) => {
-                        const formData = me.getData();
-                        
-                        vsapi.call(
-                            `${main_view.base_url}/prm/tenant/team/save`,
-                            formData,
-                            btn,
-                            null
-                        ).then((res) => {
-                            if (res.status_code === 200) {
-                                const newTeamId = res.data?.id || null;
-                                me.hide(true, formData, newTeamId);
+                
 
-                                if (formData.id > 0) {
-                                    cv_interact.success("update_success_team");
-                                } else {
-                                    cv_interact.success("create_success_team");
-                                }
-                            } else {
-                                cv_interact.error(res.error_message || "Failed to save team");
-                            }
-                        });
+                onPrepareForm: (me, data) => {
+                    console.log(1122,data);
+                    console.log(3355, me);
+                    
+                    
+                    const spacesList = data?.spaces || [];
+                    console.log(333,data);
+                    
+
+                    VSUtil.setComboItems(
+                        me.controls.space_id,
+                        spacesList,
+                        "id", 
+                        "code", 
+                        "",
+                        "Select Space", 
+                        ""
+                    );
+
+                    if (data?.team) {
+                        me.setData(data.team);
                     }
-                }
-            ]
-        });
+                },
+
+                buttons: [
+                    {
+                        label: '<span vslang="buttons.Cancel"></span>',
+                        cssClass: "btn btn-secondary",
+                        click: me => {
+                            me.hide(false);
+                        }
+                    },
+                    {
+                        label: '<span vslang="buttons.Save"></span>',
+                        cssClass: "btn btn-primary",
+                        click: (me, btn) => {
+                            const formData = me.getData();
+                            console.log(6677,formData);
+
+                            vsapi
+                                .call(
+                                    `${main_view.base_url}/tenant/team/save`,
+                                    formData,
+                                    btn,
+                                    null
+                                )
+                                .then(res => {
+                                    if (res.status_code === 200) {
+                                        const newTeamId = res.data?.id || null;
+                                        me.hide(true, formData, newTeamId);
+
+                                        if (formData.id > 0) {
+                                            cv_interact.success(
+                                                "update_success_team"
+                                            );
+                                        } else {
+                                            cv_interact.success(
+                                                "create_success_team"
+                                            );
+                                        }
+                                    } else {
+                                        cv_interact.error(
+                                            res.error_message ||
+                                                "Failed to save team"
+                                        );
+                                    }
+                                });
+                        }
+                    }
+                ]
+            });
 
         dialog.show(op);
     };
@@ -838,13 +524,11 @@ const CreateTeamDialog = (() => {
     return self;
 })();
 
-
-
 const CreateTeamMemberDialog = (() => {
     const self = {};
     let dialog = null;
 
-    self.show = (op) => {
+    self.show = op => {
         dialog =
             dialog ||
             new GeneralDialog({
@@ -941,7 +625,10 @@ const CreateTeamMemberDialog = (() => {
                                     data-style="material" 
                                     data-field="space_id"
                                     required
-                                    placeholder="${LocaleManager.trans('Select Space', 'labels')}">      
+                                    placeholder="${LocaleManager.trans(
+                                        "Select Space",
+                                        "labels"
+                                    )}">      
                             </select>
                         </div>
                         <div class="col-12 col-md-3 pt-2">
@@ -979,51 +666,45 @@ const CreateTeamMemberDialog = (() => {
                 `;
                 },
 
-                contentCreated: (me) => {
+                contentCreated: me => {
                     me.uploadInput = me.divModal.querySelector(
-                        'input[name="documents"]',
+                        'input[name="documents"]'
                     );
                     me.uploadZone = me.divModal.querySelector(
-                        "#tenant-upload-zone",
+                        "#tenant-upload-zone"
                     );
                     me.previewZone = me.divModal.querySelector(
-                        "#tenant-preview-zone",
+                        "#tenant-preview-zone"
                     );
                     me.previewImg = me.divModal.querySelector(
-                        "#tenant-preview-img",
+                        "#tenant-preview-img"
                     );
-                    me.displayInput =
-                        me.divModal.querySelector("#documents_display");
+                    me.displayInput = me.divModal.querySelector(
+                        "#documents_display"
+                    );
 
-                    me.controls.btn_chooseFile =
-                        me.divModal.querySelector("#btn_chooseFile");
-                    me.controls.btn_removeFile =
-                        me.divModal.querySelector("#btn_removeFile");
+                    me.controls.btn_chooseFile = me.divModal.querySelector(
+                        "#btn_chooseFile"
+                    );
+                    me.controls.btn_removeFile = me.divModal.querySelector(
+                        "#btn_removeFile"
+                    );
 
                     me.fileBase64 = null;
                     me.ext = null;
 
                     me.renderTenantImage = () => {
-                        console.log(1, me.dataOptions.id);
-                        console.log(2, me.fileBase64);
-
                         const src = new URL(me.previewImg.src).pathname
                             .split("/")
                             .pop();
 
-                        console.log(3, src);
-
                         if (me.dataOptions.id == null && me.fileBase64) {
-                            console.log(4, "start if");
-
                             me.uploadZone.classList.add("d-none");
                             me.previewZone.classList.remove("d-none");
                         } else if (
                             me.dataOptions.id == null &&
                             !me.fileBase64
                         ) {
-                            console.log(4, "start else if 1");
-
                             me.uploadZone.classList.remove("d-none");
                             me.previewZone.classList.add("d-none");
                             me.uploadInput.value = "";
@@ -1034,16 +715,12 @@ const CreateTeamMemberDialog = (() => {
                             !me.fileBase64 &&
                             src == "placeholder.svg"
                         ) {
-                            console.log(4, "start else if 2");
-
                             me.uploadZone.classList.remove("d-none");
                             me.previewZone.classList.add("d-none");
                             me.uploadInput.value = "";
                             if (me.displayInput) me.displayInput.value = "";
                             if (me.previewImg) me.previewImg.src = "";
                         } else {
-                            console.log(4, "start else");
-
                             me.uploadZone.classList.add("d-none");
                             me.previewZone.classList.remove("d-none");
                         }
@@ -1058,7 +735,7 @@ const CreateTeamMemberDialog = (() => {
                         me.uploadInput.click();
                     };
 
-                    me.uploadInput.addEventListener("change", (e) => {
+                    me.uploadInput.addEventListener("change", e => {
                         const file = e.target.files[0];
                         if (file) {
                             const extension = file.name
@@ -1068,13 +745,13 @@ const CreateTeamMemberDialog = (() => {
 
                             if (!["jpg", "jpeg", "png"].includes(extension)) {
                                 cv_interact.error(
-                                    "Please select a valid image file (.jpg, .jpeg, .png)",
+                                    "Please select a valid image file (.jpg, .jpeg, .png)"
                                 );
                                 return;
                             }
 
                             const reader = new FileReader();
-                            reader.onload = (event) => {
+                            reader.onload = event => {
                                 const fullResult = event.target.result;
 
                                 me.fileBase64 = null;
@@ -1093,7 +770,7 @@ const CreateTeamMemberDialog = (() => {
                                 if (me.dataOptions.id > 0) {
                                     me.saveProfilePhoto(
                                         fullResult,
-                                        me.dataOptions.id,
+                                        me.dataOptions.id
                                     );
                                 }
                             };
@@ -1105,7 +782,7 @@ const CreateTeamMemberDialog = (() => {
                         if (me.dataOptions.id > 0) {
                             const yes = await cv_interact.confirm(
                                 "Are you sure to delete this profile photo?",
-                                { title: "Delete Photo", context: "delete" },
+                                { title: "Delete Photo", context: "delete" }
                             );
                             if (yes) {
                                 me.deleteProfilePhoto(me.dataOptions.id);
@@ -1117,25 +794,25 @@ const CreateTeamMemberDialog = (() => {
                         }
                     };
 
-                    me.deleteProfilePhoto = (id) => {
+                    me.deleteProfilePhoto = id => {
                         const p = { id: id };
                         vsapi
                             .call(
                                 [
                                     main_view.base_url,
-                                    "/prm/tenant/team/profile/photo/delete",
+                                    "/tenant/team/profile/photo/delete"
                                 ].join(""),
                                 p,
                                 false,
-                                false,
+                                false
                             )
-                            .then((res) => {
+                            .then(res => {
                                 if (res.status_code == 200) {
                                     me.fileBase64 = null;
                                     me.ext = null;
                                     me.renderTenantImage();
                                     cv_interact.success(
-                                        "Profile photo was deleted!",
+                                        "Profile photo was deleted!"
                                     );
                                 } else cv_interact.error(res.error_message);
                             });
@@ -1147,15 +824,15 @@ const CreateTeamMemberDialog = (() => {
                             .call(
                                 [
                                     main_view.base_url,
-                                    "/prm/tenant/team/profile/photo/save",
+                                    "/tenant/team/profile/photo/save"
                                 ].join(""),
                                 p,
-                                false,
+                                false
                             )
-                            .then((res) => {
+                            .then(res => {
                                 if (res.status_code == 200) {
                                     cv_interact.success(
-                                        "Profile photo was saved!",
+                                        "Profile photo was saved!"
                                     );
                                 } else cv_interact.error(res.error_message);
                             });
@@ -1166,8 +843,8 @@ const CreateTeamMemberDialog = (() => {
                         name: "nationality_id",
                         data: "nationalities",
                         textField: "nationality",
-                        valueField: "id",
-                    },
+                        valueField: "id"
+                    }
                 ],
                 prepareFormOptions: {
                     createTitle: "vslang:titles.Create New Staff",
@@ -1176,17 +853,33 @@ const CreateTeamMemberDialog = (() => {
                     api: {
                         endpoint: [
                             main_view.base_url,
-                            "/prm/tenant/team/form-options",
+                            "/tenant/team/form-options"
                         ].join(""),
-                        params: (op) => {
+                        params: op => {
                             return { id: op.id };
-                        },
-                    },
+                        }
+                    }
                 },
 
                 onPrepareForm: (me, data) => {
                     me.renderTenantImage();
-                    // console.log(6666666, me);
+
+                    if (me.dataOptions && me.dataOptions.team_id) {
+                        me.team_id = me.dataOptions.team_id; // Store it
+                        // Add hidden input if not exists
+                        if (
+                            !me.divModal.querySelector('input[name="team_id"]')
+                        ) {
+                            const hidden = document.createElement("input");
+                            hidden.type = "hidden";
+                            hidden.name = "team_id";
+                            hidden.value = me.dataOptions.team_id;
+                            me.divModal
+                                .querySelector(".tenant-form")
+                                .appendChild(hidden);
+                        }
+                    }
+
                     if (me.dataOptions.phone_number) {
                         me.controls.name.value = me.dataOptions.name;
                         me.controls.phone_number.value =
@@ -1203,7 +896,7 @@ const CreateTeamMemberDialog = (() => {
                                 me.fileBase64 = data.image_url;
                             }
                         }
-                    },
+                    }
                 },
                 buttons: [
                     {
@@ -1211,73 +904,155 @@ const CreateTeamMemberDialog = (() => {
                         cssClass: "btn btn-secondary",
                         click: (me, btn) => {
                             me.hide(false);
-                        },
+                        }
                     },
                     {
                         label: '<span vslang="buttons.Save"></span>',
                         cssClass: "btn btn-primary",
                         click: (me, btn) => {
                             const op = me.getData();
+                            console.log(6655,op);
+
                             op.id = me.dataOptions.id;
+                            if (me.dataOptions.team_id) {
+                                op.team_id = me.dataOptions.team_id;
+                            }
                             op.photo = me.fileBase64 ? me.previewImg.src : "";
 
-                            // Normalize date fields to YYYY-MM-DD before sending
-                            // (date picker may output "01-May-2026" / "DD-MMM-YYYY" format)
-                            ["start_date", "date_of_birth", "nid_issue_date"].forEach((f) => {
+                            [
+                                "start_date",
+                                "date_of_birth",
+                                "nid_issue_date"
+                            ].forEach(f => {
                                 if (op[f]) {
                                     const d = new Date(op[f]);
                                     if (!isNaN(d.getTime())) {
                                         const y = d.getFullYear();
-                                        const m = String(d.getMonth() + 1).padStart(2, "0");
-                                        const day = String(d.getDate()).padStart(2, "0");
+                                        const m = String(
+                                            d.getMonth() + 1
+                                        ).padStart(2, "0");
+                                        const day = String(
+                                            d.getDate()
+                                        ).padStart(2, "0");
                                         op[f] = `${y}-${m}-${day}`;
                                     }
                                 }
                             });
-
                             vsapi
                                 .call(
                                     [
                                         main_view.base_url,
-                                        "/prm/tenant/team/save-member",
+                                        "/tenant/team/save-member"
                                     ].join(""),
                                     op,
                                     btn,
-                                    null,
+                                    null
                                 )
-                                .then((res) => {
+                                .then(res => {
+                                    console.log(
+                                        "Server response received on saving member:",
+                                        res
+                                    );
+
                                     if (res.status_code === 200) {
                                         const newTenantId =
                                             res.data?.id || null;
                                         me.hide(true, op, newTenantId);
+
                                         if (me.dataOptions.id > 0) {
-                                            cv_interact.success("update_success_tenant");
+                                            cv_interact.success(
+                                                "update_success_tenant"
+                                            );
                                             me.previewZone.classList.add(
-                                                "d-none",
+                                                "d-none"
                                             );
                                         } else {
-                                           cv_interact.success("create_success_tenant");
+                                            const activeTeamId =
+                                                op.team_id ||
+                                                me.dataOptions.team_id;
+                                            console.log(
+                                                "Target Team ID detected:",
+                                                activeTeamId
+                                            );
+
+                                            let totalCount = 0;
+                                            if (
+                                                res.data?.member_count !==
+                                                undefined
+                                            ) {
+                                                totalCount =
+                                                    res.data.member_count;
+                                            } else if (
+                                                res.data?.tenant_team
+                                                    ?.member_count !== undefined
+                                            ) {
+                                                totalCount =
+                                                    res.data.tenant_team
+                                                        .member_count;
+                                            } else {
+                                                // If the server doesn't return the new count, read the current UI number and add 1
+                                                const activeCard = document.querySelector(
+                                                    `.team-card[data-id="${activeTeamId}"]`
+                                                );
+                                                const currentUiCount = activeCard?.querySelector(
+                                                    '[data-field="member_count"]'
+                                                )?.textContent;
+                                                totalCount = currentUiCount
+                                                    ? parseInt(
+                                                          currentUiCount,
+                                                          10
+                                                      ) + 1
+                                                    : 1;
+                                                console.warn(
+                                                    "API response did not include a counter field. Falling back to incremental UI calculation:",
+                                                    totalCount
+                                                );
+                                            }
+
+                                            if (activeTeamId) {
+                                                updateCardMemberCount(
+                                                    activeTeamId,
+                                                    totalCount
+                                                );
+                                            }
+
+                                            cv_interact.success(
+                                                "create_success_tenant"
+                                            );
                                             me.previewZone.classList.add(
-                                                "d-none",
+                                                "d-none"
                                             );
                                         }
                                     } else {
                                         cv_interact.error(res.error_message);
-                                        // me.fileData = null;
                                         if (me.controls?.documents) {
                                             me.controls.documents.value = "";
                                             me.controls.documents.classList.add(
-                                                "d-none",
+                                                "d-none"
                                             );
                                         }
                                     }
                                 });
-                        },
-                    },
-                ],
+                        }
+                    }
+                ]
             });
         dialog.show(op);
     };
     return self;
 })();
 
+function updateCardMemberCount(teamId, newCount) {
+    const card = document.querySelector(`.team-card[data-id="${teamId}"]`);
+
+    card.dataset.memberCount = newCount;
+
+    const countInputDisplay = card.querySelector('[data-field="member_count"]');
+    if (countInputDisplay) {
+        countInputDisplay.textContent = newCount;
+    } else {
+        console.error(
+            "DOM Error: Could not find an element with data-field='member_count' inside the card container."
+        );
+    }
+}
