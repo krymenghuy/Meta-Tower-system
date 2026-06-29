@@ -112,13 +112,16 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('receipt')->gr
 });
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('team')->group(function () {
     Route::post('/save', [TeamController::class, 'saveTeamTenant']);
-    Route::post('/create', [TeamController::class, 'saveTeam']);
-    Route::post('/list-paginate', [TeamController::class, 'getListTeam']);
-    Route::post('/details', [TeamController::class, 'getDetails']);
+    Route::post('/save-member', [TeamController::class, 'saveTeamMember']);
+    Route::post('/list', [TeamController::class, 'getTeamList']);
+    Route::post('/member-list', [TeamController::class, 'getListTeamMemberPaginate']);
+    Route::post('/details', [TeamController::class, 'getTeamDetails']);
     Route::post('/form-options', [TeamController::class, 'getFormOptions']);
     Route::post('/delete', [TeamController::class, 'deleteTeam']);
     Route::post('/profile/photo/delete', [TeamController::class, 'deleteProfilePhoto']);
     Route::post('/profile/photo/save', [TeamController::class, 'saveProfilePhoto']);
     Route::post('/update-status', [TeamController::class, 'updateTeamStatus']);
 });
+
+
 

@@ -1,48 +1,69 @@
 <div id="_main_team_component" class="p-3 mobile-padding" style="display:none;">
-    <div id="_team_list_container" style="display:none">
-        <div id="_divFilter_team" class="bg-white shadow-sm p-3 rounded-2">
-            <div class="align-items-center row g-3">
-                <div class="col-12 col-md-6 col-lg-3">
-                    <div class="position-relative w-100">
-                        <input type="text" class="filter-field rounded-2 input-search" id="_search_team"
-                            placeholder="Search by name, code or phone">
+    <div id="_team_list_container">
+
+        <!-- Filter Bar -->
+        <div id="_divFilter_team" class="bg-white shadow-sm p-3 rounded-3 mb-4">
+            <div class="row align-items-center g-3">
+                <div class="col-12 col-md-5">
+                    <div class="position-relative">
+                        <input type="text" class="filter-field form-control rounded-2 ps-5" 
+                               id="_search_team" placeholder="Search by name, code or phone">
+                        <i class="fa-solid fa-magnifying-glass position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
                     </div>
                 </div>
-                <div class="col-12 col-md-6 col-lg-2">
-                    <select id="_el_team_status" class="filter-field data-input form-control" data-field="status_id"
-                        placeholder="Status"></select>
+                <div class="col-12 col-md-3">
+                    <select id="_el_team_status" class="filter-field form-control" data-field="status_id"></select>
                 </div>
-                <div class="ms-md-auto text-md-end col-12 col-md-auto">
-                    <button type="button" class="w-100 w-md-auto btnAddNewPrm" id="_btnAddTeam">
-                        <i class="me-2 fa fa-user-plus"></i>
+                <div class="col-12 col-md-4 text-md-end">
+                    <button type="button" class="btn btn-primary px-4" id="_btnAddTeam">
+                        <i class="me-2 fa fa-plus"></i>
                         <span vslang="buttons.Create Team">Create Team</span>
                     </button>
                 </div>
             </div>
         </div>
-        <div id="_team_list_view" class="mt-3 rounded-2 overflow-y-auto"></div>
+
+        <!-- Two Column Layout -->
+     <div class="row g-3">
+
+        <div class="col-lg-3">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-header bg-white py-3">
+                    <h6 class="mb-0 text-muted">Teams Overview</h6>
+                </div>
+                <div class="card-body p-3" style="height: calc(100vh - 240px); overflow-y: auto;">
+                    <div id="_team_card_view"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-9">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-header bg-white py-3">
+                    <h6 class="mb-0 text-muted">Team Members</h6>
+                </div>
+                <div class="card-body p-0" style="height: calc(100vh - 240px); overflow-y: auto;">
+                    <div id="_team_list_view"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
     </div>
 </div>
 
+<!-- Profile View -->
 <div id="_team_profile_view" class="px-3" style="display:none">
-    <div class="d-flex align-items-center justify-content-between bg-white shadow-sm mt-2 p-3 rounded-3"
-        id="view_buttons">
-        <div class="d-flex flex-wrap align-items-center gap-3">
-            <a href="javascript:void(0)" id="_btn_back_team" class="d-flex align-items-center gap-2 shadow-sm btn-outline-secondary btn btn-sm">
-                <i class="fa-angles-left fa-solid fs-5"></i>
-                Back to Team
-            </a>
-            <div class="d-sm-block vr d-none"></div>
-            <nav aria-label="breadcrumb">
-            </nav>
-        </div>
+    <div class="d-flex align-items-center bg-white shadow-sm mt-2 p-3 rounded-3">
+        <a href="javascript:void(0)" id="_btn_back_team" class="btn btn-outline-secondary btn-sm">
+            <i class="fa-solid fa-arrow-left me-2"></i> Back to Teams
+        </a>
     </div>
-
-    <div class="mt-3 mb-5" style="max-height: 600px;" id="sub_view_profile">
+    <div class="mt-3" id="sub_view_profile">
         <div id="profile_info_team"></div>
     </div>
 </div>
-
 <style>
     .card {
         border-radius: 5px;
