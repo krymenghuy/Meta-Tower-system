@@ -1299,7 +1299,7 @@ var DashboardComponent =  (() =>{
                                 return `
                                     <tr>
                                         <td>${h(row.tenant)}</td>
-                                        <td>Floor ${h(row.floor)}</td>
+                                        <td>${h(row.floor)}</td>
                                         <td>${h(row.expiry)}</td>
                                         <td>
                                             <span

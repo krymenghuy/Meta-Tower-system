@@ -569,156 +569,156 @@ var DashboardComponent =  new (function () {
 
     mThis.charts = Object.create(null);
 
-    mThis.data = {
-        period: "June 2026",
+//     mThis.data = {
+//         period: "June 2026",
 
-        summary: {
-            monthly_revenue: 86520,
-            revenue_growth: 8.4,
-            outstanding_amount: 23480,
-            overdue_invoices: 18,
-            collection_rate: 96
-        },
-        kpis: [
-			{
-				title: "Active Lease",
-				value: "1",
-				note: "Current rental agreement",
-				trend: "Good standing",
-				icon: "🏢",
-				color: "#2563eb",
-				soft: "#dbeafe"
-			},
-				{
-				title: "Outstanding Balance",
-				value: "$0.00",
-				note: "No unpaid invoices",
-				trend: "Fully paid",
-				icon: "💳",
-				color: "#9333ea",
-				soft: "#f3e8ff"
-			},
-			{
-				title: "Amenity Booking",
-				value: 0,
-				note: "No active bookings",
-				trend: "Available",
-				icon: "🏢",
-				color: "#16a34a",
-				soft: "#dcfce7"
-			},
-			{
-				title: "Service Requests",
-				value: "2",
-				note: "Maintenance requests",
-				trend: "In progress",
-				icon: "🛠️",
-				color: "#ea580c",
-				soft: "#ffedd5"
-			},
+//         summary: {
+//             monthly_revenue: 86520,
+//             revenue_growth: 8.4,
+//             outstanding_amount: 23480,
+//             overdue_invoices: 18,
+//             collection_rate: 96
+//         },
+//         kpis: [
+// 			{
+// 				title: "Active Lease",
+// 				value: "1",
+// 				note: "Current rental agreement",
+// 				trend: "Good standing",
+// 				icon: "🏢",
+// 				color: "#2563eb",
+// 				soft: "#dbeafe"
+// 			},
+// 				{
+// 				title: "Outstanding Balance",
+// 				value: "$0.00",
+// 				note: "No unpaid invoices",
+// 				trend: "Fully paid",
+// 				icon: "💳",
+// 				color: "#9333ea",
+// 				soft: "#f3e8ff"
+// 			},
+// 			{
+// 				title: "Amenity Booking",
+// 				value: 0,
+// 				note: "No active bookings",
+// 				trend: "Available",
+// 				icon: "🏢",
+// 				color: "#16a34a",
+// 				soft: "#dcfce7"
+// 			},
+// 			{
+// 				title: "Service Requests",
+// 				value: "2",
+// 				note: "Maintenance requests",
+// 				trend: "In progress",
+// 				icon: "🛠️",
+// 				color: "#ea580c",
+// 				soft: "#ffedd5"
+// 			},
 		
-		],
-       	collection_kpis: [
-			{
-				title: "Rent Collection",
-				value: "96%",
-				note: "Monthly rental payments",
-				trend: "+2% from last month",
-				color: COLORS.violet,
-				soft: "#818CF8"
-			},
-			{
-				title: "Electricity Collection",
-				value: "94%",
-				note: "Utility payments received",
-				trend: "+1.5% this month",
-				color: COLORS.success,
-				soft: "#34D399"
-			},
-			{
-				title: "Service Fee Collection",
-				value: "92%",
-				note: "Building service charges",
-				trend: "Stable performance",
-				color: COLORS.warning,
-				soft: "#FBBF24"
-			},
-			{
-				title: "Occupancy Rate",
-				value: "91%",
-				note: "Leased building spaces",
-				trend: "+3% occupancy growth",
-				color: COLORS.info,
-				soft: "#38BDF8"
-			},
-			{
-				title: "Lease Renewal",
-				value: "88%",
-				note: "Contract renewals completed",
-				trend: "Renewal target on track",
-				color: COLORS.danger,
-				soft: "#FB7185"
-			}
-		],
-        activities: [
-            {
-                text: "ABC Consulting paid invoice INV-24081",
-                time: "10:45 AM"
-            },
-            {
-                text: "XYZ Ltd renewed lease contract",
-                time: "09:30 AM"
-            },
-            {
-                text: "June electricity bills generated",
-                time: "Yesterday"
-            },
-            {
-                text: "New tenant moved into Floor 6",
-                time: "Yesterday"
-            }
-        ],
-        lease_expiry: [
-			{
-				tenant_name: "ABC Consulting",
-				floor_no: 5,
-				expiry_date: "2026-07-15",
-				days_left: 18,
-				status: "due_soon"
-			},
-			{
-				tenant_name: "XYZ Ltd",
-				floor_no: 7,
-				expiry_date: "2026-07-20",
-				days_left: 23,
-				status: "pending"
-			},
-			{
-				tenant_name: "Meta Lab",
-				floor_no: 2,
-				expiry_date: "2026-07-28",
-				days_left: 31,
-				status: "normal"
-			}
-		],
-		announcements: [
-    {
-        title: "Water supply maintenance",
-        note: "Water will be interrupted from 2PM - 5PM",
-        level: "warning"
-    },
-    {
-        title: "Parking policy update",
-        note: "New parking rules effective from next month",
-        level: "success"
-    },
-    {
-        title: "Emergency drill notice",
-        note: "Fire drill scheduled this Friday at 10AM",
-        level: "danger"
-    }
-]
-    };
+// 		],
+//        	collection_kpis: [
+// 			{
+// 				title: "Rent Collection",
+// 				value: "96%",
+// 				note: "Monthly rental payments",
+// 				trend: "+2% from last month",
+// 				color: COLORS.violet,
+// 				soft: "#818CF8"
+// 			},
+// 			{
+// 				title: "Electricity Collection",
+// 				value: "94%",
+// 				note: "Utility payments received",
+// 				trend: "+1.5% this month",
+// 				color: COLORS.success,
+// 				soft: "#34D399"
+// 			},
+// 			{
+// 				title: "Service Fee Collection",
+// 				value: "92%",
+// 				note: "Building service charges",
+// 				trend: "Stable performance",
+// 				color: COLORS.warning,
+// 				soft: "#FBBF24"
+// 			},
+// 			{
+// 				title: "Occupancy Rate",
+// 				value: "91%",
+// 				note: "Leased building spaces",
+// 				trend: "+3% occupancy growth",
+// 				color: COLORS.info,
+// 				soft: "#38BDF8"
+// 			},
+// 			{
+// 				title: "Lease Renewal",
+// 				value: "88%",
+// 				note: "Contract renewals completed",
+// 				trend: "Renewal target on track",
+// 				color: COLORS.danger,
+// 				soft: "#FB7185"
+// 			}
+// 		],
+//         activities: [
+//             {
+//                 text: "ABC Consulting paid invoice INV-24081",
+//                 time: "10:45 AM"
+//             },
+//             {
+//                 text: "XYZ Ltd renewed lease contract",
+//                 time: "09:30 AM"
+//             },
+//             {
+//                 text: "June electricity bills generated",
+//                 time: "Yesterday"
+//             },
+//             {
+//                 text: "New tenant moved into Floor 6",
+//                 time: "Yesterday"
+//             }
+//         ],
+//         lease_expiry: [
+// 			{
+// 				tenant_name: "ABC Consulting",
+// 				floor_no: 5,
+// 				expiry_date: "2026-07-15",
+// 				days_left: 18,
+// 				status: "due_soon"
+// 			},
+// 			{
+// 				tenant_name: "XYZ Ltd",
+// 				floor_no: 7,
+// 				expiry_date: "2026-07-20",
+// 				days_left: 23,
+// 				status: "pending"
+// 			},
+// 			{
+// 				tenant_name: "Meta Lab",
+// 				floor_no: 2,
+// 				expiry_date: "2026-07-28",
+// 				days_left: 31,
+// 				status: "normal"
+// 			}
+// 		],
+// 		announcements: [
+//     {
+//         title: "Water supply maintenance",
+//         note: "Water will be interrupted from 2PM - 5PM",
+//         level: "warning"
+//     },
+//     {
+//         title: "Parking policy update",
+//         note: "New parking rules effective from next month",
+//         level: "success"
+//     },
+//     {
+//         title: "Emergency drill notice",
+//         note: "Fire drill scheduled this Friday at 10AM",
+//         level: "danger"
+//     }
+// ]
+//     };
 
     mThis.init = function () {
         if (mThis.state.initialized) return;
@@ -794,39 +794,6 @@ var DashboardComponent =  new (function () {
         };
     };
 
-    // mThis.renderDashboard = function (data) {
-    //     const div = mThis.self;
-    //     if (!div) {
-    //         console.error("Dashboard root element was not found.");
-    //         return;
-    //     }
-
-    //     mThis.self.innerHTML = `
-    //         <div class="meta-dashboard">
-    //             ${mThis.renderCardTop(data.card_top)}
-    //             <div class="row g-3">
-    //                 ${mThis.renderKpis(data.kpis)}
-    //             </div>
-    //             <div class="row g-3 mt-1 pb-3">
-    //                 <div class="col-12 col-xl-6">
-    //                     ${mThis.renderTimeline(data.activities)}
-    //                 </div>
-	// 				<div class="col-12 col-xl-6">
-	// 					${mThis.renderAnnouncementList({
-	// 						title: "Announcements",
-	// 						subtitle: "Latest updates and notices for tenants",
-	// 						pill: "Broadcast",
-	// 						items: data.announcements
-	// 					})}
-	// 				</div>
-    //             </div>
-    //         </div>
-    //     `;
-
-    //     mThis.state.rendered = true;
-
-    //     mThis.updateHeight();
-    // };
     mThis.renderDashboard = function (data) {
         const div = mThis.self;
         if (!div) {
@@ -841,7 +808,7 @@ var DashboardComponent =  new (function () {
                 </div>`,
                 `<div class="row g-3 mt-1 pb-3">
                     <div class="col-12 col-xl-6">
-                        ${mThis.renderTimeline(data.activities)}
+                        ${mThis.renderTimeline(data.activities.activities)}
                     </div>
                     <div class="col-12 col-xl-6">
                         ${mThis.renderAnnouncementList()}
@@ -1054,18 +1021,6 @@ var DashboardComponent =  new (function () {
     `;
 };
 
-
-
-    // mThis.refresh = function (data) {
-    //     if (data && typeof data === "object") {
-    //         mThis.data = {
-    //             ...mThis.data,
-    //             ...data
-    //         };
-    //     }
-
-    //     mThis.renderDashboard();
-    // };
     mThis.loadDashBoardData = (filter , onFinish) => {
         vsapi.call(`${main_view.base_url}/tenant/dashboard/data`, filter).then(res => {
             const data = res.status_code === 200 ? (res.data) : {};
