@@ -875,7 +875,7 @@ const ContractDialog = (() => {
                         </div>
                         <div class="col-3">
                             <div class="vs-material-field">
-                                <input type="text" name="deposit" class="data-input form-control" data-field="deposit" placeholder=" " />
+                                <input type="text" name="deposit" class="data-input form-control" data-field="deposit" disabled placeholder=" " />
                                 <label vslang="labels.Deposit">Deposit</label>
                             </div>
                         </div>
@@ -1147,6 +1147,17 @@ const ContractDialog = (() => {
                         }
                         if (me.controls.price)
                             me.controls.price.value = selected.price ?? "";
+
+                        if (me.controls.deposit) {
+                            const priceVal = parseFloat(selected.price) || 0;
+                            const sqmVal = parseFloat(selected.sqm_size) || 0;  
+                            const priceType = selected.price_type || "";
+                            const monthlyPrice = priceType === "sqm" ? (priceVal * sqmVal) : priceVal;
+                            me.controls.deposit.value = new Intl.NumberFormat('en-US', {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2
+                            }).format(monthlyPrice * 3);
+                        }
                     };
 
                     if (unitSelect) {
@@ -1188,6 +1199,9 @@ const ContractDialog = (() => {
                         cssClass: "btn btn-primary",
                         click: (me, btn) => {
                             const op = me.getData();
+                            if (me.controls.deposit) {
+                                op.deposit = me.controls.deposit.value.replace(/[^0-9.]/g, '');
+                            }
                             // if (!me.tenant_id) {
                             //     cv_interact.error("Please select a tenant.");
                             //     return;
