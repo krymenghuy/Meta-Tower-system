@@ -199,7 +199,7 @@ return [
                 '/js/components/tenant/ReceiptsComponent.js',
                 '/js/components/tenant/RequestServiceComponent.js',
                 '/js/components/tenant/AnnouncementComponent.js',
-                '/js/components/tenant/ReservationComponent.js',
+                '/js/components/tenant/BookAmenityComponent.js',
                 '/js/components/tenant/ServicesComponent.js',
 
 

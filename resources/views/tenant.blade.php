@@ -30,7 +30,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
     <?php
-    StyleManager::render('tenant-style', 1, 43);
+    StyleManager::render('tenant-style', 1, 44);
     ?>
     <style>
         /* Custom animations for the modal like Materialize css effect */
@@ -103,7 +103,7 @@
     ScriptManager::render('primary', 1, 14);
     ScriptManager::render('primary-defer', 1, 38);
 
-    ScriptManager::render('tenant-components', 1, 250);
+    ScriptManager::render('tenant-components', 1, 254);
     //ScriptManager::render('pdfmake', 1);
     ?>
 </head>
@@ -292,13 +292,13 @@
                                                         About Meta Client
                                                     </a>
                                                 </span>
-                                                <span class="user-menu-item">
+                                                <!-- <span class="user-menu-item">
                                                     <a id="_main_mnu_changepwd" class="dropdown-item"
                                                         href="javascript:void(0)">
                                                         <i class="m-2 fas fa-key"></i>
                                                         Change password
                                                     </a>
-                                                </span>
+                                                </span> -->
                                                 <div class="dropdown-divider"></div>
                                                 <span class="user-menu-item">
                                                     <a id="_main_mnu_logout" class="dropdown-item"
@@ -326,7 +326,7 @@
                             @include('layouts.tenant.receiptsComponent')
                             @include('layouts.tenant.requestServiceComponent')
                             @include('layouts.tenant.announcementComponent')
-                            @include('layouts.tenant.reservationComponent')
+                            @include('layouts.tenant.bookAmenityComponent')
                             @include('layouts.tenant.tenantProfileComponent')
                             @include('layouts.tenant.servicesComponent')
 

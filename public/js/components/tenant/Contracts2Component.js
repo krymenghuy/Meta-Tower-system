@@ -147,6 +147,215 @@ var Contracts2Component = new (function () {
         return VSMoney.formatAmount(data.deposit, data.currency_code ?? "USD");
     };
 
+    mThis.getSpaceImageMeta = (data) => {
+        const type = String(data.space_type ?? "").toLowerCase();
+        const base = "/assets/images/contracts/";
+        if (type.includes("warehouse") || type.includes("storage")) {
+            return {
+                icon: "fa-warehouse",
+                gradient: "linear-gradient(135deg, #64748b 0%, #334155 100%)",
+                imageUrl: `${base}warehouse-default.jpg`,
+            };
+        }
+        if (type.includes("retail") || type.includes("shop")) {
+            return {
+                icon: "fa-store",
+                gradient: "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)",
+                imageUrl: `${base}retail-default.jpg`,
+            };
+        }
+        return {
+            icon: "fa-building",
+            gradient: "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)",
+            imageUrl: `${base}office-default.jpg`,
+        };
+    };
+
+    mThis.renderSpacePhoto = (data, imageMeta) => {
+        const photoUrl = `${main_view.base_url}${imageMeta.imageUrl}`;
+        const spaceType = mThis.escapeHtml(data.space_type ?? "Space");
+        return `
+            <div class="contract2-card__photo" data-gradient="${mThis.escapeHtml(imageMeta.gradient)}">
+                <img class="contract2-card__photo-img"
+                    src="${photoUrl}"
+                    alt="${spaceType}"
+                    loading="lazy">
+                <div class="contract2-card__photo-fallback" style="background:${imageMeta.gradient}">
+                    <i class="fa-solid ${imageMeta.icon}"></i>
+                </div>
+                <span class="contract2-card__photo-label">${spaceType}</span>
+            </div>`;
+    };
+
+    mThis.renderPaymentChart = (seed) => {
+        const heights = [42, 58, 48, 72, 65];
+        const months = ["Jun", "Jul", "Aug", "Sep", "Oct"];
+        const offset = (parseInt(seed, 10) || 0) % 3;
+        return `
+            <div class="contract2-card__chart">
+                <div class="contract2-card__chart-title">Recent Payment History</div>
+                <div class="contract2-card__chart-bars">
+                    ${months
+                        .map((month, i) => {
+                            const h = heights[(i + offset) % heights.length];
+                            return `<div class="contract2-card__chart-bar-wrap">
+                                <div class="contract2-card__chart-bar" style="height:${h}%"></div>
+                                <span>${month}</span>
+                            </div>`;
+                        })
+                        .join("")}
+                </div>
+            </div>`;
+    };
+
+    mThis.renderContractCard = (data) => {
+        const status = mThis.getStatusMeta(data);
+        const unitLabel = mThis.escapeHtml(data.space_code ?? "Unit");
+        const businessType = mThis.escapeHtml(data.business_type ?? "—");
+        const deposit = mThis.formatDeposit(data);
+        const priceBlock = mThis.formatPriceInline(data);
+        const duration = mThis.escapeHtml(
+            mThis.formatDateRange(data.start_date, data.end_date),
+        );
+        const keyRenewalDate = mThis.escapeHtml(data.end_date ?? "—");
+        const sqmDisplay =
+            data.price_type === "total"
+                ? `${VSMoney.formatAmount(data.price, data.currency_code ?? "USD")} /mon`
+                : `${VSMoney.formatAmount(data.price, data.currency_code ?? "USD")} · ${mThis.formatAreaDetail(data.sqm_size) ?? "—"}`;
+        const imageMeta = mThis.getSpaceImageMeta(data);
+        const tenantName = mThis.escapeHtml(data.tenant_name ?? "—");
+        const tenantRole = mThis.escapeHtml(data.legal_name || "Primary tenant");
+        const tenantInitial = tenantName.charAt(0).toUpperCase() || "T";
+
+        return `
+            <div class="col-12 col-xl-6">
+                <div class="contract2-card" data-contract-id="${data.id}">
+                    <div class="contract2-card__header">
+                        <div class="contract2-card__header-left">
+                            <span class="contract2-card__icon">
+                                <i class="fa-solid fa-building-columns"></i>
+                            </span>
+                            <div class="contract2-card__header-text">
+                                <div class="contract2-card__title-row">
+                                    <span class="contract2-card__title">${unitLabel}</span>
+                                </div>
+                                <div class="contract2-card__subtitle">${businessType}</div>
+                            </div>
+                        </div>
+                        <div class="contract2-card__header-right">
+                            <label class="contract2-card__toggle" title="Collapse/Expand Details">
+                                <span class="contract2-card__toggle-label">Collapse/Expand Details</span>
+                                <input type="checkbox" class="contract2-card__toggle-input" checked aria-expanded="true">
+                                <span class="contract2-card__toggle-track"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="contract2-card__body">
+                        <div class="row g-3 contract2-card__body-grid">
+                            <div class="col-12 col-md-4 contract2-card__col-left">
+                                ${mThis.renderSpacePhoto(data, imageMeta)}
+                                <div class="contract2-card__address">
+                                    <div class="contract2-card__address-head">
+                                        <i class="fa-solid fa-location-dot"></i>
+                                        <span>Property Address</span>
+                                    </div>
+                                    <p>Meta Tower, ${unitLabel}, Phnom Penh, Cambodia</p>
+                                </div>
+                                <div class="contract2-card__floorplan">
+                                    <img class="contract2-card__floorplan-img"
+                                        src="${main_view.base_url}/assets/images/contracts/floor-plan-default.png"
+                                        alt="Floor plan - ${unitLabel}"
+                                        loading="lazy">
+                                </div>
+                                <div class="contract2-card__sqft">
+                                    <span class="contract2-card__sqft-label">Square footage</span>
+                                    <span class="contract2-card__sqft-value">${sqmDisplay}</span>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-8 contract2-card__col-right">
+                                <div class="contract2-card__panel">
+                                    <div class="contract2-card__panel-head">
+                                        <div class="contract2-card__section-title">Contract Status</div>
+                                        <span class="${status.cls}">${mThis.escapeHtml(status.label)}</span>
+                                    </div>
+                                    <div class="contract2-card__status-block">
+                                        <div class="contract2-card__duration">
+                                            <span>Duration:</span>
+                                            <strong>${duration}</strong>
+                                        </div>
+                                        <div class="contract2-card__renewal-date">
+                                            Key renewal date: <strong>${keyRenewalDate}</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="contract2-card__panel contract2-card__panel--finance">
+                                    <div class="contract2-card__section-title">Financial Details</div>
+                                    <div class="contract2-card__finance-grid">
+                                        <div class="contract2-card__finance-main">
+                                            <div class="contract2-card__price-big">${priceBlock}</div>
+                                            <ul class="contract2-card__finance-list">
+                                                <li><span>Total sum of Deposit:</span> <strong>${deposit}</strong></li>
+                                                <li><span>Utility Details:</span> <strong>Any</strong></li>
+                                                <li><span>Property type:</span> <strong>${mThis.escapeHtml(data.space_type ?? "—")}</strong></li>
+                                            </ul>
+                                        </div>
+                                        ${mThis.renderPaymentChart(data.id)}
+                                    </div>
+                                </div>
+                                <div class="contract2-card__panel contract2-card__panel--contacts">
+                                    <div class="contract2-card__section-title">Tenant Contacts</div>
+                                    <div class="contract2-card__contact">
+                                        <span class="contract2-card__contact-avatar">${tenantInitial}</span>
+                                        <div class="contract2-card__contact-info">
+                                            <strong>${tenantName}</strong>
+                                            <span>${tenantRole}</span>
+                                        </div>
+                                        <button type="button" class="contract2-card__contact-btn" title="Contact">
+                                            <i class="fa-regular fa-user"></i>
+                                        </button>
+                                    </div>
+                                    <div class="contract2-card__detail-wrap">
+                                        <button type="button" class="contract2-card__action contract2-card__action--detail btn_contract2_detail"
+                                            data-id="${data.id}">
+                                            View detail
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+    };
+
+    mThis.bindCardEvents = (container) => {
+        if (!container) return;
+
+        container.querySelectorAll(".contract2-card__photo-img").forEach((img) => {
+            img.addEventListener("error", () => {
+                const wrap = img.closest(".contract2-card__photo");
+                if (wrap) wrap.classList.add("is-fallback");
+            });
+        });
+
+        container.querySelectorAll(".contract2-card__toggle-input").forEach((input) => {
+            input.addEventListener("change", () => {
+                const card = input.closest(".contract2-card");
+                if (!card) return;
+
+                const expanded = input.checked;
+                card.classList.toggle("is-collapsed", !expanded);
+                input.setAttribute("aria-expanded", expanded ? "true" : "false");
+            });
+        });
+
+        container.querySelectorAll(".btn_contract2_detail").forEach((btn) => {
+            btn.addEventListener("click", () => {
+                mThis.showContractDetailDialog(btn.dataset.id);
+            });
+        });
+    };
+
     mThis.renderContractRows = (container, items) => {
         items = items ?? [];
         mThis.contractItemsMap = {};
@@ -165,43 +374,14 @@ var Contracts2Component = new (function () {
             return;
         }
 
-        let html = '<div class="contract2-list">';
+        let html = '<div class="row g-3 contract2-card-grid">';
         items.forEach((data) => {
             mThis.contractItemsMap[data.id] = data;
-            const status = mThis.getStatusMeta(data);
-            const unitLabel = mThis.escapeHtml(data.space_code ?? "Unit");
-            const subtitle = `${mThis.escapeHtml(data.business_type ?? "—")} · ${mThis.escapeHtml(
-                mThis.formatDateRange(data.start_date, data.end_date),
-            )}`;
-
-            html += `
-            <div class="contract2-row" data-contract-id="${data.id}">
-                <span class="contract2-row__icon">
-                    <i class="fa-solid fa-building-columns"></i>
-                </span>
-                <div class="contract2-row__main">
-                    <div class="contract2-row__title-row">
-                        <span class="contract2-row__title">${unitLabel}</span>
-                        <span class="${status.cls}">${mThis.escapeHtml(status.label)}</span>
-                    </div>
-                    <div class="contract2-row__subtitle">${subtitle}</div>
-                </div>
-                <div class="contract2-row__price">
-                    <span class="contract2-row__price-value">${mThis.formatPriceInline(data)}</span>
-                </div>
-                <div class="contract2-row__menu-wrap">
-                    <a href="javascript:void(0)" class="btn_contract2_action contract2-row__menu-btn"
-                        data-id="${data.id}"
-                        data-statusid="${data.status_id ?? ""}"
-                        aria-haspopup="true" aria-expanded="false"
-                        title="More options">
-                        <i class="fa-solid fa-ellipsis-vertical"></i>
-                    </a>
-                </div>
-            </div>`;
+            html += mThis.renderContractCard(data);
         });
         html += "</div>";
         container.innerHTML = html;
+        mThis.bindCardEvents(container);
     };
 
     mThis.init = () => {
@@ -209,7 +389,7 @@ var Contracts2Component = new (function () {
 
         mThis.Contract2ListView = new ListView("_contract2_list", {
             fetchApi: `${main_view.base_url}/tenant/contract/list-paginate`,
-            perPage: 10,
+            perPage: 6,
             apiCluster: main_view.apiCluster,
             renderItems: (items, container) => {
                 mThis.renderContractRows(container, items);
@@ -224,8 +404,6 @@ var Contracts2Component = new (function () {
         window.onresize = () => {
             sh_parent.style.maxHeight = window.innerHeight - 200 + "px";
         };
-
-        mThis.initDropdownMenus(mThis.pr_tbl);
 
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             el.onchange = () => {
@@ -306,7 +484,7 @@ var Contracts2Component = new (function () {
                 <section class="contract2-detail__main">
                     <div class="contract2-detail__tabs">
                         <button type="button" class="contract2-detail__tab is-active" data-tab="overview">Overview</button>
-                        <button type="button" class="contract2-detail__tab" data-tab="tenant">Tenant</button>
+                        <button type="button" class="contract2-detail__tab" data-tab="renew">View renew</button>
                         <button type="button" class="contract2-detail__tab" data-tab="documents">Documents</button>
                     </div>
                     <div class="contract2-detail__panel">
@@ -341,20 +519,8 @@ var Contracts2Component = new (function () {
                                 </div>
                             </div>
                         </div>
-                        <div class="contract2-detail__tab-panel d-none" data-panel="tenant">
-                            <div class="contract2-detail__section-card">
-                                <div class="contract2-detail__section-head">
-                                    <span class="contract2-detail__section-icon"><i class="fa-regular fa-user"></i></span>
-                                    <span>Tenant information</span>
-                                </div>
-                                <div class="contract2-detail__info-grid">
-                                    ${mThis.renderDetailField("Name", mThis.valueHtml(data.tenant_name))}
-                                    ${mThis.renderDetailField("Phone", mThis.valueHtml(data.phone_number))}
-                                    ${mThis.renderDetailField("Email", mThis.valueHtml(data.email))}
-                                    ${mThis.renderDetailField("Legal name", mThis.valueHtml(data.legal_name))}
-                                    ${mThis.renderDetailField("Tenant code", mThis.valueHtml(data.code))}
-                                </div>
-                            </div>
+                        <div class="contract2-detail__tab-panel d-none" data-panel="renew">
+                            <div id="_contract2_detail_renew_panel" class="contract2-detail__renew-panel"></div>
                         </div>
                         <div class="contract2-detail__tab-panel d-none" data-panel="documents">
                             <div class="contract2-detail__empty-tab">
@@ -368,19 +534,33 @@ var Contracts2Component = new (function () {
             </div>`;
     };
 
-    mThis.bindDetailTabs = (root, onClose) => {
+    mThis.bindDetailTabs = (root, onClose, contractId, options = {}) => {
         if (!root) return;
         const tabs = root.querySelectorAll(".contract2-detail__tab");
         const panels = root.querySelectorAll(".contract2-detail__tab-panel");
+        let renewLoaded = false;
+
+        const activateTab = (name) => {
+            tabs.forEach((t) => {
+                t.classList.toggle("is-active", t.dataset.tab === name);
+            });
+            panels.forEach((panel) => {
+                panel.classList.toggle("d-none", panel.dataset.panel !== name);
+            });
+            if (name === "renew" && !renewLoaded && contractId) {
+                renewLoaded = true;
+                const renewPanel = root.querySelector("#_contract2_detail_renew_panel");
+                mThis.loadRenewalHistory(renewPanel, contractId, null, { inline: true });
+            }
+        };
+
         tabs.forEach((tab) => {
-            tab.onclick = () => {
-                const name = tab.dataset.tab;
-                tabs.forEach((t) => t.classList.toggle("is-active", t === tab));
-                panels.forEach((panel) => {
-                    panel.classList.toggle("d-none", panel.dataset.panel !== name);
-                });
-            };
+            tab.onclick = () => activateTab(tab.dataset.tab);
         });
+
+        if (options.initialTab) {
+            activateTab(options.initialTab);
+        }
 
         const closeBtn = root.querySelector(".contract2-detail__close-btn");
         if (closeBtn && typeof onClose === "function") {
@@ -391,7 +571,7 @@ var Contracts2Component = new (function () {
         }
     };
 
-    mThis.showContractDetailDialog = (id) => {
+    mThis.showContractDetailDialog = (id, options = {}) => {
         const data = mThis.contractItemsMap[id];
         if (!data) return;
 
@@ -402,12 +582,13 @@ var Contracts2Component = new (function () {
             hideFooter: true,
             hideHeader: true,
             onReady: (root, hide) => {
-                mThis.bindDetailTabs(root, hide);
+                mThis.bindDetailTabs(root, hide, id, options);
             },
         });
     };
 
-    mThis.buildRenewalTimelineHtml = (data, renewals) => {
+    mThis.buildRenewalTimelineHtml = (data, renewals, options = {}) => {
+        const inline = options.inline === true;
         const unitLabel = mThis.escapeHtml(data.space_code ?? "Unit");
         const renewalsList = Array.isArray(renewals) ? renewals : [];
         const totalEntries = 1 + renewalsList.length;
@@ -490,34 +671,58 @@ var Contracts2Component = new (function () {
             </div>`;
         });
 
+        const footHtml = inline
+            ? ""
+            : `<div class="contract2-renewal__foot">
+                    <button type="button" class="contract2-renewal__scroll-hint" tabindex="-1" aria-hidden="true">
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                </div>`;
+
+        const subText = inline
+            ? `${mThis.escapeHtml(data.tenant_name ?? "—")} · ${totalEntries} renewal${totalEntries === 1 ? "" : "s"} on record`
+            : `${totalEntries} renewal${totalEntries === 1 ? "" : "s"} on record`;
+
+        const headIconHtml = inline
+            ? `<span class="contract2-renewal__head-icon"><i class="fa-solid fa-clock-rotate-left"></i></span>`
+            : "";
+
+        const bodyHtml = `
+                <div class="contract2-renewal${inline ? " contract2-renewal--inline" : ""}">
+                    <div class="contract2-renewal__head${inline ? " contract2-renewal__head--inline" : ""}">
+                        <div class="contract2-renewal__head-main">
+                            ${headIconHtml}
+                            <div>
+                                <div class="contract2-renewal__title">${unitLabel} · renewal history</div>
+                                <div class="contract2-renewal__sub">${subText}</div>
+                            </div>
+                        </div>
+                        ${activeBadge}
+                    </div>
+                    <div class="contract2-renewal__timeline-wrap">
+                        <div class="contract2-renewal__timeline">${timelineHtml}</div>
+                    </div>
+                    ${footHtml}
+                </div>`;
+
+        if (inline) {
+            return bodyHtml;
+        }
+
         return `
             <div class="contract2-renewal-shell">
                 <button type="button" class="contract2-renewal__close-btn" aria-label="Close">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
-                <div class="contract2-renewal">
-                    <div class="contract2-renewal__head">
-                        <div>
-                            <div class="contract2-renewal__title">${unitLabel} · renewal history</div>
-                            <div class="contract2-renewal__sub">${totalEntries} renewal${totalEntries === 1 ? "" : "s"} on record</div>
-                        </div>
-                        ${activeBadge}
-                    </div>
-                    <div class="contract2-renewal__timeline">${timelineHtml}</div>
-                    <div class="contract2-renewal__foot">
-                        <button type="button" class="contract2-renewal__scroll-hint" tabindex="-1" aria-hidden="true">
-                            <i class="fa-solid fa-chevron-down"></i>
-                        </button>
-                    </div>
-                </div>
+                ${bodyHtml}
             </div>`;
     };
 
-    mThis.loadRenewalHistory = (container, id, onClose) => {
+    mThis.loadRenewalHistory = (container, id, onClose, options = {}) => {
         const data = mThis.contractItemsMap[id];
         if (!data) return;
 
-        container.innerHTML = `<div class="contract2-renewal-loading"><div class="spinner-border text-primary" role="status"></div></div>`;
+        container.innerHTML = `<div class="contract2-renewal-loading${options.inline ? " contract2-renewal-loading--inline" : ""}"><div class="spinner-border text-primary" role="status"></div></div>`;
 
         vsapi
             .call(
@@ -531,8 +736,14 @@ var Contracts2Component = new (function () {
                     res.status_code === 200 && res.data && res.data.data
                         ? res.data.data
                         : [];
-                container.innerHTML = mThis.buildRenewalTimelineHtml(data, renewals);
-                mThis.bindRenewalDialog(container, onClose);
+                container.innerHTML = mThis.buildRenewalTimelineHtml(
+                    data,
+                    renewals,
+                    options,
+                );
+                if (!options.inline) {
+                    mThis.bindRenewalDialog(container, onClose);
+                }
             })
             .catch(() => {
                 container.innerHTML = `<div class="alert alert-danger m-0">Failed to load renewal history.</div>`;
@@ -548,64 +759,6 @@ var Contracts2Component = new (function () {
                 onClose();
             };
         }
-    };
-
-    mThis.showRenewRecordDialog = (id) => {
-        const data = mThis.contractItemsMap[id];
-        if (!data) return;
-
-        Contract2ViewDialog.show({
-            title: "",
-            contentHtml: `<div id="_contract2_renewal_panel"></div>`,
-            dialogClass: "contract2-renewal-modal",
-            hideFooter: true,
-            hideHeader: true,
-            onReady: (panel, hide) => {
-                mThis.loadRenewalHistory(panel, id, hide);
-            },
-        });
-    };
-
-    mThis.downloadAgreement = (id) => {
-        cv_interact.info("Agreement download is not available for this contract yet.");
-    };
-
-    mThis.initDropdownMenus = (listContainer) => {
-        new VSDropdownMenu({
-            containerElement: listContainer,
-            actionButtonClass: "btn_contract2_action",
-            cssClass: "contract2-row__dropdown shadow-sm",
-            adjustPosition: { top: 4 },
-            menus: [
-                {
-                    html: '<span class="ps-2">View detail</span>',
-                    icon: `<i class="fa-regular fa-eye fs-6 text-prm-custom"></i>`,
-                    cssClass: "contract2-row__dropdown-item",
-                    name: "view_detail",
-                },
-                {
-                    html: '<span class="ps-2">View renew record</span>',
-                    icon: `<i class="fa-solid fa-clock-rotate-left fs-6 text-prm-custom"></i>`,
-                    cssClass: "contract2-row__dropdown-item",
-                    name: "view_renew_record",
-                },
-                {
-                    html: '<span class="ps-2">Download agreement</span>',
-                    icon: `<i class="fa-solid fa-download fs-6 text-prm-custom"></i>`,
-                    cssClass: "contract2-row__dropdown-item menu-item--divider",
-                    name: "download_agreement",
-                },
-            ],
-            onClick: (menuLink, id, name) => {
-                if (name === "view_detail") {
-                    mThis.showContractDetailDialog(id);
-                } else if (name === "view_renew_record") {
-                    mThis.showRenewRecordDialog(id);
-                } else if (name === "download_agreement") {
-                    mThis.downloadAgreement(id);
-                }
-            },
-        });
     };
 
     mThis.prepareFormOptions = (onFinish) => {

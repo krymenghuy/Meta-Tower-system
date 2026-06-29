@@ -10,7 +10,7 @@
     use App\Models\Prm\GeneralSettings;
     use Log;
 
-    class Reservation extends VSModel
+    class BookAmenity extends VSModel
     {
         protected $table = 'reservations';
         protected $userInfo = null;
@@ -211,7 +211,7 @@
                 ->join('amenity_categories as ac', 'ac.id', '=', 'a.category_id')
                 ->join('tenants as t', 't.id', '=', 'r.tenant_id')
                 ->whereRaw($str_search)
-                ->whereRaw("r.tenant_id = ".$tenant_id)
+                ->where('r.tenant_id',$tenant_id)
                 ->whereRaw($str_moreWhere)
                 ->selectRaw("r.id, r.booking_date, r.start_time, r.end_time, r.amenity_id, a.name as amenity_name, a.code as amenity_code, a.category_id, ac.name as amenity_category, a.max_capacity as amenity_capacity, r.tenant_id, t.name as tenant_name, t.phone_number as phone_number, r.remarks, r.status_id, rs.name as status_name, r.updated_at, r.update_user")
                 ->orderBy('r.id','DESC');
