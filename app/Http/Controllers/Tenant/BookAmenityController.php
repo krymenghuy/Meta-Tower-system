@@ -3,19 +3,19 @@
 namespace App\Http\Controllers\Tenant;
 
 use App\Http\Controllers\Controller;
-use App\Models\Tenant\Reservation;
+use App\Models\Tenant\BookAmenity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use JDV;
 use XAuthService;
 
-class ReservationsController extends Controller
+class BookAmenityController extends Controller
 {
     protected $reservation;
 
     public function __construct()
     {
-        $this->reservation = new Reservation();
+        $this->reservation = new BookAmenity();
     }
 
     public function saveReservation(Request $req)
@@ -24,33 +24,25 @@ class ReservationsController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-
         $id = $req->id ?? $req->reservation_id;
-        $reservation = new Reservation($id, $ss);
-
+        $reservation = new BookAmenity($id, $ss);
         $params = $req->all();
         if (isset($ss->tenant_id) && $ss->tenant_id) {
             $params['tenant_id'] = $ss->tenant_id;
         }
-
         $res = $reservation->upsert($params);
-
         return JDV::raw($res);
     }
-
     public function getListPaginate(Request $req)
     {
         $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-
         $params = $req->all();
-
         if (isset($ss->tenant_id) && $ss->tenant_id) {
             $params['tenant_id'] = $ss->tenant_id;
         }
-
         return JDV::result($this->reservation->getListPaginate($params, $ss));
     }
 
@@ -65,7 +57,7 @@ class ReservationsController extends Controller
             return JDV::error('Invalid ID');
         }
 
-        $row = Reservations::reservationDetails($req->id);
+        $row = BookAmenity::reservationDetails($req->id);
 
         if (!$row) {
             return JDV::error('Reservation not found.');
