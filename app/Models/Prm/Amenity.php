@@ -39,7 +39,7 @@ class Amenity extends VSModel
             'code'            => '0|string|max=50',
         ];
 
-        $chars = ['@', ',', '-', '.', '#'];
+        $chars = ['@', ',', '-', '.','/', '#'];
         $code_char = ['@', '.', '-', '_'];
 
         $res = DBX::validateObject(

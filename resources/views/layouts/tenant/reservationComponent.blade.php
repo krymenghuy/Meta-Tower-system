@@ -28,7 +28,7 @@
             </div>
         </div>
     </div>
-    <div id="_reservation_list" class="reservation-list-wrap bg-white mt-3"></div>
+    <div id="_reservation_list" class="reservation-list-wrap mt-3"></div>
 </div>
 
 <style>
