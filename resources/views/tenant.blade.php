@@ -292,13 +292,13 @@
                                                         About Meta Client
                                                     </a>
                                                 </span>
-                                                <span class="user-menu-item">
+                                                <!-- <span class="user-menu-item">
                                                     <a id="_main_mnu_changepwd" class="dropdown-item"
                                                         href="javascript:void(0)">
                                                         <i class="m-2 fas fa-key"></i>
                                                         Change password
                                                     </a>
-                                                </span>
+                                                </span> -->
                                                 <div class="dropdown-divider"></div>
                                                 <span class="user-menu-item">
                                                     <a id="_main_mnu_logout" class="dropdown-item"
