@@ -1,7 +1,7 @@
 "use strict";
 var ReservationComponent = (() => {
     const mThis = {};
-    mThis.title_prop = "Booking Amenity";
+    mThis.title_prop = "Book Amenity";
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector(
         "#_main_reservation_component",
@@ -650,7 +650,7 @@ const CreateReservationDialog = (() => {
                                 .call(
                                     [
                                         main_view.base_url,
-                                        "/prm/tenant/reservation/save",
+                                        "/tenant/reservation/save",
                                     ].join(""),
                                     op,
                                     btn,
