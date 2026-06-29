@@ -1,17 +1,16 @@
 "use strict";
-var ReservationComponent = (() => {
+var BookAmenityComponent = (() => {
     const mThis = {};
     mThis.title_prop = "Book Amenity";
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector(
-        "#_main_reservation_component",
+        "#_main_book_amenity_component",
     );
-    mThis.btnAdd = mThis.self.querySelector("#_btnReservation");
-    mThis.divFilter = mThis.self.querySelector("#_divFilter_reservation");
-    mThis.elFilter_status = mThis.self.querySelector("#_reservation_status");
-    mThis.elAmenity = mThis.self.querySelector("#amenity_id");
+    mThis.btnAdd = mThis.self.querySelector("#_btnBookNow");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter_book_amenity");
+    mThis.elFilter_status = mThis.self.querySelector("#_book_amenity_status");
     mThis.elBookingDate = mThis.self.querySelector("#booking_date");
-    mThis.elSearch = mThis.self.querySelector("#_search_reservation");
+    mThis.elSearch = mThis.self.querySelector("#_search_book_amenity");
     mThis.elBookingDateTo = mThis.self.querySelector("booking_date_to");
     mThis.autoRefreshMs = 60000;
     mThis.autoRefreshTimer = null;
@@ -563,7 +562,7 @@ const CreateReservationDialog = (() => {
                 ],
 
                 prepareFormOptions: {
-                    createTitle: "Create Reservation",
+                    createTitle: "Book Now",
                     modifyTitle: "Modify Reservation",
                     targetProp: "reservation_details",
                     api: {

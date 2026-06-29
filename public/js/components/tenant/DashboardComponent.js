@@ -552,7 +552,7 @@ var DashboardComponent =  new (function () {
         }
     `;
 
-    mThis.title_prop = "Dashboard";
+    mThis.title_prop = "Overview";
     mThis.base_url = main_view.base_url;
     mThis.asset_url = main_view.asset_url;
 

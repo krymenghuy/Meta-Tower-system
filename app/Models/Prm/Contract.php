@@ -1402,6 +1402,7 @@ class Contract
             default => '',
         };
         $tenant_full_name = $tenant_title . ' ' . ($tenant_name ?? '');
+        
         $tenant_nid = $d->national_id ?? $tenant->national_id ?? '';
         $tenant_phone = $d->phone_number ?? $tenant->phone_number ?? '';
         $tenant_address = $tenant_address ?? $d->address ?? $tenant->address;

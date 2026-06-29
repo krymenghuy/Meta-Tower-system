@@ -10,7 +10,7 @@
     use App\Models\Prm\GeneralSettings;
     use Log;
 
-    class Reservation extends VSModel
+    class BookAmenity extends VSModel
     {
         protected $table = 'reservations';
         protected $userInfo = null;

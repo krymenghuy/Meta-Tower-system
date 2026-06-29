@@ -326,7 +326,7 @@
                             @include('layouts.tenant.receiptsComponent')
                             @include('layouts.tenant.requestServiceComponent')
                             @include('layouts.tenant.announcementComponent')
-                            @include('layouts.tenant.reservationComponent')
+                            @include('layouts.tenant.bookAmenityComponent')
                             @include('layouts.tenant.tenantProfileComponent')
                             @include('layouts.tenant.servicesComponent')
 
