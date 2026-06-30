@@ -68,26 +68,18 @@ var TeamComponent = new (function() {
             }
         },
         {
-            transTitle: "titles.Date of Birth",
+            transTitle: "titles.Start Date",
             className: "align-middle ",
             data: data => {
-                return `<span class="text-prm-custom text-nowrap">${data.date_of_birth ??
+                return `<span class="text-prm-custom text-nowrap">${data.start_date ??
                     "_"}</span>`;
             }
         },
         {
-            transTitle: "titles.National ID",
+            transTitle: "titles.Position",
             className: "align-middle",
             data: data => {
-                return `<span class="text-prm-custom text-nowrap">${data.national_id ??
-                    "_"}</span>`;
-            }
-        },
-        {
-            transTitle: "titles.Passport",
-            className: "align-middle",
-            data: data => {
-                return `<span class="text-prm-custom text-nowrap">${data.passport_number ??
+                return `<span class="text-prm-custom text-nowrap">${data.position ??
                     "_"}</span>`;
             }
         },
@@ -170,6 +162,24 @@ var TeamComponent = new (function() {
             }
         });
 
+        // ✅ Create a distinct placeholder element instead of using innerHTML directly
+        if (mThis.listViewContainer) {
+            // First hide the actual list table if it loaded empty shells
+            const tableEl =
+                mThis.listViewContainer.querySelector(".table") ||
+                mThis.listViewContainer.firstElementChild;
+            if (tableEl) tableEl.style.display = "none";
+
+            const placeholder = document.createElement("div");
+            placeholder.id = "_team_list_placeholder";
+            placeholder.className = "text-center py-5 text-muted";
+            placeholder.innerHTML = `
+                <i class="fa-solid fa-arrow-pointer fa-2x mb-2 opacity-50"></i>
+                <p>Please click a team card first to see its members.</p>
+            `;
+            mThis.listViewContainer.appendChild(placeholder);
+        }
+
         mThis.btnAdd.onclick = function(e) {
             e.preventDefault();
             const op = {
@@ -186,6 +196,131 @@ var TeamComponent = new (function() {
         };
 
         mThis.initAlready = true;
+    };
+
+    mThis.initDropdownMenus = listContainer => {
+        const menuOptions = {
+            containerElement: listContainer,
+            actionButtonClass: "btn-tenant-dropdown-action",
+            cssClass: "bg-white shadow",
+            menus: [
+                {
+                    html:
+                        '<span class="ps-2" vslang="titles.View Details">View Details</span>',
+                    icon: `<i class="fa-solid fa-user fs-5 text-info"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "view_profile"
+                },
+                {
+                    html:
+                        '<span class="ps-2" vslang="titles.Modify Member">Modify Member</span>',
+                    icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "modify_member"
+                },
+                {
+                    html:
+                        '<span class="ps-2" vslang="titles.Delete Member">Delete Member</span>',
+                    icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "delete_member"
+                }
+            ],
+            onShow: (me, container) => {
+                const menu = me.getActiveMenus(container);
+                const status_id = container.dataset.statusid;
+
+                if (menu.modify_member) {
+                    menu.modify_member.style.display =
+                        Number(status_id) !== 2 ? "block" : "none";
+                }
+            },
+
+            onClick: (menuLink, id, name) => {
+                switch (name) {
+                    case "view_profile": {
+                        mThis.showPage("profile_view", { member_id: id });
+                        break;
+                    }
+                    case "modify_member": {
+                        mThis.editMember(id, menuLink);
+                        break;
+                    }
+                    case "delete_member": {
+                        mThis.deleteMember(id, menuLink);
+                        break;
+                    }
+                    default: {
+                        break;
+                    }
+                }
+            }
+        };
+        new VSDropdownMenu(menuOptions);
+    };
+    mThis.renderView = () => {
+        if (mThis.staffListView) {
+            // Re-runs the list view with its current page/filters state
+            mThis.staffListView.showPage();
+        } else {
+            mThis.refreshTeamList();
+        }
+    };
+
+    mThis.editMember = (id, menuLink) => {
+        let op = {
+            id: id,
+            btn: menuLink,
+            team_id: mThis.currentTeamId,
+            onClose: () => {
+            mThis.staffListView.showPage({
+                ...mThis.getFilterData(),
+                team_id: mThis.currentTeamId
+            });
+        }
+        };
+        CreateTeamMemberDialog.show(op);
+    };
+    mThis.deleteMember = (id, menuLink) => {
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.renderView();
+            }
+        };
+        // if (!AuthManager.allowed(221, false)) return;
+        cv_interact.confirm(
+            "confirm_delete",
+            {
+                title: "deleted",
+                context: "delete",
+                confirmButtonText: "Delete"
+            },
+            function(e) {
+                if (e) {
+                    vsapi
+                        .call(
+                            `${main_view.base_url}/tenant/team/delete-member`,
+                            op,
+                            false,
+                            false,
+                            false
+                        )
+                        .then(res => {
+                            if (res.status_code == 200) {
+                                TeamComponent.staffListView.showPage({
+                                    ...TeamComponent.getFilterData(),
+                                    team_id: res.data.team_id
+                                });
+                                cv_interact.success("delete_success_tenant");
+                            } else {
+                                cv_interact.error(res.error_message);
+                            }
+                        });
+                }
+            }
+        );
     };
 
     mThis.renderTeamCards = (container, data) => {
@@ -228,19 +363,25 @@ var TeamComponent = new (function() {
                             </div>
 
                             <div style="display: flex; gap: 8px; padding: 10px 16px; background-color: #ffffff; border-top: 1px solid #e2e5f5; justify-content: flex-end; align-items: center;">
-                                <button class="create-staff-btn" data-id="${team.id}"
+                                <button class="create-staff-btn" data-id="${
+                                    team.id
+                                }"
                                         style="width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; border-radius: 8px; cursor: pointer; border: 1.5px solid #22c55e; background: transparent; color: #16a34a; transition: all 0.2s;"
                                         title="Create staff">
                                     <i class="fa-solid fa-user-plus"></i>
                                 </button>
                                 
-                                <button class="edit-team-btn" data-id="${team.id}"
+                                <button class="edit-team-btn" data-id="${
+                                    team.id
+                                }"
                                         style="width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; border-radius: 8px; cursor: pointer; border: 1.5px solid #3b82f6; background: transparent; color: #2563eb; transition: all 0.2s;"
                                         title="Edit">
                                     <i class="fa-solid fa-pen"></i>
                                 </button>
                                 
-                                <button class="delete-team-btn" data-id="${team.id}"
+                                <button class="delete-team-btn" data-id="${
+                                    team.id
+                                }"
                                         style="width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; border-radius: 8px; cursor: pointer; border: 1.5px solid #f87171; background: transparent; color: #dc2626; transition: all 0.2s;"
                                         title="Delete">
                                     <i class="fa-solid fa-trash"></i>
@@ -271,32 +412,55 @@ var TeamComponent = new (function() {
             });
         });
 
-        // Click on card → View Team Profile (filter members by team)
         container.querySelectorAll(".team-card").forEach(card => {
             card.addEventListener("click", async e => {
                 if (e.target.closest("button")) return;
                 const teamId = e.currentTarget.dataset.id;
-                mThis.staffListView.showPage({ team_id: teamId });
-                // mThis.showPage("profile_view", { id: teamId });
+                 mThis.currentTeamId = teamId; 
 
-                console.log(teamId);
+                console.log("Viewing members for team ID:", teamId);
+
+                if (mThis.staffListView) {
+                    // ✅ Find and remove our placeholder to restore standard ListView DOM targets
+                    const placeholder = mThis.listViewContainer.querySelector(
+                        "#_team_list_placeholder"
+                    );
+                    if (placeholder) {
+                        placeholder.remove();
+                    }
+
+                    // ✅ Make sure the main list view table/structure is visible again
+                    const hiddenTable =
+                        mThis.listViewContainer.querySelector(".table") ||
+                        mThis.listViewContainer.firstElementChild;
+                    if (hiddenTable) {
+                        hiddenTable.style.display = "";
+                    }
+
+                    // Combine global filters with your selected team ID
+                    const currentFilters = mThis.getFilterData();
+                    mThis.staffListView.showPage({
+                        ...currentFilters,
+                        team_id: teamId
+                    });
+                }
             });
         });
- 
-       // Corrected delete button listener (duplication removed)
+
+        // Corrected delete button listener (duplication removed)
         container.querySelectorAll(".delete-team-btn").forEach(btn => {
             btn.addEventListener("click", e => {
                 e.stopPropagation(); // Prevents card click event
                 const teamId = e.currentTarget.dataset.id; //
-                
+
                 cv_interact.confirm(
                     "confirm_delete",
                     {
                         title: "deleted",
                         context: "delete",
-                        confirmButtonText: "Delete",
+                        confirmButtonText: "Delete"
                     },
-                    function (isConfirmed) {
+                    function(isConfirmed) {
                         if (isConfirmed) {
                             vsapi
                                 .call(
@@ -304,36 +468,37 @@ var TeamComponent = new (function() {
                                     { id: teamId }, //
                                     false,
                                     false,
-                                    false,
+                                    false
                                 )
-                                .then((res) => {
+                                .then(res => {
                                     if (res.status_code == 200) {
                                         mThis.showPage("team_list"); // Refreshes the list
-                                        cv_interact.success("delete_success_tenant"); //
+                                        cv_interact.success(
+                                            "delete_success_tenant"
+                                        ); //
                                     } else {
                                         cv_interact.error(res.error_message); //
                                     }
                                 });
                         }
-                    },
+                    }
                 );
             });
         });
 
-
         container.querySelectorAll(".edit-team-btn").forEach(btn => {
             btn.addEventListener("click", e => {
                 e.stopPropagation();
-                
+
                 // ✅ CORRECT: ID is successfully retrieved
                 const teamId = e.currentTarget.dataset.id;
                 console.log("Opening edit dialog for team ID:", teamId);
-                
+
                 let op = {
                     id: teamId,
                     onClose: () => mThis.refreshTeamList()
                 };
-                
+
                 CreateTeamDialog.show(op);
                 console.log("Opening edit dialog for team ID:", teamId);
             });
@@ -367,7 +532,8 @@ var TeamComponent = new (function() {
                     mThis.renderTeamCards(mThis.teamCardView, teams);
                 }
 
-                if (mThis.staffListView) {
+                // 🛑 CHANGE HERE: Only trigger list fetch if a team_id is actively part of the filters
+                if (mThis.staffListView && filter.team_id) {
                     mThis.staffListView.showPage(filter);
                 }
                 break;
@@ -433,156 +599,17 @@ var TeamComponent = new (function() {
     return mThis;
 })();
 
-// const CreateTeamDialog = (() => {
-//     const self = {};
-//     let dialog = null;
-
-//     self.show = op => {
-
-//         dialog = new GeneralDialog({
-//                 cssClass: "modal-md vs-modal",
-//                 backdrop: "static",
-//                 keyboard: true,
-//                 createContent: () => {
-//                     return `
-//                     <input type="hidden" name="id" class="data-input" data-field="id" />
-
-//                     <div class="row g-3">
-//                         <div class="col-6">
-//                             <div class="vs-material-field">
-//                                 <input type="text" 
-//                                     name="team_name" 
-//                                     class="data-input form-control" 
-//                                     data-field="team_name" 
-//                                     placeholder=" " 
-//                                     required />
-//                                 <label vslang="labels.Team Name">Team Name</label>
-//                             </div>
-//                         </div>
-
-//                         <div class="col-6 col-md-6">
-//                             <select name="space_id" 
-//                                     class="data-input form-control"
-//                                     data-style="material" 
-//                                     data-field="space_id"
-//                                     required
-//                                     placeholder="${LocaleManager.trans(
-//                                         "Select Space",
-//                                         "labels"
-//                                     )}">      
-//                             </select>
-//                         </div>
-                                
-//                     </div>
-//                 `;
-//                 },
-
-//                 prepareFormOptions: {
-//                     createTitle: "vslang:titles.Create New Team",
-//                     modifyTitle: "vslang:titles.Modify Team",
-//                     targetProp: "team",
-//                     api: {
-//                         endpoint: `${main_view.base_url}/tenant/team/form-options`,
-//                         params: () => ({ id: op.id }) 
-//                     }
-//                 },
-                
-
-//                 onPrepareForm: (me, data) => {
-//                     console.log("me",me);
-//                     console.log("data",data);
-//                     me.renderTeamCards();
-
-                    
-//                     const spacesList = data?.spaces || [];
-
-//                     VSUtil.setComboItems(
-//                         me.controls.space_id,
-//                         spacesList,
-//                         "id", 
-//                         "code", 
-//                         "",
-//                         "Select Space", 
-//                         ""
-//                     );
-
-//                     // If backend found and returned the team data, bind it to the inputs automatically
-//                     if (data?.team) {
-//                         me.setData(data.team);
-//                     }
-//                 },
-
-//                 buttons: [
-//                     {
-//                         label: '<span vslang="buttons.Cancel"></span>',
-//                         cssClass: "btn btn-secondary",
-//                         click: me => {
-//                             me.hide(false);
-//                         }
-//                     },
-//                     {
-//                         label: '<span vslang="buttons.Save"></span>',
-//                         cssClass: "btn btn-primary",
-//                         click: (me, btn) => {
-//                             const payload = me.getData();
-                            
-//                             // Ensure the ID accompanies the payload
-//                             payload.id = me.dataOptions.id || payload.id; 
-
-//                             vsapi
-//                                 .call(
-//                                     `${main_view.base_url}/tenant/team/save`,
-//                                     payload,
-//                                     btn,
-//                                     null
-//                                 )
-//                                 .then(res => {
-//                                     if (res.status_code === 200) {
-//                                         const newTeamId = res.data?.id || null;
-//                                         me.hide(true, payload, newTeamId);
-
-//                                         if (payload.id > 0) {
-//                                             cv_interact.success(
-//                                                 "update_success_team"
-//                                             );
-//                                         } else {
-//                                             cv_interact.success(
-//                                                 "create_success_team"
-//                                             );
-//                                         }
-                                        
-//                                         if (typeof op.onClose === 'function') {
-//                                             op.onClose();
-//                                         }
-//                                     } else {
-//                                         cv_interact.error(
-//                                             res.error_message ||
-//                                                 "Failed to save team"
-//                                         );
-//                                     }
-//                                 });
-//                         }
-//                     }
-//                 ]
-//             });
-
-//         dialog.show(op);
-//     };
-
-//     return self;
-// })();
-
 const CreateTeamDialog = (() => {
     const self = {};
     let dialog = null;
 
     self.show = op => {
         dialog = new GeneralDialog({
-                cssClass: "modal-md vs-modal",
-                backdrop: "static",
-                keyboard: true,
-                createContent: () => {
-                    return `
+            cssClass: "modal-md vs-modal",
+            backdrop: "static",
+            keyboard: true,
+            createContent: () => {
+                return `
                     <input type="hidden" name="id" class="data-input" data-field="id" />
 
                     <div class="row g-3">
@@ -613,93 +640,106 @@ const CreateTeamDialog = (() => {
                                 
                     </div>
                 `;
-                },
+            },
+            configSelect: [
+                {
+                    name: "space_id",
+                    data: "spaces",
+                    textField: "code",
+                    valueField: "id"
+                }
+            ],
 
-                prepareFormOptions: {
-                    createTitle: "vslang:titles.Create New Team",
-                    modifyTitle: "vslang:titles.Modify Team",
-                    targetProp: "team",
-                    api: {
-                        endpoint: `${main_view.base_url}/tenant/team/form-options`,
-                        // ✅ FIX 2: Use an empty parameter arrow function to prevent variable shadowing.
-                        // This allows correctly passing the outer team ID context.
-                        params: () => ({ id: op.id }) 
+            prepareFormOptions: {
+                createTitle: "vslang:titles.Create New Team",
+                modifyTitle: "vslang:titles.Modify Team",
+                targetProp: "team",
+                api: {
+                    endpoint: `${main_view.base_url}/tenant/team/form-options`,
+                    // ✅ FIX 2: Use an empty parameter arrow function to prevent variable shadowing.
+                    // This allows correctly passing the outer team ID context.
+                    params: () => ({ id: op.id })
+                }
+            },
+
+            onPrepareForm: (me, data) => {
+                const spacesList = data?.spaces || [];
+                console.log("AA", spacesList);
+
+                VSUtil.setComboItems(
+                    me.controls.space_id,
+                    spacesList,
+                    "id",
+                    "code",
+                    "",
+                    "Select Space",
+                    ""
+                );
+
+                // If backend found and returned the team data, bind it to the inputs automatically
+                if (data?.team) {
+                    const teamData = Array.isArray(data.team)
+                        ? data.team[0]
+                        : data.team;
+                    if (teamData) {
+                        me.setData(teamData);
+                    }
+                }
+            },
+
+            buttons: [
+                {
+                    label: '<span vslang="buttons.Cancel"></span>',
+                    cssClass: "btn btn-secondary",
+                    click: me => {
+                        me.hide(false);
                     }
                 },
-                
+                {
+                    label: '<span vslang="buttons.Save"></span>',
+                    cssClass: "btn btn-primary",
+                    click: (me, btn) => {
+                        const payload = me.getData();
 
-                onPrepareForm: (me, data) => {
-                    const spacesList = data?.spaces || [];
+                        // Ensure the ID accompanies the payload
+                        payload.id = me.dataOptions.id || payload.id;
 
-                    VSUtil.setComboItems(
-                        me.controls.space_id,
-                        spacesList,
-                        "id", 
-                        "code", 
-                        "",
-                        "Select Space", 
-                        ""
-                    );
+                        vsapi
+                            .call(
+                                `${main_view.base_url}/tenant/team/save`,
+                                payload,
+                                btn,
+                                null
+                            )
+                            .then(res => {
+                                if (res.status_code === 200) {
+                                    const newTeamId = res.data?.id || null;
+                                    me.hide(true, payload, newTeamId);
 
-                    // If backend found and returned the team data, bind it to the inputs automatically
-                    if (data?.team) {
-                        me.setData(data.team);
-                    }
-                },
-
-                buttons: [
-                    {
-                        label: '<span vslang="buttons.Cancel"></span>',
-                        cssClass: "btn btn-secondary",
-                        click: me => {
-                            me.hide(false);
-                        }
-                    },
-                    {
-                        label: '<span vslang="buttons.Save"></span>',
-                        cssClass: "btn btn-primary",
-                        click: (me, btn) => {
-                            const payload = me.getData();
-                            
-                            // Ensure the ID accompanies the payload
-                            payload.id = me.dataOptions.id || payload.id; 
-
-                            vsapi
-                                .call(
-                                    `${main_view.base_url}/tenant/team/save`,
-                                    payload,
-                                    btn,
-                                    null
-                                )
-                                .then(res => {
-                                    if (res.status_code === 200) {
-                                        const newTeamId = res.data?.id || null;
-                                        me.hide(true, payload, newTeamId);
-
-                                        if (payload.id > 0) {
-                                            cv_interact.success(
-                                                "update_success_team"
-                                            );
-                                        } else {
-                                            cv_interact.success(
-                                                "create_success_team"
-                                            );
-                                        }
-                                        
-                                        if (typeof op.onClose === 'function') {
-                                            op.onClose();
-                                        }
+                                    if (payload.id > 0) {
+                                        cv_interact.success(
+                                            "update_success_team"
+                                        );
                                     } else {
-                                        cv_interact.error(
-                                            res.error_message ||
-                                                "Failed to save team"
+                                        cv_interact.success(
+                                            "create_success_team"
                                         );
                                     }
-                                });
-                        }
+
+                                    if (typeof op.onClose === "function") {
+                                        op.onClose();
+                                    }
+                                } else {
+                                    cv_interact.error(
+                                        res.error_message ||
+                                            "Failed to save team"
+                                    );
+                                }
+                            });
                     }
-                ]
-            });
+                }
+            ]
+        });
 
         dialog.show(op);
     };
@@ -712,14 +752,12 @@ const CreateTeamMemberDialog = (() => {
     let dialog = null;
 
     self.show = op => {
-        dialog =
-            dialog ||
-            new GeneralDialog({
-                cssClass: "modal-lg vs-modal ",
-                backdrop: "static",
-                keyboard: true,
-                createContent: () => {
-                    return `
+        dialog = new GeneralDialog({
+            cssClass: "modal-lg vs-modal ",
+            backdrop: "static",
+            keyboard: true,
+            createContent: () => {
+                return `
                 <div class="tenant-form row">
                     <div class="col-12 col-md-3 d-flex justify-content-center">
                         <div id="tenant-profile-container" class="tenant-profile-container d-flex align-items-center justify-content-center" >
@@ -779,12 +817,6 @@ const CreateTeamMemberDialog = (() => {
                                     <option value="2">Standard</option>
                                 </select>
                             </div>
-                            <div class="col-12 col-md-6">
-                                <div class="vs-material-field">
-                                    <input type="text" name="legal_name" class="data-input form-control" data-field="legal_name" placeholder=" " />
-                                    <label vslang="labels.Legal Name">Legal Name</label>
-                                </div>
-                            </div>
                             <div class="col-12 col-md-6" >
                                 <select data-style="material" name="nationality_id" class="data-input form-control" data-field="nationality_id" placeholder="Nationality"></select>
                             </div>
@@ -802,7 +834,7 @@ const CreateTeamMemberDialog = (() => {
                                 <label vslang="labels.National ID">National ID</label>
                             </div>
                         </div>
-                        <div class="col-6 col-md-6">
+                        <div class="d-none col-6 col-md-6">
                             <select name="space_id" 
                                     class="data-input form-control"
                                     data-style="material" 
@@ -814,7 +846,7 @@ const CreateTeamMemberDialog = (() => {
                                     )}">      
                             </select>
                         </div>
-                        <div class="col-12 col-md-3 pt-2">
+                        <div class="col-12 col-md-6 pt-2">
                             <div class="vs-material-field">
                                 <input type="text" data-type="date" name="nid_issue_date" class="data-input form-control form_input" data-field="nid_issue_date" placeholder=" " />
                                 <label vslang="labels.Issue Date">Issue Date</label>
@@ -847,379 +879,377 @@ const CreateTeamMemberDialog = (() => {
 
                 </div>
                 `;
-                },
+            },
 
-                contentCreated: me => {
-                    me.uploadInput = me.divModal.querySelector(
-                        'input[name="documents"]'
-                    );
-                    me.uploadZone = me.divModal.querySelector(
-                        "#tenant-upload-zone"
-                    );
-                    me.previewZone = me.divModal.querySelector(
-                        "#tenant-preview-zone"
-                    );
-                    me.previewImg = me.divModal.querySelector(
-                        "#tenant-preview-img"
-                    );
-                    me.displayInput = me.divModal.querySelector(
-                        "#documents_display"
-                    );
+            contentCreated: me => {
+                me.uploadInput = me.divModal.querySelector(
+                    'input[name="documents"]'
+                );
+                me.uploadZone = me.divModal.querySelector(
+                    "#tenant-upload-zone"
+                );
+                me.previewZone = me.divModal.querySelector(
+                    "#tenant-preview-zone"
+                );
+                me.previewImg = me.divModal.querySelector(
+                    "#tenant-preview-img"
+                );
+                me.displayInput = me.divModal.querySelector(
+                    "#documents_display"
+                );
 
-                    me.controls.btn_chooseFile = me.divModal.querySelector(
-                        "#btn_chooseFile"
-                    );
-                    me.controls.btn_removeFile = me.divModal.querySelector(
-                        "#btn_removeFile"
-                    );
+                me.controls.btn_chooseFile = me.divModal.querySelector(
+                    "#btn_chooseFile"
+                );
+                me.controls.btn_removeFile = me.divModal.querySelector(
+                    "#btn_removeFile"
+                );
 
-                    me.fileBase64 = null;
-                    me.ext = null;
+                me.fileBase64 = null;
+                me.ext = null;
 
-                    me.renderTenantImage = () => {
-                        const src = new URL(me.previewImg.src).pathname
-                            .split("/")
-                            .pop();
+                me.renderMembeImage = () => {
+                    const src = new URL(me.previewImg.src).pathname
+                        .split("/")
+                        .pop();
 
-                        if (me.dataOptions.id == null && me.fileBase64) {
-                            me.uploadZone.classList.add("d-none");
-                            me.previewZone.classList.remove("d-none");
-                        } else if (
-                            me.dataOptions.id == null &&
-                            !me.fileBase64
-                        ) {
-                            me.uploadZone.classList.remove("d-none");
-                            me.previewZone.classList.add("d-none");
-                            me.uploadInput.value = "";
-                            if (me.displayInput) me.displayInput.value = "";
-                            if (me.previewImg) me.previewImg.src = "";
-                        } else if (
-                            me.dataOptions.id > 0 &&
-                            !me.fileBase64 &&
-                            src == "placeholder.svg"
-                        ) {
-                            me.uploadZone.classList.remove("d-none");
-                            me.previewZone.classList.add("d-none");
-                            me.uploadInput.value = "";
-                            if (me.displayInput) me.displayInput.value = "";
-                            if (me.previewImg) me.previewImg.src = "";
-                        } else {
-                            me.uploadZone.classList.add("d-none");
-                            me.previewZone.classList.remove("d-none");
-                        }
-                    };
+                    if (me.dataOptions.id == null && me.fileBase64) {
+                        me.uploadZone.classList.add("d-none");
+                        me.previewZone.classList.remove("d-none");
+                    } else if (me.dataOptions.id == null && !me.fileBase64) {
+                        me.uploadZone.classList.remove("d-none");
+                        me.previewZone.classList.add("d-none");
+                        me.uploadInput.value = "";
+                        if (me.displayInput) me.displayInput.value = "";
+                        if (me.previewImg) me.previewImg.src = "";
+                    } else if (
+                        me.dataOptions.id > 0 &&
+                        !me.fileBase64 &&
+                        src == "placeholder.svg"
+                    ) {
+                        me.uploadZone.classList.remove("d-none");
+                        me.previewZone.classList.add("d-none");
+                        me.uploadInput.value = "";
+                        if (me.displayInput) me.displayInput.value = "";
+                        if (me.previewImg) me.previewImg.src = "";
+                    } else {
+                        me.uploadZone.classList.add("d-none");
+                        me.previewZone.classList.remove("d-none");
+                    }
+                };
 
-                    me.controls.btn_chooseFile.onclick = () => {
-                        me.uploadInput.click();
-                    };
-                    me.previewImg.style.cursor = "pointer";
-                    me.previewImg.title = "Click to change photo";
-                    me.previewImg.onclick = () => {
-                        me.uploadInput.click();
-                    };
+                me.controls.btn_chooseFile.onclick = () => {
+                    me.uploadInput.click();
+                };
+                me.previewImg.style.cursor = "pointer";
+                me.previewImg.title = "Click to change photo";
+                me.previewImg.onclick = () => {
+                    me.uploadInput.click();
+                };
 
-                    me.uploadInput.addEventListener("change", e => {
-                        const file = e.target.files[0];
-                        if (file) {
-                            const extension = file.name
-                                .split(".")
-                                .pop()
-                                .toLowerCase();
+                me.uploadInput.addEventListener("change", e => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const extension = file.name
+                            .split(".")
+                            .pop()
+                            .toLowerCase();
 
-                            if (!["jpg", "jpeg", "png"].includes(extension)) {
-                                cv_interact.error(
-                                    "Please select a valid image file (.jpg, .jpeg, .png)"
-                                );
-                                return;
-                            }
-
-                            const reader = new FileReader();
-                            reader.onload = event => {
-                                const fullResult = event.target.result;
-
-                                me.fileBase64 = null;
-
-                                me.fileBase64 = fullResult.split(",")[1];
-                                let detectedExt = fullResult
-                                    .split(";")[0]
-                                    .split(":")[1];
-                                me.ext = detectedExt.split("/")[1];
-
-                                me.previewImg.src = fullResult;
-                                me.displayInput.value = file.name;
-
-                                me.renderTenantImage();
-
-                                if (me.dataOptions.id > 0) {
-                                    me.saveProfilePhoto(
-                                        fullResult,
-                                        me.dataOptions.id
-                                    );
-                                }
-                            };
-                            reader.readAsDataURL(file);
-                        }
-                    });
-
-                    me.controls.btn_removeFile.onclick = async () => {
-                        if (me.dataOptions.id > 0) {
-                            const yes = await cv_interact.confirm(
-                                "Are you sure to delete this profile photo?",
-                                { title: "Delete Photo", context: "delete" }
+                        if (!["jpg", "jpeg", "png"].includes(extension)) {
+                            cv_interact.error(
+                                "Please select a valid image file (.jpg, .jpeg, .png)"
                             );
-                            if (yes) {
-                                me.deleteProfilePhoto(me.dataOptions.id);
-                            }
-                        } else {
+                            return;
+                        }
+
+                        const reader = new FileReader();
+                        reader.onload = event => {
+                            const fullResult = event.target.result;
+
                             me.fileBase64 = null;
-                            me.ext = null;
-                            me.renderTenantImage();
-                        }
-                    };
 
-                    me.deleteProfilePhoto = id => {
-                        const p = { id: id };
-                        vsapi
-                            .call(
-                                [
-                                    main_view.base_url,
-                                    "/tenant/team/profile/photo/delete"
-                                ].join(""),
-                                p,
-                                false,
-                                false
-                            )
-                            .then(res => {
-                                if (res.status_code == 200) {
-                                    me.fileBase64 = null;
-                                    me.ext = null;
-                                    me.renderTenantImage();
-                                    cv_interact.success(
-                                        "Profile photo was deleted!"
-                                    );
-                                } else cv_interact.error(res.error_message);
-                            });
-                    };
+                            me.fileBase64 = fullResult.split(",")[1];
+                            let detectedExt = fullResult
+                                .split(";")[0]
+                                .split(":")[1];
+                            me.ext = detectedExt.split("/")[1];
 
-                    me.saveProfilePhoto = (photo, id) => {
-                        const p = { photo: photo, id: id };
-                        vsapi
-                            .call(
-                                [
-                                    main_view.base_url,
-                                    "/tenant/team/profile/photo/save"
-                                ].join(""),
-                                p,
-                                false
-                            )
-                            .then(res => {
-                                if (res.status_code == 200) {
-                                    cv_interact.success(
-                                        "Profile photo was saved!"
-                                    );
-                                } else cv_interact.error(res.error_message);
-                            });
-                    };
-                },
-                configSelect: [
-                    {
-                        name: "nationality_id",
-                        data: "nationalities",
-                        textField: "nationality",
-                        valueField: "id"
-                    }
-                ],
-                prepareFormOptions: {
-                    createTitle: "vslang:titles.Create New Staff",
-                    modifyTitle: "vslang:titles.Modify Staff",
-                    targetProp: "staff",
-                    api: {
-                        endpoint: [
-                            main_view.base_url,
-                            "/tenant/team/form-options"
-                        ].join(""),
-                        params: op => {
-                            return { id: op.id };
-                        }
-                    }
-                },
+                            me.previewImg.src = fullResult;
+                            me.displayInput.value = file.name;
 
-                onPrepareForm: (me, data) => {
-                    me.renderTenantImage();
+                            me.renderMembeImage();
 
-                    if (me.dataOptions && me.dataOptions.team_id) {
-                        me.team_id = me.dataOptions.team_id; // Store it
-                        // Add hidden input if not exists
-                        if (
-                            !me.divModal.querySelector('input[name="team_id"]')
-                        ) {
-                            const hidden = document.createElement("input");
-                            hidden.type = "hidden";
-                            hidden.name = "team_id";
-                            hidden.value = me.dataOptions.team_id;
-                            me.divModal
-                                .querySelector(".tenant-form")
-                                .appendChild(hidden);
-                        }
-                    }
-
-                    if (me.dataOptions.phone_number) {
-                        me.controls.name.value = me.dataOptions.name;
-                        me.controls.phone_number.value =
-                            me.dataOptions.phone_number;
-                        me.controls.email.value = me.dataOptions.email;
-                    }
-                },
-
-                extendMethod: {
-                    setData: (me, data) => {
-                        if (me.dataOptions.id > 0) {
-                            if (data && data.image_url) {
-                                me.previewImg.src = data.image_url;
-                                me.fileBase64 = data.image_url;
+                            if (me.dataOptions.id > 0) {
+                                me.saveProfilePhoto(
+                                    fullResult,
+                                    me.dataOptions.id
+                                );
                             }
-                        }
+                        };
+                        reader.readAsDataURL(file);
                     }
-                },
-                buttons: [
-                    {
-                        label: '<span vslang="buttons.Cancel"></span>',
-                        cssClass: "btn btn-secondary",
-                        click: (me, btn) => {
-                            me.hide(false);
+                });
+
+                me.controls.btn_removeFile.onclick = async () => {
+                    if (me.dataOptions.id > 0) {
+                        const yes = await cv_interact.confirm(
+                            "Are you sure to delete this profile photo?",
+                            { title: "Delete Photo", context: "delete" }
+                        );
+                        if (yes) {
+                            me.deleteProfilePhoto(me.dataOptions.id);
                         }
-                    },
-                    {
-                        label: '<span vslang="buttons.Save"></span>',
-                        cssClass: "btn btn-primary",
-                        click: (me, btn) => {
-                            const op = me.getData();
-                            console.log(6655,op);
+                    } else {
+                        me.fileBase64 = null;
+                        me.ext = null;
+                        me.renderMembeImage();
+                    }
+                };
 
-                            op.id = me.dataOptions.id;
-                            if (me.dataOptions.team_id) {
-                                op.team_id = me.dataOptions.team_id;
-                            }
-                            op.photo = me.fileBase64 ? me.previewImg.src : "";
-
+                me.deleteProfilePhoto = id => {
+                    const p = { id: id };
+                    vsapi
+                        .call(
                             [
-                                "start_date",
-                                "date_of_birth",
-                                "nid_issue_date"
-                            ].forEach(f => {
-                                if (op[f]) {
-                                    const d = new Date(op[f]);
-                                    if (!isNaN(d.getTime())) {
-                                        const y = d.getFullYear();
-                                        const m = String(
-                                            d.getMonth() + 1
-                                        ).padStart(2, "0");
-                                        const day = String(
-                                            d.getDate()
-                                        ).padStart(2, "0");
-                                        op[f] = `${y}-${m}-${day}`;
+                                main_view.base_url,
+                                "/tenant/team/profile/photo/delete"
+                            ].join(""),
+                            p,
+                            false,
+                            false
+                        )
+                        .then(res => {
+                            if (res.status_code == 200) {
+                                me.fileBase64 = null;
+                                me.ext = null;
+                                me.renderMembeImage();
+                                cv_interact.success(
+                                    "Profile photo was deleted!"
+                                );
+                            } else cv_interact.error(res.error_message);
+                        });
+                };
+
+                me.saveProfilePhoto = (photo, id) => {
+                    const p = { photo: photo, id: id };
+                    vsapi
+                        .call(
+                            [
+                                main_view.base_url,
+                                "/tenant/team/profile/photo/save"
+                            ].join(""),
+                            p,
+                            false
+                        )
+                        .then(res => {
+                            if (res.status_code == 200) {
+                                cv_interact.success("Profile photo was saved!");
+                            } else cv_interact.error(res.error_message);
+                        });
+                };
+            },
+            configSelect: [
+                {
+                    name: "nationality_id",
+                    data: "nationalities",
+                    textField: "nationality",
+                    valueField: "id"
+                }
+            ],
+            prepareFormOptions: {
+                createTitle: "vslang:titles.Create New Staff",
+                modifyTitle: "vslang:titles.Modify Staff",
+                targetProp: "member",
+                api: {
+                    endpoint: [
+                        main_view.base_url,
+                        "/tenant/team/form-options-member"
+                    ].join(""),
+                    // ✅ FIX: empty-parameter arrow to avoid shadowing the
+                    // outer `op` (which holds the real member id).
+                    params: () => {
+                        return { id: op.id };
+                    }
+                }
+            },
+
+            onPrepareForm: (me, data) => {
+                me.renderMembeImage();
+
+                if (me.dataOptions && me.dataOptions.team_id) {
+                    me.team_id = me.dataOptions.team_id; // Store it
+                    // Add hidden input if not exists
+                    if (!me.divModal.querySelector('input[name="team_id"]')) {
+                        const hidden = document.createElement("input");
+                        hidden.type = "hidden";
+                        hidden.name = "team_id";
+                        hidden.value = me.dataOptions.team_id;
+                        me.divModal
+                            .querySelector(".tenant-form")
+                            .appendChild(hidden);
+                    }
+                }
+
+                // ✅ FIX: bind the fetched record (data.member) onto the
+                // form the same way CreateTeamDialog does with data.team.
+                // Team::getFormOptionsMember() returns the key 'member'.
+                if (data?.member) {
+                    const staffData = Array.isArray(data.member)
+                        ? data.member[0]
+                        : data.member;
+                    if (staffData) {
+                        me.setData(staffData);
+                    }
+                }
+            },
+
+            extendMethod: {
+                setData: (me, data) => {
+                    if (me.dataOptions.id > 0) {
+                        if (data && data.image_url) {
+                            me.previewImg.src = data.image_url;
+                            me.fileBase64 = data.image_url;
+                        }
+                    }
+                }
+            },
+            buttons: [
+                {
+                    label: '<span vslang="buttons.Cancel"></span>',
+                    cssClass: "btn btn-secondary",
+                    click: (me, btn) => {
+                        me.hide(false);
+                    }
+                },
+                {
+                    label: '<span vslang="buttons.Save"></span>',
+                    cssClass: "btn btn-primary",
+                    click: (me, btn) => {
+                        const op = me.getData();
+                        console.log(6655, op);
+
+                        op.id = me.dataOptions.id;
+                        if (me.dataOptions.team_id) {
+                            op.team_id = me.dataOptions.team_id;
+                        }
+                        op.photo = me.fileBase64 ? me.previewImg.src : "";
+
+                        [
+                            "start_date",
+                            "date_of_birth",
+                            "nid_issue_date"
+                        ].forEach(f => {
+                            if (op[f]) {
+                                const d = new Date(op[f]);
+                                if (!isNaN(d.getTime())) {
+                                    const y = d.getFullYear();
+                                    const m = String(d.getMonth() + 1).padStart(
+                                        2,
+                                        "0"
+                                    );
+                                    const day = String(d.getDate()).padStart(
+                                        2,
+                                        "0"
+                                    );
+                                    op[f] = `${y}-${m}-${day}`;
+                                }
+                            }
+                        });
+                        vsapi
+                            .call(
+                                [
+                                    main_view.base_url,
+                                    "/tenant/team/save-member"
+                                ].join(""),
+                                op,
+                                btn,
+                                null
+                            )
+                            .then(res => {
+                                console.log(
+                                    "Server response received on saving member:",
+                                    res
+                                );
+
+                                if (res.status_code === 200) {
+                                    const newTenantId = res.data?.id || null;
+                                    me.hide(true, op, newTenantId);
+
+                                    if (me.dataOptions.id > 0) {
+                                        cv_interact.success(
+                                            "update_success_tenant"
+                                        );
+                                        me.previewZone.classList.add("d-none");
+                                    } else {
+                                        const activeTeamId =
+                                            op.team_id ||
+                                            me.dataOptions.team_id;
+                                        console.log(
+                                            "Target Team ID detected:",
+                                            activeTeamId
+                                        );
+
+                                        let totalCount = 0;
+                                        if (
+                                            res.data?.member_count !== undefined
+                                        ) {
+                                            totalCount = res.data.member_count;
+                                        } else if (
+                                            res.data?.tenant_team
+                                                ?.member_count !== undefined
+                                        ) {
+                                            totalCount =
+                                                res.data.tenant_team
+                                                    .member_count;
+                                        } else {
+                                            // If the server doesn't return the new count, read the current UI number and add 1
+                                            const activeCard = document.querySelector(
+                                                `.team-card[data-id="${activeTeamId}"]`
+                                            );
+                                            const currentUiCount = activeCard?.querySelector(
+                                                '[data-field="member_count"]'
+                                            )?.textContent;
+                                            totalCount = currentUiCount
+                                                ? parseInt(currentUiCount, 10) +
+                                                  1
+                                                : 1;
+                                            console.warn(
+                                                "API response did not include a counter field. Falling back to incremental UI calculation:",
+                                                totalCount
+                                            );
+                                        }
+
+                                        if (activeTeamId) {
+                                            updateCardMemberCount(
+                                                activeTeamId,
+                                                totalCount
+                                            );
+                                        }
+
+                                        cv_interact.success(
+                                            "create_success_tenant"
+                                        );
+                                        me.previewZone.classList.add("d-none");
+
+                                        TeamComponent.staffListView.showPage({
+                                            ...TeamComponent.getFilterData(),
+                                            team_id: activeTeamId
+                                        });
+                                    }
+                                } else {
+                                    cv_interact.error(res.error_message);
+                                    if (me.controls?.documents) {
+                                        me.controls.documents.value = "";
+                                        me.controls.documents.classList.add(
+                                            "d-none"
+                                        );
                                     }
                                 }
                             });
-                            vsapi
-                                .call(
-                                    [
-                                        main_view.base_url,
-                                        "/tenant/team/save-member"
-                                    ].join(""),
-                                    op,
-                                    btn,
-                                    null
-                                )
-                                .then(res => {
-                                    console.log(
-                                        "Server response received on saving member:",
-                                        res
-                                    );
-
-                                    if (res.status_code === 200) {
-                                        const newTenantId =
-                                            res.data?.id || null;
-                                        me.hide(true, op, newTenantId);
-
-                                        if (me.dataOptions.id > 0) {
-                                            cv_interact.success(
-                                                "update_success_tenant"
-                                            );
-                                            me.previewZone.classList.add(
-                                                "d-none"
-                                            );
-                                        } else {
-                                            const activeTeamId =
-                                                op.team_id ||
-                                                me.dataOptions.team_id;
-                                            console.log(
-                                                "Target Team ID detected:",
-                                                activeTeamId
-                                            );
-
-                                            let totalCount = 0;
-                                            if (
-                                                res.data?.member_count !==
-                                                undefined
-                                            ) {
-                                                totalCount =
-                                                    res.data.member_count;
-                                            } else if (
-                                                res.data?.tenant_team
-                                                    ?.member_count !== undefined
-                                            ) {
-                                                totalCount =
-                                                    res.data.tenant_team
-                                                        .member_count;
-                                            } else {
-                                                // If the server doesn't return the new count, read the current UI number and add 1
-                                                const activeCard = document.querySelector(
-                                                    `.team-card[data-id="${activeTeamId}"]`
-                                                );
-                                                const currentUiCount = activeCard?.querySelector(
-                                                    '[data-field="member_count"]'
-                                                )?.textContent;
-                                                totalCount = currentUiCount
-                                                    ? parseInt(
-                                                          currentUiCount,
-                                                          10
-                                                      ) + 1
-                                                    : 1;
-                                                console.warn(
-                                                    "API response did not include a counter field. Falling back to incremental UI calculation:",
-                                                    totalCount
-                                                );
-                                            }
-
-                                            if (activeTeamId) {
-                                                updateCardMemberCount(
-                                                    activeTeamId,
-                                                    totalCount
-                                                );
-                                            }
-
-                                            cv_interact.success(
-                                                "create_success_tenant"
-                                            );
-                                            me.previewZone.classList.add(
-                                                "d-none"
-                                            );
-                                        }
-                                    } else {
-                                        cv_interact.error(res.error_message);
-                                        if (me.controls?.documents) {
-                                            me.controls.documents.value = "";
-                                            me.controls.documents.classList.add(
-                                                "d-none"
-                                            );
-                                        }
-                                    }
-                                });
-                        }
                     }
-                ]
-            });
+                }
+            ]
+        });
         dialog.show(op);
     };
     return self;
