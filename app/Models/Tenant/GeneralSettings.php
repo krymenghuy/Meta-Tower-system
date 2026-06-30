@@ -723,5 +723,9 @@ static function options_maintenance_amenity($ss)
     {
         return DB::table('expense_statuses')->selectRaw('id,name as expense_status')->get();
     }
+        static function options_team_member_status($ss)
+    {
+        return DB::table('team_member_statuses')->selectRaw('id,name')->get();
+    }
 
 }

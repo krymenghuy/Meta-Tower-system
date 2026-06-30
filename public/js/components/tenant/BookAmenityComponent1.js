@@ -33,64 +33,29 @@ var BookAmenityComponent = (() => {
         return `${h12}:${String(min).padStart(2, "0")} ${ampm}`;
     };
 
-    mThis.parseBookingDate = (dateStr) => {
-        if (dateStr == null || String(dateStr).trim() === "") {
-            return { day: "—", month: "—", year: "—" };
-        }
-        const s = String(dateStr).trim();
-        const iso = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
-        if (iso) {
-            const months = [
-                "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
-                "JUL", "AUG", "SEP", "OCT", "NOV", "DEC",
-            ];
-            const monthIdx = parseInt(iso[2], 10) - 1;
-            return {
-                day: String(parseInt(iso[3], 10)),
-                month: months[monthIdx] ?? "—",
-                year: iso[1],
-            };
-        }
-        const parts = s.replace(/-/g, " ").split(/\s+/);
-        if (parts.length >= 3) {
-            return {
-                day: parts[0],
-                month: parts[1].substring(0, 3).toUpperCase(),
-                year: parts[2],
-            };
-        }
-        return { day: "—", month: "—", year: s };
-    };
-
-    mThis.formatReservationRef = (id) => {
-        const num = parseInt(id, 10);
-        if (!num) return "—";
-        return `RESERVATION - #${String(num).padStart(5, "0")}`;
-    };
-
     mThis.getStatusMeta = (data) => {
         const status = (data.status ?? "").toLowerCase();
         const statusId = parseInt(data.status_id, 10);
         const map = {
             upcoming: {
                 label: "Upcoming",
-                rowCls: "reservation-card--upcoming",
-                valueCls: "reservation-card__status-value reservation-card__status-value--upcoming",
+                rowCls: "reservation-row--upcoming",
+                badgeCls: "reservation-row__status-badge reservation-row__status-badge--upcoming",
             },
             "in-progress": {
                 label: "In-Progress",
-                rowCls: "reservation-card--in-progress",
-                valueCls: "reservation-card__status-value reservation-card__status-value--in-progress",
+                rowCls: "reservation-row--in-progress",
+                badgeCls: "reservation-row__status-badge reservation-row__status-badge--in-progress",
             },
             completed: {
                 label: "Completed",
-                rowCls: "reservation-card--completed",
-                valueCls: "reservation-card__status-value reservation-card__status-value--completed",
+                rowCls: "reservation-row--completed",
+                badgeCls: "reservation-row__status-badge reservation-row__status-badge--completed",
             },
             cancelled: {
                 label: "Cancelled",
-                rowCls: "reservation-card--cancelled",
-                valueCls: "reservation-card__status-value reservation-card__status-value--cancelled",
+                rowCls: "reservation-row--cancelled",
+                badgeCls: "reservation-row__status-badge reservation-row__status-badge--cancelled",
             },
         };
         const meta = map[status] || null;
@@ -102,24 +67,19 @@ var BookAmenityComponent = (() => {
         return {
             label: data.status ?? "—",
             rowCls: "",
-            valueCls: "reservation-card__status-value",
+            badgeCls: "reservation-row__status-badge",
         };
     };
 
     mThis.renderReservationAction = (data) => {
-        if (data.status_id == 2) {
-            return `<div class="reservation-card__action reservation-card__action--empty" aria-hidden="true"></div>`;
-        }
-        return `<div class="reservation-card__action">
-            <a href="javascript:void(0)" class="btn_reservation_action reservation-card__menu-btn"
-                data-id="${data.id}"
-                data-statusid="${data.status_id ?? ""}"
-                aria-haspopup="true" aria-expanded="false"
-                aria-label="More options"
-                title="More options">
-                <i class="fa-solid fa-ellipsis-vertical"></i>
-            </a>
-        </div>`;
+        if (data.status_id == 2) return "";
+        return `<a href="javascript:void(0)" class="btn_reservation_action reservation-row__menu-btn"
+            data-id="${data.id}"
+            data-statusid="${data.status_id ?? ""}"
+            aria-haspopup="true" aria-expanded="false"
+            title="More options">
+            <i class="fa-solid fa-ellipsis-vertical"></i>
+        </a>`;
     };
 
     mThis.renderReservationList = (container, items) => {
@@ -142,8 +102,7 @@ var BookAmenityComponent = (() => {
         items.forEach((data) => {
             const status = mThis.getStatusMeta(data);
             const amenityName = mThis.escapeHtml(data.amenity_name ?? "—");
-            const dateParts = mThis.parseBookingDate(data.booking_date);
-            const ref = mThis.escapeHtml(mThis.formatReservationRef(data.id));
+            const bookingDate = mThis.escapeHtml(data.booking_date ?? "—");
             const start12 = mThis.to12h((data.start_time ?? "").substring(0, 5));
             const end12 = mThis.to12h((data.end_time ?? "").substring(0, 5));
             const remarksRaw = (data.remarks ?? "").trim();
@@ -153,31 +112,28 @@ var BookAmenityComponent = (() => {
             const rowCls = status.rowCls ? ` ${status.rowCls}` : "";
 
             rowsHtml += `
-            <div class="reservation-card${rowCls} reservation" id="reservation_id${data.id}" data-statusid="${data.status_id ?? ""}">
-                <div class="reservation-card__date">
-                    <span class="reservation-card__date-day">${mThis.escapeHtml(dateParts.day)}</span>
-                    <span class="reservation-card__date-month">${mThis.escapeHtml(dateParts.month)}</span>
-                    <span class="reservation-card__date-year">${mThis.escapeHtml(dateParts.year)}</span>
-                </div>
-                <div class="reservation-card__content">
-                    <div class="reservation-card__info">
-                        <div class="reservation-card__title-block">
-                            <span class="reservation-card__title">${amenityName}</span>
-                            <span class="reservation-card__ref">${ref}</span>
-                        </div>
-                        <div class="reservation-card__field">
-                            <span class="reservation-card__field-label">Time</span>
-                            <span class="reservation-card__field-value">${start12} - ${end12}</span>
-                        </div>
-                        <div class="reservation-card__field">
-                            <span class="reservation-card__field-label">Notes</span>
-                            <span class="reservation-card__field-value">${remarks}</span>
-                        </div>
-                        <div class="reservation-card__field reservation-card__field--status">
-                            <span class="reservation-card__field-label">Status</span>
-                            <span class="${status.valueCls}">${mThis.escapeHtml(status.label)}</span>
-                        </div>
+            <div class="reservation-row${rowCls} reservation" id="reservation_id${data.id}" data-statusid="${data.status_id ?? ""}">
+                <div class="reservation-row__accent"></div>
+                <div class="reservation-row__grid">
+                    <div class="reservation-row__cell reservation-row__cell--amenity">
+                        <span class="reservation-row__amenity">${amenityName}</span>
                     </div>
+                    <div class="reservation-row__cell reservation-row__cell--date">
+                        <i class="fa-regular fa-calendar reservation-row__icon"></i>
+                        <span>${bookingDate}</span>
+                    </div>
+                    <div class="reservation-row__cell reservation-row__cell--time">
+                        <i class="fa-regular fa-clock reservation-row__icon"></i>
+                        <span>${start12} - ${end12}</span>
+                    </div>
+                    <div class="reservation-row__cell reservation-row__cell--notes">
+                        <span class="reservation-row__notes-pill">${remarks}</span>
+                    </div>
+                    <div class="reservation-row__cell reservation-row__cell--status">
+                        <span class="${status.badgeCls}">${mThis.escapeHtml(status.label)}</span>
+                    </div>
+                </div>
+                <div class="reservation-row__action">
                     ${mThis.renderReservationAction(data)}
                 </div>
             </div>`;
@@ -185,6 +141,27 @@ var BookAmenityComponent = (() => {
 
         container.innerHTML = `
             <div class="reservation-list">
+                <div class="reservation-list__header">
+                    <div class="reservation-list__header-accent"></div>
+                    <div class="reservation-list__header-grid">
+                        <div class="reservation-list__header-cell reservation-list__header-cell--amenity">
+                            <span class="reservation-list__header-en">Amenity</span>
+                        </div>
+                        <div class="reservation-list__header-cell reservation-list__header-cell--date">
+                            <span class="reservation-list__header-en">Date</span>
+                        </div>
+                        <div class="reservation-list__header-cell reservation-list__header-cell--time">
+                            <span class="reservation-list__header-en">Time Detail</span>
+                        </div>
+                        <div class="reservation-list__header-cell reservation-list__header-cell--notes">
+                            <span class="reservation-list__header-en">Administrative Notes</span>
+                        </div>
+                        <div class="reservation-list__header-cell reservation-list__header-cell--status">
+                            <span class="reservation-list__header-en">Status</span>
+                        </div>
+                    </div>
+                    <div class="reservation-list__header-action"></div>
+                </div>
                 <div class="reservation-list__rows">
                     ${rowsHtml}
                 </div>
@@ -203,9 +180,8 @@ var BookAmenityComponent = (() => {
             fetchApi: `${main_view.base_url}/tenant/reservation/list-paginate`,
             perPage: 8,
             apiCluster: main_view.apiCluster,
-
-            renderItems: (items, list_container) => {
-                mThis.renderBookAmenityList(list_container, items);
+            renderItems: (items, container) => {
+                mThis.renderReservationList(container, items);
             },
             listContainerClass: null,
         });
@@ -291,7 +267,7 @@ var BookAmenityComponent = (() => {
         const menuOptions = {
             containerElement: table,
             actionButtonClass: "btn_reservation_action",
-            cssClass: "reservation-card__dropdown shadow-sm",
+            cssClass: "reservation-row__dropdown shadow-sm",
             menus: [
                 {
                     html: '<span class="ps-2" vslang="titles.Modify"></span>',

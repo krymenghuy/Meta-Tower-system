@@ -1,5 +1,5 @@
 "use strict";
-var ReceiptsComponent = new (function () {
+var TransactionComponent = new (function () {
     const mThis = this;
     mThis.title_prop = "Transaction";
     mThis.currency_symbol = "$";
@@ -152,7 +152,7 @@ var ReceiptsComponent = new (function () {
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
             tableClass:
-                "table table--white rounded-2 overflow-hidden header-uppercase mb-0",
+                "table table--white rounded-3 overflow-hidden header-uppercase mb-0",
             rowCreated: (data, index, tr) => {
                 tr.classList.add("receipt", "cursor-pointer");
                 tr.id = `receipt_id_${data.id}`;
@@ -281,4 +281,4 @@ var ReceiptsComponent = new (function () {
     return mThis;
 })();
 
-window.ReceiptsComponent = ReceiptsComponent;
+window.TransactionComponent = TransactionComponent;
