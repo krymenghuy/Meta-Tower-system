@@ -25,11 +25,28 @@ class Announcement
         $ss = $ss ?? $this->userInfo;
         $v_rule = [
             'title' => '1|string|1-150|text=announcement_title_required',
-            'description' => '1|string|text=announcement_description_required'
+            'description' => '1|string|text=announcement_description_required',
+            'category' => '0|string|0-50',
+            'priority' => '0|string|0-50',
+            'audience' => '0|string|0-50',
+            'publish_date' => '1|string|text=publish_date_required',
+            'expiry_date' => '0|string',
+            'status' => '1|string|text=status_required',
+            'building_id' => '0|integer'
         ];
         $title_char = ['&', '.', '/', '-', ' ', '?', '!', '(', ')', '[', ']', ',', ':', ';', '"'];
-        $desc_char = ['&', '.', '/', '-', ' ', '?', '!', '(', ')', '[', ']', ',', ':', ';', '"', '<', '>', '=', '_'];
-        $res = DBX::validateObject($arr, $v_rule, 1, ['title' => $title_char, 'description' => $desc_char], $ss->lang, 0, null);
+        $desc_char = ['&', '.', '/', '-', ' ', '?', '!', '(', ')', '[', ']', ',', ':', ';', '"', '<', '>', '=', '_', '+', '%', '$', '#', '@', '\'', '*', '{', '}', '|', '\\', '~', '`', '^'];
+        $clean_char = [' ', '-', '_'];
+        $res = DBX::validateObject($arr, $v_rule, 1, [
+            'title' => $title_char, 
+            'description' => $desc_char,
+            'category' => $clean_char,
+            'priority' => $clean_char,
+            'audience' => $clean_char,
+            'status' => $clean_char,
+            'publish_date' => ['/', ' ', ':', '-'],
+            'expiry_date' => ['/', ' ', ':', '-']
+        ], $ss->lang, 0, null);
         if ($res->error) {
             return DV::error($res->error);
         }
@@ -40,6 +57,19 @@ class Announcement
                 $q->where('id', '<>', $id);
             })
             ->exists();
+
+
+        // Format dates
+        if (!empty($inputs['publish_date'])) {
+            $inputs['publish_date'] = date('Y-m-d H:i:s', strtotime($inputs['publish_date']));
+        }
+        if (!empty($inputs['expiry_date'])) {
+            $inputs['expiry_date'] = date('Y-m-d H:i:s', strtotime($inputs['expiry_date']));
+        } else {
+            $inputs['expiry_date'] = null;
+        }
+
+        $inputs['building_id'] = !empty($inputs['building_id']) ? $inputs['building_id'] : null;
 
         $now = date('Y-m-d H:i:s');
         if ($id) {
@@ -67,22 +97,44 @@ class Announcement
         $ss = $ss ?? $this->userInfo;
         $d = (object) $arr;
         $search_value = $d->search_value ?? null;
+        $category = $d->category ?? null;
+        $priority = $d->priority ?? null;
+        $status = $d->status ?? null;
+        $sort = $d->sort ?? 'newest';
+
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 10;
         if (!is_numeric($current_page) || !is_numeric($per_page)) {
             return null;
         }
         $skip_rows = ($current_page - 1) * $per_page;
-        $str_search = "1=1";
+
+        $query = DB::table('announcements as a')
+            ->leftJoin('buildings as b', 'b.id', '=', 'a.building_id');
+
         if ($search_value) {
             $skip_rows = 0;
             $search_value = escape_like_str($search_value);
-            $str_search = "(a.title Like '%" . $search_value . "%' OR a.description Like '%" . $search_value . "%')";
+            $query->whereRaw("(a.title Like '%" . $search_value . "%' OR a.description Like '%" . $search_value . "%')");
         }
-        $query = DB::table('announcements as a')
-            ->whereRaw($str_search)
-            ->selectRaw("a.id, a.title, a.description")
-            ->orderBy('a.id', 'desc');
+
+        if ($category) {
+            $query->where('a.category', $category);
+        }
+
+        if ($priority) {
+            $query->where('a.priority', $priority);
+        }
+
+        if ($status) {
+            $query->where('a.status', $status);
+        }
+
+        $orderDirection = ($sort === 'oldest') ? 'asc' : 'desc';
+        $query->orderBy('a.id', $orderDirection);
+
+        $query->selectRaw("a.id, a.title, a.description, a.category, a.priority, a.audience, a.publish_date, a.expiry_date, a.status, a.building_id, b.name as building_name");
+
         $clone_query = clone $query;
         $count = $clone_query->count('a.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
@@ -93,7 +145,7 @@ class Announcement
     {
         $announcement = DB::table('announcements as a')
             ->where('a.id', $id)
-            ->selectRaw("a.id, a.title, a.description")
+            ->selectRaw("a.id, a.title, a.description, a.category, a.priority, a.audience, a.publish_date, a.expiry_date, a.status, a.building_id")
             ->first();
         return $announcement;
     }
@@ -110,8 +162,10 @@ class Announcement
     public function getFormOptions($id = null, $ss = null)
     {
         $announcement_details = $id ? self::announcementDetails($id) : null;
+        $buildings = DB::table('buildings')->select('id', 'name as building')->get();
         return (object) [
-            'announcement_details' => $announcement_details
+            'announcement_details' => $announcement_details,
+            'buildings' => $buildings
         ];
     }
 }
