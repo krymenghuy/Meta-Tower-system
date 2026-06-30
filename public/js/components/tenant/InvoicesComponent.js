@@ -220,7 +220,7 @@ var InvoicesComponent = (() => {
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
             tableClass:
-                "table table--white rounded-2 rounded-2 overflow-hidden header-uppercase",
+                "table table--white rounded-3 overflow-hidden header-uppercase",
             rowCreated: (data, index, tr) => {
                 tr.classList.add("invoice", "cursor-pointer");
                 tr.id = `invoice_id_${data.id}`;

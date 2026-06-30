@@ -8,7 +8,6 @@
     use Illuminate\Support\Facades\DB;
     use Vsd\Vsloquent\VSModel;
     use App\Models\Prm\GeneralSettings;
-    use Log;
 
     class BookAmenity extends VSModel
     {
@@ -182,18 +181,12 @@
             $skip_rows = ($current_page - 1) * $per_page;
             $str_search = "1=1";
             $str_moreWhere = '2=2';
-
             $tenant_id = $ss->official_id;
-
-            // \Log::info(print_r($ss, true));
-
-
             if($search_value){
                 $skip_rows = 0;
                 $search_value = escape_like_str($search_value);
                 $str_search = "(a.name LIKE '%" . $search_value . "%' OR a.code LIKE '%" . $search_value . "%' OR t.name LIKE '%" . $search_value . "%' OR t.phone_number LIKE '%" . $search_value . "%')";
             }
-
             if($amenity_id){
                 $str_moreWhere .= ' AND r.amenity_id =' . $amenity_id;
             }
