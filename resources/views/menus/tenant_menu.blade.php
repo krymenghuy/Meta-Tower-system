@@ -173,7 +173,7 @@ function v_display($mod_id, $module_ids = null)
                 <li class="kt-menu__item" aria-haspopup="true" <?php v_display(309); ?>>
                     <a href="ContractsComponent" modid="309" class="menu-item kt-menu__link">
                         <span class="kt-menu__link-icon">
-                            <img class="opacity-icons icons" src="{{ asset('assets/images/icons/staff.svg') }}" />
+                            <img class="opacity-icons icons" src="{{ asset('assets/images/icons/contract.png') }}" />
                         </span>
                         <span class="font-color kt-menu__link-text" vslang="menus.Contract">Contract</span>
                     </a>
@@ -182,7 +182,7 @@ function v_display($mod_id, $module_ids = null)
                 <li class="kt-menu__item" aria-haspopup="true" <?php v_display(309); ?>>
                     <a href="Contracts2Component" modid="309" class="menu-item kt-menu__link">
                         <span class="kt-menu__link-icon">
-                            <img class="opacity-icons icons" src="{{ asset('assets/images/icons/staff.svg') }}" />
+                            <img class="opacity-icons icons" src="{{ asset('assets/images/icons/contract.png') }}" />
                         </span>
                         <span class="font-color kt-menu__link-text">Contract 2</span>
                     </a>
@@ -200,7 +200,7 @@ function v_display($mod_id, $module_ids = null)
                 <li class="kt-menu__item" aria-haspopup="true" <?php v_display(302); ?>>
                     <a href="InvoicesComponent" modid="302" class="menu-item kt-menu__link">
                         <span class="kt-menu__link-icon">
-                            <img class="opacity-icons icons" src="{{ asset('assets/images/icons/staff.svg') }}" />
+                            <img class="opacity-icons icons" src="{{ asset('assets/images/icons/receipt.png') }}" />
                         </span>
                         <span class="font-color kt-menu__link-text" vslang="menus.My Invoices">My Invoices</span>
                     </a>
@@ -209,7 +209,7 @@ function v_display($mod_id, $module_ids = null)
                 <li class="kt-menu__item" aria-haspopup="true" <?php v_display(303); ?>>
                     <a href="TransactionComponent" modid="303" class="menu-item kt-menu__link">
                         <span class="kt-menu__link-icon">
-                            <img class="opacity-icons icons" src="{{ asset('assets/images/icons/receipt.png') }}" />
+                            <img class="opacity-icons icons" src="{{ asset('assets/images/icons/transaction.svg') }}" />
                         </span>
                         <span class="font-color kt-menu__link-text" vslang="menus.Transactions">Transactions</span>
                     </a>
@@ -219,7 +219,7 @@ function v_display($mod_id, $module_ids = null)
                     <a href="RequestServiceComponent" modid="304" class="menu-item kt-menu__link">
                         <span class="kt-menu__link-icon">
                             <img class="opacity-icons icons"
-                                src="{{ asset('assets/images/icons/zone_floor.svg') }}" />
+                                src="{{ asset('assets/images/icons/google-task.svg') }}" />
                         </span>
                         <span class="font-color kt-menu__link-text" vslang="menus.Request Service">Request Service</span>
                     </a>
@@ -228,30 +228,12 @@ function v_display($mod_id, $module_ids = null)
                 <li class="kt-menu__item" aria-haspopup="true" <?php v_display(305); ?>>
                     <a href="AnnouncementComponent" modid="305" class="menu-item kt-menu__link">
                         <span class="kt-menu__link-icon">
-                            <img class="opacity-icons icons" src="{{ asset('assets/images/icons/staff.svg') }}" />
+                            <img class="opacity-icons icons" src="{{ asset('assets/images/icons/banner.png') }}" />
                         </span>
                         <span class="font-color kt-menu__link-text" vslang="menus.Announcements">Announcements</span>
                     </a>
                 </li>
-                <li class="kt-menu__item" aria-haspopup="true" <?php v_display(306); ?>>
-                    <a href="ServicesComponent" modid="306" class="menu-item kt-menu__link">
-                        <span class="kt-menu__link-icon">
-                            <img class="opacity-icons icons" src="{{ asset('assets/images/icons/staff.svg') }}" />
-                        </span>
-                        <span class="font-color kt-menu__link-text" vslang="menus.Services">Services</span>
-                    </a>
-                </li>
-
-                <!-- <li class="kt-menu__item" aria-haspopup="true" <?php v_display(201); ?>>
-                            <a href="AccessControlComponent" modid="201" class="menu-item kt-menu__link">
-                                <span class="kt-menu__link-icon">
-                                    <img class="opacity-icons icons" src="{{ asset('assets/images/icons/staff.svg') }}" />
-                                </span>
-                                <span class="font-color kt-menu__link-text" vslang="menus.Support / Contact">Support / Contact</span>
-                            </a>
-                        </li> -->
-
-                  <li class="kt-menu__item" aria-haspopup="true" <?php v_display(307); ?>>
+                <li class="kt-menu__item" aria-haspopup="true" <?php v_display(307); ?>>
                     <a href="TeamComponent" modid="307" class=" menu-item kt-menu__link">
                         <span class="kt-menu__link-icon">
                             <img class="opacity-icons icons" src="{{ asset('assets/images/icons/staff.svg') }}" />
@@ -264,7 +246,7 @@ function v_display($mod_id, $module_ids = null)
                         <span class="kt-menu__link-icon">
                             <img class="opacity-icons icons" src="{{ asset('assets/images/icons/staff.svg') }}" />
                         </span>
-                        <span class="font-color kt-menu__link-text" vslang="menus.Profile">Profile</span>
+                        <span class="font-color kt-menu__link-text" vslang="menus.My Profile">My Profile</span>
                     </a>
                 </li>
                 <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true"

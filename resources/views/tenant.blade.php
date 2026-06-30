@@ -90,7 +90,8 @@
 
             /* font-family: 'Segoe UI', sans-serif; */
             /* font-family: Arial, sans-serif; */
-            font-family: "Marcellus", serif;
+            font-family: 'Inter', sans-serif;
+
            /* font-family:'Helvetica Neue',Helvetica,Arial,sans-serif; */
         }
         .svg-white {
